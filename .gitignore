@@ -1,0 +1,4 @@
+^bak
+data/players/*.json
+*.swp
+TODO.txt

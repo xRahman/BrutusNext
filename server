@@ -1,0 +1,18 @@
+#!/bin/sh
+#
+#         ____             _               _   _ ________   _________
+#        |  _ \           | |             | \ | |  ____\ \ / /__   __|
+#        | |_) |_ __ _   _| |_ _   _ ___  |  \| | |__   \ V /   | |
+#        |  _ <| '__| | | | __| | | / __| | . ` |  __|   > <    | |
+#        | |_) | |  | |_| | |_| |_| \__ \ | |\  | |____ / . \   | |
+#        |____/|_|   \__,_|\__|\__,_|___/ |_| \_|______/_/ \_\  |_|
+#
+#                            Server executable
+#
+# To run the server use:
+#  ./server [options]
+#
+# Options:
+#   -p, --port ... Port to listen to telnet (default is 4443).
+
+node --use_strict ./src/BrutusNext.js  "$@"
