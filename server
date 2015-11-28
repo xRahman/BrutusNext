@@ -15,4 +15,4 @@
 # Options:
 #   -p, --port ... Port to listen to telnet (default is 4443).
 
-node --use_strict ./src/BrutusNext.js  "$@"
+node ./build/BrutusNext.js  "$@"
