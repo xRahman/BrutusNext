@@ -2,17 +2,4 @@
 
 # Part of BrutusNext
 
-# This script checks validity of code and of code styling.
-# It does not really compile anything, just prints errors if there are any.
-
-# Check everything in /src.
-# -- verbose will print name or code of option that triggered error message.
-jshint ./src/* --verbose
-jscs ./src/* --verbose
-
-# Note that jshint and jscs can't check JSON files (or basically anything
-# else than .js). That means that only javascript files should be present
-# in /src (JSON etc should be in separate directories).
-
-# If you add any javascript source files to any other directory than /src,
-# you should add that directory here for checking.
+tsc --target ES5 --charset UTF-8 --moduleResolution node --newLine LF --noEmitOnError --outDir ./build --rootDir ./src --sourceMap --sourceRoot ./src --module commonjs ./src/BrutusNext.ts
