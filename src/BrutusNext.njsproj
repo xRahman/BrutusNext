@@ -23,7 +23,6 @@
   <ItemGroup>
     <TypeScriptCompile Include="BrutusNext.ts" />
     <TypeScriptCompile Include="game\Game.ts" />
-    <TypeScriptCompile Include="server\Levels.ts" />
     <TypeScriptCompile Include="server\Mudlog.ts" />
     <TypeScriptCompile Include="server\Server.ts" />
     <TypeScriptCompile Include="server\Players.ts" />

@@ -3,7 +3,6 @@
 
   Implements immortal hierarchy.
 */
-
 /*
 module.exports = class Levels
 {
@@ -33,4 +32,5 @@ module.exports = class Levels
   // ------- Protected Methods --------
 
 };
-*/
+*/ 
+//# sourceMappingURL=Levels.js.map
