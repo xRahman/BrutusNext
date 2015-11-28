@@ -12,191 +12,97 @@
 
   Server creates and runs it's own game when you .run() it.
 */
-
-import {ASSERT} from '../shared/ASSERT';
-import {ASSERT_FATAL} from '../shared/ASSERT';
-import {Mudlog} from '../server/Mudlog';
-import {Players} from '../server/Players';
-import {Game} from '../game/Game';
-
-
-export class Server
-{
-  // -------------- static members -------------
-
-  static get DEFAULT_TELNET_PORT() { return 4443; }
-
-  static getInstance()
-  {
-    ASSERT_FATAL(
-      Server.myInstance !== null && Server.myInstance !== undefined,
-      "Instance of server doesn't exist yet");
-    return Server.myInstance;
-  }
-
-  // Creates an instance of a server. Server is a singleton, so it must
-  // not already exist.
-  static create()
-  {
-    if (!ASSERT(Server.myInstance === undefined,
-      "Server already exists, not creating it"))
-      return;
-
-    Server.myInstance = new Server();
-  }
-
-  protected static myInstance: Server;
-
-  // -------------- public members -------------
-
-  public get game() { return this.myGame; }
-  public get players() { return this.myPlayers; }
-
-  // Starts the server. This is not a static method so it needs
-  // to be called on Server.getInstance(). That's also why it doesn't
-  // need to check if instance exists.
-  public run(telnetPort: number)
-  {
-    this.myTelnetPort = telnetPort;
-
-    // Create the game.
-    if (!ASSERT(this.myGame === undefined, "Game already exists"))
-      return;
-    this.myGame = new Game();
-
-    // Load the game.
-    this.myGame.load();
-
-    Mudlog.log(
-      "We are up and running at port: " + telnetPort,
-      Mudlog.msgType.SYSTEM,
-      Mudlog.levels.IMMORTAL);
-  }
-
-  // ------------ protected members -------------
-
-  protected myTelnetPort: number;
-  protected myGame: Game;
-  protected myPlayers: Players;
-
-  protected init(restart_server)
-  {
-
-    /*
-    util.log("START - Loading entities");
-    players = new PlayerManager([]);
-    restart_server =
-    typeof restart_server === 'undefined' ? true : restart_server;
-
-    Commands.configure({
-      rooms: rooms,
-      players: players,
-      items: items,
-      npcs: npcs,
-      locale: commander.locale
-    });
-
-    Events.configure({
-      players: players,
-      items: items,
-      locale: commander.locale,
-      npcs: npcs,
-      rooms: rooms
-    });
-    */
-
-    if (restart_server)
-    {
-      /*
-      util.log("START - Starting server");
-      */
-
-      /*
-      // Effectively the 'main' game loop but not really because it's a REPL
-      server = new telnet.Server(function(socket)
-      {
-        socket.on('interrupt', function()
-        {
-          socket.write("\n*interrupt*\n");
-        });
-
-        // Register all of the events
-        for (var event in Events.events)
-        {
-          socket.on(event, Events.events[event]);
-        }
-
-        socket.write("Connecting...\n");
-        util.log("User connected...");
-        // @see: src/events.js - Events.events.login
-        socket.emit('login', socket);
-      });
-      */
-
-      // start the server
-      /*
-      server.listen(commander.port).on('error', function(err)
-      {
-        if (err.code === 'EADDRINUSE')
-        {
-          util.log("Cannot start server on port " + commander.port + ",
-        address is already in use.");
-      util.log("Do you have a MUD server already running?");
-        } else if (err.code === 'EACCES')
-        {
-          util.log("Cannot start server on port " + commander.port
-            + ": permission denied.");
-          util.log("Are you trying to start it on a priviledged port without"
-            + "being root?");
-        } else
-        {
-          util.log("Failed to start MUD server:");
-          util.log(err);
-        }
-        process.exit(1);
-      });
-      */
-
-      /*
-      // save every 10 minutes
-      util.log("Setting autosave to " + commander.save + " minutes.");
-      clearInterval(saveint);
-      saveint = setInterval(save, commander.save * 60000);
-
-      // respawn every 20 minutes, probably a better way to do this
-      util.log("Setting respawn to " + commander.respawn + " minutes.");
-      clearInterval(respawnint);
-      respawnint = setInterval(load, commander.respawn * 60000);
-
-      Plugins.init(true, {
-        players: players,
-        items: items,
-        locale: commander.locale,
-        npcs: npcs,
-        rooms: rooms,
-        server: server
-      });
-      */
+var ASSERT_1 = require('../shared/ASSERT');
+var ASSERT_2 = require('../shared/ASSERT');
+var Mudlog_1 = require('../server/Mudlog');
+var Game_1 = require('../game/Game');
+var Server = (function () {
+    function Server() {
     }
-
-    /*
-    load(function(success)
-    {
-      if (success)
-      {
-        util.log(util.format("Server started on port: %d %s",
-          commander.port, '...'));
-        server.emit('startup');
-      } else
-      {
-        process.exit(1);
-      }
+    Object.defineProperty(Server, "DEFAULT_TELNET_PORT", {
+        // -------------- static members -------------
+        get: function () { return 4443; },
+        enumerable: true,
+        configurable: true
     });
-    */
-  }
-
-}
-
+    Server.getInstance = function () {
+        ASSERT_2.ASSERT_FATAL(Server.myInstance !== null && Server.myInstance !== undefined, "Instance of server doesn't exist yet");
+        return Server.myInstance;
+    };
+    // Creates an instance of a server. Server is a singleton, so it must
+    // not already exist.
+    Server.create = function () {
+        if (!ASSERT_1.ASSERT(Server.myInstance === undefined, "Server already exists, not creating it"))
+            return;
+        Server.myInstance = new Server();
+    };
+    Object.defineProperty(Server.prototype, "game", {
+        // -------------- public members -------------
+        get: function () { return this.myGame; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Server.prototype, "players", {
+        get: function () { return this.myPlayers; },
+        enumerable: true,
+        configurable: true
+    });
+    // Starts the server. This is not a static method so it needs
+    // to be called on Server.getInstance(). That's also why it doesn't
+    // need to check if instance exists.
+    Server.prototype.run = function (telnetPort) {
+        this.myTelnetPort = telnetPort;
+        // Create the game.
+        if (!ASSERT_1.ASSERT(this.myGame === undefined, "Game already exists"))
+            return;
+        this.myGame = new Game_1.Game();
+        // Load the game.
+        this.myGame.load();
+        Mudlog_1.Mudlog.log("We are up and running at port: " + telnetPort, Mudlog_1.Mudlog.msgType.SYSTEM, Mudlog_1.Mudlog.levels.IMMORTAL);
+    };
+    Server.prototype.init = function (restart_server) {
+        /*
+        util.log("START - Loading entities");
+        players = new PlayerManager([]);
+        restart_server =
+        typeof restart_server === 'undefined' ? true : restart_server;
+    
+        Commands.configure({
+          rooms: rooms,
+          players: players,
+          items: items,
+          npcs: npcs,
+          locale: commander.locale
+        });
+    
+        Events.configure({
+          players: players,
+          items: items,
+          locale: commander.locale,
+          npcs: npcs,
+          rooms: rooms
+        });
+        */
+        if (restart_server) {
+        }
+        /*
+        load(function(success)
+        {
+          if (success)
+          {
+            util.log(util.format("Server started on port: %d %s",
+              commander.port, '...'));
+            server.emit('startup');
+          } else
+          {
+            process.exit(1);
+          }
+        });
+        */
+    };
+    return Server;
+})();
+exports.Server = Server;
 /*
   // built-ins
 var net = require('net'),
@@ -507,3 +413,4 @@ process.stdin.on('data', function (data)
 });
 // vim: set syn=javascript :
 */
+//# sourceMappingURL=Server.js.map

@@ -52,7 +52,7 @@ function parseCmdlineParams()
 // It's called main() to sound familiar to C programmers ;)
 function main()
 {
-  // Include package.json
+  // Include package.json file (located in BrutusNext directory)
   // (it contains version number and list of all required modules along with
   // their required version)
   let packageDotJson = require('../package.json');
@@ -64,9 +64,12 @@ function main()
     Mudlog.levels.IMMORTAL);
 
   let cmdlineParser = parseCmdlineParams();
-  let server = new Server();
-  // Run the server on parameter-specified telnet port port.
-  server.run(cmdlineParser.port);
+
+  // Create an instance of server.
+  // (server is a singleton so we use static method to do it)
+  Server.create();
+  // Run the server at specified telnet port.
+  Server.getInstance().run(cmdlineParser.port);
 }
 
 // Run the main() function.

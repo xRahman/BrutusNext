@@ -22,13 +22,16 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
   <ItemGroup>
     <TypeScriptCompile Include="BrutusNext.ts" />
+    <TypeScriptCompile Include="game\Game.ts" />
     <TypeScriptCompile Include="server\Levels.ts" />
     <TypeScriptCompile Include="server\Mudlog.ts" />
     <TypeScriptCompile Include="server\Server.ts" />
+    <TypeScriptCompile Include="server\Players.ts" />
     <TypeScriptCompile Include="shared\ASSERT.ts" />
     <TypeScriptCompile Include="shared\Utils.ts" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="game\" />
     <Folder Include="server" />
     <Folder Include="shared" />
   </ItemGroup>

@@ -3,6 +3,7 @@
 data/players/*.json
 src/obj
 src/bin
+src/bin/Microsoft.NodejsTools.WebRole.dll
 src/.ntvs_analysis.dat
 src/*.js
 src/*.js.map
