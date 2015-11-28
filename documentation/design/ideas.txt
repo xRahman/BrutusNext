@@ -1,0 +1,35 @@
+﻿IDEA: Spojit vypis pozicovani a soucasne stavu grupy
+
+You (100%/ 63%)---------Dobrak ( 20%/100%)-Dragon ( 90%/ 13%)
+
+You(100%)--------- Dobrak(20%)-Dragon(90%)
+
+You(100%)------------------Dragon(100%)
+You(100%)-------------Dragon(85%)
+You(100%)-----Dragon(35%)
+You(  5%)Dragon(11%)
+
+-- asi radsi na kazdou radku max 1 hrac a 1 mob
+
+IDEA: Rooty, snary, blink (klidne i preskoceni moba uplne doprava)
+
+
+
+-------------------------------------------------------------------
+
+Fleeovani a vypis exitu:
+-------------------------
+- pri looku do roomu by melo byt videt, ze jsou exity blokovane
+
+south - Preparing hall (blocked)
+
+- pri looku do smeru se vypise, kteri mobove ten vychod blokuji
+
+look south
+You see the Temple Altar.
+  A dragon blocks this exit.
+  A chimera blocks this exit.
+
+- fleeovani znamena nejdriv utect k libovolne strane obrazovky (radky), nasledne probehne flee
+- flee pujde do libovolneho exitu, ktery neni blokovany nebo zavreny
+(cilene do konkretniho smeru mozna az s nejakym assassinskym skillem)

@@ -11,58 +11,32 @@
   Server creates and runs it's own game when you .run() it.
 */
 
-/*
-let Levels = require('../game/Levels');
-let Mudlog = require('./Mudlog');
+import {ASSERT} from '../shared/ASSERT';
+import {ASSERT_FATAL} from '../shared/ASSERT';
+import {Mudlog} from '../server/Mudlog';
 
-class Server
+export class Server
 {
-  // -------- Public Methods ----------
+  static get DEFAULT_TELNET_PORT() { return 4443; }
+///  static game: Game;
 
-  // Start the server, create, load and run the game.
-  run(telnetPort)
+  run(telnetPort: number)
   {
-    if (telnetPort)
-      this.myTelnetPort = telnetPort;
-
-    Mudlog.log("OK", Mudlog.INFO, Levels.CREATOR);
-
-
-    // Start the server.
-//    console.log(
-//        "We are up and running on telnet port "
-//        + this.myTelnetPort + "!");
+    this.telnetPort = telnetPort;
 
     // Create the game.
+
+
+    // Load the game.
+
+    Mudlog.log(
+      "We are up and running at port: " + telnetPort,
+      Mudlog.msgType.SYSTEM,
+      Mudlog.levels.IMMORTAL);
   }
 
-  // ------- Public Accessors ---------
-
-  static get DEFAULT_TELNET_PORT() { return 4443; }
-
-  constructor()
-  {
-    // --------- Public Data ----------
-
-    // -------- Protected Data --------
-
-    this.myTelnetPort = Server.DEFAULT_TELNET_PORT;
-
-    // Prevent changing propreties of this class.
-    Object.seal(this);
-  }
-
-  // ----- Protected Accessors --------
-
-  // ------- Protected Methods --------
-
+  protected telnetPort;
 }
-
-// export the class
-module.exports = Server;
-*/
-
-
 
 /*
 // server si hru vytvori sam

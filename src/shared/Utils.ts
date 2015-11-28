@@ -5,6 +5,12 @@
 */
 
 /*
+import {Assert} from './Assert';
+declare var GLOBAL: any;
+GLOBAL.ASSERT = Assert.assert;
+*/
+
+/*
 module.exports = class Utils
 {
   // Checks number and types of function arguments.

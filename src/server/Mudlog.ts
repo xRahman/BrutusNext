@@ -3,52 +3,71 @@
 
   Implements logger.
 
-  Usage:
-    let Mudlog = require('./Mudlog');
-    Mudlog.log("OK", Mudlog.INFO, 0);
+  Usage example:
+
+    import {Mudlog} from '../server/Mudlog';
+
+    Mudlog.log(
+      "Loading mobile data...",
+      Mudlog.msgType.SYSTEM, Mudlog.levels.CREATOR);
 */
 
-/*
-let Levels = require('../game/Levels');
-
-class Mudlog
+export class Mudlog
 {
-  // -------- Public Methods ----------
-
-  // Log the message.
-  static log(message, severity, visibilityLevel)
+  // TODO: Tohle by se asi hodilo prehodit jinam, nejspis nekam do classy pro
+  // immortalske zalezitosti. Zatim to necham tady.
+  static levels =
   {
-    checkArguments(arguments, "string", "string", "number");
+    MORTAL:      { value: 0, str: "MORTAL" },
+    IMMORTAL:    { value: 1, str: "IMMORTAL" },
+    GOD:         { value: 2, str: "GOD" },
+    GREATER_GOD: { value: 3, str: "GREATER_GOD" },
+    CREATOR:     { value: 4, str: "CREATOR" },
+    IMPLEMENTOR: { value: 5, str: "IMPLEMENTOR" },
+    // This probably won't be needed.
+    ///length:      { value: 6, str: "ERROR" }
+  }
 
-    if (visibilityLevel >= Levels.MORTAL)  // Everything is logged for now.
+  static msgType =
+  {
+    ASSERT:       { str: "ASSERT" },
+    ASSERT_FATAL: { str: "ASSERT_FATAL" },
+    SYSTEM:       { str: "SYSTEM" }
+  }
+
+  // Outputs message to log file. Also sends it to online immortals
+  // of required or greater level.
+  static log(
+    message: string,
+    msgType: MudlogMessageType,
+    level: MudlogImmortalLevel)
+  {
+    // TODO: Kontrolovat level charu, az bude existovat
+    // (zatim se loguje vsechno)
+    if (true)
+    ///if (level.value >= char.level)
     {
-      // Log message to the console.
-      console.log(severity + ' ' + message);
+      // Do not log fatal asserts to the console, only to the log file
+      // and to online immortals.
+      // (stack trace will be sent to the console via throwing Error())
+      if (msgType.str !== Mudlog.msgType.ASSERT_FATAL.str)
+      {
+        // Log message to the console.
+        console.log("[" + msgType.str + "] " + message);
+      }
     }
   }
-
-  // ------- Public Accessors ---------
-
-  static get INFO() { return '[INFO]'; }
-  static get WARNING() { return '[WARNING]'; }
-  static get ERROR() { return '[ERROR]'; }
-  static get FATAL_ERROR() { return '[FATAL ERROR]'; }
-
-  constructor()
-  {
-    // --------- Public Data ----------
-
-    // -------- Protected Data --------
-
-    // Prevent changing propreties of this class.
-    Object.seal(this);
-  }
-
-  // ----- Protected Accessors --------
-
-  // ------- Protected Methods --------
-
 }
 
-module.exports = Mudlog;
-*/
+// ---------------------- module private stuff -------------------------------
+
+interface MudlogMessageType
+{
+  str: string;
+}
+
+interface MudlogImmortalLevel
+{
+  value: number;
+  str: string;
+}

@@ -1,4 +1,11 @@
 ^bak
+.vs
 data/players/*.json
-*.swp
+src/obj
+src/bin
+src/.ntvs_analysis.dat
+src/*.js
+src/*.js.map
+build/*.js
+build/*.js.map
 TODO.txt
