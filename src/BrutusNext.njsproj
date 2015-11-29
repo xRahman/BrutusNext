@@ -26,12 +26,14 @@
     <TypeScriptCompile Include="server\Mudlog.ts" />
     <TypeScriptCompile Include="server\Server.ts" />
     <TypeScriptCompile Include="server\Players.ts" />
+    <TypeScriptCompile Include="server\telnet\TelnetServer.ts" />
     <TypeScriptCompile Include="shared\ASSERT.ts" />
     <TypeScriptCompile Include="shared\Utils.ts" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="game\" />
     <Folder Include="server" />
+    <Folder Include="server\telnet\" />
     <Folder Include="shared" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />

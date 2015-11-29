@@ -4,7 +4,9 @@
   Implements assertions. Use them a lot!
 
   ASSERT() just prints errors, ASSERT_FATAL() also terminates the program.
-  
+*/
+
+/*
   Use ASSERT_FATAL() either if there is no realistic way to recover from the
   error or if "recovery" could lead to corruption of persistant game data
   (player file etc.).
@@ -78,7 +80,7 @@ export function ASSERT_FATAL(condition: boolean, message: string)
   }
 }
 
-// ---------------------- module private stuff -------------------------------
+// ---------------------- private module stuff -------------------------------
 
 // Creates Error() object, reads stack trace from it.
 // Returns string containing stack trace trimmed to start with function
