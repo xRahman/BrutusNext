@@ -60,7 +60,7 @@ function main()
   // Log our name and version.
   Mudlog.log(
     packageDotJson.name + " server v. " + packageDotJson.version,
-    Mudlog.msgType.SYSTEM,
+    Mudlog.msgType.SYSTEM_INFO,
     Mudlog.levels.IMMORTAL);
 
   let cmdlineParser = parseCmdlineParams();

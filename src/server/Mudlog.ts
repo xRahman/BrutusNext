@@ -31,8 +31,9 @@ export class Mudlog
   static msgType =
   {
     ASSERT:       { str: "ASSERT" },
-    ASSERT_FATAL: { str: "ASSERT_FATAL" },
-    SYSTEM:       { str: "SYSTEM" }
+    ASSERT_FATAL: { str: "ASSERT FATAL" },
+    SYSTEM_INFO:  { str: "SYSTEM INFO" },
+    SYSTEM_ERROR: { str: "SYSTEM ERROR" }
   }
 
   // Outputs message to log file. Also sends it to online immortals
@@ -59,7 +60,7 @@ export class Mudlog
   }
 }
 
-// ---------------------- module private stuff -------------------------------
+// ---------------------- private module stuff -------------------------------
 
 interface MudlogMessageType
 {
