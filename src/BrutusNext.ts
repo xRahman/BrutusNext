@@ -17,7 +17,7 @@
 */
 
 import {Mudlog} from './server/Mudlog';
-import {Server} from './server/Server';
+import {GameServer} from './server/GameServer';
 
 // To be able to require() JavaScript modules from TypeScript, we need
 // to declare function require():
@@ -40,8 +40,9 @@ function parseCmdlineParams()
 
   parser.option(
       '-p, --port [portNumber]',
-      'Port to listen to telnet [default: ' + Server.DEFAULT_TELNET_PORT + ']',
-      Server.DEFAULT_TELNET_PORT);
+      'Port to listen to telnet [default: '
+      + GameServer.DEFAULT_TELNET_PORT + ']',
+      GameServer.DEFAULT_TELNET_PORT);
 
   parser.parse(process.argv);
 
@@ -67,9 +68,9 @@ function main()
 
   // Create an instance of server.
   // (server is a singleton so we use static method to do it)
-  Server.create();
+  GameServer.create();
   // Run the server at specified telnet port.
-  Server.getInstance().run(cmdlineParser.port);
+  GameServer.getInstance().run(cmdlineParser.port);
 }
 
 // Run the main() function.
