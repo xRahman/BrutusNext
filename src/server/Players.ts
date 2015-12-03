@@ -1,7 +1,7 @@
 ﻿/*
   Part of BrutusNEXT
 
-  Implements container for connected player and thei accounts.
+  Implements container for players and their accounts.
 */
 
 export class Players

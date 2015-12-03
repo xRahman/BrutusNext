@@ -3,21 +3,23 @@
 
   Implements assertions. Use them a lot!
 
-  ASSERT() just prints errors, ASSERT_FATAL() also terminates the program.
+       --------------------------------------------------------
+             EVERY ASSERTION FAIL NEEDS TO BE FIXED ASAP!
+               (Even if MUD doesn't crash right away)
+       --------------------------------------------------------
 */
 
 /*
+  ASSERT() just prints errors, ASSERT_FATAL() also terminates the program.
+
   Use ASSERT_FATAL() either if there is no realistic way to recover from the
   error or if "recovery" could lead to corruption of persistant game data
   (player file etc.).
 
-  EVERY REPORTED ASSERTION FAIL NEEDS TO BE FIXED ASAP!
-  (Even if MUD doesn't crash right away.)
-  
   Usage examples:
 
     import {ASSERT} from '../shared/ASSERT';
-    if (!ASSERT(character, "Invalid character"))
+    if (!ASSERT(character !== null, "Invalid character"))
       return;
 
     import {ASSERT_FATAL} from '../shared/ASSERT';
@@ -33,10 +35,10 @@
 /*
   Implementation notes:
     Functions ASSERT() and ASSERT_FATAL() are exported directly (without
-  encapsulating class) so they can be imported and called without the need
-  of class or napespace accessing.
+  encapsulating class) so they can be imported and called directly without
+  the need to type something like Assert.ASSERT().
 
-    The are named with CAPS to diferentiate them from assert() function that
+  They are named with CAPS to diferentiate them from assert() function that
   might be some day introduced to JavaScript.
 */
 
