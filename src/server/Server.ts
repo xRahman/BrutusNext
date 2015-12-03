@@ -87,7 +87,7 @@ export class Server
           "Telnet server already exists"))
       return;
     this.myTelnetServer = new TelnetServer(telnetPort);
-    this.myTelnetServer.start();
+    this.myTelnetServer.start(telnetPort);
   }
 
   // Creates an instance of the game and loads its state from the disk.
