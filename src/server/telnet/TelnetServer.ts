@@ -1,29 +1,47 @@
-﻿/*
+/*
   Part of BrutusNEXT
 
   Implements container for connected player and their accounts.
 */
 
+'use strict';
+/// <reference path='../../headers/node.d.ts' />
+/// <reference path='../../headers/ws.d.ts' />
+
 import {Mudlog} from '../../server/Mudlog';
 ///import {Server} from '../../server/Server';
 import {ASSERT_FATAL} from '../../shared/ASSERT';
 
-/*
 // To be able to require() JavaScript modules from TypeScript, we need
 // to declare function require():
 declare function require(name: string): any;
 
 // Built-in node.js modules
-let net = require('net');
+///let net = require('net');
+import * as net from 'net';
+/*
+declare Socket = net.Socket;
+*/
 
 // 3rd party modules
 ///var websocketServer = require('websocket').server;
-*/
 
 export class TelnetServer
 {
-  public start()
+///  public port: number;
+  
+  public start(port: number)
   {
+///    this.port = port;
+  
+    this.myServer = net.createServer
+    (
+      function (socket: net.Socket)
+      {
+        socket.write('Welcome to the Telnet server!');
+      }
+    );
+    this.myServer.listen(port);
   }
 
   constructor(public port: number) { }

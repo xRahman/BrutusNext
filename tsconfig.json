@@ -1,0 +1,20 @@
+{
+  "compilerOptions":
+  {
+    "target": "es5",
+    "charset": "UTF-8",
+    "moduleResolution": "node",
+    "newLine": "LF",
+    "noEmitOnError": true,
+    "outDir": "./build",
+    "rootDir": "./src",
+    "sourceMap": true,
+    "sourceRoot": "./src",
+    "module": "commonjs"
+  },
+  "files":
+  [
+    "./src/headers/node.d.ts",
+    "./src/BrutusNext.ts"
+  ]
+}
