@@ -79,7 +79,7 @@ export function ASSERT_FATAL(condition: boolean, message: string)
     let error = new Error("Fatal assertion failed");
     // Modify error object's stack trace to reflect that it was caused by
     // ASSERT_FATAL.
-    error.stack = stackTrace;
+    error.stack = errorMsg;
 
     // Throw an exception that will cause the program to end and print stack
     // trace to the console.
