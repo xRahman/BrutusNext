@@ -25,23 +25,40 @@ import * as events from 'events';  // Import namespace 'events' from node.js
 
 export class TelnetServer
 {
-  static get EVENT_CONNECTION_REQUEST() { return 'connection_request'; }
-  static get EVENT_SERVER_STARTED_LISTENING() { return 'listening'; }
-  static get EVENT_SOCKET_RECEIVED_DATA() { return 'data'; }
-  static get EVENT_SOCKET_ERROR() { return 'error'; }
-  static get EVENT_SOCKET_CLOSE() { return 'close'; }
+  public static events =
+  {
+    SERVER_STARTED_LISTENING: 'listening',
+    SERVER_ERROR:             'error',
+    SOCKET_RECEIVED_DATA:     'data',
+    SOCKET_ERROR:             'error',
+    SOCKET_CLOSE:             'close'
+  }
 
-  public open = false; // Do we accept new connections?
+  // Do we accept new connections?
+  public open = false;
 
+  // Starts the telnet server.
   public start()
   {
+    // Create a new raw socket server. Parameter is handler which will be
+    // called when there is a new connection to the server.
     this.myTelnetServer = net.createServer(TelnetServer.onNewConnection);
 
-    // Register handler to open the server to the new connection when
+    // Register handler for server errors (like attempt to run the server
+    // on unavailable port).
+    this.myTelnetServer.on
+      (
+      TelnetServer.events.SERVER_ERROR,
+      function(error) { TelnetServer.onServerError(error); }
+      );
+
+    // Register handler to open the server to the new connections when
     // telnet server is ready (e. g. when 'listening' event is emited).
-    this.myTelnetServer.on(
-      TelnetServer.EVENT_SERVER_STARTED_LISTENING,
-      TelnetServer.onServerStartsListening);
+    this.myTelnetServer.on
+    (
+      TelnetServer.events.SERVER_STARTED_LISTENING,
+      TelnetServer.onServerStartsListening
+    );
 
     Mudlog.log(
       "Starting telnet server at port " + this.port,
@@ -53,19 +70,15 @@ export class TelnetServer
 
   constructor
   (
-    public port: number,
-    protected myGameServer: GameServer
+    public port: number
   )
   {
-    this.myCommProcessor.on
-    (
-      TelnetServer.EVENT_CONNECTION_REQUEST,
-      function(socketId) { TelnetServer.onNewConnectionRequest(socketId) }
-    );
   }
 
   protected myTelnetServer: net.Server;
-  protected myCommProcessor = new events.EventEmitter();
+
+/// Vlastni EventEmmiter nejspis nakonec nebudu potrebovat
+///  protected myCommProcessor = new events.EventEmitter();
 
   // Handles 'listening' event of telnet server.
   protected static onServerStartsListening()
@@ -79,12 +92,37 @@ export class TelnetServer
       Mudlog.levels.IMMORTAL);
   }
 
+  // Handles 'error' event of telnet server.
+  protected static onServerError(error)
+  {
+    let port = GameServer.getInstance().telnetServer.port;
+
+    if (error.code === 'EADDRINUSE')
+    {
+      ASSERT_FATAL(false,
+        "Cannot start telnet server on port "
+        + port + ": Address is already in use.\n"
+        + "Do you have a MUD server already running?");
+    }
+
+    if (error.code === 'EACCES')
+    {
+      ASSERT_FATAL(false,
+        "Cannot start telnet server on port "
+        + port + ": Permission denied.\n"
+        + "Are you trying to start it on a priviledged port without"
+        + " being root?");
+    }
+
+    ASSERT_FATAL(false,
+      "Cannot start telnet server on port "
+      + port + ": Unknown error");
+  }
+
   protected static onNewConnection(socket: net.Socket)
   {
     let gameServer = GameServer.getInstance();
     let telnetServer = gameServer.telnetServer;
-
-    socket.write('Welcome to the Telnet server!');
 
     Mudlog.log(
       "TELNET SERVER: Received a new connection request from "
@@ -118,14 +156,12 @@ export class TelnetServer
     /// zatim necham.
     ///s.socket = s; // conform to the websocket object to make easier to handle
 
+    TelnetServer.initTelnetSocket(socket);
 
-    // Taky netusim, k cemu to je dobre.
-    socket.setEncoding('binary');
-
-    let socketId = gameServer.socketManager.addSocket(socket);
-
-    telnetServer.myCommProcessor.emit(TelnetServer.EVENT_CONNECTION_REQUEST,
-      socketId);
+    // Let SocketManager create a new socket descriptor. Remember it's unique
+    // string id.
+    let socketDescriptorId: string =
+      gameServer.socketManager.addSocketDescriptor(socket);
 
     /// TODO:
     /// Co se socket idCkem?
@@ -134,65 +170,90 @@ export class TelnetServer
     /// - logovaciProces ho nasledne preda prislusnemu playerovi
     /// Ten proces by mel asi obsluhovat server. Bude na to potrebovat socket
     /// deskriptor, ktery vzniknul pridanim socketu do SocketManageru
-  }
 
-  protected static onNewConnectionRequest(socketId: string)
-  {
-    let gameServer = GameServer.getInstance();
-
-    let socket = gameServer.socketManager.getSocketById(socketId);
-
-    /// TODO: Nejaky check, ze socket jeste neni zinicializovany, abych
-    /// nevyrabel duplicitni event listenery
-
-    socket.on
-    (
-      TelnetServer.EVENT_SOCKET_RECEIVED_DATA,
-      function(data) { TelnetServer.onSocketReceivedData(socket, data); }
-    );
-
-    socket.on
-    (
-      TelnetServer.EVENT_SOCKET_ERROR,
-      function(error) { TelnetServer.onSocketError(socket, error); }
-    );
-
-    socket.on
-    (
-      TelnetServer.EVENT_SOCKET_CLOSE,
-      function() { TelnetServer.onSocketClose(socket); }
-    );
+    /// TODO: Poslat login prompt (nejspis ne tady. Asi ze socketDesciptoru,
+    /// aby to bylo jednotne pro vsechny mozne druhy socketu?)
+    socket.write('Welcome to the Telnet server!');
   }
 
   protected static onSocketReceivedData(socket: net.Socket, data /* TODO: Jaky to muze mit typ? */)
   {
+    console.log("onSocketReceivedData(): " + data);
+
+    /// TODO: Najit prislusny deskriptor a nechat ho, at to zpracuje
   }
 
-  protected static onSocketError(socket: net.Socket, error /* TODO: Jaky to muze mit typ? */)
+  protected static onSocketError(socket: net.Socket, error)
   {
+    let gameServer = GameServer.getInstance();
+
+    // I don't really know what kind of errors can happen here.
+    // For now let's just log the error and close the connection.
+    Mudlog.log(
+      "Socket error occured, closing the connection: " + error,
+      Mudlog.msgType.SYSTEM_ERROR,
+      Mudlog.levels.IMMORTAL);
+
+    gameServer.socketManager.socketError(socket);
   }
 
   protected static onSocketClose(socket: net.Socket)
   {
+    console.log("onSocketClose()");
+
+    /// TODO: Najit prislusny deskriptor a nechat ho, at to zpracuje
+    /// Nebo mozna v tomhle pripade to hodit na SocketManager?
+  }
+
+  protected static checkEventHandlerAbsence(socket: net.Socket, event: string)
+  {
+    let registeredEvents =
+      events.EventEmitter.listenerCount(socket, event);
+    ASSERT_FATAL(registeredEvents === 0,
+      "Event " + event + " is already registered on socket");
+  }
+
+  // Sets socket transfer mode, registers event handlers, etc.
+  protected static initTelnetSocket(socket: net.Socket)
+  {
+    let gameServer = GameServer.getInstance();
+
+    // Tell the socket to interpret data as raw binary stream.
+    socket.setEncoding('binary');
+
+    // Check that event handler for 'data' event is not already registered.
+    TelnetServer.checkEventHandlerAbsence(
+      socket, TelnetServer.events.SOCKET_RECEIVED_DATA);
+
+    // Register event handler for 'data' event.
+    socket.on
+    (
+      TelnetServer.events.SOCKET_RECEIVED_DATA,
+      function(data) { TelnetServer.onSocketReceivedData(socket, data); }
+    );
+
+    // Check that event handler for 'error' event is not already registered.
+    TelnetServer.checkEventHandlerAbsence(
+      socket, TelnetServer.events.SOCKET_ERROR);
+
+    // Register event handler for 'error' event.
+    socket.on
+    (
+      TelnetServer.events.SOCKET_ERROR,
+      function(error) { TelnetServer.onSocketError(socket, error); }
+    );
+
+    // Check that event handler for 'close' event is not already registered.
+    TelnetServer.checkEventHandlerAbsence(
+      socket, TelnetServer.events.SOCKET_CLOSE);
+
+    // Register event handler for 'close' event.
+    socket.on
+    (
+      TelnetServer.events.SOCKET_CLOSE,
+      function() { TelnetServer.onSocketClose(socket); }
+    );
   }
 }
 
 // ---------------------- private module stuff -------------------------------
-
-/*
-  Mudlog.log(
-    "User connected...",
-    Mudlog.msgType.SYSTEM_INFO,
-    Mudlog.levels.IMMORTAL);
-
-    ASSERT_FATAL(false,
-      "Cannot start telnet server on port "
-      + port + ", address is already in use.\n"
-      + "Do you have a MUD server already running?");
-
-    ASSERT_FATAL(false,
-      "Cannot start telnet server on port "
-      + port + ", permission denied.\n"
-      + "Are you trying to start it on a priviledged port without"
-      + " being root?");
-*/

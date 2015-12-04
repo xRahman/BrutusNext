@@ -73,7 +73,7 @@ export class GameServer
 ///    Mudlog.log(
 ///      "We are up and running at port: " + telnetPort,
 ///      Mudlog.msgType.SYSTEM_INFO,
-///      Mudlog.levels.IMMORTAL);
+    ///      Mudlog.levels.IMMORTAL);
   }
 
   // ------------ protected members -------------
@@ -90,7 +90,7 @@ export class GameServer
           "Telnet server already exists"))
       return;
 
-    this.myTelnetServer = new TelnetServer(telnetPort, this);
+    this.myTelnetServer = new TelnetServer(telnetPort);
     this.myTelnetServer.start();
   }
 
