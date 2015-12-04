@@ -13,7 +13,7 @@ import {SocketDescriptor} from '../server/SocketDescriptor';
 export class SocketManager extends IdProvider
 {
   // Creates a socket descriptor, returns its unique string id.
-  public addSocket(socket: net.Socket): String
+  public addSocketDescriptor(socket: net.Socket): string
   {
     let stringId = this.generateId();
 
@@ -41,29 +41,16 @@ export class SocketManager extends IdProvider
     return stringId;
   }
 
-  /*
-  /// TODO
-  /// Otazka je, kdy budu mazat sockety - dost mozna jen ze socket eventu,
-  /// v tom pripade bych je mazal podle reference na socket, ne podle idcka.
-  public removeSocket(id: string)
+  // Handle a socket error by closing the connection.
+  public socketError(socket: net.Socket)
   {
-    let descriptor = this.mySocketDescriptors[id];
+    /// TODO: Mozna poslat nejake info hraci, ze se stalo neco zleho.
+    /// (zatim naprosto netusim, pri jake prilezitosti muze socket error
+    /// nastat)
 
-    if (!ASSERT(typeof descriptor !== 'undefined',
-      "Attempt to remove socket with id: " + id + " which doesn't exist."))
-      return;
-
-    delete this.mySocketDescriptors[id];
-
-    /// TODO: Zrusit socket taky z mySocketReferences a myReferenceToDescriptorMap
-    /// (jen je otazka, jak to dohledat...)
-    /// mazat z poli se bude nejak takhle:
-    ///
-    /// var i = sockets.indexOf(socket);
-	  /// if (i != -1) {
-		///   sockets.splice(i, 1);
+    // Remove the corresponding socket descriptor.
+    this.deleteSocketDescriptor(socket);
   }
-  */
 
   public getSocketById(id: string)
   {
@@ -82,18 +69,14 @@ export class SocketManager extends IdProvider
 
     ASSERT_FATAL(index in this.myReferenceToDescriptorMap,
       "There is no record for given socket reference");
+ 
+    let descriptorId = this.myReferenceToDescriptorMap[index]
 
-    let stringId = this.myReferenceToDescriptorMap[index]
-
-    ASSERT_FATAL(stringId in this.mySocketDescriptors,
+    ASSERT_FATAL(descriptorId in this.mySocketDescriptors,
       "There is no descriptor matching given socket");
 
-    return stringId;
+    return descriptorId;
   }
-
-  // Todo: Do hlavni mapy nedavat primo sockety, ale deskpriptory (tj. instance
-  // classy, ktera bude mimo jine obsahovat odkaz na char, ke kteremu socket
-  // patri - bez toho by se nepoznalo, k jakemu charu se event vztahuje)
 
   // This hash map allows to access sockets using unique string ids.
   protected mySocketDescriptors: { [key: string]: SocketDescriptor } = {};
@@ -106,4 +89,47 @@ export class SocketManager extends IdProvider
   // This map tells us what unique string id (pointing to mySocketDescriptors)
   // corresponds to a given index within mySocketReferences[] array.
   protected myReferenceToDescriptorMap: { [key: number]: string } = {};
+
+  protected deleteSocketDescriptor(socket: net.Socket)
+  {
+    let index = this.mySocketReferences.indexOf(socket);
+
+    ASSERT_FATAL(index >= 0 && index < this.mySocketReferences.length,
+      "There is no record for given socket");
+
+    let descriptorId = this.myReferenceToDescriptorMap[index];
+
+    // Delete the property that traslates to the descriptor.
+    delete this.mySocketDescriptors[descriptorId];
+
+    // Delete the property that traslates to the descriptor.
+    delete this.myReferenceToDescriptorMap[index];
+
+    // Remove 1 item from the array at specified index.
+    this.mySocketReferences.splice(index, 1);
+  }
+
+  /*
+  /// TODO
+  /// Otazka je, kdy budu mazat sockety - dost mozna jen ze socket eventu,
+  /// v tom pripade bych je mazal podle reference na socket, ne podle idcka.
+  public deleteSocketDescriptor(id: string)
+  {
+    let descriptor = this.mySocketDescriptors[id];
+
+    if (!ASSERT(typeof descriptor !== 'undefined',
+      "Attempt to remove socket with id: " + id + " which doesn't exist."))
+      return;
+
+    delete this.mySocketDescriptors[id];
+
+    /// TODO: Zrusit socket taky z mySocketReferences a myReferenceToDescriptorMap
+    /// (jen je otazka, jak to dohledat...)
+    /// mazat z poli se bude nejak takhle:
+    ///
+    /// var i = sockets.indexOf(socket);
+	  /// if (i != -1) {
+		///   sockets.splice(i, 1);
+  }
+  */
 }

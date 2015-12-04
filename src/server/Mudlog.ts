@@ -12,11 +12,14 @@
       Mudlog.msgType.SYSTEM, Mudlog.levels.CREATOR);
 */
 
+/// TODO: Az bude log file, tak napsat odchytavani vyjimek, aby se stack trace
+///       zapisoval do log filu.
+
 export class Mudlog
 {
   // TODO: Tohle by se asi hodilo prehodit jinam, nejspis nekam do classy pro
   // immortalske zalezitosti. Zatim to necham tady.
-  static levels =
+  public static levels =
   {
     MORTAL:      { value: 0, str: "MORTAL" },
     IMMORTAL:    { value: 1, str: "IMMORTAL" },
@@ -24,11 +27,11 @@ export class Mudlog
     GREATER_GOD: { value: 3, str: "GREATER_GOD" },
     CREATOR:     { value: 4, str: "CREATOR" },
     IMPLEMENTOR: { value: 5, str: "IMPLEMENTOR" },
-    // This probably won't be needed.
+    // This probably won't be needed here.
     ///length:      { value: 6, str: "ERROR" }
   }
 
-  static msgType =
+  public static msgType =
   {
     ASSERT:       { str: "ASSERT" },
     ASSERT_FATAL: { str: "ASSERT FATAL" },
