@@ -71,6 +71,8 @@ export class Server
       "We are up and running at port: " + telnetPort,
       Mudlog.msgType.SYSTEM_INFO,
       Mudlog.levels.IMMORTAL);
+      
+    ASSERT_FATAL(false, "Test assert");
   }
 
   // ------------ protected members -------------

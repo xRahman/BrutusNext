@@ -76,9 +76,14 @@ export function ASSERT_FATAL(condition: boolean, message: string)
 
     Mudlog.log(errorMsg, Mudlog.msgType.ASSERT_FATAL, Mudlog.levels.IMMORTAL);
 
+    let error = new Error("Fatal assertion failed");
+    // Modify error object's stack trace to reflect that it was caused by
+    // ASSERT_FATAL.
+    error.stack = stackTrace;
+
     // Throw an exception that will cause the program to end and print stack
     // trace to the console.
-    throw new Error("Fatal assertion failed");
+    throw error;
   }
 }
 
