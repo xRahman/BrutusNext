@@ -2,4 +2,6 @@
 
 # Part of BrutusNext
 
-tsc --target ES5 --charset UTF-8 --moduleResolution node --newLine LF --noEmitOnError --outDir ./build --rootDir ./src --sourceMap --sourceRoot ./src --module commonjs ./src/BrutusNext.ts
+# We now use tsconfig.json instead of command line parameters.
+tsc
+##tsc --target ES5 --charset UTF-8 --moduleResolution node --newLine LF --noEmitOnError --outDir ./build --rootDir ./src --sourceMap --sourceRoot ./src --module commonjs ./src/BrutusNext.ts
