@@ -25,11 +25,13 @@
     <TypeScriptCompile Include="game\Game.ts" />
     <TypeScriptCompile Include="headers\node.d.ts" />
     <TypeScriptCompile Include="headers\ws.d.ts" />
+    <TypeScriptCompile Include="server\Account.ts" />
+    <TypeScriptCompile Include="server\AuthProcessor.ts" />
     <TypeScriptCompile Include="server\Mudlog.ts" />
     <TypeScriptCompile Include="server\GameServer.ts" />
-    <TypeScriptCompile Include="server\Players.ts" />
+    <TypeScriptCompile Include="server\AccountManager.ts" />
     <TypeScriptCompile Include="server\SocketDescriptor.ts" />
-    <TypeScriptCompile Include="server\SocketManager.ts" />
+    <TypeScriptCompile Include="server\DescriptorManager.ts" />
     <TypeScriptCompile Include="server\telnet\TelnetServer.ts" />
     <TypeScriptCompile Include="shared\ASSERT.ts" />
     <TypeScriptCompile Include="shared\IdProvider.ts" />
