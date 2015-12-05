@@ -15,27 +15,29 @@
 
 'use strict';
 
+import {ASSERT_FATAL} from '../../shared/ASSERT';
 import {Mudlog} from '../../server/Mudlog';
 import {GameServer} from '../../server/GameServer';
-import {ASSERT_FATAL} from '../../shared/ASSERT';
 
-// Built-in node.js modules
+// Built-in node.js modules.
 import * as net from 'net';  // Import namespace 'net' from node.js
 import * as events from 'events';  // Import namespace 'events' from node.js
 
+// This constant is used to extend socket objects with new property.
+const DESCRIPTOR_ID = 'descriptorId';
+
 export class TelnetServer
 {
-  public static events =
-  {
-    SERVER_STARTED_LISTENING: 'listening',
-    SERVER_ERROR:             'error',
-    SOCKET_RECEIVED_DATA:     'data',
-    SOCKET_ERROR:             'error',
-    SOCKET_CLOSE:             'close'
-  }
+  constructor(protected myPort: number) { }
+
+  // ----------------- Public data ----------------------
 
   // Do we accept new connections?
   public open = false;
+
+  public get port() { return this.myPort; }
+
+  // ---------------- Public methods --------------------
 
   // Starts the telnet server.
   public start()
@@ -47,10 +49,10 @@ export class TelnetServer
     // Register handler for server errors (like attempt to run the server
     // on unavailable port).
     this.myTelnetServer.on
-      (
+    (
       TelnetServer.events.SERVER_ERROR,
       function(error) { TelnetServer.onServerError(error); }
-      );
+    );
 
     // Register handler to open the server to the new connections when
     // telnet server is ready (e. g. when 'listening' event is emited).
@@ -68,17 +70,20 @@ export class TelnetServer
     this.myTelnetServer.listen(this.port);
   }
 
-  constructor
-  (
-    public port: number
-  )
-  {
-  }
+  // -------------- Protected class data ----------------
 
   protected myTelnetServer: net.Server;
 
-/// Vlastni EventEmmiter nejspis nakonec nebudu potrebovat
-///  protected myCommProcessor = new events.EventEmitter();
+  protected static events =
+  {
+    SERVER_STARTED_LISTENING: 'listening',
+    SERVER_ERROR: 'error',
+    SOCKET_RECEIVED_DATA: 'data',
+    SOCKET_ERROR: 'error',
+    SOCKET_CLOSE: 'close'
+  }
+
+  // ---------------- Event handlers --------------------
 
   // Handles 'listening' event of telnet server.
   protected static onServerStartsListening()
@@ -119,10 +124,12 @@ export class TelnetServer
       + port + ": Unknown error");
   }
 
+  // This handler is registered directly by net.createServer()
+  // (it processes a new connection request)
   protected static onNewConnection(socket: net.Socket)
   {
-    let gameServer = GameServer.getInstance();
-    let telnetServer = gameServer.telnetServer;
+    let descriptorManager = GameServer.getInstance().descriptorManager;
+    let telnetServer = GameServer.getInstance().telnetServer;
 
     Mudlog.log(
       "TELNET SERVER: Received a new connection request from "
@@ -137,7 +144,7 @@ export class TelnetServer
         Mudlog.msgType.SYSTEM_INFO,
         Mudlog.levels.IMMORTAL);
 
-      // Half - closes the socket.i.e., it sends a FIN packet.
+      // Half - closes the socket. i.e., it sends a FIN packet.
       // It is possible the server will still send some data.
       socket.end();
 
@@ -161,31 +168,36 @@ export class TelnetServer
     // Let SocketManager create a new socket descriptor. Remember it's unique
     // string id.
     let socketDescriptorId: string =
-      gameServer.socketManager.addSocketDescriptor(socket);
+      descriptorManager.addSocketDescriptor(socket);
 
-    /// TODO:
-    /// Co se socket idCkem?
-    /// - predhodit ho Logovacimu procesu, ktery zjisti, ktery player ze se
-    ///   to snazi zalogovat
-    /// - logovaciProces ho nasledne preda prislusnemu playerovi
-    /// Ten proces by mel asi obsluhovat server. Bude na to potrebovat socket
-    /// deskriptor, ktery vzniknul pridanim socketu do SocketManageru
+    // Here we are extending socket object with our custom property (that's
+    // why we use [] brackets).
+    //   We store socketDescriptorId in socket object in order to know which
+    // player does this socket belong to (if any) when socket events (like
+    // receiving data) are processed.
+    socket[DESCRIPTOR_ID] = socketDescriptorId;
 
-    /// TODO: Poslat login prompt (nejspis ne tady. Asi ze socketDesciptoru,
-    /// aby to bylo jednotne pro vsechny mozne druhy socketu?)
-    socket.write('Welcome to the Telnet server!');
+    descriptorManager.getSocketDescriptor(socketDescriptorId)
+      .startLoginProcess();
   }
 
-  protected static onSocketReceivedData(socket: net.Socket, data /* TODO: Jaky to muze mit typ? */)
+  protected static onSocketReceivedData(socket: net.Socket, data: string)
   {
+    let gameServer = GameServer.getInstance();
+
     console.log("onSocketReceivedData(): " + data);
 
-    /// TODO: Najit prislusny deskriptor a nechat ho, at to zpracuje
+    // Here we are accessing our custom property that we dynamically
+    // added to our socket (that's the reason for [] brackets).
+    ASSERT_FATAL(socket[DESCRIPTOR_ID] !== undefined,
+      "Missing property '" + DESCRIPTOR_ID + "' on socket");
+    gameServer.descriptorManager.getSocketDescriptor(
+      socket[DESCRIPTOR_ID]).socketReceivedData(data);
   }
 
   protected static onSocketError(socket: net.Socket, error)
   {
-    let gameServer = GameServer.getInstance();
+    let descriptorManager = GameServer.getInstance().descriptorManager;
 
     // I don't really know what kind of errors can happen here.
     // For now let's just log the error and close the connection.
@@ -194,16 +206,25 @@ export class TelnetServer
       Mudlog.msgType.SYSTEM_ERROR,
       Mudlog.levels.IMMORTAL);
 
-    gameServer.socketManager.socketError(socket);
+    // Here we are accessing our custom property that we dynamically
+    // added to our socket (that's the reason for [] brackets).
+    ASSERT_FATAL(socket[DESCRIPTOR_ID] !== undefined,
+      "Missing property '" + DESCRIPTOR_ID + "' on socket");
+    descriptorManager.socketError(socket[DESCRIPTOR_ID]);
   }
 
   protected static onSocketClose(socket: net.Socket)
   {
-    console.log("onSocketClose()");
+    let descriptorManager = GameServer.getInstance().descriptorManager;
 
-    /// TODO: Najit prislusny deskriptor a nechat ho, at to zpracuje
-    /// Nebo mozna v tomhle pripade to hodit na SocketManager?
+    // Here we are accessing our custom property that we dynamically
+    // added to our socket (that's the reason for [] brackets).
+    ASSERT_FATAL(socket[DESCRIPTOR_ID] !== undefined,
+      "Missing property '" + DESCRIPTOR_ID + "' on socket");
+    descriptorManager.socketClose(socket[DESCRIPTOR_ID]);
   }
+
+  // ---------- Auxiliary protected methods -------------
 
   protected static checkEventHandlerAbsence(socket: net.Socket, event: string)
   {
@@ -255,5 +276,3 @@ export class TelnetServer
     );
   }
 }
-
-// ---------------------- private module stuff -------------------------------

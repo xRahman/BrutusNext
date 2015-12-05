@@ -9,17 +9,15 @@
     import {Server} from './server/Server';
     Server.create();   // Creates an instance.
     Server.getInstance().run(port); // Specify telnet port number to listen on.
-
-  Server creates and runs it's own game when you .run() it.
 */
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {Mudlog} from '../server/Mudlog';
-import {Players} from '../server/Players';
+import {AccountManager} from '../server/AccountManager';
 import {Game} from '../game/Game';
 import {TelnetServer} from '../server/telnet/TelnetServer';
-import {SocketManager} from '../server/SocketManager';
+import {DescriptorManager} from '../server/DescriptorManager';
 
 export class GameServer
 {
@@ -50,18 +48,10 @@ export class GameServer
 
   // -------------- public members -------------
 
-  public socketManager: SocketManager = new SocketManager();
-
   public get game() { return this.myGame; }
-  public get players() { return this.myPlayers; }
-
-  get telnetServer()
-  {
-    ASSERT_FATAL(
-      this.myTelnetServer !== null && this.myTelnetServer !== undefined,
-      "Telnet server doesn't exist yet");
-    return this.myTelnetServer;
-  }
+  public get accountManager() { return this.myAccountManager; }
+  public get descriptorManager() { return this.myDescriptorManager; }
+  public get telnetServer() { return this.myTelnetServer; }
 
   // Starts the server. This is not a static method so it needs
   // to be called on Server.getInstance().
@@ -69,38 +59,29 @@ export class GameServer
   {
     this.startGame();
     this.startTelnetServer(telnetPort);
-
-///    Mudlog.log(
-///      "We are up and running at port: " + telnetPort,
-///      Mudlog.msgType.SYSTEM_INFO,
-    ///      Mudlog.levels.IMMORTAL);
   }
 
   // ------------ protected members -------------
 
-  protected myGame: Game;
-  protected myPlayers: Players;
-  protected myTelnetServer: TelnetServer;
+  protected myGame: Game = new Game();
+  protected myAccountManager: AccountManager = new AccountManager();
+  protected myDescriptorManager: DescriptorManager = new DescriptorManager();
+  protected myTelnetServer: TelnetServer =
+    new TelnetServer(GameServer.DEFAULT_TELNET_PORT);
 
   // Creates an instance of telnet server and starts it.
   protected startTelnetServer(telnetPort: number)
   {
-    if (!ASSERT(
-          this.myTelnetServer === undefined || this.myTelnetServer === null,
-          "Telnet server already exists"))
-      return;
+    ASSERT_FATAL(this.telnetServer.open === false,
+      "Telnet server is already running");
 
-    this.myTelnetServer = new TelnetServer(telnetPort);
     this.myTelnetServer.start();
   }
 
   // Creates an instance of the game and loads its state from the disk.
   protected startGame()
   {
-    if (!ASSERT(this.myGame === undefined, "Game already exists"))
-      return;
-
-    this.myGame = new Game();
+    // TODO: Check, ze hra jeste neni loadnuta
 
     // Load the game.
     this.myGame.load();
