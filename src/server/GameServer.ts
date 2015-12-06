@@ -17,7 +17,9 @@ import {Mudlog} from '../server/Mudlog';
 import {AccountManager} from '../server/AccountManager';
 import {Game} from '../game/Game';
 import {TelnetServer} from '../server/telnet/TelnetServer';
+import {IdProvider} from '../shared/IdProvider';
 import {DescriptorManager} from '../server/DescriptorManager';
+
 
 export class GameServer
 {
@@ -64,8 +66,10 @@ export class GameServer
   // ------------ protected members -------------
 
   protected myGame: Game = new Game();
-  protected myAccountManager: AccountManager = new AccountManager();
-  protected myDescriptorManager: DescriptorManager = new DescriptorManager();
+  protected myAccountManager: AccountManager =
+    new AccountManager(new IdProvider());
+  protected myDescriptorManager: DescriptorManager =
+    new DescriptorManager(new IdProvider());
   protected myTelnetServer: TelnetServer =
     new TelnetServer(GameServer.DEFAULT_TELNET_PORT);
 

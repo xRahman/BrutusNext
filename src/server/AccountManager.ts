@@ -5,7 +5,7 @@
 */
 
 import {ASSERT_FATAL} from '../shared/ASSERT';
-import {IdProvider} from '../shared/IdProvider';
+import {IdContainer} from '../shared/IdContainer';
 import {Account} from '../server/Account';
 
 // Built-in node.js modules.
@@ -13,36 +13,27 @@ import * as fs from 'fs';  // Import namespace 'fs' from node.js
 
 const ACCOUNTS_DIRECTORY = "./data/accounts/";
 
-export class AccountManager extends IdProvider
+export class AccountManager extends IdContainer<Account>
 {
   // ---------------- Public methods --------------------
 
-  // Adds an account to the list of online accounts,
-  // returns its unique string id.
-  public addNewAccount(accountName: string): string
+  public createNewAccount(accountName: string, password: string): string
   {
-    // generateId() is a method inherited from IdProvider.
-    let newId = this.generateId();
+    let newAccount = new Account(accountName);
 
-    ASSERT_FATAL(!(newId in this.myOnlineAccounts),
-      "Account '" + newId + "' already exists");
+    /// TODO
 
-    // Here we are creating a new property in myOnlineAccounts
-    // (it is possible because myOnlineAccounts is a hashmap)
-    this.myOnlineAccounts[newId] = new Account(accountName);
-    // Also add record to the coresponding hashmap.
-    this.myOnlineAccountNames[accountName] = newId;
 
-    return newId;
+
+    // Save the account info to the disk (so we know that the account exists).
+
+
+    return "";
   }
-
+  
   public getAccount(id: string)
   {
-    let account = this.myOnlineAccounts[id];
-    ASSERT_FATAL(typeof account !== 'undefined',
-      "Account (" + id + ") doesn't exist");
-
-    return account;
+    return this.getItem(id);
   }
 
   // Returns true if account with given name exists.
@@ -58,22 +49,31 @@ export class AccountManager extends IdProvider
     return fs.existsSync(path);
   }
 
-  public logIn(accountName: string, password: string)
+  // Returns account id on succes, "" on failure
+  public logIn(accountName: string, password: string): string
   {
     /// TODO
 
     // login failed.
-    return false;
+    return "";
   }
 
   // -------------- Protected class data ----------------
 
-  // This hashmap allows to access accounts using unique string ids.
-  // (it only stores accounts of players currently online, not all existing
-  // accounts)
-  protected myOnlineAccounts: { [key: string]: Account } = {};
   // This hashmap maps account names to account keys.
   protected myOnlineAccountNames: { [key: string]: string } = {};
 
   // -------------- Protected methods -------------------
+
+  // Adds an account to the list of online accounts,
+  // returns its unique string id.
+  protected addOnlineAccount(accountName: string): string
+  {
+    let newId = super.addItem(new Account(accountName));
+
+    // Also add record to the coresponding hashmap.
+    this.myOnlineAccountNames[accountName] = newId;
+
+    return newId;
+  }
 }
