@@ -6,7 +6,7 @@
 
 export class Account
 {
-  constructor(protected myAccountName) { }
+  constructor(protected myAccountName: string) {}
   // ---------------- Public methods --------------------
 
   public processCommand(command: string)
@@ -15,6 +15,10 @@ export class Account
   }
 
   // -------------- Protected class data ----------------
+
+  /// TODO: Zkoumam moznost zdedit ze SaveableObject classy
+  ///protected myData; // TODO: typ. Otazka je, jestli delat na data novou
+                    // classu, nebo to nechat jako nespecifikovany Object
 
   // --------------- Protected methods ------------------
 }
