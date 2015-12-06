@@ -8,32 +8,45 @@ import {ASSERT} from '../shared/ASSERT';
 import {Mudlog} from '../server/Mudlog';
 import {GameServer} from '../server/GameServer';
 import {AuthProcessor} from '../server/AuthProcessor';
+import {LobbyProcessor} from '../server/LobbyProcessor';
 
 // Built-in node.js modules.
 import * as net from 'net';  // Import namespace 'net' from node.js
 
-/*
-enum UserState { AUTHENTICATION, LOBBY, ONLINE };
-*/
-
 export class SocketDescriptor
 {
-  constructor
-    (
-    protected mySocket: net.Socket,
-    protected myId
-    )
-  { }
+  constructor(protected mySocket: net.Socket) { }
 
   // ----------------- Public data ----------------------
 
   public get socket() { return this.mySocket; }
 
+  public set id(value: string) { this.myId = value; }
+  public get id() { return this.myId; }
+
+  public set accountId(value: string) { this.myAccountId = value; }
+
   // ---------------- Public methods --------------------
 
   public startLoginProcess()
   {
+    ASSERT(this.myStage === SocketDescriptor.stage.INITIAL,
+      "Starting login process from wrong stage");
+
+    this.myStage = SocketDescriptor.stage.AUTHENTICATION;
+
     this.myAuthProcessor.startLoginProcess();
+  }
+
+  public enterLobby()
+  {
+    ASSERT(this.myStage === SocketDescriptor.stage.AUTHENTICATION
+      || this.myStage === SocketDescriptor.stage.IN_GAME,
+      "Entering lobby from wrong stage");
+
+    this.myStage = SocketDescriptor.stage.LOBBY;
+
+    this.myLobbyProcessor.enterMenu();
   }
 
   public socketReceivedData(data: string)
@@ -111,49 +124,63 @@ export class SocketDescriptor
   // descriptor match to.
   protected myAccountId = "";
 
+  // Unique id of this descriptor.
+  protected myId = "";
+
   // Buffer to accumulate incomplete parts of data stream.
   protected myBuffer = "";
 
   protected myAuthProcessor = new AuthProcessor(this);
+  protected myLobbyProcessor = new LobbyProcessor(this);
 
-  /*
-  protected myUserState: UserState = UserState.AUTHENTICATION;
-  */
+  protected static stage =
+  {
+    INITIAL: 0, // Initial stage.
+    AUTHENTICATION: 1,
+    LOBBY: 2,
+    IN_GAME: 3
+  }
+
+  protected myStage = SocketDescriptor.stage.INITIAL;
 
   // -------------- Protected methods -------------------
 
   // Parses and executes a single-line command.
   protected processCommand(command: string)
   {
-    if (this.myAccountId === "")
+    switch (this.myStage)
     {
-      this.myAuthProcessor.processCommand(command);
-    } else
-    {
-      GameServer.getInstance().accountManager.
-        getAccount(this.myAccountId).processCommand(command);
-    }
-
-    /*
-    switch (this.myUserState)
-    {
-      case UserState.AUTHENTICATION:
-        ///this.myAuthenticationProcessor.processCommand();
+      case SocketDescriptor.stage.INITIAL:
+        ASSERT(false, "SocketDescriptor has not yet been initialized by"
+          + "startLoginProcess(), it is not supposed to process any"
+          + " commands yet");
         break;
+      case SocketDescriptor.stage.AUTHENTICATION:
+        ASSERT(this.myAccountId === "",
+          "Attempt to start authentication on descriptor that already has"
+          + " an online account associated to it");
 
-      case UserState.LOBBY:
-        ///this.myLobbyProcessor.processCommand();
+        this.myAuthProcessor.processCommand(command);
         break;
+      case SocketDescriptor.stage.LOBBY:
+        ASSERT(this.myAccountId !== "",
+          "Attempt to process lobby command on descriptor that doesn't have"
+          + " an online account associated to it");
 
-      case UserState.ONLINE:
-        ///this.myCharacter.processCommand();
+        this.myLobbyProcessor.processCommand(command);
         break;
+      case SocketDescriptor.stage.IN_GAME:
+        ASSERT(this.myAccountId !== "",
+          "Attempt to process ingame command on descriptor that doesn't have"
+          + " an online account associated to it");
 
+        GameServer.getInstance().accountManager.
+          getAccount(this.myAccountId).processCommand(command);
+        break;
       default:
-        ASSERT(false, "Unknown user state");
+        ASSERT(false, "Unknown stage");
         break;
     }
-    */
   }
 
   // Ensures that all newlines are in format CR;LF ('\r\n');
@@ -165,6 +192,10 @@ export class SocketDescriptor
     return data;
   }
 
+  /// TODO: Tohle je tezke provizorum. Zatim to pouze odstrani ze streamu
+  /// komunikacni kody, nic to podle nich nenastavuje. Asi by taky bylo fajn
+  /// nedelat to rucne, ale najit na to nejaky modul.
+  //
   // Processes any protocol-specific data and removes it from the data stream.
   protected parseProtocolData(data: string)
   {
