@@ -6,29 +6,22 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
-import {IdProvider} from '../shared/IdProvider';
+import {IdContainer} from '../shared/IdContainer';
 import {SocketDescriptor} from '../server/SocketDescriptor';
 
 // Import namespace 'net' from node.js
 import * as net from 'net';
 
-export class DescriptorManager extends IdProvider
+export class DescriptorManager extends IdContainer<SocketDescriptor>
 {
   // ---------------- Public methods --------------------
-
+ 
   // Creates a socket descriptor, returns its unique string id.
   public addSocketDescriptor(socket: net.Socket): string
   {
     // generateId() is a method inherited from IdProvider.
-    let newId = this.generateId();
-
-    ASSERT_FATAL(!(newId in this.mySocketDescriptors),
-      "Socket descriptor '" + newId + "' already exists");
-
-    // Here we are creating a new property in mySocketDescriptors
-    // (it is possible because mySocketDescriptors is a hashmap)
-    this.mySocketDescriptors[newId] =
-      new SocketDescriptor(socket, newId);
+    let newId = this.addItem(new SocketDescriptor(socket));
+    this.getItem(newId).id = newId;
 
     return newId;
   }
@@ -36,40 +29,23 @@ export class DescriptorManager extends IdProvider
   // Handle a socket error by closing the connection.
   public socketError(descriptorId: string)
   {
-    this.getSocketDescriptor(descriptorId).socketError();
+    this.getItem(descriptorId).socketError();
 
     // Remove the corresponding socket descriptor.
-    this.deleteSocketDescriptor(descriptorId);
+    this.deleteItem(descriptorId);
   }
 
   public socketClose(descriptorId: string)
   {
-    let socketDescriptor = this.getSocketDescriptor(descriptorId);
+    let socketDescriptor = this.getItem(descriptorId);
 
     socketDescriptor.socketClose();
 
-    this.deleteSocketDescriptor(descriptorId);
+    this.deleteItem(descriptorId);
   }
-
+  
   public getSocketDescriptor(id: string)
   {
-    let socketDescriptor = this.mySocketDescriptors[id];
-    ASSERT_FATAL(typeof socketDescriptor !== 'undefined',
-      "Socket descriptor (" + id + ") no longer exists");
-
-    return socketDescriptor;
-  }
-
-  // -------------- Protected class data ----------------
-
-  // This hash map allows to access sockets using unique string ids.
-  protected mySocketDescriptors: { [key: string]: SocketDescriptor } = {};
-
-  // -------------- Protected methods -------------------
-
-  protected deleteSocketDescriptor(descriptorId: string)
-  {
-    // Delete the property that traslates to the descriptor.
-    delete this.mySocketDescriptors[descriptorId];
+    return this.getItem(id);
   }
 }

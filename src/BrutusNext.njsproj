@@ -27,6 +27,7 @@
     <TypeScriptCompile Include="headers\ws.d.ts" />
     <TypeScriptCompile Include="server\Account.ts" />
     <TypeScriptCompile Include="server\AuthProcessor.ts" />
+    <TypeScriptCompile Include="server\LobbyProcessor.ts" />
     <TypeScriptCompile Include="server\Mudlog.ts" />
     <TypeScriptCompile Include="server\GameServer.ts" />
     <TypeScriptCompile Include="server\AccountManager.ts" />
@@ -34,7 +35,9 @@
     <TypeScriptCompile Include="server\DescriptorManager.ts" />
     <TypeScriptCompile Include="server\telnet\TelnetServer.ts" />
     <TypeScriptCompile Include="shared\ASSERT.ts" />
+    <TypeScriptCompile Include="shared\IdContainer.ts" />
     <TypeScriptCompile Include="shared\IdProvider.ts" />
+    <TypeScriptCompile Include="shared\SaveableObject.ts" />
     <TypeScriptCompile Include="shared\Utils.ts" />
   </ItemGroup>
   <ItemGroup>

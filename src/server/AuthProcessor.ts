@@ -4,6 +4,34 @@
   Handles user authentication.
 */
 
+/*
+  Implementation note:
+    The system is built to use user accounts separated from characters,
+    so you could for example have more than one character on a single
+    account.
+
+    However, currently the game is set up so that there is no need for
+    a user to have more characters. So we'll just pretend that we are
+    creating a character even though it's actually an account.
+
+  Security note:
+    Sending unencrypted password is... Well let's hope its temporary
+    solution.
+
+    Problem je, ze pres telnet se nic jineho posilat neda. Zatim me napada
+    jedine reseni: Svazat account s mailovou adresou a posilat jednorazove
+    "heslo" pokazde, kdyz se chce hrac lognout. Pripadne pridat moznost
+    lognout zapamatovat si ipcko a povolit z nej logovat bez hesla, aby to
+    nebyla takova pruda.
+
+  // BTW pouzivat mailovou adresu jako account name neni dobry napad, protoze
+  // by se stejne jako heslo posilala nezakryptovane, tzn. by ji nekdo mohl
+  // takhle zjistit a bud zkouset hacknout, nebo alespon otravovat password
+  // resetama.
+
+  Ted to kazdopadne resit nebudu.
+*/
+
 import {ASSERT} from '../shared/ASSERT';
 import {SocketDescriptor} from '../server/SocketDescriptor';
 import {GameServer} from '../server/GameServer';
@@ -47,7 +75,11 @@ export class AuthProcessor
   public startLoginProcess()
   {
     this.mySocketDescriptor.send("Welcome to the BrutusNext!\r\n"
-      + "By what account name do you want to be recognized? ");
+      + "By what name do you wish to be known? ");
+
+/// Account name variant:
+///    this.mySocketDescriptor.send("Welcome to the BrutusNext!\r\n"
+///      + "By what account name do you want to be recognized? ");
 
     this.myStage = AuthProcessor.stage.LOGIN;
   }
@@ -71,15 +103,23 @@ export class AuthProcessor
 
   protected loginAttempt(accountName: string)
   {
+    // Only letters for now.
+    let regExp = /[^A-Za-z]/;
+
+/// Account name variant:
     // This regexp will evaluate as true if tested string contains any
     // non-alphanumeric characters.
-    let regExp = /[^A-Za-z0-9]/;
+///    let regExp = /[^A-Za-z0-9]/;
 
     if (!accountName)
     {
       this.mySocketDescriptor.send(
-        "\r\nYou really need to enter an account name to log in, sorry.\r\n"
-        + "Please enter valid account name: ");
+        "You really need to enter a name to log in, sorry.\r\n"
+        + "Please enter a valid name: ");
+/// Account name variant:
+///      this.mySocketDescriptor.send(
+///        "You really need to enter an account name to log in, sorry.\r\n"
+///        + "Please enter valid account name: ");
 
       // We don't advance the stage so the next user input will trigger
       // a loginAttempt() again.
@@ -89,27 +129,53 @@ export class AuthProcessor
     if (regExp.test(accountName) === true)
     {
       this.mySocketDescriptor.send(
-        "\r\nAccount name can only contain english letters and numbers.\r\n"
-        + "Please enter valid account name: ");
+        "Name can only contain english letters and numbers.\r\n"
+        + "Please enter a valid name: ");
+/// Account name variant:
+///      this.mySocketDescriptor.send(
+///        "Account name can only contain english letters and numbers.\r\n"
+///        + "Please enter valid account name: ");
 
       // We don't advance the stage so the next user input will trigger
       // a loginAttempt() again.
       return;
     }
 
-    if (accountName.length > 20)
+    const MAX_ACCOUNT_NAME_LENGTH = 12;
+/// Account name variant
+///    const MAX_ACCOUNT_NAME_LENGTH = 20;
+
+    if (accountName.length > MAX_ACCOUNT_NAME_LENGTH)
     {
       this.mySocketDescriptor.send(
-        "\r\nCould you please pick something shorter,"
-        + " like up to 20 characters?.\r\n"
-        + "Please enter valid account name: ");
+        "Could you please pick something shorter,"
+        + " like up to " + MAX_ACCOUNT_NAME_LENGTH + " characters?.\r\n"
+        + "Please enter a valid name: ");
+/// Account name variant
+///      + "Please enter valid account name: ");
 
       // We don't advance the stage so the next user input will trigger
       // a loginAttempt() again.
       return;
     }
 
-    // Make the first lettler uppercase and the rest lowercase.
+    const MIN_ACCOUNT_NAME_LENGTH = 2;
+
+    if (accountName.length < MIN_ACCOUNT_NAME_LENGTH)
+    {
+      this.mySocketDescriptor.send(
+        "Could you please pick a name that is at least "
+        + MIN_ACCOUNT_NAME_LENGTH + " characters long?.\r\n"
+        + "Please enter a valid name: ");
+      /// Account name variant
+      ///      + "Please enter valid account name: ");
+
+      // We don't advance the stage so the next user input will trigger
+      // a loginAttempt() again.
+      return;
+    }
+
+    // Make the first letter uppercase and the rest lowercase.
     accountName = accountName[0].toUpperCase()
       + accountName.toLowerCase().substr(1);
 
@@ -125,11 +191,15 @@ export class AuthProcessor
       // Existing user. Ask for password.
       this.mySocketDescriptor.send("Password: ");
       this.myStage = AuthProcessor.stage.PASSWORD;
-    } else
+    }
+    else
     {
       // New user. Ask for a new password.
-      this.mySocketDescriptor.send("Creating a new user account...\r\n"
-        + "Please enter a password for your account: ");
+      this.mySocketDescriptor.send("Creating a new character...\r\n"
+        + "Please enter a password you want to use to log in: ");
+/// Account name variant
+///      this.mySocketDescriptor.send("Creating a new user account...\r\n"
+///        + "Please enter a password for your account: ");
       this.myStage = AuthProcessor.stage.NEW_PASSWORD;
     }
   }
@@ -138,9 +208,24 @@ export class AuthProcessor
   {
     let accountManager = GameServer.getInstance().accountManager;
 
-    if (accountManager.logIn(this.myAccountName, password))
+    let accountId = accountManager.logIn(this.myAccountName, password);
+
+    if (accountId)
     {
+      this.mySocketDescriptor.accountId = accountId;
+
       this.myStage = AuthProcessor.stage.DONE;
+
+      this.mySocketDescriptor.enterLobby();
+    }
+    else
+    {
+      this.mySocketDescriptor.send(
+        "Wrong password.\r\n"
+        + "Password: ");
+
+      // Here we don't advance the stage so the next user input will trigger
+      // a checkPassword() again.
     }
   }
 
@@ -148,11 +233,42 @@ export class AuthProcessor
   {
     let accountManager = GameServer.getInstance().accountManager;
 
-    /// TODO: Check for password sanity.
-
-    if (accountManager.logIn(this.myAccountName, password))
+    if (!password)
     {
-      this.myStage = AuthProcessor.stage.DONE;
+      this.mySocketDescriptor.send(
+        "You really need to enter a password, sorry.\r\n"
+        + "Please enter a valid password: ");
+
+      // We don't advance the stage so the next user input will trigger
+      // a getNewPassword() again.
+      return;
     }
+
+    const MIN_PASSWORD_LENGTH = 4;
+
+    if (password.length < MIN_PASSWORD_LENGTH)
+    {
+      this.mySocketDescriptor.send(
+        "Do you know the joke about passwords needing to be at least "
+        + MIN_PASSWORD_LENGTH + " characters long?\r\n"
+        + "Please enter a valid password: ");
+
+      // We don't advance the stage so the next user input will trigger
+      // a getNewPassword() again.
+      return;
+    }
+
+    // Pozn: O znovuzadani hesla nema smysl zadat, kdyz ho uzivatel
+    // pri zadavani normalne vidi. (Asi by to ale chtelo implementovat
+    // password reset s poslanim noveho hesla na mail).
+
+    let newAccountId =
+      accountManager.createNewAccount(this.myAccountName, password);
+
+    this.mySocketDescriptor.accountId = newAccountId;
+
+    this.myStage = AuthProcessor.stage.DONE;
+
+    this.mySocketDescriptor.enterLobby();
   }
 }
