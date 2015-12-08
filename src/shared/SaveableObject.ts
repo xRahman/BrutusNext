@@ -169,11 +169,11 @@ export class SaveableObject
         "indent_size": 2,
         "indent_char": " ",
         "eol": "\n",
-        "indent_level": 0,
-        "indent_with_tabs": false,
-        "preserve_newlines": true,
+///        "indent_level": 0,
+///        "indent_with_tabs": false,
+///        "preserve_newlines": true,
 //        "max_preserve_newlines": 10,
-        "jslint_happy": false,
+///        "jslint_happy": false,
 ///        "space_after_anon_function": false,
         "brace_style": "expand",
         "keep_array_indentation": true,
@@ -182,9 +182,9 @@ export class SaveableObject
 ///        "break_chained_methods": false,
 ///        "eval_code": false,
 ///        "unescape_strings": false,
-        "wrap_line_length": 0,
-        "wrap_attributes": "auto",
-        "wrap_attributes_indent_size": 2,
+///        "wrap_line_length": 0,
+//        "wrap_attributes": "auto",
+//        "wrap_attributes_indent_size": 2,
         "end_with_newline": false
       }
     );
