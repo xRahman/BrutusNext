@@ -26,6 +26,7 @@
     <TypeScriptCompile Include="headers\node.d.ts" />
     <TypeScriptCompile Include="headers\ws.d.ts" />
     <TypeScriptCompile Include="server\Account.ts" />
+    <TypeScriptCompile Include="server\AccountData.ts" />
     <TypeScriptCompile Include="server\AuthProcessor.ts" />
     <TypeScriptCompile Include="server\LobbyProcessor.ts" />
     <TypeScriptCompile Include="server\Mudlog.ts" />
