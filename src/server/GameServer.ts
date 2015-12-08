@@ -20,6 +20,11 @@ import {TelnetServer} from '../server/telnet/TelnetServer';
 import {IdProvider} from '../shared/IdProvider';
 import {DescriptorManager} from '../server/DescriptorManager';
 
+/*
+/// TESTING:
+import {SaveableObject} from '../shared/SaveableObject';
+*/
+import {AccountData} from '../server/AccountData';
 
 export class GameServer
 {
@@ -59,6 +64,14 @@ export class GameServer
   // to be called on Server.getInstance().
   public run(telnetPort: number)
   {
+    
+    /// TESTING:
+
+    let tmp = new AccountData('0.0');
+    tmp.saveToFile('./data/accounts/test.json');
+    
+
+
     this.startGame();
     this.startTelnetServer(telnetPort);
   }
