@@ -29,6 +29,11 @@
 
 import {ASSERT_FATAL} from '../shared/ASSERT';
 
+// Built-in node.js modules.
+import * as fs from 'fs';  // Import namespace 'fs' from node.js
+
+let beautify = require('js-beautify').js_beautify;
+
 export class SaveableObject
 {
   // Version will be checked for. Default behaviour is to trigger
@@ -50,12 +55,90 @@ export class SaveableObject
 
   public loadFromFile(filePath: string)
   {
-    /// TODO
+    let jsonStream;
+    try
+    {
+      jsonStream = fs.readFileSync(filePath, 'utf8');
+    }
+    catch (error)
+    {
+      /// TODO: Syslog message
+      throw error;
+    }
+
+    this.loadFromJsonStream(jsonStream);
+
+    /*
+    // prozatim to nactu synchronne
+    /// this.loading = true;
+    fs.readFile
+    (
+      filePath,
+      'utf8',
+      (error, data) =>
+      {
+        if (error)
+          throw error;
+        /// TODO:
+        /// this.loading = false;
+        this.loadFromJsonStream(data);
+      }
+    );
+    */
   }
 
   public saveToFile(filePath: string)
   {
-    /// TODO
+    /// TODO:
+    /// this.saving = true;
+    /// Tohle nebude stacit, save requesty budu asi muset bufferovat (do fromty)
+    /// (protoze je spatne pustit nove savovani toho sameho filu driv, nez
+    /// dobehne to stare)
+    // Nebo mozna prece jen pouzit ten write stream?
+
+    let jsonStream = this.saveToJsonStream();
+
+    try
+    {
+      fs.writeFileSync(filePath, jsonStream, 'utf8');
+    }
+    catch (error)
+    {
+      /// TODO: Syslog message
+      throw error;
+    }
+
+    /*
+    /// Zatim to savnu synchronne.
+    fs.writeFile
+    (
+      jsonStream,
+      filePath,
+      'utf8',
+      (error) =>
+      {
+        if(error)
+          throw error;
+
+         /// TODO:
+        /// this.saving = false;
+        /// console.log('It\'s saved!');
+      }
+    );
+
+    /// Asi se na write a read streamy vykaslu...
+    /*
+    // 'utf-8' is default encoding, so there is no need to specify it.
+    var wstream = fs.createWriteStream('myOutput.txt');
+    // Node.js 0.10+ emits finish when complete
+    wstream.on('finish', function()
+    {
+      console.log('file has been written');
+    });
+    wstream.write('Hello world!\n');
+    wstream.write('Another line');
+    wstream.end();
+    */
   }
 
   public loadFromJsonStream(stream: string)
@@ -76,8 +159,36 @@ export class SaveableObject
   {
     let regExp: RegExp;
     // Indent with 2 spaces.
-    let stream = JSON.stringify(this.saveToJsonData(), null, 2);
-    
+    ///let stream = JSON.stringify(this.saveToJsonData(), null, 2);
+    let stream = JSON.stringify(this.saveToJsonData());
+
+    stream = beautify
+    (
+      stream,
+      {
+        "indent_size": 2,
+        "indent_char": " ",
+        "eol": "\n",
+        "indent_level": 0,
+        "indent_with_tabs": false,
+        "preserve_newlines": true,
+//        "max_preserve_newlines": 10,
+        "jslint_happy": false,
+///        "space_after_anon_function": false,
+        "brace_style": "expand",
+        "keep_array_indentation": true,
+///        "keep_function_indentation": false,
+///        "space_before_conditional": true,
+///        "break_chained_methods": false,
+///        "eval_code": false,
+///        "unescape_strings": false,
+        "wrap_line_length": 0,
+        "wrap_attributes": "auto",
+        "wrap_attributes_indent_size": 2,
+        "end_with_newline": false
+      }
+    );
+/*
     // Add newline before and after curly braces.
     regExp = /([\{\}])/g;
     stream = stream.replace(regExp, '\n$1\n');
@@ -97,6 +208,7 @@ export class SaveableObject
     // Remove newlines before commas.
     regExp = /\n\,/g;
     stream = stream.replace(regExp, ',');
+*/
 
     return stream;
   }
