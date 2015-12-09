@@ -4,10 +4,10 @@
   Implements player account.
 */
 
-import {DataContainer} from '../shared/DataContainer';
+import {SaveableContainer} from '../shared/SaveableContainer';
 import {AccountData} from '../server/AccountData';
 
-export class Account extends DataContainer
+export class Account extends SaveableContainer
 {
   // Account name is not saved to the file. Filename represents account name.
   constructor(protected myAccountName: string)

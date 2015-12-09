@@ -3,46 +3,46 @@
 
   Implements functionality that enables inherited classes to save and load
   specific data in JSON format.
+
+  Unline SaveableObject, which automatically saves/loads all of its data
+  members, SaveableContainer only saves it's data members that are
+  SaveableContainers or SaveableObjects (and version number).
 */
 
 /*
   Usage:
-  1) inherit your class from DataContainer.  
+  1) inherit your class from SaveableContainer.  
   2) To specify which data you want to be saved and loaded, create a data
     container inherited from SaveableObject. Everything you declare in it
     will automatically get saved or loaded.
 
-    class DummyData extends SaveableObject
+    class MyClassData extends SaveableObject
     {
       // IPORTANT: Everything here needs to be inicialized or you will get
       // errors!
 
       // Make everything public. Only you will be able to access it anyways
-      // because your DummyData will be protected (see class Dummy).
+      // because your MyClassData will be protected (see class MyClass).
       public somethingYouWantToSaveAndLoad = "";
     }
 
-    class Dummy extends DataContainer
+    class MyClass extends SaveableContainer
     {
       // Here you supply the version that will be saved and also checked
       // for upon loading from file.
-      protected myData = new DummyData({ version: 12 });
+      protected myData = new MyClassData({ version: 12 });
     }
 
-   3) Call saveToFile(path) or loadFromFile(path)
-     let dummy = new Dummy();
-     dummy.saveToFile('./data/dummy.json');
-     dummy.loadFromFile('./data/dummy.json');
-
-  Note:
-    Every member of DataContainer that is inherited from SaveableObject
-    will automatically be added to save/load process.
+   3) Call saveToFile(path) or loadFromFile(path) on your root object.
+     let myClassInstance = new MyClass();
+     myClassInstance.saveToFile('./data/myClassInstance0.json');
+     myClassInstance.loadFromFile('./data/myClassInstance0.json');
 */
 
 import {ASSERT} from '../shared/ASSERT';
 import {SaveableObject} from '../shared/SaveableObject';
 
-export class DataContainer extends SaveableObject
+export class SaveableContainer extends SaveableObject
 {
   public loadFromJsonObject(jsonObject: Object)
   {
@@ -50,8 +50,8 @@ export class DataContainer extends SaveableObject
 
     for (let property in jsonObject)
     {
-      // DataContainer only loads properties that are SaveableObjects
-      // or DataContainers (unline SaveableObject, which loads all of it's
+      // SaveableContainer only loads properties that are SaveableObjects
+      // or SaveableContainers (unline SaveableObject, which loads all of it's
       // properties)
       if (typeof this[property] === 'object'
           && 'loadFromJsonObject' in this[property])
@@ -65,13 +65,16 @@ export class DataContainer extends SaveableObject
   {
     let jsonObject = {};
 
-    // We need to save version manually.
+    // We need to save version manually. This is an exception to
+    // SaveableContainer only saving it's members that are SaveableContainers
+    // or SaveableObjects. But we need to save version in order to be able to
+    // check it, don't we?
     jsonObject['version'] = this.version;
 
     for (let property in this)
     {
-      // DataContainer only saves properties that are SaveableObjects
-      // or DataContainers (unline SaveableObject, which saves all of it's
+      // SaveableContainer only saves properties that are SaveableObjects
+      // or SaveableContainers (unline SaveableObject, which saves all of it's
       // properties)
       if (typeof this[property] === 'object'
           && 'saveToJsonObject' in this[property])
