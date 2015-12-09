@@ -36,7 +36,7 @@
     <TypeScriptCompile Include="server\DescriptorManager.ts" />
     <TypeScriptCompile Include="server\telnet\TelnetServer.ts" />
     <TypeScriptCompile Include="shared\ASSERT.ts" />
-    <TypeScriptCompile Include="shared\DataContainer.ts" />
+    <TypeScriptCompile Include="shared\SaveableContainer.ts" />
     <TypeScriptCompile Include="shared\IdContainer.ts" />
     <TypeScriptCompile Include="shared\IdProvider.ts" />
     <TypeScriptCompile Include="shared\SaveableObject.ts" />
