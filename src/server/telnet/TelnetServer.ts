@@ -6,11 +6,19 @@
 
 /*
   Implementation note:
-    All event handlers must be static methods!
-  The reason is, that it is possible in TypeScript to call a method
-  on 'this' that is not an instance of the method's class. And that's
-  exactly what happens when an even handler is called. So by declaring
-  event handler a static method you prevent ugly errors from happening.
+    Event handleds need to be registered using lambda expression '() => {}'.
+    For example:
+      this.myTelnetServer.on
+      (
+        'error',
+        (error) => { this.onServerError(error); }
+      );
+    The reason is, that it is not guaranteed that in TypeScript that class
+    methods will get called on an instance of their class. In other words,
+    'this' will be something else than you expect when you register an event
+    handler.
+      Lambda expression solves this by capturing 'this', so you may use it
+    correcly within lambda function body.
 */
 
 'use strict';
@@ -18,6 +26,7 @@
 import {ASSERT_FATAL} from '../../shared/ASSERT';
 import {Mudlog} from '../../server/Mudlog';
 import {GameServer} from '../../server/GameServer';
+import {DescriptorManager} from '../../server/DescriptorManager';
 
 // Built-in node.js modules.
 import * as net from 'net';  // Import namespace 'net' from node.js
@@ -28,7 +37,8 @@ const DESCRIPTOR_ID = 'descriptorId';
 
 export class TelnetServer
 {
-  constructor(protected myPort: number) { }
+  constructor(protected myPort: number,
+              protected myDescriptorManager: DescriptorManager) { }
 
   // ----------------- Public data ----------------------
 
@@ -44,14 +54,15 @@ export class TelnetServer
   {
     // Create a new raw socket server. Parameter is handler which will be
     // called when there is a new connection to the server.
-    this.myTelnetServer = net.createServer(TelnetServer.onNewConnection);
+    this.myTelnetServer =
+      net.createServer((socket) => { this.onNewConnection(socket); });
 
     // Register handler for server errors (like attempt to run the server
     // on unavailable port).
     this.myTelnetServer.on
     (
       TelnetServer.events.SERVER_ERROR,
-      function(error) { TelnetServer.onServerError(error); }
+      (error) => { this.onServerError(error); }
     );
 
     // Register handler to open the server to the new connections when
@@ -59,7 +70,7 @@ export class TelnetServer
     this.myTelnetServer.on
     (
       TelnetServer.events.SERVER_STARTED_LISTENING,
-      TelnetServer.onServerStartsListening
+      () => { this.onServerStartsListening(); }
     );
 
     Mudlog.log(
@@ -86,11 +97,9 @@ export class TelnetServer
   // ---------------- Event handlers --------------------
 
   // Handles 'listening' event of telnet server.
-  protected static onServerStartsListening()
+  protected onServerStartsListening()
   {
-    let telnetServer = GameServer.getInstance().telnetServer;
-
-    telnetServer.open = true;
+    this.open = true;
     Mudlog.log(
       "Telnet server is up and listening to the new connections",
       Mudlog.msgType.SYSTEM_INFO,
@@ -98,15 +107,13 @@ export class TelnetServer
   }
 
   // Handles 'error' event of telnet server.
-  protected static onServerError(error)
+  protected onServerError(error)
   {
-    let port = GameServer.getInstance().telnetServer.port;
-
     if (error.code === 'EADDRINUSE')
     {
       ASSERT_FATAL(false,
         "Cannot start telnet server on port "
-        + port + ": Address is already in use.\n"
+        + this.port + ": Address is already in use.\n"
         + "Do you have a MUD server already running?");
     }
 
@@ -114,30 +121,27 @@ export class TelnetServer
     {
       ASSERT_FATAL(false,
         "Cannot start telnet server on port "
-        + port + ": Permission denied.\n"
+        + this.port + ": Permission denied.\n"
         + "Are you trying to start it on a priviledged port without"
         + " being root?");
     }
 
     ASSERT_FATAL(false,
       "Cannot start telnet server on port "
-      + port + ": Unknown error");
+      + this.port + ": Unknown error");
   }
 
   // This handler is registered directly by net.createServer()
   // (it processes a new connection request)
-  protected static onNewConnection(socket: net.Socket)
+  protected onNewConnection(socket: net.Socket)
   {
-    let descriptorManager = GameServer.getInstance().descriptorManager;
-    let telnetServer = GameServer.getInstance().telnetServer;
-
     Mudlog.log(
       "TELNET SERVER: Received a new connection request from "
       + socket.remoteAddress,
       Mudlog.msgType.SYSTEM_INFO,
       Mudlog.levels.IMMORTAL);
 
-    if (!telnetServer.open)
+    if (!this.open)
     {
       Mudlog.log(
         "TELNET SERVER: Denying connection request: Server is closed",
@@ -163,12 +167,12 @@ export class TelnetServer
     /// zatim necham.
     ///s.socket = s; // conform to the websocket object to make easier to handle
 
-    TelnetServer.initTelnetSocket(socket);
+    this.initTelnetSocket(socket);
 
     // Let SocketManager create a new socket descriptor. Remember it's unique
     // string id.
     let socketDescriptorId: string =
-      descriptorManager.addSocketDescriptor(socket);
+      this.myDescriptorManager.addSocketDescriptor(socket);
 
     // Here we are extending socket object with our custom property (that's
     // why we use [] brackets).
@@ -177,28 +181,24 @@ export class TelnetServer
     // receiving data) are processed.
     socket[DESCRIPTOR_ID] = socketDescriptorId;
 
-    descriptorManager.getSocketDescriptor(socketDescriptorId)
+    this.myDescriptorManager.getSocketDescriptor(socketDescriptorId)
       .startLoginProcess();
   }
 
-  protected static onSocketReceivedData(socket: net.Socket, data: string)
+  protected onSocketReceivedData(socket: net.Socket, data: string)
   {
-    let gameServer = GameServer.getInstance();
-
     console.log("onSocketReceivedData(): " + data);
 
     // Here we are accessing our custom property that we dynamically
     // added to our socket (that's the reason for [] brackets).
     ASSERT_FATAL(socket[DESCRIPTOR_ID] !== undefined,
       "Missing property '" + DESCRIPTOR_ID + "' on socket");
-    gameServer.descriptorManager.getSocketDescriptor(
-      socket[DESCRIPTOR_ID]).socketReceivedData(data);
+    this.myDescriptorManager.getSocketDescriptor(socket[DESCRIPTOR_ID])
+      .socketReceivedData(data);
   }
 
-  protected static onSocketError(socket: net.Socket, error)
+  protected onSocketError(socket: net.Socket, error)
   {
-    let descriptorManager = GameServer.getInstance().descriptorManager;
-
     // I don't really know what kind of errors can happen here.
     // For now let's just log the error and close the connection.
     Mudlog.log(
@@ -210,23 +210,22 @@ export class TelnetServer
     // added to our socket (that's the reason for [] brackets).
     ASSERT_FATAL(socket[DESCRIPTOR_ID] !== undefined,
       "Missing property '" + DESCRIPTOR_ID + "' on socket");
-    descriptorManager.socketError(socket[DESCRIPTOR_ID]);
+    this.myDescriptorManager.socketError(socket[DESCRIPTOR_ID]);
   }
 
-  protected static onSocketClose(socket: net.Socket)
+  protected onSocketClose(socket: net.Socket)
   {
-    let descriptorManager = GameServer.getInstance().descriptorManager;
 
     // Here we are accessing our custom property that we dynamically
     // added to our socket (that's the reason for [] brackets).
     ASSERT_FATAL(socket[DESCRIPTOR_ID] !== undefined,
       "Missing property '" + DESCRIPTOR_ID + "' on socket");
-    descriptorManager.socketClose(socket[DESCRIPTOR_ID]);
+    this.myDescriptorManager.socketClose(socket[DESCRIPTOR_ID]);
   }
 
   // ---------- Auxiliary protected methods -------------
 
-  protected static checkEventHandlerAbsence(socket: net.Socket, event: string)
+  protected checkEventHandlerAbsence(socket: net.Socket, event: string)
   {
     let registeredEvents =
       events.EventEmitter.listenerCount(socket, event);
@@ -235,7 +234,7 @@ export class TelnetServer
   }
 
   // Sets socket transfer mode, registers event handlers, etc.
-  protected static initTelnetSocket(socket: net.Socket)
+  protected initTelnetSocket(socket: net.Socket)
   {
     let gameServer = GameServer.getInstance();
 
@@ -243,36 +242,36 @@ export class TelnetServer
     socket.setEncoding('binary');
 
     // Check that event handler for 'data' event is not already registered.
-    TelnetServer.checkEventHandlerAbsence(
+    this.checkEventHandlerAbsence(
       socket, TelnetServer.events.SOCKET_RECEIVED_DATA);
 
     // Register event handler for 'data' event.
     socket.on
     (
       TelnetServer.events.SOCKET_RECEIVED_DATA,
-      function(data) { TelnetServer.onSocketReceivedData(socket, data); }
+      (data) => { this.onSocketReceivedData(socket, data); }
     );
 
     // Check that event handler for 'error' event is not already registered.
-    TelnetServer.checkEventHandlerAbsence(
+    this.checkEventHandlerAbsence(
       socket, TelnetServer.events.SOCKET_ERROR);
 
     // Register event handler for 'error' event.
     socket.on
     (
       TelnetServer.events.SOCKET_ERROR,
-      function(error) { TelnetServer.onSocketError(socket, error); }
+      (error) => { this.onSocketError(socket, error); }
     );
 
     // Check that event handler for 'close' event is not already registered.
-    TelnetServer.checkEventHandlerAbsence(
+    this.checkEventHandlerAbsence(
       socket, TelnetServer.events.SOCKET_CLOSE);
 
     // Register event handler for 'close' event.
     socket.on
     (
       TelnetServer.events.SOCKET_CLOSE,
-      function() { TelnetServer.onSocketClose(socket); }
+      () => { this.onSocketClose(socket); }
     );
   }
 }
