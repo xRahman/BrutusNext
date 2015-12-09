@@ -4,9 +4,19 @@
   Implements player account.
 */
 
-export class Account
+import {DataContainer} from '../shared/DataContainer';
+import {AccountData} from '../server/AccountData';
+
+export class Account extends DataContainer
 {
-  constructor(protected myAccountName: string) {}
+  // Account name is not saved to the file. Filename represents account name.
+  constructor(protected myAccountName: string)
+  {
+    // Don't forget to bump up version number if you add or remove
+    // SaveableObjects. You will also need to convert data in respective
+    // .json files to conform to the new version.
+    super({ version: 0 });
+  }
   // ---------------- Public methods --------------------
 
   public processCommand(command: string)
@@ -16,9 +26,7 @@ export class Account
 
   // -------------- Protected class data ----------------
 
-  /// TODO: Zkoumam moznost zdedit ze SaveableObject classy
-  ///protected myData; // TODO: typ. Otazka je, jestli delat na data novou
-                    // classu, nebo to nechat jako nespecifikovany Object
+  public myData = new AccountData();
 
   // --------------- Protected methods ------------------
 }

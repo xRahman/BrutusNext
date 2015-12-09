@@ -6,7 +6,9 @@
 */
 
 /*
-  Usage:
+  Usage: See usage of DataContainer.
+
+
     To specify which data you want to be saved and loaded, create a data
     container inherited from SaveableObject. Everything you declare in it
     will automatically get saved or loaded when you call it's saveToJSON()
@@ -21,16 +23,22 @@
 
     class Dummy
     {
-      // Here you supply the version string that will be saved and also checked
+      // Here you supply the version that will be saved and also checked
       // for upon loading from file.
-      protected myData = new DummyData("12");
+      protected myData = new DummyData({ version: 12 });
     }
 */
 
+import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
 
 // Built-in node.js modules.
 import * as fs from 'fs';  // Import namespace 'fs' from node.js
+
+interface Version
+{
+  version: number
+}
 
 let beautify = require('js-beautify').js_beautify;
 
@@ -39,26 +47,41 @@ export class SaveableObject
   // Version will be checked for. Default behaviour is to trigger
   // a FATAL_ASSERT when versions don't match. You can override it
   // by overriding a checkVersion() method;
-  constructor(public version: string) { }
+  public version
 
-  public checkVersion(jsonData: Object)
+  // Version is passed as object because it makes the code more easily
+  // readable. You need to write: let d = new DummyData({ version: 12 });
+  // which is self-explainable unlike let d = new DummyData(12);
+  constructor(version: Version = { version: 0 })
+  {
+    if (!ASSERT(version.version >= 0, "Version can't be negative, sorry"))
+    {
+      this.version = 0;
+    }
+    else
+    {
+      this.version = version.version;
+    }
+  }
+
+  public checkVersion(jsonObject: Object)
   {
     /// TODO: Doplnit do chybovych hlasek, kde nastala chyba, tj ktereho
     /// souboru se to tyka (pokud to pujde zjistit)
 
-    ASSERT_FATAL('version' in jsonData,
+    ASSERT_FATAL('version' in jsonObject,
       "There is no 'version' property in JSON data");
 
-    ASSERT_FATAL(jsonData['version'] === this.version,
+    ASSERT_FATAL(jsonObject['version'] === this.version,
       "Version of JSON data doesn't match required version");
   }
 
   public loadFromFile(filePath: string)
   {
-    let jsonStream;
+    let jsonString;
     try
     {
-      jsonStream = fs.readFileSync(filePath, 'utf8');
+      jsonString = fs.readFileSync(filePath, 'utf8');
     }
     catch (error)
     {
@@ -66,7 +89,7 @@ export class SaveableObject
       throw error;
     }
 
-    this.loadFromJsonStream(jsonStream);
+    this.loadFromJsonString(jsonString);
 
     /*
     // prozatim to nactu synchronne
@@ -81,7 +104,7 @@ export class SaveableObject
           throw error;
         /// TODO:
         /// this.loading = false;
-        this.loadFromJsonStream(data);
+        this.loadFromJsonString(data);
       }
     );
     */
@@ -96,11 +119,11 @@ export class SaveableObject
     /// dobehne to stare)
     // Nebo mozna prece jen pouzit ten write stream?
 
-    let jsonStream = this.saveToJsonStream();
+    let jsonString = this.saveToJsonString();
 
     try
     {
-      fs.writeFileSync(filePath, jsonStream, 'utf8');
+      fs.writeFileSync(filePath, jsonString, 'utf8');
     }
     catch (error)
     {
@@ -141,30 +164,32 @@ export class SaveableObject
     */
   }
 
-  public loadFromJsonStream(stream: string)
+  public loadFromJsonString(jsonString: string)
   {
-    let jsonData;
+    let jsonObject = {};
 
     try
     {
-      jsonData = JSON.parse(stream);
+      jsonObject = JSON.parse(jsonString);
     }
     catch (e)
     {
-      ASSERT_FATAL(false, "Syntax error in JSON stream: " + e.message);
+      ASSERT_FATAL(false, "Syntax error in JSON string: " + e.message);
     }
+
+    this.loadFromJsonObject(jsonObject);
   }
 
-  public saveToJsonStream(): string
+  public saveToJsonString(): string
   {
     let regExp: RegExp;
     // Indent with 2 spaces.
     ///let stream = JSON.stringify(this.saveToJsonData(), null, 2);
-    let stream = JSON.stringify(this.saveToJsonData());
+    let jsonString = JSON.stringify(this.saveToJsonObject());
 
-    stream = beautify
+    jsonString = beautify
     (
-      stream,
+      jsonString,
       {
         "indent_size": 2,
         "indent_char": " ",
@@ -172,7 +197,7 @@ export class SaveableObject
 ///        "indent_level": 0,
 ///        "indent_with_tabs": false,
 ///        "preserve_newlines": true,
-//        "max_preserve_newlines": 10,
+///        "max_preserve_newlines": 10,
 ///        "jslint_happy": false,
 ///        "space_after_anon_function": false,
         "brace_style": "expand",
@@ -183,78 +208,80 @@ export class SaveableObject
 ///        "eval_code": false,
 ///        "unescape_strings": false,
 ///        "wrap_line_length": 0,
-//        "wrap_attributes": "auto",
-//        "wrap_attributes_indent_size": 2,
+///        "wrap_attributes": "auto",
+///        "wrap_attributes_indent_size": 2,
         "end_with_newline": false
       }
     );
-/*
-    // Add newline before and after curly braces.
-    regExp = /([\{\}])/g;
-    stream = stream.replace(regExp, '\n$1\n');
- 
-    // Add newline before and after square brackets.
-    regExp = /([\[\]])/g;
-    stream = stream.replace(regExp, '\n$1\n');
- 
-    // Add newline after comma.
-    regExp = /(\,)/g;
-    stream = stream.replace(regExp, '$1\n');
- 
-    // Remove multiple newlines.
-    regExp = /(\n\n)/g;
-    stream = stream.replace(regExp, '\n');
- 
-    // Remove newlines before commas.
-    regExp = /\n\,/g;
-    stream = stream.replace(regExp, ',');
-*/
 
-    return stream;
+    return jsonString;
   }
 
-  public loadFromJsonData(jsonData: Object)
+  public loadFromJsonObject(jsonObject: Object)
   {
     let property = "";
 
-    // Check version.
-    this.checkVersion(jsonData);
+    this.checkVersion(jsonObject);
 
     // Check if we have the same set of properties as the JSON data we are
     // trying to load ourselves from.
     for (property in this)
     {
-      ASSERT_FATAL(property in jsonData,
-        "Property '" + property + "' exists in object but not in JSON data"
-        + " we are trying to load ourselves from. Maybe someone forgot to"
-        + " change the version and convert JSON files to a new format?");
+      // Skip our methods, they are not saved to json of course.
+      if (typeof this[property] !== 'function')
+      {
+        ASSERT_FATAL(property in jsonObject,
+          "Property '" + property + "' exists in object but not in JSON data"
+          + " we are trying to load ourselves from. Maybe you forgot to"
+          + " change the version and convert JSON files to a new format?");
+      }
     }
 
     // Also the other way around.
-    for (property in jsonData)
+    for (property in jsonObject)
     {
       ASSERT_FATAL(property in this,
         "Property '" + property + "' exists in JSON data we are trying to"
-        + " load ourselves from but we don't have it Maybe someone forgot to"
+        + " load ourselves from but we don't have it Maybe you forgot to"
         + " change the version and convert JSON files to a new format?");
     }
 
     // Now copy the data.
-    for (property in jsonData)
+    for (property in jsonObject)
     {
-      this[property] = jsonData[property];
+      if (typeof this[property] === 'object'
+          && 'loadFromJsonObject' in this[property])
+      {
+        // This handles the situation when you put SaveableObject into
+        // another SaveableObject.
+        this[property].loadFromJsonObject(jsonObject[property]);
+      }
+      else
+      {
+        this[property] = jsonObject[property];
+      }
     }
   }
 
-  public saveToJsonData(): Object
+  public saveToJsonObject(): Object
   {
-    let jsonData: Object = {};
+    let jsonObject: Object = {};
 
     for (let property in this)
     {
-      jsonData[property] = this[property];
+      // This handles the situation when you put SaveableObject into
+      // another SaveableObject.
+      if (typeof this[property] === 'object'
+          && 'saveToJsonObject' in this[property])
+      {
+        jsonObject[property] = this[property].saveToJsonObject();
+      }
+      else
+      {
+        jsonObject[property] = this[property];
+      }
     }
 
-    return jsonData;
+    return jsonObject;
   }
 }
