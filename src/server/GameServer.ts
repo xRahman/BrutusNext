@@ -24,7 +24,7 @@ import {DescriptorManager} from '../server/DescriptorManager';
 /// TESTING:
 import {SaveableObject} from '../shared/SaveableObject';
 */
-import {AccountData} from '../server/AccountData';
+import {Account} from '../server/Account';
 
 export class GameServer
 {
@@ -66,9 +66,13 @@ export class GameServer
   {
     
     /// TESTING:
-
-    let tmp = new AccountData('0.0');
-    tmp.saveToFile('./data/accounts/test.json');
+    /*
+    let tmp = new Account("test");
+    
+    tmp.loadFromFile('./data/accounts/test.json');
+    console.log("X is " + tmp.myData.x);
+    */
+    ///tmp.saveToFile('./data/accounts/test.json');
     
 
 
@@ -84,7 +88,7 @@ export class GameServer
   protected myDescriptorManager: DescriptorManager =
     new DescriptorManager(new IdProvider());
   protected myTelnetServer: TelnetServer =
-    new TelnetServer(GameServer.DEFAULT_TELNET_PORT);
+    new TelnetServer(GameServer.DEFAULT_TELNET_PORT, this.descriptorManager);
 
   // Creates an instance of telnet server and starts it.
   protected startTelnetServer(telnetPort: number)
