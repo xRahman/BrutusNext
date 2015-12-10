@@ -74,7 +74,7 @@ export class AuthProcessor
 
   public startLoginProcess()
   {
-    this.mySocketDescriptor.send("Welcome to the BrutusNext!\r\n"
+    this.mySocketDescriptor.send("&GWelcome to the BrutusNext!\r\n&w"
       + "By what name do you wish to be known? ");
 
 /// Account name variant:
