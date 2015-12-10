@@ -35,6 +35,80 @@ import * as events from 'events';  // Import namespace 'events' from node.js
 // This constant is used to extend socket objects with new property.
 const DESCRIPTOR_ID = 'descriptorId';
 
+const ANSI =
+{
+  '&n': '\u001b[0m',
+  '&d': '\u001b[1m',      // bold
+  '&i': '\u001b[3m',      // italic
+  '&u': '\u001b[4m',      // underline
+  '&l': '\u001b[5m',      // blink
+  '&k': '\u001b[30m',     // black
+  '&Ki': '\u001b[1;3;30m', // black, bold, italic
+  '&K': '\u001b[1;30m',
+  '&r': '\u001b[31m',
+  '&Ri': '\u001b[1;3;31m', // red, bold, italic
+  '&R': '\u001b[1;31m',
+  '&g': '\u001b[32m',
+  '&Gi': '\u001b[1;3;32m', // green, bold, italic
+  '&G': '\u001b[1;32m',
+  '&y': '\u001b[33m',
+  '&Y': '\u001b[1;33m',
+  '&b': '\u001b[34m',
+  '&Bi': '\u001b[1;3;34m', // blue, bold, italic
+  '&B': '\u001b[1;34m',
+  '&m': '\u001b[35m',
+  '&M': '\u001b[1;35m',
+  '&c': '\u001b[36m',
+  '&C': '\u001b[1;36m',
+  '&w': '\u001b[37m',
+  '&W': '\u001b[1;37m'
+};
+
+/*
+/// Zatim nepouzito.
+const ANSI256 = ['#000', '#B00', '#0B0', '#BB0', '#00B', '#B0B', '#0BB',
+                '#BBB', '#555', '#F55', '#5F5', '#FF5', '#55F', '#F5F',
+                '#5FF', '#FFF', '#000', '#005', '#008', '#00B', '#00D',
+                '#00F', '#050', '#055', '#058', '#05B', '#05D', '#05F',
+                '#080', '#085', '#088', '#08B', '#08D', '#08F', '#0B0',
+                '#0B5', '#0B8', '#0BB', '#0BD', '#0BF', '#0D0', '#0D5',
+                '#0D8', '#0DB', '#0DD', '#0DF', '#0F0', '#0F5', '#0F8',
+                '#0FB', '#0FD', '#0FF', '#500', '#505', '#508', '#50B',
+                '#50D', '#50F', '#550', '#555', '#558', '#55B', '#55D',
+                '#55F', '#580', '#585', '#588', '#58B', '#58D', '#58F',
+                '#5B0', '#5B5', '#5B8', '#5BB', '#5BD', '#5BF', '#5D0',
+                '#5D5', '#5D8', '#5DB', '#5DD', '#5DF', '#5F0', '#5F5',
+                '#5F8', '#5FB', '#5FD', '#5FF', '#800', '#805', '#808',
+                '#80B', '#80D', '#80F', '#850', '#855', '#858', '#85B',
+                '#85D', '#85F', '#880', '#885', '#888', '#88B', '#88D',
+                '#88F', '#8B0', '#8B5', '#8B8', '#8BB', '#8BD', '#8BF',
+                '#8D0', '#8D5', '#8D8', '#8DB', '#8DD', '#8DF', '#8F0',
+                '#8F5', '#8F8', '#8FB', '#8FD', '#8FF', '#B00', '#B05',
+                '#B08', '#B0B', '#B0D', '#B0F', '#B50', '#B55', '#B58',
+                '#B5B', '#B5D', '#B5F', '#B80', '#B85', '#B88', '#B8B',
+                '#B8D', '#B8F', '#BB0', '#BB5', '#BB8', '#BBB', '#BBD',
+                '#BBF', '#BD0', '#BD5', '#BD8', '#BDB', '#BDD', '#BDF',
+                '#BF0', '#BF5', '#BF8', '#BFB', '#BFD', '#BFF', '#D00',
+                '#D05', '#D08', '#D0B', '#D0D', '#D0F', '#D50', '#D55',
+                '#D58', '#D5B', '#D5D', '#D5F', '#D80', '#D85', '#D88',
+                '#D8B', '#D8D', '#D8F', '#DB0', '#DB5', '#DB8', '#DBB',
+                '#DBD', '#DBF', '#DD0', '#DD5', '#DD8', '#DDB', '#DDD',
+                '#DDF', '#DF0', '#DF5', '#DF8', '#DFB', '#DFD', '#DFF',
+                '#F00', '#F05', '#F08', '#F0B', '#F0D', '#F0F', '#F50',
+                '#F55', '#F58', '#F5B', '#F5D', '#F5F', '#F80', '#F85',
+                '#F88', '#F8B', '#F8D', '#F8F', '#FB0', '#FB5', '#FB8',
+                '#FBB', '#FBD', '#FBF', '#FD0', '#FD5', '#FD8', '#FDB',
+                '#FDD', '#FDF', '#FF0', '#FF5', '#FF8', '#FFB', '#FFD',
+                '#FFF', 'rgb(8,8,8)', 'rgb(18,18,18)', 'rgb(28,28,28)',
+                'rgb(38,38,38)', 'rgb(48,48,48)', 'rgb(58,58,58)',
+                'rgb(68,68,68)', 'rgb(78,78,78)', 'rgb(88,88,88)',
+                'rgb(98,98,98)', 'rgb(108,108,108)', 'rgb(118,118,118)',
+                'rgb(128,128,128)', 'rgb(138,138,138)', 'rgb(148,148,148)',
+                'rgb(158,158,158)', 'rgb(168,168,168)', 'rgb(178,178,178)',
+                'rgb(188,188,188)', 'rgb(198,198,198)', 'rgb(208,208,208)',
+                'rgb(218,218,218)', 'rgb(228,228,228)', 'rgb(238,238,238)'];
+*/
+
 export class TelnetServer
 {
   constructor(protected myPort: number,
@@ -239,6 +313,7 @@ export class TelnetServer
     let gameServer = GameServer.getInstance();
 
     // Tell the socket to interpret data as raw binary stream.
+    // (it's necessary for unicode characters to transmit correctly)
     socket.setEncoding('binary');
 
     // Check that event handler for 'data' event is not already registered.
@@ -273,5 +348,30 @@ export class TelnetServer
       TelnetServer.events.SOCKET_CLOSE,
       () => { this.onSocketClose(socket); }
     );
+  }
+
+  // Converts MUD color codes (e.g. "&gSomething &wcolorful&g) to ANSI color
+  // codes.
+  public static ansify(data: string): string
+  {
+    if (/(&[a-zA-Z])/.test(data))
+    {
+      console.log("Ansify started");
+      for (let code in ANSI)
+      {
+        let regExp = new RegExp(code, 'g');
+        data = data.replace(regExp, ANSI[code]);
+      }
+    }
+    console.log("Data after ansify: " + data);
+	
+    /*
+    /// We don't use codes like '&0' right now 
+    /// (whatever this is supposed to do)
+    if (/&([0-9]+)/.test(data))
+      data = data.replace(/&([0-9]+)/ig, '\u001b[38;5;$1m');
+    */
+
+    return data;
   }
 }
