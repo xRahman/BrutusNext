@@ -44,7 +44,7 @@ import {SaveableObject} from '../shared/SaveableObject';
 
 export class SaveableContainer extends SaveableObject
 {
-  public loadFromJsonObject(jsonObject: Object)
+  protected loadFromJsonObject(jsonObject: Object)
   {
     this.checkVersion(jsonObject);
 
@@ -61,7 +61,7 @@ export class SaveableContainer extends SaveableObject
     }
   }
 
-  public saveToJsonObject(): Object
+  protected saveToJsonObject(): Object
   {
     let jsonObject = {};
 

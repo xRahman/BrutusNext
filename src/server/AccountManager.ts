@@ -11,8 +11,6 @@ import {Account} from '../server/Account';
 // Built-in node.js modules.
 import * as fs from 'fs';  // Import namespace 'fs' from node.js
 
-const ACCOUNTS_DIRECTORY = "./data/accounts/";
-
 export class AccountManager extends IdContainer<Account>
 {
   // ---------------- Public methods --------------------
@@ -21,14 +19,15 @@ export class AccountManager extends IdContainer<Account>
   {
     let newAccount = new Account(accountName);
 
-    /// TODO
-
-
+    // This creates and assigns hash, not actual password.
+    newAccount.password = password;
 
     // Save the account info to the disk (so we know that the account exists).
+    newAccount.save();
 
+    let newAccountId = this.addOnlineAccount(accountName);
 
-    return "";
+    return newAccountId;
   }
   
   public getAccount(id: string)
@@ -44,7 +43,7 @@ export class AccountManager extends IdContainer<Account>
     if (this.myOnlineAccountNames[accountName])
       return true;
 
-    let path = ACCOUNTS_DIRECTORY + accountName + ".json";
+    let path = Account.SAVE_DIRECTORY + accountName + ".json";
 
     return fs.existsSync(path);
   }
@@ -52,10 +51,30 @@ export class AccountManager extends IdContainer<Account>
   // Returns account id on succes, "" on failure
   public logIn(accountName: string, password: string): string
   {
-    /// TODO
+    let accountId = "";
+    let account = null;
 
-    // login failed.
-    return "";
+    if (accountName in this.myOnlineAccountNames)
+    {
+      // Attempt to re-log to an online account.
+      accountId = this.myOnlineAccountNames[accountName];
+      account = this.getAccount(accountId);
+    } else
+    {
+      // Login to an offline account.
+      accountId = this.addOnlineAccount(accountName);
+      account = this.getAccount(accountId);
+      // Load account from file, mainly for us to be able to check if password
+      // is correct.
+      account.load();
+    }
+
+    if (account.checkPassword(password))
+      /// TODO: Handle usurping of an existing connection (close old socket,
+      /// send info to a new socket, atc.
+      return accountId;
+    else
+      return "";
   }
 
   // -------------- Protected class data ----------------

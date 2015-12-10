@@ -9,6 +9,7 @@ import {Mudlog} from '../server/Mudlog';
 import {GameServer} from '../server/GameServer';
 import {AuthProcessor} from '../server/AuthProcessor';
 import {LobbyProcessor} from '../server/LobbyProcessor';
+import {TelnetServer} from '../server/telnet/TelnetServer';
 
 // Built-in node.js modules.
 import * as net from 'net';  // Import namespace 'net' from node.js
@@ -115,6 +116,10 @@ export class SocketDescriptor
   // Sends a string to the user.
   public send(data: string)
   {
+    // Convert MUD color codes to ANSI color codes.
+    /// (note: this only works for telnet and classic MUD clients)
+    data = TelnetServer.ansify(data);
+
     this.mySocket.write(data);
   }
 
