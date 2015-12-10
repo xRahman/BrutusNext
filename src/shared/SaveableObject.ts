@@ -47,12 +47,12 @@ export class SaveableObject
   // Version will be checked for. Default behaviour is to trigger
   // a FATAL_ASSERT when versions don't match. You can override it
   // by overriding a checkVersion() method;
-  public version
+  protected version = 0;
 
   // Version is passed as object because it makes the code more easily
   // readable. You need to write: let d = new DummyData({ version: 12 });
   // which is self-explainable unlike let d = new DummyData(12);
-  constructor(version: Version = { version: 0 })
+  constructor(version: Version)
   {
     if (!ASSERT(version.version >= 0, "Version can't be negative, sorry"))
     {
@@ -64,7 +64,7 @@ export class SaveableObject
     }
   }
 
-  public checkVersion(jsonObject: Object)
+  protected checkVersion(jsonObject: Object)
   {
     /// TODO: Doplnit do chybovych hlasek, kde nastala chyba, tj ktereho
     /// souboru se to tyka (pokud to pujde zjistit)
@@ -76,7 +76,7 @@ export class SaveableObject
       "Version of JSON data doesn't match required version");
   }
 
-  public loadFromFile(filePath: string)
+  protected loadFromFile(filePath: string)
   {
     let jsonString;
     try
@@ -110,7 +110,7 @@ export class SaveableObject
     */
   }
 
-  public saveToFile(filePath: string)
+  protected saveToFile(filePath: string)
   {
     /// TODO:
     /// this.saving = true;
@@ -164,7 +164,7 @@ export class SaveableObject
     */
   }
 
-  public loadFromJsonString(jsonString: string)
+  protected loadFromJsonString(jsonString: string)
   {
     let jsonObject = {};
 
@@ -180,7 +180,7 @@ export class SaveableObject
     this.loadFromJsonObject(jsonObject);
   }
 
-  public saveToJsonString(): string
+  protected saveToJsonString(): string
   {
     let regExp: RegExp;
     // Indent with 2 spaces.
@@ -217,7 +217,7 @@ export class SaveableObject
     return jsonString;
   }
 
-  public loadFromJsonObject(jsonObject: Object)
+  protected loadFromJsonObject(jsonObject: Object)
   {
     let property = "";
 
@@ -263,7 +263,7 @@ export class SaveableObject
     }
   }
 
-  public saveToJsonObject(): Object
+  protected saveToJsonObject(): Object
   {
     let jsonObject: Object = {};
 

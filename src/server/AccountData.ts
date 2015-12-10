@@ -15,18 +15,11 @@ export class AccountData extends SaveableObject
     // .json files to conform to the new version.
     super({ version: 0 });
   }
-  
-  /*
-  public blah = "";
-  public x = -1;
-  public struct = { kafe: "Kafe", teplota: 13 };
-  public pole = [0, 0, 0, 0];
-  */
-  
-  /*
-  public blah = "BLAH";
-  public x = 0;
-  public struct = { kafe: "Kafe", teplota: 13 };
-  public pole = [1, 2, 3, 4];
-  */
+
+  // dateofCreation always initializes to current time, but for existing
+  // accounts will be overwritten when loading from file. 
+  public dateOfCreation = new Date();
+
+  // Not really a password, just it's hash.
+  password = "";
 }
