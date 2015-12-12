@@ -4,7 +4,7 @@
   Implements functionality that enables inherited classes to save and load
   specific data in JSON format.
 
-  Unline SaveableObject, which automatically saves/loads all of its data
+  Unlike SaveableObject, which automatically saves/loads all of its data
   members, SaveableContainer only saves it's data members that are
   SaveableContainers or SaveableObjects (and version number).
 */

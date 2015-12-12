@@ -5,6 +5,7 @@
 */
 
 import {ASSERT} from '../shared/ASSERT';
+import {Id} from '../shared/Id';
 import {Mudlog} from '../server/Mudlog';
 import {GameServer} from '../server/GameServer';
 import {AuthProcessor} from '../server/AuthProcessor';
@@ -22,10 +23,10 @@ export class SocketDescriptor
 
   public get socket() { return this.mySocket; }
 
-  public set id(value: string) { this.myId = value; }
+  public set id(value: Id) { this.myId = value; }
   public get id() { return this.myId; }
 
-  public set accountId(value: string) { this.myAccountId = value; }
+  public set accountId(value: Id) { this.myAccountId = value; }
 
   // ---------------- Public methods --------------------
 
@@ -50,9 +51,18 @@ export class SocketDescriptor
     this.myLobbyProcessor.enterMenu();
   }
 
+  public quitGame()
+  {
+    this.myStage = SocketDescriptor.stage.QUITTED_GAME;
+    // Close the socket. Event 'close' will be generated on the socket,
+    // which will lead to the player being logged out.
+    this.mySocket.end();
+  }
+
   public socketReceivedData(data: string)
   {
-    console.log("SocketDescriptor.socketReceivedData()");
+    /// DEBUG
+    /// console.log("SocketDescriptor.socketReceivedData()");
 
     data = this.normalizeCRLF(data);
 
@@ -63,7 +73,8 @@ export class SocketDescriptor
         return;
     }
 
-    console.log("Data after protocol parse: " + data);
+    /// DEBUG
+    /// console.log("Data after protocol parse: " + data);
 
     // Discard data that doesn't contain a newline. That's probably
     // some protocol negotiation stuff we haven't been able to catch.
@@ -102,15 +113,58 @@ export class SocketDescriptor
 
   public socketClose()
   {
-    /// TODO
-    console.log("SocketDescriptor.socketClose()");
+    let accountManager = GameServer.getInstance().accountManager;
+
+    if (this.myStage === SocketDescriptor.stage.IN_GAME)
+    {
+      /// TODO
+      // Player was in game and his link has just died.
+    }
+    else
+    {
+      // Player was not in game, log him off.
+      // (but only if an account is already associated to this descriptor.
+      // It might not be, for example if player closed his connection
+      // before entering password.)
+      if (this.myAccountId)
+      {
+        accountManager.logOut(this.myAccountId);
+      }
+      else
+      {
+        let address = this.mySocket.remoteAddress;
+
+        if (this.myAuthProcessor.accountName)
+        {
+          Mudlog.log(
+            "Player " + this.myAuthProcessor.accountName
+            + " closed connection before logging in",
+            Mudlog.msgType.SYSTEM_INFO,
+            Mudlog.levels.IMMORTAL);
+        }
+        else
+        {
+          Mudlog.log(
+            "Unknown player closed connection before logging in",
+            Mudlog.msgType.SYSTEM_INFO,
+            Mudlog.levels.IMMORTAL);
+        }
+      }
+    }
   }
 
   public socketError()
   {
-    /// TODO: Poslat nejake info hraci, ze se stalo neco zleho.
-    /// (zatim naprosto netusim, pri jake prilezitosti muze socket error
-    /// nastat)
+    let accountManager = GameServer.getInstance().accountManager;
+    let accountName = accountManager.getAccount(this.myAccountId).accountName;
+
+    Mudlog.log(
+      "Player " + accountName + " has encountered a socket error",
+      Mudlog.msgType.SYSTEM_ERROR,
+      Mudlog.levels.IMMORTAL);
+
+    // (Netusim, co vsechno muze socket erorr znamenat, pripadne co je s nim
+    // potreba udelat).
   }
 
   // Sends a string to the user.
@@ -123,14 +177,19 @@ export class SocketDescriptor
     this.mySocket.write(data);
   }
 
+  public isInGame()
+  {
+    return this.myStage === SocketDescriptor.stage.IN_GAME;
+  }
+
   // -------------- Protected class data ----------------
 
   // Empty string means that we do not yet know what account does this
   // descriptor match to.
-  protected myAccountId = "";
+  protected myAccountId: Id = null;
 
-  // Unique id of this descriptor.
-  protected myId = "";
+  // Unique stringId of this descriptor.
+  protected myId: Id = null;
 
   // Buffer to accumulate incomplete parts of data stream.
   protected myBuffer = "";
@@ -143,7 +202,8 @@ export class SocketDescriptor
     INITIAL: 0, // Initial stage.
     AUTHENTICATION: 1,
     LOBBY: 2,
-    IN_GAME: 3
+    IN_GAME: 3,
+    QUITTED_GAME: 4
   }
 
   protected myStage = SocketDescriptor.stage.INITIAL;
@@ -161,26 +221,30 @@ export class SocketDescriptor
           + " commands yet");
         break;
       case SocketDescriptor.stage.AUTHENTICATION:
-        ASSERT(this.myAccountId === "",
+        ASSERT(this.myAccountId === null,
           "Attempt to start authentication on descriptor that already has"
           + " an online account associated to it");
 
         this.myAuthProcessor.processCommand(command);
         break;
       case SocketDescriptor.stage.LOBBY:
-        ASSERT(this.myAccountId !== "",
+        ASSERT(this.myAccountId !== null,
           "Attempt to process lobby command on descriptor that doesn't have"
           + " an online account associated to it");
 
         this.myLobbyProcessor.processCommand(command);
         break;
       case SocketDescriptor.stage.IN_GAME:
-        ASSERT(this.myAccountId !== "",
+        ASSERT(this.myAccountId !== null,
           "Attempt to process ingame command on descriptor that doesn't have"
           + " an online account associated to it");
 
         GameServer.getInstance().accountManager.
           getAccount(this.myAccountId).processCommand(command);
+        break;
+      case SocketDescriptor.stage.QUITTED_GAME:
+        ASSERT(false, "Player has quitted the game, SocketDescriptor"
+          + " is not supposed to process any more commands");
         break;
       default:
         ASSERT(false, "Unknown stage");

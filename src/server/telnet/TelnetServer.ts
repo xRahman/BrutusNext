@@ -25,6 +25,7 @@
 
 import {ASSERT_FATAL} from '../../shared/ASSERT';
 import {Mudlog} from '../../server/Mudlog';
+import {Id} from '../../shared/Id';
 import {GameServer} from '../../server/GameServer';
 import {DescriptorManager} from '../../server/DescriptorManager';
 
@@ -245,7 +246,7 @@ export class TelnetServer
 
     // Let SocketManager create a new socket descriptor. Remember it's unique
     // string id.
-    let socketDescriptorId: string =
+    let socketDescriptorId: Id =
       this.myDescriptorManager.addSocketDescriptor(socket);
 
     // Here we are extending socket object with our custom property (that's
@@ -261,7 +262,8 @@ export class TelnetServer
 
   protected onSocketReceivedData(socket: net.Socket, data: string)
   {
-    console.log("onSocketReceivedData(): " + data);
+    /// DEBUG
+    /// console.log("onSocketReceivedData(): " + data);
 
     // Here we are accessing our custom property that we dynamically
     // added to our socket (that's the reason for [] brackets).
@@ -356,15 +358,19 @@ export class TelnetServer
   {
     if (/(&[a-zA-Z])/.test(data))
     {
-      console.log("Ansify started");
+      /// DEBUG
+      /// console.log("Ansify started");
+
       for (let code in ANSI)
       {
         let regExp = new RegExp(code, 'g');
         data = data.replace(regExp, ANSI[code]);
       }
     }
-    console.log("Data after ansify: " + data);
-	
+
+    /// DEBUG
+    /// console.log("Data after ansify: " + data);
+
     /*
     /// We don't use codes like '&0' right now 
     /// (whatever this is supposed to do)

@@ -1,11 +1,12 @@
 ﻿/*
   Part of BrutusNEXT
 
-  Implements container for socket descriptors.
+  Container for socket descriptors.
 */
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
+import {Id} from '../shared/Id';
 import {IdContainer} from '../shared/IdContainer';
 import {SocketDescriptor} from '../server/SocketDescriptor';
 
@@ -16,8 +17,8 @@ export class DescriptorManager extends IdContainer<SocketDescriptor>
 {
   // ---------------- Public methods --------------------
  
-  // Creates a socket descriptor, returns its unique string id.
-  public addSocketDescriptor(socket: net.Socket): string
+  // Creates a socket descriptor, returns its unique id.
+  public addSocketDescriptor(socket: net.Socket): Id
   {
     // generateId() is a method inherited from IdProvider.
     let newId = this.addItem(new SocketDescriptor(socket));
@@ -27,7 +28,7 @@ export class DescriptorManager extends IdContainer<SocketDescriptor>
   }
 
   // Handle a socket error by closing the connection.
-  public socketError(descriptorId: string)
+  public socketError(descriptorId: Id)
   {
     this.getItem(descriptorId).socketError();
 
@@ -35,7 +36,7 @@ export class DescriptorManager extends IdContainer<SocketDescriptor>
     this.deleteItem(descriptorId);
   }
 
-  public socketClose(descriptorId: string)
+  public socketClose(descriptorId: Id)
   {
     let socketDescriptor = this.getItem(descriptorId);
 
@@ -44,7 +45,7 @@ export class DescriptorManager extends IdContainer<SocketDescriptor>
     this.deleteItem(descriptorId);
   }
   
-  public getSocketDescriptor(id: string)
+  public getSocketDescriptor(id: Id)
   {
     return this.getItem(id);
   }

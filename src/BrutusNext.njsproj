@@ -22,7 +22,14 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
   <ItemGroup>
     <TypeScriptCompile Include="BrutusNext.ts" />
+    <TypeScriptCompile Include="game\Character.ts" />
+    <TypeScriptCompile Include="game\CharacterData.ts" />
+    <TypeScriptCompile Include="game\CharacterManager.ts" />
     <TypeScriptCompile Include="game\Game.ts" />
+    <TypeScriptCompile Include="game\GameEntity.ts" />
+    <TypeScriptCompile Include="game\GameEntityData.ts" />
+    <TypeScriptCompile Include="game\Room.ts" />
+    <TypeScriptCompile Include="game\RoomManager.ts" />
     <TypeScriptCompile Include="headers\node.d.ts" />
     <TypeScriptCompile Include="headers\ws.d.ts" />
     <TypeScriptCompile Include="server\Account.ts" />
@@ -36,6 +43,7 @@
     <TypeScriptCompile Include="server\DescriptorManager.ts" />
     <TypeScriptCompile Include="server\telnet\TelnetServer.ts" />
     <TypeScriptCompile Include="shared\ASSERT.ts" />
+    <TypeScriptCompile Include="shared\Id.ts" />
     <TypeScriptCompile Include="shared\SaveableContainer.ts" />
     <TypeScriptCompile Include="shared\IdContainer.ts" />
     <TypeScriptCompile Include="shared\IdProvider.ts" />
