@@ -33,19 +33,26 @@
 */
 
 import {ASSERT} from '../shared/ASSERT';
+import {ASSERT_FATAL} from '../shared/ASSERT';
 import {SocketDescriptor} from '../server/SocketDescriptor';
 import {GameServer} from '../server/GameServer';
 import {AccountManager} from '../server/AccountManager';
 
 export class AuthProcessor
 {
+  // In this special case it's ok to hold direct reference to
+  // SocketDescriptor, because our instance of AuthProcessor
+  // is owned by the very SocketDescriptor we are storing reference
+  // of here. In any other case, unique stringId of SocketDescriptor (within
+  // DescriptorManager) needs to be used instead of a direct reference!
   constructor(protected mySocketDescriptor: SocketDescriptor) {}
 
   // ---------------- Public methods --------------------
 
+  public get accountName() { return this.myAccountName; }
+
   public processCommand(command: string)
   {
-    /// TODO
     switch (this.myStage)
     {
       case AuthProcessor.stage.INITIAL:
@@ -61,7 +68,6 @@ export class AuthProcessor
       case AuthProcessor.stage.NEW_PASSWORD:
         this.getNewPassword(command);
         break;
-
       case AuthProcessor.stage.DONE:
         ASSERT(false, "AuthProcessor has already done it's job, it is not"
           + " supposed to process any more commands");
@@ -74,11 +80,11 @@ export class AuthProcessor
 
   public startLoginProcess()
   {
-    this.mySocketDescriptor.send("&GWelcome to the BrutusNext!\r\n&w"
+    this.mySocketDescriptor.send("&GWelcome to &RBrutus &YNext!\r\n&w"
       + "By what name do you wish to be known? ");
 
 /// Account name variant:
-///    this.mySocketDescriptor.send("Welcome to the BrutusNext!\r\n"
+///    this.mySocketDescriptor.send("&GWelcome to the &RBrutus &YNext!\r\n"
 ///      + "By what account name do you want to be recognized? ");
 
     this.myStage = AuthProcessor.stage.LOGIN;
@@ -208,9 +214,17 @@ export class AuthProcessor
   {
     let accountManager = GameServer.getInstance().accountManager;
 
-    let accountId = accountManager.logIn(this.myAccountName, password);
+    ASSERT_FATAL(this.mySocketDescriptor.id != null,
+      "Invalid socket descriptor id");
 
-    if (accountId)
+    // If password doesn't check, logIn returns "".
+    let accountId =
+      accountManager.logIn(
+        this.myAccountName,
+        password,
+        this.mySocketDescriptor.id);
+
+    if (accountId !== null)
     {
       this.mySocketDescriptor.accountId = accountId;
 
@@ -263,7 +277,10 @@ export class AuthProcessor
     // password reset s poslanim noveho hesla na mail).
 
     let newAccountId =
-      accountManager.createNewAccount(this.myAccountName, password);
+      accountManager.createNewAccount(
+        this.myAccountName,
+        password,
+        this.mySocketDescriptor.id);
 
     this.mySocketDescriptor.accountId = newAccountId;
 
