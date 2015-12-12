@@ -28,6 +28,11 @@ import {Account} from '../server/Account';
 
 export class GameServer
 {
+  constructor()
+  {
+    this.myTimeOfBoot = new Date();
+  }
+
   // -------------- static members -------------
 
   static get DEFAULT_TELNET_PORT() { return 4443; }
@@ -54,6 +59,12 @@ export class GameServer
   protected static myInstance: GameServer;
 
   // -------------- public members -------------
+
+  public get timeOfBoot()
+  {
+    ASSERT(this.myTimeOfBoot != null, "Time of boot is not initialized yet");
+    return this.myTimeOfBoot;
+  }
 
   public get game() { return this.myGame; }
   public get accountManager() { return this.myAccountManager; }
@@ -84,11 +95,13 @@ export class GameServer
 
   protected myGame: Game = new Game();
   protected myAccountManager: AccountManager =
-    new AccountManager(new IdProvider());
+    new AccountManager();
   protected myDescriptorManager: DescriptorManager =
-    new DescriptorManager(new IdProvider());
+    new DescriptorManager();
   protected myTelnetServer: TelnetServer =
     new TelnetServer(GameServer.DEFAULT_TELNET_PORT, this.descriptorManager);
+
+  protected myTimeOfBoot = null;
 
   // Creates an instance of telnet server and starts it.
   protected startTelnetServer(telnetPort: number)

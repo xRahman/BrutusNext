@@ -6,19 +6,22 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {SocketDescriptor} from '../server/SocketDescriptor';
-///import {GameServer} from '../server/GameServer';
-///import {AccountManager} from '../server/AccountManager';
 
 const GAME_MENU =
-    "\r\nWelcome to BRUTUS Next!\r\n"
+    "\r\n&wWelcome to &RBRUTUS &YNext!\r\n"
   + "\r\n"
-  + "0) Exit from BRUTUS Next.\r\n"
-  + "1) Enter the game.\r\n"
+  + "&G0&g) &bExit from &RBRUTUS &YNext.\r\n"
+  + "&G1&g) &BEnter the game.\r\n"
   + "\r\n"
-  + "Make your choice: ";
+  + "&wMake your choice: ";
 
 export class LobbyProcessor
 {
+  // In this special case it's ok to hold direct reference to
+  // SocketDescriptor, because our instance of LobbyProcessor
+  // is owned by the very SocketDescriptor we are storing reference
+  // of here. In any other case, unique id of SocketDescriptor (within
+  // DescriptorManager) needs to be used instead of a direct reference!
   constructor(protected mySocketDescriptor: SocketDescriptor) { }
 
   // ---------------- Public methods --------------------
@@ -80,13 +83,11 @@ export class LobbyProcessor
     {
       case "0": // Quit the game.
         this.mySocketDescriptor.send(
-          "Goodbye.\r\n"
+          "&wGoodbye.\r\n"
           + "Have a nice day...");
 
         this.myStage = LobbyProcessor.stage.NOT_IN_LOBBY;
-
-        /// TODO: close the connection
-        /// TODO: delete online account
+        this.mySocketDescriptor.quitGame();
         break;
       case "1": // Enter the game.
         this.myStage = LobbyProcessor.stage.NOT_IN_LOBBY;
