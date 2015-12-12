@@ -7,7 +7,7 @@
 import {ASSERT} from '../shared/ASSERT';
 import {Id} from '../shared/Id';
 import {Mudlog} from '../server/Mudlog';
-import {GameServer} from '../server/GameServer';
+import {Server} from '../server/Server';
 import {AuthProcessor} from '../server/AuthProcessor';
 import {LobbyProcessor} from '../server/LobbyProcessor';
 import {TelnetServer} from '../server/telnet/TelnetServer';
@@ -113,7 +113,7 @@ export class SocketDescriptor
 
   public socketClose()
   {
-    let accountManager = GameServer.getInstance().accountManager;
+    let accountManager = Server.accountManager;
 
     if (this.myStage === SocketDescriptor.stage.IN_GAME)
     {
@@ -155,7 +155,7 @@ export class SocketDescriptor
 
   public socketError()
   {
-    let accountManager = GameServer.getInstance().accountManager;
+    let accountManager = Server.accountManager;
     let accountName = accountManager.getAccount(this.myAccountId).accountName;
 
     Mudlog.log(
@@ -239,8 +239,8 @@ export class SocketDescriptor
           "Attempt to process ingame command on descriptor that doesn't have"
           + " an online account associated to it");
 
-        GameServer.getInstance().accountManager.
-          getAccount(this.myAccountId).processCommand(command);
+        Server.accountManager.getAccount(this.myAccountId)
+          .processCommand(command);
         break;
       case SocketDescriptor.stage.QUITTED_GAME:
         ASSERT(false, "Player has quitted the game, SocketDescriptor"

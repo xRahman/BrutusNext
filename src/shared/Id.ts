@@ -5,8 +5,7 @@
 */
 
 import {ASSERT} from '../shared/ASSERT';
-
-import {GameServer} from '../server/GameServer';
+import {Server} from '../server/Server';
 
 /*
 /// Zatim to ze SaveableObjectu dedit nebudu. To by znamenalo, ze by se mi
@@ -37,7 +36,7 @@ export class Id
     ///super({ version: 0 });
     */
 
-    this.myTimeOfBoot = GameServer.getInstance().timeOfBoot;
+    this.myTimeOfBoot = Server.timeOfBoot;
   }
 
   public get stringId() { return this.myStringId; }
