@@ -8,7 +8,7 @@ import {Id} from '../shared/Id';
 import {SaveableContainer} from '../shared/SaveableContainer';
 import {AccountData} from '../server/AccountData';
 import {SocketDescriptor} from '../server/SocketDescriptor';
-import {GameServer} from '../server/GameServer';
+import {Server} from '../server/Server';
 
 // Built-in node.js modules.
 import * as crypto from 'crypto';  // Import namespace 'crypto' from node.js
@@ -60,7 +60,7 @@ export class Account extends SaveableContainer
   public isInGame(): boolean
   {
     let descriptorManager =
-      GameServer.getInstance().descriptorManager;
+      Server.descriptorManager;
 
     let socketDescriptor =
       descriptorManager.getSocketDescriptor(this.mySocketDescriptorId);
