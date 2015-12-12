@@ -1,7 +1,7 @@
 ﻿/*
   Part of BrutusNEXT
 
-  Holds saveable data members for Account class.
+  Saveable data members for Account class.
 */
 
 import {SaveableObject} from '../shared/SaveableObject';
@@ -16,10 +16,13 @@ export class AccountData extends SaveableObject
     super({ version: 0 });
   }
 
+  // Names of characters belonging to this account.
+  public characters: Array<string> = [];
+
   // dateofCreation always initializes to current time, but for existing
   // accounts will be overwritten when loading from file. 
   public dateOfCreation = new Date();
 
   // Not really a password, just it's hash.
-  password = "";
+  public password = "";
 }

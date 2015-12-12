@@ -2,7 +2,7 @@
   Part of BrutusNEXT
 
   Implements container template class to store objects identified by
-  unique string ids.
+  unique ids.
 */
 
 /*
@@ -14,55 +14,101 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
+import {Id} from '../shared/Id';
 import {IdProvider} from '../shared/IdProvider';
+import {GameServer} from '../server/GameServer';
 
 export class IdContainer<T>
 {
-  // Id provider needs to be supplied externally, so more then one container
-  // can store items identified by the same set of unique id's.
-  constructor(protected myIdProvider: IdProvider) { }
+  constructor()
+  {
+    // This will assign the actual name of the container class that is
+    // inherited from IdContainer, for example 'AccountManager'.
+    //   Id's will automatically be checked when accessed to match this,
+    // so you will know when you try to access something by id not issued
+    // by the container you are asking for that something.
+    this.myTypeOfId = this.getClassName();
+  }
 
   // ---------------- Public methods --------------------
 
   // -------------- Protected class data ----------------
 
-  // This hash map allows to access sockets using unique string ids.
+  // This hash map allows to access items using unique sids.
   protected myContainer: { [key: string]: T } = {};
+
+  protected myTypeOfId = "";
 
   // -------------- Protected methods -------------------
 
-  // Inserts a new item to the container, returns its unique string id.
-  protected addItem(item: T): string
+  // Inserts a new item to the container, returns its unique id.
+  protected addItem(item: T): Id
   {
-    let newId = this.myIdProvider.generateId();
+    let newId = IdProvider.generateId(this.myTypeOfId);
 
-    ASSERT_FATAL(!(newId in this.myContainer),
-      "Item '" + newId + "' already exists in the container");
+    ASSERT_FATAL(!(newId.stringId in this.myContainer),
+      "Item '" + newId.stringId + "' already exists in the container");
 
     // Here we are creating a new property in myContainer
     // (it is possible because myContainer is a hashmap)
-    this.myContainer[newId] = item;
+    this.myContainer[newId.stringId] = item;
 
     return newId;
   }
 
-  protected getItem(id: string): T
+  protected getItem(id: Id): T
   {
-    let item = this.myContainer[id];
+    // Check if given id is valid, issued by this container and in this boot.
+    this.checkId(id);
+
+    let item = this.myContainer[id.stringId];
     ASSERT_FATAL(typeof item !== 'undefined',
-      "Item (" + id + ") no longer exists in the container");
+      "Item (" + id.stringId + ") no longer exists in the container");
 
     return item;
   }
 
-  protected deleteItem(id: string)
+  protected deleteItem(id: Id)
   {
-    if (!ASSERT(typeof this.myContainer[id] !== 'undefined',
-      "Attempt to delete item (" + id + ") that doesn't exist"
+    // Check if given id is valid, issued by this container and in this boot.
+    this.checkId(id);
+
+    if (!ASSERT(id.stringId in this.myContainer,
+      "Attempt to delete item (" + id.stringId + ") that doesn't exist"
       + " in the container"))
     {
       // Delete the property that traslates to the descriptor.
-      delete this.myContainer[id];
+      delete this.myContainer[id.stringId];
     }
+  }
+
+  // ---------- Auxiliary protected methods ------------- 
+
+  // Checks if id is valid and issued by this container.
+  protected checkId(id: Id)
+  {
+    ASSERT_FATAL(id !== null, "Invalid id");
+
+    ASSERT(id.typeOfId === this.myTypeOfId,
+      "Attempt to access an item using id that wasn't issued by"
+      + "  this container. Perhaps you are using wrong manager class?")
+
+    // Check if timeOfBoot matches current timeOfBoot.
+    ASSERT_FATAL(id.timeOfBoot === GameServer.getInstance().timeOfBoot,
+      "Attempt to use id's issued in another boot. Perhaps you have"
+      + " overwritten your id by load()?");
+        
+  }
+
+  // Returns actual name of the class which inherited this method.
+  protected getClassName()
+  {
+    let funcNameRegex = /function (.{1,})\(/;
+    let results = (funcNameRegex).exec((<any>this).constructor.toString());
+
+    ASSERT_FATAL(results && results.length > 1,
+      "Unable to extract class name");
+
+    return (results && results.length > 1) ? results[1] : "";
   }
 }

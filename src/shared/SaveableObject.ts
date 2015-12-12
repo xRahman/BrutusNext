@@ -6,35 +6,21 @@
 */
 
 /*
-  Usage: See usage of DataContainer.
-
-
-    To specify which data you want to be saved and loaded, create a data
-    container inherited from SaveableObject. Everything you declare in it
-    will automatically get saved or loaded when you call it's saveToJSON()
-    or loadFromJSON() methods.
-
-    class DummyData extends SaveableObject
-    {
-       // Make everything public. Only you will be able to access it anyways
-       // because your DummyData will be protected (see class Dummy).
-       public somethingYouWantToSaveAndLoad = "";
-    }
-
-    class Dummy
-    {
-      // Here you supply the version that will be saved and also checked
-      // for upon loading from file.
-      protected myData = new DummyData({ version: 12 });
-    }
+  Usage: See usage of SaveableContainer.
 */
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
+import {Mudlog} from '../server/Mudlog';
 
 // Built-in node.js modules.
 import * as fs from 'fs';  // Import namespace 'fs' from node.js
 
+// Using this interface improves readability of code. You can't
+// write just:
+//   new SaveableObject(3);
+// you need to write:
+//   new SaveableObject({ version: 3 });
 interface Version
 {
   version: number
@@ -66,33 +52,42 @@ export class SaveableObject
 
   protected checkVersion(jsonObject: Object)
   {
-    /// TODO: Doplnit do chybovych hlasek, kde nastala chyba, tj ktereho
-    /// souboru se to tyka (pokud to pujde zjistit)
-
     ASSERT_FATAL('version' in jsonObject,
       "There is no 'version' property in JSON data");
 
     ASSERT_FATAL(jsonObject['version'] === this.version,
-      "Version of JSON data doesn't match required version");
+      "Version of JSON data ("
+      + jsonObject['version'] +
+      ") doesn't match required version ("
+      + this.version + ")");
   }
 
   protected loadFromFile(filePath: string)
   {
     let jsonString;
+
+    /// Prozatim to nactu synchronne.
+    /// TODO: Asynchronni loading.
+
     try
     {
       jsonString = fs.readFileSync(filePath, 'utf8');
     }
     catch (error)
     {
-      /// TODO: Syslog message
+      Mudlog.log(
+        "Error loading file '" + filePath + "': " + error.code,
+        Mudlog.msgType.SYSTEM_ERROR,
+        Mudlog.levels.IMMORTAL);
+
+      // Throw the exception so the mud will get terminated with error
+      // message.
       throw error;
     }
 
     this.loadFromJsonString(jsonString);
 
     /*
-    // prozatim to nactu synchronne
     /// this.loading = true;
     fs.readFile
     (
@@ -102,7 +97,7 @@ export class SaveableObject
       {
         if (error)
           throw error;
-        /// TODO:
+
         /// this.loading = false;
         this.loadFromJsonString(data);
       }
@@ -112,14 +107,10 @@ export class SaveableObject
 
   protected saveToFile(filePath: string)
   {
-    /// TODO:
-    /// this.saving = true;
-    /// Tohle nebude stacit, save requesty budu asi muset bufferovat (do fromty)
-    /// (protoze je spatne pustit nove savovani toho sameho filu driv, nez
-    /// dobehne to stare)
-    // Nebo mozna prece jen pouzit ten write stream?
-
     let jsonString = this.saveToJsonString();
+
+    /// Zatim to savnu synchronne.
+    /// TODO: Casem prepsat na asynchronni read/write.
 
     try
     {
@@ -127,12 +118,17 @@ export class SaveableObject
     }
     catch (error)
     {
-      /// TODO: Syslog message
+      Mudlog.log(
+        "Error saving file '" + filePath + "': " + error.code,
+        Mudlog.msgType.SYSTEM_ERROR,
+        Mudlog.levels.IMMORTAL);
+
+      // Throw the exception so the mud will get terminated with error
+      // message.
       throw error;
     }
 
     /*
-    /// Zatim to savnu synchronne.
     fs.writeFile
     (
       jsonStream,
@@ -149,7 +145,12 @@ export class SaveableObject
       }
     );
 
-    /// Asi se na write a read streamy vykaslu...
+    /// this.saving = true;
+    /// Tohle nebude stacit, save requesty budu asi muset bufferovat (do fromty)
+    /// (protoze je spatne pustit nove savovani toho sameho filu driv, nez
+    /// dobehne to stare)
+    // Nebo mozna prece jen pouzit ten write stream?
+
     /*
     // 'utf-8' is default encoding, so there is no need to specify it.
     var wstream = fs.createWriteStream('myOutput.txt');
@@ -183,8 +184,6 @@ export class SaveableObject
   protected saveToJsonString(): string
   {
     let regExp: RegExp;
-    // Indent with 2 spaces.
-    ///let stream = JSON.stringify(this.saveToJsonData(), null, 2);
     let jsonString = JSON.stringify(this.saveToJsonObject());
 
     jsonString = beautify
@@ -194,22 +193,8 @@ export class SaveableObject
         "indent_size": 2,
         "indent_char": " ",
         "eol": "\n",
-///        "indent_level": 0,
-///        "indent_with_tabs": false,
-///        "preserve_newlines": true,
-///        "max_preserve_newlines": 10,
-///        "jslint_happy": false,
-///        "space_after_anon_function": false,
         "brace_style": "expand",
         "keep_array_indentation": true,
-///        "keep_function_indentation": false,
-///        "space_before_conditional": true,
-///        "break_chained_methods": false,
-///        "eval_code": false,
-///        "unescape_strings": false,
-///        "wrap_line_length": 0,
-///        "wrap_attributes": "auto",
-///        "wrap_attributes_indent_size": 2,
         "end_with_newline": false
       }
     );
