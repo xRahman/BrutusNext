@@ -37,7 +37,7 @@
     <TypeScriptCompile Include="server\AuthProcessor.ts" />
     <TypeScriptCompile Include="server\LobbyProcessor.ts" />
     <TypeScriptCompile Include="server\Mudlog.ts" />
-    <TypeScriptCompile Include="server\GameServer.ts" />
+    <TypeScriptCompile Include="server\Server.ts" />
     <TypeScriptCompile Include="server\AccountManager.ts" />
     <TypeScriptCompile Include="server\SocketDescriptor.ts" />
     <TypeScriptCompile Include="server\DescriptorManager.ts" />

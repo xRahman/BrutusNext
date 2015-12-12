@@ -35,7 +35,7 @@
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {SocketDescriptor} from '../server/SocketDescriptor';
-import {GameServer} from '../server/GameServer';
+import {Server} from '../server/Server';
 import {AccountManager} from '../server/AccountManager';
 
 export class AuthProcessor
@@ -188,7 +188,7 @@ export class AuthProcessor
     // Remember final account name because nobody else is going to do it.
     this.myAccountName = accountName;
 
-    let accountManager = GameServer.getInstance().accountManager;
+    let accountManager = Server.accountManager;
 
     // We are not going to log in or create a new account just yet,
     // we will wait for a password.
@@ -212,7 +212,7 @@ export class AuthProcessor
 
   protected checkPassword(password: string)
   {
-    let accountManager = GameServer.getInstance().accountManager;
+    let accountManager = Server.accountManager;
 
     ASSERT_FATAL(this.mySocketDescriptor.id != null,
       "Invalid socket descriptor id");
@@ -245,7 +245,7 @@ export class AuthProcessor
 
   protected getNewPassword(password: string)
   {
-    let accountManager = GameServer.getInstance().accountManager;
+    let accountManager = Server.accountManager;
 
     if (!password)
     {

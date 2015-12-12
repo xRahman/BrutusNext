@@ -26,7 +26,7 @@
 import {ASSERT_FATAL} from '../../shared/ASSERT';
 import {Mudlog} from '../../server/Mudlog';
 import {Id} from '../../shared/Id';
-import {GameServer} from '../../server/GameServer';
+import {Server} from '../../server/Server';
 import {DescriptorManager} from '../../server/DescriptorManager';
 
 // Built-in node.js modules.
@@ -312,8 +312,6 @@ export class TelnetServer
   // Sets socket transfer mode, registers event handlers, etc.
   protected initTelnetSocket(socket: net.Socket)
   {
-    let gameServer = GameServer.getInstance();
-
     // Tell the socket to interpret data as raw binary stream.
     // (it's necessary for unicode characters to transmit correctly)
     socket.setEncoding('binary');

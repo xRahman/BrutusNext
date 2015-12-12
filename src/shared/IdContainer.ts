@@ -16,7 +16,7 @@ import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {Id} from '../shared/Id';
 import {IdProvider} from '../shared/IdProvider';
-import {GameServer} from '../server/GameServer';
+import {Server} from '../server/Server';
 
 export class IdContainer<T>
 {
@@ -94,7 +94,7 @@ export class IdContainer<T>
       + "  this container. Perhaps you are using wrong manager class?")
 
     // Check if timeOfBoot matches current timeOfBoot.
-    ASSERT_FATAL(id.timeOfBoot === GameServer.getInstance().timeOfBoot,
+    ASSERT_FATAL(id.timeOfBoot === Server.timeOfBoot,
       "Attempt to use id's issued in another boot. Perhaps you have"
       + " overwritten your id by load()?");
         
