@@ -1,8 +1,10 @@
-﻿/*
+/*
   Part of BrutusNEXT
 
   Handles user lobby.
 */
+
+'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
 import {PlayerConnection} from '../server/PlayerConnection';

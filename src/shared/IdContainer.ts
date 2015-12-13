@@ -1,4 +1,4 @@
-﻿/*
+/*
   Part of BrutusNEXT
 
   Implements container template class to store objects identified by
@@ -11,6 +11,8 @@
   need them. It is to prevent someone from manipulating your data the way
   you don't want it to be manipulated.
 */
+
+'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';

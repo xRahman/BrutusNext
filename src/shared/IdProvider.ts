@@ -1,4 +1,4 @@
-﻿/*
+/*
   Part of BrutusNEXT
 
   Implements generator of unique ids.
@@ -21,6 +21,8 @@
 /// (v kazdem bootu se budou idcka pridelovat od 1, ale ve spojeni s boot
 /// timestampem budou vsechna idcka unikatni i pres boot - coz bude fajn
 /// treba pri porovnavani, kdo byl zdrojem affectu)
+
+'use strict';
 
 import {Id} from '../shared/Id';
 

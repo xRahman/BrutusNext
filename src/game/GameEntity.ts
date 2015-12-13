@@ -1,8 +1,10 @@
-﻿/*
+/*
   Part of BrutusNEXT
 
   Abstract ancestor for all game entities (rooms, items, characters, etc.).
 */
+
+'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
 import {SaveableContainer} from '../shared/SaveableContainer';
