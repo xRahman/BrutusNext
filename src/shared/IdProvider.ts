@@ -52,12 +52,6 @@ export class IdProvider
     for (let i = 0; i < IdProvider.myLastIssuedId.length; i++)
       stringId += IdProvider.myLastIssuedId[i].toString(16)
 
-    /// DEBUG
-    /// console.log("Issuing unique id: '" + stringId + "'");
-
-    /// DEBUG:
-    console.log("generateId() id type: " + typeOfId);
-
     return new Id(stringId, typeOfId);
   }
 
