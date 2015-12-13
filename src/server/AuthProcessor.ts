@@ -1,4 +1,4 @@
-﻿/*
+/*
   Part of BrutusNEXT
 
   Handles user authentication.
@@ -31,6 +31,8 @@
 
   Ted to kazdopadne resit nebudu.
 */
+
+'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';

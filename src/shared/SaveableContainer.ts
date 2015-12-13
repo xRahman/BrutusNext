@@ -1,4 +1,4 @@
-﻿/*
+/*
   Part of BrutusNEXT
 
   Implements functionality that enables inherited classes to save and load
@@ -38,6 +38,8 @@
      myClassInstance.saveToFile('./data/myClassInstance0.json');
      myClassInstance.loadFromFile('./data/myClassInstance0.json');
 */
+
+'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
 import {SaveableObject} from '../shared/SaveableObject';

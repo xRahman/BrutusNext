@@ -1,8 +1,10 @@
-﻿/*
+/*
   Part of BrutusNEXT
 
   Player account.
 */
+
+'use strict';
 
 import {Id} from '../shared/Id';
 import {SaveableContainer} from '../shared/SaveableContainer';

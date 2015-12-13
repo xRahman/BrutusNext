@@ -1,8 +1,10 @@
-﻿/*
+/*
   Part of BrutusNEXT
 
   Saveable data members for Character class.
 */
+
+'use strict';
 
 import {GameEntityData} from '../game/GameEntityData';
 

@@ -1,8 +1,10 @@
-﻿/*
+/*
   Part of BrutusNEXT
 
   Character (player or mob).
 */
+
+'use strict';
 
 import {GameEntity} from '../game/GameEntity';
 import {CharacterData} from '../game/CharacterData';

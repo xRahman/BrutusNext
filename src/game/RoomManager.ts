@@ -1,8 +1,10 @@
-﻿/*
+/*
   Part of BrutusNEXT
 
   Implements container for room.
 */
+
+'use strict';
 
 import {IdContainer} from '../shared/IdContainer';
 import {Room} from '../game/Room';

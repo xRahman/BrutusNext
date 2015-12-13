@@ -42,6 +42,8 @@
   might be some day introduced to JavaScript.
 */
 
+'use strict';
+
 // Import required classes.
 import {Mudlog} from '../server/Mudlog';
 

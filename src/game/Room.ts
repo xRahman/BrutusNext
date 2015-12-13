@@ -1,8 +1,10 @@
-﻿/*
+/*
   Part of BrutusNEXT
 
   Room (a graph node that game world consists of).
 */
+
+'use strict';
 
 import {GameEntity} from '../game/GameEntity';
 ///import {RoomData} from '../server/RoomData';

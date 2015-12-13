@@ -1,10 +1,12 @@
-﻿/*
+/*
   Part of BrutusNEXT
 
   Abstract ancestor for descriptors encapsulating specific types of sockecs
   (like telnet socket).
 
 */
+
+'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
 import {Server} from '../server/Server';
