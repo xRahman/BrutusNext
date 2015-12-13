@@ -422,7 +422,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     if (data.slice(-2) !== '\r\n')
     {
       Mudlog.log(
-        player + " received data of unknown format not ending with newline: "
+        player + " has sent data of unknown format not ending with newline: "
         + data,
         Mudlog.msgType.SYSTEM_INFO,
         Mudlog.levels.IMMORTAL);
