@@ -1,8 +1,10 @@
-﻿/*
+/*
   Part of BrutusNEXT
 
   Implements container for all characters (both player and non-player).
 */
+
+'use strict';
 
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {Id} from '../shared/Id';

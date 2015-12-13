@@ -4,6 +4,8 @@
   Global utility functions.
 */
 
+'use strict';
+
 /*
 import {Assert} from './Assert';
 declare var GLOBAL: any;

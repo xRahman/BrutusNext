@@ -12,6 +12,8 @@
       Mudlog.msgType.SYSTEM, Mudlog.levels.CREATOR);
 */
 
+'use strict';
+
 /// TODO: Az bude log file, tak napsat odchytavani vyjimek, aby se stack trace
 ///       zapisoval do log filu.
 

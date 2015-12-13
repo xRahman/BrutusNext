@@ -1,8 +1,10 @@
-﻿/*
+/*
   Part of BrutusNEXT
 
   Saveable data members for Account class.
 */
+
+'use strict';
 
 import {SaveableObject} from '../shared/SaveableObject';
 
