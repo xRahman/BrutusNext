@@ -15,7 +15,7 @@ import {GameEntity} from '../game/GameEntity';
 
 export class PlayerConnection
 {
-  constructor(protected mySocketDescriptor: SocketDescriptor) { }
+  constructor(protected mySocketDescriptor: SocketDescriptor) {}
 
   // ----------------- Public data ----------------------
 
@@ -131,7 +131,11 @@ export class PlayerConnection
         /// a davat tomu herni prikazy).
 ///        this.myGameEntity.processCommand(command);
         /// TESTING:
-        this.tmpCharacter.processCommand(command);
+        this.tmpCharacter1.x = 1;
+        this.tmpCharacter2.x = 2;
+
+        this.tmpCharacter1.processCommand(command);
+        this.tmpCharacter2.processCommand(command);
         break;
       case PlayerConnection.stage.QUITTED_GAME:
         ASSERT(false, "Player has quitted the game, PlayerConnection"
@@ -223,5 +227,6 @@ export class PlayerConnection
   // -------------- Protected methods -------------------
 
   /// TESTING
-  tmpCharacter = new GameEntity({ version: 0 });
+  tmpCharacter1 = new GameEntity({ version: 0 });
+  tmpCharacter2 = new GameEntity({ version: 0 });
 }
