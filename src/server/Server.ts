@@ -18,12 +18,7 @@ import {AccountManager} from '../server/AccountManager';
 import {Game} from '../game/Game';
 import {TelnetServer} from '../server/telnet/TelnetServer';
 import {IdProvider} from '../shared/IdProvider';
-import {DescriptorManager} from '../server/DescriptorManager';
-
-/*
-/// TESTING:
-import {SaveableObject} from '../shared/SaveableObject';
-*/
+import {PlayerConnectionManager} from '../server/PlayerConnectionManager';
 import {Account} from '../server/Account';
 
 export class Server
@@ -32,6 +27,10 @@ export class Server
   {
     this.myTimeOfBoot = new Date();
   }
+
+  // --------------- Static accessors -------------------
+
+  // These are actually shortcuts so you don't need to use Server.getInstance()
 
   public static get timeOfBoot()
   {
@@ -47,16 +46,14 @@ export class Server
   {
     return Server.getInstance().myAccountManager;
   }
-  public static get descriptorManager()
+  public static get playerConnectionManager()
   {
-    return Server.getInstance().myDescriptorManager;
+    return Server.getInstance().myPlayerConnectionManager;
   }
   public static get telnetServer()
   {
     return Server.getInstance().myTelnetServer;
   }
-
-  // -------------- static members -------------
 
   static get DEFAULT_TELNET_PORT() { return 4443; }
 
@@ -67,6 +64,8 @@ export class Server
       "Instance of server doesn't exist yet");
     return Server.myInstance;
   }
+
+  // ---------------- Static methods --------------------
 
   // Creates an instance of a server. Server is a singleton, so it must
   // not already exist.
@@ -79,46 +78,34 @@ export class Server
     Server.myInstance = new Server();
   }
 
+  // -------------- Static class data -------------------
+
   protected static myInstance: Server;
 
-  // -------------- public members -------------
+  // ---------------- Public methods --------------------
 
   // Starts the server. This is not a static method so it needs
   // to be called on Server.getInstance().
   public run(telnetPort: number)
   {
-    
-    /// TESTING:
-    /*
-    let tmp = new Account("test");
-    
-    tmp.loadFromFile('./data/accounts/test.json');
-    console.log("X is " + tmp.myData.x);
-    */
-    ///tmp.saveToFile('./data/accounts/test.json');
-    
-
-
     this.startGame();
     this.startTelnetServer(telnetPort);
   }
 
-  // ------------ protected members -------------
+  // -------------- Protected class data ----------------
 
-  protected myGame: Game = new Game();
-  protected myAccountManager: AccountManager =
-    new AccountManager();
-  protected myDescriptorManager: DescriptorManager =
-    new DescriptorManager();
-  protected myTelnetServer: TelnetServer =
-    new TelnetServer(Server.DEFAULT_TELNET_PORT, this.myDescriptorManager);
-
+  protected myGame = new Game();
+  protected myAccountManager = new AccountManager();
+  protected myPlayerConnectionManager = new PlayerConnectionManager();
+  protected myTelnetServer = new TelnetServer(Server.DEFAULT_TELNET_PORT);
   protected myTimeOfBoot = null;
+
+  // --------------- Protected methods ------------------
 
   // Creates an instance of telnet server and starts it.
   protected startTelnetServer(telnetPort: number)
   {
-    ASSERT_FATAL(this.myTelnetServer.open === false,
+    ASSERT_FATAL(this.myTelnetServer.isOpen === false,
       "Telnet server is already running");
 
     this.myTelnetServer.start();

@@ -34,18 +34,18 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
-import {SocketDescriptor} from '../server/SocketDescriptor';
+import {PlayerConnection} from '../server/PlayerConnection';
 import {Server} from '../server/Server';
 import {AccountManager} from '../server/AccountManager';
 
 export class AuthProcessor
 {
   // In this special case it's ok to hold direct reference to
-  // SocketDescriptor, because our instance of AuthProcessor
-  // is owned by the very SocketDescriptor we are storing reference
-  // of here. In any other case, unique stringId of SocketDescriptor (within
-  // DescriptorManager) needs to be used instead of a direct reference!
-  constructor(protected mySocketDescriptor: SocketDescriptor) {}
+  // PlayerConnection, because instance of AuthProcessor
+  // is owned by the very PlayerConnection we are storing reference
+  // of here. In any other case, unique stringId of PlayerConnection (within
+  // PlayerConnectionManager) needs to be used instead of a direct reference!
+  constructor(protected myPlayerConnection: PlayerConnection) {}
 
   // ---------------- Public methods --------------------
 
@@ -80,11 +80,11 @@ export class AuthProcessor
 
   public startLoginProcess()
   {
-    this.mySocketDescriptor.send("&GWelcome to &RBrutus &YNext!\r\n&w"
-      + "By what name do you wish to be known? ");
+    this.myPlayerConnection.send("&GWelcome to &RBrutus &YNext!\r\n"
+      + "&wBy what name do you wish to be known? ");
 
 /// Account name variant:
-///    this.mySocketDescriptor.send("&GWelcome to the &RBrutus &YNext!\r\n"
+///    this.myPlayerConnection.send("&GWelcome to the &RBrutus &YNext!\r\n"
 ///      + "By what account name do you want to be recognized? ");
 
     this.myStage = AuthProcessor.stage.LOGIN;
@@ -109,102 +109,32 @@ export class AuthProcessor
 
   protected loginAttempt(accountName: string)
   {
-    // Only letters for now.
-    let regExp = /[^A-Za-z]/;
-
-/// Account name variant:
-    // This regexp will evaluate as true if tested string contains any
-    // non-alphanumeric characters.
-///    let regExp = /[^A-Za-z0-9]/;
-
-    if (!accountName)
-    {
-      this.mySocketDescriptor.send(
-        "You really need to enter a name to log in, sorry.\r\n"
-        + "Please enter a valid name: ");
-/// Account name variant:
-///      this.mySocketDescriptor.send(
-///        "You really need to enter an account name to log in, sorry.\r\n"
-///        + "Please enter valid account name: ");
-
+    if (!this.isAccountNameValid(accountName))
       // We don't advance the stage so the next user input will trigger
       // a loginAttempt() again.
       return;
-    }
-
-    if (regExp.test(accountName) === true)
-    {
-      this.mySocketDescriptor.send(
-        "Name can only contain english letters and numbers.\r\n"
-        + "Please enter a valid name: ");
-/// Account name variant:
-///      this.mySocketDescriptor.send(
-///        "Account name can only contain english letters and numbers.\r\n"
-///        + "Please enter valid account name: ");
-
-      // We don't advance the stage so the next user input will trigger
-      // a loginAttempt() again.
-      return;
-    }
-
-    const MAX_ACCOUNT_NAME_LENGTH = 12;
-/// Account name variant
-///    const MAX_ACCOUNT_NAME_LENGTH = 20;
-
-    if (accountName.length > MAX_ACCOUNT_NAME_LENGTH)
-    {
-      this.mySocketDescriptor.send(
-        "Could you please pick something shorter,"
-        + " like up to " + MAX_ACCOUNT_NAME_LENGTH + " characters?.\r\n"
-        + "Please enter a valid name: ");
-/// Account name variant
-///      + "Please enter valid account name: ");
-
-      // We don't advance the stage so the next user input will trigger
-      // a loginAttempt() again.
-      return;
-    }
-
-    const MIN_ACCOUNT_NAME_LENGTH = 2;
-
-    if (accountName.length < MIN_ACCOUNT_NAME_LENGTH)
-    {
-      this.mySocketDescriptor.send(
-        "Could you please pick a name that is at least "
-        + MIN_ACCOUNT_NAME_LENGTH + " characters long?.\r\n"
-        + "Please enter a valid name: ");
-      /// Account name variant
-      ///      + "Please enter valid account name: ");
-
-      // We don't advance the stage so the next user input will trigger
-      // a loginAttempt() again.
-      return;
-    }
 
     // Make the first letter uppercase and the rest lowercase.
     accountName = accountName[0].toUpperCase()
       + accountName.toLowerCase().substr(1);
 
-    // Remember final account name because nobody else is going to do it.
+    // We are not going to attempt to log in to this account untill we receive
+    // password so we need to remember account name until then.
     this.myAccountName = accountName;
 
-    let accountManager = Server.accountManager;
-
-    // We are not going to log in or create a new account just yet,
-    // we will wait for a password.
-    if (accountManager.exists(accountName))
+    if (Server.accountManager.exists(accountName))
     {
       // Existing user. Ask for password.
-      this.mySocketDescriptor.send("Password: ");
+      this.myPlayerConnection.send("&wPassword: ");
       this.myStage = AuthProcessor.stage.PASSWORD;
     }
     else
     {
       // New user. Ask for a new password.
-      this.mySocketDescriptor.send("Creating a new character...\r\n"
+      this.myPlayerConnection.send("&wCreating a new character...\r\n"
         + "Please enter a password you want to use to log in: ");
 /// Account name variant
-///      this.mySocketDescriptor.send("Creating a new user account...\r\n"
+///      this.myPlayerConnection.send("&wCreating a new user account...\r\n"
 ///        + "Please enter a password for your account: ");
       this.myStage = AuthProcessor.stage.NEW_PASSWORD;
     }
@@ -214,7 +144,7 @@ export class AuthProcessor
   {
     let accountManager = Server.accountManager;
 
-    ASSERT_FATAL(this.mySocketDescriptor.id != null,
+    ASSERT_FATAL(this.myPlayerConnection.id != null,
       "Invalid socket descriptor id");
 
     // If password doesn't check, logIn returns "".
@@ -222,20 +152,18 @@ export class AuthProcessor
       accountManager.logIn(
         this.myAccountName,
         password,
-        this.mySocketDescriptor.id);
+        this.myPlayerConnection.id);
 
     if (accountId !== null)
     {
-      this.mySocketDescriptor.accountId = accountId;
-
+      this.myPlayerConnection.accountId = accountId;
       this.myStage = AuthProcessor.stage.DONE;
-
-      this.mySocketDescriptor.enterLobby();
+      this.myPlayerConnection.enterLobby();
     }
     else
     {
-      this.mySocketDescriptor.send(
-        "Wrong password.\r\n"
+      this.myPlayerConnection.send(
+        "&wWrong password.\r\n"
         + "Password: ");
 
       // Here we don't advance the stage so the next user input will trigger
@@ -245,47 +173,120 @@ export class AuthProcessor
 
   protected getNewPassword(password: string)
   {
-    let accountManager = Server.accountManager;
-
-    if (!password)
-    {
-      this.mySocketDescriptor.send(
-        "You really need to enter a password, sorry.\r\n"
-        + "Please enter a valid password: ");
-
+    if (!this.isPasswordValid(password))
       // We don't advance the stage so the next user input will trigger
       // a getNewPassword() again.
       return;
-    }
-
-    const MIN_PASSWORD_LENGTH = 4;
-
-    if (password.length < MIN_PASSWORD_LENGTH)
-    {
-      this.mySocketDescriptor.send(
-        "Do you know the joke about passwords needing to be at least "
-        + MIN_PASSWORD_LENGTH + " characters long?\r\n"
-        + "Please enter a valid password: ");
-
-      // We don't advance the stage so the next user input will trigger
-      // a getNewPassword() again.
-      return;
-    }
 
     // Pozn: O znovuzadani hesla nema smysl zadat, kdyz ho uzivatel
     // pri zadavani normalne vidi. (Asi by to ale chtelo implementovat
     // password reset s poslanim noveho hesla na mail).
 
     let newAccountId =
-      accountManager.createNewAccount(
+      Server.accountManager.createNewAccount(
         this.myAccountName,
         password,
-        this.mySocketDescriptor.id);
+        this.myPlayerConnection.id);
 
-    this.mySocketDescriptor.accountId = newAccountId;
-
+    this.myPlayerConnection.accountId = newAccountId;
     this.myStage = AuthProcessor.stage.DONE;
+    this.myPlayerConnection.enterLobby();
+  }
 
-    this.mySocketDescriptor.enterLobby();
+  // ---------- Auxiliary protected methods ------------- 
+
+  isAccountNameValid(accountName: string): boolean
+  {
+    if (!accountName)
+    {
+      this.myPlayerConnection.send(
+        "&wYou really need to enter a name to log in, sorry.\r\n"
+        + "Please enter a valid name: ");
+      /// Account name variant:
+      ///      this.myPlayerConnection.send(
+      ///        "&wYou really need to enter an account name to log in, sorry.\r\n"
+      ///        + "Please enter valid account name: ");
+
+      return false;
+    }
+
+    // Only letters for now.
+    let regExp = /[^A-Za-z]/;
+
+    /// Account name variant:
+    // This regexp will evaluate as true if tested string contains any
+    // non-alphanumeric characters.
+    ///    let regExp = /[^A-Za-z0-9]/;
+
+    if (regExp.test(accountName) === true)
+    {
+      this.myPlayerConnection.send(
+        "&wName can only contain english letters and numbers.\r\n"
+        + "Please enter a valid name: ");
+   /// Account name variant:
+   ///      this.myPlayerConnection.send(
+   ///        "&wAccount name can only contain english letters and numbers.\r\n"
+   ///        + "Please enter valid account name: ");
+
+      return false;
+    }
+
+    const MAX_ACCOUNT_NAME_LENGTH = 12;
+    /// Account name variant
+    ///    const MAX_ACCOUNT_NAME_LENGTH = 20;
+
+    if (accountName.length > MAX_ACCOUNT_NAME_LENGTH)
+    {
+      this.myPlayerConnection.send(
+        "&wCould you please pick something shorter,"
+        + " like up to " + MAX_ACCOUNT_NAME_LENGTH + " characters?.\r\n"
+        + "Please enter a valid name: ");
+      /// Account name variant
+      ///      + "Please enter valid account name: ");
+
+      return false;
+    }
+
+    const MIN_ACCOUNT_NAME_LENGTH = 2;
+
+    if (accountName.length < MIN_ACCOUNT_NAME_LENGTH)
+    {
+      this.myPlayerConnection.send(
+        "&wCould you please pick a name that is at least "
+        + MIN_ACCOUNT_NAME_LENGTH + " characters long?.\r\n"
+        + "Please enter a valid name: ");
+      /// Account name variant
+      ///      + "Please enter valid account name: ");
+
+      return false;
+    }
+
+    return true;
+  }
+
+  isPasswordValid(password: string): boolean
+  {
+    if (!password)
+    {
+      this.myPlayerConnection.send(
+        "&wYou really need to enter a password, sorry.\r\n"
+        + "Please enter a valid password: ");
+
+      return false;
+    }
+
+    const MIN_PASSWORD_LENGTH = 4;
+
+    if (password.length < MIN_PASSWORD_LENGTH)
+    {
+      this.myPlayerConnection.send(
+        "&wDo you know the joke about passwords needing to be at least "
+        + MIN_PASSWORD_LENGTH + " characters long?\r\n"
+        + "Please enter a valid password: ");
+
+      return false;
+    }
+
+    return true;
   }
 }

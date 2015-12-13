@@ -25,6 +25,7 @@
     <TypeScriptCompile Include="game\Character.ts" />
     <TypeScriptCompile Include="game\CharacterData.ts" />
     <TypeScriptCompile Include="game\CharacterManager.ts" />
+    <TypeScriptCompile Include="game\CommandInterpretter.ts" />
     <TypeScriptCompile Include="game\Game.ts" />
     <TypeScriptCompile Include="game\GameEntity.ts" />
     <TypeScriptCompile Include="game\GameEntityData.ts" />
@@ -37,11 +38,13 @@
     <TypeScriptCompile Include="server\AuthProcessor.ts" />
     <TypeScriptCompile Include="server\LobbyProcessor.ts" />
     <TypeScriptCompile Include="server\Mudlog.ts" />
+    <TypeScriptCompile Include="server\PlayerConnection.ts" />
     <TypeScriptCompile Include="server\Server.ts" />
     <TypeScriptCompile Include="server\AccountManager.ts" />
     <TypeScriptCompile Include="server\SocketDescriptor.ts" />
-    <TypeScriptCompile Include="server\DescriptorManager.ts" />
+    <TypeScriptCompile Include="server\PlayerConnectionManager.ts" />
     <TypeScriptCompile Include="server\telnet\TelnetServer.ts" />
+    <TypeScriptCompile Include="server\telnet\TelnetSocketDescriptor.ts" />
     <TypeScriptCompile Include="shared\ASSERT.ts" />
     <TypeScriptCompile Include="shared\Id.ts" />
     <TypeScriptCompile Include="shared\SaveableContainer.ts" />
