@@ -6,7 +6,7 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {SaveableContainer} from '../shared/SaveableContainer';
-import {CommandHandler} from '../game/CommandInterpretter';
+///import {CommandHandler} from '../game/CommandInterpretter';
 import {CommandInterpretter} from '../game/CommandInterpretter';
 
 ///export abstract class GameEntity extends SaveableContainer
@@ -16,11 +16,11 @@ export class GameEntity extends SaveableContainer
   {
     super(version);
 
-    GameEntity.myStaticCommandInterpretter.registerCommand
-    (
-      "sit",
-      (argument) => { this.onSit(argument); }
-    );
+    /// TESTING
+    /// TODO: Tohle je blbe, kazda instance GameEntity si zaregistruje
+    /// svuj vlastni command. Zrejme je taky blbe check v CommandInterpretteru
+    /// na to, ze se registruje znova ten samej command.
+    this.myCommandInterpretter.registerCommand('sit', 'onSit');
   }
 
   // ---------------- Public methods --------------------
@@ -28,7 +28,7 @@ export class GameEntity extends SaveableContainer
   public processCommand(command: string)
   {
     /// TODO
-    if (!GameEntity.myStaticCommandInterpretter.processCommand(command))
+    if (!this.myCommandInterpretter.processCommand(this, command))
     {
       console.log("Huh?!?");
     }
@@ -57,12 +57,14 @@ export class GameEntity extends SaveableContainer
   /// (pravdepodobne to nebude potreba (rozhodne ne hned ted, takze se
   /// na dynamicky pridelene commandy rovnou vykaslu).
   ///protected myCommandInterpretter = null;
-  protected static myStaticCommandInterpretter = new CommandInterpretter();
+  protected myCommandInterpretter = new CommandInterpretter();
 
   // --------------- Protected methods ------------------
 
+  /// Testing
   protected onSit(argument)
   {
-    console.log("Executed command 'sit'");
+    console.log("Executed command 'sit': " + this.x);
   }
+  public x = 0;
 }
