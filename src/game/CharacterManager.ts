@@ -57,8 +57,8 @@ export class CharacterManager extends IdContainer<Character>
  
   // -------------- Protected methods -------------------
 
-  // Adds an account to the list of online accounts and to the auxiliary
-  // hashmap, returns its unique string stringId.
+  // Adds character to the list of online characters and to the auxiliary
+  // hashmap, returns its unique id.
   protected addOnlineCharacter(character: Character): Id
   {
     let newId = super.addItem(character);
@@ -69,9 +69,9 @@ export class CharacterManager extends IdContainer<Character>
     return newId;
   }
 
-  // Removes an account both from the list of online accounts and from the
+  // Removes a character both from the list of online characters and from the
   // auxiliary hasmap
-  protected removeOnlineAccount(characterId: Id)
+  protected removeOnlineCharacter(characterId: Id)
   {
     let characterName = this.getCharacter(characterId).name;
 

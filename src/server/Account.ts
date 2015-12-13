@@ -7,7 +7,7 @@
 import {Id} from '../shared/Id';
 import {SaveableContainer} from '../shared/SaveableContainer';
 import {AccountData} from '../server/AccountData';
-import {SocketDescriptor} from '../server/SocketDescriptor';
+import {PlayerConnection} from '../server/PlayerConnection';
 import {Server} from '../server/Server';
 
 // Built-in node.js modules.
@@ -17,7 +17,7 @@ export class Account extends SaveableContainer
 {
   // Account name is not saved to the file. Filename represents account name.
   constructor(protected myAccountName: string,
-              protected mySocketDescriptorId: Id)
+              protected myPlayerConnectionId: Id)
   {
     // Don't forget to bump up version number if you add or remove
     // SaveableObjects. You will also need to convert data in respective
@@ -27,9 +27,17 @@ export class Account extends SaveableContainer
 
   static get SAVE_DIRECTORY() { return "./data/accounts/"; }
 
-  // ---------------- Public methods --------------------
+  // ----------------- Public data ----------------------
+
+  public get playerConnection()
+  {
+    return Server.playerConnectionManager
+      .getPlayerConnection(this.myPlayerConnectionId);
+  }
 
   public get accountName() { return this.myAccountName; }
+
+  // ---------------- Public methods --------------------
 
   public save()
   {
@@ -47,11 +55,6 @@ export class Account extends SaveableContainer
     this.myData.password = this.md5hash(value);
   }
 
-  public processCommand(command: string)
-  {
-    /// TODO
-  }
-
   public checkPassword(password: string): boolean
   {
     return this.myData.password === this.md5hash(password);
@@ -59,13 +62,7 @@ export class Account extends SaveableContainer
 
   public isInGame(): boolean
   {
-    let descriptorManager =
-      Server.descriptorManager;
-
-    let socketDescriptor =
-      descriptorManager.getSocketDescriptor(this.mySocketDescriptorId);
-
-    return socketDescriptor.isInGame();
+    return this.playerConnection.isInGame();
   }
 
   // -------------- Protected class data ----------------

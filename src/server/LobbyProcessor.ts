@@ -5,7 +5,7 @@
 */
 
 import {ASSERT} from '../shared/ASSERT';
-import {SocketDescriptor} from '../server/SocketDescriptor';
+import {PlayerConnection} from '../server/PlayerConnection';
 
 const GAME_MENU =
     "\r\n&wWelcome to &RBRUTUS &YNext!\r\n"
@@ -18,11 +18,11 @@ const GAME_MENU =
 export class LobbyProcessor
 {
   // In this special case it's ok to hold direct reference to
-  // SocketDescriptor, because our instance of LobbyProcessor
-  // is owned by the very SocketDescriptor we are storing reference
-  // of here. In any other case, unique id of SocketDescriptor (within
-  // DescriptorManager) needs to be used instead of a direct reference!
-  constructor(protected mySocketDescriptor: SocketDescriptor) { }
+  // PlayerConnection, because our instance of LobbyProcessor
+  // is owned by the very PlayerConnection we are storing reference
+  // of here. In any other case, unique id of PlayerConnection (within
+  // PlayerConnectionManager) needs to be used instead of a direct reference!
+  constructor(protected myPlayerConnection: PlayerConnection) { }
 
   // ---------------- Public methods --------------------
 
@@ -74,7 +74,7 @@ export class LobbyProcessor
 
   protected sendMenu()
   {
-    this.mySocketDescriptor.send(GAME_MENU);
+    this.myPlayerConnection.send(GAME_MENU);
   }
 
   protected processMenuChoice(choice: string)
@@ -82,24 +82,18 @@ export class LobbyProcessor
     switch (choice)
     {
       case "0": // Quit the game.
-        this.mySocketDescriptor.send(
-          "&wGoodbye.\r\n"
-          + "Have a nice day...");
+        this.myPlayerConnection.send(
+          "&wGoodbye. Have a nice day...\r\n");
 
         this.myStage = LobbyProcessor.stage.NOT_IN_LOBBY;
-        this.mySocketDescriptor.quitGame();
+        this.myPlayerConnection.quitGame();
         break;
       case "1": // Enter the game.
         this.myStage = LobbyProcessor.stage.NOT_IN_LOBBY;
-        // For now there can only be one character per account
-        // so we don't need to present choice which one to log in with.
-        // Entering game currently means logging in with the character
-        // associated to the account.
-        /// TODO
-
+        this.myPlayerConnection.enterGame();
         break;
       default:
-        this.mySocketDescriptor.send("That's not a menu choice!");
+        this.myPlayerConnection.send("That's not a menu choice!");
         this.sendMenu();
         break;
     }
