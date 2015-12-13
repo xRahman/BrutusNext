@@ -1,4 +1,4 @@
-﻿/*
+/*
   Part of BrutusNEXT
 
   Implements functionality that enables inherited classes to save and load
@@ -8,6 +8,8 @@
 /*
   Usage: See usage of SaveableContainer.
 */
+
+'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';

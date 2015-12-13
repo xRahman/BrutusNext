@@ -1,9 +1,10 @@
-﻿/*
+/*
   Part of BrutusNEXT
 
   TODO.
 */
 
+'use strict';
 
 /*
 import {ASSERT_FATAL} from '../shared/ASSERT';

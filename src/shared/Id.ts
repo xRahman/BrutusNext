@@ -1,8 +1,10 @@
-﻿/*
+/*
   Part of BrutusNEXT
 
   Unique identifier.
 */
+
+'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
 import {Server} from '../server/Server';

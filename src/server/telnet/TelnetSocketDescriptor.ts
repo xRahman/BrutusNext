@@ -1,4 +1,4 @@
-﻿/*
+/*
   Part of BrutusNEXT
 
   Encapsulates a telnet socket.

@@ -1,8 +1,10 @@
-﻿/*
+/*
   Part of BrutusNEXT
 
   A single connection to the game.
 */
+
+'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
 import {Id} from '../shared/Id';

@@ -1,8 +1,10 @@
-﻿/*
+/*
   Part of BrutusNEXT
 
   Implements container for all game-related stuff.
 */
+
+'use strict';
 
 import {CharacterManager} from '../game/CharacterManager';
 
