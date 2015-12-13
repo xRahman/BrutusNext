@@ -10,7 +10,6 @@ import {IdContainer} from '../shared/IdContainer';
 import {Id} from '../shared/Id';
 import {Account} from '../server/Account';
 import {Mudlog} from '../server/Mudlog';
-import {SocketDescriptor} from '../server/SocketDescriptor';
 
 // Built-in node.js modules.
 import * as fs from 'fs';  // Import namespace 'fs' from node.js
@@ -30,7 +29,7 @@ export class AccountManager extends IdContainer<Account>
 
     let newAccount = new Account(accountName, socketDescriptorId);
 
-    // This creates and assigns hash, not actual password.
+    // This creates and assigns hash. Actual password is not remembered.
     newAccount.password = password;
 
     let newAccountId = this.addOnlineAccount(newAccount);
@@ -63,7 +62,7 @@ export class AccountManager extends IdContainer<Account>
   public logIn(
     accountName: string,
     password: string,
-    socketDescriptorId: Id): Id
+    playerConnectionId: Id): Id
   {
     let accountId: Id = null;
     let account = null;
@@ -76,9 +75,8 @@ export class AccountManager extends IdContainer<Account>
     } else
     {
       // Login to an offline account.
-      account = new Account(accountName, socketDescriptorId);
+      account = new Account(accountName, playerConnectionId);
       accountId = this.addOnlineAccount(account);
-      account = this.getAccount(accountId);
       // Load account from file, mainly for us to be able to check if password
       // is correct.
       account.load();
@@ -119,7 +117,7 @@ export class AccountManager extends IdContainer<Account>
   // -------------- Protected methods -------------------
 
   // Adds an account to the list of online accounts and to the auxiliary
-  // hashmap, returns its unique string stringId.
+  // hashmap, returns its unique id.
   protected addOnlineAccount(account: Account): Id
   {
     let newId = super.addItem(account);
