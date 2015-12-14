@@ -7,66 +7,33 @@
 'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
-import {SaveableContainer} from '../shared/SaveableContainer';
-///import {CommandHandler} from '../game/CommandInterpretter';
+import {Server} from '../server/Server';
 import {CommandInterpretter} from '../game/CommandInterpretter';
 
 ///export abstract class GameEntity extends SaveableContainer
-export class GameEntity extends SaveableContainer
+export class GameEntity extends CommandInterpretter
 {
-  constructor(version)
-  {
-    super(version);
-
-    /// TESTING
-    /// TODO: Tohle je blbe, kazda instance GameEntity si zaregistruje
-    /// svuj vlastni command. Zrejme je taky blbe check v CommandInterpretteru
-    /// na to, ze se registruje znova ten samej command.
-    this.myCommandInterpretter.registerCommand('sit', 'onSit');
-  }
 
   // ---------------- Public methods --------------------
 
-  public processCommand(command: string)
-  {
-    /// TODO
-    if (!this.myCommandInterpretter.processCommand(this, command))
-    {
-      console.log("Huh?!?");
-    }
-  }
-
-  /*
-  // This method allows you to add a new command to your game entity.
-  public registerCommand(command: string, handler: CommandHandler)
-  {
-    
-
-    if (!ASSERT(command !== "", "Attempt to register empty command"))
-      return;
-
-    if (!ASSERT(!(command in this.myCommands), "Attempt to register a command that"
-      + " is already registered"))
-      return;
-  }
-  */
-
   // -------------- Protected class data ----------------
 
-  // Each game entity has two sets of commands: Static set, which are
-  // commands that all entities of this type have, and non-static set,
-  // which contains commands added to this entity at runtime.
-  /// (pravdepodobne to nebude potreba (rozhodne ne hned ted, takze se
-  /// na dynamicky pridelene commandy rovnou vykaslu).
-  ///protected myCommandInterpretter = null;
-  protected myCommandInterpretter = new CommandInterpretter();
+  protected get playerConnection()
+  {
+    return Server.playerConnectionManager
+      .getPlayerConnection(this.myPlayerConnectionId);
+  }
+
+  // null if no player is connected to (is playing as) this entity,
+  // connectionId otherwise.
+  protected myPlayerConnectionId = null;
 
   // --------------- Protected methods ------------------
 
-  /// Testing
-  protected onSit(argument)
+  // Send message to the connected player that command is not recognized.
+  protected unknownCommand()
   {
-    console.log("Executed command 'sit': " + this.x);
+    if (this.myPlayerConnectionId)
+      this.playerConnection.send("&gHuh?!?");
   }
-  public x = 0;
 }

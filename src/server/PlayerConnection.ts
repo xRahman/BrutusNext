@@ -14,6 +14,7 @@ import {SocketDescriptor} from '../server/SocketDescriptor';
 import {AuthProcessor} from '../server/AuthProcessor';
 import {LobbyProcessor} from '../server/LobbyProcessor';
 import {GameEntity} from '../game/GameEntity';
+import {Character} from '../game/Character';
 
 export class PlayerConnection
 {
@@ -122,6 +123,7 @@ export class PlayerConnection
           "Attempt to process ingame command on player connection that doesn't"
           + " have an online account");
 
+        /*
         /// TODO
         /// Tohle je asi taky blbost. Commandy musej umet zpracovatvat primo
         /// mud entity (charactery a tak), aby se pres ne daly ovladat
@@ -135,9 +137,12 @@ export class PlayerConnection
         /// TESTING:
         this.tmpCharacter1.x = 1;
         this.tmpCharacter2.x = 2;
+        this.tmpCharacter3.x = 3;
 
         this.tmpCharacter1.processCommand(command);
         this.tmpCharacter2.processCommand(command);
+        this.tmpCharacter3.processCommand(command);
+        */
         break;
       case PlayerConnection.stage.QUITTED_GAME:
         ASSERT(false, "Player has quitted the game, PlayerConnection"
@@ -231,4 +236,5 @@ export class PlayerConnection
   /// TESTING
   tmpCharacter1 = new GameEntity({ version: 0 });
   tmpCharacter2 = new GameEntity({ version: 0 });
+  tmpCharacter3 = new Character("Zuzka");
 }
