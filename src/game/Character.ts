@@ -48,4 +48,21 @@ export class Character extends GameEntity
   public myId: string = "";
 
   // --------------- Protected methods ------------------
+
+  /// Testing
+  protected doStand(argument)
+  {
+    console.log("Executed command 'stand': " + this.x);
+  }
+
+  /// Testing
+  protected doSit(argument)
+  {
+    console.log("Haf haf! 'sit': " + this.x);
+  }
+
+  public x = 0;
 }
+
+// Statically registered commands:
+GameEntity.registerCommand('stand', 'doStand');
