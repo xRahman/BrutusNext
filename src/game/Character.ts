@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {Id} from '../shared/Id';
 import {GameEntity} from '../game/GameEntity';
 import {CharacterData} from '../game/CharacterData';
 
@@ -13,17 +14,19 @@ export class Character extends GameEntity
 {
   constructor(name: string)
   {
+    super();
+
     // Don't forget to bump up version number if you add or remove
     // SaveableObjects. You will also need to convert data in respective
     // .json files to conform to the new version.
-    super({ version: 0 });
+    this.version = 0;
 
-    this.myData.name = name;
+    this.myData = new CharacterData(name);
   }
 
   static get SAVE_DIRECTORY() { return "./data/characters/"; }
 
-  // ----- --------- Public accessors -------------------
+  // --------------- Public accessors -------------------
 
   public get name() { return this.myData.name; }
 
@@ -39,9 +42,17 @@ export class Character extends GameEntity
     this.loadFromFile(Character.SAVE_DIRECTORY + this.myData.name + ".json");
   }
 
-  // -------------- Protected class data ----------------
+  // Player connected to this entity is entering game.
+  public announcePlayerEnteringGame()
+  {
+    // TODO
+    // if (this.isPlayerCharacter())
+    // {
+         // Send a message to the room that a player has just entered game.
+    // }
+  }
 
-  public myData = new CharacterData();
+  // -------------- Protected class data ----------------
 
   // You can request access of this character from CharacterManager 
   // using this unique id;

@@ -195,9 +195,9 @@ export class AuthProcessor
     this.myPlayerConnection.enterLobby();
   }
 
-  // ---------- Auxiliary protected methods ------------- 
+  // ----------- Auxiliary private methods --------------
 
-  isAccountNameValid(accountName: string): boolean
+  private isAccountNameValid(accountName: string): boolean
   {
     if (!accountName)
     {
@@ -266,7 +266,7 @@ export class AuthProcessor
     return true;
   }
 
-  isPasswordValid(password: string): boolean
+  private isPasswordValid(password: string): boolean
   {
     if (!password)
     {

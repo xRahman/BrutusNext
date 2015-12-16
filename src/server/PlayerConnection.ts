@@ -13,6 +13,7 @@ import {Server} from '../server/Server';
 import {SocketDescriptor} from '../server/SocketDescriptor';
 import {AuthProcessor} from '../server/AuthProcessor';
 import {LobbyProcessor} from '../server/LobbyProcessor';
+import {Game} from '../game/Game';
 import {GameEntity} from '../game/GameEntity';
 import {Character} from '../game/Character';
 
@@ -22,13 +23,28 @@ export class PlayerConnection
 
   // ----------------- Public data ----------------------
 
-  ///public get socket() { return this.mySocket; }
-
   public set id(value: Id) { this.myId = value; }
   public get id() { return this.myId; }
 
+  // Id of player account this connection has logged in with.
   public set accountId(value: Id) { this.myAccountId = value; }
   public get accountId() { return this.myAccountId; }
+
+  // Id of ingame entity this player connection is attached to.
+  // (usually the character a player is playing, but it is possible for
+  // immortals to 'switch' to any game entity)
+  public set ingameEntityId(value: Id) { this.myIngameEntityId = value; }
+  public get ingameEntityId() { return this.myIngameEntityId; }
+
+  public get ingameEntity(): GameEntity
+  {
+    if (!ASSERT(this.myIngameEntityId !== null,
+        "Attempt to access gameEntity on PlayerConnection which doesn't have"
+        + " any assigned yet"))
+      return null;
+
+    Game.entities.getItem(this.myIngameEntityId);
+  }
 
   // ------- Internal stage transition methods ----------
 
@@ -64,7 +80,7 @@ export class PlayerConnection
     // so we don't need to present choice which one to log in with.
     //   Entering game currently means logging in with the character
     // associated to the account.
-    if (Server.game.characterManager.exists(accountName))
+    if (Game.characterManager.exists(accountName))
     {
       /// TODO
       /// Load existing character and enter game.
@@ -79,8 +95,17 @@ export class PlayerConnection
     }
     else
     {
-      /// TODO
-      /// Create a new character and enter game.
+      // Create a new character and enter game.
+
+      // For now, there is only one character per account and the name
+      // is the same. So let's create a character with accountName as name.
+      this.myIngameEntityId =
+        Game.characterManager.createNewCharacter(accountName, this.id);
+
+      /// TODO: Pridej char do mistnosti, kde se odlogoval
+      /// (vime, ze je to player char, protoze jsme ho zrovna vytvorili)
+
+      this.ingameEntity.announcePlayerEnteringGame();
     }
   }
 
@@ -205,7 +230,16 @@ export class PlayerConnection
 
   public isInGame()
   {
-    return this.myStage === PlayerConnection.stage.IN_GAME;
+    if (this.ingameEntityId !== null)
+    {
+      ASSERT(this.myStage === PlayerConnection.stage.IN_GAME,
+        "Player connection has ingame entity assigned but player connection"
+        + " stage is not 'IN_GAME'");
+
+      return true;
+    }
+
+    return ;
   }
 
   // -------------- Protected class data ----------------
@@ -213,6 +247,11 @@ export class PlayerConnection
   // Empty string means that we do not yet know what account does this
   // descriptor match to.
   protected myAccountId: Id = null;
+
+  // Id of entity this player connection is attached to.
+  // (usually the character a player is playing, but it is possible for
+  // immortals to 'switch' to any game entity)
+  protected myIngameEntityId: Id = null;
 
   // Unique stringId of this descriptor.
   protected myId: Id = null;
@@ -233,8 +272,4 @@ export class PlayerConnection
 
   // -------------- Protected methods -------------------
 
-  /// TESTING
-  tmpCharacter1 = new GameEntity({ version: 0 });
-  tmpCharacter2 = new GameEntity({ version: 0 });
-  tmpCharacter3 = new Character("Zuzka");
 }

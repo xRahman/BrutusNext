@@ -9,7 +9,7 @@
 
 import {SaveableObject} from '../shared/SaveableObject';
 
-export class GameEntityData extends SaveableObject
+export abstract class GameEntityData extends SaveableObject
 {
-  public name: string = "";
+  constructor(public name: string) { super(); }
 }

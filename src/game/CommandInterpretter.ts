@@ -154,5 +154,5 @@ export abstract class CommandInterpretter extends SaveableContainer
 // abbreviations ('n', 's', etc.) would stop working (your command would
 // trigger instead).
 //   Generally said it's good practice to add new commands after the existing
-// ones with the same beginning.
+// ones with the same prefix.
 CommandInterpretter.registerCommand('sit', 'doSit');

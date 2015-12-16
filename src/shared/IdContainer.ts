@@ -5,13 +5,6 @@
   unique ids.
 */
 
-/*
-  Implementation note:
-    All methods are protected, so you need to write public wrappers if you
-  need them. It is to prevent someone from manipulating your data the way
-  you don't want it to be manipulated.
-*/
-
 'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
@@ -34,17 +27,8 @@ export class IdContainer<T>
 
   // ---------------- Public methods --------------------
 
-  // -------------- Protected class data ----------------
-
-  // This hash map allows to access items using unique sids.
-  protected myContainer: { [key: string]: T } = {};
-
-  protected myTypeOfId = "";
-
-  // -------------- Protected methods -------------------
-
   // Inserts a new item to the container, returns its unique id.
-  protected addItem(item: T): Id
+  public addItem(item: T): Id
   {
     let newId = IdProvider.generateId(this.myTypeOfId);
 
@@ -58,7 +42,7 @@ export class IdContainer<T>
     return newId;
   }
 
-  protected getItem(id: Id): T
+  public getItem(id: Id): T
   {
     // Check if given id is valid, issued by this container and in this boot.
     this.checkId(id);
@@ -70,7 +54,7 @@ export class IdContainer<T>
     return item;
   }
 
-  protected deleteItem(id: Id)
+  public deleteItem(id: Id)
   {
     // Check if given id is valid, issued by this container and in this boot.
     this.checkId(id);
@@ -84,10 +68,31 @@ export class IdContainer<T>
     }
   }
 
-  // ---------- Auxiliary protected methods ------------- 
+  // -------------- Protected class data ----------------
+
+  // This hash map allows to access items using unique sids.
+  protected myContainer: { [key: string]: T } = {};
+
+  protected myTypeOfId = "";
+
+  // -------------- Protected methods -------------------
+
+  // Returns name of the class which inherited this method.
+  protected getClassName()
+  {
+    let funcNameRegex = /function (.{1,})\(/;
+    let results = (funcNameRegex).exec((<any>this).constructor.toString());
+
+    ASSERT_FATAL(results && results.length > 1,
+      "Unable to extract class name");
+
+    return (results && results.length > 1) ? results[1] : "";
+  }
+
+  // ----------- Auxiliary private methods --------------
 
   // Checks if id is valid and issued by this container.
-  protected checkId(id: Id)
+  private checkId(id: Id)
   {
     ASSERT_FATAL(id !== null, "Invalid id");
 
@@ -98,19 +103,6 @@ export class IdContainer<T>
     // Check if timeOfBoot matches current timeOfBoot.
     ASSERT_FATAL(id.timeOfBoot === Server.timeOfBoot,
       "Attempt to use id's issued in another boot. Perhaps you have"
-      + " overwritten your id by load()?");
-        
-  }
-
-  // Returns actual name of the class which inherited this method.
-  protected getClassName()
-  {
-    let funcNameRegex = /function (.{1,})\(/;
-    let results = (funcNameRegex).exec((<any>this).constructor.toString());
-
-    ASSERT_FATAL(results && results.length > 1,
-      "Unable to extract class name");
-
-    return (results && results.length > 1) ? results[1] : "";
+      + " overwritten your id by load()?");  
   }
 }
