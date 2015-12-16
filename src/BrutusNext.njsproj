@@ -24,11 +24,11 @@
     <TypeScriptCompile Include="BrutusNext.ts" />
     <TypeScriptCompile Include="game\Character.ts" />
     <TypeScriptCompile Include="game\CharacterData.ts" />
-    <TypeScriptCompile Include="game\CharacterManager.ts" />
     <TypeScriptCompile Include="game\CommandInterpretter.ts" />
     <TypeScriptCompile Include="game\Game.ts" />
     <TypeScriptCompile Include="game\GameEntity.ts" />
     <TypeScriptCompile Include="game\GameEntityData.ts" />
+    <TypeScriptCompile Include="game\CharacterManager.ts" />
     <TypeScriptCompile Include="game\Room.ts" />
     <TypeScriptCompile Include="game\RoomManager.ts" />
     <TypeScriptCompile Include="headers\node.d.ts" />

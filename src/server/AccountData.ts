@@ -12,10 +12,12 @@ export class AccountData extends SaveableObject
 {
   constructor()
   {
+    super();
+
     // Don't forget to bump up version number if you add or remove
-    // properties. You will also need to convert data in respective
+    // SaveableObjects. You will also need to convert data in respective
     // .json files to conform to the new version.
-    super({ version: 0 });
+    this.version = 0;
   }
 
   // Names of characters belonging to this account.

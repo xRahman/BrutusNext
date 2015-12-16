@@ -23,13 +23,13 @@ export class AccountManager extends IdContainer<Account>
   public createNewAccount(
     accountName: string,
     password: string,
-    socketDescriptorId: Id): Id
+    playerConnectionId: Id): Id
   {
     ASSERT_FATAL(!this.exists(accountName),
       "Attempt to create an account '"
       + accountName + "' which already exists");
 
-    let newAccount = new Account(accountName, socketDescriptorId);
+    let newAccount = new Account(accountName, playerConnectionId);
 
     // This creates and assigns hash. Actual password is not remembered.
     newAccount.password = password;
@@ -100,8 +100,9 @@ export class AccountManager extends IdContainer<Account>
   {
     let accountName = this.getAccount(accountId).accountName;
 
-    ASSERT(!this.getAccount(accountId).isInGame(),
-      "Attempt to logout a player who is still in game");
+    if (!ASSERT(!this.getAccount(accountId).isInGame(),
+          "Attempt to logout a player who is still in game"))
+      return;
 
     Mudlog.log(
       "Player " + accountName + " has logged out",
@@ -122,7 +123,7 @@ export class AccountManager extends IdContainer<Account>
   // hashmap, returns its unique id.
   protected addOnlineAccount(account: Account): Id
   {
-    let newId = super.addItem(account);
+    let newId = this.addItem(account);
 
     // Also add record to the corresponding hashmap.
     this.myOnlineAccountNames[account.accountName] = newId;
