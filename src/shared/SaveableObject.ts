@@ -18,16 +18,6 @@ import {Mudlog} from '../server/Mudlog';
 // Built-in node.js modules.
 import * as fs from 'fs';  // Import namespace 'fs' from node.js
 
-// Using this interface improves readability of code. You can't
-// write just:
-//   new SaveableObject(3);
-// you need to write:
-//   new SaveableObject({ version: 3 });
-interface Version
-{
-  version: number
-}
-
 let beautify = require('js-beautify').js_beautify;
 
 export class SaveableObject
@@ -36,21 +26,6 @@ export class SaveableObject
   // a FATAL_ASSERT when versions don't match. You can override it
   // by overriding a checkVersion() method;
   protected version = 0;
-
-  // Version is passed as object because it makes the code more easily
-  // readable. You need to write: let d = new DummyData({ version: 12 });
-  // which is self-explainable unlike let d = new DummyData(12);
-  constructor(version: Version)
-  {
-    if (!ASSERT(version.version >= 0, "Version can't be negative, sorry"))
-    {
-      this.version = 0;
-    }
-    else
-    {
-      this.version = version.version;
-    }
-  }
 
   protected checkVersion(jsonObject: Object)
   {
