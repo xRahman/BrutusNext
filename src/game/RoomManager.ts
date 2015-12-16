@@ -6,10 +6,7 @@
 
 'use strict';
 
-import {IdContainer} from '../shared/IdContainer';
-import {Room} from '../game/Room';
-
-export class RoomManager extends IdContainer<Room>
+export class RoomManager
 {
   // ---------------- Public methods --------------------
 

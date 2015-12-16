@@ -13,10 +13,12 @@ export class Room extends GameEntity
 {
   constructor()
   {
+    super();
+
+    this.version = 0;
     // Don't forget to bump up version number if you add or remove
     // SaveableObjects. You will also need to convert data in respective
     // .json files to conform to the new version.
-    super({ version: 0 });
   }
 
   static get SAVE_DIRECTORY() { return "./data/rooms/"; }

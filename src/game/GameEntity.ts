@@ -8,21 +8,46 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {Server} from '../server/Server';
+import {Id} from '../shared/Id';
+import {GameEntityData} from '../game/GameEntityData';
 import {CommandInterpretter} from '../game/CommandInterpretter';
 
 ///export abstract class GameEntity extends SaveableContainer
-export class GameEntity extends CommandInterpretter
+export abstract class GameEntity extends CommandInterpretter
 {
+  // --------------- Public accessors -------------------
 
-  // ---------------- Public methods --------------------
+  public get name()
+  {
+    if (!ASSERT(this.myData !== null, "Attempt to access 'name' property on"
+          + "entity that doesn't have valid myData"))
+      return "";
 
-  // -------------- Protected class data ----------------
+    return this.myData.name;
+  }
 
-  protected get playerConnection()
+  public get playerConnection()
   {
     return Server.playerConnectionManager
       .getPlayerConnection(this.myPlayerConnectionId);
   }
+  public set playerConnectionId(value: Id)
+  {
+    this.myPlayerConnectionId = value;
+  }
+
+  // Player connected to this entity is entering game.
+  //   Needs to be overriden if something is going to happen (like message
+  // that a player character has just entered game).
+  public announcePlayerEnteringGame() { }
+
+  // ---------------- Public methods --------------------
+
+
+  // -------------- Protected class data ----------------
+
+  protected myData: GameEntityData = null;
+
 
   // null if no player is connected to (is playing as) this entity,
   // connectionId otherwise.
