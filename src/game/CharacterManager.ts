@@ -41,6 +41,11 @@ export class CharacterManager
   {
     let characterId: Id = null;
 
+    // Using 'in' operator on object with null value would crash the game.
+    if (!ASSERT(this.myPlayerCharacterNames !== null,
+          "Invalid myPlayerCharacterNames"))
+      return;
+
     if (characterName in this.myPlayerCharacterNames)
     {
       // Character is already loaded.

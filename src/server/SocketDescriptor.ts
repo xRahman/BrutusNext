@@ -18,7 +18,15 @@ import * as net from 'net';  // Import namespace 'net' from node.js
 
 export abstract class SocketDescriptor
 {
-  constructor(protected mySocket: net.Socket) {}
+  constructor(protected mySocket: net.Socket)
+  {
+    ASSERT(this.mySocket.address !== undefined,
+      "Missing address on socket");
+
+    // Remember ip address because we need to know it even after ours socket
+    // closes.
+    this.myIpAddress = this.mySocket.remoteAddress;
+  }
 
   // ----------------- Public data ----------------------
 
@@ -28,14 +36,15 @@ export abstract class SocketDescriptor
       "Invalid player connection id");
     this.myPlayerConnectionId = value;
   }
-  
-  // Accessors can't be declared as abstract for some reason so we will
-  // make it abstract the hard way.
-  public get remoteAddress(): string
-  {
-    throw new Error("Abstract method call");
-  }
 
+  public get ipAddress()
+  {
+    ASSERT(this.myIpAddress != null,
+      "Ip address is not initialized on socket descriptor");
+
+    return this.myIpAddress;
+  }
+ 
   public get playerConnection()
   {
     ASSERT(this.playerConnectionId !== null,
@@ -58,6 +67,8 @@ export abstract class SocketDescriptor
   // -------------- Protected class data ----------------
 
   protected myPlayerConnectionId: Id = null;
+
+  protected myIpAddress: string = "";
 
   // -------------- Protected methods -------------------
 

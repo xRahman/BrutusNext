@@ -36,6 +36,7 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
+import {Mudlog} from '../server/Mudlog';
 import {PlayerConnection} from '../server/PlayerConnection';
 import {Server} from '../server/Server';
 import {AccountManager} from '../server/AccountManager';
@@ -158,12 +159,24 @@ export class AuthProcessor
 
     if (accountId !== null)
     {
+      Mudlog.log(
+        this.myAccountName
+        + " [" + this.myPlayerConnection.ipAddress + "] has connected",
+        Mudlog.msgType.SYSTEM_INFO,
+        Mudlog.levels.IMMORTAL);
+
       this.myPlayerConnection.accountId = accountId;
       this.myStage = AuthProcessor.stage.DONE;
       this.myPlayerConnection.enterLobby();
     }
     else
     {
+      Mudlog.log(
+        "Bad PW: "
+        + this.myAccountName + " [" + this.myPlayerConnection.ipAddress + "]",
+        Mudlog.msgType.SYSTEM_INFO,
+        Mudlog.levels.IMMORTAL);
+
       this.myPlayerConnection.send(
         "&wWrong password.\r\n"
         + "Password: ");

@@ -28,12 +28,12 @@ export class PlayerConnectionManager extends IdContainer<PlayerConnection>
     return newId;
   }
 
-  // This should only be called from PlayerConnection.close();
-  //   Removes the connection from the manager but does not close the link. You
-  // need yo call PlayerConnection.close() to correctly close the connection.
-  public removePlayerConnection(connectionId: Id)
+  // Closes the player connection and removes if from the manager.
+  public dropPlayerConnection(connectionId: Id)
   {
     let playerConnection = this.getItem(connectionId);
+
+    playerConnection.close();
 
     this.deleteItem(connectionId);
   }

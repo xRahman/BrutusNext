@@ -8,6 +8,7 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
+import {Server} from '../server/Server';
 import {IdContainer} from '../shared/IdContainer';
 import {Id} from '../shared/Id';
 import {Account} from '../server/Account';
@@ -34,7 +35,7 @@ export class AccountManager extends IdContainer<Account>
     // This creates and assigns hash. Actual password is not remembered.
     newAccount.password = password;
 
-    let newAccountId = this.addOnlineAccount(newAccount);
+    let newAccountId = this.addAccount(newAccount);
 
     // Save the account info to the disk (so we know that the account exists).
     newAccount.save();
@@ -52,7 +53,7 @@ export class AccountManager extends IdContainer<Account>
   {
     // First check if account is already online so we can save reading from
     // disk.
-    if (this.myOnlineAccountNames[accountName])
+    if (this.myAccountNames[accountName])
       return true;
 
     let path = Account.SAVE_DIRECTORY + accountName + ".json";
@@ -69,16 +70,21 @@ export class AccountManager extends IdContainer<Account>
     let accountId: Id = null;
     let account = null;
 
-    if (accountName in this.myOnlineAccountNames)
+    // Using 'in' operator on object with null value would crash the game.
+    if (!ASSERT(this.myAccountNames !== null,
+          "Invalid myOnlineAccountNames"))
+      return;
+
+    if (accountName in this.myAccountNames)
     {
       // Attempt to re-log to an online account.
-      accountId = this.myOnlineAccountNames[accountName];
+      accountId = this.myAccountNames[accountName];
       account = this.getAccount(accountId);
     } else
     {
       // Login to an offline account.
       account = new Account(accountName, playerConnectionId);
-      accountId = this.addOnlineAccount(account);
+      accountId = this.addAccount(account);
       // Load account from file, mainly for us to be able to check if password
       // is correct.
       account.load();
@@ -98,48 +104,50 @@ export class AccountManager extends IdContainer<Account>
 
   public logOut(accountId: Id)
   {
-    let accountName = this.getAccount(accountId).accountName;
+    let account = this.getAccount(accountId);
+    let accountName = account.accountName;
+    let ipAddress = account.playerConnection.ipAddress;
 
     if (!ASSERT(!this.getAccount(accountId).isInGame(),
           "Attempt to logout a player who is still in game"))
       return;
 
     Mudlog.log(
-      "Player " + accountName + " has logged out",
+      accountName + " [" + ipAddress  + "] has logged out",
       Mudlog.msgType.SYSTEM_INFO,
       Mudlog.levels.IMMORTAL);
 
-    this.removeOnlineAccount(accountId);
+    this.dropAccount(accountId);
   }
 
   // -------------- Protected class data ----------------
 
   // This hashmap maps account names to account ids.
-  protected myOnlineAccountNames: { [key: string]: Id } = {};
+  protected myAccountNames: { [key: string]: Id } = {};
 
   // -------------- Protected methods -------------------
 
   // Adds an account to the list of online accounts and to the auxiliary
   // hashmap, returns its unique id.
-  protected addOnlineAccount(account: Account): Id
+  protected addAccount(account: Account): Id
   {
     let newId = this.addItem(account);
 
     // Also add record to the corresponding hashmap.
-    this.myOnlineAccountNames[account.accountName] = newId;
+    this.myAccountNames[account.accountName] = newId;
 
     return newId;
   }
 
   // Removes an account both from the list of online accounts and from the
   // auxiliary hasmap
-  protected removeOnlineAccount(accountId: Id)
+  protected dropAccount(accountId: Id)
   {
     let accountName = this.getAccount(accountId).accountName;
 
     super.deleteItem(accountId);
 
     // Also remove record from the corresponding hashmap.
-    delete this.myOnlineAccountNames[accountName];
+    delete this.myAccountNames[accountName];
   }
 }
