@@ -54,10 +54,6 @@ export class Character extends GameEntity
 
   // -------------- Protected class data ----------------
 
-  // You can request access of this character from CharacterManager 
-  // using this unique id;
-  public myId: string = "";
-
   // --------------- Protected methods ------------------
 
   /// Testing

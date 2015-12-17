@@ -28,9 +28,21 @@ export abstract class GameEntity extends CommandInterpretter
 
   public get playerConnection()
   {
+    // We need to return null if myPlayerConnectionId is null, because
+    // if accessing playerConnection when myPlayerConnectionId is null
+    // was treated an error, saving game entity with null id would crash
+    // (even if id is not actually saved, crash would occur on attempt
+    // to find out if playerConnection property is SaveableObject).
+    //    It's proabably better to be able to check playerConnection to
+    // be null anyways, because it's intuitive way to do it (instead of
+    // having to check if myPlayerConnectionId is null).
+    if (this.myPlayerConnectionId === null)
+      return null;
+
     return Server.playerConnectionManager
       .getPlayerConnection(this.myPlayerConnectionId);
   }
+
   public set playerConnectionId(value: Id)
   {
     this.myPlayerConnectionId = value;
@@ -51,7 +63,17 @@ export abstract class GameEntity extends CommandInterpretter
 
   // null if no player is connected to (is playing as) this entity,
   // connectionId otherwise.
-  protected myPlayerConnectionId = null;
+  protected myPlayerConnectionId: Id = null;
+
+/*
+/// TODO: idcko by asi mel entite setovat IdContainer (nejen entite,
+/// jakemukoliv itemu, ktery se do nej vklada (tzn. itemy by asi mely byt
+/// zdedeny z nejakeho IdentifyableItem, ktery si bude umet pamatovat idcko).
+
+  // You can request access of this character from CharacterManager 
+  // using this unique id;
+  public myId: Id = null;
+*/
 
   // --------------- Protected methods ------------------
 

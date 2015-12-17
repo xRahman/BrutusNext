@@ -100,11 +100,6 @@ export class TelnetSocketDescriptor extends SocketDescriptor
 
   // ----------------- Public data ----------------------
 
-  public get remoteAddress()
-  {
-    return this.mySocket.remoteAddress;
-  }
-
   // ---------------- Public methods --------------------
 
   // Sends a string to the user.
@@ -194,10 +189,18 @@ export class TelnetSocketDescriptor extends SocketDescriptor
         return;
     }
 
+    /*
     // Discard data that doesn't end with a newline. That's probably
     // some protocol negotiation stuff we haven't been able to catch.
     if (!this.endsWithNewline(data))
       return;
+    */
+    // It seams that putty sometimes sends data not finished with newline,
+    // so if we discard such data, player would not get response she expects
+    // to get.
+    //   For now I'll leave the check here in order to monitor the issue,
+    // but I'll process the data anyways.
+    this.endsWithNewline(data);
 
     // If input contains multiple lines, split them.
     let lines = this.splitInputByNewlines(data);
@@ -240,7 +243,8 @@ export class TelnetSocketDescriptor extends SocketDescriptor
 
   protected onSocketClose()
   {
-    this.playerConnection.close();
+    Server.playerConnectionManager
+      .dropPlayerConnection(this.myPlayerConnectionId);
   }
 
   // -------------- Protected methods -------------------
@@ -351,7 +355,11 @@ export class TelnetSocketDescriptor extends SocketDescriptor
    
          if ((json = data.match(/\{[\s\S]+\}/g)))
          {
-         	
+
+          // Using 'in' operator on object with null value would crash the game.
+          if (!ASSERT(json !== null, "Invalid json object"))
+            return;
+
            //log('possible json in user input');
            for (let i in json)
            {
