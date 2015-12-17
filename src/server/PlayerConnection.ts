@@ -36,6 +36,9 @@ export class PlayerConnection
   public set ingameEntityId(value: Id) { this.myIngameEntityId = value; }
   public get ingameEntityId() { return this.myIngameEntityId; }
 
+  // IP address.
+  public get ipAddress() { return this.mySocketDescriptor.ipAddress; }
+
   public get ingameEntity(): GameEntity
   {
     if (!ASSERT(this.myIngameEntityId !== null,
@@ -43,7 +46,7 @@ export class PlayerConnection
         + " any assigned yet"))
       return null;
 
-    Game.entities.getItem(this.myIngameEntityId);
+    return Game.entities.getItem(this.myIngameEntityId);
   }
 
   // ------- Internal stage transition methods ----------
@@ -179,7 +182,10 @@ export class PlayerConnection
     }
   }
 
-  // Close the connection
+  // Close the connection.
+  // (Don't call this directly, use dropPlayerConnection() method of
+  // PlayerConnectionManager to close the connection. Otherwise you will
+  // end up with dangling closed connection).
   public close()
   {
     if (this.myStage === PlayerConnection.stage.IN_GAME)
@@ -200,7 +206,6 @@ export class PlayerConnection
       }
       else
       {
-        let address = this.mySocketDescriptor.remoteAddress;
         let player = "";
 
         if (this.myAuthProcessor.accountName)
@@ -213,13 +218,12 @@ export class PlayerConnection
         }
 
         Mudlog.log(
-          player + " closed connection before logging in",
+          player
+          + " [" + this.ipAddress + "] closed connection before logging in",
           Mudlog.msgType.SYSTEM_INFO,
           Mudlog.levels.IMMORTAL);
       }
     }
-
-    Server.playerConnectionManager.removePlayerConnection(this.myId);
   }
 
   // Sends a string to the user.
