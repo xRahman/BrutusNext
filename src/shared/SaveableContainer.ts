@@ -50,8 +50,16 @@ export class SaveableContainer extends SaveableObject
   {
     this.checkVersion(jsonObject);
 
+    // Using 'in' operator on object with null value would crash the game.
+    if (!ASSERT(jsonObject !== null, "Invalid json object"))
+      return;
+
     for (let property in jsonObject)
     {
+      // Using 'in' operator on object with null value would crash the game.
+      if (!ASSERT(this[property] !== null, "Invalid this[" + property + "]"))
+        return;
+
       // SaveableContainer only loads properties that are SaveableObjects
       // or SaveableContainers (unline SaveableObject, which loads all of it's
       // properties)
@@ -78,7 +86,12 @@ export class SaveableContainer extends SaveableObject
       // SaveableContainer only saves properties that are SaveableObjects
       // or SaveableContainers (unline SaveableObject, which saves all of it's
       // properties)
-      if (typeof this[property] === 'object'
+      //   Note: Objects with null value have no properties so using 'in'
+      // operator on 'null' would lead to crash. But if some property is null,
+      // it means that we definitely don't need to save it, so it's ok to skip
+      // it.
+      if (this[property] !== null
+          && typeof this[property] === 'object'
           && 'saveToJsonObject' in this[property])
       {
         jsonObject[property] = this[property].saveToJsonObject();
