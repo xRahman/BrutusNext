@@ -15,24 +15,25 @@ import {Server} from '../server/Server';
 
 export class IdContainer<T>
 {
-  constructor()
-  {
-    // This will assign the actual name of the container class that is
-    // inherited from IdContainer, for example 'AccountManager'.
-    //   Id's will automatically be checked when accessed to match this,
-    // so you will know when you try to access something by id not issued
-    // by the container you are asking for that something.
-    this.myTypeOfId = this.getClassName();
-  }
 
   // ---------------- Public methods --------------------
 
   // Inserts a new item to the container, returns its unique id.
-  public addItem(item: T): Id
+  public addNewItem(item: T): Id
   {
-    let newId = IdProvider.generateId(this.myTypeOfId);
+    // Item with this id must not already exist.
+    //   This is a very serious error. It most probably means that
+    // lastIssuedId of IdProvider has not been saved correctly and it was
+    // issuing the same ids again (= not unique ones). The only way to fix
+    // this correcyly is to go through all saved files, find out the largest
+    // id saved in them and set lastIssuedId in file ./data/LastIssuedId.json
+    // to it. (Or you might just increse it by some large number and hope that
+    // you skip all already issued ids.)
+    //   Much safer way is to rollback to the last backup that worked.
+    let newId = Server.idProvider.generateId(this.myTypeOfId);
 
-    ASSERT_FATAL(!(newId.stringId in this.myContainer),
+    ASSERT_FATAL(
+      !(newId.stringId in this.myContainer),
       "Item '" + newId.stringId + "' already exists in the container");
 
     // Here we are creating a new property in myContainer
@@ -42,12 +43,34 @@ export class IdContainer<T>
     return newId;
   }
 
+  // Inserts item under an existing id.
+  public addItem(item: T, id: Id)
+  {
+    // Item with this id must not already exist.
+    //   This is a very serious error. It most probably means that
+    // lastIssuedId of IdProvider has not been saved correctly and it was
+    // issuing the same ids again (= not unique ones). The only way to fix
+    // this correcyly is to go through all saved files, find out the largest
+    // id saved in them and set lastIssuedId in file ./data/LastIssuedId.json
+    // to it. (Or you might just increse it by some large number and hope that
+    // you skip all already issued ids.)
+    //   Much safer way is to rollback to the last backup that worked.
+    ASSERT_FATAL(
+      !(id.stringId in this.myContainer),
+      "Attempt to add item with id (" + id.stringId + ") that already"
+      + " exists in the container");
+
+    // Here we are creating a new property in myContainer
+    // (it is possible because myContainer is a hashmap)
+    this.myContainer[id.stringId] = item;
+  }
+
   public getItem(id: Id): T
   {
-    // Check if given id is valid, issued by this container and in this boot.
-    this.checkId(id);
+    ASSERT_FATAL(id.notNull(), "Invalid id");
 
     let item = this.myContainer[id.stringId];
+
     ASSERT_FATAL(typeof item !== 'undefined',
       "Item (" + id.stringId + ") no longer exists in the container");
 
@@ -56,16 +79,17 @@ export class IdContainer<T>
 
   public deleteItem(id: Id)
   {
-    // Check if given id is valid, issued by this container and in this boot.
-    this.checkId(id);
+    ASSERT_FATAL(id.notNull(), "Invalid id");
 
     if (!ASSERT(id.stringId in this.myContainer,
-      "Attempt to delete item (" + id.stringId + ") that doesn't exist"
-      + " in the container"))
+      "Attempt to delete item (" + id.stringId + ")"
+      + " that doesn't exist in the container"))
     {
-      // Delete the property that traslates to the descriptor.
-      delete this.myContainer[id.stringId];
+      return;
     }
+
+    // Delete the property that traslates to the descriptor.
+    delete this.myContainer[id.stringId];
   }
 
   // -------------- Protected class data ----------------
@@ -77,32 +101,4 @@ export class IdContainer<T>
 
   // -------------- Protected methods -------------------
 
-  // Returns name of the class which inherited this method.
-  protected getClassName()
-  {
-    let funcNameRegex = /function (.{1,})\(/;
-    let results = (funcNameRegex).exec((<any>this).constructor.toString());
-
-    ASSERT_FATAL(results && results.length > 1,
-      "Unable to extract class name");
-
-    return (results && results.length > 1) ? results[1] : "";
-  }
-
-  // ----------- Auxiliary private methods --------------
-
-  // Checks if id is valid and issued by this container.
-  private checkId(id: Id)
-  {
-    ASSERT_FATAL(id !== null, "Invalid id");
-
-    ASSERT(id.typeOfId === this.myTypeOfId,
-      "Attempt to access an item using id that wasn't issued by"
-      + "  this container. Perhaps you are using wrong manager class?")
-
-    // Check if timeOfBoot matches current timeOfBoot.
-    ASSERT_FATAL(id.timeOfBoot === Server.timeOfBoot,
-      "Attempt to use id's issued in another boot. Perhaps you have"
-      + " overwritten your id by load()?");  
-  }
 }

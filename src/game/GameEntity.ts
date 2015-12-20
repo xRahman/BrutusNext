@@ -36,7 +36,7 @@ export abstract class GameEntity extends CommandInterpretter
     //    It's proabably better to be able to check playerConnection to
     // be null anyways, because it's intuitive way to do it (instead of
     // having to check if myPlayerConnectionId is null).
-    if (this.myPlayerConnectionId === null)
+    if (this.myPlayerConnectionId.isNull())
       return null;
 
     return Server.playerConnectionManager
@@ -63,17 +63,7 @@ export abstract class GameEntity extends CommandInterpretter
 
   // null if no player is connected to (is playing as) this entity,
   // connectionId otherwise.
-  protected myPlayerConnectionId: Id = null;
-
-/*
-/// TODO: idcko by asi mel entite setovat IdContainer (nejen entite,
-/// jakemukoliv itemu, ktery se do nej vklada (tzn. itemy by asi mely byt
-/// zdedeny z nejakeho IdentifyableItem, ktery si bude umet pamatovat idcko).
-
-  // You can request access of this character from CharacterManager 
-  // using this unique id;
-  public myId: Id = null;
-*/
+  protected myPlayerConnectionId: Id = Id.NULL;
 
   // --------------- Protected methods ------------------
 

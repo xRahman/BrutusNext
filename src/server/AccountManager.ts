@@ -27,7 +27,7 @@ export class AccountManager extends IdContainer<Account>
     playerConnectionId: Id): Id
   {
     ASSERT_FATAL(!this.exists(accountName),
-      "Attempt to create an account '"
+      "Attempt to create account '"
       + accountName + "' which already exists");
 
     let newAccount = new Account(accountName, playerConnectionId);
@@ -35,7 +35,7 @@ export class AccountManager extends IdContainer<Account>
     // This creates and assigns hash. Actual password is not remembered.
     newAccount.password = password;
 
-    let newAccountId = this.addAccount(newAccount);
+    let newAccountId = this.addNewAccount(newAccount);
 
     // Save the account info to the disk (so we know that the account exists).
     newAccount.save();
@@ -61,45 +61,31 @@ export class AccountManager extends IdContainer<Account>
     return fs.existsSync(path);
   }
 
-  // Returns account id on succes, "" on failure
-  public logIn(
-    accountName: string,
-    password: string,
-    playerConnectionId: Id): Id
+  // Return account id if account is already loaded, null otherwise.
+  public getAccountByName(accountName: string): Account
   {
-    let accountId: Id = null;
-    let account = null;
-
     // Using 'in' operator on object with null value would crash the game.
     if (!ASSERT(this.myAccountNames !== null,
-          "Invalid myOnlineAccountNames"))
-      return;
+      "Invalid myOnlineAccountNames"))
+      return null;
 
     if (accountName in this.myAccountNames)
     {
       // Attempt to re-log to an online account.
-      accountId = this.myAccountNames[accountName];
-      account = this.getAccount(accountId);
-    } else
-    {
-      // Login to an offline account.
-      account = new Account(accountName, playerConnectionId);
-      accountId = this.addAccount(account);
-      // Load account from file, mainly for us to be able to check if password
-      // is correct.
-      account.load();
+      let accountId = this.myAccountNames[accountName];
+      return this.getItem(accountId);
     }
 
-    if (account.checkPassword(password))
-      /// TODO: Handle usurping of an existing connection (close old socket,
-      /// send info to a new socket, atc.
-      return accountId;
-    else
-      // We are not going to remove loaded account from the list of online
-      // accounts just yet, because user will probably send corrected password
-      // so we would have to load account info from the disk again.
-      // Account will be put offline when socket is closed.
-      return null;
+    return null;
+  }
+
+  public registerLoadedAccount(account: Account)
+  {
+    ASSERT_FATAL(!this.getAccountByName(account.accountName),
+      "Attempt to register account '"
+      + account.accountName + "' which is already registered");
+
+    this.addAccount(account);
   }
 
   public logOut(accountId: Id)
@@ -129,14 +115,23 @@ export class AccountManager extends IdContainer<Account>
 
   // Adds an account to the list of online accounts and to the auxiliary
   // hashmap, returns its unique id.
-  protected addAccount(account: Account): Id
+  protected addNewAccount(account: Account): Id
   {
-    let newId = this.addItem(account);
+    let newId = this.addNewItem(account);
 
     // Also add record to the corresponding hashmap.
     this.myAccountNames[account.accountName] = newId;
 
     return newId;
+  }
+
+  // Adds an account which already has an id (loaded it from file).
+  protected addAccount(account: Account)
+  {
+    this.addItem(account, account.id);
+
+    // Also add record to the corresponding hashmap.
+    this.myAccountNames[account.accountName] = account.id;
   }
 
   // Removes an account both from the list of online accounts and from the
@@ -145,7 +140,7 @@ export class AccountManager extends IdContainer<Account>
   {
     let accountName = this.getAccount(accountId).accountName;
 
-    super.deleteItem(accountId);
+    this.deleteItem(accountId);
 
     // Also remove record from the corresponding hashmap.
     delete this.myAccountNames[accountName];

@@ -1,5 +1,11 @@
 {
   "version": 0,
+  "myId":
+  {
+    "version": 0,
+    "myStringId": "1",
+    "myTimeOfBoot": "2015-12-10T17:17:25.441Z"
+  },
   "myData":
   {
     "version": 0,

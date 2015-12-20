@@ -42,4 +42,12 @@ export class Room extends GameEntity
   ///public myData = new RoomData();
 
   // --------------- Protected methods ------------------
+
+  /// TODO: Tohle nejspis bude jinak, jmena room nejsou unikatni.
+  /// to budou mit jinak.
+  // What file will this object be saved to.
+  protected myGetSavePath(): string
+  {
+    return Room.SAVE_DIRECTORY + this.name + ".json";
+  }
 }

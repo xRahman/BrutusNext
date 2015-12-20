@@ -29,10 +29,10 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
-import {SaveableContainer} from '../shared/SaveableContainer';
+import {IdableSaveableContainer} from '../shared/IdableSaveableContainer';
 import {GameEntity} from '../game/GameEntity';
 
-export abstract class CommandInterpretter extends SaveableContainer
+export abstract class CommandInterpretter extends IdableSaveableContainer
 {
 
   // ---------------- Static methods -------------------- 

@@ -16,6 +16,8 @@
     -p, --port ... Port to listen to telnet (default is 4443).
 */
 
+'use strict';
+
 import {Mudlog} from './server/Mudlog';
 import {Server} from './server/Server';
 
@@ -24,16 +26,32 @@ import {Server} from './server/Server';
 // stack trace (instead of stack trace in generated JavaScript).
 require('source-map-support').install();
 
+let parser = require('commander');
+
+// Include package.json file (located in BrutusNext directory)
+// (it contains version number and list of all required modules along with
+// their required version)
+let packageDotJson = require('../package.json');
+
+// Oznami, ze Promise sezrala exception a nic nerekla a crashne mud.
+process.on
+(
+  'unhandledRejection',
+  function(reason, p)
+  {
+    console.log("Unhandled Rejection at: Promise ", p, " reason: ", reason);
+    // application specific logging, throwing an error, or other logic here
+    throw new Error("Promise zase pozrala exception");
+  }
+);
+
 // Parses commandline parameters.
 // - Return object imported from 'commander' module.
 function parseCmdlineParams()
 {
-  let parser = require('commander');
-
   parser.option(
-      '-p, --port [portNumber]',
-      'Port to listen to telnet [default: '
-      + Server.DEFAULT_TELNET_PORT + ']',
+      "-p, --port [portNumber]",
+      "Port to listen to telnet [default: " + Server.DEFAULT_TELNET_PORT + "]",
       Server.DEFAULT_TELNET_PORT);
 
   parser.parse(process.argv);
@@ -45,11 +63,6 @@ function parseCmdlineParams()
 // It's called main() to sound familiar to C programmers ;)
 function main()
 {
-  // Include package.json file (located in BrutusNext directory)
-  // (it contains version number and list of all required modules along with
-  // their required version)
-  let packageDotJson = require('../package.json');
-
   // Log our name and version.
   Mudlog.log(
     packageDotJson.name + " server v. " + packageDotJson.version,

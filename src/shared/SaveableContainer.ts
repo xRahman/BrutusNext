@@ -41,7 +41,7 @@
 
 'use strict';
 
-import {ASSERT} from '../shared/ASSERT';
+import {ASSERT_FATAL} from '../shared/ASSERT';
 import {SaveableObject} from '../shared/SaveableObject';
 
 export class SaveableContainer extends SaveableObject
@@ -51,20 +51,32 @@ export class SaveableContainer extends SaveableObject
     this.checkVersion(jsonObject);
 
     // Using 'in' operator on object with null value would crash the game.
-    if (!ASSERT(jsonObject !== null, "Invalid json object"))
-      return;
+    ASSERT_FATAL(jsonObject !== null, "Invalid json object");
 
+    // When loading we will restore all properties present in the save file,
+    // but they must exist on this class.
     for (let property in jsonObject)
     {
-      // Using 'in' operator on object with null value would crash the game.
-      if (!ASSERT(this[property] !== null, "Invalid this[" + property + "]"))
-        return;
+      ASSERT_FATAL(property in this,
+        "There is a property in json object"
+        + " we are loading ourselves from that we don't have. Perhaps we"
+        + " are loading ourselves from the wrong file or from wile with"
+        + " outdated format?");
 
-      // SaveableContainer only loads properties that are SaveableObjects
-      // or SaveableContainers (unline SaveableObject, which loads all of it's
-      // properties)
-      if (typeof this[property] === 'object'
-          && 'loadFromJsonObject' in this[property])
+      ASSERT_FATAL(this[property] !== null,
+        "There is a property (" + property + ") in this object with null"
+        + " value, which is to be loaded from json. That's not possible,"
+        + " because loading method can't be called on null object. Make"
+        + " sure that all properties on this class are inicialized to"
+        + " something else than null");
+
+      // Properties that are not SaveableObjects (= don't have
+      // 'loadFromJsonObject' method) are not loaded, you need to load them
+      // manually if you want to have some (see IdableSaveableContainer).
+      if (
+        this[property] !== null
+        && typeof this[property] === 'object'
+        && 'loadFromJsonObject' in this[property])
       {
         this[property].loadFromJsonObject(jsonObject[property]);
       }
@@ -83,21 +95,32 @@ export class SaveableContainer extends SaveableObject
 
     for (let property in this)
     {
-      // SaveableContainer only saves properties that are SaveableObjects
-      // or SaveableContainers (unline SaveableObject, which saves all of it's
-      // properties)
-      //   Note: Objects with null value have no properties so using 'in'
-      // operator on 'null' would lead to crash. But if some property is null,
-      // it means that we definitely don't need to save it, so it's ok to skip
-      // it.
-      if (this[property] !== null
-          && typeof this[property] === 'object'
-          && 'saveToJsonObject' in this[property])
+      if (this.isSupposedToSave(property))
       {
         jsonObject[property] = this[property].saveToJsonObject();
       }
     }
 
     return jsonObject;
+  }
+
+  private isSupposedToSave(property): boolean
+  {
+    // SaveableContainer only loads/saves properties that are SaveableObjects
+    // or SaveableContainers (unlike SaveableObject, which loads all of it's
+    // properties)
+    //   Note: Objects with null value have no properties so using 'in'
+    // operator on 'null' would lead to crash. But if some property is null,
+    // it means that we definitely don't need to save it, so it's ok to skip
+    // it.
+    if (
+      this[property] !== null
+      &&  typeof this[property] === 'object'
+      && 'loadFromJsonObject' in this[property])
+    {
+      return true;
+    }
+
+    return false;
   }
 }
