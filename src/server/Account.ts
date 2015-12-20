@@ -7,7 +7,7 @@
 'use strict';
 
 import {Id} from '../shared/Id';
-import {SaveableContainer} from '../shared/SaveableContainer';
+import {IdableSaveableContainer} from '../shared/IdableSaveableContainer';
 import {AccountData} from '../server/AccountData';
 import {PlayerConnection} from '../server/PlayerConnection';
 import {Server} from '../server/Server';
@@ -15,7 +15,7 @@ import {Server} from '../server/Server';
 // Built-in node.js modules.
 import * as crypto from 'crypto';  // Import namespace 'crypto' from node.js
 
-export class Account extends SaveableContainer
+export class Account extends IdableSaveableContainer
 {
   // Account name is not saved to the file. Filename represents account name.
   constructor(protected myAccountName: string,
@@ -39,19 +39,14 @@ export class Account extends SaveableContainer
       .getPlayerConnection(this.myPlayerConnectionId);
   }
 
+  public set playerConnectionId(value: Id)
+  {
+    this.myPlayerConnectionId = value;
+  }
+
   public get accountName() { return this.myAccountName; }
 
   // ---------------- Public methods --------------------
-
-  public save()
-  {
-    this.saveToFile(Account.SAVE_DIRECTORY + this.myAccountName + ".json");
-  }
-
-  public load()
-  {
-    this.loadFromFile(Account.SAVE_DIRECTORY + this.myAccountName + ".json");
-  }
 
   // Only hash of the password is stored
   public set password(value: string)
@@ -82,5 +77,11 @@ export class Account extends SaveableContainer
     hashFacility.update(input.trim());
 
     return hashFacility.digest('hex');
+  }
+
+  // What file will this object be saved to.
+  protected myGetSavePath(): string
+  {
+    return Account.SAVE_DIRECTORY + this.myAccountName + ".json";
   }
 }

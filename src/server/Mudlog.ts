@@ -56,11 +56,17 @@ export class Mudlog
       // Do not log fatal asserts to the console, only to the log file
       // and to online immortals.
       // (stack trace will be sent to the console via throwing Error())
-      if (msgType.str !== Mudlog.msgType.ASSERT_FATAL.str)
-      {
+
+/// Promisy (async funkce) mi zerou exceptiony, takze prozatim budu
+/// vypisovat i fatal asserty do konzole (holt tam budou dvakrat, kdyz
+/// je spusti neco mimo async funkci, ale lepsi, nez se o chybe nedozvedet
+/// vubec).
+
+///      if (msgType.str !== Mudlog.msgType.ASSERT_FATAL.str)
+///      {
         // Log message to the console.
         console.log("[" + msgType.str + "] " + message);
-      }
+///      }
     }
   }
 }

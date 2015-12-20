@@ -39,7 +39,7 @@ export class CharacterManager
   // Returns id of character if she is already loaded or loads her from disk.
   public requestCharacter(characterName: string): Id
   {
-    let characterId: Id = null;
+    let characterId: Id = Id.NULL;
 
     // Using 'in' operator on object with null value would crash the game.
     if (!ASSERT(this.myPlayerCharacterNames !== null,
@@ -108,7 +108,7 @@ export class CharacterManager
   // hashmap, returns its unique id.
   protected addOnlineCharacter(character: Character): Id
   {
-    let newId = Game.entities.addItem(character);
+    let newId = Game.entities.addNewItem(character);
 
     // Also add record to the corresponding hashmap.
     this.myPlayerCharacterNames[character.name] = newId;

@@ -9,6 +9,7 @@
 'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
+import {ASSERT_FATAL} from '../shared/ASSERT';
 import {Server} from '../server/Server';
 import {Id} from '../shared/Id';
 import {PlayerConnection} from '../server/PlayerConnection';
@@ -30,6 +31,7 @@ export abstract class SocketDescriptor
 
   // ----------------- Public data ----------------------
 
+  public get playerConnectionId() { return this.myPlayerConnectionId; }
   public set playerConnectionId(value: Id)
   {
     ASSERT(value !== undefined && value !== null,
@@ -47,8 +49,8 @@ export abstract class SocketDescriptor
  
   public get playerConnection()
   {
-    ASSERT(this.playerConnectionId !== null,
-      "Invalid player connection id")
+    ASSERT_FATAL(this.playerConnectionId.notNull(),
+      "Invalid player connection id");
 
     return Server.playerConnectionManager
       .getPlayerConnection(this.myPlayerConnectionId);
@@ -66,7 +68,7 @@ export abstract class SocketDescriptor
 
   // -------------- Protected class data ----------------
 
-  protected myPlayerConnectionId: Id = null;
+  protected myPlayerConnectionId: Id = Id.NULL;
 
   protected myIpAddress: string = "";
 

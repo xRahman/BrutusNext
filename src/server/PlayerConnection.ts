@@ -11,6 +11,7 @@ import {Id} from '../shared/Id';
 import {Mudlog} from '../server/Mudlog';
 import {Server} from '../server/Server';
 import {SocketDescriptor} from '../server/SocketDescriptor';
+import {Account} from '../server/Account';
 import {AuthProcessor} from '../server/AuthProcessor';
 import {LobbyProcessor} from '../server/LobbyProcessor';
 import {Game} from '../game/Game';
@@ -41,7 +42,7 @@ export class PlayerConnection
 
   public get ingameEntity(): GameEntity
   {
-    if (!ASSERT(this.myIngameEntityId !== null,
+    if (!ASSERT(this.myIngameEntityId.notNull(),
         "Attempt to access gameEntity on PlayerConnection which doesn't have"
         + " any assigned yet"))
       return null;
@@ -72,7 +73,7 @@ export class PlayerConnection
 
   public enterGame()
   {
-    ASSERT(this.myAccountId !== null, "Invalid account id");
+    ASSERT(this.myAccountId.notNull(), "Invalid account id");
 
     let accountManager = Server.accountManager;
     let accountName = accountManager.getAccount(this.myAccountId).accountName;
@@ -120,10 +121,48 @@ export class PlayerConnection
     this.mySocketDescriptor.disconnect();
   }
 
+  // Handles situation when player connects to previously offline account .
+  public connect(account: Account)
+  {
+    Mudlog.log(
+      account.accountName + " [" + this.ipAddress + "] has logged in",
+      Mudlog.msgType.SYSTEM_INFO,
+      Mudlog.levels.IMMORTAL);
+
+    this.accountId = account.id;
+    this.enterLobby();
+  }
+
+  // Handles situation when player reconnects to the already loaded
+  // account (usualy when she previously lost her link or when she
+  // is connecting from different computer without logging out first).
+  public reconnect(account: Account)
+  {
+    /// TODO: Pokud zije predchozi connection, poslat pres ni hlasku,
+    /// ze body usurped nebo account usurped (podle toho, jestli je ve hre
+    /// nebo v menu) a zavrit tu connection (a dropnout z connection manageru)
+
+    /// TODO: Pred tim, nez ji zavru, si z ni musim precist aktualni stage
+
+    account.playerConnectionId = this.id;
+
+    Mudlog.log(
+      account.accountName + " [" + this.ipAddress + "] has reconnected",
+      Mudlog.msgType.SYSTEM_INFO,
+      Mudlog.levels.IMMORTAL);
+
+    /// TODOOOOO: Tohle muze znamenat, ze je player uz ve hre, tj.
+    /// stage connectionu by se me
+
+    /// TODO: Poslat hlasku playerovi, ze se reconnectnul. Pokud byl v menu,
+    /// tak poslat nove menu. Pokud byl ve hre, tak nejspis forcnout na look
+    /// (a poslat hlasku do roomy, ze se player reconnectnul)
+  }
+
   // ---------------- Public methods --------------------
 
   // Parses and executes a single-line command.
-  public processCommand(command: string)
+  public async processCommand(command: string)
   {
     switch (this.myStage)
     {
@@ -133,21 +172,21 @@ export class PlayerConnection
           + " commands yet");
         break;
       case PlayerConnection.stage.AUTHENTICATION:
-        ASSERT(this.myAccountId === null,
+        ASSERT(this.myAccountId.isNull(),
           "Attempt to start authentication on player connection that already"
           + " has an online account");
 
-        this.myAuthProcessor.processCommand(command);
+        await this.myAuthProcessor.processCommand(command);
         break;
       case PlayerConnection.stage.LOBBY:
-        ASSERT(this.myAccountId !== null,
+        ASSERT(this.myAccountId.notNull(),
           "Attempt to process lobby command on player connection that doesn't"
           + " have an online account");
 
         this.myLobbyProcessor.processCommand(command);
         break;
       case PlayerConnection.stage.IN_GAME:
-        ASSERT(this.myAccountId !== null,
+        ASSERT(this.myAccountId.notNull(),
           "Attempt to process ingame command on player connection that doesn't"
           + " have an online account");
 
@@ -202,7 +241,7 @@ export class PlayerConnection
       if (this.myAccountId)
       {
         Server.accountManager.logOut(this.myAccountId);
-        this.myAccountId = null;
+        this.myAccountId = Id.NULL;
       }
       else
       {
@@ -234,7 +273,7 @@ export class PlayerConnection
 
   public isInGame()
   {
-    if (this.ingameEntityId !== null)
+    if (this.ingameEntityId.notNull())
     {
       ASSERT(this.myStage === PlayerConnection.stage.IN_GAME,
         "Player connection has ingame entity assigned but player connection"
@@ -250,15 +289,15 @@ export class PlayerConnection
 
   // Empty string means that we do not yet know what account does this
   // descriptor match to.
-  protected myAccountId: Id = null;
+  protected myAccountId: Id = Id.NULL;
 
   // Id of entity this player connection is attached to.
   // (usually the character a player is playing, but it is possible for
   // immortals to 'switch' to any game entity)
-  protected myIngameEntityId: Id = null;
+  protected myIngameEntityId: Id = Id.NULL;
 
   // Unique stringId of this descriptor.
-  protected myId: Id = null;
+  protected myId: Id = Id.NULL;
 
   protected myAuthProcessor = new AuthProcessor(this);
   protected myLobbyProcessor = new LobbyProcessor(this);
