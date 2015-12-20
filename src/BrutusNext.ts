@@ -41,7 +41,10 @@ process.on
   {
     console.log("Unhandled Rejection at: Promise ", p, " reason: ", reason);
     // application specific logging, throwing an error, or other logic here
-    throw new Error("Promise zase pozrala exception");
+
+    // There is no point in throwing another exception from here, stack trace
+    // would not show anything useful.
+    process.exit(1);
   }
 );
 

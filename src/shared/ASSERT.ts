@@ -78,14 +78,22 @@ export function ASSERT_FATAL(condition: boolean, message: string)
 
     Mudlog.log(errorMsg, Mudlog.msgType.ASSERT_FATAL, Mudlog.levels.IMMORTAL);
 
+    // Since promises are eating exceptions, throwing an error won't stop
+    // the program if ASSERT_FATAL is triggered withing asynchronous method.
+    // So we rather print stack trace ourselves (using Mudlog.log() above)
+    // and exit the program manualy.
+    process.exit(1);
+
+    /*
     let error = new Error("Fatal assertion failed");
     // Modify error object's stack trace to reflect that it was caused by
     // ASSERT_FATAL.
     error.stack = errorMsg;
-
+    
     // Throw an exception that will cause the program to end and print stack
     // trace to the console.
     throw error;
+    */
   }
 }
 
