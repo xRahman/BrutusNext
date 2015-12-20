@@ -32,16 +32,6 @@ export class Character extends GameEntity
 
   // ---------------- Public methods --------------------
 
-  public save()
-  {
-    this.saveToFile(Character.SAVE_DIRECTORY + this.myData.name + ".json");
-  }
-
-  public load()
-  {
-    this.loadFromFile(Character.SAVE_DIRECTORY + this.myData.name + ".json");
-  }
-
   // Player connected to this entity is entering game.
   public announcePlayerEnteringGame()
   {
@@ -56,6 +46,7 @@ export class Character extends GameEntity
 
   // --------------- Protected methods ------------------
 
+  /*
   /// Testing
   protected doStand(argument)
   {
@@ -67,9 +58,13 @@ export class Character extends GameEntity
   {
     console.log("Haf haf! 'sit': " + this.x);
   }
+  */
 
-  public x = 0;
+  /// TODO: Tohle nejspis bude platit pouze pro player charactery, NPC
+  /// to budou mit jinak.
+  // What file will this object be saved to.
+  protected myGetSavePath(): string
+  {
+    return Character.SAVE_DIRECTORY + this.name + ".json";
+  }
 }
-
-// Statically registered commands:
-GameEntity.registerCommand('stand', 'doStand');

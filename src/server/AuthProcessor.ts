@@ -39,6 +39,7 @@ import {ASSERT_FATAL} from '../shared/ASSERT';
 import {Mudlog} from '../server/Mudlog';
 import {PlayerConnection} from '../server/PlayerConnection';
 import {Server} from '../server/Server';
+import {Account} from '../server/Account';
 import {AccountManager} from '../server/AccountManager';
 
 export class AuthProcessor
@@ -54,7 +55,7 @@ export class AuthProcessor
 
   public get accountName() { return this.myAccountName; }
 
-  public processCommand(command: string)
+  public async processCommand(command: string)
   {
     switch (this.myStage)
     {
@@ -66,7 +67,7 @@ export class AuthProcessor
         this.loginAttempt(command);
         break;
       case AuthProcessor.stage.PASSWORD:
-        this.checkPassword(command);
+        await this.checkPassword(command);
         break;
       case AuthProcessor.stage.NEW_PASSWORD:
         this.getNewPassword(command);
@@ -143,31 +144,48 @@ export class AuthProcessor
     }
   }
 
-  protected checkPassword(password: string)
+  protected async checkPassword(password: string)
   {
     let accountManager = Server.accountManager;
 
     ASSERT_FATAL(this.myPlayerConnection.id != null,
-      "Invalid socket descriptor id");
+      "Invalid player connection id");
 
-    // If password doesn't check, logIn returns "".
-    let accountId =
-      accountManager.logIn(
-        this.myAccountName,
-        password,
-        this.myPlayerConnection.id);
+    // Are we reconnecting to an already loaded account?
+    let reconnect = true;
 
-    if (accountId !== null)
+    // Check if account info is already loaded.
+    let account = accountManager.getAccountByName(this.myAccountName);
+
+    if (!account)
     {
-      Mudlog.log(
-        this.myAccountName
-        + " [" + this.myPlayerConnection.ipAddress + "] has connected",
-        Mudlog.msgType.SYSTEM_INFO,
-        Mudlog.levels.IMMORTAL);
+      // We are not reconnecting.
+      reconnect = false;
+      account = new Account(this.myAccountName, this.myPlayerConnection.id);
 
-      this.myPlayerConnection.accountId = accountId;
+      // Asynchronous reading from the file.
+      // (the rest of the code will execute only after the reading is done)
+      await account.load();
+
+      ASSERT_FATAL(
+        account.id.notNull(),
+        "Null id in saved file of account: " + account.accountName);
+    }
+
+    if (account.checkPassword(password))
+    {
+      // Password checks so we are done with authenticating.
       this.myStage = AuthProcessor.stage.DONE;
-      this.myPlayerConnection.enterLobby();
+
+      if (reconnect)
+        this.myPlayerConnection.reconnect(account);
+      else
+      {
+        // Add newly loaded account to AccountManager (under it's original id).
+        accountManager.registerLoadedAccount(account);
+
+        this.myPlayerConnection.connect(account);
+      }
     }
     else
     {

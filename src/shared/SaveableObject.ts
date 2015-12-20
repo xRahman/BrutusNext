@@ -14,18 +14,30 @@
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {Mudlog} from '../server/Mudlog';
+import {Server} from '../server/Server';
 
 // Built-in node.js modules.
 import * as fs from 'fs';  // Import namespace 'fs' from node.js
 
+// 3rd party modules.
+let promisifiedFS = require('fs-promise');
 let beautify = require('js-beautify').js_beautify;
 
 export class SaveableObject
 {
+  // -------------- Protected class data ----------------
+
   // Version will be checked for. Default behaviour is to trigger
   // a FATAL_ASSERT when versions don't match. You can override it
   // by overriding a checkVersion() method;
   protected version = 0;
+  // Buffer to stack save requests issued while already saving ourselves.
+  // Also serves as lock - if it's not null, it means we are already saving
+  // ourselves.
+  // (note: This property is not saved)
+  protected mySaveRequests: Array<string> = null;
+
+  // -------------- Protected methods -------------------
 
   protected checkVersion(jsonObject: Object)
   {
@@ -33,22 +45,24 @@ export class SaveableObject
       "There is no 'version' property in JSON data");
 
     ASSERT_FATAL(jsonObject['version'] === this.version,
-      "Version of JSON data ("
-      + jsonObject['version'] +
-      ") doesn't match required version ("
-      + this.version + ")");
+      "Version of JSON data (" + jsonObject['version'] + ")"
+      + " doesn't match required version (" + this.version + ")");
   }
 
-  protected loadFromFile(filePath: string)
+  protected async loadFromFile(filePath: string)
   {
-    let jsonString;
+    // Note: Unline writing the same file while it is saving, loading
+    // from the same file while it is loading is not a problem (according
+    // to node.js filestream documentation). So we don't need to bother with
+    // loading locks.
 
-    /// Prozatim to nactu synchronne.
-    /// TODO: Asynchronni loading.
+    let jsonString = "";
 
     try
     {
-      jsonString = fs.readFileSync(filePath, 'utf8');
+      // Asynchronous reading from the file.
+      // (the rest of the code will execute only after the reading is done)
+      jsonString = await promisifiedFS.readFile(filePath, 'utf8');
     }
     catch (error)
     {
@@ -63,83 +77,69 @@ export class SaveableObject
     }
 
     this.loadFromJsonString(jsonString);
-
-    /*
-    /// this.loading = true;
-    fs.readFile
-    (
-      filePath,
-      'utf8',
-      (error, data) =>
-      {
-        if (error)
-          throw error;
-
-        /// this.loading = false;
-        this.loadFromJsonString(data);
-      }
-    );
-    */
   }
 
-  protected saveToFile(filePath: string)
+  protected async saveToFile(filePath: string)
   {
     let jsonString = this.saveToJsonString();
 
-    /// Zatim to savnu synchronne.
-    /// TODO: Casem prepsat na asynchronni read/write.
+    // lastIssuedId needs to be saved each time we are saved because we might
+    // be saving ids that were issued after last lastIssuedId save.
+    await Server.idProvider.saveLastIssuedId();
 
-    try
+    // mySaveRequests serves both as buffer for request and as lock indicating
+    // that we are already saving something (it it's not null).
+    if (this.mySaveRequests !== null)
     {
-      fs.writeFileSync(filePath, jsonString, 'utf8');
+      // Saving to the same file while it is still being saved is not safe
+      // (according to node.js filestream documentation). So if this occurs,
+      // we won't initiate another save at once, just remember that a request
+      // has been issued (and where are we supposed to save ourselves).
+
+      // Only push requests to save to different path.
+      // (there is no point in future resaving to the same file multiple times)
+      if (this.mySaveRequests.indexOf(filePath) !== -1)
+        this.mySaveRequests.push(filePath);
+
+      return;
     }
-    catch (error)
+    else
     {
-      Mudlog.log(
-        "Error saving file '" + filePath + "': " + error.code,
-        Mudlog.msgType.SYSTEM_ERROR,
-        Mudlog.levels.IMMORTAL);
-
-      // Throw the exception so the mud will get terminated with error
-      // message.
-      throw error;
+      this.mySaveRequests.push(filePath);
     }
 
-    /*
-    fs.writeFile
-    (
-      jsonStream,
-      filePath,
-      'utf8',
-      (error) =>
+    for (let i = 0; i < this.mySaveRequests.length; i++)
+    {
+      try
       {
-        if(error)
-          throw error;
-
-         /// TODO:
-        /// this.saving = false;
-        /// console.log('It\'s saved!');
+        // Asynchronous saving to file.
+        // (the rest of the code will execute only after the saving is done)
+        await promisifiedFS
+          .writeFile(this.mySaveRequests[i], jsonString, 'utf8');
       }
-    );
+      catch (error)
+      {
+        Mudlog.log(
+          "Error saving file '" + this.mySaveRequests[i] + "': " + error.code,
+          Mudlog.msgType.SYSTEM_ERROR,
+          Mudlog.levels.IMMORTAL);
 
-    /// this.saving = true;
-    /// Tohle nebude stacit, save requesty budu asi muset bufferovat (do fromty)
-    /// (protoze je spatne pustit nove savovani toho sameho filu driv, nez
-    /// dobehne to stare)
-    // Nebo mozna prece jen pouzit ten write stream?
+        // Throw the exception so the mud will get terminated with error
+        // message.
+        throw error;
+      }
+    }
 
-    /*
-    // 'utf-8' is default encoding, so there is no need to specify it.
-    var wstream = fs.createWriteStream('myOutput.txt');
-    // Node.js 0.10+ emits finish when complete
-    wstream.on('finish', function()
-    {
-      console.log('file has been written');
-    });
-    wstream.write('Hello world!\n');
-    wstream.write('Another line');
-    wstream.end();
-    */
+    // All save requests are processed, mark the buffer as empty.
+    // (if will also hopefully flag allocated data for freeing from memory)
+    this.mySaveRequests = null;
+
+    // Save current lastIssuedId once more, because it is possible that while
+    // we were saving it, another one was issued and saved withing the object
+    // we jast saved.
+    // (It would actually be ok just to save it here, but lastIssuedId
+    // consistency is absolutely crucial, so better be safe)
+    Server.idProvider.saveLastIssuedId();
   }
 
   protected loadFromJsonString(jsonString: string)
@@ -190,7 +190,10 @@ export class SaveableObject
     for (property in this)
     {
       // Skip our methods, they are not saved to json of course.
-      if (typeof this[property] !== 'function')
+      //   Also skip 'mySaveRequests' property, which is used to micromanage
+      // asynchronous saving and is not saved.
+      if (typeof this[property] !== 'function'
+        && property !== 'mySaveRequests')
       {
         ASSERT_FATAL(property in jsonObject,
           "Property '" + property + "' exists in object but not in JSON data"
@@ -204,15 +207,23 @@ export class SaveableObject
     {
       ASSERT_FATAL(property in this,
         "Property '" + property + "' exists in JSON data we are trying to"
-        + " load ourselves from but we don't have it Maybe you forgot to"
+        + " load ourselves from but we don't have it. Maybe you forgot to"
         + " change the version and convert JSON files to a new format?");
     }
 
     // Now copy the data.
     for (property in jsonObject)
     {
-      if (typeof this[property] === 'object'
-          && 'loadFromJsonObject' in this[property])
+      ASSERT_FATAL(this[property] !== null,
+        "There is a property (" + property + ") in this object with null"
+        + " value, which is to be loaded from json. That's not possible,"
+        + " because loading method can't be called on null object. Make"
+        + " sure that all properties on this class are inicialized to"
+        + " something else than null");
+
+      if (this[property] !== null
+        && typeof this[property] === 'object'
+        && 'loadFromJsonObject' in this[property])
       {
         // This handles the situation when you put SaveableObject into
         // another SaveableObject.
@@ -231,6 +242,11 @@ export class SaveableObject
 
     for (let property in this)
     {
+      // mySaveRequests object is not to be saved, it is used to micromanage
+      // asynchronous saving.
+      if (property === 'mySaveRequests')
+        continue;
+
       // This handles the situation when you put SaveableObject into
       // another SaveableObject.
       if (typeof this[property] === 'object'

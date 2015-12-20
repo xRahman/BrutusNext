@@ -21,8 +21,7 @@ export class PlayerConnectionManager extends IdContainer<PlayerConnection>
   // Creates a socket descriptor, returns its unique id.
   public addPlayerConnection(socketDescriptor: SocketDescriptor): Id
   {
-    // generateId() is a method inherited from IdProvider.
-    let newId = this.addItem(new PlayerConnection(socketDescriptor));
+    let newId = this.addNewItem(new PlayerConnection(socketDescriptor));
     this.getItem(newId).id = newId;
 
     return newId;

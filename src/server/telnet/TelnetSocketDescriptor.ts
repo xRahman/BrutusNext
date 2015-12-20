@@ -18,33 +18,33 @@ import * as net from 'net';  // Import namespace 'net' from node.js
 import * as events from 'events';  // Import namespace 'events' from node.js
 
 const ANSI =
-  {
-    '&n': '\u001b[0m',
-    '&d': '\u001b[1m',      // bold
-    '&i': '\u001b[3m',      // italic
-    '&u': '\u001b[4m',      // underline
-    '&l': '\u001b[5m',      // blink
-    '&k': '\u001b[30m',     // black
-    '&Ki': '\u001b[1;3;30m', // black, bold, italic
-    '&K': '\u001b[1;30m',
-    '&r': '\u001b[31m',
-    '&Ri': '\u001b[1;3;31m', // red, bold, italic
-    '&R': '\u001b[1;31m',
-    '&g': '\u001b[32m',
-    '&Gi': '\u001b[1;3;32m', // green, bold, italic
-    '&G': '\u001b[1;32m',
-    '&y': '\u001b[33m',
-    '&Y': '\u001b[1;33m',
-    '&b': '\u001b[34m',
-    '&Bi': '\u001b[1;3;34m', // blue, bold, italic
-    '&B': '\u001b[1;34m',
-    '&m': '\u001b[35m',
-    '&M': '\u001b[1;35m',
-    '&c': '\u001b[36m',
-    '&C': '\u001b[1;36m',
-    '&w': '\u001b[37m',
-    '&W': '\u001b[1;37m'
-  };
+{
+  '&n': '\u001b[0m',
+  '&d': '\u001b[1m',      // bold
+  '&i': '\u001b[3m',      // italic
+  '&u': '\u001b[4m',      // underline
+  '&l': '\u001b[5m',      // blink
+  '&k': '\u001b[30m',     // black
+  '&Ki': '\u001b[1;3;30m', // black, bold, italic
+  '&K': '\u001b[1;30m',
+  '&r': '\u001b[31m',
+  '&Ri': '\u001b[1;3;31m', // red, bold, italic
+  '&R': '\u001b[1;31m',
+  '&g': '\u001b[32m',
+  '&Gi': '\u001b[1;3;32m', // green, bold, italic
+  '&G': '\u001b[1;32m',
+  '&y': '\u001b[33m',
+  '&Y': '\u001b[1;33m',
+  '&b': '\u001b[34m',
+  '&Bi': '\u001b[1;3;34m', // blue, bold, italic
+  '&B': '\u001b[1;34m',
+  '&m': '\u001b[35m',
+  '&M': '\u001b[1;35m',
+  '&c': '\u001b[36m',
+  '&C': '\u001b[1;36m',
+  '&w': '\u001b[37m',
+  '&W': '\u001b[1;37m'
+};
 
 /*
 /// Zatim nepouzito.
@@ -170,11 +170,14 @@ export class TelnetSocketDescriptor extends SocketDescriptor
   }
 
   // Buffer to accumulate incomplete parts of data stream.
-  protected myBuffer = "";
+  protected myinputBuffer = "";
+
+  // Command lines waiting to be processed.
+  protected myCommandsBuffer = null;
 
   // ---------------- Event handlers --------------------
 
-  protected onSocketReceivedData(data: string)
+  protected async onSocketReceivedData(data: string)
   {
     // Ensure that all newlines are in format CR;LF ('\r\n').
     data = this.normalizeCRLF(data);
@@ -202,13 +205,39 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     // but I'll process the data anyways.
     this.endsWithNewline(data);
 
-    // If input contains multiple lines, split them.
-    let lines = this.splitInputByNewlines(data);
+    // myCommandsBuffer stores commands that are awaiting processing and also
+    // serves as a lock. If there is something in it, it means that previous
+    // commands from this socket are already being processed and we need to
+    // add our new commands to the buffer or we would process them out of
+    // order in which we received them.
+    if (this.myCommandsBuffer !== null)
+    {
+      // Just add lines to buffer.
+      
+      // This strange command appends an array to another array.
+      this.myCommandsBuffer.push.apply(this.myCommandsBuffer,
+        this.splitInputByNewlines(data));
+
+      // Our new commands will be processed by 'thread' that issued the lock
+      // (in the following for cycle).
+      return;
+    } else
+    {
+      // If input contains multiple lines, split them.
+      this.myCommandsBuffer = this.splitInputByNewlines(data);
+    }
 
     // Handle each line as a separate command. Also trim it (remove leading
     // and trailing white spaces) before processing.
-    for (let i = 0; i < lines.length; i++)
-      this.playerConnection.processCommand(lines[i].trim());
+    for (let i = 0; i < this.myCommandsBuffer.length; i++)
+    {
+      await this.playerConnection
+        .processCommand(this.myCommandsBuffer[i].trim());
+    }
+
+    // All commands are processed, mark the buffer as empty.
+    // (if will also hopefully flag allocated data for freeing from memory)
+    this.myCommandsBuffer = null;
   }
 
   protected onSocketError(error)
@@ -216,7 +245,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     let accountName = "";
     let player = "";
 
-    if (this.playerConnection.accountId !== null)
+    if (this.playerConnection.accountId.notNull())
     {
       accountName =
         Server.accountManager
@@ -276,7 +305,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     if (data === "") // Nothing to parse.
       return;
 
-    data = this.myBuffer + data;
+    data = this.myinputBuffer + data;
 
     if (data.indexOf('\xff\xfb\xc9') !== -1)
     {
@@ -317,7 +346,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
         /// Ok, tohle snad jakz takz chapu: Nedosel cely GMCP packet, takze si
         /// data odlozime do bufferu, dokud nedojde zbytek.
         ///log('incomplete GMCP package', this);
-        this.myBuffer = data;
+        this.myinputBuffer = data;
 
         return "";
       }
@@ -338,12 +367,12 @@ export class TelnetSocketDescriptor extends SocketDescriptor
 
       if (data.indexOf('\xff\xfa\xc9') !== -1)
       {
-        this.myBuffer = data;
+        this.myinputBuffer = data;
 
         return "";
       }
       else
-        this.myBuffer = '';
+        this.myinputBuffer = '';
     }
 
     /// JSON zatim nepotrebuju
@@ -374,7 +403,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
            /// and process pending input another way
            if ((data.indexOf('{') !== -1 || data.indexOf('}') !== -1))
            {
-             this.myBuffer = data;
+             this.myinputBuffer = data;
              return "";
            }
          }
@@ -414,10 +443,9 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     let accountName = "";
     let player = "";
 
-    if (this.playerConnection.accountId !== null)
+    if (this.playerConnection.accountId.notNull())
     {
-      accountName =
-      Server.accountManager
+      accountName = Server.accountManager
         .getAccount(this.playerConnection.accountId).accountName;
     }
 

@@ -3,15 +3,12 @@
 
   Global utility functions.
 */
-
 'use strict';
-
 /*
 import {Assert} from './Assert';
 declare var GLOBAL: any;
 GLOBAL.ASSERT = Assert.assert;
 */
-
 /*
 module.exports = class Utils
 {
@@ -146,4 +143,5 @@ function checkTypesOfArguments(argumentsToCheck)
     }
   }
 }
-*/
+*/ 
+//# sourceMappingURL=Utils.js.map
