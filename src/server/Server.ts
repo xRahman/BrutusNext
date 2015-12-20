@@ -40,21 +40,30 @@ export class Server
       "Time of boot is not initialized yet");
     return Server.getInstance().myTimeOfBoot;
   }
+
   public static get game()
   {
     return Server.getInstance().myGame;
   }
+
   public static get accountManager()
   {
     return Server.getInstance().myAccountManager;
   }
+
   public static get playerConnectionManager()
   {
     return Server.getInstance().myPlayerConnectionManager;
   }
+
   public static get telnetServer()
   {
     return Server.getInstance().myTelnetServer;
+  }
+
+  public static get idProvider()
+  {
+    return Server.getInstance().myIdProvider;
   }
 
   static get DEFAULT_TELNET_PORT() { return 4443; }
@@ -96,6 +105,7 @@ export class Server
 
   // -------------- Protected class data ----------------
 
+  protected myIdProvider = new IdProvider();
   protected myGame = new Game();
   protected myAccountManager = new AccountManager();
   protected myPlayerConnectionManager = new PlayerConnectionManager();

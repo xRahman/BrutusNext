@@ -1,7 +1,8 @@
 {
   "compilerOptions":
   {
-    "target": "es5",
+    "target": "es6",
+    "module": "commonjs",
     "charset": "UTF-8",
     "moduleResolution": "node",
     "newLine": "LF",
@@ -9,8 +10,7 @@
     "outDir": "./build",
     "rootDir": "./src",
     "sourceMap": true,
-    "sourceRoot": "./src",
-    "module": "commonjs"
+    "sourceRoot": "./src"
   },
   "files":
   [
