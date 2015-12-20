@@ -20,48 +20,52 @@
     <TypeScriptModuleKind>CommonJs</TypeScriptModuleKind>
     <TypeScriptModuleResolution>node</TypeScriptModuleResolution>
     <NodeExeArguments>--harmony_rest_parameters</NodeExeArguments>
+    <TypeScriptOutDir>./build</TypeScriptOutDir>
+    <TypeScriptRootDir>./src</TypeScriptRootDir>
+    <TypeScriptSourceRoot>./src</TypeScriptSourceRoot>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
   <ItemGroup>
-    <TypeScriptCompile Include="BrutusNext.ts" />
-    <TypeScriptCompile Include="game\Character.ts" />
-    <TypeScriptCompile Include="game\CharacterData.ts" />
-    <TypeScriptCompile Include="game\CommandInterpretter.ts" />
-    <TypeScriptCompile Include="game\Game.ts" />
-    <TypeScriptCompile Include="game\GameEntity.ts" />
-    <TypeScriptCompile Include="game\GameEntityData.ts" />
-    <TypeScriptCompile Include="game\CharacterManager.ts" />
-    <TypeScriptCompile Include="game\Room.ts" />
-    <TypeScriptCompile Include="game\RoomManager.ts" />
-    <TypeScriptCompile Include="headers\node.d.ts" />
-    <TypeScriptCompile Include="headers\ws.d.ts" />
-    <TypeScriptCompile Include="server\Account.ts" />
-    <TypeScriptCompile Include="server\AccountData.ts" />
-    <TypeScriptCompile Include="server\AuthProcessor.ts" />
-    <TypeScriptCompile Include="server\LobbyProcessor.ts" />
-    <TypeScriptCompile Include="server\Mudlog.ts" />
-    <TypeScriptCompile Include="server\PlayerConnection.ts" />
-    <TypeScriptCompile Include="server\Server.ts" />
-    <TypeScriptCompile Include="server\AccountManager.ts" />
-    <TypeScriptCompile Include="server\SocketDescriptor.ts" />
-    <TypeScriptCompile Include="server\PlayerConnectionManager.ts" />
-    <TypeScriptCompile Include="server\telnet\TelnetServer.ts" />
-    <TypeScriptCompile Include="server\telnet\TelnetSocketDescriptor.ts" />
-    <TypeScriptCompile Include="shared\ASSERT.ts" />
-    <TypeScriptCompile Include="shared\Id.ts" />
-    <TypeScriptCompile Include="shared\SaveableContainer.ts" />
-    <TypeScriptCompile Include="shared\IdContainer.ts" />
-    <TypeScriptCompile Include="shared\IdProvider.ts" />
-    <TypeScriptCompile Include="shared\IdableSaveableContainer.ts" />
-    <TypeScriptCompile Include="shared\SaveableObject.ts" />
+    <TypeScriptCompile Include="src\BrutusNext.ts" />
+    <TypeScriptCompile Include="src\game\Character.ts" />
+    <TypeScriptCompile Include="src\game\CharacterData.ts" />
+    <TypeScriptCompile Include="src\game\CommandInterpretter.ts" />
+    <TypeScriptCompile Include="src\game\Game.ts" />
+    <TypeScriptCompile Include="src\game\GameEntity.ts" />
+    <TypeScriptCompile Include="src\game\GameEntityData.ts" />
+    <TypeScriptCompile Include="src\game\CharacterManager.ts" />
+    <TypeScriptCompile Include="src\game\Room.ts" />
+    <TypeScriptCompile Include="src\game\RoomManager.ts" />
+    <TypeScriptCompile Include="src\headers\node.d.ts" />
+    <TypeScriptCompile Include="src\headers\ws.d.ts" />
+    <TypeScriptCompile Include="src\server\Account.ts" />
+    <TypeScriptCompile Include="src\server\AccountData.ts" />
+    <TypeScriptCompile Include="src\server\AuthProcessor.ts" />
+    <TypeScriptCompile Include="src\server\LobbyProcessor.ts" />
+    <TypeScriptCompile Include="src\server\Mudlog.ts" />
+    <TypeScriptCompile Include="src\server\PlayerConnection.ts" />
+    <TypeScriptCompile Include="src\server\Server.ts" />
+    <TypeScriptCompile Include="src\server\AccountManager.ts" />
+    <TypeScriptCompile Include="src\server\SocketDescriptor.ts" />
+    <TypeScriptCompile Include="src\server\PlayerConnectionManager.ts" />
+    <TypeScriptCompile Include="src\server\telnet\TelnetServer.ts" />
+    <TypeScriptCompile Include="src\server\telnet\TelnetSocketDescriptor.ts" />
+    <TypeScriptCompile Include="src\shared\ASSERT.ts" />
+    <TypeScriptCompile Include="src\shared\Id.ts" />
+    <TypeScriptCompile Include="src\shared\SaveableContainer.ts" />
+    <TypeScriptCompile Include="src\shared\IdContainer.ts" />
+    <TypeScriptCompile Include="src\shared\IdProvider.ts" />
+    <TypeScriptCompile Include="src\shared\IdableSaveableContainer.ts" />
+    <TypeScriptCompile Include="src\shared\SaveableObject.ts" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="game\" />
-    <Folder Include="headers\" />
-    <Folder Include="server" />
-    <Folder Include="server\telnet\" />
-    <Folder Include="shared" />
+    <Folder Include="src\" />
+    <Folder Include="src\game\" />
+    <Folder Include="src\headers\" />
+    <Folder Include="src\server" />
+    <Folder Include="src\server\telnet\" />
+    <Folder Include="src\shared" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <!--Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them.-->
