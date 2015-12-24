@@ -37,6 +37,8 @@ export class AccountManager extends IdContainer<Account>
 
     let newAccountId = this.addNewAccount(newAccount);
 
+    newAccount.id = newAccountId;
+
     // Save the account info to the disk (so we know that the account exists).
     newAccount.save();
 

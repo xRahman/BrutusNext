@@ -170,6 +170,14 @@ export class AuthProcessor
       ASSERT_FATAL(
         account.id.notNull(),
         "Null id in saved file of account: " + account.accountName);
+
+      if (!ASSERT(this.myAccountName === account.accountName,
+        "Account name saved in file (" + account.accountName + ")"
+        + " doesn't match account file name (" + this.myAccountName + ")."
+        + " Renaming account to match file name."))
+      {
+        account.accountName = this.myAccountName;
+      }
     }
 
     if (account.checkPassword(password))
@@ -211,15 +219,21 @@ export class AuthProcessor
       // a getNewPassword() again.
       return;
 
-    // Pozn: O znovuzadani hesla nema smysl zadat, kdyz ho uzivatel
-    // pri zadavani normalne vidi. (Asi by to ale chtelo implementovat
-    // password reset s poslanim noveho hesla na mail).
+    // Note: There is no point in asking user to retype the password when
+    //       she can se it typed.
 
+    // Password accepted, create a new account.
     let newAccountId =
       Server.accountManager.createNewAccount(
         this.myAccountName,
         password,
         this.myPlayerConnection.id);
+
+    Mudlog.log(
+      "New player: " + this.accountName
+      + " [" + this.myPlayerConnection.ipAddress + "]",
+      Mudlog.msgType.SYSTEM_INFO,
+      Mudlog.levels.IMMORTAL);
 
     this.myPlayerConnection.accountId = newAccountId;
     this.myStage = AuthProcessor.stage.DONE;

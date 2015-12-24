@@ -35,7 +35,10 @@ export class SaveableObject
   // Also serves as lock - if it's not null, it means we are already saving
   // ourselves.
   // (note: This property is not saved)
-  protected mySaveRequests: Array<string> = null;
+  protected mySaveRequests: Array<string> = [];
+
+  // You can set this flag to false to prevent saving of SaveableObject
+  public isSaveable = true;
 
   // -------------- Protected methods -------------------
 
@@ -81,15 +84,29 @@ export class SaveableObject
 
   protected async saveToFile(filePath: string)
   {
-    let jsonString = this.saveToJsonString();
+///    console.log("saveToFile()");
 
     // lastIssuedId needs to be saved each time we are saved because we might
     // be saving ids that were issued after last lastIssuedId save.
     await Server.idProvider.saveLastIssuedId();
 
+    await this.saveContentsToFile(filePath);
+
+    // Save current lastIssuedId once more, because it is possible that while
+    // we were saving it, another one was issued and saved withing the object
+    // we jast saved.
+    // (It would actually be ok just to save it here, but lastIssuedId
+    // consistency is absolutely crucial, so better be safe)
+    await Server.idProvider.saveLastIssuedId();
+  }
+
+  protected async saveContentsToFile(filePath: string)
+  {
+    let jsonString = this.saveToJsonString();
+
     // mySaveRequests serves both as buffer for request and as lock indicating
-    // that we are already saving something (it it's not null).
-    if (this.mySaveRequests !== null)
+    // that we are already saving something (it it contains something).
+    if (this.mySaveRequests.length !== 0)
     {
       // Saving to the same file while it is still being saved is not safe
       // (according to node.js filestream documentation). So if this occurs,
@@ -132,14 +149,7 @@ export class SaveableObject
 
     // All save requests are processed, mark the buffer as empty.
     // (if will also hopefully flag allocated data for freeing from memory)
-    this.mySaveRequests = null;
-
-    // Save current lastIssuedId once more, because it is possible that while
-    // we were saving it, another one was issued and saved withing the object
-    // we jast saved.
-    // (It would actually be ok just to save it here, but lastIssuedId
-    // consistency is absolutely crucial, so better be safe)
-    Server.idProvider.saveLastIssuedId();
+    this.mySaveRequests = [];
   }
 
   protected loadFromJsonString(jsonString: string)
@@ -191,9 +201,10 @@ export class SaveableObject
     {
       // Skip our methods, they are not saved to json of course.
       //   Also skip 'mySaveRequests' property, which is used to micromanage
-      // asynchronous saving and is not saved.
+      // asynchronous saving and is not saved. Also skip 'isSaveable' property.
       if (typeof this[property] !== 'function'
-        && property !== 'mySaveRequests')
+        && property !== 'mySaveRequests'
+        && property !== 'isSaveable')
       {
         ASSERT_FATAL(property in jsonObject,
           "Property '" + property + "' exists in object but not in JSON data"
@@ -245,6 +256,9 @@ export class SaveableObject
       // mySaveRequests object is not to be saved, it is used to micromanage
       // asynchronous saving.
       if (property === 'mySaveRequests')
+        continue;
+
+      if (property === 'isSaveable')
         continue;
 
       // This handles the situation when you put SaveableObject into
