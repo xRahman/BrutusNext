@@ -7,8 +7,8 @@
     <ProjectHome />
     <ProjectView>ProjectFiles</ProjectView>
     <StartupFile>BrutusNext.ts</StartupFile>
-    <WorkingDirectory>C:\Brutus\BrutusNext</WorkingDirectory>
-    <OutputPath>.</OutputPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>./build</OutputPath>
     <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{349c5851-65df-11da-9384-00065b846f21};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
     <TypeScriptSourceMap>true</TypeScriptSourceMap>
     <EnableTypeScript>true</EnableTypeScript>
@@ -20,7 +20,7 @@
     <TypeScriptModuleKind>CommonJs</TypeScriptModuleKind>
     <TypeScriptModuleResolution>node</TypeScriptModuleResolution>
     <NodeExeArguments>--harmony_rest_parameters</NodeExeArguments>
-    <TypeScriptOutDir>./build</TypeScriptOutDir>
+    <TypeScriptOutDir>./src</TypeScriptOutDir>
     <TypeScriptRootDir>./src</TypeScriptRootDir>
     <TypeScriptSourceRoot>./src</TypeScriptSourceRoot>
   </PropertyGroup>
@@ -53,6 +53,7 @@
     <TypeScriptCompile Include="src\server\telnet\TelnetSocketDescriptor.ts" />
     <TypeScriptCompile Include="src\shared\ASSERT.ts" />
     <TypeScriptCompile Include="src\shared\Id.ts" />
+    <TypeScriptCompile Include="src\shared\NamedClass.ts" />
     <TypeScriptCompile Include="src\shared\SaveableContainer.ts" />
     <TypeScriptCompile Include="src\shared\IdContainer.ts" />
     <TypeScriptCompile Include="src\shared\IdProvider.ts" />

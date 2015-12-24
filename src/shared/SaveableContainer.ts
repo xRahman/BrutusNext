@@ -92,6 +92,8 @@ export class SaveableContainer extends SaveableObject
     // SaveableContainer only saving it's members that are SaveableContainers
     // or SaveableObjects. But we need to save version in order to be able to
     // check it, don't we?
+    //   The same is true for class name.
+    jsonObject['className'] = this.className;
     jsonObject['version'] = this.version;
 
     for (let property in this)
