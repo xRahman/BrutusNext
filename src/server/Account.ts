@@ -18,7 +18,7 @@ import * as crypto from 'crypto';  // Import namespace 'crypto' from node.js
 export class Account extends IdableSaveableContainer
 {
   // Account name is not saved to the file. Filename represents account name.
-  constructor(protected myAccountName: string,
+  constructor(accountName: string,
               protected myPlayerConnectionId: Id)
   {
     super();
@@ -27,6 +27,8 @@ export class Account extends IdableSaveableContainer
     // SaveableObjects. You will also need to convert data in respective
     // .json files to conform to the new version.
     this.version = 0;
+
+    this.myData.accountName = accountName;
   }
 
   static get SAVE_DIRECTORY() { return "./data/accounts/"; }
@@ -44,7 +46,8 @@ export class Account extends IdableSaveableContainer
     this.myPlayerConnectionId = value;
   }
 
-  public get accountName() { return this.myAccountName; }
+  public get accountName() { return this.myData.accountName; }
+  public set accountName(value: string) { this.myData.accountName = value; }
 
   // ---------------- Public methods --------------------
 
@@ -82,6 +85,6 @@ export class Account extends IdableSaveableContainer
   // What file will this object be saved to.
   protected myGetSavePath(): string
   {
-    return Account.SAVE_DIRECTORY + this.myAccountName + ".json";
+    return Account.SAVE_DIRECTORY + this.accountName + ".json";
   }
 }

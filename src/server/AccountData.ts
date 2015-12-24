@@ -29,4 +29,6 @@ export class AccountData extends SaveableObject
 
   // Not really a password, just it's hash.
   public password = "";
+
+  public accountName = "";
 }

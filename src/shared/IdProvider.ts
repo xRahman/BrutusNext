@@ -142,7 +142,15 @@ export class IdProvider extends SaveableObject
 
   // -------------- Protected methods -------------------
 
-  // Overrides loadFromJsonObject() from SaveableObject to only
+  // Overrides SaveableObject::saveToFile() to not to save
+  // lastIssuedId (because it's done by this method so it would
+  // lead endless recursion and stack overflow.
+  protected async saveToFile(filePath: string)
+  {
+    await this.saveContentsToFile(filePath);
+  }
+
+  // Overrides SaveableObject::loadFromJsonObject() to only
   // save lastIssuedId.
   protected saveToJsonObject(): Object
   {
