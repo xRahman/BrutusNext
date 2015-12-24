@@ -136,7 +136,7 @@ export class AuthProcessor
     {
       // New user. Ask for a new password.
       this.myPlayerConnection.send("&wCreating a new character...\r\n"
-        + "Please enter a password you want to use to log in: ");
+        + "Please enter a password you want to use: ");
 /// Account name variant
 ///      this.myPlayerConnection.send("&wCreating a new user account...\r\n"
 ///        + "Please enter a password for your account: ");
