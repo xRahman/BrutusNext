@@ -76,7 +76,8 @@ export class SaveableContainer extends SaveableObject
       if (
         this[property] !== null
         && typeof this[property] === 'object'
-        && 'loadFromJsonObject' in this[property])
+        && 'loadFromJsonObject' in this[property]
+        && this[property].isSaveable)
       {
         this[property].loadFromJsonObject(jsonObject[property]);
       }
@@ -116,7 +117,8 @@ export class SaveableContainer extends SaveableObject
     if (
       this[property] !== null
       &&  typeof this[property] === 'object'
-      && 'loadFromJsonObject' in this[property])
+      && 'loadFromJsonObject' in this[property]
+      && this[property].isSaveable)
     {
       return true;
     }
