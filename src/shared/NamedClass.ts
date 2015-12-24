@@ -10,13 +10,23 @@ import {ASSERT_FATAL} from '../shared/ASSERT';
 
 export class NamedClass
 {
-  // Returns name of the class which inherited this method.
-  protected getClassName()
+  constructor()
   {
-    let funcNameRegex = /function (.{1,})\(/;
-    let results = (funcNameRegex).exec((<any>this).constructor.toString());
+      this.className = this.getClassName();
+  }
 
-    ASSERT_FATAL(results && results.length > 1,
+  public className = "NamedClass";
+
+  // Returns name of the class which inherited this method.
+  private getClassName()
+  {
+    ///let funcNameRegex = /function (.{1,})\(/;
+    let classNameRegex = /class (.*) extends (.*)/;
+///    let results = (funcNameRegex).exec((<any>this).constructor.toString());
+
+    let results = classNameRegex.exec(this.constructor.toString());
+
+    ASSERT_FATAL(results !== null && results.length > 1,
       "Unable to extract class name");
 
     return (results && results.length > 1) ? results[1] : "";

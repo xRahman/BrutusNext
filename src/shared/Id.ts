@@ -13,8 +13,8 @@ import {SaveableObject} from '../shared/SaveableObject';
 export class Id extends SaveableObject
 {
   // myStringID should be unique per boot.
-  // myTypeOfId is the name of the contaier class that issued this id.
-  constructor(protected myStringId: string)
+  // myType is the name of the class this id points to.
+  constructor(protected myStringId: string, protected myType: string)
   {
     super();
 
@@ -29,7 +29,7 @@ export class Id extends SaveableObject
   // New object is returned so you can use this to inicialize an id that will
   // be loaded from file later (if it was static value, loagind multiple
   // 'uninitialized' ids would overwrite each other).
-  public static get NULL() { return new Id(""); }
+  public static get NULL() { return new Id("", ""); }
 
   public get stringId() { return this.myStringId; }
   public get timeOfBoot() { return this.myTimeOfBoot; }

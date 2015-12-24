@@ -9,6 +9,7 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
+import {NamedClass} from '../shared/NamedClass';
 import {Id} from '../shared/Id';
 import {IdProvider} from '../shared/IdProvider';
 import {Server} from '../server/Server';
@@ -30,7 +31,12 @@ export class IdContainer<T>
     // to it. (Or you might just increse it by some large number and hope that
     // you skip all already issued ids.)
     //   Much safer way is to rollback to the last backup that worked.
-    let newId = Server.idProvider.generateId(this.myTypeOfId);
+    let newId = Server.idProvider
+      .generateId(this.myTypeOfId, item['className']);
+/// TODO: Asi to budu muset zkusit predelat z templatu na SaveableObject, treba
+/// to v typescriptu 1.7 projde.
+    /// Nebo pripadne nechat ten tvrdy pristup pres jmeno property, ovsem
+    /// s osetrenim, ze existuje.
 
     ASSERT_FATAL(
       !(newId.stringId in this.myContainer),

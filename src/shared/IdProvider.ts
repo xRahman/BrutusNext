@@ -50,7 +50,7 @@ export class IdProvider extends SaveableObject
 
   // Use 'Id.NULL' as an 'invalid' id value. Don't use 'null' because
   // it would prevent loading your ids from file.
-  public generateId(typeOfId: string): Id
+  public generateId(typeOfId: string, type: string): Id
   {
     ASSERT_FATAL(this.myLoadedFromFile === true,
       "Attempt to generate an id before IdProvider has loaded"
@@ -79,7 +79,7 @@ export class IdProvider extends SaveableObject
     for (let i = 0; i < this.myLastIssuedId.length; i++)
       stringId += this.myLastIssuedId[i].toString(16);
 
-    return new Id(stringId);
+    return new Id(stringId, type);
   }
 
   public async saveLastIssuedId()
