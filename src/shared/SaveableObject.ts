@@ -13,6 +13,7 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
+import {NamedClass} from '../shared/NamedClass';
 import {Mudlog} from '../server/Mudlog';
 import {Server} from '../server/Server';
 
@@ -23,7 +24,7 @@ import * as fs from 'fs';  // Import namespace 'fs' from node.js
 let promisifiedFS = require('fs-promise');
 let beautify = require('js-beautify').js_beautify;
 
-export class SaveableObject
+export class SaveableObject extends NamedClass
 {
   // -------------- Protected class data ----------------
 
