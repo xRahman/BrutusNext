@@ -67,7 +67,7 @@ export class IdContainer<T>
 
   public getItem(id: Id): T
   {
-    ASSERT_FATAL(id.notNull(), "Invalid id");
+    ASSERT_FATAL(id.notNull(), "Trying to get item using null id");
 
     let item = this.myContainer[id.stringId];
 
