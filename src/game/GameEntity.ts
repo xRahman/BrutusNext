@@ -61,7 +61,7 @@ export abstract class GameEntity extends CommandInterpretter
   protected myData: GameEntityData = null;
 
 
-  // null if no player is connected to (is playing as) this entity,
+  // Id.NULL if no player is connected to (is playing as) this entity,
   // connectionId otherwise.
   protected myPlayerConnectionId: Id = Id.NULL;
 

@@ -28,38 +28,43 @@ export class CharacterManager
       + characterName + "' who already exists");
 
     let newCharacter = new Character(characterName);
-    let newCharacterId = this.addOnlineCharacter(newCharacter);
+    let newCharacterId = this.addNewCharacter(newCharacter);
 
     // Save the character to the disk (so we know that the character exists).
+    // (This does not need to be synchronous.)
     newCharacter.save();
 
     return newCharacterId;
   }
 
-  // Returns id of character if she is already loaded or loads her from disk.
-  public requestCharacter(characterName: string): Id
+  // Returns null if character is not online (or doesn't exist).
+  public getCharacterByName(characterName: string): Character
   {
-    let characterId: Id = Id.NULL;
-
     // Using 'in' operator on object with null value would crash the game.
-    if (!ASSERT(this.myPlayerCharacterNames !== null,
-          "Invalid myPlayerCharacterNames"))
+    if (!ASSERT(this.myCharacterNames !== null,
+      "Invalid myPlayerCharacterNames"))
       return;
 
-    if (characterName in this.myPlayerCharacterNames)
+    if (characterName in this.myCharacterNames)
     {
       // Character is already loaded.
-      characterId = this.myPlayerCharacterNames[characterName];
-    } else
-    {
-      // Login to an offline account.
-      let character = new Character(characterName);
-      characterId = this.addOnlineCharacter(character);
-      // Load character from file.
-      character.load();
+      let characterId = this.myCharacterNames[characterName];
+
+      return this.getCharacter(characterId);
     }
 
-    return characterId;
+    return null;
+  }
+
+  // Adds character that has been loaded from file to the list of
+  // online character. Id loaded from file is reused.
+  public registerLoadedCharacter(character: Character)
+  {
+    ASSERT_FATAL(!this.getCharacterByName(character.name),
+      "Attempt to register character '"
+      + character.name + "' that is already registered");
+
+    this.addCharacter(character);
   }
 
   // Removes character from list of online characters.
@@ -71,17 +76,25 @@ export class CharacterManager
     /// aspon melo). Zatim si to tu necham.
     /// (Pokud by se to melo tykat jen playeru, tak by asi stacilo checkovat,
     /// ze character ma nenulove playerConnectionId)
-    Mudlog.log(
+    Mudlog.log
+    (
       "Dropping character " + characterName,
       Mudlog.msgType.SYSTEM_INFO,
-      Mudlog.levels.IMMORTAL);
+      Mudlog.levels.IMMORTAL
+    );
 
-    this.removeOnlineCharacter(characterId);
+    this.removeCharacter(characterId);
   }
 
-  public getPlayerCharacter(id: Id)
+  public getCharacter(id: Id): Character
   {
-    return Game.entities.getItem(id);
+    let character = Game.entities.getItem(id);
+
+    ASSERT_FATAL(character instanceof Character,
+      "Attempt to get character by id that doesn't point to an instance of"
+      + "class inherited from Character");
+
+    return <Character> character;
   }
 
   // Returns true if player character with given name exists.
@@ -89,7 +102,7 @@ export class CharacterManager
   {
     // First check if character is already online so we can save reading from
     // disk.
-    if (this.myPlayerCharacterNames[characterName])
+    if (this.myCharacterNames[characterName])
       return true;
 
     let path = Character.SAVE_DIRECTORY + characterName + ".json";
@@ -100,31 +113,40 @@ export class CharacterManager
   // -------------- Protected class data ----------------
 
   // This hashmap maps character names to character ids.
-  protected myPlayerCharacterNames: { [key: string]: Id } = {};
+  protected myCharacterNames: { [key: string]: Id } = {};
  
   // -------------- Protected methods -------------------
 
   // Adds character to the list of online characters and to the auxiliary
   // hashmap, returns its unique id.
-  protected addOnlineCharacter(character: Character): Id
+  protected addNewCharacter(character: Character): Id
   {
     let newId = Game.entities.addNewItem(character);
 
     // Also add record to the corresponding hashmap.
-    this.myPlayerCharacterNames[character.name] = newId;
+    this.myCharacterNames[character.name] = newId;
 
     return newId;
   }
 
+  // Adds a character that already has an id (loaded from file).
+  protected addCharacter(character: Character)
+  {
+    Game.entities.addNewItem(character);
+
+    // Also add record to the corresponding hashmap.
+    this.myCharacterNames[character.name] = character.id;
+  }
+
   // Removes a character both from the list of online characters and from the
   // auxiliary hasmap
-  protected removeOnlineCharacter(characterId: Id)
+  protected removeCharacter(characterId: Id)
   {
     let characterName = Game.entities.getItem(characterId).name;
 
     Game.entities.deleteItem(characterId);
 
     // Also remove record from the corresponding hashmap.
-    delete this.myPlayerCharacterNames[characterName];
+    delete this.myCharacterNames[characterName];
   }
 }

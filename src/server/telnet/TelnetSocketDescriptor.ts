@@ -242,20 +242,19 @@ export class TelnetSocketDescriptor extends SocketDescriptor
 
   protected onSocketError(error)
   {
-    let accountName = "";
     let player = "";
 
     if (this.playerConnection.accountId.notNull())
     {
-      accountName =
-        Server.accountManager
+      let accountName = Server.accountManager
         .getAccount(this.playerConnection.accountId).accountName;
-    }
 
-    if (accountName)
       player = "Player " + accountName;
+    }
     else
+    {
       player = "Unknown player";
+    }
 
     // I don't really know what kind of errors can happen here.
     // For now let's just log the error and close the connection.
