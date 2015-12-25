@@ -55,6 +55,8 @@ export class PlayerConnection extends NamedClass
     return Game.entities.getItem(this.myIngameEntityId);
   }
 
+  public get stage() { return this.myStage; }
+
   // ------- Internal stage transition methods ----------
 
   public startLoginProcess()
@@ -68,10 +70,6 @@ export class PlayerConnection extends NamedClass
 
   public enterLobby()
   {
-    ASSERT(this.myStage === PlayerConnection.stage.AUTHENTICATION
-      || this.myStage === PlayerConnection.stage.IN_GAME,
-      "Entering lobby from wrong stage");
-
     this.myStage = PlayerConnection.stage.LOBBY;
     this.myLobbyProcessor.enterMenu();
   }
@@ -91,7 +89,7 @@ export class PlayerConnection extends NamedClass
   public reconnectToCharacter()
   {
     this.announceReconnecting();
-    this.ingameEntity.announcePlayerEnteringGame();
+    this.ingameEntity.announcePlayerReconnecting();
 
     this.myStage = PlayerConnection.stage.IN_GAME;
   }
@@ -123,25 +121,47 @@ export class PlayerConnection extends NamedClass
   // is connecting from different computer without logging out first).
   public reconnectToAccount(account: Account)
   {
-    /// TODO: Pokud zije predchozi connection, poslat pres ni hlasku,
-    /// ze body usurped nebo account usurped (podle toho, jestli je ve hre
-    /// nebo v menu) a zavrit tu connection (a dropnout z connection manageru)
+    let accountManager = Server.accountManager;
+    let oldStage = PlayerConnection.stage.INITIAL;
+    let oldConnection = this.getOldConnection(account);
+    let oldIngameEntityId = Id.NULL;
 
-    /// TODO: Pred tim, nez ji zavru, si z ni musim precist aktualni stage
+    // If old connection is still alive, we need to send a message
+    // to it informing of usurping of connection and close it.
+    if (oldConnection)
+    {
+      oldStage = oldConnection.stage;
+      oldIngameEntityId = oldConnection.ingameEntityId;
+      oldConnection.announceConnectionBeingUsurped();
+      oldConnection.close();
+    }
 
     account.playerConnectionId = this.id;
 
-    Mudlog.log(
+    Mudlog.log
+    (
       account.accountName + " [" + this.ipAddress + "] has reconnected",
       Mudlog.msgType.SYSTEM_INFO,
-      Mudlog.levels.IMMORTAL);
+      Mudlog.levels.IMMORTAL
+    );
 
-    /// TODOOOOO: Tohle muze znamenat, ze je player uz ve hre, tj.
-    /// stage connectionu by se me
+    if (oldStage === PlayerConnection.stage.IN_GAME
+        && oldIngameEntityId.notNull())
+    {
+      // If player was in game before and we know what game entity she has
+      // been connected, send her back to the game.
 
-    /// TODO: Poslat hlasku playerovi, ze se reconnectnul. Pokud byl v menu,
-    /// tak poslat nove menu. Pokud byl ve hre, tak nejspis forcnout na look
-    /// (a poslat hlasku do roomy, ze se player reconnectnul)
+      // If we know what entity has player been connected to before,
+      // connect her to it again.
+      this.ingameEntityId = oldIngameEntityId;
+      this.reconnectToCharacter();
+    }
+    else
+    {
+      // If player was anywhere else before, or if we didn't manage to scan
+      // her previous stage or active entity, send her to the lobby.
+      this.enterLobby();
+    }
   }
 
   // Parses and executes a single-line command.
@@ -299,6 +319,29 @@ export class PlayerConnection extends NamedClass
 
   protected announceReconnecting()
   {
-    /// TODO
+    this.send("&gYou have reconnected to your character.");
+  }
+
+  protected getOldConnection(account: Account): PlayerConnection
+  {
+    if (account.playerConnectionId.notNull())
+    {
+      if (!ASSERT(account.playerConnectionId.equals(this.id),
+        "Account is already linked to the connection with which we are trying"
+        + " to reconnect to it"))
+      {
+        return null;
+      }
+
+      return account.playerConnection;
+    }
+
+    return null;
+  }
+
+  protected announceConnectionBeingUsurped()
+  {
+    this.send("Somebody (hopefuly you) has just connected to this account."
+      + " Closing this connection...");
   }
 }
