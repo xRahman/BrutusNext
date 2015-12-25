@@ -51,13 +51,16 @@ export class LobbyProcessor
         ASSERT(false, "LobbyProcessor has not yet been initialized, it is not"
           + " supposed to process any commands yet");
         break;
+
       case LobbyProcessor.stage.IN_MENU:
         this.processMenuChoice(command);
         break;
+
        case LobbyProcessor.stage.NOT_IN_LOBBY:
         ASSERT(false, "LobbyProcessor is not supposed to process any commands"
           + " when user is not in lobby");
         break;
+
       default:
         ASSERT(false, "Unknown stage");
         break;
@@ -87,13 +90,14 @@ export class LobbyProcessor
     switch (choice)
     {
       case "0": // Quit the game.
-        this.myPlayerConnection.send("&wGoodbye. Have a nice day...\r\n");
-        this.myStage = LobbyProcessor.stage.NOT_IN_LOBBY;
-        this.myPlayerConnection.quitGame();
+        this.quitGame();
         break;
 
       case "1": // Enter the game.
-        this.myStage = LobbyProcessor.stage.NOT_IN_LOBBY;
+        // Asynchronous reading from the file.
+        // (The rest of the code will execute only after the reading is done.)
+        //   We need async call because we want to wait after player's
+        // character is loaded from file before actually entering the game.
         await this.enterGame();
         break;
 
@@ -104,8 +108,17 @@ export class LobbyProcessor
     }
   }
 
+  protected quitGame()
+  {
+    this.myPlayerConnection.send("&wGoodbye. Have a nice day...\r\n");
+    this.myStage = LobbyProcessor.stage.NOT_IN_LOBBY;
+    this.myPlayerConnection.quitGame();
+  }
+
   protected async enterGame()
   {
+    this.myStage = LobbyProcessor.stage.NOT_IN_LOBBY;
+
     let accountManager = Server.accountManager;
     let characterManager = Game.characterManager;
 
@@ -174,7 +187,7 @@ export class LobbyProcessor
   )
   {
     // Asynchronous reading from the file.
-    // (the rest of the code will execute only after the reading is done)
+    // (The rest of the code will execute only after the reading is done.)
     await character.load();
 
     ASSERT_FATAL(character.id.notNull(),
