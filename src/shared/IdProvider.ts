@@ -121,7 +121,8 @@ export class IdProvider extends SaveableObject
 
     // loadFromJsonString() is inherited from SaveableObject.
     // It calls loadFromJsonObject() which we have overriden.
-    this.loadFromJsonString(jsonString);
+    //   filePath is passed just so it can be printed to error messages.
+    this.loadFromJsonString(jsonString, IdProvider.LAST_ISSUED_ID_FILE);
 
     ASSERT_FATAL(this.myLastIssuedId !== null
       && this.myLastIssuedId !== undefined,
