@@ -166,11 +166,11 @@ export class IdProvider extends SaveableObject
   // load lastIssuedId.
   protected loadFromJsonObject(jsonObject: Object)
   {
-    let property = 'lastIssuedId';
+    const property = 'lastIssuedId';
 
-    ASSERT_FATAL('lastIssuedId' in jsonObject,
-      "Property 'lastIssuedId' exists in object but not in JSON data");
+    ASSERT_FATAL(property in jsonObject,
+      "Property '" + property + "' exists in object but not in JSON data");
 
-    this.myLastIssuedId = jsonObject['lastIssuedId'];
+    this.myLastIssuedId = jsonObject[property];
   }
 }
