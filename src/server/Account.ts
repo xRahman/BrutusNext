@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {ASSERT} from '../shared/ASSERT';
 import {Id} from '../shared/Id';
 import {IdableSaveableContainer} from '../shared/IdableSaveableContainer';
 import {AccountData} from '../server/AccountData';
@@ -65,6 +66,18 @@ export class Account extends IdableSaveableContainer
   public isInGame(): boolean
   {
     return this.playerConnection.isInGame();
+  }
+
+  public addNewCharacter(characterName: string)
+  {
+    if (!ASSERT(characterName !== "",
+      "Attempt to add new character with empty name"))
+      return;
+
+    this.myData.characters.push(characterName);
+
+    // This doesn't need to be synchronous.
+    this.save();
   }
 
   // -------------- Protected class data ----------------

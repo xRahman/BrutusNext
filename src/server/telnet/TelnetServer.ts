@@ -166,7 +166,7 @@ export class TelnetServer
     ///s.socket = s; // conform to the websocket object to make easier to handle
 
     let socketDescriptor = new TelnetSocketDescriptor(socket);
-    let playerConnectionId: Id =
+    let playerConnectionId =
       Server.playerConnectionManager.addPlayerConnection(socketDescriptor);
 
     socketDescriptor.playerConnectionId = playerConnectionId;
