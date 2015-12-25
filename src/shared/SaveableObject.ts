@@ -43,13 +43,14 @@ export class SaveableObject extends NamedClass
 
   // -------------- Protected methods -------------------
 
-  protected checkVersion(jsonObject: Object)
+  protected checkVersion(jsonObject: Object, filePath: string)
   {
     ASSERT_FATAL('version' in jsonObject,
-      "There is no 'version' property in JSON data");
+      "There is no 'version' property in JSON data in file " + filePath);
 
     ASSERT_FATAL(jsonObject['version'] === this.version,
       "Version of JSON data (" + jsonObject['version'] + ")"
+      + " in file " + filePath
       + " doesn't match required version (" + this.version + ")");
   }
 
@@ -82,7 +83,8 @@ export class SaveableObject extends NamedClass
       throw error;
     }
 
-    this.loadFromJsonString(jsonString);
+    // filePath is passed just so it can be printed to error messages.
+    this.loadFromJsonString(jsonString, filePath);
   }
 
   protected async saveToFile(filePath: string)
@@ -103,31 +105,32 @@ export class SaveableObject extends NamedClass
 
   protected async saveContentsToFile(filePath: string)
   {
-    let jsonString = this.saveToJsonString();
-
-    // mySaveRequests serves both as buffer for request and as lock indicating
-    // that we are already saving something (it it contains something).
-    if (this.mySaveRequests.length !== 0)
-    {
-      // Saving to the same file while it is still being saved is not safe
-      // (according to node.js filestream documentation). So if this occurs,
-      // we won't initiate another save at once, just remember that a request
-      // has been issued (and where are we supposed to save ourselves).
-
-      // Only push requests to save to different path.
-      // (there is no point in future resaving to the same file multiple times)
-      if (this.mySaveRequests.indexOf(filePath) !== -1)
-        this.mySaveRequests.push(filePath);
-
+    // If we are already saving ourselves, the request will be added
+    // to the buffer and processed after ongoing saving ends.
+    if (this.bufferSaveRequest(filePath))
       return;
-    }
-    else
-    {
-      this.mySaveRequests.push(filePath);
-    }
+    
+    // If we are not saving ourselves right now, process buffered requests.
 
+    // Asynchronous saving to file.
+    // (the rest of the code will execute only after the saving is done)
+    await this.processBufferedSavingRequests();
+
+    // All save requests are processed, mark the buffer as empty.
+    // (if will also hopefully flag allocated data for freeing from memory)
+    this.mySaveRequests = [];
+  }
+
+  protected async processBufferedSavingRequests()
+  {
     for (let i = 0; i < this.mySaveRequests.length; i++)
     {
+      // Save ourselves to json string each time we are saving ourselves,
+      // because our current stat might change while we were saving (remember
+      // this is an async function so next step in this for cycle will be
+      // processed only after the previous saving ended).
+      let jsonString = this.saveToJsonString();
+
       try
       {
         // Asynchronous saving to file.
@@ -147,13 +150,38 @@ export class SaveableObject extends NamedClass
         throw error;
       }
     }
-
-    // All save requests are processed, mark the buffer as empty.
-    // (if will also hopefully flag allocated data for freeing from memory)
-    this.mySaveRequests = [];
   }
 
-  protected loadFromJsonString(jsonString: string)
+  // Returns true when request is buffered and there is no need to process
+  // it right now.
+  protected bufferSaveRequest(filePath: string): boolean
+  {
+    // mySaveRequests serves both as buffer for request and as lock indicating
+    // that we are already saving something (it it contains something).
+    if (this.mySaveRequests.length !== 0)
+    {
+      // Saving to the same file while it is still being saved is not safe
+      // (according to node.js filestream documentation). So if this occurs,
+      // we won't initiate another save at once, just remember that a request
+      // has been issued (and where are we supposed to save ourselves).
+
+      // Only push requests to save to different path.
+      // (there is no point in future resaving to the same file multiple times)
+      if (this.mySaveRequests.indexOf(filePath) !== -1)
+        this.mySaveRequests.push(filePath);
+
+      return true;
+    }
+
+    // If saving is not going on right now, push the request to the
+    // buffer,
+    this.mySaveRequests.push(filePath);
+
+    // and return false to indicate, that it needs to be processed right away.
+    return false;
+  }
+
+  protected loadFromJsonString(jsonString: string, filePath: string)
   {
     let jsonObject = {};
 
@@ -163,16 +191,18 @@ export class SaveableObject extends NamedClass
     }
     catch (e)
     {
-      ASSERT_FATAL(false, "Syntax error in JSON string: " + e.message);
+      ASSERT_FATAL(false, "Syntax error in JSON string: "
+        + e.message + " in file " + filePath);
     }
 
-    this.loadFromJsonObject(jsonObject);
+    // filePath is passed just so it can be printed to error messages.
+    this.loadFromJsonObject(jsonObject, filePath);
   }
 
   protected saveToJsonString(): string
   {
-    let regExp: RegExp;
     let jsonString = JSON.stringify(this.saveToJsonObject());
+    let regExp: RegExp;
 
     jsonString = beautify
     (
@@ -190,35 +220,39 @@ export class SaveableObject extends NamedClass
     return jsonString;
   }
 
-  protected loadFromJsonObject(jsonObject: Object)
+  protected loadFromJsonObject(jsonObject: Object, filePath: string)
   {
-    let property = "";
+    // filePath is passed just so it can be printed to error messages.
+    this.checkVersion(jsonObject, filePath);
 
-    this.checkVersion(jsonObject);
+    // filePath is passed just so it can be printed to error messages.
+    this.checkThatAllPropertiesInJsonExistInThis(jsonObject, filePath);
 
-    // This check is not done at them moment. It means that our properties that
-    // don't exist in jsonObject won't be overwritten by loading from file
-/// this.checkThatAllOurPropertiesExistInJson(jsonObject);
-
-    this.checkExistenceOfAllPropertiesInJson(jsonObject);
+    // Using 'in' operator on object with null value would crash the game.
+    ASSERT_FATAL(jsonObject !== null,
+      "Invalid json object loaded from file " + filePath);
 
     // Now copy the data.
-    for (property in jsonObject)
+    for (let property in jsonObject)
     {
       ASSERT_FATAL(this[property] !== null,
-        "There is a property (" + property + ") in this object with null"
-        + " value, which is to be loaded from json. That's not possible,"
-        + " because loading method can't be called on null object. Make"
-        + " sure that all properties on this class are inicialized to"
-        + " something else than null");
+        "There is a property (" + property + ") in object that is loading"
+        + " from file " + filePath + " that has <null> value. That's not"
+        + " allowed, because loading method can't be called on null object."
+        + " Make sure that all properties of class '" + this.className + "'"
+        + " are inicialized to something else than <null>");
 
-      if (this[property] !== null
+      if
+      (
+        this[property] !== null
         && typeof this[property] === 'object'
-        && 'loadFromJsonObject' in this[property])
+        && 'loadFromJsonObject' in this[property]
+      )
       {
         // This handles the situation when you put SaveableObject into
         // another SaveableObject.
-        this[property].loadFromJsonObject(jsonObject[property]);
+        //   filePath is passed just so it can be printed to error messages.
+        this[property].loadFromJsonObject(jsonObject[property], filePath);
       }
       else
       {
@@ -257,33 +291,11 @@ export class SaveableObject extends NamedClass
     return jsonObject;
   }
 
-  /// Not used ad the moment.
-  /*
-  protected checkThatAllOurPropertiesExistInJson(jsonObject: Object)
-  {
-    let property = "";
-
-    // Check if we have the same set of properties as the JSON data we are
-    // trying to load ourselves from.
-    for (property in this)
-    {
-      // Skip our methods, they are not saved to json of course.
-      //   Also skip 'mySaveRequests' property, which is used to micromanage
-      // asynchronous saving and is not saved. Also skip 'isSaved' property.
-      if (typeof this[property] !== 'function'
-        && property !== 'mySaveRequests'
-        && property !== 'isSaved')
-      {
-        ASSERT_FATAL(property in jsonObject,
-          "Property '" + property + "' exists in object but not in JSON data"
-          + " we are trying to load ourselves from. Maybe you forgot to"
-          + " change the version and convert JSON files to a new format?");
-      }
-    }
-  }
-  */
-
-  protected checkExistenceOfAllPropertiesInJson(jsonObject: Object)
+  protected checkThatAllPropertiesInJsonExistInThis
+  (
+    jsonObject: Object,
+    filePath: string
+  )
   {
     let property = "";
 
@@ -291,9 +303,10 @@ export class SaveableObject extends NamedClass
     for (property in jsonObject)
     {
       ASSERT_FATAL(property in this,
-        "Property '" + property + "' exists in JSON data we are trying to"
-        + " load ourselves from but we don't have it. Maybe you forgot to"
-        + " change the version and convert JSON files to a new format?");
+        "Property '" + property + "' exists in JSON data in file " + filePath
+        + " we are trying to load ourselves from but we don't have it."
+        + " Maybe you forgot to change the version and convert JSON files"
+        + " to a new format?");
     }
   }
 }
