@@ -35,8 +35,8 @@
 
    3) Call saveToFile(path) or loadFromFile(path) on your root object.
      let myClassInstance = new MyClass();
-     myClassInstance.saveToFile('./data/myClassInstance0.json');
-     myClassInstance.loadFromFile('./data/myClassInstance0.json');
+     myClassInstance.saveToFile('./data/myClassInstance.json');
+     myClassInstance.loadFromFile('./data/myClassInstance.json');
 */
 
 'use strict';
@@ -46,12 +46,17 @@ import {SaveableObject} from '../shared/SaveableObject';
 
 export class SaveableContainer extends SaveableObject
 {
-  protected loadFromJsonObject(jsonObject: Object)
+  /// Only isToBeLoaded() method is overriden now. Hopefuly this will not
+  /// be needed (if there are no problems with loading SaveableContainer,
+  /// this can be deleted.
+  /*
+  protected loadFromJsonObject(jsonObject: Object, filePath: string)
   {
-    this.checkVersion(jsonObject);
+    this.checkVersion(jsonObject, filePath);
 
     // Using 'in' operator on object with null value would crash the game.
-    ASSERT_FATAL(jsonObject !== null, "Invalid json object");
+    ASSERT_FATAL(jsonObject !== null,
+      "Invalid json object loaded from file " + filePath);
 
     // When loading we will restore all properties present in the save file,
     // but they must exist on this class.
@@ -83,16 +88,42 @@ export class SaveableContainer extends SaveableObject
       }
     }
   }
+  */
 
+  /// This actually also shouldn't be needed, because only properties that
+  /// were saved will now be loaded. So having save filter should be enough.
+  /*
+  // Override SaveableObject:isToBeLoaded() because we don't want to load
+  // properties that are not saveableObjects (that don't have
+  // 'loadFromJsonObject' property) and that are flagged as not to be saved.
+  protected isToBeLoaded(property: string)
+  {
+    if
+    (
+      this[property] !== null
+      && typeof this[property] === 'object'
+      && 'loadFromJsonObject' in this[property]
+      && this[property].isSaved === true
+    )
+    {
+      return true;
+    }
+
+    return false;
+
+    return super.isToBeLoaded(property);
+  }
+  */
+
+  // Overrides SaveableObject::saveToJsonObject() because we need different
+  // functionality here (only save properties that are SaveableObjects).
   protected saveToJsonObject(): Object
   {
     let jsonObject = {};
 
     // We need to save version manually. This is an exception to
     // SaveableContainer only saving it's members that are SaveableContainers
-    // or SaveableObjects. But we need to save version in order to be able to
-    // check it, don't we?
-    //   The same is true for class name.
+    // or SaveableObjects. The same is true for class name.
     jsonObject['className'] = this.className;
     jsonObject['version'] = this.version;
 
