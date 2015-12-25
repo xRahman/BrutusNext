@@ -18,16 +18,16 @@
     Sending unencrypted password is... Well let's hope its temporary
     solution.
 
-    Problem je, ze pres telnet se nic jineho posilat neda. Zatim me napada
-    jedine reseni: Svazat account s mailovou adresou a posilat jednorazove
-    "heslo" pokazde, kdyz se chce hrac lognout. Pripadne pridat moznost
-    lognout zapamatovat si ipcko a povolit z nej logovat bez hesla, aby to
-    nebyla takova pruda.
+ // Problem je, ze pres telnet se nic jineho posilat neda. Zatim me napada
+ // jedine reseni: Svazat account s mailovou adresou a posilat jednorazove
+ // "heslo" pokazde, kdyz se chce hrac lognout. Pripadne pridat moznost
+ // lognout zapamatovat si ipcko a povolit z nej logovat bez hesla, aby to
+ // nebyla takova pruda.
 
-  // BTW pouzivat mailovou adresu jako account name neni dobry napad, protoze
-  // by se stejne jako heslo posilala nezakryptovane, tzn. by ji nekdo mohl
-  // takhle zjistit a bud zkouset hacknout, nebo alespon otravovat password
-  // resetama.
+ // BTW pouzivat mailovou adresu jako account name neni dobry napad, protoze
+ // by se stejne jako heslo posilala nezakryptovane, tzn. by ji nekdo mohl
+ // takhle zjistit a bud zkouset hacknout, nebo alespon otravovat password
+ // resetama.
 
   Ted to kazdopadne resit nebudu.
 */
@@ -306,7 +306,7 @@ export class AuthProcessor
     return true;
   }
 
-  protected async loadAccountFromFile
+  private async loadAccountFromFile
   (
     account: Account,
     accountFileName: string
@@ -330,7 +330,7 @@ export class AuthProcessor
 
   // Check password agains that stored in account, advances stage
   // appropriately.
-  protected processPasswordCheck
+  private processPasswordCheck
   (
     account: Account,
     password: string,
@@ -363,7 +363,7 @@ export class AuthProcessor
     }
   }
 
-  protected announcePasswordFailure()
+  private announcePasswordFailure()
   {
     Mudlog.log
     (

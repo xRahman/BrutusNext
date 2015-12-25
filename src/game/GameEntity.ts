@@ -53,6 +53,11 @@ export abstract class GameEntity extends CommandInterpretter
   // that a player character has just entered game).
   public announcePlayerEnteringGame() { }
 
+  // Player connected to this entity has reconnected.
+  //   Needs to be overriden if something is going to happen (like message
+  // that a player character has just entered game).
+  public announcePlayerReconnecting() { }
+
   // ---------------- Public methods --------------------
 
 
