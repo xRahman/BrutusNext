@@ -77,7 +77,7 @@ export class SaveableContainer extends SaveableObject
         this[property] !== null
         && typeof this[property] === 'object'
         && 'loadFromJsonObject' in this[property]
-        && this[property].isSaveable)
+        && this[property].isSaved === true)
       {
         this[property].loadFromJsonObject(jsonObject[property]);
       }
@@ -98,7 +98,7 @@ export class SaveableContainer extends SaveableObject
 
     for (let property in this)
     {
-      if (this.isSupposedToSave(property))
+      if (this.isToBeSaved(property))
       {
         jsonObject[property] = this[property].saveToJsonObject();
       }
@@ -107,7 +107,7 @@ export class SaveableContainer extends SaveableObject
     return jsonObject;
   }
 
-  private isSupposedToSave(property): boolean
+  private isToBeSaved(property): boolean
   {
     // SaveableContainer only loads/saves properties that are SaveableObjects
     // or SaveableContainers (unlike SaveableObject, which loads all of it's
@@ -116,11 +116,13 @@ export class SaveableContainer extends SaveableObject
     // operator on 'null' would lead to crash. But if some property is null,
     // it means that we definitely don't need to save it, so it's ok to skip
     // it.
-    if (
+    if
+    (
       this[property] !== null
       &&  typeof this[property] === 'object'
       && 'loadFromJsonObject' in this[property]
-      && this[property].isSaveable)
+      && this[property].isSaved === true
+    )
     {
       return true;
     }

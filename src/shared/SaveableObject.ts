@@ -39,7 +39,7 @@ export class SaveableObject extends NamedClass
   protected mySaveRequests: Array<string> = [];
 
   // You can set this flag to false to prevent saving of SaveableObject
-  public isSaveable = true;
+  public isSaved = true;
 
   // -------------- Protected methods -------------------
 
@@ -70,10 +70,12 @@ export class SaveableObject extends NamedClass
     }
     catch (error)
     {
-      Mudlog.log(
+      Mudlog.log
+      (
         "Error loading file '" + filePath + "': " + error.code,
         Mudlog.msgType.SYSTEM_ERROR,
-        Mudlog.levels.IMMORTAL);
+        Mudlog.levels.IMMORTAL
+      );
 
       // Throw the exception so the mud will get terminated with error
       // message.
@@ -85,8 +87,6 @@ export class SaveableObject extends NamedClass
 
   protected async saveToFile(filePath: string)
   {
-///    console.log("saveToFile()");
-
     // lastIssuedId needs to be saved each time we are saved because we might
     // be saving ids that were issued after last lastIssuedId save.
     await Server.idProvider.saveLastIssuedId();
@@ -196,32 +196,11 @@ export class SaveableObject extends NamedClass
 
     this.checkVersion(jsonObject);
 
-    // Check if we have the same set of properties as the JSON data we are
-    // trying to load ourselves from.
-    for (property in this)
-    {
-      // Skip our methods, they are not saved to json of course.
-      //   Also skip 'mySaveRequests' property, which is used to micromanage
-      // asynchronous saving and is not saved. Also skip 'isSaveable' property.
-      if (typeof this[property] !== 'function'
-        && property !== 'mySaveRequests'
-        && property !== 'isSaveable')
-      {
-        ASSERT_FATAL(property in jsonObject,
-          "Property '" + property + "' exists in object but not in JSON data"
-          + " we are trying to load ourselves from. Maybe you forgot to"
-          + " change the version and convert JSON files to a new format?");
-      }
-    }
+    // This check is not done at them moment. It means that our properties that
+    // don't exist in jsonObject won't be overwritten by loading from file
+/// this.checkThatAllOurPropertiesExistInJson(jsonObject);
 
-    // Also the other way around.
-    for (property in jsonObject)
-    {
-      ASSERT_FATAL(property in this,
-        "Property '" + property + "' exists in JSON data we are trying to"
-        + " load ourselves from but we don't have it. Maybe you forgot to"
-        + " change the version and convert JSON files to a new format?");
-    }
+    this.checkExistenceOfAllPropertiesInJson(jsonObject);
 
     // Now copy the data.
     for (property in jsonObject)
@@ -259,7 +238,7 @@ export class SaveableObject extends NamedClass
       if (property === 'mySaveRequests')
         continue;
 
-      if (property === 'isSaveable')
+      if (property === 'isSaved')
         continue;
 
       // This handles the situation when you put SaveableObject into
@@ -276,5 +255,45 @@ export class SaveableObject extends NamedClass
     }
 
     return jsonObject;
+  }
+
+  /// Not used ad the moment.
+  /*
+  protected checkThatAllOurPropertiesExistInJson(jsonObject: Object)
+  {
+    let property = "";
+
+    // Check if we have the same set of properties as the JSON data we are
+    // trying to load ourselves from.
+    for (property in this)
+    {
+      // Skip our methods, they are not saved to json of course.
+      //   Also skip 'mySaveRequests' property, which is used to micromanage
+      // asynchronous saving and is not saved. Also skip 'isSaved' property.
+      if (typeof this[property] !== 'function'
+        && property !== 'mySaveRequests'
+        && property !== 'isSaved')
+      {
+        ASSERT_FATAL(property in jsonObject,
+          "Property '" + property + "' exists in object but not in JSON data"
+          + " we are trying to load ourselves from. Maybe you forgot to"
+          + " change the version and convert JSON files to a new format?");
+      }
+    }
+  }
+  */
+
+  protected checkExistenceOfAllPropertiesInJson(jsonObject: Object)
+  {
+    let property = "";
+
+    // Also the other way around.
+    for (property in jsonObject)
+    {
+      ASSERT_FATAL(property in this,
+        "Property '" + property + "' exists in JSON data we are trying to"
+        + " load ourselves from but we don't have it. Maybe you forgot to"
+        + " change the version and convert JSON files to a new format?");
+    }
   }
 }

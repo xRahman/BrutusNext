@@ -21,10 +21,12 @@ export class AccountManager extends IdContainer<Account>
 {
   // ---------------- Public methods --------------------
 
-  public createNewAccount(
+  public createNewAccount
+  (
     accountName: string,
     password: string,
-    playerConnectionId: Id): Id
+    playerConnectionId: Id
+  ): Id
   {
     ASSERT_FATAL(!this.exists(accountName),
       "Attempt to create account '"
@@ -37,9 +39,8 @@ export class AccountManager extends IdContainer<Account>
 
     let newAccountId = this.addNewAccount(newAccount);
 
-    newAccount.id = newAccountId;
-
     // Save the account info to the disk (so we know that the account exists).
+    // (This does not need to be synchronous.)
     newAccount.save();
 
     return newAccountId;
@@ -75,6 +76,7 @@ export class AccountManager extends IdContainer<Account>
     {
       // Attempt to re-log to an online account.
       let accountId = this.myAccountNames[accountName];
+
       return this.getItem(accountId);
     }
 
@@ -127,17 +129,17 @@ export class AccountManager extends IdContainer<Account>
     return newId;
   }
 
-  // Adds an account which already has an id (loaded it from file).
+  // Adds an account which already has an id (loaded from file).
   protected addAccount(account: Account)
   {
-    this.addItem(account, account.id);
+    this.addItem(account);
 
     // Also add record to the corresponding hashmap.
     this.myAccountNames[account.accountName] = account.id;
   }
 
   // Removes an account both from the list of online accounts and from the
-  // auxiliary hasmap
+  // auxiliary hasmap.
   protected dropAccount(accountId: Id)
   {
     let accountName = this.getAccount(accountId).accountName;

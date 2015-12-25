@@ -22,12 +22,11 @@ export class PlayerConnectionManager extends IdContainer<PlayerConnection>
   public addPlayerConnection(socketDescriptor: SocketDescriptor): Id
   {
     let newId = this.addNewItem(new PlayerConnection(socketDescriptor));
-    this.getItem(newId).id = newId;
 
     // Player connections are not persistent (if player disconnects and
     // connects again, he will have new connectionId), so there is no point
     // in saving playerConnectionIds.
-    newId.isSaveable = false;
+    newId.isSaved = false;
 
     return newId;
   }
@@ -42,7 +41,7 @@ export class PlayerConnectionManager extends IdContainer<PlayerConnection>
     this.deleteItem(connectionId);
   }
 
-  public getPlayerConnection(id: Id)
+  public getPlayerConnection(id: Id): PlayerConnection
   {
     return this.getItem(id);
   }

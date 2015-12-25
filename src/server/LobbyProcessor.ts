@@ -7,7 +7,12 @@
 'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
+import {ASSERT_FATAL} from '../shared/ASSERT';
 import {PlayerConnection} from '../server/PlayerConnection';
+import {Server} from '../server/Server';
+import {Game} from '../game/Game';
+import {Character} from '../game/Character';
+import {Mudlog} from '../server/Mudlog';
 
 const GAME_MENU =
     "\r\n&wWelcome to &RBRUTUS &YNext!\r\n"
@@ -70,8 +75,6 @@ export class LobbyProcessor
 
   protected myStage = LobbyProcessor.stage.INITIAL;
 
-///  protected myAccountName = "";
-
   // --------------- Protected methods ------------------
 
   protected sendMenu()
@@ -79,25 +82,110 @@ export class LobbyProcessor
     this.myPlayerConnection.send(GAME_MENU);
   }
 
-  protected processMenuChoice(choice: string)
+  protected async processMenuChoice(choice: string)
   {
     switch (choice)
     {
       case "0": // Quit the game.
-        this.myPlayerConnection.send(
-          "&wGoodbye. Have a nice day...\r\n");
-
+        this.myPlayerConnection.send("&wGoodbye. Have a nice day...\r\n");
         this.myStage = LobbyProcessor.stage.NOT_IN_LOBBY;
         this.myPlayerConnection.quitGame();
         break;
+
       case "1": // Enter the game.
         this.myStage = LobbyProcessor.stage.NOT_IN_LOBBY;
-        this.myPlayerConnection.enterGame();
+        await this.enterGame();
         break;
+
       default:
         this.myPlayerConnection.send("That's not a menu choice!");
         this.sendMenu();
         break;
+    }
+  }
+
+  protected async enterGame()
+  {
+    let accountManager = Server.accountManager;
+    let characterManager = Game.characterManager;
+
+    // For now, each account can only have one character and it's name is
+    // the same as accountName.
+    let characterName =
+      accountManager.getAccount(this.myPlayerConnection.accountId).accountName;
+    
+    if (!characterManager.exists(characterName))
+    {
+      this.createNewCharacter(characterName);
+      this.myPlayerConnection.enterGame();
+
+      return;
+    }
+
+    // Check if character is already online.
+    let character = characterManager.getCharacterByName(characterName);
+
+    if (character)
+    {
+      this.myPlayerConnection.ingameEntityId = character.id;
+      this.myPlayerConnection.reconnectToCharacter();
+    }
+    else
+    {
+      let character = new Character(characterName);
+
+      // Character name is passed to check against character name saved
+      // in file (they must by the same).
+      await this.loadCharacterFromFile(character, characterName);
+
+      // Add newly loaded account to characterManager (under it's original id).
+      characterManager.registerLoadedCharacter(character);
+
+      this.myPlayerConnection.ingameEntityId = character.id;
+      this.myPlayerConnection.enterGame();
+    }
+  }
+
+  protected async createNewCharacter(characterName: string)
+  {
+    let characterManager = Game.characterManager;
+    let accountManager = Server.accountManager;
+    let account = accountManager.getAccount(this.myPlayerConnection.accountId);
+
+    let newCharacterId = characterManager
+      .createNewCharacter(characterName, this.myPlayerConnection.id);
+
+    this.myPlayerConnection.ingameEntityId = newCharacterId;
+    account.addNewCharacter(characterName);
+
+    Mudlog.log
+    (
+      "Player " + account.accountName + " has created a new character: "
+      + characterName,
+      Mudlog.msgType.SYSTEM_INFO,
+      Mudlog.levels.IMMORTAL
+    );
+  }
+
+  protected async loadCharacterFromFile
+  (
+    character: Character,
+    characterFileName: string
+  )
+  {
+    // Asynchronous reading from the file.
+    // (the rest of the code will execute only after the reading is done)
+    await character.load();
+
+    ASSERT_FATAL(character.id.notNull(),
+      "Null id in saved file of character: " + character.name);
+
+    if (!ASSERT(characterFileName === character.name,
+      "Character name saved in file (" + character.name + ")"
+      + " doesn't match character file name (" + characterFileName + ")."
+      + " Renaming character to match file name."))
+    {
+      character.name = characterFileName;
     }
   }
 }

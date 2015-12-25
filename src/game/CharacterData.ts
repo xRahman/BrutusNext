@@ -19,4 +19,8 @@ export class CharacterData extends GameEntityData
     // .json files to conform to the new version.
     this.version = 0;
   }
+
+  // dateofCreation always initializes to current time, but for existing
+  // characters will be overwritten when loading from file. 
+  public timeOfCreation = new Date();
 }

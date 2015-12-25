@@ -49,7 +49,10 @@ export class AuthProcessor
   // is owned by the very PlayerConnection we are storing reference
   // of here. In any other case, unique stringId of PlayerConnection (within
   // PlayerConnectionManager) needs to be used instead of a direct reference!
-  constructor(protected myPlayerConnection: PlayerConnection) {}
+  constructor(protected myPlayerConnection: PlayerConnection) { }
+
+  public static get MAX_ACCOUNT_NAME_LENGTH() { return 12; }
+  public static get MIN_ACCOUNT_NAME_LENGTH() { return 2; }
 
   // ---------------- Public methods --------------------
 
@@ -63,19 +66,24 @@ export class AuthProcessor
         ASSERT(false, "AuthProcessor has not yet been initialized, it is not"
           + " supposed to process any commands yet");
         break;
+
       case AuthProcessor.stage.LOGIN:
         this.loginAttempt(command);
         break;
+
       case AuthProcessor.stage.PASSWORD:
         await this.checkPassword(command);
         break;
+
       case AuthProcessor.stage.NEW_PASSWORD:
         this.getNewPassword(command);
         break;
+
       case AuthProcessor.stage.DONE:
         ASSERT(false, "AuthProcessor has already done it's job, it is not"
           + " supposed to process any more commands");
         break;
+
       default:
         ASSERT(false, "Unknown stage");
         break;
@@ -151,64 +159,26 @@ export class AuthProcessor
     ASSERT_FATAL(this.myPlayerConnection.id != null,
       "Invalid player connection id");
 
-    // Are we reconnecting to an already loaded account?
-    let reconnect = true;
-
     // Check if account info is already loaded.
     let account = accountManager.getAccountByName(this.myAccountName);
 
-    if (!account)
+    if (account)
     {
-      // We are not reconnecting.
-      reconnect = false;
-      account = new Account(this.myAccountName, this.myPlayerConnection.id);
-
-      // Asynchronous reading from the file.
-      // (the rest of the code will execute only after the reading is done)
-      await account.load();
-
-      ASSERT_FATAL(
-        account.id.notNull(),
-        "Null id in saved file of account: " + account.accountName);
-
-      if (!ASSERT(this.myAccountName === account.accountName,
-        "Account name saved in file (" + account.accountName + ")"
-        + " doesn't match account file name (" + this.myAccountName + ")."
-        + " Renaming account to match file name."))
-      {
-        account.accountName = this.myAccountName;
-      }
-    }
-
-    if (account.checkPassword(password))
-    {
-      // Password checks so we are done with authenticating.
-      this.myStage = AuthProcessor.stage.DONE;
-
-      if (reconnect)
-        this.myPlayerConnection.reconnect(account);
-      else
-      {
-        // Add newly loaded account to AccountManager (under it's original id).
-        accountManager.registerLoadedAccount(account);
-
-        this.myPlayerConnection.connect(account);
-      }
+      // Last parameter says we are reconnecting to already
+      // existing account.
+      this.processPasswordCheck(account, password, true);
     }
     else
     {
-      Mudlog.log(
-        "Bad PW: "
-        + this.myAccountName + " [" + this.myPlayerConnection.ipAddress + "]",
-        Mudlog.msgType.SYSTEM_INFO,
-        Mudlog.levels.IMMORTAL);
+      account = new Account(this.myAccountName, this.myPlayerConnection.id);
 
-      this.myPlayerConnection.send(
-        "&wWrong password.\r\n"
-        + "Password: ");
+      // Account name is passed to check against character name saved
+      // in file (they must by the same).
+      await this.loadAccountFromFile(account, this.myAccountName);
 
-      // Here we don't advance the stage so the next user input will trigger
-      // a checkPassword() again.
+      // Last parameter says we are not reconnecting to already
+      // existing account.
+      this.processPasswordCheck(account, password, false);
     }
   }
 
@@ -219,21 +189,26 @@ export class AuthProcessor
       // a getNewPassword() again.
       return;
 
-    // Note: There is no point in asking user to retype the password when
-    //       she can se it typed.
+    // Note:
+    //   There is no point in asking user to retype the password when
+    // she can see it typed (which is the only option when using telnet).
 
     // Password accepted, create a new account.
     let newAccountId =
-      Server.accountManager.createNewAccount(
+      Server.accountManager.createNewAccount
+      (
         this.myAccountName,
         password,
-        this.myPlayerConnection.id);
+        this.myPlayerConnection.id
+      );
 
-    Mudlog.log(
+    Mudlog.log
+    (
       "New player: " + this.accountName
       + " [" + this.myPlayerConnection.ipAddress + "]",
       Mudlog.msgType.SYSTEM_INFO,
-      Mudlog.levels.IMMORTAL);
+      Mudlog.levels.IMMORTAL
+    );
 
     this.myPlayerConnection.accountId = newAccountId;
     this.myStage = AuthProcessor.stage.DONE;
@@ -278,15 +253,11 @@ export class AuthProcessor
       return false;
     }
 
-    const MAX_ACCOUNT_NAME_LENGTH = 12;
-    /// Account name variant
-    ///    const MAX_ACCOUNT_NAME_LENGTH = 20;
-
-    if (accountName.length > MAX_ACCOUNT_NAME_LENGTH)
+    if (accountName.length > AuthProcessor.MAX_ACCOUNT_NAME_LENGTH)
     {
       this.myPlayerConnection.send(
-        "&wCould you please pick something shorter,"
-        + " like up to " + MAX_ACCOUNT_NAME_LENGTH + " characters?.\r\n"
+        "&wCould you please pick something shorter, like up to "
+        + AuthProcessor.MAX_ACCOUNT_NAME_LENGTH + " characters?.\r\n"
         + "Please enter a valid name: ");
       /// Account name variant
       ///      + "Please enter valid account name: ");
@@ -294,13 +265,11 @@ export class AuthProcessor
       return false;
     }
 
-    const MIN_ACCOUNT_NAME_LENGTH = 2;
-
-    if (accountName.length < MIN_ACCOUNT_NAME_LENGTH)
+    if (accountName.length < AuthProcessor.MIN_ACCOUNT_NAME_LENGTH)
     {
       this.myPlayerConnection.send(
         "&wCould you please pick a name that is at least "
-        + MIN_ACCOUNT_NAME_LENGTH + " characters long?.\r\n"
+        + AuthProcessor.MIN_ACCOUNT_NAME_LENGTH + " characters long?.\r\n"
         + "Please enter a valid name: ");
       /// Account name variant
       ///      + "Please enter valid account name: ");
@@ -335,5 +304,79 @@ export class AuthProcessor
     }
 
     return true;
+  }
+
+  protected async loadAccountFromFile
+  (
+    account: Account,
+    accountFileName: string
+  )
+  {
+    // Asynchronous reading from the file.
+    // (the rest of the code will execute only after the reading is done)
+    await account.load();
+
+    ASSERT_FATAL(account.id.notNull(),
+      "Null id in saved file of account: " + account.accountName);
+
+    if (!ASSERT(this.myAccountName === account.accountName,
+      "Account name saved in file (" + account.accountName + ")"
+      + " doesn't match account file name (" + this.myAccountName + ")."
+      + " Renaming account to match file name."))
+    {
+      account.accountName = this.myAccountName;
+    }
+  }
+
+  // Check password agains that stored in account, advances stage
+  // appropriately.
+  protected processPasswordCheck
+  (
+    account: Account,
+    password: string,
+    reconnect: boolean
+  )
+  {
+    let accountManager = Server.accountManager;
+
+    if (account.checkPassword(password))
+    {
+      // Password checks so we are done with authenticating.
+      this.myStage = AuthProcessor.stage.DONE;
+
+      if (reconnect)
+        this.myPlayerConnection.reconnectToAccount(account);
+      else
+      {
+        // Add newly loaded account to accountManager (under it's original id).
+        accountManager.registerLoadedAccount(account);
+
+        this.myPlayerConnection.connectToAccount(account);
+      }
+    }
+    else
+    {
+      this.announcePasswordFailure();
+
+      // Here we don't advance the stage so the next user input will trigger
+      // a checkPassword() again.
+    }
+  }
+
+  protected announcePasswordFailure()
+  {
+    Mudlog.log
+    (
+      "Bad PW: " + this.myAccountName
+      + " [" + this.myPlayerConnection.ipAddress + "]",
+      Mudlog.msgType.SYSTEM_INFO,
+      Mudlog.levels.IMMORTAL
+    );
+
+    this.myPlayerConnection.send
+    (
+      "&wWrong password.\r\n"
+      + "Password: "
+    );
   }
 }
