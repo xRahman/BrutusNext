@@ -30,3 +30,6 @@ http://www.codeproject.com/Articles/871622/Writing-a-chat-server-using-Node-js-T
 
 Totez v JavaScriptu:
 https://nodejs.org/api/net.html
+
+
+[13:30] Huan         : rahman> rekl bych ze ano, protoze metody se dedi z prototypu, nekopiruji. A to co chces dosahnes pres bind. handlers.push(this.mojemetoda.bind(this)). Potom uz ty metody stejne nebudou
