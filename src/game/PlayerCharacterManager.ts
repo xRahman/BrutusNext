@@ -1,7 +1,14 @@
-/*
+﻿/*
   Part of BrutusNEXT
 
-  Implements container for all game entities.
+  Container storing online player characters and handling interaction with
+  player character save files.
+
+  Note:
+    There is no difference between player character and nonplayer character
+    except that player character names must be unique (but only against other
+    player characters, mobs can have the same name as player characters).
+      All player-related information is stored in account, not in character.
 */
 
 'use strict';
@@ -10,7 +17,7 @@ import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {Id} from '../shared/Id';
 import {IdContainer} from '../shared/IdContainer';
-///import {UniqueEntityManager} from '../game/UniqueEntityManager';
+import {UniqueEntityManager} from '../game/UniqueEntityManager';
 import {Game} from '../game/Game';
 import {Character} from '../game/characters/Character';
 import {Mudlog} from '../server/Mudlog';
@@ -18,7 +25,7 @@ import {Mudlog} from '../server/Mudlog';
 // Built-in node.js modules.
 import * as fs from 'fs';  // Import namespace 'fs' from node.js
 
-export class CharacterManager
+export class PlayerCharacterManager extends UniqueEntityManager<Character>
 {
   // ---------------- Public methods --------------------
 
@@ -78,11 +85,11 @@ export class CharacterManager
     /// (Pokud by se to melo tykat jen playeru, tak by asi stacilo checkovat,
     /// ze character ma nenulove playerConnectionId)
     Mudlog.log
-    (
+      (
       "Dropping character " + characterName,
       Mudlog.msgType.SYSTEM_INFO,
       Mudlog.levels.IMMORTAL
-    );
+      );
 
     this.removeCharacter(characterId);
   }
@@ -95,7 +102,7 @@ export class CharacterManager
       "Attempt to get character by id that doesn't point to an instance of"
       + "class inherited from Character");
 
-    return <Character> character;
+    return <Character>character;
   }
 
   // Returns true if player character with given name exists.
