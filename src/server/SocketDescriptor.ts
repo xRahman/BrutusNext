@@ -49,7 +49,7 @@ export abstract class SocketDescriptor
  
   public get playerConnection()
   {
-    ASSERT_FATAL(this.playerConnectionId.notNull(),
+    ASSERT_FATAL(this.playerConnectionId && this.playerConnectionId.notNull(),
       "Invalid player connection id");
 
     return Server.playerConnectionManager

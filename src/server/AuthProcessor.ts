@@ -166,7 +166,7 @@ export class AuthProcessor
     {
       // Last parameter says we are reconnecting to already
       // existing account.
-      this.processPasswordCheck(account, password, true);
+      this.processPasswordCheck(account, password, { isReconnecting: true });
     }
     else
     {
@@ -178,7 +178,7 @@ export class AuthProcessor
 
       // Last parameter says we are not reconnecting to already
       // existing account.
-      this.processPasswordCheck(account, password, false);
+      this.processPasswordCheck(account, password, { isReconnecting: false });
     }
   }
 
@@ -316,7 +316,7 @@ export class AuthProcessor
     // (the rest of the code will execute only after the reading is done)
     await account.load();
 
-    ASSERT_FATAL(account.id.notNull(),
+    ASSERT_FATAL(account.id && account.id.notNull(),
       "Null id in saved file of account: " + account.accountName);
 
     if (!ASSERT(this.myAccountName === account.accountName,
@@ -334,7 +334,7 @@ export class AuthProcessor
   (
     account: Account,
     password: string,
-    reconnect: boolean
+    reconnect: { isReconnecting: boolean }
   )
   {
     let accountManager = Server.accountManager;
@@ -344,7 +344,9 @@ export class AuthProcessor
       // Password checks so we are done with authenticating.
       this.myStage = AuthProcessor.stage.DONE;
 
-      if (reconnect)
+      // Structured parameters is used instead of simple bool to enforce
+      // more verbosity when calling processPasswordCheck().
+      if (reconnect.isReconnecting)
         this.myPlayerConnection.reconnectToAccount(account);
       else
       {

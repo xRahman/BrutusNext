@@ -151,7 +151,7 @@ export class SaveableContainer extends SaveableObject
     (
       this[property] !== null
       &&  typeof this[property] === 'object'
-      && 'loadFromJsonObject' in this[property]
+      && 'saveToJsonObject' in this[property]
       && this[property].isSaved === true
     )
     {

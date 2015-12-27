@@ -45,5 +45,5 @@ export abstract class IdableSaveableContainer extends SaveableContainer
 
   // --------------- Protected methods ------------------
 
-  protected abstract myGetSavePath(): string;
+  protected myGetSavePath(): string { return ""; }
 }

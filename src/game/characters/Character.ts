@@ -6,9 +6,9 @@
 
 'use strict';
 
-import {Id} from '../shared/Id';
-import {GameEntity} from '../game/GameEntity';
-import {CharacterData} from '../game/CharacterData';
+import {Id} from '../../shared/Id';
+import {GameEntity} from '../../game/GameEntity';
+import {CharacterData} from '../../game/characters/CharacterData';
 
 export class Character extends GameEntity
 {
@@ -27,8 +27,6 @@ export class Character extends GameEntity
   static get SAVE_DIRECTORY() { return "./data/characters/"; }
 
   // --------------- Public accessors -------------------
-
-  public get name() { return this.myData.name; }
 
   // ---------------- Public methods --------------------
 
@@ -57,6 +55,16 @@ export class Character extends GameEntity
 
   // --------------- Protected methods ------------------
 
+  /// TODO: Tohle nejspis bude platit pouze pro player charactery, NPC
+  /// to budou mit jinak.
+  // What file will this object be saved to.
+  protected myGetSavePath(): string
+  {
+    return Character.SAVE_DIRECTORY + this.name + ".json";
+  }
+
+  // ---------------- Command handlers ------------------
+
   /*
   /// Testing
   protected doStand(argument)
@@ -70,12 +78,4 @@ export class Character extends GameEntity
     console.log("Haf haf! 'sit': " + this.x);
   }
   */
-
-  /// TODO: Tohle nejspis bude platit pouze pro player charactery, NPC
-  /// to budou mit jinak.
-  // What file will this object be saved to.
-  protected myGetSavePath(): string
-  {
-    return Character.SAVE_DIRECTORY + this.name + ".json";
-  }
 }
