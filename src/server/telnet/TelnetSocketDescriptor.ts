@@ -170,16 +170,22 @@ export class TelnetSocketDescriptor extends SocketDescriptor
   }
 
   // Buffer to accumulate incomplete parts of data stream.
-  protected myinputBuffer = "";
+  protected myInputBuffer = "";
 
   // Command lines waiting to be processed.
-  protected myCommandsBuffer = null;
+  protected myCommandsBuffer = [];
 
   // ---------------- Event handlers --------------------
 
   protected async onSocketReceivedData(data: string)
   {
-    // Ensure that all newlines are in format CR;LF ('\r\n').
+    // myInputBuffer is used to store incomplete parts of commands.
+    // If there is something in it, add new data to it and process it all
+    // as a whole.
+    data = this.myInputBuffer + data;
+    this.myInputBuffer = "";
+
+     // Ensure that all newlines are in format CR;LF ('\r\n').
     data = this.normalizeCRLF(data);
 
     // Do not parse protocol data if user sent just an empty newline.
@@ -192,40 +198,22 @@ export class TelnetSocketDescriptor extends SocketDescriptor
         return;
     }
 
-    /*
-    // Discard data that doesn't end with a newline. That's probably
-    // some protocol negotiation stuff we haven't been able to catch.
+    // It seams that putty (and maybe even other clients) sometimes sends data
+    // not finished with newline and sends newline in next, separate packet.
     if (!this.endsWithNewline(data))
-      return;
-    */
-    // It seams that putty sometimes sends data not finished with newline,
-    // so if we discard such data, player would not get response she expects
-    // to get.
-    //   For now I'll leave the check here in order to monitor the issue,
-    // but I'll process the data anyways.
-    this.endsWithNewline(data);
-
-    // myCommandsBuffer stores commands that are awaiting processing and also
-    // serves as a lock. If there is something in it, it means that previous
-    // commands from this socket are already being processed and we need to
-    // add our new commands to the buffer or we would process them out of
-    // order in which we received them.
-    if (this.myCommandsBuffer !== null)
     {
-      // Just add lines to buffer.
-      
-      // This strange command appends an array to another array.
-      this.myCommandsBuffer.push.apply(this.myCommandsBuffer,
-        this.splitInputByNewlines(data));
+      // If this happens, just buffer the data and wait for the rest of the
+      // command.
+      this.myInputBuffer += data;
 
-      // Our new commands will be processed by 'thread' that issued the lock
-      // (in the following for cycle).
       return;
-    } else
-    {
-      // If input contains multiple lines, split them.
-      this.myCommandsBuffer = this.splitInputByNewlines(data);
     }
+
+    // Split input by newlines and push each line as a separate command
+    // to myCommandsBuffer[] to be processed.
+    // (.push.apply() appends an array to another array.)
+    this.myCommandsBuffer.push
+      .apply(this.myCommandsBuffer, this.splitInputByNewlines(data));
 
     // Handle each line as a separate command. Also trim it (remove leading
     // and trailing white spaces) before processing.
@@ -237,14 +225,15 @@ export class TelnetSocketDescriptor extends SocketDescriptor
 
     // All commands are processed, mark the buffer as empty.
     // (if will also hopefully flag allocated data for freeing from memory)
-    this.myCommandsBuffer = null;
+    this.myCommandsBuffer = [];
   }
 
   protected onSocketError(error)
   {
     let player = "";
 
-    if (this.playerConnection.accountId.notNull())
+    if (this.playerConnection.accountId
+      && this.playerConnection.accountId.notNull())
     {
       let accountName = Server.accountManager
         .getAccount(this.playerConnection.accountId).accountName;
@@ -304,8 +293,6 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     if (data === "") // Nothing to parse.
       return;
 
-    data = this.myinputBuffer + data;
-
     if (data.indexOf('\xff\xfb\xc9') !== -1)
     {
       // IAC WILL GMCP
@@ -345,7 +332,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
         /// Ok, tohle snad jakz takz chapu: Nedosel cely GMCP packet, takze si
         /// data odlozime do bufferu, dokud nedojde zbytek.
         ///log('incomplete GMCP package', this);
-        this.myinputBuffer = data;
+        this.myInputBuffer = data;
 
         return "";
       }
@@ -366,12 +353,12 @@ export class TelnetSocketDescriptor extends SocketDescriptor
 
       if (data.indexOf('\xff\xfa\xc9') !== -1)
       {
-        this.myinputBuffer = data;
+        this.myInputBuffer = data;
 
         return "";
       }
       else
-        this.myinputBuffer = '';
+        this.myInputBuffer = '';
     }
 
     /// JSON zatim nepotrebuju
@@ -439,28 +426,32 @@ export class TelnetSocketDescriptor extends SocketDescriptor
 
   protected endsWithNewline(data: string): boolean
   {
-    let accountName = "";
-    let player = "";
-
-    if (this.playerConnection.accountId.notNull())
-    {
-      accountName = Server.accountManager
-        .getAccount(this.playerConnection.accountId).accountName;
-    }
-
-    if (accountName)
-      player = "Player " + accountName;
-    else
-      player = "Unknown player";
-
     // (slice(-2) creates a substring starting at two characters from the end)
-    if (data.slice(-2) !== '\r\n')
+    if (data.length < 2 || data.slice(-2) !== '\r\n')
     {
-      Mudlog.log(
+      let accountName = "";
+      let player = "";
+
+      if (this.playerConnection.accountId
+        && this.playerConnection.accountId.notNull())
+      {
+        accountName = Server.accountManager
+          .getAccount(this.playerConnection.accountId).accountName;
+      }
+
+      if (accountName)
+        player = "Player " + accountName;
+      else
+        player = "Unknown player";
+
+      Mudlog.log
+      (
         player + " has sent data of unknown format not ending with newline: "
         + data,
         Mudlog.msgType.SYSTEM_INFO,
-        Mudlog.levels.IMMORTAL);
+        Mudlog.levels.IMMORTAL
+      );
+
       return false;
     }
 

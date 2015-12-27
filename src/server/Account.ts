@@ -68,13 +68,21 @@ export class Account extends IdableSaveableContainer
     return this.playerConnection.isInGame();
   }
 
-  public addNewCharacter(characterName: string)
+  public addNewCharacter(characterId: Id)
   {
+    /*
     if (!ASSERT(characterName !== "",
       "Attempt to add new character with empty name"))
       return;
 
     this.myData.characters.push(characterName);
+    */
+
+    if (!ASSERT(characterId && characterId.notNull(),
+      "Attempt to add new character with empty name"))
+      return;
+
+    this.myData.characters.push(characterId);
 
     // This doesn't need to be synchronous.
     this.save();

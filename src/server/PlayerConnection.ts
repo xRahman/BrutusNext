@@ -9,7 +9,7 @@
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {Id} from '../shared/Id';
-import {NamedClass} from '../shared/NamedClass';
+import {IdableSaveableContainer} from '../shared/IdableSaveableContainer';
 import {Mudlog} from '../server/Mudlog';
 import {Server} from '../server/Server';
 import {SocketDescriptor} from '../server/SocketDescriptor';
@@ -18,9 +18,9 @@ import {AuthProcessor} from '../server/AuthProcessor';
 import {LobbyProcessor} from '../server/LobbyProcessor';
 import {Game} from '../game/Game';
 import {GameEntity} from '../game/GameEntity';
-import {Character} from '../game/Character';
+import {Character} from '../game/characters/Character';
 
-export class PlayerConnection extends NamedClass
+export class PlayerConnection extends IdableSaveableContainer
 {
   constructor(protected mySocketDescriptor: SocketDescriptor)
   {
@@ -47,7 +47,7 @@ export class PlayerConnection extends NamedClass
 
   public get ingameEntity(): GameEntity
   {
-    if (!ASSERT(this.myIngameEntityId.notNull(),
+    if (!ASSERT(this.myIngameEntityId && this.myIngameEntityId.notNull(),
         "Attempt to access gameEntity on PlayerConnection which doesn't have"
         + " any assigned yet"))
       return null;
@@ -79,7 +79,7 @@ export class PlayerConnection extends NamedClass
     ASSERT(this.myStage === PlayerConnection.stage.LOBBY
       || this.myStage === PlayerConnection.stage.IN_GAME,
       "Entering game from wrong stage");
-    ASSERT(this.myAccountId.notNull(), "Invalid account id");
+    ASSERT(this.myAccountId && this.myAccountId.notNull(), "Invalid account id");
 
     this.myStage = PlayerConnection.stage.IN_GAME;
 
@@ -113,6 +113,7 @@ export class PlayerConnection extends NamedClass
       Mudlog.levels.IMMORTAL);
 
     this.accountId = account.id;
+    account.playerConnectionId = this.id;
     this.enterLobby();
   }
 
@@ -137,6 +138,7 @@ export class PlayerConnection extends NamedClass
     }
 
     account.playerConnectionId = this.id;
+    this.accountId = account.id;
 
     Mudlog.log
     (
@@ -146,7 +148,8 @@ export class PlayerConnection extends NamedClass
     );
 
     if (oldStage === PlayerConnection.stage.IN_GAME
-        && oldIngameEntityId.notNull())
+      && oldIngameEntityId
+      && oldIngameEntityId.notNull())
     {
       // If player was in game before and we know what game entity she has
       // been connected, send her back to the game.
@@ -176,23 +179,23 @@ export class PlayerConnection extends NamedClass
         break;
 
       case PlayerConnection.stage.AUTHENTICATION:
-        ASSERT(this.myAccountId.isNull(),
+        ASSERT(this.myAccountId && this.myAccountId.isNull(),
           "Attempt to start authentication on player connection that already"
-          + " has an online account");
+          + " has an account assigned");
         await this.myAuthProcessor.processCommand(command);
         break;
 
       case PlayerConnection.stage.LOBBY:
-        ASSERT(this.myAccountId.notNull(),
+        ASSERT(this.myAccountId && this.myAccountId.notNull(),
           "Attempt to process lobby command on player connection that doesn't"
-          + " have an online account");
+          + " have an account assigned");
         this.myLobbyProcessor.processCommand(command);
         break;
 
       case PlayerConnection.stage.IN_GAME:
-        ASSERT(this.myAccountId.notNull(),
+        ASSERT(this.myAccountId && this.myAccountId.notNull(),
           "Attempt to process ingame command on player connection that doesn't"
-          + " have an online account");
+          + " have an account assigned");
 
         /*
         /// TODO
@@ -244,7 +247,7 @@ export class PlayerConnection extends NamedClass
       // (but only if an account is already associated to this player
       // connection. It might not be, for example if player closed his
       // connection before entering password.)
-      if (this.myAccountId.notNull())
+      if (this.myAccountId && this.myAccountId.notNull())
       {
         Server.accountManager.logOut(this.myAccountId);
         this.myAccountId = Id.NULL;
@@ -275,7 +278,7 @@ export class PlayerConnection extends NamedClass
 
   public isInGame()
   {
-    if (this.ingameEntityId.notNull())
+    if (this.ingameEntityId && this.ingameEntityId.notNull())
     {
       ASSERT(this.myStage === PlayerConnection.stage.IN_GAME,
         "Player connection has ingame entity assigned but player connection"
@@ -324,7 +327,7 @@ export class PlayerConnection extends NamedClass
 
   protected getOldConnection(account: Account): PlayerConnection
   {
-    if (account.playerConnectionId.notNull())
+    if (account.playerConnectionId && account.playerConnectionId.notNull())
     {
       if (!ASSERT(account.playerConnectionId.equals(this.id),
         "Account is already linked to the connection with which we are trying"

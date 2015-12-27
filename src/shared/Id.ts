@@ -25,8 +25,6 @@ export class Id extends SaveableObject
 
     // Ids are not saved to json by default.
     this.isSaved = false;
-
-    this.myTimeOfBoot = Server.timeOfBoot;
   }
 
   // New object is returned so you can use this to inicialize an id that will
@@ -45,7 +43,6 @@ export class Id extends SaveableObject
   }
 
   public get stringId() { return this.myStringId; }
-  public get timeOfBoot() { return this.myTimeOfBoot; }
   public get type() { return this.myType; }
 
   public equals(operand: Id)
@@ -64,7 +61,4 @@ export class Id extends SaveableObject
 
   // -------------- Protected class data ----------------
 
-  /// Time of boot is no longer used, ids are unique in all enternity. It is
-  /// kept to just help with troubleshooting.
-  protected myTimeOfBoot: Date = new Date(0);
 }
