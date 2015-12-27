@@ -120,8 +120,10 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     this.mySocket.setEncoding('binary');
 
     // Check that event handler for 'data' event is not already registered.
-    this.checkEventHandlerAbsence(
-      TelnetSocketDescriptor.events.SOCKET_RECEIVED_DATA);
+    this.checkEventHandlerAbsence
+    (
+      TelnetSocketDescriptor.events.SOCKET_RECEIVED_DATA
+    );
 
     // Register event handler for 'data' event.
     this.mySocket.on
@@ -131,8 +133,10 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     );
 
     // Check that event handler for 'error' event is not already registered.
-    this.checkEventHandlerAbsence(
-      TelnetSocketDescriptor.events.SOCKET_ERROR);
+    this.checkEventHandlerAbsence
+    (
+      TelnetSocketDescriptor.events.SOCKET_ERROR
+    );
 
     // Register event handler for 'error' event.
     this.mySocket.on
@@ -198,30 +202,15 @@ export class TelnetSocketDescriptor extends SocketDescriptor
         return;
     }
 
-    // It seams that putty (and maybe even other clients) sometimes sends data
-    // not finished with newline and sends newline in next, separate packet.
-    if (!this.endsWithNewline(data))
-    {
-      // If this happens, just buffer the data and wait for the rest of the
-      // command.
-      this.myInputBuffer += data;
+    // Transfer the ending of data stream that is not finished by newline
+    // to the input buffer and cut it off of the data.
+    let input = this.cutOffUnifinishedCommand(data);
 
+    // Check if there is something to process right now.
+    if (input === "")
       return;
-    }
 
-    // Split input by newlines and push each line as a separate command
-    // to myCommandsBuffer[] to be processed.
-    // (.push.apply() appends an array to another array.)
-    this.myCommandsBuffer.push
-      .apply(this.myCommandsBuffer, this.splitInputByNewlines(data));
-
-    // Handle each line as a separate command. Also trim it (remove leading
-    // and trailing white spaces) before processing.
-    for (let i = 0; i < this.myCommandsBuffer.length; i++)
-    {
-      await this.playerConnection
-        .processCommand(this.myCommandsBuffer[i].trim());
-    }
+    await this.processInput(input);
 
     // All commands are processed, mark the buffer as empty.
     // (if will also hopefully flag allocated data for freeing from memory)
@@ -424,56 +413,53 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     return data.trim().length ? data : "";
   }
 
-  protected endsWithNewline(data: string): boolean
+  // Transfers the ending of data stream that is not finished by newline
+  // to the input buffer and cuts it off of the data.
+  protected cutOffUnifinishedCommand(data: string): string
   {
-    // (slice(-2) creates a substring starting at two characters from the end)
-    if (data.length < 2 || data.slice(-2) !== '\r\n')
+    // Telnet protocol doesn't ensure that packet ends with newline. It
+    // means that we can only process part of the input up untill the last
+    // newline (if there is any). There rest (or everything, if there is no
+    // newline in input at all) needs to be buffered untill the rest of the
+    // data arrives.
+    let lastNewlineIndex = data.lastIndexOf('\r\n');
+
+    if (lastNewlineIndex === -1)
     {
-      let accountName = "";
-      let player = "";
+      // If there is no newline in input, just buffer the data.
+      this.myInputBuffer += data;
 
-      if (this.playerConnection.accountId
-        && this.playerConnection.accountId.notNull())
-      {
-        accountName = Server.accountManager
-          .getAccount(this.playerConnection.accountId).accountName;
-      }
-
-      if (accountName)
-        player = "Player " + accountName;
-      else
-        player = "Unknown player";
-
-      Mudlog.log
-      (
-        player + " has sent data of unknown format not ending with newline: "
-        + data,
-        Mudlog.msgType.SYSTEM_INFO,
-        Mudlog.levels.IMMORTAL
-      );
-
-      return false;
+      return "";
     }
 
-    return true;
+    if (lastNewlineIndex !== data.length - 2)
+    {
+      // If there is a newline in input and there is something after
+      // the last '\r\n\', add it to input buffer.
+      // (+2 to skip '\r\n\')
+      this.myInputBuffer += data.substring(lastNewlineIndex + 2);
+    }
+
+    // Cut off the buffered part of data.
+    return data.substr(0, lastNewlineIndex);
   }
 
-  protected splitInputByNewlines(data: string): Array<string>
+  protected async processInput(input: string)
   {
-    let lines: Array<string> = [];
+    // Split input by newlines.
+    let lines = input.split('\r\n');
 
-    // (data.slice(0, -2) will create a substring not containing last two
-    // characters, which are '\r\n' because that's what we checked for right
-    // before)
-    if (data.slice(0, -2).indexOf('\r\n') !== -1)
+    // And push each line as a separate command to myCommandsBuffer[] to be
+    // processed (.push.apply() appends an array to another array).
+    this.myCommandsBuffer.push.apply(this.myCommandsBuffer, lines);
+
+    // Handle each line as a separate command. Also trim it (remove leading
+    // and trailing white spaces) before processing.
+    for (let i = 0; i < this.myCommandsBuffer.length; i++)
     {
-      lines = data.split('\r\n');
-    } else
-    {
-      lines.push(data);
+      await this.playerConnection
+        .processCommand(this.myCommandsBuffer[i].trim());
     }
-
-    return lines;
   }
 
   // Converts MUD color codes (e.g. "&gSomething &wcolorful&g)

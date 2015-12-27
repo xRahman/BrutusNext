@@ -322,7 +322,7 @@ export class PlayerConnection extends IdableSaveableContainer
 
   protected announceReconnecting()
   {
-    this.send("&gYou have reconnected to your character.");
+    this.send("&wYou have reconnected to your character.");
   }
 
   protected getOldConnection(account: Account): PlayerConnection

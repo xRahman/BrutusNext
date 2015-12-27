@@ -60,7 +60,10 @@ export class Character extends GameEntity
   // What file will this object be saved to.
   protected myGetSavePath(): string
   {
-    return Character.SAVE_DIRECTORY + this.name + ".json";
+    if (this.hasUniqueName)
+      return Character.SAVE_DIRECTORY + "unique/" + this.name + ".json";
+    else
+      return Character.SAVE_DIRECTORY + this.name + ".json";
   }
 
   // ---------------- Command handlers ------------------
