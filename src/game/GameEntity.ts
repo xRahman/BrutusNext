@@ -12,9 +12,9 @@ import {Id} from '../shared/Id';
 import {GameEntityData} from '../game/GameEntityData';
 import {CommandInterpretter} from '../game/CommandInterpretter';
 
-///export abstract class GameEntity extends SaveableContainer
 export abstract class GameEntity extends CommandInterpretter
 {
+
   // --------------- Public accessors -------------------
 
   public get name()

@@ -28,14 +28,26 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
   <ItemGroup>
     <TypeScriptCompile Include="src\BrutusNext.ts" />
-    <TypeScriptCompile Include="src\game\Character.ts" />
-    <TypeScriptCompile Include="src\game\CharacterData.ts" />
+    <TypeScriptCompile Include="src\game\characters\Character.ts" />
+    <TypeScriptCompile Include="src\game\characters\CharacterData.ts" />
     <TypeScriptCompile Include="src\game\CommandInterpretter.ts" />
+    <TypeScriptCompile Include="src\game\PlayerCharacterManager.ts" />
+    <TypeScriptCompile Include="src\game\UniqueEntityManager.ts" />
     <TypeScriptCompile Include="src\game\Game.ts" />
     <TypeScriptCompile Include="src\game\GameEntity.ts" />
     <TypeScriptCompile Include="src\game\GameEntityData.ts" />
     <TypeScriptCompile Include="src\game\CharacterManager.ts" />
-    <TypeScriptCompile Include="src\game\Room.ts" />
+    <TypeScriptCompile Include="src\game\world\Area.ts" />
+    <TypeScriptCompile Include="src\game\world\AreaData.ts" />
+    <TypeScriptCompile Include="src\game\AreaManager.ts" />
+    <TypeScriptCompile Include="src\game\world\Dimension.ts" />
+    <TypeScriptCompile Include="src\game\world\DimensionData.ts" />
+    <TypeScriptCompile Include="src\game\DimensionManager.ts" />
+    <TypeScriptCompile Include="src\game\world\Realm.ts" />
+    <TypeScriptCompile Include="src\game\world\RealmData.ts" />
+    <TypeScriptCompile Include="src\game\RealmManager.ts" />
+    <TypeScriptCompile Include="src\game\world\Room.ts" />
+    <TypeScriptCompile Include="src\game\world\RoomData.ts" />
     <TypeScriptCompile Include="src\game\RoomManager.ts" />
     <TypeScriptCompile Include="src\headers\node.d.ts" />
     <TypeScriptCompile Include="src\headers\ws.d.ts" />
@@ -54,6 +66,7 @@
     <TypeScriptCompile Include="src\shared\ASSERT.ts" />
     <TypeScriptCompile Include="src\shared\Id.ts" />
     <TypeScriptCompile Include="src\shared\NamedClass.ts" />
+    <TypeScriptCompile Include="src\shared\SaveableArray.ts" />
     <TypeScriptCompile Include="src\shared\SaveableContainer.ts" />
     <TypeScriptCompile Include="src\shared\IdContainer.ts" />
     <TypeScriptCompile Include="src\shared\IdProvider.ts" />
@@ -63,6 +76,8 @@
   <ItemGroup>
     <Folder Include="src\" />
     <Folder Include="src\game\" />
+    <Folder Include="src\game\characters\" />
+    <Folder Include="src\game\world\" />
     <Folder Include="src\headers\" />
     <Folder Include="src\server" />
     <Folder Include="src\server\telnet\" />

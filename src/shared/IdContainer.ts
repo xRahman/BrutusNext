@@ -15,7 +15,7 @@ import {Id} from '../shared/Id';
 import {IdProvider} from '../shared/IdProvider';
 import {Server} from '../server/Server';
 
-export class IdContainer<T>
+export class IdContainer<T extends IdableSaveableContainer>
 {
 
   // ---------------- Public methods --------------------
@@ -61,7 +61,7 @@ export class IdContainer<T>
 
   public getItem(id: Id): T
   {
-    ASSERT_FATAL(id.notNull(), "Trying to get item using invalid id");
+    ASSERT_FATAL(id && id.notNull(), "Trying to get item using invalid id");
 
     let item = this.myContainer[id.stringId];
 
@@ -73,7 +73,7 @@ export class IdContainer<T>
 
   public deleteItem(id: Id)
   {
-    ASSERT_FATAL(id.notNull(), "Invalid id");
+    ASSERT_FATAL(id && id.notNull(), "Invalid id");
 
     if (!ASSERT(id.stringId in this.myContainer,
       "Attempt to delete item (" + id.stringId + ")"

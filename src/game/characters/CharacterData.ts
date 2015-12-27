@@ -6,7 +6,7 @@
 
 'use strict';
 
-import {GameEntityData} from '../game/GameEntityData';
+import {GameEntityData} from '../../game/GameEntityData';
 
 export class CharacterData extends GameEntityData
 {
@@ -20,6 +20,7 @@ export class CharacterData extends GameEntityData
     this.version = 0;
   }
 
+  /// TODO: Tohle by asi mel mit az player, u mobu me to moc nezajima
   // dateofCreation always initializes to current time, but for existing
   // characters will be overwritten when loading from file. 
   public timeOfCreation = new Date();
