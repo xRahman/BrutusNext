@@ -14,13 +14,24 @@ import {CommandInterpretter} from '../game/CommandInterpretter';
 
 export abstract class GameEntity extends CommandInterpretter
 {
+  static get SAVE_DIRECTORY()
+  {
+    ASSERT(false,
+      "Attempt to access SAVE_DIRECTORY of abstract GameEntity class");
+
+    return "";
+  }
+
+  // ---------------- Public class data -----------------
+
+  public hasUniqueName: boolean = false;
 
   // --------------- Public accessors -------------------
 
   public get name()
   {
     if (!ASSERT(this.myData !== null, "Attempt to access 'name' property on"
-          + "entity that doesn't have valid myData"))
+      + "entity that doesn't have valid myData"))
       return "";
 
     return this.myData.name;
@@ -64,7 +75,6 @@ export abstract class GameEntity extends CommandInterpretter
   // -------------- Protected class data ----------------
 
   protected myData: GameEntityData = null;
-
 
   // Id.NULL if no player is connected to (is playing as) this entity,
   // connectionId otherwise.

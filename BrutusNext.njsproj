@@ -31,7 +31,7 @@
     <TypeScriptCompile Include="src\game\characters\Character.ts" />
     <TypeScriptCompile Include="src\game\characters\CharacterData.ts" />
     <TypeScriptCompile Include="src\game\CommandInterpretter.ts" />
-    <TypeScriptCompile Include="src\game\PlayerCharacterManager.ts" />
+    <TypeScriptCompile Include="src\game\UniqueCharacterManager.ts" />
     <TypeScriptCompile Include="src\game\UniqueEntityManager.ts" />
     <TypeScriptCompile Include="src\game\Game.ts" />
     <TypeScriptCompile Include="src\game\GameEntity.ts" />
