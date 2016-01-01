@@ -70,14 +70,16 @@ export class SaveableArray<T extends SaveableObject> extends Array
 
     for (let i = 0; i < jsonObject.length; i++)
     {
-      let item: SaveableObject = new this.myItemConstructor();
+      let item = new this.myItemConstructor();
 
-      // Access by property name is used, because loadFromJsonObject
-      // is protected and we are not extended from SaveableObject, because
-      // we need to extend Array. The other option would be to make it
-      // public, which would be quite strange. So this hack is probably the
-      // lesser of two evils.
-      this.push(item['loadFromJsonObject'](jsonObject[i], filePath))
+      // Access by property name is used to call item.loadFromJsonObject(),
+      // because loadFromJsonObject is protected and we are not extended from
+      // SaveableObject, because we need to extend type Array. The other option
+      // would be to make it public, which would be quite strange. So this
+      // hack is probably the lesser of two evils.
+      item['loadFromJsonObject'](jsonObject[i], filePath);
+
+      this.push(item);
     }
   }
 }

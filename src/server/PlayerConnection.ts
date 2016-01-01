@@ -70,13 +70,13 @@ export class PlayerConnection extends IdableSaveableContainer
 
   public enterLobby()
   {
-    this.myStage = PlayerConnection.stage.LOBBY;
+    this.myStage = PlayerConnection.stage.IN_LOBBY;
     this.myLobbyProcessor.enterMenu();
   }
 
   public async enterGame()
   {
-    ASSERT(this.myStage === PlayerConnection.stage.LOBBY
+    ASSERT(this.myStage === PlayerConnection.stage.IN_LOBBY
       || this.myStage === PlayerConnection.stage.IN_GAME,
       "Entering game from wrong stage");
     ASSERT(this.myAccountId && this.myAccountId.notNull(), "Invalid account id");
@@ -185,7 +185,7 @@ export class PlayerConnection extends IdableSaveableContainer
         await this.myAuthProcessor.processCommand(command);
         break;
 
-      case PlayerConnection.stage.LOBBY:
+      case PlayerConnection.stage.IN_LOBBY:
         ASSERT(this.myAccountId && this.myAccountId.notNull(),
           "Attempt to process lobby command on player connection that doesn't"
           + " have an account assigned");
@@ -311,7 +311,7 @@ export class PlayerConnection extends IdableSaveableContainer
   {
     INITIAL: 0, // Initial stage.
     AUTHENTICATION: 1,
-    LOBBY: 2,
+    IN_LOBBY: 2,
     IN_GAME: 3,
     QUITTED_GAME: 4
   }
