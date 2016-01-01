@@ -79,7 +79,7 @@ export class Account extends IdableSaveableContainer
     */
 
     if (!ASSERT(characterId && characterId.notNull(),
-      "Attempt to add new character with empty name"))
+      "Attempt to add new character with invalid id"))
       return;
 
     this.myData.characters.push(characterId);
