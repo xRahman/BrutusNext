@@ -12,11 +12,11 @@
   {
     "className": "AccountData",
     "version": 0,
-    "characters": [null,
+    "characters": [
     {
       "className": "Id",
       "version": 0,
-      "myStringId": "a",
+      "myStringId": "4",
       "myType": "Character"
     }],
     "timeOfCreation": "2015-12-24T11:58:11.002Z",

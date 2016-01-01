@@ -28,7 +28,8 @@ export class CharacterManager
       "Attempt to create a character '"
       + characterName + "' who already exists");
 
-    let newCharacter = new Character(characterName);
+    let newCharacter =
+      new Character({ name: characterName, hasUniqueName: false });
     let newCharacterId = this.addNewCharacter(newCharacter);
 
     // Save the character to the disk (so we know that the character exists).
