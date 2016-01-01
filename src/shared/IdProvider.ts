@@ -74,10 +74,19 @@ export class IdProvider extends SaveableObject
 
     let stringId = "";
 
-    // And concatenate hexadecimal string representations of all used
+    // And concatenate decimal string representations of all used
     // integer values.
-    for (let i = 0; i < this.myLastIssuedId.length; i++)
-      stringId += this.myLastIssuedId[i].toString(16);
+
+    // Start with first integer.
+    stringId = this.myLastIssuedId[0].toString(10);
+
+    // And concatenate the rest of them, deliminited by '-' character
+    // (original array can be reconstructed this way if necessary and
+    // it is better readable)
+    for (let i = 1; i < this.myLastIssuedId.length; i++)
+    {
+      stringId = this.myLastIssuedId[i].toString(10) + '-' + stringId;
+    }
 
     return new Id(stringId, type);
   }

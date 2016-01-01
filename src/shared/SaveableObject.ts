@@ -54,6 +54,17 @@ export class SaveableObject extends NamedClass
       + " doesn't match required version (" + this.version + ")");
   }
 
+  protected checkClassName (jsonObject: Object, filePath: string)
+  {
+    ASSERT_FATAL('className' in jsonObject,
+      "There is no 'className' property in JSON data in file " + filePath);
+
+    ASSERT_FATAL(jsonObject['className'] === this.className,
+      "Attempt to load JSON data of class (" + jsonObject['className'] + ")"
+      + " in file " + filePath
+      + " into instance of incompatible class (" + this.className + ")");
+  }
+
   protected async loadFromFile(filePath: string)
   {
     // Note: Unline writing the same file while it is saving, loading
@@ -225,6 +236,9 @@ export class SaveableObject extends NamedClass
     // filePath is passed just so it can be printed to error messages.
     this.checkVersion(jsonObject, filePath);
 
+    // className must be the same as it's saved value.
+    this.checkClassName(jsonObject, filePath);
+
     // filePath is passed just so it can be printed to error messages.
     this.checkThatAllPropertiesInJsonExistInThis(jsonObject, filePath);
 
@@ -242,9 +256,16 @@ export class SaveableObject extends NamedClass
         + " Make sure that all properties of class '" + this.className + "'"
         + " are inicialized to something else than <null>");
 
+      // 'version' and 'className' properties are not loaded. Classname
+      // needs to be the same of course (which is checked previously), version
+      // might differ if someone bumped it up in the code, but in that case
+      // we really need it to bump up, so we don't need to overwrite new
+      // version number with the old value from saved file.
       if
       (
-        this[property] !== null
+        property !== 'version'
+        && property !== 'className'
+        && this[property] !== null
         && typeof this[property] === 'object'
         && 'loadFromJsonObject' in this[property]
       )

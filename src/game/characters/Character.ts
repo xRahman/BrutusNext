@@ -12,7 +12,7 @@ import {CharacterData} from '../../game/characters/CharacterData';
 
 export class Character extends GameEntity
 {
-  constructor(name: string)
+  constructor(nameParam: { name: string, hasUniqueName: boolean })
   {
     super();
 
@@ -21,7 +21,8 @@ export class Character extends GameEntity
     // .json files to conform to the new version.
     this.version = 0;
 
-    this.myData = new CharacterData(name);
+    this.myData = new CharacterData(nameParam.name);
+    this.hasUniqueName = nameParam.hasUniqueName;
   }
 
   static get SAVE_DIRECTORY() { return "./data/characters/"; }
