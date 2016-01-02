@@ -68,21 +68,33 @@ export class Account extends IdableSaveableContainer
     return this.playerConnection.isInGame();
   }
 
-  public addNewCharacter(characterId: Id)
+  public addNewCharacter(characterName: string)
   {
-    /*
     if (!ASSERT(characterName !== "",
       "Attempt to add new character with empty name"))
       return;
 
     this.myData.characters.push(characterName);
-    */
 
+    /// Zpet k odkazovani postav jmeny.
+    ///     Duvod pro ukladani postav v souboru podle jmena postavy je,
+    ///   ze stat file <charName> by nemel jak najit spravny soubor, kdyz
+    ///   by byl pojmenovany hodnotou idcka.
+    ///     Kdyz budou soubory pojmenovane jmenem charu, tak zas nepujde najit
+    ///   soubor podle idcka, coz pri vstupu hrace do hry potrebuju.
+    /// Reseni tedy je, pojmenovavat player character savy jmenem charu
+    /// a seznam charu v accountu ukladat taky pres jmeno charu.
+    /// (ukladat entity s unikatnimi jmeny pod jmenem entity ma navic tu
+    /// vyhodu, ze si nemusim nekde stranou drzet seznam existujicich jmen,
+    /// muzu proste checknout, jestli existuje soubor daneho jmena.
+
+    /*
     if (!ASSERT(characterId && characterId.notNull(),
       "Attempt to add new character with invalid id"))
       return;
 
     this.myData.characters.push(characterId);
+    */
 
     // This doesn't need to be synchronous.
     this.save();
