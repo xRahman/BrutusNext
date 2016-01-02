@@ -87,24 +87,42 @@ export class LobbyProcessor
 
   protected async processMenuChoice(choice: string)
   {
+    let accountManager = Server.accountManager;
+    let account = accountManager.getAccount(this.myPlayerConnection.accountId);
+
     switch (choice)
     {
       case "0": // Quit the game.
         this.quitGame();
-        break;
+      break;
 
       case "1": // Enter the game.
-        // Asynchronous reading from the file.
-        // (The rest of the code will execute only after the reading is done.)
-        //   We need async call because we want to wait after player's
-        // character is loaded from file before actually entering the game.
-        await this.enterGame();
-        break;
+        // Create a new character if there is non on this account yet.
+        /// (for now player can only have one character and her name is the
+        /// same as account name)
+        if (account.getNumberOfCharacters() === 0)
+        {
+          let character = this.createNewCharacter(account.accountName);
+
+          if (character)
+            this.myPlayerConnection.enterGame();
+        }
+        else
+        {
+          // Enter game with first character (number '0').
+          // (because for now players only have one character)
+          //   Asynchronous reading from the file.
+          // (The rest of the code will execute only after the reading is done.)
+          // We need async call because we want to wait after player's character
+          // is loaded from file before actually entering the game.
+          await this.enterGame(0);
+        }
+      break;
 
       default:
         this.myPlayerConnection.send("That's not a menu choice!");
         this.sendMenu();
-        break;
+      break;
     }
   }
 
@@ -115,25 +133,15 @@ export class LobbyProcessor
     this.myPlayerConnection.quitGame();
   }
 
-  protected async enterGame()
+  protected async enterGame(charNumber: number)
   {
     this.myStage = LobbyProcessor.stage.NOT_IN_LOBBY;
 
-    let accountManager = Server.accountManager;
     let characterManager = Game.characterManager;
+    let accountManager = Server.accountManager;
     let account = accountManager.getAccount(this.myPlayerConnection.accountId);
 
-    // For now, each account can only have one character and it's name is
-    // the same as accountName.
-    let characterName = account.accountName;
-
-    if (!characterManager.doesNameExist(characterName))
-    {
-      this.createNewCharacter(characterName);
-      this.myPlayerConnection.enterGame();
-
-      return;
-    }
+    let characterName = account.getCharacterName(charNumber);
 
     // Check if character is already online.
     let character = characterManager.getUniqueEntityByName(characterName);
@@ -145,30 +153,41 @@ export class LobbyProcessor
     }
     else
     {
-      let character =
-        new Character({ name: characterName, hasUniqueName: true });
+      await this.loadCharacter(characterName);
 
-      // This needs to be set before loading so character will load from
-      // correct directory.
-      character.hasUniqueName = true;
-
-      // Character name is passed to check against character name saved
-      // in file (they must by the same).
-      await this.loadCharacterFromFile(character, characterName);
-
-      // Add newly loaded account to characterManager (under it's original id).
-      characterManager.registerEntity(character);
-
-      this.myPlayerConnection.ingameEntityId = character.id;
       this.myPlayerConnection.enterGame();
     }
   }
+  
+  protected async loadCharacter(characterName: string)
+  {
+    let characterManager = Game.characterManager;
 
-  protected async createNewCharacter(characterName: string)
+    let character =
+      new Character({ name: characterName, hasUniqueName: true });
+
+    // This needs to be set before loading so character will load from
+    // correct directory.
+    character.hasUniqueName = true;
+
+    // Character name is passed to check against character name saved
+    // in file (they must by the same).
+    await this.loadCharacterFromFile(character, characterName);
+
+    // Add newly loaded account to characterManager (under it's original id).
+    characterManager.registerEntity(character);
+
+    this.myPlayerConnection.ingameEntityId = character.id;
+  }
+
+  protected createNewCharacter(characterName: string): boolean
   {
     let characterManager = Game.characterManager;
     let accountManager = Server.accountManager;
     let account = accountManager.getAccount(this.myPlayerConnection.accountId);
+
+    if (this.checkIfCharacterExists(characterName))
+      return false;
 
     // 'hasUniqueName: true' because player characters have unique names.
     let newCharacterId =
@@ -188,6 +207,32 @@ export class LobbyProcessor
       Mudlog.msgType.SYSTEM_INFO,
       Mudlog.levels.IMMORTAL
     );
+
+    return true;
+  }
+
+  protected checkIfCharacterExists(characterName: string): boolean
+  {
+    let characterManager = Game.characterManager;
+
+    if (characterManager.doesNameExist(characterName))
+    {
+      ASSERT(false,
+        "Attempt to create character '" + characterName + "'"
+        + " that already exists.");
+
+      // Notify the player what went wrong.
+      this.myPlayerConnection.send
+      (
+        "Something is wrong, character with name '" + characterName + "'"
+        + " already exists. Please contact implementors and ask them to"
+        + "resolve this issue.\r\n"
+      );
+
+      return true;
+    }
+
+    return false;
   }
 
   protected async loadCharacterFromFile
