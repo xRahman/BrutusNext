@@ -7,6 +7,7 @@
 'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
+import {ASSERT_FATAL} from '../shared/ASSERT';
 import {Id} from '../shared/Id';
 import {IdableSaveableContainer} from '../shared/IdableSaveableContainer';
 import {AccountData} from '../server/AccountData';
@@ -98,6 +99,21 @@ export class Account extends IdableSaveableContainer
 
     // This doesn't need to be synchronous.
     this.save();
+  }
+
+  public getNumberOfCharacters(): number
+  {
+    return this.myData.characters.length;
+  }
+
+  public getCharacterName(charNumber: number): string
+  {
+    ASSERT_FATAL(charNumber >= 0 && charNumber < this.getNumberOfCharacters(),
+      "Attempt to get name of character number " + charNumber
+      + " from account " + this.accountName + " which only has "
+      + this.getNumberOfCharacters() + " characters.");
+
+    return this.myData.characters[charNumber];
   }
 
   // -------------- Protected class data ----------------
