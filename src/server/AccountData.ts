@@ -22,13 +22,16 @@ export class AccountData extends SaveableObject
     this.version = 0;
   }
 
+  /*
   // Names of characters belonging to this account.
   /// At the moment this is not used to log in the game, because player always
   /// have only one character with the same name as account. When the character
   /// is created, the name is added to this array, however, so it can be
   /// operated with if multiple characters per account were implemented.
-  ///public characters: Array<string> = [];
   public characters: SaveableArray<Id> = new SaveableArray<Id>(Id);
+  */
+  /// Zpet k seznamu jmen charu.
+  public characters: Array<string> = [];
 
   // dateofCreation always initializes to current time, but for existing
   // accounts will be overwritten when loading from file. 
