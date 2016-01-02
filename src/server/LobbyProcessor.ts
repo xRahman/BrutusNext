@@ -120,14 +120,14 @@ export class LobbyProcessor
     this.myStage = LobbyProcessor.stage.NOT_IN_LOBBY;
 
     let accountManager = Server.accountManager;
-    let uniqueCharacterManager = Game.uniqueCharacterManager;
+    let characterManager = Game.characterManager;
+    let account = accountManager.getAccount(this.myPlayerConnection.accountId);
 
     // For now, each account can only have one character and it's name is
     // the same as accountName.
-    let characterName =
-      accountManager.getAccount(this.myPlayerConnection.accountId).accountName;
-    
-    if (!uniqueCharacterManager.exists(characterName))
+    let characterName = account.accountName;
+
+    if (!characterManager.doesNameExist(characterName))
     {
       this.createNewCharacter(characterName);
       this.myPlayerConnection.enterGame();
@@ -136,7 +136,7 @@ export class LobbyProcessor
     }
 
     // Check if character is already online.
-    let character = uniqueCharacterManager.getEntityByName(characterName);
+    let character = characterManager.getUniqueEntityByName(characterName);
 
     if (character)
     {
@@ -157,7 +157,7 @@ export class LobbyProcessor
       await this.loadCharacterFromFile(character, characterName);
 
       // Add newly loaded account to characterManager (under it's original id).
-      uniqueCharacterManager.registerEntity(character);
+      characterManager.registerEntity(character);
 
       this.myPlayerConnection.ingameEntityId = character.id;
       this.myPlayerConnection.enterGame();
@@ -166,15 +166,20 @@ export class LobbyProcessor
 
   protected async createNewCharacter(characterName: string)
   {
-    let playerCharacterManager = Game.uniqueCharacterManager;
+    let characterManager = Game.characterManager;
     let accountManager = Server.accountManager;
     let account = accountManager.getAccount(this.myPlayerConnection.accountId);
 
-    let newCharacterId = playerCharacterManager
-      .createNewCharacter(characterName, this.myPlayerConnection.id);
+    // 'hasUniqueName: true' because player characters have unique names.
+    let newCharacterId =
+      characterManager.createNewCharacter
+      (
+        { name: characterName, hasUniqueName: true },
+        this.myPlayerConnection.id
+      );
 
     this.myPlayerConnection.ingameEntityId = newCharacterId;
-    account.addNewCharacter(newCharacterId);
+    account.addNewCharacter(characterName);
 
     Mudlog.log
     (

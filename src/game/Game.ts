@@ -9,7 +9,6 @@
 import {Server} from '../server/Server';
 import {GameEntity} from '../game/GameEntity';
 import {CharacterManager} from '../game/CharacterManager';
-import {UniqueCharacterManager} from '../game/UniqueCharacterManager';
 import {IdContainer} from '../shared/IdContainer';
 
 export class Game
@@ -22,11 +21,6 @@ export class Game
   public static get characterManager()
   {
     return Server.game.myCharacterManager;
-  }
-
-  public static get uniqueCharacterManager()
-  {
-    return Server.game.myUniqueCharacterManager;
   }
 
   // ---------------- Public methods --------------------
@@ -45,10 +39,6 @@ export class Game
 
   // Character mananger handles all character in game, including player PCs.
   protected myCharacterManager = new CharacterManager();
-
-  // Player character manager ensures that player characters have unique names.
-  // It is used to create new player characters and to load/save them to disk.
-  protected myUniqueCharacterManager = new UniqueCharacterManager();
 
   // --------------- Protected methods ------------------
 }
