@@ -12,12 +12,13 @@ import {Game} from '../game/Game';
 import {GameEntity} from '../game/GameEntity';
 import {Id} from '../shared/Id';
 
-export abstract class UniqueEntityManager<T extends GameEntity>
+export abstract class EntityManager<T extends GameEntity>
 {
   // ---------------- Public methods --------------------
 
   // Returns null if entity isn't loaded (or doesn't exist).
-  public getEntityByName(name: string): T
+  // Only checks entities with unique names.
+  public getUniqueEntityByName(name: string): T
   {
     if (name in this.myNames)
     {
@@ -30,11 +31,19 @@ export abstract class UniqueEntityManager<T extends GameEntity>
     return null;
   }
 
+  // Returns null if entity isn't loaded (or doesn't exist).
+  // Checks all entitities of this manager, uniquely named or not.
+  public getEntityByName(name: string): T
+  {
+    /// TODO
+    return null;
+  }
+
   // Adds entity that has been loaded from file to the list of
   // entities under it's original id (that was loaded from file).
   public registerEntity(entity: T)
   {
-    ASSERT_FATAL(!this.getEntityByName(entity.name),
+    ASSERT_FATAL(!this.getUniqueEntityByName(entity.name),
       "Attempt to register entity '"
       + entity.name + "' that is already registered");
 
@@ -45,12 +54,22 @@ export abstract class UniqueEntityManager<T extends GameEntity>
   // auxiliary hasmap.
   public dropEntity(entityId: Id)
   {
-    let name = Game.entities.getItem(entityId).name;
+    let entity = Game.entities.getItem(entityId);
 
     Game.entities.deleteItem(entityId);
 
-    // Also remove record from the corresponding hashmap.
-    delete this.myNames[name];
+    if (entity.hasUniqueName)
+    {
+      // Also remove record to the corresponding hashmap storing uniquely named
+      // entities.
+      delete this.myNames[entity.name];
+    }
+    /// else
+    /// {
+      /// TODO:
+      /// Nekde by se mely drzet taky jmena neunikatnich entit, aby je podle
+      /// toho bylo mozne targetit.
+    ///}
   }
 
   public getEntity(id: Id): T
@@ -60,7 +79,7 @@ export abstract class UniqueEntityManager<T extends GameEntity>
     return <T>entity;
   }
 
-  public isOnline(name: string): boolean
+  public isUniquelyNamedEntityLoaded(name: string): boolean
   {
     if (this.myNames[name])
       return true;
@@ -81,8 +100,7 @@ export abstract class UniqueEntityManager<T extends GameEntity>
   {
     let newId = Game.entities.addNewItem(entity);
 
-    // Also add record to the corresponding hashmap.
-    this.myNames[entity.name] = newId;
+    this.addEntity(entity);
 
     return newId;
   }
@@ -92,7 +110,17 @@ export abstract class UniqueEntityManager<T extends GameEntity>
   {
     Game.entities.addNewItem(entity);
 
-    // Also add record to the corresponding hashmap.
-    this.myNames[entity.name] = entity.id;
+    if (entity.hasUniqueName)
+    {
+      // Also add record to the corresponding hashmap storing uniquely named
+      // entities.
+      this.myNames[entity.name] = entity.id;
+    }
+    /// else
+    /// {
+      /// TODO:
+      /// Nekde by se mely drzet taky jmena neunikatnich entit, aby je podle toho
+      /// bylo mozne targetit.
+    ///}
   }
 }

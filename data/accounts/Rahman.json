@@ -12,13 +12,7 @@
   {
     "className": "AccountData",
     "version": 0,
-    "characters": [
-    {
-      "className": "Id",
-      "version": 0,
-      "myStringId": "2",
-      "myType": "Character"
-    }],
+    "characters": ["Rahman"],
     "timeOfCreation": "2015-12-10T17:17:25.441Z",
     "password": "9a519a0f7d29f1ffa549fada8b667b02",
     "accountName": "Rahman"
