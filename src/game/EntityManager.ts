@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Abstract ancestor for managers storing game entities with unique names.
+  Abstract ancestor for managers storing game entities.
 */
 
 'use strict';
@@ -11,6 +11,7 @@ import {ASSERT_FATAL} from '../shared/ASSERT';
 import {Game} from '../game/Game';
 import {GameEntity} from '../game/GameEntity';
 import {Id} from '../shared/Id';
+import {AbbrevSearchList} from '../shared/AbbrevSearchList';
 
 export abstract class EntityManager<T extends GameEntity>
 {
@@ -20,10 +21,10 @@ export abstract class EntityManager<T extends GameEntity>
   // Only checks entities with unique names.
   public getUniqueEntityByName(name: string): T
   {
-    if (name in this.myNames)
+    if (name in this.myUniqueNames)
     {
       // Entity is already loaded.
-      let entityId = this.myNames[name];
+      let entityId = this.myUniqueNames[name];
 
       return this.getEntity(entityId);
     }
@@ -31,12 +32,14 @@ export abstract class EntityManager<T extends GameEntity>
     return null;
   }
 
-  // Returns null if entity isn't loaded (or doesn't exist).
-  // Checks all entitities of this manager, uniquely named or not.
-  public getEntityByName(name: string): T
+  // Returns entity that corresponds to given 'targetting string'
+  // (like '3.orc').
+  // Returns null if no entity matches.
+  public getEntityByAbbrev(name: string, index: number): T
   {
-    /// TODO
-    return null;
+    let entityId = this.myAbbrevSearchList.getEntityByAbbrev(name, index);
+
+    return this.getEntity(entityId);
   }
 
   // Adds entity that has been loaded from file to the list of
@@ -62,7 +65,7 @@ export abstract class EntityManager<T extends GameEntity>
     {
       // Also remove record to the corresponding hashmap storing uniquely named
       // entities.
-      delete this.myNames[entity.name];
+      delete this.myUniqueNames[entity.name];
     }
     /// else
     /// {
@@ -81,7 +84,7 @@ export abstract class EntityManager<T extends GameEntity>
 
   public isUniquelyNamedEntityLoaded(name: string): boolean
   {
-    if (this.myNames[name])
+    if (this.myUniqueNames[name])
       return true;
 
     return false;
@@ -90,7 +93,9 @@ export abstract class EntityManager<T extends GameEntity>
   // -------------- Protected class data ----------------
 
   // This hashmap maps character names to character ids.
-  protected myNames: { [key: string]: Id } = {};
+  protected myUniqueNames: { [key: string]: Id } = {};
+
+  protected myAbbrevSearchList: AbbrevSearchList = new AbbrevSearchList();
  
   // -------------- Protected methods -------------------
 
@@ -114,7 +119,7 @@ export abstract class EntityManager<T extends GameEntity>
     {
       // Also add record to the corresponding hashmap storing uniquely named
       // entities.
-      this.myNames[entity.name] = entity.id;
+      this.myUniqueNames[entity.name] = entity.id;
     }
     /// else
     /// {
