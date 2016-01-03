@@ -191,10 +191,11 @@ export class LobbyProcessor
 
     // 'hasUniqueName: true' because player characters have unique names.
     let newCharacterId =
-      characterManager.createNewCharacter
+      characterManager.createNewUniqueCharacter
       (
-        { name: characterName, hasUniqueName: true },
-        this.myPlayerConnection.id
+        characterName,
+        this.myPlayerConnection.id,
+        { hasUniqueName: true }
       );
 
     this.myPlayerConnection.ingameEntityId = newCharacterId;

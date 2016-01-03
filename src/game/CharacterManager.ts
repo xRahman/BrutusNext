@@ -22,21 +22,22 @@ export class CharacterManager extends EntityManager<Character>
 {
   // ---------------- Public methods --------------------
 
-  public createNewCharacter
+  public createNewUniqueCharacter
   (
-    nameParam: { name: string, hasUniqueName: boolean },
-    playerConnectionId: Id
+    name: string,
+    playerConnectionId: Id,
+    hasUniqueName: {hasUniqueName: boolean }
   ): Id
   {
-    ASSERT_FATAL(!this.doesNameExist(nameParam.name),
-      "Attempt to create a character '" + nameParam.name + "'"
+    ASSERT_FATAL(!this.doesNameExist(name),
+      "Attempt to create a character '" + name + "'"
       + " who already exists");
 
     let newCharacter
-      = new Character({ name: nameParam.name, hasUniqueName: true });
+      = new Character({ name: name, hasUniqueName: true });
 
     newCharacter.playerConnectionId = playerConnectionId;
-    newCharacter.hasUniqueName = nameParam.hasUniqueName;
+    newCharacter.hasUniqueName = hasUniqueName.hasUniqueName;
 
     let newCharacterId = this.addNewEntity(newCharacter);
 
