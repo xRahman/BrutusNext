@@ -84,7 +84,7 @@ class AbbrevItemsList
   public getItemByIndex(index: number): Id
   {
     if (this.myItems[index] !== undefined)
-      this.myItems[index];
+      return this.myItems[index];
     else
       return null;
   }
