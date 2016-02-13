@@ -7,16 +7,20 @@
 */
 
 import {ASSERT_FATAL} from '../shared/ASSERT';
-import {Id} from '../shared/Id';
+///import {Id} from '../shared/Id';
 
-export class AbbrevSearchList
+/// Pozn: Pro herni entity bude se bude pouzivat AbbrevSearchList<Id>,
+///       pro prikazy bud string (jmeno handleru), nebo primo funkce, ktera
+///       prikaz zpracuje
+
+export class AbbrevSearchList<T>
 {
   // ---------------- Public methods --------------------
 
   // Returns null if no such entity exists.
   //   Note: index and abbreviation must be passed separately. So if you want
   // to find 3.orc, you need to call getEntityByAbbreviation("orc", 3);
-  public getEntityByAbbrev(abbrev: string, index: number): Id
+  public getEntityByAbbrev(abbrev: string, index: number): T
   {
     if (this.myAbbrevs[abbrev] === undefined)
       return null;
@@ -24,43 +28,43 @@ export class AbbrevSearchList
     return this.myAbbrevs[abbrev].getItemByIndex(index);
   }
 
-  public addEntity(name: string, id: Id)
+  public addEntity(name: string, item: T)
   {
     // Add all possible abbreviations of name.
     for (let i = 0; i < name.length; i++)
-      this.addItemToAbbrev(name.substring(0, i), id);
+      this.addItemToAbbrev(name.substring(0, i), item);
   }
 
-  public removeEntity(name: string, id: Id)
+  public removeEntity(name: string, item: T)
   {
     // Remove all possible abbreviations of name.
     for (let i = 0; i < name.length; i++)
-      this.removeItemFromAbbrev(name.substring(0, i), id);
+      this.removeItemFromAbbrev(name.substring(0, i), item);
   }
 
   // -------------- Protected class data ----------------
 
-  // This hashmap maps entity name abbreviations to the list of ids
-  // of entities which correspond to that abbreviation.
-  protected myAbbrevs: { [abbrev: string]: AbbrevItemsList } = {};
+  // This hashmap maps abbreviations to the list of items (of type T)
+  // corresponding to that abbreviation.
+  protected myAbbrevs: { [abbrev: string]: AbbrevItemsList<T> } = {};
 
   // --------------- Private methods -------------------
 
-  private addItemToAbbrev(abbreviation: string, id: Id)
+  private addItemToAbbrev(abbreviation: string, item: T)
   {
     if (this.myAbbrevs[abbreviation] === undefined)
-      this.myAbbrevs[abbreviation] = new AbbrevItemsList();
+      this.myAbbrevs[abbreviation] = new AbbrevItemsList<T>();
     
-    this.myAbbrevs[abbreviation].addItem(id);
+    this.myAbbrevs[abbreviation].addItem(item);
   }
 
-  private removeItemFromAbbrev(abbreviation: string, id: Id)
+  private removeItemFromAbbrev(abbreviation: string, item: T)
   {
     ASSERT_FATAL(this.myAbbrevs[abbreviation] !== undefined,
       "Attempt to remove abbrev item for abbreviation that does not exist"
       + "in myAbbrevs");
 
-    let numberOfItems = this.myAbbrevs[abbreviation].removeItem(id);
+    let numberOfItems = this.myAbbrevs[abbreviation].removeItem(item);
 
     // If there are no items left for this abbreviation, we can delete
     // the property from hashmap.
@@ -72,7 +76,7 @@ export class AbbrevSearchList
 // ---------------------- private module stuff -------------------------------
 
 // List of items corresponding to a particular abbreviation.
-class AbbrevItemsList
+class AbbrevItemsList<T>
 {
   /// TODO: vyhledove mozna bude potreba metoda getItemByIndexVis()
   /// Ta asi bude muset postupne projit itemy, testovat, ktere jsou viditelne
@@ -81,7 +85,7 @@ class AbbrevItemsList
   // ---------------- Public methods --------------------
 
   // Returns null if item is not found.
-  public getItemByIndex(index: number): Id
+  public getItemByIndex(index: number): T
   {
     if (this.myItems[index] !== undefined)
       return this.myItems[index];
@@ -89,14 +93,14 @@ class AbbrevItemsList
       return null;
   }
 
-  public addItem(id: Id)
+  public addItem(item: T)
   {
-    this.myItems.push(id);
+    this.myItems.push(item);
   }
 
-  public removeItem(id: Id): number
+  public removeItem(item: T): number
   {
-    let index = this.myItems.indexOf(id);
+    let index = this.myItems.indexOf(item);
 
     ASSERT_FATAL(index !== -1,
       "Attempt to remove item from AbbrevItemsList that does not exist in it");
@@ -109,6 +113,5 @@ class AbbrevItemsList
 
   // -------------- Protected class data ----------------
 
-  protected myItems: Array<Id> = [];
-
+  protected myItems: Array<T> = [];
 }
