@@ -26,7 +26,7 @@ export class CharacterManager extends EntityManager<Character>
   (
     name: string,
     playerConnectionId: Id,
-    hasUniqueName: {hasUniqueName: boolean }
+    hasUniqueName: { hasUniqueName: boolean }
   ): Id
   {
     ASSERT_FATAL(!this.doesNameExist(name),
