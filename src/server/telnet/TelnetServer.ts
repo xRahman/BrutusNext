@@ -6,14 +6,14 @@
 
 /*
   Implementation note:
-    Event handleds need to be registered using lambda expression '() => {}'.
+    Event handlers need to be registered using lambda expression '() => {}'.
     For example:
       this.myTelnetServer.on
       (
         'error',
         (error) => { this.onServerError(error); }
       );
-    The reason is, that it is not guaranteed that in TypeScript that class
+    The reason is, that it is not guaranteed in TypeScript that class
     methods will get called on an instance of their class. In other words,
     'this' will be something else than you expect when you register an event
     handler.
@@ -54,6 +54,8 @@ export class TelnetServer
   {
     // Create a new raw socket server. Parameter is handler which will be
     // called when there is a new connection request.
+    // (Handler is called using lambda expression (() => {}) to ensure that corect
+    // 'this' will be passed to it. )
     this.myTelnetServer =
       net.createServer((socket) => { this.onNewConnection(socket); });
 
