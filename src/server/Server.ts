@@ -32,7 +32,7 @@ export class Server
 
   // --------------- Static accessors -------------------
 
-  // These are actually shortcuts so you don't need to use Server.getInstance()
+  // These are shortcuts so you don't need to use Server.getInstance()
 
   public static get timeOfBoot()
   {

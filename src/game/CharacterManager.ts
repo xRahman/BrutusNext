@@ -26,7 +26,7 @@ export class CharacterManager extends EntityManager<Character>
   (
     name: string,
     playerConnectionId: Id,
-    hasUniqueName: { hasUniqueName: boolean }
+    nameParam: { hasUniqueName: boolean }
   ): Id
   {
     ASSERT_FATAL(!this.doesNameExist(name),
@@ -37,7 +37,7 @@ export class CharacterManager extends EntityManager<Character>
       = new Character({ name: name, hasUniqueName: true });
 
     newCharacter.playerConnectionId = playerConnectionId;
-    newCharacter.hasUniqueName = hasUniqueName.hasUniqueName;
+    newCharacter.hasUniqueName = nameParam.hasUniqueName;
 
     let newCharacterId = this.addNewEntity(newCharacter);
 
