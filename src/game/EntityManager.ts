@@ -95,7 +95,8 @@ export abstract class EntityManager<T extends GameEntity>
   // This hashmap maps character names to character ids.
   protected myUniqueNames: { [key: string]: Id } = {};
 
-  protected myAbbrevSearchList: AbbrevSearchList = new AbbrevSearchList();
+  protected myAbbrevSearchList: AbbrevSearchList<Id> =
+    new AbbrevSearchList<Id>();
  
   // -------------- Protected methods -------------------
 
