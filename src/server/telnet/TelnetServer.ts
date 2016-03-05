@@ -99,6 +99,7 @@ export class TelnetServer
   protected onServerStartsListening()
   {
     this.isOpen = true;
+
     Mudlog.log(
       "Telnet server is up and listening to the new connections",
       Mudlog.msgType.SYSTEM_INFO,

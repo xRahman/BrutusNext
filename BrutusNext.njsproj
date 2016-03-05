@@ -53,6 +53,7 @@
     <TypeScriptCompile Include="src\server\Account.ts" />
     <TypeScriptCompile Include="src\server\AccountData.ts" />
     <TypeScriptCompile Include="src\server\AuthProcessor.ts" />
+    <TypeScriptCompile Include="src\server\http\HttpServer.ts" />
     <TypeScriptCompile Include="src\server\LobbyProcessor.ts" />
     <TypeScriptCompile Include="src\server\Mudlog.ts" />
     <TypeScriptCompile Include="src\server\PlayerConnection.ts" />
@@ -75,13 +76,21 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\" />
+    <Folder Include="src\editor\" />
     <Folder Include="src\game\" />
     <Folder Include="src\game\characters\" />
     <Folder Include="src\game\world\" />
     <Folder Include="src\headers\" />
     <Folder Include="src\server" />
+    <Folder Include="src\server\http\" />
     <Folder Include="src\server\telnet\" />
     <Folder Include="src\shared" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="src\editor\editor.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="src\editor\schema.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <!--Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them.-->
