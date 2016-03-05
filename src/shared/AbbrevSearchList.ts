@@ -6,6 +6,8 @@
   like 'tell 3.orc Hello!')
 */
 
+'use strict';
+
 import {ASSERT_FATAL} from '../shared/ASSERT';
 ///import {Id} from '../shared/Id';
 
