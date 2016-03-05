@@ -30,11 +30,44 @@ export class AbbrevSearchList<T>
     return this.myAbbrevs[abbrev].getItemByIndex(index);
   }
 
+  // This is used by CommandInterpretter.
+  //   There may only be one command registered for each abbrev, so
+  // we just return it.
+  public getUniqueEntityByAbbrev(abbrev: string): T
+  {
+    return this.getEntityByAbbrev(abbrev, 1);
+  }
+
+  // This is used for adding names of rooms, items, characters, etc.
+  //   If more similar names are added, they will be accessible by dot notation
+  // (like 2.orc).
   public addEntity(name: string, item: T)
   {
     // Add all possible abbreviations of name.
     for (let i = 0; i < name.length; i++)
       this.addItemToAbbrev(name.substring(0, i), item);
+  }
+
+  public isAbbrevRegistered(abbrev: string): boolean
+  {
+    if (this.myAbbrevs[abbrev] === undefined)
+      return false;
+    else
+      return true;
+  }
+
+  // This is used by CommandInterpretter. Each abbreviation corresponds
+  // to at most one command (the one which has been registered first).
+  public addUniqueEntity(name: string, item: T)
+  {
+    // Add all possible abbreviations of name.
+    for (let i = 0; i < name.length; i++)
+    {
+      let abbrev = name.substring(0, i);
+
+      if (!this.isAbbrevRegistered(abbrev))
+        this.addItemToAbbrev(name.substring(0, i), item);
+    }
   }
 
   public removeEntity(name: string, item: T)
