@@ -19,6 +19,7 @@ import {Mudlog} from '../server/Mudlog';
 import {AccountManager} from '../server/AccountManager';
 import {Game} from '../game/Game';
 import {TelnetServer} from '../server/telnet/TelnetServer';
+import {HttpServer} from '../server/http/HttpServer';
 import {IdProvider} from '../shared/IdProvider';
 import {PlayerConnectionManager} from '../server/PlayerConnectionManager';
 import {Account} from '../server/Account';
@@ -67,6 +68,7 @@ export class Server
   }
 
   static get DEFAULT_TELNET_PORT() { return 4443; }
+  static get DEFAULT_HTTP_PORT() { return 4445; }
 
   static getInstance()
   {
@@ -101,6 +103,8 @@ export class Server
   {
     this.startGame();
     this.startTelnetServer(telnetPort);
+
+    this.startHttpServer();
   }
 
   // -------------- Protected class data ----------------
@@ -110,6 +114,7 @@ export class Server
   protected myAccountManager = new AccountManager();
   protected myPlayerConnectionManager = new PlayerConnectionManager();
   protected myTelnetServer = new TelnetServer(Server.DEFAULT_TELNET_PORT);
+  protected myHttpServer = new HttpServer(Server.DEFAULT_HTTP_PORT);
   protected myTimeOfBoot = null;
 
   // --------------- Protected methods ------------------
@@ -121,6 +126,15 @@ export class Server
       "Telnet server is already running");
 
     this.myTelnetServer.start();
+  }
+
+  // Creates an instance of http server and starts it.
+  protected startHttpServer()
+  {
+    ASSERT_FATAL(this.myHttpServer.isOpen === false,
+      "Http server is already running");
+
+    this.myHttpServer.start();
   }
 
   // Creates an instance of the game and loads its state from the disk.
