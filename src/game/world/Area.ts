@@ -23,7 +23,7 @@ export class Area extends GameEntity
     this.myData = new AreaData(name);
   }
 
-  static get SAVE_DIRECTORY() { return "./data/areas/"; }
+  static get SAVE_DIRECTORY() { return "./data/instances/areas/"; }
 
   // --------------- Public accessors -------------------
 

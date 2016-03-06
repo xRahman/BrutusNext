@@ -44,7 +44,10 @@ export class IdProvider extends SaveableObject
 
   // -------------- Public static data ------------------
 
-  static get LAST_ISSUED_ID_FILE() { return "./data/LastIssuedId.json"; }
+  static get LAST_ISSUED_ID_FILE()
+  {
+    return "./data/instances/LastIssuedId.json";
+  }
 
   // ---------------- Public methods --------------------
 

@@ -23,7 +23,7 @@ export class Dimension extends GameEntity
     this.myData = new DimensionData(name);
   }
 
-  static get SAVE_DIRECTORY() { return "./data/dimensions/"; }
+  static get SAVE_DIRECTORY() { return "./data/instances/dimensions/"; }
 
   // --------------- Public accessors -------------------
 

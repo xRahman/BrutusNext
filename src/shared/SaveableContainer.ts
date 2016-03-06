@@ -35,8 +35,8 @@
 
    3) Call saveToFile(path) or loadFromFile(path) on your root object.
      let myClassInstance = new MyClass();
-     myClassInstance.saveToFile('./data/myClassInstance.json');
-     myClassInstance.loadFromFile('./data/myClassInstance.json');
+     myClassInstance.saveToFile('./data/instances/myClassInstance.json');
+     myClassInstance.loadFromFile('./data/instances/myClassInstance.json');
 */
 
 'use strict';
