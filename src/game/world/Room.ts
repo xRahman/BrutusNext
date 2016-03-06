@@ -23,7 +23,7 @@ export class Room extends GameEntity
     this.myData = new RoomData(name);
   }
 
-  static get SAVE_DIRECTORY() { return "./data/rooms/"; }
+  static get SAVE_DIRECTORY() { return "./data/instances/rooms/"; }
 
   // --------------- Public accessors -------------------
 

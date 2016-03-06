@@ -23,7 +23,7 @@ export class Realm extends GameEntity
     this.myData = new RealmData(name);
   }
 
-  static get SAVE_DIRECTORY() { return "./data/realms/"; }
+  static get SAVE_DIRECTORY() { return "./data/instances/realms/"; }
 
   // --------------- Public accessors -------------------
 
