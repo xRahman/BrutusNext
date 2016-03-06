@@ -65,6 +65,7 @@
     <TypeScriptCompile Include="src\server\telnet\TelnetSocketDescriptor.ts" />
     <TypeScriptCompile Include="src\shared\AbbrevSearchList.ts" />
     <TypeScriptCompile Include="src\shared\ASSERT.ts" />
+    <TypeScriptCompile Include="src\shared\CommandSearchList.ts" />
     <TypeScriptCompile Include="src\shared\Id.ts" />
     <TypeScriptCompile Include="src\shared\NamedClass.ts" />
     <TypeScriptCompile Include="src\shared\SaveableArray.ts" />

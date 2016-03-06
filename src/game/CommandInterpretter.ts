@@ -31,7 +31,7 @@ import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {IdableSaveableContainer} from '../shared/IdableSaveableContainer';
 import {GameEntity} from '../game/GameEntity';
-import {AbbrevSearchList} from '../shared/AbbrevSearchList';
+import {CommandSearchList} from '../shared/CommandSearchList';
 
 export abstract class CommandInterpretter extends IdableSaveableContainer
 {
@@ -51,7 +51,7 @@ export abstract class CommandInterpretter extends IdableSaveableContainer
       return;
 
     console.log("Registering command '" + command + "'");
-    CommandInterpretter.myCommandSearchList.addUniqueEntity(command, handler);
+    CommandInterpretter.myCommandSearchList.addCommand(command, handler);
   }
 
   // ---------------- Public methods --------------------
@@ -75,7 +75,7 @@ export abstract class CommandInterpretter extends IdableSaveableContainer
   
   // Container holding abbreviations of all known commands and names of their
   // respective handlers.
-  protected static myCommandSearchList = new AbbrevSearchList<string>(); 
+  protected static myCommandSearchList = new CommandSearchList(); 
 
   // --------------- Protected methods ------------------
 
@@ -109,10 +109,12 @@ export abstract class CommandInterpretter extends IdableSaveableContainer
   // Parse first word (the actual command) from command string
   private parseCommand(commandString: string): string
   {
+    let firstSpacePos = commandString.indexOf(' ');
+
     // If there is a space in commandString, command will be it's substring
     // from the beginning to the position of first space.
-    if (commandString.indexOf(' ') !== -1)
-      return commandString.substring(0, commandString.indexOf(' '));
+    if (firstSpacePos !== -1)
+      return commandString.substring(0, firstSpacePos);
     else
       return commandString;
   }
@@ -120,15 +122,17 @@ export abstract class CommandInterpretter extends IdableSaveableContainer
   // Returns true if command is known and handled.
   private processStaticCommand(commandString: string): boolean
   {
-    let command = this.parseCommand(commandString);
+    let commandAbbrev = this.parseCommand(commandString);
 
-    let commandHandler =
-      CommandInterpretter.myCommandSearchList.getUniqueEntityByAbbrev(command);
+    let commandHandler = CommandInterpretter.myCommandSearchList
+      .getHandlerByAbbrev(commandAbbrev);
 
-    if (commandHandler !== null)
+    // getHandlerByAbbrev() returns "" if no command is registered for
+    // this abbreviation.
+    if (commandHandler !== "")
     {
       // Not all game entities know all existing commands.
-      // (This checks if method of this name exists on this object.)
+      // (This checks if method of this name exists on this entity.)
       if (!(commandHandler in this))
         return false;
 
@@ -140,10 +144,8 @@ export abstract class CommandInterpretter extends IdableSaveableContainer
 
       return true;
     }
-    else
-    {
-      return false;
-    }
+
+    return false;
   }
 }
 

@@ -32,16 +32,6 @@ export abstract class EntityManager<T extends GameEntity>
     return null;
   }
 
-  // Returns entity that corresponds to given 'targetting string'
-  // (like '3.orc').
-  // Returns null if no entity matches.
-  public getEntityByAbbrev(name: string, index: number): T
-  {
-    let entityId = this.myAbbrevSearchList.getEntityByAbbrev(name, index);
-
-    return this.getEntity(entityId);
-  }
-
   // Adds entity that has been loaded from file to the list of
   // entities under it's original id (that was loaded from file).
   public registerEntity(entity: T)
@@ -95,7 +85,7 @@ export abstract class EntityManager<T extends GameEntity>
   // This hashmap maps character names to character ids.
   protected myUniqueNames: { [key: string]: Id } = {};
 
-  protected myAbbrevSearchList = new AbbrevSearchList<Id>();
+  protected myAbbrevSearchList = new AbbrevSearchList();
  
   // -------------- Protected methods -------------------
 

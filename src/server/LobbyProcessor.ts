@@ -194,8 +194,7 @@ export class LobbyProcessor
       characterManager.createNewUniqueCharacter
       (
         characterName,
-        this.myPlayerConnection.id,
-        { hasUniqueName: true }
+        this.myPlayerConnection.id
       );
 
     this.myPlayerConnection.ingameEntityId = newCharacterId;

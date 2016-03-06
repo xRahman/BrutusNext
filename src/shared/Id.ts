@@ -28,7 +28,7 @@ export class Id extends SaveableObject
   }
 
   // New object is returned so you can use this to inicialize an id that will
-  // be loaded from file later (if it was static value, loagind multiple
+  // be loaded from file later (if it was static value, loading multiple
   // 'uninitialized' ids would overwrite each other).
   public static get NULL() { return new Id("", ""); }
 

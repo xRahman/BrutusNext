@@ -9,20 +9,68 @@
 'use strict';
 
 import {ASSERT_FATAL} from '../shared/ASSERT';
-///import {Id} from '../shared/Id';
+import {Id} from '../shared/Id';
 
-/// Pozn: Pro herni entity bude se bude pouzivat AbbrevSearchList<Id>,
-///       pro prikazy bud string (jmeno handleru), nebo primo funkce, ktera
-///       prikaz zpracuje
 
-export class AbbrevSearchList<T>
+export class AbbrevSearchList
 {
   // ---------------- Public methods --------------------
+
+
+  // Returns invalid id if no such entity exists.
+  // (search string should be something like "3.orc")
+  public getTargetEntityId(targetStr: string): Id
+  {
+    // Search string uses following format: "3.mob.orc"
+    //   The number always comes first but may be missing
+    //   ('tell mob.orc' is valid)
+    
+    let parseResult = this.parseTargetStr(targetStr);
+
+    /// TODO: Zohlednit kategorii (mob, character, etc.)
+    ///parseResult.cathegory;
+    /*
+    "character"
+    "mob"
+    "follower"
+    "player"
+    "object"
+    "group"
+    */
+
+    return this.getEntityByAbbrev(parseResult.name, parseResult.index);
+
+    return Id.NULL;
+  }
+
+  // If more similar names are added, they will be accessible by dot notation
+  // (like 2.orc).
+  public addEntity(name: string, entityId: Id)
+  {
+    // Add all possible abbreviations of name.
+    for (let i = 0; i < name.length; i++)
+      this.addItemToAbbrev(name.substring(0, i), entityId);
+  }
+
+  public removeEntity(name: string, entityId: Id)
+  {
+    // Remove all possible abbreviations of name.
+    for (let i = 0; i < name.length; i++)
+      this.removeItemFromAbbrev(name.substring(0, i), entityId);
+  }
+
+  // -------------- Protected class data ----------------
+
+  // This hashmap maps abbreviations to the list of entity IDs
+  // corresponding to that abbreviation.
+  protected myAbbrevs: { [abbrev: string]: AbbrevItemsList } = {};
+
+  // -------------- Protected methods -------------------
 
   // Returns null if no such entity exists.
   //   Note: index and abbreviation must be passed separately. So if you want
   // to find 3.orc, you need to call getEntityByAbbreviation("orc", 3);
-  public getEntityByAbbrev(abbrev: string, index: number): T
+  protected getEntityByAbbrev(abbrev: string, index: number): Id
   {
     if (this.myAbbrevs[abbrev] === undefined)
       return null;
@@ -30,88 +78,121 @@ export class AbbrevSearchList<T>
     return this.myAbbrevs[abbrev].getItemByIndex(index);
   }
 
-  // This is used by CommandInterpretter.
-  //   There may only be one command registered for each abbrev, so
-  // we just return it.
-  public getUniqueEntityByAbbrev(abbrev: string): T
+  // Returns object containing index, cathegory and name parsed from
+  // target string (like "3.mob.orc").
+  protected parseTargetStr(targetStr: string):
+    { index: number, cathegory: string, name: string }
   {
-    return this.getEntityByAbbrev(abbrev, 1);
+    let result = { index: 1, cathegory: "", name: "" };
+
+    // Split the targetStr into parts separated by dots.
+    let splitArray = targetStr.split('.');
+
+    switch (splitArray.length)
+    {
+      case 0:
+        // Empty string.
+        // We don't need to do anything, default result matches empty string.
+        // result.index = 1;      // This is implicit.
+        // result.cathegory = ""; // This is implicit.
+        // result.name = "";      // This is implicit.
+        break;
+
+      case 1:
+        // No dots found. It means that whole targetStr is a name.
+        // result.index = 1;        // This is implicit.
+        // result.cathegory = "";   // This is implicit.
+        result.name = targetStr;
+        break;
+
+      case 2:
+        // A single dot found. Here there are two possibilities:
+        // 1) it's something like 1.orc
+        // 2) it's something like mob.orc
+
+        // Test if splitArray[0] only contains digits.
+        if (/^\d+$/.test(splitArray[0]))
+        {
+          // splitArray[0] is a number, so it is an index.
+
+          result.index = parseInt(splitArray[0]);
+          // result.cathegory = "";    // This is implicit.
+        }
+        else
+        {
+          // splitArray[0] is a string, so it is a cathegory (like "mob.").
+
+          // result.index = 1;         // This is implicit.
+          result.cathegory = splitArray[0];
+        }
+
+        result.name = splitArray[1];
+        break;
+
+      case 3:
+        // Two dots found.
+        // Check if first parsed substring is a number.
+        if (/^\d+$/.test(splitArray[0]))
+        {
+          // If it is, convert it to integer (it's an index).
+          result.index = parseInt(splitArray[0]);
+        }
+        else
+        {
+          // If it's not a number, so targetStr is something like
+          // bread.mob.orc, than targetStr is not valid and nothing will match
+          // it. We return the same result as if the targetStr was empty.
+
+          // result.index = 1;      // This is implicit.
+          // result.cathegory = ""; // This is implicit.
+          // result.name = "";      // This is implicit.
+          return result;
+        }
+        // result.cathegory = "";    // This is implicit.
+        result.name = targetStr;
+        break;
+
+      default:
+        // More than three dots found, that's not valid target string.
+        // We return the same result as if the targetStr was empty (nothing
+        // will match it).
+
+        // result.index = 1;      // This is implicit.
+        // result.cathegory = ""; // This is implicit.
+        // result.name = "";      // This is implicit.
+        return result;
+    }
+
+    return result;
   }
 
-  // This is used for adding names of rooms, items, characters, etc.
-  //   If more similar names are added, they will be accessible by dot notation
-  // (like 2.orc).
-  public addEntity(name: string, item: T)
-  {
-    // Add all possible abbreviations of name.
-    for (let i = 0; i < name.length; i++)
-      this.addItemToAbbrev(name.substring(0, i), item);
-  }
-
-  public isAbbrevRegistered(abbrev: string): boolean
+  protected addItemToAbbrev(abbrev: string, entityId: Id)
   {
     if (this.myAbbrevs[abbrev] === undefined)
-      return false;
-    else
-      return true;
-  }
-
-  // This is used by CommandInterpretter. Each abbreviation corresponds
-  // to at most one command (the one which has been registered first).
-  public addUniqueEntity(name: string, item: T)
-  {
-    // Add all possible abbreviations of name.
-    for (let i = 0; i < name.length; i++)
-    {
-      let abbrev = name.substring(0, i);
-
-      if (!this.isAbbrevRegistered(abbrev))
-        this.addItemToAbbrev(name.substring(0, i), item);
-    }
-  }
-
-  public removeEntity(name: string, item: T)
-  {
-    // Remove all possible abbreviations of name.
-    for (let i = 0; i < name.length; i++)
-      this.removeItemFromAbbrev(name.substring(0, i), item);
-  }
-
-  // -------------- Protected class data ----------------
-
-  // This hashmap maps abbreviations to the list of items (of type T)
-  // corresponding to that abbreviation.
-  protected myAbbrevs: { [abbrev: string]: AbbrevItemsList<T> } = {};
-
-  // --------------- Private methods -------------------
-
-  private addItemToAbbrev(abbreviation: string, item: T)
-  {
-    if (this.myAbbrevs[abbreviation] === undefined)
-      this.myAbbrevs[abbreviation] = new AbbrevItemsList<T>();
+      this.myAbbrevs[abbrev] = new AbbrevItemsList();
     
-    this.myAbbrevs[abbreviation].addItem(item);
+    this.myAbbrevs[abbrev].addItem(entityId);
   }
 
-  private removeItemFromAbbrev(abbreviation: string, item: T)
+  protected removeItemFromAbbrev(abbrev: string, entityId: Id)
   {
-    ASSERT_FATAL(this.myAbbrevs[abbreviation] !== undefined,
+    ASSERT_FATAL(this.myAbbrevs[abbrev] !== undefined,
       "Attempt to remove abbrev item for abbreviation that does not exist"
       + "in myAbbrevs");
 
-    let numberOfItems = this.myAbbrevs[abbreviation].removeItem(item);
+    let numberOfItems = this.myAbbrevs[abbrev].removeItem(entityId);
 
     // If there are no items left for this abbreviation, we can delete
     // the property from hashmap.
     if (numberOfItems === 0)
-      delete this.myAbbrevs[abbreviation];
+      delete this.myAbbrevs[abbrev];
   }
 }
 
 // ---------------------- private module stuff -------------------------------
 
-// List of items corresponding to a particular abbreviation.
-class AbbrevItemsList<T>
+// List of entityIds corresponding to a particular abbreviation.
+class AbbrevItemsList
 {
   /// TODO: vyhledove mozna bude potreba metoda getItemByIndexVis()
   /// Ta asi bude muset postupne projit itemy, testovat, ktere jsou viditelne
@@ -120,7 +201,7 @@ class AbbrevItemsList<T>
   // ---------------- Public methods --------------------
 
   // Returns null if item is not found.
-  public getItemByIndex(index: number): T
+  public getItemByIndex(index: number): Id
   {
     if (this.myItems[index] !== undefined)
       return this.myItems[index];
@@ -128,12 +209,12 @@ class AbbrevItemsList<T>
       return null;
   }
 
-  public addItem(item: T)
+  public addItem(item: Id)
   {
     this.myItems.push(item);
   }
 
-  public removeItem(item: T): number
+  public removeItem(item: Id): number
   {
     let index = this.myItems.indexOf(item);
 
@@ -148,5 +229,5 @@ class AbbrevItemsList<T>
 
   // -------------- Protected class data ----------------
 
-  protected myItems: Array<T> = [];
+  protected myItems: Array<Id> = [];
 }

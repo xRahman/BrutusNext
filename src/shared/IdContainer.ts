@@ -105,9 +105,9 @@ export class IdContainer<T extends IdableSaveableContainer>
     // lastIssuedId of IdProvider has not been saved correctly and it was
     // issuing the same ids again (= not unique ones). The only way to fix
     // this correcyly is to go through all saved files, find out the largest
-    // id saved in them and set lastIssuedId in file ./data/LastIssuedId.json
-    // to it. (Or you might just increse it by some large number and hope that
-    // you skip all already issued ids.)
+    // id saved in them and set lastIssuedId in file
+    // ./data/instances / LastIssuedId.json to it. (Or you might just increse
+    // it by some large number and hope that you skip all already issued ids.)
     //   Much safer way is to rollback to the last backup that worked.
     ASSERT_FATAL(!(id.stringId in this.myContainer),
       "Attempt to add item with id (" + id.stringId + ") that already"

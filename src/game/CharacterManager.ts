@@ -25,8 +25,7 @@ export class CharacterManager extends EntityManager<Character>
   public createNewUniqueCharacter
   (
     name: string,
-    playerConnectionId: Id,
-    nameParam: { hasUniqueName: boolean }
+    playerConnectionId: Id
   ): Id
   {
     ASSERT_FATAL(!this.doesNameExist(name),
@@ -37,7 +36,7 @@ export class CharacterManager extends EntityManager<Character>
       = new Character({ name: name, hasUniqueName: true });
 
     newCharacter.playerConnectionId = playerConnectionId;
-    newCharacter.hasUniqueName = nameParam.hasUniqueName;
+    newCharacter.hasUniqueName = true;
 
     let newCharacterId = this.addNewEntity(newCharacter);
 
@@ -53,8 +52,8 @@ export class CharacterManager extends EntityManager<Character>
     let character = this.getEntity(id);
 
     ASSERT_FATAL(character instanceof Character,
-      "Attempt to get character by id that doesn't point to an instance of"
-      + "class inherited from Character");
+      "Attempt to get character by id that doesn't reference an instance of"
+      + " Character class");
 
     return character;
   }
