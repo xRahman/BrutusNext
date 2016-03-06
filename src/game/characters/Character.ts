@@ -25,7 +25,7 @@ export class Character extends GameEntity
     this.hasUniqueName = nameParam.hasUniqueName;
   }
 
-  static get SAVE_DIRECTORY() { return "./data/characters/"; }
+  static get SAVE_DIRECTORY() { return "./data/instances/characters/"; }
 
   // --------------- Public accessors -------------------
 

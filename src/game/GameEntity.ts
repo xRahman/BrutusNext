@@ -41,7 +41,7 @@ export abstract class GameEntity extends CommandInterpretter
   {
     // We need to return null if myPlayerConnectionId is null, because
     // if accessing playerConnection when myPlayerConnectionId is null
-    // was treated an error, saving game entity with null id would crash
+    // was considered an error, saving game entity with null id would crash
     // (even if id is not actually saved, crash would occur on attempt
     // to find out if playerConnection property is SaveableObject).
     //    It's proabably better to be able to check playerConnection to

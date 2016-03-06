@@ -33,7 +33,7 @@ export class Account extends IdableSaveableContainer
     this.myData.accountName = accountName;
   }
 
-  static get SAVE_DIRECTORY() { return "./data/accounts/"; }
+  static get SAVE_DIRECTORY() { return "./data/instances/accounts/"; }
 
   // ----------------- Public data ----------------------
 
