@@ -23,8 +23,8 @@ export class Id extends SaveableObject
     // .json files to conform to the new version.
     this.version = 0;
 
-    // Ids are not saved to json by default.
-    this.isSaved = false;
+    // Ids are saved to json by default.
+    this.isSaved = true;
   }
 
   // New object is returned so you can use this to inicialize an id that will
@@ -32,6 +32,7 @@ export class Id extends SaveableObject
   // 'uninitialized' ids would overwrite each other).
   public static get NULL() { return new Id("", ""); }
 
+  /*
   // Use SAVED_NULL if you want your null id saved to json.
   public static get SAVED_NULL()
   {
@@ -41,6 +42,7 @@ export class Id extends SaveableObject
 
     return nullId;
   }
+  */
 
   public get stringId() { return this.myStringId; }
   public get type() { return this.myType; }
