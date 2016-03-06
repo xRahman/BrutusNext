@@ -41,7 +41,10 @@ export abstract class IdableSaveableContainer extends SaveableContainer
 
   // -------------- Protected class data ----------------
 
-  protected myId = Id.SAVED_NULL;
+  // Null Ids in saveable container need to be saved, but all Ids are now
+  // saved be default, so Id.NULL is ok.
+  protected myId = Id.NULL;
+  ///protected myId = Id.SAVED_NULL;
 
   // --------------- Protected methods ------------------
 
