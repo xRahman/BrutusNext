@@ -1,20 +1,19 @@
 /*
   Part of BrutusNEXT
 
-  Area (a set of Rooms).
-
-  Area is inherited from Sector, because it basically is a set of
-  immutable rooms with defined connections to other areas.
+  Sector is a fixed set of rooms. Their contents may still be
+  randomisable, but their number, position (interconnecting exits)
+  and names are immutable.
 */
 
 'use strict';
 
-import {Sector} from '../../game/world/Sector';
-import {AreaData} from '../../game/world/AreaData';
+import {GameEntity} from '../../game/GameEntity';
+import {SectorData} from '../../game/world/SectorData';
 
-export class Area extends Sector
+export class Sector extends GameEntity
 {
-  constructor(name: string)
+  constructor()
   {
     super();
 
@@ -23,10 +22,10 @@ export class Area extends Sector
     // .json files to conform to the new version.
     this.version = 0;
 
-    this.myData = new AreaData(name);
+    this.myData = new SectorData(name);
   }
 
-  static get SAVE_DIRECTORY() { return "./data/instances/areas/"; }
+  static get SAVE_DIRECTORY() { return "./data/prototypes/sectors/"; }
 
   // --------------- Public accessors -------------------
 
@@ -36,10 +35,9 @@ export class Area extends Sector
 
   // --------------- Protected methods ------------------
 
-  // What file will this area be saved to.
   protected myGetSavePath(): string
   {
-    return Area.SAVE_DIRECTORY + this.name + ".json";
+    return Sector.SAVE_DIRECTORY + this.name + ".json";
   }
 
   // ---------------- Private methods -------------------

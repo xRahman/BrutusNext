@@ -6,8 +6,11 @@
 
 'use strict';
 
+import {Id} from '../../shared/Id';
 import {GameEntity} from '../../game/GameEntity';
 import {RoomData} from '../../game/world/RoomData';
+import {RoomInfo} from '../../game/world/RoomInfo';
+import {Exits} from '../../game/world/Exits';
 
 export class Room extends GameEntity
 {
@@ -30,6 +33,16 @@ export class Room extends GameEntity
   // ---------------- Public methods --------------------
 
   // -------------- Protected class data ----------------
+
+  // id of prototype room. If it's Id.NULL, this room is a prototype.
+  protected myPrototypeId: Id = Id.NULL;
+
+  // Description, extra descriptions, room flags, terrain type, etc.
+  // If this is null, values from prototype are used.
+  protected myRoomInfo: RoomInfo = null;
+
+  // List of exits to other entities (usually rooms).
+  protected myExits = new Exits();
 
   // --------------- Protected methods ------------------
 
