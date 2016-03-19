@@ -27,11 +27,11 @@
 
 'use strict';
 
-import {ASSERT} from '../shared/ASSERT';
-import {ASSERT_FATAL} from '../shared/ASSERT';
-import {IdableSaveableObject} from '../shared/IdableSaveableObject';
-import {GameEntity} from '../game/GameEntity';
-import {CommandSearchList} from '../shared/CommandSearchList';
+import {ASSERT} from '../../shared/ASSERT';
+import {ASSERT_FATAL} from '../../shared/ASSERT';
+import {IdableSaveableObject} from '../../shared/IdableSaveableObject';
+import {GameEntity} from '../../game/GameEntity';
+import {CommandSearchList} from '../../game/commands/CommandSearchList';
 
 export abstract class CommandInterpretter extends IdableSaveableObject
 {

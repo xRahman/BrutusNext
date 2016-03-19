@@ -7,9 +7,9 @@
 'use strict';
 
 import {Area} from '../game/world/Area';
-import {EntityManager} from '../game/EntityManager';
+import {EntityIdManager} from '../game/EntityIdManager';
 
-export class AreaManager extends EntityManager<Area>
+export class AreaManager extends EntityIdManager<Area>
 {
   // ---------------- Public methods --------------------
 

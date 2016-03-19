@@ -24,7 +24,7 @@ export class Area extends Sector
     this.version = 0;
   }
 
-  static get SAVE_DIRECTORY() { return "./data/instances/areas/"; }
+  static get SAVE_DIRECTORY() { return "./data/areas/"; }
 
   // --------------- Public accessors -------------------
 
@@ -37,7 +37,7 @@ export class Area extends Sector
   // What file will this area be saved to.
   protected getSavePath(): string
   {
-    return Area.SAVE_DIRECTORY + this.name + ".json";
+    return Area.SAVE_DIRECTORY + this.getIdStringValue() + ".json";
   }
 
   // ---------------- Private methods -------------------

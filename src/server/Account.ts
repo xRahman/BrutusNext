@@ -10,7 +10,6 @@ import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {Id} from '../shared/Id';
 import {IdableSaveableObject} from '../shared/IdableSaveableObject';
-import {AccountData} from '../server/AccountData';
 import {PlayerConnection} from '../server/PlayerConnection';
 import {Server} from '../server/Server';
 
@@ -33,7 +32,7 @@ export class Account extends IdableSaveableObject
     this.accountName = accountName;
   }
 
-  static get SAVE_DIRECTORY() { return "./data/instances/accounts/"; }
+  static get SAVE_DIRECTORY() { return "./data/accounts/"; }
 
   // ----------------- Public data ----------------------
 

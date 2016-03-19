@@ -1,109 +1,49 @@
 /*
   Part of BrutusNEXT
 
-  Abstract ancestor for all game entities (rooms, items, characters, etc.).
+  Adds functionality to all game entities enabling them to contain
+  list of ids of other game entities. This is used e. g. for world
+  to contain zones, for sectors (or zones) to contain rooms, for
+  rooms to contain items and characters, for container objects to
+  contain other items, for characters who have inventory to contain
+  items.
+
+  When entity containing ids of other entities is loaded or saved,
+  it also loads/saves all entities identified by these ids (to ensure
+  that we don't e. g. load container but not it's contents).
 */
+
 
 'use strict';
 
-import {ASSERT} from '../shared/ASSERT';
-import {Server} from '../server/Server';
+//import {ASSERT} from '../shared/ASSERT';
+//import {Server} from '../server/Server';
 import {Id} from '../shared/Id';
 import {SaveableArray} from '../shared/SaveableArray';
-import {Game} from '../game/Game';
+import {GameEntity} from '../game/GameEntity';
+import {EntityIdManager} from '../game/EntityIdManager';
+//import {Game} from '../game/Game';
 import {CommandInterpretter} from '../game/commands/CommandInterpretter';
 
-export abstract class GameEntity extends CommandInterpretter
+export abstract class EntityContainer extends CommandInterpretter
 {
-  constructor(public name: string)
-  {
-    super();
-  }
-
-  static get SAVE_DIRECTORY()
-  {
-    ASSERT(false,
-      "Attempt to access SAVE_DIRECTORY of abstract GameEntity class");
-
-    return "";
-  }
-
-  // Creates a new instance of game entity of type saved in id.
-  static createInstance(id: Id)
-  {
-    /// Tohle snad vyrobi instanci typu podle stringu id.className.
-    /// global by mel byt namespace - hadam, ze to bude 'global' object
-    /// z node.js.
-    /// Přetypování na <GameEntity> je tu proto, aby typescript aspoň zhruba
-    /// věděl, co od toho může očekávat - jinak by to byl typ <any>.
-    let newEntity = <GameEntity> new global[id.className]();
-
-    return newEntity;
-  }
 
   // ---------------- Public class data -----------------
 
-  public isNameUnique = false;
-
   // --------------- Public accessors -------------------
-
-  public get playerConnection()
-  {
-    // We need to return null if myPlayerConnectionId is null, because
-    // if accessing playerConnection when myPlayerConnectionId is null
-    // was considered an error, saving game entity with null id would crash
-    // (even if id is not actually saved, crash would occur on attempt
-    // to find out if playerConnection property is SaveableObject).
-    //    It's proabably better to be able to check playerConnection to
-    // be null anyways, because it's intuitive way to do it (instead of
-    // having to check if myPlayerConnectionId is null).
-    if (this.myPlayerConnectionId.isNull())
-      return null;
-
-    return Server.playerConnectionManager
-      .getPlayerConnection(this.myPlayerConnectionId);
-  }
-
-  public set playerConnectionId(value: Id)
-  {
-    this.myPlayerConnectionId = value;
-  }
 
   // ---------------- Public methods --------------------
 
-  // Player connected to this entity is entering game.
-  //   Needs to be overriden if something is going to happen (like message
-  // that a player character has just entered game).
-  public announcePlayerEnteringGame() { }
-
-  // Player connected to this entity has reconnected.
-  //   Needs to be overriden if something is going to happen (like message
-  // that a player character has just entered game).
-  public announcePlayerReconnecting() { }
-
   // -------------- Protected class data ----------------
-
-  // Id.NULL if no player is connected to (is playing as) this entity,
-  // connectionId otherwise.
-  protected myPlayerConnectionId: Id = Id.NULL;
 
   // Every game entity can contain other game entities.
   // (Rooms contain characters and objects, bags contain other objects,
   //  sectors contain rooms, etc.)
-  protected myEntityIds = new SaveableArray<Id>(Id);
+  ///protected myEntityIds = new SaveableArray<Id>(Id);
+  protected myEntityIdManager = new EntityIdManager<GameEntity>();
 
   // --------------- Protected methods ------------------
 
-  // Send message to the connected player that command is not recognized.
-  protected unknownCommand()
-  {
-    if (this.myPlayerConnectionId)
-      this.playerConnection.send("&gHuh?!?");
-  }
-
-  // Entity adds itself to approptiate manager
-  // (so it can be searched by name, etc.)
-  protected addToManager() { }
 
   // Adds entity id to contents of this entity.
   protected addEntity(entityId: Id)
@@ -113,7 +53,9 @@ export abstract class GameEntity extends CommandInterpretter
     /// být v contents víc druhů entity, třeba objekty a charaktery
     /// v Roomu).
 
-    this.myEntityIds.push(entityId);
+    //this.myEntityIds.push(entityId);
+    /// TODO: Mozna neco jako registerEntityById(id); ?
+    ///this.myEntityIdManager.registerEntity();
   }
 
   /*

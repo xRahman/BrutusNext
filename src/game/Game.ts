@@ -10,7 +10,7 @@ import {Server} from '../server/Server';
 import {Id} from '../shared/Id';
 import {GameEntity} from '../game/GameEntity';
 import {CharacterManager} from '../game/CharacterManager';
-import {IdContainer} from '../shared/IdContainer';
+import {IdableObjectContainer} from '../shared/IdableObjectContainer';
 import {World} from '../game/world/World';
 import {RoomManager} from '../game/RoomManager';
 import {AreaManager} from '../game/AreaManager';
@@ -52,7 +52,7 @@ export class Game
   // Loads initial state of the game from disk.
   public async load()
   {
-    /*
+///    /*
     /// Provizorvni prvni vytvoreni instance sveta:
 
     let world = new World("Brutus Next World");
@@ -81,7 +81,8 @@ export class Game
     newRoomId = newArea.addNewRoom("Landing Site");
 
     world.save();
-    */
+///    */
+
 
     /// Tohle tu asi bude finalne:
     /*
@@ -100,7 +101,7 @@ export class Game
   // Game entities (characters, rooms, objects, etc.) are all stored in
   // this container, not in their respective managers. This allows access to
   // any game entity by it's id without knowing what kind of entity it is.
-  protected myEntities = new IdContainer<GameEntity>();
+  protected myEntities = new IdableObjectContainer<GameEntity>();
 
   // Character mananger stores a list of ids of all characters in game.
   protected myCharacterManager = new CharacterManager();

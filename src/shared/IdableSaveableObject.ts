@@ -39,4 +39,7 @@ export abstract class IdableSaveableObject extends SaveableObject
   // --------------- Protected methods ------------------
 
   protected getSavePath(): string { return ""; }
+
+  // This is used for creating save file names.
+  protected getIdStringValue(): string { return this.myId.stringId; }
 }

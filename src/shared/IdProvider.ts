@@ -22,6 +22,19 @@
 /// timestampem budou vsechna idcka unikatni i pres boot - coz bude fajn
 /// treba pri porovnavani, kdo byl zdrojem affectu)
 
+/*
+  Ke zvážení: Dávat p?ed string id?ko n?jakou p?edponu, t?eba 'e' jako entity,
+    'a' jako account?
+  - teoreticky by se pak dala generovat "spot?ební" id?ka (t?eba timery)
+    s jinou p?edponou zase od za?átku
+
+  Znamenalo by to:
+    - zavést enum možných typ? id?ek
+    - p?i generování id?ka p?edávat požadovaný typ
+    - mít víc counter?
+    - všechny countery savovat do last_issued_id.
+*/
+
 'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
@@ -46,7 +59,7 @@ export class IdProvider extends SaveableObject
 
   static get LAST_ISSUED_ID_FILE()
   {
-    return "./data/instances/LastIssuedId.json";
+    return "./data/LastIssuedId.json";
   }
 
   // ---------------- Public methods --------------------

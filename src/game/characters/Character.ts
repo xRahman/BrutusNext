@@ -12,7 +12,7 @@ import {GameEntity} from '../../game/GameEntity';
 
 export class Character extends GameEntity
 {
-  constructor(nameParam: { name: string, hasUniqueName: boolean })
+  constructor(nameParam: { name: string, isNameUnique: boolean })
   {
     super(nameParam.name);
 
@@ -20,10 +20,10 @@ export class Character extends GameEntity
     // SaveableObjects. You will also need to convert data in respective
     // .json files to conform to the new version.
     this.version = 0;
-    this.hasUniqueName = nameParam.hasUniqueName;
+    this.isNameUnique = nameParam.isNameUnique;
   }
 
-  static get SAVE_DIRECTORY() { return "./data/instances/characters/"; }
+  static get SAVE_DIRECTORY() { return "./data/characters/"; }
 
   // --------------- Public accessors -------------------
 
@@ -68,10 +68,10 @@ export class Character extends GameEntity
   {
     ASSERT(this.name !== 'undefined', "'name' property doesn't exist.");
 
-    if (this.hasUniqueName)
+    if (this.isNameUnique)
       return Character.SAVE_DIRECTORY + "unique/" + this.name + ".json";
     else
-      return Character.SAVE_DIRECTORY + this.name + ".json";
+      return Character.SAVE_DIRECTORY + this.getIdStringValue() + ".json";
   }
 
   // ---------------- Command handlers ------------------
