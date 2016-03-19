@@ -7,9 +7,9 @@
 'use strict';
 
 import {Room} from '../game/world/Room';
-import {EntityManager} from '../game/EntityManager';
+import {EntityIdManager} from '../game/EntityIdManager';
 
-export class RoomManager extends EntityManager<Room>
+export class RoomManager extends EntityIdManager<Room>
 {
   // ---------------- Public methods --------------------
 

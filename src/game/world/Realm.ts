@@ -24,7 +24,7 @@ export class Realm extends GameEntity
     this.version = 0;
   }
 
-  static get SAVE_DIRECTORY() { return "./data/instances/realms/"; }
+  static get SAVE_DIRECTORY() { return "./data/realms/"; }
 
   // --------------- Public accessors -------------------
 
@@ -48,7 +48,7 @@ export class Realm extends GameEntity
   // What file will this area be saved to.
   protected getSavePath(): string
   {
-    return Realm.SAVE_DIRECTORY + this.name + ".json";
+    return Realm.SAVE_DIRECTORY + this.getIdStringValue() + ".json";
   }
 
   // ---------------- Private methods -------------------
