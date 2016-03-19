@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Abstract ancestor for managers storing game entities.
+  Abstract ancestor for managers storing id's of game entities.
 */
 
 'use strict';
@@ -13,7 +13,7 @@ import {GameEntity} from '../game/GameEntity';
 import {Id} from '../shared/Id';
 import {AbbrevSearchList} from '../shared/AbbrevSearchList';
 
-export abstract class EntityManager<T extends GameEntity>
+export class EntityIdManager<T extends GameEntity>
 {
   // ---------------- Public methods --------------------
 
@@ -36,7 +36,7 @@ export abstract class EntityManager<T extends GameEntity>
   // entities under it's original id (that was loaded from file).
   public registerEntity(entity: T)
   {
-    if (entity.hasUniqueName)
+    if (entity.isNameUnique)
     {
       ASSERT(entity.name !== 'undefined', "'name' property doesn't exist.");
 
@@ -56,7 +56,7 @@ export abstract class EntityManager<T extends GameEntity>
 
     Game.entities.deleteItem(entityId);
 
-    if (entity.hasUniqueName)
+    if (entity.isNameUnique)
     {
       ASSERT(entity.name !== 'undefined', "'name' property doesn't exist.");
 
@@ -96,7 +96,7 @@ export abstract class EntityManager<T extends GameEntity>
   // hashmap, returns its unique id.
   public addNewEntity(entity: T): Id
   {
-    let newId = Game.entities.addNewItem(entity);
+    let newId = Game.entities.addItemUnderNewId(entity);
 
     this.addEntity(entity);
 
@@ -110,14 +110,17 @@ export abstract class EntityManager<T extends GameEntity>
 
   protected myAbbrevSearchList = new AbbrevSearchList();
  
+  /// TODO:
+  ///protected myEntityIds = new SaveableArray<Id>(Id);
+
   // -------------- Protected methods -------------------  
 
   // Adds entity that already has an id (loaded from file).
   protected addEntity(entity: T)
   {
-    Game.entities.addNewItem(entity);
+    Game.entities.addItemUnderNewId(entity);
 
-    if (entity.hasUniqueName)
+    if (entity.isNameUnique)
     {
       ASSERT(entity.name !== 'undefined', "'name' property doesn't exist.");
 

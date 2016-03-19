@@ -164,11 +164,11 @@ export class LobbyProcessor
     let characterManager = Game.characterManager;
 
     let character =
-      new Character({ name: characterName, hasUniqueName: true });
+      new Character({ name: characterName, isNameUnique: true });
 
     // This needs to be set before loading so character will load from
     // correct directory.
-    character.hasUniqueName = true;
+    character.isNameUnique = true;
 
     // Character name is passed to check against character name saved
     // in file (they must by the same).
@@ -189,7 +189,7 @@ export class LobbyProcessor
     if (this.checkIfCharacterExists(characterName))
       return false;
 
-    // 'hasUniqueName: true' because player characters have unique names.
+    // 'isNameUnique: true' because player characters have unique names.
     let newCharacterId =
       characterManager.createNewUniqueCharacter
       (

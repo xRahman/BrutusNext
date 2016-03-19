@@ -9,19 +9,20 @@
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {Id} from '../shared/Id';
-import {IdContainer} from '../shared/IdContainer';
+import {IdableObjectContainer} from '../shared/IdableObjectContainer';
 import {SocketDescriptor} from '../server/SocketDescriptor';
 import {PlayerConnection} from '../server/PlayerConnection';
 
 // Import namespace 'net' from node.js
 import * as net from 'net';
 
-export class PlayerConnectionManager extends IdContainer<PlayerConnection>
+export class PlayerConnectionManager
+  extends IdableObjectContainer<PlayerConnection>
 {
   // Creates a socket descriptor, returns its unique id.
   public addPlayerConnection(socketDescriptor: SocketDescriptor): Id
   {
-    let newId = this.addNewItem(new PlayerConnection(socketDescriptor));
+    let newId = this.addItemUnderNewId(new PlayerConnection(socketDescriptor));
 
     // Player connections are not persistent (if player disconnects and
     // connects again, he will have new connectionId), so there is no point

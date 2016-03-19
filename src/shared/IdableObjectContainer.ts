@@ -5,6 +5,17 @@
   unique ids.
 */
 
+/*
+  All instances of idable objects need to be held only in some
+  IdableObjectsContainer. For example all game entities are held
+  in Game.entities (which is IdableObjectsContainer). Everything
+  else accesses idable objects only by their ids (by asking respecktive
+  container).
+
+  You can imagine it as a separate memory block (or database) with id's
+  serving as pointers into this memory (or database).
+*/
+
 'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
@@ -15,12 +26,12 @@ import {Id} from '../shared/Id';
 import {IdProvider} from '../shared/IdProvider';
 import {Server} from '../server/Server';
 
-export class IdContainer<T extends IdableSaveableObject>
+export class IdableObjectContainer<T extends IdableSaveableObject>
 {
   // ---------------- Public methods --------------------
 
   // Inserts a new item to the container, returns its unique id.
-  public addNewItem(item: T): Id
+  public addItemUnderNewId(item: T): Id
   {
     this.commonAddItemChecks(item);
 
@@ -40,7 +51,7 @@ export class IdContainer<T extends IdableSaveableObject>
   }
 
   // Inserts item under an existing id (which needs to be set as item.id).
-  public addItem(item: T)
+  public addItemUnderExistingId(item: T)
   {
     this.commonAddItemChecks(item);
 
@@ -118,7 +129,7 @@ export class IdContainer<T extends IdableSaveableObject>
     // issuing the same ids again (= not unique ones). The only way to fix
     // this correcyly is to go through all saved files, find out the largest
     // id saved in them and set lastIssuedId in file
-    // ./data/instances / LastIssuedId.json to it. (Or you might just increse
+    // ./data/LastIssuedId.json to it. (Or you might just increse
     // it by some large number and hope that you skip all already issued ids.)
     //   Much safer way is to rollback to the last backup that worked.
     ASSERT_FATAL(!(id.stringId in this.myContainer),

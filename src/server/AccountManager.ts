@@ -9,7 +9,7 @@
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {Server} from '../server/Server';
-import {IdContainer} from '../shared/IdContainer';
+import {IdableObjectContainer} from '../shared/IdableObjectContainer';
 import {Id} from '../shared/Id';
 import {Account} from '../server/Account';
 import {Mudlog} from '../server/Mudlog';
@@ -17,7 +17,7 @@ import {Mudlog} from '../server/Mudlog';
 // Built-in node.js modules.
 import * as fs from 'fs';  // Import namespace 'fs' from node.js
 
-export class AccountManager extends IdContainer<Account>
+export class AccountManager extends IdableObjectContainer<Account>
 {
   // ---------------- Public methods --------------------
 
@@ -121,7 +121,7 @@ export class AccountManager extends IdContainer<Account>
   // hashmap, returns its unique id.
   protected addNewAccount(account: Account): Id
   {
-    let newId = this.addNewItem(account);
+    let newId = this.addItemUnderNewId(account);
 
     // Also add record to the corresponding hashmap.
     this.myAccountNames[account.accountName] = newId;
@@ -132,7 +132,7 @@ export class AccountManager extends IdContainer<Account>
   // Adds an account which already has an id (loaded from file).
   protected addAccount(account: Account)
   {
-    this.addItem(account);
+    this.addItemUnderExistingId(account);
 
     // Also add record to the corresponding hashmap.
     this.myAccountNames[account.accountName] = account.id;

@@ -9,8 +9,8 @@
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {Id} from '../shared/Id';
-import {IdContainer} from '../shared/IdContainer';
-import {EntityManager} from '../game/EntityManager';
+import {IdableObjectContainer} from '../shared/IdableObjectContainer';
+import {EntityIdManager} from '../game/EntityIdManager';
 import {Game} from '../game/Game';
 import {Character} from '../game/characters/Character';
 import {Mudlog} from '../server/Mudlog';
@@ -18,7 +18,7 @@ import {Mudlog} from '../server/Mudlog';
 // Built-in node.js modules.
 import * as fs from 'fs';  // Import namespace 'fs' from node.js
 
-export class CharacterManager extends EntityManager<Character>
+export class CharacterManager extends EntityIdManager<Character>
 {
   // ---------------- Public methods --------------------
 
@@ -33,10 +33,10 @@ export class CharacterManager extends EntityManager<Character>
       + " who already exists");
 
     let newCharacter
-      = new Character({ name: name, hasUniqueName: true });
+      = new Character({ name: name, isNameUnique: true });
 
     newCharacter.playerConnectionId = playerConnectionId;
-    newCharacter.hasUniqueName = true;
+    newCharacter.isNameUnique = true;
 
     let newCharacterId = this.addNewEntity(newCharacter);
 
