@@ -134,7 +134,7 @@ export class AuthProcessor
     // password so we need to remember account name until then.
     this.myAccountName = accountName;
 
-    if (Server.accountManager.exists(accountName))
+    if (Server.accountManager.accountExists(accountName))
     {
       // Existing user. Ask for password.
       this.myPlayerConnection.send("&wPassword: ");

@@ -9,21 +9,19 @@
 
 'use strict';
 
+import {ASSERT} from '../../shared/ASSERT'
 import {Sector} from '../../game/world/Sector';
-import {AreaData} from '../../game/world/AreaData';
 
 export class Area extends Sector
 {
   constructor(name: string)
   {
-    super();
+    super(name);
 
     // Don't forget to bump up version number if you add or remove
     // SaveableObjects. You will also need to convert data in respective
     // .json files to conform to the new version.
     this.version = 0;
-
-    this.myData = new AreaData(name);
   }
 
   static get SAVE_DIRECTORY() { return "./data/instances/areas/"; }
@@ -37,7 +35,7 @@ export class Area extends Sector
   // --------------- Protected methods ------------------
 
   // What file will this area be saved to.
-  protected myGetSavePath(): string
+  protected getSavePath(): string
   {
     return Area.SAVE_DIRECTORY + this.name + ".json";
   }

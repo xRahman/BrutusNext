@@ -37,7 +37,6 @@
     <TypeScriptCompile Include="src\game\GameEntity.ts" />
     <TypeScriptCompile Include="src\game\GameEntityData.ts" />
     <TypeScriptCompile Include="src\game\CharacterManager.ts" />
-    <TypeScriptCompile Include="src\game\RoomPrototypeManager.ts" />
     <TypeScriptCompile Include="src\game\world\Area.ts" />
     <TypeScriptCompile Include="src\game\world\AreaData.ts" />
     <TypeScriptCompile Include="src\game\AreaManager.ts" />
@@ -55,6 +54,7 @@
     <TypeScriptCompile Include="src\game\world\RoomInfoGroup.ts" />
     <TypeScriptCompile Include="src\game\world\Sector.ts" />
     <TypeScriptCompile Include="src\game\world\SectorData.ts" />
+    <TypeScriptCompile Include="src\game\world\World.ts" />
     <TypeScriptCompile Include="src\headers\node.d.ts" />
     <TypeScriptCompile Include="src\headers\ws.d.ts" />
     <TypeScriptCompile Include="src\server\Account.ts" />
@@ -79,7 +79,7 @@
     <TypeScriptCompile Include="src\shared\SaveableContainer.ts" />
     <TypeScriptCompile Include="src\shared\IdContainer.ts" />
     <TypeScriptCompile Include="src\shared\IdProvider.ts" />
-    <TypeScriptCompile Include="src\shared\IdableSaveableContainer.ts" />
+    <TypeScriptCompile Include="src\shared\IdableSaveableObject.ts" />
     <TypeScriptCompile Include="src\shared\SaveableObject.ts" />
   </ItemGroup>
   <ItemGroup>

@@ -5,8 +5,6 @@
 */
 
 /*
-  Usage: See usage of SaveableContainer.
-
   Note:
     You only need SaveableArray if you want to save Objects that
     are not of primitive types. Array<number> will save and load

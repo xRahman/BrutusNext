@@ -8,21 +8,22 @@
 
 'use strict';
 
+import {ASSERT} from '../../shared/ASSERT'
+import {Id} from '../../shared/Id';
+import {Game} from '../../game/Game';
 import {GameEntity} from '../../game/GameEntity';
-import {SectorData} from '../../game/world/SectorData';
+import {Room} from '../../game/world/Room';
 
 export class Sector extends GameEntity
 {
-  constructor()
+  constructor(name: string)
   {
-    super();
+    super(name);
 
     // Don't forget to bump up version number if you add or remove
     // SaveableObjects. You will also need to convert data in respective
     // .json files to conform to the new version.
     this.version = 0;
-
-    this.myData = new SectorData(name);
   }
 
   static get SAVE_DIRECTORY() { return "./data/prototypes/sectors/"; }
@@ -31,11 +32,22 @@ export class Sector extends GameEntity
 
   // ---------------- Public methods --------------------
 
+  public addNewRoom(roomName: string): Id
+  {
+    let newRoom = new Room(roomName);
+    let newRoomId = Game.roomManager.addNewEntity(newRoom);
+
+    // Add new room if to the list of entities contained in this sector.
+    this.addEntity(newRoomId);
+
+    return newRoomId;
+  }
+
   // -------------- Protected class data ----------------
 
   // --------------- Protected methods ------------------
 
-  protected myGetSavePath(): string
+  protected getSavePath(): string
   {
     return Sector.SAVE_DIRECTORY + this.name + ".json";
   }

@@ -4,23 +4,26 @@
   Dimension (a set of Realms).
 */
 
+/*
+  Tohle mozna nakonec bude jen flaga. Dimension asi nepotrebuje
+  samostatnou funkcnost. Uvidime...
+*/
+
 'use strict';
 
+import {ASSERT} from '../../shared/ASSERT'
 import {GameEntity} from '../../game/GameEntity';
-import {DimensionData} from '../../game/world/DimensionData';
 
 export class Dimension extends GameEntity
 {
-  constructor()
+  constructor(name: string)
   {
-    super();
+    super(name);
 
     // Don't forget to bump up version number if you add or remove
     // SaveableObjects. You will also need to convert data in respective
     // .json files to conform to the new version.
     this.version = 0;
-
-    this.myData = new DimensionData(name);
   }
 
   static get SAVE_DIRECTORY() { return "./data/instances/dimensions/"; }
@@ -34,7 +37,7 @@ export class Dimension extends GameEntity
   // --------------- Protected methods ------------------
 
   // What file will this area be saved to.
-  protected myGetSavePath(): string
+  protected getSavePath(): string
   {
     return Dimension.SAVE_DIRECTORY + this.name + ".json";
   }

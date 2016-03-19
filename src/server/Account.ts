@@ -9,7 +9,7 @@
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {Id} from '../shared/Id';
-import {IdableSaveableContainer} from '../shared/IdableSaveableContainer';
+import {IdableSaveableObject} from '../shared/IdableSaveableObject';
 import {AccountData} from '../server/AccountData';
 import {PlayerConnection} from '../server/PlayerConnection';
 import {Server} from '../server/Server';
@@ -17,7 +17,7 @@ import {Server} from '../server/Server';
 // Built-in node.js modules.
 import * as crypto from 'crypto';  // Import namespace 'crypto' from node.js
 
-export class Account extends IdableSaveableContainer
+export class Account extends IdableSaveableObject
 {
   // Account name is not saved to the file. Filename represents account name.
   constructor(accountName: string,
@@ -30,7 +30,7 @@ export class Account extends IdableSaveableContainer
     // .json files to conform to the new version.
     this.version = 0;
 
-    this.myData.accountName = accountName;
+    this.accountName = accountName;
   }
 
   static get SAVE_DIRECTORY() { return "./data/instances/accounts/"; }
@@ -48,20 +48,26 @@ export class Account extends IdableSaveableContainer
     this.myPlayerConnectionId = value;
   }
 
-  public get accountName() { return this.myData.accountName; }
-  public set accountName(value: string) { this.myData.accountName = value; }
+  // List of character names this account has access to.
+  public characters: Array<string> = [];
+
+  // timeOfCreation initializes to current time, but for existing
+  // accounts will be overwritten when loading from file. 
+  public timeOfCreation = new Date();
+
+  public accountName = "";
 
   // ---------------- Public methods --------------------
 
   // Only hash of the password is stored
-  public set password(value: string)
+  public setPasswordHash(password: string)
   {
-    this.myData.password = this.md5hash(value);
+    this.myPasswordHash = this.md5hash(password);
   }
 
   public checkPassword(password: string): boolean
   {
-    return this.myData.password === this.md5hash(password);
+    return this.myPasswordHash === this.md5hash(password);
   }
 
   public isInGame(): boolean
@@ -75,8 +81,6 @@ export class Account extends IdableSaveableContainer
       "Attempt to add new character with empty name"))
       return;
 
-    this.myData.characters.push(characterName);
-
     /// Zpet k odkazovani postav jmeny.
     ///     Duvod pro ukladani postav v souboru podle jmena postavy je,
     ///   ze stat file <charName> by nemel jak najit spravny soubor, kdyz
@@ -89,13 +93,7 @@ export class Account extends IdableSaveableContainer
     /// vyhodu, ze si nemusim nekde stranou drzet seznam existujicich jmen,
     /// muzu proste checknout, jestli existuje soubor daneho jmena.
 
-    /*
-    if (!ASSERT(characterId && characterId.notNull(),
-      "Attempt to add new character with invalid id"))
-      return;
-
-    this.myData.characters.push(characterId);
-    */
+    this.characters.push(characterName);
 
     // This doesn't need to be synchronous.
     this.save();
@@ -103,7 +101,7 @@ export class Account extends IdableSaveableContainer
 
   public getNumberOfCharacters(): number
   {
-    return this.myData.characters.length;
+    return this.characters.length;
   }
 
   public getCharacterName(charNumber: number): string
@@ -113,12 +111,10 @@ export class Account extends IdableSaveableContainer
       + " from account " + this.accountName + " which only has "
       + this.getNumberOfCharacters() + " characters.");
 
-    return this.myData.characters[charNumber];
+    return this.characters[charNumber];
   }
 
   // -------------- Protected class data ----------------
-
-  public myData = new AccountData();
 
   // --------------- Protected methods ------------------
 
@@ -132,8 +128,12 @@ export class Account extends IdableSaveableContainer
   }
 
   // What file will this object be saved to.
-  protected myGetSavePath(): string
+  protected getSavePath(): string
   {
     return Account.SAVE_DIRECTORY + this.accountName + ".json";
   }
+
+  // -------------- Private class data ----------------
+
+  private myPasswordHash = "";
 }

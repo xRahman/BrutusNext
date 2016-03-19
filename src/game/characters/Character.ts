@@ -6,28 +6,33 @@
 
 'use strict';
 
+import {ASSERT} from '../../shared/ASSERT'
 import {Id} from '../../shared/Id';
 import {GameEntity} from '../../game/GameEntity';
-import {CharacterData} from '../../game/characters/CharacterData';
 
 export class Character extends GameEntity
 {
   constructor(nameParam: { name: string, hasUniqueName: boolean })
   {
-    super();
+    super(nameParam.name);
 
     // Don't forget to bump up version number if you add or remove
     // SaveableObjects. You will also need to convert data in respective
     // .json files to conform to the new version.
     this.version = 0;
-
-    this.myData = new CharacterData(nameParam.name);
     this.hasUniqueName = nameParam.hasUniqueName;
   }
 
   static get SAVE_DIRECTORY() { return "./data/instances/characters/"; }
 
   // --------------- Public accessors -------------------
+
+  // ----------------- Public data ---------------------- 
+
+  /// TODO: Tohle by mozna mel mit az player, u mobu me to moc nezajima
+  // dateofCreation always initializes to current time, but for existing
+  // characters will be overwritten when loading from file. 
+  public timeOfCreation = new Date();
 
   // ---------------- Public methods --------------------
 
@@ -59,8 +64,10 @@ export class Character extends GameEntity
   /// TODO: Tohle nejspis bude platit pouze pro player charactery, NPC
   /// to budou mit jinak.
   // What file will this object be saved to.
-  protected myGetSavePath(): string
+  protected getSavePath(): string
   {
+    ASSERT(this.name !== 'undefined', "'name' property doesn't exist.");
+
     if (this.hasUniqueName)
       return Character.SAVE_DIRECTORY + "unique/" + this.name + ".json";
     else
