@@ -9,7 +9,7 @@
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {Id} from '../shared/Id';
-import {IdableSaveableContainer} from '../shared/IdableSaveableContainer';
+import {IdableSaveableObject} from '../shared/IdableSaveableObject';
 import {Mudlog} from '../server/Mudlog';
 import {Server} from '../server/Server';
 import {SocketDescriptor} from '../server/SocketDescriptor';
@@ -20,7 +20,7 @@ import {Game} from '../game/Game';
 import {GameEntity} from '../game/GameEntity';
 import {Character} from '../game/characters/Character';
 
-export class PlayerConnection extends IdableSaveableContainer
+export class PlayerConnection extends IdableSaveableObject
 {
   constructor(protected mySocketDescriptor: SocketDescriptor)
   {
@@ -293,7 +293,7 @@ export class PlayerConnection extends IdableSaveableContainer
   // -------------- Protected class data ----------------
 
   // Empty string means that we do not yet know what account does this
-  // descriptor match to.
+  // connection match to.
   protected myAccountId: Id = Id.NULL;
 
   // Id of entity this player connection is attached to.
@@ -301,7 +301,7 @@ export class PlayerConnection extends IdableSaveableContainer
   // immortals to 'switch' to any game entity)
   protected myIngameEntityId: Id = Id.NULL;
 
-  // Unique stringId of this descriptor.
+  // Unique stringId of this connection.
   protected myId: Id = Id.NULL;
 
   protected myAuthProcessor = new AuthProcessor(this);

@@ -28,14 +28,14 @@ export class AccountManager extends IdContainer<Account>
     playerConnectionId: Id
   ): Id
   {
-    ASSERT_FATAL(!this.exists(accountName),
+    ASSERT_FATAL(!this.accountExists(accountName),
       "Attempt to create account '"
       + accountName + "' which already exists");
 
     let newAccount = new Account(accountName, playerConnectionId);
 
     // This creates and assigns hash. Actual password is not remembered.
-    newAccount.password = password;
+    newAccount.setPasswordHash(password);
 
     let newAccountId = this.addNewAccount(newAccount);
 
@@ -52,10 +52,10 @@ export class AccountManager extends IdContainer<Account>
   }
 
   // Returns true if account with given name exists.
-  public exists(accountName: string)
+  public accountExists(accountName: string)
   {
-    // First check if account is already online so we can save reading from
-    // disk.
+    // First check if account is already online so we can save ourselves
+    // reading from disk.
     if (this.myAccountNames[accountName])
       return true;
 

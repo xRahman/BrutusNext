@@ -10,14 +10,13 @@
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {NamedClass} from '../shared/NamedClass';
-import {IdableSaveableContainer} from '../shared/IdableSaveableContainer';
+import {IdableSaveableObject} from '../shared/IdableSaveableObject';
 import {Id} from '../shared/Id';
 import {IdProvider} from '../shared/IdProvider';
 import {Server} from '../server/Server';
 
-export class IdContainer<T extends IdableSaveableContainer>
+export class IdContainer<T extends IdableSaveableObject>
 {
-
   // ---------------- Public methods --------------------
 
   // Inserts a new item to the container, returns its unique id.
@@ -35,7 +34,7 @@ export class IdContainer<T extends IdableSaveableContainer>
     this.myContainer[newId.stringId] = item;
     
     // Item remembers it's own id.
-    item[IdableSaveableContainer.ID_PROPERTY] = newId;
+    item[IdableSaveableObject.ID_PROPERTY] = newId;
 
     return newId;
   }
@@ -45,7 +44,7 @@ export class IdContainer<T extends IdableSaveableContainer>
   {
     this.commonAddItemChecks(item);
 
-    let id = item[IdableSaveableContainer.ID_PROPERTY];
+    let id = item[IdableSaveableObject.ID_PROPERTY];
 
     ASSERT_FATAL(item[NamedClass.CLASS_NAME_PROPERTY] === id.type,
       "Attempt to add item to the container that is of"
@@ -69,6 +68,19 @@ export class IdContainer<T extends IdableSaveableContainer>
       "Item (" + id.stringId + ") no longer exists in the container");
 
     return item;
+  }
+
+  // Check if item with give id exists in the container.
+  public exists(id: Id): boolean
+  {
+    ASSERT_FATAL(id && id.notNull(), "Trying to get item using invalid id");
+
+    let item = this.myContainer[id.stringId];
+
+    if (typeof item !== 'undefined')
+      return true;
+    else
+      return false;
   }
 
   public deleteItem(id: Id)
@@ -123,11 +135,11 @@ export class IdContainer<T extends IdableSaveableContainer>
       "Attempt to add item to the container that is not inherited from"
       + " NamedClass");
 
-    ASSERT_FATAL(IdableSaveableContainer.ID_PROPERTY in item,
+    ASSERT_FATAL(IdableSaveableObject.ID_PROPERTY in item,
       "Attempt to add item to the container that is not inherited from"
-      + " IdableSaveableContainer");
+      + " IdableSaveableObject");
 
-    ASSERT_FATAL(item[IdableSaveableContainer.ID_PROPERTY] !== null,
+    ASSERT_FATAL(item[IdableSaveableObject.ID_PROPERTY] !== null,
       "Attempt to add item to the container with invalid id");
   }
 }

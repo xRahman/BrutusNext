@@ -29,13 +29,12 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
-import {IdableSaveableContainer} from '../shared/IdableSaveableContainer';
+import {IdableSaveableObject} from '../shared/IdableSaveableObject';
 import {GameEntity} from '../game/GameEntity';
 import {CommandSearchList} from '../shared/CommandSearchList';
 
-export abstract class CommandInterpretter extends IdableSaveableContainer
+export abstract class CommandInterpretter extends IdableSaveableObject
 {
-
   // ---------------- Static methods -------------------- 
 
   // This method allows you to add a new commands. 
