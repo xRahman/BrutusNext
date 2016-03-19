@@ -1,4 +1,8 @@
-﻿IDEA: Spojit vypis pozicovani a soucasne stavu grupy
+﻿"Holocrony" nedají bonus automaticky, jsou na to potřeba expy (možná nějaký konkrétní druh podle toho, co se chci naučit). Díky tomu bude motivace expit a nepůjde naskillovat prostě tím, že oběhnu všechny "explorepointy" (nebo se přes ně nechám protáhnout)
+
+-------------------------------------------------------------------
+
+IDEA: Spojit vypis pozicovani a soucasne stavu grupy
 
 You (100%/ 63%)---------Dobrak ( 20%/100%)-Dragon ( 90%/ 13%)
 

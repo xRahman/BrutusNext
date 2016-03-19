@@ -5,14 +5,9 @@
   {
     "className": "Id",
     "version": 0,
-    "myStringId": "4",
+    "myStringId": "5",
     "myType": "Character"
   },
-  "myData":
-  {
-    "className": "CharacterData",
-    "version": 0,
-    "name": "Zuzka",
-    "timeOfCreation": "2015-12-27T16:58:24.439Z"
-  }
+  "name": "Zuzka",
+  "timeOfCreation": "2015-12-27T16:58:24.439Z"
 }
