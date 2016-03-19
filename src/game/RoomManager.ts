@@ -1,12 +1,15 @@
 /*
   Part of BrutusNEXT
 
-  Implements container for room.
+  Implements container for rooms.
 */
 
 'use strict';
 
-export class RoomManager
+import {Room} from '../game/world/Room';
+import {EntityManager} from '../game/EntityManager';
+
+export class RoomManager extends EntityManager<Room>
 {
   // ---------------- Public methods --------------------
 

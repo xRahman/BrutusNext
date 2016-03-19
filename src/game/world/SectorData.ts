@@ -6,7 +6,7 @@
 
 'use strict';
 
-import {SaveableArray} from '../../shared/SaveableArray';
+import {Id} from '../../shared/Id';
 import {GameEntityData} from '../../game/GameEntityData';
 import {Room} from '../../game/world/Room';
 
@@ -22,5 +22,8 @@ export class SectorData extends GameEntityData
     this.version = 0;
   }
 
-  public rooms = new SaveableArray<Room>(Room);
+  // ---------------- Public methods --------------------
+
+  // ----------------- Public data ----------------------
+
 }

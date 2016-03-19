@@ -5,10 +5,6 @@
   data in JSON format.
 */
 
-/*
-  Usage: See usage of SaveableContainer.
-*/
-
 'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
@@ -38,7 +34,7 @@ export class SaveableObject extends NamedClass
   // (note: This property is not saved)
   protected mySaveRequests: Array<string> = [];
 
-  // You can set this flag to false to prevent saving of SaveableObject
+  // You can set this flag to false to prevent saving of SaveableObject.
   public isSaved = true;
 
   // -------------- Protected methods -------------------
@@ -54,23 +50,12 @@ export class SaveableObject extends NamedClass
       + " doesn't match required version (" + this.version + ")");
   }
 
-  protected checkClassName (jsonObject: Object, filePath: string)
-  {
-    ASSERT_FATAL('className' in jsonObject,
-      "There is no 'className' property in JSON data in file " + filePath);
-
-    ASSERT_FATAL(jsonObject['className'] === this.className,
-      "Attempt to load JSON data of class (" + jsonObject['className'] + ")"
-      + " in file " + filePath
-      + " into instance of incompatible class (" + this.className + ")");
-  }
-
   protected async loadFromFile(filePath: string)
   {
-    // Note: Unline writing the same file while it is saving, loading
-    // from the same file while it is loading is not a problem (according
-    // to node.js filestream documentation). So we don't need to bother with
-    // loading locks.
+    //  Unlike writing the same file while it is saving, loading from
+    //  the same file while it is loading is not a problem (according
+    //  to node.js filestream documentation). So we don't need to bother
+    //  with loading locks.
 
     let jsonString = "";
 
@@ -83,15 +68,17 @@ export class SaveableObject extends NamedClass
     catch (error)
     {
       Mudlog.log
-      (
+        (
         "Error loading file '" + filePath + "': " + error.code,
         Mudlog.msgType.SYSTEM_ERROR,
         Mudlog.levels.IMMORTAL
-      );
+        );
 
       // Throw the exception so the mud will get terminated with error
       // message.
-      throw error;
+      // (create a new Error object, because the one we have cought here
+      // doesn't contain stack trace)
+      throw new Error;
     }
 
     // filePath is passed just so it can be printed to error messages.
@@ -132,7 +119,158 @@ export class SaveableObject extends NamedClass
     this.mySaveRequests = [];
   }
 
-  protected async processBufferedSavingRequests()
+  protected loadFromJsonString(jsonString: string, filePath: string)
+  {
+    let jsonObject = {};
+
+    try
+    {
+      jsonObject = JSON.parse(jsonString);
+    }
+    catch (e)
+    {
+      ASSERT_FATAL(false, "Syntax error in JSON string: "
+        + e.message + " in file " + filePath);
+    }
+
+    // filePath is passed just so it can be printed to error messages.
+    this.loadFromJsonObject(jsonObject, filePath);
+  }
+
+  protected saveToJsonString(): string
+  {
+    let jsonString = JSON.stringify(this.saveToJsonObject());
+    let regExp: RegExp;
+
+    jsonString =
+      beautify
+      (
+        jsonString,
+        {
+          "indent_size": 2,
+          "indent_char": " ",
+          "eol": "\n",
+          "brace_style": "expand",
+          "keep_array_indentation": true,
+          "end_with_newline": false
+        }
+      );
+
+    return jsonString;
+  }
+
+  protected loadFromJsonObject(jsonObject: Object, filePath: string)
+  {
+    // filePath is passed just so it can be printed to error messages.
+    this.checkVersion(jsonObject, filePath);
+
+    // className must be the same as it's saved value.
+    this.checkClassName(jsonObject, filePath);
+
+    // filePath is passed just so it can be printed to error messages.
+    this.checkThatAllPropertiesInJsonExistInThis(jsonObject, filePath);
+
+    // Using 'in' operator on object with null value would cause crash.
+    ASSERT_FATAL(jsonObject !== null,
+      "Invalid json object loaded from file " + filePath);
+
+    // Now copy the data.
+    for (let property in jsonObject)
+    {
+      ASSERT_FATAL(this[property] !== null,
+        "There is a property (" + property + ") in object that is loading"
+        + " from file " + filePath + " that has <null> value. That's not"
+        + " allowed, because loading method can't be called on null object."
+        + " Make sure that all properties of class '" + this.className + "'"
+        + " are inicialized to something else than <null>");
+
+      if
+      (
+        this[property] !== null
+        && typeof this[property] === 'object'
+        && 'loadFromJsonObject' in this[property]
+      )
+      {
+        // This handles the situation when you put SaveableObject into
+        // another SaveableObject.
+        //   filePath is passed just so it can be printed to error messages.
+        this[property].loadFromJsonObject(jsonObject[property], filePath);
+      }
+      else
+      {
+        // 'version' and 'className' properties are not loaded. Classname
+        // needs to be the same of course (which is checked previously), version
+        // might differ if someone bumped it up in the code, but in that case
+        // we really need it to bump up, so we don't want to overwrite new
+        // version number with the old value from saved file.
+        if (property !== 'version' && property !== 'className')
+        {
+          this[property] = jsonObject[property];
+        }
+      }
+    }
+  }
+
+  protected saveToJsonObject(): Object
+  {
+    let jsonObject: Object = {};
+
+    // Cycle through all properties in this object
+    for (let property in this)
+    {
+      if (this.isNonNullObject(property))
+      {
+        // If property is not a saveable object or it's 'isSaved' property
+        // is set to false, we do nothing so it won't get saved.
+        if (this.isSaveableObjectToBeSaved(property))
+        {
+          jsonObject[property] = this[property].saveToJsonObject();
+        }
+      }
+      else
+      {
+        if (this.isNotAuxiliary(property))
+        {
+          jsonObject[property] = this[property];
+        }
+      }
+    }
+
+    return jsonObject;
+  }
+
+  // --------------- Private methods --------------------
+
+  private isNonNullObject(property: string): boolean
+  {
+    return this[property] !== null && typeof this[property] === 'object';
+  }
+
+  private isSaveableObjectToBeSaved(property: string): boolean
+  {
+    return this.isNonNullObject(property)
+      && 'saveToJsonObject' in this[property]
+      && this[property].isSaved === true;
+  }
+
+  private isNotAuxiliary(property: string): boolean
+  {
+    // These are our auxiliary properties that should not be saved.
+    return property !== 'mySaveRequests' && property !== 'isSaved';
+  }
+
+  private checkClassName (jsonObject: Object, filePath: string)
+  {
+    ASSERT_FATAL('className' in jsonObject,
+      "There is no 'className' property in JSON data in file " + filePath);
+
+    ASSERT_FATAL(jsonObject['className'] === this.className,
+      "Attempt to load JSON data of class (" + jsonObject['className'] + ")"
+      + " in file " + filePath
+      + " into instance of incompatible class (" + this.className + ")");
+  }
+
+  private async processBufferedSavingRequests()
   {
     for (let i = 0; i < this.mySaveRequests.length; i++)
     {
@@ -158,14 +296,16 @@ export class SaveableObject extends NamedClass
 
         // Throw the exception so the mud will get terminated with error
         // message.
-        throw error;
+        // (create a new Error object, because the one we have cought here
+        // doesn't contain stack trace)
+        throw new Error;
       }
     }
   }
 
   // Returns true when request is buffered and there is no need to process
   // it right now.
-  protected bufferSaveRequest(filePath: string): boolean
+  private bufferSaveRequest(filePath: string): boolean
   {
     // mySaveRequests serves both as buffer for request and as lock indicating
     // that we are already saving something (it it contains something).
@@ -192,127 +332,7 @@ export class SaveableObject extends NamedClass
     return false;
   }
 
-  protected loadFromJsonString(jsonString: string, filePath: string)
-  {
-    let jsonObject = {};
-
-    try
-    {
-      jsonObject = JSON.parse(jsonString);
-    }
-    catch (e)
-    {
-      ASSERT_FATAL(false, "Syntax error in JSON string: "
-        + e.message + " in file " + filePath);
-    }
-
-    // filePath is passed just so it can be printed to error messages.
-    this.loadFromJsonObject(jsonObject, filePath);
-  }
-
-  protected saveToJsonString(): string
-  {
-    let jsonString = JSON.stringify(this.saveToJsonObject());
-    let regExp: RegExp;
-
-    jsonString = beautify
-    (
-      jsonString,
-      {
-        "indent_size": 2,
-        "indent_char": " ",
-        "eol": "\n",
-        "brace_style": "expand",
-        "keep_array_indentation": true,
-        "end_with_newline": false
-      }
-    );
-
-    return jsonString;
-  }
-
-  protected loadFromJsonObject(jsonObject: Object, filePath: string)
-  {
-    // filePath is passed just so it can be printed to error messages.
-    this.checkVersion(jsonObject, filePath);
-
-    // className must be the same as it's saved value.
-    this.checkClassName(jsonObject, filePath);
-
-    // filePath is passed just so it can be printed to error messages.
-    this.checkThatAllPropertiesInJsonExistInThis(jsonObject, filePath);
-
-    // Using 'in' operator on object with null value would crash the game.
-    ASSERT_FATAL(jsonObject !== null,
-      "Invalid json object loaded from file " + filePath);
-
-    // Now copy the data.
-    for (let property in jsonObject)
-    {
-      ASSERT_FATAL(this[property] !== null,
-        "There is a property (" + property + ") in object that is loading"
-        + " from file " + filePath + " that has <null> value. That's not"
-        + " allowed, because loading method can't be called on null object."
-        + " Make sure that all properties of class '" + this.className + "'"
-        + " are inicialized to something else than <null>");
-
-      // 'version' and 'className' properties are not loaded. Classname
-      // needs to be the same of course (which is checked previously), version
-      // might differ if someone bumped it up in the code, but in that case
-      // we really need it to bump up, so we don't need to overwrite new
-      // version number with the old value from saved file.
-      if
-      (
-        property !== 'version'
-        && property !== 'className'
-        && this[property] !== null
-        && typeof this[property] === 'object'
-        && 'loadFromJsonObject' in this[property]
-      )
-      {
-        // This handles the situation when you put SaveableObject into
-        // another SaveableObject.
-        //   filePath is passed just so it can be printed to error messages.
-        this[property].loadFromJsonObject(jsonObject[property], filePath);
-      }
-      else
-      {
-        this[property] = jsonObject[property];
-      }
-    }
-  }
-
-  protected saveToJsonObject(): Object
-  {
-    let jsonObject: Object = {};
-
-    for (let property in this)
-    {
-      // mySaveRequests object is not to be saved, it is used to micromanage
-      // asynchronous saving.
-      if (property === 'mySaveRequests')
-        continue;
-
-      if (property === 'isSaved')
-        continue;
-
-      // This handles the situation when you put SaveableObject into
-      // another SaveableObject.
-      if (typeof this[property] === 'object'
-          && 'saveToJsonObject' in this[property])
-      {
-        jsonObject[property] = this[property].saveToJsonObject();
-      }
-      else
-      {
-        jsonObject[property] = this[property];
-      }
-    }
-
-    return jsonObject;
-  }
-
-  protected checkThatAllPropertiesInJsonExistInThis
+  private checkThatAllPropertiesInJsonExistInThis
   (
     jsonObject: Object,
     filePath: string

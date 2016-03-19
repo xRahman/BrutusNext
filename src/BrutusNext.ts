@@ -34,6 +34,8 @@ let parser = require('commander');
 let packageDotJson = require('../package.json');
 
 // Oznami, ze Promise sezrala exception a nic nerekla a crashne mud.
+process.on('unhandledRejection', err => { throw err; });
+/*
 process.on
 (
   'unhandledRejection',
@@ -47,6 +49,7 @@ process.on
     process.exit(1);
   }
 );
+*/
 
 // Parses commandline parameters.
 // - Return object imported from 'commander' module.

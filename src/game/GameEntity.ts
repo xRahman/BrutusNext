@@ -9,11 +9,17 @@
 import {ASSERT} from '../shared/ASSERT';
 import {Server} from '../server/Server';
 import {Id} from '../shared/Id';
-import {GameEntityData} from '../game/GameEntityData';
+import {SaveableArray} from '../shared/SaveableArray';
+import {Game} from '../game/Game';
 import {CommandInterpretter} from '../game/CommandInterpretter';
 
 export abstract class GameEntity extends CommandInterpretter
 {
+  constructor(public name: string)
+  {
+    super();
+  }
+
   static get SAVE_DIRECTORY()
   {
     ASSERT(false,
@@ -22,20 +28,24 @@ export abstract class GameEntity extends CommandInterpretter
     return "";
   }
 
+  // Creates a new instance of game entity of type saved in id.
+  static createInstance(id: Id)
+  {
+    /// Tohle snad vyrobi instanci typu podle stringu id.className.
+    /// global by mel byt namespace - hadam, ze to bude 'global' object
+    /// z node.js.
+    /// Přetypování na <GameEntity> je tu proto, aby typescript aspoň zhruba
+    /// věděl, co od toho může očekávat - jinak by to byl typ <any>.
+    let newEntity = <GameEntity> new global[id.className]();
+
+    return newEntity;
+  }
+
   // ---------------- Public class data -----------------
 
-  public hasUniqueName: boolean = false;
+  public hasUniqueName = false;
 
   // --------------- Public accessors -------------------
-
-  public get name()
-  {
-    if (!ASSERT(this.myData !== null, "Attempt to access 'name' property on"
-      + "entity that doesn't have valid myData"))
-      return "";
-
-    return this.myData.name;
-  }
 
   public get playerConnection()
   {
@@ -59,6 +69,8 @@ export abstract class GameEntity extends CommandInterpretter
     this.myPlayerConnectionId = value;
   }
 
+  // ---------------- Public methods --------------------
+
   // Player connected to this entity is entering game.
   //   Needs to be overriden if something is going to happen (like message
   // that a player character has just entered game).
@@ -69,16 +81,16 @@ export abstract class GameEntity extends CommandInterpretter
   // that a player character has just entered game).
   public announcePlayerReconnecting() { }
 
-  // ---------------- Public methods --------------------
-
-
   // -------------- Protected class data ----------------
-
-  protected myData: GameEntityData = null;
 
   // Id.NULL if no player is connected to (is playing as) this entity,
   // connectionId otherwise.
   protected myPlayerConnectionId: Id = Id.NULL;
+
+  // Every game entity can contain other game entities.
+  // (Rooms contain characters and objects, bags contain other objects,
+  //  sectors contain rooms, etc.)
+  protected myEntityIds = new SaveableArray<Id>(Id);
 
   // --------------- Protected methods ------------------
 
@@ -88,4 +100,84 @@ export abstract class GameEntity extends CommandInterpretter
     if (this.myPlayerConnectionId)
       this.playerConnection.send("&gHuh?!?");
   }
+
+  // Entity adds itself to approptiate manager
+  // (so it can be searched by name, etc.)
+  protected addToManager() { }
+
+  // Adds entity id to contents of this entity.
+  protected addEntity(entityId: Id)
+  {
+    /// TODO: Asi to přidat taky do abbrevSearchListu této
+    /// entity (možná do více abrevSearchListů, pokud může
+    /// být v contents víc druhů entity, třeba objekty a charaktery
+    /// v Roomu).
+
+    this.myEntityIds.push(entityId);
+  }
+
+  /*
+  // This terrible hack is needed to bypass bug in current version of
+  // TypeScript (at the time of writing this code), which disallows using
+  // super. call within nested async method.
+  protected async superLoadFromFileHack(filePath: string)
+  {
+    super.loadFromFile(filePath);
+  }
+
+  // Override ancestor's loadFromFile() in order to load entities contained
+  // in this entity.
+  protected async loadFromFile(filePath: string)
+  {
+    // First we need to load our own (sector) data, so we know
+    // which entity ids do we contain.
+    ///await super.loadFromFile(filePath);
+    await this.superLoadFromFileHack(filePath);
+
+    // We only hold ids of cotained entities, not actual entities. So we need
+    // to load them manually.
+    for (let i = 0; i < this.myEntityIds.length; i++)
+    {
+      let id = this.myEntityIds[i];
+
+      // If entity already exists, there is no need to load it.
+      if (!Game.entities.exists(id))
+      {
+        let newEntity = GameEntity.createInstance(id);
+
+        // Load entity from file.
+        await newEntity.load();
+
+        // Add entity id to it's approptiate manager so it can be searched for by
+        // name, etc.
+        newEntity.addToManager();
+      }
+    }
+  }
+
+  // This terrible hack is needed to bypass bug in current version of
+  // TypeScript (at the time of writing this code), which disallows using
+  // super. call within nested async method.
+  protected async superSaveToFileHack(filePath: string)
+  {
+    super.saveToFile(filePath);
+  }
+
+  // Override ancestor's saveToFile() in order to save entities contained
+  // in this entity.
+  protected async saveToFile(filePath: string)
+  {
+    // We only hold ids of cotained entities, not actual entities. So we need
+    // to save them manually.
+    for (let i = 0; i < this.myEntityIds.length; i++)
+    {
+      let entityId = this.myEntityIds[i];
+
+      await Game.entities.getItem(entityId).save();
+    }
+
+    ///await super.saveToFile(filePath);
+    await this.superSaveToFileHack(filePath);
+  }
+  */
 }
