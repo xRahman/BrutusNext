@@ -7,9 +7,9 @@
 'use strict';
 
 import {Realm} from '../game/world/Realm';
-import {EntityManager} from '../game/EntityManager';
+import {EntityIdManager} from '../game/EntityIdManager';
 
-export class RealmManager extends EntityManager<Realm>
+export class RealmManager extends EntityIdManager<Realm>
 {
   // ---------------- Public methods --------------------
 

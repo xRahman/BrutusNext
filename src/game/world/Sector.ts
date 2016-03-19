@@ -49,7 +49,7 @@ export class Sector extends GameEntity
 
   protected getSavePath(): string
   {
-    return Sector.SAVE_DIRECTORY + this.name + ".json";
+    return Sector.SAVE_DIRECTORY + this.getIdStringValue() + ".json";
   }
 
   // ---------------- Private methods -------------------

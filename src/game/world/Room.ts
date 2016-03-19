@@ -25,7 +25,7 @@ export class Room extends GameEntity
     this.version = 0;
   }
 
-  static get SAVE_DIRECTORY() { return "./data/instances/rooms/"; }
+  static get SAVE_DIRECTORY() { return "./data/rooms/"; }
 
   // --------------- Public accessors -------------------
 
@@ -57,7 +57,7 @@ export class Room extends GameEntity
   // What file will this area be saved to.
   protected getSavePath(): string
   {
-    return Room.SAVE_DIRECTORY + this.name + ".json";
+    return Room.SAVE_DIRECTORY + this.getIdStringValue() + ".json";
   }
 
   // ---------------- Private methods -------------------

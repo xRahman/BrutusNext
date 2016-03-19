@@ -12,15 +12,21 @@
 
 'use strict';
 
-import {GameEntityData} from '../../game/GameEntityData';
+/*
+///
+  Možná by tohle mohlo být v modulu Room, pokud RoomInfo nebude potřeba od
+  nikud jinud.
+*/
+
 import {ExtraDescription} from '../../game/ExtraDescription';
+import {IdableSaveableObject} from '../../shared/IdableSaveableObject';
 import {SaveableArray} from '../../shared/SaveableArray';
 
-export class RoomInfo extends GameEntityData
+export class RoomInfo extends IdableSaveableObject
 {
-  constructor(public name: string)
+  constructor()
   {
-    super(name);
+    super();
 
     // Don't forget to bump up version number if you add or remove
     // properties. You will also need to convert data in respective
