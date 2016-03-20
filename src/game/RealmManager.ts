@@ -4,12 +4,13 @@
   Implements container for areas.
 */
 
+/*
 'use strict';
 
 import {Realm} from '../game/world/Realm';
-import {EntityIdManager} from '../game/EntityIdManager';
+import {ListOfEntityIds} from '../game/ListOfEntityIds';
 
-export class RealmManager extends EntityIdManager<Realm>
+export class RealmManager extends ListOfEntityIds<Realm>
 {
   // ---------------- Public methods --------------------
 
@@ -18,3 +19,4 @@ export class RealmManager extends EntityIdManager<Realm>
   // -------------- Protected methods -------------------
 
 }
+*/

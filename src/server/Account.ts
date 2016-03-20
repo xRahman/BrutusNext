@@ -127,7 +127,7 @@ export class Account extends IdableSaveableObject
   }
 
   // What file will this object be saved to.
-  protected getSavePath(): string
+  protected getSaveDirectory(): string
   {
     return Account.SAVE_DIRECTORY + this.accountName + ".json";
   }

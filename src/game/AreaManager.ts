@@ -3,13 +3,13 @@
 
   Implements container for areas.
 */
-
+/*
 'use strict';
 
 import {Area} from '../game/world/Area';
-import {EntityIdManager} from '../game/EntityIdManager';
+import {ListOfEntityIds} from '../game/ListOfEntityIds';
 
-export class AreaManager extends EntityIdManager<Area>
+export class AreaManager extends ListOfEntityIds<Area>
 {
   // ---------------- Public methods --------------------
 
@@ -18,3 +18,4 @@ export class AreaManager extends EntityIdManager<Area>
   // -------------- Protected methods -------------------
 
 }
+*/
