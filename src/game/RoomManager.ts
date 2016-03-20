@@ -3,13 +3,13 @@
 
   Implements container for rooms.
 */
-
+/*
 'use strict';
 
 import {Room} from '../game/world/Room';
-import {EntityIdManager} from '../game/EntityIdManager';
+import {ListOfEntityIds} from '../game/ListOfEntityIds';
 
-export class RoomManager extends EntityIdManager<Room>
+export class RoomManager extends ListOfEntityIds<Room>
 {
   // ---------------- Public methods --------------------
 
@@ -18,3 +18,4 @@ export class RoomManager extends EntityIdManager<Room>
   // -------------- Protected methods -------------------
 
 }
+*/

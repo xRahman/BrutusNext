@@ -9,8 +9,7 @@
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {Id} from '../shared/Id';
-import {IdableObjectContainer} from '../shared/IdableObjectContainer';
-import {EntityIdManager} from '../game/EntityIdManager';
+import {IdList} from '../game/IdList';
 import {Game} from '../game/Game';
 import {Character} from '../game/characters/Character';
 import {Mudlog} from '../server/Mudlog';
@@ -18,8 +17,10 @@ import {Mudlog} from '../server/Mudlog';
 // Built-in node.js modules.
 import * as fs from 'fs';  // Import namespace 'fs' from node.js
 
-export class CharacterManager extends EntityIdManager<Character>
+export class PlayerCharacterManager
 {
+  constructor(private myCharacterList: IdList) { }
+
   // ---------------- Public methods --------------------
 
   public createNewUniqueCharacter
@@ -38,7 +39,8 @@ export class CharacterManager extends EntityIdManager<Character>
     newCharacter.playerConnectionId = playerConnectionId;
     newCharacter.isNameUnique = true;
 
-    let newCharacterId = this.addNewEntity(newCharacter);
+    let newCharacterId =
+      this.myCharacterList.addEntityUnderNewId(newCharacter);
 
     // Save the character to the disk (so we know that the character exists).
     // (This does not need to be synchronous.)
@@ -47,22 +49,47 @@ export class CharacterManager extends EntityIdManager<Character>
     return newCharacterId;
   }
 
+  public addExistingPlayerCharacter(character: Character)
+  {
+    this.myCharacterList.addEntityUnderExistingId(character);
+  }
+
+  public getPlayerCharacter(characterName: string): Character
+  {
+    let character = this.myCharacterList.getUniqueEntityByName(characterName);
+
+    if (character !== null)
+    {
+      ASSERT(character instanceof Character,
+        "Requested entity '" + characterName + "' is not a Character");
+    }
+
+    return <Character>character;
+  }
+
+  /*
+  /// TODO: Tohle zjevne neni potreba. Pokud to tak zustane, smazat
   public getCharacter(id: Id): Character
   {
-    let character = this.getEntity(id);
+    let character = Game.entities.getItem(id);
 
     ASSERT_FATAL(character instanceof Character,
       "Attempt to get character by id that doesn't reference an instance of"
       + " Character class");
 
-    return character;
+    ASSERT_FATAL(id.className === 'Character',
+      "Attempt to get character by id that doesn't reference an instance of"
+      + " Character class");
+
+    return <Character>character;
   }
+  */
 
   public doesNameExist(characterName: string)
   {
     // First check if character is already online so we can save reading from
     // disk.
-    if (this.isUniquelyNamedEntityLoaded(characterName))
+    if (this.myCharacterList.hasUniqueEntity(characterName))
       return true;
 
     let path = Character.SAVE_DIRECTORY + "unique/" + characterName + ".json";

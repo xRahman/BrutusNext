@@ -23,22 +23,18 @@ export class Area extends Sector
     // .json files to conform to the new version.
     this.version = 0;
   }
-
-  static get SAVE_DIRECTORY() { return "./data/areas/"; }
-
+  
   // --------------- Public accessors -------------------
+
+  // -------------- Protected accessors -----------------
+
+  protected get SAVE_DIRECTORY() { return "./data/areas/"; }
 
   // ---------------- Public methods --------------------
 
   // -------------- Protected class data ----------------
 
   // --------------- Protected methods ------------------
-
-  // What file will this area be saved to.
-  protected getSavePath(): string
-  {
-    return Area.SAVE_DIRECTORY + this.getIdStringValue() + ".json";
-  }
 
   // ---------------- Private methods -------------------
 }
