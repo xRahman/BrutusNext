@@ -137,14 +137,14 @@ export class LobbyProcessor
   {
     this.myStage = LobbyProcessor.stage.NOT_IN_LOBBY;
 
-    let characterManager = Game.characterManager;
+    let playerCharacterManager = Game.playerCharacterManager;
     let accountManager = Server.accountManager;
     let account = accountManager.getAccount(this.myPlayerConnection.accountId);
 
     let characterName = account.getCharacterName(charNumber);
 
     // Check if character is already online.
-    let character = characterManager.getUniqueEntityByName(characterName);
+    let character = playerCharacterManager.getPlayerCharacter(characterName);
 
     if (character)
     {
@@ -161,7 +161,7 @@ export class LobbyProcessor
   
   protected async loadCharacter(characterName: string)
   {
-    let characterManager = Game.characterManager;
+    let characterManager = Game.playerCharacterManager;
 
     let character =
       new Character({ name: characterName, isNameUnique: true });
@@ -174,15 +174,15 @@ export class LobbyProcessor
     // in file (they must by the same).
     await this.loadCharacterFromFile(character, characterName);
 
-    // Add newly loaded account to characterManager (under it's original id).
-    characterManager.registerEntity(character);
+    // Add newly loaded character to characterManager (under it's original id).
+    characterManager.addExistingPlayerCharacter(character);
 
     this.myPlayerConnection.ingameEntityId = character.id;
   }
 
   protected createNewCharacter(characterName: string): boolean
   {
-    let characterManager = Game.characterManager;
+    let characterManager = Game.playerCharacterManager;
     let accountManager = Server.accountManager;
     let account = accountManager.getAccount(this.myPlayerConnection.accountId);
 
@@ -213,7 +213,7 @@ export class LobbyProcessor
 
   protected checkIfCharacterExists(characterName: string): boolean
   {
-    let characterManager = Game.characterManager;
+    let characterManager = Game.playerCharacterManager;
 
     if (characterManager.doesNameExist(characterName))
     {

@@ -28,6 +28,7 @@ export class SaveableObject extends NamedClass
   // a FATAL_ASSERT when versions don't match. You can override it
   // by overriding a checkVersion() method;
   protected version = 0;
+
   // Buffer to stack save requests issued while already saving ourselves.
   // Also serves as lock - if it's not null, it means we are already saving
   // ourselves.
@@ -85,13 +86,29 @@ export class SaveableObject extends NamedClass
     this.loadFromJsonString(jsonString, filePath);
   }
 
-  protected async saveToFile(filePath: string)
+  protected async saveToFile(directory: string, fileName: string)
   {
+    ASSERT_FATAL(directory.substr(directory.length - 1) === '/',
+      "Directory path '" + directory + "' doesn't end with '/'");
+
+    // Directory might not yet exist, so we better make sure it does.
+    // (According to node.js documentation, it's ok not to check if
+    // directory exist prior to calling mkdir(), the check is done by it)
+    try
+    {
+      await promisifiedFS.mkdir(directory);
+    }
+    catch (e)
+    {
+      // It's ok if the directory exists, it's what we wanted to ensure.
+      // So just do nothing.
+    }
+
     // lastIssuedId needs to be saved each time we are saved because we might
     // be saving ids that were issued after last lastIssuedId save.
     await Server.idProvider.saveLastIssuedId();
 
-    await this.saveContentsToFile(filePath);
+    await this.saveContentsToFile(directory + fileName);
 
     // Save current lastIssuedId once more, because it is possible that while
     // we were saving it, another one was issued and saved withing the object

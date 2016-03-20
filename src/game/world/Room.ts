@@ -25,17 +25,19 @@ export class Room extends GameEntity
     this.version = 0;
   }
 
-  static get SAVE_DIRECTORY() { return "./data/rooms/"; }
-
   // --------------- Public accessors -------------------
+
+  // -------------- Protected accessors -----------------
+
+  protected get SAVE_DIRECTORY() { return "./data/rooms/"; }
 
   // ---------------- Public methods --------------------
 
   // Entity adds itself to approptiate manager
   // (so it can be searched by name, etc.)
-  protected addToManager()
+  public addToManager()
   {
-    Game.roomManager.registerEntity(this);
+    Game.roomList.addEntityUnderExistingId(this);
   }
 
   // -------------- Protected class data ----------------
@@ -51,14 +53,6 @@ export class Room extends GameEntity
   protected myExits = new Exits();
 
   // --------------- Protected methods ------------------
-
-  /// TODO: Tohle nejspis bude jinak, jmena room nejsou unikatni.
-  /// to budou mit jinak.
-  // What file will this area be saved to.
-  protected getSavePath(): string
-  {
-    return Room.SAVE_DIRECTORY + this.getIdStringValue() + ".json";
-  }
 
   // ---------------- Private methods -------------------
 }

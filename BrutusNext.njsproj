@@ -30,12 +30,12 @@
     <TypeScriptCompile Include="src\BrutusNext.ts" />
     <TypeScriptCompile Include="src\game\characters\Character.ts" />
     <TypeScriptCompile Include="src\game\commands\CommandInterpretter.ts" />
-    <TypeScriptCompile Include="src\game\EntityIdConainer.ts" />
-    <TypeScriptCompile Include="src\game\EntityIdManager.ts" />
+    <TypeScriptCompile Include="src\game\EntityContainer.ts" />
+    <TypeScriptCompile Include="src\game\IdList.ts" />
     <TypeScriptCompile Include="src\game\ExtraDescription.ts" />
     <TypeScriptCompile Include="src\game\Game.ts" />
     <TypeScriptCompile Include="src\game\GameEntity.ts" />
-    <TypeScriptCompile Include="src\game\CharacterManager.ts" />
+    <TypeScriptCompile Include="src\game\PlayerCharacterManager.ts" />
     <TypeScriptCompile Include="src\game\world\Area.ts" />
     <TypeScriptCompile Include="src\game\AreaManager.ts" />
     <TypeScriptCompile Include="src\game\world\Dimension.ts" />
@@ -63,7 +63,7 @@
     <TypeScriptCompile Include="src\server\PlayerConnectionManager.ts" />
     <TypeScriptCompile Include="src\server\telnet\TelnetServer.ts" />
     <TypeScriptCompile Include="src\server\telnet\TelnetSocketDescriptor.ts" />
-    <TypeScriptCompile Include="src\shared\AbbrevSearchList.ts" />
+    <TypeScriptCompile Include="src\game\AbbrevSearchList.ts" />
     <TypeScriptCompile Include="src\shared\ASSERT.ts" />
     <TypeScriptCompile Include="src\game\commands\CommandSearchList.ts" />
     <TypeScriptCompile Include="src\shared\Id.ts" />
