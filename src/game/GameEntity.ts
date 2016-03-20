@@ -6,26 +6,18 @@
 
 'use strict';
 
-import {ASSERT} from '../shared/ASSERT';
+import {ASSERT_FATAL} from '../shared/ASSERT';
 import {Server} from '../server/Server';
 import {Id} from '../shared/Id';
 import {SaveableArray} from '../shared/SaveableArray';
 import {Game} from '../game/Game';
-import {CommandInterpretter} from '../game/commands/CommandInterpretter';
+import {EntityContainer} from '../game/EntityContainer';
 
-export abstract class GameEntity extends CommandInterpretter
+export abstract class GameEntity extends EntityContainer
 {
   constructor(public name: string)
   {
     super();
-  }
-
-  static get SAVE_DIRECTORY()
-  {
-    ASSERT(false,
-      "Attempt to access SAVE_DIRECTORY of abstract GameEntity class");
-
-    return "";
   }
 
   // Creates a new instance of game entity of type saved in id.
@@ -57,16 +49,26 @@ export abstract class GameEntity extends CommandInterpretter
     //    It's proabably better to be able to check playerConnection to
     // be null anyways, because it's intuitive way to do it (instead of
     // having to check if myPlayerConnectionId is null).
-    if (this.myPlayerConnectionId.isNull())
+    if (this.myNonsaveableData.playerConnectionId.isNull())
       return null;
 
     return Server.playerConnectionManager
-      .getPlayerConnection(this.myPlayerConnectionId);
+      .getPlayerConnection(this.myNonsaveableData.playerConnectionId);
   }
 
   public set playerConnectionId(value: Id)
   {
-    this.myPlayerConnectionId = value;
+    this.myNonsaveableData.playerConnectionId = value;
+  }
+
+  // -------------- Protected accessors -----------------
+
+  protected get SAVE_DIRECTORY()
+  {
+    ASSERT_FATAL(false,
+      "Attempt to access SAVE_DIRECTORY of abstract GameEntity class");
+
+    return "";
   }
 
   // ---------------- Public methods --------------------
@@ -81,103 +83,48 @@ export abstract class GameEntity extends CommandInterpretter
   // that a player character has just entered game).
   public announcePlayerReconnecting() { }
 
+  // Entity adds itself to approptiate manager
+  // (so it can be searched by name, etc.)
+  public addToManager() { }
+
+  protected getSaveDirectory(): string
+  {
+    if (this.isNameUnique)
+      return this.SAVE_DIRECTORY + "unique/";
+    else
+      return this.SAVE_DIRECTORY;
+  }
+
+  protected getSaveFileName(): string
+  {
+    if (this.isNameUnique)
+      return this.name + ".json";
+    else
+      return this.getIdStringValue() + ".json";
+  }
+
   // -------------- Protected class data ----------------
 
-  // Id.NULL if no player is connected to (is playing as) this entity,
-  // connectionId otherwise.
-  protected myPlayerConnectionId: Id = Id.NULL;
-
-  // Every game entity can contain other game entities.
-  // (Rooms contain characters and objects, bags contain other objects,
-  //  sectors contain rooms, etc.)
-  protected myEntityIds = new SaveableArray<Id>(Id);
+  protected myNonsaveableData = new NonsaveableGameEntityData();
 
   // --------------- Protected methods ------------------
 
   // Send message to the connected player that command is not recognized.
   protected unknownCommand()
   {
-    if (this.myPlayerConnectionId)
+    if (this.playerConnection)
       this.playerConnection.send("&gHuh?!?");
   }
+}
 
-  // Entity adds itself to approptiate manager
-  // (so it can be searched by name, etc.)
-  protected addToManager() { }
+// ---------------------- private module stuff -------------------------------
 
-  // Adds entity id to contents of this entity.
-  protected addEntity(entityId: Id)
-  {
-    /// TODO: Asi to přidat taky do abbrevSearchListu této
-    /// entity (možná do více abrevSearchListů, pokud může
-    /// být v contents víc druhů entity, třeba objekty a charaktery
-    /// v Roomu).
+class NonsaveableGameEntityData
+{
+  // Do not save this object.
+  public isSaved = false;
 
-    this.myEntityIds.push(entityId);
-  }
-
-  /*
-  // This terrible hack is needed to bypass bug in current version of
-  // TypeScript (at the time of writing this code), which disallows using
-  // super. call within nested async method.
-  protected async superLoadFromFileHack(filePath: string)
-  {
-    super.loadFromFile(filePath);
-  }
-
-  // Override ancestor's loadFromFile() in order to load entities contained
-  // in this entity.
-  protected async loadFromFile(filePath: string)
-  {
-    // First we need to load our own (sector) data, so we know
-    // which entity ids do we contain.
-    ///await super.loadFromFile(filePath);
-    await this.superLoadFromFileHack(filePath);
-
-    // We only hold ids of cotained entities, not actual entities. So we need
-    // to load them manually.
-    for (let i = 0; i < this.myEntityIds.length; i++)
-    {
-      let id = this.myEntityIds[i];
-
-      // If entity already exists, there is no need to load it.
-      if (!Game.entities.exists(id))
-      {
-        let newEntity = GameEntity.createInstance(id);
-
-        // Load entity from file.
-        await newEntity.load();
-
-        // Add entity id to it's approptiate manager so it can be searched for by
-        // name, etc.
-        newEntity.addToManager();
-      }
-    }
-  }
-
-  // This terrible hack is needed to bypass bug in current version of
-  // TypeScript (at the time of writing this code), which disallows using
-  // super. call within nested async method.
-  protected async superSaveToFileHack(filePath: string)
-  {
-    super.saveToFile(filePath);
-  }
-
-  // Override ancestor's saveToFile() in order to save entities contained
-  // in this entity.
-  protected async saveToFile(filePath: string)
-  {
-    // We only hold ids of cotained entities, not actual entities. So we need
-    // to save them manually.
-    for (let i = 0; i < this.myEntityIds.length; i++)
-    {
-      let entityId = this.myEntityIds[i];
-
-      await Game.entities.getItem(entityId).save();
-    }
-
-    ///await super.saveToFile(filePath);
-    await this.superSaveToFileHack(filePath);
-  }
-  */
+  // Id.NULL if no player is connected to (is playing as) this entity,
+  // connectionId otherwise.
+  public playerConnectionId: Id = Id.NULL;
 }

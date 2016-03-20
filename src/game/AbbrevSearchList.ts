@@ -10,10 +10,13 @@
 
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {Id} from '../shared/Id';
-
+import {GameEntity} from "../game/GameEntity";
 
 export class AbbrevSearchList
 {
+  // Do not save this object to JSON.
+  public get isSaved() { return false; }
+
   // ---------------- Public methods --------------------
 
 
@@ -45,18 +48,22 @@ export class AbbrevSearchList
 
   // If more similar names are added, they will be accessible by dot notation
   // (like 2.orc).
-  public addEntity(name: string, entityId: Id)
+  public addEntity(entity: GameEntity)
   {
-    // Add all possible abbreviations of name.
-    for (let i = 0; i < name.length; i++)
-      this.addItemToAbbrev(name.substring(0, i), entityId);
+    /// TODO: Misto entity.name pridat vsechny aliasy entity.
+
+    // Add all possible abbreviations of entity's name.
+    for (let i = 0; i < entity.name.length; i++)
+      this.addItemToAbbrev(entity.name.substring(0, i), entity.id);
   }
 
-  public removeEntity(name: string, entityId: Id)
+  public removeEntity(entity: GameEntity)
   {
-    // Remove all possible abbreviations of name.
-    for (let i = 0; i < name.length; i++)
-      this.removeItemFromAbbrev(name.substring(0, i), entityId);
+    /// TODO: Misto entity.name odebrat vsechny aliasy entity.
+
+    // Remove all possible abbreviations of entity's name.
+    for (let i = 0; i < entity.name.length; i++)
+      this.removeItemFromAbbrev(entity.name.substring(0, i), entity.id);
   }
 
   // -------------- Protected class data ----------------

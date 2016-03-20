@@ -37,7 +37,7 @@ export class Dimension extends GameEntity
   // --------------- Protected methods ------------------
 
   // What file will this area be saved to.
-  protected getSavePath(): string
+  protected getSaveDirectory(): string
   {
     return Dimension.SAVE_DIRECTORY + this.getIdStringValue() + ".json";
   }

@@ -23,9 +23,21 @@ export class Character extends GameEntity
     this.isNameUnique = nameParam.isNameUnique;
   }
 
-  static get SAVE_DIRECTORY() { return "./data/characters/"; }
-
   // --------------- Public accessors -------------------
+
+  // There is both static and nonstatic version of SAVE_DIRECTORY (both
+  // return the same value), because we need to be able to access it without
+  // an intance of Character, and we also need it to override SAVE_DIRECTORY
+  // property inherited from GameEntity (which cannot be static, because
+  // static properties can't be overriden).
+  public static get SAVE_DIRECTORY()
+  {
+    return "./data/characters/";
+  }
+
+  // -------------- Protected accessors -----------------
+
+  protected get SAVE_DIRECTORY() { return Character.SAVE_DIRECTORY; }
 
   // ----------------- Public data ---------------------- 
 
@@ -60,19 +72,6 @@ export class Character extends GameEntity
   // -------------- Protected class data ----------------
 
   // --------------- Protected methods ------------------
-
-  /// TODO: Tohle nejspis bude platit pouze pro player charactery, NPC
-  /// to budou mit jinak.
-  // What file will this object be saved to.
-  protected getSavePath(): string
-  {
-    ASSERT(this.name !== 'undefined', "'name' property doesn't exist.");
-
-    if (this.isNameUnique)
-      return Character.SAVE_DIRECTORY + "unique/" + this.name + ".json";
-    else
-      return Character.SAVE_DIRECTORY + this.getIdStringValue() + ".json";
-  }
 
   // ---------------- Command handlers ------------------
 

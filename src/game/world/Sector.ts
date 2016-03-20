@@ -26,19 +26,21 @@ export class Sector extends GameEntity
     this.version = 0;
   }
 
-  static get SAVE_DIRECTORY() { return "./data/prototypes/sectors/"; }
-
   // --------------- Public accessors -------------------
+
+  // -------------- Protected accessors -----------------
+
+  protected get SAVE_DIRECTORY() { return "./data/prototypes/sectors/"; }
 
   // ---------------- Public methods --------------------
 
   public addNewRoom(roomName: string): Id
   {
     let newRoom = new Room(roomName);
-    let newRoomId = Game.roomManager.addNewEntity(newRoom);
+    let newRoomId = Game.roomList.addEntityUnderNewId(newRoom);
 
     // Add new room if to the list of entities contained in this sector.
-    this.addEntity(newRoomId);
+    this.insertEntity(newRoomId);
 
     return newRoomId;
   }
@@ -46,11 +48,6 @@ export class Sector extends GameEntity
   // -------------- Protected class data ----------------
 
   // --------------- Protected methods ------------------
-
-  protected getSavePath(): string
-  {
-    return Sector.SAVE_DIRECTORY + this.getIdStringValue() + ".json";
-  }
 
   // ---------------- Private methods -------------------
 }

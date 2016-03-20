@@ -9,12 +9,10 @@
 import {Server} from '../server/Server';
 import {Id} from '../shared/Id';
 import {GameEntity} from '../game/GameEntity';
-import {CharacterManager} from '../game/CharacterManager';
+import {PlayerCharacterManager} from '../game/PlayerCharacterManager';
 import {IdableObjectContainer} from '../shared/IdableObjectContainer';
 import {World} from '../game/world/World';
-import {RoomManager} from '../game/RoomManager';
-import {AreaManager} from '../game/AreaManager';
-import {RealmManager} from '../game/RealmManager';
+import {IdList} from '../game/IdList'
 
 /// Asi docasne:
 import {Area} from '../game/world/Area';
@@ -27,24 +25,29 @@ export class Game
     return Server.game.myEntities;
   }
 
-  public static get characterManager()
+  public static get playerCharacterManager()
   {
     return Server.game.myCharacterManager;
   }
 
-  public static get roomManager()
+  public static get characterList()
   {
-    return Server.game.myRoomManager;
+    return Server.game.myCharacterList;
   }
 
-  public static get areaManager()
+  public static get roomList()
   {
-    return Server.game.myAreaManager;
+    return Server.game.myRoomList;
   }
 
-  public static get realmManager()
+  public static get areaList()
   {
-    return Server.game.myRealmManager;
+    return Server.game.myAreaList;
+  }
+
+  public static get realmList()
+  {
+    return Server.game.myRealmList;
   }
 
   // ---------------- Public methods --------------------
@@ -55,7 +58,7 @@ export class Game
 ///    /*
     /// Provizorvni prvni vytvoreni instance sveta:
 
-    let world = new World("Brutus Next World");
+    let world = new World("BrutusNext World");
     let worldId = new Id(World.WORLD_ENTITY_ID, world.className);
 
     world.id = worldId;
@@ -103,17 +106,20 @@ export class Game
   // any game entity by it's id without knowing what kind of entity it is.
   protected myEntities = new IdableObjectContainer<GameEntity>();
 
-  // Character mananger stores a list of ids of all characters in game.
-  protected myCharacterManager = new CharacterManager();
+  // List of ids of all characters in game.
+  protected myCharacterList = new IdList();
 
-  // Room manager stores a list of ids of all rooms in game.
-  protected myRoomManager = new RoomManager();
+  // List of ids of all rooms in game.
+  protected myRoomList = new IdList();
 
-  // Area manager stores a list of ids of all areas in game.
-  protected myAreaManager = new AreaManager();
+  // List of ids of all areas in game.
+  protected myAreaList = new IdList();
 
-  // Room manager stores a list of ids of all rooms in game.
-  protected myRealmManager = new RealmManager();
+  // List of ids of all realms in game.
+  protected myRealmList = new IdList();
+
+  // Handles creating of new characters
+  protected myCharacterManager = new PlayerCharacterManager(this.myCharacterList);
 
   // There is only one world in the game (at the moment).
   protected myWorldId = Id.NULL;

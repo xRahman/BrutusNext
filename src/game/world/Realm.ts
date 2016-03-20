@@ -24,19 +24,21 @@ export class Realm extends GameEntity
     this.version = 0;
   }
 
-  static get SAVE_DIRECTORY() { return "./data/realms/"; }
-
   // --------------- Public accessors -------------------
+
+  // -------------- Protected accessors -----------------
+
+  protected get SAVE_DIRECTORY() { return "./data/realms/"; }
 
   // ---------------- Public methods --------------------
 
   public addNewArea(areaName: string): Id
   {
     let newArea = new Area(areaName);
-    let newAreaId = Game.areaManager.addNewEntity(newArea);
+    let newAreaId = Game.areaList.addEntityUnderNewId(newArea);
 
     // Add new area id to the list of entities contained in this realm.
-    this.addEntity(newAreaId);
+    this.insertEntity(newAreaId);
 
     return newAreaId;
   }
@@ -44,12 +46,6 @@ export class Realm extends GameEntity
   // -------------- Protected class data ----------------
 
   // --------------- Protected methods ------------------
-
-  // What file will this area be saved to.
-  protected getSavePath(): string
-  {
-    return Realm.SAVE_DIRECTORY + this.getIdStringValue() + ".json";
-  }
 
   // ---------------- Private methods -------------------
 }

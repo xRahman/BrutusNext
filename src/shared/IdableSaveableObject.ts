@@ -24,12 +24,12 @@ export abstract class IdableSaveableObject extends SaveableObject
 
   public async save()
   {
-    await this.saveToFile(this.getSavePath());
+    await this.saveToFile(this.getSaveDirectory(), this.getSaveFileName());
   }
 
   public async load()
   {
-    await this.loadFromFile(this.getSavePath());
+    await this.loadFromFile(this.getFullSavePath());
   }
 
   // -------------- Protected class data ----------------
@@ -38,7 +38,35 @@ export abstract class IdableSaveableObject extends SaveableObject
 
   // --------------- Protected methods ------------------
 
-  protected getSavePath(): string { return ""; }
+  protected getSaveDirectory(): string
+  {
+    ASSERT_FATAL(false,
+      "Attempt to call getSaveDirectory() of abstract"
+      + " IdableSaveableObject class");
+
+    return "";
+  }
+
+  protected getSaveFileName(): string
+  {
+    ASSERT_FATAL(false,
+      "Attempt to call getSaveFileName() of abstract"
+      + " IdableSaveableObject class");
+
+    return "";
+  }
+
+  protected getFullSavePath(): string
+  {
+    let directory = this.getSaveDirectory();
+    let fileName = this.getSaveFileName();
+    let fullPath = directory + fileName;
+
+    ASSERT_FATAL(directory.substr(directory.length - 1) === '/',
+      "Directory path '" + directory + "' doesn't end with '/'");
+
+    return this.getSaveDirectory() + this.getSaveFileName();
+  }
 
   // This is used for creating save file names.
   protected getIdStringValue(): string { return this.myId.stringId; }

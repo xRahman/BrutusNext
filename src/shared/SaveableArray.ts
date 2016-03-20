@@ -24,8 +24,6 @@ export class SaveableArray<T extends SaveableObject> extends Array
     super();
   }
 
-  // Overrides SaveableObject::saveToJsonObject() because we need different
-  // functionality here (only save properties that are SaveableObjects).
   protected saveToJsonObject(): Array<any>
   {
     let jsonObject: Array<any> = [];
