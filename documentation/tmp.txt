@@ -1,0 +1,55 @@
+﻿GameEntity by mel byt IdContainer<Id>
+- tedy container Idcek
+
+Staci mi, ze se idcka davaji do hashmapy?
+- nestaci, protoze potrebuju pevne poradi
+
+
+V cem se lisi:
+EntityManager, IdContainer, EntityContainer?
+
+IdContainer
+/* Mel by se jmenovat asi spis IdableItemsContainer */
+- neni z niceho zdedeny
+- je to template (IdContainer<T extends IdableSaveableObject>)
+- itemy jsou v hashmape
+Umi:
+  - pridat item pod existujicim idckem
+  - vygenerovat itemu idcko a pod nim ho pridat
+  - odebrat item z containeru
+  - odpovedet, jestli je item daneho idcka v containeru
+  - vratit item podle idcka (pres hashmapu)
+IMPORTANT: IdContainer nedrzi idcka, ale primo itemy!
+
+EntityManager
+- neni z niceho zdedeny
+- je to template (EntityManager<T extends GameEntity>)
+- vubec si nedrzi idcka ani itemy, drzi si pouze abbrevSeachList a uniqueNames
+Umi:
+  - pridat item pod existujicim idckem
+  - pridat novy item do Game.entities (tam se mu vygeneruje idcko)
+  - checknout, jestli je entita v Game.entities (nikoliv jestli je v manageru)
+  - vratit entitu (vezme ji z Game.entities, necheckuje, jestli mu idcko patri - nema jak)
+  - odebrat entitu z manageru
+- jestli ma entita unikatni jmeno nebo ne je vlastnost entity, manager ji podle toho zaradi do
+  seznamu unikatnich jmen nebo ne
+
+EntityContainer
+- je zdedeny z predka GameEntity (EntityContainer extends CommandInterpretter)
+- zatim nema nic, ale mel by mit SaveableArray idcek
+- mel by asi umet so same, co EntityManager (ale unikatni jmena ho asi nezajimaji)
+
+save() a load() by mel automaticky savnout/loadnout i vsechny obsazene entity, aby se nestalo, ze loadnu
+container, ale ne to, co je v nem.
+
+Zaver: GameEntity by v sobe proste mela mit entity manager
+
+---------------------------------------------
+
+Trochu stranou: Do ceho se budou davat:
+
+Vsechny arey?
+- do worldu ne, tam jsou realmy
+
+Vsechny charactery?
+
