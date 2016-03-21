@@ -1,0 +1,185 @@
+Obecné úvahy:
+-----------------
+
+- standardizované objekty typu RoomData apod. možná nebudou úplně dobrý nápad.
+  GameEntity by asi měly zůstat coby containery, ale "datové podobjekty" mohou
+  být různé - třeba RoomInfo.
+
+- ještě by tu byla možnost udělat GameEntity rovnou jako SaveableObject s tím,
+  že naopak půjde dělat nesavující se podobjekty a do nich uklidit to, co
+  savovat nechci. Možná by to bylo přehlednější.
+
+- za úvahu asi taky stojí, jestli tyhle datové podclassy nedat do stejného
+  souboru. Tj RoomInfo by bylo v souboru Room.ts
+
+
+Strutura světa
+------------------
+
+Dimension
+
+Realm
+(realmy asi nepotřebují templaty, pracuje se přímo s konkrétními instancemi
+ realmů)
+- list of areas (konkrétní instance zón)
+
++ vygeneruj_zónu(z_templatu)
+
+Area (zóna)
+- list of rooms
+- list of mobs (aby šlo projít všechny moby v zóně, hledat moba v zóně, atd.)
+- list of object (stejné důvody)
+(zóny už určitě potřebují templaty)
+
+Room
+- list of mobs
+- list of objects
+- list of exits
+
+
+
+Poznámky:
+- 
+
+Entita
+- v jaké je zóně (pokud to není zóna nebo vyšší), realmu, dimenzi, etc.
+
+Kontejnery
+- můžeš dát moba do kontejneru? Asi jak kterého a do jak kterého kontejneru,
+  ale v principu ano.
+
+
+  Template zóny
+    - obsahuje jeden sektor
+    (template zóny je rekurzivní. Sektor je skupina místností a jejich
+     propojení s okolím, což mohou být další sektory, které se napojují
+     na další sektory)
+     Pozn.: Při generování předávat parametr, jak hluboko jsem uvnitř stacku
+            (aby šla omezit hloubka rekurze)
+
+    Sektor zóny
+      (může se vygenerovat i prázdný - prostě tam daný sektor vůbec nebude
+       - musí samozřejmě jít nastavit, zda je to možné)
+      .minimum_number_of_rooms
+      .maximum_number_of_rooms
+      - list of rooms
+      - list of connections
+      (jinak řečeno sektor je seznam nula nebo více místností a jedné nebo více
+      connections - alespoň jedna connection musí vést dovnitř sektoru)
+      (connections propojují sektor s ostatními sektory, pokud je to kořenový
+      sektor zóny, tak jsou to současně propojení s jinými zónami)
+
+  Poznámka:
+    - dává smysl udělat první sektor v zóně natvrdo, jako jakousi "kostru"
+      zóny. Nemusí být spojitá.
+
+  Poznámka:
+    - V editoru (ať už OLC nebo na webu) to chce "connection" exity
+      nějak barevně zvýraznit.
+
+Connection
+  (propojuje sektory)
+  .in
+  .out
+  (může se tomu říkat in a out, protože se to vždycky vztahuje k sektoru)
+  .volitelně směr (up-down, east-west, north-south)
+
+Connection group
+  skupina connections (propojení dvou sektorů), která říká, že se na to dá
+  napojit pouze kompatibilní skupina
+
+Exit
+ (normálně ven z místnosti)
+ (i objekt může mít exit - aby měla myš jak utéct z báglu)
+ .id_of_connection
+ .entrance_direction (defaultně je to oposit směru, kam vede exit, ale může
+ to být i zakřivené)
+ IMPORTANT: Exit nemá popisek (použije se entrance description z místnosti, kam
+   exit vede)
+ IMPORTANT: To samé platí pro dveře. Když se do místnosti vstupuje dveřma, tak
+ jsou tam dveře.
+
+
+ Pozn: Sektory nejsou specifické pro konkrétní zóny!
+  (zóna může mít seznam použitých sektorů, aby se v tom dobře pracovalo, ale
+  principielně musí být možné používat libovolný sektor v libovolné zóně)
+
+Sektor group
+  /* Template only, nikdy to nebude mít instanci */
+  /* Možná to dokonce nemusí být ani objekt, stačí prostě číslo sektor grupy
+    - i když asi jo, mělo by to mít nějaký popis a parametry, třeba velikost,
+      počet exitů, atd. */
+  (connection vede na určitou sektor grupu, dokonce na konkrétní vstup této
+   sektor grupy)
+  (sektor grupu si lze představit jako prázdnou krabičku s pevně definovanými
+  vstupy/výstupy. Cokoliv se vejde dovnitř krabičky a má tyto vstupy a výstupy,
+  může být v této sektor grupě)
+  (má nějaké obecné parametry, třeba terén - aby se mi nestávalo, že se
+  uprostřed města vygeneruje kus dungeonu)
+
+
+Hierarchická struktura sektorů
+-------------------------------
+Tohle je důležité: Sektory musí jít dědit
+(i když, to chce promyslet. Možná nemusí, stačí je správně zařadit do sektor
+ grupy)
+
+
+
+SUPER IMPORTANT: Entrance description (nebo entryDescription)
+ - Místo 'exit description' používat 'entrance description'.
+   (engine se podívá, kam exit vede a z cílové roomy přečte entrance description
+   - může být jedna pro celou roomu nehledě na směr vstupu
+   - případně nadefinovaná pro každý směr vstupu zvlášť)
+- teleport entrance description (třeba když se dívám do portálu).
+- dveře jsou taky popsané v místnosti, do které vedou (ne ze které vedou)
+
+SUPER IMPORTANT IDEA: používat statické membery
+- informace společné pro všechny instance, tj. třeba jaké má daný sector
+  connection pointy, můžu dát do statických properties
+/* Problém je, jestli je půjde editovat/savovat */
+
+IDEA: Zóna je zděděná ze Sectoru (protože zóna je v podstate konkretní instance
+  jednoho sectoru, která navíc umí obsahovat moby a tak (i když to sector taky)
+  a vygenerovat se - to asi sector umět nemusí)
+
+IDEA: Room obsahuje odkaz na RoomInfo.
+  Respektive - buď je tam přímo instance RoomInfa, nebo je to null a v tom
+  případě se půjde před odkaz na prototyp RoomInfa.
+
+RoomInfo
+  .name
+  .popisek
+  .terrainType
+  .entryDescription (to je spíš objekt)
+
+RoomInfoGroup
+/* Nebo možná RoomInfoSet? */
+(Něco jako sector group. V roomu může být odkaz na room info grupu, ze které
+ se náhodně vybere nějaké room info. Tahle půjde rychle udělat sektor plný
+ místností s náhodným popiskem (z několika možných), aniž by to bylo třeba
+ rozsekávat na víc sektorů)
+(Obecný princip: Sektor popisuje geometrii grafu (exity), ne nutně obsah
+ místnosti)
+ /* To by ale znamenalo, že by to měl být celý RoomContent, ne jen RoomInfo.
+    Nebo možná obojí, tj. jako dva různé odkazy? */
+
+Symbolická jména
+-----------------
+Potřebuju je? Nebude stačit prostě idčko?
+(Template bude nejspíš taky istance - ostatně proč ne)
+
+Prototyp roomy je prostě instance roomy
+- pozná se tak, že má odkaz na prototyp null
+- prototypy room by měly existovat někde mimo zónu (nebo v jiné zóně), aby
+  se nepletly do procházení všech roomů v zóně a tak
+
+Buď musím mít odkaz na room contents (nebo zvlášť na popisky a content),
+nebo potřebuju "obalovací" objekt, který bude mít exity a odkaz na room.
+- asi ta první varianta, room by měl bejt prostě room a sector je složenej
+  z roomů.
+- exity se z prototypu nikdy neberou
+
+RoomContents místo RoomData?
+- to je asi blbost. Contents musí mít každá rooma vlastní. Sharovat se dá
+  load script (nebo prostě počáteční stav), což může být property RoomInfa

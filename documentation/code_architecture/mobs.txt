@@ -1,0 +1,36 @@
+Strutura mobů
+------------------
+
+Character
+(Pozn.: nerozlišuju hráčské postavy a moby)
+
+Humanoid extends Character
+// dvě ruce, dvě nohy, jedna hlava
+
+Orc extends Humanoid
+// nahrbenej, mohutné svaly, tesáky
+
+Skurut extends Orc
+
+IDEA: Skládat description z několika částí:
+- jak zhruba vypadá
+- co má na sobě
+- jaké má nástroje/zbraně
+(tohle jde udělat i přes itemy, tj. oblečení/výzbroj)
+
+IDEA: Chování bude záležet na situaci. Doma se může orc chovat jako farmář
+(commoner), když ale vytáhne do boje, přepne se na grunta (něco jako warrior)
+
+orc warrior
+orc shaman (jakýkoliv šaman?)
+
+Pozn: Class (a tedy skilly, chování v boji a tak) by asi neměla být součástí
+obecného templatu, protože mezi classou lze přepínat.
+- tj. by asi měla být oddělená hierarchie combat speců a character by měl mít
+  link na ten, který zrovna používá.
+(Tohle zas ale zboří tu hezkou myšlenku dědičnosti, safra...)
+
+
+--------------------------------------
+templaty:
+- 
