@@ -24,38 +24,42 @@ export class SaveableArray<T extends SaveableObject> extends Array
     super();
   }
 
+  // This needs to be set in order to actualy get saved.
+  public isSaved = true;
+
   protected saveToJsonObject(): Array<any>
   {
     let jsonObject: Array<any> = [];
 
     for (let i = 0; i < this.length; i++)
     {
-      if (this.isToBeSaved(this[i]))
+      if (this[i] === null)
       {
-        jsonObject.push(this[i].saveToJsonObject());
+        jsonObject.push(null);
       }
-      else
+      else  // Property is not null.
       {
-        jsonObject.push(this[i]);
+        ASSERT_FATAL
+        (
+          typeof this[i] === 'object' && 'saveToJsonObject' in this[i],
+          "There is an item in SaveableArray that is not a SaveableObject."
+          + " That's not allowed."
+        );
+
+        if (this[i].isSaved === true)
+        {
+          jsonObject.push(this[i].saveToJsonObject());
+        }
+        else
+        {
+          // This means that members of SaveableArray which with 'isSaved'
+          // set to false will be saved (and also loaded) as 'null'.
+          jsonObject.push(null);
+        }
       }
     }
 
     return jsonObject;
-  }
-
-  protected isToBeSaved(property: any): boolean
-  {
-    if
-    (
-      property !== null
-      && typeof property === 'object'
-      && 'saveToJsonObject' in property
-    )
-    {
-      return true;
-    }
-
-    return false;
   }
 
   protected loadFromJsonObject(jsonObject: Array<any>, filePath: string)
@@ -66,16 +70,23 @@ export class SaveableArray<T extends SaveableObject> extends Array
 
     for (let i = 0; i < jsonObject.length; i++)
     {
-      let item = new this.myItemConstructor();
+      if (jsonObject[i] === null)
+      {
+        this.push(null);
+      }
+      else
+      {
+        let item = new this.myItemConstructor();
 
-      // Access by property name is used to call item.loadFromJsonObject(),
-      // because loadFromJsonObject is protected and we are not extended from
-      // SaveableObject, because we need to extend type Array. The other option
-      // would be to make it public, which would be quite strange. So this
-      // hack is probably the lesser of two evils.
-      item['loadFromJsonObject'](jsonObject[i], filePath);
+        // Access by property name is used to call item.loadFromJsonObject(),
+        // because loadFromJsonObject is protected and we are not extended from
+        // SaveableObject, because we need to extend type Array. The other
+        // option would be to make it public, which would be quite strange. So
+        // this hack is probably the lesser of two evils.
+        item['loadFromJsonObject'](jsonObject[i], filePath);
 
-      this.push(item);
+        this.push(item);
+      }
     }
   }
 }
