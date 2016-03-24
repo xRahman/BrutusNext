@@ -49,16 +49,16 @@ export abstract class GameEntity extends EntityContainer
     //    It's proabably better to be able to check playerConnection to
     // be null anyways, because it's intuitive way to do it (instead of
     // having to check if myPlayerConnectionId is null).
-    if (this.myNonsaveableData.playerConnectionId.isNull())
+    if (this.myTmpData.playerConnectionId.isNull())
       return null;
 
     return Server.playerConnectionManager
-      .getPlayerConnection(this.myNonsaveableData.playerConnectionId);
+      .getPlayerConnection(this.myTmpData.playerConnectionId);
   }
 
   public set playerConnectionId(value: Id)
   {
-    this.myNonsaveableData.playerConnectionId = value;
+    this.myTmpData.playerConnectionId = value;
   }
 
   // -------------- Protected accessors -----------------
@@ -105,7 +105,7 @@ export abstract class GameEntity extends EntityContainer
 
   // -------------- Protected class data ----------------
 
-  protected myNonsaveableData = new NonsaveableGameEntityData();
+  protected myTmpData = new GameEntityTmpData();
 
   // --------------- Protected methods ------------------
 
@@ -119,11 +119,9 @@ export abstract class GameEntity extends EntityContainer
 
 // ---------------------- private module stuff -------------------------------
 
-class NonsaveableGameEntityData
+// Auxiliary class storing temporary data that should not be saved.
+class GameEntityTmpData
 {
-  // Do not save this object.
-  public isSaved = false;
-
   // Id.NULL if no player is connected to (is playing as) this entity,
   // connectionId otherwise.
   public playerConnectionId: Id = Id.NULL;

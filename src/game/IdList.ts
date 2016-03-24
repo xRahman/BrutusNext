@@ -27,10 +27,10 @@ export class IdList extends SaveableObject
   // Only checks entities with unique names.
   public getUniqueEntityByName(name: string): GameEntity
   {
-    if (name in this.myUniqueNames.hashMap)
+    if (name in this.myTmpData.uniqueNames)
     {
       // Entity is already loaded.
-      let entityId = this.myUniqueNames.hashMap[name];
+      let entityId = this.myTmpData.uniqueNames[name];
 
       return Game.entities.getItem(entityId);
     }
@@ -80,7 +80,7 @@ export class IdList extends SaveableObject
 
       // Also remove record to the corresponding hashmap storing uniquely named
       // entities.
-      delete this.myUniqueNames.hashMap[entity.name];
+      delete this.myTmpData.uniqueNames[entity.name];
     }
    
     // Remove all aliases of this entity from abbrevSearchList.
@@ -107,7 +107,7 @@ export class IdList extends SaveableObject
 
   public hasUniqueEntity(name: string): boolean
   {
-    if (this.myUniqueNames.hashMap[name])
+    if (this.myTmpData.uniqueNames[name])
       return true;
 
     return false;
@@ -123,13 +123,7 @@ export class IdList extends SaveableObject
 
   // -------------- Protected class data ----------------
 
-  protected myUniqueNames: NonsaveableIdToStringHashMap =
-  {
-    // Do not save this property to JSON.
-    isSaved: false,
-    // This hashmap maps character names to character ids.
-    hashMap: {}
-  };
+  protected myTmpData = new IdListTmpData();
 
   // Note: This property is not saved to JSON.
   // (because AbbrevSearchList is flagged as non-saveable)
@@ -162,7 +156,7 @@ export class IdList extends SaveableObject
     // If entity has unique name, add it's id to the hashmap of unique names.
     if (entity.isNameUnique)
     {
-      this.myUniqueNames.hashMap[entity.name] = entity.id;
+      this.myTmpData.uniqueNames[entity.name] = entity.id;
     }
 
     // Add all aliases of this entity to abbrevSearchList.
@@ -172,8 +166,9 @@ export class IdList extends SaveableObject
 
 // ---------------------- private module stuff -------------------------------
 
-interface NonsaveableIdToStringHashMap
+// Auxiliary class storing temporary data that should not be saved.
+class IdListTmpData
 {
-  isSaved: boolean,
-  hashMap: { [key: string]: Id }
+  // Hashmap mapping strings (names) to ids.
+  public uniqueNames: { [key: string]: Id }
 }

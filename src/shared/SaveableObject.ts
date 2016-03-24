@@ -232,6 +232,13 @@ export class SaveableObject extends NamedClass
   {
     let jsonObject: Object = {};
 
+    // A little hack - save 'name' property first (out of order). This is to
+    // make saved JSON files more readable.
+    if ('name' in this)
+    {
+      jsonObject['name'] = this['name'];
+    }
+
     // Cycle through all properties in this object
     for (let property in this)
     {
@@ -246,7 +253,9 @@ export class SaveableObject extends NamedClass
       }
       else
       {
-        if (this.isNotAuxiliary(property))
+        // Don't save 'name' property here, because we saved it by hack
+        // as the first property to be saved.
+        if (this.isSavedProperty(property) && property !== 'name')
         {
           jsonObject[property] = this[property];
         }
@@ -270,7 +279,7 @@ export class SaveableObject extends NamedClass
       && this[property].isSaved === true;
   }
 
-  private isNotAuxiliary(property: string): boolean
+  private isSavedProperty(property: string): boolean
   {
     // These are our auxiliary properties that should not be saved.
     return property !== 'mySaveRequests' && property !== 'isSaved';
