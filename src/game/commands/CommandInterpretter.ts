@@ -44,13 +44,13 @@ export abstract class CommandInterpretter extends IdableSaveableObject
       return;
 
     if (!ASSERT_FATAL(
-        CommandInterpretter.myCommandSearchList.isAbbrevRegistered(command),
+        CommandInterpretter.commandSearchList.isAbbrevRegistered(command),
         "Attempt to register command '" + command
         + "' that is already registered"))
       return;
 
     console.log("Registering command '" + command + "'");
-    CommandInterpretter.myCommandSearchList.addCommand(command, handler);
+    CommandInterpretter.commandSearchList.addCommand(command, handler);
   }
 
   // ---------------- Public methods --------------------
@@ -63,7 +63,7 @@ export abstract class CommandInterpretter extends IdableSaveableObject
 
     // NOTE: In order to be able to dynamically add command to a specific
     // instances of game entities, you would need to add non-static version
-    // of myCommandSearchList and search in it here if none of staticaly bound
+    // of commandSearchList and search in it here if none of staticaly bound
     // commands matched commandString.
 
     if (!this.processStaticCommand(commandString))
@@ -74,7 +74,7 @@ export abstract class CommandInterpretter extends IdableSaveableObject
   
   // Container holding abbreviations of all known commands and names of their
   // respective handlers.
-  protected static myCommandSearchList = new CommandSearchList(); 
+  protected static commandSearchList = new CommandSearchList(); 
 
   // --------------- Protected methods ------------------
 
@@ -123,7 +123,7 @@ export abstract class CommandInterpretter extends IdableSaveableObject
   {
     let commandAbbrev = this.parseCommand(commandString);
 
-    let commandHandler = CommandInterpretter.myCommandSearchList
+    let commandHandler = CommandInterpretter.commandSearchList
       .getHandlerByAbbrev(commandAbbrev);
 
     // getHandlerByAbbrev() returns "" if no command is registered for

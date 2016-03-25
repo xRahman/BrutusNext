@@ -19,8 +19,7 @@ import * as crypto from 'crypto';  // Import namespace 'crypto' from node.js
 export class Account extends IdableSaveableObject
 {
   // Account name is not saved to the file. Filename represents account name.
-  constructor(accountName: string,
-              protected myPlayerConnectionId: Id)
+  constructor(accountName: string, public playerConnectionId: Id)
   {
     super();
 
@@ -39,12 +38,7 @@ export class Account extends IdableSaveableObject
   public get playerConnection()
   {
     return Server.playerConnectionManager
-      .getPlayerConnection(this.myPlayerConnectionId);
-  }
-
-  public set playerConnectionId(value: Id)
-  {
-    this.myPlayerConnectionId = value;
+      .getPlayerConnection(this.playerConnectionId);
   }
 
   // List of character names this account has access to.
@@ -61,12 +55,12 @@ export class Account extends IdableSaveableObject
   // Only hash of the password is stored
   public setPasswordHash(password: string)
   {
-    this.myPasswordHash = this.md5hash(password);
+    this.passwordHash = this.md5hash(password);
   }
 
   public checkPassword(password: string): boolean
   {
-    return this.myPasswordHash === this.md5hash(password);
+    return this.passwordHash === this.md5hash(password);
   }
 
   public isInGame(): boolean
@@ -126,13 +120,19 @@ export class Account extends IdableSaveableObject
     return hashFacility.digest('hex');
   }
 
-  // What file will this object be saved to.
+  // What file will this account be saved to.
+  protected getSaveFileName(): string
+  {
+    return this.accountName + ".json";
+  }
+
+  // What path will this account be saved to.
   protected getSaveDirectory(): string
   {
-    return Account.SAVE_DIRECTORY + this.accountName + ".json";
+    return Account.SAVE_DIRECTORY;
   }
 
   // -------------- Private class data ----------------
 
-  private myPasswordHash = "";
+  private passwordHash = "";
 }

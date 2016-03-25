@@ -17,8 +17,7 @@ export abstract class IdableSaveableObject extends SaveableObject
 
   // ----------------- Public data ----------------------
 
-  public get id() { return this.myId; }
-  public set id(value: Id) { this.myId = value; }
+  public id = Id.NULL;
 
   // ---------------- Public methods --------------------
 
@@ -33,8 +32,6 @@ export abstract class IdableSaveableObject extends SaveableObject
   }
 
   // -------------- Protected class data ----------------
-
-  protected myId = Id.NULL;
 
   // --------------- Protected methods ------------------
 
@@ -69,5 +66,5 @@ export abstract class IdableSaveableObject extends SaveableObject
   }
 
   // This is used for creating save file names.
-  protected getIdStringValue(): string { return this.myId.stringId; }
+  protected getIdStringValue(): string { return this.id.getStringId(); }
 }

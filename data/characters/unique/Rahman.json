@@ -1,12 +1,12 @@
 {
   "className": "Character",
   "version": 0,
-  "myId":
+  "id":
   {
     "className": "Id",
     "version": 0,
-    "myStringId": "3",
-    "myType": "Character"
+    "stringId": "3",
+    "type": "Character"
   },
   "name": "Rahman",
   "timeOfCreation": "2016-01-01T13:30:04.791Z"

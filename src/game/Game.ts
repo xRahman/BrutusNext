@@ -22,32 +22,32 @@ export class Game
 {
   public static get entities()
   {
-    return Server.game.myEntities;
+    return Server.game.entities;
   }
 
   public static get playerCharacterManager()
   {
-    return Server.game.myCharacterManager;
+    return Server.game.playerCharacterManager;
   }
 
   public static get characterList()
   {
-    return Server.game.myCharacterList;
+    return Server.game.characterList;
   }
 
   public static get roomList()
   {
-    return Server.game.myRoomList;
+    return Server.game.roomList;
   }
 
   public static get areaList()
   {
-    return Server.game.myAreaList;
+    return Server.game.areaList;
   }
 
   public static get realmList()
   {
-    return Server.game.myRealmList;
+    return Server.game.realmList;
   }
 
   // ---------------- Public methods --------------------
@@ -55,7 +55,7 @@ export class Game
   // Loads initial state of the game from disk.
   public async load()
   {
-///    /*
+    /*
     /// Provizorvni prvni vytvoreni instance sveta:
 
     let world = new World("BrutusNext World");
@@ -84,19 +84,16 @@ export class Game
     newRoomId = newArea.addNewRoom("Landing Site");
 
     world.save();
-///    */
-
+    */
 
     /// Tohle tu asi bude finalne:
-    /*
-    let world = new World();
-    let worldId = new Id(World.WORLD_ENTITY_ID, world.className);
+    //let world = new World("");
+    let worldId = new Id(World.WORLD_ENTITY_ID, 'World');
 
-    world.id = worldId;
+    let world = GameEntity.createInstance(worldId);
 
     // Load entity from file.
     await world.load();
-    */
   }
 
   // -------------- Protected class data ----------------
@@ -104,25 +101,25 @@ export class Game
   // Game entities (characters, rooms, objects, etc.) are all stored in
   // this container, not in their respective managers. This allows access to
   // any game entity by it's id without knowing what kind of entity it is.
-  protected myEntities = new IdableObjectContainer<GameEntity>();
+  protected entities = new IdableObjectContainer<GameEntity>();
 
   // List of ids of all characters in game.
-  protected myCharacterList = new IdList();
+  protected characterList = new IdList();
 
   // List of ids of all rooms in game.
-  protected myRoomList = new IdList();
+  protected roomList = new IdList();
 
   // List of ids of all areas in game.
-  protected myAreaList = new IdList();
+  protected areaList = new IdList();
 
   // List of ids of all realms in game.
-  protected myRealmList = new IdList();
+  protected realmList = new IdList();
 
   // Handles creating of new characters
-  protected myCharacterManager = new PlayerCharacterManager(this.myCharacterList);
+  protected playerCharacterManager = new PlayerCharacterManager(this.characterList);
 
   // There is only one world in the game (at the moment).
-  protected myWorldId = Id.NULL;
+  protected worldId = Id.NULL;
 
   // --------------- Protected methods ------------------
 }

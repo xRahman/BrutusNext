@@ -70,7 +70,7 @@ export class AbbrevSearchList
 
   // This hashmap maps abbreviations to the list of entity IDs
   // corresponding to that abbreviation.
-  protected myAbbrevs: { [abbrev: string]: AbbrevItemsList } = {};
+  protected abbrevs: { [abbrev: string]: AbbrevItemsList } = {};
 
   // -------------- Protected methods -------------------
 
@@ -79,10 +79,10 @@ export class AbbrevSearchList
   // to find 3.orc, you need to call getEntityByAbbreviation("orc", 3);
   protected getEntityByAbbrev(abbrev: string, index: number): Id
   {
-    if (this.myAbbrevs[abbrev] === undefined)
+    if (this.abbrevs[abbrev] === undefined)
       return null;
 
-    return this.myAbbrevs[abbrev].getItemByIndex(index);
+    return this.abbrevs[abbrev].getItemByIndex(index);
   }
 
   // Returns object containing index, cathegory and name parsed from
@@ -175,24 +175,24 @@ export class AbbrevSearchList
 
   protected addItemToAbbrev(abbrev: string, entityId: Id)
   {
-    if (this.myAbbrevs[abbrev] === undefined)
-      this.myAbbrevs[abbrev] = new AbbrevItemsList();
+    if (this.abbrevs[abbrev] === undefined)
+      this.abbrevs[abbrev] = new AbbrevItemsList();
     
-    this.myAbbrevs[abbrev].addItem(entityId);
+    this.abbrevs[abbrev].addItem(entityId);
   }
 
   protected removeItemFromAbbrev(abbrev: string, entityId: Id)
   {
-    ASSERT_FATAL(this.myAbbrevs[abbrev] !== undefined,
+    ASSERT_FATAL(this.abbrevs[abbrev] !== undefined,
       "Attempt to remove abbrev item for abbreviation that does not exist"
-      + "in myAbbrevs");
+      + "in this.abbrevs");
 
-    let numberOfItems = this.myAbbrevs[abbrev].removeItem(entityId);
+    let numberOfItems = this.abbrevs[abbrev].removeItem(entityId);
 
     // If there are no items left for this abbreviation, we can delete
     // the property from hashmap.
     if (numberOfItems === 0)
-      delete this.myAbbrevs[abbrev];
+      delete this.abbrevs[abbrev];
   }
 }
 
@@ -210,31 +210,31 @@ class AbbrevItemsList
   // Returns null if item is not found.
   public getItemByIndex(index: number): Id
   {
-    if (this.myItems[index] !== undefined)
-      return this.myItems[index];
+    if (this.items[index] !== undefined)
+      return this.items[index];
     else
       return null;
   }
 
   public addItem(item: Id)
   {
-    this.myItems.push(item);
+    this.items.push(item);
   }
 
   public removeItem(item: Id): number
   {
-    let index = this.myItems.indexOf(item);
+    let index = this.items.indexOf(item);
 
     ASSERT_FATAL(index !== -1,
       "Attempt to remove item from AbbrevItemsList that does not exist in it");
 
     // Remove 1 item at index.
-    this.myItems.splice(index, 1);
+    this.items.splice(index, 1);
 
-    return this.myItems.length;
+    return this.items.length;
   }
 
   // -------------- Protected class data ----------------
 
-  protected myItems: Array<Id> = [];
+  protected items: Array<Id> = [];
 }

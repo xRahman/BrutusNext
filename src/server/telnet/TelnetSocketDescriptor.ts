@@ -109,7 +109,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     /// (note: this only works for telnet and classic MUD clients)
     data = this.ansify(data);
 
-    this.mySocket.write(data);
+    this.socket.write(data);
   }
 
   // Sets socket transfer mode, registers event handlers, etc.
@@ -117,7 +117,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
   {
     // Tell the socket to interpret data as raw binary stream.
     // (it's necessary for unicode characters to transmit correctly)
-    this.mySocket.setEncoding('binary');
+    this.socket.setEncoding('binary');
 
     // Check that event handler for 'data' event is not already registered.
     this.checkEventHandlerAbsence
@@ -126,7 +126,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     );
 
     // Register event handler for 'data' event.
-    this.mySocket.on
+    this.socket.on
     (
       TelnetSocketDescriptor.events.SOCKET_RECEIVED_DATA,
       (data) => { this.onSocketReceivedData(data); }
@@ -139,7 +139,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     );
 
     // Register event handler for 'error' event.
-    this.mySocket.on
+    this.socket.on
     (
       TelnetSocketDescriptor.events.SOCKET_ERROR,
       (error) => { this.onSocketError(error); }
@@ -150,7 +150,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
       TelnetSocketDescriptor.events.SOCKET_CLOSE);
 
     // Register event handler for 'close' event.
-    this.mySocket.on
+    this.socket.on
     (
       TelnetSocketDescriptor.events.SOCKET_CLOSE,
       () => { this.onSocketClose(); }
@@ -161,7 +161,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
   public disconnect()
   {
     this.send("&wClosing the connection.");
-    this.mySocket.end();
+    this.socket.end();
   }
  
   // -------------- Protected class data ----------------
@@ -174,20 +174,20 @@ export class TelnetSocketDescriptor extends SocketDescriptor
   }
 
   // Buffer to accumulate incomplete parts of data stream.
-  protected myInputBuffer = "";
+  protected inputBuffer = "";
 
   // Command lines waiting to be processed.
-  protected myCommandsBuffer = [];
+  protected commandsBuffer = [];
 
   // ---------------- Event handlers --------------------
 
   protected async onSocketReceivedData(data: string)
   {
-    // myInputBuffer is used to store incomplete parts of commands.
+    // inputBuffer is used to store incomplete parts of commands.
     // If there is something in it, add new data to it and process it all
     // as a whole.
-    data = this.myInputBuffer + data;
-    this.myInputBuffer = "";
+    data = this.inputBuffer + data;
+    this.inputBuffer = "";
 
      // Ensure that all newlines are in format CR;LF ('\r\n').
     data = this.normalizeCRLF(data);
@@ -214,7 +214,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
 
     // All commands are processed, mark the buffer as empty.
     // (if will also hopefully flag allocated data for freeing from memory)
-    this.myCommandsBuffer = [];
+    this.commandsBuffer = [];
   }
 
   protected onSocketError(error)
@@ -244,13 +244,13 @@ export class TelnetSocketDescriptor extends SocketDescriptor
 
     // This will (hopefully) close the socket, which will generate 'close'
     // event, which will trigger closing of the connection.
-    this.mySocket.end();
+    this.socket.end();
   }
 
   protected onSocketClose()
   {
     Server.playerConnectionManager
-      .dropPlayerConnection(this.myPlayerConnectionId);
+      .dropPlayerConnection(this.playerConnectionId);
   }
 
   // -------------- Protected methods -------------------
@@ -267,7 +267,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
   protected checkEventHandlerAbsence(event: string)
   {
     let registeredEvents =
-      events.EventEmitter.listenerCount(this.mySocket, event);
+      events.EventEmitter.listenerCount(this.socket, event);
     ASSERT_FATAL(registeredEvents === 0,
       "Event " + event + " is already registered on socket");
   }
@@ -321,7 +321,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
         /// Ok, tohle snad jakz takz chapu: Nedosel cely GMCP packet, takze si
         /// data odlozime do bufferu, dokud nedojde zbytek.
         ///log('incomplete GMCP package', this);
-        this.myInputBuffer = data;
+        this.inputBuffer = data;
 
         return "";
       }
@@ -342,12 +342,12 @@ export class TelnetSocketDescriptor extends SocketDescriptor
 
       if (data.indexOf('\xff\xfa\xc9') !== -1)
       {
-        this.myInputBuffer = data;
+        this.inputBuffer = data;
 
         return "";
       }
       else
-        this.myInputBuffer = '';
+        this.inputBuffer = '';
     }
 
     /// JSON zatim nepotrebuju
@@ -378,7 +378,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
            /// and process pending input another way
            if ((data.indexOf('{') !== -1 || data.indexOf('}') !== -1))
            {
-             this.myinputBuffer = data;
+             this.inputBuffer = data;
              return "";
            }
          }
@@ -427,7 +427,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     if (lastNewlineIndex === -1)
     {
       // If there is no newline in input, just buffer the data.
-      this.myInputBuffer += data;
+      this.inputBuffer += data;
 
       return "";
     }
@@ -437,7 +437,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
       // If there is a newline in input and there is something after
       // the last '\r\n\', add it to input buffer.
       // (+2 to skip '\r\n\')
-      this.myInputBuffer += data.substring(lastNewlineIndex + 2);
+      this.inputBuffer += data.substring(lastNewlineIndex + 2);
     }
 
     // Cut off the buffered part of data.
@@ -449,16 +449,16 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     // Split input by newlines.
     let lines = input.split('\r\n');
 
-    // And push each line as a separate command to myCommandsBuffer[] to be
+    // And push each line as a separate command to commandsBuffer[] to be
     // processed (.push.apply() appends an array to another array).
-    this.myCommandsBuffer.push.apply(this.myCommandsBuffer, lines);
+    this.commandsBuffer.push.apply(this.commandsBuffer, lines);
 
     // Handle each line as a separate command. Also trim it (remove leading
     // and trailing white spaces) before processing.
-    for (let i = 0; i < this.myCommandsBuffer.length; i++)
+    for (let i = 0; i < this.commandsBuffer.length; i++)
     {
       await this.playerConnection
-        .processCommand(this.myCommandsBuffer[i].trim());
+        .processCommand(this.commandsBuffer[i].trim());
     }
   }
 

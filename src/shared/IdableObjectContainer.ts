@@ -36,13 +36,13 @@ export class IdableObjectContainer<T extends IdableSaveableObject>
     this.commonAddItemChecks(item);
 
     let newId = Server.idProvider
-      .generateId(this.myTypeOfId, item[NamedClass.CLASS_NAME_PROPERTY]);
+      .generateId(this.typeOfId, item[NamedClass.CLASS_NAME_PROPERTY]);
 
     this.itemNotYetExistsCheck(item, newId);
 
-    // Here we are creating a new property in myContainer
-    // (it is possible because myContainer is a hashmap)
-    this.myContainer[newId.stringId] = item;
+    // Here we are creating a new property in this.container
+    // (it is possible because this.container is a hashmap)
+    this.container[newId.getStringId()] = item;
     
     // Item remembers it's own id.
     item[IdableSaveableObject.ID_PROPERTY] = newId;
@@ -64,19 +64,19 @@ export class IdableObjectContainer<T extends IdableSaveableObject>
 
     this.itemNotYetExistsCheck(item, id);
 
-    // Here we are creating a new property in myContainer.
-    // (it is possible because myContainer is a hashmap)
-    this.myContainer[id.stringId] = item;
+    // Here we are creating a new property in this.container.
+    // (it is possible because this.container is a hashmap)
+    this.container[id.getStringId()] = item;
   }
 
   public getItem(id: Id): T
   {
     ASSERT_FATAL(id && id.notNull(), "Trying to get item using invalid id");
 
-    let item = this.myContainer[id.stringId];
+    let item = this.container[id.getStringId()];
 
     ASSERT_FATAL(typeof item !== 'undefined',
-      "Item (" + id.stringId + ") no longer exists in the container");
+      "Item (" + id.getStringId() + ") no longer exists in the container");
 
     return item;
   }
@@ -86,7 +86,7 @@ export class IdableObjectContainer<T extends IdableSaveableObject>
   {
     ASSERT_FATAL(id && id.notNull(), "Trying to get item using invalid id");
 
-    let item = this.myContainer[id.stringId];
+    let item = this.container[id.getStringId()];
 
     if (typeof item !== 'undefined')
       return true;
@@ -98,24 +98,24 @@ export class IdableObjectContainer<T extends IdableSaveableObject>
   {
     ASSERT_FATAL(id && id.notNull(), "Invalid id");
 
-    if (!ASSERT(id.stringId in this.myContainer,
-      "Attempt to delete item (" + id.stringId + ")"
+    if (!ASSERT(id.getStringId() in this.container,
+      "Attempt to delete item (" + id.getStringId() + ")"
       + " that doesn't exist in the container"))
     {
       return;
     }
 
     // Delete the property that traslates to the descriptor.
-    delete this.myContainer[id.stringId];
+    delete this.container[id.getStringId()];
   }
 
   // -------------- Protected class data ----------------
 
   // This hash map allows to access items using unique sids.
-  protected myContainer: { [key: string]: T } = {};
+  protected container: { [key: string]: T } = {};
 
   // className of item this id points to.
-  protected myTypeOfId = "";
+  protected typeOfId = "";
 
   // -------------- Protected methods -------------------
 
@@ -132,8 +132,8 @@ export class IdableObjectContainer<T extends IdableSaveableObject>
     // ./data/LastIssuedId.json to it. (Or you might just increse
     // it by some large number and hope that you skip all already issued ids.)
     //   Much safer way is to rollback to the last backup that worked.
-    ASSERT_FATAL(!(id.stringId in this.myContainer),
-      "Attempt to add item with id (" + id.stringId + ") that already"
+    ASSERT_FATAL(!(id.getStringId() in this.container),
+      "Attempt to add item with id (" + id.getStringId() + ") that already"
       + " exists in the container");
   }
 

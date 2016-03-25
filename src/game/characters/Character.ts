@@ -89,3 +89,7 @@ export class Character extends GameEntity
   }
   */
 }
+
+// Add constructor of this class as a property of global object,
+// so it's instances can be created dynamically in runtime.
+global['Character'] = Character;
