@@ -1,0 +1,31 @@
+{
+  "name": "BrutusNext World",
+  "className": "World",
+  "version": 0,
+  "id":
+  {
+    "className": "Id",
+    "version": 0,
+    "stringId": "1",
+    "type": "World"
+  },
+  "contents":
+  {
+    "className": "IdList",
+    "version": 0,
+    "entityIds": [
+    {
+      "className": "Id",
+      "version": 0,
+      "stringId": "6",
+      "type": "Realm"
+    },
+    {
+      "className": "Id",
+      "version": 0,
+      "stringId": "9",
+      "type": "Realm"
+    }]
+  },
+  "isNameUnique": false
+}
