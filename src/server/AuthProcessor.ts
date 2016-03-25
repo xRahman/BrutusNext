@@ -49,18 +49,18 @@ export class AuthProcessor
   // is owned by the very PlayerConnection we are storing reference
   // of here. In any other case, unique stringId of PlayerConnection (within
   // PlayerConnectionManager) needs to be used instead of a direct reference!
-  constructor(protected myPlayerConnection: PlayerConnection) { }
+  constructor(protected playerConnection: PlayerConnection) { }
 
   public static get MAX_ACCOUNT_NAME_LENGTH() { return 12; }
   public static get MIN_ACCOUNT_NAME_LENGTH() { return 2; }
 
   // ---------------- Public methods --------------------
 
-  public get accountName() { return this.myAccountName; }
+  public getAccountName() { return this.accountName; }
 
   public async processCommand(command: string)
   {
-    switch (this.myStage)
+    switch (this.stage)
     {
       case AuthProcessor.stage.INITIAL:
         ASSERT(false, "AuthProcessor has not yet been initialized, it is not"
@@ -92,14 +92,14 @@ export class AuthProcessor
 
   public startLoginProcess()
   {
-    this.myPlayerConnection.send("&GWelcome to &RBrutus &YNext!\r\n"
+    this.playerConnection.send("&GWelcome to &RBrutus &YNext!\r\n"
       + "&wBy what name do you wish to be known? ");
 
 /// Account name variant:
-///    this.myPlayerConnection.send("&GWelcome to the &RBrutus &YNext!\r\n"
+///    this.playerConnection.send("&GWelcome to the &RBrutus &YNext!\r\n"
 ///      + "By what account name do you want to be recognized? ");
 
-    this.myStage = AuthProcessor.stage.LOGIN;
+    this.stage = AuthProcessor.stage.LOGIN;
   }
 
   // -------------- Protected class data ----------------
@@ -113,9 +113,9 @@ export class AuthProcessor
     DONE: 4
   }
 
-  protected myStage = AuthProcessor.stage.INITIAL;
+  protected stage = AuthProcessor.stage.INITIAL;
 
-  protected myAccountName = "";
+  protected accountName = "";
 
   // --------------- Protected methods ------------------
 
@@ -132,23 +132,23 @@ export class AuthProcessor
 
     // We are not going to attempt to log in to this account untill we receive
     // password so we need to remember account name until then.
-    this.myAccountName = accountName;
+    this.accountName = accountName;
 
     if (Server.accountManager.accountExists(accountName))
     {
       // Existing user. Ask for password.
-      this.myPlayerConnection.send("&wPassword: ");
-      this.myStage = AuthProcessor.stage.PASSWORD;
+      this.playerConnection.send("&wPassword: ");
+      this.stage = AuthProcessor.stage.PASSWORD;
     }
     else
     {
       // New user. Ask for a new password.
-      this.myPlayerConnection.send("&wCreating a new character...\r\n"
+      this.playerConnection.send("&wCreating a new character...\r\n"
         + "Please enter a password you want to use: ");
 /// Account name variant
-///      this.myPlayerConnection.send("&wCreating a new user account...\r\n"
+///      this.playerConnection.send("&wCreating a new user account...\r\n"
 ///        + "Please enter a password for your account: ");
-      this.myStage = AuthProcessor.stage.NEW_PASSWORD;
+      this.stage = AuthProcessor.stage.NEW_PASSWORD;
     }
   }
 
@@ -156,11 +156,11 @@ export class AuthProcessor
   {
     let accountManager = Server.accountManager;
 
-    ASSERT_FATAL(this.myPlayerConnection.id != null,
+    ASSERT_FATAL(this.playerConnection.id != null,
       "Invalid player connection id");
 
     // Check if account info is already loaded.
-    let account = accountManager.getAccountByName(this.myAccountName);
+    let account = accountManager.getAccountByName(this.accountName);
 
     if (account)
     {
@@ -170,11 +170,11 @@ export class AuthProcessor
     }
     else
     {
-      account = new Account(this.myAccountName, this.myPlayerConnection.id);
+      account = new Account(this.accountName, this.playerConnection.id);
 
       // Account name is passed to check against character name saved
       // in file (they must by the same).
-      await this.loadAccountFromFile(account, this.myAccountName);
+      await this.loadAccountFromFile(account, this.accountName);
 
       // Last parameter says we are not reconnecting to already
       // existing account.
@@ -197,22 +197,22 @@ export class AuthProcessor
     let newAccountId =
       Server.accountManager.createNewAccount
       (
-        this.myAccountName,
+        this.accountName,
         password,
-        this.myPlayerConnection.id
+        this.playerConnection.id
       );
 
     Mudlog.log
     (
       "New player: " + this.accountName
-      + " [" + this.myPlayerConnection.ipAddress + "]",
+      + " [" + this.playerConnection.ipAddress + "]",
       Mudlog.msgType.SYSTEM_INFO,
       Mudlog.levels.IMMORTAL
     );
 
-    this.myPlayerConnection.accountId = newAccountId;
-    this.myStage = AuthProcessor.stage.DONE;
-    this.myPlayerConnection.enterLobby();
+    this.playerConnection.accountId = newAccountId;
+    this.stage = AuthProcessor.stage.DONE;
+    this.playerConnection.enterLobby();
   }
 
   // ----------- Auxiliary private methods --------------
@@ -221,11 +221,11 @@ export class AuthProcessor
   {
     if (!accountName)
     {
-      this.myPlayerConnection.send(
+      this.playerConnection.send(
         "&wYou really need to enter a name to log in, sorry.\r\n"
         + "Please enter a valid name: ");
       /// Account name variant:
-      ///      this.myPlayerConnection.send(
+      ///      this.playerConnection.send(
       ///        "&wYou really need to enter an account name to log in, sorry.\r\n"
       ///        + "Please enter valid account name: ");
 
@@ -242,11 +242,11 @@ export class AuthProcessor
 
     if (regExp.test(accountName) === true)
     {
-      this.myPlayerConnection.send(
+      this.playerConnection.send(
         "&wName can only contain english letters and numbers.\r\n"
         + "Please enter a valid name: ");
    /// Account name variant:
-   ///      this.myPlayerConnection.send(
+   ///      this.playerConnection.send(
    ///        "&wAccount name can only contain english letters and numbers.\r\n"
    ///        + "Please enter valid account name: ");
 
@@ -255,7 +255,7 @@ export class AuthProcessor
 
     if (accountName.length > AuthProcessor.MAX_ACCOUNT_NAME_LENGTH)
     {
-      this.myPlayerConnection.send(
+      this.playerConnection.send(
         "&wCould you please pick something shorter, like up to "
         + AuthProcessor.MAX_ACCOUNT_NAME_LENGTH + " characters?.\r\n"
         + "Please enter a valid name: ");
@@ -267,7 +267,7 @@ export class AuthProcessor
 
     if (accountName.length < AuthProcessor.MIN_ACCOUNT_NAME_LENGTH)
     {
-      this.myPlayerConnection.send(
+      this.playerConnection.send(
         "&wCould you please pick a name that is at least "
         + AuthProcessor.MIN_ACCOUNT_NAME_LENGTH + " characters long?.\r\n"
         + "Please enter a valid name: ");
@@ -284,7 +284,7 @@ export class AuthProcessor
   {
     if (!password)
     {
-      this.myPlayerConnection.send(
+      this.playerConnection.send(
         "&wYou really need to enter a password, sorry.\r\n"
         + "Please enter a valid password: ");
 
@@ -295,7 +295,7 @@ export class AuthProcessor
 
     if (password.length < MIN_PASSWORD_LENGTH)
     {
-      this.myPlayerConnection.send(
+      this.playerConnection.send(
         "&wDo you know the joke about passwords needing to be at least "
         + MIN_PASSWORD_LENGTH + " characters long?\r\n"
         + "Please enter a valid password: ");
@@ -319,12 +319,12 @@ export class AuthProcessor
     ASSERT_FATAL(account.id && account.id.notNull(),
       "Null id in saved file of account: " + account.accountName);
 
-    if (!ASSERT(this.myAccountName === account.accountName,
+    if (!ASSERT(this.accountName === account.accountName,
       "Account name saved in file (" + account.accountName + ")"
-      + " doesn't match account file name (" + this.myAccountName + ")."
+      + " doesn't match account file name (" + this.accountName + ")."
       + " Renaming account to match file name."))
     {
-      account.accountName = this.myAccountName;
+      account.accountName = this.accountName;
     }
   }
 
@@ -342,18 +342,18 @@ export class AuthProcessor
     if (account.checkPassword(password))
     {
       // Password checks so we are done with authenticating.
-      this.myStage = AuthProcessor.stage.DONE;
+      this.stage = AuthProcessor.stage.DONE;
 
       // Structured parameters is used instead of simple bool to enforce
       // more verbosity when calling processPasswordCheck().
       if (reconnect.isReconnecting)
-        this.myPlayerConnection.reconnectToAccount(account);
+        this.playerConnection.reconnectToAccount(account);
       else
       {
         // Add newly loaded account to accountManager (under it's original id).
         accountManager.registerLoadedAccount(account);
 
-        this.myPlayerConnection.connectToAccount(account);
+        this.playerConnection.connectToAccount(account);
       }
     }
     else
@@ -369,13 +369,13 @@ export class AuthProcessor
   {
     Mudlog.log
     (
-      "Bad PW: " + this.myAccountName
-      + " [" + this.myPlayerConnection.ipAddress + "]",
+      "Bad PW: " + this.accountName
+      + " [" + this.playerConnection.ipAddress + "]",
       Mudlog.msgType.SYSTEM_INFO,
       Mudlog.levels.IMMORTAL
     );
 
-    this.myPlayerConnection.send
+    this.playerConnection.send
     (
       "&wWrong password.\r\n"
       + "Password: "

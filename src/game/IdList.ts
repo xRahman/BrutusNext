@@ -19,7 +19,7 @@ export class IdList extends SaveableObject
 {
   // --------------- Public accessors -------------------
 
-  public get idArray() { return this.myEntityIds; }
+  public get idArray() { return this.entityIds; }
 
   // ---------------- Public methods --------------------
 
@@ -27,10 +27,10 @@ export class IdList extends SaveableObject
   // Only checks entities with unique names.
   public getUniqueEntityByName(name: string): GameEntity
   {
-    if (name in this.myTmpData.uniqueNames)
+    if (name in this.tmpData.uniqueNames)
     {
       // Entity is already loaded.
-      let entityId = this.myTmpData.uniqueNames[name];
+      let entityId = this.tmpData.uniqueNames[name];
 
       return Game.entities.getItem(entityId);
     }
@@ -49,7 +49,7 @@ export class IdList extends SaveableObject
   {
     if (entity.isNameUnique)
     {
-      ASSERT(entity.name !== 'undefined', "'name' property doesn't exist.");
+      ASSERT(entity.name !== undefined, "'name' property doesn't exist.");
 
       ASSERT_FATAL(!this.getUniqueEntityByName(entity.name),
         "Attempt to register entity '"
@@ -76,18 +76,18 @@ export class IdList extends SaveableObject
 
     if (entity.isNameUnique)
     {
-      ASSERT(entity.name !== 'undefined', "'name' property doesn't exist.");
+      ASSERT(entity.name !== undefined, "'name' property doesn't exist.");
 
       // Also remove record to the corresponding hashmap storing uniquely named
       // entities.
-      delete this.myTmpData.uniqueNames[entity.name];
+      delete this.tmpData.uniqueNames[entity.name];
     }
    
     // Remove all aliases of this entity from abbrevSearchList.
-    this.myAbbrevSearchList.removeEntity(entity);
+    this.abbrevSearchList.removeEntity(entity);
 
     // And remove id from array of ids contained in the list.
-    let index = this.myEntityIds.indexOf(entityId);
+    let index = this.entityIds.indexOf(entityId);
 
     if (!ASSERT(index !== -1,
         "Attempt to remove id of entity '" + entity.name + "' from"
@@ -95,7 +95,7 @@ export class IdList extends SaveableObject
       return;
 
     // splice() removes 1 item at the position 'index'.
-    this.myEntityIds.splice(index, 1);
+    this.entityIds.splice(index, 1);
   }
 
   // Removes entity from this list and deletes it from the game.
@@ -107,7 +107,7 @@ export class IdList extends SaveableObject
 
   public hasUniqueEntity(name: string): boolean
   {
-    if (this.myTmpData.uniqueNames[name])
+    if (this.tmpData.uniqueNames[name])
       return true;
 
     return false;
@@ -115,7 +115,7 @@ export class IdList extends SaveableObject
 
   public isInTheList(id: Id): boolean
   {
-    if (this.myEntityIds.indexOf(id) === -1)
+    if (this.entityIds.indexOf(id) === -1)
       return false;
     else
       return true;
@@ -123,16 +123,16 @@ export class IdList extends SaveableObject
 
   // -------------- Protected class data ----------------
 
-  protected myTmpData = new IdListTmpData();
+  protected tmpData = new IdListTmpData();
 
   // Note: This property is not saved to JSON.
   // (because AbbrevSearchList is flagged as non-saveable)
-  protected myAbbrevSearchList = new AbbrevSearchList();
+  protected abbrevSearchList = new AbbrevSearchList();
  
   // We need array because order is important (e. g. order of contents
   // in a room). And it needs to be saveable, because we want to save its
   // in it and they are saveable objects, not primitive types.
-  protected myEntityIds = new SaveableArray<Id>(Id);
+  protected entityIds = new SaveableArray<Id>(Id);
 
   // -------------- Protected methods -------------------  
 
@@ -151,16 +151,16 @@ export class IdList extends SaveableObject
     }
 
     // Add to the list of entities contained in this list.
-    this.myEntityIds.push(entity.id);
+    this.entityIds.push(entity.id);
 
     // If entity has unique name, add it's id to the hashmap of unique names.
     if (entity.isNameUnique)
     {
-      this.myTmpData.uniqueNames[entity.name] = entity.id;
+      this.tmpData.uniqueNames[entity.name] = entity.id;
     }
 
     // Add all aliases of this entity to abbrevSearchList.
-    this.myAbbrevSearchList.addEntity(entity);
+    this.abbrevSearchList.addEntity(entity);
   }
 }
 
@@ -170,5 +170,5 @@ export class IdList extends SaveableObject
 class IdListTmpData
 {
   // Hashmap mapping strings (names) to ids.
-  public uniqueNames: { [key: string]: Id }
+  public uniqueNames: { [key: string]: Id } = {};
 }

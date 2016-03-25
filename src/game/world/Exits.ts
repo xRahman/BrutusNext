@@ -33,17 +33,17 @@ export class Exits extends SaveableObject
 
   public getExitId(exitName: string): Id
   {
-    if (exitName in this.myExits)
-      return this.myExits[exitName];
+    if (exitName in this.exits)
+      return this.exits[exitName];
     else
       return Id.NULL;
   }
 
   public addExit(exitName: string, exitId: Id)
   {
-    this.myExits[exitName] = exitId; 
+    this.exits[exitName] = exitId; 
   }
 
   // This hash map allows to access destination id using exit name.
-  protected myExits: { [exitName: string]: Id } = {};
+  protected exits: { [exitName: string]: Id } = {};
 }

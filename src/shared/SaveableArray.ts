@@ -9,7 +9,8 @@
     You only need SaveableArray if you want to save Objects that
     are not of primitive types. Array<number> will save and load
     perfectly well. If you need Array<Id>, however, you have to
-    use myArray: SaveableArray<Id> = new SaveableArray<Id>(Id);
+    use:
+      public arrayData: SaveableArray<Id> = new SaveableArray<Id>(Id);
 */
 
 'use strict';
@@ -19,7 +20,7 @@ import {SaveableObject} from '../shared/SaveableObject';
 
 export class SaveableArray<T extends SaveableObject> extends Array
 {
-  constructor(private myItemConstructor)
+  constructor(private itemConstructor)
   {
     super();
   }
@@ -76,7 +77,7 @@ export class SaveableArray<T extends SaveableObject> extends Array
       }
       else
       {
-        let item = new this.myItemConstructor();
+        let item = new this.itemConstructor();
 
         // Access by property name is used to call item.loadFromJsonObject(),
         // because loadFromJsonObject is protected and we are not extended from

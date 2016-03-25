@@ -33,7 +33,7 @@ export class SaveableObject extends NamedClass
   // Also serves as lock - if it's not null, it means we are already saving
   // ourselves.
   // (note: This property is not saved)
-  protected mySaveRequests: Array<string> = [];
+  protected saveRequests: Array<string> = [];
 
   // You can set this flag to false to prevent saving of SaveableObject.
   public isSaved = true;
@@ -133,7 +133,7 @@ export class SaveableObject extends NamedClass
 
     // All save requests are processed, mark the buffer as empty.
     // (if will also hopefully flag allocated data for freeing from memory)
-    this.mySaveRequests = [];
+    this.saveRequests = [];
   }
 
   protected loadFromJsonString(jsonString: string, filePath: string)
@@ -194,13 +194,6 @@ export class SaveableObject extends NamedClass
     // Now copy the data.
     for (let property in jsonObject)
     {
-      ASSERT_FATAL(this[property] !== null,
-        "There is a property (" + property + ") in object that is loading"
-        + " from file " + filePath + " that has <null> value. That's not"
-        + " allowed, because loading method can't be called on null object."
-        + " Make sure that all properties of class '" + this.className + "'"
-        + " are inicialized to something else than <null>");
-
       if
       (
         this[property] !== null
@@ -282,7 +275,7 @@ export class SaveableObject extends NamedClass
   private isSavedProperty(property: string): boolean
   {
     // These are our auxiliary properties that should not be saved.
-    return property !== 'mySaveRequests' && property !== 'isSaved';
+    return property !== 'saveRequests' && property !== 'isSaved';
   }
 
   private checkClassName (jsonObject: Object, filePath: string)
@@ -298,7 +291,7 @@ export class SaveableObject extends NamedClass
 
   private async processBufferedSavingRequests()
   {
-    for (let i = 0; i < this.mySaveRequests.length; i++)
+    for (let i = 0; i < this.saveRequests.length; i++)
     {
       // Save ourselves to json string each time we are saving ourselves,
       // because our current stat might change while we were saving (remember
@@ -311,12 +304,12 @@ export class SaveableObject extends NamedClass
         // Asynchronous saving to file.
         // (the rest of the code will execute only after the saving is done)
         await promisifiedFS
-          .writeFile(this.mySaveRequests[i], jsonString, 'utf8');
+          .writeFile(this.saveRequests[i], jsonString, 'utf8');
       }
       catch (error)
       {
         Mudlog.log(
-          "Error saving file '" + this.mySaveRequests[i] + "': " + error.code,
+          "Error saving file '" + this.saveRequests[i] + "': " + error.code,
           Mudlog.msgType.SYSTEM_ERROR,
           Mudlog.levels.IMMORTAL);
 
@@ -333,9 +326,9 @@ export class SaveableObject extends NamedClass
   // it right now.
   private bufferSaveRequest(filePath: string): boolean
   {
-    // mySaveRequests serves both as buffer for request and as lock indicating
+    // saveRequests serves both as buffer for request and as lock indicating
     // that we are already saving something (it it contains something).
-    if (this.mySaveRequests.length !== 0)
+    if (this.saveRequests.length !== 0)
     {
       // Saving to the same file while it is still being saved is not safe
       // (according to node.js filestream documentation). So if this occurs,
@@ -344,15 +337,15 @@ export class SaveableObject extends NamedClass
 
       // Only push requests to save to different path.
       // (there is no point in future resaving to the same file multiple times)
-      if (this.mySaveRequests.indexOf(filePath) !== -1)
-        this.mySaveRequests.push(filePath);
+      if (this.saveRequests.indexOf(filePath) !== -1)
+        this.saveRequests.push(filePath);
 
       return true;
     }
 
     // If saving is not going on right now, push the request to the
     // buffer,
-    this.mySaveRequests.push(filePath);
+    this.saveRequests.push(filePath);
 
     // and return false to indicate, that it needs to be processed right away.
     return false;

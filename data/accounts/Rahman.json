@@ -1,15 +1,15 @@
 {
   "className": "Account",
   "version": 0,
-  "myId":
+  "id":
   {
     "className": "Id",
     "version": 0,
-    "myStringId": "2",
-    "myType": "Account"
+    "stringId": "2",
+    "type": "Account"
   },
   "characters": ["Rahman"],
   "timeOfCreation": "2015-12-10T17:17:25.441Z",
-  "myPasswordHash": "9a519a0f7d29f1ffa549fada8b667b02",
+  "passwordHash": "9a519a0f7d29f1ffa549fada8b667b02",
   "accountName": "Rahman"
 }
