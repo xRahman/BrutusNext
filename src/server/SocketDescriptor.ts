@@ -19,32 +19,32 @@ import * as net from 'net';  // Import namespace 'net' from node.js
 
 export abstract class SocketDescriptor
 {
-  constructor(protected mySocket: net.Socket)
+  constructor(protected socket: net.Socket)
   {
-    ASSERT(this.mySocket.address !== undefined,
+    ASSERT(this.socket.address !== undefined,
       "Missing address on socket");
 
     // Remember ip address because we need to know it even after ours socket
     // closes.
-    this.myIpAddress = this.mySocket.remoteAddress;
+    this.ipAddress = this.socket.remoteAddress;
   }
 
   // ----------------- Public data ----------------------
 
-  public get playerConnectionId() { return this.myPlayerConnectionId; }
-  public set playerConnectionId(value: Id)
+  public getPlayerConnectionId() { return this.playerConnectionId; }
+  public setPlayerConnectionId(value: Id)
   {
     ASSERT(value !== undefined && value !== null,
       "Invalid player connection id");
-    this.myPlayerConnectionId = value;
+    this.playerConnectionId = value;
   }
 
-  public get ipAddress()
+  public getIpAddress(): string
   {
-    ASSERT(this.myIpAddress != null,
+    ASSERT(this.ipAddress != null,
       "Ip address is not initialized on socket descriptor");
 
-    return this.myIpAddress;
+    return this.ipAddress;
   }
  
   public get playerConnection()
@@ -53,8 +53,10 @@ export abstract class SocketDescriptor
       "Invalid player connection id");
 
     return Server.playerConnectionManager
-      .getPlayerConnection(this.myPlayerConnectionId);
+      .getPlayerConnection(this.playerConnectionId);
   }
+
+  public playerConnectionId: Id = Id.NULL;
 
   // ---------------- Public methods --------------------
  
@@ -68,9 +70,7 @@ export abstract class SocketDescriptor
 
   // -------------- Protected class data ----------------
 
-  protected myPlayerConnectionId: Id = Id.NULL;
-
-  protected myIpAddress: string = "";
+  protected ipAddress: string = "";
 
   // -------------- Protected methods -------------------
 

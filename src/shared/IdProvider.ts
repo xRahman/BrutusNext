@@ -4,37 +4,6 @@
   Implements generator of unique ids.
 */
 
-/*
-  Don't use this class alone, extend your container from IdContainer<T>
-  and pass it an instance of IdProvider.
-*/
-
-/// TODO:
-/// 1) Zmenit to na static class a univerzalne unikatni idcka
-/// (to taky znamena, ze se instance IdProvideru nebude muset predavat
-/// IdContainerum, protoze si vsichni budou brat idcka ze stejneho zdroje)
-/// 2) zmenit typ idcka ze stringu na class Id (nebo mozna IdType),
-/// kde bude:
-/// - stringove ID,
-/// - typ IDcka (ROOM_ID, SOCKET_DESCRIPTOR_ID, atd.)
-/// - boot timestamp
-/// (v kazdem bootu se budou idcka pridelovat od 1, ale ve spojeni s boot
-/// timestampem budou vsechna idcka unikatni i pres boot - coz bude fajn
-/// treba pri porovnavani, kdo byl zdrojem affectu)
-
-/*
-  Ke zvážení: Dávat p?ed string id?ko n?jakou p?edponu, t?eba 'e' jako entity,
-    'a' jako account?
-  - teoreticky by se pak dala generovat "spot?ební" id?ka (t?eba timery)
-    s jinou p?edponou zase od za?átku
-
-  Znamenalo by to:
-    - zavést enum možných typ? id?ek
-    - p?i generování id?ka p?edávat požadovaný typ
-    - mít víc counter?
-    - všechny countery savovat do last_issued_id.
-*/
-
 'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
@@ -68,24 +37,24 @@ export class IdProvider extends SaveableObject
   // it would prevent loading your ids from file.
   public generateId(typeOfId: string, type: string): Id
   {
-    ASSERT_FATAL(this.myLoadedFromFile === true,
+    ASSERT_FATAL(this.ready === true,
       "Attempt to generate an id before IdProvider has loaded"
       + "lastIssuedId from file");
 
     // This little gymnastics is probably not necessary, but I will
     // definitely sleep better knowing that there is no way we could
     // ever run out of ids (except if we run out of memory).
-    if (this.myLastIssuedId[this.myLastIssuedId.length - 1]
-    // Number.MAX_SAFE_INTEGER constant can't be used for some reason.
-    // So let's just use it's value.
-      >= 9007199254740991)
+    // (Number.MAX_SAFE_INTEGER constant can't be used for some reason.
+    // So let's just use it's value)
+    if (this.lastIssuedId[this.lastIssuedId.length - 1]
+        >= 9007199254740991)
     {
       // The idea is that when we run out of numbers in an integer,
       // we just add more.
-      this.myLastIssuedId.push(0);
+      this.lastIssuedId.push(0);
     } else
     {
-      this.myLastIssuedId[this.myLastIssuedId.length - 1]++;
+      this.lastIssuedId[this.lastIssuedId.length - 1]++;
     }
 
     let stringId = "";
@@ -94,14 +63,14 @@ export class IdProvider extends SaveableObject
     // integer values.
 
     // Start with first integer.
-    stringId = this.myLastIssuedId[0].toString(10);
+    stringId = this.lastIssuedId[0].toString(10);
 
     // And concatenate the rest of them, deliminited by '-' character
     // (original array can be reconstructed this way if necessary and
     // it is better readable)
-    for (let i = 1; i < this.myLastIssuedId.length; i++)
+    for (let i = 1; i < this.lastIssuedId.length; i++)
     {
-      stringId = this.myLastIssuedId[i].toString(10) + '-' + stringId;
+      stringId = this.lastIssuedId[i].toString(10) + '-' + stringId;
     }
 
     return new Id(stringId, type);
@@ -126,7 +95,7 @@ export class IdProvider extends SaveableObject
 
     try
     {
-      // Here we need synchronous reading because myLastIssuedId needs
+      // Here we need synchronous reading because lastIssuedId needs
       // to be loaded from file before any id is ever issued.
       jsonString = fs.readFileSync(IdProvider.LAST_ISSUED_ID_FILE, 'utf8');
     }
@@ -149,22 +118,21 @@ export class IdProvider extends SaveableObject
     //   filePath is passed just so it can be printed to error messages.
     this.loadFromJsonString(jsonString, IdProvider.LAST_ISSUED_ID_FILE);
 
-    ASSERT_FATAL(this.myLastIssuedId !== null
-      && this.myLastIssuedId !== undefined,
+    ASSERT_FATAL(this.lastIssuedId !== null
+      && this.lastIssuedId !== undefined,
       "Error loading lastIssuedId from file");
 
     // Remove the lock preventing issuing of new ids.
-    this.myLoadedFromFile = true;
+    this.ready = true;
   }
 
   // -------------- Protected class data ----------------
 
-  ///protected myLastIssuedId: Array<number> = [0];
-  protected myLastIssuedId: Array<number> = null;
+  protected lastIssuedId: Array<number> = null;
 
-  // This lock prevents us from issuing new ids before myLastIssuedId is
+  // This lock prevents us from issuing new ids before lastIssuedId is
   // loaded from file (from last boot).
-  protected myLoadedFromFile = false;
+  protected ready = false;
 
   // -------------- Protected methods -------------------
 
@@ -183,7 +151,7 @@ export class IdProvider extends SaveableObject
     let jsonObject: Object = {};
 
     // We only save lastIssuedId.
-    jsonObject['lastIssuedId'] = this.myLastIssuedId;
+    jsonObject['lastIssuedId'] = this.lastIssuedId;
 
     return jsonObject;
   }
@@ -197,6 +165,6 @@ export class IdProvider extends SaveableObject
     ASSERT_FATAL(property in jsonObject,
       "Property '" + property + "' exists in object but not in JSON data");
 
-    this.myLastIssuedId = jsonObject[property];
+    this.lastIssuedId = jsonObject[property];
   }
 }

@@ -38,34 +38,34 @@ import * as http from 'http';  // Import namespace 'http' from node.js
 
 export class HttpServer
 {
-  constructor(protected myPort: number) { }
+  constructor(protected port: number) { }
 
   // ----------------- Public data ----------------------
 
   // Do we accept http requests?
   public isOpen = false;
 
-  public get port() { return this.myPort; }
+  public getPort() { return this.port; }
 
   // ---------------- Public methods --------------------
 
   // Starts the http server.
   public start()
   {
-    this.myHttpServer =
+    this.httpServer =
       http.createServer
       (
         (request, response) => { this.onRequest(request, response); }
       );
 
-    this.myHttpServer.listen(this.port, '127.0.0.1');
+    this.httpServer.listen(this.port, '127.0.0.1');
 
     this.isOpen = true;
   }
 
   // -------------- Protected class data ----------------
 
-  protected myHttpServer;
+  protected httpServer;
   
   // ---------------- Event handlers --------------------
 

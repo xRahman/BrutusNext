@@ -12,9 +12,9 @@ import {SaveableObject} from '../shared/SaveableObject';
 
 export class Id extends SaveableObject
 {
-  // myStringID is a unique string.
-  // myType is the name of the class this id points to.
-  constructor(protected myStringId: string, protected myType: string)
+  // stringId is a unique string.
+  // type is the name of the class this id points to.
+  constructor(protected stringId: string, protected type: string)
   {
     super();
 
@@ -29,8 +29,8 @@ export class Id extends SaveableObject
   // 'uninitialized' ids would overwrite each other).
   public static get NULL() { return new Id("", ""); }
 
-  public get stringId() { return this.myStringId; }
-  public get type() { return this.myType; }
+  public getStringId() { return this.stringId; }
+  public getType() { return this.type; }
 
   public equals(operand: Id)
   {

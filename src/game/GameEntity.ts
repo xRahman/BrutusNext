@@ -21,14 +21,30 @@ export abstract class GameEntity extends EntityContainer
   }
 
   // Creates a new instance of game entity of type saved in id.
-  static createInstance(id: Id)
+  static createInstance(id: Id, ...args: any[])
   {
-    /// Tohle snad vyrobi instanci typu podle stringu id.className.
-    /// global by mel byt namespace - hadam, ze to bude 'global' object
-    /// z node.js.
-    /// Přetypování na <GameEntity> je tu proto, aby typescript aspoň zhruba
-    /// věděl, co od toho může očekávat - jinak by to byl typ <any>.
-    let newEntity = <GameEntity> new global[id.className]();
+    // Here we are going to create an instance of a class with a name
+    // stored within id as id.getType().
+    // We will use global object to acces respective class constructor.
+
+    ASSERT_FATAL(id.notNull(),
+      "Invalid (null) id passed to GameEntity::createInstance()");
+
+    ASSERT_FATAL(typeof id.getType() !== 'undefined' && id.getType() !== "",
+      "Id with invalid class type passed to GameEntity::createInstance()");
+
+    ASSERT_FATAL(typeof global[id.getType()] !== 'undefined',
+      "Attempt to createInstance() of unknown type '" + id.getType() + "'."
+      + " You probably forgot to add something like"
+      + " 'global['Character'] = Character;' at the end of your newly"
+      + " created module.")
+
+    // Type cast to <GameEntity> is here for TypeScript to be roughly aware
+    // what can it expect from newly created variable - otherwise it would
+    // be of type <any>.
+    let newEntity = <GameEntity>new global[id.getType()](...args);
+
+    newEntity.id = id;
 
     return newEntity;
   }
@@ -41,24 +57,24 @@ export abstract class GameEntity extends EntityContainer
 
   public get playerConnection()
   {
-    // We need to return null if myPlayerConnectionId is null, because
-    // if accessing playerConnection when myPlayerConnectionId is null
+    // We need to return null if playerConnectionId is null, because
+    // if accessing playerConnection when playerConnectionId is null
     // was considered an error, saving game entity with null id would crash
     // (even if id is not actually saved, crash would occur on attempt
     // to find out if playerConnection property is SaveableObject).
     //    It's proabably better to be able to check playerConnection to
     // be null anyways, because it's intuitive way to do it (instead of
-    // having to check if myPlayerConnectionId is null).
-    if (this.myTmpData.playerConnectionId.isNull())
+    // having to check if playerConnectionId is null).
+    if (this.tmpData.playerConnectionId.isNull())
       return null;
 
     return Server.playerConnectionManager
-      .getPlayerConnection(this.myTmpData.playerConnectionId);
+      .getPlayerConnection(this.tmpData.playerConnectionId);
   }
 
   public set playerConnectionId(value: Id)
   {
-    this.myTmpData.playerConnectionId = value;
+    this.tmpData.playerConnectionId = value;
   }
 
   // -------------- Protected accessors -----------------
@@ -105,7 +121,7 @@ export abstract class GameEntity extends EntityContainer
 
   // -------------- Protected class data ----------------
 
-  protected myTmpData = new GameEntityTmpData();
+  protected tmpData = new GameEntityTmpData();
 
   // --------------- Protected methods ------------------
 
