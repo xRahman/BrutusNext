@@ -19,7 +19,7 @@ import * as fs from 'fs';  // Import namespace 'fs' from node.js
 
 export class PlayerCharacterManager
 {
-  constructor(private myCharacterList: IdList) { }
+  constructor(private characterList: IdList) { }
 
   // ---------------- Public methods --------------------
 
@@ -40,7 +40,7 @@ export class PlayerCharacterManager
     newCharacter.isNameUnique = true;
 
     let newCharacterId =
-      this.myCharacterList.addEntityUnderNewId(newCharacter);
+      this.characterList.addEntityUnderNewId(newCharacter);
 
     // Save the character to the disk (so we know that the character exists).
     // (This does not need to be synchronous.)
@@ -51,12 +51,12 @@ export class PlayerCharacterManager
 
   public addExistingPlayerCharacter(character: Character)
   {
-    this.myCharacterList.addEntityUnderExistingId(character);
+    this.characterList.addEntityUnderExistingId(character);
   }
 
   public getPlayerCharacter(characterName: string): Character
   {
-    let character = this.myCharacterList.getUniqueEntityByName(characterName);
+    let character = this.characterList.getUniqueEntityByName(characterName);
 
     if (character !== null)
     {
@@ -89,7 +89,7 @@ export class PlayerCharacterManager
   {
     // First check if character is already online so we can save reading from
     // disk.
-    if (this.myCharacterList.hasUniqueEntity(characterName))
+    if (this.characterList.hasUniqueEntity(characterName))
       return true;
 
     let path = Character.SAVE_DIRECTORY + "unique/" + characterName + ".json";

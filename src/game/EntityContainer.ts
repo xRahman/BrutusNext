@@ -39,11 +39,11 @@ export abstract class EntityContainer extends CommandInterpretter
     /// verzi v8 enginu nejde pouzit super. uvnitr chainu asyc funkci.
     await this.saveToFile(this.getSaveDirectory(), this.getSaveFileName());
 
-    let contents = this.myContents.idArray;
+    let contentsArray = this.contents.idArray;
 
-    for (let i = 0; i < contents.length; i++)
+    for (let i = 0; i < contentsArray.length; i++)
     {
-      let entityId = contents[i];
+      let entityId = contentsArray[i];
 
       await Game.entities.getItem(entityId).save();
     }
@@ -67,7 +67,7 @@ export abstract class EntityContainer extends CommandInterpretter
     // need to read their id's first.
     await this.loadFromFile(fullPath);
 
-    let contents = this.myContents.idArray;
+    let contents = this.contents.idArray;
 
     for (let i = 0; i < contents.length; i++)
     {
@@ -96,7 +96,7 @@ export abstract class EntityContainer extends CommandInterpretter
   // Every game entity can contain other game entities.
   // (Rooms contain characters and objects, bags contain other objects,
   //  sectors contain rooms, etc.)
-  protected myContents = new IdList();
+  protected contents = new IdList();
 
   // --------------- Protected methods ------------------
 
@@ -104,12 +104,12 @@ export abstract class EntityContainer extends CommandInterpretter
   // Adds entity id to contents of this entity.
   protected insertEntity(entityId: Id)
   {
-    this.myContents.addEntityById(entityId);
+    this.contents.addEntityById(entityId);
   }
 
   // Removes entity if from contents of this entity.
   public removeEntity(entityId: Id)
   {
-    this.myContents.removeEntityFromList(entityId);
+    this.contents.removeEntityFromList(entityId);
   }
 }

@@ -56,7 +56,7 @@ export class AccountManager extends IdableObjectContainer<Account>
   {
     // First check if account is already online so we can save ourselves
     // reading from disk.
-    if (this.myAccountNames[accountName])
+    if (this.accountNames[accountName])
       return true;
 
     let path = Account.SAVE_DIRECTORY + accountName + ".json";
@@ -68,14 +68,14 @@ export class AccountManager extends IdableObjectContainer<Account>
   public getAccountByName(accountName: string): Account
   {
     // Using 'in' operator on object with null value would crash the game.
-    if (!ASSERT(this.myAccountNames !== null,
-      "Invalid myOnlineAccountNames"))
+    if (!ASSERT(this.accountNames !== null,
+      "Invalid accountNames"))
       return null;
 
-    if (accountName in this.myAccountNames)
+    if (accountName in this.accountNames)
     {
       // Attempt to re-log to an online account.
-      let accountId = this.myAccountNames[accountName];
+      let accountId = this.accountNames[accountName];
 
       return this.getItem(accountId);
     }
@@ -113,7 +113,7 @@ export class AccountManager extends IdableObjectContainer<Account>
   // -------------- Protected class data ----------------
 
   // This hashmap maps account names to account ids.
-  protected myAccountNames: { [key: string]: Id } = {};
+  protected accountNames: { [key: string]: Id } = {};
 
   // -------------- Protected methods -------------------
 
@@ -124,7 +124,7 @@ export class AccountManager extends IdableObjectContainer<Account>
     let newId = this.addItemUnderNewId(account);
 
     // Also add record to the corresponding hashmap.
-    this.myAccountNames[account.accountName] = newId;
+    this.accountNames[account.accountName] = newId;
 
     return newId;
   }
@@ -135,7 +135,7 @@ export class AccountManager extends IdableObjectContainer<Account>
     this.addItemUnderExistingId(account);
 
     // Also add record to the corresponding hashmap.
-    this.myAccountNames[account.accountName] = account.id;
+    this.accountNames[account.accountName] = account.id;
   }
 
   // Removes an account both from the list of online accounts and from the
@@ -147,6 +147,6 @@ export class AccountManager extends IdableObjectContainer<Account>
     this.deleteItem(accountId);
 
     // Also remove record from the corresponding hashmap.
-    delete this.myAccountNames[accountName];
+    delete this.accountNames[accountName];
   }
 }

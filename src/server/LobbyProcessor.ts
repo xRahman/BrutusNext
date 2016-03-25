@@ -29,23 +29,23 @@ export class LobbyProcessor
   // is owned by the very PlayerConnection we are storing reference
   // of here. In any other case, unique id of PlayerConnection (within
   // PlayerConnectionManager) needs to be used instead of a direct reference!
-  constructor(protected myPlayerConnection: PlayerConnection) { }
+  constructor(protected playerConnection: PlayerConnection) { }
 
   // ---------------- Public methods --------------------
 
   public enterMenu()
   {
-    ASSERT(this.myStage === LobbyProcessor.stage.INITIAL
-        || this.myStage === LobbyProcessor.stage.NOT_IN_LOBBY,
+    ASSERT(this.stage === LobbyProcessor.stage.INITIAL
+        || this.stage === LobbyProcessor.stage.NOT_IN_LOBBY,
       "Entering game menu from invalid lobby stage");
 
-    this.myStage = LobbyProcessor.stage.IN_MENU;
+    this.stage = LobbyProcessor.stage.IN_MENU;
     this.sendMenu();
   }
 
   public processCommand(command: string)
   {
-    switch (this.myStage)
+    switch (this.stage)
     {
       case LobbyProcessor.stage.INITIAL:
         ASSERT(false, "LobbyProcessor has not yet been initialized, it is not"
@@ -76,19 +76,19 @@ export class LobbyProcessor
     NOT_IN_LOBBY: 2
   }
 
-  protected myStage = LobbyProcessor.stage.INITIAL;
+  protected stage = LobbyProcessor.stage.INITIAL;
 
   // --------------- Protected methods ------------------
 
   protected sendMenu()
   {
-    this.myPlayerConnection.send(GAME_MENU);
+    this.playerConnection.send(GAME_MENU);
   }
 
   protected async processMenuChoice(choice: string)
   {
     let accountManager = Server.accountManager;
-    let account = accountManager.getAccount(this.myPlayerConnection.accountId);
+    let account = accountManager.getAccount(this.playerConnection.accountId);
 
     switch (choice)
     {
@@ -105,7 +105,7 @@ export class LobbyProcessor
           let character = this.createNewCharacter(account.accountName);
 
           if (character)
-            this.myPlayerConnection.enterGame();
+            this.playerConnection.enterGame();
         }
         else
         {
@@ -120,7 +120,7 @@ export class LobbyProcessor
       break;
 
       default:
-        this.myPlayerConnection.send("That's not a menu choice!");
+        this.playerConnection.send("That's not a menu choice!");
         this.sendMenu();
       break;
     }
@@ -128,18 +128,18 @@ export class LobbyProcessor
 
   protected quitGame()
   {
-    this.myPlayerConnection.send("&wGoodbye. Have a nice day...\r\n");
-    this.myStage = LobbyProcessor.stage.NOT_IN_LOBBY;
-    this.myPlayerConnection.quitGame();
+    this.playerConnection.send("&wGoodbye. Have a nice day...\r\n");
+    this.stage = LobbyProcessor.stage.NOT_IN_LOBBY;
+    this.playerConnection.quitGame();
   }
 
   protected async enterGame(charNumber: number)
   {
-    this.myStage = LobbyProcessor.stage.NOT_IN_LOBBY;
+    this.stage = LobbyProcessor.stage.NOT_IN_LOBBY;
 
     let playerCharacterManager = Game.playerCharacterManager;
     let accountManager = Server.accountManager;
-    let account = accountManager.getAccount(this.myPlayerConnection.accountId);
+    let account = accountManager.getAccount(this.playerConnection.accountId);
 
     let characterName = account.getCharacterName(charNumber);
 
@@ -148,14 +148,14 @@ export class LobbyProcessor
 
     if (character)
     {
-      this.myPlayerConnection.ingameEntityId = character.id;
-      this.myPlayerConnection.reconnectToCharacter();
+      this.playerConnection.ingameEntityId = character.id;
+      this.playerConnection.reconnectToCharacter();
     }
     else
     {
       await this.loadCharacter(characterName);
 
-      this.myPlayerConnection.enterGame();
+      this.playerConnection.enterGame();
     }
   }
   
@@ -177,14 +177,14 @@ export class LobbyProcessor
     // Add newly loaded character to characterManager (under it's original id).
     characterManager.addExistingPlayerCharacter(character);
 
-    this.myPlayerConnection.ingameEntityId = character.id;
+    this.playerConnection.ingameEntityId = character.id;
   }
 
   protected createNewCharacter(characterName: string): boolean
   {
     let characterManager = Game.playerCharacterManager;
     let accountManager = Server.accountManager;
-    let account = accountManager.getAccount(this.myPlayerConnection.accountId);
+    let account = accountManager.getAccount(this.playerConnection.accountId);
 
     if (this.checkIfCharacterExists(characterName))
       return false;
@@ -194,10 +194,10 @@ export class LobbyProcessor
       characterManager.createNewUniqueCharacter
       (
         characterName,
-        this.myPlayerConnection.id
+        this.playerConnection.id
       );
 
-    this.myPlayerConnection.ingameEntityId = newCharacterId;
+    this.playerConnection.ingameEntityId = newCharacterId;
     account.addNewCharacter(characterName);
 
     Mudlog.log
@@ -222,7 +222,7 @@ export class LobbyProcessor
         + " that already exists.");
 
       // Notify the player what went wrong.
-      this.myPlayerConnection.send
+      this.playerConnection.send
       (
         "Something is wrong, character with name '" + characterName + "'"
         + " already exists. Please contact implementors and ask them to"

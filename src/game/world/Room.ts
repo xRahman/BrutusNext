@@ -43,16 +43,20 @@ export class Room extends GameEntity
   // -------------- Protected class data ----------------
 
   // id of prototype room. If it's Id.NULL, this room is a prototype.
-  protected myPrototypeId: Id = Id.NULL;
+  protected prototypeId: Id = Id.NULL;
 
   // Description, extra descriptions, room flags, terrain type, etc.
   // If this is null, values from prototype are used.
-  protected myRoomInfo: RoomInfo = null;
+  protected roomInfo: RoomInfo = null;
 
   // List of exits to other entities (usually rooms).
-  protected myExits = new Exits();
+  protected exits = new Exits();
 
   // --------------- Protected methods ------------------
 
   // ---------------- Private methods -------------------
 }
+
+// Add constructor of this class as a property of global object,
+// so it's instances can be created dynamically in runtime.
+global['Room'] = Room;

@@ -14,15 +14,15 @@ export class CommandSearchList
   // (Returns empty string if no command is registered for such abbrev.)
   public getHandlerByAbbrev(abbrev: string): string
   {
-    if (this.myAbbrevs[abbrev] === undefined)
+    if (this.abbrevs[abbrev] === undefined)
       return "";
 
-    return this.myAbbrevs[abbrev];
+    return this.abbrevs[abbrev];
   }
 
   public isAbbrevRegistered(abbrev: string): boolean
   {
-    if (this.myAbbrevs[abbrev] === undefined)
+    if (this.abbrevs[abbrev] === undefined)
       return false;
     else
       return true;
@@ -38,7 +38,7 @@ export class CommandSearchList
       let abbrev = command.substring(0, i);
 
       if (!this.isAbbrevRegistered(abbrev))
-        this.myAbbrevs[abbrev] = handler;
+        this.abbrevs[abbrev] = handler;
     }
   }
 
@@ -46,7 +46,7 @@ export class CommandSearchList
 
   // This hashmap maps abbreviations to the list of items (of type T)
   // corresponding to that abbreviation.
-  protected myAbbrevs: { [abbrev: string]: string } = {};
+  protected abbrevs: { [abbrev: string]: string } = {};
 
   // --------------- Private methods -------------------
 

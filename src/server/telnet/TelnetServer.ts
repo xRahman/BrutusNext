@@ -8,7 +8,7 @@
   Implementation note:
     Event handlers need to be registered using lambda expression '() => {}'.
     For example:
-      this.myTelnetServer.on
+      this.telnetServer.on
       (
         'error',
         (error) => { this.onServerError(error); }
@@ -38,16 +38,16 @@ import * as events from 'events';  // Import namespace 'events' from node.js
 
 export class TelnetServer
 {
-  constructor(protected myPort: number) { }
+  constructor(protected port: number) { }
 
   // ----------------- Public data ----------------------
 
   // Do we accept new connections?
   public isOpen = false;
 
-  public get port() { return this.myPort; }
-
   // ---------------- Public methods --------------------
+
+  public getPort() { return this.port; }
 
   // Starts the telnet server.
   public start()
@@ -56,12 +56,12 @@ export class TelnetServer
     // called when there is a new connection request.
     // (Handler is called using lambda expression (() => {}) to ensure that corect
     // 'this' will be passed to it. )
-    this.myTelnetServer =
+    this.telnetServer =
       net.createServer((socket) => { this.onNewConnection(socket); });
 
     // Register handler for server errors (like attempt to run the server
     // on unavailable port).
-    this.myTelnetServer.on
+    this.telnetServer.on
     (
       TelnetServer.events.SERVER_ERROR,
       (error) => { this.onServerError(error); }
@@ -69,7 +69,7 @@ export class TelnetServer
 
     // Register handler to open the server to the new connections when
     // telnet server is ready (when 'listening' event is emited).
-    this.myTelnetServer.on
+    this.telnetServer.on
     (
       TelnetServer.events.SERVER_STARTED_LISTENING,
       () => { this.onServerStartsListening(); }
@@ -80,12 +80,12 @@ export class TelnetServer
       Mudlog.msgType.SYSTEM_INFO,
       Mudlog.levels.IMMORTAL);
 
-    this.myTelnetServer.listen(this.port);
+    this.telnetServer.listen(this.port);
   }
 
   // -------------- Protected class data ----------------
 
-  protected myTelnetServer: net.Server;
+  protected telnetServer: net.Server;
 
   protected static events =
   {
