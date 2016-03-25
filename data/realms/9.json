@@ -1,0 +1,25 @@
+{
+  "name": "Shattered Lands",
+  "className": "Realm",
+  "version": 0,
+  "id":
+  {
+    "className": "Id",
+    "version": 0,
+    "stringId": "9",
+    "type": "Realm"
+  },
+  "contents":
+  {
+    "className": "IdList",
+    "version": 0,
+    "entityIds": [
+    {
+      "className": "Id",
+      "version": 0,
+      "stringId": "10",
+      "type": "Area"
+    }]
+  },
+  "isNameUnique": false
+}
