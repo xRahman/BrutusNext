@@ -16,9 +16,9 @@ import {Room} from '../../game/world/Room';
 
 export class Sector extends GameEntity
 {
-  constructor(name: string)
+  constructor()
   {
-    super(name);
+    super();
 
     // Don't forget to bump up version number if you add or remove
     // SaveableObjects. You will also need to convert data in respective
@@ -36,7 +36,10 @@ export class Sector extends GameEntity
 
   public addNewRoom(roomName: string): Id
   {
-    let newRoom = new Room(roomName);
+    let newRoom = new Room();
+
+    newRoom.name = roomName;
+
     let newRoomId = Game.roomList.addEntityUnderNewId(newRoom);
 
     // Add new room if to the list of entities contained in this sector.
@@ -51,7 +54,3 @@ export class Sector extends GameEntity
 
   // ---------------- Private methods -------------------
 }
-
-// Add constructor of this class as a property of global object,
-// so it's instances can be created dynamically in runtime.
-global['Sector'] = Sector;

@@ -9,17 +9,37 @@
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {Server} from '../server/Server';
 import {Id} from '../shared/Id';
-import {SaveableArray} from '../shared/SaveableArray';
+import {SaveableObject} from '../shared/SaveableObject';
 import {Game} from '../game/Game';
 import {EntityContainer} from '../game/EntityContainer';
 
 export abstract class GameEntity extends EntityContainer
 {
-  constructor(public name: string)
+  // If you were wondering why 'name' isn't passed to constructor,
+  // it's because of dynamic instantiation while loading from file.
+  // While it's possible to pass arguments to dynamically called
+  // constructor, it would be difficult to pass it a name before
+  // anything was actually loaded yet.
+  constructor()
   {
     super();
   }
 
+  // Creates a new instance of game entity of type saved in id.
+  static createInstanceFromId(id: Id, ...args: any[])
+  {
+    ASSERT_FATAL(id !== null,
+      "Invalid (null) id passed to GameEntity::createInstance()");
+
+    let newEntity =
+      <GameEntity>SaveableObject.createInstance(id.getType(), args);
+
+    newEntity.id = id;
+    
+    return <GameEntity>newEntity;
+  }
+
+  /*
   // Creates a new instance of game entity of type saved in id.
   static createInstance(id: Id, ...args: any[])
   {
@@ -27,7 +47,7 @@ export abstract class GameEntity extends EntityContainer
     // stored within id as id.getType().
     // We will use global object to acces respective class constructor.
 
-    ASSERT_FATAL(id.notNull(),
+    ASSERT_FATAL(id !== null,
       "Invalid (null) id passed to GameEntity::createInstance()");
 
     ASSERT_FATAL(typeof id.getType() !== 'undefined' && id.getType() !== "",
@@ -48,9 +68,11 @@ export abstract class GameEntity extends EntityContainer
 
     return newEntity;
   }
+  */
 
   // ---------------- Public class data -----------------
 
+  public name = "Unnamed Entity";
   public isNameUnique = false;
 
   // --------------- Public accessors -------------------
@@ -65,7 +87,7 @@ export abstract class GameEntity extends EntityContainer
     //    It's proabably better to be able to check playerConnection to
     // be null anyways, because it's intuitive way to do it (instead of
     // having to check if playerConnectionId is null).
-    if (this.tmpData.playerConnectionId.isNull())
+    if (this.tmpData.playerConnectionId === null)
       return null;
 
     return Server.playerConnectionManager
@@ -138,7 +160,7 @@ export abstract class GameEntity extends EntityContainer
 // Auxiliary class storing temporary data that should not be saved.
 class GameEntityTmpData
 {
-  // Id.NULL if no player is connected to (is playing as) this entity,
+  // null if no player is connected to (is playing as) this entity,
   // connectionId otherwise.
-  public playerConnectionId: Id = Id.NULL;
+  public playerConnectionId: Id = null;
 }

@@ -14,9 +14,9 @@ import {Area} from '../../game/world/Area';
 
 export class Realm extends GameEntity
 {
-  constructor(name: string)
+  constructor()
   {
-    super(name);
+    super();
 
     // Don't forget to bump up version number if you add or remove
     // SaveableObjects. You will also need to convert data in respective
@@ -34,7 +34,10 @@ export class Realm extends GameEntity
 
   public addNewArea(areaName: string): Id
   {
-    let newArea = new Area(areaName);
+    let newArea = new Area();
+
+    newArea.name = areaName;
+
     let newAreaId = Game.areaList.addEntityUnderNewId(newArea);
 
     // Add new area id to the list of entities contained in this realm.
@@ -49,7 +52,3 @@ export class Realm extends GameEntity
 
   // ---------------- Private methods -------------------
 }
-
-// Add constructor of this class as a property of global object,
-// so it's instances can be created dynamically in runtime.
-global['Realm'] = Realm;

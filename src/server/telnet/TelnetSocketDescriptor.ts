@@ -221,11 +221,10 @@ export class TelnetSocketDescriptor extends SocketDescriptor
   {
     let player = "";
 
-    if (this.playerConnection.accountId
-      && this.playerConnection.accountId.notNull())
+    if (this.playerConnection.accountId !== null)
     {
       let accountName = Server.accountManager
-        .getAccount(this.playerConnection.accountId).accountName;
+        .getAccount(this.playerConnection.accountId).name;
 
       player = "Player " + accountName;
     }

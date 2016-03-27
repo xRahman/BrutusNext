@@ -99,11 +99,11 @@ export class Server
 
   // Starts the server. This is not a static method so it needs
   // to be called on Server.getInstance().
-  public run(telnetPort: number)
+  public async run(telnetPort: number)
   {
-    this.startGame();
-    this.startTelnetServer(telnetPort);
+    await this.loadGame();
 
+    this.startTelnetServer(telnetPort);
     this.startHttpServer();
   }
 
@@ -138,11 +138,15 @@ export class Server
   }
 
   // Creates an instance of the game and loads its state from the disk.
-  protected startGame()
+  protected async loadGame()
   {
+    // Id provider needs to be loaded first in order to be able to correctly
+    // generate new ids (lastIssuedId needs to be loaded).
+    await this.idProvider.load();
+
     // TODO: Check, ze hra jeste neni loadnuta
 
     // Load the game.
-    this.game.load();
+    await this.game.load();
   }
 }

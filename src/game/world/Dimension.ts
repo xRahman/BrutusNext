@@ -16,9 +16,9 @@ import {GameEntity} from '../../game/GameEntity';
 
 export class Dimension extends GameEntity
 {
-  constructor(name: string)
+  constructor()
   {
-    super(name);
+    super();
 
     // Don't forget to bump up version number if you add or remove
     // SaveableObjects. You will also need to convert data in respective
@@ -44,7 +44,3 @@ export class Dimension extends GameEntity
 
   // ---------------- Private methods -------------------
 }
-
-// Add constructor of this class as a property of global object,
-// so it's instances can be created dynamically in runtime.
-global['Dimension'] = Dimension;
