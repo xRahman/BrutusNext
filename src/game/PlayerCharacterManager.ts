@@ -33,11 +33,11 @@ export class PlayerCharacterManager
       "Attempt to create a character '" + name + "'"
       + " who already exists");
 
-    let newCharacter
-      = new Character({ name: name, isNameUnique: true });
+    let newCharacter = new Character();
 
-    newCharacter.playerConnectionId = playerConnectionId;
+    newCharacter.name = name;
     newCharacter.isNameUnique = true;
+    newCharacter.playerConnectionId = playerConnectionId;
 
     let newCharacterId =
       this.characterList.addEntityUnderNewId(newCharacter);

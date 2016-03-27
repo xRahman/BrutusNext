@@ -36,7 +36,7 @@ export class Exits extends SaveableObject
     if (exitName in this.exits)
       return this.exits[exitName];
     else
-      return Id.NULL;
+      return null;
   }
 
   public addExit(exitName: string, exitId: Id)

@@ -10,7 +10,6 @@ import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {Id} from '../shared/Id';
 import {SaveableObject} from '../shared/SaveableObject';
-import {SaveableArray} from '../shared/SaveableArray';
 import {AbbrevSearchList} from '../game/AbbrevSearchList';
 import {Game} from '../game/Game';
 import {GameEntity} from '../game/GameEntity';
@@ -129,10 +128,9 @@ export class IdList extends SaveableObject
   // (because AbbrevSearchList is flagged as non-saveable)
   protected abbrevSearchList = new AbbrevSearchList();
  
-  // We need array because order is important (e. g. order of contents
-  // in a room). And it needs to be saveable, because we want to save its
-  // in it and they are saveable objects, not primitive types.
-  protected entityIds = new SaveableArray<Id>(Id);
+  // We need array because order is important
+  // (e.g.order of contents in a room).
+  protected entityIds = new Array<Id>();
 
   // -------------- Protected methods -------------------  
 
@@ -147,7 +145,10 @@ export class IdList extends SaveableObject
     // it there.
     if (!Game.entities.exists(entity.id))
     {
-      Game.entities.addItemUnderNewId(entity);
+      if (entity.id === null)
+        Game.entities.addItemUnderNewId(entity);
+      else
+        Game.entities.addItemUnderExistingId(entity);
     }
 
     // Add to the list of entities contained in this list.

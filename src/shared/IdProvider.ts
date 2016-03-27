@@ -15,29 +15,45 @@ import {SaveableObject} from '../shared/SaveableObject';
 // Built-in node.js modules.
 import * as fs from 'fs';  // Import namespace 'fs' from node.js
 
+// 3rd party modules.
+let promisifiedFS = require('fs-promise');
+
 export class IdProvider extends SaveableObject
 {
-  constructor()
-  {
-    super();
-
-    this.loadLastIssuedId();
-  }
-
   // -------------- Public static data ------------------
 
-  static get LAST_ISSUED_ID_FILE()
-  {
-    return "./data/LastIssuedId.json";
-  }
+  protected static get SAVE_DIRECTORY() { return "./data/"; }
+  protected static get SAVE_FILE_NAME() { return "IdProvider.json" }
+ 
 
   // ---------------- Public methods --------------------
 
-  // Use 'Id.NULL' as an 'invalid' id value. Don't use 'null' because
-  // it would prevent loading your ids from file.
+  public async save()
+  {
+    await this.saveToFile
+    (
+      IdProvider.SAVE_DIRECTORY,
+      IdProvider.SAVE_FILE_NAME
+    );
+  }
+
+  public async load()
+  {
+    await this.loadFromFile
+    (
+      IdProvider.SAVE_DIRECTORY + IdProvider.SAVE_FILE_NAME
+    );
+
+    // Remove the lock.
+    this.tmpData.ready = true;
+  }
+
+  // Use 'null' as a 'not pointing anywhere' id value. Id can be invalid
+  // even if it's not null, for example when it's pointing to an object
+  // which has already been deleted.
   public generateId(typeOfId: string, type: string): Id
   {
-    ASSERT_FATAL(this.ready === true,
+    ASSERT_FATAL(this.tmpData.ready === true,
       "Attempt to generate an id before IdProvider has loaded"
       + "lastIssuedId from file");
 
@@ -76,6 +92,7 @@ export class IdProvider extends SaveableObject
     return new Id(stringId, type);
   }
 
+  /*
   public async saveLastIssuedId()
   {
     // saveToFile() is inherited from SaveableObject.
@@ -125,20 +142,33 @@ export class IdProvider extends SaveableObject
     // Remove the lock preventing issuing of new ids.
     this.ready = true;
   }
+  */
 
   // -------------- Protected class data ----------------
 
-  protected lastIssuedId: Array<number> = null;
-
-  // This lock prevents us from issuing new ids before lastIssuedId is
-  // loaded from file (from last boot).
-  protected ready = false;
+  // [0] represents a start of the world - no ids have been isued yet.
+  // This should never happen in real life, lastIssuedId should always
+  // be loaded from disk before any ids are issued.
+  protected lastIssuedId: Array<number> = [0];
+  protected tmpData = new IdProviderTmpData();
 
   // -------------- Protected methods -------------------
 
   // Overrides SaveableObject::saveToFile() to not to save
-  // lastIssuedId (because it's done by this method so it would
-  // lead endless recursion and stack overflow.
+  // idProvider (because it's done by this class so it would
+  // lead to endless recursion and stack overflow.
+  protected async saveToFile(directory: string, fileName: string)
+  {
+    ASSERT_FATAL(directory.substr(directory.length - 1) === '/',
+      "Directory path '" + directory + "' doesn't end with '/'");
+
+    // Directory might not yet exist, so we better make sure it does.
+    await this.createDirectory(directory);
+
+    await this.saveContentsToFile(directory + fileName);
+
+  }
+  /*
   protected async saveToFile(filePath: string)
   {
     await this.saveContentsToFile(filePath);
@@ -167,4 +197,12 @@ export class IdProvider extends SaveableObject
 
     this.lastIssuedId = jsonObject[property];
   }
+  */
+}
+
+class IdProviderTmpData
+{
+  // This lock prevents us from issuing new ids before lastIssuedId is
+  // loaded from file (from last boot).
+  public ready = false;
 }

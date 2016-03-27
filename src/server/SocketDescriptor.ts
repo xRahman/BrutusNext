@@ -49,14 +49,14 @@ export abstract class SocketDescriptor
  
   public get playerConnection()
   {
-    ASSERT_FATAL(this.playerConnectionId && this.playerConnectionId.notNull(),
+    ASSERT_FATAL(this.playerConnectionId !== null,
       "Invalid player connection id");
 
     return Server.playerConnectionManager
       .getPlayerConnection(this.playerConnectionId);
   }
 
-  public playerConnectionId: Id = Id.NULL;
+  public playerConnectionId: Id = null;
 
   // ---------------- Public methods --------------------
  

@@ -15,18 +15,15 @@ import {Realm} from '../../game/world/Realm';
 
 export class World extends GameEntity
 {
-  constructor(name: string)
+  constructor()
   {
-    super(name);
+    super();
 
     // Don't forget to bump up version number if you add or remove
     // SaveableObjects. You will also need to convert data in respective
     // .json files to conform to the new version.
     this.version = 0;
   }
-
-  // Id of 'world' entity is hardcored.
-  static get WORLD_ENTITY_ID() { return "1"; }
 
   // --------------- Public accessors -------------------
 
@@ -38,7 +35,10 @@ export class World extends GameEntity
 
   public addNewRealm(realmName: string): Id
   {
-    let newRealm = new Realm(realmName);
+    let newRealm = new Realm();
+
+    newRealm.name = realmName;
+
     let newRealmId = Game.realmList.addEntityUnderNewId(newRealm);
 
     // Add new realm id to the list of entities contained in the world.
@@ -54,12 +54,14 @@ export class World extends GameEntity
   // What file is the world saved to.
   protected getSaveFileName(): string
   {
-    return 'world' + ".json";
+    return "world.json";
   }
 
   // ---------------- Private methods -------------------
 }
 
+/*
 // Add constructor of this class as a property of global object,
 // so it's instances can be created dynamically in runtime.
 global['World'] = World;
+*/

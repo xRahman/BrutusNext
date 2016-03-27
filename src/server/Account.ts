@@ -18,8 +18,7 @@ import * as crypto from 'crypto';  // Import namespace 'crypto' from node.js
 
 export class Account extends IdableSaveableObject
 {
-  // Account name is not saved to the file. Filename represents account name.
-  constructor(accountName: string, public playerConnectionId: Id)
+  constructor(public name: string, public playerConnectionId: Id)
   {
     super();
 
@@ -27,8 +26,6 @@ export class Account extends IdableSaveableObject
     // SaveableObjects. You will also need to convert data in respective
     // .json files to conform to the new version.
     this.version = 0;
-
-    this.accountName = accountName;
   }
 
   static get SAVE_DIRECTORY() { return "./data/accounts/"; }
@@ -47,8 +44,6 @@ export class Account extends IdableSaveableObject
   // timeOfCreation initializes to current time, but for existing
   // accounts will be overwritten when loading from file. 
   public timeOfCreation = new Date();
-
-  public accountName = "";
 
   // ---------------- Public methods --------------------
 
@@ -101,7 +96,7 @@ export class Account extends IdableSaveableObject
   {
     ASSERT_FATAL(charNumber >= 0 && charNumber < this.getNumberOfCharacters(),
       "Attempt to get name of character number " + charNumber
-      + " from account " + this.accountName + " which only has "
+      + " from account " + this.name + " which only has "
       + this.getNumberOfCharacters() + " characters.");
 
     return this.characters[charNumber];
@@ -123,7 +118,7 @@ export class Account extends IdableSaveableObject
   // What file will this account be saved to.
   protected getSaveFileName(): string
   {
-    return this.accountName + ".json";
+    return this.name + ".json";
   }
 
   // What path will this account be saved to.
