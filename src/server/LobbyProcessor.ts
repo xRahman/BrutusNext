@@ -102,7 +102,7 @@ export class LobbyProcessor
         /// same as account name)
         if (account.getNumberOfCharacters() === 0)
         {
-          let character = this.createNewCharacter(account.accountName);
+          let character = this.createNewCharacter(account.name);
 
           if (character)
             this.playerConnection.enterGame();
@@ -163,8 +163,9 @@ export class LobbyProcessor
   {
     let characterManager = Game.playerCharacterManager;
 
-    let character =
-      new Character({ name: characterName, isNameUnique: true });
+    let character = new Character();
+
+    character.name = characterName;
 
     // This needs to be set before loading so character will load from
     // correct directory.
@@ -202,7 +203,7 @@ export class LobbyProcessor
 
     Mudlog.log
     (
-      "Player " + account.accountName + " has created a new character: "
+      "Player " + account.name + " has created a new character: "
       + characterName,
       Mudlog.msgType.SYSTEM_INFO,
       Mudlog.levels.IMMORTAL
@@ -245,7 +246,7 @@ export class LobbyProcessor
     // (The rest of the code will execute only after the reading is done.)
     await character.load();
 
-    ASSERT_FATAL(character.id && character.id.notNull(),
+    ASSERT_FATAL(character.id !== null,
       "Invalid id in saved file of character: " + character.name);
 
     if (!ASSERT(characterFileName === character.name,

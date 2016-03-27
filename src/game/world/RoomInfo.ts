@@ -13,16 +13,15 @@
 'use strict';
 
 /*
-///
+/// TODO:
   Možná by tohle mohlo být v modulu Room, pokud RoomInfo nebude potřeba od
   nikud jinud.
 */
 
 import {ExtraDescription} from '../../game/ExtraDescription';
-import {IdableSaveableObject} from '../../shared/IdableSaveableObject';
-import {SaveableArray} from '../../shared/SaveableArray';
+import {SaveableObject} from '../../shared/SaveableObject';
 
-export class RoomInfo extends IdableSaveableObject
+export class RoomInfo extends SaveableObject
 {
   constructor()
   {
@@ -35,6 +34,5 @@ export class RoomInfo extends IdableSaveableObject
   }
 
   public description = "Unfinished room.";
-  public extraDescriptions =
-    new SaveableArray<ExtraDescription>(ExtraDescription);
+  public extraDescriptions = [];
 }

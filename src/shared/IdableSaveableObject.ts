@@ -17,7 +17,7 @@ export abstract class IdableSaveableObject extends SaveableObject
 
   // ----------------- Public data ----------------------
 
-  public id = Id.NULL;
+  public id: Id = null;
 
   // ---------------- Public methods --------------------
 

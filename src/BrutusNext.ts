@@ -33,23 +33,11 @@ let parser = require('commander');
 // their required version)
 let packageDotJson = require('../package.json');
 
-// Oznami, ze Promise sezrala exception a nic nerekla a crashne mud.
+// This handler catches exceptions thrown from withing async (promisified)
+// functions. A new exception is thrown, which will crash the mud and print
+// the original stack trace. Without this, exceptions thrown from withing
+// async function would lead to silent crashes.
 process.on('unhandledRejection', err => { throw err; });
-/*
-process.on
-(
-  'unhandledRejection',
-  function(reason, p)
-  {
-    console.log("Unhandled Rejection at: Promise ", p, " reason: ", reason);
-    // application specific logging, throwing an error, or other logic here
-
-    // There is no point in throwing another exception from here, stack trace
-    // would not show anything useful.
-    process.exit(1);
-  }
-);
-*/
 
 // Parses commandline parameters.
 // - Return object imported from 'commander' module.
@@ -67,7 +55,7 @@ function parseCmdlineParams()
 
 // Program entry point.
 // It's called main() to sound familiar to C programmers ;)
-function main()
+async function main()
 {
   // Log our name and version.
   Mudlog.log(
@@ -81,6 +69,7 @@ function main()
   // (server is a singleton so we use static method to do it)
   Server.create();
   // Run the server at specified telnet port.
+  // (Server.run() is async function)
   Server.getInstance().run(cmdlineParser.port);
 }
 

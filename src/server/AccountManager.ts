@@ -37,7 +37,7 @@ export class AccountManager extends IdableObjectContainer<Account>
     // This creates and assigns hash. Actual password is not remembered.
     newAccount.setPasswordHash(password);
 
-    let newAccountId = this.addNewAccount(newAccount);
+    let newAccountId = this.addAccountUnderNewId(newAccount);
 
     // Save the account info to the disk (so we know that the account exists).
     // (This does not need to be synchronous.)
@@ -85,17 +85,17 @@ export class AccountManager extends IdableObjectContainer<Account>
 
   public registerLoadedAccount(account: Account)
   {
-    ASSERT_FATAL(!this.getAccountByName(account.accountName),
+    ASSERT_FATAL(!this.getAccountByName(account.name),
       "Attempt to register account '"
-      + account.accountName + "' which is already registered");
+      + account.name + "' which is already registered");
 
-    this.addAccount(account);
+    this.addAccountUnderExistingId(account);
   }
 
   public logOut(accountId: Id)
   {
     let account = this.getAccount(accountId);
-    let accountName = account.accountName;
+    let accountName = account.name;
     let ipAddress = account.playerConnection.ipAddress;
 
     if (!ASSERT(!this.getAccount(accountId).isInGame(),
@@ -119,30 +119,30 @@ export class AccountManager extends IdableObjectContainer<Account>
 
   // Adds an account to the list of online accounts and to the auxiliary
   // hashmap, returns its unique id.
-  protected addNewAccount(account: Account): Id
+  protected addAccountUnderNewId(account: Account): Id
   {
     let newId = this.addItemUnderNewId(account);
 
     // Also add record to the corresponding hashmap.
-    this.accountNames[account.accountName] = newId;
+    this.accountNames[account.name] = newId;
 
     return newId;
   }
 
   // Adds an account which already has an id (loaded from file).
-  protected addAccount(account: Account)
+  protected addAccountUnderExistingId(account: Account)
   {
     this.addItemUnderExistingId(account);
 
     // Also add record to the corresponding hashmap.
-    this.accountNames[account.accountName] = account.id;
+    this.accountNames[account.name] = account.id;
   }
 
   // Removes an account both from the list of online accounts and from the
   // auxiliary hasmap.
   protected dropAccount(accountId: Id)
   {
-    let accountName = this.getAccount(accountId).accountName;
+    let accountName = this.getAccount(accountId).name;
 
     this.deleteItem(accountId);
 
