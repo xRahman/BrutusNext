@@ -30,6 +30,7 @@
     <TypeScriptCompile Include="src\BrutusNext.ts" />
     <TypeScriptCompile Include="src\game\characters\Character.ts" />
     <TypeScriptCompile Include="src\game\commands\CommandInterpretter.ts" />
+    <TypeScriptCompile Include="src\game\DynamicClasses.ts" />
     <TypeScriptCompile Include="src\game\EntityContainer.ts" />
     <TypeScriptCompile Include="src\game\IdList.ts" />
     <TypeScriptCompile Include="src\game\ExtraDescription.ts" />
@@ -68,7 +69,6 @@
     <TypeScriptCompile Include="src\game\commands\CommandSearchList.ts" />
     <TypeScriptCompile Include="src\shared\Id.ts" />
     <TypeScriptCompile Include="src\shared\NamedClass.ts" />
-    <TypeScriptCompile Include="src\shared\SaveableArray.ts" />
     <TypeScriptCompile Include="src\shared\IdableObjectContainer.ts" />
     <TypeScriptCompile Include="src\shared\IdProvider.ts" />
     <TypeScriptCompile Include="src\shared\IdableSaveableObject.ts" />

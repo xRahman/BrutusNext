@@ -243,7 +243,7 @@ export class AuthProcessor
     if (regExp.test(accountName) === true)
     {
       this.playerConnection.send(
-        "&wName can only contain english letters and numbers.\r\n"
+        "&wName can only contain english letters.\r\n"
         + "Please enter a valid name: ");
    /// Account name variant:
    ///      this.playerConnection.send(
@@ -316,15 +316,15 @@ export class AuthProcessor
     // (the rest of the code will execute only after the reading is done)
     await account.load();
 
-    ASSERT_FATAL(account.id && account.id.notNull(),
-      "Null id in saved file of account: " + account.accountName);
+    ASSERT_FATAL(account.id !== null,
+      "Null id in saved file of account: " + account.name);
 
-    if (!ASSERT(this.accountName === account.accountName,
-      "Account name saved in file (" + account.accountName + ")"
+    if (!ASSERT(this.accountName === account.name,
+      "Account name saved in file (" + account.name + ")"
       + " doesn't match account file name (" + this.accountName + ")."
       + " Renaming account to match file name."))
     {
-      account.accountName = this.accountName;
+      account.name = this.accountName;
     }
   }
 

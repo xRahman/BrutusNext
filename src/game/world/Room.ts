@@ -15,9 +15,9 @@ import {Exits} from '../../game/world/Exits';
 
 export class Room extends GameEntity
 {
-  constructor(name: string)
+  constructor()
   {
-    super(name);
+    super();
 
     // Don't forget to bump up version number if you add or remove
     // SaveableObjects. You will also need to convert data in respective
@@ -42,8 +42,8 @@ export class Room extends GameEntity
 
   // -------------- Protected class data ----------------
 
-  // id of prototype room. If it's Id.NULL, this room is a prototype.
-  protected prototypeId: Id = Id.NULL;
+  // id of prototype room. If it's null, this room is a prototype.
+  protected prototypeId: Id = null;
 
   // Description, extra descriptions, room flags, terrain type, etc.
   // If this is null, values from prototype are used.
@@ -56,7 +56,3 @@ export class Room extends GameEntity
 
   // ---------------- Private methods -------------------
 }
-
-// Add constructor of this class as a property of global object,
-// so it's instances can be created dynamically in runtime.
-global['Room'] = Room;

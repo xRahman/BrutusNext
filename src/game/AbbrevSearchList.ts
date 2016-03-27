@@ -14,11 +14,7 @@ import {GameEntity} from "../game/GameEntity";
 
 export class AbbrevSearchList
 {
-  // Do not save this object to JSON.
-  public get isSaved() { return false; }
-
   // ---------------- Public methods --------------------
-
 
   // Returns invalid id if no such entity exists.
   // (search string should be something like "3.orc")
@@ -42,8 +38,6 @@ export class AbbrevSearchList
     */
 
     return this.getEntityByAbbrev(parseResult.name, parseResult.index);
-
-    return Id.NULL;
   }
 
   // If more similar names are added, they will be accessible by dot notation

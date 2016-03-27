@@ -12,15 +12,14 @@ import {GameEntity} from '../../game/GameEntity';
 
 export class Character extends GameEntity
 {
-  constructor(nameParam: { name: string, isNameUnique: boolean })
+  constructor()
   {
-    super(nameParam.name);
+    super();
 
     // Don't forget to bump up version number if you add or remove
     // SaveableObjects. You will also need to convert data in respective
     // .json files to conform to the new version.
     this.version = 0;
-    this.isNameUnique = nameParam.isNameUnique;
   }
 
   // --------------- Public accessors -------------------
@@ -89,7 +88,3 @@ export class Character extends GameEntity
   }
   */
 }
-
-// Add constructor of this class as a property of global object,
-// so it's instances can be created dynamically in runtime.
-global['Character'] = Character;

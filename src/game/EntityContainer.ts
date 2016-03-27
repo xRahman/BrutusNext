@@ -79,7 +79,7 @@ export abstract class EntityContainer extends CommandInterpretter
         // Creates an instance of correct type based on className property
         // of id (in other words: Type of referenced entity is saved within
         // id and is recreated here).
-        let newEntity = GameEntity.createInstance(id);
+        let newEntity = GameEntity.createInstanceFromId(id);
 
         // Load entity from file.
         await newEntity.load();

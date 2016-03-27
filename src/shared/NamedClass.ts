@@ -1,4 +1,4 @@
-﻿/*
+/*
   Part of BrutusNEXT
 
   Class that let's you know it's class name.
@@ -12,7 +12,7 @@ export class NamedClass
 {
   constructor()
   {
-      this.className = this.getClassName();
+    this.className = this.getClassName();
   }
 
   public static get CLASS_NAME_PROPERTY() { return 'className'; }
@@ -27,7 +27,7 @@ export class NamedClass
 
     // this.constructor.toString() is something like:
     // 'class GameEntity extends something'
-    // We want to grab 'GameEntity part of it.
+    // We want to grab 'GameEntity' part of it.
     //   Note: It will probably only work for classes that extend something,
     // but this functionality is only available to classes that extend
     // NamedClass so it will always by true.

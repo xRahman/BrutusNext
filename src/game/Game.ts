@@ -18,6 +18,15 @@ import {IdList} from '../game/IdList'
 import {Area} from '../game/world/Area';
 import {Realm} from '../game/world/Realm';
 
+// Unlike "import {SomeClass} from ''", "require()" ensures that required
+// module _will_ be loaded here. This is necessary for using dynamic classes,
+// because their constructors need to be added to 'global' object in order
+// to be dynamically invoked.
+// Note:
+//  This cannot be done in SaveableObject from some reason (it probably causes
+//  cyclic module dependance) even though it would make much more sense there.
+require('../game/DynamicClasses');
+
 export class Game
 {
   public static get entities()
@@ -58,7 +67,8 @@ export class Game
     /*
     /// Provizorvni prvni vytvoreni instance sveta:
 
-    let world = new World("BrutusNext World");
+    let world = new World();
+    world.name = "BrutusNext World";
     let worldId = new Id(World.WORLD_ENTITY_ID, world.className);
 
     world.id = worldId;
@@ -86,14 +96,13 @@ export class Game
     world.save();
     */
 
+///    /*
     /// Tohle tu asi bude finalne:
-    //let world = new World("");
-    let worldId = new Id(World.WORLD_ENTITY_ID, 'World');
-
-    let world = GameEntity.createInstance(worldId);
+    let world = <World>GameEntity.createInstance('World');
 
     // Load entity from file.
     await world.load();
+///    */
   }
 
   // -------------- Protected class data ----------------
@@ -119,7 +128,7 @@ export class Game
   protected playerCharacterManager = new PlayerCharacterManager(this.characterList);
 
   // There is only one world in the game (at the moment).
-  protected worldId = Id.NULL;
+  protected worldId = null;
 
   // --------------- Protected methods ------------------
 }

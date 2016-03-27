@@ -34,7 +34,7 @@ export class PlayerConnection extends IdableSaveableObject
 
   public get ingameEntity(): GameEntity
   {
-    if (!ASSERT(this.ingameEntityId && this.ingameEntityId.notNull(),
+    if (!ASSERT(this.ingameEntityId !== null,
         "Attempt to access gameEntity on PlayerConnection which doesn't have"
         + " any assigned yet"))
       return null;
@@ -44,12 +44,12 @@ export class PlayerConnection extends IdableSaveableObject
 
   // Empty string means that we do not yet know what account does this
   // connection match to.
-  public accountId: Id = Id.NULL;
+  public accountId: Id = null;
 
   // Id of entity this player connection is attached to.
   // (usually the character a player is playing, but it is possible for
   // immortals to 'switch' to any game entity)
-  public ingameEntityId: Id = Id.NULL;
+  public ingameEntityId: Id = null;
 
   // ------- Internal stage transition methods ----------
 
@@ -71,9 +71,11 @@ export class PlayerConnection extends IdableSaveableObject
   public async enterGame()
   {
     ASSERT(this.stage === PlayerConnection.stage.IN_LOBBY
-      || this.stage === PlayerConnection.stage.IN_GAME,
+        || this.stage === PlayerConnection.stage.IN_GAME,
       "Entering game from wrong stage");
-    ASSERT(this.accountId && this.accountId.notNull(), "Invalid account id");
+
+    ASSERT(this.accountId !== null,
+       "Invalid account id");
 
     this.stage = PlayerConnection.stage.IN_GAME;
 
@@ -101,10 +103,12 @@ export class PlayerConnection extends IdableSaveableObject
   // Handles situation when player connects to previously offline account .
   public connectToAccount(account: Account)
   {
-    Mudlog.log(
-      account.accountName + " [" + this.ipAddress + "] has logged in",
+    Mudlog.log
+    (
+      account.name + " [" + this.ipAddress + "] has logged in",
       Mudlog.msgType.SYSTEM_INFO,
-      Mudlog.levels.IMMORTAL);
+      Mudlog.levels.IMMORTAL
+    );
 
     this.accountId = account.id;
     account.playerConnectionId = this.id;
@@ -119,7 +123,7 @@ export class PlayerConnection extends IdableSaveableObject
     let accountManager = Server.accountManager;
     let oldStage = PlayerConnection.stage.INITIAL;
     let oldConnection = this.getOldConnection(account);
-    let oldIngameEntityId = Id.NULL;
+    let oldIngameEntityId = null;
 
     // If old connection is still alive, we need to send a message
     // to it informing of usurping of connection and close it.
@@ -127,8 +131,16 @@ export class PlayerConnection extends IdableSaveableObject
     {
       oldStage = oldConnection.stage;
       oldIngameEntityId = oldConnection.ingameEntityId;
-      oldConnection.announceConnectionBeingUsurped();
-      oldConnection.close();
+
+      // If ids of old a new connection are the same, it means that
+      // player is reconnecting using the same connection and so we
+      // don't need to announce that his connection has been usurped
+      // and we shouldn't close the connection.
+      if (!oldConnection.id.equals(this.id))
+      {
+        oldConnection.announceConnectionBeingUsurped();
+        oldConnection.close();
+      }
     }
 
     account.playerConnectionId = this.id;
@@ -136,17 +148,16 @@ export class PlayerConnection extends IdableSaveableObject
 
     Mudlog.log
     (
-      account.accountName + " [" + this.ipAddress + "] has reconnected",
+      account.name + " [" + this.ipAddress + "] has reconnected",
       Mudlog.msgType.SYSTEM_INFO,
       Mudlog.levels.IMMORTAL
     );
 
-    if (oldStage === PlayerConnection.stage.IN_GAME
-      && oldIngameEntityId
-      && oldIngameEntityId.notNull())
-    {
-      // If player was in game before and we know what game entity she has
+    // If player was in game before and we know what game entity she has
       // been connected, send her back to the game.
+    if (oldStage === PlayerConnection.stage.IN_GAME
+        && oldIngameEntityId !== null)
+    {
 
       // If we know what entity has player been connected to before,
       // connect her to it again.
@@ -155,8 +166,8 @@ export class PlayerConnection extends IdableSaveableObject
     }
     else
     {
-      // If player was anywhere else before, or if we didn't manage to scan
-      // her previous stage or active entity, send her to the lobby.
+      // If player was anywhere else before, or if we didn't manage to
+      // retrieve her previous stage or active entity, send her to the lobby.
       this.enterLobby();
     }
   }
@@ -173,21 +184,21 @@ export class PlayerConnection extends IdableSaveableObject
         break;
 
       case PlayerConnection.stage.AUTHENTICATION:
-        ASSERT(this.accountId && this.accountId.isNull(),
+        ASSERT(this.accountId === null,
           "Attempt to start authentication on player connection that already"
           + " has an account assigned");
         await this.authProcessor.processCommand(command);
         break;
 
       case PlayerConnection.stage.IN_LOBBY:
-        ASSERT(this.accountId && this.accountId.notNull(),
+        ASSERT(this.accountId !== null,
           "Attempt to process lobby command on player connection that doesn't"
           + " have an account assigned");
         this.lobbyProcessor.processCommand(command);
         break;
 
       case PlayerConnection.stage.IN_GAME:
-        ASSERT(this.accountId && this.accountId.notNull(),
+        ASSERT(this.accountId !== null,
           "Attempt to process ingame command on player connection that doesn't"
           + " have an account assigned");
 
@@ -241,10 +252,10 @@ export class PlayerConnection extends IdableSaveableObject
       // (but only if an account is already associated to this player
       // connection. It might not be, for example if player closed his
       // connection before entering password.)
-      if (this.accountId && this.accountId.notNull())
+      if (this.accountId !== null)
       {
         Server.accountManager.logOut(this.accountId);
-        this.accountId = Id.NULL;
+        this.accountId = null;
       }
       else
       {
@@ -272,7 +283,7 @@ export class PlayerConnection extends IdableSaveableObject
 
   public isInGame()
   {
-    if (this.ingameEntityId && this.ingameEntityId.notNull())
+    if (this.ingameEntityId !== null)
     {
       ASSERT(this.stage === PlayerConnection.stage.IN_GAME,
         "Player connection has ingame entity assigned but player connection"
@@ -309,15 +320,8 @@ export class PlayerConnection extends IdableSaveableObject
 
   protected getOldConnection(account: Account): PlayerConnection
   {
-    if (account.playerConnectionId && account.playerConnectionId.notNull())
+    if (account.playerConnectionId !== null)
     {
-      if (!ASSERT(account.playerConnectionId.equals(this.id),
-        "Account is already linked to the connection with which we are trying"
-        + " to reconnect to it"))
-      {
-        return null;
-      }
-
       return account.playerConnection;
     }
 
