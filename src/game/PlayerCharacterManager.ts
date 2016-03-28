@@ -49,7 +49,7 @@ export class PlayerCharacterManager
     return newCharacterId;
   }
 
-  public addExistingPlayerCharacter(character: Character)
+  public addPlayerCharacterUnderExistingId(character: Character)
   {
     this.characterList.addEntityUnderExistingId(character);
   }
