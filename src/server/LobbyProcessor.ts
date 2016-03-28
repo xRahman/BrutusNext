@@ -8,9 +8,12 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
+import {Id} from '../shared/Id';
 import {PlayerConnection} from '../server/PlayerConnection';
 import {Server} from '../server/Server';
+import {Account} from '../server/Account';
 import {Game} from '../game/Game';
+import {GameEntity} from '../game/GameEntity';
 import {Character} from '../game/characters/Character';
 import {Mudlog} from '../server/Mudlog';
 
@@ -102,10 +105,7 @@ export class LobbyProcessor
         /// same as account name)
         if (account.getNumberOfCharacters() === 0)
         {
-          let character = this.createNewCharacter(account.name);
-
-          if (character)
-            this.playerConnection.enterGame();
+          this.createCharacterAndEnterGame(account);
         }
         else
         {
@@ -115,7 +115,7 @@ export class LobbyProcessor
           // (The rest of the code will execute only after the reading is done.)
           // We need async call because we want to wait after player's character
           // is loaded from file before actually entering the game.
-          await this.enterGame(0);
+          await this.enterGame(account.getCharacterName(0));
         }
       break;
 
@@ -133,28 +133,45 @@ export class LobbyProcessor
     this.playerConnection.quitGame();
   }
 
-  protected async enterGame(charNumber: number)
+  protected async enterGame(characterName: string)
   {
     this.stage = LobbyProcessor.stage.NOT_IN_LOBBY;
 
     let playerCharacterManager = Game.playerCharacterManager;
-    let accountManager = Server.accountManager;
-    let account = accountManager.getAccount(this.playerConnection.accountId);
-
-    let characterName = account.getCharacterName(charNumber);
 
     // Check if character is already online.
     let character = playerCharacterManager.getPlayerCharacter(characterName);
 
     if (character)
     {
-      this.playerConnection.ingameEntityId = character.id;
+      this.attachConnectionToGameEntity(character);
       this.playerConnection.reconnectToCharacter();
     }
     else
     {
       await this.loadCharacter(characterName);
 
+      this.playerConnection.enterGame();
+    }
+  }
+
+  protected createCharacterAndEnterGame(account: Account)
+  {
+    if (!ASSERT(this.playerConnection.ingameEntityId === null,
+      "Player account '" + account.name + "' has attempted to enter game"
+      + "with ingame entity already attached"))
+    {
+      this.playerConnection.send("&wAn error occured while entering"
+        + " game. Please contact implementors.");
+    }
+
+    let newCharacterId = this.createNewCharacter(account.name);
+
+    if (newCharacterId)
+    {
+      let character = Game.entities.getItem(newCharacterId);
+
+      this.attachConnectionToGameEntity(character);
       this.playerConnection.enterGame();
     }
   }
@@ -176,19 +193,20 @@ export class LobbyProcessor
     await this.loadCharacterFromFile(character, characterName);
 
     // Add newly loaded character to characterManager (under it's original id).
-    characterManager.addExistingPlayerCharacter(character);
+    characterManager.addPlayerCharacterUnderExistingId(character);
 
-    this.playerConnection.ingameEntityId = character.id;
+    this.attachConnectionToGameEntity(character);
   }
 
-  protected createNewCharacter(characterName: string): boolean
+  protected createNewCharacter(characterName: string): Id
   {
     let characterManager = Game.playerCharacterManager;
     let accountManager = Server.accountManager;
     let account = accountManager.getAccount(this.playerConnection.accountId);
 
-    if (this.checkIfCharacterExists(characterName))
-      return false;
+    // Error messages are handled inside characterNameExists().
+    if (this.characterNameExists(characterName))
+      return null;
 
     // 'isNameUnique: true' because player characters have unique names.
     let newCharacterId =
@@ -198,7 +216,6 @@ export class LobbyProcessor
         this.playerConnection.id
       );
 
-    this.playerConnection.ingameEntityId = newCharacterId;
     account.addNewCharacter(characterName);
 
     Mudlog.log
@@ -209,10 +226,10 @@ export class LobbyProcessor
       Mudlog.levels.IMMORTAL
     );
 
-    return true;
+    return newCharacterId;
   }
 
-  protected checkIfCharacterExists(characterName: string): boolean
+  protected characterNameExists(characterName: string): boolean
   {
     let characterManager = Game.playerCharacterManager;
 
@@ -256,5 +273,10 @@ export class LobbyProcessor
     {
       character.name = characterFileName;
     }
+  }
+
+  protected attachConnectionToGameEntity(gameEntity: GameEntity)
+  {
+    this.playerConnection.attachToGameEntity(gameEntity);
   }
 }

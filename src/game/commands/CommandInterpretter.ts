@@ -40,14 +40,18 @@ export abstract class CommandInterpretter extends IdableSaveableObject
   // This method allows you to add a new commands. 
   public static registerCommand(command: string, handler: string)
   {
-    if (!ASSERT_FATAL(command !== "", "Attempt to register an empty command"))
-      return;
+    ASSERT_FATAL(command !== "", "Attempt to register an empty command");
 
-    if (!ASSERT_FATAL(
-        CommandInterpretter.commandSearchList.isAbbrevRegistered(command),
-        "Attempt to register command '" + command
-        + "' that is already registered"))
-      return;
+    /*
+    /// Tohle s novym commandSearchListem nejde checkovat.
+
+    ASSERT_FATAL
+    (
+      CommandInterpretter.commandSearchList.isAbbrevRegistered(command),
+      "Attempt to register command '" + command
+      + "' that is already registered"
+    );
+    */
 
     console.log("Registering command '" + command + "'");
     CommandInterpretter.commandSearchList.addCommand(command, handler);
@@ -157,4 +161,6 @@ export abstract class CommandInterpretter extends IdableSaveableObject
 // trigger instead).
 //   Generally said it's good practice to add new commands after the existing
 // ones with the same prefix.
+CommandInterpretter.registerCommand('qui', 'doQui');
+CommandInterpretter.registerCommand('quit', 'doQuit');
 CommandInterpretter.registerCommand('sit', 'doSit');
