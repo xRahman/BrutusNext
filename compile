@@ -4,4 +4,6 @@
 
 # We now use tsconfig.json instead of command line parameters.
 tsc
+
+# This is just for reference what cmdline params we used to use.
 ##tsc --target ES5 --charset UTF-8 --moduleResolution node --newLine LF --noEmitOnError --outDir ./build --rootDir ./src --sourceMap --sourceRoot ./src --module commonjs ./src/BrutusNext.ts
