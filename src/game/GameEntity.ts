@@ -116,6 +116,11 @@ export abstract class GameEntity extends EntityContainer
   // that a player character has just entered game).
   public announcePlayerEnteringGame() { }
 
+  // Player connected to this entity is entering game.
+  //   Needs to be overriden if something is going to happen (like message
+  // that a player character has just entered game).
+  public announcePlayerLeavingGame() { }
+
   // Player connected to this entity has reconnected.
   //   Needs to be overriden if something is going to happen (like message
   // that a player character has just entered game).
@@ -152,6 +157,28 @@ export abstract class GameEntity extends EntityContainer
   {
     if (this.playerConnection)
       this.playerConnection.send("&gHuh?!?");
+  }
+
+  // ---------------- Command handlers ------------------
+
+  // Prevents accidental quitting without typing full 'quit' commmand.s
+  protected doQui(argument: string)
+  {
+    if (this.playerConnection)
+    {
+      this.playerConnection.send("&gYou have to type quit--no less, to quit!");
+    }
+  }
+
+  protected doQuit(argument: string)
+  {
+    if (this.playerConnection)
+    {
+      this.announcePlayerLeavingGame();
+      this.playerConnection.send("&gGoodbye, friend.. Come back soon!\r\n");
+      this.playerConnection.enterLobby();
+      this.playerConnection.detachFromGameEntity();
+    }
   }
 }
 

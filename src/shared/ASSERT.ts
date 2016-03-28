@@ -95,6 +95,13 @@ export function ASSERT_FATAL(condition: boolean, message: string)
     throw error;
     */
   }
+
+  // This is basically a nonsense, ASSERT_FATAL is not supposed to be checked
+  // against - if it fails, game will crash so no other code is necessary.
+  // However, I have already done it by mistake and without this return value,
+  // condition if (!ASSERT_FATAL(...)) would fail, even if conditing passed
+  // to it were true - which would lead to queer, unexpected behaviour.
+  return true;
 }
 
 // ---------------------- private module stuff -------------------------------

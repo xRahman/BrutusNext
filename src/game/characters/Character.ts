@@ -50,11 +50,20 @@ export class Character extends GameEntity
   // Announce to the room that player is entering game as this character.
   public announcePlayerEnteringGame()
   {
-    // TODO
     // if (this.isPlayerCharacter())
     // {
          // Send a message to the room that a player has just entered game.
          // this.sendToRoom("&BZuzka &Whas entered the game. &wBe ready.");
+    // }
+  }
+
+  // Announce to the room that player is leaving game.
+  public announcePlayerLeavingGame()
+  {
+    // if (this.isPlayerCharacter())
+    // {
+    // Send a message to the room that a player has just left game.
+    // this.sendToRoom("&Zuzka has left the game.");
     // }
   }
 

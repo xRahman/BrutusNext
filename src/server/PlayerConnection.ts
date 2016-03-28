@@ -42,6 +42,13 @@ export class PlayerConnection extends IdableSaveableObject
     return Game.entities.getItem(this.ingameEntityId);
   }
 
+  public get account()
+  {
+    let accountManager = Server.accountManager;
+
+    return accountManager.getItem(this.accountId);
+  }
+
   // Empty string means that we do not yet know what account does this
   // connection match to.
   public accountId: Id = null;
@@ -75,9 +82,12 @@ export class PlayerConnection extends IdableSaveableObject
       "Entering game from wrong stage");
 
     ASSERT(this.accountId !== null,
-       "Invalid account id");
+      "Invalid account id");
 
     this.stage = PlayerConnection.stage.IN_GAME;
+
+    this.send("&gWelcome to the land of &RBrutus&YNext!"
+            + " &gMay your visit here be... Interesting.\r\n");
 
     this.ingameEntity.announcePlayerEnteringGame();
   }
@@ -202,26 +212,11 @@ export class PlayerConnection extends IdableSaveableObject
           "Attempt to process ingame command on player connection that doesn't"
           + " have an account assigned");
 
-        /*
-        /// TODO
-        /// Tohle je asi taky blbost. Commandy musej umet zpracovatvat primo
-        /// mud entity (charactery a tak), aby se pres ne daly ovladat
-        /// ze scriptu a tak. Mit naveseny command processor na player
-        /// connection je asi zbytecny.
-        ///  Tzn. tady to rovnou poslat na online character (respektive
-        /// online entitu, protoze to muze byt cokoliv, ne nutne jen character)
-        /// (je v principu mozne se switchnout do roomy, objectu, atd.
-        /// a davat tomu herni prikazy).
-///        this.gameEntity.processCommand(command);
-        /// TESTING:
-        this.tmpCharacter1.x = 1;
-        this.tmpCharacter2.x = 2;
-        this.tmpCharacter3.x = 3;
+        ASSERT(this.isInGame(),
+          "Attempt to process ingame command on player connection that doesn't"
+          + " have an ingame entity attached")
 
-        this.tmpCharacter1.processCommand(command);
-        this.tmpCharacter2.processCommand(command);
-        this.tmpCharacter3.processCommand(command);
-        */
+        this.ingameEntity.processCommand(command);
         break;
 
       case PlayerConnection.stage.QUITTED_GAME:
@@ -293,6 +288,22 @@ export class PlayerConnection extends IdableSaveableObject
     }
 
     return false;
+  }
+
+  public attachToGameEntity(gameEntity)
+  {
+    this.ingameEntityId = gameEntity.id;
+    gameEntity.playerConnectionId = this.id;
+  }
+
+  public detachFromGameEntity()
+  {
+    ASSERT(this.ingameEntity !== null,
+      "Attempt to detach ingame entity from " + this.account.name + "'s"
+      + "player connection when there is no ingame entity attached to it");
+
+    this.ingameEntity.playerConnectionId = null;
+    this.ingameEntityId = null;
   }
 
   // -------------- Protected class data ----------------
