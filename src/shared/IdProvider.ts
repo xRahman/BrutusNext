@@ -92,58 +92,6 @@ export class IdProvider extends SaveableObject
     return new Id(stringId, type);
   }
 
-  /*
-  public async saveLastIssuedId()
-  {
-    // saveToFile() is inherited from SaveableObject.
-    // It calls saveToJsonString() (also inherited from SaveableObject),
-    // which calls saveToJsonObject() which we have overriden to only
-    // save lastIssuedId.
-    await this.saveToFile(IdProvider.LAST_ISSUED_ID_FILE);
-  }
-
-  // Load is synchronous.
-  // It should only be called at the start of the server and it needs to be
-  // done before any ids are issued.
-  // (issuing is ids is locked untill loadLastIssuedId() is called)
-  public loadLastIssuedId()
-  {
-    let jsonString = "";
-
-    try
-    {
-      // Here we need synchronous reading because lastIssuedId needs
-      // to be loaded from file before any id is ever issued.
-      jsonString = fs.readFileSync(IdProvider.LAST_ISSUED_ID_FILE, 'utf8');
-    }
-    catch (error)
-    {
-      Mudlog.log(
-        "Error loading file '"
-        + IdProvider.LAST_ISSUED_ID_FILE + "': "
-        + error.code,
-        Mudlog.msgType.SYSTEM_ERROR,
-        Mudlog.levels.IMMORTAL);
-
-      // Throw the exception so the mud will get terminated with error
-      // message.
-      throw error;
-    }
-
-    // loadFromJsonString() is inherited from SaveableObject.
-    // It calls loadFromJsonObject() which we have overriden.
-    //   filePath is passed just so it can be printed to error messages.
-    this.loadFromJsonString(jsonString, IdProvider.LAST_ISSUED_ID_FILE);
-
-    ASSERT_FATAL(this.lastIssuedId !== null
-      && this.lastIssuedId !== undefined,
-      "Error loading lastIssuedId from file");
-
-    // Remove the lock preventing issuing of new ids.
-    this.ready = true;
-  }
-  */
-
   // -------------- Protected class data ----------------
 
   // [0] represents a start of the world - no ids have been isued yet.
@@ -166,38 +114,7 @@ export class IdProvider extends SaveableObject
     await this.createDirectory(directory);
 
     await this.saveContentsToFile(directory + fileName);
-
   }
-  /*
-  protected async saveToFile(filePath: string)
-  {
-    await this.saveContentsToFile(filePath);
-  }
-
-  // Overrides SaveableObject::loadFromJsonObject() to only
-  // save lastIssuedId.
-  protected saveToJsonObject(): Object
-  {
-    let jsonObject: Object = {};
-
-    // We only save lastIssuedId.
-    jsonObject['lastIssuedId'] = this.lastIssuedId;
-
-    return jsonObject;
-  }
-
-  // Overrides loadFromJsonObject() from SaveableObject to only
-  // load lastIssuedId.
-  protected loadFromJsonObject(jsonObject: Object)
-  {
-    const property = 'lastIssuedId';
-
-    ASSERT_FATAL(property in jsonObject,
-      "Property '" + property + "' exists in object but not in JSON data");
-
-    this.lastIssuedId = jsonObject[property];
-  }
-  */
 }
 
 class IdProviderTmpData

@@ -45,10 +45,12 @@ export class SaveableObject extends NamedClass
       typeof global[className] !== 'undefined',
       "Attempt to createInstance() of unknown type"
       + " '" + className + "'. You probably forgot to add"
-      + " something like 'global['Character'] = Character;'"
-      + " at the end of your module."
+      + " a record to DynamicClasses.ts file for your new class."
     );
 
+    // This accesses a class constructor by it's name. Consctructor of
+    // each class that is supposed to be dynamically loaded here needs
+    // to be added to 'global' object in DynamicClasses.ts file.
     let newObject = new global[className](...args);
 
     // Type cast to <SaveableObject> is here for TypeScript to be roughly
@@ -224,119 +226,6 @@ export class SaveableObject extends NamedClass
           jsonObject[property],
           filePath
         );
-
-      /*
-      // First handle the case that property in JSON has null value. In that
-      // case our property also needs to be null, no matter what type it is.
-      if (jsonObject[property] === null)
-      {
-        this[property] = null;
-      }
-      else  // Here we know that jsonObject[property] isn't null.
-      {
-        if (typeof jsonObject[property] === 'object')
-        {
-          // If our corresponding property is null, it wouldn't be able to
-          // load itself from JSON, because you can't call methods on null
-          // object. So we first need to assign a new instance of correct
-          // type to it - the type is saved in JSON in 'className' property.
-          if (this[property] === null)
-          {
-            if (Array.isArray(jsonObject[property]))
-            {
-              // If we are loading an array, we set our corresponding property
-              // to be an empty array o be able to accomodate it's elements.
-              this[property] = [];
-            }
-            else  // Here we know that we are no loading an array.
-            {
-              ASSERT_FATAL
-              (
-                typeof jsonObject[property].className !== 'undefined',
-                "Missing 'className' property in a nested object in file "
-                + filePath
-              );
-
-              // Initiate our property to a new instance of correct type.
-              // (Type is saved as 'className' property)
-              this[property] =
-                SaveableObject.createInstance(jsonObject[property].className);
-            }
-          }
-
-          // Now we are sure that this[property] isn't null (either it wasn't
-          // null or we have just assigned a new instance of correct type in
-          // it). So we can safely load it from corresponding JSON.
-
-          if (Array.isArray(jsonObject[property]))
-          {
-            ASSERT_FATAL(Array.isArray(this[property]),
-              "Attempt to load an array from file " + filePath + " to"
-              + "a property '" + property + "' that is not an array");
-
-            // If our array is not yet empty, empty it so old content won't
-            // merge with newly loaded one.
-            if (this[property] !== [])
-            {
-              this[property] = [];
-            }
-
-            for (let i = 0; i < jsonObject[property].length; i++)
-            {
-              this[property].push(this.loadProperty(property, jsonObject[property][i], filePath));
-            }
-          }
-          else  // Here we are loading a generic object, not an array.
-          {
-            ASSERT('loadFromJsonObject' in this[property],
-              "Attempt to load a nested object from file " + filePath + " into"
-              + " a property '" + property + "' which is not a saveable object."
-              + " Maybe you forgot to extend your class from SaveableObject?");
-
-            this[property].loadFromJsonObject(jsonObject[property], filePath);
-          }
-        }
-        else  // We are loading simple (non-object) property.
-        {
-          ASSERT_FATAL(typeof this[property] !== 'object',
-            "Property '" + property + "' is object in this but a simple"
-            + " (non-object) type in JSON. Maybe you are trying to load"
-            + " an outdated version of file " + filePath + "?"
-            + " (It's also possible that your property is a string which"
-            + " has not been inicialized by string literal and therefore"
-            + " is treated by javascript as 'object'. Make sure that all"
-            + " strings are inicialized like this.name = 'Karel'");
-
-          this[property] = jsonObject[property];
-        }
-      }
-      */
-      /*
-      if
-      (
-        this[property] !== null
-        && typeof this[property] === 'object'
-        && 'loadFromJsonObject' in this[property]
-      )
-      {
-        // This handles the situation when you put SaveableObject into
-        // another SaveableObject.
-        // (FilePath is passed just so it can be printed to error messages).
-        this[property].loadFromJsonObject(jsonObject[property], filePath);
-      }
-      else
-      {
-        // 'version' and 'className' properties are not loaded. Classname
-        // needs to be the same of course (which is checked previously), version
-        // might differ if someone bumped it up in the code, but in that case
-        // we really need it to bump up, so we don't want to overwrite new
-        // version number with the old value from saved file.
-        if (property !== 'version' && property !== 'className')
-        {
-          this[property] = jsonObject[property];
-        }
-      }
-      */
     }
   }
 
@@ -367,26 +256,6 @@ export class SaveableObject extends NamedClass
       {
         jsonObject[property] = this.saveProperty(this[property]);
       }
-      /*
-      if (this.isNonNullObject(property))
-      {
-        // If property is not a saveable object or it's 'isSaved' property
-        // is set to false, we do nothing so it won't get saved.
-        if (this.isSaveableObjectToBeSaved(property))
-        {
-          jsonObject[property] = this[property].saveToJsonObject();
-        }
-      }
-      else
-      {
-        // Don't save 'name' property here, because we saved it by hack
-        // as the first property to be saved.
-        if (this.isSavedProperty(property) && property !== 'name')
-        {
-          jsonObject[property] = this[property];
-        }
-      }
-      */
     }
 
     return jsonObject;

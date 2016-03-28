@@ -35,7 +35,10 @@ export class CommandSearchList
     // Add all possible abbreviations of command.
     for (let i = 0; i < command.length; i++)
     {
-      let abbrev = command.substring(0, i);
+      // Substring from 0 to (i + 1), because without +1 it would start
+      // with empty string and end with a string 1 character shorten than
+      // lenght.
+      let abbrev = command.substring(0, i + 1);
 
       if (!this.isAbbrevRegistered(abbrev))
         this.abbrevs[abbrev] = handler;
