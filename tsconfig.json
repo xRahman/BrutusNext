@@ -15,6 +15,7 @@
   "files":
   [
     "./src/headers/node.d.ts",
+    "./src/game/DynamicClasses.ts",
     "./src/BrutusNext.ts"
   ]
 }
