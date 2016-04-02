@@ -1,0 +1,25 @@
+{
+  "name": "Base Camp",
+  "className": "Area",
+  "version": 0,
+  "id":
+  {
+    "className": "Id",
+    "version": 0,
+    "stringId": "6-imj1yd9e",
+    "type": "Area"
+  },
+  "contents":
+  {
+    "className": "IdList",
+    "version": 0,
+    "entityIds": [
+    {
+      "className": "Id",
+      "version": 0,
+      "stringId": "7-imj1yd9e",
+      "type": "Room"
+    }]
+  },
+  "isNameUnique": false
+}

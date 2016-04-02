@@ -38,7 +38,7 @@ export class IdableObjectContainer<T extends IdableSaveableObject>
     ASSERT_FATAL(item.id === null,
       "Attempt to add item which already has an id under new id");
 
-    let newId = Server.idProvider.generateId(this.typeOfId, item.className);
+    let newId = Server.idProvider.generateId(item.className);
 
     this.itemNotYetExistsCheck(newId);
 
@@ -121,9 +121,6 @@ export class IdableObjectContainer<T extends IdableSaveableObject>
 
   // This hash map allows to access items using unique ids.
   protected itemContainer: { [key: string]: T } = {};
-
-  // className of item this id points to.
-  protected typeOfId = "";
 
   // -------------- Protected methods -------------------
 

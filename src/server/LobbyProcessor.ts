@@ -40,7 +40,7 @@ export class LobbyProcessor
   {
     ASSERT(this.stage === LobbyProcessor.stage.INITIAL
         || this.stage === LobbyProcessor.stage.NOT_IN_LOBBY,
-      "Entering game menu from invalid lobby stage");
+      "Entering game menu from invalid lobby stage (" + this.stage + ")");
 
     this.stage = LobbyProcessor.stage.IN_MENU;
     this.sendMenu();
@@ -74,9 +74,9 @@ export class LobbyProcessor
 
   protected static stage =
   {
-    INITIAL: 0, // Initial stage.
-    IN_MENU: 1,
-    NOT_IN_LOBBY: 2
+    INITIAL: 'INITIAL', // Initial stage.
+    IN_MENU: 'IN_MENU',
+    NOT_IN_LOBBY: 'NOT_IN_LOBBY'
   }
 
   protected stage = LobbyProcessor.stage.INITIAL;
@@ -163,17 +163,26 @@ export class LobbyProcessor
     {
       this.playerConnection.send("&wAn error occured while entering"
         + " game. Please contact implementors.");
+
+      return;
     }
 
     let newCharacterId = this.createNewCharacter(account.name);
 
-    if (newCharacterId)
+    if (!ASSERT(newCharacterId !== null,
+      "Failed to create new character (" + account.name + ")"))
     {
-      let character = Game.entities.getItem(newCharacterId);
-
-      this.attachConnectionToGameEntity(character);
-      this.playerConnection.enterGame();
+      this.playerConnection.send("&wAn error occured while creating"
+        + " your character. Please contact implementors.");
+      return;
     }
+
+    this.stage = LobbyProcessor.stage.NOT_IN_LOBBY;
+
+    let character = Game.entities.getItem(newCharacterId);
+
+    this.attachConnectionToGameEntity(character);
+    this.playerConnection.enterGame();
   }
   
   protected async loadCharacter(characterName: string)
