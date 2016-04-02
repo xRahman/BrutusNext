@@ -85,7 +85,7 @@ export class AuthProcessor
         break;
 
       default:
-        ASSERT(false, "Unknown stage");
+        ASSERT(false, "Unknown stage: " + this.stage);
         break;
     }
   }
@@ -106,11 +106,11 @@ export class AuthProcessor
 
   protected static stage =
   {
-    INITIAL: 0, // Initial stage.
-    LOGIN: 1,
-    PASSWORD: 2,
-    NEW_PASSWORD: 3,
-    DONE: 4
+    INITIAL: 'INITIAL', // Initial stage.
+    LOGIN: 'LOGIN',
+    PASSWORD: 'PASSWORD',
+    NEW_PASSWORD: 'NEW_PASSWORD',
+    DONE: 'DONE'
   }
 
   protected stage = AuthProcessor.stage.INITIAL;

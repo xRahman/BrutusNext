@@ -1,0 +1,26 @@
+{
+  "name": "Landing Site",
+  "className": "Room",
+  "version": 0,
+  "id":
+  {
+    "className": "Id",
+    "version": 0,
+    "stringId": "7-imj1yd9e",
+    "type": "Room"
+  },
+  "contents":
+  {
+    "className": "IdList",
+    "version": 0,
+    "entityIds": []
+  },
+  "isNameUnique": false,
+  "prototypeId": null,
+  "roomInfo": null,
+  "exits":
+  {
+    "className": "Exits",
+    "version": 0
+  }
+}

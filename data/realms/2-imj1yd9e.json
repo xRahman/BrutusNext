@@ -1,0 +1,25 @@
+{
+  "name": "Prototype Realm",
+  "className": "Realm",
+  "version": 0,
+  "id":
+  {
+    "className": "Id",
+    "version": 0,
+    "stringId": "2-imj1yd9e",
+    "type": "Realm"
+  },
+  "contents":
+  {
+    "className": "IdList",
+    "version": 0,
+    "entityIds": [
+    {
+      "className": "Id",
+      "version": 0,
+      "stringId": "3-imj1yd9e",
+      "type": "Area"
+    }]
+  },
+  "isNameUnique": false
+}

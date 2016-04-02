@@ -29,6 +29,7 @@ export class Server
   constructor()
   {
     this.timeOfBoot = new Date();
+    this.idProvider = new IdProvider(this.timeOfBoot);
   }
 
   // --------------- Static accessors -------------------
@@ -109,7 +110,7 @@ export class Server
 
   // -------------- Protected class data ----------------
 
-  protected idProvider = new IdProvider();
+  protected idProvider = null;
   protected game = new Game();
   protected accountManager = new AccountManager();
   protected playerConnectionManager = new PlayerConnectionManager();
@@ -140,10 +141,6 @@ export class Server
   // Creates an instance of the game and loads its state from the disk.
   protected async loadGame()
   {
-    // Id provider needs to be loaded first in order to be able to correctly
-    // generate new ids (lastIssuedId needs to be loaded).
-    await this.idProvider.load();
-
     // TODO: Check, ze hra jeste neni loadnuta
 
     // Load the game.
