@@ -1,13 +1,19 @@
 {
+  "name": "Rahman",
   "className": "Character",
   "version": 0,
   "id":
   {
     "className": "Id",
     "version": 0,
-    "stringId": "3",
+    "stringId": "3-imj46ymp",
     "type": "Character"
   },
-  "name": "Rahman",
-  "timeOfCreation": "2016-01-01T13:30:04.791Z"
+  "contents":
+  {
+    "className": "IdList",
+    "version": 0,
+    "entityIds": []
+  },
+  "isNameUnique": true
 }

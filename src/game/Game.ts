@@ -69,7 +69,7 @@ export class Game
 
     let world = new World();
     world.name = "BrutusNext World";
-    let worldId = new Id(World.WORLD_ENTITY_ID, world.className);
+    let worldId = Server.idProvider.generateId('World');
 
     world.id = worldId;
 

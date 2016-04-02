@@ -126,20 +126,9 @@ export class SaveableObject extends NamedClass
       "Directory path '" + directory + "' doesn't end with '/'");
 
     // Directory might not yet exist, so we better make sure it does.
-    await this.createDirectory(directory);
-
-    // lastIssuedId needs to be saved each time we are saved because we might
-    // be saving ids that were issued after last lastIssuedId save.
-    await Server.idProvider.save();
+    await promisifiedFS.ensureDir(directory);
 
     await this.saveContentsToFile(directory + fileName);
-
-    // Save current lastIssuedId once more, because it is possible that while
-    // we were saving it, another one was issued and saved withing the object
-    // we jast saved.
-    // (It would actually be ok just to save it here, but lastIssuedId
-    // consistency is absolutely crucial, so better be safe)
-    await Server.idProvider.save();
   }
 
   protected async saveContentsToFile(filePath: string)
@@ -261,21 +250,6 @@ export class SaveableObject extends NamedClass
     return jsonObject;
   }
 
-  protected async createDirectory(directory: string)
-  {
-    // (According to node.js documentation, it's ok not to check if
-    // directory exists prior to calling mkdir(), the check is done by it)
-    try
-    {
-      await promisifiedFS.mkdir(directory);
-    }
-    catch (e)
-    {
-      // It's ok if the directory exists, it's what we wanted to ensure.
-      // So just do nothing.
-    }
-  }
-
   // --------------- Private methods --------------------
 
   private checkClassName (jsonObject: Object, filePath: string)
@@ -359,7 +333,6 @@ export class SaveableObject extends NamedClass
   {
     let property = "";
 
-    // Also the other way around.
     for (property in jsonObject)
     {
       ASSERT_FATAL(property in this,
