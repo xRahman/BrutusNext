@@ -6,7 +6,7 @@
   {
     "className": "Id",
     "version": 0,
-    "stringId": "1",
+    "stringId": "1-imj1yd9e",
     "type": "World"
   },
   "contents":
@@ -17,13 +17,13 @@
     {
       "className": "Id",
       "version": 0,
-      "stringId": "6",
+      "stringId": "2-imj1yd9e",
       "type": "Realm"
     },
     {
       "className": "Id",
       "version": 0,
-      "stringId": "9",
+      "stringId": "5-imj1yd9e",
       "type": "Realm"
     }]
   },
