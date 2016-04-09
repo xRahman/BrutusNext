@@ -1,13 +1,13 @@
 {
-  "name": "Prototype Realm",
-  "className": "Realm",
+  "name": "Base Camp",
+  "className": "Area",
   "version": 0,
   "id":
   {
     "className": "Id",
     "version": 0,
-    "stringId": "2-imj1yd9e",
-    "type": "Realm"
+    "stringId": "6-imt2xk99",
+    "type": "Area"
   },
   "contents":
   {
@@ -17,8 +17,8 @@
     {
       "className": "Id",
       "version": 0,
-      "stringId": "3-imj1yd9e",
-      "type": "Area"
+      "stringId": "7-imt2xk99",
+      "type": "Room"
     }]
   },
   "isNameUnique": false

@@ -15,6 +15,20 @@ import {EntityContainer} from '../game/EntityContainer';
 
 export abstract class GameEntity extends EntityContainer
 {
+  /*
+  /// TEST
+
+  protected testVariable = "Hello World!";
+  protected static testVariable = { isSaved: false };
+  protected static testStaticVariable = "GameEntityStaticVariable";
+  //public test() { console.log("GameEntity::" + this.className); }
+  public test()
+  {
+    console.log("GameEntity::" + GameEntity['testStaticVariable']);
+  }
+  */
+
+  /*
   // If you were wondering why 'name' isn't passed to constructor,
   // it's because of dynamic instantiation while loading from file.
   // While it's possible to pass arguments to dynamically called
@@ -24,6 +38,7 @@ export abstract class GameEntity extends EntityContainer
   {
     super();
   }
+  */
 
   // Creates a new instance of game entity of type saved in id.
   static createInstanceFromId(id: Id, ...args: any[])
@@ -87,16 +102,16 @@ export abstract class GameEntity extends EntityContainer
     //    It's proabably better to be able to check playerConnection to
     // be null anyways, because it's intuitive way to do it (instead of
     // having to check if playerConnectionId is null).
-    if (this.tmpData.playerConnectionId === null)
+    if (this.playerConnectionId === null)
       return null;
 
     return Server.playerConnectionManager
-      .getPlayerConnection(this.tmpData.playerConnectionId);
+      .getPlayerConnection(this.playerConnectionId);
   }
 
-  public set playerConnectionId(value: Id)
+  public setPlayerConnectionId(value: Id)
   {
-    this.tmpData.playerConnectionId = value;
+    this.playerConnectionId = value;
   }
 
   // -------------- Protected accessors -----------------
@@ -146,9 +161,13 @@ export abstract class GameEntity extends EntityContainer
       return this.getIdStringValue() + ".json";
   }
 
-  // -------------- Protected class data ----------------
+  // -------------- Private class data ----------------
 
-  protected tmpData = new GameEntityTmpData();
+  // null if no player is connected to (is playing as) this entity,
+  // connectionId otherwise.
+  private playerConnectionId: Id = null;
+  // Flag saying that playerConnectionId is not to be saved to JSON.
+  private static playerConnectionId = { isSaved: false };
 
   // --------------- Protected methods ------------------
 
@@ -156,7 +175,7 @@ export abstract class GameEntity extends EntityContainer
   protected unknownCommand()
   {
     if (this.playerConnection)
-      this.playerConnection.send("&gHuh?!?");
+      this.playerConnection.sendAsBlock("&gHuh?!?");
   }
 
   // ---------------- Command handlers ------------------
@@ -166,7 +185,8 @@ export abstract class GameEntity extends EntityContainer
   {
     if (this.playerConnection)
     {
-      this.playerConnection.send("&gYou have to type quit--no less, to quit!");
+      this.playerConnection
+        .sendAsBlock("&gYou have to type quit--no less, to quit!");
     }
   }
 
@@ -175,19 +195,10 @@ export abstract class GameEntity extends EntityContainer
     if (this.playerConnection)
     {
       this.announcePlayerLeavingGame();
-      this.playerConnection.send("&gGoodbye, friend.. Come back soon!\r\n");
       this.playerConnection.enterLobby();
+      this.playerConnection
+        .sendAsBlock("\n&gGoodbye, friend.. Come back soon!");
       this.playerConnection.detachFromGameEntity();
     }
   }
-}
-
-// ---------------------- private module stuff -------------------------------
-
-// Auxiliary class storing temporary data that should not be saved.
-class GameEntityTmpData
-{
-  // null if no player is connected to (is playing as) this entity,
-  // connectionId otherwise.
-  public playerConnectionId: Id = null;
 }

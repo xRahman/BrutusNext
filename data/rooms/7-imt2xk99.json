@@ -1,12 +1,12 @@
 {
-  "name": "Prototype Room",
+  "name": "Landing Site",
   "className": "Room",
   "version": 0,
   "id":
   {
     "className": "Id",
     "version": 0,
-    "stringId": "4-imj1yd9e",
+    "stringId": "7-imt2xk99",
     "type": "Room"
   },
   "contents":
@@ -21,6 +21,8 @@
   "exits":
   {
     "className": "Exits",
-    "version": 0
+    "version": 0,
+    "exits":
+    {}
   }
 }

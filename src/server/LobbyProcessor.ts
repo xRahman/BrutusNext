@@ -17,14 +17,6 @@ import {GameEntity} from '../game/GameEntity';
 import {Character} from '../game/characters/Character';
 import {Mudlog} from '../server/Mudlog';
 
-const GAME_MENU =
-    "\r\n&wWelcome to &RBRUTUS &YNext!\r\n"
-  + "\r\n"
-  + "&G0&g) &bExit from &RBRUTUS &YNext.\r\n"
-  + "&G1&g) &BEnter the game.\r\n"
-  + "\r\n"
-  + "&wMake your choice: ";
-
 export class LobbyProcessor
 {
   // In this special case it's ok to hold direct reference to
@@ -33,6 +25,25 @@ export class LobbyProcessor
   // of here. In any other case, unique id of PlayerConnection (within
   // PlayerConnectionManager) needs to be used instead of a direct reference!
   constructor(protected playerConnection: PlayerConnection) { }
+
+  public static get GAME_MENU()
+  {
+    return "&wWelcome to &RBRUTUS &YNext!\n"
+          + "\n"
+          + "&G0&g) &bExit from &RBRUTUS &YNext.\n"
+          + "&G1&g) &BEnter the game.\n"
+          + "\n"
+          + "&wMake your choice: ";
+  }
+
+  // ----------------- Public data ----------------------
+
+  public static stage =
+  {
+    INITIAL: 'INITIAL', // Initial stage.
+    IN_MENU: 'IN_MENU',
+    NOT_IN_LOBBY: 'NOT_IN_LOBBY'
+  }
 
   // ---------------- Public methods --------------------
 
@@ -43,7 +54,6 @@ export class LobbyProcessor
       "Entering game menu from invalid lobby stage (" + this.stage + ")");
 
     this.stage = LobbyProcessor.stage.IN_MENU;
-    this.sendMenu();
   }
 
   public processCommand(command: string)
@@ -65,28 +75,18 @@ export class LobbyProcessor
         break;
 
       default:
-        ASSERT(false, "Unknown stage");
+        ASSERT(false, "Unknown lobby stage: " + this.stage);
         break;
     }
   }
 
-  // -------------- Protected class data ----------------
+  public getStage() { return this.stage; }
 
-  protected static stage =
-  {
-    INITIAL: 'INITIAL', // Initial stage.
-    IN_MENU: 'IN_MENU',
-    NOT_IN_LOBBY: 'NOT_IN_LOBBY'
-  }
+  // -------------- Protected class data ----------------
 
   protected stage = LobbyProcessor.stage.INITIAL;
 
   // --------------- Protected methods ------------------
-
-  protected sendMenu()
-  {
-    this.playerConnection.send(GAME_MENU);
-  }
 
   protected async processMenuChoice(choice: string)
   {
@@ -120,15 +120,14 @@ export class LobbyProcessor
       break;
 
       default:
-        this.playerConnection.send("That's not a menu choice!");
-        this.sendMenu();
+        this.playerConnection.sendAsBlock("\nThat's not a menu choice!");
       break;
     }
   }
 
   protected quitGame()
   {
-    this.playerConnection.send("&wGoodbye. Have a nice day...\r\n");
+    this.playerConnection.sendAsPrompt("&wGoodbye. Have a nice day...");
     this.stage = LobbyProcessor.stage.NOT_IN_LOBBY;
     this.playerConnection.quitGame();
   }
@@ -161,8 +160,11 @@ export class LobbyProcessor
       "Player account '" + account.name + "' has attempted to enter game"
       + "with ingame entity already attached"))
     {
-      this.playerConnection.send("&wAn error occured while entering"
-        + " game. Please contact implementors.");
+      this.playerConnection.sendAsBlock
+      (
+        "&wAn error occured while entering"
+        + " game. Please contact implementors."
+      );
 
       return;
     }
@@ -172,8 +174,11 @@ export class LobbyProcessor
     if (!ASSERT(newCharacterId !== null,
       "Failed to create new character (" + account.name + ")"))
     {
-      this.playerConnection.send("&wAn error occured while creating"
-        + " your character. Please contact implementors.");
+      this.playerConnection.sendAsBlock
+      (
+        "&wAn error occured while creating"
+        + " your character. Please contact implementors."
+      );
       return;
     }
 
@@ -249,11 +254,11 @@ export class LobbyProcessor
         + " that already exists.");
 
       // Notify the player what went wrong.
-      this.playerConnection.send
+      this.playerConnection.sendAsBlock
       (
-        "Something is wrong, character with name '" + characterName + "'"
+        "Something is wrong, character named '" + characterName + "'"
         + " already exists. Please contact implementors and ask them to"
-        + "resolve this issue.\r\n"
+        + "resolve this issue."
       );
 
       return true;

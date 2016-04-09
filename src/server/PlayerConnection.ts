@@ -86,8 +86,11 @@ export class PlayerConnection extends IdableSaveableObject
 
     this.stage = PlayerConnection.stage.IN_GAME;
 
-    this.send("&gWelcome to the land of &RBrutus&YNext!"
-            + " &gMay your visit here be... Interesting.\r\n");
+    this.sendAsPromptlessBlock
+    (
+      "\n&gWelcome to the land of &RBrutus&YNext!"
+      + " &gMay your visit here be... &GInteresting."
+    );
 
     this.ingameEntity.announcePlayerEnteringGame();
   }
@@ -109,6 +112,54 @@ export class PlayerConnection extends IdableSaveableObject
   }
 
   // ---------------- Public methods --------------------
+
+  public sendMotd(param: { withPrompt: boolean })
+  {
+    let motd = "\n&wThere is no message of the day at this time.";
+
+    // TODO: Umoznit nastavovat MOTD a tady ho posilat, pokud je nastavene.
+
+    if (param.withPrompt)
+      this.sendAsBlock(motd);
+    else
+      this.sendAsPromptlessBlock(motd);
+  }
+
+  public sendLastLoginInfo()
+  {
+    // Last login info looks like:
+    //
+    // There was #377256 players since 3.1.2002
+    //
+    // Last login: localhost at Sat Apr  2 20:40:06 2016
+
+    ///    let numberOfPlayersInfo =
+    ///      "&wThere was #" + Server.getNumberOfPlayers()
+    ///      + " players since &W3. 4. 2016";
+
+    let lastLoginDate = "unknown date"
+
+    if (ASSERT(this.account.getLastLoginDate() !== null,
+      "Attempt to send last login info of account "
+      + this.account.name + " which doesn't have it"
+      + " initialized yet"))
+    {
+      /// Pozn: Pres telnet samozrejme nezjistit, jaky ma player nastaveny
+      /// locale, takze to bude nejspis locale serveru, nebo tak neco.
+      /// (Asi by se muselo nastavovat rucne v menu jaky chci mit format
+      ///  data a casu)
+      /// BTW toLocaleString('cs-CZ') nefunguje, porad je to anglicky format.
+      lastLoginDate = this.account.getLastLoginDate().toLocaleString();
+    }
+
+    let lastLoginInfo =
+      "&wLast login: " + this.account.getLastLoginAddress()
+      + " at " + lastLoginDate;
+
+///    this.sendAsPromptlessBlock(numberOfPlayersInfo);
+
+    this.sendAsBlock(lastLoginInfo);
+  }
 
   // Handles situation when player connects to previously offline account .
   public connectToAccount(account: Account)
@@ -270,10 +321,67 @@ export class PlayerConnection extends IdableSaveableObject
     }
   }
 
-  // Sends a string to the user.
-  public send(data: string)
+  // Send data to the connection without adding any newlines.
+  // (It means that player will type right next to this output)
+  public sendAsPrompt(data: string)
   {
-    this.socketDescriptor.send(data);
+    this.send(data, { asBlock: false, addPrompt: false });
+  }
+
+  // Send data as block, followed by prompt.
+  // (It means that a newline or an empty line will be added to data,
+  //  followed by player's prompt.)
+  public sendAsBlock(data: string)
+  {
+    this.send(data, { asBlock: true, addPrompt: true });
+  }
+
+  // Send data as block without prompt.
+  // (It means that a newline or an empty line will be added to data,
+  //  but no prompt.)
+  public sendAsPromptlessBlock(data: string)
+  {
+    this.send(data, { asBlock: true, addPrompt: false });
+  }
+
+  public generatePrompt(): string
+  {
+    let prompt = "&g>";
+
+    switch (this.lobbyProcessor.getStage())
+    {
+      case LobbyProcessor.stage.INITIAL:
+        ASSERT(false, "LobbyProcessor has not yet been initialized, prompt"
+          + " is not supposed be generated yet");
+        break;
+
+      case LobbyProcessor.stage.IN_MENU:
+        // When player is in lobby, menu is his prompt.
+        prompt = LobbyProcessor.GAME_MENU;
+        break;
+
+      case LobbyProcessor.stage.NOT_IN_LOBBY:
+        /// TODO: Opravdu generovat prompt, kdyz je player ve hre.
+        prompt = "&gDummy_ingame_prompt >";
+        break;
+
+      default:
+        ASSERT(false,
+          "Unknown lobby stage: "
+          + this.lobbyProcessor.getStage());
+
+        prompt = "&wInvalid prompt >";
+        break;
+    }
+
+    // An empty space is added after the prompt to separate it from
+    // player input.
+    prompt += " ";
+
+    if (this.containsNewlineCharacters(prompt))
+      prompt = this.normalizeNewlineCharacters(prompt);
+
+    return prompt;
   }
 
   public isInGame()
@@ -302,7 +410,7 @@ export class PlayerConnection extends IdableSaveableObject
       "Attempt to detach ingame entity from " + this.account.name + "'s"
       + "player connection when there is no ingame entity attached to it");
 
-    this.ingameEntity.playerConnectionId = null;
+    this.ingameEntity.setPlayerConnectionId(null);
     this.ingameEntityId = null;
   }
 
@@ -322,14 +430,14 @@ export class PlayerConnection extends IdableSaveableObject
 
   protected stage = PlayerConnection.stage.INITIAL;
 
-  // -------------- Protected methods -------------------
+  // ----------- Auxiliary private methods --------------
 
-  protected announceReconnecting()
+  private announceReconnecting()
   {
-    this.send("&wYou have reconnected to your character.");
+    this.sendAsBlock("&wYou have reconnected to your character.");
   }
 
-  protected getOldConnection(account: Account): PlayerConnection
+  private getOldConnection(account: Account): PlayerConnection
   {
     if (account.playerConnectionId !== null)
     {
@@ -339,9 +447,142 @@ export class PlayerConnection extends IdableSaveableObject
     return null;
   }
 
-  protected announceConnectionBeingUsurped()
+  private announceConnectionBeingUsurped()
   {
-    this.send("Somebody (hopefuly you) has just connected to this account."
-      + " Closing this connection...");
+    this.sendAsPrompt("Somebody (hopefuly you) has just connected to this"
+      + " account. Closing this connection...");
+  }
+
+  // Sends a string to the user.
+  // (automatically handles inserting of empty lines)
+  private send(data: string, mode: { asBlock: boolean, addPrompt: boolean })
+  {
+    if (this.isDataEmpty(data))
+      return;
+
+    let newlineCharactersFound = this.countEndingNewlineCharacters(data);
+
+    // Cut off ending newline characters if there are any.
+    // (we do trimming here and not inside counting function to save
+    //  copying of data if trimming is not needed)
+    if (newlineCharactersFound > 0)
+      data = data.substring(0, data.length - newlineCharactersFound);
+
+    // Now we are sure that data doesn't end with newline characters.
+
+    // This converts all newline characters to '\r\n'
+    if (this.containsNewlineCharacters(data))
+      data = this.normalizeNewlineCharacters(data);
+
+    if (mode.asBlock)
+    {
+
+      // Now add a default newline to separate messages from each other.
+      data += '\r\n';
+
+      // Add another newline if player doesn't have brief mode.
+      /// TODO: if (!this.briefMode())
+      data += '\r\n';
+    }
+
+    if (mode.addPrompt)
+    {
+      data += this.generatePrompt();
+    }
+
+    // Append gray color after any output sent to player.
+    // This is to normalize color of player-typed input in raw telnet
+    // clients (input is displayed with the color of last output).
+    data += '&w';
+
+    this.socketDescriptor.send(data);
+  }
+
+
+  private getPlayedCharacterName(): string
+  {
+    if (this.ingameEntity !== null)
+    {
+      return " playing character " + this.ingameEntity.name;
+    }
+    else
+    {
+      return "";
+    }
+  }
+
+  private isDataEmpty(data: string): boolean
+  {
+    if (data === "")
+    {
+      ASSERT(false,
+        "Attempt to send empty string to account "
+        + this.account.name + this.getPlayedCharacterName());
+
+      return true;
+    }
+
+    return false;
+  }
+
+  private countEndingNewlineCharacters(data: string): number
+  {
+    let newlineCharactersFound = 0;
+
+    // Count number of '\r' or '\n' characters from the end of the string.
+    // (ending with just '\r' or '\r\r' or '\n\n' doesn't make sense
+    // of course, but endign with correct line break is also an error
+    // so we will handle everything the same way.)
+    for (let i = data.length - 1; i >= 0; i++)
+    {
+      if (data.charAt(i) === '\n' || data.charAt(i) === '\r')
+        newlineCharactersFound++;
+      else
+        break;
+    }
+
+    // Log an error (via ASSERT) if any newline characters are found.
+    if (newlineCharactersFound > 0)
+    {
+
+      ASSERT(false,
+        "String '" + data + "' sent to player " + this.account.name
+        + this.getPlayedCharacterName() + " ends with newline characters."
+        + " Make sure that you don't add no '\\r' or '\\n' characters at any"
+        + " combination to the end of any strings that are sent to players");
+    }
+
+    return newlineCharactersFound;
+  }
+
+  private containsNewlineCharacters(data: string): boolean
+  {
+    if (data.indexOf('\r') !== -1)
+    {
+      ASSERT(false,
+        "String '" + data + "' sent to player " + this.account.name
+        + this.getPlayedCharacterName() + " contains '\\r' characters."
+        + " Make sure that you only use '\\n' in multiline strings");
+
+      return true;
+    }
+
+    if (data.indexOf('\n') !== -1)
+      return true;
+
+    return false;
+  }
+
+  private normalizeNewlineCharacters(data: string): string
+  {
+    // Make sure that all newlines are representedy by '\r\n'.
+    if (data && data.length)
+    {
+      // First remove all '\r' characters, then replace all '\n'
+      // characters with '\r\n'.
+      data = data.replace(/\r/gi, "").replace(/\n/gi, '\r\n');
+    }
+
+    return data;
   }
 }

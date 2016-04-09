@@ -25,13 +25,6 @@ export class PlayerConnectionManager
     let newConnection = new PlayerConnection(socketDescriptor)
     let newId = this.addItemUnderNewId(newConnection);
 
-    // Player connections are not persistent (if player disconnects and
-    // connects again, he will have new connectionId), so there is no point
-    // in saving playerConnectionIds.
-    // (Here we are creating a new property - 'isSaved' normaly doesn't exist,
-    // because it's only needed when something is not supposed to save.)
-    newId['isSaved'] = false;
-
     return newId;
   }
 
