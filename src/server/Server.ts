@@ -24,6 +24,9 @@ import {IdProvider} from '../shared/IdProvider';
 import {PlayerConnectionManager} from '../server/PlayerConnectionManager';
 import {Account} from '../server/Account';
 
+// Built-in node.js modules.
+import * as fs from 'fs';  // Import namespace 'fs' from node.js
+
 export class Server
 {
   constructor()
@@ -102,7 +105,7 @@ export class Server
   // to be called on Server.getInstance().
   public async run(telnetPort: number)
   {
-    await this.loadGame();
+    await this.createGame();
 
     this.startTelnetServer(telnetPort);
     this.startHttpServer();
@@ -139,11 +142,19 @@ export class Server
   }
 
   // Creates an instance of the game and loads its state from the disk.
-  protected async loadGame()
+  protected async createGame()
   {
-    // TODO: Check, ze hra jeste neni loadnuta
+    // If 'data' directory doesn't exist at all, create and save a new world.
+    if(!fs.existsSync("./data/"))
+    {
+      await this.game.createNewWorld();
+    }
+    else
+    {
+      // TODO: Check, ze hra jeste neni loadnuta
 
-    // Load the game.
-    await this.game.load();
+      // Load the game.
+      await this.game.load();
+    }
   }
 }

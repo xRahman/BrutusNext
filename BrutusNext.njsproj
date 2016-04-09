@@ -67,6 +67,7 @@
     <TypeScriptCompile Include="src\game\AbbrevSearchList.ts" />
     <TypeScriptCompile Include="src\shared\ASSERT.ts" />
     <TypeScriptCompile Include="src\game\commands\CommandSearchList.ts" />
+    <TypeScriptCompile Include="src\shared\AttributableClass.ts" />
     <TypeScriptCompile Include="src\shared\Id.ts" />
     <TypeScriptCompile Include="src\shared\NamedClass.ts" />
     <TypeScriptCompile Include="src\shared\IdableObjectContainer.ts" />

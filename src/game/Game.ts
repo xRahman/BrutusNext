@@ -61,19 +61,19 @@ export class Game
 
   // ---------------- Public methods --------------------
 
-  // Loads initial state of the game from disk.
-  public async load()
+  // Creates and saves a new world.
+  // (this method sould only be used if you don't have 'data' directory at all)
+  public async createNewWorld()
   {
-    /*
-    /// Provizorvni prvni vytvoreni instance sveta:
+    // Create world 'BrutusNext World'.
 
     let world = new World();
     world.name = "BrutusNext World";
-    let worldId = Server.idProvider.generateId('World');
+    let worldId = Server.idProvider.generateId(world.className);
 
     world.id = worldId;
 
-    /// create realm Prototype Realm
+    // Create realm 'Prototype Realm'.
 
     let newRealmId = world.addNewRealm("Prototype Realm");
     let newRealm = <Realm>Game.entities.getItem(newRealmId);
@@ -83,7 +83,7 @@ export class Game
 
     let newRoomId = newArea.addNewRoom("Prototype Room");
 
-    /// create realm Shattered Lands
+    // Create realm 'Shattered Lands'.
 
     newRealmId = world.addNewRealm("Shattered Lands");
     newRealm = <Realm>Game.entities.getItem(newRealmId);
@@ -94,15 +94,23 @@ export class Game
     newRoomId = newArea.addNewRoom("Landing Site");
 
     world.save();
+  }
+
+  // Loads initial state of the game from disk.
+  public async load()
+  {
+    /*
+    /// TEST
+
+    let testRoom = new Room();
+    testRoom.test();
     */
 
-///    /*
     /// Tohle tu asi bude finalne:
     let world = <World>GameEntity.createInstance('World');
 
     // Load entity from file.
     await world.load();
-///    */
   }
 
   // -------------- Protected class data ----------------

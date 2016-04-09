@@ -6,7 +6,7 @@
   {
     "className": "Id",
     "version": 0,
-    "stringId": "3-imj46ymp",
+    "stringId": "a-imt2xk99",
     "type": "Character"
   },
   "contents":
@@ -15,5 +15,6 @@
     "version": 0,
     "entityIds": []
   },
-  "isNameUnique": true
+  "isNameUnique": true,
+  "timeOfCreation": "2016-04-09T11:50:15.960Z"
 }

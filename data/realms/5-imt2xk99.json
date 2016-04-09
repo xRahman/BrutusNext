@@ -1,13 +1,13 @@
 {
-  "name": "Base Camp",
-  "className": "Area",
+  "name": "Shattered Lands",
+  "className": "Realm",
   "version": 0,
   "id":
   {
     "className": "Id",
     "version": 0,
-    "stringId": "6-imj1yd9e",
-    "type": "Area"
+    "stringId": "5-imt2xk99",
+    "type": "Realm"
   },
   "contents":
   {
@@ -17,8 +17,8 @@
     {
       "className": "Id",
       "version": 0,
-      "stringId": "7-imj1yd9e",
-      "type": "Room"
+      "stringId": "6-imt2xk99",
+      "type": "Area"
     }]
   },
   "isNameUnique": false

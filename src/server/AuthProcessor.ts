@@ -92,11 +92,11 @@ export class AuthProcessor
 
   public startLoginProcess()
   {
-    this.playerConnection.send("&GWelcome to &RBrutus &YNext!\r\n"
+    this.playerConnection.sendAsPrompt("&GWelcome to &RBrutus &YNext!\n"
       + "&wBy what name do you wish to be known? ");
 
 /// Account name variant:
-///    this.playerConnection.send("&GWelcome to the &RBrutus &YNext!\r\n"
+///    this.playerConnection.send("&GWelcome to the &RBrutus &YNext!\n"
 ///      + "By what account name do you want to be recognized? ");
 
     this.stage = AuthProcessor.stage.LOGIN;
@@ -137,16 +137,16 @@ export class AuthProcessor
     if (Server.accountManager.accountExists(accountName))
     {
       // Existing user. Ask for password.
-      this.playerConnection.send("&wPassword: ");
+      this.playerConnection.sendAsPrompt("&wPassword: ");
       this.stage = AuthProcessor.stage.PASSWORD;
     }
     else
     {
       // New user. Ask for a new password.
-      this.playerConnection.send("&wCreating a new character...\r\n"
+      this.playerConnection.sendAsPrompt("&wCreating a new character...\n"
         + "Please enter a password you want to use: ");
 /// Account name variant
-///      this.playerConnection.send("&wCreating a new user account...\r\n"
+///      this.playerConnection.send("&wCreating a new user account...\n"
 ///        + "Please enter a password for your account: ");
       this.stage = AuthProcessor.stage.NEW_PASSWORD;
     }
@@ -211,8 +211,10 @@ export class AuthProcessor
     );
 
     this.playerConnection.accountId = newAccountId;
+    this.updateLoginInfo();
     this.stage = AuthProcessor.stage.DONE;
     this.playerConnection.enterLobby();
+    this.playerConnection.sendMotd({ withPrompt: true });
   }
 
   // ----------- Auxiliary private methods --------------
@@ -221,12 +223,14 @@ export class AuthProcessor
   {
     if (!accountName)
     {
-      this.playerConnection.send(
-        "&wYou really need to enter a name to log in, sorry.\r\n"
-        + "Please enter a valid name: ");
+      this.playerConnection.sendAsPrompt
+      (
+        "&wYou really need to enter a name to log in, sorry.\n"
+        + "Please enter a valid name: "
+      );
       /// Account name variant:
       ///      this.playerConnection.send(
-      ///        "&wYou really need to enter an account name to log in, sorry.\r\n"
+      ///        "&wYou really need to enter an account name to log in, sorry.\n"
       ///        + "Please enter valid account name: ");
 
       return false;
@@ -242,12 +246,14 @@ export class AuthProcessor
 
     if (regExp.test(accountName) === true)
     {
-      this.playerConnection.send(
-        "&wName can only contain english letters.\r\n"
-        + "Please enter a valid name: ");
+      this.playerConnection.sendAsPrompt
+      (
+        "&wName can only contain english letters.\n"
+        + "Please enter a valid name: "
+      );
    /// Account name variant:
    ///      this.playerConnection.send(
-   ///        "&wAccount name can only contain english letters and numbers.\r\n"
+   ///        "&wAccount name can only contain english letters and numbers.\n"
    ///        + "Please enter valid account name: ");
 
       return false;
@@ -255,10 +261,12 @@ export class AuthProcessor
 
     if (accountName.length > AuthProcessor.MAX_ACCOUNT_NAME_LENGTH)
     {
-      this.playerConnection.send(
+      this.playerConnection.sendAsPrompt
+      (
         "&wCould you please pick something shorter, like up to "
-        + AuthProcessor.MAX_ACCOUNT_NAME_LENGTH + " characters?.\r\n"
-        + "Please enter a valid name: ");
+        + AuthProcessor.MAX_ACCOUNT_NAME_LENGTH + " characters?\n"
+        + "Please enter a valid name: "
+      );
       /// Account name variant
       ///      + "Please enter valid account name: ");
 
@@ -267,10 +275,12 @@ export class AuthProcessor
 
     if (accountName.length < AuthProcessor.MIN_ACCOUNT_NAME_LENGTH)
     {
-      this.playerConnection.send(
+      this.playerConnection.sendAsPrompt
+      (
         "&wCould you please pick a name that is at least "
-        + AuthProcessor.MIN_ACCOUNT_NAME_LENGTH + " characters long?.\r\n"
-        + "Please enter a valid name: ");
+        + AuthProcessor.MIN_ACCOUNT_NAME_LENGTH + " characters long?\n"
+        + "Please enter a valid name: "
+      );
       /// Account name variant
       ///      + "Please enter valid account name: ");
 
@@ -284,9 +294,11 @@ export class AuthProcessor
   {
     if (!password)
     {
-      this.playerConnection.send(
-        "&wYou really need to enter a password, sorry.\r\n"
-        + "Please enter a valid password: ");
+      this.playerConnection.sendAsPrompt
+      (
+        "&wYou really need to enter a password, sorry.\n"
+        + "Please enter a valid password: "
+      );
 
       return false;
     }
@@ -295,10 +307,12 @@ export class AuthProcessor
 
     if (password.length < MIN_PASSWORD_LENGTH)
     {
-      this.playerConnection.send(
+      this.playerConnection.sendAsPrompt
+      (
         "&wDo you know the joke about passwords needing to be at least "
-        + MIN_PASSWORD_LENGTH + " characters long?\r\n"
-        + "Please enter a valid password: ");
+        + MIN_PASSWORD_LENGTH + " characters long?\n"
+        + "Please enter a valid password: "
+      );
 
       return false;
     }
@@ -347,7 +361,9 @@ export class AuthProcessor
       // Structured parameters is used instead of simple bool to enforce
       // more verbosity when calling processPasswordCheck().
       if (reconnect.isReconnecting)
+      {
         this.playerConnection.reconnectToAccount(account);
+      }
       else
       {
         // Add newly loaded account to accountManager (under it's original id).
@@ -355,6 +371,9 @@ export class AuthProcessor
 
         this.playerConnection.connectToAccount(account);
       }
+
+      this.sendLoginInfo();
+      this.updateLoginInfo();
     }
     else
     {
@@ -375,10 +394,23 @@ export class AuthProcessor
       Mudlog.levels.IMMORTAL
     );
 
-    this.playerConnection.send
+    this.playerConnection.sendAsPrompt
     (
-      "&wWrong password.\r\n"
+      "&wWrong password.\n"
       + "Password: "
     );
+  }
+
+  // Sends a login info (motd, last login, etc.).
+  private sendLoginInfo()
+  {
+    this.playerConnection.sendMotd({ withPrompt: false });
+    this.playerConnection.sendLastLoginInfo();
+  }
+
+  // Updates login info to current values.
+  private updateLoginInfo()
+  {
+    this.playerConnection.account.updateLastLoginInfo();
   }
 }
