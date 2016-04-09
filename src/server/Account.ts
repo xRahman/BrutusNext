@@ -18,6 +18,9 @@ import * as crypto from 'crypto';  // Import namespace 'crypto' from node.js
 
 export class Account extends IdableSaveableObject
 {
+  // Flag saying that playerConnectionId is not to be saved to JSON.
+  private static playerConnectionId = { isSaved: false };
+
   constructor(public name: string, public playerConnectionId: Id)
   {
     super();
@@ -46,6 +49,18 @@ export class Account extends IdableSaveableObject
   public timeOfCreation = new Date();
 
   // ---------------- Public methods --------------------
+
+  public getLastLoginAddress() { return this.lastLoginAddress; }
+  public getLastLoginDate()
+  {
+    ASSERT(typeof this.lastLoginDate !== 'string',
+      "Wrong type of date object encountered in Account. This probably"
+      + " means that you have initialized a Date object with <null> value"
+      + " or assigned <null> to it prior to loading from file. You must not"
+      + " not assign <null> to properties of type Date.");
+
+    return this.lastLoginDate;
+  }
 
   // Only hash of the password is stored
   public setPasswordHash(password: string)
@@ -102,7 +117,18 @@ export class Account extends IdableSaveableObject
     return this.characters[charNumber];
   }
 
+  public updateLastLoginInfo()
+  {
+    this.lastLoginAddress = this.playerConnection.ipAddress;
+
+    // Creating a new Date object initializes it to current date and time.
+    this.lastLoginDate = new Date();
+  }
+
   // -------------- Protected class data ----------------
+
+  protected lastLoginAddress = "";
+  protected lastLoginDate = new Date(0);
 
   // --------------- Protected methods ------------------
 

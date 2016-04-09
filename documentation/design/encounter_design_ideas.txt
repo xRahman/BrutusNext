@@ -1,0 +1,6 @@
+﻿-------------------------------------------------------------------------
+
+Boss spawne addy, kteri ze zacatku nedelaji moc velkou damage, ale postupne si ji zvedaji.
+Po dobu, kdy jsou addi up, dostava boss zvysenou damage - tim vetsi, cim dyl a cim vic je jich up.
+
+-------------------------------------------------------------------------

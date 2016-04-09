@@ -45,10 +45,15 @@ export class AbbrevSearchList
   public addEntity(entity: GameEntity)
   {
     /// TODO: Misto entity.name pridat vsechny aliasy entity.
+    /// TODO: Nahradit mezery podtrzitky
+    let alias = entity.name;
 
     // Add all possible abbreviations of entity's name.
-    for (let i = 0; i < entity.name.length; i++)
-      this.addItemToAbbrev(entity.name.substring(0, i), entity.id);
+    for (let i = 0; i < alias.length; i++)
+      // From 0 to i + 1, because we don't want to add empty string and
+      // we do want to add last character of the string (substring()
+      // doesn't include right limit to the result).
+      this.addItemToAbbrev(alias.substring(0, i + 1), entity.id);
   }
 
   public removeEntity(entity: GameEntity)
@@ -73,10 +78,12 @@ export class AbbrevSearchList
   // to find 3.orc, you need to call getEntityByAbbreviation("orc", 3);
   protected getEntityByAbbrev(abbrev: string, index: number): Id
   {
-    if (this.abbrevs[abbrev] === undefined)
+    let lowercaseAbbrev = abbrev.toLocaleLowerCase();
+
+    if (this.abbrevs[lowercaseAbbrev] === undefined)
       return null;
 
-    return this.abbrevs[abbrev].getItemByIndex(index);
+    return this.abbrevs[lowercaseAbbrev].getItemByIndex(index);
   }
 
   // Returns object containing index, cathegory and name parsed from
@@ -169,24 +176,29 @@ export class AbbrevSearchList
 
   protected addItemToAbbrev(abbrev: string, entityId: Id)
   {
-    if (this.abbrevs[abbrev] === undefined)
-      this.abbrevs[abbrev] = new AbbrevItemsList();
+    let lowercaseAbbrev = abbrev.toLocaleLowerCase();
+
+    if (this.abbrevs[lowercaseAbbrev] === undefined)
+      this.abbrevs[lowercaseAbbrev] = new AbbrevItemsList();
     
-    this.abbrevs[abbrev].addItem(entityId);
+    this.abbrevs[lowercaseAbbrev].addItem(entityId);
   }
 
   protected removeItemFromAbbrev(abbrev: string, entityId: Id)
   {
-    ASSERT_FATAL(this.abbrevs[abbrev] !== undefined,
-      "Attempt to remove abbrev item for abbreviation that does not exist"
-      + "in this.abbrevs");
+    let lowercaseAbbrev = abbrev.toLocaleLowerCase();
 
-    let numberOfItems = this.abbrevs[abbrev].removeItem(entityId);
+    ASSERT_FATAL(this.abbrevs[lowercaseAbbrev] !== undefined,
+      "Attempt to remove abbrev item for abbreviation"
+      + " '" + lowercaseAbbrev + "' that does not exist"
+      + " in this.abbrevs");
+
+    let numberOfItems = this.abbrevs[lowercaseAbbrev].removeItem(entityId);
 
     // If there are no items left for this abbreviation, we can delete
     // the property from hashmap.
     if (numberOfItems === 0)
-      delete this.abbrevs[abbrev];
+      delete this.abbrevs[lowercaseAbbrev];
   }
 }
 

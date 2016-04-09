@@ -1,13 +1,13 @@
 {
-  "name": "Shattered Lands",
-  "className": "Realm",
+  "name": "Prototype Area",
+  "className": "Area",
   "version": 0,
   "id":
   {
     "className": "Id",
     "version": 0,
-    "stringId": "5-imj1yd9e",
-    "type": "Realm"
+    "stringId": "3-imt2xk99",
+    "type": "Area"
   },
   "contents":
   {
@@ -17,8 +17,8 @@
     {
       "className": "Id",
       "version": 0,
-      "stringId": "6-imj1yd9e",
-      "type": "Area"
+      "stringId": "4-imt2xk99",
+      "type": "Room"
     }]
   },
   "isNameUnique": false

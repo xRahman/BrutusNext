@@ -10,6 +10,7 @@
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {NamedClass} from '../shared/NamedClass';
+import {AttributableClass} from '../shared/AttributableClass';
 import {Mudlog} from '../server/Mudlog';
 import {Server} from '../server/Server';
 
@@ -20,7 +21,7 @@ import * as fs from 'fs';  // Import namespace 'fs' from node.js
 let promisifiedFS = require('fs-promise');
 let beautify = require('js-beautify').js_beautify;
 
-export class SaveableObject extends NamedClass
+export class SaveableObject extends AttributableClass
 {
   // Creates a new instance of game entity of type saved in id.
   static createInstance(className: string, ...args: any[])
@@ -71,6 +72,7 @@ export class SaveableObject extends NamedClass
   // ourselves.
   // (note: This property is not saved)
   protected saveRequests: Array<string> = [];
+  protected static saveRequests = { isSaved: false };
 
   // -------------- Protected methods -------------------
 
@@ -208,7 +210,7 @@ export class SaveableObject extends NamedClass
     for (let property in jsonObject)
     {
       this[property] =
-        this.loadProperty
+        this.loadVariable
         (
           property,
           this[property],
@@ -234,16 +236,11 @@ export class SaveableObject extends NamedClass
     {
       // Skip 'name' property because it's already saved thanks to
       // previous hack.
-      //   Also skip 'saveRequests' property, because it's an auxiliary
-      // buffer which doesn't need to be saved.
-      if
-      (
-        property !== 'name'
-        && property !== 'saveRequests'
-        && this.shouldBeSaved(this[property])
-      )
+      // (isToBeSaved() checks static attribute property.isSaved)
+      if (property !== 'name' && this.isToBeSaved(property))
       {
-        jsonObject[property] = this.saveProperty(this[property]);
+        jsonObject[property] =
+          this.saveVariable(this[property], property, this.className);
       }
     }
 
@@ -344,7 +341,7 @@ export class SaveableObject extends NamedClass
   }
 
   // Loads a property of type Array from a JSON Array object.
-  private loadArrayProperty
+  private loadArray
   (
     propertyName: string,
     jsonProperty: Array<any>,
@@ -355,12 +352,12 @@ export class SaveableObject extends NamedClass
 
     for (let i = 0; i < jsonProperty.length; i++)
     {
-      // newProperty needs to be set to null prior to calling loadProperty(),
+      // newProperty needs to be set to null prior to calling loadVariable(),
       // so an instance of the correct type will be created.
       let newProperty = null;
 
       newProperty =
-        this.loadProperty
+        this.loadVariable
          (
           "Array Item",
           newProperty,
@@ -374,31 +371,35 @@ export class SaveableObject extends NamedClass
     return newArray;
   }
 
-  // Loads a single property from JSON object.
-  private loadProperty
+  // Loads a single variable from JSON object.
+  private loadVariable
   (
-    propertyName: string,
-    myProperty: any,
-    jsonProperty: Object,
+    variableName: string,
+    variable: any,
+    jsonVariable: any,
     filePath: string
-  )
+  ): any
   {
     // First handle the case that property in JSON has null value. In that
     // case our property also needs to be null, no matter what type it is.
-    if (jsonProperty === null)
+    if (jsonVariable === null)
       return null;
 
-    if (Array.isArray(jsonProperty))
+    if (Array.isArray(jsonVariable))
     {
-      return this.loadArrayProperty(propertyName, jsonProperty, filePath);
+      ASSERT_FATAL(variable === null || Array.isArray(variable),
+        "Attempt to load array property '" + variableName + "' to"
+        + " a non-array property.");
+
+      return this.loadArray(variableName, jsonVariable, filePath);
     }
     else
     {
-      return this.loadNonArrayProperty
+      return this.loadNonArrayVariable
       (
-        propertyName,
-        myProperty,
-        jsonProperty,
+        variableName,
+        variable,
+        jsonVariable,
         filePath
       );
     }
@@ -418,11 +419,15 @@ export class SaveableObject extends NamedClass
     if (myProperty === null)
     {
       ASSERT_FATAL
-       (
-        typeof jsonProperty['className'] !== 'undefined',
+      (
+        jsonProperty['className'] !== undefined,
         "Missing 'className' property in a nested object in file "
-        + filePath
-       );
+        + filePath + ". You probably assigned <null> to a property"
+        + " of some generic object type (default javascript Object,"
+        + " Date or Array) or of a class type not inherited from"
+        + " NamedClass. Make sure that properties of these types are"
+        + " never assigned <null> value or inicialized to <null>."
+      );
 
       // Initiate our property to a new instance of correct type.
       // (Type is saved as 'className' property)
@@ -433,119 +438,213 @@ export class SaveableObject extends NamedClass
     return myProperty;
   }
 
-  private loadNonArrayProperty
+  private loadNonArrayVariable
   (
     propertyName: string,
     myProperty: any,
-    jsonProperty: Object,
+    jsonProperty: any,
     filePath: string
   )
   {
-    if (typeof jsonProperty === 'object')
+    // If we are loading property of primitive type (Number or String),
+    // we just assign the value.
+    if (typeof jsonProperty !== 'object')
     {
-      // If our corresponding property is null, it wouldn't be able to
-      // load itself from JSON, because you can't call methods on null
-      // object. So we first need to assign a new instance of correct
-      // type to it - the type is saved in JSON in 'className' property.
-      myProperty =
-        this.createNewIfNull
-        (
-          propertyName,
-          myProperty,
-          jsonProperty,
-          filePath
-        );
-
-      // Now we are sure that myProperty isn't null (either it wasn't
-      // null or we have just assigned a new instance of correct type in
-      // it). So we can safely load it from corresponding JSON.
-
-      ASSERT_FATAL('loadFromJsonObject' in myProperty,
-        "Attempt to load a nested object from file " + filePath + " into"
-        + " a property '" + propertyName + "' which is not a saveable object."
-        + " Maybe you forgot to extend your class from SaveableObject?");
-
-      myProperty.loadFromJsonObject(jsonProperty, filePath);
-    }
-    else  // We are loading simple (non-object) property.
-    {
-      myProperty = jsonProperty;
-    }
-
-    return myProperty;
-  }
-
-  // Saves a property of type Array to a corresponding JSON Array object.
-  private saveArrayProperty(myProperty: Array<any>)
-  {
-    let jsonArray = [];
-
-    for (let i = 0; i < myProperty.length; i++)
-    {
-      if (this.shouldBeSaved(myProperty[i]))
+      // Note: Date object is actually saved as value of primitive type
+      // (string), not as an object.
+      // In order to recognize that we are loading a date, we will check
+      // the type of property we are loading the date to.
+      // (This wouldn't work if value of Date property we are loading the
+      //  date to would be <null> - which is why it's not allowed to assign
+      //  <null> to Date properties or initialize them with <null>)
+      if (this.isDate(myProperty))
       {
-        let arrayItem = this.saveProperty(myProperty[i]);
-
-        jsonArray.push(arrayItem);
+        // Date object is not automatically created by JSON.parse(),
+        // only it's string representation. So we need to pass the JSON
+        // string representing value of date to a constructor of Date
+        // object to convert it to Date object.
+        return new Date(jsonProperty);
       }
       else
       {
-        // This means that items in array that should not be saved
-        // will be saved as null values (so the indexes will match).
-        jsonArray.push(null);
+        return jsonProperty;
       }
+    }
+
+    // Here we are sure that jsonProperty is an Object.
+
+    // If our corresponding property is null, it wouldn't be able to
+    // load itself from JSON, because you can't call methods on null
+    // object. So we first need to assign a new instance of correct
+    // type to it - the type is saved in JSON in 'className' property.
+    myProperty =
+      this.createNewIfNull
+      (
+        propertyName,
+        myProperty,
+        jsonProperty,
+        filePath
+      );
+
+    // Now we are sure that myProperty isn't null (either it wasn't
+    // null or we have just assigned a new instance of correct type in
+    // it). So we can safely load it from corresponding JSON.
+
+    if ('loadFromJsonObject' in myProperty)
+    {
+      // If we are loading into a saveable object, do it using it's
+      // loadFromJsonObject() method.
+      myProperty.loadFromJsonObject(jsonProperty, filePath);
+
+      return myProperty;
+    }
+    else  // We are loading object that is neither Date nor SaveableObject.
+    {
+      return this.loadPrimitiveObjectFromJson
+      (
+        propertyName,
+        myProperty,
+        jsonProperty,
+        filePath
+      );
+    }
+  }
+
+  // Saves a property of type Array to a corresponding JSON Array object.
+  private saveArray(array: Array<any>, arrayName: string, className: string)
+  {
+    let jsonArray = [];
+
+    // Note: isSaved static attribute is not tested for members of an array.
+    // Either the whole array is saved, or it's not saved at all. Having
+    // 'holes' in an array after loading (probably with <null> values) would
+    // certainly be confusing after all.
+    for (let i = 0; i < array.length; i++)
+    {
+      let itemDescription = "an item of an array '" + arrayName + "'"
+        + " at position " + i;
+      jsonArray.push(this.saveVariable(array[i], itemDescription, className));
     }
 
     return jsonArray;
   }
 
-  // Saves a single property to a corresponding JSON object.
-  private saveProperty(myProperty: any)
+  // Saves a single variable to a corresponding JSON object.
+  // (description is a string used for error message. It should describe
+  //  the property as well as possible - what's it's name, what it's in, etc.)
+  private saveVariable(variable: any, description: string, className: string)
   {
-    if (myProperty === null)
+    if (variable === null)
       return null;
 
-    if (Array.isArray(myProperty))
+    if (Array.isArray(variable))
     {
-      return this.saveArrayProperty(myProperty);
+      return this.saveArray(variable, description, className);
     }
-    else if (typeof myProperty === 'object')
+    else if (typeof variable === 'object')
     {
-      return myProperty.saveToJsonObject();
+      // myProperty is a saveableObject
+      if ('saveToJsonObject' in variable)
+        return variable.saveToJsonObject();
+
+      if (this.isDate(variable))
+        return variable;
+
+      if (this.isPrimitiveJavascriptObject(variable))
+        return this.savePrimitiveObjectToJson(variable);
+
+      ASSERT_FATAL(false,
+        "Variable '" + description + "' in class '" + className + "'"
+        + " (or some of it's ancestors) is a class but is not inherited"
+        + " from SaveableObject. Make sure that you only use primitive"
+        + " types (numbers, strings), Arrays, basic javascript Objects"
+        + " or classes inherited from SaveableObject as a properties of"
+        + " class inherited from SaveableObject.");
     }
-    else
+    else  // Variable is of primitive type (number or string).
     {
-      return myProperty;
+      return variable;
     }
   }
 
-  // Property should not be saved only if it's a non-array object and there
-  // is not a 'saveToJsonObject' property in it (so it can't be saved).
-  private shouldBeSaved(myProperty: any)
+  // Check if there is a static property named the same as property,
+  // an if it's value contains: { isSaved = false; }
+  private isToBeSaved(property: string): boolean
   {
-    // Searching for properties in <null> would lead to a crash, so better
-    // check it.
-    if (myProperty === null)
-      return true;
+    // Access static variable named the same as property.
+    let propertyAttributes = this.getPropertyAttributes(this, property);
 
-    // We definitely want to save arrays.
-    if (Array.isArray(myProperty))
-      return true;
+    // If attributes for our property exist.
+    if (propertyAttributes !== undefined)
+    {
+      // And if there is 'isSaved' property in atributes.
+      // (so something like: static property = { issaved: false };
+      //  has been declared).
+      if (propertyAttributes.isSaved !== undefined)
+      {
+        // And it's set to false.
+        if (propertyAttributes.isSaved === false)
+          // Then property is not to be saved.
+          return false;
+      }
+    }
 
-    // Note: If 'isSaved' property is not present on a saveable object,
-    // it will be saved (because value of 'isSaved' will be <undefined>
-    // so (myProperty.isSaved === false) will be false).
-    // This is intended, it saves memory because we much more often want
-    // saveable objects to be saved than not.
-    if (myProperty.isSaved === false)
-      return false;
-
-    // This is the only case that should not be saved (note that we checked
-    // if myProperty is array previously).
-    if (typeof myProperty === 'object' && !('saveToJsonObject' in myProperty))
-      return false;
- 
-    // This means it's a simple, nonobject property - so we want to save it.
     return true;
+  }
+
+  // The purpose of manual saving of properties of primitive Objects
+  // is to determine if some of them are SaveableObjects so they need
+  // to be saved using their saveToJsonObject() method.
+  // (this check is done within this.saveVariable() call)
+  private savePrimitiveObjectToJson(variable: any): Object
+  {
+    let jsonObject: Object = {};
+    
+    for (let property in variable)
+    {
+      jsonObject[property] =
+        this.saveVariable(variable[property], property, 'Object');
+    }
+
+    return jsonObject;
+  }
+
+  // The purpose of manual loading of properties of primitive Objects
+  // is to determine if some of them are SaveableObjects so they need
+  // to be loaded using their loadFromJsonObject() method.
+  // (this check is done within this.loadVariable() call)
+  private loadPrimitiveObjectFromJson
+  (
+    propertyName: string,
+    primitiveObject: any,
+    jsonObject: any,
+    filePath: string
+  )
+  {
+    // Now copy the data.
+    for (let property in jsonObject)
+    {
+      primitiveObject[property] =
+        this.loadVariable
+        (
+          property,
+          primitiveObject[property],
+          jsonObject[property],
+          filePath
+        );
+    }
+
+    return primitiveObject;
+  }
+
+  private isPrimitiveJavascriptObject(variable: any): boolean
+  {
+    return variable.constructor.name === 'Object';
+  }
+
+  private isDate(variable: any): boolean
+  {
+    // Dirty hack to check if object is of type 'Date'.
+    return Object.prototype.toString.call(variable) === '[object Date]';
   }
 }
