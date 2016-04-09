@@ -1,13 +1,13 @@
 {
-  "name": "Prototype Area",
-  "className": "Area",
+  "name": "Prototype Realm",
+  "className": "Realm",
   "version": 0,
   "id":
   {
     "className": "Id",
     "version": 0,
-    "stringId": "3-imj1yd9e",
-    "type": "Area"
+    "stringId": "2-imt2xk99",
+    "type": "Realm"
   },
   "contents":
   {
@@ -17,8 +17,8 @@
     {
       "className": "Id",
       "version": 0,
-      "stringId": "4-imj1yd9e",
-      "type": "Room"
+      "stringId": "3-imt2xk99",
+      "type": "Area"
     }]
   },
   "isNameUnique": false

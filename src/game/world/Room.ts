@@ -15,6 +15,23 @@ import {Exits} from '../../game/world/Exits';
 
 export class Room extends GameEntity
 {
+  /*
+  /// TEST
+  protected static testStaticVariable = "RoomEntityStaticVariable";
+
+  //public test() { console.log("Room::" + this.className + ", super: "); super.test(); }
+  public test()
+  {
+    console.log(this.getPropertyAttributes(this, 'testStaticVariable'));
+    
+    //console.log(super.constructor['testStaticVariable']);
+    //console.log("Room::" + this.constructor['testStaticVariable'] + ", super: ");
+    //super.test();
+
+    console.log(this.getPropertyAttributes(this, 'gameEntityTestStaticVariable'));
+  }
+  */
+
   constructor()
   {
     super();

@@ -26,10 +26,10 @@ export class IdList extends SaveableObject
   // Only checks entities with unique names.
   public getUniqueEntityByName(name: string): GameEntity
   {
-    if (name in this.tmpData.uniqueNames)
+    if (name in this.uniqueNames)
     {
       // Entity is already loaded.
-      let entityId = this.tmpData.uniqueNames[name];
+      let entityId = this.uniqueNames[name];
 
       return Game.entities.getItem(entityId);
     }
@@ -79,7 +79,7 @@ export class IdList extends SaveableObject
 
       // Also remove record to the corresponding hashmap storing uniquely named
       // entities.
-      delete this.tmpData.uniqueNames[entity.name];
+      delete this.uniqueNames[entity.name];
     }
    
     // Remove all aliases of this entity from abbrevSearchList.
@@ -106,7 +106,7 @@ export class IdList extends SaveableObject
 
   public hasUniqueEntity(name: string): boolean
   {
-    if (this.tmpData.uniqueNames[name])
+    if (this.uniqueNames[name])
       return true;
 
     return false;
@@ -120,21 +120,24 @@ export class IdList extends SaveableObject
       return true;
   }
 
-  // -------------- Protected class data ----------------
+  // -------------- Private class data ----------------
 
-  protected tmpData = new IdListTmpData();
-
-  // Note: This property is not saved to JSON.
-  // (because AbbrevSearchList is flagged as non-saveable)
-  protected abbrevSearchList = new AbbrevSearchList();
+  private abbrevSearchList = new AbbrevSearchList();
+  // Flag saying that abbrevSearchList is not to be saved to JSON.
+  private static abbrevSearchList = { isSaved: false };
  
   // We need array because order is important
   // (e.g.order of contents in a room).
-  protected entityIds = new Array<Id>();
+  private entityIds = new Array<Id>();
 
-  // -------------- Protected methods -------------------  
+  // Hashmap mapping strings (names) to ids.
+  private uniqueNames: { [key: string]: Id } = {};
+  // Flag saying that uniqueNames is not to be saved to JSON.
+  private static uniqueNames = { isSaved: false };
 
-  protected addEntity(entity: GameEntity)
+  // -------------- Private methods -------------------  
+
+  private addEntity(entity: GameEntity)
   {
     if (!ASSERT(!this.isInTheList(entity.id),
         "Attempt to add entity '" + entity.name + "' to an id list"
@@ -157,19 +160,10 @@ export class IdList extends SaveableObject
     // If entity has unique name, add it's id to the hashmap of unique names.
     if (entity.isNameUnique)
     {
-      this.tmpData.uniqueNames[entity.name] = entity.id;
+      this.uniqueNames[entity.name] = entity.id;
     }
 
     // Add all aliases of this entity to abbrevSearchList.
     this.abbrevSearchList.addEntity(entity);
   }
-}
-
-// ---------------------- private module stuff -------------------------------
-
-// Auxiliary class storing temporary data that should not be saved.
-class IdListTmpData
-{
-  // Hashmap mapping strings (names) to ids.
-  public uniqueNames: { [key: string]: Id } = {};
 }

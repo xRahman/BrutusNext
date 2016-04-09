@@ -19,6 +19,10 @@ export class NamedClass
 
   public className = "NamedClass";
 
+  // This is a hack allowing descendants of AttributableClass to search for
+  // static properties of their ancestors.
+  protected getThis() { return null; }
+
   // Returns name of the class which inherited this method.
   private getClassName()
   {

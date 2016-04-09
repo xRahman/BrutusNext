@@ -6,9 +6,12 @@
   {
     "className": "Id",
     "version": 0,
-    "stringId": "2-imj46ymp",
+    "stringId": "9-imt2xk99",
     "type": "Account"
   },
   "characters": ["Rahman"],
+  "timeOfCreation": "2016-04-09T11:50:15.160Z",
+  "lastLoginAddress": "::1",
+  "lastLoginDate": "2016-04-09T11:50:15.160Z",
   "passwordHash": "9a519a0f7d29f1ffa549fada8b667b02"
 }
