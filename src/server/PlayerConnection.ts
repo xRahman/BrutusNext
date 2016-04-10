@@ -44,6 +44,9 @@ export class PlayerConnection extends IdableSaveableObject
 
   public get account()
   {
+    if (this.accountId === null)
+      return null;
+
     let accountManager = Server.accountManager;
 
     return accountManager.getItem(this.accountId);
@@ -108,7 +111,7 @@ export class PlayerConnection extends IdableSaveableObject
     this.stage = PlayerConnection.stage.QUITTED_GAME;
     // Disconnect the player. Event 'close' will be generated on the socket,
     // which will lead to the player being logged out.
-    this.socketDescriptor.disconnect();
+    this.socketDescriptor.closeSocket();
   }
 
   // ---------------- Public methods --------------------
@@ -137,7 +140,7 @@ export class PlayerConnection extends IdableSaveableObject
     ///      "&wThere was #" + Server.getNumberOfPlayers()
     ///      + " players since &W3. 4. 2016";
 
-    let lastLoginDate = "unknown date"
+    let lastLoginDate = "unknown date";
 
     if (ASSERT(this.account.getLastLoginDate() !== null,
       "Attempt to send last login info of account "
@@ -187,7 +190,7 @@ export class PlayerConnection extends IdableSaveableObject
     let oldIngameEntityId = null;
 
     // If old connection is still alive, we need to send a message
-    // to it informing of usurping of connection and close it.
+    // to it informing about usurping of connection and close it.
     if (oldConnection)
     {
       oldStage = oldConnection.stage;
@@ -197,10 +200,17 @@ export class PlayerConnection extends IdableSaveableObject
       // player is reconnecting using the same connection and so we
       // don't need to announce that his connection has been usurped
       // and we shouldn't close the connection.
+      // (I'm not sure if it's even possible, but better be sure)
       if (!oldConnection.id.equals(this.id))
       {
         oldConnection.announceConnectionBeingUsurped();
-        oldConnection.close();
+        // Set null to oldConnection.accountId to prevent account being
+        // logged out when the connection closes.
+        oldConnection.accountId = null;
+        
+        // Closing the socket will trigger 'close' event on socket, which
+        // will be handled by calling close() on respective playerConnection.
+        oldConnection.socketDescriptor.closeSocket();
       }
     }
 
@@ -215,7 +225,7 @@ export class PlayerConnection extends IdableSaveableObject
     );
 
     // If player was in game before and we know what game entity she has
-      // been connected, send her back to the game.
+    // been connected to, send her back to the game.
     if (oldStage === PlayerConnection.stage.IN_GAME
         && oldIngameEntityId !== null)
     {
@@ -282,25 +292,28 @@ export class PlayerConnection extends IdableSaveableObject
   }
 
   // Close the connection.
-  // (Don't call this directly, use dropPlayerConnection() method of
-  // PlayerConnectionManager to close the connection. Otherwise you will
-  // end up with dangling closed connection).
+  // (Don't call this directly, use this.socketDescriptor.closeSocket();
+  // instad. Closing the socket will trigger 'close' event, which will
+  // be handled by calling this method).
   public close()
   {
     if (this.stage === PlayerConnection.stage.IN_GAME)
     {
       /// TODO
-      // Player was in game and his link has just died.
+      // Player was in game and her link has just died.
     }
     else
     {
-      // Player was not in game, log him off.
+      // Player was not in game, log him out.
       // (but only if an account is already associated to this player
       // connection. It might not be, for example if player closed his
-      // connection before entering password.)
-      if (this.accountId !== null)
+      // connection before entering password or if player reconnected
+      // with a new socket - in this case accountId in old connection
+      // is set to null to prevent logging it out)
+      if (this.account !== null)
       {
-        Server.accountManager.logOut(this.accountId);
+        this.account.logout();
+        ///Server.accountManager.logout(this.accountId);
         this.accountId = null;
       }
       else
@@ -312,13 +325,19 @@ export class PlayerConnection extends IdableSaveableObject
         else
           player = "Unknown player";
 
-        Mudlog.log(
-          player
-          + " [" + this.ipAddress + "] closed connection before logging in",
+        Mudlog.log
+        (
+          player + " [" + this.ipAddress + "]"
+          + " closed connection before logging in",
           Mudlog.msgType.SYSTEM_INFO,
-          Mudlog.levels.IMMORTAL);
+          Mudlog.levels.IMMORTAL
+        );
       }
     }
+    /*
+    this.sendAsPromptlessBlock("&wClosing the connection.");
+    this.socketDescriptor.closeSocket();    
+    */
   }
 
   // Send data to the connection without adding any newlines.
@@ -449,8 +468,10 @@ export class PlayerConnection extends IdableSaveableObject
 
   private announceConnectionBeingUsurped()
   {
-    this.sendAsPrompt("Somebody (hopefuly you) has just connected to this"
-      + " account. Closing this connection...");
+    this.sendAsPromptlessBlock
+    (
+      "Somebody (hopefuly you) has just connected to this account."
+    );
   }
 
   // Sends a string to the user.
