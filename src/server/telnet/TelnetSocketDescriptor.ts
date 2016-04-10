@@ -146,8 +146,10 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     );
 
     // Check that event handler for 'close' event is not already registered.
-    this.checkEventHandlerAbsence(
-      TelnetSocketDescriptor.events.SOCKET_CLOSE);
+    this.checkEventHandlerAbsence
+    (
+      TelnetSocketDescriptor.events.SOCKET_CLOSE
+    );
 
     // Register event handler for 'close' event.
     this.socket.on
@@ -158,10 +160,11 @@ export class TelnetSocketDescriptor extends SocketDescriptor
   }
 
   // Closes the socket, ending the connection.
-  public disconnect()
+  public closeSocket()
   {
-    this.send("&wClosing the connection.");
     this.socket.end();
+    ///this.socket.removeAllListeners('data');
+    ///this.socket.destroy();
   }
  
   // -------------- Protected class data ----------------
@@ -235,21 +238,34 @@ export class TelnetSocketDescriptor extends SocketDescriptor
 
     // I don't really know what kind of errors can happen here.
     // For now let's just log the error and close the connection.
-    Mudlog.log(
+    Mudlog.log
+    (
       player
-      + " has encounterd a socket error, closing the connection: " + error,
+      + " has encounterd a socket error, closing the connection. " + error,
       Mudlog.msgType.SYSTEM_ERROR,
-      Mudlog.levels.IMMORTAL);
+      Mudlog.levels.IMMORTAL
+    );
 
+    this.closeSocket();
+    /*
     // This will (hopefully) close the socket, which will generate 'close'
     // event, which will trigger closing of the connection.
     this.socket.end();
+    ///this.socket.removeAllListeners('data');
+    ///this.socket.destroy();
+    */
   }
 
   protected onSocketClose()
   {
+    console.log(">>>>>>>>>>>>>>> onSocketClose() called <<<<<<<<<<<<<<<<");
+
+    this.playerConnection.close();
+
+    /*
     Server.playerConnectionManager
       .dropPlayerConnection(this.playerConnectionId);
+    */
   }
 
   // -------------- Protected methods -------------------
