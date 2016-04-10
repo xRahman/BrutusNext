@@ -92,11 +92,11 @@ export class AuthProcessor
 
   public startLoginProcess()
   {
-    this.playerConnection.sendAsPrompt("&GWelcome to &RBrutus &YNext!\n"
+    this.playerConnection.sendAsPrompt("&gWelcome to &RBrutus &YNext!\n"
       + "&wBy what name do you wish to be known? ");
 
 /// Account name variant:
-///    this.playerConnection.send("&GWelcome to the &RBrutus &YNext!\n"
+///    this.playerConnection.send("&gWelcome to the &RBrutus &YNext!\n"
 ///      + "By what account name do you want to be recognized? ");
 
     this.stage = AuthProcessor.stage.LOGIN;

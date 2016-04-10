@@ -470,7 +470,12 @@ export class TelnetSocketDescriptor extends SocketDescriptor
       for (let code in ANSI)
       {
         let regExp = new RegExp(code, 'g');
-        data = data.replace(regExp, ANSI[code]);
+        // '\u001b[0m' code turns off all attributes. Without it,
+        // 'bold' attribute, which is used to output bright colors,
+        // would stay on forever.
+        /// TODO: Asi by se to dalo trochu optimalizovat. Stacilo by
+        /// posilat reset jen kdyz jde tmava barva po jasne.
+        data = data.replace(regExp, '\u001b[0m' + ANSI[code]);
       }
     }
 
