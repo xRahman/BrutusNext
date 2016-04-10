@@ -109,9 +109,9 @@ export class PlayerConnection extends IdableSaveableObject
   public quitGame()
   {
     this.stage = PlayerConnection.stage.QUITTED_GAME;
-    // Disconnect the player. Event 'close' will be generated on the socket,
+    // Close the socket. Event 'close' will be generated on it,
     // which will lead to the player being logged out.
-    this.socketDescriptor.closeSocket();
+    this.close();
   }
 
   // ---------------- Public methods --------------------
@@ -208,9 +208,9 @@ export class PlayerConnection extends IdableSaveableObject
         // logged out when the connection closes.
         oldConnection.accountId = null;
         
-        // Closing the socket will trigger 'close' event on socket, which
-        // will be handled by calling close() on respective playerConnection.
-        oldConnection.socketDescriptor.closeSocket();
+        // Closes the socket, which will trigger 'close' event on it,
+        // which will then be handled by closing the connection.
+        oldConnection.close();
       }
     }
 
@@ -291,12 +291,29 @@ export class PlayerConnection extends IdableSaveableObject
     }
   }
 
-  // Close the connection.
-  // (Don't call this directly, use this.socketDescriptor.closeSocket();
-  // instad. Closing the socket will trigger 'close' event, which will
-  // be handled by calling this method).
   public close()
   {
+    // Closes the socket, which will trigger 'close' event on it, which
+    // will be handlec by calling onSocketClose() on this connection.
+    this.socketDescriptor.closeSocket();
+  }
+
+  // Close the connection.
+  // (Don't call this directly, use this.close() instad. Closing the
+  // socket will trigger 'close' event, which will be handled
+  // by calling this method).
+  public onSocketClose()
+  {
+    if (!ASSERT(this.socketDescriptor.socketClosed === true,
+      "Attempt to call PlayerConnection:onSocketClose() before respective"
+      + " socket has been closed. Don't call PlayerConnection::onSocketClose()"
+      + " directly, use playerConnection.close() instead."
+      + " That way a 'close' event will be triggered on socket and"
+      + " PlayerConnection::onSocketClose() will be called from the handler."))
+    {
+      return;
+    }
+
     if (this.stage === PlayerConnection.stage.IN_GAME)
     {
       /// TODO
@@ -313,7 +330,6 @@ export class PlayerConnection extends IdableSaveableObject
       if (this.account !== null)
       {
         this.account.logout();
-        ///Server.accountManager.logout(this.accountId);
         this.accountId = null;
       }
       else
@@ -334,10 +350,6 @@ export class PlayerConnection extends IdableSaveableObject
         );
       }
     }
-    /*
-    this.sendAsPromptlessBlock("&wClosing the connection.");
-    this.socketDescriptor.closeSocket();    
-    */
   }
 
   // Send data to the connection without adding any newlines.
