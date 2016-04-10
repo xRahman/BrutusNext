@@ -164,9 +164,7 @@ export class AuthProcessor
 
     if (account)
     {
-      // Last parameter says we are reconnecting to already
-      // existing account.
-      this.processPasswordCheck(account, password, { isReconnecting: true });
+      this.processPasswordCheck(account, password, { reconnecting: true });
     }
     else
     {
@@ -174,11 +172,9 @@ export class AuthProcessor
 
       // Account name is passed to check against character name saved
       // in file (they must by the same).
-      await this.loadAccountFromFile(account, this.accountName);
+      await this.loadAccount(account, this.accountName);
 
-      // Last parameter says we are not reconnecting to already
-      // existing account.
-      this.processPasswordCheck(account, password, { isReconnecting: false });
+      this.processPasswordCheck(account, password, { reconnecting: false });
     }
   }
 
@@ -320,7 +316,7 @@ export class AuthProcessor
     return true;
   }
 
-  private async loadAccountFromFile
+  private async loadAccount
   (
     account: Account,
     accountFileName: string
@@ -348,7 +344,7 @@ export class AuthProcessor
   (
     account: Account,
     password: string,
-    reconnect: { isReconnecting: boolean }
+    param: { reconnecting: boolean }
   )
   {
     let accountManager = Server.accountManager;
@@ -360,7 +356,7 @@ export class AuthProcessor
 
       // Structured parameters is used instead of simple bool to enforce
       // more verbosity when calling processPasswordCheck().
-      if (reconnect.isReconnecting)
+      if (param.reconnecting)
       {
         this.playerConnection.reconnectToAccount(account);
       }

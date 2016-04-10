@@ -92,22 +92,16 @@ export class AccountManager extends IdableObjectContainer<Account>
     this.addAccountUnderExistingId(account);
   }
 
-  public logOut(accountId: Id)
+  // Removes an account both from the list of online accounts and from the
+  // auxiliary hasmap.
+  public dropAccount(accountId: Id)
   {
-    let account = this.getAccount(accountId);
-    let accountName = account.name;
-    let ipAddress = account.playerConnection.ipAddress;
+    let accountName = this.getAccount(accountId).name;
 
-    if (!ASSERT(!this.getAccount(accountId).isInGame(),
-          "Attempt to logout a player who is still in game"))
-      return;
+    this.deleteItem(accountId);
 
-    Mudlog.log(
-      accountName + " [" + ipAddress  + "] has logged out",
-      Mudlog.msgType.SYSTEM_INFO,
-      Mudlog.levels.IMMORTAL);
-
-    this.dropAccount(accountId);
+    // Also remove record from the corresponding hashmap.
+    delete this.accountNames[accountName];
   }
 
   // -------------- Protected class data ----------------
@@ -136,17 +130,5 @@ export class AccountManager extends IdableObjectContainer<Account>
 
     // Also add record to the corresponding hashmap.
     this.accountNames[account.name] = account.id;
-  }
-
-  // Removes an account both from the list of online accounts and from the
-  // auxiliary hasmap.
-  protected dropAccount(accountId: Id)
-  {
-    let accountName = this.getAccount(accountId).name;
-
-    this.deleteItem(accountId);
-
-    // Also remove record from the corresponding hashmap.
-    delete this.accountNames[accountName];
   }
 }

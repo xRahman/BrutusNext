@@ -8,6 +8,7 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
+import {Mudlog} from '../server/Mudlog';
 import {Id} from '../shared/Id';
 import {IdableSaveableObject} from '../shared/IdableSaveableObject';
 import {PlayerConnection} from '../server/PlayerConnection';
@@ -123,6 +124,25 @@ export class Account extends IdableSaveableObject
 
     // Creating a new Date object initializes it to current date and time.
     this.lastLoginDate = new Date();
+  }
+
+  public logout()
+  {
+    let accountName = this.name;
+    let ipAddress = this.playerConnection.ipAddress;
+
+    if (!ASSERT(!this.isInGame(),
+      "Attempt to logout a player who is still in game"))
+      return;
+
+    Mudlog.log
+    (
+      accountName + " [" + ipAddress + "] has logged out",
+      Mudlog.msgType.SYSTEM_INFO,
+      Mudlog.levels.IMMORTAL
+    );
+
+    Server.accountManager.dropAccount(this.id);
   }
 
   // -------------- Protected class data ----------------
