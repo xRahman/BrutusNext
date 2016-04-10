@@ -163,8 +163,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
   public closeSocket()
   {
     this.socket.end();
-    ///this.socket.removeAllListeners('data');
-    ///this.socket.destroy();
+    super.closeSocket();
   }
  
   // -------------- Protected class data ----------------
@@ -247,20 +246,13 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     );
 
     this.closeSocket();
-    /*
-    // This will (hopefully) close the socket, which will generate 'close'
-    // event, which will trigger closing of the connection.
-    this.socket.end();
-    ///this.socket.removeAllListeners('data');
-    ///this.socket.destroy();
-    */
   }
 
   protected onSocketClose()
   {
     console.log(">>>>>>>>>>>>>>> onSocketClose() called <<<<<<<<<<<<<<<<");
 
-    this.playerConnection.close();
+    this.playerConnection.onSocketClose();
 
     /*
     Server.playerConnectionManager
