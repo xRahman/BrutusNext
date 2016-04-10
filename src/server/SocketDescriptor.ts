@@ -58,6 +58,8 @@ export abstract class SocketDescriptor
 
   public playerConnectionId: Id = null;
 
+  public socketClosed = false;
+
   // ---------------- Public methods --------------------
  
   public abstract initSocket();
@@ -66,7 +68,10 @@ export abstract class SocketDescriptor
   public abstract send(data: string);
 
   // Closes the socket, ending the connection.
-  public abstract closeSocket();
+  public closeSocket()
+  {
+    this.socketClosed = true;
+  }
 
   // -------------- Protected class data ----------------
 
