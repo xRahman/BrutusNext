@@ -28,15 +28,17 @@ export class PlayerConnectionManager
     return newId;
   }
 
-  // Closes the player connection and removes if from the manager.
+  /*
+  // Closes the player connection and removes it from the manager.
   public dropPlayerConnection(connectionId: Id)
   {
     let playerConnection = this.getItem(connectionId);
 
-    playerConnection.close();
+    playerConnection.close({ logoutAccount: true });
 
     this.deleteItem(connectionId);
   }
+  */
 
   public getPlayerConnection(id: Id): PlayerConnection
   {

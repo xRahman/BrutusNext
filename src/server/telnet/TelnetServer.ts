@@ -54,8 +54,8 @@ export class TelnetServer
   {
     // Create a new raw socket server. Parameter is handler which will be
     // called when there is a new connection request.
-    // (Handler is called using lambda expression (() => {}) to ensure that corect
-    // 'this' will be passed to it. )
+    // (Handler is called using lambda expression (() => {}) to ensure that
+    // corect 'this' will be passed to it. )
     this.telnetServer =
       net.createServer((socket) => { this.onNewConnection(socket); });
 
@@ -100,10 +100,12 @@ export class TelnetServer
   {
     this.isOpen = true;
 
-    Mudlog.log(
+    Mudlog.log
+    (
       "Telnet server is up and listening to the new connections",
       Mudlog.msgType.SYSTEM_INFO,
-      Mudlog.levels.IMMORTAL);
+      Mudlog.levels.IMMORTAL
+    );
   }
 
   // Handles 'error' event of telnet server.
@@ -135,11 +137,13 @@ export class TelnetServer
   // (it processes a new connection request)
   protected onNewConnection(socket: net.Socket)
   {
-    Mudlog.log(
+    Mudlog.log
+    (
       "TELNET SERVER: Received a new connection request from "
       + socket.remoteAddress,
       Mudlog.msgType.SYSTEM_INFO,
-      Mudlog.levels.IMMORTAL);
+      Mudlog.levels.IMMORTAL
+    );
 
     if (!this.isOpen)
     {

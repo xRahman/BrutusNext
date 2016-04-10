@@ -66,7 +66,7 @@ export abstract class SocketDescriptor
   public abstract send(data: string);
 
   // Closes the socket, ending the connection.
-  public abstract disconnect();
+  public abstract closeSocket();
 
   // -------------- Protected class data ----------------
 
