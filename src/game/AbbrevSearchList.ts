@@ -53,7 +53,7 @@ export class AbbrevSearchList
       // From 0 to i + 1, because we don't want to add empty string and
       // we do want to add last character of the string (substring()
       // doesn't include right limit to the result).
-      this.addItemToAbbrev(alias.substring(0, i + 1), entity.id);
+      this.addItemToAbbrev(alias.substring(0, i + 1), entity.getId());
   }
 
   public removeEntity(entity: GameEntity)
@@ -62,7 +62,7 @@ export class AbbrevSearchList
 
     // Remove all possible abbreviations of entity's name.
     for (let i = 0; i < entity.name.length; i++)
-      this.removeItemFromAbbrev(entity.name.substring(0, i), entity.id);
+      this.removeItemFromAbbrev(entity.name.substring(0, i), entity.getId());
   }
 
   // -------------- Protected class data ----------------

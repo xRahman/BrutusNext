@@ -61,7 +61,6 @@
     <TypeScriptCompile Include="src\server\Server.ts" />
     <TypeScriptCompile Include="src\server\AccountManager.ts" />
     <TypeScriptCompile Include="src\server\SocketDescriptor.ts" />
-    <TypeScriptCompile Include="src\server\PlayerConnectionManager.ts" />
     <TypeScriptCompile Include="src\server\telnet\TelnetServer.ts" />
     <TypeScriptCompile Include="src\server\telnet\TelnetSocketDescriptor.ts" />
     <TypeScriptCompile Include="src\game\AbbrevSearchList.ts" />

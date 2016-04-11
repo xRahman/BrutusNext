@@ -29,7 +29,12 @@ export class PlayerConnection extends IdableSaveableObject
 
   // ----------------- Public data ----------------------
 
-  // IP address.
+  public setId(id: Id)
+  {
+    this.socketDescriptor.setPlayerConnectionId(id);
+    super.setId(id);
+  }
+
   public get ipAddress() { return this.socketDescriptor.getIpAddress(); }
 
   public get ingameEntity(): GameEntity
@@ -108,7 +113,7 @@ export class PlayerConnection extends IdableSaveableObject
 
   public quitGame()
   {
-    this.stage = PlayerConnection.stage.QUITTED_GAME;
+    this.stage = PlayerConnection.stage.LOGGED_OUT;
     // Close the socket. Event 'close' will be generated on it,
     // which will lead to the player being logged out.
     this.close();
@@ -174,8 +179,8 @@ export class PlayerConnection extends IdableSaveableObject
       Mudlog.levels.IMMORTAL
     );
 
-    this.accountId = account.id;
-    account.playerConnectionId = this.id;
+    this.accountId = account.getId();
+    account.playerConnectionId = this.getId();
     this.enterLobby();
   }
 
@@ -201,7 +206,7 @@ export class PlayerConnection extends IdableSaveableObject
       // don't need to announce that his connection has been usurped
       // and we shouldn't close the connection.
       // (I'm not sure if it's even possible, but better be sure)
-      if (!oldConnection.id.equals(this.id))
+      if (!oldConnection.getId().equals(this.getId()))
       {
         oldConnection.announceConnectionBeingUsurped();
         // Set null to oldConnection.accountId to prevent account being
@@ -214,8 +219,8 @@ export class PlayerConnection extends IdableSaveableObject
       }
     }
 
-    account.playerConnectionId = this.id;
-    this.accountId = account.id;
+    account.playerConnectionId = this.getId();
+    this.accountId = account.getId();
 
     Mudlog.log
     (
@@ -256,8 +261,8 @@ export class PlayerConnection extends IdableSaveableObject
 
       case PlayerConnection.stage.AUTHENTICATION:
         ASSERT(this.accountId === null,
-          "Attempt to start authentication on player connection that already"
-          + " has an account assigned");
+          "Attempt to process authentication command on player connection"
+          + "  that already has an account assigned");
         await this.authProcessor.processCommand(command);
         break;
 
@@ -280,8 +285,8 @@ export class PlayerConnection extends IdableSaveableObject
         this.ingameEntity.processCommand(command);
         break;
 
-      case PlayerConnection.stage.QUITTED_GAME:
-        ASSERT(false, "Player has quitted the game, PlayerConnection"
+      case PlayerConnection.stage.LOGGED_OUT:
+        ASSERT(false, "Player is logged out already, PlayerConnection"
           + " is not supposed to process any more commands");
         break;
 
@@ -314,41 +319,51 @@ export class PlayerConnection extends IdableSaveableObject
       return;
     }
 
-    if (this.stage === PlayerConnection.stage.IN_GAME)
+    switch (this.stage)
     {
-      /// TODO
-      // Player was in game and her link has just died.
-    }
-    else
-    {
-      // Player was not in game, log him out.
-      // (but only if an account is already associated to this player
-      // connection. It might not be, for example if player closed his
-      // connection before entering password or if player reconnected
-      // with a new socket - in this case accountId in old connection
-      // is set to null to prevent logging it out)
-      if (this.account !== null)
-      {
-        this.account.logout();
-        this.accountId = null;
-      }
-      else
-      {
-        let player = "";
+      case PlayerConnection.stage.INITIAL:
+        ASSERT(false, "PlayerConnection has not yet been initialized by"
+          + "startLoginProcess(), it is not supposed to process any"
+          + " events yet");
+      break;
 
-        if (this.authProcessor.getAccountName())
-          player = "Player " + this.authProcessor.getAccountName();
-        else
-          player = "Unknown player";
+      case PlayerConnection.stage.AUTHENTICATION:
+        this.announcePlayerLostConnection(" when authenticating");
 
-        Mudlog.log
-        (
-          player + " [" + this.ipAddress + "]"
-          + " closed connection before logging in",
-          Mudlog.msgType.SYSTEM_INFO,
-          Mudlog.levels.IMMORTAL
-        );
-      }
+        if (!ASSERT(this.accountId === null,
+          "Player connection is in AUTHENTICATION stage but has an account"
+          + "assigned to it already. That's not supposed to happen"))
+        {
+          // This should never be executed, but if an error occurs, it's
+          // probably better not to be left with dangling account.
+          this.logoutAccount("has been logged out");
+        }
+
+        this.removeSelfFromManager();
+      break;
+
+      case PlayerConnection.stage.IN_LOBBY:
+        this.announcePlayerLostConnection(" when in menu");
+        this.logoutAccount("has been logged out");
+        this.removeSelfFromManager();
+      break;
+
+      case PlayerConnection.stage.IN_GAME:
+        this.announcePlayerLostConnection(" when in game");
+        this.logoutAccount("has been logged out");
+
+        /// TODO: Neco udelat s ingame entitou (hodit ji link-death).
+        /// (momentalne proste zustane viset ve hre)
+
+        this.removeSelfFromManager();
+      break;
+
+      // Player has correcly exited game from menu.
+      case PlayerConnection.stage.LOGGED_OUT:
+        ///this.announcePlayerExitedGame();
+        this.logoutAccount("has logged out");
+        this.removeSelfFromManager();
+      break;
     }
   }
 
@@ -378,6 +393,8 @@ export class PlayerConnection extends IdableSaveableObject
   public generatePrompt(): string
   {
     let prompt = "&g>";
+
+    /// TODO: switch na stage lobby processoru by mel byt v LobbyProcessoru
 
     switch (this.lobbyProcessor.getStage())
     {
@@ -432,7 +449,7 @@ export class PlayerConnection extends IdableSaveableObject
   public attachToGameEntity(gameEntity)
   {
     this.ingameEntityId = gameEntity.id;
-    gameEntity.playerConnectionId = this.id;
+    gameEntity.playerConnectionId = this.getId();
   }
 
   public detachFromGameEntity()
@@ -452,11 +469,11 @@ export class PlayerConnection extends IdableSaveableObject
 
   protected static stage =
   {
-    INITIAL: 0, // Initial stage.
-    AUTHENTICATION: 1,
-    IN_LOBBY: 2,
-    IN_GAME: 3,
-    QUITTED_GAME: 4
+    INITIAL: 'INITIAL', // Initial stage.
+    AUTHENTICATION: 'AUTHENTICATION',
+    IN_LOBBY: 'IN_LOBBY',
+    IN_GAME: 'IN_GAME',
+    LOGGED_OUT: 'LOGGED_OUT'
   }
 
   protected stage = PlayerConnection.stage.INITIAL;
@@ -618,4 +635,55 @@ export class PlayerConnection extends IdableSaveableObject
 
     return data;
   }
+
+  private removeSelfFromManager()
+  {
+    Server.playerConnectionManager.removeItem(this.getId());
+  }
+
+  private logoutAccount(action: string)
+  {
+    if (this.account === null)
+    {
+      let player = "Unknown player";
+
+      if (this.authProcessor.getAccountName())
+      {
+        player = "Player " + this.authProcessor.getAccountName();
+      }
+
+      ASSERT(false, "Attempt to logout player " + player + " who is not"
+        + " logged-in to an account");
+
+      return;
+    }
+
+    this.account.logout(action);
+    this.accountId = null;
+  }
+
+  private announcePlayerLostConnection(state: string)
+  {
+    let player = "Unknown player";
+
+    if (this.authProcessor.getAccountName())
+      player = "Player " + this.authProcessor.getAccountName();
+
+    Mudlog.log
+    (
+      player + " [" + this.ipAddress + "]"
+      + " has lost (or closed) connection" + state,
+      Mudlog.msgType.SYSTEM_INFO,
+      Mudlog.levels.IMMORTAL
+    );
+  }
+
+  /*
+  /// Asi nebude potreba
+  private announcePlayerExitedGame()
+  {
+    // TODO:
+    console.log("Player has left the game");
+  }
+  */
 }

@@ -17,9 +17,10 @@ export abstract class IdableSaveableObject extends SaveableObject
 
   // ----------------- Public data ----------------------
 
-  public id: Id = null;
-
   // ---------------- Public methods --------------------
+
+  public getId() { return this.id; }
+  public setId(id: Id) { this.id = id; }
 
   public async save()
   {
@@ -67,4 +68,8 @@ export abstract class IdableSaveableObject extends SaveableObject
 
   // This is used for creating save file names.
   protected getIdStringValue(): string { return this.id.getStringId(); }
+
+  // ----------------- Private data ----------------------
+
+  private id: Id = null;
 }
