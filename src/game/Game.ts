@@ -70,8 +70,7 @@ export class Game
     let world = new World();
     world.name = "BrutusNext World";
     let worldId = Server.idProvider.generateId(world.className);
-
-    world.id = worldId;
+    world.setId(worldId);
 
     // Create realm 'Prototype Realm'.
 

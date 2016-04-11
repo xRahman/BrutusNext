@@ -227,7 +227,7 @@ export class LobbyProcessor
       characterManager.createNewUniqueCharacter
       (
         characterName,
-        this.playerConnection.id
+        this.playerConnection.getId()
       );
 
     account.addNewCharacter(characterName);
@@ -277,7 +277,7 @@ export class LobbyProcessor
     // (The rest of the code will execute only after the reading is done.)
     await character.load();
 
-    ASSERT_FATAL(character.id !== null,
+    ASSERT_FATAL(character.getId() !== null,
       "Invalid id in saved file of character: " + character.name);
 
     if (!ASSERT(characterFileName === character.name,

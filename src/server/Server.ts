@@ -15,13 +15,14 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
+import {IdableObjectContainer} from '../shared/IdableObjectContainer';
+import {PlayerConnection} from '../server/PlayerConnection';
 import {Mudlog} from '../server/Mudlog';
 import {AccountManager} from '../server/AccountManager';
 import {Game} from '../game/Game';
 import {TelnetServer} from '../server/telnet/TelnetServer';
 import {HttpServer} from '../server/http/HttpServer';
 import {IdProvider} from '../shared/IdProvider';
-import {PlayerConnectionManager} from '../server/PlayerConnectionManager';
 import {Account} from '../server/Account';
 
 // Built-in node.js modules.
@@ -76,9 +77,11 @@ export class Server
 
   static getInstance()
   {
-    ASSERT_FATAL(
+    ASSERT_FATAL
+    (
       Server.instance !== null && Server.instance !== undefined,
-      "Instance of server doesn't exist yet");
+      "Instance of server doesn't exist yet"
+    );
     return Server.instance;
   }
 
@@ -116,7 +119,8 @@ export class Server
   protected idProvider = null;
   protected game = new Game();
   protected accountManager = new AccountManager();
-  protected playerConnectionManager = new PlayerConnectionManager();
+  protected playerConnectionManager =
+    new IdableObjectContainer<PlayerConnection>();
   protected telnetServer = new TelnetServer(Server.DEFAULT_TELNET_PORT);
   protected httpServer = new HttpServer(Server.DEFAULT_HTTP_PORT);
   protected timeOfBoot = null;

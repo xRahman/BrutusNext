@@ -35,7 +35,7 @@ export class IdableObjectContainer<T extends IdableSaveableObject>
   {
     this.commonAddItemChecks(item);
 
-    ASSERT_FATAL(item.id === null,
+    ASSERT_FATAL(item.getId() === null,
       "Attempt to add item which already has an id under new id");
 
     let newId = Server.idProvider.generateId(item.className);
@@ -47,7 +47,7 @@ export class IdableObjectContainer<T extends IdableSaveableObject>
     this.itemContainer[newId.getStringId()] = item;
     
     // Item remembers it's own id.
-    item.id = newId;
+    item.setId(newId);
 
     return newId;
   }
@@ -57,7 +57,7 @@ export class IdableObjectContainer<T extends IdableSaveableObject>
   {
     this.commonAddItemChecks(item);
 
-    let id = item.id;
+    let id = item.getId();
 
     ASSERT_FATAL(typeof id !== 'undefined',
       "Attempt to add item to the itemContainer with invalid id");
@@ -102,7 +102,7 @@ export class IdableObjectContainer<T extends IdableSaveableObject>
       return false;
   }
 
-  public deleteItem(id: Id)
+  public removeItem(id: Id)
   {
     ASSERT_FATAL(id !== null, "Invalid id");
 
