@@ -98,7 +98,7 @@ export class AccountManager extends IdableObjectContainer<Account>
   {
     let accountName = this.getAccount(accountId).name;
 
-    this.deleteItem(accountId);
+    this.removeItem(accountId);
 
     // Also remove record from the corresponding hashmap.
     delete this.accountNames[accountName];
@@ -129,6 +129,6 @@ export class AccountManager extends IdableObjectContainer<Account>
     this.addItemUnderExistingId(account);
 
     // Also add record to the corresponding hashmap.
-    this.accountNames[account.name] = account.id;
+    this.accountNames[account.name] = account.getId();
   }
 }

@@ -156,7 +156,7 @@ export class AuthProcessor
   {
     let accountManager = Server.accountManager;
 
-    ASSERT_FATAL(this.playerConnection.id != null,
+    ASSERT_FATAL(this.playerConnection.getId() != null,
       "Invalid player connection id");
 
     // Check if account info is already loaded.
@@ -168,7 +168,7 @@ export class AuthProcessor
     }
     else
     {
-      account = new Account(this.accountName, this.playerConnection.id);
+      account = new Account(this.accountName, this.playerConnection.getId());
 
       // Account name is passed to check against character name saved
       // in file (they must by the same).
@@ -195,7 +195,7 @@ export class AuthProcessor
       (
         this.accountName,
         password,
-        this.playerConnection.id
+        this.playerConnection.getId()
       );
 
     Mudlog.log
@@ -326,7 +326,7 @@ export class AuthProcessor
     // (the rest of the code will execute only after the reading is done)
     await account.load();
 
-    ASSERT_FATAL(account.id !== null,
+    ASSERT_FATAL(account.getId() !== null,
       "Null id in saved file of account: " + account.name);
 
     if (!ASSERT(this.accountName === account.name,

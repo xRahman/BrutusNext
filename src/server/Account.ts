@@ -38,8 +38,7 @@ export class Account extends IdableSaveableObject
 
   public get playerConnection()
   {
-    return Server.playerConnectionManager
-      .getPlayerConnection(this.playerConnectionId);
+    return Server.playerConnectionManager.getItem(this.playerConnectionId);
   }
 
   // List of character names this account has access to.
@@ -126,23 +125,27 @@ export class Account extends IdableSaveableObject
     this.lastLoginDate = new Date();
   }
 
-  public logout()
+  public logout(action: string)
   {
     let accountName = this.name;
     let ipAddress = this.playerConnection.ipAddress;
 
+    /*
+    /// Tohle je nakonec ok - kdyz player shodi linku ze hry,
+    /// tam mu tam zustane vise ld character, ale account se odloguje.
     if (!ASSERT(!this.isInGame(),
       "Attempt to logout a player who is still in game"))
       return;
+    */
 
     Mudlog.log
     (
-      accountName + " [" + ipAddress + "] has logged out",
+      accountName + " [" + ipAddress + "] " + action,
       Mudlog.msgType.SYSTEM_INFO,
       Mudlog.levels.IMMORTAL
     );
 
-    Server.accountManager.dropAccount(this.id);
+    Server.accountManager.dropAccount(this.getId());
   }
 
   // -------------- Protected class data ----------------
