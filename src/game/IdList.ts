@@ -101,7 +101,7 @@ export class IdList extends SaveableObject
   public deleteEntity(entityId: Id)
   {
     this.removeEntityFromList(entityId);
-    Game.entities.deleteItem(entityId);
+    Game.entities.removeItem(entityId);
   }
 
   public hasUniqueEntity(name: string): boolean
@@ -139,28 +139,28 @@ export class IdList extends SaveableObject
 
   private addEntity(entity: GameEntity)
   {
-    if (!ASSERT(!this.isInTheList(entity.id),
+    if (!ASSERT(!this.isInTheList(entity.getId()),
         "Attempt to add entity '" + entity.name + "' to an id list"
         + " which is already present in it"))
       return;
 
     // If entity isn't in global container holding all entities yet, add
     // it there.
-    if (!Game.entities.exists(entity.id))
+    if (!Game.entities.exists(entity.getId()))
     {
-      if (entity.id === null)
+      if (entity.getId() === null)
         Game.entities.addItemUnderNewId(entity);
       else
         Game.entities.addItemUnderExistingId(entity);
     }
 
     // Add to the list of entities contained in this list.
-    this.entityIds.push(entity.id);
+    this.entityIds.push(entity.getId());
 
     // If entity has unique name, add it's id to the hashmap of unique names.
     if (entity.isNameUnique)
     {
-      this.uniqueNames[entity.name] = entity.id;
+      this.uniqueNames[entity.name] = entity.getId();
     }
 
     // Add all aliases of this entity to abbrevSearchList.

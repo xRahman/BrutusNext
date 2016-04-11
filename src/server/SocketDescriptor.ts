@@ -52,8 +52,7 @@ export abstract class SocketDescriptor
     ASSERT_FATAL(this.playerConnectionId !== null,
       "Invalid player connection id");
 
-    return Server.playerConnectionManager
-      .getPlayerConnection(this.playerConnectionId);
+    return Server.playerConnectionManager.getItem(this.playerConnectionId);
   }
 
   public playerConnectionId: Id = null;
@@ -68,10 +67,7 @@ export abstract class SocketDescriptor
   public abstract send(data: string);
 
   // Closes the socket, ending the connection.
-  public closeSocket()
-  {
-    this.socketClosed = true;
-  }
+  public abstract closeSocket();
 
   // -------------- Protected class data ----------------
 

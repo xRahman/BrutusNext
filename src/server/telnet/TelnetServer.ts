@@ -28,7 +28,6 @@ import {Mudlog} from '../../server/Mudlog';
 import {Id} from '../../shared/Id';
 import {Server} from '../../server/Server';
 import {PlayerConnection} from '../../server/PlayerConnection';
-import {PlayerConnectionManager} from '../../server/PlayerConnectionManager';
 import {TelnetSocketDescriptor}
   from '../../server/telnet/TelnetSocketDescriptor';
 
@@ -147,10 +146,12 @@ export class TelnetServer
 
     if (!this.isOpen)
     {
-      Mudlog.log(
+      Mudlog.log
+      (
         "TELNET SERVER: Denying connection request: Server is closed",
         Mudlog.msgType.SYSTEM_INFO,
-        Mudlog.levels.IMMORTAL);
+        Mudlog.levels.IMMORTAL
+      );
 
       // Half - closes the socket. i.e., it sends a FIN packet.
       // It is possible the server will still send some data.
@@ -173,12 +174,10 @@ export class TelnetServer
     ///s.socket = s; // conform to the websocket object to make easier to handle
 
     let socketDescriptor = new TelnetSocketDescriptor(socket);
+    let newPlayerConnection = new PlayerConnection(socketDescriptor);
     let playerConnectionId =
-      Server.playerConnectionManager.addPlayerConnection(socketDescriptor);
-
-    socketDescriptor.playerConnectionId = playerConnectionId;
-    socketDescriptor.initSocket();
-    Server.playerConnectionManager.getPlayerConnection(playerConnectionId)
-      .startLoginProcess();
+      Server.playerConnectionManager.addItemUnderNewId(newPlayerConnection);
+    
+    newPlayerConnection.startLoginProcess();
   }
 }

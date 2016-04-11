@@ -96,6 +96,8 @@ export class TelnetSocketDescriptor extends SocketDescriptor
   constructor(socket: net.Socket)
   {
     super(socket);
+
+    this.initSocket();
   }
 
   // ----------------- Public data ----------------------
@@ -163,7 +165,6 @@ export class TelnetSocketDescriptor extends SocketDescriptor
   public closeSocket()
   {
     this.socket.end();
-    super.closeSocket();
   }
  
   // -------------- Protected class data ----------------
@@ -250,14 +251,8 @@ export class TelnetSocketDescriptor extends SocketDescriptor
 
   protected onSocketClose()
   {
-    console.log(">>>>>>>>>>>>>>> onSocketClose() called <<<<<<<<<<<<<<<<");
-
+    this.socketClosed = true;
     this.playerConnection.onSocketClose();
-
-    /*
-    Server.playerConnectionManager
-      .dropPlayerConnection(this.playerConnectionId);
-    */
   }
 
   // -------------- Protected methods -------------------

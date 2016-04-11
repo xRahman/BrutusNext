@@ -49,7 +49,7 @@ export abstract class GameEntity extends EntityContainer
     let newEntity =
       <GameEntity>SaveableObject.createInstance(id.getType(), args);
 
-    newEntity.id = id;
+    newEntity.setId(id);
     
     return <GameEntity>newEntity;
   }
@@ -105,8 +105,7 @@ export abstract class GameEntity extends EntityContainer
     if (this.playerConnectionId === null)
       return null;
 
-    return Server.playerConnectionManager
-      .getPlayerConnection(this.playerConnectionId);
+    return Server.playerConnectionManager.getItem(this.playerConnectionId);
   }
 
   public setPlayerConnectionId(value: Id)
