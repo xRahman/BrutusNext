@@ -37,7 +37,7 @@ export class PlayerCharacterManager
 
     newCharacter.name = name;
     newCharacter.isNameUnique = true;
-    newCharacter.setPlayerConnectionId(playerConnectionId);
+    newCharacter.atachPlayerConnection(playerConnectionId);
 
     let newCharacterId =
       this.characterList.addEntityUnderNewId(newCharacter);

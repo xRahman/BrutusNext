@@ -65,28 +65,28 @@ export class AuthProcessor
       case AuthProcessor.stage.INITIAL:
         ASSERT(false, "AuthProcessor has not yet been initialized, it is not"
           + " supposed to process any commands yet");
-        break;
+      break;
 
       case AuthProcessor.stage.LOGIN:
         this.loginAttempt(command);
-        break;
+      break;
 
       case AuthProcessor.stage.PASSWORD:
         await this.checkPassword(command);
-        break;
+      break;
 
       case AuthProcessor.stage.NEW_PASSWORD:
         this.getNewPassword(command);
-        break;
+      break;
 
       case AuthProcessor.stage.DONE:
         ASSERT(false, "AuthProcessor has already done it's job, it is not"
           + " supposed to process any more commands");
-        break;
+      break;
 
       default:
         ASSERT(false, "Unknown stage: " + this.stage);
-        break;
+      break;
     }
   }
 
