@@ -29,11 +29,11 @@ export class LobbyProcessor
   public static get GAME_MENU()
   {
     return "&wWelcome to &RBRUTUS &YNext!\n"
-          + "\n"
-          + "&G0&g) &bExit from &RBRUTUS &YNext.\n"
-          + "&G1&g) &BEnter the game.\n"
-          + "\n"
-          + "&wMake your choice: ";
+      + "\n"
+      + "&G0&g) &bExit from &RBRUTUS &YNext.\n"
+      + "&G1&g) &BEnter the game.\n"
+      + "\n"
+      + "&wMake your choice: ";
   }
 
   // ----------------- Public data ----------------------
@@ -46,6 +46,37 @@ export class LobbyProcessor
   }
 
   // ---------------- Public methods --------------------
+
+  public generatePrompt(): string
+  {
+    let prompt = "&g>";
+
+    switch (this.getStage())
+    {
+      case LobbyProcessor.stage.INITIAL:
+        ASSERT(false, "LobbyProcessor has not yet been initialized, prompt"
+          + " is not supposed be generated yet");
+        break;
+
+      case LobbyProcessor.stage.IN_MENU:
+        // When player is in lobby, menu is his prompt.
+        prompt = LobbyProcessor.GAME_MENU;
+        break;
+
+      case LobbyProcessor.stage.NOT_IN_LOBBY:
+        ASSERT(false, "Player is not in lobby,"
+          + " LobbyProcessor is not supposed generate prompt");
+        break;
+
+      default:
+        ASSERT(false,
+          "Unknown lobby stage: "
+          + this.getStage());
+        break;
+    }
+
+    return prompt;
+  }
 
   public enterMenu()
   {
