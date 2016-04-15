@@ -39,9 +39,7 @@ export class PlayerConnection extends IdableSaveableObject
 
   public get ingameEntity(): GameEntity
   {
-    if (!ASSERT(this.ingameEntityId !== null,
-        "Attempt to access gameEntity on PlayerConnection which doesn't have"
-        + " any assigned yet"))
+    if (this.ingameEntityId === null)
       return null;
 
     return Game.entities.getItem(this.ingameEntityId);
@@ -114,6 +112,7 @@ export class PlayerConnection extends IdableSaveableObject
   public quitGame()
   {
     this.stage = PlayerConnection.stage.LOGGED_OUT;
+
     // Close the socket. Event 'close' will be generated on it,
     // which will lead to the player being logged out.
     this.close();
@@ -224,7 +223,8 @@ export class PlayerConnection extends IdableSaveableObject
 
     Mudlog.log
     (
-      account.name + " [" + this.ipAddress + "] has reconnected",
+      account.name + " [" + this.ipAddress + "] has reconnected."
+      + " Closing the old connection",
       Mudlog.msgType.SYSTEM_INFO,
       Mudlog.levels.IMMORTAL
     );
@@ -257,21 +257,21 @@ export class PlayerConnection extends IdableSaveableObject
         ASSERT(false, "PlayerConnection has not yet been initialized by"
           + "startLoginProcess(), it is not supposed to process any"
           + " commands yet");
-        break;
+      break;
 
       case PlayerConnection.stage.AUTHENTICATION:
         ASSERT(this.accountId === null,
           "Attempt to process authentication command on player connection"
           + "  that already has an account assigned");
         await this.authProcessor.processCommand(command);
-        break;
+      break;
 
       case PlayerConnection.stage.IN_LOBBY:
         ASSERT(this.accountId !== null,
           "Attempt to process lobby command on player connection that doesn't"
           + " have an account assigned");
         this.lobbyProcessor.processCommand(command);
-        break;
+      break;
 
       case PlayerConnection.stage.IN_GAME:
         ASSERT(this.accountId !== null,
@@ -283,16 +283,16 @@ export class PlayerConnection extends IdableSaveableObject
           + " have an ingame entity attached")
 
         this.ingameEntity.processCommand(command);
-        break;
+      break;
 
       case PlayerConnection.stage.LOGGED_OUT:
         ASSERT(false, "Player is logged out already, PlayerConnection"
           + " is not supposed to process any more commands");
-        break;
+      break;
 
       default:
         ASSERT(false, "Unknown stage");
-        break;
+      break;
     }
   }
 
@@ -328,41 +328,20 @@ export class PlayerConnection extends IdableSaveableObject
       break;
 
       case PlayerConnection.stage.AUTHENTICATION:
-        this.announcePlayerLostConnection(" when authenticating");
-
-        if (!ASSERT(this.accountId === null,
-          "Player connection is in AUTHENTICATION stage but has an account"
-          + "assigned to it already. That's not supposed to happen"))
-        {
-          // This should never be executed, but if an error occurs, it's
-          // probably better not to be left with dangling account.
-          this.logoutAccount("has been logged out");
-        }
-
-        this.removeSelfFromManager();
+        this.onSocketCloseWhenAuthenticating();
       break;
 
       case PlayerConnection.stage.IN_LOBBY:
-        this.announcePlayerLostConnection(" when in menu");
-        this.logoutAccount("has been logged out");
-        this.removeSelfFromManager();
+        this.onSocketCloseWhenInLobby();
       break;
 
       case PlayerConnection.stage.IN_GAME:
-        this.announcePlayerLostConnection(" when in game");
-        this.logoutAccount("has been logged out");
-
-        /// TODO: Neco udelat s ingame entitou (hodit ji link-death).
-        /// (momentalne proste zustane viset ve hre)
-
-        this.removeSelfFromManager();
+        this.onSocketCloseWhenInGame();
       break;
 
       // Player has correcly exited game from menu.
       case PlayerConnection.stage.LOGGED_OUT:
-        ///this.announcePlayerExitedGame();
-        this.logoutAccount("has logged out");
-        this.removeSelfFromManager();
+        this.onSocketCloseWhenLoggedOut();
       break;
     }
   }
@@ -394,32 +373,39 @@ export class PlayerConnection extends IdableSaveableObject
   {
     let prompt = "&g>";
 
-    /// TODO: switch na stage lobby processoru by mel byt v LobbyProcessoru
-
-    switch (this.lobbyProcessor.getStage())
+    switch (this.stage)
     {
-      case LobbyProcessor.stage.INITIAL:
-        ASSERT(false, "LobbyProcessor has not yet been initialized, prompt"
-          + " is not supposed be generated yet");
-        break;
+      case PlayerConnection.stage.INITIAL:
+        ASSERT(false, "PlayerConnection has not yet been initialized by"
+          + "startLoginProcess(), it is not supposed generate prompt yet");
+      break;
 
-      case LobbyProcessor.stage.IN_MENU:
-        // When player is in lobby, menu is his prompt.
-        prompt = LobbyProcessor.GAME_MENU;
-        break;
+      case PlayerConnection.stage.AUTHENTICATION:
+        // generatePrompt() is not used while player is authenticating,
+        // because it would lead to lots of internal states like "failed
+        // password attempt", "password too short", etc.
+        ASSERT(false, "Player is authenticating, generatePrompt() should"
+          + " not be called right now");
+      break;
 
-      case LobbyProcessor.stage.NOT_IN_LOBBY:
-        /// TODO: Opravdu generovat prompt, kdyz je player ve hre.
-        prompt = "&gDummy_ingame_prompt >";
-        break;
+      case PlayerConnection.stage.IN_LOBBY:
+        prompt = this.lobbyProcessor.generatePrompt();
+      break;
 
-      default:
-        ASSERT(false,
-          "Unknown lobby stage: "
-          + this.lobbyProcessor.getStage());
+      case PlayerConnection.stage.IN_GAME:
+        if (ASSERT(this.ingameEntity !== null,
+          "Attempt to generatePrompt() on playerConnection which doesn't"
+          + "have an ingame entity attached"))
+        {
+          prompt = this.ingameEntity.generatePrompt();
+        }
+      break;
 
-        prompt = "&wInvalid prompt >";
-        break;
+      // Player has correcly exited game from menu.
+      case PlayerConnection.stage.LOGGED_OUT:
+        ASSERT(false, "Player has already logged out. PlayerConnection"
+          + " is not supposed to generate prompt anymore");
+      break;
     }
 
     // An empty space is added after the prompt to separate it from
@@ -458,8 +444,7 @@ export class PlayerConnection extends IdableSaveableObject
       "Attempt to detach ingame entity from " + this.account.name + "'s"
       + "player connection when there is no ingame entity attached to it");
 
-    this.ingameEntity.setPlayerConnectionId(null);
-    this.ingameEntityId = null;
+    this.ingameEntity.detachPlayerConnection();
   }
 
   // -------------- Protected class data ----------------
@@ -672,18 +657,61 @@ export class PlayerConnection extends IdableSaveableObject
     Mudlog.log
     (
       player + " [" + this.ipAddress + "]"
-      + " has lost (or closed) connection" + state,
+      + " lost (or closed) connection" + state,
       Mudlog.msgType.SYSTEM_INFO,
       Mudlog.levels.IMMORTAL
     );
   }
 
-  /*
-  /// Asi nebude potreba
-  private announcePlayerExitedGame()
+  private onSocketCloseWhenAuthenticating()
   {
-    // TODO:
-    console.log("Player has left the game");
+    if (!ASSERT(this.accountId === null,
+      "Player connection is in AUTHENTICATION stage but has an account"
+      + "assigned to it already. That's not supposed to happen"))
+    {
+      // This should never be executed, but if an error occurs, it's
+      // probably better not to be left with dangling account.
+      this.logoutAccount("has been logged out");
+    }
+
+    this.removeSelfFromManager();
   }
-  */
+
+  private onSocketCloseWhenInLobby()
+  {
+    this.announcePlayerLostConnection(" when in menu");
+
+    if (this.account !== null)
+      this.logoutAccount("has been logged out");
+
+    this.removeSelfFromManager();
+  }
+
+  private onSocketCloseWhenInGame()
+  {
+    this.announcePlayerLostConnection(" when in game");
+
+    if (this.account !== null)
+      this.logoutAccount("has been logged out");
+
+    ASSERT(this.ingameEntity !== null,
+      "Player was in game but didn't have ingame entity attached."
+      + " That's not supposed to happen.");
+
+    if (this.ingameEntity)
+      this.ingameEntity.detachPlayerConnection();
+
+    /// TODO: Neco udelat s ingame entitou (hodit ji link-death).
+    /// (momentalne proste zustane viset ve hre)
+
+    this.removeSelfFromManager();
+  }
+
+  private onSocketCloseWhenLoggedOut()
+  {
+    if (this.account !== null)
+      this.logoutAccount("has logged out");
+
+    this.removeSelfFromManager();
+  }
 }

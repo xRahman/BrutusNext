@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {Server} from '../server/Server';
 import {Id} from '../shared/Id';
@@ -54,37 +55,6 @@ export abstract class GameEntity extends EntityContainer
     return <GameEntity>newEntity;
   }
 
-  /*
-  // Creates a new instance of game entity of type saved in id.
-  static createInstance(id: Id, ...args: any[])
-  {
-    // Here we are going to create an instance of a class with a name
-    // stored within id as id.getType().
-    // We will use global object to acces respective class constructor.
-
-    ASSERT_FATAL(id !== null,
-      "Invalid (null) id passed to GameEntity::createInstance()");
-
-    ASSERT_FATAL(typeof id.getType() !== 'undefined' && id.getType() !== "",
-      "Id with invalid class type passed to GameEntity::createInstance()");
-
-    ASSERT_FATAL(typeof global[id.getType()] !== 'undefined',
-      "Attempt to createInstance() of unknown type '" + id.getType() + "'."
-      + " You probably forgot to add something like"
-      + " 'global['Character'] = Character;' at the end of your newly"
-      + " created module.")
-
-    // Type cast to <GameEntity> is here for TypeScript to be roughly aware
-    // what can it expect from newly created variable - otherwise it would
-    // be of type <any>.
-    let newEntity = <GameEntity>new global[id.getType()](...args);
-
-    newEntity.id = id;
-
-    return newEntity;
-  }
-  */
-
   // ---------------- Public class data -----------------
 
   public name = "Unnamed Entity";
@@ -108,22 +78,41 @@ export abstract class GameEntity extends EntityContainer
     return Server.playerConnectionManager.getItem(this.playerConnectionId);
   }
 
-  public setPlayerConnectionId(value: Id)
-  {
-    this.playerConnectionId = value;
-  }
-
   // -------------- Protected accessors -----------------
 
   protected get SAVE_DIRECTORY()
   {
     ASSERT_FATAL(false,
-      "Attempt to access SAVE_DIRECTORY of abstract GameEntity class");
+      "Attempt to access SAVE_DIRECTORY of abstract GameEntity class"
+      + " (" + this.getErrorIdString() + ")");
 
     return "";
   }
 
   // ---------------- Public methods --------------------
+
+  public generatePrompt(): string
+  {
+    /// TODO: Generovat nejaky smysluplny prompt.
+    return "&gDummy_ingame_prompt >";
+  }
+
+  public atachPlayerConnection(connectionId: Id)
+  {
+    ASSERT(this.playerConnectionId !== null,
+      "Attempt to attach player connection to '" + this.getErrorIdString()
+      + "' which already has a connection attached to it. If you want"
+      + " to change which connection is attached to this entity, use"
+      + " detachPlayerConnection() first and then attach a new one.");
+
+    this.playerConnectionId = connectionId;
+  }
+
+  public detachPlayerConnection()
+  {
+    // TODO
+    this.playerConnectionId = null;
+  }
 
   // Player connected to this entity is entering game.
   //   Needs to be overriden if something is going to happen (like message
@@ -158,6 +147,14 @@ export abstract class GameEntity extends EntityContainer
       return this.name + ".json";
     else
       return this.getIdStringValue() + ".json";
+  }
+
+  // Returns something like "Character 'Zuzka' (id: d-imt2xk99)".
+  // (indended for use in error messages)
+  public getErrorIdString()
+  {
+    return this.className + " '" + this.name + "'"
+      + " (id: " + this.getId().getStringId() + ")";
   }
 
   // -------------- Private class data ----------------
