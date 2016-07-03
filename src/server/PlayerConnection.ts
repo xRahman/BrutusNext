@@ -118,6 +118,16 @@ export class PlayerConnection extends IdableSaveableObject
     this.close();
   }
 
+  public returnFromStringEditor()
+  {
+    /// TODO
+  }
+
+  public abortStringEditor()
+  {
+    /// TODO
+  }
+
   // ---------------- Public methods --------------------
 
   public sendMotd(param: { withPrompt: boolean })

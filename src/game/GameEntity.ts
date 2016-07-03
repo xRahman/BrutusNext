@@ -59,6 +59,7 @@ export abstract class GameEntity extends EntityContainer
 
   public name = "Unnamed Entity";
   public isNameUnique = false;
+  public aliases: Array<String> = [];
 
   // --------------- Public accessors -------------------
 
