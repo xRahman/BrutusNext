@@ -44,6 +44,29 @@ export class Room extends GameEntity
 
   // --------------- Public accessors -------------------
 
+  public getRoomInfo()
+  {
+    if (this.roomInfo === null)
+    {
+      if (!ASSERT(this.prototypeId !== null,
+        "Attempt to access roomInfo of " + this.getErrorIdString()
+        + "which has neither roomInfo, nor a prototype."
+        + " Creating default roomInfo"))
+      {
+        // Create roomInfo with default values.
+        this.roomInfo = new RoomInfo();
+
+        return this.roomInfo;
+      }
+
+      let prototypeRoom = <Room>this.prototypeId.getEntity();
+
+      return prototypeRoom.getRoomInfo();
+    }
+
+    return this.roomInfo;
+  }
+
   // -------------- Protected accessors -----------------
 
   protected get SAVE_DIRECTORY() { return "./data/rooms/"; }
@@ -57,19 +80,51 @@ export class Room extends GameEntity
     Game.roomList.addEntityUnderExistingId(this);
   }
 
-  // -------------- Protected class data ----------------
+  // Creates a formatted string describing room contents.
+  protected printContents(): string
+  {
+    let contents = "&R" + this.name;
+    contents += "\n";
+    /*
+    contents += "&w" + this.getRoomInfo().description;
+    */
 
-  // id of prototype room. If it's null, this room is a prototype.
-  protected prototypeId: Id = null;
+    /* --- TEST --- */
+    let roomPrototype = Room.prototype; // tohle znamena, ze si muzu prototyp
+                                        // ulozit do promenne.
+
+    roomPrototype.description = "Description set to prototype";
+    contents += "&w" + this.description;
+    /* --- TEST --- */
+    
+
+
+    // TODO: Exity, mobove, objekty...
+    
+    return contents;
+  }
+
+  // -------------- Protected class data ----------------
 
   // Description, extra descriptions, room flags, terrain type, etc.
   // If this is null, values from prototype are used.
   protected roomInfo: RoomInfo = null;
 
+  /* --- TEST --- */
+  public description: string;
+  /* --- TEST --- */
+
   // List of exits to other entities (usually rooms).
   protected exits = new Exits();
 
   // --------------- Protected methods ------------------
+
+  // This is called when a new prototype is created.
+  protected initializePrototypeData()
+  {
+    // Create roomInfo with default values.
+    this.roomInfo = new RoomInfo();
+  }
 
   // ---------------- Private methods -------------------
 }

@@ -1,0 +1,4 @@
+Use class Map instead of common objects to implement hashmaps.
+
+All info (with examples of use) is here:
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map

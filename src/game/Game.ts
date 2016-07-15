@@ -8,6 +8,7 @@
 
 import {Server} from '../server/Server';
 import {Id} from '../shared/Id';
+import {PrototypeManager} from '../game/PrototypeManager';
 import {GameEntity} from '../game/GameEntity';
 import {PlayerCharacterManager} from '../game/PlayerCharacterManager';
 import {IdableObjectContainer} from '../shared/IdableObjectContainer';
@@ -67,27 +68,39 @@ export class Game
   {
     // Create world 'BrutusNext World'.
 
+    // World doesn't have a prototype, class World is used directly.
     let world = new World();
     world.name = "BrutusNext World";
-    let worldId = Server.idProvider.generateId(world.className);
+    let worldId = Server.idProvider.generateId(world);
     world.setId(worldId);
 
     // Create realm 'Prototype Realm'.
 
     let newRealmId = world.addNewRealm("Prototype Realm");
-    let newRealm = <Realm>Game.entities.getItem(newRealmId);
+    let newRealm = <Realm>this.entities.getItem(newRealmId);
 
-    let newAreaId = newRealm.addNewArea("Prototype Area");
-    let newArea = <Area>Game.entities.getItem(newAreaId);
+    this.prototypeManager.addNewPrototype
+    (
+      { name: "SystemArea", ancestor: "Area" }
+    );
 
-    let newRoomId = newArea.addNewRoom("Prototype Room");
+    let newAreaId = newRealm.addNewArea
+    (
+      { name: "System Area", prototype: "SystemArea" }
+    );
+
+    let newArea = <Area>this.entities.getItem(newAreaId);
+    // TODO: Zmenit na:
+    //let newArea = newAreaId.getEntity();
+
+    let newRoomId = newArea.addNewRoom("System Room");
 
     // Create realm 'Shattered Lands'.
 
     newRealmId = world.addNewRealm("Shattered Lands");
     newRealm = <Realm>Game.entities.getItem(newRealmId);
 
-    newAreaId = newRealm.addNewArea("Base Camp");
+    newAreaId = newRealm.addNewArea({ name: "Base Camp", prototype: "TODO" });
     newArea = <Area>Game.entities.getItem(newAreaId);
 
     newRoomId = newArea.addNewRoom("Landing Site");
@@ -104,6 +117,10 @@ export class Game
     let testRoom = new Room();
     testRoom.test();
     */
+
+
+    await this.prototypeManager.load();
+    this.prototypeManager.createClasses();
 
     /// Tohle tu asi bude finalne:
     let world = <World>GameEntity.createInstance('World');
@@ -132,10 +149,17 @@ export class Game
   protected realmList = new IdList();
 
   // Handles creating of new characters
-  protected playerCharacterManager = new PlayerCharacterManager(this.characterList);
+  protected playerCharacterManager =
+    new PlayerCharacterManager(this.characterList);
 
   // There is only one world in the game (at the moment).
   protected worldId = null;
 
+  // Prototype manager creates classes for all game entities.
+  protected prototypeManager = new PrototypeManager();
+
   // --------------- Protected methods ------------------
+
+  // ---------------- Private methods -------------------
+
 }
