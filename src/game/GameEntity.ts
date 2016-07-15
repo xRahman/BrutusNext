@@ -12,7 +12,11 @@ import {Server} from '../server/Server';
 import {Id} from '../shared/Id';
 import {SaveableObject} from '../shared/SaveableObject';
 import {Game} from '../game/Game';
+import {EntityId} from '../game/EntityId';
 import {EntityContainer} from '../game/EntityContainer';
+
+// TEST:
+const vm = require('vm');
 
 export abstract class GameEntity extends EntityContainer
 {
@@ -35,9 +39,17 @@ export abstract class GameEntity extends EntityContainer
   // While it's possible to pass arguments to dynamically called
   // constructor, it would be difficult to pass it a name before
   // anything was actually loaded yet.
-  constructor()
+  constructor(prototypeId: EntityId)
   {
     super();
+
+    if (prototypeId !== undefined)
+    {
+      this.prototypeId = prototypeId;
+
+      if (prototypeId === null)
+        this.initializePrototypeData();
+    }
   }
   */
 
@@ -91,6 +103,8 @@ export abstract class GameEntity extends EntityContainer
   }
 
   // ---------------- Public methods --------------------
+
+  public getId() { return <EntityId>super.getId(); }
 
   public generatePrompt(): string
   {
@@ -166,6 +180,9 @@ export abstract class GameEntity extends EntityContainer
   // Flag saying that playerConnectionId is not to be saved to JSON.
   private static playerConnectionId = { isSaved: false };
 
+  // Id of prototype entity. If it's null, this entity is a prototype.
+  protected prototypeId: EntityId = null;
+
   // --------------- Protected methods ------------------
 
   // Send message to the connected player that command is not recognized.
@@ -175,7 +192,40 @@ export abstract class GameEntity extends EntityContainer
       this.playerConnection.sendAsBlock("&gHuh?!?");
   }
 
+  // Creates a formatted string describing entity contents.
+  protected printContents(): string
+  {
+    ASSERT(false, "GameEntity::printContents() is not supposed to be"
+      + "called, it needs to be overriden");
+
+    return "";
+  }
+
+  // This is called when a new prototype is created.
+  // (all ancestors that use prototyping should override this function)
+  protected initializePrototypeData()
+  {
+  }
+
+  // -------------- Protected class data ---------------
+
+  // Id of an entity this entity is contained in.
+  // (Rooms are contained in Areas, characters may be in rooms or object,
+  // objects may be in room or object, etc.)
+  protected location: EntityId = null;
+
   // ---------------- Command handlers ------------------
+
+  protected doLook(argument: string)
+  {
+    if (this.playerConnection)
+    {
+      // No arguments - show contents of container this entity is inside of.
+      // (Usualy a room the player is in).
+      if (argument === "")
+        this.showContainerContents();
+    }
+  }
 
   // Prevents accidental quitting without typing full 'quit' commmand.s
   protected doQui(argument: string)
@@ -197,5 +247,78 @@ export abstract class GameEntity extends EntityContainer
         .sendAsBlock("\n&gGoodbye, friend.. Come back soon!");
       this.playerConnection.detachFromGameEntity();
     }
+  }
+
+  // ---------------- Command handler processors ------------------
+
+  /// TEST:
+  public description: String;
+
+  // Sends a text describing room contents to the player connection.
+  protected showContainerContents()
+  {
+    if (!ASSERT(this.playerConnection !== null,
+        "Attempt to show room contents when there is no player connection" +
+         + "attached"))
+      return;
+
+    if (!ASSERT(this.location !== null,
+        "Attempt to show contents of container of entity"
+        + "'" + this.name + "' which isn't contained in anything"))
+      return;
+    
+    // TODO: Check na slepotu.
+    // neco jako:
+    //  if (this.isBlind())
+    //    output = "You are blind, you can't see anything.";
+    // pripadne:
+    //   output = "It's completely dark, you can't see anything.";
+
+
+    /* --- TEST --- */
+
+    //let script = "return 'Changed function!'";
+    //let script = "'use strict'; class Point extends GameEntity { print() {return 'Class method'} }; return Point;";
+    let script = "'use strict'; let Room = global['Room']; class Point extends Room { print() {return 'Class method'} }; global['Point'] = Point;";
+
+    let vmScript = null;
+    try
+    {
+      vmScript = new vm.Script(script, { displayErrors: true });
+    }
+    catch (e)
+    {
+      ASSERT(false, "Script compile error: " + e.message);
+    }
+
+    vmScript.runInThisContext();
+    let Point = global['Point'];
+    /*
+    let fce = new Function('GameEntity', script);
+    // Funkce fce vrati novou classu Point.
+    // Aby mohl classu Point zdedit z GameEntity, tak musim GameEntity predat
+    // jako parametr - dynamicky vytvorene funkce nevidi zadny kontext krome
+    // predanych parametru (mozna global uvidi, coz se asi bude hodit, abych
+    // mohl classu dynamicky instanciovat pri loadovani z disku).
+    let Point = fce(GameEntity);
+    */
+
+    // Kterou nasledne muzu instanciovat.
+    let instanceOfPoint = new Point();
+
+    GameEntity.prototype.description = "GameEntity prototype description";
+
+    //let output = instanceOfPoint.print();
+    let output = instanceOfPoint.description;
+
+    /* --- TEST --- */
+
+
+
+//    let output = this.location.getEntity().printContents();
+
+    if (output !== "")
+      this.playerConnection.sendAsBlock(output);
+
   }
 }

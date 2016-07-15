@@ -1,14 +1,14 @@
 /*
   Part of BrutusNEXT
 
-  Abstract ancestor for managers storing id's of game entities.
+  Managers storing id's of game entities.
 */
 
 'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
-import {Id} from '../shared/Id';
+import {EntityId} from '../game/EntityId';
 import {SaveableObject} from '../shared/SaveableObject';
 import {AbbrevSearchList} from '../game/AbbrevSearchList';
 import {Game} from '../game/Game';
@@ -37,7 +37,7 @@ export class IdList extends SaveableObject
     return null;
   }
 
-  public addEntityById(entityId: Id)
+  public addEntityById(entityId: EntityId)
   {
     this.addEntityUnderExistingId(Game.entities.getItem(entityId));
   }
@@ -58,18 +58,18 @@ export class IdList extends SaveableObject
     this.addEntity(entity);
   }
 
-  public addEntityUnderNewId(entity: GameEntity): Id
+  public addEntityUnderNewId(entity: GameEntity): EntityId
   {
     let newId = Game.entities.addItemUnderNewId(entity);
 
     this.addEntity(entity);
 
-    return newId;
+    return <EntityId>newId;
   }
 
   // Removes entity id from this list, but doesn't delete the entity from
   // the game.
-  public removeEntityFromList(entityId: Id)
+  public removeEntityFromList(entityId: EntityId)
   {
     let entity = Game.entities.getItem(entityId);
 
@@ -98,7 +98,7 @@ export class IdList extends SaveableObject
   }
 
   // Removes entity from this list and deletes it from the game.
-  public deleteEntity(entityId: Id)
+  public deleteEntity(entityId: EntityId)
   {
     this.removeEntityFromList(entityId);
     Game.entities.removeItem(entityId);
@@ -112,9 +112,9 @@ export class IdList extends SaveableObject
     return false;
   }
 
-  public isInTheList(id: Id): boolean
+  public isInTheList(entityId: EntityId): boolean
   {
-    if (this.entityIds.indexOf(id) === -1)
+    if (this.entityIds.indexOf(entityId) === -1)
       return false;
     else
       return true;
@@ -128,10 +128,10 @@ export class IdList extends SaveableObject
  
   // We need array because order is important
   // (e.g.order of contents in a room).
-  private entityIds = new Array<Id>();
+  private entityIds = new Array<EntityId>();
 
   // Hashmap mapping strings (names) to ids.
-  private uniqueNames: { [key: string]: Id } = {};
+  private uniqueNames: { [key: string]: EntityId } = {};
   // Flag saying that uniqueNames is not to be saved to JSON.
   private static uniqueNames = { isSaved: false };
 

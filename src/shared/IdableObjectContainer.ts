@@ -10,7 +10,8 @@
   IdableObjectsContainer. For example all game entities are held
   in Game.entities (which is IdableObjectsContainer). Everything
   else accesses idable objects only by their ids (by asking respective
-  container).
+  container or by using internal reference within id by calling
+  id.getObject()).
 
   You can imagine it as a separate memory block (or database) with id's
   serving as pointers into this memory (or database).
@@ -38,7 +39,7 @@ export class IdableObjectContainer<T extends IdableSaveableObject>
     ASSERT_FATAL(item.getId() === null,
       "Attempt to add item which already has an id under new id");
 
-    let newId = Server.idProvider.generateId(item.className);
+    let newId = Server.idProvider.generateId(item.className, item);
 
     this.itemNotYetExistsCheck(newId);
 
@@ -60,7 +61,7 @@ export class IdableObjectContainer<T extends IdableSaveableObject>
     let id = item.getId();
 
     ASSERT_FATAL(typeof id !== 'undefined',
-      "Attempt to add item to the itemContainer with invalid id");
+      "Attempt to add item to the itemContainer with missing id");
 
     ASSERT_FATAL(id !== null,
       "Attempt to add item to the itemContainer with invalid id");
@@ -107,11 +108,14 @@ export class IdableObjectContainer<T extends IdableSaveableObject>
     ASSERT_FATAL(id !== null, "Invalid id");
 
     if (!ASSERT(id.getStringId() in this.itemContainer,
-      "Attempt to delete item (" + id.getStringId() + ")"
-      + " that doesn't exist in the itemContainer"))
-    {
+        "Attempt to delete item (" + id.getStringId() + ")"
+        + " that doesn't exist in the itemContainer"))
       return;
-    }
+
+    // Set internal reference to identified object to null.
+    // (id object will still exist after referenced object is removed,
+    // it just won't be valid anymore).
+    id.invalidate();
 
     // Delete the property that traslates to the descriptor.
     delete this.itemContainer[id.getStringId()];
@@ -131,14 +135,12 @@ export class IdableObjectContainer<T extends IdableSaveableObject>
     let stringId = id.getStringId();
 
     // Item with this id must not already exist.
-    //   This is a very serious error. It most probably means that
-    // lastIssuedId of IdProvider has not been saved correctly and it was
-    // issuing the same ids again (= not unique ones). The only way to fix
-    // this correcyly is to go through all saved files, find out the largest
-    // id saved in them and set lastIssuedId in file
-    // ./data/LastIssuedId.json to it. (Or you might just increse
-    // it by some large number and hope that you skip all already issued ids.)
-    //   Much safer way is to rollback to the last backup that worked.
+    //   This should never happen, because ids are issued sequentionaly within
+    // a single boot and each id contains boot timestamp in it. So the only way
+    // two id's could be identical is to launch two instances of the server
+    // in exactly the same milisecond.
+    //   It means that if this happened, you have probably duplicated some
+    // objects somewhere.
     ASSERT_FATAL(!(stringId in this.itemContainer),
       "Attempt to add item with id (" + stringId + ") that already"
       + " exists in the itemContainer");

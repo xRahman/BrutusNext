@@ -16,10 +16,10 @@
 'use strict';
 
 import {ASSERT_FATAL} from '../shared/ASSERT';
-import {Id} from '../shared/Id';
 import {GameEntity} from '../game/GameEntity';
 import {IdList} from '../game/IdList';
 import {Game} from '../game/Game';
+import {EntityId} from '../game/EntityId';
 import {CommandInterpretter} from '../game/commands/CommandInterpretter';
 
 export abstract class EntityContainer extends CommandInterpretter
@@ -102,13 +102,13 @@ export abstract class EntityContainer extends CommandInterpretter
 
 
   // Adds entity id to contents of this entity.
-  protected insertEntity(entityId: Id)
+  protected insertEntity(entityId: EntityId)
   {
     this.contents.addEntityById(entityId);
   }
 
   // Removes entity if from contents of this entity.
-  public removeEntity(entityId: Id)
+  public removeEntity(entityId: EntityId)
   {
     this.contents.removeEntityFromList(entityId);
   }

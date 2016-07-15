@@ -16,5 +16,12 @@
     "entityIds": []
   },
   "isNameUnique": true,
-  "timeOfCreation": "2016-04-09T11:50:15.960Z"
+  "timeOfCreation": "2016-04-09T11:50:15.960Z",
+  "location":
+  {
+    "className": "EntityId",
+    "version": 0,
+    "stringId": "7-imt2xk99",
+    "type": "Room"
+  }
 }

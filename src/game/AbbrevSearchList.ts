@@ -8,7 +8,7 @@
 
 /*
   Note: This solution might take quite a lot of memory. If it
-  become an issue (with lots of entities online), the easiest
+  becomes an issue (with lots of entities online), the easiest
   solution would be to limit abbrevList to only contain say
   up to three letter abbreviations. This way there would be
   more sequential processing of entities listed for such short
@@ -19,8 +19,8 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
-import {Id} from '../shared/Id';
 import {GameEntity} from "../game/GameEntity";
+import {EntityId} from '../game/EntityId';
 
 export class AbbrevSearchList
 {
@@ -39,7 +39,7 @@ export class AbbrevSearchList
 
   // This hashmap maps abbreviations to the list of entities
   // corresponding to that abbreviation.
-  protected abbrevList: { [abbrev: string]: EntityList } = {};
+  protected abbrevList: { [abbrev: string]: EntityIdList } = {};
 
   // ---------------- Public methods --------------------
 
@@ -50,7 +50,7 @@ export class AbbrevSearchList
 
   // Returns null if no such entity exists.
   // (search string should be something like "3.mob.orc_chief")
-  public search(searchString: string): GameEntity
+  public search(searchString: string): EntityId
   {
     let parseResult = this.parseSearchString(searchString);
     let cathegory = this.parseSearchCathegory(parseResult.cathegory);
@@ -78,10 +78,16 @@ export class AbbrevSearchList
 
       // Add all possible abbreviations of each alias word.
       for (let j = 0; j < alias.length; j++)
+      {
         // From 0 to i + 1, because we don't want to add empty string and
         // we do want to add last character of the string (substring()
         // doesn't include right limit to the result).
-        this.addEntityToAbbreviation(alias.substring(0, j + 1), entity);
+        this.addEntityIdToAbbreviation
+        (
+          alias.substring(0, j + 1),
+          entity.getId()
+        );
+      }
     }
   }
 
@@ -94,23 +100,29 @@ export class AbbrevSearchList
 
       // Remove all possible abbreviations of each alias.
       for (let j = 0; j < alias.length; j++)
-        this.removeEntityFromAbbreviation(alias.substring(0, j), entity);
+      {
+        this.removeEntityIdFromAbbreviation
+        (
+          alias.substring(0, j),
+          entity.getId()
+        );
+      }
     }
   }
 
   // ---------------- Private methods --------------------
 
-  private addEntityToAbbreviation(abbrev: string, entity: GameEntity)
+  private addEntityIdToAbbreviation(abbrev: string, entityId: EntityId)
   {
     let lowercaseAbbrev = abbrev.toLocaleLowerCase();
 
     if (this.abbrevList[lowercaseAbbrev] === undefined)
-      this.abbrevList[lowercaseAbbrev] = new EntityList();
+      this.abbrevList[lowercaseAbbrev] = new EntityIdList();
 
-    this.abbrevList[lowercaseAbbrev].addEntity(entity);
+    this.abbrevList[lowercaseAbbrev].addEntity(entityId);
   }
 
-  private removeEntityFromAbbreviation(abbrev: string, entity: GameEntity)
+  private removeEntityIdFromAbbreviation(abbrev: string, entityId: EntityId)
   {
     let lowercaseAbbrev = abbrev.toLocaleLowerCase();
 
@@ -119,7 +131,8 @@ export class AbbrevSearchList
       + " '" + lowercaseAbbrev + "' that does not exist"
       + " in this.abbrevs");
 
-    let numberOfItems = this.abbrevList[lowercaseAbbrev].removeEntity(entity);
+    let numberOfItems =
+      this.abbrevList[lowercaseAbbrev].removeEntity(entityId);
 
     // If there are no items left for this abbreviation, we can delete
     // the property from hashmap.
@@ -127,9 +140,9 @@ export class AbbrevSearchList
       delete this.abbrevList[lowercaseAbbrev];
   }
 
-  private mergeResults(entityLists: Array<EntityList>): Array<GameEntity>
+  private mergeResults(entityLists: Array<EntityIdList>): Array<EntityId>
   {
-    let result: Array<GameEntity> = [];
+    let result: Array<EntityId> = [];
 
     if (entityLists.length === 0)
       return result;
@@ -172,6 +185,10 @@ export class AbbrevSearchList
 
       case AbbrevSearchList.searchCathegory.CHARMED:
         // TODO:
+        //   something like:
+        //   if (candidate.isCharmed())
+        //     return false;
+        //   break;
         break;
 
       case AbbrevSearchList.searchCathegory.FOLLOWER:
@@ -204,11 +221,11 @@ export class AbbrevSearchList
 
   private filterResults
   (
-    candidates: Array<GameEntity>,
+    candidates: Array<EntityId>,
     searchIndex: number,
     cathegory: number
   )
-  : GameEntity
+  : EntityId
   {
     // This test it not necessary, it just saves going through the list
     // of candidates it there is less of them then requested index.
@@ -219,7 +236,9 @@ export class AbbrevSearchList
 
     for (let i = 0; i < searchIndex; i++)
     {
-      if (this.validateResult(candidates[i], cathegory))
+      let candidate = <GameEntity>candidates[i].getEntity();
+
+      if (this.validateResult(candidate, cathegory))
         validResultsFound++;
 
       if (validResultsFound === searchIndex)
@@ -235,7 +254,7 @@ export class AbbrevSearchList
     searchIndex: number,
     cathegory: number
   )
-  : GameEntity
+  : EntityId
   {
     // Nothing can possibly match an empty, null or undefined searchName.
     if (!searchName)
@@ -246,7 +265,7 @@ export class AbbrevSearchList
 
     // This array will store a list of entities that listen to each of
     // abbreviations contained in abbrevArray.
-    let itemLists: Array<EntityList> = [];
+    let itemLists: Array<EntityIdList> = [];
 
     for (let i = 0; i < abbrevArray.length; i++)
     {
@@ -370,27 +389,27 @@ export class AbbrevSearchList
 // ---------------------- private module stuff -------------------------------
 
 // List of entityIds corresponding to a particular abbreviation.
-class EntityList
+class EntityIdList
 {
   // -------------- Public class data ----------------
 
-  public entities: Array<GameEntity> = [];
+  public entities: Array<EntityId> = [];
 
   // ---------------- Public methods --------------------
 
-  public contains(entity: GameEntity): boolean
+  public contains(entityId: EntityId): boolean
   {
-    return this.entities.indexOf(entity) !== -1;
+    return this.entities.indexOf(entityId) !== -1;
   }
 
-  public addEntity(item: GameEntity)
+  public addEntity(entityId: EntityId)
   {
-    this.entities.push(item);
+    this.entities.push(entityId);
   }
 
-  public removeEntity(item: GameEntity): number
+  public removeEntity(entityId: EntityId): number
   {
-    let index = this.entities.indexOf(item);
+    let index = this.entities.indexOf(entityId);
 
     ASSERT_FATAL(index !== -1,
       "Attempt to remove item from AbbrevItemsList that does not exist in it");

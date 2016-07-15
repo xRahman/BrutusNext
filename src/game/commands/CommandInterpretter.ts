@@ -161,6 +161,7 @@ export abstract class CommandInterpretter extends IdableSaveableObject
 // trigger instead).
 //   Generally said it's good practice to add new commands after the existing
 // ones with the same prefix.
+CommandInterpretter.registerCommand('look', 'doLook');
 CommandInterpretter.registerCommand('qui', 'doQui');
 CommandInterpretter.registerCommand('quit', 'doQuit');
 CommandInterpretter.registerCommand('sit', 'doSit');
