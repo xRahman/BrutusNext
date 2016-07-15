@@ -28,10 +28,14 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
   <ItemGroup>
     <TypeScriptCompile Include="src\BrutusNext.ts" />
-    <TypeScriptCompile Include="src\editor\StringEditor.ts" />
+    <TypeScriptCompile Include="src\editor\OLC\StringEditor.ts" />
     <TypeScriptCompile Include="src\game\characters\Character.ts" />
     <TypeScriptCompile Include="src\game\commands\CommandInterpretter.ts" />
     <TypeScriptCompile Include="src\game\DynamicClasses.ts" />
+    <TypeScriptCompile Include="src\game\EntityId.ts" />
+    <TypeScriptCompile Include="src\game\PrototypeData.ts" />
+    <TypeScriptCompile Include="src\game\PrototypeManager.ts" />
+    <TypeScriptCompile Include="src\game\ScriptData.ts" />
     <TypeScriptCompile Include="src\shared\EditableObject.ts" />
     <TypeScriptCompile Include="src\game\EntityContainer.ts" />
     <TypeScriptCompile Include="src\game\IdList.ts" />
@@ -79,6 +83,7 @@
   <ItemGroup>
     <Folder Include="src\" />
     <Folder Include="src\editor\" />
+    <Folder Include="src\editor\OLC\" />
     <Folder Include="src\game\" />
     <Folder Include="src\game\characters\" />
     <Folder Include="src\game\commands\" />

@@ -1,0 +1,15 @@
+Use getSomething() and setSomething() methods instead of accessors.
+
+Reason: If you wanted a public accessor for a private class variable, you would
+have to create a different name the actual variable. Having variable x accessed
+by function getX() is more intuitive.
+
+
+When to use accessors:
+- for constants, for example:
+    protected get SAVE_DIRECTORY() { return "./data/realms/"; }
+
+- for static acces, for example
+    public static get entities() { return Server.game.entities; }
+  (in this case class variable 'entities' can exist along with an accessor
+  of the same name, because accessor is static)

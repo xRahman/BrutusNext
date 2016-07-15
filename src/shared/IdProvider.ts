@@ -10,6 +10,7 @@ import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {Mudlog} from '../server/Mudlog';
 import {Id} from '../shared/Id';
+import {IdableSaveableObject} from '../shared/IdableSaveableObject';
 
 export class IdProvider
 {
@@ -19,10 +20,7 @@ export class IdProvider
 
   // ---------------- Public methods --------------------
 
-  // Use 'null' as a 'not pointing anywhere' id value. Id can be invalid
-  // even if it's not null, for example when it's pointing to an object
-  // which has already been deleted.
-  public generateId(type: string): Id
+  public generateId(object: IdableSaveableObject): Id
   {
     // Increment lastIssuedId first so we start with 1 (initial value is 0).
     this.lastIssuedId++;
@@ -37,7 +35,7 @@ export class IdProvider
       + '-'
       + this.timeOfBoot.getTime().toString(36);
 
-    return new Id(stringId, type);
+    return new Id(stringId, object.className, object);
   }
 
   // -------------- Protected class data ----------------

@@ -8,6 +8,7 @@
 
 import {ASSERT} from '../../shared/ASSERT'
 import {Id} from '../../shared/Id';
+import {SaveableObject} from '../../shared/SaveableObject';
 import {Game} from '../../game/Game';
 import {GameEntity} from '../../game/GameEntity';
 import {Area} from '../../game/world/Area';
@@ -32,11 +33,14 @@ export class Realm extends GameEntity
 
   // ---------------- Public methods --------------------
 
-  public addNewArea(areaName: string): Id
+  public addNewArea(param: { name: string, prototype: string }): Id
   {
-    let newArea = new Area();
+    ///let newArea = new Area();
+    // Dynamic creation of a new instance by calling a constructor saved
+    // in 'global' object.
+    let newArea = <Area>SaveableObject.createInstance(param.prototype);
 
-    newArea.name = areaName;
+    newArea.name = param.name;
 
     let newAreaId = Game.areaList.addEntityUnderNewId(newArea);
 

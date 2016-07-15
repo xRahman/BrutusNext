@@ -1,0 +1,15 @@
+'undefined' constructor parameters
+-----------------------------------
+
+When dynamically creating an entity (while loading from JSON), a constructor
+is called with 'undefined' parameters. That's OK for properties that are
+going to be loaded after that, because they will get correct values by
+loading.
+  If you create a class variable that is not to be saved, however, you need
+to check if appropriate constructor parameter is 'undefined' and only set
+a value if it's not. Othewise you would overwrite default (or current) value
+with 'undefined'.
+
+Side note:
+If you encounter dereferencing of an 'undefined' value, this might be the
+reason why the variable is 'undefined'.

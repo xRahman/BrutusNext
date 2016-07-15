@@ -6,6 +6,9 @@
 import {Id} from "../shared/Id";
 global['Id'] = Id;
 
+import {EntityId} from "../game/EntityId";
+global['EntityId'] = EntityId;
+
 import {Character} from "../game/characters/Character";
 global['Character'] = Character;
 
