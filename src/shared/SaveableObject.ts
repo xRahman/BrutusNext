@@ -23,7 +23,7 @@ let beautify = require('js-beautify').js_beautify;
 
 export class SaveableObject extends AttributableClass
 {
-  // Creates a new instance of game entity of type saved in id.
+  // Creates a new instance of game entity of type className.
   static createInstance(className: string, ...args: any[])
   {
     // Here we are going to dynamically create an instance of a class
@@ -129,7 +129,6 @@ export class SaveableObject extends AttributableClass
 
     // Directory might not yet exist, so we better make sure it does.
     await promisifiedFS.ensureDir(directory);
-
     await this.saveContentsToFile(directory + fileName);
   }
 

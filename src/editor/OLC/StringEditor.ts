@@ -6,9 +6,9 @@
 
 'use strict';
 
-import {ASSERT} from '../shared/ASSERT';
-import {ASSERT_FATAL} from '../shared/ASSERT';
-import {PlayerConnection} from '../server/PlayerConnection';
+import {ASSERT} from '../../shared/ASSERT';
+import {ASSERT_FATAL} from '../../shared/ASSERT';
+import {PlayerConnection} from '../../server/PlayerConnection';
 
 export class StringEditor
 {

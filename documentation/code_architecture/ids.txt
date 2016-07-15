@@ -1,0 +1,77 @@
+What are ids good for?
+----------------------
+
+- They allow to access objects by string identifier.
+- Using them prevents accessing of destroyed objects by mistake.
+
+IMPORTANT:
+-----------
+Only ever use direct references like this:
+  let ch: Character = something.getCharacter();
+as local function variables, never as class members. If you want to remember
+any object in your class,  always use an id (EntityId if it's some sort of
+GameEntity, Id otherwise).
+
+
+Explanation:
+------------
+If you keep a reference to a character (some mob for example) and this
+character dies, the object representing this character won't get dealocated,
+because you still keep reference to it (in javascript, objects are dealocated
+only after there is no active reference to that object). The second unpleasant
+feature of keeping direct references is, that you can't know if you are not
+by mistake accessing an object, that is not supposed to exist any more. (You
+would have to use checks like if (ch.notDead()) ... and there would be errors
+even so.
+  To prevent such problems, we always keep an id instead of an reference and
+we always access specific objects using this id. If an object is destroyed,
+an id will still exist, but it won't be valid anymore so if you try to use it,
+you will get an error (an ASSERT will trigger) so you will be able to fix it.
+
+Another reason is, that if you kept direct reference to an object, it would
+automaticaly get saved along with your object. If you use id, only an id is
+saved, which is what we want (each entity is saved to it's own file, references
+are later restored using string ids).
+
+---------------------------------------------------------------------------
+
+Implementation details:
+
+Internal direct reference
+--------------------------
+An id may internaly keep a direct reference to an object. So if you call for
+example entityId.getEntity(), you will most probably get returned
+entityId.internalReference directly (so the cost of using id instead of
+reference is just one extra dereferencing).
+  This is all automatic, just use
+    entityId.getEntity();
+
+Accesing objects by string ids
+-------------------------------
+In order to be able to access any object by it's string id, all identifiable
+objects are stored in an IdableObjectContainer. All string ids of contained
+objects are properties of this container, so any object is accessed like this:
+  container['string_id'];  // Container is a hashmap.
+
+Id is an object
+----------------
+An id is actualy an object, not just string identifier. It contains string id
+(of course), possibly direct reference to an object and also class name (or
+type) of an identified object (so you know what class is this id supposed to
+reference). This is useful while debugging.
+  Id's are also SaveableObjects, so they can (and are) automaticaly saved to
+and loaded from JSON (and JSON files). When and id is loaded, it's internal
+direct reference is not initialized at once, because referenced object may not
+be loaded yet (this will certainly be true if you double-link two entities, so
+both of them contain an id of the other entity). For this reason an internal
+reference is initialized only when an id.getEntity() is first used
+(referenced object is accessed using string id and it's reference is then
+remembered).
+
+What does string id consist of
+-------------------------------
+String id consists of boot timestamp and a number (which is just an incremental
+count of how many ids were issued in this boot). This way all ids are always
+universally unique so you can safely merge work that you made on different
+server instances (unless you would launch two instances at exactly the same
+milisecond - don't do that ;-)).
