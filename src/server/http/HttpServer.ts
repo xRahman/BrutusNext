@@ -4,8 +4,6 @@
   Implements http server.
 */
 
-'use strict';
-
 /*
   K vyzkouseni je to na adrese http://127.0.0.1:4445
 
@@ -31,9 +29,11 @@
   jako pri loadovani ze souboru.
 */
 
+'use strict';
+
+import {FileSystem} from '../../shared/fs/FileSystem';
 
 // Built-in node.js modules.
-import * as fs from 'fs';  // Import namespace 'fs' from node.js
 import * as http from 'http';  // Import namespace 'http' from node.js
 
 export class HttpServer
@@ -90,10 +90,10 @@ export class HttpServer
         '\n\n');
       */
 
-      let webPage = fs.readFileSync("./src/editor/editor.html", "utf8");
-      let editorScript =
-        fs.readFileSync("./src/editor/3rd_party/jsoneditor.js", "utf8");
-      let schemaScript = fs.readFileSync("./src/editor/schema.js", "utf8");
+      let webPage = FileSystem.readFileSync("./src/editor/editor.html");
+      let editorScript = FileSystem.readFileSync
+        ("./src/editor/3rd_party/jsoneditor.js");
+      let schemaScript = FileSystem.readFileSync("./src/editor/schema.js");
 
       /// Do zakladniho html (editor.html) se "vlepi" obsah souboru
       /// jsoneditor.js a schema.js.

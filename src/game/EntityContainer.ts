@@ -104,7 +104,12 @@ export abstract class EntityContainer extends CommandInterpretter
   // Adds entity id to contents of this entity.
   protected insertEntity(entityId: EntityId)
   {
+    let entity = entityId.getEntity({ typeCast: GameEntity });
+
     this.contents.addEntityById(entityId);
+
+    entity.setLocation(this.getId());
+
   }
 
   // Removes entity if from contents of this entity.

@@ -10,6 +10,8 @@
 'use strict';
 
 import {ASSERT} from '../../shared/ASSERT'
+import {EntityId} from '../../game/EntityId';
+import {Game} from '../../game/Game';
 import {Sector} from '../../game/world/Sector';
 
 export class Area extends Sector
@@ -31,6 +33,9 @@ export class Area extends Sector
   protected get SAVE_DIRECTORY() { return "./data/areas/"; }
 
   // ---------------- Public methods --------------------
+
+  /// Pozn: Area tu nic nemá, protože je zděděná ze Sectoru, kde
+  ///  je veškerá funkcionalita. Možná to nakonec bude jinak...
 
   // -------------- Protected class data ----------------
 

@@ -8,6 +8,8 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
+import {FileSystem} from '../shared/fs/FileSystem';
+import {AdminLevels} from '../server/AdminLevels';
 import {Mudlog} from '../server/Mudlog';
 import {Id} from '../shared/Id';
 import {IdableSaveableObject} from '../shared/IdableSaveableObject';
@@ -35,6 +37,8 @@ export class Account extends IdableSaveableObject
   static get SAVE_DIRECTORY() { return "./data/accounts/"; }
 
   // ----------------- Public data ----------------------
+
+  public getAdminLevel() { return this.adminLevel; }
 
   public get playerConnection()
   {
@@ -132,7 +136,7 @@ export class Account extends IdableSaveableObject
 
     /*
     /// Tohle je nakonec ok - kdyz player shodi linku ze hry,
-    /// tam mu tam zustane vise ld character, ale account se odloguje.
+    /// tam mu tam zustane viset ld character, ale account se odloguje.
     if (!ASSERT(!this.isInGame(),
       "Attempt to logout a player who is still in game"))
       return;
@@ -142,10 +146,21 @@ export class Account extends IdableSaveableObject
     (
       accountName + " [" + ipAddress + "] " + action,
       Mudlog.msgType.SYSTEM_INFO,
-      Mudlog.levels.IMMORTAL
+      AdminLevels.IMMORTAL
     );
 
     Server.accountManager.dropAccount(this.getId());
+  }
+
+  // Set this.adminLevel to 5 if there are no other accounts on the disk.
+  public firstAccountCheck()
+  {
+    if (FileSystem.isEmpty(Account.SAVE_DIRECTORY))
+    {
+      // We are creating the first account on this mud installation.
+      // Mark it as implementor account.
+      this.adminLevel = AdminLevels.IMPLEMENTOR;
+    }
   }
 
   // -------------- Protected class data ----------------
@@ -179,4 +194,5 @@ export class Account extends IdableSaveableObject
   // -------------- Private class data ----------------
 
   private passwordHash = "";
+  private adminLevel = AdminLevels.IMMORTAL;
 }

@@ -11,20 +11,25 @@ import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {NamedClass} from '../shared/NamedClass';
 import {AttributableClass} from '../shared/AttributableClass';
+import {FileSystem} from '../shared/fs/FileSystem';
 import {Mudlog} from '../server/Mudlog';
 import {Server} from '../server/Server';
 
-// Built-in node.js modules.
-import * as fs from 'fs';  // Import namespace 'fs' from node.js
-
-// 3rd party modules.
-let promisifiedFS = require('fs-promise');
 let beautify = require('js-beautify').js_beautify;
 
 export class SaveableObject extends AttributableClass
 {
-  // Creates a new instance of game entity of type className.
-  static createInstance(className: string, ...args: any[])
+  // Creates a new instance of type className.
+  static createInstance<T>
+  (
+    param:
+    {
+      className: string,
+      typeCast: { new (...args: any[]): T }
+    },
+    // Any extra arguments are passed to the class constructor.
+    ...args: any[]
+  )
   {
     // Here we are going to dynamically create an instance of a class
     // className. We will use global object to acces respective class
@@ -32,9 +37,9 @@ export class SaveableObject extends AttributableClass
 
     ASSERT_FATAL
     (
-      typeof className !== 'undefined'
-      && className !== null
-      && className != "",
+      typeof param.className !== 'undefined'
+          && param.className !== null
+          && param.className != "",
       "Invalid class name passed to SaveableObject::createInstance()"
     );
 
@@ -43,21 +48,37 @@ export class SaveableObject extends AttributableClass
     // object, because it's not done automatically in node.js.
     ASSERT_FATAL
     (
-      typeof global[className] !== 'undefined',
+      typeof global[param.className] !== 'undefined',
       "Attempt to createInstance() of unknown type"
-      + " '" + className + "'. You probably forgot to add"
+      + " '" + param.className + "'. You probably forgot to add"
       + " a record to DynamicClasses.ts file for your new class."
     );
 
     // This accesses a class constructor by it's name. Consctructor of
     // each class that is supposed to be dynamically loaded here needs
     // to be added to 'global' object in DynamicClasses.ts file.
-    let newObject = new global[className](...args);
+    let newObject = new global[param.className](...args);
 
     // Type cast to <SaveableObject> is here for TypeScript to be roughly
     // aware what can it expect from newly created variable - otherwise it
     // would be of type <any>.
     return <SaveableObject>newObject;
+
+
+    // Dynamic type check - we make sure that our newly created object
+    // is inherited from requested class (or an instance of the class itself).
+    if (newObject instanceof param.typeCast)
+      // Here we typecast to <any> in order to pass newObject
+      // as type T (you can't typecast directly to template type but you can
+      // typecast to <any> which is then automatically cast to template type).
+      return <any>newObject;
+
+    ASSERT(false,
+      "Type cast error: Newly created object "
+      + "of type '" + param.className + "' is not an instance"
+      + " of requested type (" + param.typeCast.name + ")");
+
+    return null;
   }
 
   // -------------- Protected class data ----------------
@@ -94,29 +115,10 @@ export class SaveableObject extends AttributableClass
     //  to node.js filestream documentation). So we don't need to bother
     //  with loading locks.
 
-    let jsonString = "";
-
-    try
-    {
-      // Asynchronous reading from the file.
-      // (the rest of the code will execute only after the reading is done)
-      jsonString = await promisifiedFS.readFile(filePath, 'utf8');
-    }
-    catch (error)
-    {
-      Mudlog.log
-      (
-        "Error loading file '" + filePath + "': " + error.code,
-        Mudlog.msgType.SYSTEM_ERROR,
-        Mudlog.levels.IMMORTAL
-      );
-
-      // Throw the exception so the mud will get terminated with error
-      // message.
-      // (Create a new Error object, because the one we have cought here
-      // doesn't contain stack trace)
-      throw new Error;
-    }
+    // Asynchronous reading from the file.
+    // (the rest of the code will execute only after the reading is done)
+    //jsonString = await promisifiedFS.readFile(filePath, 'utf8');
+    let jsonString = await FileSystem.readFile(filePath);
 
     // filePath is passed just so it can be printed to error messages.
     this.loadFromJsonString(jsonString, filePath);
@@ -128,7 +130,7 @@ export class SaveableObject extends AttributableClass
       "Directory path '" + directory + "' doesn't end with '/'");
 
     // Directory might not yet exist, so we better make sure it does.
-    await promisifiedFS.ensureDir(directory);
+    await FileSystem.ensureDirectoryExists(directory);
     await this.saveContentsToFile(directory + fileName);
   }
 
@@ -171,21 +173,19 @@ export class SaveableObject extends AttributableClass
   protected saveToJsonString(): string
   {
     let jsonString = JSON.stringify(this.saveToJsonObject());
-    let regExp: RegExp;
 
-    jsonString =
-      beautify
-      (
-        jsonString,
-        {
-          "indent_size": 2,
-          "indent_char": " ",
-          "eol": "\n",
-          "brace_style": "expand",
-          "keep_array_indentation": true,
-          "end_with_newline": false
-        }
-      );
+    jsonString = beautify
+    (
+      jsonString,
+      {
+        "indent_size": 2,
+        "indent_char": " ",
+        "eol": "\n",
+        "brace_style": "expand",
+        "keep_array_indentation": true,
+        "end_with_newline": false
+      }
+    );
 
     return jsonString;
   }
@@ -269,26 +269,9 @@ export class SaveableObject extends AttributableClass
       // processed only after the previous saving ended).
       let jsonString = this.saveToJsonString();
 
-      try
-      {
-        // Asynchronous saving to file.
-        // (the rest of the code will execute only after the saving is done)
-        await promisifiedFS
-          .writeFile(this.saveRequests[i], jsonString, 'utf8');
-      }
-      catch (error)
-      {
-        Mudlog.log(
-          "Error saving file '" + this.saveRequests[i] + "': " + error.code,
-          Mudlog.msgType.SYSTEM_ERROR,
-          Mudlog.levels.IMMORTAL);
-
-        // Throw the exception so the mud will get terminated with error
-        // message.
-        // (create a new Error object, because the one we have cought here
-        // doesn't contain stack trace)
-        throw new Error;
-      }
+      // Asynchronous saving to file.
+      // (the rest of the code will execute only after the saving is done)
+      await FileSystem.writeFile(this.saveRequests[i], jsonString);
     }
   }
 

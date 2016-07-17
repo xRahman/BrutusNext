@@ -19,54 +19,29 @@
 
 export class Mudlog
 {
-  // TODO: Tohle by se asi hodilo prehodit jinam, nejspis nekam do classy pro
-  // immortalske zalezitosti. Zatim to necham tady.
-  public static levels =
-  {
-    MORTAL:      { value: 0, str: "MORTAL" },
-    IMMORTAL:    { value: 1, str: "IMMORTAL" },
-    GOD:         { value: 2, str: "GOD" },
-    GREATER_GOD: { value: 3, str: "GREATER_GOD" },
-    CREATOR:     { value: 4, str: "CREATOR" },
-    IMPLEMENTOR: { value: 5, str: "IMPLEMENTOR" },
-    // This probably won't be needed here.
-    ///length:      { value: 6, str: "ERROR" }
-  }
-
   public static msgType =
   {
-    ASSERT:       { str: "ASSERT" },
-    ASSERT_FATAL: { str: "ASSERT FATAL" },
-    SYSTEM_INFO:  { str: "SYSTEM INFO" },
-    SYSTEM_ERROR: { str: "SYSTEM ERROR" }
+    ASSERT:       "ASSERT",
+    ASSERT_FATAL: "ASSERT FATAL",
+    SYSTEM_INFO:  "SYSTEM INFO",
+    SYSTEM_ERROR: "SYSTEM ERROR"
   }
 
   // Outputs message to log file. Also sends it to online immortals
   // of required or greater level.
-  static log(
+  static log
+  (
     message: string,
-    msgType: MudlogMessageType,
-    level: MudlogImmortalLevel)
+    msgType: string,
+    level: number
+  )
   {
     // TODO: Kontrolovat level charu, az bude existovat
     // (zatim se loguje vsechno)
     if (true)
     ///if (level.value >= char.level)
     {
-      console.log("[" + msgType.str + "] " + message);
+      console.log("[" + msgType + "] " + message);
     }
   }
-}
-
-// ---------------------- private module stuff -------------------------------
-
-interface MudlogMessageType
-{
-  str: string;
-}
-
-interface MudlogImmortalLevel
-{
-  value: number;
-  str: string;
 }

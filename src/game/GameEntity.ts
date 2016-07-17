@@ -14,11 +14,12 @@ import {SaveableObject} from '../shared/SaveableObject';
 import {Game} from '../game/Game';
 import {EntityId} from '../game/EntityId';
 import {EntityContainer} from '../game/EntityContainer';
+import {IdList} from '../game/IdList'
 
 // TEST:
 const vm = require('vm');
 
-export abstract class GameEntity extends EntityContainer
+export class GameEntity extends EntityContainer
 {
   /*
   /// TEST
@@ -59,8 +60,8 @@ export abstract class GameEntity extends EntityContainer
     ASSERT_FATAL(id !== null,
       "Invalid (null) id passed to GameEntity::createInstance()");
 
-    let newEntity =
-      <GameEntity>SaveableObject.createInstance(id.getType(), args);
+    let newEntity = SaveableObject
+      .createInstance({ className: id.getType(), typeCast: GameEntity }, args);
 
     newEntity.setId(id);
     
@@ -91,6 +92,11 @@ export abstract class GameEntity extends EntityContainer
     return Server.playerConnectionManager.getItem(this.playerConnectionId);
   }
 
+  public getId() { return <EntityId>super.getId(); }
+
+  public setLocation(location: EntityId) { this.location = location; }
+  public getLocation() { return this.location; }
+
   // -------------- Protected accessors -----------------
 
   protected get SAVE_DIRECTORY()
@@ -104,7 +110,34 @@ export abstract class GameEntity extends EntityContainer
 
   // ---------------- Public methods --------------------
 
-  public getId() { return <EntityId>super.getId(); }
+  // Dynamically creates a new instance of requested class (param.prototype)
+  // and inserts it to specified idList (param.container).
+  public createNewEntity<T>
+  (
+    param:
+    {
+      name: string,
+      prototype: string,
+      container: IdList
+    }
+  )
+  : EntityId
+  {
+    // Dynamic creation of a new instance.
+    let newEntity = SaveableObject.createInstance
+    (
+      {
+        className: param.prototype,
+        typeCast: GameEntity
+      }
+    );
+
+    newEntity.name = param.name;
+
+    let newEntityId = param.container.addEntityUnderNewId(newEntity);
+
+    return newEntityId;
+  }
 
   public generatePrompt(): string
   {
@@ -319,6 +352,5 @@ export abstract class GameEntity extends EntityContainer
 
     if (output !== "")
       this.playerConnection.sendAsBlock(output);
-
   }
 }
