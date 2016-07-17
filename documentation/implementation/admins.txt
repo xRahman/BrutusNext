@@ -1,0 +1,19 @@
+TODO: Je třeba vymyslet (a implementovat), jak to udělat, aby ze skriptu nešlo
+nastavit všechno, zejména ne Account::adminLevel;
+
+- problém je, že veškeré přístupové checky (private a tak) v typescriptu jsou
+compile-time only. Ve skriptu si může sáhnout na libovolnou property
+libovolného objektu, případně si na libovolný objekt navěsit metodu, která mi
+to accessne
+
+(Bezpečná by asi mohla být javascript-private proměnná, tj. lokální proměnná
+  konstruktoru).
+
+Pozn:
+  Na disku je asi nejjednodušší ošetřit to přes linuxová práva na adresář
+s accountama.
+
+
+----------------------
+
+Prozatím to řešit nebudu.

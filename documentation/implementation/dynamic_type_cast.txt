@@ -1,0 +1,18 @@
+It might seem that "Dynamic typecast" actualy doesn't make any sense in
+typescript, because all type information is compile-time only. What I mean is
+a compile-time typecast (so your editor can give you correct hints etc.) with
+dynamic control that you are really typecasting instance of resulting type and
+not something entirely else (which would lead to an error sooner or later, but
+it would be much harder to debug).
+
+This is a functional examaple I used to implement dynamic typecasting:
+
+function cast<T>(instance, ctor: { new (...args: any[]): T }): T
+{ // instance should be "any"
+  if (instance instanceof ctor) return instance;
+  throw new Error('Type cast exception');
+}
+
+Note that 'instanceof' operator checks whole prototype chain, so
+  (new Area) instanceof (GameEntity); // This is true.
+That's exactly what we need.
