@@ -9,13 +9,11 @@
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {Id} from '../shared/Id';
+import {FileSystem} from '../shared/fs/FileSystem';
 import {IdList} from '../game/IdList';
 import {Game} from '../game/Game';
 import {Character} from '../game/characters/Character';
 import {Mudlog} from '../server/Mudlog';
-
-// Built-in node.js modules.
-import * as fs from 'fs';  // Import namespace 'fs' from node.js
 
 export class PlayerCharacterManager
 {
@@ -27,7 +25,8 @@ export class PlayerCharacterManager
   (
     name: string,
     playerConnectionId: Id
-  ): Id
+  )
+  : Id
   {
     ASSERT_FATAL(!this.doesNameExist(name),
       "Attempt to create a character '" + name + "'"
@@ -67,24 +66,6 @@ export class PlayerCharacterManager
     return <Character>character;
   }
 
-  /*
-  /// TODO: Tohle zjevne neni potreba. Pokud to tak zustane, smazat
-  public getCharacter(id: Id): Character
-  {
-    let character = Game.entities.getItem(id);
-
-    ASSERT_FATAL(character instanceof Character,
-      "Attempt to get character by id that doesn't reference an instance of"
-      + " Character class");
-
-    ASSERT_FATAL(id.className === 'Character',
-      "Attempt to get character by id that doesn't reference an instance of"
-      + " Character class");
-
-    return <Character>character;
-  }
-  */
-
   public doesNameExist(characterName: string)
   {
     // First check if character is already online so we can save reading from
@@ -94,7 +75,7 @@ export class PlayerCharacterManager
 
     let path = Character.SAVE_DIRECTORY + "unique/" + characterName + ".json";
 
-    return fs.existsSync(path);
+    return FileSystem.existsSync(path);
   }
 
   // -------------- Protected class data ----------------

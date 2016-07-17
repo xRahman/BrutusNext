@@ -8,14 +8,15 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
-import {Id} from '../shared/Id';
 import {PlayerConnection} from '../server/PlayerConnection';
 import {Server} from '../server/Server';
 import {Account} from '../server/Account';
 import {Game} from '../game/Game';
 import {GameEntity} from '../game/GameEntity';
+import {EntityId} from '../game/EntityId';
 import {Character} from '../game/characters/Character';
 import {Mudlog} from '../server/Mudlog';
+import {AdminLevels} from '../server/AdminLevels';
 
 export class LobbyProcessor
 {
@@ -193,8 +194,8 @@ export class LobbyProcessor
     {
       this.playerConnection.sendAsBlock
       (
-        "&wAn error occured while entering"
-        + " game. Please contact implementors."
+        "&wAn error occured while entering game."
+        + " Please contact implementors."
       );
 
       return;
@@ -215,7 +216,10 @@ export class LobbyProcessor
 
     this.stage = LobbyProcessor.stage.NOT_IN_LOBBY;
 
-    let character = Game.entities.getItem(newCharacterId);
+    let character = newCharacterId.getEntity({ typeCast: Character });
+
+    // Sets birthroom, immortal flag, etc.
+    character.initNewCharacter(account);
 
     this.attachConnectionToGameEntity(character);
     this.playerConnection.enterGame();
@@ -243,7 +247,7 @@ export class LobbyProcessor
     this.attachConnectionToGameEntity(character);
   }
 
-  protected createNewCharacter(characterName: string): Id
+  protected createNewCharacter(characterName: string): EntityId
   {
     let characterManager = Game.playerCharacterManager;
     let accountManager = Server.accountManager;
@@ -253,13 +257,11 @@ export class LobbyProcessor
     if (this.characterNameExists(characterName))
       return null;
 
-    // 'isNameUnique: true' because player characters have unique names.
-    let newCharacterId =
-      characterManager.createNewUniqueCharacter
-      (
-        characterName,
-        this.playerConnection.getId()
-      );
+    let newCharacterId = characterManager.createNewUniqueCharacter
+    (
+      characterName,
+      this.playerConnection.getId()
+    );
 
     account.addNewCharacter(characterName);
 
@@ -268,7 +270,7 @@ export class LobbyProcessor
       "Player " + account.name + " has created a new character: "
       + characterName,
       Mudlog.msgType.SYSTEM_INFO,
-      Mudlog.levels.IMMORTAL
+      AdminLevels.IMMORTAL
     );
 
     return newCharacterId;

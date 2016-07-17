@@ -36,6 +36,8 @@
     <TypeScriptCompile Include="src\game\PrototypeData.ts" />
     <TypeScriptCompile Include="src\game\PrototypeManager.ts" />
     <TypeScriptCompile Include="src\game\ScriptData.ts" />
+    <TypeScriptCompile Include="src\server\AdminLevels.ts" />
+    <TypeScriptCompile Include="src\shared\fs\FileSystem.ts" />
     <TypeScriptCompile Include="src\shared\EditableObject.ts" />
     <TypeScriptCompile Include="src\game\EntityContainer.ts" />
     <TypeScriptCompile Include="src\game\IdList.ts" />
@@ -91,6 +93,7 @@
     <Folder Include="src\headers\" />
     <Folder Include="src\server" />
     <Folder Include="src\server\http\" />
+    <Folder Include="src\shared\fs\" />
     <Folder Include="src\server\telnet\" />
     <Folder Include="src\shared" />
   </ItemGroup>

@@ -18,9 +18,9 @@ import {IdableSaveableObject} from '../shared/IdableSaveableObject';
 
 export class Id extends SaveableObject
 {
-  // Direct reference to object attached to this id.
+  // Direct reference to entity referenced by this id.
   // It's used for faster performance - you should always hold ids instead of
-  // direct references, but you can use id.getObject() to get your reference
+  // direct references, but you can use id.getEntity() to get your reference
   // directly without the need to search for string value of id in your
   // object container.
   protected directReference: IdableSaveableObject = null;
@@ -66,21 +66,32 @@ export class Id extends SaveableObject
     this.directReference = null;
   }
 
-  /*
   // Returns direct reference to object identified by this id.
-  // If this reference is null (for example if referenced object
+  // If this reference is null (for example if referenced entity
   // hasn't been created yet or if it has already been deleted),
   // fatal assert is triggered (so you know that you have referenced
   // something invalid).
-  public getObject()
+  public getEntity<T>(param: { typeCast: { new(...args: any[]): T } }): T
   {
-    ASSERT_FATAL(this.referencedObject !== null,
-      "Attempt to reference a SaveableObject of type '"
+    ASSERT_FATAL(this.directReference !== null,
+      "Attempt to directly reference an entity of type '"
       + this.type + "', which is not available.");
 
-    return this.referencedObject;
+    // Dynamic type check - we make sure that our referenced object
+    // is inherited from requested class (or an instance of the class itself).
+    if (this.directReference instanceof param.typeCast)
+      // Here we typecast to <any> in order to pass this.directReference
+      // as type T (you can't typecast directly to template type but you can
+      // typecast to <any> which is then automatically cast to template type).
+      return <any>this.directReference;
+
+    ASSERT(false,
+      "Type cast error: Direcly referenced entity "
+      + "(id: '" + this.stringId + "' is not an instance"
+      + " of requested type (" + param.typeCast.name + ")");
+    
+    return null;
   }
-  */
 
   public getStringId() { return this.stringId; }
   public getType() { return this.type; }

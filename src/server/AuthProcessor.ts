@@ -37,6 +37,7 @@
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {Mudlog} from '../server/Mudlog';
+import {AdminLevels} from '../server/AdminLevels';
 import {PlayerConnection} from '../server/PlayerConnection';
 import {Server} from '../server/Server';
 import {Account} from '../server/Account';
@@ -203,7 +204,7 @@ export class AuthProcessor
       "New player: " + this.accountName
       + " [" + this.playerConnection.ipAddress + "]",
       Mudlog.msgType.SYSTEM_INFO,
-      Mudlog.levels.IMMORTAL
+      AdminLevels.IMMORTAL
     );
 
     this.playerConnection.accountId = newAccountId;
@@ -387,7 +388,7 @@ export class AuthProcessor
       "Bad PW: " + this.accountName
       + " [" + this.playerConnection.ipAddress + "]",
       Mudlog.msgType.SYSTEM_INFO,
-      Mudlog.levels.IMMORTAL
+      AdminLevels.IMMORTAL
     );
 
     this.playerConnection.sendAsPrompt

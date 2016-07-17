@@ -9,6 +9,7 @@
 import {ASSERT} from '../../shared/ASSERT';
 import {ASSERT_FATAL} from '../../shared/ASSERT';
 import {Mudlog} from '../../server/Mudlog';
+import {AdminLevels} from '../../server/AdminLevels';
 import {Server} from '../../server/Server';
 import {SocketDescriptor} from '../../server/SocketDescriptor';
 import {PlayerConnection} from '../../server/PlayerConnection';
@@ -243,7 +244,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
       player
       + " has encounterd a socket error, closing the connection. " + error,
       Mudlog.msgType.SYSTEM_ERROR,
-      Mudlog.levels.IMMORTAL
+      AdminLevels.IMMORTAL
     );
 
     this.closeSocket();

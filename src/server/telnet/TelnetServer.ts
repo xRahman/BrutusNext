@@ -25,6 +25,7 @@
 
 import {ASSERT_FATAL} from '../../shared/ASSERT';
 import {Mudlog} from '../../server/Mudlog';
+import {AdminLevels} from '../../server/AdminLevels';
 import {Id} from '../../shared/Id';
 import {Server} from '../../server/Server';
 import {PlayerConnection} from '../../server/PlayerConnection';
@@ -77,7 +78,7 @@ export class TelnetServer
     Mudlog.log(
       "Starting telnet server at port " + this.port,
       Mudlog.msgType.SYSTEM_INFO,
-      Mudlog.levels.IMMORTAL);
+      AdminLevels.IMMORTAL);
 
     this.telnetServer.listen(this.port);
   }
@@ -103,7 +104,7 @@ export class TelnetServer
     (
       "Telnet server is up and listening to the new connections",
       Mudlog.msgType.SYSTEM_INFO,
-      Mudlog.levels.IMMORTAL
+      AdminLevels.IMMORTAL
     );
   }
 
@@ -141,7 +142,7 @@ export class TelnetServer
       "TELNET SERVER: Received a new connection request from "
       + socket.remoteAddress,
       Mudlog.msgType.SYSTEM_INFO,
-      Mudlog.levels.IMMORTAL
+      AdminLevels.IMMORTAL
     );
 
     if (!this.isOpen)
@@ -150,7 +151,7 @@ export class TelnetServer
       (
         "TELNET SERVER: Denying connection request: Server is closed",
         Mudlog.msgType.SYSTEM_INFO,
-        Mudlog.levels.IMMORTAL
+        AdminLevels.IMMORTAL
       );
 
       // Half - closes the socket. i.e., it sends a FIN packet.
