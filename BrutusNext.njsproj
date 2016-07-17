@@ -37,6 +37,9 @@
     <TypeScriptCompile Include="src\game\PrototypeManager.ts" />
     <TypeScriptCompile Include="src\game\ScriptData.ts" />
     <TypeScriptCompile Include="src\server\AdminLevels.ts" />
+    <TypeScriptCompile Include="src\shared\FlagsData.ts" />
+    <TypeScriptCompile Include="src\shared\FlagsDataManager.ts" />
+    <TypeScriptCompile Include="src\shared\Flags.ts" />
     <TypeScriptCompile Include="src\shared\fs\FileSystem.ts" />
     <TypeScriptCompile Include="src\shared\EditableObject.ts" />
     <TypeScriptCompile Include="src\game\EntityContainer.ts" />
