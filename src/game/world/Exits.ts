@@ -7,8 +7,8 @@
 
 'use strict';
 
-import {Id} from '../../shared/Id';
 import {SaveableObject} from '../../shared/SaveableObject';
+import {EntityId} from '../../game/EntityId';
 
 export class Exits extends SaveableObject
 {
@@ -31,7 +31,7 @@ export class Exits extends SaveableObject
     this.version = 0;
   }
 
-  public getExitId(exitName: string): Id
+  public getExitId(exitName: string): EntityId
   {
     if (exitName in this.exits)
       return this.exits[exitName];
@@ -39,11 +39,11 @@ export class Exits extends SaveableObject
       return null;
   }
 
-  public addExit(exitName: string, exitId: Id)
+  public addExit(exitName: string, exitId: EntityId)
   {
     this.exits[exitName] = exitId; 
   }
 
   // This hash map allows to access destination id using exit name.
-  protected exits: { [exitName: string]: Id } = {};
+  protected exits: { [exitName: string]: EntityId } = {};
 }

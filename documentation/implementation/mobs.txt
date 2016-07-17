@@ -1,3 +1,5 @@
+TODO: Tohle je celé outdated, předělat.
+
 Strutura mobů
 ------------------
 

@@ -11,6 +11,7 @@ import {ASSERT_FATAL} from '../shared/ASSERT';
 import {Id} from '../shared/Id';
 import {IdableSaveableObject} from '../shared/IdableSaveableObject';
 import {Mudlog} from '../server/Mudlog';
+import {AdminLevels} from '../server/AdminLevels';
 import {Server} from '../server/Server';
 import {SocketDescriptor} from '../server/SocketDescriptor';
 import {Account} from '../server/Account';
@@ -185,7 +186,7 @@ export class PlayerConnection extends IdableSaveableObject
     (
       account.name + " [" + this.ipAddress + "] has logged in",
       Mudlog.msgType.SYSTEM_INFO,
-      Mudlog.levels.IMMORTAL
+      AdminLevels.IMMORTAL
     );
 
     this.accountId = account.getId();
@@ -236,7 +237,7 @@ export class PlayerConnection extends IdableSaveableObject
       account.name + " [" + this.ipAddress + "] has reconnected."
       + " Closing the old connection",
       Mudlog.msgType.SYSTEM_INFO,
-      Mudlog.levels.IMMORTAL
+      AdminLevels.IMMORTAL
     );
 
     // If player was in game before and we know what game entity she has
@@ -669,7 +670,7 @@ export class PlayerConnection extends IdableSaveableObject
       player + " [" + this.ipAddress + "]"
       + " lost (or closed) connection" + state,
       Mudlog.msgType.SYSTEM_INFO,
-      Mudlog.levels.IMMORTAL
+      AdminLevels.IMMORTAL
     );
   }
 

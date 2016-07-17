@@ -46,6 +46,7 @@
 
 // Import required classes.
 import {Mudlog} from '../server/Mudlog';
+import {AdminLevels} from '../server/AdminLevels';
 
 // Sends error message to syslog along with a stack trace if condition is
 // false. Returns unmodified value of the condition.
@@ -58,7 +59,7 @@ export function ASSERT(condition: boolean, message: string)
     let errorMsg = "Assertion failed: '" + message + "'" + "\n"
       + stackTrace;
 
-    Mudlog.log(errorMsg, Mudlog.msgType.ASSERT, Mudlog.levels.CREATOR);
+    Mudlog.log(errorMsg, Mudlog.msgType.ASSERT, AdminLevels.CREATOR);
   }
 
   return condition;
@@ -76,7 +77,7 @@ export function ASSERT_FATAL(condition: boolean, message: string)
     let errorMsg = "Fatal assertion failed: '" + message + "'" + "\n"
       + stackTrace;
 
-    Mudlog.log(errorMsg, Mudlog.msgType.ASSERT_FATAL, Mudlog.levels.IMMORTAL);
+    Mudlog.log(errorMsg, Mudlog.msgType.ASSERT_FATAL, AdminLevels.IMMORTAL);
 
     // Since promises are eating exceptions, throwing an error won't stop
     // the program if ASSERT_FATAL is triggered withing asynchronous method.

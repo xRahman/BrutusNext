@@ -7,10 +7,11 @@
 
 'use strict';
 
-import {ASSERT} from '../../shared/ASSERT'
-import {Id} from '../../shared/Id';
+import {ASSERT} from '../../shared/ASSERT';
+import {SaveableObject} from '../../shared/SaveableObject';
 import {Game} from '../../game/Game';
 import {GameEntity} from '../../game/GameEntity';
+import {EntityId} from '../../game/EntityId';
 import {Realm} from '../../game/world/Realm';
 
 export class World extends GameEntity
@@ -31,15 +32,27 @@ export class World extends GameEntity
 
   protected get SAVE_DIRECTORY() { return "./data/"; }
 
+  // ---------------- Public class data -----------------
+
+  public systemRoomId: EntityId = null;
+  public systemAreaId: EntityId = null;
+  public systemRealmId: EntityId = null;
+
+  // The room newly created player characters spawn to.
+  public tutorialRoomId: EntityId = null;
+
   // ---------------- Public methods --------------------
 
-  public addNewRealm(realmName: string): Id
+  public createNewRealm(param: { name: string, prototype: string }): EntityId
   {
-    let newRealm = new Realm();
-
-    newRealm.name = realmName;
-
-    let newRealmId = Game.realmList.addEntityUnderNewId(newRealm);
+    let newRealmId = this.createNewEntity
+    (
+      {
+        name: param.name,
+        prototype: param.prototype,
+        container: Game.realmList
+      }
+    );
 
     // Add new realm id to the list of entities contained in the world.
     this.insertEntity(newRealmId);

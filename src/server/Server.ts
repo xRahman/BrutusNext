@@ -16,6 +16,7 @@
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {IdableObjectContainer} from '../shared/IdableObjectContainer';
+import {FileSystem} from '../shared/fs/FileSystem';
 import {PlayerConnection} from '../server/PlayerConnection';
 import {Mudlog} from '../server/Mudlog';
 import {AccountManager} from '../server/AccountManager';
@@ -24,9 +25,6 @@ import {TelnetServer} from '../server/telnet/TelnetServer';
 import {HttpServer} from '../server/http/HttpServer';
 import {IdProvider} from '../shared/IdProvider';
 import {Account} from '../server/Account';
-
-// Built-in node.js modules.
-import * as fs from 'fs';  // Import namespace 'fs' from node.js
 
 export class Server
 {
@@ -149,9 +147,9 @@ export class Server
   protected async createGame()
   {
     // If 'data' directory doesn't exist at all, create and save a new world.
-    if(!fs.existsSync("./data/"))
+    if(!FileSystem.existsSync("./data/"))
     {
-      await this.game.createNewWorld();
+      await this.game.createDefaultWorld();
     }
     else
     {

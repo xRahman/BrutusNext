@@ -9,9 +9,9 @@
 'use strict';
 
 import {ASSERT} from '../../shared/ASSERT'
-import {Id} from '../../shared/Id';
 import {Game} from '../../game/Game';
 import {GameEntity} from '../../game/GameEntity';
+import {EntityId} from '../../game/EntityId';
 import {Room} from '../../game/world/Room';
 
 export class Sector extends GameEntity
@@ -34,15 +34,18 @@ export class Sector extends GameEntity
 
   // ---------------- Public methods --------------------
 
-  public addNewRoom(roomName: string): Id
+  public createNewRoom(param: { name: string, prototype: string }): EntityId
   {
-    let newRoom = new Room();
+    let newRoomId = this.createNewEntity
+    (
+      {
+        name: param.name,
+        prototype: param.prototype,
+        container: Game.roomList
+      }
+    );
 
-    newRoom.name = roomName;
-
-    let newRoomId = Game.roomList.addEntityUnderNewId(newRoom);
-
-    // Add new room if to the list of entities contained in this sector.
+    // Add new room id to the list of entities contained in this area.
     this.insertEntity(newRoomId);
 
     return newRoomId;

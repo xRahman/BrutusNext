@@ -6,10 +6,13 @@
 
 'use strict';
 
+import {ASSERT} from '../shared/ASSERT';
 import {Server} from '../server/Server';
 import {Id} from '../shared/Id';
+import {SaveableObject} from '../shared/SaveableObject';
 import {PrototypeManager} from '../game/PrototypeManager';
 import {GameEntity} from '../game/GameEntity';
+import {EntityId} from '../game/EntityId';
 import {PlayerCharacterManager} from '../game/PlayerCharacterManager';
 import {IdableObjectContainer} from '../shared/IdableObjectContainer';
 import {World} from '../game/world/World';
@@ -60,73 +63,117 @@ export class Game
     return Server.game.realmList;
   }
 
+  public static get worldId()
+  {
+    return Server.game.worldId;
+  }
+
   // ---------------- Public methods --------------------
 
-  // Creates and saves a new world.
-  // (this method sould only be used if you don't have 'data' directory at all)
-  public async createNewWorld()
+  // Creates and saves a new default world.
+  // (this method sould only be used if you don't have 'data' directory yet)
+  public async createDefaultWorld()
   {
-    // Create world 'BrutusNext World'.
+    // --- World ---
 
-    // World doesn't have a prototype, class World is used directly.
-    let world = new World();
-    world.name = "BrutusNext World";
-    let worldId = Server.idProvider.generateId(world);
-    world.setId(worldId);
+    // Create a new world prototype.
+    this.prototypeManager.createNewPrototype
+      ({ name: "BrutusWorld", ancestor: "World" });
 
-    // Create realm 'Prototype Realm'.
+    // Create world 'BrutusNext World' based on this prototype.
+    this.createNewWorld
+      ({ name: "BrutusNext World", prototype: "BrutusWorld" });
 
-    let newRealmId = world.addNewRealm("Prototype Realm");
-    let newRealm = <Realm>this.entities.getItem(newRealmId);
+    let world = this.worldId.getEntity({ typeCast: World });
 
-    this.prototypeManager.addNewPrototype
-    (
-      { name: "SystemArea", ancestor: "Area" }
-    );
+    // --- System Realm ---
 
-    let newAreaId = newRealm.addNewArea
-    (
-      { name: "System Area", prototype: "SystemArea" }
-    );
+    // Create a new realm prototype.
+    this.prototypeManager.createNewPrototype
+      ({ name: "SystemRealm", ancestor: "Realm" });
 
-    let newArea = <Area>this.entities.getItem(newAreaId);
-    // TODO: Zmenit na:
-    //let newArea = newAreaId.getEntity();
+    // Create realm 'System Realm' based on this prototype and add it to the
+    // world.
+    let systemRealmId = world.createNewRealm
+      ({ name: "System Realm", prototype: "SystemRealm" });
 
-    let newRoomId = newArea.addNewRoom("System Room");
+    let systemRealm = systemRealmId.getEntity({ typeCast: Realm });
 
-    // Create realm 'Shattered Lands'.
+    // Remember system realm id for future easy access.
+    world.systemRealmId = systemRealmId;
 
-    newRealmId = world.addNewRealm("Shattered Lands");
-    newRealm = <Realm>Game.entities.getItem(newRealmId);
+    // --- System Area ---
+    
+    // Create a new area prototype.
+    this.prototypeManager.createNewPrototype
+      ({ name: "SystemArea", ancestor: "Area" });
 
-    newAreaId = newRealm.addNewArea({ name: "Base Camp", prototype: "TODO" });
-    newArea = <Area>Game.entities.getItem(newAreaId);
+    // Create area 'System Area' based on this prototype and add it to the
+    // realm.
+    let systemAreaId = systemRealm.createNewArea
+      ({ name: "System Area", prototype: "SystemArea" });
 
-    newRoomId = newArea.addNewRoom("Landing Site");
+    let systemArea = systemAreaId.getEntity({ typeCast: Area });
 
+    // Remember system area id for future easy access.
+    world.systemAreamId = systemAreaId;
+
+    // --- System Room ---
+
+    // Create a new room prototype.
+    this.prototypeManager.createNewPrototype
+      ({ name: "SystemRoom", ancestor: "Room" });
+
+    // Create room 'System Room' based on this prototype and add it to the
+    // area.
+    let systemRoomId = systemArea.createNewRoom
+      ({ name: "System Room", prototype: "SystemRoom" });
+
+    // Remember system room id for future easy access.
+    world.systemRoomId = systemRoomId;
+
+    // --- Tutorial Room ---
+
+    // Create a new room prototype.
+    this.prototypeManager.createNewPrototype
+      ({ name: "TutorialRoom", ancestor: "Room" });
+
+    // Create room 'Tutorial Room' based on this prototype and add it to the
+    // area.
+    let tutorialRoomId = systemArea.createNewRoom
+      ({ name: "Tutorial Room", prototype: "TutorialRoom" });
+
+    // Remember system room id for future easy access.
+    // (Newly created player characters spawn to this room.)
+    world.tutorialRoomId = tutorialRoomId;
+
+    // ---------------------
+
+    // Save all prototypes we have just created.
+    this.prototypeManager.save();
+
+    // Save the world we have just created.
     world.save();
   }
 
   // Loads initial state of the game from disk.
   public async load()
   {
-    /*
-    /// TEST
-
-    let testRoom = new Room();
-    testRoom.test();
-    */
-
-
+    // Load prototype data for all prototypes.
     await this.prototypeManager.load();
+    // Create javascript classes from prototype data (all game entities will
+    // be instantiated from these dynamically created prototype classes).
     this.prototypeManager.createClasses();
 
-    /// Tohle tu asi bude finalne:
-    let world = <World>GameEntity.createInstance('World');
+    // 'BrutusWorld' is a prototype for world
+    // (it is created by createDefaultWorld()).
+    let world = GameEntity.createInstance
+      ({ className: 'BrutusWorld', typeCast: World });
 
     // Load entity from file.
     await world.load();
+
+    this.worldId = world.getId();
   }
 
   // -------------- Protected class data ----------------
@@ -162,4 +209,18 @@ export class Game
 
   // ---------------- Private methods -------------------
 
+  private createNewWorld(param: { name: string, prototype: string })
+  {
+    if (!ASSERT(this.worldId === null,
+        "Attempt to add new world when there is already a world. There can"
+        + " only be one world per game at the moment. World is not added"))
+      return;
+
+    // Dynamic creation of a new instance.
+    let newWorld = SaveableObject.createInstance
+      ({ className: param.prototype, typeCast: World });
+
+    newWorld.name = param.name;
+    this.worldId = Server.idProvider.generateId(newWorld);
+  }
 }

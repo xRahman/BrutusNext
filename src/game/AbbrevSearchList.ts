@@ -236,7 +236,7 @@ export class AbbrevSearchList
 
     for (let i = 0; i < searchIndex; i++)
     {
-      let candidate = <GameEntity>candidates[i].getEntity();
+      let candidate = candidates[i].getEntity({ typeCast: GameEntity });
 
       if (this.validateResult(candidate, cathegory))
         validResultsFound++;
