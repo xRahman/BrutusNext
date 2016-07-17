@@ -7,8 +7,11 @@
 'use strict';
 
 import {ASSERT} from '../../shared/ASSERT'
-import {Id} from '../../shared/Id';
+import {Account} from '../../server/Account';
+import {AdminLevels} from '../../server/AdminLevels';
+import {Game} from '../../game/Game';
 import {GameEntity} from '../../game/GameEntity';
+import {World} from '../../game/world/World';
 
 export class Character extends GameEntity
 {
@@ -46,6 +49,27 @@ export class Character extends GameEntity
   public timeOfCreation = new Date();
 
   // ---------------- Public methods --------------------
+
+  // Sets birthroom (initial location), immortal flag, etc.
+  public initNewCharacter(account: Account)
+  {
+    let world = Game.worldId.getEntity({ typeCast: World });
+
+    /// TODO: Tohle dělá immortaly ze všech charů na accountu.
+    /// Imm+ by měl být jen jeden z nich.
+    if (account.getAdminLevel() > AdminLevels.MORTAL)
+    {
+      // Immortals enter game in System Room.
+      this.setLocation(world.systemRoomId);
+
+      /// TODO: Setnout charu immortal flagu.
+    }
+    else
+    {
+      // Mortals enter game in Tutorial Room.
+      this.setLocation(world.tutorialRoomId);
+    }
+  }
 
   // Announce to the room that player is entering game as this character.
   public announcePlayerEnteringGame()

@@ -8,14 +8,12 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
+import {FileSystem} from '../shared/fs/FileSystem';
 import {Server} from '../server/Server';
 import {IdableObjectContainer} from '../shared/IdableObjectContainer';
 import {Id} from '../shared/Id';
 import {Account} from '../server/Account';
 import {Mudlog} from '../server/Mudlog';
-
-// Built-in node.js modules.
-import * as fs from 'fs';  // Import namespace 'fs' from node.js
 
 export class AccountManager extends IdableObjectContainer<Account>
 {
@@ -26,7 +24,8 @@ export class AccountManager extends IdableObjectContainer<Account>
     accountName: string,
     password: string,
     playerConnectionId: Id
-  ): Id
+  )
+  : Id
   {
     ASSERT_FATAL(!this.accountExists(accountName),
       "Attempt to create account '"
@@ -38,6 +37,11 @@ export class AccountManager extends IdableObjectContainer<Account>
     newAccount.setPasswordHash(password);
 
     let newAccountId = this.addAccountUnderNewId(newAccount);
+
+
+    // Set newAccount.adminLevel to 5 if there are no other accounts on the
+    // disk (this needs to be done before newAcount is saved of course).
+    newAccount.firstAccountCheck();
 
     // Save the account info to the disk (so we know that the account exists).
     // (This does not need to be synchronous.)
@@ -61,7 +65,7 @@ export class AccountManager extends IdableObjectContainer<Account>
 
     let path = Account.SAVE_DIRECTORY + accountName + ".json";
 
-    return fs.existsSync(path);
+    return FileSystem.existsSync(path);
   }
 
   // Return account id if account is already loaded, null otherwise.

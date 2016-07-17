@@ -7,10 +7,10 @@
 'use strict';
 
 import {ASSERT} from '../../shared/ASSERT'
-import {Id} from '../../shared/Id';
 import {SaveableObject} from '../../shared/SaveableObject';
 import {Game} from '../../game/Game';
 import {GameEntity} from '../../game/GameEntity';
+import {EntityId} from '../../game/EntityId';
 import {Area} from '../../game/world/Area';
 
 export class Realm extends GameEntity
@@ -33,16 +33,16 @@ export class Realm extends GameEntity
 
   // ---------------- Public methods --------------------
 
-  public addNewArea(param: { name: string, prototype: string }): Id
+  public createNewArea(param: { name: string, prototype: string }): EntityId
   {
-    ///let newArea = new Area();
-    // Dynamic creation of a new instance by calling a constructor saved
-    // in 'global' object.
-    let newArea = <Area>SaveableObject.createInstance(param.prototype);
-
-    newArea.name = param.name;
-
-    let newAreaId = Game.areaList.addEntityUnderNewId(newArea);
+    let newAreaId = this.createNewEntity
+    (
+      {
+        name: param.name,
+        prototype: param.prototype,
+        container: Game.areaList
+      }
+    );
 
     // Add new area id to the list of entities contained in this realm.
     this.insertEntity(newAreaId);

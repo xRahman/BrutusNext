@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Creates classes representing entity prototypes.
+  Creates classes that are used as entity prototypes.
 
     If you have for example mob 'red dragon', it is instantiated from
   prototype such as 'MRedDragon1', which is a class that will be created in

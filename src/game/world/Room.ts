@@ -7,7 +7,6 @@
 'use strict';
 
 import {ASSERT} from '../../shared/ASSERT'
-import {Id} from '../../shared/Id';
 import {GameEntity} from '../../game/GameEntity';
 import {Game} from '../../game/Game';
 import {RoomInfo} from '../../game/world/RoomInfo';
@@ -59,7 +58,7 @@ export class Room extends GameEntity
         return this.roomInfo;
       }
 
-      let prototypeRoom = <Room>this.prototypeId.getEntity();
+      let prototypeRoom = this.prototypeId.getEntity({ typeCast: Room });
 
       return prototypeRoom.getRoomInfo();
     }
