@@ -201,7 +201,7 @@ export class LobbyProcessor
       return;
     }
 
-    let newCharacterId = this.createNewCharacter(account.name);
+    let newCharacterId = this.createCharacter(account.name);
 
     if (!ASSERT(newCharacterId !== null,
       "Failed to create new character (" + account.name + ")"))
@@ -247,7 +247,7 @@ export class LobbyProcessor
     this.attachConnectionToGameEntity(character);
   }
 
-  protected createNewCharacter(characterName: string): EntityId
+  protected createCharacter(characterName: string): EntityId
   {
     let characterManager = Game.playerCharacterManager;
     let accountManager = Server.accountManager;
@@ -257,7 +257,7 @@ export class LobbyProcessor
     if (this.characterNameExists(characterName))
       return null;
 
-    let newCharacterId = characterManager.createNewUniqueCharacter
+    let newCharacterId = characterManager.createUniqueCharacter
     (
       characterName,
       this.playerConnection.getId()

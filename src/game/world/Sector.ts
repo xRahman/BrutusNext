@@ -34,9 +34,9 @@ export class Sector extends GameEntity
 
   // ---------------- Public methods --------------------
 
-  public createNewRoom(param: { name: string, prototype: string }): EntityId
+  public createRoom(param: { name: string, prototype: string }): EntityId
   {
-    let newRoomId = this.createNewEntity
+    let newRoomId = this.createEntity
     (
       {
         name: param.name,

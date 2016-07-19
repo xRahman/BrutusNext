@@ -30,12 +30,14 @@
     <TypeScriptCompile Include="src\BrutusNext.ts" />
     <TypeScriptCompile Include="src\editor\OLC\StringEditor.ts" />
     <TypeScriptCompile Include="src\game\characters\Character.ts" />
+    <TypeScriptCompile Include="src\game\characters\CharacterFlags.ts" />
     <TypeScriptCompile Include="src\game\commands\CommandInterpretter.ts" />
     <TypeScriptCompile Include="src\game\DynamicClasses.ts" />
     <TypeScriptCompile Include="src\game\EntityId.ts" />
     <TypeScriptCompile Include="src\game\PrototypeData.ts" />
-    <TypeScriptCompile Include="src\game\PrototypeManager.ts" />
+    <TypeScriptCompile Include="src\game\PrototypeDataManager.ts" />
     <TypeScriptCompile Include="src\game\ScriptData.ts" />
+    <TypeScriptCompile Include="src\server\AccountFlags.ts" />
     <TypeScriptCompile Include="src\server\AdminLevels.ts" />
     <TypeScriptCompile Include="src\shared\FlagsData.ts" />
     <TypeScriptCompile Include="src\shared\FlagsDataManager.ts" />
