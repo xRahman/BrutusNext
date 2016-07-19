@@ -112,7 +112,7 @@ export class GameEntity extends EntityContainer
 
   // Dynamically creates a new instance of requested class (param.prototype)
   // and inserts it to specified idList (param.container).
-  public createNewEntity<T>
+  public createEntity<T>
   (
     param:
     {

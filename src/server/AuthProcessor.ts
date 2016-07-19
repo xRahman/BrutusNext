@@ -192,7 +192,7 @@ export class AuthProcessor
 
     // Password accepted, create a new account.
     let newAccountId =
-      Server.accountManager.createNewAccount
+      Server.accountManager.createAccount
       (
         this.accountName,
         password,

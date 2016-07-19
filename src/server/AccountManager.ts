@@ -19,7 +19,7 @@ export class AccountManager extends IdableObjectContainer<Account>
 {
   // ---------------- Public methods --------------------
 
-  public createNewAccount
+  public createAccount
   (
     accountName: string,
     password: string,
