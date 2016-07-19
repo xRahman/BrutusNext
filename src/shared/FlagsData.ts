@@ -4,9 +4,16 @@
   List of flag names that can be set to a flag object of specific type.
 */
 
+/*
+  Note:
+    New flags can be added dynamically (from scripts) using
+  Flags::addFlag(flagName).
+*/
+
 'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
+import {Flags} from '../shared/Flags';
 import {SaveableObject} from '../shared/SaveableObject';
 
 export class FlagsData extends SaveableObject
@@ -19,62 +26,94 @@ export class FlagsData extends SaveableObject
   // (Value is name of the class of respective Flags object.)
   private flagsType: string = "";
 
-  // Hashmap, because we will access flag values using flag names (strings).
-  private flagValues = new Map();
+  // Hashmap of numbers (integer flag values) indexed by strings (flag names).
+  private flagValuesList = new Map();
 
-  public addFlagType(flagName: string)
+  // This flag is set to true the first time
+  private flagsAutoUpdated = false;
+  // Do not save (and load) variable 'flagsAutoUpdated'.
+  private static flagsAutoUpdated = { isSaved: false };
+
+  constructor(flagsObject: Flags)
   {
-    let flagNamePrefix = flagName.substr(0, this.prefix.length);
+    super();
 
-    // Check that flagName starts with this.prefix.
-    if (!ASSERT(flagNamePrefix === this.prefix,
-        "Attempt to add a new flag type '" + flagName + "' to"
-        + " FlagsData of " + this.flagsType + " that has an"
-        + " incorrect prefix (should be '" + this.prefix + "'."
-        + " Flag type is not added"))
-      return;
-
-    // Check that such flag doesn't exist yet.
-
-    // get() will return undefined if flag doesn't exist.
-    let flagValue = this.flagValues.get(flagName);
-    
-    if (!ASSERT(flagValue === undefined,
-        "Attempt to add flag type '" + flagName + "' to"
-        + " FlagsData of " + this.flagsType + "which already"
-        + " contains it"))
-      return;
-
-    // Determine the next free value for a new flag.
-    let newFlagValue = this.flagValues.size;
-
-    // Check that this value doesn't exist in hashmap yet.
-    // (This is not really needed and it's quite time-consuming
-    // because whole hashmap will be iterated, but we can afford
-    // to do it because new flag values are only added occasionally.)
-    // (Better be sure than sorry.)
-    for (var value of this.flagValues.values())
+    // This will be skipped when loading from file, but that's ok because
+    // these values will be overwritten by those in the file anyways.
+    if (flagsObject !== undefined)
     {
-      if (!ASSERT(value !== newFlagValue,
-          "Broken FlagsData of " + this.flagsType + ". It already contains"
-          + " value '" + newFlagValue + "' which is equal to the number of"
-          + " flag types. That is not supposed to happen. Flag type is not"
-          + " added"))
-        return;
-    }
+      this.flagsType = flagsObject.className;
 
-    // Add record to hashmap.
-    this.flagValues.set(flagName, newFlagValue);
+      // This trick dynamically accesses static class property without
+      // the need to use something like Flags.property;
+      // (flagsObject.constructor[property] is the same as if you could
+      //  write (typeof(flagsObject)).property)
+      this.prefix = flagsObject.constructor['prefix'];
+
+      ASSERT
+      (
+        this.prefix !== undefined
+        && this.prefix !== ""
+        && this.prefix !== null,
+        "Invalid flags prefix in class " + flagsObject.className + "."
+        + " Make sure that static variable "
+        + flagsObject.className + ".prefix"
+        + " exists, is a nonempty string and is unique over all Flags classes"
+      );
+    }
   }
 
-  // Returns FlagValue object for a given flag name.
+  // ---------------- Public methods --------------------
+
+  public isAutoUpdated()
+  {
+    return this.flagsAutoUpdated;
+  }
+
+  public updateFlags(flagsObject: Flags): { saveNeeded: boolean }
+  {
+    let result = { saveNeeded: false };
+
+    // Prevent updating again
+    // (Flag names defined in code are updated here so it doesn't make
+    //  sense to update them more then once per boot).
+    this.flagsAutoUpdated = true;
+
+    let flagNamesList = flagsObject.getStaticFlagNames();
+
+    for (let i = 0; i < flagNamesList.length; i++)
+    {
+      let partialResult = this.updateFlag(flagNamesList[i]);
+
+      if (partialResult.saveNeeded === true)
+        result.saveNeeded = true;
+    }
+
+    return result;
+  }
+
+  // If flag with this name doesn't exist yet, it will be added
+  // to the list.
+  public updateFlag(flagName: string): { saveNeeded: boolean }
+  {
+    let result = { saveNeeded: false };
+
+    if (!this.flagValuesList.has(flagName))
+    {
+      this.addFlag(flagName);
+      result.saveNeeded = true;
+    }
+
+    return result;
+  }
+
+  // Returns flag value (number) for a given flag name.
   // (Returns -1 if such flag doesn't exist on this type of flags.)
   // Note:
   //   This method is called automatically when you access a Flags object.
-  // You don't have to do the translation manually.
   public getFlagValue(flagName: string): number
   {
-    let flagValue = this.flagValues.get(flagName);
+    let flagValue = this.flagValuesList.get(flagName);
 
     if (!ASSERT(flagValue !== undefined,
         "Attempt to get value of flag type '" + flagName + "' which doesn't"
@@ -82,5 +121,66 @@ export class FlagsData extends SaveableObject
       return -1;
 
     return flagValue;
+  }
+
+  // ---------------- Private methods --------------------
+
+  private addFlag(flagName: string)
+  {
+    let flagNamePrefix = flagName.substr(0, this.prefix.length);
+
+    // Check that flagName starts with this.prefix.
+    if (!ASSERT(flagNamePrefix === this.prefix,
+      "Attempt to add a new flag type '" + flagName + "' to"
+      + " FlagsData of " + this.flagsType + " that has an"
+      + " incorrect prefix (should be '" + this.prefix + "'."
+      + " Flag type is not added"))
+      return;
+
+    // get() will return undefined if flag doesn't exist.
+    let flagValue = this.flagValuesList.get(flagName);
+
+    // Check that such flag doesn't exist yet.    
+    if (!ASSERT(flagValue === undefined,
+      "Attempt to add flag type '" + flagName + "' to"
+      + " FlagsData of " + this.flagsType + "which already"
+      + " contains it"))
+      return;
+
+    // Determine free value for a new flag.
+    // (There may be 'holes' if for example someone deletes a deprecated
+    //  flag value. Here we find the first such hole.)
+    let newFlagValue = this.getFirstFreeFlagValue();
+
+    // Add record to hashmap.
+    this.flagValuesList.set(flagName, newFlagValue);
+  }
+
+  private getFirstFreeFlagValue(): number
+  {
+    // Temporary array of size equal to the number of used flag values.
+    // (It is possible that we will index beyond this size, but this helps
+    // node.js to prealocate memeory - we know we are going to need at least
+    // this much),
+    let usedFlagValues = new Array(this.flagValuesList.size);
+
+    for (var value of this.flagValuesList.values())
+    {
+      // Here we translate actual flag values to indexes of temporary array.
+      usedFlagValues[value] = 1;
+    }
+
+    // '<= size' instead of '< size'  because it is possible that all indexes
+    // within the array are used so first free index will be equal to the
+    // length of this array.
+    for (let i = 0; i <= usedFlagValues.length; i++)
+    {
+      // Check if index 'i' exists in the array.
+      if (!(i in usedFlagValues))
+      {
+        // We have found our first free index, no need to iterate more.
+        return i;
+      }
+    }
   }
 }

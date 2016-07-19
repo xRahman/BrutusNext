@@ -21,7 +21,7 @@ export class PlayerCharacterManager
 
   // ---------------- Public methods --------------------
 
-  public createNewUniqueCharacter
+  public createUniqueCharacter
   (
     name: string,
     playerConnectionId: Id

@@ -9,9 +9,10 @@ import {ASSERT_FATAL} from '../shared/ASSERT';
 import {SaveableObject} from '../shared/SaveableObject';
 import {PrototypeData} from '../game/PrototypeData';
 
-export class PrototypeManager extends SaveableObject
+export class PrototypeDataManager extends SaveableObject
 {
-  public prototypes = new Map();  // Hashmap.
+  // Hashmap of PrototypeData objects.
+  public prototypeDataList = new Map();
 
   private static get SAVE_DIRECTORY()
   {
@@ -25,29 +26,39 @@ export class PrototypeManager extends SaveableObject
 
   // ---------------- Public methods --------------------
 
-  public getPrototype(name: string): PrototypeData
+  public getPrototypeData(name: string): PrototypeData
   {
     // Accessing prototypes is case-insensitive.
-    return this.prototypes.get(name.toLowerCase());
+    let key = name.toLowerCase();
+
+    let prototypeData = this.prototypeDataList.get(key);
+    
+    if (!ASSERT(prototypeData !== undefined,
+      "Attempt to access FlagsData for class '" + name + "'"
+      + "that doesn't have FlagsData in FlagsDataManager"))
+      return null;
+
+    return prototypeData;
   }
 
   // Returns true on success.
-  public createNewPrototype(param: { name: string, ancestor: string }): boolean
+  public createPrototypeData(param: { name: string, ancestor: string })
+  : boolean
   {
-    if (!this.checkNewPrototypeParams(param.name, param.ancestor))
+    if (!this.checkNewPrototypeDataParams(param.name, param.ancestor))
       return false;
 
-    let newPrototype = new PrototypeData();
+    let newPrototypeData = new PrototypeData();
 
-    newPrototype.typeName = param.name;
-    newPrototype.ancestorName = param.ancestor;
+    newPrototypeData.typeName = param.name;
+    newPrototypeData.ancestorName = param.ancestor;
 
     // Lowercase of prototype name is used as key in hashmap
     // because it allows case-insensitive searching.
     let key = name.toLowerCase();
 
     // Add newly created prototype to hashmap.
-    this.prototypes.set(key, newPrototype);
+    this.prototypeDataList.set(key, newPrototypeData);
 
     return true;
   }
@@ -56,15 +67,15 @@ export class PrototypeManager extends SaveableObject
   {
     await this.saveToFile
     (
-      PrototypeManager.SAVE_DIRECTORY,
-      PrototypeManager.SAVE_FILE_NAME
+      PrototypeDataManager.SAVE_DIRECTORY,
+      PrototypeDataManager.SAVE_FILE_NAME
     );
   }
 
   public async load()
   {
-    let filePath = PrototypeManager.SAVE_DIRECTORY;
-    let fileName = PrototypeManager.SAVE_FILE_NAME;
+    let filePath = PrototypeDataManager.SAVE_DIRECTORY;
+    let fileName = PrototypeDataManager.SAVE_FILE_NAME;
     let fullPath = filePath + fileName;
 
     ASSERT_FATAL(filePath.substr(filePath.length - 1) === '/',
@@ -79,7 +90,7 @@ export class PrototypeManager extends SaveableObject
   public createClasses()
   {
     // Iterate over all values in hashmap.
-    for (let prototype of this.prototypes.values())
+    for (let prototype of this.prototypeDataList.values())
     {
       prototype.createClass();
     }
@@ -87,7 +98,7 @@ export class PrototypeManager extends SaveableObject
 
   // ---------------- Private methods -------------------
 
-  private checkNewPrototypeParams(name: string, ancestor: string): boolean
+  private checkNewPrototypeDataParams(name: string, ancestor: string): boolean
   {
     if (!ASSERT(name !== ""
              && name !== null

@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Enables using static attributes of class properties.
+  Enables using static attributes for class properties.
 */
 
 /*
@@ -33,7 +33,7 @@ export class AttributableClass extends NamedClass
   {
     // This trick dynamically accesses static class property without
     // the need to use something like NamedClass.property;
-    // (so instance.constructor[property] is the same as if you could
+    // (instance.constructor[property] is the same as if you could
     //  write (typeof(istance)).property)
     if (instance.constructor[property] !== undefined)
       return instance.constructor[property];

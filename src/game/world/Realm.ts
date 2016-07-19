@@ -33,9 +33,9 @@ export class Realm extends GameEntity
 
   // ---------------- Public methods --------------------
 
-  public createNewArea(param: { name: string, prototype: string }): EntityId
+  public createArea(param: { name: string, prototype: string }): EntityId
   {
-    let newAreaId = this.createNewEntity
+    let newAreaId = this.createEntity
     (
       {
         name: param.name,

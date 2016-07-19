@@ -43,9 +43,9 @@ export class World extends GameEntity
 
   // ---------------- Public methods --------------------
 
-  public createNewRealm(param: { name: string, prototype: string }): EntityId
+  public createRealm(param: { name: string, prototype: string }): EntityId
   {
-    let newRealmId = this.createNewEntity
+    let newRealmId = this.createEntity
     (
       {
         name: param.name,

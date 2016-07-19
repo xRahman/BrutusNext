@@ -338,14 +338,13 @@ export class SaveableObject extends AttributableClass
       // so an instance of the correct type will be created.
       let newProperty = null;
 
-      newProperty =
-        this.loadVariable
-         (
-          "Array Item",
-          newProperty,
-          jsonProperty[i],
-          filePath
-        );
+      newProperty = this.loadVariable
+      (
+        "Array Item",
+        newProperty,
+        jsonProperty[i],
+        filePath
+      );
 
       newArray.push(newProperty);
     }

@@ -4,6 +4,8 @@
   Defines immortal levels, which determine ingame admin rights.
 */
 
+'use strict';
+
 export class AdminLevels
 {
   public static get MORTAL()      { return 0; }
