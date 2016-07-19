@@ -10,7 +10,7 @@ import {ASSERT} from '../shared/ASSERT';
 import {Server} from '../server/Server';
 import {Id} from '../shared/Id';
 import {SaveableObject} from '../shared/SaveableObject';
-import {PrototypeManager} from '../game/PrototypeManager';
+import {PrototypeDataManager} from '../game/PrototypeDataManager';
 import {GameEntity} from '../game/GameEntity';
 import {EntityId} from '../game/EntityId';
 import {PlayerCharacterManager} from '../game/PlayerCharacterManager';
@@ -77,11 +77,11 @@ export class Game
     // --- World ---
 
     // Create a new world prototype.
-    this.prototypeManager.createNewPrototype
+    this.prototypeManager.createPrototypeData
       ({ name: "BrutusWorld", ancestor: "World" });
 
     // Create world 'BrutusNext World' based on this prototype.
-    this.createNewWorld
+    this.createWorld
       ({ name: "BrutusNext World", prototype: "BrutusWorld" });
 
     let world = this.worldId.getEntity({ typeCast: World });
@@ -89,12 +89,12 @@ export class Game
     // --- System Realm ---
 
     // Create a new realm prototype.
-    this.prototypeManager.createNewPrototype
+    this.prototypeManager.createPrototypeData
       ({ name: "SystemRealm", ancestor: "Realm" });
 
     // Create realm 'System Realm' based on this prototype and add it to the
     // world.
-    let systemRealmId = world.createNewRealm
+    let systemRealmId = world.createRealm
       ({ name: "System Realm", prototype: "SystemRealm" });
 
     let systemRealm = systemRealmId.getEntity({ typeCast: Realm });
@@ -105,12 +105,12 @@ export class Game
     // --- System Area ---
     
     // Create a new area prototype.
-    this.prototypeManager.createNewPrototype
+    this.prototypeManager.createPrototypeData
       ({ name: "SystemArea", ancestor: "Area" });
 
     // Create area 'System Area' based on this prototype and add it to the
     // realm.
-    let systemAreaId = systemRealm.createNewArea
+    let systemAreaId = systemRealm.createArea
       ({ name: "System Area", prototype: "SystemArea" });
 
     let systemArea = systemAreaId.getEntity({ typeCast: Area });
@@ -121,12 +121,12 @@ export class Game
     // --- System Room ---
 
     // Create a new room prototype.
-    this.prototypeManager.createNewPrototype
+    this.prototypeManager.createPrototypeData
       ({ name: "SystemRoom", ancestor: "Room" });
 
     // Create room 'System Room' based on this prototype and add it to the
     // area.
-    let systemRoomId = systemArea.createNewRoom
+    let systemRoomId = systemArea.createRoom
       ({ name: "System Room", prototype: "SystemRoom" });
 
     // Remember system room id for future easy access.
@@ -135,12 +135,12 @@ export class Game
     // --- Tutorial Room ---
 
     // Create a new room prototype.
-    this.prototypeManager.createNewPrototype
+    this.prototypeManager.createPrototypeData
       ({ name: "TutorialRoom", ancestor: "Room" });
 
     // Create room 'Tutorial Room' based on this prototype and add it to the
     // area.
-    let tutorialRoomId = systemArea.createNewRoom
+    let tutorialRoomId = systemArea.createRoom
       ({ name: "Tutorial Room", prototype: "TutorialRoom" });
 
     // Remember system room id for future easy access.
@@ -203,13 +203,13 @@ export class Game
   protected worldId = null;
 
   // Prototype manager creates classes for all game entities.
-  protected prototypeManager = new PrototypeManager();
+  protected prototypeManager = new PrototypeDataManager();
 
   // --------------- Protected methods ------------------
 
   // ---------------- Private methods -------------------
 
-  private createNewWorld(param: { name: string, prototype: string })
+  private createWorld(param: { name: string, prototype: string })
   {
     if (!ASSERT(this.worldId === null,
         "Attempt to add new world when there is already a world. There can"
