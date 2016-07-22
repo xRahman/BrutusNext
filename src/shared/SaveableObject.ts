@@ -19,51 +19,48 @@ let beautify = require('js-beautify').js_beautify;
 
 export class SaveableObject extends AttributableClass
 {
+  public static get DYNAMIC_CLASSES_PROPERTY() { return 'dynamicClasses'; }
+
   // Creates a new instance of type className.
-  static createInstance<T>
+  public static createInstance<T>
   (
     param:
     {
       className: string,
+      // This hieroglyph stands for constructor of a class, which in
+      // in javascript represent the class itself (so this way you can
+      // pass type as a parameter).
       typeCast: { new (...args: any[]): T }
     },
-    // Any extra arguments are passed to the class constructor.
+    // Any extra arguments will be passed to the class constructor.
     ...args: any[]
   )
   {
-    // Here we are going to dynamically create an instance of a class
-    // className. We will use global object to acces respective class
-    //constructor.
+    let classNameIsValid =
+      param.className !== undefined
+      && param.className !== null
+      && param.className != "";
 
-    ASSERT_FATAL
-    (
-      typeof param.className !== 'undefined'
-          && param.className !== null
-          && param.className != "",
-      "Invalid class name passed to SaveableObject::createInstance()"
-    );
+    if (!ASSERT(classNameIsValid,
+        "Invalid class name passed to SaveableObject::createInstance()."
+        + " Instance is not created"))
+      return null;
 
-    // In order to dynamically create a class from class name, we need it's
-    // constructor. It means you need to add it as a property to 'global'
-    // object, because it's not done automatically in node.js.
-    ASSERT_FATAL
-    (
-      typeof global[param.className] !== 'undefined',
-      "Attempt to createInstance() of unknown type"
-      + " '" + param.className + "'. You probably forgot to add"
-      + " a record to DynamicClasses.ts file for your new class."
-    );
+    // We will use global object to acces respective class constructor.
+    let dynamicClasses = global[SaveableObject.DYNAMIC_CLASSES_PROPERTY];
+
+    if (!ASSERT(dynamicClasses[param.className] !== undefined,
+        "Attempt to createInstance() of unknown type"
+        + " '" + param.className + "'. You probably forgot to create"
+        + " or assign a prototype to your game entity."
+        + " Instance is not created"))
+      return null;
 
     // This accesses a class constructor by it's name. Consctructor of
     // each class that is supposed to be dynamically loaded here needs
-    // to be added to 'global' object in DynamicClasses.ts file.
-    let newObject = new global[param.className](...args);
-
-    // Type cast to <SaveableObject> is here for TypeScript to be roughly
-    // aware what can it expect from newly created variable - otherwise it
-    // would be of type <any>.
-    return <SaveableObject>newObject;
-
+    // to be added to global.dynamicClasses - this is done when prototype
+    // class is dynamically created.
+    let newObject = new dynamicClasses[param.className](...args);
 
     // Dynamic type check - we make sure that our newly created object
     // is inherited from requested class (or an instance of the class itself).
@@ -458,14 +455,13 @@ export class SaveableObject extends AttributableClass
     // load itself from JSON, because you can't call methods on null
     // object. So we first need to assign a new instance of correct
     // type to it - the type is saved in JSON in 'className' property.
-    myProperty =
-      this.createNewIfNull
-      (
-        propertyName,
-        myProperty,
-        jsonProperty,
-        filePath
-      );
+    myProperty = this.createNewIfNull
+    (
+      propertyName,
+      myProperty,
+      jsonProperty,
+      filePath
+    );
 
     // Now we are sure that myProperty isn't null (either it wasn't
     // null or we have just assigned a new instance of correct type in
@@ -605,14 +601,13 @@ export class SaveableObject extends AttributableClass
     // Now copy the data.
     for (let property in jsonObject)
     {
-      primitiveObject[property] =
-        this.loadVariable
-        (
-          property,
-          primitiveObject[property],
-          jsonObject[property],
-          filePath
-        );
+      primitiveObject[property] = this.loadVariable
+      (
+        property,
+        primitiveObject[property],
+        jsonObject[property],
+        filePath
+      );
     }
 
     return primitiveObject;

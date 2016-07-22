@@ -47,8 +47,8 @@ export class FlagsDataManager extends SaveableObject
 
     if (!ASSERT(this.loaded === true,
         "Attempt to request FlagsData for class '" + flagsType + "'"
-        + " before flagsDataManager is loaded. Make sure that you use"
-        + "all FlagsObjects only after flagsDataManager.load()"))
+        + " before flagsDataManager is loaded. Make sure that you access"
+        + " Flags objects only after flagsDataManager.load()"))
       return null;
 
     let flagsData = this.flagsDataList.get(flagsType);

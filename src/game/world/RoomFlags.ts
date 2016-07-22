@@ -1,11 +1,11 @@
 /*
   Part of BrutusNEXT
 
-  Symbolic names for character flags.
+  Symbolic names for room flags.
 */
 
 /*
-    Not all existing character flags are necessarily defined here.
+    Not all existing room flags are necessarily defined here.
     Some of them may be declared dynamically - in that case the flag
     exists in files but doesn't have symbolic name here.
       Feel free to add symbolic names for such flags here if you want
@@ -28,9 +28,8 @@
 
 import {Flags} from '../../shared/Flags';
 
-export class CharacterFlags extends Flags
+export class RoomFlags extends Flags
 {
-  // Character cannot be harmed.
-  // (She is a god or under direct protection of a god).
-  public static get GOD_PROTECTION() { return 'GOD_PROTECTION'; }
+  // System room not accessible to players.
+  public static get SYSTEM() { return 'SYSTEM'; }
 }
