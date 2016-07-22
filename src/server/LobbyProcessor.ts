@@ -132,7 +132,7 @@ export class LobbyProcessor
       break;
 
       case "1": // Enter the game.
-        // Create a new character if there is non on this account yet.
+        // Create a new character if there is none on this account yet.
         /// (for now player can only have one character and her name is the
         /// same as account name)
         if (account.getNumberOfCharacters() === 0)
@@ -201,25 +201,18 @@ export class LobbyProcessor
       return;
     }
 
-    let newCharacterId = this.createCharacter(account.name);
+    let characterId = account.createCharacter(account.name);
 
-    if (!ASSERT(newCharacterId !== null,
-      "Failed to create new character (" + account.name + ")"))
-    {
-      this.playerConnection.sendAsBlock
-      (
-        "&wAn error occured while creating"
-        + " your character. Please contact implementors."
-      );
+    if (characterId === null)
+      // Error messages are already handled by createrCharacter().
       return;
-    }
 
     this.stage = LobbyProcessor.stage.NOT_IN_LOBBY;
 
-    let character = newCharacterId.getEntity({ typeCast: Character });
+    let character = characterId.getEntity({ typeCast: Character });
 
     // Sets birthroom, immortal flag, etc.
-    character.initNewCharacter(account);
+    character.init(account);
 
     this.attachConnectionToGameEntity(character);
     this.playerConnection.enterGame();
@@ -245,59 +238,6 @@ export class LobbyProcessor
     characterManager.addPlayerCharacterUnderExistingId(character);
 
     this.attachConnectionToGameEntity(character);
-  }
-
-  protected createCharacter(characterName: string): EntityId
-  {
-    let characterManager = Game.playerCharacterManager;
-    let accountManager = Server.accountManager;
-    let account = accountManager.getAccount(this.playerConnection.accountId);
-
-    // Error messages are handled inside characterNameExists().
-    if (this.characterNameExists(characterName))
-      return null;
-
-    let newCharacterId = characterManager.createUniqueCharacter
-    (
-      characterName,
-      this.playerConnection.getId()
-    );
-
-    account.addNewCharacter(characterName);
-
-    Mudlog.log
-    (
-      "Player " + account.name + " has created a new character: "
-      + characterName,
-      Mudlog.msgType.SYSTEM_INFO,
-      AdminLevels.IMMORTAL
-    );
-
-    return newCharacterId;
-  }
-
-  protected characterNameExists(characterName: string): boolean
-  {
-    let characterManager = Game.playerCharacterManager;
-
-    if (characterManager.doesNameExist(characterName))
-    {
-      ASSERT(false,
-        "Attempt to create character '" + characterName + "'"
-        + " that already exists.");
-
-      // Notify the player what went wrong.
-      this.playerConnection.sendAsBlock
-      (
-        "Something is wrong, character named '" + characterName + "'"
-        + " already exists. Please contact implementors and ask them to"
-        + "resolve this issue."
-      );
-
-      return true;
-    }
-
-    return false;
   }
 
   protected async loadCharacterFromFile

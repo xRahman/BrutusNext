@@ -90,40 +90,13 @@ export abstract class Flags extends SaveableObject
   public getStaticFlagNames(): Array<string>
   {
     let result = new Array<string>();
-    let flagPrefix = this.constructor['prefix'];
-
-    ASSERT
-    (
-      flagPrefix !== undefined,
-      "Static 'prefix' property is missing in class " + this.className + "."
-      + " All Flags objects need to have required flag prefix declared as"
-      + " static property called 'prefix'"
-    );
 
     // This trick iterates over static class properties of this object.
     for (let property in this.constructor)
     {
-      // Here we grab the number of characters equal to the length of
-      // prefix each flag name should have from the start of the string.
-      let propertyPrefix = property.substr(0, flagPrefix.length);
-
-      // So we can compare that property name realy starts with required
-      // flag prefix. If it doesn't it's not a flag name and so it won't
-      // be added as such.
-      if (property !== 'prefix' && propertyPrefix === flagPrefix)
-      {
-        // While we are at it, we can as well check if declared
-        // flag names really match their symbolic (property) names.
-        ASSERT
-        (
-          property === this.constructor[property],
-          "Property '" + property + "' in class " + this.className
-          + " has incorrect value (" + this.constructor[property] + ")."
-          + " It needs to be the same as the name of the property"
-        );
-
+      // Only add string properties as new flag names.
+      if (typeof this.constructor['property'] === 'string')
         result.push(property);
-      }
     }
 
     return result;

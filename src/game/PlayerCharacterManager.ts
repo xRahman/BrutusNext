@@ -28,9 +28,10 @@ export class PlayerCharacterManager
   )
   : Id
   {
-    ASSERT_FATAL(!this.doesNameExist(name),
-      "Attempt to create a character '" + name + "'"
-      + " who already exists");
+    if (!ASSERT(!this.exists(name),
+      "Attempt to create character '" + name + "' who already exists."
+      + " Character is not created"))
+      return null;
 
     let newCharacter = new Character();
 
@@ -41,8 +42,9 @@ export class PlayerCharacterManager
     let newCharacterId =
       this.characterList.addEntityUnderNewId(newCharacter);
 
-    // Save the character to the disk (so we know that the character exists).
-    // (This does not need to be synchronous.)
+    // Save the character to the disk.
+    // (We don't need to wait for save to finish so we don't need
+    //  async/await here).
     newCharacter.save();
 
     return newCharacterId;
@@ -66,7 +68,7 @@ export class PlayerCharacterManager
     return <Character>character;
   }
 
-  public doesNameExist(characterName: string)
+  public exists(characterName: string)
   {
     // First check if character is already online so we can save reading from
     // disk.

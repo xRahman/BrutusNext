@@ -4,6 +4,8 @@
   Manages entity prototypes.
 */
 
+'use strict';
+
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {SaveableObject} from '../shared/SaveableObject';
@@ -42,24 +44,17 @@ export class PrototypeDataManager extends SaveableObject
   }
 
   // Returns true on success.
-  public createPrototypeData(param: { name: string, ancestor: string })
+  public createPrototype(param: { name: string, ancestor: string })
   : boolean
   {
-    if (!this.checkNewPrototypeDataParams(param.name, param.ancestor))
+    let prototypeData = this.createPrototypeData(param)
+
+    if (prototypeData === null)
       return false;
 
-    let newPrototypeData = new PrototypeData();
-
-    newPrototypeData.typeName = param.name;
-    newPrototypeData.ancestorName = param.ancestor;
-
-    // Lowercase of prototype name is used as key in hashmap
-    // because it allows case-insensitive searching.
-    let key = name.toLowerCase();
-
-    // Add newly created prototype to hashmap.
-    this.prototypeDataList.set(key, newPrototypeData);
-
+    // Creates a javascript class based on prototype data.
+    prototypeData.createClass();
+    
     return true;
   }
 
@@ -98,6 +93,27 @@ export class PrototypeDataManager extends SaveableObject
 
   // ---------------- Private methods -------------------
 
+  private createPrototypeData(param: { name: string, ancestor: string })
+  : PrototypeData
+  {
+    if (!this.checkNewPrototypeDataParams(param.name, param.ancestor))
+      return null;
+
+    let prototypeData = new PrototypeData();
+
+    prototypeData.prototypeName = param.name;
+    prototypeData.ancestorName = param.ancestor;
+
+    // Lowercase of prototype name is used as key in hashmap
+    // because it allows case-insensitive searching.
+    let key = prototypeData.prototypeName.toLowerCase();
+
+    // Add newly created prototype to hashmap.
+    this.prototypeDataList.set(key, prototypeData);
+
+    return prototypeData;
+  }
+
   private checkNewPrototypeDataParams(name: string, ancestor: string): boolean
   {
     if (!ASSERT(name !== ""
@@ -114,7 +130,10 @@ export class PrototypeDataManager extends SaveableObject
         + " ancestor name. Prototype is not created"))
       return false;
 
-    if (!ASSERT(global[name] !== undefined,
+    // Prototype classes are stored in global.dynamicClasses.
+    let dynamicClasses = global[SaveableObject.DYNAMIC_CLASSES_PROPERTY];
+
+    if (!ASSERT(dynamicClasses[name] === undefined,
         "Attempt to create new prototype '" + name + "' but class of that name"
         + " already exists. Prototype is not created"))
       return false;

@@ -309,7 +309,7 @@ export class GameEntity extends EntityContainer
 
 
     /* --- TEST --- */
-
+    /*
     //let script = "return 'Changed function!'";
     //let script = "'use strict'; class Point extends GameEntity { print() {return 'Class method'} }; return Point;";
     let script = "'use strict'; let Room = global['Room']; class Point extends Room { print() {return 'Class method'} }; global['Point'] = Point;";
@@ -326,6 +326,7 @@ export class GameEntity extends EntityContainer
 
     vmScript.runInThisContext();
     let Point = global['Point'];
+    */
     /*
     let fce = new Function('GameEntity', script);
     // Funkce fce vrati novou classu Point.
@@ -336,6 +337,7 @@ export class GameEntity extends EntityContainer
     let Point = fce(GameEntity);
     */
 
+    /*
     // Kterou nasledne muzu instanciovat.
     let instanceOfPoint = new Point();
 
@@ -343,12 +345,14 @@ export class GameEntity extends EntityContainer
 
     //let output = instanceOfPoint.print();
     let output = instanceOfPoint.description;
+    */
 
     /* --- TEST --- */
 
 
 
-//    let output = this.location.getEntity().printContents();
+    let output =
+      this.location.getEntity({ typeCast: GameEntity }).printContents();
 
     if (output !== "")
       this.playerConnection.sendAsBlock(output);
