@@ -7,6 +7,7 @@
 'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
+import {ASSERT_FATAL} from '../shared/ASSERT';
 import {Server} from '../server/Server';
 import {Id} from '../shared/Id';
 import {SaveableObject} from '../shared/SaveableObject';
@@ -16,6 +17,8 @@ import {EntityId} from '../game/EntityId';
 import {PlayerCharacterManager} from '../game/PlayerCharacterManager';
 import {IdableObjectContainer} from '../shared/IdableObjectContainer';
 import {World} from '../game/world/World';
+import {Room} from '../game/world/Room';
+import {RoomFlags} from '../game/world/RoomFlags';
 import {IdList} from '../game/IdList'
 
 /// Asi docasne:
@@ -77,7 +80,7 @@ export class Game
     // --- World ---
 
     // Create a new world prototype.
-    this.prototypeManager.createPrototypeData
+    this.prototypeManager.createPrototype
       ({ name: "BrutusWorld", ancestor: "World" });
 
     // Create world 'BrutusNext World' based on this prototype.
@@ -89,7 +92,7 @@ export class Game
     // --- System Realm ---
 
     // Create a new realm prototype.
-    this.prototypeManager.createPrototypeData
+    this.prototypeManager.createPrototype
       ({ name: "SystemRealm", ancestor: "Realm" });
 
     // Create realm 'System Realm' based on this prototype and add it to the
@@ -105,7 +108,7 @@ export class Game
     // --- System Area ---
     
     // Create a new area prototype.
-    this.prototypeManager.createPrototypeData
+    this.prototypeManager.createPrototype
       ({ name: "SystemArea", ancestor: "Area" });
 
     // Create area 'System Area' based on this prototype and add it to the
@@ -121,7 +124,7 @@ export class Game
     // --- System Room ---
 
     // Create a new room prototype.
-    this.prototypeManager.createPrototypeData
+    this.prototypeManager.createPrototype
       ({ name: "SystemRoom", ancestor: "Room" });
 
     // Create room 'System Room' based on this prototype and add it to the
@@ -132,10 +135,12 @@ export class Game
     // Remember system room id for future easy access.
     world.systemRoomId = systemRoomId;
 
+    systemRoomId.getEntity({ typeCast: Room }).roomFlags.set(RoomFlags.SYSTEM);
+
     // --- Tutorial Room ---
 
     // Create a new room prototype.
-    this.prototypeManager.createPrototypeData
+    this.prototypeManager.createPrototype
       ({ name: "TutorialRoom", ancestor: "Room" });
 
     // Create room 'Tutorial Room' based on this prototype and add it to the
@@ -217,10 +222,13 @@ export class Game
       return;
 
     // Dynamic creation of a new instance.
-    let newWorld = SaveableObject.createInstance
+    let world = SaveableObject.createInstance
       ({ className: param.prototype, typeCast: World });
 
-    newWorld.name = param.name;
-    this.worldId = Server.idProvider.generateId(newWorld);
+    if (!ASSERT_FATAL(world !== null, "Failed to create world"))
+      return;
+
+    world.name = param.name;
+    this.worldId = Server.idProvider.generateId(world);
   }
 }

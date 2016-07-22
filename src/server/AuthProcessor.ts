@@ -191,13 +191,12 @@ export class AuthProcessor
     // she can see it typed (which is the only option when using telnet).
 
     // Password accepted, create a new account.
-    let newAccountId =
-      Server.accountManager.createAccount
-      (
-        this.accountName,
-        password,
-        this.playerConnection.getId()
-      );
+    let newAccountId = Server.accountManager.createAccount
+    (
+      this.accountName,
+      password,
+      this.playerConnection.getId()
+    );
 
     Mudlog.log
     (

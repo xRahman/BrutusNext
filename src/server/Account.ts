@@ -15,6 +15,8 @@ import {Id} from '../shared/Id';
 import {IdableSaveableObject} from '../shared/IdableSaveableObject';
 import {PlayerConnection} from '../server/PlayerConnection';
 import {Server} from '../server/Server';
+import {Game} from '../game/Game';
+import {EntityId} from '../game/EntityId';
 
 // Built-in node.js modules.
 import * as crypto from 'crypto';  // Import namespace 'crypto' from node.js
@@ -37,8 +39,6 @@ export class Account extends IdableSaveableObject
   static get SAVE_DIRECTORY() { return "./data/accounts/"; }
 
   // ----------------- Public data ----------------------
-
-  public getAdminLevel() { return this.adminLevel; }
 
   public get playerConnection()
   {
@@ -82,28 +82,54 @@ export class Account extends IdableSaveableObject
     return this.playerConnection.isInGame();
   }
 
-  public addNewCharacter(characterName: string)
+  public createCharacter(characterName: string): EntityId
   {
-    if (!ASSERT(characterName !== "",
-      "Attempt to add new character with empty name"))
-      return;
+    let characterManager = Game.playerCharacterManager;
 
-    /// Zpet k odkazovani postav jmeny.
-    ///     Duvod pro ukladani postav v souboru podle jmena postavy je,
-    ///   ze stat file <charName> by nemel jak najit spravny soubor, kdyz
-    ///   by byl pojmenovany hodnotou idcka.
-    ///     Kdyz budou soubory pojmenovane jmenem charu, tak zas nepujde najit
-    ///   soubor podle idcka, coz pri vstupu hrace do hry potrebuju.
-    /// Reseni tedy je, pojmenovavat player character savy jmenem charu
-    /// a seznam charu v accountu ukladat taky pres jmeno charu.
-    /// (ukladat entity s unikatnimi jmeny pod jmenem entity ma navic tu
-    /// vyhodu, ze si nemusim nekde stranou drzet seznam existujicich jmen,
-    /// muzu proste checknout, jestli existuje soubor daneho jmena.
+    if (characterManager.exists(characterName))
+    {
+      // Handle error messages.
+      this.reportCharacterAlreadyExists(characterName);
 
-    this.characters.push(characterName);
+      return null;
+    }
 
-    // This doesn't need to be synchronous.
-    this.save();
+    let characterId = characterManager.createUniqueCharacter
+    (
+      characterName,
+      this.playerConnection.getId()
+    );
+
+    // (Also handles error messages.)
+    if (!this.characterCreatedSuccessfuly(characterId, characterName))
+      return null;
+
+    this.addCharacter(characterName);
+    this.logCharacterCreation(this.name, characterName);
+
+    return characterId;
+  }
+
+  private characterCreatedSuccessfuly
+  (
+    characterId: EntityId,
+    characterName: string
+  )
+  : boolean
+  {
+    if (!ASSERT(characterId !== null,
+        "Failed to create new character (" + characterName + ")"))
+    {
+      this.playerConnection.sendAsBlock
+      (
+        "&wAn error occured while creating"
+        + " your character. Please contact implementors."
+      );
+
+      return false;
+    }
+
+    return true;
   }
 
   public getNumberOfCharacters(): number
@@ -152,6 +178,7 @@ export class Account extends IdableSaveableObject
     Server.accountManager.dropAccount(this.getId());
   }
 
+  /*
   // Set this.adminLevel to 5 if there are no other accounts on the disk.
   public firstAccountCheck()
   {
@@ -159,9 +186,10 @@ export class Account extends IdableSaveableObject
     {
       // We are creating the first account on this mud installation.
       // Mark it as implementor account.
-      this.adminLevel = AdminLevels.IMPLEMENTOR;
+      this.adminLevel = AdminLevels.CREATOR;
     }
   }
+  */
 
   // -------------- Protected class data ----------------
 
@@ -194,5 +222,62 @@ export class Account extends IdableSaveableObject
   // -------------- Private class data ----------------
 
   private passwordHash = "";
-  private adminLevel = AdminLevels.IMMORTAL;
+
+  // ---------------- Private methods --------------------
+
+  private addCharacter(characterName: string)
+  {
+    if (!ASSERT(characterName !== "",
+      "Attempt to add new character with empty name"))
+      return;
+
+    /// Zpet k odkazovani postav jmeny.
+    ///     Duvod pro ukladani postav v souboru podle jmena postavy je,
+    ///   ze stat file <charName> by nemel jak najit spravny soubor, kdyz
+    ///   by byl pojmenovany hodnotou idcka.
+    ///     Kdyz budou soubory pojmenovane jmenem charu, tak zas nepujde najit
+    ///   soubor podle idcka, coz pri vstupu hrace do hry potrebuju.
+    /// Reseni tedy je, pojmenovavat player character savy jmenem charu
+    /// a seznam charu v accountu ukladat taky pres jmeno charu.
+    /// (ukladat entity s unikatnimi jmeny pod jmenem entity ma navic tu
+    /// vyhodu, ze si nemusim nekde stranou drzet seznam existujicich jmen,
+    /// muzu proste checknout, jestli existuje soubor daneho jmena.
+
+    this.characters.push(characterName);
+
+    // This doesn't need to be synchronous.
+    this.save();
+  }
+
+  private reportCharacterAlreadyExists(characterName: string)
+  {
+    ASSERT
+    (
+      false,
+      "Attempt to create character '" + characterName + "'"
+      + " that already exists."
+    );
+
+    // Notify the player what went wrong.
+    if (this.playerConnection)
+    {
+      this.playerConnection.sendAsBlock
+      (
+        "Something is wrong, character named '" + characterName + "'"
+        + " already exists. Please contact implementors and ask them to"
+        + "resolve this issue."
+      );
+    }
+  }
+
+  private logCharacterCreation(accountName: string, characterName: string)
+  {
+    Mudlog.log
+    (
+      "Player " + this.name + " has created a new character: "
+      + characterName,
+      Mudlog.msgType.SYSTEM_INFO,
+      AdminLevels.IMMORTAL
+    );
+  }
 }

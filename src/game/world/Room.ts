@@ -10,26 +10,12 @@ import {ASSERT} from '../../shared/ASSERT'
 import {GameEntity} from '../../game/GameEntity';
 import {Game} from '../../game/Game';
 import {RoomInfo} from '../../game/world/RoomInfo';
+import {RoomFlags} from '../../game/world/RoomFlags';
 import {Exits} from '../../game/world/Exits';
 
 export class Room extends GameEntity
 {
-  /*
-  /// TEST
-  protected static testStaticVariable = "RoomEntityStaticVariable";
-
-  //public test() { console.log("Room::" + this.className + ", super: "); super.test(); }
-  public test()
-  {
-    console.log(this.getPropertyAttributes(this, 'testStaticVariable'));
-    
-    //console.log(super.constructor['testStaticVariable']);
-    //console.log("Room::" + this.constructor['testStaticVariable'] + ", super: ");
-    //super.test();
-
-    console.log(this.getPropertyAttributes(this, 'gameEntityTestStaticVariable'));
-  }
-  */
+  public roomFlags = new RoomFlags();
 
   constructor()
   {

@@ -37,6 +37,7 @@
     <TypeScriptCompile Include="src\game\PrototypeData.ts" />
     <TypeScriptCompile Include="src\game\PrototypeDataManager.ts" />
     <TypeScriptCompile Include="src\game\ScriptData.ts" />
+    <TypeScriptCompile Include="src\game\world\RoomFlags.ts" />
     <TypeScriptCompile Include="src\server\AccountFlags.ts" />
     <TypeScriptCompile Include="src\server\AdminLevels.ts" />
     <TypeScriptCompile Include="src\shared\FlagsData.ts" />
