@@ -12,9 +12,16 @@ import {AdminLevels} from '../../server/AdminLevels';
 import {Game} from '../../game/Game';
 import {GameEntity} from '../../game/GameEntity';
 import {World} from '../../game/world/World';
+import {CharacterFlags} from '../../game/characters/CharacterFlags';
 
 export class Character extends GameEntity
 {
+  public characterFlags = new CharacterFlags();
+
+  protected timeOfCreation = new Date();
+
+  private adminLevel = AdminLevels.MORTAL;
+
   constructor()
   {
     super();
@@ -37,32 +44,26 @@ export class Character extends GameEntity
     return "./data/characters/";
   }
 
+  public getTimeOfCreation() { return this.timeOfCreation; }
+
+  public getAdminLevel() { return this.adminLevel; }
+
   // -------------- Protected accessors -----------------
 
   protected get SAVE_DIRECTORY() { return Character.SAVE_DIRECTORY; }
 
-  // ----------------- Public data ---------------------- 
-
-  /// TODO: Tohle by mozna mel mit az player, u mobu me to moc nezajima
-  // dateofCreation always initializes to current time, but for existing
-  // characters will be overwritten when loading from file. 
-  public timeOfCreation = new Date();
-
   // ---------------- Public methods --------------------
 
-  // Sets birthroom (initial location), immortal flag, etc.
-  public initNewCharacter(account: Account)
+  // Sets birthroom (initial location), CHAR_IMMORTALITY flag.
+  public init(account: Account)
   {
     let world = Game.worldId.getEntity({ typeCast: World });
 
-    /// TODO: Tohle dělá immortaly ze všech charů na accountu.
-    /// Imm+ by měl být jen jeden z nich.
-    if (account.getAdminLevel() > AdminLevels.MORTAL)
+    if (this.getAdminLevel() > AdminLevels.MORTAL)
     {
       // Immortals enter game in System Room.
       this.setLocation(world.systemRoomId);
-
-      /// TODO: Setnout charu immortal flagu.
+      this.characterFlags.set(CharacterFlags.GOD_PROTECTION);
     }
     else
     {

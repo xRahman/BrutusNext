@@ -39,7 +39,7 @@ export class IdableObjectContainer<T extends IdableSaveableObject>
     ASSERT_FATAL(item.getId() === null,
       "Attempt to add item which already has an id under new id");
 
-    let newId = Server.idProvider.generateId(item.className, item);
+    let newId = Server.idProvider.generateId(item);
 
     this.itemNotYetExistsCheck(newId);
 

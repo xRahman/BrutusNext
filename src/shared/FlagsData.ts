@@ -18,10 +18,6 @@ import {SaveableObject} from '../shared/SaveableObject';
 
 export class FlagsData extends SaveableObject
 {
-  // Prefix all flags of this type must begin with (it is checked when adding
-  // new flag values).
-  private prefix: string = null;
-
   // What type of flags does this list belong to (e. g. RoomFlags).
   // (Value is name of the class of respective Flags object.)
   private flagsType: string = "";
@@ -41,26 +37,7 @@ export class FlagsData extends SaveableObject
     // This will be skipped when loading from file, but that's ok because
     // these values will be overwritten by those in the file anyways.
     if (flagsObject !== undefined)
-    {
       this.flagsType = flagsObject.className;
-
-      // This trick dynamically accesses static class property without
-      // the need to use something like Flags.property;
-      // (flagsObject.constructor[property] is the same as if you could
-      //  write (typeof(flagsObject)).property)
-      this.prefix = flagsObject.constructor['prefix'];
-
-      ASSERT
-      (
-        this.prefix !== undefined
-        && this.prefix !== ""
-        && this.prefix !== null,
-        "Invalid flags prefix in class " + flagsObject.className + "."
-        + " Make sure that static variable "
-        + flagsObject.className + ".prefix"
-        + " exists, is a nonempty string and is unique over all Flags classes"
-      );
-    }
   }
 
   // ---------------- Public methods --------------------
@@ -127,17 +104,7 @@ export class FlagsData extends SaveableObject
 
   private addFlag(flagName: string)
   {
-    let flagNamePrefix = flagName.substr(0, this.prefix.length);
-
-    // Check that flagName starts with this.prefix.
-    if (!ASSERT(flagNamePrefix === this.prefix,
-      "Attempt to add a new flag type '" + flagName + "' to"
-      + " FlagsData of " + this.flagsType + " that has an"
-      + " incorrect prefix (should be '" + this.prefix + "'."
-      + " Flag type is not added"))
-      return;
-
-    // get() will return undefined if flag doesn't exist.
+    // flagValuesList.get() returns undefined if flag doesn't exist.
     let flagValue = this.flagValuesList.get(flagName);
 
     // Check that such flag doesn't exist yet.    

@@ -39,9 +39,11 @@ export class AccountManager extends IdableObjectContainer<Account>
     let newAccountId = this.addAccountUnderNewId(newAccount);
 
 
+    /*
     // Set newAccount.adminLevel to 5 if there are no other accounts on the
     // disk (this needs to be done before newAcount is saved of course).
     newAccount.firstAccountCheck();
+    */
 
     // Save the account info to the disk (so we know that the account exists).
     // (This does not need to be synchronous.)
