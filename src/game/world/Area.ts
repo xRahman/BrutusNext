@@ -30,7 +30,7 @@ export class Area extends Sector
 
   // -------------- Protected accessors -----------------
 
-  protected get SAVE_DIRECTORY() { return "./data/areas/"; }
+  protected static get SAVE_DIRECTORY() { return "./data/areas/"; }
 
   // ---------------- Public methods --------------------
 

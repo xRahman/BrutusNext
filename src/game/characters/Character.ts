@@ -34,11 +34,6 @@ export class Character extends GameEntity
 
   // --------------- Public accessors -------------------
 
-  // There is both static and nonstatic version of SAVE_DIRECTORY (both
-  // return the same value), because we need to be able to access it without
-  // an intance of Character, and we also need it to override SAVE_DIRECTORY
-  // property inherited from GameEntity (which cannot be static, because
-  // static properties can't be overriden).
   public static get SAVE_DIRECTORY()
   {
     return "./data/characters/";
@@ -47,10 +42,6 @@ export class Character extends GameEntity
   public getTimeOfCreation() { return this.timeOfCreation; }
 
   public getAdminLevel() { return this.adminLevel; }
-
-  // -------------- Protected accessors -----------------
-
-  protected get SAVE_DIRECTORY() { return Character.SAVE_DIRECTORY; }
 
   // ---------------- Public methods --------------------
 

@@ -54,7 +54,7 @@ export class Room extends GameEntity
 
   // -------------- Protected accessors -----------------
 
-  protected get SAVE_DIRECTORY() { return "./data/rooms/"; }
+  protected static get SAVE_DIRECTORY() { return "./data/rooms/"; }
 
   // ---------------- Public methods --------------------
 

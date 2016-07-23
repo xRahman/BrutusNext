@@ -125,8 +125,29 @@ export class SaveableObject extends AttributableClass
   // (see class Flags for example)
   protected async saveToFile(directory: string, fileName: string)
   {
-    ASSERT_FATAL(directory.substr(directory.length - 1) === '/',
-      "Directory path '" + directory + "' doesn't end with '/'");
+    let directoryIsValid = directory !== undefined
+                        && directory !== null
+                        && directory !== "";
+
+    let filenameIsValid = fileName !== undefined
+                       && fileName !== null
+                       && fileName !== "";
+
+    if (!ASSERT(directoryIsValid,
+        "Invalid 'directory' parameter when saving class "
+        + this.className + "." + " Object is not saved"))
+      return;
+
+    if (!ASSERT(filenameIsValid,
+        "Invalid 'fileName' parameter when saving class "
+        + this.className + "." + " Object is not saved"))
+      return;
+
+    if (!ASSERT(directory.substr(directory.length - 1) === '/',
+        "Error when saving class " + this.className + ":"
+        + " Directory path '" + directory + "' doesn't end with '/ '."
+        + " Object is not saved"))
+      return;
 
     // Directory might not yet exist, so we better make sure it does.
     await FileSystem.ensureDirectoryExists(directory);
@@ -670,13 +691,14 @@ export class SaveableObject extends AttributableClass
 
   private extractMapContents(map: Map<any, any>): Array<any>
   {
-    // Pass required size to Array constructor to prealocate memory.
-    let result = new Array(map.size);
+    let result = [];
 
     // 'map.entries' is Iterable (whatever that means) so it needs to be
     // iterated using for ( of ).
     for (let entry of map.entries())
+    {
       result.push(entry);
+    }
     
     return result;
   }

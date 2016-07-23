@@ -14,7 +14,7 @@ import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {Server} from '../server/Server';
 import {SaveableObject} from '../shared/SaveableObject';
-import {IdableSaveableObject} from '../shared/IdableSaveableObject';
+import {IdableObject} from '../shared/IdableObject';
 
 export class Id extends SaveableObject
 {
@@ -23,7 +23,7 @@ export class Id extends SaveableObject
   // direct references, but you can use id.getEntity() to get your reference
   // directly without the need to search for string value of id in your
   // object container.
-  protected directReference: IdableSaveableObject = null;
+  protected directReference: IdableObject = null;
   // Do not save variable 'directReference'.
   protected static directReference = { isSaved: false };
 
@@ -39,7 +39,7 @@ export class Id extends SaveableObject
     // direct references, but you can use id.getObject() to get your reference
     // directly without the need to search for string value of id in your
     // object container.
-    object: IdableSaveableObject
+    object: IdableObject
   )
   {
     super();

@@ -29,7 +29,7 @@ export class Realm extends GameEntity
 
   // -------------- Protected accessors -----------------
 
-  protected get SAVE_DIRECTORY() { return "./data/realms/"; }
+  protected static get SAVE_DIRECTORY() { return "./data/realms/"; }
 
   // ---------------- Public methods --------------------
 

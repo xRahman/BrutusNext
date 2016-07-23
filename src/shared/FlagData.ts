@@ -16,14 +16,14 @@ import {ASSERT} from '../shared/ASSERT';
 import {Flags} from '../shared/Flags';
 import {SaveableObject} from '../shared/SaveableObject';
 
-export class FlagsData extends SaveableObject
+export class FlagData extends SaveableObject
 {
   // What type of flags does this list belong to (e. g. RoomFlags).
   // (Value is name of the class of respective Flags object.)
   private flagsType: string = "";
 
   // Hashmap of numbers (integer flag values) indexed by strings (flag names).
-  private flagValuesList = new Map();
+  private flagValues = new Map();
 
   // This flag is set to true the first time
   private flagsAutoUpdated = false;
@@ -75,7 +75,7 @@ export class FlagsData extends SaveableObject
   {
     let result = { saveNeeded: false };
 
-    if (!this.flagValuesList.has(flagName))
+    if (!this.flagValues.has(flagName))
     {
       this.addFlag(flagName);
       result.saveNeeded = true;
@@ -90,7 +90,7 @@ export class FlagsData extends SaveableObject
   //   This method is called automatically when you access a Flags object.
   public getFlagValue(flagName: string): number
   {
-    let flagValue = this.flagValuesList.get(flagName);
+    let flagValue = this.flagValues.get(flagName);
 
     if (!ASSERT(flagValue !== undefined,
         "Attempt to get value of flag type '" + flagName + "' which doesn't"
@@ -105,7 +105,7 @@ export class FlagsData extends SaveableObject
   private addFlag(flagName: string)
   {
     // flagValuesList.get() returns undefined if flag doesn't exist.
-    let flagValue = this.flagValuesList.get(flagName);
+    let flagValue = this.flagValues.get(flagName);
 
     // Check that such flag doesn't exist yet.    
     if (!ASSERT(flagValue === undefined,
@@ -120,7 +120,7 @@ export class FlagsData extends SaveableObject
     let newFlagValue = this.getFirstFreeFlagValue();
 
     // Add record to hashmap.
-    this.flagValuesList.set(flagName, newFlagValue);
+    this.flagValues.set(flagName, newFlagValue);
   }
 
   private getFirstFreeFlagValue(): number
@@ -129,9 +129,9 @@ export class FlagsData extends SaveableObject
     // (It is possible that we will index beyond this size, but this helps
     // node.js to prealocate memeory - we know we are going to need at least
     // this much),
-    let usedFlagValues = new Array(this.flagValuesList.size);
+    let usedFlagValues = new Array(this.flagValues.size);
 
-    for (var value of this.flagValuesList.values())
+    for (var value of this.flagValues.values())
     {
       // Here we translate actual flag values to indexes of temporary array.
       usedFlagValues[value] = 1;

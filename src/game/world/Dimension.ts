@@ -26,7 +26,7 @@ export class Dimension extends GameEntity
     this.version = 0;
   }
 
-  static get SAVE_DIRECTORY() { return "./data/dimensions/"; }
+  protected static get SAVE_DIRECTORY() { return "./data/dimensions/"; }
 
   // --------------- Public accessors -------------------
 
@@ -35,12 +35,6 @@ export class Dimension extends GameEntity
   // -------------- Protected class data ----------------
 
   // --------------- Protected methods ------------------
-
-  // What file will this area be saved to.
-  protected getSaveDirectory(): string
-  {
-    return Dimension.SAVE_DIRECTORY + this.getIdStringValue() + ".json";
-  }
 
   // ---------------- Private methods -------------------
 }
