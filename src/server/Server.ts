@@ -156,6 +156,14 @@ export class Server
     // If 'data' directory doesn't exist at all, create and save a new world.
     if(!FileSystem.existsSync("./data/"))
     {
+      // Save flagsDataManager (so it's empty save file exists).
+      this.flagsDataManager.save();
+      // And flag it as loaded.
+      this.flagsDataManager.skipLoad();
+
+      // Save prototypeManager (so it's empty save file exists).
+      Game.prototypeManager.save();
+
       await this.game.createDefaultWorld();
     }
     else
