@@ -7,11 +7,11 @@
 'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
-import {ASSERT_FATAL} from '../shared/ASSERT';
+import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {Server} from '../server/Server';
 import {Id} from '../shared/Id';
 import {SaveableObject} from '../shared/SaveableObject';
-import {PrototypeDataManager} from '../game/PrototypeDataManager';
+import {PrototypeDataManager} from '../shared/PrototypeDataManager';
 import {GameEntity} from '../game/GameEntity';
 import {EntityId} from '../game/EntityId';
 import {PlayerCharacterManager} from '../game/PlayerCharacterManager';

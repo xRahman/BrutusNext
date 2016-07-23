@@ -20,7 +20,7 @@
 'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
-import {ASSERT_FATAL} from '../shared/ASSERT';
+import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {NamedClass} from '../shared/NamedClass';
 import {IdableObject} from '../shared/IdableObject';
 import {Id} from '../shared/Id';

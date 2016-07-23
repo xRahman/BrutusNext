@@ -7,7 +7,7 @@
 'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
-import {ASSERT_FATAL} from '../shared/ASSERT';
+import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {FileSystem} from '../shared/fs/FileSystem';
 import {Server} from '../server/Server';
 import {IdableObjectContainer} from '../shared/IdableObjectContainer';

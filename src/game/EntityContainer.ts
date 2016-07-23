@@ -15,7 +15,7 @@
 
 'use strict';
 
-import {ASSERT_FATAL} from '../shared/ASSERT';
+import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {GameEntity} from '../game/GameEntity';
 import {IdList} from '../game/IdList';
 import {Game} from '../game/Game';

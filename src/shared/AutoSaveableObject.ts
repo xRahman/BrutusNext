@@ -7,7 +7,7 @@
 'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
-import {ASSERT_FATAL} from '../shared/ASSERT';
+import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {SaveableObject} from '../shared/SaveableObject';
 
 export abstract class AutoSaveableObject extends SaveableObject
