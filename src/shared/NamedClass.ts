@@ -6,7 +6,7 @@
 
 'use strict';
 
-import {ASSERT_FATAL} from '../shared/ASSERT';
+import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 
 export class NamedClass
 {

@@ -7,7 +7,7 @@
 'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
-import {ASSERT_FATAL} from '../shared/ASSERT';
+import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {PlayerConnection} from '../server/PlayerConnection';
 import {Server} from '../server/Server';
 import {Account} from '../server/Account';

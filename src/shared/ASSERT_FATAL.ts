@@ -49,19 +49,31 @@ import {getTrimmedStackTrace} from '../shared/UTILS';
 import {Mudlog} from '../server/Mudlog';
 import {AdminLevels} from '../server/AdminLevels';
 
-// Sends error message to syslog along with a stack trace if condition is
-// false. Returns unmodified value of the condition.
-export function ASSERT(condition: boolean, message: string)
+// Use ASSERT_FATAL to check for nonrecoverable errors.
+// If condition is false, logs error messages and throws Error() to end
+// the program.
+export function ASSERT_FATAL(condition: boolean, message: string)
 {
   if (condition === false)
   {
     let stackTrace = getTrimmedStackTrace();
 
-    let errorMsg = "Assertion failed: '" + message + "'" + "\n"
+    let errorMsg = "Fatal assertion failed: '" + message + "'" + "\n"
       + stackTrace;
 
-    Mudlog.log(errorMsg, Mudlog.msgType.ASSERT, AdminLevels.CREATOR);
+    Mudlog.log(errorMsg, Mudlog.msgType.ASSERT_FATAL, AdminLevels.IMMORTAL);
+
+    // Since promises are eating exceptions, throwing an error won't stop
+    // the program if ASSERT_FATAL is triggered within asynchronous method.
+    // So we rather print stack trace ourselves (using Mudlog.log() above)
+    // and exit the program manualy.
+    process.exit(1);
   }
 
-  return condition;
+  // This is basically a nonsense, ASSERT_FATAL is not supposed to be checked
+  // against - if it fails, game will crash so no other code is necessary.
+  // However, I have already done it by mistake and without this return value,
+  // condition if (!ASSERT_FATAL(...)) would fail, even if it was true - which
+  // would lead to queer, unexpected behaviour.
+  return true;
 }

@@ -11,7 +11,7 @@
 'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
-import {ASSERT_FATAL} from '../shared/ASSERT';
+import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {Server} from '../server/Server';
 import {SaveableObject} from '../shared/SaveableObject';
 import {IdableObject} from '../shared/IdableObject';

@@ -7,7 +7,7 @@
 'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
-import {ASSERT_FATAL} from '../shared/ASSERT';
+import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {EntityId} from '../game/EntityId';
 import {SaveableObject} from '../shared/SaveableObject';
 import {AbbrevSearchList} from '../game/AbbrevSearchList';
