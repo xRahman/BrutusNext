@@ -35,6 +35,13 @@ export class FlagsDataManager extends SaveableObject
 
   // ---------------- Public methods --------------------
 
+  // Manager won't be loaded from disk.
+  // (this is used when we are creating game from empty /data directory)
+  public skipLoad()
+  {
+    this.loaded = true;
+  }
+
   // Returns FlagsData object containing list of flag names that
   // can be set to flags object passed as parameter.
   //   Requested FlagsData object is created if it doesn't exist

@@ -90,16 +90,61 @@ export abstract class Flags extends SaveableObject
   public getStaticFlagNames(): Array<string>
   {
     let result = new Array<string>();
+    // getOwnPropertyNames() returns all properties, including nonenumerables.
+    // (We need to use it because accessors are not listed by 'in' operator.)
+    let staticPropertyNames = Object.getOwnPropertyNames(this.constructor);
 
     // This trick iterates over static class properties of this object.
-    for (let property in this.constructor)
+    for (let i = 0; i < staticPropertyNames.length; i++)
     {
+      let property = this.constructor[staticPropertyNames[i]];
+
       // Only add string properties as new flag names.
-      if (typeof this.constructor['property'] === 'string')
+      // Also skip property 'name', which is always se on this.constructor
+      // by javascript itself.
+      if (staticPropertyNames[i] !== 'name' && typeof property === 'string')
         result.push(property);
     }
 
     return result;
+  }
+
+  // -------------- Protected methods -------------------
+
+  // Overrides SaveableObject::loadPropertyFromJsonObject() to
+  // be able save bitvector as array of numbers.
+  protected loadPropertyFromJsonObject
+  (
+    jsonObject: Object,
+    property: string,
+    filePath: string
+  )
+  {
+    if (property === 'flags')
+    {
+      // Flags are saved as array of numbers. Bitvector is recreated
+      // by passing this array to constructor.
+      this[property] = new FastBitSet(jsonObject[property]);
+    }
+    else
+    {
+      super.loadPropertyFromJsonObject(jsonObject, property, filePath);
+    }
+  }
+
+  // Overrides SaveableObject::loadPropertyFromJsonObject() to
+  // be able load bitvector from array of numbers.
+  protected savePropertyToJsonObject(jsonObject: Object, property: string)
+  {
+    if (property === 'flags')
+    {
+      // Save bitvector as array of numbers.
+      jsonObject[property] = this.flags.array();
+    }
+    else
+    {
+      super.savePropertyToJsonObject(jsonObject, property);
+    }
   }
 
   // ---------------- Private methods --------------------

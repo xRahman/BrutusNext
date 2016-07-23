@@ -121,6 +121,8 @@ export class SaveableObject extends AttributableClass
     this.loadFromJsonString(jsonString, filePath);
   }
 
+  // Override this method if you need to save property of nonstandard type.
+  // (see class Flags for example)
   protected async saveToFile(directory: string, fileName: string)
   {
     ASSERT_FATAL(directory.substr(directory.length - 1) === '/',
@@ -131,7 +133,33 @@ export class SaveableObject extends AttributableClass
     await this.saveContentsToFile(directory + fileName);
   }
 
-  protected async saveContentsToFile(filePath: string)
+  // Override this method if you need to load property of nonstandard type.
+  // (see class Flags for example)
+  protected loadPropertyFromJsonObject
+  (
+    jsonObject: Object,
+    property: string,
+    filePath: string
+  )
+  {
+    this[property] = this.loadVariable
+    (
+      property,
+      this[property],
+      jsonObject[property],
+      filePath
+    );
+  }
+
+  protected savePropertyToJsonObject(jsonObject: Object, property: string)
+  {
+    jsonObject[property] =
+      this.saveVariable(this[property], property, this.className);
+  }
+
+  // --------------- Private methods --------------------
+
+  private async saveContentsToFile(filePath: string)
   {
     // If we are already saving ourselves, the request will be added
     // to the buffer and processed after ongoing saving ends.
@@ -149,7 +177,7 @@ export class SaveableObject extends AttributableClass
     this.saveRequests = [];
   }
 
-  protected loadFromJsonString(jsonString: string, filePath: string)
+  private loadFromJsonString(jsonString: string, filePath: string)
   {
     let jsonObject = {};
 
@@ -167,7 +195,7 @@ export class SaveableObject extends AttributableClass
     this.loadFromJsonObject(jsonObject, filePath);
   }
 
-  protected saveToJsonString(): string
+  private saveToJsonString(): string
   {
     let jsonString = JSON.stringify(this.saveToJsonObject());
 
@@ -187,7 +215,7 @@ export class SaveableObject extends AttributableClass
     return jsonString;
   }
 
-  protected loadFromJsonObject(jsonObject: Object, filePath: string)
+  private loadFromJsonObject(jsonObject: Object, filePath: string)
   {
     // filePath is passed just so it can be printed to error messages.
     this.checkVersion(jsonObject, filePath);
@@ -205,23 +233,16 @@ export class SaveableObject extends AttributableClass
     // Now copy the data.
     for (let property in jsonObject)
     {
-      this[property] =
-        this.loadVariable
-        (
-          property,
-          this[property],
-          jsonObject[property],
-          filePath
-        );
+      this.loadPropertyFromJsonObject(jsonObject, property, filePath);
     }
   }
 
-  protected saveToJsonObject(): Object
+  private saveToJsonObject(): Object
   {
     let jsonObject: Object = {};
 
-    // A little hack - save 'name' property first (out of order). This is to
-    // make saved JSON files more readable.
+    // A little hack - save 'name' property first (out of order)
+    // to make saved JSON files more readable.
     if ('name' in this)
     {
       jsonObject['name'] = this['name'];
@@ -233,17 +254,14 @@ export class SaveableObject extends AttributableClass
       // Skip 'name' property because it's already saved thanks to
       // previous hack.
       // (isToBeSaved() checks static attribute property.isSaved)
-      if (property !== 'name' && this.isToBeSaved(property))
+      if (property !== 'name' && this.isSaved(property))
       {
-        jsonObject[property] =
-          this.saveVariable(this[property], property, this.className);
+        this.savePropertyToJsonObject(jsonObject, property);
       }
     }
 
     return jsonObject;
   }
-
-  // --------------- Private methods --------------------
 
   private checkClassName (jsonObject: Object, filePath: string)
   {
@@ -402,7 +420,7 @@ export class SaveableObject extends AttributableClass
         "Missing 'className' property in a nested object in file "
         + filePath + ". You probably assigned <null> to a property"
         + " of some generic object type (default javascript Object,"
-        + " Date or Array) or of a class type not inherited from"
+        + " Date, Map or Array) or of a class type not inherited from"
         + " NamedClass. Make sure that properties of these types are"
         + " never assigned <null> value or inicialized to <null>."
       );
@@ -467,7 +485,14 @@ export class SaveableObject extends AttributableClass
     // null or we have just assigned a new instance of correct type in
     // it). So we can safely load it from corresponding JSON.
 
-    if ('loadFromJsonObject' in myProperty)
+    if (this.isMap(myProperty))
+    {
+      // When we are loading instance of class Map, data are actually
+      // saved as array of [key, value] pairs and we need to recreate
+      // our Map object from it.
+      return new Map(myProperty);
+    }
+    else if ('loadFromJsonObject' in myProperty)
     {
       // If we are loading into a saveable object, do it using it's
       // loadFromJsonObject() method.
@@ -475,7 +500,7 @@ export class SaveableObject extends AttributableClass
 
       return myProperty;
     }
-    else  // We are loading object that is neither Date nor SaveableObject.
+    else // We are loading object that is neither Date, Map nor SaveableObject.
     {
       return this.loadPrimitiveObjectFromJson
       (
@@ -527,16 +552,29 @@ export class SaveableObject extends AttributableClass
       if (this.isDate(variable))
         return variable;
 
+      // When we are saving a Map object, we request it's contents
+      // formated as array of [key, value] pairs by calling it's
+      // .entries() method and then save this array as any regular
+      // array (values can be another objects or arrays, so we need to
+      // save it recursively).
+      if (this.isMap(variable))
+      {
+        let mapContents = this.extractMapContents(variable);
+
+        return this.saveArray(mapContents, description, className);
+      }
+
       if (this.isPrimitiveJavascriptObject(variable))
         return this.savePrimitiveObjectToJson(variable);
 
       ASSERT_FATAL(false,
         "Variable '" + description + "' in class '" + className + "'"
-        + " (or some of it's ancestors) is a class but is not inherited"
-        + " from SaveableObject. Make sure that you only use primitive"
-        + " types (numbers, strings), Arrays, basic javascript Objects"
-        + " or classes inherited from SaveableObject as a properties of"
-        + " class inherited from SaveableObject.");
+        + " (or inherited from some of it's ancestors) is a class but"
+        + " is not inherited from SaveableObject. Make sure that you"
+        + " only use primitive types (numbers, strings), Arrays, basic"
+        + " javascript Objects, Dates, Maps or classes inherited from"
+        + " SaveableObject as properties of classes inherited from"
+        + " SaveableObject");
     }
     else  // Variable is of primitive type (number or string).
     {
@@ -546,7 +584,7 @@ export class SaveableObject extends AttributableClass
 
   // Check if there is a static property named the same as property,
   // an if it's value contains: { isSaved = false; }
-  private isToBeSaved(property: string): boolean
+  private isSaved(property: string): boolean
   {
     // Access static variable named the same as property.
     let propertyAttributes = this.getPropertyAttributes(this, property);
@@ -622,5 +660,24 @@ export class SaveableObject extends AttributableClass
   {
     // Dirty hack to check if object is of type 'Date'.
     return Object.prototype.toString.call(variable) === '[object Date]';
+  }
+
+  private isMap(variable: any): boolean
+  {
+    // Dirty hack to check if object is of type 'Map'.
+    return Object.prototype.toString.call(variable) === '[object Map]';
+  }
+
+  private extractMapContents(map: Map<any, any>): Array<any>
+  {
+    // Pass required size to Array constructor to prealocate memory.
+    let result = new Array(map.size);
+
+    // 'map.entries' is Iterable (whatever that means) so it needs to be
+    // iterated using for ( of ).
+    for (let entry of map.entries())
+      result.push(entry);
+    
+    return result;
   }
 }
