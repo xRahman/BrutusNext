@@ -7,7 +7,7 @@
 'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
-import {FlagsData} from '../shared/FlagsData';
+import {FlagData} from '../shared/FlagData';
 import {SaveableObject} from '../shared/SaveableObject';
 import {Server} from '../server/Server';
 
@@ -21,7 +21,9 @@ export abstract class Flags extends SaveableObject
   // to this Flags object and what numeric values they translate to.
   // (This reference is automaticaly acquired the first time you
   //  use this.getFlagsData()).
-  private flagsData: FlagsData = null;
+  private flagData: FlagData = null;
+  // Do not save variable flagData.
+  private static flagData = { isSaved: false };
 
   // Bitvector to track which flags are set.
   private flags = new FastBitSet();
@@ -151,7 +153,7 @@ export abstract class Flags extends SaveableObject
 
   private getFlagsData()
   {
-    if (this.flagsData === null)
+    if (this.flagData === null)
     {
       // This also updates corresponding FlagsData object with flag types
       // (names of the flags) declared as static variables within this
@@ -160,9 +162,9 @@ export abstract class Flags extends SaveableObject
       // 'ROOM_HOT' is automaticaly added to respective FlagsData object
       // here (so you don't have to manualy edit file where flag names are
       // saved).
-      this.flagsData = Server.flagsDataManager.getFlagsData(this);
+      this.flagData = Server.flagsDataManager.getFlagsData(this);
     }
 
-    return this.flagsData;
+    return this.flagData;
   }
 }

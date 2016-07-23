@@ -9,21 +9,22 @@
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {SaveableObject} from '../shared/SaveableObject';
+import {AutoSaveableObject} from '../shared/AutoSaveableObject';
 import {PrototypeData} from '../game/PrototypeData';
 
-export class PrototypeDataManager extends SaveableObject
+export class PrototypeDataManager extends AutoSaveableObject
 {
   // Hashmap of PrototypeData objects.
   public prototypeDataList = new Map();
 
   private static get SAVE_DIRECTORY()
   {
-    return "./data/prototypes/";
+    return "./data/";
   }
 
   private static get SAVE_FILE_NAME()
   {
-    return "prototypeManager.json";
+    return "prototypeDataManager.json";
   }
 
   // ---------------- Public methods --------------------
@@ -58,6 +59,7 @@ export class PrototypeDataManager extends SaveableObject
     return true;
   }
 
+  /*
   public async save()
   {
     await this.saveToFile
@@ -78,6 +80,7 @@ export class PrototypeDataManager extends SaveableObject
 
     await this.loadFromFile(fullPath);
   }
+  */
 
   // Creates javascript classes that will be used to instantiate game
   // objects and sets data members and methods to their prototypes (so

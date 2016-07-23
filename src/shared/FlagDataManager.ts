@@ -11,13 +11,13 @@ import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {SaveableObject} from '../shared/SaveableObject';
 import {Flags} from '../shared/Flags';
-import {FlagsData} from '../shared/FlagsData';
+import {FlagData} from '../shared/FlagData';
 
-export class FlagsDataManager extends SaveableObject
+export class FlagDataManager extends SaveableObject
 {
   // Hashmap of <FlagsData> objects indexed by strings
   // (Flag object class names).
-  private flagsDataList = new Map();
+  private flagData = new Map();
 
   private loaded = false;
   // Do not save (and load) variable 'loaded'.
@@ -25,12 +25,12 @@ export class FlagsDataManager extends SaveableObject
 
   private static get SAVE_DIRECTORY()
   {
-    return "./data/flags/";
+    return "./data/";
   }
 
   private static get SAVE_FILE_NAME()
   {
-    return "flagsDataManager.json";
+    return "flagDataManager.json";
   }
 
   // ---------------- Public methods --------------------
@@ -47,7 +47,7 @@ export class FlagsDataManager extends SaveableObject
   //   Requested FlagsData object is created if it doesn't exist
   // and it's list of flag names is updated to contain all flag
   // names defined as static variables within parameter 'flags'.
-  public getFlagsData(flags: Flags): FlagsData
+  public getFlagsData(flags: Flags): FlagData
   {
     let saveNeeded = false;
     let flagsType = flags.className;
@@ -58,7 +58,7 @@ export class FlagsDataManager extends SaveableObject
         + " Flags objects only after flagsDataManager.load()"))
       return null;
 
-    let flagsData = this.flagsDataList.get(flagsType);
+    let flagsData = this.flagData.get(flagsType);
 
     // If requested FlagsData object doesn't exist, it will be created.
     if (flagsData === undefined)
@@ -90,15 +90,15 @@ export class FlagsDataManager extends SaveableObject
   {
     await this.saveToFile
     (
-      FlagsDataManager.SAVE_DIRECTORY,
-      FlagsDataManager.SAVE_FILE_NAME
+      FlagDataManager.SAVE_DIRECTORY,
+      FlagDataManager.SAVE_FILE_NAME
     );
   }
 
   public async load()
   {
-    let filePath = FlagsDataManager.SAVE_DIRECTORY;
-    let fileName = FlagsDataManager.SAVE_FILE_NAME;
+    let filePath = FlagDataManager.SAVE_DIRECTORY;
+    let fileName = FlagDataManager.SAVE_FILE_NAME;
     let fullPath = filePath + fileName;
 
     ASSERT_FATAL(filePath.substr(filePath.length - 1) === '/',
@@ -109,13 +109,13 @@ export class FlagsDataManager extends SaveableObject
 
   // ---------------- Private methods -------------------
 
-  private createFlagsData(flagsObject: Flags): FlagsData
+  private createFlagsData(flagsObject: Flags): FlagData
   {
     let key = flagsObject.className;
-    let flagsData = new FlagsData(flagsObject);
+    let flagsData = new FlagData(flagsObject);
 
     // Add new FlagsData object to hashmap.
-    this.flagsDataList.set(key, flagsData);
+    this.flagData.set(key, flagsData);
 
     if (!ASSERT(flagsData !== undefined,
         "Failed to create FlagsData for class '" + key + "'"))
