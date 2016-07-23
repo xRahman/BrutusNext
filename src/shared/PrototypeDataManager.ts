@@ -7,10 +7,10 @@
 'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
-import {ASSERT_FATAL} from '../shared/ASSERT';
+import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {SaveableObject} from '../shared/SaveableObject';
 import {AutoSaveableObject} from '../shared/AutoSaveableObject';
-import {PrototypeData} from '../game/PrototypeData';
+import {PrototypeData} from '../shared/PrototypeData';
 
 export class PrototypeDataManager extends AutoSaveableObject
 {
@@ -58,29 +58,6 @@ export class PrototypeDataManager extends AutoSaveableObject
     
     return true;
   }
-
-  /*
-  public async save()
-  {
-    await this.saveToFile
-    (
-      PrototypeDataManager.SAVE_DIRECTORY,
-      PrototypeDataManager.SAVE_FILE_NAME
-    );
-  }
-
-  public async load()
-  {
-    let filePath = PrototypeDataManager.SAVE_DIRECTORY;
-    let fileName = PrototypeDataManager.SAVE_FILE_NAME;
-    let fullPath = filePath + fileName;
-
-    ASSERT_FATAL(filePath.substr(filePath.length - 1) === '/',
-      "filePath '" + filePath + "' doesn't end with '/'");
-
-    await this.loadFromFile(fullPath);
-  }
-  */
 
   // Creates javascript classes that will be used to instantiate game
   // objects and sets data members and methods to their prototypes (so
