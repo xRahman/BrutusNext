@@ -7,7 +7,7 @@
 
 'use strict';
 
-import {ASSERT_FATAL} from '../shared/ASSERT';
+import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {Id} from '../shared/Id';
 import {AutoSaveableObject} from '../shared/AutoSaveableObject';
 
