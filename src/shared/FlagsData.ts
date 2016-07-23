@@ -51,7 +51,7 @@ export class FlagsData extends SaveableObject
   {
     let result = { saveNeeded: false };
 
-    // Prevent updating again
+    // Prevent updating again.
     // (Flag names defined in code are updated here so it doesn't make
     //  sense to update them more then once per boot).
     this.flagsAutoUpdated = true;

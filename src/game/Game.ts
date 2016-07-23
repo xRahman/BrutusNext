@@ -71,6 +71,11 @@ export class Game
     return Server.game.worldId;
   }
 
+  public static get prototypeManager()
+  {
+    return Server.game.prototypeManager;
+  }
+
   // ---------------- Public methods --------------------
 
   // Creates and saves a new default world.
