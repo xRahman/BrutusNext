@@ -29,11 +29,14 @@
 
 import {ASSERT} from '../../shared/ASSERT';
 import {ASSERT_FATAL} from '../../shared/ASSERT';
-import {IdableSaveableObject} from '../../shared/IdableSaveableObject';
+import {IdableObject} from '../../shared/IdableObject';
 import {GameEntity} from '../../game/GameEntity';
 import {CommandSearchList} from '../../game/commands/CommandSearchList';
 
-export abstract class CommandInterpretter extends IdableSaveableObject
+// CommandInterpretter is inherited from IdableObject, because it's
+// just one step of deeper inheritance chain (GameEntity is inherited
+// from CommandInterpretter).
+export abstract class CommandInterpretter extends IdableObject
 {
   // ---------------- Static methods -------------------- 
 
@@ -41,17 +44,6 @@ export abstract class CommandInterpretter extends IdableSaveableObject
   public static registerCommand(command: string, handler: string)
   {
     ASSERT_FATAL(command !== "", "Attempt to register an empty command");
-
-    /*
-    /// Tohle s novym commandSearchListem nejde checkovat.
-
-    ASSERT_FATAL
-    (
-      CommandInterpretter.commandSearchList.isAbbrevRegistered(command),
-      "Attempt to register command '" + command
-      + "' that is already registered"
-    );
-    */
 
     console.log("Registering command '" + command + "'");
     CommandInterpretter.commandSearchList.addCommand(command, handler);

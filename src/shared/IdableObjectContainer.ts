@@ -22,12 +22,12 @@
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {NamedClass} from '../shared/NamedClass';
-import {IdableSaveableObject} from '../shared/IdableSaveableObject';
+import {IdableObject} from '../shared/IdableObject';
 import {Id} from '../shared/Id';
 import {IdProvider} from '../shared/IdProvider';
 import {Server} from '../server/Server';
 
-export class IdableObjectContainer<T extends IdableSaveableObject>
+export class IdableObjectContainer<T extends IdableObject>
 {
   // ---------------- Public methods --------------------
 
@@ -155,7 +155,7 @@ export class IdableObjectContainer<T extends IdableSaveableObject>
       "Attempt to add item to the itemContainer that is not inherited from"
       + " NamedClass");
 
-    ASSERT_FATAL(IdableSaveableObject.ID_PROPERTY in item,
+    ASSERT_FATAL(IdableObject.ID_PROPERTY in item,
       "Attempt to add item to the itemContainer that is not inherited from"
       + " IdableSaveableObject");
   }
