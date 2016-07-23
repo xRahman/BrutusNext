@@ -34,9 +34,16 @@ export class FileSystem
     }
     catch (error)
     {
+      let reason = error.code;
+
+      // Let's be more specific - we are trying to load file so ENOENT
+      // means that file doesn't exist
+      if (error.code === 'ENOENT')
+        reason = "File doesn't exist"
+
       Mudlog.log
       (
-        "Error loading file '" + filePath + "': " + error.code,
+        "Error loading file '" + filePath + "': " + reason,
         Mudlog.msgType.SYSTEM_ERROR,
         AdminLevels.IMMORTAL
       );

@@ -99,6 +99,7 @@ export class GameEntity extends EntityContainer
 
   // -------------- Protected accessors -----------------
 
+  /*
   protected get SAVE_DIRECTORY()
   {
     ASSERT_FATAL(false,
@@ -107,6 +108,7 @@ export class GameEntity extends EntityContainer
 
     return "";
   }
+  */
 
   // ---------------- Public methods --------------------
 
@@ -183,10 +185,12 @@ export class GameEntity extends EntityContainer
 
   protected getSaveDirectory(): string
   {
+    let SAVE_DIRECTORY = super.getSaveDirectory();
+
     if (this.isNameUnique)
-      return this.SAVE_DIRECTORY + "unique/";
+      return SAVE_DIRECTORY + "unique/";
     else
-      return this.SAVE_DIRECTORY;
+      return SAVE_DIRECTORY;
   }
 
   protected getSaveFileName(): string

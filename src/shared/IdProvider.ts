@@ -10,7 +10,7 @@ import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {Mudlog} from '../server/Mudlog';
 import {Id} from '../shared/Id';
-import {IdableSaveableObject} from '../shared/IdableSaveableObject';
+import {IdableObject} from '../shared/IdableObject';
 
 export class IdProvider
 {
@@ -20,7 +20,7 @@ export class IdProvider
 
   // ---------------- Public methods --------------------
 
-  public generateId(object: IdableSaveableObject): Id
+  public generateId(object: IdableObject): Id
   {
     // Increment lastIssuedId first so we start with 1 (initial value is 0).
     this.lastIssuedId++;

@@ -9,7 +9,7 @@
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {Id} from '../shared/Id';
-import {IdableSaveableObject} from '../shared/IdableSaveableObject';
+import {IdableObject} from '../shared/IdableObject';
 import {Mudlog} from '../server/Mudlog';
 import {AdminLevels} from '../server/AdminLevels';
 import {Server} from '../server/Server';
@@ -21,7 +21,7 @@ import {Game} from '../game/Game';
 import {GameEntity} from '../game/GameEntity';
 import {Character} from '../game/characters/Character';
 
-export class PlayerConnection extends IdableSaveableObject
+export class PlayerConnection extends IdableObject
 {
   constructor(protected socketDescriptor: SocketDescriptor)
   {

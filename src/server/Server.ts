@@ -17,7 +17,7 @@ import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT';
 import {IdableObjectContainer} from '../shared/IdableObjectContainer';
 import {FileSystem} from '../shared/fs/FileSystem';
-import {FlagsDataManager} from '../shared/FlagsDataManager';
+import {FlagDataManager} from '../shared/FlagDataManager';
 import {PlayerConnection} from '../server/PlayerConnection';
 import {Mudlog} from '../server/Mudlog';
 import {AccountManager} from '../server/AccountManager';
@@ -122,7 +122,7 @@ export class Server
 
   protected idProvider = null;
   protected game = new Game();
-  protected flagsDataManager = new FlagsDataManager();
+  protected flagsDataManager = new FlagDataManager();
   protected accountManager = new AccountManager();
   protected playerConnectionManager =
     new IdableObjectContainer<PlayerConnection>();

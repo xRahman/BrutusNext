@@ -40,8 +40,9 @@
     <TypeScriptCompile Include="src\game\world\RoomFlags.ts" />
     <TypeScriptCompile Include="src\server\AccountFlags.ts" />
     <TypeScriptCompile Include="src\server\AdminLevels.ts" />
-    <TypeScriptCompile Include="src\shared\FlagsData.ts" />
-    <TypeScriptCompile Include="src\shared\FlagsDataManager.ts" />
+    <TypeScriptCompile Include="src\shared\AutoSaveableObject.ts" />
+    <TypeScriptCompile Include="src\shared\FlagData.ts" />
+    <TypeScriptCompile Include="src\shared\FlagDataManager.ts" />
     <TypeScriptCompile Include="src\shared\Flags.ts" />
     <TypeScriptCompile Include="src\shared\fs\FileSystem.ts" />
     <TypeScriptCompile Include="src\shared\EditableObject.ts" />
@@ -85,7 +86,7 @@
     <TypeScriptCompile Include="src\shared\NamedClass.ts" />
     <TypeScriptCompile Include="src\shared\IdableObjectContainer.ts" />
     <TypeScriptCompile Include="src\shared\IdProvider.ts" />
-    <TypeScriptCompile Include="src\shared\IdableSaveableObject.ts" />
+    <TypeScriptCompile Include="src\shared\IdableObject.ts" />
     <TypeScriptCompile Include="src\shared\SaveableObject.ts" />
   </ItemGroup>
   <ItemGroup>

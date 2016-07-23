@@ -12,7 +12,7 @@ import {FileSystem} from '../shared/fs/FileSystem';
 import {AdminLevels} from '../server/AdminLevels';
 import {Mudlog} from '../server/Mudlog';
 import {Id} from '../shared/Id';
-import {IdableSaveableObject} from '../shared/IdableSaveableObject';
+import {IdableObject} from '../shared/IdableObject';
 import {PlayerConnection} from '../server/PlayerConnection';
 import {Server} from '../server/Server';
 import {Game} from '../game/Game';
@@ -21,7 +21,7 @@ import {EntityId} from '../game/EntityId';
 // Built-in node.js modules.
 import * as crypto from 'crypto';  // Import namespace 'crypto' from node.js
 
-export class Account extends IdableSaveableObject
+export class Account extends IdableObject
 {
   // Flag saying that playerConnectionId is not to be saved to JSON.
   private static playerConnectionId = { isSaved: false };
@@ -36,7 +36,7 @@ export class Account extends IdableSaveableObject
     this.version = 0;
   }
 
-  static get SAVE_DIRECTORY() { return "./data/accounts/"; }
+  public static get SAVE_DIRECTORY() { return "./data/accounts/"; }
 
   // ----------------- Public data ----------------------
 
