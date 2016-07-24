@@ -7,7 +7,7 @@
 'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
-import {FlagData} from '../shared/FlagData';
+import {FlagNames} from '../shared/FlagNames';
 import {SaveableObject} from '../shared/SaveableObject';
 import {Server} from '../server/Server';
 
@@ -17,13 +17,11 @@ let FastBitSet = require('fastbitset');
 export abstract class Flags extends SaveableObject
 {
   // DO NOT ACCESS THIS VARIABLE DIRECTLY, use this.getFlagsData().
-  //   FlagData object specifying what string values of flags can be set
-  // to this Flags object and what numeric values they translate to.
-  // (This reference is automaticaly acquired the first time you
-  //  use this.getFlagsData()).
-  private flagData: FlagData = null;
-  // Do not save variable flagData.
-  private static flagData = { isSaved: false };
+  //   FlagData object specifying what string values of flags can be set to
+  // this class of Flags objects and what numeric values they translate to.
+  // (This reference is automaticaly acquired the first time you use
+  // this.getFlagsData()).
+  private static flagNames: FlagNames = null;
 
   // Bitvector to track which flags are set.
   private flags = new FastBitSet();
@@ -37,7 +35,7 @@ export abstract class Flags extends SaveableObject
     let result = this.getFlagsData().updateFlag(flagName);
 
     if (result.saveNeeded)
-      Server.flagsDataManager.save();
+      Server.flagNamesManager.save();
   }
 
   // Sets value of specified flag to true.
@@ -153,7 +151,9 @@ export abstract class Flags extends SaveableObject
 
   private getFlagsData()
   {
-    if (this.flagData === null)
+    // This trick allows us to 'dynamicaly' access static class property.
+    // It's the same as <class_name>.flagNames.
+    if (this.constructor['flagNames'] === null)
     {
       // This also updates corresponding FlagsData object with flag types
       // (names of the flags) declared as static variables within this
@@ -162,9 +162,10 @@ export abstract class Flags extends SaveableObject
       // 'ROOM_HOT' is automaticaly added to respective FlagsData object
       // here (so you don't have to manualy edit file where flag names are
       // saved).
-      this.flagData = Server.flagsDataManager.getFlagsData(this);
+      this.constructor['flagNames'] =
+        Server.flagNamesManager.getFlagNames(this);
     }
 
-    return this.flagData;
+    return this.constructor['flagNames'];
   }
 }

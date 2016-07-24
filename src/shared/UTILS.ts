@@ -5,6 +5,10 @@
 
 */
 
+'use strict';
+
+import {ASSERT} from '../shared/ASSERT';
+
 // Creates Error() object, reads stack trace from it.
 // Returns string containing stack trace trimmed to start with function
 // where assert actually got triggered.
@@ -30,4 +34,19 @@ export function getTrimmedStackTrace(): string
   let stackTrace = stackTraceLines.join('\n');
 
   return stackTrace;
+}
+
+export function dynamicCast<T>(instance, typeCast: { new (...args: any[]): T }): T
+{
+  // Dynamic type check - we make sure that our newly created object
+  // is inherited from requested class (or an instance of the class itself).
+  if (instance instanceof typeCast)
+    // Here we typecast to <any> in order to pass newObject
+    // as type T (you can't typecast directly to template type but you can
+    // typecast to <any> which is then automatically cast to template type).
+    return <any>instance;
+
+  ASSERT(false,
+    "Type cast error: Object is not an instance"
+    + " of requested type (" + typeCast.name + ")");
 }
