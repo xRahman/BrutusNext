@@ -12,7 +12,6 @@ import {SaveableObject} from '../shared/SaveableObject';
 
 export abstract class AutoSaveableObject extends SaveableObject
 {
-
   // ---------------- Public methods --------------------
   
   public async save()

@@ -16,11 +16,11 @@ import {ASSERT} from '../shared/ASSERT';
 import {Flags} from '../shared/Flags';
 import {SaveableObject} from '../shared/SaveableObject';
 
-export class FlagData extends SaveableObject
+export class FlagNames extends SaveableObject
 {
   // What type of flags does this list belong to (e. g. RoomFlags).
   // (Value is name of the class of respective Flags object.)
-  private flagsType: string = "";
+  private flagsType: string = null;
 
   // Hashmap of numbers (integer flag values) indexed by strings (flag names).
   private flagValues = new Map();
@@ -30,14 +30,14 @@ export class FlagData extends SaveableObject
   // Do not save (and load) variable 'flagsAutoUpdated'.
   private static flagsAutoUpdated = { isSaved: false };
 
-  constructor(flagsObject: Flags)
+  constructor(flags: Flags)
   {
     super();
 
     // This will be skipped when loading from file, but that's ok because
     // these values will be overwritten by those in the file anyways.
-    if (flagsObject !== undefined)
-      this.flagsType = flagsObject.className;
+    if (flags !== undefined)
+      this.flagsType = flags.className;
   }
 
   // ---------------- Public methods --------------------

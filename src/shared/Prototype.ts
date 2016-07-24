@@ -32,13 +32,13 @@ import {ScriptData} from '../game/ScriptData';
 // Built-in node.js modules.
 const vm = require('vm');
 
-export class PrototypeData extends SaveableObject
+export class Prototype extends SaveableObject
 {
   // Name of the class that will represent this prototype.
-  public prototypeName: string = "";
+  public name: string = "";
 
   // Name of the class we will be inherited from.
-  public ancestorName: string = "";
+  public ancestor: string = "";
 
   // Prototype data members and their values.
   public data: Array<{ property: string, value: any }> = [];
@@ -62,33 +62,13 @@ export class PrototypeData extends SaveableObject
     if (NewClass === undefined || NewClass === null)
       // Error is already reported by this.runDeclarationScript().
       return;
-
-    /// TEST:
-    this.data.push({ property: 'x', value: '27' });
-
     
     // Set data members to new class prototype.
-    ///NewClass.setPrototypeData(this.data);
     this.setPrototypeData(NewClass);
 
     // Create functions from scripts and set them as metods
     // to new class prototype.
-    ///NewClass.setMethods(this.scripts);
     this.setMethods(NewClass);
-    
-
-    NewClass.prototype['x'] = 31;
-
-    /// TEST:
-    let dynamicClasses = global[SaveableObject.DYNAMIC_CLASSES_PROPERTY];
-    let instance = new dynamicClasses[this.prototypeName]();
-//    instance.setPrototypeData(this.data);
-    console.log("Value (prototype): " + instance.x);
-    instance.x = 78
-    console.log("Value (instance): " + instance.x);
-
-    let instance2 = new dynamicClasses[this.prototypeName]();
-    console.log("Value2 (prototype): " + instance2.x);
   }
 
   // ---------------- Private methods -------------------
@@ -98,17 +78,16 @@ export class PrototypeData extends SaveableObject
   private createDeclarationScript(): string
   {
     let script = "";
-    let typeName = this.prototypeName;
 
     // Note:
     //   'this' inside the script is a sandbox object on which
     // the script will be run.
 
     /*
-      Ono se to chov· dost zvl·ötn? - jako by property sandbox objektu
-      byly read-only. "let x = result;" projde (?tenÌ z prom?nnÈ
-      sandbox.result), ale "result = 13;" neprojde (z·pis do
-      prom?nnÈ sandbox.result - mÌsto toho se musÌ napsat
+      Ono se to chov√° dost zvl√°≈°tnƒõ - jako by property sandbox objektu
+      byly read-only. "let x = result;" projde (ƒçten√≠ z promƒõnn√©
+      sandbox.result), ale "result = 13;" neprojde (z√°pis do
+      promƒõnn√© sandbox.result - m√≠sto toho se mus√≠ napsat
       "this.result = 13;").
     */
 
@@ -116,12 +95,12 @@ export class PrototypeData extends SaveableObject
     script += "'use strict'; "
     // this.Ancestor is a property of sandbox object.
     //script += "class " + typeName + " extends this.Ancestor ";
-    script += "let " + this.ancestorName + " = this.Ancestor;"
-    script += "class " + typeName + " extends " + this.ancestorName;
+    script += "let " + this.ancestor + " = this.Ancestor;"
+    script += "class " + this.name + " extends " + this.ancestor;
     script += "{";
     script += "}";
     // this.result is a property of sandbox object.
-    script += "this.result = " + typeName + ";";
+    script += "this.result = " + this.name + ";";
 
     return script;
   }
@@ -165,7 +144,7 @@ export class PrototypeData extends SaveableObject
     if (result === null)
     {
       ASSERT(false,
-        "Failed to dynamically create class '" + this.prototypeName + "'");
+        "Failed to dynamically create class '" + this.name + "'");
 
       return;
     }
@@ -173,12 +152,12 @@ export class PrototypeData extends SaveableObject
     // Dynamic classes are stored in global.dynamicClasses.
     let dynamicClasses = global[SaveableObject.DYNAMIC_CLASSES_PROPERTY];
 
-    dynamicClasses[this.prototypeName] = result;
+    dynamicClasses[this.name] = result;
   }
 
   private classCreationCheck(): boolean
   {
-    if (!ASSERT(this.prototypeName !== "",
+    if (!ASSERT(this.name !== "",
         "Attempt to create class with empty type name."
         + " Class is not created"))
       return false;
@@ -187,9 +166,9 @@ export class PrototypeData extends SaveableObject
     let dynamicClasses = global[SaveableObject.DYNAMIC_CLASSES_PROPERTY];
 
     // Type that we want to create must not yet exist.
-    if (!ASSERT(dynamicClasses[this.prototypeName] === undefined,
-        "Attempt to create class '" + this.prototypeName + "' inherited from"
-        + " ancestor '" + this.ancestorName + "' that already exists."
+    if (!ASSERT(dynamicClasses[this.name] === undefined,
+        "Attempt to create class '" + this.name + "' inherited from"
+        + " ancestor '" + this.ancestor + "' that already exists."
         + "Class is not created"))
       return false;
 
@@ -208,7 +187,6 @@ export class PrototypeData extends SaveableObject
   )
   // Return value is also a constructor of a class.
   : { new (...args: any[]): T }
-  //: SaveableObject // TODO: Zmenit na classu, kterou je treba vytvorit
   {
     // Object that will be used as sandbox to run script in.
     let sandbox = { console: console, result: null, Ancestor: AncestorClass };
@@ -230,13 +208,12 @@ export class PrototypeData extends SaveableObject
 
     // Null in case of failure.
     return contextifiedSandbox.result;
-    //return <SaveableObject>contextifiedSandbox.result;
   }
 
   private getAncestorClass()
   {
-    if (!ASSERT(this.ancestorName !== "",
-        "Attempt to create class '" + this.prototypeName + "' with empty"
+    if (!ASSERT(this.ancestor !== "",
+        "Attempt to create class '" + this.name + "' with empty"
         + " ancestor name (that's not allowed, dynamic classes must be"
         + " inherided from something that's inherited from GameEntity)."
         + " Class is not created"))
@@ -244,12 +221,12 @@ export class PrototypeData extends SaveableObject
 
     // Dynamic classes are stored in global.dynamicClasses.
     let dynamicClasses = global[SaveableObject.DYNAMIC_CLASSES_PROPERTY];
-    let AncestorClass = dynamicClasses[this.ancestorName];
+    let AncestorClass = dynamicClasses[this.ancestor];
 
     // Ancestor type must exist.
     if (!ASSERT(AncestorClass !== undefined,
-        "Attempt to create class '" + this.prototypeName + "' inherited from"
-        + " nonexisting ancestor class '" + this.ancestorName + "'."
+        "Attempt to create class '" + this.name + "' inherited from"
+        + " nonexisting ancestor class '" + this.ancestor + "'."
         + " Class is not created"))
       return null;
 
