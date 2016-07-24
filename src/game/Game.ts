@@ -11,7 +11,7 @@ import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {Server} from '../server/Server';
 import {Id} from '../shared/Id';
 import {SaveableObject} from '../shared/SaveableObject';
-import {PrototypeDataManager} from '../shared/PrototypeDataManager';
+import {PrototypeManager} from '../shared/PrototypeManager';
 import {GameEntity} from '../game/GameEntity';
 import {EntityId} from '../game/EntityId';
 import {PlayerCharacterManager} from '../game/PlayerCharacterManager';
@@ -78,9 +78,71 @@ export class Game
 
   // ---------------- Public methods --------------------
 
+  public async createDefaultGame()
+  {
+    // Save prototypeManager (so it's empty save file exists).
+    await this.prototypeManager.save();
+
+    await this.createDefaultWorld();
+  }
+
+  // Loads initial state of the game from disk.
+  public async load()
+  {
+    // Load prototype data for all prototypes.
+    await this.prototypeManager.load();
+    // Create javascript classes from prototype data (all game entities will
+    // be instantiated from these dynamically created prototype classes).
+    this.prototypeManager.createClasses();
+
+    // 'BrutusWorld' is a prototype for world
+    // (it is created by createDefaultWorld()).
+    let world = GameEntity.createInstance
+      ({ className: 'BrutusWorld', typeCast: World });
+
+    // Load current stat of world from file.
+    await world.load();
+
+    // Remember worldId that we just loaded from file.
+    this.worldId = world.getId();
+  }
+
+  // -------------- Protected class data ----------------
+
+  // Game entities (characters, rooms, objects, etc.) are all stored in
+  // this container, not in their respective managers. This allows access to
+  // any game entity by it's id without knowing what kind of entity it is.
+  protected entities = new IdableObjectContainer<GameEntity>();
+
+  // List of ids of all characters in game.
+  protected characterList = new IdList();
+
+  // List of ids of all rooms in game.
+  protected roomList = new IdList();
+
+  // List of ids of all areas in game.
+  protected areaList = new IdList();
+
+  // List of ids of all realms in game.
+  protected realmList = new IdList();
+
+  // Handles creating of new characters
+  protected playerCharacterManager =
+    new PlayerCharacterManager(this.characterList);
+
+  // There is only one world in the game (at the moment).
+  protected worldId = null;
+
+  // Prototype manager creates classes for all game entities.
+  protected prototypeManager = new PrototypeManager();
+
+  // --------------- Protected methods ------------------
+
+  // ---------------- Private methods -------------------
+
   // Creates and saves a new default world.
   // (this method sould only be used if you don't have 'data' directory yet)
-  public async createDefaultWorld()
+  private async createDefaultWorld()
   {
     // --- World ---
 
@@ -124,7 +186,7 @@ export class Game
     let systemArea = systemAreaId.getEntity({ typeCast: Area });
 
     // Remember system area id for future easy access.
-    world.systemAreamId = systemAreaId;
+    world.systemAreaId = systemAreaId;
 
     // --- System Room ---
 
@@ -165,59 +227,6 @@ export class Game
     // Save the world we have just created.
     world.save();
   }
-
-  // Loads initial state of the game from disk.
-  public async load()
-  {
-    // Load prototype data for all prototypes.
-    await this.prototypeManager.load();
-    // Create javascript classes from prototype data (all game entities will
-    // be instantiated from these dynamically created prototype classes).
-    this.prototypeManager.createClasses();
-
-    // 'BrutusWorld' is a prototype for world
-    // (it is created by createDefaultWorld()).
-    let world = GameEntity.createInstance
-      ({ className: 'BrutusWorld', typeCast: World });
-
-    // Load entity from file.
-    await world.load();
-
-    this.worldId = world.getId();
-  }
-
-  // -------------- Protected class data ----------------
-
-  // Game entities (characters, rooms, objects, etc.) are all stored in
-  // this container, not in their respective managers. This allows access to
-  // any game entity by it's id without knowing what kind of entity it is.
-  protected entities = new IdableObjectContainer<GameEntity>();
-
-  // List of ids of all characters in game.
-  protected characterList = new IdList();
-
-  // List of ids of all rooms in game.
-  protected roomList = new IdList();
-
-  // List of ids of all areas in game.
-  protected areaList = new IdList();
-
-  // List of ids of all realms in game.
-  protected realmList = new IdList();
-
-  // Handles creating of new characters
-  protected playerCharacterManager =
-    new PlayerCharacterManager(this.characterList);
-
-  // There is only one world in the game (at the moment).
-  protected worldId = null;
-
-  // Prototype manager creates classes for all game entities.
-  protected prototypeManager = new PrototypeDataManager();
-
-  // --------------- Protected methods ------------------
-
-  // ---------------- Private methods -------------------
 
   private createWorld(param: { name: string, prototype: string })
   {

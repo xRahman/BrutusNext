@@ -54,18 +54,11 @@ export abstract class EntityContainer extends CommandInterpretter
   // it's contents is not available in the world.
   public async load()
   {
-    let filePath = this.getSaveDirectory();
-    let fileName = this.getSaveFileName();
-    let fullPath = filePath + fileName;
-
-    ASSERT_FATAL(filePath.substr(filePath.length - 1) === '/',
-      "filePath '" + filePath + "' doesn't end with '/'");
-
     /// Tady by spravne melo byt super.load(), ale diky bugu v aktualni
     /// verzi v8 enginu nejde pouzit super. uvnitr chainu asyc funkci.
     // This needs to be done before loading contained entities, because we
     // need to read their id's first.
-    await this.loadFromFile(fullPath);
+    await this.loadFromFile(this.getFullSavePath());
 
     let contents = this.contents.idArray;
 
