@@ -1,0 +1,5 @@
+﻿persistent targetting
+----------------------
+'target mob' bude vždycky validní, dokud mob neumře.
+(takže se půjde například na target teleportovat po recallu, atd.)
+- možná by to měl být default, tj. skill by neměl být potřeba
