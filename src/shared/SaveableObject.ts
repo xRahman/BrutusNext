@@ -21,6 +21,22 @@ export class SaveableObject extends AttributableClass
 {
   public static get DYNAMIC_CLASSES_PROPERTY() { return 'dynamicClasses'; }
 
+  // -------------- Protected class data ----------------
+
+  // Version will be checked for. Default behaviour is to trigger
+  // a FATAL_ASSERT when versions don't match. You can override it
+  // by overriding a checkVersion() method;
+  protected version = 0;
+
+  // Buffer to stack save requests issued while already saving ourselves.
+  // Also serves as lock - if it's not null, it means we are already saving
+  // ourselves.
+  // (note: This property is not saved)
+  protected saveRequests: Array<string> = [];
+  protected static saveRequests = { isSaved: false };
+
+  // ---------------- Public methods --------------------
+
   // Creates a new instance of type className.
   public static createInstance<T>
   (
@@ -78,34 +94,7 @@ export class SaveableObject extends AttributableClass
     return null;
   }
 
-  // -------------- Protected class data ----------------
-
-  // Version will be checked for. Default behaviour is to trigger
-  // a FATAL_ASSERT when versions don't match. You can override it
-  // by overriding a checkVersion() method;
-  protected version = 0;
-
-  // Buffer to stack save requests issued while already saving ourselves.
-  // Also serves as lock - if it's not null, it means we are already saving
-  // ourselves.
-  // (note: This property is not saved)
-  protected saveRequests: Array<string> = [];
-  protected static saveRequests = { isSaved: false };
-
-  // -------------- Protected methods -------------------
-
-  protected checkVersion(jsonObject: Object, filePath: string)
-  {
-    ASSERT_FATAL('version' in jsonObject,
-      "There is no 'version' property in JSON data in file " + filePath);
-
-    ASSERT_FATAL(jsonObject['version'] === this.version,
-      "Version of JSON data (" + jsonObject['version'] + ")"
-      + " in file " + filePath + " doesn't match required"
-      + " version (" + this.version + ")");
-  }
-
-  protected async loadFromFile(filePath: string)
+  public async loadFromFile(filePath: string)
   {
     //  Unlike writing the same file while it is saving, loading from
     //  the same file while it is loading is not a problem (according
@@ -121,37 +110,48 @@ export class SaveableObject extends AttributableClass
     this.loadFromJsonString(jsonString, filePath);
   }
 
-  // Override this method if you need to save property of nonstandard type.
-  // (see class Flags for example)
-  protected async saveToFile(directory: string, fileName: string)
+  public async saveToFile(directory: string, fileName: string)
   {
     let directoryIsValid = directory !== undefined
-                        && directory !== null
-                        && directory !== "";
+      && directory !== null
+      && directory !== "";
 
     let filenameIsValid = fileName !== undefined
-                       && fileName !== null
-                       && fileName !== "";
+      && fileName !== null
+      && fileName !== "";
 
     if (!ASSERT(directoryIsValid,
-        "Invalid 'directory' parameter when saving class "
-        + this.className + "." + " Object is not saved"))
+      "Invalid 'directory' parameter when saving class "
+      + this.className + "." + " Object is not saved"))
       return;
 
     if (!ASSERT(filenameIsValid,
-        "Invalid 'fileName' parameter when saving class "
-        + this.className + "." + " Object is not saved"))
+      "Invalid 'fileName' parameter when saving class "
+      + this.className + "." + " Object is not saved"))
       return;
 
     if (!ASSERT(directory.substr(directory.length - 1) === '/',
-        "Error when saving class " + this.className + ":"
-        + " Directory path '" + directory + "' doesn't end with '/ '."
-        + " Object is not saved"))
+      "Error when saving class " + this.className + ":"
+      + " Directory path '" + directory + "' doesn't end with '/ '."
+      + " Object is not saved"))
       return;
 
     // Directory might not yet exist, so we better make sure it does.
     await FileSystem.ensureDirectoryExists(directory);
     await this.saveContentsToFile(directory + fileName);
+  }
+
+  // -------------- Protected methods -------------------
+
+  protected checkVersion(jsonObject: Object, filePath: string)
+  {
+    ASSERT_FATAL('version' in jsonObject,
+      "There is no 'version' property in JSON data in file " + filePath);
+
+    ASSERT_FATAL(jsonObject['version'] === this.version,
+      "Version of JSON data (" + jsonObject['version'] + ")"
+      + " in file " + filePath + " doesn't match required"
+      + " version (" + this.version + ")");
   }
 
   // Override this method if you need to load property of nonstandard type.
@@ -172,6 +172,8 @@ export class SaveableObject extends AttributableClass
     );
   }
 
+  // Override this method if you need to save property of nonstandard type.
+  // (see class Flags for example)
   protected savePropertyToJsonObject(jsonObject: Object, property: string)
   {
     jsonObject[property] =
@@ -395,14 +397,17 @@ export class SaveableObject extends AttributableClass
     variable: any,
     jsonVariable: any,
     filePath: string
-  ): any
+  )
+  : any
   {
     // First handle the case that property in JSON has null value. In that
     // case our property also needs to be null, no matter what type it is.
     if (jsonVariable === null)
       return null;
 
-    if (Array.isArray(jsonVariable))
+    // Hashmaps (class Map) are saved as array but we need them
+    // to load as non-array variable.
+    if (Array.isArray(jsonVariable) && !this.isMap(variable))
     {
       ASSERT_FATAL(variable === null || Array.isArray(variable),
         "Attempt to load array property '" + variableName + "' to"
@@ -448,8 +453,13 @@ export class SaveableObject extends AttributableClass
 
       // Initiate our property to a new instance of correct type.
       // (Type is saved as 'className' property)
-      myProperty =
-        SaveableObject.createInstance(jsonProperty['className']);
+      myProperty = SaveableObject.createInstance
+      (
+        {
+          className: jsonProperty['className'],
+          typeCast: SaveableObject
+        }
+      );
     }
 
     return myProperty;
@@ -511,7 +521,7 @@ export class SaveableObject extends AttributableClass
       // When we are loading instance of class Map, data are actually
       // saved as array of [key, value] pairs and we need to recreate
       // our Map object from it.
-      return new Map(myProperty);
+      return new Map(jsonProperty);
     }
     else if ('loadFromJsonObject' in myProperty)
     {

@@ -17,7 +17,7 @@ import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {IdableObjectContainer} from '../shared/IdableObjectContainer';
 import {FileSystem} from '../shared/fs/FileSystem';
-import {FlagDataManager} from '../shared/FlagDataManager';
+import {FlagNamesManager} from '../shared/FlagNamesManager';
 import {PlayerConnection} from '../server/PlayerConnection';
 import {Mudlog} from '../server/Mudlog';
 import {AccountManager} from '../server/AccountManager';
@@ -51,11 +51,6 @@ export class Server
     return Server.getInstance().game;
   }
 
-  public static get flagsDataManager()
-  {
-    return Server.getInstance().flagsDataManager;
-  }
-
   public static get accountManager()
   {
     return Server.getInstance().accountManager;
@@ -74,6 +69,11 @@ export class Server
   public static get idProvider()
   {
     return Server.getInstance().idProvider;
+  }
+
+  public static get flagNamesManager()
+  {
+    return Server.getInstance().flagNamesManager;
   }
 
   static get DEFAULT_TELNET_PORT() { return 4443; }
@@ -112,7 +112,29 @@ export class Server
   // to be called on Server.getInstance().
   public async run(telnetPort: number)
   {
-    await this.createGame();
+    ASSERT_FATAL(this.game === null,
+      "Error: game already exists. Server::run() can only be done once");
+
+    this.game = new Game();
+
+    // If 'data' directory doesn't exist at all, create and save a new world.
+    if (!FileSystem.existsSync("./data/"))
+    {
+      // Flag flagNamesManager as ready without loading from file
+      // (there is nowhere to load it from so will will just start
+      //  with empty instance).
+      this.flagNamesManager.ready = true;
+
+      await this.game.createDefaultGame();
+    }
+    else
+    {
+      await this.flagNamesManager.load();
+      this.flagNamesManager.ready = true;
+
+      // Load the game.
+      await this.game.load();
+    }
 
     this.startTelnetServer(telnetPort);
     this.startHttpServer();
@@ -121,14 +143,17 @@ export class Server
   // -------------- Protected class data ----------------
 
   protected idProvider = null;
-  protected game = new Game();
-  protected flagsDataManager = new FlagDataManager();
+  protected game = null;
   protected accountManager = new AccountManager();
   protected playerConnectionManager =
     new IdableObjectContainer<PlayerConnection>();
   protected telnetServer = new TelnetServer(Server.DEFAULT_TELNET_PORT);
   protected httpServer = new HttpServer(Server.DEFAULT_HTTP_PORT);
   protected timeOfBoot = null;
+
+  // flagNamesManager is in Server instead of Game, because flags are needed
+  // even outside of game (for example account flags).
+  protected flagNamesManager = new FlagNamesManager();
 
   // --------------- Protected methods ------------------
 
@@ -148,30 +173,5 @@ export class Server
       "Http server is already running");
 
     this.httpServer.start();
-  }
-
-  // Creates an instance of the game and loads its state from the disk.
-  protected async createGame()
-  {
-    // If 'data' directory doesn't exist at all, create and save a new world.
-    if(!FileSystem.existsSync("./data/"))
-    {
-      // Save flagsDataManager (so it's empty save file exists).
-      this.flagsDataManager.save();
-      // And flag it as loaded.
-      this.flagsDataManager.skipLoad();
-
-      // Save prototypeManager (so it's empty save file exists).
-      Game.prototypeManager.save();
-
-      await this.game.createDefaultWorld();
-    }
-    else
-    {
-      // TODO: Check, ze hra jeste neni loadnuta
-
-      // Load the game.
-      await this.game.load();
-    }
   }
 }
