@@ -256,7 +256,28 @@ export class SaveableObject extends AttributableClass
     // Now copy the data.
     for (let property in jsonObject)
     {
-      this.loadPropertyFromJsonObject(jsonObject, property, filePath);
+      // Property 'className' will not be assigned (it's read-only
+      // and static so it wouldn't make sense anyways), but we will
+      // check that we are loading ourselves into a class with matching
+      // className.
+      if (property === NamedClass.CLASS_NAME_PROPERTY)
+      {
+        ASSERT_FATAL(this.className !== undefined,
+          "Loading object with saved '" + NamedClass.CLASS_NAME_PROPERTY + "'"
+          + " property into an instance that doesn't have"
+          + " a '" + NamedClass.CLASS_NAME_PROPERTY + "' property."
+          + " This should never happen");
+
+        ASSERT_FATAL(jsonObject[property] === this.className,
+          "Loading object with '" + NamedClass.CLASS_NAME_PROPERTY + "'"
+          + " property saved as '" + jsonObject[property] + "' into an"
+          + " instance with '" + NamedClass.CLASS_NAME_PROPERTY + "'"
+          + this.className + ". This should never happen, types must match");
+      }
+      else
+      {
+        this.loadPropertyFromJsonObject(jsonObject, property, filePath);
+      }
     }
   }
 
@@ -271,13 +292,28 @@ export class SaveableObject extends AttributableClass
       jsonObject['name'] = this['name'];
     }
 
+    // Anoter hack - save 'className' property.
+    // (We need to save 'className' maually, because it is an accessor,
+    // so it's not enumerable - which means that it won't get iterated
+    // over in following cycle that iterates properties.)
+    let className = this.className;
+
+    ASSERT_FATAL(className !== undefined,
+      "Attempt to save a SaveableObject that doesn't have"
+      + " a " + NamedClass.CLASS_NAME_PROPERTY + " property."
+      + " I don't know how did you manage to do it - SaveableObject"
+      + " is inherited from NamedClass which does have it");
+
+    jsonObject[NamedClass.CLASS_NAME_PROPERTY] = className;
+
     // Cycle through all properties in this object.
     for (let property in this)
     {
       // Skip 'name' property because it's already saved thanks to
       // previous hack.
-      // (isToBeSaved() checks static attribute property.isSaved)
-      if (property !== 'name' && this.isSaved(property))
+      // (isSaved() checks static attribute property.isSaved)
+      // (className is passed only for more specific error messages)
+      if (property !== 'name' && this.isSaved(property, className))
       {
         this.savePropertyToJsonObject(jsonObject, property);
       }
@@ -288,13 +324,15 @@ export class SaveableObject extends AttributableClass
 
   private checkClassName (jsonObject: Object, filePath: string)
   {
-    ASSERT_FATAL('className' in jsonObject,
-      "There is no 'className' property in JSON data in file " + filePath);
+    ASSERT_FATAL(NamedClass.CLASS_NAME_PROPERTY in jsonObject,
+      "There is no '" + NamedClass.CLASS_NAME_PROPERTY + "' property"
+      + "in JSON data in file " + filePath);
 
-    ASSERT_FATAL(jsonObject['className'] === this.className,
-      "Attempt to load JSON data of class (" + jsonObject['className'] + ")"
-      + " in file " + filePath
-      + " into instance of incompatible class (" + this.className + ")");
+    ASSERT_FATAL(jsonObject[NamedClass.CLASS_NAME_PROPERTY] === this.className,
+      "Attempt to load JSON data of class"
+      + " (" + jsonObject[NamedClass.CLASS_NAME_PROPERTY] + ")"
+      + " in file " + filePath + " into instance of incompatible"
+      + " class (" + this.className + ")");
   }
 
   private async processBufferedSavingRequests()
@@ -356,7 +394,8 @@ export class SaveableObject extends AttributableClass
         "Property '" + property + "' exists in JSON data in file " + filePath
         + " we are trying to load ourselves from but we don't have it."
         + " Maybe you forgot to change the version and convert JSON files"
-        + " to a new format?");
+        + " to a new format? Or maybe you might have forgotten to initialize"
+        + " it in class declaration?");
     }
   }
 
@@ -442,13 +481,11 @@ export class SaveableObject extends AttributableClass
     {
       ASSERT_FATAL
       (
-        jsonProperty['className'] !== undefined,
-        "Missing 'className' property in a nested object in file "
-        + filePath + ". You probably assigned <null> to a property"
-        + " of some generic object type (default javascript Object,"
-        + " Date, Map or Array) or of a class type not inherited from"
-        + " NamedClass. Make sure that properties of these types are"
-        + " never assigned <null> value or inicialized to <null>."
+        jsonProperty[NamedClass.CLASS_NAME_PROPERTY] !== undefined,
+        "Missing '" + NamedClass.CLASS_NAME_PROPERTY + "' property"
+        + " in a nested object in file " + filePath + ". Make sure"
+        + " that you use SaveableObjects instead of simple javascript"
+        + " Objects (like {})"
       );
 
       // Initiate our property to a new instance of correct type.
@@ -456,7 +493,7 @@ export class SaveableObject extends AttributableClass
       myProperty = SaveableObject.createInstance
       (
         {
-          className: jsonProperty['className'],
+          className: jsonProperty[NamedClass.CLASS_NAME_PROPERTY],
           typeCast: SaveableObject
         }
       );
@@ -615,7 +652,7 @@ export class SaveableObject extends AttributableClass
 
   // Check if there is a static property named the same as property,
   // an if it's value contains: { isSaved = false; }
-  private isSaved(property: string): boolean
+  private isSaved(property: string, className: string): boolean
   {
     // Access static variable named the same as property.
     let propertyAttributes = this.getPropertyAttributes(this, property);
@@ -623,6 +660,11 @@ export class SaveableObject extends AttributableClass
     // If attributes for our property exist.
     if (propertyAttributes !== undefined)
     {
+      ASSERT_FATAL(propertyAttributes !== null,
+        "'null' propertyAtributes for property '" + property + "'"
+        + "Make sure that 'static " + property + "' declared in class"
+        + className + " (or in some of it's ancestors) is not null");
+
       // And if there is 'isSaved' property in atributes.
       // (so something like: static property = { issaved: false };
       //  has been declared).

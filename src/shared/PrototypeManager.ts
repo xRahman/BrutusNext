@@ -15,15 +15,18 @@ import {Prototype} from '../shared/Prototype';
 
 export class PrototypeManager extends AutoSaveableObject
 {
-  // Hashmap. Maps prototype names to PrototypeData objects.
+  // Hashmap<[ string, Prototype ]>
+  //   Key: prototype name
+  //   Value: prototype.
   public prototypes = new Map();
   // Do not save variable prototypes
   // (individual prototypes are saved to separate files).
   public static prototypes = { isSaved: false };
 
-  // Hashmap. Maps prototype name to { path, filename } record
-  // specifying where the prototype is saved (relative to the
-  // location of prototypeDataManager.json).
+  // Hashmap<[string, { path, filename }]>
+  //   Key: prototype name
+  //   Value: object describing location of prtotype save file.
+  //   (path is relative to the location of prototypeDataManager.json).
   private directoryTree = new Map();
 
   private static get SAVE_DIRECTORY()
@@ -38,23 +41,23 @@ export class PrototypeManager extends AutoSaveableObject
 
   // ---------------- Public methods --------------------
 
-  /*
+  ///*
   /// Zatim to zjevne neni k potreba, ale necham si to tu.
-  public getPrototypeData(name: string): PrototypeData
+  public getPrototype(name: string): Prototype
   {
     // Accessing prototypes is case-insensitive.
     let key = name.toLowerCase();
 
-    let prototypeData = this.prototypeDataList.get(key);
+    let prototype = this.prototypes.get(key);
     
-    if (!ASSERT(prototypeData !== undefined,
+    if (!ASSERT(prototype !== undefined,
       "Attempt to access FlagsData for class '" + name + "'"
       + "that doesn't have FlagsData in FlagsDataManager"))
       return null;
 
-    return prototypeData;
+    return prototype;
   }
-  */
+  //*/
 
   // Returns true on success.
   public createPrototype(param: { name: string, ancestor: string }): boolean
@@ -72,7 +75,45 @@ export class PrototypeManager extends AutoSaveableObject
     return true;
   }
 
-  private addToDirectoryTree(prototypeName: string, ancestorName: string )
+  // Creates javascript classes that will be used to instantiate game
+  // objects and sets data members and methods to their prototypes (so
+  // instantiated game objects automatically inherit from them).
+  public createClasses()
+  {
+    // Iterate over all values in hashmap.
+    for (let prototype of this.prototypes.values())
+    {
+      prototype.createClass();
+    }
+  }
+
+  // Overrides AutoSaveableObject::save() to implement automatic saving
+  // of prototypes to their own files.
+  public async save()
+  {
+    /// Tady by spravne melo byt super.save(), ale diky bugu v aktualni
+    /// verzi v8 enginu nejde pouzit super uvnitr chainu asyc funkci.
+    await this.saveToFile(this.getSaveDirectory(), this.getSaveFileName());
+
+    await this.savePrototypes();
+  }
+
+  // Overrides AutoSaveableObject::save() to implement automatic loading
+  // of prototypes from their own files.
+  public async load()
+  {
+    /// Tady by spravne melo byt super.load(), ale diky bugu v aktualni
+    /// verzi v8 enginu nejde pouzit super uvnitr chainu asyc funkci.
+    // This needs to be done before loading contained entities, because we
+    // need to read their id's first.
+    await this.loadFromFile(this.getFullSavePath());
+
+    await this.loadPrototypes();
+  }
+
+  // ---------------- Private methods -------------------
+
+  private addToDirectoryTree(prototypeName: string, ancestorName: string)
   {
     // Ancestor must already be in directory structure (because we are
     // inheriting from it so it must already exist).
@@ -97,45 +138,6 @@ export class PrototypeManager extends AutoSaveableObject
     // Insert entry to hashmap.
     this.directoryTree.set(key, value);
   }
-  
-
-  // Creates javascript classes that will be used to instantiate game
-  // objects and sets data members and methods to their prototypes (so
-  // instantiated game objects automatically inherit from them).
-  public createClasses()
-  {
-    // Iterate over all values in hashmap.
-    for (let prototype of this.prototypes.values())
-    {
-      prototype.createClass();
-    }
-  }
-
-  // Overrides AutoSaveableObject::save() to implement automatic saving
-  // of prototypes to their own files.
-  public async save()
-  {
-    /// Tady by spravne melo byt super.save(), ale diky bugu v aktualni
-    /// verzi v8 enginu nejde pouzit super. uvnitr chainu asyc funkci.
-    await this.saveToFile(this.getSaveDirectory(), this.getSaveFileName());
-
-    await this.savePrototypes();
-  }
-
-  // Overrides AutoSaveableObject::save() to implement automatic loading
-  // of prototypes from their own files.
-  public async load()
-  {
-    /// Tady by spravne melo byt super.load(), ale diky bugu v aktualni
-    /// verzi v8 enginu nejde pouzit super. uvnitr chainu asyc funkci.
-    // This needs to be done before loading contained entities, because we
-    // need to read their id's first.
-    await this.loadFromFile(this.getFullSavePath());
-
-    await this.loadPrototypes();
-  }
-
-  // ---------------- Private methods -------------------
 
   private createPrototypeData(param: { name: string, ancestor: string })
   : Prototype
@@ -199,7 +201,7 @@ export class PrototypeManager extends AutoSaveableObject
     {
       // An entry of hashmap is a [key, value] array.
       let prototypeName = entry[0];
-      let prototype = entry[1];
+      let prototype = dynamicCast(entry[1], Prototype);
 
       // { path, filename } record specifying location of saved file.
       let prototypeLocation = this.directoryTree.get(prototypeName);
@@ -213,9 +215,13 @@ export class PrototypeManager extends AutoSaveableObject
       // so we need to put it together.
       let fullDirectory = this.getSaveDirectory() + prototypeLocation.path;
       let fileName = prototypeLocation.fileName;
-      let saveablePrototype = dynamicCast(prototype, SaveableObject);
 
-      await saveablePrototype.saveToFile(fullDirectory, fileName);
+      await prototype.saveToFile(fullDirectory, fileName);
+
+      /*
+      // Scripts are saved to separate files.
+      await prototype.saveScripts(fullDirectory);
+      */
     }
   }
 
@@ -238,6 +244,11 @@ export class PrototypeManager extends AutoSaveableObject
         + prototypeLocation.fileName;
 
       await prototype.loadFromFile(filePath);
+
+      /*
+      // Scripts are saved to separate files.
+      await prototype.loadScripts(filePath);
+      */
 
       this.insertToPrototypeList(prototypeName, prototype);
     }
