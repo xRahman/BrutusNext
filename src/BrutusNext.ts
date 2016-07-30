@@ -38,7 +38,25 @@ let packageDotJson = require('../package.json');
 // functions. A new exception is thrown, which will crash the mud and print
 // the original stack trace. Without this, exceptions thrown from withing
 // async function would lead to silent crashes.
-process.on('unhandledRejection', err => { throw err; });
+process.on
+(
+  'unhandledRejection',
+  err =>
+  {
+    if (err.name === "Script cancelled")
+    {
+      // Running scripts are cancelled by rejecting the Promise, which
+      // throws an exception. It is not an error to be reported though.
+
+      /// This was used for debugging:
+      //console.log(err.message);
+    }
+    else
+    {
+      throw err;
+    }
+  }
+);
 
 // Parses commandline parameters.
 // - Return object imported from 'commander' module.

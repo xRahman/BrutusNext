@@ -21,10 +21,11 @@ export class Mudlog
 {
   public static msgType =
   {
-    ASSERT:       "ASSERT",
-    ASSERT_FATAL: "ASSERT FATAL",
-    SYSTEM_INFO:  "SYSTEM INFO",
-    SYSTEM_ERROR: "SYSTEM ERROR"
+    ASSERT:               "ASSERT",
+    ASSERT_FATAL:         "ASSERT FATAL",
+    SYSTEM_INFO:          "SYSTEM INFO",
+    SYSTEM_ERROR:         "SYSTEM ERROR",
+    SCRIPT_COMPILE_ERROR: "SCRIPT COMPILE ERROR"
   }
 
   // Outputs message to log file. Also sends it to online immortals

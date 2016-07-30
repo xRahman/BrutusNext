@@ -1,4 +1,13 @@
-﻿"Holocrony" nedají bonus automaticky, jsou na to potřeba expy (možná nějaký konkrétní druh podle toho, co se chci naučit). Díky tomu bude motivace expit a nepůjde naskillovat prostě tím, že oběhnu všechny "explorepointy" (nebo se přes ně nechám protáhnout)
+﻿IDEA: Barvy textu místnosti podle room sectoru?
+- tmavě modrá voda, světle modrá (nebo cyan) in flight, etc.?
+
+
+-----------------------------------------------------------------
+
+"Holocrony" nedají bonus automaticky, jsou na to potřeba expy (možná
+  nějaký konkrétní druh podle toho, co se chci naučit). Díky tomu bude
+  motivace expit a nepůjde naskillovat prostě tím, že oběhnu všechny
+  "explorepointy" (nebo se přes ně nechám protáhnout)
 
 -------------------------------------------------------------------
 
@@ -25,7 +34,7 @@ Fleeovani a vypis exitu:
 -------------------------
 - pri looku do roomu by melo byt videt, ze jsou exity blokovane
 
-south - Preparing hall (blocked)
+south - Preparing hall (blocked by storm giant)
 
 - pri looku do smeru se vypise, kteri mobove ten vychod blokuji
 
@@ -34,6 +43,7 @@ You see the Temple Altar.
   A dragon blocks this exit.
   A chimera blocks this exit.
 
-- fleeovani znamena nejdriv utect k libovolne strane obrazovky (radky), nasledne probehne flee
+- fleeovani znamena nejdriv utect k libovolne strane obrazovky (radky),
+  nasledne probehne flee
 - flee pujde do libovolneho exitu, ktery neni blokovany nebo zavreny
 (cilene do konkretniho smeru mozna az s nejakym assassinskym skillem)

@@ -13,7 +13,6 @@ import {FileSystem} from '../shared/fs/FileSystem';
 import {IdList} from '../game/IdList';
 import {Game} from '../game/Game';
 import {Character} from '../game/characters/Character';
-import {Mudlog} from '../server/Mudlog';
 
 export class PlayerCharacterManager
 {

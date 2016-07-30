@@ -1,0 +1,69 @@
+﻿Když to jde udělat jinak než questem, udělej to jinak než questem.
+--------------------------------------------------------------------
+
+Co tím myslím?
+
+
+Příklad:
+  (nechme teď stranou, že možná ve hře vůbec nebude equip, nebo se bude vyrábět nějak jinak.
+  Je to jen příklad)
+Kovář umí vyrobit silnou zbraň z hodně vzácného materiálu.
+- místo aby zadával quest (dones matroš, dostaneš zbraň), tak se jen v dialogu zmíní, že slyšel
+  o neznámém materiálu, který by mohl mít zajímavé vlastnosti.
+  - Neřekne nic ve smyslu "přines mi vzorek", ani "když mi přineseš vzorek, něco ti z něj udělám".
+    Prostě to jen zmíní.
+- když k němu přijde hráč a bude mít u sebe tenhle matroš, tak v konverzaci přibude nová možnost
+  ("Hele ty seš kovář, tohle by tě mohlo zajímat...").
+  - když by to dávalo smysl, tak by bylo lepší, aby kovář hráče sám oslovil - ale smysl to nedává,
+    hráč má nejspíš matroš někde v báglu a kovář to nemá jak vědět. Kdyby to byla dejme tomu zbraň
+    z nějakého materiálu, tak to je jiná, to by kovář rovnou mohl říct: "Co je zač to tvoje kopí,
+    můžu se na něj mrknout?"
+  - v téhle konverzaci kovář teprve zmíní, že by z toho chtěl zkusit něco vyrobit. Tohle už může
+    bejt quest, protože quest engine ladně pořeší věci jako trakování progresu (mám toho už dost?),
+    předání matroše kováři (prostě quest complete, jinak by se to muselo strkat do nějakého
+    kontejneru nebo tak něco a to je dost neintuitivní).
+
+Obecněji k tématu:
+- Diablo 3 má sice pár stupidních questů, ale jinak je to rubačka v otevřeném generovaném světě.
+Herní obsah tvoří encountery (např. arcane sentry a podobné schopnosti elitek) a "interaktivnost
+prostředí" (takové ty lustry, co se dají shodit na enemáky a tak). Tohle je sice pokrok oproti
+Diablu 1, ale popravedě žádný zázrak - kolik hráčů použije shození lustru víc než jednou?
+(ono to dost souvisí s tím, že to nic moc nedělá, a že zabít ty potvory normálně je vlastně
+jednodušší, ale to teď nechme stranou). Podstatné je, že tohle není "herní obsah", tedy něco,
+co hráč může dělat a chce to dělat, protože z toho je něco, co ho někam posune.
+- tohle v D3 plní bounties (protože je za ně matroš na craftění) a greater rifts (protože se
+za ně upgradují legendary gemy), ale to je v zásadě asi tak jediný herní content, který tam je
+
+- Wowko, když teď necháme stranou achievementy, dungeony, raidy a tak, generuje world content
+pomocí questů. Za questy jsou expy a levelovací equip, takže je v zásadě důvod je dělat. Problém
+je, že quest je úplně všechno, včetně věcí, které by quest být nemusely - respektive nemusely
+by tak vypadat.
+  Trochu to spravují questy, které lze někde nalézt (na stěně je malba, která zadává quest).
+  Na druhou stranu je to pořád zbytečně návodné - hráči to naskočí do quest logu, tak se toho chce
+  zbavit - což úplně zabije radost z objevování.
+  - Dejme tomu, že to je věc, která se dá sebrat (na malbě třeba může být kliknutelná možnost si
+    ji obkreslit (bude nejspíš chtít pergamen a pero)), ale obkreslená malba sama o sobě nic
+    nedělá, nic nezadává. Nějaké NPCčko o ní může něco vědět nebo o ni mít zájem (různá NPCčka
+    třeba za ni mohou nabídnout různé věci). Tyhle dialogy se aktivují prostě tím, že má hráč
+    předmět u sebe, ne tím, že si nabral quest.
+    (malba klidně může jít obkreslit víckrát, když už jsme u toho. Proč ne? A může jít někde najít
+     obkreslenou malbu, kterou obkreslil někdo jinej. NPCčka o ni stále budou mít zájem, ale hráč
+     nebude vědět, odkud je ta malba obkreslená - super záhada!).
+
+- pak jsou tu další věci, které mohou tvořit herní obsah (je to nějaká netriviální činnost, kterou
+  hráč má důvod dělat, protože si tím nějak pomůže nebo se tím někam posune). Třeba výroba zbraně
+  proti konkrétnímu druhu potvor v zóně (které bez ní mohou být pěkně drsné), nebo třeba
+  zprovoznění teleportu, který usnadní cestování po zóně (umožní obejít hnusné agresivní potvory),
+  atd. Na nic z toho nemusí být quest, ale mělo by být telegrafováno, že tu taková možnost je
+  (může o tom něco říct nějaké npcčko, může o tom být něco napsáno v nějaké knize, atd.)
+  - může to být i lehce přehnané (viz třeba ta možnost obkreslit si malbu - to je kus herního
+    ui, takže je jasné, že to tam není náhodou a s tou mlabou se dá něco dělat. Ale to samo
+    o sobě už stačí, npcček v herním světě není až tolik, takže i kdyby měl hráč obejít všechna,
+    dřív nebo později to najde (respektive dřív někdo na web hodí návod, ale to je ok - pořád
+    je to lepší, než když hra vede hráče za ručičku. Najít si návod na webu je sice ochcávka,
+    ale furt má tu vlastnost, že hráč narazil na záhadu a sám aktivně pátrá po řešení - což je
+    přesně to, čeho chceme dosáhnout).
+    (BTW hrál jsem dost starých her podle návodu staženého z webu a dost jsem se u toho bavil
+    a vydalo to na spoustu hodin gameplaye - tzn. návody na webu nemusí nutně kazit zábavu, stačí
+    myslet na to, že je dřív nebo později někdo napíše, takže gameplay musí být hlavně o tom tu
+    věc skutečně ingame udělat - třeba se pro něco probít dungeonem).

@@ -1,0 +1,25 @@
+﻿flight
+----------------------
+
+- Umožňuje použít exity, které jsou bez létání nedosažitelné (vyletět na hradby,
+přeletět propast, atd.)
+  - Budou asi existovat i jiné metody (šplhat, levitovat...)
+
+- když zdrhám letem od nelétajícího protivníka, nemůže mě pronásledovat.
+- když střílím z letu na lelétajícího protivníka, nemůže na mě útočit na melee.
+
+/*
+  - command 'flee' asi automaticky použije tu nejvýhodnější medotu utíkání
+    (tj. když umím lítat, tak letecky)
+
+  - jde napsat 'fly north' nebo 'run north' (i v boji), to pak enforcne
+    příslušný mód zdrhání
+*/
+
+- a samozřejmě umožňuje pohybovat se v roomách, které jsou "in flight"
+
+Air current
+-------------
+- může snižovat rychlost letu v určitém směru (a zvyšovat v opačném), může
+  odnášet do vedlejších místností, atd.
+  (může třeba bránit v přeletění hradeb)

@@ -1,0 +1,12 @@
+To measure how long it takes to execute your function,
+use console.time() and console.timeEnd().
+
+Example:
+
+{
+  console.time("Label");
+
+  yourLazyFunction();
+
+  console.timeEnd("Label"); // This will output something like "Label: 2.117ms"
+}
