@@ -34,6 +34,9 @@ import {Realm} from '../game/world/Realm';
 //  cyclic module dependance) even though it would make much more sense there.
 require('../game/DynamicClasses');
 
+// TEST:
+import {Script} from '../shared/Script';
+
 export class Game
 {
   public static get entities()
@@ -100,7 +103,7 @@ export class Game
     let world = GameEntity.createInstance
       ({ className: 'BrutusWorld', typeCast: World });
 
-    // Load current stat of world from file.
+    // Load current state of world from file.
     await world.load();
 
     // Remember worldId that we just loaded from file.
@@ -226,6 +229,76 @@ export class Game
 
     // Save the world we have just created.
     world.save();
+
+    ////////////////-------------------------------------
+    // TEST
+    /*
+    //scriptData.code =
+    //  "'use strict';"
+    //  //+ "this.result = async function onLoad()"
+    //  + "this.result = function onLoad()"
+    //  + "{"
+    //  + "  console.log('Launching onload() script!');"
+    //  //+ "  await delay(1000);"
+    //  //+ "  console.log('onload() script awaits from sleep()!');"
+    //  + "}";
+    */
+
+    ///*
+    // test savu skriptu
+    let scriptCode = "'use strict';\n"
+      + "this.result = async function onLoad()\n"
+      + "{\n"
+      + "  while(true)\n"
+      + "  {\n"
+      + "  console.log('Launching " + '"onload()"' + " script!');\n"
+      + "  console.log(this.test);\n"
+      + "  this.test = 'Test uspesny';\n"
+      + "  await delay(1000);\n"
+      + "  console.log('onload() script awakens from sleep()!');\n"
+      + "}\n";
+    + "}\n";
+
+    let script = new Script();
+    script.name = "onLoad";
+    script.code = scriptCode;
+    let proto = this.prototypeManager.getPrototype("TutorialRoom");
+    proto.scripts.push(script);
+
+    this.prototypeManager.save();
+    //*/
+
+    /*
+    let scriptData2 = new Script();
+    scriptData2.name = "onLoad2";
+    scriptData2.code = scriptCode;
+    proto.scripts.push(scriptData2);
+
+    proto.setMethods(global['dynamicClasses']['TutorialRoom']);
+
+    let tutorialRoom =
+      world.tutorialRoomId.getEntity({ typeCast: GameEntity });
+
+    tutorialRoom.test = "Test thisu";
+
+    tutorialRoom.onLoad();
+    tutorialRoom.onLoad2();
+    
+
+    /// Tohle asi fakt není dobrá metoda. Zrušením timeoutu sice zařídím to,
+    /// že se neprovede návrat z funkce delay(), ale zato zůstane někde viset
+    /// objekt s nedokončenou async funkcí -> memoryleak.
+    //clearTimeout(global['timeout']);
+
+    //tutorialRoom['onLoad'] = function() { };
+    //tutorialRoom.onLoad();
+
+    let testScript = new Script();
+    let zlyMob = { x: 42, onLoad: null };
+    zlyMob.onLoad = testScript.scriptFunction;
+
+    zlyMob.onLoad();
+    */
   }
 
   private createWorld(param: { name: string, prototype: string })

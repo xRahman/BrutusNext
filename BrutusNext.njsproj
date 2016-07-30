@@ -37,7 +37,7 @@
     <TypeScriptCompile Include="src\shared\ASSERT_FATAL.ts" />
     <TypeScriptCompile Include="src\shared\Prototype.ts" />
     <TypeScriptCompile Include="src\shared\PrototypeManager.ts" />
-    <TypeScriptCompile Include="src\game\ScriptData.ts" />
+    <TypeScriptCompile Include="src\shared\Script.ts" />
     <TypeScriptCompile Include="src\game\world\RoomFlags.ts" />
     <TypeScriptCompile Include="src\server\AccountFlags.ts" />
     <TypeScriptCompile Include="src\server\AdminLevels.ts" />
@@ -90,6 +90,7 @@
     <TypeScriptCompile Include="src\shared\IdableObject.ts" />
     <TypeScriptCompile Include="src\shared\SaveableObject.ts" />
     <TypeScriptCompile Include="src\shared\UTILS.ts" />
+    <TypeScriptCompile Include="src\shared\vm\VirtualMachine.ts" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\" />
@@ -105,12 +106,10 @@
     <Folder Include="src\shared\fs\" />
     <Folder Include="src\server\telnet\" />
     <Folder Include="src\shared" />
+    <Folder Include="src\shared\vm\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="src\editor\editor.html" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="src\editor\schema.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <!--Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them.-->

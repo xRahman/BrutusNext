@@ -50,3 +50,50 @@ export function dynamicCast<T>(instance, typeCast: { new (...args: any[]): T }):
     "Type cast error: Object is not an instance"
     + " of requested type (" + typeCast.name + ")");
 }
+
+/*
+/// TEST:
+export async function delay(miliseconds: number)
+{
+  //return new Promise(resolve => global['timeout'] = setTimeout(resolve, miliseconds));
+  return new Promise
+  (
+    (resolve, reject) =>
+    {
+      let error = new Error();
+      error.message = "Script cancelled";
+      global['timeout'] = setTimeout(reject(error), miliseconds);
+    }
+  );
+}
+*/
+
+/*
+/// TEST:
+export async function internalDelay
+(
+  miliseconds: number,
+  script: Script,
+  compiledFunction: Function
+)
+{
+  console.log("scriptName: " + scriptName);
+  //return new Promise(resolve => global['timeout'] = setTimeout(resolve, miliseconds));
+  return new Promise
+  (
+    (resolve, reject) =>
+    {
+
+      if (Script.isChanged(compiledFunction))
+      {
+        let error = new Error();
+        error.message = "Script cancelled";
+        global['timeout'] = setTimeout(reject(error), miliseconds);
+      }
+      else
+      {
+      }
+    }
+  );
+}
+*/
