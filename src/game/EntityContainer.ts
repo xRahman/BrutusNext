@@ -36,7 +36,7 @@ export abstract class EntityContainer extends CommandInterpretter
   public async save()
   {
     /// Tady by spravne melo byt super.save(), ale diky bugu v aktualni
-    /// verzi v8 enginu nejde pouzit super. uvnitr chainu asyc funkci.
+    /// verzi v8 enginu nejde pouzit super uvnitr chainu asyc funkci.
     await this.saveToFile(this.getSaveDirectory(), this.getSaveFileName());
 
     let contentsArray = this.contents.idArray;
@@ -55,7 +55,7 @@ export abstract class EntityContainer extends CommandInterpretter
   public async load()
   {
     /// Tady by spravne melo byt super.load(), ale diky bugu v aktualni
-    /// verzi v8 enginu nejde pouzit super. uvnitr chainu asyc funkci.
+    /// verzi v8 enginu nejde pouzit super uvnitr chainu asyc funkci.
     // This needs to be done before loading contained entities, because we
     // need to read their id's first.
     await this.loadFromFile(this.getFullSavePath());
