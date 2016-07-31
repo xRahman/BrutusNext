@@ -233,7 +233,7 @@ export class Game
     ////////////////-------------------------------------
     // TEST
 
-    /*
+    ///*
     // test savu skriptu
     let scriptCode1 = 
 //        "'use strict';\n"
@@ -278,12 +278,12 @@ export class Game
       world.tutorialRoomId.getEntity({ typeCast: GameEntity });
 
     tutorialRoom.test = "Test thisu 1";
-    tutorialRoom.onLoad = script1.scriptFunction;
+    tutorialRoom.onLoad = script1.run;
     tutorialRoom.onLoad();
 
+    /// Recompile test
     script1.code = scriptCode2;
     script1.compile();
-    */
   }
 
   private createWorld(param: { name: string, prototype: string })

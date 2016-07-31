@@ -24,6 +24,7 @@
 
 'use strict';
 
+///import {getTrimmedStackTrace} from '../../shared/UTILS';
 import {ASSERT} from '../../shared/ASSERT';
 import {Mudlog} from '../../server/Mudlog';
 import {AdminLevels} from '../../server/AdminLevels';
@@ -100,6 +101,7 @@ export class VirtualMachine
       Mudlog.log
       (
         "Compile error in script " + scriptName + ": " + e.message,
+          ///+ getTrimmedStackTrace(),
         Mudlog.msgType.SCRIPT_COMPILE_ERROR,
         AdminLevels.IMMORTAL
       );
@@ -183,6 +185,6 @@ export class VirtualMachine
     //            to running the vm script.
  /// TEST: console je tu docasne, ve finale ji skripty nebudou potrebovat
  /// (a ani by ji nemeli vydet, console umoznuje savovat na disk a tak).
-    return { console: console, result: null, delay: null  };
+    return { console: console, result: null /*, delay: null*/ };
   }
 }
