@@ -25,7 +25,8 @@ export class Mudlog
     ASSERT_FATAL:         "ASSERT FATAL",
     SYSTEM_INFO:          "SYSTEM INFO",
     SYSTEM_ERROR:         "SYSTEM ERROR",
-    SCRIPT_COMPILE_ERROR: "SCRIPT COMPILE ERROR"
+    SCRIPT_COMPILE_ERROR: "SCRIPT COMPILE ERROR",
+    SCRIPT_RUNTIME_ERROR: "SCRIPT RUNTIME ERROR"
   }
 
   // Outputs message to log file. Also sends it to online immortals

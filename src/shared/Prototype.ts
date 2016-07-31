@@ -44,7 +44,10 @@ export class Prototype extends SaveableObject
   public data = new Array<{ property: string, value: any }>();
 
   // Scripts attached to the prototype.
-  public scripts = new Array<Script>();
+  // Hashmap<[ string, FlagNames ]>
+  //   Key: script name (without prototype name)
+  //   Value: Script object
+  public scripts = new Map();
 
   /*
   /// TEST:
@@ -67,12 +70,13 @@ export class Prototype extends SaveableObject
   // ---------------- Public methods --------------------
 
   // Creates a new script and adds it to this prototype.
-  public createScript(): Script
+  public createScript(scriptName: string): Script
   {
     let script = new Script();
-    
-    script.prototypeName = this.name;
-    this.scripts.push(script);
+    script.name = scriptName;
+    script.prototype = this.name;
+    // Add new script to this.scripts hashmap under it's name.
+    this.scripts.set(scriptName, script);
     
     return script;
   }
@@ -99,24 +103,6 @@ export class Prototype extends SaveableObject
     // to new class prototype.
     this.setMethods(NewClass);
   }
-
-  /*
-  public saveScripts(directory: string)
-  {
-    for (let i = 0; i < this.scripts.length; i++)
-    {
-      this.scripts[i].saveScriptCode(directory);
-    }
-  }
-
-  public loadScripts(directory: string)
-  {
-    for (let i = 0; i < this.scripts.length; i++)
-    {
-      this.scripts[i].loadScriptCode(directory);
-    }
-  }
-  */
 
   // ---------------- Private methods -------------------
 
@@ -201,38 +187,7 @@ export class Prototype extends SaveableObject
       // Error is already reported by this.getAncestorClass().
       return null;
 
-    /*
-    // Dynamicaly create a new class using a script.
-    let NewClass = this.runClassDeclarationScript(AncestorClass);
-    */
-
-    // Following mumbo-jumbo dynamically creates a new javascript class.
-
-    /*
-    // Declare constructor of a new class.
-    let NewClass = function() { };
-    // Assign a name to the new class (same as name of the prototype).
-    NewClass.name = this.name;
-    // Inherit NewClass from Ancestor.
-    NewClass.prototype = new Ancestor();
-    // And make sure that constructor of NewClass is NewClass, not Ancestor.
-    NewClass.prototype.constructor = NewClass;
-    */
-
-    /*
-    // Declare constructor of a new class.
-    let NewClass = new Function("return function " + this.name + "() {}");
-    // Inherit NewClass from Ancestor.
-    NewClass.prototype = new Ancestor();
-    // And make sure that constructor of NewClass is NewClass, not Ancestor.
-    NewClass.prototype.constructor = NewClass;
-    */
-
-    /*
-    let classNameGenerator = { [this.name]: class extends Ancestor { } };
-    let NewClass = classNameGenerator[this.name];
-    */
-
+    /// DEBUG:
     console.log("Declaring class '" + this.name + "'");
 
     // Note that dynamically declared class can't have a name.
@@ -240,18 +195,6 @@ export class Prototype extends SaveableObject
     //  property 'className'. See NamedClass::className for details.)
     let NewClass = class extends Ancestor { };
     NewClass[NamedClass.CLASS_NAME_PROPERTY] = this.name;
-    
-    /*
-    // Create a new class.
-    class NewClass { };
-    // Assign a name to the new class (same as name of the prototype).
-    NewClass.name = this.name;
-
-    // Inherit NewClass from Ancestor.
-    NewClass.prototype = new Ancestor();
-    // And make sure that constructor of NewClass is NewClass, not Ancestor.
-    NewClass.prototype.constructor = NewClass;
-    */
 
     // Assigns newly created type to global.dynamicClasses.
     // Triggers assert if we failed to create it.
@@ -400,63 +343,9 @@ export class Prototype extends SaveableObject
   */
   public setMethods(prototypeClass)
   {
-    /// TODO:
-    for (let i = 0; i < this.scripts.length; i++)
+    // Iterate over all values in this.scripts hashmap.
+    for (let script of this.scripts.values())
     {
-      /*
-      let code = this.scripts[i].code;
-
-      let scriptName = "TutorialRoom::" + this.scripts[i].name;
-
-      // Pozn: diky tomu, ze to je funkce ve funkci, tak vidi
-      // na lokalni promennou scriptName. Tim obejdu potrebu
-      // predavat tenhle parametr pres funkci delay(), ktera se vola
-      // uvnitr skriptu.
-      let wrappedDelay = async function(miliseconds: number)
-      {
-        await internalDelay(miliseconds, scriptName);
-      }
-
-      // Přiřadím do contextifiedSandboxu lokálně definovanou metodu,
-      // která si s sebou nese jméno skriptu (protože vidí na lokální
-      // proměnnou deklarovanou před ní).
-
-      console.time("Contextify_Sandbox");
-
-      // Object that will be used as sandbox to run script in.
-      //let sandbox = { console: console, result: null, delay: delay };
-      let sandbox = { console: console, result: null, delay: wrappedDelay };
-
-      // 'Contextify' the sandbox.
-      // (check node.js 'vm' module documentation)
-      //let contextifiedSandbox = vm.createContext(sandbox);
-      let contextifiedSandbox = VirtualMachine.contextifySandbox(sandbox);
-
-      console.timeEnd("Contextify_Sandbox");
-
-      console.log("Transpile_ + _Compile starts...");
-      console.time("Transpile_+_Compile");
-
-      // Transpile from typescript to javascript
-      let transpiledCode =
-        ts.transpile(code, { module: ts.ModuleKind.CommonJS });
-
-      //let vmScript = this.compileScript(transpiledScript);
-
-      let vmScript =
-        VirtualMachine.compileVmScript(scriptName, transpiledCode);
-
-      console.timeEnd("Transpile_+_Compile");
-
-      // Run the compiled code within our sandbox object.
-      //this.executeVmScript(vmScript, contextifiedSandbox);
-      VirtualMachine.executeVmScript(scriptName, vmScript, contextifiedSandbox);
-
-      let scriptFunction = contextifiedSandbox.result;
-      */
-      
-      let script = this.scripts[i];
-      
       script.compile();
 
       // Assign compiled scriptFunction to the prototype class.

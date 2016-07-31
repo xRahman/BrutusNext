@@ -232,72 +232,57 @@ export class Game
 
     ////////////////-------------------------------------
     // TEST
+
     /*
-    //scriptData.code =
-    //  "'use strict';"
-    //  //+ "this.result = async function onLoad()"
-    //  + "this.result = function onLoad()"
-    //  + "{"
-    //  + "  console.log('Launching onload() script!');"
-    //  //+ "  await delay(1000);"
-    //  //+ "  console.log('onload() script awaits from sleep()!');"
-    //  + "}";
-    */
-
-    ///*
     // test savu skriptu
-    let scriptCode = "'use strict';\n"
-      + "this.result = async function onLoad()\n"
-      + "{\n"
-      + "  while(true)\n"
+    let scriptCode1 = 
+//        "'use strict';\n"
+//      + "this.result = async function onLoad()\n"
+//      + "{\n"
+      "  while(true)\n"
       + "  {\n"
-      + "  console.log('Launching " + '"onload()"' + " script!');\n"
-      + "  console.log(this.test);\n"
-      + "  this.test = 'Test uspesny';\n"
-      + "  await delay(1000);\n"
-      + "  console.log('onload() script awakens from sleep()!');\n"
-      + "}\n";
-    + "}\n";
+      + "    console.log('Launching " + '"onload()"' + " script!');\n"
+      + "    console.log('This.test: ' + this.test);\n"
+      + "    this.test = 'Test uspesny';\n"
+      + "    await delay(1000);\n"
+      + "    console.log('onLoad() script awakens from sleep()!');\n"
+      + "  }\n";
+//      + "}\n";
 
-    let script = new Script();
-    script.name = "onLoad";
-    script.code = scriptCode;
+
+    let scriptCode2 =
+        "  while(true)\n"
+      + "  {\n"
+      + "    console.log('Launching " + '"onDeath()"' + " script!');\n"
+      + "    console.log('This.test: ' + this.test);\n"
+      + "    this.test = 'Druhy test uspesny';\n"
+      + "    await delay(1000);\n"
+      + "    console.log('onDeath() script awakens from sleep()!');\n"
+      + "  }\n";
+
+    
     let proto = this.prototypeManager.getPrototype("TutorialRoom");
-    proto.scripts.push(script);
+    let script1 = proto.createScript("onLoad");
+    script1.code = scriptCode1;
+    script1.compile();
+    
+    //let script2 = proto.createScript("onDeath");
+    //script2.code = scriptCode2;
+    //script2.compile();
+    
 
     this.prototypeManager.save();
-    //*/
 
-    /*
-    let scriptData2 = new Script();
-    scriptData2.name = "onLoad2";
-    scriptData2.code = scriptCode;
-    proto.scripts.push(scriptData2);
-
-    proto.setMethods(global['dynamicClasses']['TutorialRoom']);
 
     let tutorialRoom =
       world.tutorialRoomId.getEntity({ typeCast: GameEntity });
 
-    tutorialRoom.test = "Test thisu";
-
+    tutorialRoom.test = "Test thisu 1";
+    tutorialRoom.onLoad = script1.scriptFunction;
     tutorialRoom.onLoad();
-    tutorialRoom.onLoad2();
-    
 
-    /// Tohle asi fakt není dobrá metoda. Zrušením timeoutu sice zařídím to,
-    /// že se neprovede návrat z funkce delay(), ale zato zůstane někde viset
-    /// objekt s nedokončenou async funkcí -> memoryleak.
-    //clearTimeout(global['timeout']);
-
-    //tutorialRoom['onLoad'] = function() { };
-    //tutorialRoom.onLoad();
-
-    let testScript = new Script();
-    let zlyMob = { x: 42, onLoad: null };
-    zlyMob.onLoad = testScript.scriptFunction;
-
-    zlyMob.onLoad();
+    script1.code = scriptCode2;
+    script1.compile();
     */
   }
 

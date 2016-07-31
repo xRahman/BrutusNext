@@ -6,10 +6,12 @@
 
 'use strict';
 
-import {ASSERT} from '../shared/ASSERT'
+import {ASSERT} from '../shared/ASSERT';
 import {SaveableObject} from '../shared/SaveableObject';
 import {Prototype} from '../shared/Prototype';
 import {VirtualMachine} from '../shared/vm/VirtualMachine';
+import {AdminLevels} from '../server/AdminLevels';
+import {Mudlog} from '../server/Mudlog';
 
 // 3rd party modules.
 import * as ts from "typescript";
@@ -19,6 +21,9 @@ export class Script extends SaveableObject
   // Name of function that will be created on prototype.
   // (This needs to be the same as the name of the function inside the script.)
   public name: string = "";
+
+  // Name of the prototype this script belongs to.
+  public prototype: string = null;
 
   // Code that will be be compiled into a function and assigned to a prototype.
   public code: string = "";
@@ -36,11 +41,6 @@ export class Script extends SaveableObject
   private internalFunction = null;
   // Do not save variable internalFunction.
   private static internalFunction = { isSaved: false };
-  
-  // What prototype does this script belong to.
-  // (this can't be named 'prototype', because it would conflict with
-  // javascript .prototype property of classes)
-  public prototypeName: string = null;
 
 /// Tohle možná nakonec potřebovat nebudu...
   // Here we keep track of running instances of this script so they
@@ -61,7 +61,7 @@ export class Script extends SaveableObject
 
       General idea is to allow instances of game entities (like 'evilMob')
       to be assigned a function, which is created by compiling the script.
-      Easiest way to do it is this: evilMob['functionName'] = scriptFunction;
+      Easiest way to do it is: evilMob['functionName'] = scriptFunction;
       This solution, however, wouldn't allow for the scriptFunction body to be
       changed in runtime (for example when builder changes and recompiles the
       script), because evilMob.functionName() would still be the old, unchanged
@@ -77,13 +77,13 @@ export class Script extends SaveableObject
       when we do evilmob['scriptFunction'] = script.scriptFunction;, calling
       evilMob.scriptFunction will set 'this' for scriptFunction to evilMob
       (even though scriptFunction is a method of Script class) - and that is
-      what we want, because we want to be able to access evilMob's properties
-      from the script.
+      fine, because we want to be able to access evilMob's properties from
+      the script.
         That, however, means that this.internalFunction() call inside
       Script::scriptFunction() won't work, because this is an evilMob, not
       script. So we need to rememeber 'script' somewhere and that somewhere
       is a closure of constructor of Script class (yes, that's where we are
-      right now). Whe a new Script() is called, constructor of Script launches
+      right now). When a new Script() is called, constructor of Script launches
       and this points to 'script' at that time (because we are inside of
       constructor of Script). So here we remember 'script' - that's
       what following line does:
@@ -112,11 +112,19 @@ export class Script extends SaveableObject
         scriptFunction(), which is 'evilMob').
       */
 
-      if (!ASSERT(script.internalFunction !== null,
-          "Internal script function of script " + script.name
+      if (script.internalFunction === null)
+      {
+        Mudlog.log
+        (
+          "Internal script function of script " + script.getFullName()
           + " doesn't exist yet. Script must be compiled before"
-          + " it can be used"))
+          + " it can be used",
+          Mudlog.msgType.SCRIPT_RUNTIME_ERROR,
+          AdminLevels.IMMORTAL
+        );
+
         return;
+      }
 
       script.internalFunction.apply(this, args);
     }
@@ -128,15 +136,17 @@ export class Script extends SaveableObject
   // (for example SystemRoom.onLoad).
   public getFullName(): string
   {
-    return this.prototypeName + "." + this.name;
+    return this.prototype + "." + this.name;
   }
 
   // Creates this.scriptFunction from this.code.
   public compile()
   {
+    /*
     // Check if code contains function with the same name as script.
     if (!this.checkCode())
       return;
+    */
 
     // Declare local variable to store 'this.scriptname' in a closure.
     let scriptName = this.getFullName();
@@ -181,12 +191,11 @@ export class Script extends SaveableObject
     let contextifiedSandbox = VirtualMachine.contextifySandbox(sandbox);
     */
 
-    // Transpile from typescript to javascript
-    let transpiledCode =
-      ts.transpile(this.code, { module: ts.ModuleKind.CommonJS });
+    let vmScript = this.compileVmScript(scriptName);
 
-    let vmScript =
-      VirtualMachine.compileVmScript(scriptName, transpiledCode);
+    // Error has been reported by compileVmScript()
+    if (vmScript === null)
+      return;
 
     // Run the compiled code within our sandbox object.
     VirtualMachine.executeVmScript(scriptName, vmScript, sandbox);
@@ -194,8 +203,8 @@ export class Script extends SaveableObject
     // Assign compiled function to a class variable.
     this.internalFunction = sandbox.result;
     
-    // And also store it in a local variable so it's awailable from
-    // within a closure function delay().
+    // And also store it in a local variable of this method so it's
+    // awailable from within a closure function delay().
     compiledFunction = this.internalFunction;
   }
 
@@ -209,23 +218,40 @@ export class Script extends SaveableObject
     return true;
   }
 
+  /*
   private checkCode(): boolean
   {
     // Script code must contain function with the same name as the script.
     // TODO
     return true;
   }
+  */
 
-  private resumeScript(resolve, reject, compiledFunction)
+  // Adds 'use strict';, function header and {} to the code.
+  private getFullCode(): string
   {
-    // If the script core was been recompiled while this script
+    let fullCode =
+        "'use strict';\n"
+      // TODO: Function parameters
+      + "this.result = async function " + this.name + "()\n"
+      + "{\n"
+      +    this.code
+      + "}\n";
+    
+    return fullCode;
+  }
+
+  private resumeScript(script: Script, resolve, reject, compiledFunction)
+  {
+    // If the script code was been recompiled while this script
     // was waiting for delay() to expire, this instance of script
     // needs to be stopped.
-    if (this.codeChanged(compiledFunction))
+    if (script.codeChanged(compiledFunction))
     {
       let error = new Error();
       error.name = "Script cancelled";
-      error.message = "Running script " + this.name + " has been cancelled";
+      error.message =
+        "Running script " + script.getFullName() + " has been cancelled";
 
       // Reject the Promise, so the script will stop.
       // (an exception will be thrown, which will be handled by
@@ -239,6 +265,33 @@ export class Script extends SaveableObject
     }
   }
 
+  private compileVmScript(scriptName: string)
+  {
+    // Adds'use strict';, function header and {} to the script code.
+    let fullCode = this.getFullCode();
+    let transpiledCode = null;
+
+    try
+    {
+      // Transpile from typescript to javascript
+      transpiledCode =
+        ts.transpile(fullCode, { module: ts.ModuleKind.CommonJS });
+    }
+    catch (e)
+    {
+      Mudlog.log
+      (
+        "Transpile error in script " + scriptName + ": " + e.message,
+        Mudlog.msgType.SCRIPT_COMPILE_ERROR,
+        AdminLevels.IMMORTAL
+      );
+
+      return null;
+    }
+
+    return VirtualMachine.compileVmScript(scriptName, transpiledCode);
+  }
+
   private async internalDelay(miliseconds: number, compiledFunction: Function)
   {
     return new Promise
@@ -246,8 +299,19 @@ export class Script extends SaveableObject
       (resolve, reject) =>
         setTimeout
         (
-          this.resumeScript(resolve, reject, compiledFunction),
-          miliseconds
+          // This migth be confusing because setTimeout passes parameters
+          // in quite unusual way. The syntax is:
+          //   setTimeout(callback, delay, [arg], [...]);
+          // which means that arguments passed to callback are not
+          // passed like this: callback(arguments) as you would expect,
+          // but like extra arguments of setTimeout.
+          this.resumeScript,
+          miliseconds,
+          // So these are actually arguments of this.resumeScript:
+          this,
+          resolve,
+          reject,
+          compiledFunction
         )
     );
   }

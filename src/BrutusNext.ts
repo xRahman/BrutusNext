@@ -49,7 +49,7 @@ process.on
       // throws an exception. It is not an error to be reported though.
 
       /// This was used for debugging:
-      //console.log(err.message);
+      console.log(err.message);
     }
     else
     {
