@@ -20,8 +20,9 @@ export class FlagNamesManager extends AutoSaveableObject
   // Do not save (and load) variable 'ready'.
   private static ready = { isSaved: false };
 
-  // Hashmap of <FlagNames> objects indexed by class names of Flags objects
-  // (like "RoomFlags").
+  // Hashmap<[ string, FlagNames ]>
+  //   Key: name of class inherited from class Flags
+  //   Value: FlagNames object
   private flagNamesList = new Map();
 
   private static get SAVE_DIRECTORY()

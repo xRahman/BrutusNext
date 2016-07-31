@@ -17,7 +17,7 @@ export class PrototypeManager extends AutoSaveableObject
 {
   // Hashmap<[ string, Prototype ]>
   //   Key: prototype name
-  //   Value: prototype.
+  //   Value: prototype
   public prototypes = new Map();
   // Do not save variable prototypes
   // (individual prototypes are saved to separate files).
