@@ -11,15 +11,13 @@ import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {Server} from '../server/Server';
 import {Id} from '../shared/Id';
 import {SaveableObject} from '../shared/SaveableObject';
+import {Script} from '../shared/Script';
 import {Game} from '../game/Game';
 import {EntityId} from '../game/EntityId';
-import {EntityContainer} from '../game/EntityContainer';
+import {NamedEntity} from '../game/NamedEntity';
 import {IdList} from '../game/IdList'
 
-// TEST:
-const vm = require('vm');
-
-export class GameEntity extends EntityContainer
+export class GameEntity extends NamedEntity
 {
   /*
   /// TEST
@@ -199,14 +197,6 @@ export class GameEntity extends EntityContainer
       return this.name + ".json";
     else
       return this.getIdStringValue() + ".json";
-  }
-
-  // Returns something like "Character 'Zuzka' (id: d-imt2xk99)".
-  // (indended for use in error messages)
-  public getErrorIdString()
-  {
-    return this.className + " '" + this.name + "'"
-      + " (id: " + this.getId().getStringId() + ")";
   }
 
   // -------------- Private class data ----------------
