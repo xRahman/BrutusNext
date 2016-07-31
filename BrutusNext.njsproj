@@ -34,6 +34,8 @@
     <TypeScriptCompile Include="src\game\commands\CommandInterpretter.ts" />
     <TypeScriptCompile Include="src\game\DynamicClasses.ts" />
     <TypeScriptCompile Include="src\game\EntityId.ts" />
+    <TypeScriptCompile Include="src\game\NamedEntity.ts" />
+    <TypeScriptCompile Include="src\game\ScriptableEntity.ts" />
     <TypeScriptCompile Include="src\shared\ASSERT_FATAL.ts" />
     <TypeScriptCompile Include="src\shared\Prototype.ts" />
     <TypeScriptCompile Include="src\shared\PrototypeManager.ts" />
