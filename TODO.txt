@@ -1,0 +1,999 @@
+﻿blahg
+TOFIX:
+ARGH - directReference v Idckach je udelana spatne :\
+  - dokud vsichni odkazuji na Idcko, ktere si drzi samotna entita,
+  tak je to asi ok. Ale muze se stat, ze si nekdo vytvori vlastni
+  instanci Id - třeba po loadu ze souboru. V ten moment se to rozbije,
+  protože neexistuje jediná instance Idčka pro danou entitu...
+Jak to spravit?
+  - instance Idček asi budou muset být v příslušném containeru spolu
+    s entitama. Takže (i při loadu) si nebudu nikdy vytvářet vlastní Idčko,
+    vždycky si budu muset říct containeru, aby mi Idčko vyrobilo
+    (já mu dám stringId a on mi buď vrátí referenci na existující instanci Id,
+    nebo si ji vyrobí...)
+
+
+TODO: Zkontrolovat všechny komentáře v modulu Script
+
+TODO: Kontrola, že skript dostal správné parametry.
+  - A to ve fci Script.scriptFunction (deklarovane v constuctoru classy Script)
+
+TODO: Nastavitelný Lock proti opakovanému spouštění běžícího skriptu.
+
+TODO: script.recompile
+
+TODO: script.rename (nebo možná Prototype.renameScript)
+
+TODO: co se stane, když mi umře entita, na které běží async skript?
+
+
+
+TODO: Checkovatko na memoryleaky
+
+
+TODO: entity.stopScript(scriptName);
+TODO: entity.stopAllScripts();
+- musí to vycházet z entity, ne ze Skriptu
+[idea has been dropped. attachovat/detachovat scripty na entity nebude možné]
+
+
+
+TODO: Casem odstranit consoli ze skriptoveho sandboxu.
+
+TODO: Immlevely ukladat nekam jinam nez k charu
+- (asi do AccountManageru?)
+
+TODO: Skripty v Prototypu dávat do hashmapy místo do pole (protože bude třeba
+  umět skript najít například při 'edit TutorialRoom.onLoad');
+[done]
+
+TODO: Do Script.code dávat jen tělo funkce. Hlavičku funkce a {} tam přilepí
+  engine.
+[done]
+
+TODO: Změnit odkaz na prototyp ve Scriptu na jméno prototypu.
+[done]
+
+TODO: Otestovat skripty
+  - ukládání do souboru [done]
+  - zkompilovat a pustit dva různé skripty [done]
+  - rekompilace běžícího skriptu [done]
+[done]
+
+TODO: Naucit SaveableObject savovat a loadovat obycejne objekty.
+- ono by to v zásadě mohlo být ok, pokud je to dynamická classa a má
+   className, tzn. by ji bylo možné instanciovat. Ale to už rovnou můžu
+   trvat na tom, aby to byl SaveableObject.
+[Aha, on už to umí. Odmítá savovat jen classy, které nejsou obyč Object
+ a nejsou zděděné ze SaveableObjectu, což je asi dobře.]
+
+TODO: Nahackovat savovani staticke property 'className'
+[done]
+
+TODO: Ještě přece jen zvážit, jestli nepoužívat nepojmenované classy
+  (tj. že Class.constructor.name bude "") a nedávat jim className jako
+  moji vlastní property.
+  - ono to celkem dává smysl, protože to prostě nejsou statické classy.
+[budu používat nepojmenované classy]
+
+TODO: Změnit NamedClass, aby className nebyla property na instanci,
+  ale statická property (tj. na constructoru).
+[done]
+
+
+TODO: Velmi výhledově se zamyslet nad lepším formátem savutých skriptů
+  (hjson? samostatný soubor?), protože je to přece jen kód a bude se
+  například diffovat v gitu (co na něm který immortal změnil?)
+
+TODO: Zjistit, jestli by classDeclarationScript nemohl byt zkompilovany
+  jen jednou (a brat si parametry ze sandboxu).
+[pokud mi bude fungovat vyrábění class bez skriptu, tak tohle nebude potřeba]
+
+TODO: Ucesat Prototype.setMethods()
+[done]
+
+TODO: assert na internalFunction !== null
+[done]
+
+TODO: Testnout, jestli můžu z jednoho sandboxu vyrobit dvě skriptové funkce,
+  které budou mít různé skriptName.
+[done, nemůžu]
+
+IMPORTANT TODO: U prototypu savovat jen přetížené properties, ne ty
+  z prototypu.
+
+TODO: Instance savovat do /data/instances
+
+TODO: Charactery savovat na disk v lowercasu
+  - ze dvou duvodu:
+    1) aby neslo vytvorit soucasne char Zuzka a zuzka
+    2) aby se slo prihlasit case-insensitive verzi
+  - nebo se na to vykaslat a enforcovet Prvnivelke pismeno ve jmene charu?
+    (Asi prece jen bude hezci, kdyz na disku budou chary savnute s velkym)
+  - kazdopadne to case-insensitive prihlaseni by fungovat melo.
+
+TODO: Zkontrolovat, ze jsem Flags-related classy prejmenoval spravne
+[snad jo]
+
+TODO: Presunout flagNamesManager ze Serveru do Game
+ - asi to nebyl dobrej nápad, protože když bych chtěl mít account flagy,
+   tak nebudou fungovat bez toho, aby existovala hra.
+   - nejspíš to budu muset přesunout zpět.
+[done (přesunuto zpět)]
+
+TODO: Optimalizovat savovani prototypu, kdyz se zmeni jen jeden prototyp
+  (takze neni treba savovat uplne vsechny prototypy)
+  - mozna metodou Prototype::save(), ktera zavola save prototypeManageru
+    na konkretni prototyp?
+
+TODO: Pokusit se sjendotit dynamic typecast (metodou z UTILS?)
+  - ideálně ji přesunout někam jinam (někam do entity inheritance chainu)
+
+TODO: Projít všechny FATAL asserty a zkontrolovat, jestli musí být FATAL.
+
+TODO: Projít nově vytvořená data a opravit všechny chyby
+
+TODO: Při savu Map objectu je vždycky první prvek 'undefined'
+[fixed]
+
+TODO: Přejmenovat FlagsData na FlagData a FlagsDataManager na FlagDataManager
+[done]
+
+TODO: Zkontrolovat, že dobře loguje BAD PW attempt
+
+TODO: Promyslet a zkontrolovat, jak SaveableObject pracuje s null hodnotama
+- nejspíš je tam navíc ten ASSERT, kterej to kontroluje, null už by to mělo
+  zvládat (buď se vytvoří objekt správného typu, nebo se přímo přiřadí hodnota
+  loadnutá z JSONu)
+
+TODO: Možná mám někde zbytečně metody save() a load()
+  - jsou v IdableSaveableObjectu (takže pokud je něco zděděné přímo ze
+    saveableObjectu, tak to tyhle metody nemá.)
+
+TODO: Zacina bitvector od nuly nebo od jednicky? Zjistit.
+[zjevne od nuly, takze to mam spravne]
+
+TODO: Loadovani/savovani classy 'Map' v SaveableObjectu
+[snad]
+
+
+TODO: Adresářová struktura prototypů (a asi i v rámci PrototypeDataManageru)
+[snad done]
+
+TODO: Když neexistuje adresář /data, tak vytvořit defaultní flagsData
+  a prototypeData
+  - respektive možná bude stačit ve flagsDataManageru hodit loaded flagu
+    na true, aby se flagy vytvářely samy...
+[asi ok]
+
+TODO: Nekam naimplementovat metody setPrototypeData() a setMethods() :-)
+- nekam do GameEntity chainu, asi na urovni /shared.
+ (Nakonec jsou v PrototypeData, protože je to potřeba setovat zvenku do 
+  class_constructor.prototype)
+[Zatím je jen setPrototypeData()]
+TODO: setMethods()
+TODO: Skripty
+
+
+TODO: V PrototypeData doplnit typ k predavanym typum (ja vim, zni to divne...)
+[Jakz takz, nekde jsem neprisel na to, jak na to]
+
+TODO: Hodit ASSERT_FATAL do samostatneho modulu (a fci getTrimmedStackTrace()
+  taky, aby se dala includnout z obou assertu).
+[done]
+
+TODO: PrototypeData a PrototypeDataManager presunout do /shared
+[done]
+
+TODO: Zvážit, jestli nedávat dynamické classy (repsketive jejich konstruktory)
+někam jinam než přímo do global objectu (asi do global.dynamicClasses ?).
+[done]
+TODO: Popravdě možná spíš pod server, nebo tak něco... Těžko říct.
+
+
+TODO: Zrušit prefixy z flagů.
+[done]
+
+TODO: vsechna createNew asi prejmenovat jen na create (když něco vytvářím,
+  tak je jasné, že to bude nové).
+[done]
+
+TODO: Zvážit, jestli nepřejmenovat všechny proměnné typu newArray (zrušit new).
+
+TODO: Přidat do SaveableObjectu savovani classy Map.
+  (Ono to možná funguje samo, chce to každopádně zkontrolovat.)
+  - tak samo to opravdu nefunguje
+[done]
+
+TODO: implementovat flagy (bitvector engine).
+[done]
+
+TODO: Přidat do accountu seznam charů, které mají admin práva (nebo možná na
+  char flagu, že má admin práva - checkne se this.playerConnection, přes ni
+  account a na něm je adminLevel).
+
+TODO: Udělat vlastní FS modul, ať jsou všechny souborové fce na jednom místě.
+[done]
+
+TODO: Když se zakládá první character, udělat z něj implementora a dát ho do
+  SystemRoom.
+  - možná se bude hodit držet si systemRoomId ve Worldu jako proměnnou.
+[jakz takz]
+- Zatim spis nejakztakz
+TODO (stále)
+
+TODO: Nastavovat entity.location (kdyz entitu vkladam do nejake jine).
+[Snad done (mozna ne vsude)]
+
+TODO: Všude, kde se to hodí, předělat předávání parmetrů. Předávání objektem
+  dělá kód mnohem čitelnější .
+
+TODO: Používat 'new Map' místo 'new Object' (hlavně proto, že dynamicky
+  generované klíče mohou kolidovat s existujícíma properties na objektu).
+  - vyzkoušeno a přidáno do Saveableobjectu
+TODO: Udělat to všude
+
+IDEA: Udělat z IDčka generic - id.getObject() pak vždycky vrátí správný typ.
+[Tohle nepůjde]
+- místo toho id.getEntity() dělá dynamický typeCasting.
+[done]
+
+TODO: predelat vsechna idcka v savech na EntityId
+- to asi pořeším tím, že vyrobím celý svět znovu.
+
+TODO: Pri vytvareni noveho sveta generovat mistnostem nejake defaultni
+  RoomInfo.
+  (A to asi tak, ze se pri vytvareni nove rommy vytvori automaticky, pokud
+  konstruktor nedostane jako parametr template - nebo mozna dve funkce, jedna
+  na vytvoreni templatove roomy a druha na vytvoreni odvozene roomy?)
+/* Predelavam cely koncept prototypu, takze tohle bude cele jinak */
+
+TODO: Zprovoznit prikaz look (zatim asi jen do roomy)
+[kostra by snad byla]
+
+TODO: Loadovat chary do konkrétní roomy.
+[To je tak napul. Rahman ma nastavenou 'location', Zuzka ne a nove zalozene
+chary taky ne]
+
+TODO: Zprovoznit příkaz na založení nové entity (na Brutusu se tohle děje,
+  když dám editovat dosud neexistující objekt)
+
+
+TODO (hodně výhledově): Zajistit, aby se ze skriptů nedal nastavovat
+  Account::adminLevel a nedaly dělat věci, na které je třeba adminLevel > 0.
+  (viz ./documentation/code_architecture/admins)
+
+-------------
+
+TODO: Idcka dostala přímou referenci na odkazovaný objekt
+  - při vytváření objektu je třeba tuhle referenci v idčku inicializovat
+    (je to parametr constructoru)
+  - a při mazání objektu (odebírání ze seznamu objektů) ji zase invalidovat.
+[snad done]
+
+TODO: V AbbrevSearchListu nahradit prime odkazy na GameEntity Idckama (idcko
+  ma ted v sobe primy odkaz, takze to nebude vyrazne pomalejsi).
+[snad done]
+
+TODO: Otestovat AbbrevSearchList
+  - pridat do nějakého roomu pár characterů
+  - implementovat příkaz tell (globální search)
+  - implementovat nějaký social do roomu (search v roomu)
+
+Úvahy o hot reloadu
+  - nakonec asi bude nejjednodušší udělat si to růčo, podobně jako
+    save/load. Nejspíš tak, že se po reloadu modulu vytvoří instance
+    příslušné entity a všechny existující entity v game entity containeru
+    si vždycky najdou svůj nový "prototyp" (nejspíše podle className),
+    projdou všechny svoje properties (jdou projít i metody?), metody si
+    přiřadí ty z nového "prototypu", existující property si nechají
+    (možná zruší ty, které na novém "prototypu" nejsou) a přidají ty, co
+    má nový "prototyp" navíc - zkopírováním, takže budou inicializované
+    podle nového kódu.
+  - reload proběhne automaticky, protože poběží watch na změny příslušných
+    souborů.
+
+TODO: Zprovoznit resolvování aliasů složených z více klíčových slov
+   v AbbrevSearchListu:
+   - Dám do něj jednotlivě všechna klíčová slova z alias listu.
+   - Při heldání je všechna matchnu, čímž dostanu n polí se seznamem entit
+    "slyšících" na dané jméno. Ty následně projdu a vytvořím seznam idček,
+    které se nachází ve všech těchto polích.
+[snad done, zatím netestováno]
+
+TODO (výhledově): Dodělat do AbbrevSearchListu funkčnost, že dokud je v něm
+  málo záznamů, tak se vůbec nebude konstruovat vyhledávací struktura, prostě
+  se lineárně projde pole aliasů (to proto, aby se zbytečně nezabírala paměť
+  vyhledávací strukturou pro pár mobů v roomě, pát itemů v inventáři, atp.)
+
+TODO: Vsude doplnit metodu getErrorIdString() a dusledne ji pouzivat v
+  chybovych hlaskach.
+
+
+TODO: OLC
+
+
+
+
+TODO: Checkovat, ze loadnute id odpovida idcku, podle ktereho jsem
+  entitu naloadoval.
+  (a taky ze id odpovida nazvu souboru, pokud entita neni unikatni)
+
+
+TODO: Zautomatizovat protopyování - asi by to měly umět všechny gameEntity
+minimálně do té míry, že si budou držet odkaz na prototyp (idčko) a budou
+automaticky prototypovat 'name'.
+
+TODO: Do zahlavi souboru nakreslit stromy dedicnosti.
+
+TODO: Udelat tridu Command, do ktere se vrazi cely command string, a ktera
+  s nim bude umet pracovat (parsovat argumenty, atd.)
+- Tohle je otazka. Koukal jsem na to a mozna to neni az tak dobry napad,
+  v ruznych situacich se command parsuje ruzne (kazdy skill to muze delat
+  jinak, napr.)
+
+TODO: Zkontrolovat, ze datove properties, ktere maji get i set a pri
+getu a setu se s nima nedela nic vic nez prirazeni a cteni, jsou rovnou
+public.
+
+TODO: Ve vsech classach hodit protected data na konec.
+- mozna spis vsechna data k sobe a treba ten blok s deklaraci dat jeste nejak
+  graficky odlisit, treba odsazenim
+
+
+---------------------------------------
+
+TODO: Upravit LobbyProcessor, aby prompt posilal pres generatePrompt()
+[done]
+- Pro AuthProcessor to neni dobrej napad, vedlo by to ke spouste internich
+  stavu
+
+TODO: v metode PlayerConnection::generatePrompt()
+/// TODO: switch na stage lobby processoru by mel byt v LobbyProcessoru
+[done]
+
+TOFIX: Asserty pri connecteni z ruznych terminalu
+[Co jsem vedel tak fixed]
+
+TOFIX: Stalo se mi, ze jsem se pripojil, jeste nez se neco zinicializovalo,
+  takze jsem nedostal menu.
+  - a uz asi i vim, jak se mi to stalo: Nalogoval jsem az do hry a zabil
+    putty (zavrel connection), nasledne jsem se pokusil znovu prihlasit.
+  - bude to nejspis tim, ze zatim nemam implementovane korektni zavreni
+    connection, kdyz player shodi connection, zatimco je ve hre.
+    (viz PlayerConnection::close(), prvni vetev ifu)
+[nejspis fixed]
+
+TOFIX: Kdyz naloguju, vlezu do hry, quitnu a zatimco jsem v menu, tak se
+  priloguju pres novou connection, tak to do logu vypise:
+  "Player Rahman [::1] closed connection before logging in" 
+  - zrejme se pri quitu ze hry neco nenastavi spravne.
+- asi je spatne jen hlaska. Je spravne, ze je account null - byl setnuty
+  na null proto, aby ho connection neodlogovala (protoze jde o reconnect)
+  Ve fci PlayerConnection::onSocketClose() by mel byt switch podle
+  stage lobbyProcessoru, ne jen test na to, jestli je je account null.
+Pozn.: stage lobbyProcessoru bych nemel switchovat v metode PlayerConnection,
+  mel bych na to udelat metodu v lobbyProcessoru.
+[fixed]
+
+TOFIX: Kdyz si uzurpnu connection, tak se nezavre
+[fixed]
+
+TODO: stage ve vsech managerech predelat z intu na stringy, at je pri
+  debugovani videt, co je to za stage.
+[done]
+
+
+TODO: fixnout SYSTEM ERRORY, ktere vznikaji tim, ze se spusti 'onError'
+event po zavreni connection
+- mozna se to vyresi, kdyz pri zavirani socketu odstranim listenery
+  na data:
+    socket.removeAllListeners('data');
+- tak ne.
+[snad fixed]
+
+TODO: Zprovoznit start z neexistujicich dat
+(musi se vytvorit world, v nem 1 realm, v nem 1 zona, v ni 1 room)
+[done]
+
+
+TODO: Opravit barvy
+[done]
+
+
+TODO: loadovani a savovani obyc objektu (nezdedenych ze SaveableObject)
+- kdyz objekt nema loadFromJsonObject, tak do nej proste priradit to, co se
+  loadnulo z jsonu.
+- tohle je potreba kvuli loadovani Date objektu.
+- nebo mozna rozpoznavat, ze jde o Date object, tezko rict. Tohle prirazeni
+  by mohlo vest k tomu, ze objekt nebude mit vsechny properties, ktere by mel
+  mit.
+  - asi by bylo lepsi detekovat, ze to je Date object...
+[done]
+
+TODO: Misto this.isSaved pri loadu/savu checkovat
+  ClassAttributes.getAttribute(className, property, attribute);
+[done]
+
+TODO: Poresit radkovani pri posilani menu
+/*
+  Kdy se vypisuje menu:
+  - pri nalogovani do hry
+      (to jde tesne po prikazu a musi byt odradkovane)
+      - tady by ve skutecnosti melo byt nejdriv MOTD a po nem "Pres return"
+  - pri quitu ze hry
+      (to jde po bloku textu, nema byt odradkovane, protoze odradkovani zaridi
+      engine)
+  - invalid option v menu (vypise se znovu jako prompt)
+      (odradkovane ma byt v tomhle pripade "That's not a menu choice, takze
+      menu jde opet po bloku jako prompt)
+*/
+[snad done]
+
+TOFIX: Ponastavovat isSaved = false vsude, kde je to potreba
+[snad done]
+
+TOFIX: abbrevSearchList by nemel byt case sensitive
+[done]
+
+TOFIX: Do abbrevSearchListu se ocividne nedava posledni prvek
+- a naopak se tam dava i prazdny string
+[done, fixed]
+
+TOFIX: Prvky v poli ocividne savuji saveRequests property
+[tak prvky v poli se savovaly spravne, chyba byla v hashmape, coz je obyc
+ Object]
+
+TODO: Za prompt pridavat mezeru (aby byl player input od promptu oddeleny)
+[done]
+
+TODO: Fixnout "Invalid prompt >" pri "That's not a menu choice!"
+[fixed]
+
+TODO: Nejspis budu muset zrusit zrani newlinu na konci inputu, holt si to
+  koderi budou muset hlidat sami. Bude to potreba na to, abych na patricnych
+  mistech vyrobil vicenasobne odradkovani.
+/*
+  - mozna by se to mohlo kontrolovat v ramci sendAsBlock(), tj. kdyz to konci
+  promptem. Tam se mezi prompt a blok automaticky prida mezera (pokud player
+  nema brief mode) a asi nikdy nebude hrozit, ze by tam mely byt dve.
+  - tohle by asi mohlo i stacit, btw. Drtiva vetsina herniho outputu bude
+  rozhodne posilana jako blok (urcite sendToChar(), urcite act()).
+*/
+/*
+  Tak ne, je to blbost. Po bloku bez promptu stejne nasleduje newline a po
+  promptu naopak logicky byt nesmi, jinak by hrac psal na novou radku misto
+  na stejnou.
+
+  Ve skutecnosti je nekde potreba newline pred outputem, protoze je treba
+  odradkovat po odeslani prikazu, a to se jinak udelat neda.
+*/
+[rozhodnuto: Newliny na konci outputu se zerou, je povolena newline pred
+outputem - pouziva se na oddeleni outputu od player commandu]
+
+TODO: Vyzkoumat, jak je to udelane, ze v putty neni pri zadavani videt heslo
+
+TODO: Poresit barvu player inputu
+/*
+  Zjevne se pise barvou, kterou naposledy poslal mud.
+  - tj. asi by to chtelo na konec kazdeho stringu prilepit &w.
+*/
+[done]
+
+TODO: Poresit automaticke radkovani prikazu.
+/*
+  Uvaha: Za odradkovavani VZDYCKY zodpovida engine, tj. zadny send_cosi() prikaz
+  nesmi koncit enterem
+  - tohle mozna enfocnout v kodu - ASSERTEM a tim, ze se pripadny enter
+    automaticky odstrani.
+  - povolene jsou pouze entery uvnitr stringu, pokud ma byt viceradkovy
+
+  TODO: Zajistit, aby to takhle opravdu bylo, i v prubehu logovani do hry.
+
+  TODO: Sjednotit, jak se budou entery psat - asi vzdycky '\n' s tim, ze
+    se to pripadne tesne pred odeslanim hromadne preklopi na '\r\n'
+
+  Pozn: Matne si vzpominam, ze pri posilani progressbaru bylo potreba
+    rozlisovat mezi sendem, ktery se ma odradkovat, a ktery se odradkovat nema
+    - respektive mozna to bylo jeste jinak, ze se zapnul mod "ted posilam
+    updaty progressbaru", pri kterem se neodradkovava nic.
+*/
+/*
+  Je to trochu jinak:
+  - za promptem nikdy neni newline, takze se prikaz pise rovnou za nej. Promt
+    jsou i vsechny prikazy v menu a tak.
+  To znamena, ze je treba rozlisovat, jestli se posila prompt, nebo neco
+  jinyho.
+*/
+[snad done]
+
+Zrusit savovani IdProvideru, misto toho k idcku prilepovat boot timestamp.
+[done]
+
+Zrusit prvni parametr z IdProvider.generateId()
+[done]
+
+TOFIX: Po quitu nebo reconnectu je nejspis nastaveno provazani
+  s playerConnection, opakovany quit nezabere (respektive pak vubec nefungujou
+  prikazy)
+  [done]
+
+TOFIX: qui spusti doQuit() misto doQui()
+[Fixed]
+
+---------------------------------------------
+---------------------------------------------
+---------------------------------------------
+---------------------------------------------
+
+Important TODO: Saving request buffer na savovani lastIssuedId
+[Done - IdProvider ted vyuziva mnohem vic funkcnosti ze SaveableObjectu,
+ vcetne bufferovani save requestu]
+
+---------------------------------------------
+
+TODO: Zrusit pevne idcko worldu. Bude se loadovat ze souboru
+world.json, kde je ulozene.
+[Done]
+
+---------------------------------------------
+
+TODO: accountName prejmenovat na name, at se savuje na zacatek souboru.
+[Done]
+
+---------------------------------------------
+
+TODO: Udelat hack do SaveableObjectu, ze kdyz ma entita property 'name',
+  tak se savne jako prvni (jestli to teda pujde).
+[done]
+
+---------------------------------------------
+
+GameEntity by mel byt IdContainer<Id>
+- tedy container Idcek
+[Done - obsahuje IdList]
+
+Staci mi, ze se idcka davaji do hashmapy?
+- nestaci, protoze potrebuju pevne poradi
+[Done - IdList ma Array idcek]
+
+V cem se lisi:
+EntityManager, IdContainer, EntityContainer?
+
+IdContainer
+/* Mel by se jmenovat asi spis IdableItemsContainer */
+- neni z niceho zdedeny
+- je to template (IdContainer<T extends IdableSaveableObject>)
+- itemy jsou v hashmape
+Umi:
+  - pridat item pod existujicim idckem
+  - vygenerovat itemu idcko a pod nim ho pridat
+  - odebrat item z containeru
+  - odpovedet, jestli je item daneho idcka v containeru
+  - vratit item podle idcka (pres hashmapu)
+IMPORTANT: IdContainer nedrzi idcka, ale primo itemy!
+
+EntityManager
+- neni z niceho zdedeny
+- je to template (EntityManager<T extends GameEntity>)
+- vubec si nedrzi idcka ani itemy, drzi si pouze abbrevSeachList a uniqueNames
+Umi:
+  - pridat item pod existujicim idckem
+  - pridat novy item do Game.entities (tam se mu vygeneruje idcko)
+  - checknout, jestli je entita v Game.entities (nikoliv jestli je v manageru)
+  - vratit entitu (vezme ji z Game.entities, necheckuje, jestli mu idcko patri - nema jak)
+  - odebrat entitu z manageru
+- jestli ma entita unikatni jmeno nebo ne je vlastnost entity, manager ji podle toho zaradi do
+  seznamu unikatnich jmen nebo ne
+
+EntityContainer
+- je zdedeny z predka GameEntity (EntityContainer extends CommandInterpretter)
+- zatim nema nic, ale mel by mit SaveableArray idcek
+- mel by asi umet so same, co EntityManager (ale unikatni jmena ho asi nezajimaji)
+[Done - jmenuje se to IdList]
+
+save() a load() by mel automaticky savnout/loadnout i vsechny obsazene entity,
+aby se nestalo, ze loadnu container, ale ne to, co je v nem.
+[Done]
+
+Zaver: GameEntity by v sobe proste mela mit entity manager
+[Done - je to tochu jinak, misto manageru je ted classa IdList, ktera v sobe
+ drzi seznam idcek a umi v nem vyhledavat.]
+
+------------------------------------------------------------------------
+
+Ke zvážení: Dávat před string idčko nějakou předponu, třeba e jako entity, a jako account?
+- teoreticky by se pak dala generovat "spotřební" idčka (třeba timery) s jinou předponou zase
+od začátku
+[Zatim na to kaslat]
+
+Nesavovat playerConnectionId
+[done]
+
+Load/save entityContainerů
+[asi done]
+
+Check, že existují adresáře, do kterých se mám savnout (možná je automaticky
+vyrobit, pokud neexistují?).
+[done]
+
+
+
+-----------------------------------------------------
+
+TODO: Implementovat binarni vyhledavaci pole na hledani abbreviationu.
+[nahrubo asi done. Je to hashmapa]
+
+TODO: Pridelat do entity manageru trackovani neunikatnich jmen.
+[snad done]
+
+TODO: Z protected metod zrusit predponu 'my', stejne ji vetsinou nepouzivam.
+(u dat zustane)
+[zruseno i u dat]
+
+------------------------------------------------------
+
+Hodne vyhledove:
+
+[23:49] Huan         : jiste ze muzou vracet. promise.resolve(navratovahodnota)
+[23:50] Huan         : a presne tohle streamline resi
+[23:50] Huan         : a resi i ty exception
+
+[exceptiony jsou jakz takz poresene tim, ze se odchyti a vyhodi znova, takze
+to vypise stack]
+
+------------------------------------------------------
+
+Vyhledove rozbehat tslint
+
+
+
+
+
+===============================================================
+Uvahy k prototypovani, skriptovani, hot reloadu, etc.
+-------------------------------------------------------
+
+
+    /*
+    // TEST:
+    let script = "return 'Changed function!'";
+    this.location.getEntity().printContents =
+      <() => string>new Function(script);
+
+      - Tohle funguje. Znamena to, ze skript muze byt ulozenej
+      jako string a muzu ho v runtime povesit jako metodu na nejaky
+      objekt (novou nebo existujici).
+
+      - otazka je, jak udelat wait
+
+      - chybi odolnost proti zacykleni (ale to zas neni tak zasadni, to
+      se stava malokdy)
+
+      - neni videt this, musi se predat jako parametr (coz je ale asi ok,
+      tak se chovaji i brutusi skripty).
+
+      - nejde volat jine funkce, pouze metody toho, co se preda jako
+      parametr (nemam to ozkousene, ale snad jo). Coz je ale asi spravne,
+      aspon je to odolne proti zneuziti.
+
+      - musi to byt javascript (nemuze to byt typescript). Dalo by se ale asi
+      udelat nejake externi volani typescript compileru
+      vol
+    */
+
+
+
+    Asi by taky šel použít node.js modul 'vm':
+    https://nodejs.org/api/vm.html
+
+    - to bohužel pořád funguje jen na úrovni javascriptu...
+
+
+
+    Když bych chtěl prototypovat nativní javascriptovou prototype inheritancí
+    (jako že bych určitě chtěl), tak by každý brutusí vnum musel odpovídat
+    samostatné class. Pak by prostě javascriptový prototyp té classy fungoval
+    jako mudový prototyp.
+      Editace prototypu v runtime by pak vypadala takhle:
+        Mob82003.prototype.maxHitPoints = 20;
+
+
+
+  ------------
+
+  Jak na dynamické generování nových typů (prototypů)?
+
+  - Musím to samozřejmě načíst z nějakého souboru v rozumném (tj. JSON) formátu
+  - Co všechno dávat do jednoho souboru? Po zónách to asi organizované mít
+    nechci... (respektive určitě by mělo jít vypsat, jací mobové jsou použiti
+    v dané zóně, ale neměli by se vyrábat mobové (roomy, atd.) přímo do zón).
+
+    Každopádně zatím můžu začít jednou entitou v jednom souboru, pak to kdyžtak
+    rozšířím.
+
+Takže:
+
+class PrototypeData
+{
+  type: string;
+    /* Jaky typ se má dynamicky vytvořit */
+    - ten by se asi měl generovat automaticky
+    ("Mob"/"Obj"/"Room" etc. - nebo možná 'mOrc21') + jméno + případně číslo?
+    - je podstatné si uvědomit, že prototypy se nedávají do zón a že od každého
+    prototypu může existovat víc instancí (i od prototypu roomy). Takže když
+    budu chtít ve skriptu projít 10 room v zóně, tak budu ty roomy odkazovat
+    přes jejich stringová idčka (nebo nějaký logický dns-like ekvivalent),
+    nikoliv přes jméno prototypu.
+    - na druhou stranu loadovat budu z prototypu, takže 'load mOrc21' se
+    používat bude
+
+  ancestor: string;
+    /* Z čeho se má zdědit */
+
+  data: Array<any>;
+    /* Jaké property a s jakými hodnotami se mají nasetovat prototypu
+      (tedy do Type.prototype) */
+
+  scripts: Array<Script>;
+    /* kusy kodu, ze kterych se maji vyrobit metody a povesit na prototyp */
+}
+
+class ScriptData
+{
+  methodName: string;
+    /* Pod jakym jmenem se ma funkce povesit na prototyp */
+
+  code: string;
+    /* Tohle není přímo tělo funkce. Při navěšování na prototyp se ještě
+       obalí nastavením sandboxu a voláním s timeoutem. */
+}
+    
+
+
+Pozn (Globální skriptové funkce):
+  Pokud budu chtít mít nějaké skriptové fce, tak je asi nahážu do nějakého
+  objektu, který automaticky přihodím do každého sandboxu (tedy do každého
+  nového prototypového typu, protože sandbox bude nejspíš vždycky celá
+  entita).
+  - to by znamenalo, že by se volaly přes nějakou dot notation, nejspíš
+  se.doSomething(); // 'se' jako ScriptEngine
+  (nebo možná utils.doSomething()?)
+- on možná sandbox objekt funguje jako 'global', takže půjdou funkce volat
+  přímo. Chce to vyzkoušet.
+
+
+TODO: pořešit 2 death scripty na mobovi (obecně víc skriptů na stejném triggeru
+  jedné entity)
+
+
+===============================================================
+Bitmapy
+-------------------------------------------------------
+
+IDEA: Zkombinovat moznost deklarovat flagy v kodu a deklarovat je dynamicky.
+- Když je flaga v kódu i v soboru (a sedí value), tak to tak
+  zůstane. Když je v kódu a není v souboru, tak se dosavuje do souboru.
+  (Tj. vždycky budou všechny flag values v souboru, včetně těch deklarovaných
+   v kódu, ale ne všechny flagy musí být deklarované v kódu).
+- když to při loadování hry nesedí (v kódu je stejná flaga jako v souboru ale
+  s jinou hodnotou), tak to sprostě zařve FATAL_ASSERTEM
+
+Jinak řečeno (a i jianak implementováno): V kódu budou deklarovány jen
+  symbolické konstanty (bez hodnoty), hodnota bude jen v souboru (repsketive
+  v hashmapě).
+
+/*
+ Jinak: FlagValue nepotřebuju, tu si vyrobím interně při indexaci.
+   (a vlastně ani to ne, budu přece přistupovat na Flags object konkrétního
+   typu a ten mi řekne, že value "PLAYER_DISCONNECTED" v RoomFlags není).
+
+ - možná by stálo za to vyžadovat, aby všechny flagy mělo globálně unikátní
+   názvy (možná formou prefixů).
+   (Prefixy by fungovaly tak, ze každý FlagData by si svůj prefix pamatoval
+   a kontroloval by, že jím nově vytvářená flaga začíná (neměl by se připojovat
+   automaticky, jen kontrolovat)).
+*/
+
+
+- flagy by měly jít přidávat za běhu, což znamená, že se musí umět savovat
+  na disk (do kódu se za běhu zapisovat nedá).
+  (Naprd je, že pak nebude napovídat visualko...)
+
+Hodnota (konkrétní flaga) by měla být objekt, který v sobě má:
+- vlastní číslo flagy
+- jméno typu
+(Díky tomu půjde za běhu kontrolovat, že RoomFlags indexuju opravdu room flagou
+ a ne třeba PLR flagou se stejným číslem).
+
+
+class RoomFlags extends Flags
+{
+  public static get ROOM_HOT() { return ROOM_HOT; };
+
+  /*
+     Not all existing room flags are necessarily defined here.
+     Some of them may be declared dynamically - in that case the flag
+     exists in files but doesn't have symbolic name here.
+       Feel free to add symbolic names for such flags here if you want
+     to use from the code.
+     
+     Note also that only the name of the flag is declared here, not its
+     integer value. The value is still saved to file.
+
+     You can also add a new flag here that doesn't yet exist in the file.
+     It will be added there automatically on the next reboot (when the
+     game loads itself from file) and an unused numeric value will
+     automatically be assigned to it.
+
+     If you really want to delete a flag (maybe because you addes some by
+     mistake or it becomes obsolete), the only way to do it is to edit
+     the file with respective FlagData (///TODO: cesta k souboru).
+   */
+}
+
+--------------------
+
+Automatický update flaglistů:
+------------------------------
+
+- FlagsDataManager má flagu this.loaded, díky které lze assertovat,
+  když se někdo pokusí hrabat na FlagData před tím, než jsou poprvé
+  loadnuta ze souboru.
+
+- instance Flags objektů (třeba new CharacterFlags()) mají referenci
+  na příslušný FlagsData object inicializovaný na false.
+  Až když ho někdo bude chtít poprvé použít, tak se na FlagsDataManageru
+  checkne, že takový FlagsData objekt existuje (a že už je loadnuto).
+  Pokud ne, tak ho vytvoří a savne.
+  - tohle se pochopitelně provede jen jednou za boot, proože při příštím
+    accessu už existovat bude.
+
+- Když si konkrétní instance Flags objektu žádá o referenci na svůj FlagsData
+  object, tak se taky provede update seznamu flag podle statických proměnných
+  na Flags objektu, které začínají příslušným prefixem.
+  - FlagsData object má flagu this.flagsAutoUpdated, která zaručí, že se tohle
+    provede jen jedno, i když instancí příslušného FlagsObjectu bude více
+    (každá z nich si při prvním použití vyžádá referenci na svůj FlagsData
+    object)
+
+
+===============================================================
+Multiple characters and connections per account
+------------------------------------------------
+
+0) Exit BrutusNext
+1) Enter game as Rahman
+nebo
+1) Reconnect as Rahman
+// Pokud už char ve hře je
+
+2) Create new character.
+3) Delete a character.
+
+
+  // Player can be connected to her account multiple times - for example
+  // When immortal wants to play her mortal character on one session and
+  // here immortal on another.
+  /* Pozn: Mortalove by mohli mit omezeni na jedinou connection soucasne. */
+  pendingConnections = new Array<PlayerConnection>();
+
+
+Reconnect:
+- Zahodi se existujici connection navazana na character (pokud je jeste ziva)
+  a misto ni se setne pending connection, od ktere prisel request.
+
+
+===============================================================
+
+Scripting
+----------
+
+Každý skript je deklarace funkce
+- jméno skriptu je totožné se jménem funkce (obalovací kód musí umět vytáhnout
+  ze sandbox objectu proměnnou s danou funkcí - což bude dělat kód, který se
+  přilepí na konec skriptu. A ten samozřejmě musí vědět, jak se má ta fce
+  jmenovat).
+- díky tomu, že skript deklaruje funkci, je možné v ní použít i return.
+- script editor by při editaci nového scriptu měl automaticky vložit hlavičku
+  funkce + prázdné tělo. Může to být šedivé, tj. uvnitř editace skriptu edituju
+  jen obsah a když chci změnit jméno fce nebo parametry, tak musím vyskočit
+  ven (nebo si to prostě naparsuju, ono to zas tak těžké nebude - prostě první
+  vnější {})
+
+'stopscript'
+- Už v zásadě vím jak na to: Nechám doběhnout timer a místo resolve() zavolám
+  reject(). Tím vyhodím výjimku, kterou pak následně odchytím (jako všechny
+  výjimky z async funkcí přímo v BrutusNext.ts, akorát musím odflitrovat,
+  že jde o stopscript exception - nejspíš podle err.message).
+
+  Otázka je, jak v kódu, kterej se zavolá po skončení timeoutu, zjistit, že
+  patří ke skriptu, kterej někdo stopnul.
+  - nestačí na to jméno funkce, protože mezi tím se ten skript mohl pustit
+    znova a kdyby novému spuštění dřív doběhnul timeout, tak bych umřel to nové
+    místo starého. Takže musím přesně identifikovat každé jednotlivé spuštění
+    timeoutu (možná přes ten timeout id?)
+
+Související problém: Rušení skriptů běžících na entitě, kterou někdo zabil.
+  - když bych ty skripty nestopnul, tak budou sahat na neexistující this
+  - to znamená, že údaje o spuštěných skriptech (do kterých se bude
+    poznamenávat, které skripty se mají stopnout, nemůžou bejt přímo na entitě.
+    Po smazání entity bude timeout stále čekat.)
+    - teoreticky by to mohlo být na classe (jako static proměnná). To ostatně
+      asi i dává smysl, protože skripty jsou vlastnost prototypu (můžu v zásadě
+      přiřadit na instanci nějakej skript, ale definovat se budou na prototypu.
+      Takže budu psát něco jako 'stopscript PrototypeRoom::onLoad()', což by
+      mělo stopnout všechny běžící instance tohohle kusu kódu, včetně těch,
+      které jsem připojil na nějakou jinou entitu než odvozenou
+      z PrototypeRoom.)
+      - ok, takže na classe PrototypeRoom budu mít něco jako 'runningScripts',
+        což bude hashmapa indexovaná jmény skriptových fcí (třeba 'onLoad').
+        A pro každou běžící instanci tohohle skriptu tam bude záznam.
+        (díky tomu půjde vypisovat i statistiky, kolik instancí nějakého
+        skriptu mi běží, na jakých běží entitách, atd.)
+
+  Ok. Otázka teda je, jak do PrototypeRoom.runningScripts přidám info o právě
+  spuštěném skriptu.
+  - jediné možné místo je asi kód funkce delay(). A musím do ní nějak
+    propašovat informaci Prototype::scriptName - s tím, že Prorotype nemusí
+    nutně být this.prototype, protože metodu SystemRoom.doCosi() můžu klidně
+    pustit i na nějaké jiné entitě (s jiným prorotypem).
+
+  Jak to udělat?
+  - když buildím skript, tak vytvořím funkci. Může ta funkce mít vlastní
+    funkci delay? (Která zavolá funkci performDelay() s parametry 'Prototype'
+    a 'ScriptName'?).
+
+/*
+TOHLE NEBUDU IMPLEMENTOVAT
+- nepůjde attachovat/detachovat skripty na instance (entity), to je antipattern.
+
+Stopování běžících skriptů
+- ideálně bych měl do běžícího skriptu propašovat odkaz na 'script' object
+  a odkaz na internalFunction(). Když bude při doběhnutí timeru
+  internalFunction uvnitř funkce delay() jiná než ve script.internalFunction(),
+  tak to znamená, že se má skript stonout.
+- alternativně můžu předávat compilationCounter a incrementovat ho na 'scriptu'
+  (když má delay() menší compilationCounter, tak to znamená, že se má stopnout)
+*/
+-----------------------------------------------------
+
+Přejmenování skriptu
+- Pokud je script jen na prototypu, tak to je relativně jednoduché, na
+  prototype se ze Scriptu dostanu (a prostě assignu undefined místo původního
+  jména a novou scriptFunction na nové jméno)
+
+/*
+TOHLE NEBUDU IMPLEMENTOVAT
+- nepůjde attachovat/detachovat skripty na instance (entity), to je antipattern.
+
+- Pokud jsem script attachnul na entitu, tak to bude těžší.
+  IDEA: Při attachnutí skriptu na entitu se nesetne rovnou scriptFunction,
+  ale nejdřív nově vytvořená interFunction, která bude vědět, (přes jaké jméno
+  byla zavolána. Ta se následně může podívat, jestli skript s takovým jménem
+  ještě existuje (jak?))...
+*/
+
+---------------------------
+
+IDEA:
+Deklarovat fci delay() uvnitr skriptu místo uvnitř compile().
+- díky tomu uvidí na 'me' predane do skriptu jako parametr
+Nevyhoda: Vsechny skriptove fce budou muset mit explicitni parametr 'me'.
+
+
+IDEA:
+- 'script' můžu pořád dostat do delay() přes closure metody compile(),
+  jen musí přidat ještě jedno volání, které ji zavolá.
+
+  (tj. delay() bude deklarovaný ve skriptu a uvidí na 'me' a na funkci
+  interDelay, která je deklarovaná v closure metody compile() a nastavená
+  jako parametr sandboxu - což je problém, protože sandbox je jen jeden
+  pro všechny skripty....
+  - může být interDelay() deklarovaný v closure scriptFunction()?
+    - to mi asi k ničemu nepomůže. Leda že by...
+
+  - může být interDelay() předaný jako parametr do skriptové fce? Asi může...
+
+
+  IDEA: Script.internalFunction prejmenovat na Script.run
