@@ -22,7 +22,9 @@ export class FlagNames extends SaveableObject
   // (Value is name of the class of respective Flags object.)
   private flagsType: string = null;
 
-  // Hashmap of numbers (integer flag values) indexed by strings (flag names).
+  // Hashmap<[ string, number ]>
+  //   Key: flag name
+  //   Value: flag integer value
   private flagValues = new Map();
 
   // This flag is set to true the first time

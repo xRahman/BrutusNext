@@ -24,8 +24,7 @@
 
 'use strict';
 
-//import {ASSERT} from '../../shared/ASSERT';
-//import {ASSERT_FATAL} from '../../shared/ASSERT_FATAL';
+import {ASSERT} from '../../shared/ASSERT';
 import {Mudlog} from '../../server/Mudlog';
 import {AdminLevels} from '../../server/AdminLevels';
 
@@ -116,6 +115,14 @@ export class VirtualMachine
   //  some reason even though they are exported in /headers/node.d.ts)
   public static executeVmScript(scriptName, vmScript, vmContext)
   {
+    if (!ASSERT(vmContext !== null,
+        "Invalid vmContext"))
+      return;
+
+    if (!ASSERT(vmScript !== null,
+        "Invalid vmScript"))
+      return;
+
     try
     {
       // Execute the script using 'vm' module of node.js.
@@ -143,7 +150,7 @@ export class VirtualMachine
       */
       Mudlog.log
       (
-        "Runtime error while creating function from mud script "
+        "Failed to create function from mud script "
         + scriptName + ": " + e.message,
         Mudlog.msgType.SCRIPT_COMPILE_ERROR,
         AdminLevels.IMMORTAL
@@ -174,6 +181,8 @@ export class VirtualMachine
     //            the vm script.
     //   'delay' is supposed to be a function. It will be set prior
     //            to running the vm script.
-    return { result: null, delay: null  };
+ /// TEST: console je tu docasne, ve finale ji skripty nebudou potrebovat
+ /// (a ani by ji nemeli vydet, console umoznuje savovat na disk a tak).
+    return { console: console, result: null, delay: null  };
   }
 }
