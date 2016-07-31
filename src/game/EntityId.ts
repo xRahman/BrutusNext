@@ -91,4 +91,18 @@ export class EntityId extends Id
 
     return super.getEntity(param);
   }
+
+  /*
+  // Checks if entity still exists.
+  public isValid(): boolean
+  {
+    // TODO: Nebude to tak jednoduché, viz TODO :\
+
+    // If direct reference still exists, 
+    if (this.directReference !== null)
+      return true;
+
+    return false;
+  }
+  */
 }

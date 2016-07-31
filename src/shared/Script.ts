@@ -6,12 +6,13 @@
 
 'use strict';
 
-import {ASSERT} from '../shared/ASSERT';
 import {SaveableObject} from '../shared/SaveableObject';
 import {Prototype} from '../shared/Prototype';
 import {VirtualMachine} from '../shared/vm/VirtualMachine';
 import {AdminLevels} from '../server/AdminLevels';
 import {Mudlog} from '../server/Mudlog';
+import {EntityId} from '../game/EntityId';
+import {GameEntity} from '../game/GameEntity';
 
 // 3rd party modules.
 import * as ts from "typescript";
@@ -28,28 +29,17 @@ export class Script extends SaveableObject
   // Code that will be be compiled into a function and assigned to a prototype.
   public code: string = "";
 
-  // Function made from compiled script code.
-  // If you want to assign this script to an entity, assign this variable
-  // as it's method.
-  // (for example zlyMob['onLoad'] = script.scriptFunction;)
-  public scriptFunction = null;
-  // Do not save variable scriptFunction.
-  private static scriptFunction = { isSaved: false };
+  // Calling this function will execute compiled script code.
+  // (Only after the script is compiled of course.)
+  public run = null;
+  // Do not save variable run.
+  private static run = { isSaved: false };
 
   // When the scrit is compiled, this is the function that represents
   // the script.
   private internalFunction = null;
   // Do not save variable internalFunction.
   private static internalFunction = { isSaved: false };
-
-/// Tohle možná nakonec potřebovat nebudu...
-  // Here we keep track of running instances of this script so they
-  // can all be stopped at the same time.
-  // (This is used when the script code is changed - all running
-  //  instances are stopped and the new function is created.)
-//  private runningInstances = new Array<ScriptInstance>();
-  // Do not save variable runningInstances.
-//  private static runningInstances = { isSaved: false };
 
   constructor()
   {
@@ -99,18 +89,12 @@ export class Script extends SaveableObject
       the closure.
     */
 
-    this.scriptFunction = function(...args: any[])
+    this.run = async function(...args: any[])
     {
-      /*
-        Now we just call our insideFunction() on remembered 'script'.
-        It's not that easy, however, because we need script to have
-        'evilMob' as this (because we need to be able to access evilMob's
-        properties from the script).
-
-        To to it, we use apply() method of function() object, which allows
-        us to call a function with specified 'this' (which is 'this' of
-        scriptFunction(), which is 'evilMob').
-      */
+      /// TODO: Zkontrolovat, že jsme dostali správné parametry.
+      /// - vidím tady na script (protože ho mám z closure), v něm
+      ///   by mělo být uloženo, jaké má dostat parametry
+      /// - a vidím samozřejmě i jaké jsem dostal parametry.
 
       if (script.internalFunction === null)
       {
@@ -126,11 +110,58 @@ export class Script extends SaveableObject
         return;
       }
 
-      script.internalFunction.apply(this, args);
+      // Declare _closureDelay() function in a closure (locally) so it can
+      // access local constructor variables.
+      let _closureDelay = async function
+      (
+        miliseconds: number,
+        entity: GameEntity
+      )
+      {
+        // Variable script is from the closure (it's a local variable
+        // of constructor of Script class).
+        await script.internalDelay
+        (
+          miliseconds,     // Length of the delay.
+          entity.getId(),  // Id of entity on which the script was triggered.
+          // Reference to compiled script function at the time of launching it.
+          // (It will be used to check if script was recompiled whill it was
+          //  running.)
+          script.internalFunction,
+          script.getFullName()
+        );
+      }
+
+
+      /*
+        Now we just call our insideFunction() on remembered 'script'.
+        It's not that easy, however, because we need script to have
+        'evilMob' as this (because we need to be able to access evilMob's
+        properties from the script).
+
+        To to it, we use call() method of Function() object, which allows
+        us to call a function with specified 'this' (which is the entity
+        on which the script was triggered, like 'evilMob').
+      */
+
+      script.internalFunction.call
+      (
+        // 'this' is the entity on which the script was triggered.
+        this,   // This 'this' will become 'this' of internalFunction().
+        this,   // This 'this' will become 'me' parameter inside the script.
+        _closureDelay,
+        script, // Script object with compiled script.
+        args    // Arguments passed to triggered script.
+      );
     }
   }
 
   // ---------------- Public methods --------------------
+
+  public isValid(): boolean
+  {
+    return this.internalFunction !== null;
+  }
 
   // Returns 'prototypeName.scriptName'
   // (for example SystemRoom.onLoad).
@@ -142,15 +173,10 @@ export class Script extends SaveableObject
   // Creates this.scriptFunction from this.code.
   public compile()
   {
-    /*
-    // Check if code contains function with the same name as script.
-    if (!this.checkCode())
-      return;
-    */
-
     // Declare local variable to store 'this.scriptname' in a closure.
     let scriptName = this.getFullName();
-    
+
+    /*
     // Declare local variable to store 'this' in a closure.
     // (so we can call this.scriptChanged() from funcion delay())
     let script = this;
@@ -162,13 +188,15 @@ export class Script extends SaveableObject
     //  be run even later - definitely not before the script get's compiled.)
     let compiledFunction = null;
     
-    // Declare delay() function in a closure (loally) so it can
+    // Declare delay() function in a closure (locally) so it can
     // access local variable scriptName.
     let delay = async function(miliseconds: number)
     {
+      console.log(this.getId().getStringId());
+
       // Variable script is from the closure (it's a local variable
       // of Script.compile).
-      await script.internalDelay(miliseconds, compiledFunction);
+      await script.internalDelay(miliseconds, compiledFunction, scriptName);
     }
     
     // Sandbox is stored in a static variable - it's reused for
@@ -179,16 +207,10 @@ export class Script extends SaveableObject
     // Assign localy declared delay() function to the sandbox, so
     // the script will be able to call it.
     sandbox.delay = delay;
-
-    /*
-    // Object that will be used as sandbox to run script in.
-    //let sandbox = { console: console, result: null, delay: delay };
-    let sandbox = { console: console, result: null, delay: wrappedDelay };
-
-    // 'Contextify' the sandbox.
-    // (check node.js 'vm' module documentation)
-    //let contextifiedSandbox = vm.createContext(sandbox);
-    let contextifiedSandbox = VirtualMachine.contextifySandbox(sandbox);
+    
+    //// calling delay() from within the script will set 'this' to
+    //// sandbox 'this, which is an entity that the script is running on.
+    //sandbox.delay = delay.call(sandbox.me);
     */
 
     let vmScript = this.compileVmScript(scriptName);
@@ -197,20 +219,28 @@ export class Script extends SaveableObject
     if (vmScript === null)
       return;
 
+    // Sandbox is stored in a static variable - it's reused for
+    // compiling all mud scripts (because contextifying a sandbox
+    // takes quite a long time).
+    let sandbox = VirtualMachine.contextifiedScriptCompilationSandbox;
+
     // Run the compiled code within our sandbox object.
     VirtualMachine.executeVmScript(scriptName, vmScript, sandbox);
 
     // Assign compiled function to a class variable.
     this.internalFunction = sandbox.result;
-    
+
+    /*
     // And also store it in a local variable of this method so it's
     // awailable from within a closure function delay().
     compiledFunction = this.internalFunction;
+    */
   }
 
   // Checks if internal function changed against the one
   // passed as parameter.
-  public codeChanged(originalFunction: Function): boolean
+  // (This happens when the script is recompiled.)
+  public internalFunctionChanged(originalFunction: Function): boolean
   {
     if (this.internalFunction === originalFunction)
       return false;
@@ -218,40 +248,57 @@ export class Script extends SaveableObject
     return true;
   }
 
-  /*
-  private checkCode(): boolean
-  {
-    // Script code must contain function with the same name as the script.
-    // TODO
-    return true;
-  }
-  */
-
   // Adds 'use strict';, function header and {} to the code.
   private getFullCode(): string
   {
     let fullCode =
         "'use strict';\n"
-      // TODO: Function parameters
-      + "this.result = async function " + this.name + "()\n"
+      // TODO: Předávat zbylé parametry
+      + "this.result = async function " + this.name
+      + "("
+      + "  me: GameEntity,"
+//      + "  _script: Script,"
+      + "  _closureDelay: Function"
+      + ")\n"
       + "{\n"
+           // Here we are declaring local function delay()
+           // within the closure of script function (so it
+           // can see parameter 'me').
+      + "  let delay = async function(miliseconds: number)\n"
+      + "  {\n"
+             // Variable me is taken from the script closure
+             // (it's a script parameter).
+      + "    await _closureDelay(miliseconds, me);\n"
+      + "  }\n"
       +    this.code
       + "}\n";
     
     return fullCode;
   }
 
-  private resumeScript(script: Script, resolve, reject, compiledFunction)
+  private resumeScript
+  (
+    script: Script,
+    resolve,
+    reject,
+    entityId: EntityId,
+    compiledFunction: Function
+  )
   {
-    // If the script code was been recompiled while this script
-    // was waiting for delay() to expire, this instance of script
+    // TODO: Udelat neco s 'entityId', kdyz uz jsem ho sem propasoval
+    // (testnout podle nej, jestli je entity jeste validni)
+    console.log(entityId.getStringId());
+
+    // If the script code was recompiled while this script was
+    // waiting for delay() to expire, this instance of script
     // needs to be stopped.
-    if (script.codeChanged(compiledFunction))
+    if (script.internalFunctionChanged(compiledFunction))
     {
       let error = new Error();
       error.name = "Script cancelled";
       error.message =
-        "Running script " + script.getFullName() + " has been cancelled";
+        "Running script " + script.getFullName() + " has been cancelled"
+        + " because it had been recompiled";
 
       // Reject the Promise, so the script will stop.
       // (an exception will be thrown, which will be handled by
@@ -292,8 +339,29 @@ export class Script extends SaveableObject
     return VirtualMachine.compileVmScript(scriptName, transpiledCode);
   }
 
-  private async internalDelay(miliseconds: number, compiledFunction: Function)
+  private async internalDelay
+  (
+    miliseconds: number,
+    entityId: EntityId,
+    compiledFunction: Function,
+    scriptName: string
+  )
   {
+    // If someone writes 'await delay();' into a script (without a parameter),
+    // the script will wait 1 milisecond.
+    if (miliseconds === undefined)
+    {
+      Mudlog.log
+      (
+        "Missing 'miliseconds' parameter of 'await delay()' in script "
+        + scriptName + ". Script will wait for 1 milisecond",
+        Mudlog.msgType.SCRIPT_RUNTIME_ERROR,
+        AdminLevels.IMMORTAL
+      );
+
+      miliseconds = 1;
+    }
+
     return new Promise
     (
       (resolve, reject) =>
@@ -305,12 +373,13 @@ export class Script extends SaveableObject
           // which means that arguments passed to callback are not
           // passed like this: callback(arguments) as you would expect,
           // but like extra arguments of setTimeout.
-          this.resumeScript,
-          miliseconds,
-          // So these are actually arguments of this.resumeScript:
-          this,
+          this.resumeScript,  // Function to be called when timeout ends.
+          miliseconds,        // Length of timeout.
+          // Remaining parameters are arguments of this.resumeScript function:
+          this,     // Script object with compiled script.
           resolve,
           reject,
+          entityId,
           compiledFunction
         )
     );
