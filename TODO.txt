@@ -1,5 +1,4 @@
-﻿blahg
-TOFIX:
+﻿TOFIX:
 ARGH - directReference v Idckach je udelana spatne :\
   - dokud vsichni odkazuji na Idcko, ktere si drzi samotna entita,
   tak je to asi ok. Ale muze se stat, ze si nekdo vytvori vlastni
