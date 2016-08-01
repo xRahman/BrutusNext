@@ -14,6 +14,11 @@ import {IdableObject} from '../shared/IdableObject';
 
 export class IdProvider
 {
+  // Hashmap<[ string, Id ]>
+  //   Key: string id
+  //   Value: Id object
+  private ids = new Map();
+
   constructor(private timeOfBoot: Date) { }
 
   // -------------- Public static data ------------------
