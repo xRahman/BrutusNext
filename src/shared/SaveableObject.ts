@@ -9,11 +9,11 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
+import {Id} from '../shared/Id';
 import {NamedClass} from '../shared/NamedClass';
 import {AttributableClass} from '../shared/AttributableClass';
 import {FileSystem} from '../shared/fs/FileSystem';
 import {Mudlog} from '../server/Mudlog';
-import {Server} from '../server/Server';
 
 let beautify = require('js-beautify').js_beautify;
 
@@ -159,25 +159,25 @@ export class SaveableObject extends AttributableClass
   protected loadPropertyFromJsonObject
   (
     jsonObject: Object,
-    property: string,
+    propertyName: string,
     filePath: string
   )
   {
-    this[property] = this.loadVariable
+    this[propertyName] = this.loadVariable
     (
-      property,
-      this[property],
-      jsonObject[property],
+      propertyName,
+      this[propertyName],
+      jsonObject[propertyName],
       filePath
     );
   }
 
   // Override this method if you need to save property of nonstandard type.
   // (see class Flags for example)
-  protected savePropertyToJsonObject(jsonObject: Object, property: string)
+  protected savePropertyToJsonObject(jsonObject: Object, propertyName: string)
   {
-    jsonObject[property] =
-      this.saveVariable(this[property], property, this.className);
+    jsonObject[propertyName] =
+      this.saveVariable(this[propertyName], propertyName, this.className);
   }
 
   // --------------- Private methods --------------------
@@ -254,13 +254,13 @@ export class SaveableObject extends AttributableClass
       "Invalid json object loaded from file " + filePath);
 
     // Now copy the data.
-    for (let property in jsonObject)
+    for (let propertyName in jsonObject)
     {
       // Property 'className' will not be assigned (it's read-only
       // and static so it wouldn't make sense anyways), but we will
       // check that we are loading ourselves into a class with matching
       // className.
-      if (property === NamedClass.CLASS_NAME_PROPERTY)
+      if (propertyName === NamedClass.CLASS_NAME_PROPERTY)
       {
         ASSERT_FATAL(this.className !== undefined,
           "Loading object with saved '" + NamedClass.CLASS_NAME_PROPERTY + "'"
@@ -268,15 +268,15 @@ export class SaveableObject extends AttributableClass
           + " a '" + NamedClass.CLASS_NAME_PROPERTY + "' property."
           + " This should never happen");
 
-        ASSERT_FATAL(jsonObject[property] === this.className,
+        ASSERT_FATAL(jsonObject[propertyName] === this.className,
           "Loading object with '" + NamedClass.CLASS_NAME_PROPERTY + "'"
-          + " property saved as '" + jsonObject[property] + "' into an"
+          + " property saved as '" + jsonObject[propertyName] + "' into an"
           + " instance with '" + NamedClass.CLASS_NAME_PROPERTY + "'"
           + this.className + ". This should never happen, types must match");
       }
       else
       {
-        this.loadPropertyFromJsonObject(jsonObject, property, filePath);
+        this.loadPropertyFromJsonObject(jsonObject, propertyName, filePath);
       }
     }
   }
@@ -403,13 +403,13 @@ export class SaveableObject extends AttributableClass
   private loadArray
   (
     propertyName: string,
-    jsonProperty: Array<any>,
+    jsonArray: Array<any>,
     filePath: string
   )
   {
     let newArray = [];
 
-    for (let i = 0; i < jsonProperty.length; i++)
+    for (let i = 0; i < jsonArray.length; i++)
     {
       // newProperty needs to be set to null prior to calling loadVariable(),
       // so an instance of the correct type will be created.
@@ -419,7 +419,7 @@ export class SaveableObject extends AttributableClass
       (
         "Array Item",
         newProperty,
-        jsonProperty[i],
+        jsonArray[i],
         filePath
       );
 
@@ -468,12 +468,12 @@ export class SaveableObject extends AttributableClass
 
   // If myProperty is null, a new instance of correct type will be
   // created and returned.
-  // (Type is read from jsonProperty.className)
+  // (Type is read from jsonObject.className)
   private createNewIfNull
   (
     propertyName: string,
     myProperty: any,
-    jsonProperty: Object,
+    jsonObject: Object,
     filePath: string
   )
   {
@@ -481,7 +481,7 @@ export class SaveableObject extends AttributableClass
     {
       ASSERT_FATAL
       (
-        jsonProperty[NamedClass.CLASS_NAME_PROPERTY] !== undefined,
+        jsonObject[NamedClass.CLASS_NAME_PROPERTY] !== undefined,
         "Missing '" + NamedClass.CLASS_NAME_PROPERTY + "' property"
         + " in a nested object in file " + filePath + ". Make sure"
         + " that you use SaveableObjects instead of simple javascript"
@@ -493,7 +493,7 @@ export class SaveableObject extends AttributableClass
       myProperty = SaveableObject.createInstance
       (
         {
-          className: jsonProperty[NamedClass.CLASS_NAME_PROPERTY],
+          className: jsonObject[NamedClass.CLASS_NAME_PROPERTY],
           typeCast: SaveableObject
         }
       );
@@ -506,13 +506,13 @@ export class SaveableObject extends AttributableClass
   (
     propertyName: string,
     myProperty: any,
-    jsonProperty: any,
+    jsonObject: any,
     filePath: string
   )
   {
     // If we are loading property of primitive type (Number or String),
     // we just assign the value.
-    if (typeof jsonProperty !== 'object')
+    if (typeof jsonObject !== 'object')
     {
       // Note: Date object is actually saved as value of primitive type
       // (string), not as an object.
@@ -527,15 +527,15 @@ export class SaveableObject extends AttributableClass
         // only it's string representation. So we need to pass the JSON
         // string representing value of date to a constructor of Date
         // object to convert it to Date object.
-        return new Date(jsonProperty);
+        return new Date(jsonObject);
       }
       else
       {
-        return jsonProperty;
+        return jsonObject;
       }
     }
 
-    // Here we are sure that jsonProperty is an Object.
+    // Here we are sure that jsonObject is an Object.
 
     // If our corresponding property is null, it wouldn't be able to
     // load itself from JSON, because you can't call methods on null
@@ -545,7 +545,7 @@ export class SaveableObject extends AttributableClass
     (
       propertyName,
       myProperty,
-      jsonProperty,
+      jsonObject,
       filePath
     );
 
@@ -558,13 +558,13 @@ export class SaveableObject extends AttributableClass
       // When we are loading instance of class Map, data are actually
       // saved as array of [key, value] pairs and we need to recreate
       // our Map object from it.
-      return new Map(jsonProperty);
+      return new Map(jsonObject);
     }
     else if ('loadFromJsonObject' in myProperty)
     {
       // If we are loading into a saveable object, do it using it's
       // loadFromJsonObject() method.
-      myProperty.loadFromJsonObject(jsonProperty, filePath);
+      myProperty.loadFromJsonObject(jsonObject, filePath);
 
       return myProperty;
     }
@@ -574,7 +574,7 @@ export class SaveableObject extends AttributableClass
       (
         propertyName,
         myProperty,
-        jsonProperty,
+        jsonObject,
         filePath
       );
     }
@@ -652,17 +652,17 @@ export class SaveableObject extends AttributableClass
 
   // Check if there is a static property named the same as property,
   // an if it's value contains: { isSaved = false; }
-  private isSaved(property: string, className: string): boolean
+  private isSaved(propertyName: string, className: string): boolean
   {
     // Access static variable named the same as property.
-    let propertyAttributes = this.getPropertyAttributes(this, property);
+    let propertyAttributes = this.getPropertyAttributes(this, propertyName);
 
     // If attributes for our property exist.
     if (propertyAttributes !== undefined)
     {
       ASSERT_FATAL(propertyAttributes !== null,
-        "'null' propertyAtributes for property '" + property + "'"
-        + "Make sure that 'static " + property + "' declared in class"
+        "'null' propertyAtributes for property '" + propertyName + "'"
+        + "Make sure that 'static " + propertyName + "' declared in class"
         + className + " (or in some of it's ancestors) is not null");
 
       // And if there is 'isSaved' property in atributes.

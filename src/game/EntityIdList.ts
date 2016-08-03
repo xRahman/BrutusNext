@@ -14,7 +14,7 @@ import {AbbrevSearchList} from '../game/AbbrevSearchList';
 import {Game} from '../game/Game';
 import {GameEntity} from '../game/GameEntity';
 
-export class IdList extends SaveableObject
+export class EntityIdList extends SaveableObject
 {
   // --------------- Public accessors -------------------
 
@@ -60,7 +60,7 @@ export class IdList extends SaveableObject
 
   public addEntityUnderNewId(entity: GameEntity): EntityId
   {
-    let newId = Game.entities.addItemUnderNewId(entity);
+    let newId = Game.entities.addItemUnderNewId(entity, EntityId);
 
     this.addEntity(entity);
 
@@ -149,7 +149,7 @@ export class IdList extends SaveableObject
     if (!Game.entities.exists(entity.getId()))
     {
       if (entity.getId() === null)
-        Game.entities.addItemUnderNewId(entity);
+        Game.entities.addItemUnderNewId(entity, EntityId);
       else
         Game.entities.addItemUnderExistingId(entity);
     }

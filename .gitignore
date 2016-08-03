@@ -3,3 +3,6 @@
 .ntvs_analysis.dat
 build
 /bin/Microsoft.NodejsTools.WebRole.dll
+/src/game/Game.ts~RFc8edfa.TMP
+/src/shared/IdableObject.ts~RF124801d.TMP
+/src/shared/IdProvider.ts~RF12c7a05.TMP

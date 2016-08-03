@@ -60,7 +60,11 @@ export class EntityId extends Id
   // hasn't been created yet or if it has already been deleted),
   // fatal assert is triggered (so you know that you have referenced
   // something invalid).
-  public getEntity<T>(param: { typeCast: { new (...args: any[]): T } }): T
+  public getEntity<T>
+  (
+    param: { typeCast: { new (...args: any[]): T } }
+  )
+  : T
   {
     // Direct reference is not initialized while loading, because
     // that would enforce certain order of loading (and prevent

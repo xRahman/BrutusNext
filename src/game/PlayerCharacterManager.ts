@@ -10,13 +10,13 @@ import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {Id} from '../shared/Id';
 import {FileSystem} from '../shared/fs/FileSystem';
-import {IdList} from '../game/IdList';
+import {EntityIdList} from '../game/EntityIdList';
 import {Game} from '../game/Game';
 import {Character} from '../game/characters/Character';
 
 export class PlayerCharacterManager
 {
-  constructor(private characterList: IdList) { }
+  constructor(private characterList: EntityIdList) { }
 
   // ---------------- Public methods --------------------
 
