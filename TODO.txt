@@ -1,4 +1,9 @@
-﻿TOFIX:
+﻿TODO: Asi všude zrušit property deklarované jako parametry konstruktorů
+  (ne vždy se konstruktor volá se všemi parametry a pak se stane to, že
+  property není inicializovaná. Kromě toho to znepřehledňuje kód - hůř
+  se hledá, co je nějaká property zač.)
+
+TOFIX:
 ARGH - directReference v Idckach je udelana spatne :\
   - dokud vsichni odkazuji na Idcko, ktere si drzi samotna entita,
   tak je to asi ok. Ale muze se stat, ze si nekdo vytvori vlastni
@@ -10,7 +15,7 @@ Jak to spravit?
     vždycky si budu muset říct containeru, aby mi Idčko vyrobilo
     (já mu dám stringId a on mi buď vrátí referenci na existující instanci Id,
     nebo si ji vyrobí...)
-
+[zatím netestováno]
 
 TODO: Zkontrolovat všechny komentáře v modulu Script
 
