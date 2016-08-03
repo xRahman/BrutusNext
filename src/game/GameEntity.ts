@@ -15,7 +15,7 @@ import {Script} from '../shared/Script';
 import {Game} from '../game/Game';
 import {EntityId} from '../game/EntityId';
 import {NamedEntity} from '../game/NamedEntity';
-import {IdList} from '../game/IdList'
+import {EntityIdList} from '../game/EntityIdList'
 
 export class GameEntity extends NamedEntity
 {
@@ -118,7 +118,7 @@ export class GameEntity extends NamedEntity
     {
       name: string,
       prototype: string,
-      container: IdList
+      container: EntityIdList
     }
   )
   : EntityId

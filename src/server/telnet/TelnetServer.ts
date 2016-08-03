@@ -176,8 +176,8 @@ export class TelnetServer
 
     let socketDescriptor = new TelnetSocketDescriptor(socket);
     let newPlayerConnection = new PlayerConnection(socketDescriptor);
-    let playerConnectionId =
-      Server.playerConnectionManager.addItemUnderNewId(newPlayerConnection);
+    let playerConnectionId = Server.playerConnectionManager
+        .addItemUnderNewId(newPlayerConnection, Id);
     
     newPlayerConnection.startLoginProcess();
   }

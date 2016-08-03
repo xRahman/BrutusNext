@@ -17,7 +17,7 @@
 
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {GameEntity} from '../game/GameEntity';
-import {IdList} from '../game/IdList';
+import {EntityIdList} from '../game/EntityIdList';
 import {Game} from '../game/Game';
 import {EntityId} from '../game/EntityId';
 import {CommandInterpretter} from '../game/commands/CommandInterpretter';
@@ -89,7 +89,7 @@ export abstract class EntityContainer extends CommandInterpretter
   // Every game entity can contain other game entities.
   // (Rooms contain characters and objects, bags contain other objects,
   //  sectors contain rooms, etc.)
-  protected contents = new IdList();
+  protected contents = new EntityIdList();
 
   // --------------- Protected methods ------------------
 
