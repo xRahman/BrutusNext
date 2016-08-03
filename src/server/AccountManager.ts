@@ -121,7 +121,7 @@ export class AccountManager extends IdableObjectContainer<Account>
   // hashmap, returns its unique id.
   protected addAccountUnderNewId(account: Account): Id
   {
-    let newId = this.addItemUnderNewId(account);
+    let newId = this.addItemUnderNewId(account, Id);
 
     // Also add record to the corresponding hashmap.
     this.accountNames[account.name] = newId;

@@ -50,7 +50,7 @@
     <TypeScriptCompile Include="src\shared\fs\FileSystem.ts" />
     <TypeScriptCompile Include="src\shared\EditableObject.ts" />
     <TypeScriptCompile Include="src\game\EntityContainer.ts" />
-    <TypeScriptCompile Include="src\game\IdList.ts" />
+    <TypeScriptCompile Include="src\game\EntityIdList.ts" />
     <TypeScriptCompile Include="src\game\ExtraDescription.ts" />
     <TypeScriptCompile Include="src\game\Game.ts" />
     <TypeScriptCompile Include="src\game\GameEntity.ts" />

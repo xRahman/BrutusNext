@@ -32,14 +32,22 @@ export class IdableObjectContainer<T extends IdableObject>
   // ---------------- Public methods --------------------
 
   // Inserts a new item to the itemContainer, returns its unique id.
-  public addItemUnderNewId(item: T): Id
+  public addItemUnderNewId<U extends Id>
+  (
+    // Item to be added.
+    item: T,
+    // What type of id should be created.
+    // (Constructor of class extended from Id.)
+    idClass: { new (...args: any[]): U }
+  )
+  : U
   {
     this.commonAddItemChecks(item);
 
     ASSERT_FATAL(item.getId() === null,
       "Attempt to add item which already has an id under new id");
 
-    let newId = Server.idProvider.generateId(item);
+    let newId = Server.idProvider.generateId(item, idClass);
 
     this.itemNotYetExistsCheck(newId);
 

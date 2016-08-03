@@ -19,7 +19,7 @@ import {IdableObjectContainer} from '../shared/IdableObjectContainer';
 import {World} from '../game/world/World';
 import {Room} from '../game/world/Room';
 import {RoomFlags} from '../game/world/RoomFlags';
-import {IdList} from '../game/IdList'
+import {EntityIdList} from '../game/EntityIdList';
 
 /// Asi docasne:
 import {Area} from '../game/world/Area';
@@ -118,16 +118,16 @@ export class Game
   protected entities = new IdableObjectContainer<GameEntity>();
 
   // List of ids of all characters in game.
-  protected characterList = new IdList();
+  protected characterList = new EntityIdList();
 
   // List of ids of all rooms in game.
-  protected roomList = new IdList();
+  protected roomList = new EntityIdList();
 
   // List of ids of all areas in game.
-  protected areaList = new IdList();
+  protected areaList = new EntityIdList();
 
   // List of ids of all realms in game.
-  protected realmList = new IdList();
+  protected realmList = new EntityIdList();
 
   // Handles creating of new characters
   protected playerCharacterManager =
@@ -301,6 +301,6 @@ export class Game
       return;
 
     world.name = param.name;
-    this.worldId = Server.idProvider.generateId(world);
+    this.worldId = Server.idProvider.generateId(world, EntityId);
   }
 }

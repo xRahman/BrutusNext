@@ -18,6 +18,11 @@ import {IdableObject} from '../shared/IdableObject';
 
 export class Id extends SaveableObject
 {
+  public static get STRING_ID_PROPERTY() { return 'stringId'; }
+  public static get TYPE_PROPERTY() { return 'stringId'; }
+
+  // -------------- Protected class data ----------------
+
   // Direct reference to entity referenced by this id.
   // It's used for faster performance - you should always hold ids instead of
   // direct references, but you can use id.getEntity() to get your reference
@@ -71,7 +76,11 @@ export class Id extends SaveableObject
   // hasn't been created yet or if it has already been deleted),
   // fatal assert is triggered (so you know that you have referenced
   // something invalid).
-  public getEntity<T>(param: { typeCast: { new(...args: any[]): T } }): T
+  public getEntity<T>
+  (
+    param: { typeCast: { new (...args: any[]): T } }
+  )
+  : T
   {
     ASSERT_FATAL(this.directReference !== null,
       "Attempt to directly reference an entity of type '"
@@ -107,6 +116,20 @@ export class Id extends SaveableObject
     return true;
   }
 
-  // -------------- Protected class data ----------------
+  // Performs checks to ensure that saved id with the same stringId
+  // really matches this id.
+  public checkAgainstJsonObject(jsonObject: Object, filePath: string)
+  {
+    let type = jsonObject[Id.TYPE_PROPERTY];
 
+    if (!ASSERT(type !== undefined,
+        "Missing '" + Id.TYPE_PROPERTY + "' in id '" + this.stringId + "'"
+        + " loaded from file " + filePath))
+      return;
+
+    ASSERT(this.type === type,
+      "Property '" + Id.TYPE_PROPERTY + "' in id '" + this.stringId + "'"
+      + " loaded from file " + filePath + " doesn't match existing id"
+      + " with the same stringId");
+  }
 }
