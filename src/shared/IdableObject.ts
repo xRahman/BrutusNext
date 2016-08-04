@@ -56,7 +56,7 @@ export abstract class IdableObject extends AutoSaveableObject
     else
     {
       // Other (non-id) properties are loaded the regular way.
-      this.loadPropertyFromJsonObject(jsonObject, propertyName, filePath);
+      super.loadPropertyFromJsonObject(jsonObject, propertyName, filePath);
     }
   }
 
@@ -64,6 +64,12 @@ export abstract class IdableObject extends AutoSaveableObject
 
   private isId(jsonObject: Object): boolean
   {
+    // Technically there can be an id saved with a 'null' value,
+    // but in that case we don't have to load it as Id, because
+    // it will be null anyways.
+    if (jsonObject === null)
+      return false;
+
     if (!ASSERT(jsonObject !== undefined,
         "Invalid jsonObject"))
       return false;
