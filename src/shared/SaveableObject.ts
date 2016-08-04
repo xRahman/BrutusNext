@@ -68,7 +68,8 @@ export class SaveableObject extends AttributableClass
     if (!ASSERT(dynamicClasses[param.className] !== undefined,
         "Attempt to createInstance() of unknown type"
         + " '" + param.className + "'. You probably forgot to create"
-        + " or assign a prototype to your game entity."
+        + " or assign a prototype to your game entity or add a new"
+        + " class to DynamicClasses.ts."
         + " Instance is not created"))
       return null;
 
@@ -246,8 +247,12 @@ export class SaveableObject extends AttributableClass
     // className must be the same as it's saved value.
     this.checkClassName(jsonObject, filePath);
 
+    /*
+    /// This is not an arror - entities are supposed to have variables
+    /// on them that don't exist on prototype.
     // filePath is passed just so it can be printed to error messages.
     this.checkThatAllPropertiesInJsonExistInThis(jsonObject, filePath);
+    */
 
     // Using 'in' operator on object with null value would cause crash.
     ASSERT_FATAL(jsonObject !== null,
@@ -380,6 +385,7 @@ export class SaveableObject extends AttributableClass
     return false;
   }
 
+  /*
   private checkThatAllPropertiesInJsonExistInThis
   (
     jsonObject: Object,
@@ -398,6 +404,7 @@ export class SaveableObject extends AttributableClass
         + " it in class declaration?");
     }
   }
+  */
 
   // Loads a property of type Array from a JSON Array object.
   private loadArray
@@ -444,9 +451,13 @@ export class SaveableObject extends AttributableClass
     if (jsonVariable === null)
       return null;
 
-    // Hashmaps (class Map) are saved as array but we need them
-    // to load as non-array variable.
-    if (Array.isArray(jsonVariable) && !this.isMap(variable))
+    if
+    (
+      Array.isArray(jsonVariable)
+      // Hashmaps (class Map) are saved as array but we need them
+      // to load as non-array variable.
+      && !this.isMap(variable)
+    )
     {
       ASSERT_FATAL(variable === null || Array.isArray(variable),
         "Attempt to load array property '" + variableName + "' to"
@@ -467,8 +478,7 @@ export class SaveableObject extends AttributableClass
   }
 
   // If myProperty is null, a new instance of correct type will be
-  // created and returned.
-  // (Type is read from jsonObject.className)
+  // created and returned (type is read from jsonObject.className).
   private createNewIfNull
   (
     propertyName: string,
@@ -479,24 +489,30 @@ export class SaveableObject extends AttributableClass
   {
     if (myProperty === null)
     {
-      ASSERT_FATAL
-      (
-        jsonObject[NamedClass.CLASS_NAME_PROPERTY] !== undefined,
-        "Missing '" + NamedClass.CLASS_NAME_PROPERTY + "' property"
-        + " in a nested object in file " + filePath + ". Make sure"
-        + " that you use SaveableObjects instead of simple javascript"
-        + " Objects (like {})"
-      );
-
-      // Initiate our property to a new instance of correct type.
-      // (Type is saved as 'className' property)
-      myProperty = SaveableObject.createInstance
-      (
-        {
-          className: jsonObject[NamedClass.CLASS_NAME_PROPERTY],
-          typeCast: SaveableObject
-        }
-      );
+      if (jsonObject[NamedClass.CLASS_NAME_PROPERTY] === undefined)
+      {
+        // If there isn't a 'className' property in jsonObject,
+        // property is a basic javascript object.
+        // Note:
+        //   This doesn't always have to be true and it will lead to
+        // errors if someone creates a new class not inherited
+        // from SaveableObject and puts it in saveable class - it will
+        // get loaded, but it won't have correct type (it will be just
+        // a basic javascript object).
+        myProperty = {};
+      }
+      else
+      {
+        // If there is a 'className' property, create a new instance
+        // of such type.
+        myProperty = SaveableObject.createInstance
+        (
+          {
+            className: jsonObject[NamedClass.CLASS_NAME_PROPERTY],
+            typeCast: SaveableObject
+          }
+        );
+      }
     }
 
     return myProperty;
@@ -558,7 +574,13 @@ export class SaveableObject extends AttributableClass
       // When we are loading instance of class Map, data are actually
       // saved as array of [key, value] pairs and we need to recreate
       // our Map object from it.
-      return new Map(jsonObject);
+
+      // But first we need to properly load items within this array,
+      // because they may be SaveableObjects and simple assigning
+      // wouldn't be enough.
+      let tmpArray = this.loadArray(propertyName, jsonObject, filePath);
+
+      return new Map(tmpArray);
     }
     else if ('loadFromJsonObject' in myProperty)
     {
@@ -572,7 +594,6 @@ export class SaveableObject extends AttributableClass
     {
       return this.loadPrimitiveObjectFromJson
       (
-        propertyName,
         myProperty,
         jsonObject,
         filePath
@@ -703,20 +724,20 @@ export class SaveableObject extends AttributableClass
   // (this check is done within this.loadVariable() call)
   private loadPrimitiveObjectFromJson
   (
-    propertyName: string,
     primitiveObject: any,
     jsonObject: any,
     filePath: string
   )
   {
     // Now copy the data.
-    for (let property in jsonObject)
+    for (let propertyName in jsonObject)
     {
-      primitiveObject[property] = this.loadVariable
+      // This will create property 'property' if it doesn't exist.
+      primitiveObject[propertyName] = this.loadVariable
       (
-        property,
-        primitiveObject[property],
-        jsonObject[property],
+        propertyName,
+        primitiveObject[propertyName],
+        jsonObject[propertyName],
         filePath
       );
     }
