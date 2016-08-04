@@ -9,6 +9,9 @@ if (global['dynamicClasses'] === undefined)
 import {Script} from '../shared/Script';
 global['dynamicClasses']['Script'] = Script;
 
+import {FlagNames} from '../shared/FlagNames';
+global['dynamicClasses']['FlagNames'] = FlagNames;
+
 import {Id} from '../shared/Id';
 global['dynamicClasses']['Id'] = Id;
 

@@ -1,4 +1,7 @@
-﻿TODO: Asi všude zrušit property deklarované jako parametry konstruktorů
+﻿TODO: S loadováním/savováním hashmap jsem se, zdá se, radoval předčasně
+  - opravit loadování SaveableObjectů uložených v hashmapě.
+
+TODO: Asi všude zrušit property deklarované jako parametry konstruktorů
   (ne vždy se konstruktor volá se všemi parametry a pak se stane to, že
   property není inicializovaná. Kromě toho to znepřehledňuje kód - hůř
   se hledá, co je nějaká property zač.)

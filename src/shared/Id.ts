@@ -19,7 +19,7 @@ import {IdableObject} from '../shared/IdableObject';
 export class Id extends SaveableObject
 {
   public static get STRING_ID_PROPERTY() { return 'stringId'; }
-  public static get TYPE_PROPERTY() { return 'stringId'; }
+  public static get TYPE_PROPERTY() { return 'type'; }
 
   // -------------- Protected class data ----------------
 
