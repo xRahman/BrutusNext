@@ -58,8 +58,8 @@ export class IdProvider
 
   public registerLoadedId(id: Id)
   {
-    if (!ASSERT(this.ids.has(id.getStringId()) === undefined,
-        "Attempt to register loaded id '" + id.getStringId + "'"
+    if (!ASSERT(this.ids.has(id.getStringId()) === false,
+        "Attempt to register loaded id '" + id.getStringId() + "'"
         + " that is already registered in idProvider"))
       return;
 
