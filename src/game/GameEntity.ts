@@ -122,7 +122,7 @@ export class GameEntity extends Container
 
     let id = Server.entities.addUnderNewId(entity);
 
-    param.idList.addEntity(entity);
+    param.idList.add(entity);
 
     return id;
   }
