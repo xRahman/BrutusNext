@@ -21,7 +21,7 @@ import {Game} from '../game/Game';
 import {GameEntity} from '../game/GameEntity';
 import {Character} from '../game/characters/Character';
 
-export class PlayerConnection extends Entity
+export class Connection extends Entity
 {
   constructor(protected socketDescriptor: SocketDescriptor)
   {
@@ -32,7 +32,7 @@ export class PlayerConnection extends Entity
 
   public setId(id: EntityId)
   {
-    this.socketDescriptor.setPlayerConnectionId(id);
+    this.socketDescriptor.setConnectionId(id);
     super.setId(id);
   }
 
@@ -67,29 +67,29 @@ export class PlayerConnection extends Entity
 
   public startLoginProcess()
   {
-    ASSERT(this.stage === PlayerConnection.stage.INITIAL,
+    ASSERT(this.stage === Connection.stage.INITIAL,
       "Starting login process from wrong stage");
 
-    this.stage = PlayerConnection.stage.AUTHENTICATION;
+    this.stage = Connection.stage.AUTHENTICATION;
     this.authProcessor.startLoginProcess();
   }
 
   public enterLobby()
   {
-    this.stage = PlayerConnection.stage.IN_LOBBY;
+    this.stage = Connection.stage.IN_LOBBY;
     this.lobbyProcessor.enterMenu();
   }
 
   public async enterGame()
   {
-    ASSERT(this.stage === PlayerConnection.stage.IN_LOBBY
-        || this.stage === PlayerConnection.stage.IN_GAME,
+    ASSERT(this.stage === Connection.stage.IN_LOBBY
+        || this.stage === Connection.stage.IN_GAME,
       "Entering game from wrong stage");
 
     ASSERT(this.accountId !== null,
       "Invalid account id");
 
-    this.stage = PlayerConnection.stage.IN_GAME;
+    this.stage = Connection.stage.IN_GAME;
 
     this.sendAsPromptlessBlock
     (
@@ -105,12 +105,12 @@ export class PlayerConnection extends Entity
     this.announceReconnecting();
     this.ingameEntity.announcePlayerReconnecting();
 
-    this.stage = PlayerConnection.stage.IN_GAME;
+    this.stage = Connection.stage.IN_GAME;
   }
 
   public quitGame()
   {
-    this.stage = PlayerConnection.stage.LOGGED_OUT;
+    this.stage = Connection.stage.LOGGED_OUT;
 
     // Close the socket. Event 'close' will be generated on it,
     // which will lead to the player being logged out.
@@ -188,7 +188,7 @@ export class PlayerConnection extends Entity
     );
 
     this.accountId = account.getId();
-    account.playerConnectionId = this.getId();
+    account.connectionId = this.getId();
     this.enterLobby();
   }
 
@@ -198,7 +198,7 @@ export class PlayerConnection extends Entity
   public reconnectToAccount(account: Account)
   {
     let accountManager = Server.accounts;
-    let oldStage = PlayerConnection.stage.INITIAL;
+    let oldStage = Connection.stage.INITIAL;
     let oldConnection = this.getOldConnection(account);
     let oldIngameEntityId = null;
 
@@ -227,7 +227,7 @@ export class PlayerConnection extends Entity
       }
     }
 
-    account.playerConnectionId = this.getId();
+    account.connectionId = this.getId();
     this.accountId = account.getId();
 
     Mudlog.log
@@ -240,7 +240,7 @@ export class PlayerConnection extends Entity
 
     // If player was in game before and we know what game entity she has
     // been connected to, send her back to the game.
-    if (oldStage === PlayerConnection.stage.IN_GAME
+    if (oldStage === Connection.stage.IN_GAME
         && oldIngameEntityId !== null)
     {
 
@@ -262,27 +262,27 @@ export class PlayerConnection extends Entity
   {
     switch (this.stage)
     {
-      case PlayerConnection.stage.INITIAL:
-        ASSERT(false, "PlayerConnection has not yet been initialized by"
+      case Connection.stage.INITIAL:
+        ASSERT(false, "Connection has not yet been initialized by"
           + "startLoginProcess(), it is not supposed to process any"
           + " commands yet");
       break;
 
-      case PlayerConnection.stage.AUTHENTICATION:
+      case Connection.stage.AUTHENTICATION:
         ASSERT(this.accountId === null,
           "Attempt to process authentication command on player connection"
           + "  that already has an account assigned");
         await this.authProcessor.processCommand(command);
       break;
 
-      case PlayerConnection.stage.IN_LOBBY:
+      case Connection.stage.IN_LOBBY:
         ASSERT(this.accountId !== null,
           "Attempt to process lobby command on player connection that doesn't"
           + " have an account assigned");
         this.lobbyProcessor.processCommand(command);
       break;
 
-      case PlayerConnection.stage.IN_GAME:
+      case Connection.stage.IN_GAME:
         ASSERT(this.accountId !== null,
           "Attempt to process ingame command on player connection that doesn't"
           + " have an account assigned");
@@ -294,8 +294,8 @@ export class PlayerConnection extends Entity
         this.ingameEntity.processCommand(command);
       break;
 
-      case PlayerConnection.stage.LOGGED_OUT:
-        ASSERT(false, "Player is logged out already, PlayerConnection"
+      case Connection.stage.LOGGED_OUT:
+        ASSERT(false, "Player is logged out already, Connection"
           + " is not supposed to process any more commands");
       break;
 
@@ -319,37 +319,37 @@ export class PlayerConnection extends Entity
   public onSocketClose()
   {
     if (!ASSERT(this.socketDescriptor.socketClosed === true,
-      "Attempt to call PlayerConnection:onSocketClose() before respective"
-      + " socket has been closed. Don't call PlayerConnection::onSocketClose()"
-      + " directly, use playerConnection.close() instead."
+      "Attempt to call Connection:onSocketClose() before respective"
+      + " socket has been closed. Don't call Connection::onSocketClose()"
+      + " directly, use connection.close() instead."
       + " That way a 'close' event will be triggered on socket and"
-      + " PlayerConnection::onSocketClose() will be called from the handler."))
+      + " Connection::onSocketClose() will be called from the handler."))
     {
       return;
     }
 
     switch (this.stage)
     {
-      case PlayerConnection.stage.INITIAL:
-        ASSERT(false, "PlayerConnection has not yet been initialized by"
+      case Connection.stage.INITIAL:
+        ASSERT(false, "Connection has not yet been initialized by"
           + "startLoginProcess(), it is not supposed to process any"
           + " events yet");
       break;
 
-      case PlayerConnection.stage.AUTHENTICATION:
+      case Connection.stage.AUTHENTICATION:
         this.onSocketCloseWhenAuthenticating();
       break;
 
-      case PlayerConnection.stage.IN_LOBBY:
+      case Connection.stage.IN_LOBBY:
         this.onSocketCloseWhenInLobby();
       break;
 
-      case PlayerConnection.stage.IN_GAME:
+      case Connection.stage.IN_GAME:
         this.onSocketCloseWhenInGame();
       break;
 
       // Player has correcly exited game from menu.
-      case PlayerConnection.stage.LOGGED_OUT:
+      case Connection.stage.LOGGED_OUT:
         this.onSocketCloseWhenLoggedOut();
       break;
     }
@@ -384,12 +384,12 @@ export class PlayerConnection extends Entity
 
     switch (this.stage)
     {
-      case PlayerConnection.stage.INITIAL:
-        ASSERT(false, "PlayerConnection has not yet been initialized by"
+      case Connection.stage.INITIAL:
+        ASSERT(false, "Connection has not yet been initialized by"
           + "startLoginProcess(), it is not supposed generate prompt yet");
       break;
 
-      case PlayerConnection.stage.AUTHENTICATION:
+      case Connection.stage.AUTHENTICATION:
         // generatePrompt() is not used while player is authenticating,
         // because it would lead to lots of internal states like "failed
         // password attempt", "password too short", etc.
@@ -397,13 +397,13 @@ export class PlayerConnection extends Entity
           + " not be called right now");
       break;
 
-      case PlayerConnection.stage.IN_LOBBY:
+      case Connection.stage.IN_LOBBY:
         prompt = this.lobbyProcessor.generatePrompt();
       break;
 
-      case PlayerConnection.stage.IN_GAME:
+      case Connection.stage.IN_GAME:
         if (ASSERT(this.ingameEntity !== null,
-          "Attempt to generatePrompt() on playerConnection which doesn't"
+          "Attempt to generatePrompt() on connection which doesn't"
           + "have an ingame entity attached"))
         {
           prompt = this.ingameEntity.generatePrompt();
@@ -411,8 +411,8 @@ export class PlayerConnection extends Entity
       break;
 
       // Player has correcly exited game from menu.
-      case PlayerConnection.stage.LOGGED_OUT:
-        ASSERT(false, "Player has already logged out. PlayerConnection"
+      case Connection.stage.LOGGED_OUT:
+        ASSERT(false, "Player has already logged out. Connection"
           + " is not supposed to generate prompt anymore");
       break;
     }
@@ -431,7 +431,7 @@ export class PlayerConnection extends Entity
   {
     if (this.ingameEntityId !== null)
     {
-      ASSERT(this.stage === PlayerConnection.stage.IN_GAME,
+      ASSERT(this.stage === Connection.stage.IN_GAME,
         "Player connection has ingame entity assigned but player connection"
         + " stage is not 'IN_GAME'");
 
@@ -444,7 +444,7 @@ export class PlayerConnection extends Entity
   public attachToGameEntity(gameEntity)
   {
     this.ingameEntityId = gameEntity.id;
-    gameEntity.playerConnectionId = this.getId();
+    gameEntity.connectionId = this.getId();
   }
 
   public detachFromGameEntity()
@@ -453,7 +453,7 @@ export class PlayerConnection extends Entity
       "Attempt to detach ingame entity from " + this.account.name + "'s"
       + "player connection when there is no ingame entity attached to it");
 
-    this.ingameEntity.detachPlayerConnection();
+    this.ingameEntity.detachConnection();
   }
 
   // -------------- Protected class data ----------------
@@ -470,7 +470,7 @@ export class PlayerConnection extends Entity
     LOGGED_OUT: 'LOGGED_OUT'
   }
 
-  protected stage = PlayerConnection.stage.INITIAL;
+  protected stage = Connection.stage.INITIAL;
 
   // ----------- Auxiliary private methods --------------
 
@@ -479,11 +479,11 @@ export class PlayerConnection extends Entity
     this.sendAsBlock("&wYou have reconnected to your character.");
   }
 
-  private getOldConnection(account: Account): PlayerConnection
+  private getOldConnection(account: Account): Connection
   {
-    if (account.playerConnectionId !== null)
+    if (account.connectionId !== null)
     {
-      return account.playerConnection;
+      return account.connection;
     }
 
     return null;
@@ -632,7 +632,7 @@ export class PlayerConnection extends Entity
 
   private removeSelfFromManager()
   {
-    Server.playerConnections.dropEntity(this.getId());
+    Server.connections.remove(this.getId());
   }
 
   private logoutAccount(action: string)
@@ -708,7 +708,7 @@ export class PlayerConnection extends Entity
       + " That's not supposed to happen.");
 
     if (this.ingameEntity)
-      this.ingameEntity.detachPlayerConnection();
+      this.ingameEntity.detachConnection();
 
     /// TODO: Neco udelat s ingame entitou (hodit ji link-death).
     /// (momentalne proste zustane viset ve hre)

@@ -12,7 +12,7 @@ import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {Server} from '../server/Server';
 import {EntityId} from '../shared/EntityId';
-import {PlayerConnection} from '../server/PlayerConnection';
+import {Connection} from '../server/Connection';
 
 // Built-in node.js modules.
 import * as net from 'net';  // Import namespace 'net' from node.js
@@ -31,12 +31,12 @@ export abstract class SocketDescriptor
 
   // ----------------- Public data ----------------------
 
-  public getPlayerConnectionId() { return this.playerConnectionId; }
-  public setPlayerConnectionId(value: EntityId)
+  public getConnectionId() { return this.connectionId; }
+  public setConnectionId(value: EntityId)
   {
     ASSERT(value !== undefined && value !== null,
       "Invalid player connection id");
-    this.playerConnectionId = value;
+    this.connectionId = value;
   }
 
   public getIpAddress(): string
@@ -47,15 +47,15 @@ export abstract class SocketDescriptor
     return this.ipAddress;
   }
  
-  public get playerConnection()
+  public get connection()
   {
-    ASSERT_FATAL(this.playerConnectionId !== null,
+    ASSERT_FATAL(this.connectionId !== null,
       "Invalid player connection id");
 
-    return Server.playerConnections.getItem(this.playerConnectionId);
+    return this.connectionId.getEntity({ typeCast: Connection });
   }
 
-  public playerConnectionId: EntityId = null;
+  public connectionId: EntityId = null;
 
   public socketClosed = false;
 

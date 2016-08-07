@@ -24,7 +24,7 @@ import {GameEntity} from '../game/GameEntity';
 import {EntityId} from '../shared/EntityId';
 import {CommandInterpretter} from '../game/commands/CommandInterpretter';
 
-export abstract class Container extends CommandInterpretter
+export abstract class ContainerEntity extends CommandInterpretter
 {
 
   // ---------------- Public class data -----------------
