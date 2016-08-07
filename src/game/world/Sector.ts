@@ -11,7 +11,7 @@
 import {ASSERT} from '../../shared/ASSERT'
 import {Game} from '../../game/Game';
 import {GameEntity} from '../../game/GameEntity';
-import {EntityId} from '../../game/EntityId';
+import {EntityId} from '../../shared/EntityId';
 import {Room} from '../../game/world/Room';
 
 export class Sector extends GameEntity
@@ -41,7 +41,7 @@ export class Sector extends GameEntity
       {
         name: param.name,
         prototype: param.prototype,
-        container: Game.roomList
+        idList: Game.rooms
       }
     );
 

@@ -58,11 +58,11 @@ export class Room extends GameEntity
 
   // ---------------- Public methods --------------------
 
-  // Entity adds itself to approptiate manager
-  // (so it can be searched by name, etc.)
-  public addToManager()
+  // Entity adds itself to approptiate IdList
+  // (so it can be searched by name, etc).
+  public addToIdList()
   {
-    Game.roomList.addEntityUnderExistingId(this);
+    Game.rooms.addEntityUnderExistingId(this);
   }
 
   // Creates a formatted string describing room contents.

@@ -11,22 +11,23 @@ import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {FileSystem} from '../shared/fs/FileSystem';
 import {AdminLevels} from '../server/AdminLevels';
 import {Mudlog} from '../server/Mudlog';
-import {Id} from '../shared/Id';
-import {IdableObject} from '../shared/IdableObject';
+import {EntityId} from '../shared/EntityId';
+import {NamedEntity} from '../shared/NamedEntity';
 import {PlayerConnection} from '../server/PlayerConnection';
 import {Server} from '../server/Server';
 import {Game} from '../game/Game';
-import {EntityId} from '../game/EntityId';
 
 // Built-in node.js modules.
 import * as crypto from 'crypto';  // Import namespace 'crypto' from node.js
 
-export class Account extends IdableObject
+export class Account extends NamedEntity
 {
+  public playerConnectionId: EntityId = null;
+
   // Flag saying that playerConnectionId is not to be saved to JSON.
   private static playerConnectionId = { isSaved: false };
 
-  constructor(public name: string, public playerConnectionId: Id)
+  constructor(name: string, playerConnectionId: EntityId)
   {
     super();
 
@@ -34,6 +35,12 @@ export class Account extends IdableObject
     // SaveableObjects. You will also need to convert data in respective
     // .json files to conform to the new version.
     this.version = 0;
+
+    this.playerConnectionId = playerConnectionId;
+
+    this.name = name;
+    // Account names are unique.
+    this.isNameUnique = true;
   }
 
   public static get SAVE_DIRECTORY() { return "./data/accounts/"; }
@@ -42,7 +49,7 @@ export class Account extends IdableObject
 
   public get playerConnection()
   {
-    return Server.playerConnectionManager.getItem(this.playerConnectionId);
+    return Server.playerConnections.getItem(this.playerConnectionId);
   }
 
   // List of character names this account has access to.
@@ -175,7 +182,7 @@ export class Account extends IdableObject
       AdminLevels.IMMORTAL
     );
 
-    Server.accountManager.dropAccount(this.getId());
+    Server.accounts.dropAccount(this.getId());
   }
 
   /*

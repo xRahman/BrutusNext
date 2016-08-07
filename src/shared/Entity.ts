@@ -8,24 +8,49 @@
 'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
-import {Id} from '../shared/Id';
+import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
+import {EntityId} from '../shared/EntityId';
 import {NamedClass} from '../shared/NamedClass';
 import {SaveableObject} from '../shared/SaveableObject';
 import {AutoSaveableObject} from '../shared/AutoSaveableObject';
 import {Server} from '../server/Server';
 
-export abstract class IdableObject extends AutoSaveableObject
+export class Entity extends AutoSaveableObject
 {
   public static get ID_PROPERTY() { return 'id'; }
 
   // ----------------- Private data ----------------------
 
-  private id: Id = null;
+  private id: EntityId = null;
+
+  // ---------------- Static methods --------------------
+
+  // Creates a new instance of game entity of type saved in id.
+  static createInstanceFromId(id: EntityId, ...args: any[]): Entity
+  {
+    ASSERT_FATAL(id !== null,
+      "Invalid (null) id passed to GameEntity::createInstance()");
+
+    let newEntity = SaveableObject
+      .createInstance({ className: id.getType(), typeCast: Entity }, args);
+
+    newEntity.setId(id);
+
+    return newEntity;
+  }
+
+  // --------------- Public accessors -------------------
+
+  public getId() { return this.id; }
+  public setId(id: EntityId) { this.id = id; }
 
   // ---------------- Public methods --------------------
 
-  public getId() { return this.id; }
-  public setId(id: Id) { this.id = id; }
+  // Entity adds itself to approptiate IdList
+  // (so it can be searched by name, etc).
+  // Note:
+  //   This method is overriden by descendants which are inserted to IdList.
+  public addToIdList() { }
 
   // --------------- Protected methods ------------------
 
@@ -33,7 +58,7 @@ export abstract class IdableObject extends AutoSaveableObject
   protected getIdStringValue(): string { return this.id.getStringId(); }
 
   // Overrides SaveableObject::loadPropertyFromJsonObject() to be
-  // able to correctly save properties of type Id (or it's descendants).
+  // able to correctly save properties of type EntityId (or it's descendants).
   protected loadPropertyFromJsonObject
   (
     jsonObject: Object,
@@ -43,12 +68,11 @@ export abstract class IdableObject extends AutoSaveableObject
   {
     if (this.isId(jsonObject[propertyName]))
     {
-      // Id's are loaded in a special way because then need to be
+      // EntityId's are loaded in a special way because then need to be
       // registered by IdProvider.
       this.loadIdPropertyFromJsonObject
       (
         propertyName,
-        this[propertyName],
         jsonObject[propertyName],
         filePath
       );
@@ -65,7 +89,7 @@ export abstract class IdableObject extends AutoSaveableObject
   private isId(jsonObject: Object): boolean
   {
     // Technically there can be an id saved with a 'null' value,
-    // but in that case we don't have to load it as Id, because
+    // but in that case we don't have to load it as EntityId, because
     // it will be null anyways.
     if (jsonObject === null)
       return false;
@@ -74,12 +98,12 @@ export abstract class IdableObject extends AutoSaveableObject
         "Invalid jsonObject"))
       return false;
 
-    // Json object doesn't have a type (it's a plain javascript Object),
+    // Json objects don't have a type (they are plain javascript Objects),
     // so we can't use instanceOf. We could test className, but that wouldn't
-    // work for ancestors of Id class (anyone who would have inherited from
-    // class Id would have to add a special case here), so instead we use
-    // 'stringId' property which all ancestors of Id inherit.
-    if (jsonObject[Id.STRING_ID_PROPERTY] === undefined)
+    // work for ancestors of EntityId class (anyone who would inherit from
+    // class EntityId would have to add a special case here), so instead we
+    // check 'stringId' property which all ancestors of EntityId inherit.
+    if (jsonObject[EntityId.STRING_ID_PROPERTY] === undefined)
       return false;
 
     return true;
@@ -88,18 +112,16 @@ export abstract class IdableObject extends AutoSaveableObject
   private loadIdPropertyFromJsonObject
   (
     propertyName: string,
-    myProperty: any,
     jsonObject: any,
     filePath: string
   )
-  : Id
   {
-    let stringId = jsonObject[Id.STRING_ID_PROPERTY];
+    let stringId = jsonObject[EntityId.STRING_ID_PROPERTY];
 
     if (!ASSERT(stringId !== undefined && stringId !== null,
       "Errow while loading id from file " + filePath + ": Unable"
       + " to load id, because passed 'jsonObject' doesn't contain"
-      + "property '" + Id.STRING_ID_PROPERTY + "'"))
+      + "property '" + EntityId.STRING_ID_PROPERTY + "'"))
       return null;
 
     let id = Server.idProvider.get(stringId);
@@ -115,25 +137,31 @@ export abstract class IdableObject extends AutoSaveableObject
       // We are going to use existing id iven if loaded id doesn't
       // match perfecly (if there were errors, they have been
       // reported by id.checkAgainstJsonObject()).
-      return id;
+      this[propertyName] = id;
+      ///return id;
     }
     else
     {
       // This id doesn't exist in idProvider yet, so we need to
-      // create a new id.
-      id = SaveableObject.createInstance
+      // create a new instance of EntityId.
+      this[propertyName] = SaveableObject.createInstance
       (
         {
           className: jsonObject[NamedClass.CLASS_NAME_PROPERTY],
-          typeCast: Id
+          typeCast: EntityId
         }
       );
 
       // Load it from it from json object.
-      id.loadFromJsonObject(jsonObject, filePath);
+      this.loadPropertyFromJsonObject
+      (
+        jsonObject,
+        propertyName,
+        filePath
+      );
 
       // And register it in idProvider.
-      Server.idProvider.registerLoadedId(id);
+      Server.idProvider.registerLoadedId(this[propertyName]);
     }
   }
 }

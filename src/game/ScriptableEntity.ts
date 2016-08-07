@@ -18,7 +18,7 @@
 import {AdminLevels} from '../server/AdminLevels';
 import {Mudlog} from '../server/Mudlog';
 import {Script} from '../shared/Script';
-import {NamedEntity} from '../game/NamedEntity';
+import {NamedEntity} from '../shared/NamedEntity';
 
 export abstract class ScriptableEntity extends NamedEntity
 {

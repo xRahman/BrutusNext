@@ -15,14 +15,16 @@
 
 'use strict';
 
+import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
-import {GameEntity} from '../game/GameEntity';
-import {EntityIdList} from '../game/EntityIdList';
+import {Entity} from '../shared/Entity';
+import {IdList} from '../shared/IdList';
 import {Game} from '../game/Game';
-import {EntityId} from '../game/EntityId';
+import {GameEntity} from '../game/GameEntity';
+import {EntityId} from '../shared/EntityId';
 import {CommandInterpretter} from '../game/commands/CommandInterpretter';
 
-export abstract class EntityContainer extends CommandInterpretter
+export abstract class Container extends CommandInterpretter
 {
 
   // ---------------- Public class data -----------------
@@ -39,14 +41,7 @@ export abstract class EntityContainer extends CommandInterpretter
     /// verzi v8 enginu nejde pouzit super uvnitr chainu asyc funkci.
     await this.saveToFile(this.getSaveDirectory(), this.getSaveFileName());
 
-    let contentsArray = this.contents.idArray;
-
-    for (let i = 0; i < contentsArray.length; i++)
-    {
-      let entityId = contentsArray[i];
-
-      await Game.entities.getItem(entityId).save();
-    }
+    await this.contents.save(this.getErrorIdString());
   }
 
   // When loading an entity, all referenced entities are loaded as well.
@@ -60,28 +55,7 @@ export abstract class EntityContainer extends CommandInterpretter
     // need to read their id's first.
     await this.loadFromFile(this.getFullSavePath());
 
-    let contents = this.contents.idArray;
-
-    for (let i = 0; i < contents.length; i++)
-    {
-      let id = contents[i];
-
-      // If entity already exists, there is no need to load it.
-      if (!Game.entities.exists(id))
-      {
-        // Creates an instance of correct type based on className property
-        // of id (in other words: Type of referenced entity is saved within
-        // id and is recreated here).
-        let newEntity = GameEntity.createInstanceFromId(id);
-
-        // Load entity from file.
-        await newEntity.load();
-
-        // Add entity id to it's approptiate manager so it can be searched
-        // for by name, etc.
-        newEntity.addToManager();
-      }
-    }
+    await this.contents.load(this.getErrorIdString());
   }
 
   // -------------- Protected class data ----------------
@@ -89,25 +63,23 @@ export abstract class EntityContainer extends CommandInterpretter
   // Every game entity can contain other game entities.
   // (Rooms contain characters and objects, bags contain other objects,
   //  sectors contain rooms, etc.)
-  protected contents = new EntityIdList();
+  protected contents = new IdList();
 
   // --------------- Protected methods ------------------
-
 
   // Adds entity id to contents of this entity.
   protected insertEntity(entityId: EntityId)
   {
     let entity = entityId.getEntity({ typeCast: GameEntity });
 
-    this.contents.addEntityById(entityId);
+    this.contents.addEntity(entity);
 
     entity.setLocation(this.getId());
-
   }
 
   // Removes entity if from contents of this entity.
   public removeEntity(entityId: EntityId)
   {
-    this.contents.removeEntityFromList(entityId);
+    this.contents.removeFromList(entityId);
   }
 }
