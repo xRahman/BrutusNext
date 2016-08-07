@@ -41,7 +41,7 @@ import {AdminLevels} from '../server/AdminLevels';
 import {PlayerConnection} from '../server/PlayerConnection';
 import {Server} from '../server/Server';
 import {Account} from '../server/Account';
-import {AccountManager} from '../server/AccountManager';
+import {AccountList} from '../server/AccountList';
 
 export class AuthProcessor
 {
@@ -135,7 +135,7 @@ export class AuthProcessor
     // password so we need to remember account name until then.
     this.accountName = accountName;
 
-    if (Server.accountManager.accountExists(accountName))
+    if (Server.accounts.exists(accountName))
     {
       // Existing user. Ask for password.
       this.playerConnection.sendAsPrompt("&wPassword: ");
@@ -155,7 +155,7 @@ export class AuthProcessor
 
   protected async checkPassword(password: string)
   {
-    let accountManager = Server.accountManager;
+    let accountManager = Server.accounts;
 
     ASSERT_FATAL(this.playerConnection.getId() != null,
       "Invalid player connection id");
@@ -191,7 +191,7 @@ export class AuthProcessor
     // she can see it typed (which is the only option when using telnet).
 
     // Password accepted, create a new account.
-    let newAccountId = Server.accountManager.createAccount
+    let newAccountId = Server.accounts.createAccount
     (
       this.accountName,
       password,
@@ -347,7 +347,7 @@ export class AuthProcessor
     param: { reconnecting: boolean }
   )
   {
-    let accountManager = Server.accountManager;
+    let accountManager = Server.accounts;
 
     if (account.checkPassword(password))
     {
@@ -363,7 +363,7 @@ export class AuthProcessor
       else
       {
         // Add newly loaded account to accountManager (under it's original id).
-        accountManager.registerLoadedAccount(account);
+        accountManager.addEntity(account);
 
         this.playerConnection.connectToAccount(account);
       }

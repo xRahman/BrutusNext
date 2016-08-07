@@ -20,7 +20,7 @@
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {GameEntity} from "../game/GameEntity";
-import {EntityId} from '../game/EntityId';
+import {EntityId} from '../shared/EntityId';
 
 export class AbbrevSearchList
 {
@@ -288,8 +288,8 @@ export class AbbrevSearchList
 
   // Returns object containing index, cathegory and name parsed from
   // target string (like "3.mob.orc").
-  private parseSearchString(searchString: string):
-    { index: number, cathegory: string, name: string }
+  private parseSearchString(searchString: string)
+  : { index: number, cathegory: string, name: string }
   {
     let result = { index: 1, cathegory: "", name: "" };
 

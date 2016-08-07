@@ -8,8 +8,8 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
-import {Id} from '../shared/Id';
-import {IdableObject} from '../shared/IdableObject';
+import {EntityId} from '../shared/EntityId';
+import {Entity} from '../shared/Entity';
 import {Mudlog} from '../server/Mudlog';
 import {AdminLevels} from '../server/AdminLevels';
 import {Server} from '../server/Server';
@@ -21,7 +21,7 @@ import {Game} from '../game/Game';
 import {GameEntity} from '../game/GameEntity';
 import {Character} from '../game/characters/Character';
 
-export class PlayerConnection extends IdableObject
+export class PlayerConnection extends Entity
 {
   constructor(protected socketDescriptor: SocketDescriptor)
   {
@@ -30,7 +30,7 @@ export class PlayerConnection extends IdableObject
 
   // ----------------- Public data ----------------------
 
-  public setId(id: Id)
+  public setId(id: EntityId)
   {
     this.socketDescriptor.setPlayerConnectionId(id);
     super.setId(id);
@@ -43,7 +43,7 @@ export class PlayerConnection extends IdableObject
     if (this.ingameEntityId === null)
       return null;
 
-    return Game.entities.getItem(this.ingameEntityId);
+    return this.ingameEntityId.getEntity({ typeCast: GameEntity });
   }
 
   public get account()
@@ -51,19 +51,17 @@ export class PlayerConnection extends IdableObject
     if (this.accountId === null)
       return null;
 
-    let accountManager = Server.accountManager;
-
-    return accountManager.getItem(this.accountId);
+    return this.accountId.getEntity({ typeCast: Account });
   }
 
   // Empty string means that we do not yet know what account does this
   // connection match to.
-  public accountId: Id = null;
+  public accountId: EntityId = null;
 
-  // Id of entity this player connection is attached to.
+  // EntityId of entity this player connection is attached to.
   // (usually the character a player is playing, but it is possible for
   // immortals to 'switch' to any game entity)
-  public ingameEntityId: Id = null;
+  public ingameEntityId: EntityId = null;
 
   // ------- Internal stage transition methods ----------
 
@@ -199,7 +197,7 @@ export class PlayerConnection extends IdableObject
   // is connecting from different computer without logging out first).
   public reconnectToAccount(account: Account)
   {
-    let accountManager = Server.accountManager;
+    let accountManager = Server.accounts;
     let oldStage = PlayerConnection.stage.INITIAL;
     let oldConnection = this.getOldConnection(account);
     let oldIngameEntityId = null;
@@ -358,7 +356,7 @@ export class PlayerConnection extends IdableObject
   }
 
   // Send data to the connection without adding any newlines.
-  // (It means that player will type right next to this output)
+  // (It means that player will type right next to this output.)
   public sendAsPrompt(data: string)
   {
     this.send(data, { asBlock: false, addPrompt: false });
@@ -634,7 +632,7 @@ export class PlayerConnection extends IdableObject
 
   private removeSelfFromManager()
   {
-    Server.playerConnectionManager.removeItem(this.getId());
+    Server.playerConnections.dropEntity(this.getId());
   }
 
   private logoutAccount(action: string)

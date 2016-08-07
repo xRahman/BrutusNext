@@ -9,26 +9,24 @@
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {Server} from '../server/Server';
-import {Id} from '../shared/Id';
+import {EntityId} from '../shared/EntityId';
 import {SaveableObject} from '../shared/SaveableObject';
 import {PrototypeManager} from '../shared/PrototypeManager';
-import {GameEntity} from '../game/GameEntity';
-import {EntityId} from '../game/EntityId';
-import {PlayerCharacterManager} from '../game/PlayerCharacterManager';
-import {IdableObjectContainer} from '../shared/IdableObjectContainer';
+import {CharacterList} from '../game/CharacterList';
+import {EntityContainer} from '../shared/EntityContainer';
 import {World} from '../game/world/World';
 import {Room} from '../game/world/Room';
 import {RoomFlags} from '../game/world/RoomFlags';
-import {EntityIdList} from '../game/EntityIdList';
+import {IdSearchList} from '../game/IdSearchList';
 
 /// Asi docasne:
 import {Area} from '../game/world/Area';
 import {Realm} from '../game/world/Realm';
 
-// Unlike "import {SomeClass} from ''", "require()" ensures that required
-// module _will_ be loaded here. This is necessary for using dynamic classes,
-// because their constructors need to be added to 'global' object in order
-// to be dynamically invoked.
+// Unlike "import {SomeClass} from 'SomeClass'", "require()" ensures that
+// required module _will_ be loaded here. This is necessary for using dynamic
+// required because their constructors need to be added to 'global' object in
+// order to be dynamically invoked.
 // Note:
 //  This cannot be done in SaveableObject from some reason (it probably causes
 //  cyclic module dependance) even though it would make much more sense there.
@@ -39,34 +37,24 @@ import {Script} from '../shared/Script';
 
 export class Game
 {
-  public static get entities()
+  public static get characters()
   {
-    return Server.game.entities;
+    return Server.game.characters;
   }
 
-  public static get playerCharacterManager()
+  public static get rooms()
   {
-    return Server.game.playerCharacterManager;
+    return Server.game.rooms;
   }
 
-  public static get characterList()
+  public static get areas()
   {
-    return Server.game.characterList;
+    return Server.game.areas;
   }
 
-  public static get roomList()
+  public static get realms()
   {
-    return Server.game.roomList;
-  }
-
-  public static get areaList()
-  {
-    return Server.game.areaList;
-  }
-
-  public static get realmList()
-  {
-    return Server.game.realmList;
+    return Server.game.realms;
   }
 
   public static get worldId()
@@ -100,7 +88,7 @@ export class Game
 
     // 'BrutusWorld' is a prototype for world
     // (it is created by createDefaultWorld()).
-    let world = GameEntity.createInstance
+    let world = SaveableObject.createInstance
       ({ className: 'BrutusWorld', typeCast: World });
 
     // Load current state of world from file.
@@ -112,31 +100,23 @@ export class Game
 
   // -------------- Protected class data ----------------
 
-  // Game entities (characters, rooms, objects, etc.) are all stored in
-  // this container, not in their respective managers. This allows access to
-  // any game entity by it's id without knowing what kind of entity it is.
-  protected entities = new IdableObjectContainer<GameEntity>();
-
   // List of ids of all characters in game.
-  protected characterList = new EntityIdList();
+  // (Also handles creating of new characters).
+  protected characters = new CharacterList();
 
   // List of ids of all rooms in game.
-  protected roomList = new EntityIdList();
+  protected rooms = new IdSearchList();
 
   // List of ids of all areas in game.
-  protected areaList = new EntityIdList();
+  protected areas = new IdSearchList();
 
   // List of ids of all realms in game.
-  protected realmList = new EntityIdList();
-
-  // Handles creating of new characters
-  protected playerCharacterManager =
-    new PlayerCharacterManager(this.characterList);
+  protected realms = new IdSearchList();
 
   // There is only one world in the game (at the moment).
   protected worldId = null;
 
-  // Prototype manager creates classes for all game entities.
+  // Dynamically creates classes from which game entities are inherited.
   protected prototypeManager = new PrototypeManager();
 
   // --------------- Protected methods ------------------
@@ -275,7 +255,7 @@ export class Game
 
 
     let tutorialRoom =
-      world.tutorialRoomId.getEntity({ typeCast: GameEntity });
+      world.tutorialRoomId.getEntity({ typeCast:Room });
 
     tutorialRoom.test = "Test thisu 1";
     tutorialRoom.onLoad = script1.run;
@@ -301,6 +281,6 @@ export class Game
       return;
 
     world.name = param.name;
-    this.worldId = Server.idProvider.generateId(world, EntityId);
+    this.worldId = Server.idProvider.generateId(world);
   }
 }

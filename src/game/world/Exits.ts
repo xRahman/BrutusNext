@@ -8,7 +8,7 @@
 'use strict';
 
 import {SaveableObject} from '../../shared/SaveableObject';
-import {EntityId} from '../../game/EntityId';
+import {EntityId} from '../../shared/EntityId';
 
 export class Exits extends SaveableObject
 {

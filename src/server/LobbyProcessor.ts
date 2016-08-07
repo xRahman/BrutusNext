@@ -13,7 +13,7 @@ import {Server} from '../server/Server';
 import {Account} from '../server/Account';
 import {Game} from '../game/Game';
 import {GameEntity} from '../game/GameEntity';
-import {EntityId} from '../game/EntityId';
+import {EntityId} from '../shared/EntityId';
 import {Character} from '../game/characters/Character';
 import {Mudlog} from '../server/Mudlog';
 import {AdminLevels} from '../server/AdminLevels';
@@ -122,8 +122,8 @@ export class LobbyProcessor
 
   protected async processMenuChoice(choice: string)
   {
-    let accountManager = Server.accountManager;
-    let account = accountManager.getAccount(this.playerConnection.accountId);
+    let account =
+      this.playerConnection.accountId.getEntity({ typeCast: Account });
 
     switch (choice)
     {

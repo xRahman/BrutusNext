@@ -26,7 +26,7 @@
 import {ASSERT_FATAL} from '../../shared/ASSERT_FATAL';
 import {Mudlog} from '../../server/Mudlog';
 import {AdminLevels} from '../../server/AdminLevels';
-import {Id} from '../../shared/Id';
+import {EntityId} from '../../shared/EntityId';
 import {Server} from '../../server/Server';
 import {PlayerConnection} from '../../server/PlayerConnection';
 import {TelnetSocketDescriptor}
@@ -174,11 +174,22 @@ export class TelnetServer
     /// zatim necham.
     ///s.socket = s; // conform to the websocket object to make easier to handle
 
-    let socketDescriptor = new TelnetSocketDescriptor(socket);
-    let newPlayerConnection = new PlayerConnection(socketDescriptor);
-    let playerConnectionId = Server.playerConnectionManager
-        .addItemUnderNewId(newPlayerConnection, Id);
+    let playerConnection = this.createPlayerConnection(socket);
     
-    newPlayerConnection.startLoginProcess();
+    
+    playerConnection.startLoginProcess();
+  }
+
+  private createPlayerConnection(socket)
+  {
+    let socketDescriptor = new TelnetSocketDescriptor(socket);
+    let playerConnection = new PlayerConnection(socketDescriptor);
+
+    let id = Server.entities.addUnderNewId(playerConnection);
+
+    Server.playerConnections.addEntity(playerConnection);
+
+
+    return playerConnection;
   }
 }
