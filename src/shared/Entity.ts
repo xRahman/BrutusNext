@@ -46,6 +46,13 @@ export class Entity extends AutoSaveableObject
 
   // ---------------- Public methods --------------------
 
+  // Returns something like "Connection (id: d-imt2xk99)"
+  // (indended for use in error messages).
+  public getErrorIdString()
+  {
+    return this.className + " (id: " + this.getId().getStringId() + ")";
+  }
+
   // Entity adds itself to approptiate IdList
   // (so it can be searched by name, etc).
   // Note:

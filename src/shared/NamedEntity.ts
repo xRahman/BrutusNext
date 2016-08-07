@@ -15,8 +15,8 @@ export class NamedEntity extends Entity
 
   // ---------------- Public methods --------------------
 
-  // Returns something like "Character 'Zuzka' (id: d-imt2xk99)".
-  // (indended for use in error messages)
+  // Returns something like "Character 'Zuzka' (id: d-imt2xk99)"
+  // (indended for use in error messages).
   public getErrorIdString()
   {
     return this.className + " '" + this.name + "'"

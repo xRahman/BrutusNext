@@ -40,7 +40,7 @@ export class AccountList extends IdList
 
     let id = Server.entities.addUnderNewId(account);
 
-    this.addEntity(account);
+    this.add(account);
 
     /*
     // Set newAccount.adminLevel to 5 if there are no other accounts on the
@@ -85,7 +85,7 @@ export class AccountList extends IdList
 
   public dropAccount(accountId: EntityId)
   {
-    this.removeFromList(accountId);
+    this.remove(accountId);
 
     // Also remove it from entities so the memore can be
     // dealocated.
