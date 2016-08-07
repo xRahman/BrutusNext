@@ -29,14 +29,10 @@
 
 import {ASSERT} from '../../shared/ASSERT';
 import {ASSERT_FATAL} from '../../shared/ASSERT_FATAL';
-import {IdableObject} from '../../shared/IdableObject';
-import {GameEntity} from '../../game/GameEntity';
+import {NamedEntity} from '../../shared/NamedEntity';
 import {CommandSearchList} from '../../game/commands/CommandSearchList';
 
-// CommandInterpretter is inherited from IdableObject, because it's
-// just one step of deeper inheritance chain (GameEntity is inherited
-// from CommandInterpretter).
-export abstract class CommandInterpretter extends IdableObject
+export abstract class CommandInterpretter extends NamedEntity
 {
   // ---------------- Static methods -------------------- 
 

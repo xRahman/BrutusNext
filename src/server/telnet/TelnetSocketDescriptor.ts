@@ -9,6 +9,7 @@
 import {ASSERT} from '../../shared/ASSERT';
 import {ASSERT_FATAL} from '../../shared/ASSERT_FATAL';
 import {Mudlog} from '../../server/Mudlog';
+import {Account} from '../../server/Account';
 import {AdminLevels} from '../../server/AdminLevels';
 import {Server} from '../../server/Server';
 import {SocketDescriptor} from '../../server/SocketDescriptor';
@@ -227,8 +228,8 @@ export class TelnetSocketDescriptor extends SocketDescriptor
 
     if (this.playerConnection.accountId !== null)
     {
-      let accountName = Server.accountManager
-        .getAccount(this.playerConnection.accountId).name;
+      let accountName =
+        this.playerConnection.accountId.getEntity({ typeCast: Account }).name;
 
       player = "Player " + accountName;
     }

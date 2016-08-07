@@ -1,5 +1,65 @@
-﻿TODO: S loadováním/savováním hashmap jsem se, zdá se, radoval předčasně
+﻿IDEA: Sloučit AbbrevSeachList a IdSearch list do jedné classy
+      (AbbrevSearchList prostě bude zděděnej z IdListu)
+      Přidat classu NameSearchList (zděděnou z IdListu)
+
+TODO: PlayerConnection přejmenovat na Connection
+      a Server.playerConnections na Server.connections
+
+TODO: V Server a Game oddělit managery od idListu a dát k tomu komentáře,
+      čím se to liší.
+
+TODO: IdList přesunout do /shared
+      (IdSeachList asi taky)
+
+TODO: Všechny XXXManager přejmenovat na XXXList a zdědit je z IdList nebo
+      IdSearchList
+      - nebo ještě druhá možnost, místo AccountList prostě Accounts
+      (ale asi raději AccountList, Accounts je divné jméno pro classu)
+TODO: Všechny xxxList přesmenovat na xxxs (characterList na characters).
+TODO: EntityContainer přejmenovat na EntityManager
+      (bude z toho jasnější že je jen jeden)
+TODO: Container přejmenovat na ContainerEntity
+TODO: CommandInterpretter přejmenovat na CommandInterprettingEntity?
+      nebo CommandEntity? CommandProcessingEntity? - to zní nejlíp.
+      - hmm, to možná ne, to zní divně...
+
+Obecně se držet schématu:
+- Manager obsahuje přímo instance
+  - EntityManager obsahuje entity (což jsou instance)
+  - FlagNamesManager obsahuje instance FlagNames objektů
+  - PrototypeManager obsahuje instance Prototypů
+
+- List obsahuje idčka
+-------------
+
+TODO: Přidat classu IdSearchList a přesunout do ni abbrevSearchList z IdListu.
+
+TODO: game/EntityContainer přejmenovat na něco jiného
+      - buď EntityIdContainer
+      - nebo GameEntityContainer
+      - nebo prostě Container?
+Nebo možná raději přejmenovat /shared/EntityContainer na EntityManager?
+
+TODO: Pokud budu managery dědit z idListu, tak to udělat
+      i s PlayerCharacterManagerem
+
+TODO: Přesunout NamedEntity do shared
+  (a možná i další classy).
+
+TODO: Id přejmenovat na EntityId (a classu EntityId zrušit).
+
+TODO: Nastavovat idčkům status.
+
+TODO: Ještě jednou zvážit typescriptové enumy (Entity.satus, atpod.).
+
+TODO: Výhledově dát 'dynamicClasses' někam jinam než do global objectu.
+  - asi do serveru
+TODO: Výhledově nějak líp pořešit dynamické classy než přes dynamicClasses.ts
+  (možná všechny moduly requirovat místo importovat?)
+
+TODO: S loadováním/savováním hashmap jsem se, zdá se, radoval předčasně
   - opravit loadování SaveableObjectů uložených v hashmapě.
+[snad už ok]
 
 TODO: Asi všude zrušit property deklarované jako parametry konstruktorů
   (ne vždy se konstruktor volá se všemi parametry a pak se stane to, že
@@ -1004,3 +1064,55 @@ IDEA:
 
 
   IDEA: Script.internalFunction prejmenovat na Script.run
+
+
+======================================================
+
+  Úvahy nad idčky a entitami
+  ---------------------------
+
+  - IdableObject přejmenovat na IdableEntity (nebo jen Entity)
+    (protože idčka mají funkci getEntity, tak ať to dává smysl)
+    (pořád bude rozdíl mezi Entity a GameEntity)
+
+  - IdableObjectContainer přejmenovat na EntityContainer
+
+  - V celé aplikaci mít jen jeden Entity Container
+    (tzn. budou v něm accounty, game entity, atd.)
+
+  - Sloučit IdProvider s EntityContainerem (nejspíš ho dát do entityContaineru)
+
+
+Validita idček
+  Když idčko loaduju z disku
+  - checknu, jestli už není zaregistrované v IdProvideru
+    - pokud ano, vezmu si referenci (a už má validitu zjištěnou)
+    - pokud ne, přidám ho do IdProvideru - a asi bych měl ověřit validitu
+      (a nastavit ji do interní proměnné)
+
+  Hmm, validita může znamenat různé věci
+  - valid entita, ale není loadnutá
+  - smazaná entita
+
+  public status = Entity.STATUS.UNKNOWN;
+  
+  public static STATUS =
+  {
+    // Initial value - we don't know yet.
+    UNKNOWN:                  "UNKNOWN",
+    // Entity is valid and loaded.
+    VALID:                    "VALID",
+    // Entity is valid (not deleted) and loaded from disk.
+    NOT_LOADED:               "NOT_LOADED",
+    // Entity has been deleted, you should not access it anymore.
+    DELETED:                  "NOT_LOADED"
+  }
+
+  // internalReference jde zcela nezavisle. Entita muze byt loadnuta
+  // a validni a pritom internalReference null
+  // - nebo ne?
+  //   Co mi brani updatnout internalReference hned?
+
+  TODO: Zrušit classu EntityId
+  TODO Id.getEntity<T>() bude generic a bude dynamicky přetypovávat
+    na requestnutý typ T.

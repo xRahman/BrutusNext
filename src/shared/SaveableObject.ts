@@ -9,7 +9,7 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
-import {Id} from '../shared/Id';
+import {EntityId} from '../shared/EntityId';
 import {NamedClass} from '../shared/NamedClass';
 import {AttributableClass} from '../shared/AttributableClass';
 import {FileSystem} from '../shared/fs/FileSystem';
@@ -241,18 +241,11 @@ export class SaveableObject extends AttributableClass
 
   private loadFromJsonObject(jsonObject: Object, filePath: string)
   {
-    // filePath is passed just so it can be printed to error messages.
+    // 'filePath' is passed just so it can be printed to error messages.
     this.checkVersion(jsonObject, filePath);
 
-    // className must be the same as it's saved value.
+    // 'className' must be the same as it's saved value.
     this.checkClassName(jsonObject, filePath);
-
-    /*
-    /// This is not an arror - entities are supposed to have variables
-    /// on them that don't exist on prototype.
-    // filePath is passed just so it can be printed to error messages.
-    this.checkThatAllPropertiesInJsonExistInThis(jsonObject, filePath);
-    */
 
     // Using 'in' operator on object with null value would cause crash.
     ASSERT_FATAL(jsonObject !== null,
@@ -384,27 +377,6 @@ export class SaveableObject extends AttributableClass
     // and return false to indicate, that it needs to be processed right away.
     return false;
   }
-
-  /*
-  private checkThatAllPropertiesInJsonExistInThis
-  (
-    jsonObject: Object,
-    filePath: string
-  )
-  {
-    let property = "";
-
-    for (property in jsonObject)
-    {
-      ASSERT_FATAL(property in this,
-        "Property '" + property + "' exists in JSON data in file " + filePath
-        + " we are trying to load ourselves from but we don't have it."
-        + " Maybe you forgot to change the version and convert JSON files"
-        + " to a new format? Or maybe you might have forgotten to initialize"
-        + " it in class declaration?");
-    }
-  }
-  */
 
   // Loads a property of type Array from a JSON Array object.
   private loadArray

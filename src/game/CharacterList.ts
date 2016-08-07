@@ -8,70 +8,57 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
-import {Id} from '../shared/Id';
+import {EntityId} from '../shared/EntityId';
 import {FileSystem} from '../shared/fs/FileSystem';
-import {EntityIdList} from '../game/EntityIdList';
+import {Server} from '../server/Server';
+import {IdSearchList} from '../game/IdSearchList';
 import {Game} from '../game/Game';
 import {Character} from '../game/characters/Character';
 
-export class PlayerCharacterManager
+export class CharacterList extends IdSearchList
 {
-  constructor(private characterList: EntityIdList) { }
-
   // ---------------- Public methods --------------------
 
   public createUniqueCharacter
   (
     name: string,
-    playerConnectionId: Id
+    playerConnectionId: EntityId
   )
-  : Id
+  : EntityId
   {
     if (!ASSERT(!this.exists(name),
       "Attempt to create character '" + name + "' who already exists."
       + " Character is not created"))
       return null;
 
-    let newCharacter = new Character();
+    let character = new Character();
 
-    newCharacter.name = name;
-    newCharacter.isNameUnique = true;
-    newCharacter.atachPlayerConnection(playerConnectionId);
+    character.name = name;
+    character.isNameUnique = true;
+    character.atachPlayerConnection(playerConnectionId);
 
-    let newCharacterId =
-      this.characterList.addEntityUnderNewId(newCharacter);
+    let id = Server.entities.addUnderNewId(character);
 
     // Save the character to the disk.
     // (We don't need to wait for save to finish so we don't need
     //  async/await here).
-    newCharacter.save();
+    character.save();
 
-    return newCharacterId;
-  }
-
-  public addPlayerCharacterUnderExistingId(character: Character)
-  {
-    this.characterList.addEntityUnderExistingId(character);
+    return id;
   }
 
   public getPlayerCharacter(characterName: string): Character
   {
-    let character = this.characterList.getUniqueEntityByName(characterName);
+    let id = this.getEntityIdByUniqueName(characterName);
 
-    if (character !== null)
-    {
-      ASSERT(character instanceof Character,
-        "Requested entity '" + characterName + "' is not a Character");
-    }
-
-    return <Character>character;
+    return id.getEntity({ typeCast: Character });
   }
 
   public exists(characterName: string)
   {
     // First check if character is already online so we can save reading from
     // disk.
-    if (this.characterList.hasUniqueEntity(characterName))
+    if (this.hasUniqueEntity(characterName))
       return true;
 
     let path = Character.SAVE_DIRECTORY + "unique/" + characterName + ".json";

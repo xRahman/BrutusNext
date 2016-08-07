@@ -11,7 +11,7 @@
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {Server} from '../server/Server';
-import {Id} from '../shared/Id';
+import {EntityId} from '../shared/EntityId';
 import {PlayerConnection} from '../server/PlayerConnection';
 
 // Built-in node.js modules.
@@ -32,7 +32,7 @@ export abstract class SocketDescriptor
   // ----------------- Public data ----------------------
 
   public getPlayerConnectionId() { return this.playerConnectionId; }
-  public setPlayerConnectionId(value: Id)
+  public setPlayerConnectionId(value: EntityId)
   {
     ASSERT(value !== undefined && value !== null,
       "Invalid player connection id");
@@ -52,10 +52,10 @@ export abstract class SocketDescriptor
     ASSERT_FATAL(this.playerConnectionId !== null,
       "Invalid player connection id");
 
-    return Server.playerConnectionManager.getItem(this.playerConnectionId);
+    return Server.playerConnections.getItem(this.playerConnectionId);
   }
 
-  public playerConnectionId: Id = null;
+  public playerConnectionId: EntityId = null;
 
   public socketClosed = false;
 

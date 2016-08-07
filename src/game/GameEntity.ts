@@ -9,15 +9,15 @@
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {Server} from '../server/Server';
-import {Id} from '../shared/Id';
+import {EntityId} from '../shared/EntityId';
 import {SaveableObject} from '../shared/SaveableObject';
 import {Script} from '../shared/Script';
+import {PlayerConnection} from '../server/PlayerConnection';
 import {Game} from '../game/Game';
-import {EntityId} from '../game/EntityId';
-import {NamedEntity} from '../game/NamedEntity';
-import {EntityIdList} from '../game/EntityIdList'
+import {Container} from '../game/Container';
+import {IdList} from '../shared/IdList'
 
-export class GameEntity extends NamedEntity
+export class GameEntity extends Container
 {
   /*
   /// TEST
@@ -52,20 +52,6 @@ export class GameEntity extends NamedEntity
   }
   */
 
-  // Creates a new instance of game entity of type saved in id.
-  static createInstanceFromId(id: Id, ...args: any[])
-  {
-    ASSERT_FATAL(id !== null,
-      "Invalid (null) id passed to GameEntity::createInstance()");
-
-    let newEntity = SaveableObject
-      .createInstance({ className: id.getType(), typeCast: GameEntity }, args);
-
-    newEntity.setId(id);
-    
-    return <GameEntity>newEntity;
-  }
-
   // ---------------- Public class data -----------------
 
   public name = "Unnamed Entity";
@@ -74,7 +60,7 @@ export class GameEntity extends NamedEntity
 
   // --------------- Public accessors -------------------
 
-  public get playerConnection()
+  public get playerConnection(): PlayerConnection
   {
     // We need to return null if playerConnectionId is null, because
     // if accessing playerConnection when playerConnectionId is null
@@ -87,7 +73,7 @@ export class GameEntity extends NamedEntity
     if (this.playerConnectionId === null)
       return null;
 
-    return Server.playerConnectionManager.getItem(this.playerConnectionId);
+    return this.playerConnectionId.getEntity({ typeCast: PlayerConnection });
   }
 
   public getId() { return <EntityId>super.getId(); }
@@ -111,20 +97,20 @@ export class GameEntity extends NamedEntity
   // ---------------- Public methods --------------------
 
   // Dynamically creates a new instance of requested class (param.prototype)
-  // and inserts it to specified idList (param.container).
+  // and inserts it to specified idList (param.idList).
   public createEntity<T>
   (
     param:
     {
       name: string,
       prototype: string,
-      container: EntityIdList
+      idList: IdList
     }
   )
   : EntityId
   {
     // Dynamic creation of a new instance.
-    let newEntity = SaveableObject.createInstance
+    let entity = SaveableObject.createInstance
     (
       {
         className: param.prototype,
@@ -132,11 +118,13 @@ export class GameEntity extends NamedEntity
       }
     );
 
-    newEntity.name = param.name;
+    entity.name = param.name;
 
-    let newEntityId = param.container.addEntityUnderNewId(newEntity);
+    let id = Server.entities.addUnderNewId(entity);
 
-    return newEntityId;
+    param.idList.addEntity(entity);
+
+    return id;
   }
 
   public generatePrompt(): string
@@ -145,7 +133,7 @@ export class GameEntity extends NamedEntity
     return "&gDummy_ingame_prompt >";
   }
 
-  public atachPlayerConnection(connectionId: Id)
+  public atachPlayerConnection(connectionId: EntityId)
   {
     ASSERT(this.playerConnectionId !== null,
       "Attempt to attach player connection to '" + this.getErrorIdString()
@@ -177,10 +165,6 @@ export class GameEntity extends NamedEntity
   // that a player character has just entered game).
   public announcePlayerReconnecting() { }
 
-  // Entity adds itself to approptiate manager
-  // (so it can be searched by name, etc.)
-  public addToManager() { }
-
   protected getSaveDirectory(): string
   {
     let SAVE_DIRECTORY = super.getSaveDirectory();
@@ -203,11 +187,11 @@ export class GameEntity extends NamedEntity
 
   // null if no player is connected to (is playing as) this entity,
   // connectionId otherwise.
-  private playerConnectionId: Id = null;
+  private playerConnectionId: EntityId = null;
   // Flag saying that playerConnectionId is not to be saved to JSON.
   private static playerConnectionId = { isSaved: false };
 
-  // Id of prototype entity. If it's null, this entity is a prototype.
+  // EntityId of prototype entity. If it's null, this entity is a prototype.
   protected prototypeId: EntityId = null;
 
   // --------------- Protected methods ------------------
@@ -236,7 +220,7 @@ export class GameEntity extends NamedEntity
 
   // -------------- Protected class data ---------------
 
-  // Id of an entity this entity is contained in.
+  // EntityId of an entity this entity is contained in.
   // (Rooms are contained in Areas, characters may be in rooms or object,
   // objects may be in room or object, etc.)
   protected location: EntityId = null;

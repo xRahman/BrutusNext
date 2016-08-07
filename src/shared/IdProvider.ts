@@ -9,14 +9,14 @@
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {Mudlog} from '../server/Mudlog';
-import {Id} from '../shared/Id';
-import {IdableObject} from '../shared/IdableObject';
+import {EntityId} from '../shared/EntityId';
+import {Entity} from '../shared/Entity';
 
 export class IdProvider
 {
-  // Hashmap<[ string, Id ]>
+  // Hashmap<[ string, EntityId ]>
   //   Key: string id
-  //   Value: Id object
+  //   Value: EntityId object
   private ids = new Map();
 
   constructor(private timeOfBoot: Date) { }
@@ -26,20 +26,17 @@ export class IdProvider
   // ---------------- Public methods --------------------
 
   // Returns undefined if id doesn't exist.
-  public get(stringId: string): Id
+  public get(stringId: string): EntityId
   {
     return this.ids.get(stringId);
   }
 
-  public generateId<T extends Id>
+  public generateId
   (
     // Entity for which we are generating an id.
-    entity: IdableObject,
-    // What type of id should be created.
-    // (Constructor of class extended from Id.)
-    idClass: { new (...args: any[]): T }
+    entity: Entity
   )
-  : T
+  : EntityId
   {
     // Increment lastIssuedId first so we start with 1 (initial value is 0).
     this.lastIssuedId++;
@@ -48,15 +45,15 @@ export class IdProvider
 
     // Here we are dynamically creating an instance of class
     // 'idClass' passed to us as parameter.
-    let id = new idClass(stringId, entity.className, entity);
+    let id = new EntityId(stringId, entity.className, entity);
 
-    // Insert newly created Id object to hashmap.
+    // Insert newly created EntityId object to hashmap.
     this.ids.set(stringId, id);
 
     return id;
   }
 
-  public registerLoadedId(id: Id)
+  public registerLoadedId(id: EntityId)
   {
     if (!ASSERT(this.ids.has(id.getStringId()) === false,
         "Attempt to register loaded id '" + id.getStringId() + "'"
