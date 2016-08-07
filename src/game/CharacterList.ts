@@ -10,12 +10,12 @@ import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {EntityId} from '../shared/EntityId';
 import {FileSystem} from '../shared/fs/FileSystem';
+import {AbbrevSearchList} from '../game/AbbrevSearchList';
 import {Server} from '../server/Server';
-import {IdSearchList} from '../game/IdSearchList';
 import {Game} from '../game/Game';
 import {Character} from '../game/characters/Character';
 
-export class CharacterList extends IdSearchList
+export class CharacterList extends AbbrevSearchList
 {
   // ---------------- Public methods --------------------
 
@@ -49,7 +49,7 @@ export class CharacterList extends IdSearchList
 
   public getPlayerCharacter(characterName: string): Character
   {
-    let id = this.getEntityIdByUniqueName(characterName);
+    let id = this.getIdByName(characterName);
 
     return id.getEntity({ typeCast: Character });
   }

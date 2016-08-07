@@ -72,7 +72,7 @@ export abstract class Container extends CommandInterpretter
   {
     let entity = entityId.getEntity({ typeCast: GameEntity });
 
-    this.contents.addEntity(entity);
+    this.contents.add(entity);
 
     entity.setLocation(this.getId());
   }
@@ -80,6 +80,6 @@ export abstract class Container extends CommandInterpretter
   // Removes entity if from contents of this entity.
   public removeEntity(entityId: EntityId)
   {
-    this.contents.removeFromList(entityId);
+    this.contents.remove(entityId);
   }
 }

@@ -1,4 +1,8 @@
-﻿IDEA: Sloučit AbbrevSeachList a IdSearch list do jedné classy
+﻿TODO: Všude po volání entityId.getEntity() dát check na to, že result
+      není null.
+      (entityId.getEntity() může vrátit null. Dereference by pak shodila hru)
+
+IDEA: Sloučit AbbrevSeachList a IdSearch list do jedné classy
       (AbbrevSearchList prostě bude zděděnej z IdListu)
       Přidat classu NameSearchList (zděděnou z IdListu)
 
