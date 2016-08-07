@@ -16,6 +16,22 @@ import {Realm} from '../../game/world/Realm';
 
 export class World extends GameEntity
 {
+  // --------------- Public accessors -------------------
+
+  // -------------- Protected accessors -----------------
+
+  protected static get SAVE_DIRECTORY() { return "./data/"; }
+
+  // ---------------- Public class data -----------------
+
+  // The room newly created player characters spawn to.
+  public tutorialRoomId: EntityId = null;
+  public systemRoomId: EntityId = null;
+  public systemAreaId: EntityId = null;
+  public systemRealmId: EntityId = null;
+
+  // -------------- Protected class data ----------------
+
   constructor()
   {
     super();
@@ -25,21 +41,6 @@ export class World extends GameEntity
     // .json files to conform to the new version.
     this.version = 0;
   }
-
-  // --------------- Public accessors -------------------
-
-  // -------------- Protected accessors -----------------
-
-  protected static get SAVE_DIRECTORY() { return "./data/"; }
-
-  // ---------------- Public class data -----------------
-
-  public systemRoomId: EntityId = null;
-  public systemAreaId: EntityId = null;
-  public systemRealmId: EntityId = null;
-
-  // The room newly created player characters spawn to.
-  public tutorialRoomId: EntityId = null;
 
   // ---------------- Public methods --------------------
 
@@ -59,8 +60,6 @@ export class World extends GameEntity
 
     return newRealmId;
   }
-
-  // -------------- Protected class data ----------------
 
   // --------------- Protected methods ------------------
 

@@ -48,19 +48,22 @@ export class IdList extends SaveableObject
         + " which is already in the list. Entity is not added"))
       return null;
 
+    /// Entity is now stored directly in an id.
+    /*
     // If entity isn't in global container holding all entities yet, add
     // it there.
-    if (!Server.entities.has(id))
+    if (!Server.idManager.hasEntity(id))
     {
       if (entity.getId() === null)
       {
-        Server.entities.addUnderNewId(entity);
+        Server.idManager.addUnderNewId(entity);
       }
       else
       {
-        Server.entities.addUnderExistingId(entity);
+        Server.idManager.addUnderExistingId(entity);
       }
     }
+    */
 
     // Add id to hashmap under it's string id.
     this.entityIds.set(id.getStringId, id);
@@ -76,22 +79,23 @@ export class IdList extends SaveableObject
     {
       switch (id.getEntityState())
       {
-        case EntityId.entityState.UNKNOWN:
+        case EntityId.state.ID_NOT_LOADED:
           ASSERT(false,
-            "Entity container " + containerIdString + " contains"
-            + " id " + id.getStringId() + " with unknown entity state."
-            + " EntityId must not be accessed before it's entity state is set");
+            "Entity container " + containerIdString + " contains id"
+            + id.getStringId() + " whis hasn't been loaded from file"
+            + " yet. EntityId must not be accessed before it is loaded");
           break;
 
-        case EntityId.entityState.LOADED:
+        case EntityId.state.ENTITY_NOT_LOADED:
+          await id.loadEntity();
+          id.status = EntityId.state.ENTITY_LOADED;
+          break;
+
+        case EntityId.state.ENTITY_LOADED:
           // If entity is already loaded, there is no need to do it again.
           break;
 
-        case EntityId.entityState.NOT_LOADED:
-          await id.loadEntity();
-          break;
-
-        case EntityId.entityState.DELETED:
+        case EntityId.state.ENTITY_DELETED:
           ASSERT(false,
             "Entity container " + containerIdString + " contains"
             + " deleted entity with id " + id.getStringId() + ". Entity"
@@ -113,22 +117,22 @@ export class IdList extends SaveableObject
     {
       switch (id.getEntityState())
       {
-        case EntityId.entityState.UNKNOWN:
+        case EntityId.state.ID_NOT_LOADED:
           ASSERT(false,
-            "Entity container " + containerIdString + " contains"
-            + " id " + id.getStringId() + " with unknown entity state."
-            + " EntityId must not be accessed before it's entity state is set");
+            "Entity container " + containerIdString + " contains id"
+            + id.getStringId() + " whis hasn't been loaded from file"
+            + " yet. EntityId must not be accessed before it is loaded");
           break;
 
-        case EntityId.entityState.LOADED:
-          await id.saveEntity();
-          break;
-
-        case EntityId.entityState.NOT_LOADED:
+        case EntityId.state.ENTITY_NOT_LOADED:
           // If entity isn't loaded, there is nothing to save.
           break;
 
-        case EntityId.entityState.DELETED:
+        case EntityId.state.ENTITY_LOADED:
+          await id.saveEntity();
+          break;
+
+        case EntityId.state.ENTITY_DELETED:
           ASSERT(false,
             "ContainerEntity " + containerIdString + " contains"
             + " deleted entity with id " + id.getStringId() + ". Entity"
@@ -148,18 +152,21 @@ export class IdList extends SaveableObject
   {
     if (!ASSERT(this.entityIds.has(entityId.getStringId()),
         "Attempt to remove id '" + entityId.getStringId() + "'"
-        + " from IdList '" + this.constructor.name + "'"
+        + " from IdList '" + this.className + "'"
         + " that is not present in it"))
       return;
 
     this.entityIds.delete(entityId.getStringId());
   }
 
-  // Removes entity from this list and deletes it from the game.
+  // Removes entity from this list and deletes it from memory.
   public delete(entityId: EntityId)
   {
+    // Remove entity reference from id so the memory can be dealocated.
+    entityId.dropEntity();
+
+    // Remove id from idList.
     this.remove(entityId);
-    Server.entities.dropEntity(entityId);
   }
 
   // Returns true if entityId is in the list.

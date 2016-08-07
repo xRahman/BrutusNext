@@ -13,11 +13,11 @@ import {EntityId} from '../shared/EntityId';
 import {SaveableObject} from '../shared/SaveableObject';
 import {PrototypeManager} from '../shared/PrototypeManager';
 import {CharacterList} from '../game/CharacterList';
-import {EntityContainer} from '../shared/EntityContainer';
+import {IdProvider} from '../shared/IdProvider';
 import {World} from '../game/world/World';
 import {Room} from '../game/world/Room';
 import {RoomFlags} from '../game/world/RoomFlags';
-import {IdSearchList} from '../game/IdSearchList';
+import {AbbrevSearchList} from '../game/AbbrevSearchList';
 
 /// Asi docasne:
 import {Area} from '../game/world/Area';
@@ -69,6 +69,7 @@ export class Game
 
   // ---------------- Public methods --------------------
 
+  /*
   public async createDefaultGame()
   {
     // Save prototypeManager (so it's empty save file exists).
@@ -76,56 +77,11 @@ export class Game
 
     await this.createDefaultWorld();
   }
-
-  // Loads initial state of the game from disk.
-  public async load()
-  {
-    // Load prototype data for all prototypes.
-    await this.prototypeManager.load();
-    // Create javascript classes from prototype data (all game entities will
-    // be instantiated from these dynamically created prototype classes).
-    this.prototypeManager.createClasses();
-
-    // 'BrutusWorld' is a prototype for world
-    // (it is created by createDefaultWorld()).
-    let world = SaveableObject.createInstance
-      ({ className: 'BrutusWorld', typeCast: World });
-
-    // Load current state of world from file.
-    await world.load();
-
-    // Remember worldId that we just loaded from file.
-    this.worldId = world.getId();
-  }
-
-  // -------------- Protected class data ----------------
-
-  // List of ids of all characters in game.
-  // (Also handles creating of new characters).
-  protected characters = new CharacterList();
-
-  // List of ids of all rooms in game.
-  protected rooms = new IdSearchList();
-
-  // List of ids of all areas in game.
-  protected areas = new IdSearchList();
-
-  // List of ids of all realms in game.
-  protected realms = new IdSearchList();
-
-  // There is only one world in the game (at the moment).
-  protected worldId = null;
-
-  // Dynamically creates classes from which game entities are inherited.
-  protected prototypeManager = new PrototypeManager();
-
-  // --------------- Protected methods ------------------
-
-  // ---------------- Private methods -------------------
+  */
 
   // Creates and saves a new default world.
   // (this method sould only be used if you don't have 'data' directory yet)
-  private async createDefaultWorld()
+  public async createDefaultWorld()
   {
     // --- World ---
 
@@ -156,7 +112,7 @@ export class Game
     world.systemRealmId = systemRealmId;
 
     // --- System Area ---
-    
+
     // Create a new area prototype.
     this.prototypeManager.createPrototype
       ({ name: "SystemArea", ancestor: "Area" });
@@ -215,10 +171,10 @@ export class Game
 
     ///*
     // test savu skriptu
-    let scriptCode1 = 
-//        "'use strict';\n"
-//      + "this.result = async function onLoad()\n"
-//      + "{\n"
+    let scriptCode1 =
+      //        "'use strict';\n"
+      //      + "this.result = async function onLoad()\n"
+      //      + "{\n"
       "  while(true)\n"
       + "  {\n"
       + "    console.log('Launching " + '"onload()"' + " script!');\n"
@@ -227,11 +183,11 @@ export class Game
       + "    await delay(1000);\n"
       + "    console.log('onLoad() script awakens from sleep()!');\n"
       + "  }\n";
-//      + "}\n";
+    //      + "}\n";
 
 
     let scriptCode2 =
-        "  while(true)\n"
+      "  while(true)\n"
       + "  {\n"
       + "    console.log('Launching " + '"onDeath()"' + " script!');\n"
       + "    console.log('This.test: ' + this.test);\n"
@@ -240,22 +196,22 @@ export class Game
       + "    console.log('onDeath() script awakens from sleep()!');\n"
       + "  }\n";
 
-    
+
     let proto = this.prototypeManager.getPrototype("TutorialRoom");
     let script1 = proto.createScript("onLoad");
     script1.code = scriptCode1;
     script1.compile();
-    
+
     //let script2 = proto.createScript("onDeath");
     //script2.code = scriptCode2;
     //script2.compile();
-    
+
 
     this.prototypeManager.save();
 
 
     let tutorialRoom =
-      world.tutorialRoomId.getEntity({ typeCast:Room });
+      world.tutorialRoomId.getEntity({ typeCast: Room });
 
     tutorialRoom.test = "Test thisu 1";
     tutorialRoom.onLoad = script1.run;
@@ -265,6 +221,61 @@ export class Game
     script1.code = scriptCode2;
     script1.compile();
   }
+
+  // Loads initial state of the game from disk.
+  public async load()
+  {
+    // Load prototype data for all prototypes.
+    await this.prototypeManager.load();
+    // Create javascript classes from prototype data (all game entities will
+    // be instantiated from these dynamically created prototype classes).
+    this.prototypeManager.createClasses();
+
+    // 'BrutusWorld' is a prototype for world
+    // (it is created by createDefaultWorld()).
+    let world = SaveableObject.createInstance
+      ({ className: 'BrutusWorld', typeCast: World });
+
+    // Load current state of world from file.
+    await world.load();
+
+    // Remember worldId that we just loaded from file.
+    this.worldId = world.getId();
+  }
+
+  // -------------- Protected class data ----------------
+
+  // -------- idLists ---------
+  // IdLists only contain entity id's (instances of
+  // all entities are owned by Server.idProvider).
+
+  // List of ids of all characters in game.
+  // (Also handles creating of new characters).
+  protected characters = new CharacterList();
+
+  // List of ids of all rooms in game.
+  protected rooms = new AbbrevSearchList();
+
+  // List of ids of all areas in game.
+  protected areas = new AbbrevSearchList();
+
+  // List of ids of all realms in game.
+  protected realms = new AbbrevSearchList();
+
+  // -------- managers --------
+  // Unlike idLists, managers store actual instances, not just entity ids.
+
+  // Dynamically creates classes from which game entities are inherited.
+  protected prototypeManager = new PrototypeManager();
+
+  // --- Direct links (ids) ---
+
+  // There is only one world in the game (at the moment).
+  protected worldId = null;
+
+  // --------------- Protected methods ------------------
+
+  // ---------------- Private methods -------------------
 
   private createWorld(param: { name: string, prototype: string })
   {
@@ -281,6 +292,7 @@ export class Game
       return;
 
     world.name = param.name;
-    this.worldId = Server.idProvider.generateId(world);
+
+    this.worldId = Server.idProvider.createId(world);
   }
 }

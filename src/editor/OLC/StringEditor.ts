@@ -8,13 +8,13 @@
 
 import {ASSERT} from '../../shared/ASSERT';
 import {ASSERT_FATAL} from '../../shared/ASSERT_FATAL';
-import {PlayerConnection} from '../../server/PlayerConnection';
+import {Connection} from '../../server/Connection';
 
 export class StringEditor
 {
   constructor
   (
-    private playerConnection: PlayerConnection,
+    private connection: Connection,
     initialText: string
   )
   {
@@ -37,12 +37,12 @@ export class StringEditor
     switch (command)
     {
       case '/s':  // Save the result and exit the editor.
-        this.playerConnection.returnFromStringEditor();
+        this.connection.returnFromStringEditor();
       break;
 
       case '/a':  // Discard all changes and exit the editor.
         this.text = this.origText;
-        this.playerConnection.abortStringEditor();
+        this.connection.abortStringEditor();
       break;
 
       case '/c':  // Clear the contents.

@@ -14,6 +14,7 @@ import {NamedClass} from '../shared/NamedClass';
 import {AttributableClass} from '../shared/AttributableClass';
 import {FileSystem} from '../shared/fs/FileSystem';
 import {Mudlog} from '../server/Mudlog';
+import {Server} from '../server/Server';
 
 let beautify = require('js-beautify').js_beautify;
 
@@ -423,7 +424,18 @@ export class SaveableObject extends AttributableClass
     if (jsonVariable === null)
       return null;
 
-    if
+    if (this.isId(jsonVariable, filePath))
+    {
+      // EntityId's are loaded in a special way because then need to be
+      // registered by IdManager.
+      this.loadIdPropertyFromJsonObject
+      (
+        variableName,
+        variable,
+        filePath
+      );
+    }
+    else if
     (
       Array.isArray(jsonVariable)
       // Hashmaps (class Map) are saved as array but we need them
@@ -725,13 +737,55 @@ export class SaveableObject extends AttributableClass
   private isDate(variable: any): boolean
   {
     // Dirty hack to check if object is of type 'Date'.
-    return Object.prototype.toString.call(variable) === '[object Date]';
+    ///return Object.prototype.toString.call(variable) === '[object Date]';
+    return variable.constructor.name === 'Date';
   }
 
   private isMap(variable: any): boolean
   {
     // Dirty hack to check if object is of type 'Map'.
-    return Object.prototype.toString.call(variable) === '[object Map]';
+    ///return Object.prototype.toString.call(variable) === '[object Map]';
+    return variable.constructor.name === 'Map';
+  }
+
+  private isId(jsonObject: Object, filePath: string): boolean
+  {
+    // Technically there can be an id saved with a 'null' value,
+    // but in that case we don't have to load it as an EntityId,
+    // because it will be null anyways.
+    if (jsonObject === null)
+      return false;
+
+    if (!ASSERT(jsonObject !== undefined,
+      "Invalid jsonObject"))
+      return false;
+
+    if (jsonObject[NamedClass.CLASS_NAME_PROPERTY] !== undefined)
+    {
+      if (jsonObject[NamedClass.CLASS_NAME_PROPERTY] === "EntityId")
+        return true;
+
+      return false;
+    }
+
+    // Json objects don't have a type (they are plain javascript Objects),
+    // so we can't use instanceOf. We could test className, but that wouldn't
+    // work for ancestors of EntityId class (anyone who would inherit from
+    // class EntityId would have to add a special case here), so instead we
+    // check 'stringId' property which all ancestors of EntityId inherit.
+    ASSERT(jsonObject[EntityId.STRING_ID_PROPERTY] === undefined,
+      "There is a " + EntityId.STRING_ID_PROPERTY + " property in"
+      + " Json object loaded from file " + filePath + " but a "
+      + NamedClass.CLASS_NAME_PROPERTY + " is missing. That"
+      + " probably means that you have either inherited from"
+      + " EntityId class or you have declared a property named "
+      + EntityId.STRING_ID_PROPERTY + " in some random class."
+      + " If it's the first case, you will have to change code"
+      + " here where this ASSERT have been triggered. If it's the"
+      + " second case, you should name the property otherwise. If "
+      + " it's neither, good luck figuring out what's going on.");
+
+    return true;
   }
 
   private extractMapContents(map: Map<any, any>): Array<any>
@@ -746,5 +800,66 @@ export class SaveableObject extends AttributableClass
     }
     
     return result;
+  }
+
+  private loadIdPropertyFromJsonObject
+    (
+    propertyName: string,
+    jsonObject: any,
+    filePath: string
+    )
+  {
+    let stringId = jsonObject[EntityId.STRING_ID_PROPERTY];
+
+    if (!ASSERT(stringId !== undefined && stringId !== null,
+      "Errow while loading id from file " + filePath + ": Unable"
+      + " to load id, because passed 'jsonObject' doesn't contain"
+      + "property '" + EntityId.STRING_ID_PROPERTY + "'"))
+      return null;
+
+    let id = Server.idProvider.get(stringId);
+
+    if (id !== undefined)
+    {
+      // Check that all properties of loaded id match existing id.
+      id.checkAgainstJsonObject(jsonObject, filePath);
+
+      // We are going to use existing id iven if loaded id doesn't
+      // match perfecly (if there were errors, they have been
+      // reported by id.checkAgainstJsonObject()).
+      this[propertyName] = id;
+    }
+    else
+    {
+      // Id doesn't exist in idProvider yet, so we need to
+      // create a new instance of EntityId.
+      // (This will create an EntityId with internal state ID_NOT_LOADED,
+      //  and it won't be registered in idProvider.)
+      id = SaveableObject.createInstance
+        (
+        {
+          className: jsonObject[NamedClass.CLASS_NAME_PROPERTY],
+          typeCast: EntityId
+        }
+        );
+
+      // We need to set id to our property so we can use
+      // this.loadPropertyFromJsonObject().
+      this[propertyName] = id;
+
+      // Load it from it from json object.
+      this.loadPropertyFromJsonObject
+        (
+        jsonObject,
+        propertyName,
+        filePath
+        );
+
+      // Update internal status from ID_NOT_LOADED to ENTITY_NOT_LOADED.
+      id.status = EntityId.state.ENTITY_NOT_LOADED;
+
+      // Register loaded id in idProvider.
+      Server.idProvider.register(this[propertyName]);
+    }
   }
 }
