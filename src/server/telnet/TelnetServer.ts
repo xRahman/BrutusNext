@@ -28,7 +28,7 @@ import {Mudlog} from '../../server/Mudlog';
 import {AdminLevels} from '../../server/AdminLevels';
 import {EntityId} from '../../shared/EntityId';
 import {Server} from '../../server/Server';
-import {PlayerConnection} from '../../server/PlayerConnection';
+import {Connection} from '../../server/Connection';
 import {TelnetSocketDescriptor}
   from '../../server/telnet/TelnetSocketDescriptor';
 
@@ -174,22 +174,22 @@ export class TelnetServer
     /// zatim necham.
     ///s.socket = s; // conform to the websocket object to make easier to handle
 
-    let playerConnection = this.createPlayerConnection(socket);
+    let connection = this.createConnection(socket);
     
     
-    playerConnection.startLoginProcess();
+    connection.startLoginProcess();
   }
 
-  private createPlayerConnection(socket)
+  private createConnection(socket)
   {
     let socketDescriptor = new TelnetSocketDescriptor(socket);
-    let playerConnection = new PlayerConnection(socketDescriptor);
+    let connection = new Connection(socketDescriptor);
 
-    let id = Server.entities.addUnderNewId(playerConnection);
+    let id = Server.idProvider.createId(connection);
 
-    Server.playerConnections.add(playerConnection);
+    Server.connections.add(connection);
 
 
-    return playerConnection;
+    return connection;
   }
 }

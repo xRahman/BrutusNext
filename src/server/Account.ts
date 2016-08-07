@@ -13,7 +13,7 @@ import {AdminLevels} from '../server/AdminLevels';
 import {Mudlog} from '../server/Mudlog';
 import {EntityId} from '../shared/EntityId';
 import {NamedEntity} from '../shared/NamedEntity';
-import {PlayerConnection} from '../server/PlayerConnection';
+import {Connection} from '../server/Connection';
 import {Server} from '../server/Server';
 import {Game} from '../game/Game';
 
@@ -22,12 +22,11 @@ import * as crypto from 'crypto';  // Import namespace 'crypto' from node.js
 
 export class Account extends NamedEntity
 {
-  public playerConnectionId: EntityId = null;
+  public connectionId: EntityId = null;
+  // Do not save and load property 'connectionId'.
+  private static connectionId = { isSaved: false };
 
-  // Flag saying that playerConnectionId is not to be saved to JSON.
-  private static playerConnectionId = { isSaved: false };
-
-  constructor(name: string, playerConnectionId: EntityId)
+  constructor(name: string, connectionId: EntityId)
   {
     super();
 
@@ -36,7 +35,7 @@ export class Account extends NamedEntity
     // .json files to conform to the new version.
     this.version = 0;
 
-    this.playerConnectionId = playerConnectionId;
+    this.connectionId = connectionId;
 
     this.name = name;
     // Account names are unique.
@@ -47,9 +46,9 @@ export class Account extends NamedEntity
 
   // ----------------- Public data ----------------------
 
-  public get playerConnection()
+  public get connection()
   {
-    return Server.playerConnections.getItem(this.playerConnectionId);
+    return this.connectionId.getEntity({ typeCast: Connection });
   }
 
   // List of character names this account has access to.
@@ -86,14 +85,14 @@ export class Account extends NamedEntity
 
   public isInGame(): boolean
   {
-    return this.playerConnection.isInGame();
+    return this.connection.isInGame();
   }
 
   public createCharacter(characterName: string): EntityId
   {
-    let characterManager = Game.playerCharacterManager;
+    let characterList = Game.characters;
 
-    if (characterManager.exists(characterName))
+    if (characterList.exists(characterName))
     {
       // Handle error messages.
       this.reportCharacterAlreadyExists(characterName);
@@ -101,10 +100,10 @@ export class Account extends NamedEntity
       return null;
     }
 
-    let characterId = characterManager.createUniqueCharacter
+    let characterId = characterList.createUniqueCharacter
     (
       characterName,
-      this.playerConnection.getId()
+      this.connection.getId()
     );
 
     // (Also handles error messages.)
@@ -127,7 +126,7 @@ export class Account extends NamedEntity
     if (!ASSERT(characterId !== null,
         "Failed to create new character (" + characterName + ")"))
     {
-      this.playerConnection.sendAsBlock
+      this.connection.sendAsBlock
       (
         "&wAn error occured while creating"
         + " your character. Please contact implementors."
@@ -156,7 +155,7 @@ export class Account extends NamedEntity
 
   public updateLastLoginInfo()
   {
-    this.lastLoginAddress = this.playerConnection.ipAddress;
+    this.lastLoginAddress = this.connection.ipAddress;
 
     // Creating a new Date object initializes it to current date and time.
     this.lastLoginDate = new Date();
@@ -165,7 +164,7 @@ export class Account extends NamedEntity
   public logout(action: string)
   {
     let accountName = this.name;
-    let ipAddress = this.playerConnection.ipAddress;
+    let ipAddress = this.connection.ipAddress;
 
     /*
     /// Tohle je nakonec ok - kdyz player shodi linku ze hry,
@@ -266,9 +265,9 @@ export class Account extends NamedEntity
     );
 
     // Notify the player what went wrong.
-    if (this.playerConnection)
+    if (this.connection)
     {
-      this.playerConnection.sendAsBlock
+      this.connection.sendAsBlock
       (
         "Something is wrong, character named '" + characterName + "'"
         + " already exists. Please contact implementors and ask them to"

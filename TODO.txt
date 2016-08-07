@@ -1,19 +1,52 @@
-﻿TODO: Všude po volání entityId.getEntity() dát check na to, že result
+﻿TODO: Specialni kod na loadovani idcek musi byt primo v SaveableObjectu,
+  ne az v Entity. Sice jen Entity muze mit idcko, ale to neznamena, ze si
+  nekdo nemuze vytvorit SaveableObject, do ktereho si da idcko na JINOU entitu.
+[done]
+
+TODO: Zavest pocitadlo rozdanych referenci v IdManageru
+  - kdyz klesne na 0, tak je mozne idcko vyhodit z manageru.
+- Tak jinak, misto toho idProvider drzi idcka ve WeakMape
+[done]
+
+IDEA: Idcko se automaticky zaregistruje v IdManageru, pokud jsou parametry
+  konstruktoru definovane.
+  - diky tomu se mi nestane, ze by si nekdo vytvoril idcko (pres new EntityId)
+    a nevlozil ho do IdManageru (jako se mi povedlo s WorldId).
+  - ono se mu to teda asi nepovede ani tak, kdyz bude idProvider schovany
+    uvnitr IdManageru. Ale takhle aspon usetrim kod, ktery se stejne musi
+    vzdycky provest.
+[asi done]
+
+TODO: protected -> private v EntityId
+[done]
+
+TODO: Nastavovat idčkům status.
+[snad done]
+
+TODO: V SaveableObjectu sjednotit fce isPrimitiveObject, isDate, atd.
+      - pokud bude fungovat .constructor.name, tak používat to.
+{nahozeno, je to treba otestovat}
+
+TODO: Všude po volání entityId.getEntity() dát check na to, že result
       není null.
       (entityId.getEntity() může vrátit null. Dereference by pak shodila hru)
 
 IDEA: Sloučit AbbrevSeachList a IdSearch list do jedné classy
       (AbbrevSearchList prostě bude zděděnej z IdListu)
       Přidat classu NameSearchList (zděděnou z IdListu)
+[done]
 
 TODO: PlayerConnection přejmenovat na Connection
       a Server.playerConnections na Server.connections
+[done]
 
 TODO: V Server a Game oddělit managery od idListu a dát k tomu komentáře,
       čím se to liší.
+[done]
 
 TODO: IdList přesunout do /shared
       (IdSeachList asi taky)
+[done]
 
 TODO: Všechny XXXManager přejmenovat na XXXList a zdědit je z IdList nebo
       IdSearchList
@@ -26,6 +59,8 @@ TODO: Container přejmenovat na ContainerEntity
 TODO: CommandInterpretter přejmenovat na CommandInterprettingEntity?
       nebo CommandEntity? CommandProcessingEntity? - to zní nejlíp.
       - hmm, to možná ne, to zní divně...
+      [necham CommandInterpretter]
+[done]
 
 Obecně se držet schématu:
 - Manager obsahuje přímo instance
@@ -37,22 +72,26 @@ Obecně se držet schématu:
 -------------
 
 TODO: Přidat classu IdSearchList a přesunout do ni abbrevSearchList z IdListu.
+[done]
 
 TODO: game/EntityContainer přejmenovat na něco jiného
       - buď EntityIdContainer
       - nebo GameEntityContainer
       - nebo prostě Container?
 Nebo možná raději přejmenovat /shared/EntityContainer na EntityManager?
+[done]
 
 TODO: Pokud budu managery dědit z idListu, tak to udělat
       i s PlayerCharacterManagerem
+[done]
 
 TODO: Přesunout NamedEntity do shared
   (a možná i další classy).
+[done]
 
 TODO: Id přejmenovat na EntityId (a classu EntityId zrušit).
-
-TODO: Nastavovat idčkům status.
+  - tohle si asi ještě rozmyslím... I když...
+[done]
 
 TODO: Ještě jednou zvážit typescriptové enumy (Entity.satus, atpod.).
 

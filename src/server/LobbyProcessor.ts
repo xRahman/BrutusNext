@@ -8,7 +8,7 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
-import {PlayerConnection} from '../server/PlayerConnection';
+import {Connection} from '../server/Connection';
 import {Server} from '../server/Server';
 import {Account} from '../server/Account';
 import {Game} from '../game/Game';
@@ -21,11 +21,11 @@ import {AdminLevels} from '../server/AdminLevels';
 export class LobbyProcessor
 {
   // In this special case it's ok to hold direct reference to
-  // PlayerConnection, because our instance of LobbyProcessor
-  // is owned by the very PlayerConnection we are storing reference
-  // of here. In any other case, unique id of PlayerConnection (within
-  // PlayerConnectionManager) needs to be used instead of a direct reference!
-  constructor(protected playerConnection: PlayerConnection) { }
+  // Connection, because our instance of LobbyProcessor
+  // is owned by the very Connection we are storing reference
+  // of here. In any other case, unique id of Connection (within
+  // Sever.connections) needs to be used instead of a direct reference!
+  constructor(protected connection: Connection) { }
 
   public static get GAME_MENU()
   {
@@ -123,7 +123,7 @@ export class LobbyProcessor
   protected async processMenuChoice(choice: string)
   {
     let account =
-      this.playerConnection.accountId.getEntity({ typeCast: Account });
+      this.connection.accountId.getEntity({ typeCast: Account });
 
     switch (choice)
     {
@@ -152,47 +152,47 @@ export class LobbyProcessor
       break;
 
       default:
-        this.playerConnection.sendAsBlock("\nThat's not a menu choice!");
+        this.connection.sendAsBlock("\nThat's not a menu choice!");
       break;
     }
   }
 
   protected quitGame()
   {
-    this.playerConnection.sendAsPrompt("&wGoodbye. Have a nice day...");
+    this.connection.sendAsPrompt("&wGoodbye. Have a nice day...");
     this.stage = LobbyProcessor.stage.NOT_IN_LOBBY;
-    this.playerConnection.quitGame();
+    this.connection.quitGame();
   }
 
   protected async enterGame(characterName: string)
   {
     this.stage = LobbyProcessor.stage.NOT_IN_LOBBY;
 
-    let playerCharacterManager = Game.playerCharacterManager;
+    let characterList = Game.characters;
 
     // Check if character is already online.
-    let character = playerCharacterManager.getPlayerCharacter(characterName);
+    let character = characterList.getPlayerCharacter(characterName);
 
     if (character)
     {
       this.attachConnectionToGameEntity(character);
-      this.playerConnection.reconnectToCharacter();
+      this.connection.reconnectToCharacter();
     }
     else
     {
       await this.loadCharacter(characterName);
 
-      this.playerConnection.enterGame();
+      this.connection.enterGame();
     }
   }
 
   protected createCharacterAndEnterGame(account: Account)
   {
-    if (!ASSERT(this.playerConnection.ingameEntityId === null,
+    if (!ASSERT(this.connection.ingameEntityId === null,
       "Player account '" + account.name + "' has attempted to enter game"
       + "with ingame entity already attached"))
     {
-      this.playerConnection.sendAsBlock
+      this.connection.sendAsBlock
       (
         "&wAn error occured while entering game."
         + " Please contact implementors."
@@ -215,12 +215,12 @@ export class LobbyProcessor
     character.init(account);
 
     this.attachConnectionToGameEntity(character);
-    this.playerConnection.enterGame();
+    this.connection.enterGame();
   }
   
   protected async loadCharacter(characterName: string)
   {
-    let characterManager = Game.playerCharacterManager;
+    let characterList = Game.characters;
 
     let character = new Character();
 
@@ -235,7 +235,7 @@ export class LobbyProcessor
     await this.loadCharacterFromFile(character, characterName);
 
     // Add newly loaded character to characterManager (under it's original id).
-    characterManager.addPlayerCharacterUnderExistingId(character);
+    characterList.addPlayerCharacterUnderExistingId(character);
 
     this.attachConnectionToGameEntity(character);
   }
@@ -264,6 +264,6 @@ export class LobbyProcessor
 
   protected attachConnectionToGameEntity(gameEntity: GameEntity)
   {
-    this.playerConnection.attachToGameEntity(gameEntity);
+    this.connection.attachToGameEntity(gameEntity);
   }
 }

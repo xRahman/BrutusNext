@@ -12,12 +12,12 @@ import {Server} from '../server/Server';
 import {EntityId} from '../shared/EntityId';
 import {SaveableObject} from '../shared/SaveableObject';
 import {Script} from '../shared/Script';
-import {PlayerConnection} from '../server/PlayerConnection';
+import {Connection} from '../server/Connection';
 import {Game} from '../game/Game';
-import {Container} from '../game/Container';
+import {ContainerEntity} from '../game/ContainerEntity';
 import {IdList} from '../shared/IdList'
 
-export class GameEntity extends Container
+export class GameEntity extends ContainerEntity
 {
   /*
   /// TEST
@@ -60,20 +60,20 @@ export class GameEntity extends Container
 
   // --------------- Public accessors -------------------
 
-  public get playerConnection(): PlayerConnection
+  public get connection(): Connection
   {
-    // We need to return null if playerConnectionId is null, because
-    // if accessing playerConnection when playerConnectionId is null
+    // We need to return null if connectionId is null, because
+    // if accessing connection when connectionId is null
     // was considered an error, saving game entity with null id would crash
     // (even if id is not actually saved, crash would occur on attempt
-    // to find out if playerConnection property is SaveableObject).
-    //    It's proabably better to be able to check playerConnection to
+    // to find out if connection property is SaveableObject).
+    //    It's proabably better to be able to check connection to
     // be null anyways, because it's intuitive way to do it (instead of
-    // having to check if playerConnectionId is null).
-    if (this.playerConnectionId === null)
+    // having to check if connectionId is null).
+    if (this.connectionId === null)
       return null;
 
-    return this.playerConnectionId.getEntity({ typeCast: PlayerConnection });
+    return this.connectionId.getEntity({ typeCast: Connection });
   }
 
   public getId() { return <EntityId>super.getId(); }
@@ -120,7 +120,7 @@ export class GameEntity extends Container
 
     entity.name = param.name;
 
-    let id = Server.entities.addUnderNewId(entity);
+    let id = Server.idProvider.createId(entity);
 
     param.idList.add(entity);
 
@@ -133,21 +133,21 @@ export class GameEntity extends Container
     return "&gDummy_ingame_prompt >";
   }
 
-  public atachPlayerConnection(connectionId: EntityId)
+  public atachConnection(connectionId: EntityId)
   {
-    ASSERT(this.playerConnectionId !== null,
+    ASSERT(this.connectionId !== null,
       "Attempt to attach player connection to '" + this.getErrorIdString()
       + "' which already has a connection attached to it. If you want"
       + " to change which connection is attached to this entity, use"
-      + " detachPlayerConnection() first and then attach a new one.");
+      + " detachConnection() first and then attach a new one.");
 
-    this.playerConnectionId = connectionId;
+    this.connectionId = connectionId;
   }
 
-  public detachPlayerConnection()
+  public detachConnection()
   {
     // TODO
-    this.playerConnectionId = null;
+    this.connectionId = null;
   }
 
   // Player connected to this entity is entering game.
@@ -187,8 +187,8 @@ export class GameEntity extends Container
 
   // null if no player is connected to (is playing as) this entity,
   // connectionId otherwise.
-  private playerConnectionId: EntityId = null;
-  // Flag saying that playerConnectionId is not to be saved to JSON.
+  private connectionId: EntityId = null;
+  // Flag saying that connectionId is not to be saved to JSON.
   private static playerConnectionId = { isSaved: false };
 
   // EntityId of prototype entity. If it's null, this entity is a prototype.
@@ -199,8 +199,8 @@ export class GameEntity extends Container
   // Send message to the connected player that command is not recognized.
   protected unknownCommand()
   {
-    if (this.playerConnection)
-      this.playerConnection.sendAsBlock("&gHuh?!?");
+    if (this.connection)
+      this.connection.sendAsBlock("&gHuh?!?");
   }
 
   // Creates a formatted string describing entity contents.
@@ -229,7 +229,7 @@ export class GameEntity extends Container
 
   protected doLook(argument: string)
   {
-    if (this.playerConnection)
+    if (this.connection)
     {
       // No arguments - show contents of container this entity is inside of.
       // (Usualy a room the player is in).
@@ -241,22 +241,22 @@ export class GameEntity extends Container
   // Prevents accidental quitting without typing full 'quit' commmand.s
   protected doQui(argument: string)
   {
-    if (this.playerConnection)
+    if (this.connection)
     {
-      this.playerConnection
+      this.connection
         .sendAsBlock("&gYou have to type quit--no less, to quit!");
     }
   }
 
   protected doQuit(argument: string)
   {
-    if (this.playerConnection)
+    if (this.connection)
     {
       this.announcePlayerLeavingGame();
-      this.playerConnection.enterLobby();
-      this.playerConnection
+      this.connection.enterLobby();
+      this.connection
         .sendAsBlock("\n&gGoodbye, friend.. Come back soon!");
-      this.playerConnection.detachFromGameEntity();
+      this.connection.detachFromGameEntity();
     }
   }
 
@@ -268,7 +268,7 @@ export class GameEntity extends Container
   // Sends a text describing room contents to the player connection.
   protected showContainerContents()
   {
-    if (!ASSERT(this.playerConnection !== null,
+    if (!ASSERT(this.connection !== null,
         "Attempt to show room contents when there is no player connection" +
          + "attached"))
       return;
@@ -333,6 +333,6 @@ export class GameEntity extends Container
       this.location.getEntity({ typeCast: GameEntity }).printContents();
 
     if (output !== "")
-      this.playerConnection.sendAsBlock(output);
+      this.connection.sendAsBlock(output);
   }
 }

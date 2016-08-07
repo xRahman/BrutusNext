@@ -10,12 +10,12 @@ import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {FileSystem} from '../shared/fs/FileSystem';
 import {Server} from '../server/Server';
-import {IdList} from '../shared/IdList';
+import {NameSearchList} from '../shared/NameSearchList';
 import {EntityId} from '../shared/EntityId';
 import {Account} from '../server/Account';
 import {Mudlog} from '../server/Mudlog';
 
-export class AccountList extends IdList
+export class AccountList extends NameSearchList
 {
   // -------------- Private class data -----------------
 
@@ -25,7 +25,7 @@ export class AccountList extends IdList
   (
     accountName: string,
     password: string,
-    playerConnectionId: EntityId
+    connectionId: EntityId
   )
   : EntityId
   {
@@ -33,12 +33,12 @@ export class AccountList extends IdList
       "Attempt to create account '"
       + accountName + "' which already exists");
 
-    let account = new Account(accountName, playerConnectionId);
+    let account = new Account(accountName, connectionId);
 
     // This creates and assigns hash. Actual password is not remembered.
     account.setPasswordHash(password);
 
-    let id = Server.entities.addUnderNewId(account);
+    let id = Server.idProvider.createId(account);
 
     this.add(account);
 
@@ -75,7 +75,7 @@ export class AccountList extends IdList
     if (this.hasUniqueEntity(accountName))
     {
       // Attempt to re-log to an online account.
-      let id = this.getEntityIdByUniqueName(accountName);
+      let id = this.getIdByName(accountName);
 
       return id.getEntity({ typeCast: Account });
     }
@@ -85,11 +85,11 @@ export class AccountList extends IdList
 
   public dropAccount(accountId: EntityId)
   {
-    this.remove(accountId);
+    // Remove entity reference from id so the memory can be dealocated.
+    accountId.dropEntity();
 
-    // Also remove it from entities so the memore can be
-    // dealocated.
-    Server.entities.dropEntity(accountId);
+    // Remove id from idList.
+    this.remove(accountId);
   }
 
   // -------------- Protected methods -------------------

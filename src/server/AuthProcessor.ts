@@ -38,7 +38,7 @@ import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {Mudlog} from '../server/Mudlog';
 import {AdminLevels} from '../server/AdminLevels';
-import {PlayerConnection} from '../server/PlayerConnection';
+import {Connection} from '../server/Connection';
 import {Server} from '../server/Server';
 import {Account} from '../server/Account';
 import {AccountList} from '../server/AccountList';
@@ -46,11 +46,11 @@ import {AccountList} from '../server/AccountList';
 export class AuthProcessor
 {
   // In this special case it's ok to hold direct reference to
-  // PlayerConnection, because instance of AuthProcessor
-  // is owned by the very PlayerConnection we are storing reference
-  // of here. In any other case, unique stringId of PlayerConnection (within
-  // PlayerConnectionManager) needs to be used instead of a direct reference!
-  constructor(protected playerConnection: PlayerConnection) { }
+  // Connection, because instance of AuthProcessor
+  // is owned by the very Connection we are storing reference
+  // of here. In any other case, unique stringId of Connection (within
+  // Server.connections) needs to be used instead of a direct reference!
+  constructor(protected connection: Connection) { }
 
   public static get MAX_ACCOUNT_NAME_LENGTH() { return 12; }
   public static get MIN_ACCOUNT_NAME_LENGTH() { return 2; }
@@ -93,11 +93,11 @@ export class AuthProcessor
 
   public startLoginProcess()
   {
-    this.playerConnection.sendAsPrompt("&gWelcome to &RBrutus &YNext!\n"
+    this.connection.sendAsPrompt("&gWelcome to &RBrutus &YNext!\n"
       + "&wBy what name do you wish to be known? ");
 
 /// Account name variant:
-///    this.playerConnection.send("&gWelcome to the &RBrutus &YNext!\n"
+///    this.connection.send("&gWelcome to the &RBrutus &YNext!\n"
 ///      + "By what account name do you want to be recognized? ");
 
     this.stage = AuthProcessor.stage.LOGIN;
@@ -138,16 +138,16 @@ export class AuthProcessor
     if (Server.accounts.exists(accountName))
     {
       // Existing user. Ask for password.
-      this.playerConnection.sendAsPrompt("&wPassword: ");
+      this.connection.sendAsPrompt("&wPassword: ");
       this.stage = AuthProcessor.stage.PASSWORD;
     }
     else
     {
       // New user. Ask for a new password.
-      this.playerConnection.sendAsPrompt("&wCreating a new character...\n"
+      this.connection.sendAsPrompt("&wCreating a new character...\n"
         + "Please enter a password you want to use: ");
 /// Account name variant
-///      this.playerConnection.send("&wCreating a new user account...\n"
+///      this.connection.send("&wCreating a new user account...\n"
 ///        + "Please enter a password for your account: ");
       this.stage = AuthProcessor.stage.NEW_PASSWORD;
     }
@@ -157,7 +157,7 @@ export class AuthProcessor
   {
     let accountManager = Server.accounts;
 
-    ASSERT_FATAL(this.playerConnection.getId() != null,
+    ASSERT_FATAL(this.connection.getId() != null,
       "Invalid player connection id");
 
     // Check if account info is already loaded.
@@ -169,7 +169,7 @@ export class AuthProcessor
     }
     else
     {
-      account = new Account(this.accountName, this.playerConnection.getId());
+      account = new Account(this.accountName, this.connection.getId());
 
       // Account name is passed to check against character name saved
       // in file (they must by the same).
@@ -195,22 +195,22 @@ export class AuthProcessor
     (
       this.accountName,
       password,
-      this.playerConnection.getId()
+      this.connection.getId()
     );
 
     Mudlog.log
     (
       "New player: " + this.accountName
-      + " [" + this.playerConnection.ipAddress + "]",
+      + " [" + this.connection.ipAddress + "]",
       Mudlog.msgType.SYSTEM_INFO,
       AdminLevels.IMMORTAL
     );
 
-    this.playerConnection.accountId = newAccountId;
+    this.connection.accountId = newAccountId;
     this.updateLoginInfo();
     this.stage = AuthProcessor.stage.DONE;
-    this.playerConnection.enterLobby();
-    this.playerConnection.sendMotd({ withPrompt: true });
+    this.connection.enterLobby();
+    this.connection.sendMotd({ withPrompt: true });
   }
 
   // ----------- Auxiliary private methods --------------
@@ -219,13 +219,13 @@ export class AuthProcessor
   {
     if (!accountName)
     {
-      this.playerConnection.sendAsPrompt
+      this.connection.sendAsPrompt
       (
         "&wYou really need to enter a name to log in, sorry.\n"
         + "Please enter a valid name: "
       );
       /// Account name variant:
-      ///      this.playerConnection.send(
+      ///      this.connection.send(
       ///        "&wYou really need to enter an account name to log in, sorry.\n"
       ///        + "Please enter valid account name: ");
 
@@ -242,13 +242,13 @@ export class AuthProcessor
 
     if (regExp.test(accountName) === true)
     {
-      this.playerConnection.sendAsPrompt
+      this.connection.sendAsPrompt
       (
         "&wName can only contain english letters.\n"
         + "Please enter a valid name: "
       );
    /// Account name variant:
-   ///      this.playerConnection.send(
+   ///      this.connection.send(
    ///        "&wAccount name can only contain english letters and numbers.\n"
    ///        + "Please enter valid account name: ");
 
@@ -257,7 +257,7 @@ export class AuthProcessor
 
     if (accountName.length > AuthProcessor.MAX_ACCOUNT_NAME_LENGTH)
     {
-      this.playerConnection.sendAsPrompt
+      this.connection.sendAsPrompt
       (
         "&wCould you please pick something shorter, like up to "
         + AuthProcessor.MAX_ACCOUNT_NAME_LENGTH + " characters?\n"
@@ -271,7 +271,7 @@ export class AuthProcessor
 
     if (accountName.length < AuthProcessor.MIN_ACCOUNT_NAME_LENGTH)
     {
-      this.playerConnection.sendAsPrompt
+      this.connection.sendAsPrompt
       (
         "&wCould you please pick a name that is at least "
         + AuthProcessor.MIN_ACCOUNT_NAME_LENGTH + " characters long?\n"
@@ -290,7 +290,7 @@ export class AuthProcessor
   {
     if (!password)
     {
-      this.playerConnection.sendAsPrompt
+      this.connection.sendAsPrompt
       (
         "&wYou really need to enter a password, sorry.\n"
         + "Please enter a valid password: "
@@ -303,7 +303,7 @@ export class AuthProcessor
 
     if (password.length < MIN_PASSWORD_LENGTH)
     {
-      this.playerConnection.sendAsPrompt
+      this.connection.sendAsPrompt
       (
         "&wDo you know the joke about passwords needing to be at least "
         + MIN_PASSWORD_LENGTH + " characters long?\n"
@@ -358,14 +358,14 @@ export class AuthProcessor
       // more verbosity when calling processPasswordCheck().
       if (param.reconnecting)
       {
-        this.playerConnection.reconnectToAccount(account);
+        this.connection.reconnectToAccount(account);
       }
       else
       {
         // Add newly loaded account to accountManager (under it's original id).
         accountManager.add(account);
 
-        this.playerConnection.connectToAccount(account);
+        this.connection.connectToAccount(account);
       }
 
       this.sendLoginInfo();
@@ -385,12 +385,12 @@ export class AuthProcessor
     Mudlog.log
     (
       "Bad PW: " + this.accountName
-      + " [" + this.playerConnection.ipAddress + "]",
+      + " [" + this.connection.ipAddress + "]",
       Mudlog.msgType.SYSTEM_INFO,
       AdminLevels.IMMORTAL
     );
 
-    this.playerConnection.sendAsPrompt
+    this.connection.sendAsPrompt
     (
       "&wWrong password.\n"
       + "Password: "
@@ -400,13 +400,13 @@ export class AuthProcessor
   // Sends a login info (motd, last login, etc.).
   private sendLoginInfo()
   {
-    this.playerConnection.sendMotd({ withPrompt: false });
-    this.playerConnection.sendLastLoginInfo();
+    this.connection.sendMotd({ withPrompt: false });
+    this.connection.sendLastLoginInfo();
   }
 
   // Updates login info to current values.
   private updateLoginInfo()
   {
-    this.playerConnection.account.updateLastLoginInfo();
+    this.connection.account.updateLastLoginInfo();
   }
 }
