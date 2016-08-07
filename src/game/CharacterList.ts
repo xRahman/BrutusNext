@@ -22,7 +22,7 @@ export class CharacterList extends AbbrevSearchList
   public createUniqueCharacter
   (
     name: string,
-    playerConnectionId: EntityId
+    connectionId: EntityId
   )
   : EntityId
   {
@@ -35,9 +35,9 @@ export class CharacterList extends AbbrevSearchList
 
     character.name = name;
     character.isNameUnique = true;
-    character.atachPlayerConnection(playerConnectionId);
+    character.atachConnection(connectionId);
 
-    let id = Server.entities.addUnderNewId(character);
+    let id = Server.idProvider.createId(character);
 
     // Save the character to the disk.
     // (We don't need to wait for save to finish so we don't need

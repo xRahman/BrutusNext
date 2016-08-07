@@ -13,7 +13,7 @@ import {Account} from '../../server/Account';
 import {AdminLevels} from '../../server/AdminLevels';
 import {Server} from '../../server/Server';
 import {SocketDescriptor} from '../../server/SocketDescriptor';
-import {PlayerConnection} from '../../server/PlayerConnection';
+import {Connection} from '../../server/Connection';
 
 // Built-in node.js modules.
 import * as net from 'net';  // Import namespace 'net' from node.js
@@ -226,10 +226,10 @@ export class TelnetSocketDescriptor extends SocketDescriptor
   {
     let player = "";
 
-    if (this.playerConnection.accountId !== null)
+    if (this.connection.accountId !== null)
     {
       let accountName =
-        this.playerConnection.accountId.getEntity({ typeCast: Account }).name;
+        this.connection.accountId.getEntity({ typeCast: Account }).name;
 
       player = "Player " + accountName;
     }
@@ -254,7 +254,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
   protected onSocketClose()
   {
     this.socketClosed = true;
-    this.playerConnection.onSocketClose();
+    this.connection.onSocketClose();
   }
 
   // -------------- Protected methods -------------------
@@ -461,7 +461,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     // and trailing white spaces) before processing.
     for (let i = 0; i < this.commandsBuffer.length; i++)
     {
-      await this.playerConnection
+      await this.connection
         .processCommand(this.commandsBuffer[i].trim());
     }
   }
