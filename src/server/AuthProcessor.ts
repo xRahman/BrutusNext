@@ -363,7 +363,7 @@ export class AuthProcessor
       else
       {
         // Add newly loaded account to accountManager (under it's original id).
-        accountManager.addEntity(account);
+        accountManager.add(account);
 
         this.playerConnection.connectToAccount(account);
       }

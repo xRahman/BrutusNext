@@ -19,14 +19,15 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
+import {NameSearchList} from '../shared/NameSearchList';
 import {GameEntity} from "../game/GameEntity";
 import {EntityId} from '../shared/EntityId';
 
-export class AbbrevSearchList
+export class AbbrevSearchList extends NameSearchList
 {
   // -------------- Protected class data ----------------
 
-  protected static searchCathegory =
+  private static searchCathegory =
   {
     ANYTHING: 0,
     MOB: 1,
@@ -39,14 +40,11 @@ export class AbbrevSearchList
 
   // This hashmap maps abbreviations to the list of entities
   // corresponding to that abbreviation.
-  protected abbrevList: { [abbrev: string]: EntityIdList } = {};
+  private abbrevList: { [abbrev: string]: EntityIdList } = {};
+  // Do not save and load property 'abbrevList'.
+  private static abbrevList = { isSaved: false };
 
   // ---------------- Public methods --------------------
-
-  public isAbbrev(partialString: string, fullString: string): boolean
-  {
-    return fullString.indexOf(partialString) !== -1;
-  }
 
   // Returns null if no such entity exists.
   // (search string should be something like "3.mob.orc_chief")
@@ -67,9 +65,55 @@ export class AbbrevSearchList
     return this.findEntity(parseResult.name, parseResult.index, cathegory);
   }
 
+  public add(entity: GameEntity): EntityId
+  {
+    let id = super.add(entity);
+
+    if (id === null)
+      return null;
+
+    // Add all aliases of this entity to abbrevSearchList.
+    this.addToAbbrevList(entity);
+
+    return id;
+  }
+
+  // Removes entity id from this list, but doesn't delete the entity from
+  // the game.
+  public remove(entityId: EntityId)
+  {
+    let entity = entityId.getEntity({ typeCast: GameEntity });
+
+    // Remove all aliases of this entity from abbrevSearchList.
+    this.removeFromAbbrevList(entity);
+
+    super.remove(entityId);
+  }
+
+  // ---------------- Private methods --------------------
+
+  private removeFromAbbrevList(entity: GameEntity)
+  {
+    // Remove all entity aliases.
+    for (let i = 0; i < entity.aliases.length; i++)
+    {
+      let alias = entity.aliases[i];
+
+      // Remove all possible abbreviations of each alias.
+      for (let j = 0; j < alias.length; j++)
+      {
+        this.removeEntityIdFromAbbreviation
+          (
+          alias.substring(0, j),
+          entity.getId()
+          );
+      }
+    }
+  }
+
   // If more similar names are added, they will be accessible by dot notation
   // (like 2.orc).
-  public addEntity(entity: GameEntity)
+  private addToAbbrevList(entity: GameEntity)
   {
     // Add all entity aliases.
     for (let i = 0; i < entity.aliases.length; i++)
@@ -83,34 +127,18 @@ export class AbbrevSearchList
         // we do want to add last character of the string (substring()
         // doesn't include right limit to the result).
         this.addEntityIdToAbbreviation
-        (
+          (
           alias.substring(0, j + 1),
           entity.getId()
-        );
+          );
       }
     }
   }
 
-  public removeEntity(entity: GameEntity)
+  private isAbbrev(partialString: string, fullString: string): boolean
   {
-    // Remove all entity aliases.
-    for (let i = 0; i < entity.aliases.length; i++)
-    {
-      let alias = entity.aliases[i];
-
-      // Remove all possible abbreviations of each alias.
-      for (let j = 0; j < alias.length; j++)
-      {
-        this.removeEntityIdFromAbbreviation
-        (
-          alias.substring(0, j),
-          entity.getId()
-        );
-      }
-    }
+    return fullString.indexOf(partialString) !== -1;
   }
-
-  // ---------------- Private methods --------------------
 
   private addEntityIdToAbbreviation(abbrev: string, entityId: EntityId)
   {

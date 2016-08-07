@@ -187,7 +187,7 @@ export class TelnetServer
 
     let id = Server.entities.addUnderNewId(playerConnection);
 
-    Server.playerConnections.addEntity(playerConnection);
+    Server.playerConnections.add(playerConnection);
 
 
     return playerConnection;
