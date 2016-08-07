@@ -10,7 +10,7 @@ import {ASSERT} from '../../shared/ASSERT'
 import {SaveableObject} from '../../shared/SaveableObject';
 import {Game} from '../../game/Game';
 import {GameEntity} from '../../game/GameEntity';
-import {EntityId} from '../../game/EntityId';
+import {EntityId} from '../../shared/EntityId';
 import {Area} from '../../game/world/Area';
 
 export class Realm extends GameEntity
@@ -40,7 +40,7 @@ export class Realm extends GameEntity
       {
         name: param.name,
         prototype: param.prototype,
-        container: Game.areaList
+        idList: Game.areas
       }
     );
 

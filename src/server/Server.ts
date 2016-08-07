@@ -15,12 +15,13 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
-import {IdableObjectContainer} from '../shared/IdableObjectContainer';
+import {EntityContainer} from '../shared/EntityContainer';
 import {FileSystem} from '../shared/fs/FileSystem';
 import {FlagNamesManager} from '../shared/FlagNamesManager';
 import {PlayerConnection} from '../server/PlayerConnection';
 import {Mudlog} from '../server/Mudlog';
-import {AccountManager} from '../server/AccountManager';
+import {IdList} from '../shared/IdList';
+import {AccountList} from '../server/AccountList';
 import {Game} from '../game/Game';
 import {TelnetServer} from '../server/telnet/TelnetServer';
 import {HttpServer} from '../server/http/HttpServer';
@@ -29,10 +30,35 @@ import {Account} from '../server/Account';
 
 export class Server
 {
+  // -------------- Static class data -------------------
+
+  protected static instance: Server;
+
+  // -------------- Private class data -----------------
+
+  private game = null;
+  private accounts = new AccountList();
+  private playerConnections = new IdList();
+  private telnetServer = new TelnetServer(Server.DEFAULT_TELNET_PORT);
+  private httpServer = new HttpServer(Server.DEFAULT_HTTP_PORT);
+  private timeOfBoot = new Date();
+  private idProvider = new IdProvider(this.timeOfBoot);
+
+  // Contains all entities that are accessible by id.
+  // (all game entities, accounts, player connections, etc.)
+  private entities = new EntityContainer();
+
+  // flagNamesManager is in Server instead of Game, because flags are needed
+  // even outside of game (for example account flags).
+  private flagNamesManager = new FlagNamesManager();
+
   constructor()
   {
+    /*
+    // Inicializace p?esunuta rovnou do deklarace.
     this.timeOfBoot = new Date();
     this.idProvider = new IdProvider(this.timeOfBoot);
+    */
   }
 
   // --------------- Static accessors -------------------
@@ -51,14 +77,14 @@ export class Server
     return Server.getInstance().game;
   }
 
-  public static get accountManager()
+  public static get accounts()
   {
-    return Server.getInstance().accountManager;
+    return Server.getInstance().accounts;
   }
 
-  public static get playerConnectionManager()
+  public static get playerConnections()
   {
-    return Server.getInstance().playerConnectionManager;
+    return Server.getInstance().playerConnections;
   }
 
   public static get telnetServer()
@@ -74,6 +100,11 @@ export class Server
   public static get flagNamesManager()
   {
     return Server.getInstance().flagNamesManager;
+  }
+
+  public static get entities()
+  {
+    return Server.getInstance().entities;
   }
 
   static get DEFAULT_TELNET_PORT() { return 4443; }
@@ -101,10 +132,6 @@ export class Server
 
     Server.instance = new Server();
   }
-
-  // -------------- Static class data -------------------
-
-  protected static instance: Server;
 
   // ---------------- Public methods --------------------
 
@@ -139,21 +166,6 @@ export class Server
     this.startTelnetServer(telnetPort);
     this.startHttpServer();
   }
-
-  // -------------- Protected class data ----------------
-
-  protected idProvider = null;
-  protected game = null;
-  protected accountManager = new AccountManager();
-  protected playerConnectionManager =
-    new IdableObjectContainer<PlayerConnection>();
-  protected telnetServer = new TelnetServer(Server.DEFAULT_TELNET_PORT);
-  protected httpServer = new HttpServer(Server.DEFAULT_HTTP_PORT);
-  protected timeOfBoot = null;
-
-  // flagNamesManager is in Server instead of Game, because flags are needed
-  // even outside of game (for example account flags).
-  protected flagNamesManager = new FlagNamesManager();
 
   // --------------- Protected methods ------------------
 

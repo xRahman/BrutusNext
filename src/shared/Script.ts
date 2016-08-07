@@ -11,7 +11,7 @@ import {Prototype} from '../shared/Prototype';
 import {VirtualMachine} from '../shared/vm/VirtualMachine';
 import {AdminLevels} from '../server/AdminLevels';
 import {Mudlog} from '../server/Mudlog';
-import {EntityId} from '../game/EntityId';
+import {EntityId} from '../shared/EntityId';
 import {GameEntity} from '../game/GameEntity';
 
 // 3rd party modules.
