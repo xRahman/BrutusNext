@@ -11,8 +11,36 @@ import {EntityId} from '../shared/EntityId';
 import {SaveableObject} from '../shared/SaveableObject';
 import {AutoSaveableObject} from '../shared/AutoSaveableObject';
 
+/*
+/// TODO: Hmm, takhle asi ne. Bude se to savovat na disk, takze tu asi
+/// muze byt jen informace VALID/DELETED, protoze idcko muze byt savnute
+/// mnohokrat a pri loadu by se mohl loadnout nejakej divnej state.
+/// - a vubec nejlepsi asi bude, kdyz to udelam proste jako bool.
+enum State
+{
+  // Entity has been instantiated but neither loaded from file
+  // nor initiated manually.
+  NOT_LOADED,
+  // Entity is loaded from disk and valid (not deleted).
+  VALID,
+  // Entity has been deleted from both memory and disk, you can't access
+  // it anymore.
+  DELETED
+}
+*/
+
 export class Entity extends AutoSaveableObject
 {
+  /*
+  // Enum cannot be declared inside a class in current version of Typescript,
+  // but it can be assigned as static class variable. This allows using
+  // Entity.State as if enum had been declared right here.
+  // (Note that this enum is actually used in EntityId, not here in Entity.
+  //  it's because id might still persist in save files even if entity itself
+  //  had been deleted.)
+  public static State = State;
+  */
+
   public static get ID_PROPERTY() { return 'id'; }
 
   // ----------------- Private data ----------------------
