@@ -22,11 +22,13 @@
     if (!ASSERT(character !== null, "Invalid character"))
       return;
 
-    import {ASSERT_FATAL} from '../shared/ASSERT';
+    import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
     ASSERT_FATAL(false, "Corrupted player data");
 
   Try to write messages that explain what the condition was (because it won't
-  show in error output).
+  show in error output) and also what are the possible causes of this error
+  (at the time of writing of an ASSERT, you know quite well what could go
+   wrong. 5 years later, you will pay gold for any such hint, trust me).
 
   Do not, however, include name of the function where error occured. That will
   be added automatically.
