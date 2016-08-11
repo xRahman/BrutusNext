@@ -16,33 +16,38 @@ import {Server} from '../server/Server';
 import {SaveableObject} from '../shared/SaveableObject';
 import {Entity} from '../shared/Entity';
 
+enum State
+{
+  // Initial value - id has been created using new EntityId() without
+  // valid parameters passed to constructor. This happens when id is
+  // being loaded from file.
+  ID_NOT_LOADED,
+  // Entity is valid (not deleted), but not loaded from disk.
+  ENTITY_NOT_LOADED,
+  // Entity is loaded from disk and valid (not deleted).
+  ENTITY_LOADED,
+  // Entity has been deleted, you can't access it anymore.
+  ENTITY_DELETED
+}
+
 export class EntityId extends SaveableObject
 {
+  // Enum cannot be declare inside a class in current version of Typescript,
+  // but it can be assigned as static class variable. This allows using
+  // EntityId.State as if State has been declared right here. 
+  public static State = State;
+
   public static get STRING_ID_PROPERTY() { return 'stringId'; }
   public static get TYPE_PROPERTY() { return 'type'; }
-
-  public static state =
-  {
-    // Initial value - id has been created using new EntityId() without
-    // valid parameters passed to constructor. This happens when id is
-    // being loaded from file.
-    ID_NOT_LOADED: "ID_NOT_LOADED",
-    // Entity is valid (not deleted), but not loaded from disk.
-    ENTITY_NOT_LOADED: "ENTITY_NOT_LOADED",
-    // Entity is loaded from disk and valid (not deleted).
-    ENTITY_LOADED: "ENTITY_LOADED",
-    // Entity has been deleted, you can't access it anymore.
-    ENTITY_DELETED: "ENTITY_DELETED"
-  }
 
   // -------------- Public class data ------------------
 
   // Variable is named 'status' and not 'state', because
   // 'state' is a static enum and we need static variable
   // of the same name as this variable to mark it as not saveable.
-  public status = EntityId.state.ID_NOT_LOADED;
+  public state = State.ID_NOT_LOADED;
   // Do not save or load variable status.
-  private static status = { isSaved: false };
+  private static state = { isSaved: false };
 
   // -------------- Private class data -----------------
 
@@ -76,7 +81,7 @@ export class EntityId extends SaveableObject
       this.type = entity.className;
 
       // We have just been passed an entity so it's definitely loaded.
-      this.status = EntityId.state.ENTITY_LOADED;
+      this.state = EntityId.State.ENTITY_LOADED;
 
       // Register this id in IdManager.
       this.register();
@@ -86,7 +91,7 @@ export class EntityId extends SaveableObject
       this.stringId = null;
       this.entity = null;
       this.type = null;
-      this.status = EntityId.state.ID_NOT_LOADED;
+      this.state = EntityId.State.ID_NOT_LOADED;
     }
   }
 
@@ -96,14 +101,14 @@ export class EntityId extends SaveableObject
   
   public async loadEntity()
   {
-    ASSERT(this.status === EntityId.state.ENTITY_NOT_LOADED,
+    ASSERT(this.state === EntityId.State.ENTITY_NOT_LOADED,
       "Attempt to load entity using id " + this.getStringId()
-      + " which doesn't have state 'NOT_LOADED'");
+      + " which doesn't have state 'ENTITY_NOT_LOADED'");
 
     // Creates an instance of correct type based on className property
     // of id (in other words: Type of referenced entity is saved within
     // id and is recreated here).
-    let newEntity = Entity.createInstanceFromId(this);
+    let newEntity = this.createEntity();
 
     // Load entity from file.
     await newEntity.load();
@@ -115,9 +120,9 @@ export class EntityId extends SaveableObject
 
   public async saveEntity()
   {
-    ASSERT(this.status === EntityId.state.ENTITY_LOADED,
+    ASSERT(this.state === EntityId.State.ENTITY_LOADED,
       "Attempt to save entity using id " + this.getStringId()
-      + " which doesn't have state 'LOADED'");
+      + " which doesn't have state 'ENTITY_LOADED'");
 
     let entity = this.getEntity({ typeCast: Entity });
 
@@ -132,11 +137,11 @@ export class EntityId extends SaveableObject
   // (Entity will be dealocated from memory but not deleted from disk.)
   public dropEntity()
   {
-    ASSERT(this.status === EntityId.state.ENTITY_LOADED,
+    ASSERT(this.state === EntityId.State.ENTITY_LOADED,
       "Attempt to drop entity of an id " + this.getStringId()
       + " which doesn't have state LOADED");
 
-    this.status = EntityId.state.ENTITY_NOT_LOADED;
+    this.state = EntityId.State.ENTITY_NOT_LOADED;
     this.entity = null;
   }
 
@@ -151,7 +156,7 @@ export class EntityId extends SaveableObject
   )
   : T
   {
-    if (this.status !== EntityId.state.ENTITY_LOADED)
+    if (this.state !== EntityId.State.ENTITY_LOADED)
     {
       if (this.entity !== null)
       {
@@ -169,17 +174,6 @@ export class EntityId extends SaveableObject
         return null;
       }
     }
-
-/*
-    // Direct reference is not initialized while loading, because
-    // that would enforce certain order of loading (and prevent
-    // bidirectional linking of entities using their ids). This means
-    // that it may happen that entity is not initialized
-    // when getEntity() is called. In that case we need to look
-    // the entity up using the string id.
-    if (this.updateDirectReference() === null)
-      return null;
-*/
 
     // Dynamic type check - we make sure that our referenced object
     // is inherited from requested class (or an instance of the class itself).
@@ -228,34 +222,28 @@ export class EntityId extends SaveableObject
 
   // ---------------- Private methods ------------------- 
 
+  // Register this id in Server.idProvider.
   private register()
   {
     Server.idProvider.register(this);
   }
 
-  /*
-  private updateDirectReference(): Entity
+  // Creates an instance of entity of type 'this.type'.
+  // 'args' are passed to entity constructor.
+  private createEntity(...args: any[]): Entity
   {
-    if (this.entity === null)
-    {
-      // Find referenced entity by string id.
-      let entity = Server.idProvider.getEntity(this);
-
-      // This can never happen because it would trigger ASSERT_FATAL
-      // in Server.idProvider.get() first, but better be sure...
-      if (entity === undefined)
+    let entity = SaveableObject.createInstance
+    (
       {
-        ASSERT(false,
-          "Attempt to reference nonexisting entity of type '"
-          + this.type + "' by id '" + this.stringId + "'");
+        className: this.getType(),
+        typeCast: Entity
+      },
+      args
+    );
 
-        return null;
-      }
+    // Entity remembers it's id.
+    entity.setId(this);
 
-      this.entity = entity;
-    }
-
-    return this.entity;
+    return entity;
   }
-  */
 }
