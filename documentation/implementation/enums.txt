@@ -1,0 +1,71 @@
+Enums
+----------------------
+
+// Example of enum usage:
+
+// Note that enum is a type so it's name is capitalized (State, not state).
+// This has a side benefit that you can declare variable state: State,
+// which may have static attributes declared as 'private static state = {}'
+// and it won't collide with public static State = State; within the class.
+enum State
+{
+  // Initial value - id has been created using new EntityId() without
+  // valid parameters passed to constructor. This happens when id is
+  // being loaded from file.
+  ID_NOT_LOADED,
+  // Entity is valid (not deleted), but not loaded from disk.
+  ENTITY_NOT_LOADED,
+  // Entity is loaded from disk and valid (not deleted).
+  ENTITY_LOADED,
+  // Entity has been deleted, you can't access it anymore.
+  ENTITY_DELETED
+}
+
+export class EntityId extends SaveableObject
+{
+  // Enum cannot be declared inside a class in current version of Typescript,
+  // but it can be assigned as static class variable. This allows using
+  // EntityId.State as if enum had been declared right here. 
+  public static State = State;
+}
+
+// Now we can use for example EntityId.State.ID_NOT_LOADED from any file
+// that has {EntityId} included, even though enum State is not declared
+// inside EntityId class.
+
+--------------------------------------------------------------
+
+Why (and when) use objects with string properties instead?
+
+- Mostly when the value is saved to file. It's much more readable to have
+  "state: 'ENTITY_NOT_LOADED'" in json file than "state: 2".
+  It should be the same runtime-wise (hopefuly only references to strings
+  are held and compared, not whole strings (this may not be true for
+  comparison because javascript strings are compared by value - but
+  they still migh be compared by reference if both variables reference
+  the same same string object...)).
+
+
+
+// Example this:
+
+export class EntityId extends SaveableObject
+{
+  // Note the capitalized first letter (State, not state). The reason is
+  // the same as with enum - this is actually a declaration of a type,
+  // even though it doesn't look like one.
+  //   And it also allows having a variable with the same name ('state')
+  // and this variable can have static attributes.
+  public static State =
+  {
+    // Initial value - id has been created using new EntityId() without
+    // valid parameters passed to constructor. This happens when id is
+    // being loaded from file.
+    ID_NOT_LOADED: 'ID_NOT_LOADED',
+    // Entity is valid (not deleted), but not loaded from disk.
+    ENTITY_NOT_LOADED: 'ENTITY_NOT_LOADED',
+    // Entity is loaded from disk and valid (not deleted).
+    ENTITY_LOADED: 'ENTITY_LOADED',
+    // Entity has been deleted, you can't access it anymore.
+    ENTITY_DELETED: 'ENTITY_DELETED'
+  }
