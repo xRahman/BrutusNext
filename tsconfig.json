@@ -7,15 +7,23 @@
     "moduleResolution": "node",
     "newLine": "LF",
     "noEmitOnError": true,
-    "outDir": "./build",
-    "rootDir": "./src",
-    "sourceMap": true,
-    "sourceRoot": "./src"
+    "outDir": "build",
+    //"rootDir": "src",
+    "sourceMap": true
+    //"sourceRoot": "src"
   },
-  "files":
+  /*"files":
   [
     "./src/headers/node.d.ts",
     "./src/game/DynamicClasses.ts",
     "./src/BrutusNext.ts"
-  ]
+  ],*/
+  "exclude": [
+        "node_modules",
+        "documentation",
+        "bin",
+        "build",
+        ".git",
+        ".vscode"
+    ]
 }
