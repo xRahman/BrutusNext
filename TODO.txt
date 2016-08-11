@@ -1,4 +1,7 @@
-﻿
+﻿TODO: Nad AdminLevels by asi fakt byl lepsi enum.
+
+TODO: Typescript používat inline místo linkem.
+
 TODO: Asi se fakt vrátnit k Id místo EntityId.
 
 IDEA: Přesunout fci getTrimmedStackTrace do modulu Mudlog a zrušit UTILS.
