@@ -1,4 +1,9 @@
-﻿TODO: Specialni kod na loadovani idcek musi byt primo v SaveableObjectu,
+﻿
+TODO: Asi se fakt vrátnit k Id místo EntityId.
+
+IDEA: Přesunout fci getTrimmedStackTrace do modulu Mudlog a zrušit UTILS.
+
+TODO: Specialni kod na loadovani idcek musi byt primo v SaveableObjectu,
   ne az v Entity. Sice jen Entity muze mit idcko, ale to neznamena, ze si
   nekdo nemuze vytvorit SaveableObject, do ktereho si da idcko na JINOU entitu.
 [done]

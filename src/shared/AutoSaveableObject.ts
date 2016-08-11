@@ -4,6 +4,14 @@
   Extends SaveableObject with save() and load() methods.
 */
 
+/*
+  Save file location is read from static variables 'SAVE_DIRECTORY'
+  and 'SAVE_FILE_NAME'.
+  
+  You can also extend methods getSaveDirectory() and getSaveFileName()
+  to create path and filename dynamically.
+*/
+
 'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
@@ -37,8 +45,8 @@ export abstract class AutoSaveableObject extends SaveableObject
     if (!ASSERT(saveDirectory !== undefined,
         "Missing static SAVE_DIRECTORY property on class " + this.className))
     {
-      // When this happen, data will be saved to
-      // ./data/_MISSING_SAVE_DIRECTORY_ERROR
+      // If static variable SAVE_DIRECTORY is missing,, data will be saved
+      // to directory './data/_MISSING_SAVE_DIRECTORY_ERROR'.
       return "./data/_MISSING_SAVE_DIRECTORY_ERROR";
     }
 
@@ -56,6 +64,8 @@ export abstract class AutoSaveableObject extends SaveableObject
     if (!ASSERT(saveFileName !== undefined,
       "Missing static SAVE_FILE_NAME property on class " + this.className))
     {
+      // If static variable SAVE_FILE_NAME is missing, data will be saved
+      // to file '_MISSING_SAVE_FILE_NAME_'.
       return "_MISSING_SAVE_FILE_NAME_" + this.className + ".json";
     }
 
@@ -68,8 +78,12 @@ export abstract class AutoSaveableObject extends SaveableObject
     let fileName = this.getSaveFileName();
     let fullPath = directory + fileName;
 
-    ASSERT_FATAL(directory.substr(directory.length - 1) === '/',
-      "Directory path '" + directory + "' doesn't end with '/'");
+    if (!ASSERT(directory.substr(directory.length - 1) === '/',
+      "Directory path '" + directory + "' doesn't end with '/'."
+      + "The '/' is added automatically, but it should be fixed anyways"))
+    {
+      return this.getSaveDirectory() + '/' + this.getSaveFileName();
+    }
 
     return this.getSaveDirectory() + this.getSaveFileName();
   }

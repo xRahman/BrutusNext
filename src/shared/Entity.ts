@@ -1,8 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Extends SaveableObject with the ability to remember id and to save
-  and load to the file.
+  Extends SaveableObject with the ability to remember it's EntityId.
 */
 
 'use strict';
@@ -20,22 +19,6 @@ export class Entity extends AutoSaveableObject
 
   private id: EntityId = null;
 
-  // ---------------- Static methods --------------------
-
-  // Creates a new instance of game entity of type saved in id.
-  static createInstanceFromId(id: EntityId, ...args: any[]): Entity
-  {
-    ASSERT_FATAL(id !== null,
-      "Invalid (null) id passed to GameEntity::createInstance()");
-
-    let newEntity = SaveableObject
-      .createInstance({ className: id.getType(), typeCast: Entity }, args);
-
-    newEntity.setId(id);
-
-    return newEntity;
-  }
-
   // --------------- Public accessors -------------------
 
   public getId() { return this.id; }
@@ -43,7 +26,7 @@ export class Entity extends AutoSaveableObject
 
   // ---------------- Public methods --------------------
 
-  // Returns something like "Connection (id: d-imt2xk99)"
+  // Returns something like 'Connection (id: d-imt2xk99)'
   // (indended for use in error messages).
   public getErrorIdString()
   {
@@ -59,5 +42,8 @@ export class Entity extends AutoSaveableObject
   // --------------- Protected methods ------------------
 
   // This is used for creating save file names.
-  protected getIdStringValue(): string { return this.id.getStringId(); }
+  protected getIdStringValue(): string
+  {
+    return this.id.getStringId();
+  }
 }

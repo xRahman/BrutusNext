@@ -22,11 +22,13 @@
     if (!ASSERT(character !== null, "Invalid character"))
       return;
 
-    import {ASSERT_FATAL} from '../shared/ASSERT';
+    import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
     ASSERT_FATAL(false, "Corrupted player data");
 
   Try to write messages that explain what the condition was (because it won't
-  show in error output).
+  show in error output) and also what are the possible causes of this error
+  (at the time of writing of an ASSERT, you know quite well what could go
+   wrong. 5 years later, you will pay gold for any such hint, trust me).
 
   Do not, however, include name of the function where error occured. That will
   be added automatically.
@@ -50,8 +52,7 @@ import {Mudlog} from '../server/Mudlog';
 import {AdminLevels} from '../server/AdminLevels';
 
 // Use ASSERT_FATAL to check for nonrecoverable errors.
-// If condition is false, logs error messages and throws Error() to end
-// the program.
+// If condition is false, logs error messages and exits the program.
 export function ASSERT_FATAL(condition: boolean, message: string)
 {
   if (condition === false)
@@ -72,8 +73,8 @@ export function ASSERT_FATAL(condition: boolean, message: string)
 
   // This is basically a nonsense, ASSERT_FATAL is not supposed to be checked
   // against - if it fails, game will crash so no other code is necessary.
-  // However, I have already done it by mistake and without this return value,
-  // condition if (!ASSERT_FATAL(...)) would fail, even if it was true - which
-  // would lead to queer, unexpected behaviour.
+  // However, I have already written 'if (!ASSERT_FATAL(...))' by mistake and
+  // without this return value, condition  would fail even if it was true,
+  // which would lead to queer, unexpected behaviour.
   return true;
 }
