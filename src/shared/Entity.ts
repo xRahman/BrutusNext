@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {EntityId} from '../shared/EntityId';
 import {SaveableObject} from '../shared/SaveableObject';
@@ -53,6 +54,19 @@ export class Entity extends AutoSaveableObject
   public setId(id: EntityId) { this.id = id; }
 
   // ---------------- Public methods --------------------
+
+  // Overrides AutoSaveableObject.save() to skip saving
+  // if entity had been deleted.
+  public async save()
+  {
+    // 'entityDeleted' flag is on id, not on entity (because id
+    // may persist even after entity is deleted).
+    if (!ASSERT(this.getId().isEntityDeleted() === false,
+        "Attemp to save deleted entity " + this.getErrorIdString()))
+      return;
+
+    await this.saveToFile(this.getSaveDirectory(), this.getSaveFileName());
+  }
 
   // Returns something like 'Connection (id: d-imt2xk99)'
   // (indended for use in error messages).

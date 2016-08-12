@@ -17,6 +17,7 @@
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {SaveableObject} from '../shared/SaveableObject';
+import {FileSystem} from '../shared/fs/FileSystem';
 
 export abstract class AutoSaveableObject extends SaveableObject
 {
@@ -30,6 +31,11 @@ export abstract class AutoSaveableObject extends SaveableObject
   public async load()
   {
     await this.loadFromFile(this.getFullSavePath());
+  }
+
+  public saveExists(): boolean
+  {
+    return FileSystem.existsSync(this.getFullSavePath());    
   }
 
   // --------------- Protected methods ------------------
