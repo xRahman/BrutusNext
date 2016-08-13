@@ -77,35 +77,20 @@ export class IdList extends SaveableObject
     // Iterate over all value in this.entityIds hashmap.
     for (let id of this.entityIds.values())
     {
-      switch (id.getEntityState())
-      {
-        case EntityId.state.ID_NOT_LOADED:
-          ASSERT(false,
-            "Entity container " + containerIdString + " contains id"
-            + id.getStringId() + " whis hasn't been loaded from file"
-            + " yet. EntityId must not be accessed before it is loaded");
-          break;
+      // Valid means loaded in memory and not flagged as delted.
+      if (id.isEntityValid())
+        // If entity is already loaded, we must not do it again
+        // (because we would overwrite more recent data with older version).
+        break;
 
-        case EntityId.state.ENTITY_NOT_LOADED:
-          await id.loadEntity();
-          id.status = EntityId.state.ENTITY_LOADED;
-          break;
-
-        case EntityId.state.ENTITY_LOADED:
-          // If entity is already loaded, there is no need to do it again.
-          break;
-
-        case EntityId.state.ENTITY_DELETED:
-          ASSERT(false,
-            "Entity container " + containerIdString + " contains"
-            + " deleted entity with id " + id.getStringId() + ". Entity"
-            + " must be removed from it's container before it is deleted");
-          break;
-
-        default:
-          ASSERT(false, "Unknown entity state");
-          break;
-      }
+      if (!ASSERT(id.isEntityDeleted() === false,
+          "Entity container " + containerIdString + " contains"
+          + " deleted entity with id " + id.getStringId() + ". Entity"
+          + " must be removed from its container before it is deleted"))
+        // There is no point in loading a deleted entity.
+        break;
+      
+      await id.loadEntity();
     }
   }
 
@@ -115,34 +100,19 @@ export class IdList extends SaveableObject
     // Iterate over all value in this.entityIds hashmap.
     for (let id of this.entityIds.values())
     {
-      switch (id.getEntityState())
-      {
-        case EntityId.state.ID_NOT_LOADED:
-          ASSERT(false,
-            "Entity container " + containerIdString + " contains id"
-            + id.getStringId() + " whis hasn't been loaded from file"
-            + " yet. EntityId must not be accessed before it is loaded");
-          break;
+      if (!ASSERT(id.isEntityDeleted() === false,
+          "ContainerEntity " + containerIdString + " contains"
+          + " deleted entity with id " + id.getStringId() + ". Entity"
+          + " must be removed from its container before it is deleted"))
+        // There is no point in saving a deleted entity.
+        break;
 
-        case EntityId.state.ENTITY_NOT_LOADED:
-          // If entity isn't loaded, there is nothing to save.
-          break;
+      // Valid means loaded in memory and not flagged as delted.
+      if (id.isEntityValid() === false)
+        // There is no point in saving an entity that is not loaded in memory.
+        break;
 
-        case EntityId.state.ENTITY_LOADED:
-          await id.saveEntity();
-          break;
-
-        case EntityId.state.ENTITY_DELETED:
-          ASSERT(false,
-            "ContainerEntity " + containerIdString + " contains"
-            + " deleted entity with id " + id.getStringId() + ". Entity"
-            + " must be removed from it's container before it is deleted");
-          break;
-
-        default:
-          ASSERT(false, "Unknown entity state");
-          break;
-      }
+      await id.saveEntity();
     }
   }
 
