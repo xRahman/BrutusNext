@@ -803,11 +803,11 @@ export class SaveableObject extends AttributableClass
   }
 
   private loadIdPropertyFromJsonObject
-    (
+  (
     propertyName: string,
     jsonObject: any,
     filePath: string
-    )
+  )
   {
     let stringId = jsonObject[EntityId.STRING_ID_PROPERTY];
 
@@ -836,12 +836,12 @@ export class SaveableObject extends AttributableClass
       // (This will create an EntityId with internal state ID_NOT_LOADED,
       //  and it won't be registered in idProvider.)
       id = SaveableObject.createInstance
-        (
+      (
         {
           className: jsonObject[NamedClass.CLASS_NAME_PROPERTY],
           typeCast: EntityId
         }
-        );
+      );
 
       // We need to set id to our property so we can use
       // this.loadPropertyFromJsonObject().
@@ -849,14 +849,11 @@ export class SaveableObject extends AttributableClass
 
       // Load it from it from json object.
       this.loadPropertyFromJsonObject
-        (
+      (
         jsonObject,
         propertyName,
         filePath
-        );
-
-      // Update internal status from ID_NOT_LOADED to ENTITY_NOT_LOADED.
-      id.status = EntityId.state.ENTITY_NOT_LOADED;
+      );
 
       // Register loaded id in idProvider.
       Server.idProvider.register(this[propertyName]);

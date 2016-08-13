@@ -73,6 +73,12 @@ export class EntityId extends SaveableObject
     return this.entityDeleted;
   }
 
+  // True if entity is loaded in memory and not flagged as deleted.
+  public isEntityValid()
+  {
+    return this.entity !== null && this.entityDeleted === false;
+  }
+
   // ---------------- Public methods --------------------
   
   public async loadEntity()
@@ -131,7 +137,7 @@ export class EntityId extends SaveableObject
   // something invalid).
   public getEntity<T>(param: { typeCast: { new (...args: any[]): T } }): T
   {
-    if (this.referencedEntityDeletedCheck() === true)
+    if (this.entityNotDeletedCheck() === false)
       return null;
 
     if (this.referenceValidCheck() === false)
@@ -156,8 +162,13 @@ export class EntityId extends SaveableObject
 
   public equals(operand: EntityId)
   {
-    ASSERT(operand.stringId !== "", "Attempt to compare to an invalid id");
-    ASSERT(this.stringId !== "", "Attempt to compare an invalid id");
+    ASSERT(operand.stringId !== null
+        && operand.stringId !== "",
+      "Attempt to compare to an invalid id");
+
+    ASSERT(this.stringId !== null
+        && this.stringId !== "",
+      "Attempt to compare an invalid id");
 
     if (this.stringId !== operand.stringId)
       return false;
@@ -233,11 +244,7 @@ export class EntityId extends SaveableObject
   // entity save file doesn't exist.
   private saveExistsCheck(entity: Entity): boolean
   {
-    if (entity.saveExists())
-    {
-      return true;
-    }
-    else
+    if (entity.saveExists() === false)
     {
       // We are trying to load an entity which doesn't have a save file.
       //   This can happen because id can be saved when entity had still
@@ -251,9 +258,11 @@ export class EntityId extends SaveableObject
 
       return false;
     }
+
+    return true;
   }
 
-  private referencedEntityDeletedCheck(): boolean
+  private entityNotDeletedCheck(): boolean
   {
     if (this.isEntityDeleted())
     {
@@ -271,17 +280,21 @@ export class EntityId extends SaveableObject
           + " that references a deleted entity");
       }
 
-      return true;
+      return false;
     }
 
-    return false;
+    return true;
   }
 
   private referenceValidCheck(): boolean
   {
-    if (this.entity === null)
-    {
-      
-    }
+    if (!ASSERT(this.entity !== null,
+        "Attempt to dereference id " + this.getStringId()
+        + " which doesn't have a valid 'entity' reference."
+        + " entity must be loaded from disk before id.getEntity()"
+        + " can be used"))
+      return false;
+
+    return true;
   }
 }
