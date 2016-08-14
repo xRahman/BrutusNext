@@ -659,8 +659,12 @@ export class SaveableObject extends AttributableClass
   // an if it's value contains: { isSaved = false; }
   private isSaved(propertyName: string, className: string): boolean
   {
+    /*
     // Access static variable named the same as property.
     let propertyAttributes = this.getPropertyAttributes(this, propertyName);
+    */
+    // Access static variable named the same as property.
+    let propertyAttributes = this.getPropertyAttributes(propertyName);
 
     // If attributes for our property exist.
     if (propertyAttributes !== undefined)

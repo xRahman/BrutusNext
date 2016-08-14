@@ -27,10 +27,22 @@ import {NamedClass} from '../shared/NamedClass';
 
 export class AttributableClass extends NamedClass
 {
+  /*
   // This is a hack allowing descendants of AttributableClass to recursively
   // search for static properties of their ancestors.
   protected getThis() { return this; }
+  */
 
+  // Returns object containing static attributes for a given class property.
+  protected getPropertyAttributes(property: string)
+  {
+    // This trick dynamically accesses static class property without
+    // the need to use something like NamedClass.property;
+    // (it's the same as if you could write (typeof(istance)).property).
+    return this.constructor[property];
+  }
+
+  /*
   // Returns object containing static attributes for a given class property.
   protected getPropertyAttributes(instance: any, property: string)
   {
@@ -60,4 +72,5 @@ export class AttributableClass extends NamedClass
       return undefined;
     }
   }
+  */
 }

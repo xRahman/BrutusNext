@@ -60,6 +60,16 @@ export class Account extends NamedEntity
 
   // ---------------- Public methods --------------------
 
+  // Overrides Entity.getSaveSubDirectory().
+  protected static getSaveSubDirectory()
+  {
+    // Note:
+    //   Because we are in a static method, 'this' is actualy the class
+    // constructor and it's properties are static properties of the
+    // class.
+    return this.className + "/";
+  }
+
   public getLastLoginAddress() { return this.lastLoginAddress; }
   public getLastLoginDate()
   {
