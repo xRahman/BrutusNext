@@ -59,6 +59,10 @@ export abstract class AutoSaveableObject extends SaveableObject
     return saveDirectory
   }
 
+  /// TODO: Až p?ed?lám strukturu sav?/load?, tak zkontrolovat,
+  /// jestli je static SAVE_FILE_NAME pot?eba (ale asi jo,
+  /// protože n?které classy jsou zd?d?né ze SaveableObjectu,
+  /// ale nejsou to Entity (t?eba r?zné managery).
   protected getSaveFileName(): string
   {
     // This trick dynamically accesses static class variable.

@@ -129,6 +129,16 @@ export class Connection extends Entity
 
   // ---------------- Public methods --------------------
 
+  // Overrides Entity.getSaveSubDirectory().
+  protected static getSaveSubDirectory()
+  {
+    // Note:
+    //   Because we are in a static method, 'this' is actualy the class
+    // constructor and it's properties are static properties of the
+    // class.
+    return this.className + "/";
+  }
+
   public sendMotd(param: { withPrompt: boolean })
   {
     let motd = "\n&wThere is no message of the day at this time.";
