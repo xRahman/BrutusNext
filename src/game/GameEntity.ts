@@ -76,8 +76,6 @@ export class GameEntity extends ContainerEntity
     return this.connectionId.getEntity({ typeCast: Connection });
   }
 
-  public getId() { return <EntityId>super.getId(); }
-
   public setLocation(location: EntityId) { this.location = location; }
   public getLocation() { return this.location; }
 

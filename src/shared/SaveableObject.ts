@@ -9,7 +9,7 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
-import {EntityId} from '../shared/EntityId';
+//import {EntityId} from '../shared/EntityId';
 import {NamedClass} from '../shared/NamedClass';
 import {AttributableClass} from '../shared/AttributableClass';
 import {FileSystem} from '../shared/fs/FileSystem';
@@ -762,7 +762,7 @@ export class SaveableObject extends AttributableClass
 
     if (jsonObject[NamedClass.CLASS_NAME_PROPERTY] !== undefined)
     {
-      if (jsonObject[NamedClass.CLASS_NAME_PROPERTY] === "EntityId")
+      if (jsonObject[NamedClass.CLASS_NAME_PROPERTY] === 'EntityId')
         return true;
 
       return false;
@@ -773,13 +773,13 @@ export class SaveableObject extends AttributableClass
     // work for ancestors of EntityId class (anyone who would inherit from
     // class EntityId would have to add a special case here), so instead we
     // check 'stringId' property which all ancestors of EntityId inherit.
-    ASSERT(jsonObject[EntityId.STRING_ID_PROPERTY] === undefined,
-      "There is a " + EntityId.STRING_ID_PROPERTY + " property in"
+    ASSERT(jsonObject['id' /*EntityId.STRING_ID_PROPERTY*/] === undefined,
+      "There is a " + 'id' /*EntityId.STRING_ID_PROPERTY*/ + " property in"
       + " Json object loaded from file " + filePath + " but a "
       + NamedClass.CLASS_NAME_PROPERTY + " is missing. That"
       + " probably means that you have either inherited from"
       + " EntityId class or you have declared a property named "
-      + EntityId.STRING_ID_PROPERTY + " in some random class."
+      + 'id' /*EntityId.STRING_ID_PROPERTY*/ + " in some random class."
       + " If it's the first case, you will have to change code"
       + " here where this ASSERT have been triggered. If it's the"
       + " second case, you should name the property otherwise. If "
@@ -809,12 +809,12 @@ export class SaveableObject extends AttributableClass
     filePath: string
   )
   {
-    let stringId = jsonObject[EntityId.STRING_ID_PROPERTY];
+    let stringId = jsonObject['stringId'/*EntityId.STRING_ID_PROPERTY*/];
 
     if (!ASSERT(stringId !== undefined && stringId !== null,
       "Errow while loading id from file " + filePath + ": Unable"
       + " to load id, because passed 'jsonObject' doesn't contain"
-      + "property '" + EntityId.STRING_ID_PROPERTY + "'"))
+      + "property '" + 'stringId' /* EntityId.STRING_ID_PROPERTY*/ + "'"))
       return null;
 
     let id = Server.idProvider.get(stringId);
@@ -839,7 +839,11 @@ export class SaveableObject extends AttributableClass
       (
         {
           className: jsonObject[NamedClass.CLASS_NAME_PROPERTY],
-          typeCast: EntityId
+          // We can't typecast to EntityId here, because class EntityId
+          // is inherited from SaveableObject so we can't include it from
+          // SaveableObject. It doesn't really matter, however, we are not
+          // going to do anything with it here.
+          typeCast: SaveableObject
         }
       );
 

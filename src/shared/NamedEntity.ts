@@ -19,7 +19,12 @@ export class NamedEntity extends Entity
   // (indended for use in error messages).
   public getErrorIdString()
   {
+    let id = this.getId();
+
+    if (id === null)
+      return this.className + " '" + this.name;
+
     return this.className + " '" + this.name + "'"
-      + " (id: " + this.getId().getStringId() + ")";
+      + " (id: " + id.getStringId() + ")";
   }
 }
