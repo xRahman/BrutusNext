@@ -47,7 +47,8 @@ export class IdProvider
   // be held in memory if there is another (not weak) reference to an id.
   // In other words when you remove an id from an idList, it may get
   // dellocated along with it's entity.
-  private ids = new WeakMap();
+  ///private ids = new WeakMap();
+  private ids = new Map();
 
   constructor(private timeOfBoot: Date) { }
 

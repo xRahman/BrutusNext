@@ -12,6 +12,7 @@ import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {SaveableObject} from '../shared/SaveableObject';
 import {AutoSaveableObject} from '../shared/AutoSaveableObject';
 import {Prototype} from '../shared/Prototype';
+import {Entity} from '../shared/Entity';
 
 export class PrototypeManager extends AutoSaveableObject
 {
@@ -23,11 +24,13 @@ export class PrototypeManager extends AutoSaveableObject
   // (individual prototypes are saved to separate files).
   public static prototypes = { isSaved: false };
 
+  /*
   // Hashmap<[string, { path, filename }]>
   //   Key: prototype name
-  //   Value: object describing location of prtotype save file.
+  //   Value: object describing location of prototype save file.
   //   (path is relative to the location of prototypeDataManager.json).
   private directoryTree = new Map();
+  */
 
   private static get SAVE_DIRECTORY()
   {
@@ -70,7 +73,7 @@ export class PrototypeManager extends AutoSaveableObject
     // Creates a javascript class based on prototype data.
     prototypeData.createClass();
 
-    this.addToDirectoryTree(param.name, param.ancestor);
+    ///this.addToDirectoryTree(param.name, param.ancestor);
 
     return true;
   }
@@ -113,6 +116,7 @@ export class PrototypeManager extends AutoSaveableObject
 
   // ---------------- Private methods -------------------
 
+  /*
   private addToDirectoryTree(prototypeName: string, ancestorName: string)
   {
     // Ancestor must already be in directory structure (because we are
@@ -138,6 +142,7 @@ export class PrototypeManager extends AutoSaveableObject
     // Insert entry to hashmap.
     this.directoryTree.set(key, value);
   }
+  */
 
   private createPrototypeData(param: { name: string, ancestor: string })
   : Prototype
@@ -200,9 +205,14 @@ export class PrototypeManager extends AutoSaveableObject
     for (let entry of this.prototypes.entries())
     {
       // An entry of hashmap is a [key, value] array.
-      let prototypeName = entry[0];
+      /// Tohle asi nebudu vubec potrebovat.
+      /// TODO: V tom pripade by stacilo cyklovat pres values misto pres
+      ///   entries.
+      //let lowercasePrototypeName = entry[0];
       let prototype = dynamicCast(entry[1], Prototype);
+      let prototypeName = prototype.name;
 
+      /*
       // { path, filename } record specifying location of saved file.
       let prototypeLocation = this.directoryTree.get(prototypeName);
 
@@ -213,10 +223,17 @@ export class PrototypeManager extends AutoSaveableObject
 
       // Directory is relative to the save location of prototypeDataManger,
       // so we need to put it together.
+
       let fullDirectory = this.getSaveDirectory() + prototypeLocation.path;
       let fileName = prototypeLocation.fileName;
 
       await prototype.saveToFile(fullDirectory, fileName);
+      */
+
+      let path = this.getPrototypeSavePath(prototypeName);
+      let fileName = this.getPrototypeSaveFileName(prototypeName);
+
+      await prototype.saveToFile(path, fileName);
 
       /*
       // Scripts are saved to separate files.
@@ -227,6 +244,9 @@ export class PrototypeManager extends AutoSaveableObject
 
   private async loadPrototypes()
   {
+    /// Ok, loadnout to sice asi neumim, ale to ted nebudu resit.
+    /// Nejdriv save.
+    /*
     for (let entry of this.directoryTree.entries())
     {
       // An entry of hashmap is a [key, value] array.
@@ -245,12 +265,49 @@ export class PrototypeManager extends AutoSaveableObject
 
       await prototype.loadFromFile(filePath);
 
-      /*
-      // Scripts are saved to separate files.
-      await prototype.loadScripts(filePath);
-      */
+      //// Scripts are saved to separate files.
+      //await prototype.loadScripts(filePath);
+
 
       this.insertToPrototypeList(prototypeName, prototype);
     }
+    */
+  }
+
+  private getPrototypeSavePath(prototypeName: string)
+  {
+    return Entity.getSaveDirectory(prototypeName, this.getSaveDirectory());
+
+    /*
+    // Prototype classes are stored in global.dynamicClasses.
+    let dynamicClasses = global[SaveableObject.DYNAMIC_CLASSES_PROPERTY];
+    let PrototypeClass = dynamicClasses[prototypeName];
+    // Save directory of PrototypeManager, which is './data/prototypes/'
+    let rootDir = this.getSaveDirectory();
+    let errorPath =
+      rootDir + "_SAVE_PATH_CREATION_ERROR/" + prototypeName + "/";
+
+    if (!ASSERT(PrototypeClass !== undefined,
+        "Unable to compose prototype save path for prototype"
+        + " '" + prototypeName + "' because dynamic class"
+        + " '" + prototypeName + "' doesn't exist."
+        + " Prototype will be saved to " + errorPath + " instead"))
+      return errorPath;
+
+    if (!ASSERT(PrototypeClass['getSaveSubDirectory'] !== undefined,
+        "Unable to compose prototype save path for prototype"
+        + " '" + prototypeName + "' because dynamic class"
+        + " '" + prototypeName + "' doesn't have static method"
+        + " 'getSaveSubDirectory'. Prototype will be saved"
+        + " to " + errorPath + " instead"))
+      return errorPath;
+
+    return rootDir + PrototypeClass.getSaveSubDirectory();
+    */
+  }
+
+  private getPrototypeSaveFileName(prototypeName: string)
+  {
+    return prototypeName + ".json";
   }
 }
