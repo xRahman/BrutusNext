@@ -1,4 +1,23 @@
-﻿TODO: Nad AdminLevels by asi fakt byl lepsi enum.
+BIG IDEA: Zuršit ASSERTY.
+  Místo toho používat:
+    if (condition === false)
+    {
+      ERROR
+      (
+        "message"
+      );
+    }
+
+  - Ve skutečnosti stejně ty asserty píšu vždycky do podmínek a navíc ten
+    zápis if (!ASSERT(condition, "message")) není moc intuitivní.
+  - vyřeší to problém s tím, že se mi provádí kód na skládání stringu,
+    přestože string není potřeba.
+
+
+
+TODO: Korektne vycistit SaveableObject od pozustatku EntityId.
+
+TODO: Nad AdminLevels by asi fakt byl lepsi enum.
 
 TODO: Typescript používat inline místo linkem.
 
@@ -1167,3 +1186,300 @@ Validita idček
   TODO: Zrušit classu EntityId
   TODO Id.getEntity<T>() bude generic a bude dynamicky přetypovávat
     na requestnutý typ T.
+
+
+=======================================================================
+Úvahy o idčkách, weakmapách, atd...
+=======================================================================
+
+
+Počáteční stav
+---------------
+
+IdProvider
+"a-skh2swe" : id->zlyMob
+
+Zuzka
+ id->zlyMob
+
+
+
+
+delete zlyMob
+--------------
+
+id.entity = null;	// entity se smaže z paměti
+id.entityDeleted = true;
+
+/* ----------- */
+
+aktuální IdProvider:
+"a-skh2swe" : id->zlyMob
+
+Zuzka
+ id->zlyMob
+
+Potřebuju vědět, že:
+- můžu smazat stringový klíč
+- můžu smazat id
+
+
+stringKey můžu smazat až ve chvíli, kdy zmizí poslední reference na idčko
+- protože do té doby potřebuju být schopen dohledat idčko podle jeho stringKey
+
+
+================================================
+
+Idea: Zrušit class Id, používat přímé reference
+
+- když SaveableObject narazí na Entitu, tak zavolá entity.saveReference(), což vytvoří
+  podobný záznam, jaký teď má idčko.
+
+- při loadování se z tohohle záznamu vezme stringId a checkne se, jestli je odpovídající
+  entita loadnutá. Když ne, tak se reference nastaví na null (nebo místo toho na Id object?).
+
+- při pokusu dereferencovat odkazovanou entitu se znova zkusí najít entita podle stringId
+  (respektive byla by to možnost. "Už je online?" "A teď?")
+
+No jo, jenže...
+  Kam se savne to stringId, když bude reference null? To by se musela automaticky vytvořit
+  nová promměná ve stylu "jméno_proměnné" + "stringId" a do ní by se hodilo to string idčko...
+  - a nebo se tam místo entity hodí ten object Id a dereferencování jeho metod bude holt
+    crashovat... (dereference null by crashnula taky)
+
+Proč přece jen používat idčka?
+
+- protože o tom, že je problém, se dozvím už ve chvíli, kdy použiju
+  id.getEntity()
+
+
+- problém je se skriptama, protože tam si dám do proměnné entitu a pak
+  dám wait... a entitu může mezi tím někdo smazat.
+
+Proč raději používat přímé reference?
+- protože když nenapíšu if (id.getEnity() !== null) ..., tak mi to spadne
+  při pokusu na entitě cokoliv zavolat
+Když místo toho neoifuju referenci, tak mi na ní metoda zavolat půjde - sice
+  se bude volat na invalid entitě, ale nespadne na tom celá hra.
+- zato můžu do nativních metod entit psát checky typu:
+  if (!this.valid)
+  {
+    ERROR(message);
+    return;
+  }
+  Takže se dozvím, že se snažím manipulovat se smazanou entitou (a přitom to
+  nic neudělá a neshodí to hru).
+
+
+
+
+================================================
+
+1. Dejme tomu, že dokážu checknout, jestli je entita s daným idčkem savnutá
+   na disku.
+   - Jak na to?
+     - musím umět získat fullSavePath od každé entity, ideálně bez toho,
+       aby ta entita musela existovat (static metoda? Jenže jak zavolám static
+       metodu, když nemám entitu? Přes dynamicClasses?
+       - jo, to by asi šlo).
+
+
+
+2. Při smazání entity:
+   - nastaví se jí flaga deleted
+   - smaže se z disku
+   - smaže se záznam z idProvideru
+
+Dokud je záznam v idProvideru, tak určitě existuje alespoň jedna reference
+na entitu. Tzn. nemusí být reference nikde jinde.
+
+IMPORTANT: V metodě Entity.save() zkontrolovat flagu deleted.
+  - takže se smazaná entita nesavne.
+
+Co se stane, když si za běhu vezmu referenci na entitu a někdo tu entitu smaže?
+- Entita pořád existuje v paměti (já se na ni odkazuju), ale má flagu deleted.
+- Už není záznam v idProvideru
+  - když se teď někdo zeptá idProvideru, jestli je entita smazaná, dozví se, že
+    ano.
+  - když se loadne někdo s referencí na entitu:
+    - Zeptá se idProvideru a dozví se, že záznam nemá.
+    - Checkne, jestli existuje save. Pokud ne, znamená to, že je entita
+      smazaná.
+
+
+Úvaha bokem: Hráčské postavy a unikátní jména
+- hráčské postavy se nemažou (tj. delete nesmaže záznam z disku, pouze nastaví
+  flagu deleted), ale může se teoreticky smazat jméno.
+- přitom bych ale asi potřeboval možnost zjistit čistě dotazem na existenci
+  souboru, jestli je entita smazaná. To nejspíš znamená, savovat hráčský char
+  na dvě místa - pod stringIdčkem a pod unikátnímJménem.
+
+
+
+Struktura dat:
+---------------
+
+  ./data
+       /Account
+         1-imt2xk99.json
+       /Character
+         4-imt2xk99.json
+     /entities
+       /Account
+         6-imt2xk99.json
+       /World
+       /Room
+       /Character
+     /prototypes
+       /World
+       /Room
+       /Character
+          7-imt2xk99.json
+          /Orc
+            8-imt2xk99.json
+     /unique_names
+       /*
+         Pro každé unikátní jméno jeden prázdný soubor. Podle jejich
+         existence se zjišťuje, jestli je jméno volné.
+         (teoreticky tu mohou být podadresáře, pokud bych chtěl mít víc
+         nezávislých kategorií unikátních jmen)
+       */
+       Zuzka
+       Rahman
+
+- hmm, asi bych chtěl, aby se všechno, co patří k Accountu, savovalo
+  do /Accoounts/Rahman, včetně všech charů na accountu, lodí, základen, atd.
+  - i když je to otázka, dost značně to všechno zkomplikuje.
+  - navíc počítám s tím, že "hráčovy" assety mohou žít svým vlastním životem,
+    takže pak nejsou až tak úplně 100% hráčovy...
+    (což znamená, že by se u některých entit měnilo, komu patří, takže by se
+     pak savovaly na různá místa na disku... Asi na to spíš kašlat a savovat
+     všechny entity stejně.)
+
+PS: Smazání entity, která má být obnovitelná, ji prostě přejmenuje na
+.json.deleted, není třeba ji přesouvat do jiného adresáře.
+
+---------------------------
+Co by bylo potřeba, aby se daly savovat playerovy entity do /Acccounts?
+
+- každý savnutý odkaz na entitu by si musel pamatovat, jakému Characteru
+  a jakému accountu to patří.
+  - co když hráčova věc zůstane ve hře a vezme si ji někdo jiný?
+    - měl by ji vůbec mít savnutou hráč, když je stále ve hře?
+      Očividně se to může stát, když hráč napíše 'save' a následně věc někomu
+      dá. V ten moment je má savnutou u sebe a dotyčný si ji může savnout taky.
+      Tím se nevynutí save prvního hráče, takže ji nyní mají savnutou oba,
+      pokud dejme tomu crashne mud.
+    - když by každý z nich měl savnuté jen idčko, tak se pořád může stát, že si
+      to idčko savnou oba. Pak se při loadu stane co? Budou mít oba dva
+      referenci na stejný item?
+    - když se budou s hráčem savovat jen reference, tak to půjde pořešit přes
+      to, že item samotný má u sebe savnutou 'location'. Když při loadu
+      location entity nebude odpovídat tomu, do čeho se loaduje, tak se může
+      zase zahodit - znamená to, že o ni hráč po svém savu přišel a savnul ji
+      někdo jiný.
+
+
+[09:51] Rahman       : <64> Zacinam si cim dal vic klonit k tomu, nesavovat itemy do player filu ale do /Objects
+[09:51] Rahman       : <64> Hlavnim duvodem je obrana proti duplikovani itemu
+[09:52] Rahman       : <64> Kdyz jeden player napise 'save', da item druhemu playerovi, ten napise 'save' a nasledne spadne mud bez savu, tak je ten item savnuty ve dvou pfilech
+[09:52] Rahman       : <64> a kazdy z nich ma jako ownera jineho playera
+[09:54] Rahman       : <64> zatimco kdyz bude u playera savnute jen stringove idcko itemu a item bude jinde, tak timhle vznikne stav, kdy item je savnuty dvakrat na stejne misto a dva ruzni playeri maji na nej odkaz (tvari se, ze je item jejich)
+[09:55] Rahman       : <64> jenze item ma u sebe savnutou 'location', takze kdyz se logne ten prvni player, tak mu muzu rict 'sorry, tenhle item uz ma nekdo jiny'
+[09:56] Rahman       : <64> samozrejme to znamena, ze bude peklo rucne vytahnout playera ze zalohy, protoze jeho itemy budou rozstrkane vsude mozne
+[09:56] Rahman       : <64> na druhou stranu to pujde celkem jednoduse zautomatizovat, takze ho budes moct restornout za behu primo ze hry
+[09:57] Rahman       : <64> proste si vytahnes prislusnou verzi z gitu do jineho adresare (protoze v gitu bude ulne vsechno) a forcnes playera, at se loadne ze /zaloha/data misto z /mud/data
+[09:58] Rahman       : <64> a pri te prilezitosti to muze item po itemu kontrolovat, jestli nahodou neexistuji v ostre verzi a nema je nekdo jiny, takze se zabrani duplicitam
+
+
+Ad unique names
+- možná bude lepší držet je v paměti, ono jich zas až tak strašně moc
+  nebude. Takže asi vytvořit nějaký UniqueNamesManager.
+  - v něm budou kategorie accounts a characters
+
+
+================================================
+
+IDEA: Rozlišovat:
+  - Adresář, kam se savne celá hra se vším všudy před bootem
+    (a po bootu se z něj zase celá se vším všudy loadne)
+  - A adresář, kam se savují player data v průběhu bootu...
+
+
+
+
+================================================
+
+Undelete
+---------
+
+Problém: Někdo si schová referenci na char, který smažu.
+  - v ten moment se maže záznam z hashmapy (stringId->entita).
+  Následně provedu undelete (ve stejném bootu). Znova loaduju entitu
+  z disku a měl bych ji napojit na už existující, protože si ji někdo
+  stále pamatuje - jenže na tu už se nemám jak dostat, protože už není
+  záznam v hasmapě.
+
+Řešení: undeletnutelné entity nemazat z hashmapy.
+  - Týkat se to bude asi jen player charů (lodí, designů a tak)
+
+Problém: Někdo qitne s charem a pak se zas naconnectí
+  - to je vlastně stejnej problém jako s tím undeletem: Nemůžu vyhodit
+  záznam z hashmapy, protože bych se pak nedokázal napojit na instanci,
+  na kterou si někdo stále drží referenci.
+
+  Tzn. quitnutý char bude zůstávat v paměti
+  - teoreticky na něj můžu držet jen weak link (dát ho do WeakMapy),
+    takže se pak z paměti vyhodí aspoň entita - jo, to zní hezky, ale jak
+    to udělat? Já potřebuju držet tu referenci na entitu
+
+================================================
+
+Použití node-weak:
+
+Když vyrábím novou entitu, tak si do hashmapy dám strong referenci a současně
+weak referenci. Vrátím weak referenci, která se bude přiřazovat ve zbytku kódu.
+
+Když budu chtít entitu zahodit z paměti, tak:
+- do strong reference v hasmapě zapíšu null
+  - v ten moment můžu dokonce rovnou checknout, jestli weakRef.isDead() a pokud
+    ano, tak zahodit celý záznam v hashmapě (protože nikdo jiný nemá referenci).
+    Pokud není dead, tak si nechám weakRef, protože mě možná časem někdo bude
+    chtít oživit.
+
+- využití callbacku:
+    Když se mi zavolá callback, tak můžu vyhodit celý záznam z hashmapy,
+    protože to znamená, že nikdo už nedrží referenci na entitu.
+    - když se mi někdo relogne, undeletne, nebo tak, tak se prostě dá nový
+      záznam do hasmapy
+
+================================================
+
+Využití proxy:
+  - Entita je proxy, která defaultně jen předává přístupy zapouzdřené entitě.
+  - Když na Entitu zavolám delete, tak se v proxy změní metody get() a set()
+    a místo předávání vnitřní entitě budou reportovat přístup na smazanou
+    entitu.
+
+- Teoreticky takhle půjde odchytávat i pokus o přístup na neexistující property
+  (takže program nespadne - respektive nespadne na volání neexistující metody
+   entity, ale může pořád spadnout, když přistoupím na to, co mi ta
+   neexistující metoda "vrátí").
+
+================================================
+
+TODO:
+
+- Domyslet novou strukturu dat
+- Přejít na novou strukturu dat
+
+- Líp vymyslet dynamicClasses
+- Implementovat to
+
+- otestovat node-weak
+
+
+- Přejít z Idček na reference na entity
+
+
+- otestovat Proxy
