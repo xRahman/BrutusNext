@@ -55,6 +55,43 @@ export class Entity extends AutoSaveableObject
 
   // ---------------- Public methods --------------------
 
+  // Constructs a save directory for an entity of type 'className'
+  // by appending it to 'rootDirectory' (which should be something
+  // like './data/prototypes/')
+  public static getSaveDirectory(className: string, rootDirectory: string)
+  {
+    // Prototype classes are stored in global.dynamicClasses.
+    let dynamicClasses = global[SaveableObject.DYNAMIC_CLASSES_PROPERTY];
+    let PrototypeClass = dynamicClasses[className];
+    let errorPath =
+      rootDirectory + "_SAVE_PATH_CREATION_ERROR/" + className + "/";
+
+    if (!ASSERT(PrototypeClass !== undefined,
+      "Unable to compose prototype save path for prototype"
+      + " '" + className + "' because dynamic class"
+      + " '" + className + "' doesn't exist."
+      + " Prototype will be saved to " + errorPath + " instead"))
+      return errorPath;
+
+    if (!ASSERT(PrototypeClass['getSaveSubDirectory'] !== undefined,
+      "Unable to compose prototype save path for prototype"
+      + " '" + className + "' because dynamic class"
+      + " '" + className + "' doesn't have static method"
+      + " 'getSaveSubDirectory'. Prototype will be saved"
+      + " to " + errorPath + " instead"))
+      return errorPath;
+
+    return rootDirectory + PrototypeClass.getSaveSubDirectory();
+  }
+
+  protected static getSaveSubDirectory()
+  {
+    /// Prázdný string, protože se to přilepuje k './data/entities/' případně
+    /// k './data/prototypes/' a až teprve potomci (např. Account nebo
+    /// GameEntity) mají nějaké podadresáře (/Account).
+    return "";
+  }
+
   // Overrides AutoSaveableObject.save() to skip saving
   // if entity had been deleted.
   public async save()
@@ -72,6 +109,9 @@ export class Entity extends AutoSaveableObject
   // (indended for use in error messages).
   public getErrorIdString()
   {
+    if (this.getId() === null)
+      return this.className;
+
     return this.className + " (id: " + this.getId().getStringId() + ")";
   }
 
@@ -88,4 +128,47 @@ export class Entity extends AutoSaveableObject
   {
     return this.id.getStringId();
   }
+
+  protected getSaveDirectory(): string
+  {
+    /// TODO: Možná ten prefix schovat na nějaké lepší místo...
+    /// (třeba k hashmapě, která bude mapovat idčka na entity)
+    return Entity.getSaveDirectory(this.className, './data/entities/');
+  }
+
+  protected getSaveFileName(): string
+  {
+    return this.id.getStringId() + '.json';
+  }
+
+  /*
+  protected getSaveDirectory(): string
+  {
+    // This trick dynamically accesses static class variable.
+    // (so it's the same as AutoSaveableOcject.SAVE_DIRECTORY,
+    //  but when this method is called from for example Room,
+    //  it will mean Room.SAVE_DIRECTORY)
+    let saveDirectory = this.constructor['SAVE_DIRECTORY'];
+
+    if (!ASSERT(saveDirectory !== undefined,
+      "Missing static SAVE_DIRECTORY property on class " + this.className))
+    {
+      // If static variable SAVE_DIRECTORY is missing,, data will be saved
+      // to directory './data/_MISSING_SAVE_DIRECTORY_ERROR'.
+      return "./data/_MISSING_SAVE_DIRECTORY_ERROR";
+    }
+
+    return saveDirectory
+  }
+
+  
+  /// Pozn: V GameEntity je to přetížené a vrací to idčko pro neunikátní
+  /// entity a jméno pro unikátní
+  /// TODO: Z GameEntity to zrušit a dát to sem (nebo ještě lépe do statické
+  /// metody)
+  protected getSaveFileName(): string
+  {
+    return this.getIdStringValue() + ".json";
+  }
+  */
 }

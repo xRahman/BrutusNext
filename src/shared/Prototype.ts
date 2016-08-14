@@ -181,6 +181,13 @@ export class Prototype extends SaveableObject
   //+
   private declareClass()
   {
+    // Mozna panikarim moc brzo a chyba je jinde...
+    /*
+    /// Tak takhle to bohuzel nepujde, protoze 
+    /// let NewClass = class extends Ancestor { };
+    /// spatne nastavi NewClass.prototype (ukazuje sam na sebe, misto na
+    /// instanci predka). Takze asi zpet k declaration scriptum...
+    */
     let Ancestor = this.getAncestorClass();
 
     if (Ancestor === undefined || Ancestor === null)
@@ -194,6 +201,10 @@ export class Prototype extends SaveableObject
     // (That's why we are not using constructor.name but rather our own
     //  property 'className'. See NamedClass::className for details.)
     let NewClass = class extends Ancestor { };
+
+    /// Pozn.: Tohle prepise staticky accessor zdedeny z NamedClass
+    ///   (coz je dobre, protoze ten vraci constructor.name, ktery u
+    ///    dynamicky vytvorenych class neni nastaveny).
     NewClass[NamedClass.CLASS_NAME_PROPERTY] = this.name;
 
     // Assigns newly created type to global.dynamicClasses.
@@ -324,10 +335,10 @@ export class Prototype extends SaveableObject
       let property = this.data[i].property;
       let value = this.data[i].value;
 
-      // Dynamic access to class property - it will be created if it
-      // doesn't exist.
-      // (properties are assigned to class prototype so all game entities of
-      //  this type will automatically inherit them)
+      // [] represends dynamic access to class property - property will be
+      // created if it doesn't exist (properties are assigned to class
+      // prototype so all game entities of this type will automatically
+      // inherit them).
       prototypeClass.prototype[property] = value;
     }
   }

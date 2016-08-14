@@ -94,6 +94,49 @@ export class GameEntity extends ContainerEntity
 
   // ---------------- Public methods --------------------
 
+  // Overrides Entity.getSaveSubDirectory().
+  protected static getSaveSubDirectory()
+  {
+    // Note:
+    //   Because we are in a static method, 'this' is actualy the class
+    // constructor and it's properties are static properties of the
+    // class.
+
+    let className = this['className'];
+    let errorPath = "_SAVE_PATH_CREATION_ERROR/";
+
+    if (!ASSERT(className !== undefined,
+        "Unable to compose entity save path because"
+        + " property 'className' doesn't exist on a class"
+        + " in a prototype chain. Save path will contain "
+        + errorPath + " instead"))
+      return errorPath;
+
+    /// Jaky prototyp ma muj prototyp - jinak receno, jakeho mam predka.
+    let ancestor = Object.getPrototypeOf(this.prototype);
+
+    // Staticka property ancestora.
+    let getAncestorSubDirectory =
+      ancestor.constructor['getSaveSubDirectory'];
+
+    errorPath = "_SAVE_PATH_CREATION_ERROR_" + className + "/";
+
+    if (!ASSERT(getAncestorSubDirectory !== undefined,
+        "Unable to compose correct save path for class"
+        + " '" + className + "' because static method"
+        + " 'getSaveSubDirectory' doesn't exist on it's"
+        + " ancestor. Save path will contain " + errorPath
+        + " instead"))
+      return errorPath;
+
+    // Call getAncestorSubDirectory() with 'ancestor.constructor' as 'this'.
+    // ('ancestor.constructor' and not just 'ancestor', it is a static method
+    //  so 'this' must be the class constructor, not an instance).
+    let ancestorPath = getAncestorSubDirectory.call(ancestor.constructor);
+    
+    return ancestorPath + className + "/";
+  }
+
   // Dynamically creates a new instance of requested class (param.prototype)
   // and inserts it to specified idList (param.idList).
   public createEntity<T>
@@ -173,6 +216,7 @@ export class GameEntity extends ContainerEntity
       return SAVE_DIRECTORY;
   }
 
+  /*
   protected getSaveFileName(): string
   {
     if (this.isNameUnique)
@@ -180,6 +224,7 @@ export class GameEntity extends ContainerEntity
     else
       return this.getIdStringValue() + ".json";
   }
+  */
 
   // -------------- Private class data ----------------
 

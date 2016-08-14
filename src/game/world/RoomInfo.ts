@@ -1,3 +1,5 @@
+/// TODO: Tohle komplet zrušit, prototypy jsou vyřešeny lépe.
+
 /*
   Part of BrutusNEXT
 

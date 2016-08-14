@@ -1,3 +1,26 @@
+Pozn.: Accounty se mi savují postaru do /Accounts/Rahman.json, což je nakonec
+  asi dobře. Každopádně to chce zkontrolovat.
+
+TODO: Odstraněním saveTree z PrototypeManageru jsem přišel o informaci, jaké
+  prototypy se mají načíst při startu hry.
+  - nějak to pořešit.
+Jedna možnost je, prostě prolézt celý adresář /Prototypes
+
+TODO: Opravit savovani entit.
+
+TODO: Opravit AttributableClass
+  - protože super.metoda dělá něco trochu jiného, než jsem si myslel
+    (nevolá metodu přímého předka, ale toho předka, který ji jako první
+    má jinou. Tzn. to může přeskočit několik stupňů dědění. A já je
+    v AttributableClass potřebuju projít všechny).
+  - toť otázka. Není to náhodou tak, že se mi ta statická proměnná
+    automaticky zdědí, takže ji prostě uvidím na this.constructor, ať
+    je deklarovaná na jakémkoliv předkovi?
+    - v tom případě tam naopak šaškuju zbytečně složitě...
+[Hmm, tak zjevně jsem to dělal zbytečně složitě.]
+
+
+TODO: Opravdu to udělat, zní to rozumně.
 BIG IDEA: Zuršit ASSERTY.
   Místo toho používat:
     if (condition === false)
@@ -16,6 +39,9 @@ BIG IDEA: Zuršit ASSERTY.
 
 
 TODO: Korektne vycistit SaveableObject od pozustatku EntityId.
+  (protože EntityId nemůže být includnuté v SaveableObjectu, byl
+   by to křížový include (nebo je z něj zděděné). On to sice typescript
+   compiler povolí, ale zuchne to pak v runtimu).
 
 TODO: Nad AdminLevels by asi fakt byl lepsi enum.
 
@@ -1397,6 +1423,40 @@ Ad unique names
   nebude. Takže asi vytvořit nějaký UniqueNamesManager.
   - v něm budou kategorie accounts a characters
 
+Class inheritance tree
+-----------------
+
+NamedClass
+- AttributableClass
+  - SaveableObject
+    - AutoSaveableObject
+      - Entity
+        - NamedEntity
+          - Account
+          - CommandInterpretter
+            - ContainerEntity
+              - GameEntity
+                - Sector
+                  - Area
+                - Dimension
+                - Realm
+                - Room
+                - World
+                - Character
+
+Ok, co jsou kořeny adresářového stromu?
+- Account (respektive NamedEntity) (protože ./data/entities/Account)
+- GameEnity (protože ./data/entities/Realm apod.)
+
+Tzn při volání getSavePath():
+- NamedEntity by měla vracet ./data/entities
+- GameEntity by měla vracet ./data/entities
+- Entity by asi taky měla vracet ./data/entities
+- Account by měl vracet className + super.getSavePath()
+  // A navíc to nebude moct bejt super. protože se to nebude volat na instanci,
+  // ale na prototype chainu.
+
+
 
 ================================================
 
@@ -1405,7 +1465,14 @@ IDEA: Rozlišovat:
     (a po bootu se z něj zase celá se vším všudy loadne)
   - A adresář, kam se savují player data v průběhu bootu...
 
-
+Asi spíš jinak: Mít dvě gitové repository. Do jedné se budou
+  commitovat změny v kódu (samozřejmě i s aktuálním stavem dat),
+  do druhé zálohy dat (samozřejmě i s aktuálním stavem kódu.
+- restore dat ze zálohy se bude provádět z běžícího mudu, prostě se ty
+  entity natáhnou z /backup/data místo z /mud/data
+Důvodem pro dvě repository je, že nechci, aby do programátorské nespamovaly
+commity se zálohama...
+(Možná to takhle jednoduše nepůjde, uvidíme...)
 
 
 ================================================
