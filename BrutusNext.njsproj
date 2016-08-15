@@ -19,7 +19,7 @@
     <TypeScriptTarget>ES6</TypeScriptTarget>
     <TypeScriptModuleKind>CommonJs</TypeScriptModuleKind>
     <TypeScriptModuleResolution>node</TypeScriptModuleResolution>
-    <NodeExeArguments>--harmony_rest_parameters</NodeExeArguments>
+    <NodeExeArguments>--harmony_rest_parameters --harmony_proxies</NodeExeArguments>
     <TypeScriptOutDir>./src</TypeScriptOutDir>
     <TypeScriptRootDir>./src</TypeScriptRootDir>
     <TypeScriptSourceRoot>./src</TypeScriptSourceRoot>
@@ -33,6 +33,7 @@
     <TypeScriptCompile Include="src\game\characters\CharacterFlags.ts" />
     <TypeScriptCompile Include="src\game\commands\CommandInterpretter.ts" />
     <TypeScriptCompile Include="src\game\DynamicClasses.ts" />
+    <TypeScriptCompile Include="src\headers\harmony-proxy.d.ts" />
     <TypeScriptCompile Include="src\shared\NamedEntity.ts" />
     <TypeScriptCompile Include="src\game\ScriptableEntity.ts" />
     <TypeScriptCompile Include="src\shared\ASSERT_FATAL.ts" />
