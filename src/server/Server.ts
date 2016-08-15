@@ -137,6 +137,8 @@ export class Server
   // Loads the game (or creates a new one if there is no ./data directory).
   public async run(telnetPort: number)
   {
+    test();
+
     ASSERT_FATAL(this.game === null,
       "Error: game already exists. Server::run() can only be done once");
 
@@ -184,4 +186,61 @@ export class Server
 
     this.httpServer.start();
   }
+}
+
+class Handler
+{
+  public entity;
+
+  public set(target: any, property: any, value: any, receiver: any): boolean
+  {
+    /*
+    return Reflect.set(this.entity, property, value, receiver);
+    */
+
+    if (this.entity !== null)
+      this.entity[property] = value;
+    else
+      console.log("Zapis na smazanou entitu!");
+
+    return true;
+  }
+
+  public get(target: any, property: any)
+  {
+    if (this.entity !== null)
+      return this.entity[property];
+    else
+      console.log("Cteni ze smazane entity!");
+    /*
+    Reflect.get(this.entity, property);
+    */
+  }
+}
+
+/// Tohle je potreba jen na to, aby to prelozilo stare harmony api
+/// na nove ES6 API (tj. aby šlo zavolat new Proxy(target, handler);
+var Proxy = require('harmony-proxy');
+
+function test()
+{
+  let entity1 = { x: 1 };
+  let entity2 = { x: 2 };
+  let handler = new Handler();
+
+  let proxy = new Proxy({}, handler);
+
+  handler.entity = entity1;
+
+  console.log("Proxy1.x = " + proxy.x);
+
+  handler.entity = null;
+
+  console.log("Proxy_null.x = " + proxy.x);
+
+  proxy.y = 13;
+
+  handler.entity = entity2;
+
+  console.log("Proxy2.x = " + proxy.x);
 }
