@@ -1533,6 +1533,28 @@ Využití proxy:
    entity, ale může pořád spadnout, když přistoupím na to, co mi ta
    neexistující metoda "vrátí").
 
+ÚVAHA: Využití Proxy k ošetřetní relogu bez nutnosti počítat reference:
+
+    Lognu se
+
+    Někdo si na mě vezme referenci
+
+    Odlognu (save)
+
+    Dotyčný zkusí na referenci přistoupit
+    - Proxy checkne hashmapu a zakáže mu to
+
+    (load )Znova se lognu
+    - Vytvoří se nový objekt. Dotyčný má stále referenci na ten smazaný
+
+    Dotyčný zkusí na referenci přistoupit
+    - Proxy checkne hashmapu, zjistí, že objekt byl znovu vytvořený, takže přesměruje
+      interní referenci na nový objekt
+      (pro dotyčného se to tváří, jako kdyby objekt stále žil)
+
+
+
+
 ================================================
 
 TODO:

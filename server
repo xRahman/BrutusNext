@@ -15,4 +15,4 @@
 # Options:
 #   -p, --port ... Port to listen to telnet (default is 4443).
 
-node --harmony_rest_parameters ./build/BrutusNext.js  "$@"
+node --harmony_rest_parameters --harmony_proxies ./build/BrutusNext.js  "$@"
