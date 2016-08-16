@@ -1,3 +1,6 @@
+IDEA: Konstruktor Entity bude vracet 'new Proxy()', takže nejpůjde mít
+  nezaproxynovanou entitu.
+
 Pozn.: Accounty se mi savují postaru do /Accounts/Rahman.json, což je nakonec
   asi dobře. Každopádně to chce zkontrolovat.
 
