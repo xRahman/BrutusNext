@@ -188,15 +188,104 @@ export class Server
   }
 }
 
-class Handler
+// -------------- TEST ----------------------
+
+
+class InvalidFunctionProxyHandler
+{
+  /// Note: It's possible that it will be necessary to implement some
+  ///   of commented-out handlers in the future, so I'll let them be here.
+
+  //// A trap for Object.getPrototypeOf.
+  //public getPrototypeOf(target)
+  //{
+  //}
+
+  //// A trap for Object.setPrototypeOf.
+  //public setPrototypeOf(target)
+  //{
+  //}
+
+  //// A trap for Object.isExtensible.
+  //public isExtensible(target)
+  //{
+  //}
+
+  //// A trap for Object.preventExtensions.
+  //public preventExtensions(target)
+  //{
+  //}
+
+  //// A trap for Object.getOwnPropertyDescriptor.
+  //public getOwnPropertyDescriptor(target)
+  //{
+  //}
+
+  //// A trap for Object.defineProperty.
+  //public defineProperty(target)
+  //{
+  //}
+
+  //// A trap for the in operator.
+  //public has(target)
+  //{
+  //}
+
+  // A trap for getting property values.
+  public get(target: any, property: any): any
+  {
+    // If someone calls 'toString()' on us.
+    if (property === "toString")
+      return function() { return "[InvalidFunction]"; }
+
+    console.log("InvalidFunctionProxyHandler.get trap triggered for property: "
+      + property);
+
+    return this;
+  }
+
+  // A trap for setting property values.
+  public set(target: any, property: any, value: any, receiver: any): boolean
+  {
+    console.log("InvalidFunctionProxyHandler.set trap triggered for property: "
+      + property);
+
+    return true;
+  }
+
+
+  //// A trap for the delete operator.
+  //public deleteProperty(target)
+  //{
+  //}
+
+  //// A trap for Object.getOwnPropertyNames.
+  //public ownKeys(target)
+  //{
+  //}
+
+  // A trap for a function call.
+  public apply(target, thisArg, argumentsList)
+  {
+    console.log("InvalidFunctionProxyHandler.apply trap triggered");
+
+    return this;
+  }
+
+  //// A trap for the new operator.
+  //public construct(target)
+  //{
+  //}
+}
+
+class EntityProxyHandler
 {
   public entity;
 
+  // A trap for setting property values.
   public set(target: any, property: any, value: any, receiver: any): boolean
   {
-    /*
-    return Reflect.set(this.entity, property, value, receiver);
-    */
+    console.log("Set trap triggered for property: " + property);
 
     if (this.entity !== null)
       this.entity[property] = value;
@@ -206,15 +295,26 @@ class Handler
     return true;
   }
 
+  // A trap for getting property values.
   public get(target: any, property: any)
   {
+    console.log("Get trap triggered for property: " + property);
+
     if (this.entity !== null)
+    {
       return this.entity[property];
+    }
     else
+    {
       console.log("Cteni ze smazane entity!");
-    /*
-    Reflect.get(this.entity, property);
-    */
+
+      /*
+      return function() { };
+      */
+      let invalidValueProxyHandler = new InvalidFunctionProxyHandler();
+
+      return new Proxy(() => { }, invalidValueProxyHandler);
+    }
   }
 }
 
@@ -224,23 +324,36 @@ var Proxy = require('harmony-proxy');
 
 function test()
 {
-  let entity1 = { x: 1 };
-  let entity2 = { x: 2 };
-  let handler = new Handler();
+  let entity1 =
+  {
+    x: 1,
+    fce: function() { console.log("fce entity1"); }
+  };
+
+  let entity2 =
+  {
+    x: 2,
+    fce: function() { console.log("fce entity2"); }
+  };
+
+  let handler = new EntityProxyHandler();
 
   let proxy = new Proxy({}, handler);
 
   handler.entity = entity1;
 
   console.log("Proxy1.x = " + proxy.x);
+  proxy.fce();
 
   handler.entity = null;
 
   console.log("Proxy_null.x = " + proxy.x);
+  proxy.fce();
 
   proxy.y = 13;
 
   handler.entity = entity2;
 
   console.log("Proxy2.x = " + proxy.x);
+  proxy.fce();
 }
