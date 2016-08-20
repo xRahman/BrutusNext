@@ -48,6 +48,13 @@ export class Entity extends AutoSaveableObject
 
   private id: EntityId = null;
 
+  /*
+  constructor(handler: EntityProxyHandler)
+  {
+    super();
+  }
+  */
+
   // --------------- Public accessors -------------------
 
   public getId() { return this.id; }

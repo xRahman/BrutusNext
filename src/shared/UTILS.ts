@@ -22,7 +22,7 @@ export function getTrimmedStackTrace(): string
   // Now we cut off first three lines from tmpErr.stack string.
   //   First line contains just: 'Error:' which we don't need.
   //   Second line contains name and line of ASSERT() function.
-  //   Second line contains name and line of getTrimmedStackTrace() function.
+  //   Third line contains name and line of getTrimmedStackTrace() function.
   //   By second and third line we trim stack trace to begin on the line where
   // assertion actually failed, which is exacly what user needs to see.
 
