@@ -57,10 +57,8 @@ export function ASSERT(condition: boolean, message: string)
 {
   if (condition === false)
   {
-    let stackTrace = getTrimmedStackTrace();
-
     let errorMsg = "Assertion failed: '" + message + "'" + "\n"
-      + stackTrace;
+      + getTrimmedStackTrace();
 
     Mudlog.log(errorMsg, Mudlog.msgType.ASSERT, AdminLevels.CREATOR);
   }

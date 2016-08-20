@@ -21,12 +21,15 @@ export class Mudlog
 {
   public static msgType =
   {
-    ASSERT:               "ASSERT",
-    ASSERT_FATAL:         "ASSERT FATAL",
-    SYSTEM_INFO:          "SYSTEM INFO",
-    SYSTEM_ERROR:         "SYSTEM ERROR",
-    SCRIPT_COMPILE_ERROR: "SCRIPT COMPILE ERROR",
-    SCRIPT_RUNTIME_ERROR: "SCRIPT RUNTIME ERROR"
+    ASSERT:                  "ASSERT",
+    ASSERT_FATAL:            "ASSERT FATAL",
+    SYSTEM_INFO:             "SYSTEM INFO",
+    SYSTEM_ERROR:            "SYSTEM ERROR",
+    SCRIPT_COMPILE_ERROR:    "SCRIPT COMPILE ERROR",
+    SCRIPT_RUNTIME_ERROR:    "SCRIPT RUNTIME ERROR",
+    INVALID_PROPERTY_ACCESS: "INVALID_PROPERTY_ACCESS",
+    INVALID_ENTITY_ACCESS:   "INVALID_ENTITY_ACCESS",
+    INVALID_VARIABLE_ACCESS: "INVALID_VARIABLE_ACCESS"
   }
 
   // Outputs message to log file. Also sends it to online immortals

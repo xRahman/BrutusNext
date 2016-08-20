@@ -1,3 +1,5 @@
+TODO: Odchytavat pristup na neexistujici property.
+
 IDEA: Konstruktor Entity bude vracet 'new Proxy()', takže nejpůjde mít
   nezaproxynovanou entitu.
 
