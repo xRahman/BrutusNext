@@ -49,9 +49,38 @@ export class Entity extends AutoSaveableObject
   private id: EntityId = null;
 
   /*
-  constructor(handler: EntityProxyHandler)
+  Mozna spis jinak:
+  - parametrem konstruktoru bude id.
+      Kdyz dostanu id (nebude undefined), tak to znamena, ze se budu
+    pod timhle idckem loadovat.
+      Kydz id nedostanu, tak se vytvari nova entita.
+  - hmm, pujde to takhle, kdyz se volaji konstruktory dynamickych class?
+
+  constructor(id: string)
   {
     super();
+
+    let entityProxy = null;
+
+    if (id === undefined)
+    {
+      // We are creating a new instance of entity. A new id will be generated.
+      this.id = null;
+
+      // This will generate a new id and set is as this.id;
+      entityProxy = Server.entityManager.registerNewEntity(this);
+    }
+    else
+    {
+      // We are loading an existing entity. Existing id will be used.
+      this.id = id;
+
+      entityProxy = Server.entityManager.registerExistingEntity(this);
+    }
+
+    // Constructor of Entity dosn't return the entity but rather a javascript
+    // proxy object through which the entity is accessed.
+    return entityProxy;
   }
   */
 

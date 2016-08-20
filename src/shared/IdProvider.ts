@@ -35,6 +35,7 @@ export class IdProvider
   // Number of issued ids in this boot.
   private lastIssuedId = 0;
 
+  /*
   // Hashmap<[ string, EntityId ]>
   //   Key: string id
   //   Value: entityId
@@ -49,11 +50,28 @@ export class IdProvider
   // dellocated along with it's entity.
   ///private ids = new WeakMap();
   private ids = new Map();
+  */
 
   constructor(private timeOfBoot: Date) { }
 
   // ---------------- Public methods --------------------
 
+  private generateId()
+  {
+    // Increment lastIssuedId first so we start with 1 (initial value is 0).
+    this.lastIssuedId++;
+
+    // String id consists of radix-36 representation of lastIssuedId
+    // and a radix-36 representation of current boot timestamp
+    // (in miliseconds from the start of computer age) separated by dash ('-').
+    // (radix 36 is used because it's a maximum radix toString() allows to use
+    // and thus it leads to the shortest possible string representation of id)
+    return this.lastIssuedId.toString(36)
+      + '-'
+      + this.timeOfBoot.getTime().toString(36);
+  }
+
+  /*
   public createId(entity: Entity): EntityId
   {
     this.commonAddEntityChecks(entity);
@@ -97,9 +115,11 @@ export class IdProvider
   {
     return this.ids.has(stringId);
   }
+  */
 
   // --------------- Private methods -------------------
 
+  /*
   private generateId(entity: Entity): EntityId
   {
     // Increment lastIssuedId first so we start with 1 (initial value is 0).
@@ -150,4 +170,5 @@ export class IdProvider
       "Attempt to add entity to entityManager that is not inherited from"
       + " class Entity");
   }
+  */
 }
