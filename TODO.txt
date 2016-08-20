@@ -1,7 +1,31 @@
-TODO: Odchytavat pristup na neexistujici property.
+TODO: EntityManager.proxyHandler by mozna nemuselo bejt pole (ale mapa).
 
-IDEA: Konstruktor Entity bude vracet 'new Proxy()', takže nejpůjde mít
-  nezaproxynovanou entitu.
+TODO: Vytvořit modul EntityManager (again ;-))
+TODO: Konstruktor Entity by měl vracet Proxy.
+  IDEA: Konstruktor Entity bude vracet 'new Proxy()', takže nejpůjde mít
+    nezaproxynovanou entitu.
+TODO: Sebrat IdProvideru funkcionalitu na trackování idček.
+  [done]
+TODO: Předělat IdListy na EntityListy.
+TODO: Ošetřit savování referencí na entity v SaveableObjectu.
+  - musí se savnout Id záznam místo entity.
+  - při loadu se zase jen načte Id záznam
+    - možná to bude znamenat, že entity proxy musí umět ještě jeden stav
+      (kromě entity = null). Nebo možná prostě jen pamatovat si idčko
+      (protože EntityProxyHandler teď vlastně slouží jako původní class Id).
+
+TODO: Odchytavat pristup na neexistujici property.
+[done]
+
+
+TODO: Při loadu game entity kontrolovat, že savnutá 'location' (její stringové
+  idčko) odpovídá tomu, do čeho entitu loaduju (stejné stringové idčko).
+  - pokud neodpovídá, tak odmítnout entitu přiřadit
+    (Tohle ošetřuje situaci, kdy se jeden player savne, dá item druhému
+    playerovi, ten se savne a následně spadne mud. Tomu prvnímu to při loadu
+    item nedá, protože nebude sedět location. Tomu druhému load projde.
+    - to samé platí i pro restorování ze zálohy.)
+
 
 Pozn.: Accounty se mi savují postaru do /Accounts/Rahman.json, což je nakonec
   asi dobře. Každopádně to chce zkontrolovat.
@@ -1553,8 +1577,8 @@ Využití proxy:
     - Vytvoří se nový objekt. Dotyčný má stále referenci na ten smazaný
 
     Dotyčný zkusí na referenci přistoupit
-    - Proxy checkne hashmapu, zjistí, že objekt byl znovu vytvořený, takže přesměruje
-      interní referenci na nový objekt
+    - Proxy checkne hashmapu, zjistí, že objekt byl znovu vytvořený, takže
+      přesměruje interní referenci na nový objekt
       (pro dotyčného se to tváří, jako kdyby objekt stále žil)
 
 

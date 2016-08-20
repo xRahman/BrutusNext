@@ -33,7 +33,9 @@
     <TypeScriptCompile Include="src\game\characters\CharacterFlags.ts" />
     <TypeScriptCompile Include="src\game\commands\CommandInterpretter.ts" />
     <TypeScriptCompile Include="src\game\DynamicClasses.ts" />
+    <TypeScriptCompile Include="src\shared\EntityManager.ts" />
     <TypeScriptCompile Include="src\shared\EntityProxyHandler.ts" />
+    <TypeScriptCompile Include="src\shared\InvalidValueProxyHandler.ts" />
     <TypeScriptCompile Include="src\shared\NamedEntity.ts" />
     <TypeScriptCompile Include="src\game\ScriptableEntity.ts" />
     <TypeScriptCompile Include="src\shared\ASSERT_FATAL.ts" />
