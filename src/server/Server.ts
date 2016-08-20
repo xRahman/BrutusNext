@@ -15,7 +15,8 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
-import {IdProvider} from '../shared/IdProvider';
+//import {IdProvider} from '../shared/IdProvider';
+import {EntityManager} from '../shared/EntityManager';
 import {FileSystem} from '../shared/fs/FileSystem';
 import {FlagNamesManager} from '../shared/FlagNamesManager';
 import {Connection} from '../server/Connection';
@@ -51,12 +52,10 @@ export class Server
   private accounts = new AccountList();
 
   // -------- managers --------
-  // Unlike idLists, managers store actual instances, not just entity ids.
+  // Unlike idLists, managers store actual instances, not just references.
 
-  // Contains ids of all entities (accounts, connections, all game entities).
-  // Each id stores it's own entity instance as id.entity (accessible
-  // by id.getEntity()).
-  private idProvider = new IdProvider(this.timeOfBoot);
+  // Contains all entities (accounts, connections, all game entities).
+  private entityManager = new EntityManager(this.timeOfBoot);
 
   // flagNamesManager is in Server instead of Game, because flags are needed
   // even outside of game (for example account flags).
@@ -99,9 +98,9 @@ export class Server
     return Server.getInstance().flagNamesManager;
   }
 
-  public static get idProvider()
+  public static get entityManager()
   {
-    return Server.getInstance().idProvider;
+    return Server.getInstance().entityManager;
   }
 
   static get DEFAULT_TELNET_PORT() { return 4443; }
@@ -194,200 +193,6 @@ export class Server
 
 // -------------- TEST ----------------------
 
-/*
-class InvalidValueProxyHandler
-{
-  /// Note: It's possible that it will be necessary to implement some
-  ///   of commented-out handlers in the future, so I'll let them be here.
-
-  //// A trap for Object.getPrototypeOf.
-  //public getPrototypeOf(target)
-  //{
-  //}
-
-  //// A trap for Object.setPrototypeOf.
-  //public setPrototypeOf(target)
-  //{
-  //}
-
-  //// A trap for Object.isExtensible.
-  //public isExtensible(target)
-  //{
-  //}
-
-  //// A trap for Object.preventExtensions.
-  //public preventExtensions(target)
-  //{
-  //}
-
-  //// A trap for Object.getOwnPropertyDescriptor.
-  //public getOwnPropertyDescriptor(target)
-  //{
-  //}
-
-  //// A trap for Object.defineProperty.
-  //public defineProperty(target)
-  //{
-  //}
-
-  //// A trap for the in operator.
-  //public has(target)
-  //{
-  //}
-
-  // A trap for getting property values.
-  public get(target: any, property: any): any
-  {
-    // If someone calls 'toString()' on us.
-    if (property === "toString")
-      return function() { return "[InvalidFunction]"; }
-
-    console.log("InvalidFunctionProxyHandler.get trap triggered for property: "
-      + property);
-
-    return this;
-  }
-
-  // A trap for setting property values.
-  public set(target: any, property: any, value: any, receiver: any): boolean
-  {
-    console.log("InvalidFunctionProxyHandler.set trap triggered for property: "
-      + property);
-
-    return true;
-  }
-
-
-  //// A trap for the delete operator.
-  //public deleteProperty(target)
-  //{
-  //}
-
-  //// A trap for Object.getOwnPropertyNames.
-  //public ownKeys(target)
-  //{
-  //}
-
-  // A trap for a function call.
-  public apply(target, thisArg, argumentsList)
-  {
-    console.log("InvalidFunctionProxyHandler.apply trap triggered");
-
-    return this;
-  }
-
-  //// A trap for the new operator.
-  //public construct(target)
-  //{
-  //}
-}
-*/
-
-/*
-class EntityProxyHandler
-{
-  public entity;
-
-  /// Note: It's possible that it will be necessary to implement some
-  ///   of commented-out handlers in the future, so I'll let them be here.
-
-  //// A trap for Object.getPrototypeOf.
-  //public getPrototypeOf(target)
-  //{
-  //}
-
-  //// A trap for Object.setPrototypeOf.
-  //public setPrototypeOf(target)
-  //{
-  //}
-
-  //// A trap for Object.isExtensible.
-  //public isExtensible(target)
-  //{
-  //}
-
-  //// A trap for Object.preventExtensions.
-  //public preventExtensions(target)
-  //{
-  //}
-
-  //// A trap for Object.getOwnPropertyDescriptor.
-  //public getOwnPropertyDescriptor(target)
-  //{
-  //}
-
-  //// A trap for Object.defineProperty.
-  //public defineProperty(target)
-  //{
-  //}
-
-  //// A trap for the in operator.
-  //public has(target)
-  //{
-  //}
-
-  // A trap for getting property values.
-  public get(target: any, property: any)
-  {
-    console.log("Get trap triggered for property: " + property);
-
-    if (this.entity !== null)
-    {
-      return this.entity[property];
-    }
-    else
-    {
-      console.log("Cteni ze smazane entity!");
-
-      // TODO: N?jak poznat, co je funkce a co ne
-      // (a podle toho vracet bu? function proxy nebo object proxy).
-      /// A nebo možná vždycky vracet function proxy - dají se na ní
-      /// zatrapovat p?ístupy stejn? jako na nonfunction proxy (nejspíš).
-
-      
-      ///return function() { };
-
-      let invalidValueProxyHandler = new InvalidValueProxyHandler();
-
-      /// TODO: Nevracet new Proxy, ale statickou promennou s touhle proxy.
-      return new Proxy(() => { }, invalidValueProxyHandler);
-    }
-  }
-
-  // A trap for setting property values.
-  public set(target: any, property: any, value: any, receiver: any): boolean
-  {
-    console.log("Set trap triggered for property: " + property);
-
-    if (this.entity !== null)
-      this.entity[property] = value;
-    else
-      console.log("Zapis na smazanou entitu!");
-
-    return true;
-  }
-
-  //// A trap for the delete operator.
-  //public deleteProperty(target)
-  //{
-  //}
-
-  //// A trap for Object.getOwnPropertyNames.
-  //public ownKeys(target)
-  //{
-  //}
-
-  //// A trap for a function call.
-  //public apply(target, thisArg, argumentsList)
-  //{
-  //}
-
-  //// A trap for the new operator.
-  //public construct(target)
-  //{
-  //}
-}
-*/
 
 /// Tohle je potreba jen na to, aby to prelozilo stare harmony api
 /// na nove ES6 API (tj. aby šlo zavolat new Proxy(target, handler);

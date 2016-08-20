@@ -70,8 +70,7 @@ export class SaveableObject extends AttributableClass
         "Attempt to createInstance() of unknown type"
         + " '" + param.className + "'. You probably forgot to create"
         + " or assign a prototype to your game entity or add a new"
-        + " class to DynamicClasses.ts."
-        + " Instance is not created"))
+        + " class to DynamicClasses.ts. Instance is not created"))
       return null;
 
     // This accesses a class constructor by it's name. Consctructor of
