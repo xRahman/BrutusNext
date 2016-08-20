@@ -29,18 +29,25 @@
 'use strict';
 
 import {getTrimmedStackTrace} from '../shared/UTILS';
+import {ASSERT} from '../shared/ASSERT';
+import {Entity} from '../shared/Entity';
+import {InvalidValueProxyHandler} from '../shared/InvalidValueProxyHandler';
+import {Server} from '../server/Server';
 import {AdminLevels} from '../server/AdminLevels';
 import {Mudlog} from '../server/Mudlog';
 
-// Module 'harmony-proxy' translates new ES6 Proxy API to old
-// (harmony) proxy API. So basically it allows us to call
-// 'new Proxy(target, handler);' even though ES6 proxies are
-// not imlemented in node.js yet.
-let Proxy = require('harmony-proxy');
-
 export class EntityProxyHandler
 {
-  public entity = null;
+  public entity: Entity = null;
+  public id: string = null;
+
+  // ---------------- Public methods --------------------
+
+  public invalidate()
+  {
+    this.entity = null;
+    this.id = null;
+  }
 
   // -------------------  Traps -------------------------
   /// Note: It's possible that it will be necessary to implement some
@@ -84,8 +91,19 @@ export class EntityProxyHandler
   // A trap for getting property values.
   public get(target: any, property: any)
   {
+    // This hack traps calls of entity.isValid() method.
+    if (property === "isValid")
+      // Here we don't return this.isEntityValid() but the function
+      // itself. That's because if function call is trapped by proxy
+      // handler, first the function is requested by 'get' trap and
+      // than the returned function is called. It means that someone
+      // else will call the function we return here, we are not supposed
+      // to call it ourselves.
+      return this.isEntityValid;
+
     // Does the referenced entity exist?
-    if (this.entity === null)
+    // (isEntityValid() updates this.entity if it's possible)
+    if (this.isEntityValid() === false)
     {
       Mudlog.log
       (
@@ -112,26 +130,7 @@ export class EntityProxyHandler
       return InvalidValueProxyHandler.invalidVariable;
     }
 
-    let value = this.entity[property];
-
-    // Are we accessing a valid property?
-    if (value === undefined)
-    {
-      Mudlog.log
-      (
-        "Attempt to read an undefined property '" + property + "'"
-        + "of entity " + this.entity.getErrorIdString(),
-        Mudlog.msgType.INVALID_PROPERTY_ACCESS,
-        AdminLevels.IMMORTAL
-      );
-
-      // 'invalidVariable' that traps all access to it and reports
-      // it as invalid.
-      return InvalidValueProxyHandler.invalidVariable;
-    }
-
-    // All checks passed ok.
-    return value;
+    return this.readProperty(property);
   }
 
   // A trap for setting property values.
@@ -142,7 +141,9 @@ export class EntityProxyHandler
     // (it will be created by doing it). If it should ever get forbidden,
     // here is the place to do it.
 
-    if (this.entity === null)
+    // Does the referenced entity exist?
+    // (isEntityValid() updates this.entity if it's possible)
+    if (this.isEntityValid() === false)
     {
       Mudlog.log
       (
@@ -187,138 +188,72 @@ export class EntityProxyHandler
   //public construct(target)
   //{
   //}
-}
 
-// ---------------------- private module stuff ------------------------------- 
+  // --------------- Private methods -------------------
 
-// This handler of javascript Proxy object is used to emulate 'invalid value'
-// variable. Access to these variables is trapped and logged.
-class InvalidValueProxyHandler
-{
-  public static invalidVariable = new Proxy
-  (
-    // 'invalidVariable' is a function proxy
-    // ('() => { }' is an empty function object).
-    () => { },
-    // Access to properties is trapped by InvalidValueProxyHandler class.
-    new InvalidValueProxyHandler()
-  );
-
-  // -------------------  Traps -------------------------
-  /// Note: It's possible that it will be necessary to implement some
-  ///   of commented-out handlers in the future, so I'll let them be here.
-
-  //// A trap for Object.getPrototypeOf.
-  //public getPrototypeOf(target)
-  //{
-  //}
-
-  //// A trap for Object.setPrototypeOf.
-  //public setPrototypeOf(target)
-  //{
-  //}
-
-  //// A trap for Object.isExtensible.
-  //public isExtensible(target)
-  //{
-  //}
-
-  //// A trap for Object.preventExtensions.
-  //public preventExtensions(target)
-  //{
-  //}
-
-  //// A trap for Object.getOwnPropertyDescriptor.
-  //public getOwnPropertyDescriptor(target)
-  //{
-  //}
-
-  //// A trap for Object.defineProperty.
-  //public defineProperty(target)
-  //{
-  //}
-
-  //// A trap for the in operator.
-  //public has(target)
-  //{
-  //}
-
-  // A trap for getting property values.
-  public get(target: any, property: any): any
+  private readProperty(property: string)
   {
-    // If someone calls 'toString()' on us.
-    if (property === "toString")
-      return function() { return "<InvalidVariable>"; }
+    let value = this.entity[property];
 
-    Mudlog.log
-    (
-      "Attempt to read property '" + property + "' of an invalid variable\n"
-      + getTrimmedStackTrace(),
-      Mudlog.msgType.INVALID_VARIABLE_ACCESS,
-      AdminLevels.IMMORTAL
-    );
+    // Are we accessing a valid property?
+    if (value === undefined)
+    {
+      Mudlog.log
+      (
+        "Attempt to read an undefined property '" + property + "'"
+        + "of entity " + this.entity.getErrorIdString(),
+        Mudlog.msgType.INVALID_PROPERTY_ACCESS,
+        AdminLevels.IMMORTAL
+      );
 
-    // Reading a property of invalid variable returns invalid variable.
-    return InvalidValueProxyHandler.invalidVariable;
+      // 'invalidVariable' that traps all access to it and reports
+      // it as invalid.
+      return InvalidValueProxyHandler.invalidVariable;
+    }
+
+    return value;
   }
 
-  // A trap for setting property values.
-  public set(target: any, property: any, value: any, receiver: any): boolean
+  private isEntityValid(): boolean
   {
-    console.log("InvalidFunctionProxyHandler.set trap triggered for property: "
-      + property);
+    ASSERT(this.id !== null,
+      "Null stringId in EntityProxyHandler");
 
-    Mudlog.log
-    (
-      "Attempt to write to property '" + property + "'"
-      + " of an invalid variable\n"
-      + getTrimmedStackTrace(),
-      Mudlog.msgType.INVALID_VARIABLE_ACCESS,
-      AdminLevels.IMMORTAL
-    );
+    if (this.entity === null)
+    {
+      // If we don't have a valid entity reference, we will
+      // ask EntityManager if the entity exists (this can
+      // happen for example if player quits - so our reference
+      // is set to null - and then logs back again. In that case
+      // our reference to entity is still null but entity exists
+      // in entityManager, so we have to ask for it).
+      return this.updateEnity();
+    }
 
-    // Return value of 'set' trap noramlly indicates if writing succeeded.
-    // We are not, however, going to return false on failure, because that
-    // would throw a TypeError exception, which is exactly what we are trying
-    // to prevent here.
-    //   The purpose of proxyfying invalid variables is to report errors
-    // ourselves and handle them in such a way that they won't crash the game.
     return true;
   }
 
-
-  //// A trap for the delete operator.
-  //public deleteProperty(target)
-  //{
-  //}
-
-  //// A trap for Object.getOwnPropertyNames.
-  //public ownKeys(target)
-  //{
-  //}
-
-  // A trap for a function call.
-  public apply(target, thisArg, argumentsList)
+  // Requests current reference to entity from Server.entityManager
+  // and updates this.reference with a new value.
+  //   Returns false if entity is unavailable.
+  private updateEnity(): boolean
   {
-    Mudlog.log
-    (
-      "Attempt to call an invalid function",
+    if (this.id === null)
+      // If we don't have a string id, there is no way we can
+      // update our entity reference.
+      return false;
 
-      ///   Calling getTrimmedStackTrace() had been causing
-      ///  recursion so I had to remove it from here.
-      //"Attempt to call an invalid function\n"
-      //+ getTrimmedStackTrace(),
+    //let entity = Server.entityManager.get(this.id);
+    let entity = Server.entityManager.updateReference(this.id, this);
 
-      Mudlog.msgType.INVALID_VARIABLE_ACCESS,
-      AdminLevels.IMMORTAL
-    );
+    if (entity !== undefined)
+    {
+      // Update our internal reference if entity does exist.
+      this.entity = entity;
 
-    // Calling invalid variable as a function returns invalid variable.
-    return InvalidValueProxyHandler.invalidVariable;
+      return true;
+    }
+
+    return false;
   }
-
-  //// A trap for the new operator.
-  //public construct(target)
-  //{
-  //}
 }
