@@ -19,7 +19,7 @@ import {IdProvider} from '../shared/IdProvider';
 import {FileSystem} from '../shared/fs/FileSystem';
 import {FlagNamesManager} from '../shared/FlagNamesManager';
 import {Connection} from '../server/Connection';
-import {Mudlog} from '../server/Mudlog';
+///import {Mudlog} from '../server/Mudlog';
 import {IdList} from '../shared/IdList';
 import {AccountList} from '../server/AccountList';
 import {Game} from '../game/Game';
@@ -37,14 +37,14 @@ export class Server
 
   private timeOfBoot = new Date();
 
-  // -- singleton instances ---
+  // --- singleton instances ---
   // (There is only one such instance per server.)
 
   private game = null;
   private telnetServer = new TelnetServer(Server.DEFAULT_TELNET_PORT);
   private httpServer = new HttpServer(Server.DEFAULT_HTTP_PORT);
   
-  // -------- idLists ---------
+  // --------- idLists ---------
   // IdLists contain entity id's.
 
   private connections = new IdList();
@@ -144,15 +144,18 @@ export class Server
 
     this.game = new Game();
 
+    /*
     // If 'data' directory doesn't exist at all, create and save a new world.
     if (!FileSystem.existsSync("./data/"))
     {
+    */
       // Flag flagNamesManager as ready without loading from file
       // (there is nowhere to load it from so we will just start
       //  with empty instance).
       this.flagNamesManager.ready = true;
 
       await this.game.createDefaultWorld();
+    /*
     }
     else
     {
@@ -162,6 +165,7 @@ export class Server
       // Load the game.
       await this.game.load();
     }
+    */
 
     this.startTelnetServer(telnetPort);
     this.startHttpServer();
@@ -190,8 +194,8 @@ export class Server
 
 // -------------- TEST ----------------------
 
-
-class InvalidFunctionProxyHandler
+/*
+class InvalidValueProxyHandler
 {
   /// Note: It's possible that it will be necessary to implement some
   ///   of commented-out handlers in the future, so I'll let them be here.
@@ -277,23 +281,50 @@ class InvalidFunctionProxyHandler
   //{
   //}
 }
+*/
 
+/*
 class EntityProxyHandler
 {
   public entity;
 
-  // A trap for setting property values.
-  public set(target: any, property: any, value: any, receiver: any): boolean
-  {
-    console.log("Set trap triggered for property: " + property);
+  /// Note: It's possible that it will be necessary to implement some
+  ///   of commented-out handlers in the future, so I'll let them be here.
 
-    if (this.entity !== null)
-      this.entity[property] = value;
-    else
-      console.log("Zapis na smazanou entitu!");
+  //// A trap for Object.getPrototypeOf.
+  //public getPrototypeOf(target)
+  //{
+  //}
 
-    return true;
-  }
+  //// A trap for Object.setPrototypeOf.
+  //public setPrototypeOf(target)
+  //{
+  //}
+
+  //// A trap for Object.isExtensible.
+  //public isExtensible(target)
+  //{
+  //}
+
+  //// A trap for Object.preventExtensions.
+  //public preventExtensions(target)
+  //{
+  //}
+
+  //// A trap for Object.getOwnPropertyDescriptor.
+  //public getOwnPropertyDescriptor(target)
+  //{
+  //}
+
+  //// A trap for Object.defineProperty.
+  //public defineProperty(target)
+  //{
+  //}
+
+  //// A trap for the in operator.
+  //public has(target)
+  //{
+  //}
 
   // A trap for getting property values.
   public get(target: any, property: any)
@@ -308,19 +339,63 @@ class EntityProxyHandler
     {
       console.log("Cteni ze smazane entity!");
 
-      /*
-      return function() { };
-      */
-      let invalidValueProxyHandler = new InvalidFunctionProxyHandler();
+      // TODO: N?jak poznat, co je funkce a co ne
+      // (a podle toho vracet bu? function proxy nebo object proxy).
+      /// A nebo možná vždycky vracet function proxy - dají se na ní
+      /// zatrapovat p?ístupy stejn? jako na nonfunction proxy (nejspíš).
 
+      
+      ///return function() { };
+
+      let invalidValueProxyHandler = new InvalidValueProxyHandler();
+
+      /// TODO: Nevracet new Proxy, ale statickou promennou s touhle proxy.
       return new Proxy(() => { }, invalidValueProxyHandler);
     }
   }
+
+  // A trap for setting property values.
+  public set(target: any, property: any, value: any, receiver: any): boolean
+  {
+    console.log("Set trap triggered for property: " + property);
+
+    if (this.entity !== null)
+      this.entity[property] = value;
+    else
+      console.log("Zapis na smazanou entitu!");
+
+    return true;
+  }
+
+  //// A trap for the delete operator.
+  //public deleteProperty(target)
+  //{
+  //}
+
+  //// A trap for Object.getOwnPropertyNames.
+  //public ownKeys(target)
+  //{
+  //}
+
+  //// A trap for a function call.
+  //public apply(target, thisArg, argumentsList)
+  //{
+  //}
+
+  //// A trap for the new operator.
+  //public construct(target)
+  //{
+  //}
 }
+*/
 
 /// Tohle je potreba jen na to, aby to prelozilo stare harmony api
-/// na nove ES6 API (tj. aby �lo zavolat new Proxy(target, handler);
+/// na nove ES6 API (tj. aby šlo zavolat new Proxy(target, handler);
 var Proxy = require('harmony-proxy');
+
+
+import {EntityProxyHandler} from '../shared/EntityProxyHandler';
+
 
 function test()
 {
@@ -340,15 +415,31 @@ function test()
 
   let proxy = new Proxy({}, handler);
 
+  /*
   handler.entity = entity1;
 
   console.log("Proxy1.x = " + proxy.x);
   proxy.fce();
+  */
 
   handler.entity = null;
 
+  proxy.fce();
+  proxy.y = 13;
+  let tmp = proxy.x;
+  tmp = proxy.i;
+
+
+  /*
   console.log("Proxy_null.x = " + proxy.x);
   proxy.fce();
+
+  let tmp = proxy.x;
+  console.log("Tmp: " + tmp);
+  tmp();
+  tmp.z = 11;
+  let tmp2 = tmp;
+  console.log("Tmp2: " + tmp);
 
   proxy.y = 13;
 
@@ -356,4 +447,5 @@ function test()
 
   console.log("Proxy2.x = " + proxy.x);
   proxy.fce();
+  */
 }

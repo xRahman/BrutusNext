@@ -57,10 +57,8 @@ export function ASSERT_FATAL(condition: boolean, message: string)
 {
   if (condition === false)
   {
-    let stackTrace = getTrimmedStackTrace();
-
     let errorMsg = "Fatal assertion failed: '" + message + "'" + "\n"
-      + stackTrace;
+      + getTrimmedStackTrace();
 
     Mudlog.log(errorMsg, Mudlog.msgType.ASSERT_FATAL, AdminLevels.IMMORTAL);
 
