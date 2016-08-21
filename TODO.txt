@@ -1,4 +1,10 @@
+TODO: V SaveableObjectu (a možná i jinde) předávám do vnořených volání
+ hromadu stejných parametrů.
+ - zabalit je do objektu 'param', dost se tím ten kód zpřehlední.
+
 TODO: EntityManager.proxyHandler by mozna nemuselo bejt pole (ale mapa).
+  - nakonec to bude Set
+[done]
 
 TODO: Vytvořit modul EntityManager (again ;-))
 TODO: Konstruktor Entity by měl vracet Proxy.
@@ -13,6 +19,7 @@ TODO: Ošetřit savování referencí na entity v SaveableObjectu.
     - možná to bude znamenat, že entity proxy musí umět ještě jeden stav
       (kromě entity = null). Nebo možná prostě jen pamatovat si idčko
       (protože EntityProxyHandler teď vlastně slouží jako původní class Id).
+TODO: Přetypovat idčka z Id na string.
 
 TODO: Odchytavat pristup na neexistujici property.
 [done]
@@ -52,13 +59,14 @@ TODO: Opravit AttributableClass
 TODO: Opravdu to udělat, zní to rozumně.
 BIG IDEA: Zuršit ASSERTY.
   Místo toho používat:
-    if (condition === false)
-    {
-      ERROR
-      (
-        "message"
-      );
-    }
+
+  if (condition === false)
+  {
+    ERROR
+    (
+      "message"
+    );
+  }
 
   - Ve skutečnosti stejně ty asserty píšu vždycky do podmínek a navíc ten
     zápis if (!ASSERT(condition, "message")) není moc intuitivní.
