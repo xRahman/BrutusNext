@@ -57,9 +57,9 @@ export class Game
     return Server.game.realms;
   }
 
-  public static get worldId()
+  public static get world()
   {
-    return Server.game.worldId;
+    return Server.game.world;
   }
 
   public static get prototypeManager()
@@ -68,16 +68,6 @@ export class Game
   }
 
   // ---------------- Public methods --------------------
-
-  /*
-  public async createDefaultGame()
-  {
-    // Save prototypeManager (so it's empty save file exists).
-    await this.prototypeManager.save();
-
-    await this.createDefaultWorld();
-  }
-  */
 
   // Creates and saves a new default world.
   // (this method sould only be used if you don't have 'data' directory yet)
@@ -93,23 +83,23 @@ export class Game
     this.createWorld
       ({ name: "BrutusNext World", prototype: "BrutusWorld" });
 
-    let world = this.worldId.getEntity({ typeCast: World });
+    // Create system realm.
+    this.world.createSystemRealm();
 
-    // --- System Realm ---
-
+    /*
     // Create a new realm prototype.
     this.prototypeManager.createPrototype
       ({ name: "SystemRealm", ancestor: "Realm" });
 
     // Create realm 'System Realm' based on this prototype and add it to the
     // world.
-    let systemRealmId = world.createRealm
+    let systemRealmId = this.world.createRealm
       ({ name: "System Realm", prototype: "SystemRealm" });
 
     let systemRealm = systemRealmId.getEntity({ typeCast: Realm });
 
     // Remember system realm id for future easy access.
-    world.systemRealmId = systemRealmId;
+    this.world.systemRealmId = systemRealmId;
 
     // --- System Area ---
 
@@ -157,6 +147,7 @@ export class Game
     // Remember system room id for future easy access.
     // (Newly created player characters spawn to this room.)
     world.tutorialRoomId = tutorialRoomId;
+    */
 
     // ---------------------
 
@@ -164,11 +155,12 @@ export class Game
     this.prototypeManager.save();
 
     // Save the world we have just created.
-    world.save();
+    this.world.save();
 
     ////////////////-------------------------------------
     // TEST
 
+    /*
     ///*
     // test savu skriptu
     let scriptCode1 =
@@ -220,6 +212,7 @@ export class Game
     /// Recompile test
     script1.code = scriptCode2;
     script1.compile();
+    */
   }
 
   // Loads initial state of the game from disk.
@@ -227,20 +220,28 @@ export class Game
   {
     // Load prototype data for all prototypes.
     await this.prototypeManager.load();
+
     // Create javascript classes from prototype data (all game entities will
     // be instantiated from these dynamically created prototype classes).
     this.prototypeManager.createClasses();
 
+    /*
+    /// Tohle je blbě - přidělí to worldu nové idčko.
     // 'BrutusWorld' is a prototype for world
     // (it is created by createDefaultWorld()).
-    let world = SaveableObject.createInstance
+    this.world = SaveableObject.createInstance
       ({ className: 'BrutusWorld', typeCast: World });
+    */
+
+    this.world = Server.entityManager.get(null);
 
     // Load current state of world from file.
-    await world.load();
+    await this.world.load();
 
+    /*
     // Remember worldId that we just loaded from file.
     this.worldId = world.getId();
+    */
   }
 
   // -------------- Protected class data ----------------
@@ -268,10 +269,10 @@ export class Game
   // Dynamically creates classes from which game entities are inherited.
   protected prototypeManager = new PrototypeManager();
 
-  // --- Direct links (ids) ---
+  // --- Direct references ---
 
   // There is only one world in the game (at the moment).
-  protected worldId = null;
+  protected world = null;
 
   // --------------- Protected methods ------------------
 
@@ -279,20 +280,16 @@ export class Game
 
   private createWorld(param: { name: string, prototype: string })
   {
-    if (!ASSERT(this.worldId === null,
+    if (!ASSERT(this.world === null,
         "Attempt to add new world when there is already a world. There can"
         + " only be one world per game at the moment. World is not added"))
       return;
 
-    // Dynamic creation of a new instance.
-    let world = SaveableObject.createInstance
-      ({ className: param.prototype, typeCast: World });
+    this.world = Server.entityManager.createEntity(param.prototype);
 
-    if (!ASSERT_FATAL(world !== null, "Failed to create world"))
+    if (!ASSERT_FATAL(this.world !== null, "Failed to create world"))
       return;
 
-    world.name = param.name;
-
-    this.worldId = Server.idProvider.createId(world);
+    this.world.name = param.name;
   }
 }
