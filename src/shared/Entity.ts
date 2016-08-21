@@ -11,6 +11,7 @@ import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {EntityId} from '../shared/EntityId';
 import {SaveableObject} from '../shared/SaveableObject';
 import {AutoSaveableObject} from '../shared/AutoSaveableObject';
+import {Server} from '../server/Server';
 
 /*
 /// TODO: Hmm, takhle asi ne. Bude se to savovat na disk, takze tu asi
@@ -42,11 +43,16 @@ export class Entity extends AutoSaveableObject
   public static State = State;
   */
 
-  public static get ID_PROPERTY() { return 'id'; }
+  ///public static get ID_PROPERTY() { return 'id'; }
+  public static get ENTITY_REFERENCE_CLASS_NAME()
+  {
+    return 'EntityReference';
+  }
 
   // ----------------- Private data ----------------------
 
-  private id: EntityId = null;
+  ///private id: EntityId = null;
+  private id: string = null;
 
   /*
   Mozna spis jinak:
@@ -55,41 +61,48 @@ export class Entity extends AutoSaveableObject
     pod timhle idckem loadovat.
       Kydz id nedostanu, tak se vytvari nova entita.
   - hmm, pujde to takhle, kdyz se volaji konstruktory dynamickych class?
-
+  */
   constructor(id: string)
   {
     super();
-
-    let entityProxy = null;
 
     if (id === undefined)
     {
       // We are creating a new instance of entity. A new id will be generated.
       this.id = null;
-
-      // This will generate a new id and set is as this.id;
-      entityProxy = Server.entityManager.registerNewEntity(this);
     }
     else
     {
       // We are loading an existing entity. Existing id will be used.
       this.id = id;
-
-      entityProxy = Server.entityManager.registerExistingEntity(this);
     }
 
     // Constructor of Entity dosn't return the entity but rather a javascript
     // proxy object through which the entity is accessed.
-    return entityProxy;
+    return Server.entityManager.add(this);
   }
-  */
 
   // --------------- Public accessors -------------------
 
   public getId() { return this.id; }
-  public setId(id: EntityId) { this.id = id; }
+  ///public setId(id: EntityId) { this.id = id; }
+  public setId(id: string) { this.id = id; }
 
   // ---------------- Public methods --------------------
+
+  public saveIdToJsonObject()
+  {
+    let jsonObject =
+    {
+      // No class 'EntityReference' actually exists. When this record
+      // is loaded, an entity proxy is created.
+      className: Entity.ENTITY_REFERENCE_CLASS_NAME,
+      type: this.className,
+      id: this.getId()
+    };
+
+    return jsonObject;
+  }
 
   // Constructs a save directory for an entity of type 'className'
   // by appending it to 'rootDirectory' (which should be something

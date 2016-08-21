@@ -15,12 +15,10 @@
 'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
-//import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
-//import {NamedClass} from '../shared/NamedClass';
+import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {IdProvider} from '../shared/IdProvider';
 import {Entity} from '../shared/Entity';
 import {EntityProxyHandler} from '../shared/EntityProxyHandler';
-//import {EntityId} from '../shared/EntityId';
 
 export class EntityManager
 {
@@ -40,6 +38,95 @@ export class EntityManager
 
   // ---------------- Public methods --------------------
 
+  // If 'id' loaded from JSON already exists in EntityManager,
+  // existing entity proxy is returned. Otherwise an 'invalid'
+  // entity proxy is created and returned.
+  public loadReferenceFromJsonObject
+  (
+    propertyName: string,
+    jsonObject: any,
+    filePath: string
+  )
+  : Entity
+  {
+    ASSERT_FATAL(jsonObject.className === Entity.ENTITY_REFERENCE_CLASS_NAME,
+      "Attempt to load entity reference from invalid JSON object");
+
+    let id = jsonObject.id;
+
+    ASSERT(id !== undefined && id !== null,
+      "Invalid 'id' when loading entity reference"
+      + " '" + propertyName + "' from JSON file "
+      + filePath);
+
+    let type = jsonObject.type;
+
+    ASSERT(type !== undefined && type !== null,
+      "Invalid 'type' when loading entity reference"
+      + " '" + propertyName + "' from JSON file "
+      + filePath);
+
+    let entityRecord = this.entityRecords.get(id);
+
+    // If an entity with this 'id' already exists in hashmap,
+    // just return it's proxy.
+    if (entityRecord !== undefined)
+    {
+      let entityProxy = entityRecord.entityProxy;
+
+      ASSERT(entityProxy !== undefined && entityProxy !== null,
+        "Invalid entity proxy in entity record of entity with id "
+        + id);
+
+      ASSERT(entityProxy.className === type,
+        "Error while loading entity reference"
+        + " '" + propertyName + "' from file "
+        + filePath + ": Property 'type' saved"
+        + " in JSON doesn't match type of existing"
+        + " entity " + entityProxy.getErrorStringId()
+        + " that matches id saved in JSON");
+
+      return entityProxy;
+    }
+
+    // If entity with this 'id' doesn't exist yet, a new proxy will
+    // be created and it's handler's reference to entity will be set
+    // to null.
+    // (When this proxy is accessed, it will automatically ask
+    //  EntityManager if the entity is already awailable.)
+    return this.createInvalidEntityProxy
+    (
+      propertyName,
+      jsonObject,
+      filePath
+    );
+  }
+
+  // Adds an entity to the hashmap under it's id.
+  //   If entity doesn't have an id, a new one will be generated,
+  // otherwise it will be added under it's existing id.
+  //   Returns entity proxy (which should be used instead of entity).
+  public add(entity: Entity)
+  {
+    let id = entity.getId();
+
+    // If entity doesn't have an id, a new one will be generated.
+    if (id === null)
+    {
+      id = this.idProvider.generateId();
+      entity.setId(id);
+    }
+
+    let handler = new EntityProxyHandler();
+    let entityProxy = new Proxy({}, handler);
+    let entityRecord = new EntityRecord(entity, entityProxy, handler);
+
+    // Add newly created entity record to hashmap under entity's string id.
+    this.entityRecords.set(id, entityRecord);
+
+    return entityProxy;
+  }
+
   public updateReference(id: string, handler: EntityProxyHandler)
   {
     let entityRecord: EntityRecord = this.entityRecords.get(id);
@@ -54,10 +141,10 @@ export class EntityManager
     // this old handler to which a new reference will be issued,
     // so we can invalidate the reference when entity is removed
     // from EntityManager again.
-    entityRecord.proxyHandlers.push(handler);
+    entityRecord.addHandler(handler);
 
     // This will return an entity proxy.
-    return entityRecord.getEntity();
+    return entityRecord.getEntityProxy();
   }
 
   // Removes entity from manager but doesn't delete it
@@ -80,40 +167,6 @@ export class EntityManager
     this.entityRecords.delete(entity.getId());
   }
 
-  /*
-  public createId(entity: Entity): EntityId
-  {
-    this.commonAddEntityChecks(entity);
-
-    ASSERT_FATAL(entity.getId() === null,
-      "Attempt to create id for entity " + entity.getErrorIdString()
-      + " which already has an id");
-
-    let id = this.generateId(entity);
-
-    this.idMustNotExist(id);
-
-    // Entity remembers it's own id.
-    entity.setId(id);
-
-    // Insert id to hashmap under it's string id.
-    this.ids.set(id.getStringId(), id);
-
-    return id;
-  }
-
-  public register(id: EntityId)
-  {
-    if (!ASSERT(this.ids.has(id.getStringId()) === false,
-      "Attempt to register id '" + id.getStringId() + "'"
-      + " that is already registered in IdProvider"))
-      return;
-
-    // Insert id to hashmap.
-    this.ids.set(id.getStringId(), id);
-  }
-  */
-
   // Returns entity proxy matching given id.
   // Returns undefined if entity doesn't exist in EntityManager.
   public get(id: string): Entity
@@ -129,46 +182,23 @@ export class EntityManager
 
   // --------------- Private methods -------------------
 
-  /*
-  private generateId(entity: Entity): EntityId
+  private createInvalidEntityProxy
+  (
+    propertyName: string,
+    jsonObject: any,
+    filePath: string
+  )
+  : Entity
   {
-    // Increment lastIssuedId first so we start with 1 (initial value is 0).
-    this.lastIssuedId++;
+    let handler = new EntityProxyHandler();
 
-    let stringId = this.generateStringId();
-    let id = new EntityId(stringId, entity);
+    // This also sets handler.entity to null.
+    handler.loadFromJsonObject(propertyName, jsonObject, filePath);
 
-    return id;
+    let entityProxy = new Proxy({}, handler);
+
+    return entityProxy;
   }
-
-  private idMustNotExist(id: EntityId)
-  {
-    // Id must not already exist.
-    //   This should never happen, because ids are issued sequentionaly within
-    // a single boot and each id contains boot timestamp in it. So the only way
-    // two ids could be identical is to launch two instances of the server
-    // in exactly the same milisecond.
-    //   It means that if this happened, you have probably duplicated some
-    // objects somewhere.
-    ASSERT_FATAL(this.ids.has(id.getStringId) === false,
-      "Attempt to add id (" + id.getStringId + ") that already"
-      + " exists in IdProvider");
-  }
-
-  private commonAddEntityChecks(entity: Entity)
-  {
-    ASSERT_FATAL(entity !== null && entity !== undefined,
-      "Attempt to add 'null' or 'undefined' entity to entityManager");
-
-    ASSERT_FATAL(NamedClass.CLASS_NAME_PROPERTY in entity,
-      "Attempt to add entity to entityManager that is not inherited from"
-      + " class Entity");
-
-    ASSERT_FATAL(Entity.ID_PROPERTY in entity,
-      "Attempt to add entity to entityManager that is not inherited from"
-      + " class Entity");
-  }
-  */
 }
 
 // ---------------------- private module stuff -------------------------------
@@ -178,6 +208,8 @@ class EntityRecord
   public entity = null;
   public entityProxy = null;
 
+  // Set<[ EntityProxyHandler ]>
+  //   Value: javascript proxy object handler
   // There can be more than one handler assigned to the entity.
   // It happens for example when player quits the game and logs
   // back in. If someone still has a reference to player's entity
@@ -191,9 +223,22 @@ class EntityRecord
   // to entity when the player quits again, it needs to remember all
   // existing not invalidated handlers (then the handler is invalidated,
   // its reference can be safely forgotten).
-  public proxyHandlers = new Array<EntityProxyHandler>();
+  public proxyHandlers = new Set();
+
+  constructor(entity: Entity, entityProxy: Entity, handler: EntityProxyHandler)
+  {
+    this.entity = entity;
+    this.entityProxy = entityProxy;
+    this.addHandler(handler);
+  }
 
   // ---------------- Public methods --------------------
+
+  public addHandler(handler: EntityProxyHandler)
+  {
+    if (!this.proxyHandlers.has(handler))
+      this.proxyHandlers.add(handler);
+  }
 
   public getEntity()
   {
