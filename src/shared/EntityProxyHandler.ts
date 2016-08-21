@@ -38,15 +38,51 @@ import {Mudlog} from '../server/Mudlog';
 
 export class EntityProxyHandler
 {
+  // Reference to an entity we are proxyfying.
+  // If this is null, all access to entity properties will be logged
+  // as invalid and 'invalid variable' will be returned if properties
+  // are read or methods are called.
   public entity: Entity = null;
+
+  // Id of an entity we are proxyfying.
   public id: string = null;
+
+  // Type (className) of an entity we are proxyfying.
+  public type: string = null;
 
   // ---------------- Public methods --------------------
 
   public invalidate()
   {
     this.entity = null;
-    this.id = null;
+
+    /// Tohle je asi blbost. Těžko můžu obnovit referenci,
+    /// když zapmenu idčko.
+    ///this.id = null;
+  }
+
+  public loadFromJsonObject
+  (
+    propertyName: string,
+    jsonObject: any,
+    filePath: string
+  )
+  {
+    this.id = jsonObject.id;
+    this.type = jsonObject.type;
+
+    ASSERT(this.id !== undefined && this.id !== null,
+      "Invalid 'id' when loading entity reference"
+      + " '" + propertyName + "' from JSON file "
+      + filePath);
+
+    ASSERT(this.type !== undefined && this.type !== null,
+      "Invalid 'type' when loading entity reference"
+      + " '" + propertyName + "' from JSON file "
+      + filePath);
+
+    // Set this.entity to null.
+    this.invalidate();
   }
 
   // -------------------  Traps -------------------------
@@ -227,7 +263,7 @@ export class EntityProxyHandler
       // is set to null - and then logs back again. In that case
       // our reference to entity is still null but entity exists
       // in entityManager, so we have to ask for it).
-      return this.updateEnity();
+      return this.updateEnityReference();
     }
 
     return true;
@@ -236,7 +272,7 @@ export class EntityProxyHandler
   // Requests current reference to entity from Server.entityManager
   // and updates this.reference with a new value.
   //   Returns false if entity is unavailable.
-  private updateEnity(): boolean
+  private updateEnityReference(): boolean
   {
     if (this.id === null)
       // If we don't have a string id, there is no way we can

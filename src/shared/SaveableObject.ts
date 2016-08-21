@@ -9,7 +9,7 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
-//import {EntityId} from '../shared/EntityId';
+import {Entity} from '../shared/Entity';
 import {NamedClass} from '../shared/NamedClass';
 import {AttributableClass} from '../shared/AttributableClass';
 import {FileSystem} from '../shared/fs/FileSystem';
@@ -309,7 +309,7 @@ export class SaveableObject extends AttributableClass
     {
       // Skip 'name' property because it's already saved thanks to
       // previous hack.
-      // (isSaved() checks static attribute property.isSaved)
+      // (this.isSaved() checks static attribute property.isSaved)
       // (className is passed only for more specific error messages)
       if (property !== 'name' && this.isSaved(property, className))
       {
@@ -386,23 +386,24 @@ export class SaveableObject extends AttributableClass
     filePath: string
   )
   {
-    let newArray = [];
+    // We know the length of the array we are going to populate.
+    let newArray = new Array(jsonArray.length);
 
     for (let i = 0; i < jsonArray.length; i++)
     {
-      // newProperty needs to be set to null prior to calling loadVariable(),
+      // 'item' needs to be set to null prior to calling loadVariable(),
       // so an instance of the correct type will be created.
-      let newProperty = null;
+      let item = null;
 
-      newProperty = this.loadVariable
+      item = this.loadVariable
       (
         "Array Item",
-        newProperty,
+        item,
         jsonArray[i],
         filePath
       );
 
-      newArray.push(newProperty);
+      newArray.push(item);
     }
 
     return newArray;
@@ -423,18 +424,22 @@ export class SaveableObject extends AttributableClass
     if (jsonVariable === null)
       return null;
 
-    if (this.isId(jsonVariable, filePath))
+    if (this.isEntityReference(jsonVariable))
     {
-      // EntityId's are loaded in a special way because then need to be
-      // registered by IdManager.
-      this.loadIdPropertyFromJsonObject
+      // Entity reference is loaded by EntityManager,
+      // because we need to check if such entity already
+      // exists. An existing entity proxy is returned in
+      // such case. An an 'invalid entity' proxy is created
+      // and returned otherwise.
+      return Server.entityManager.loadReferenceFromJsonObject
       (
         variableName,
         variable,
         filePath
       );
     }
-    else if
+
+    if
     (
       Array.isArray(jsonVariable)
       // Hashmaps (class Map) are saved as array but we need them
@@ -448,16 +453,14 @@ export class SaveableObject extends AttributableClass
 
       return this.loadArray(variableName, jsonVariable, filePath);
     }
-    else
-    {
-      return this.loadNonArrayVariable
-      (
-        variableName,
-        variable,
-        jsonVariable,
-        filePath
-      );
-    }
+    
+    return this.loadNonArrayVariable
+    (
+      variableName,
+      variable,
+      jsonVariable,
+      filePath
+    );
   }
 
   // If myProperty is null, a new instance of correct type will be
@@ -501,41 +504,15 @@ export class SaveableObject extends AttributableClass
     return myProperty;
   }
 
-  private loadNonArrayVariable
+  private loadObjectVariable
   (
     propertyName: string,
     myProperty: any,
     jsonObject: any,
     filePath: string
   )
+  : any
   {
-    // If we are loading property of primitive type (Number or String),
-    // we just assign the value.
-    if (typeof jsonObject !== 'object')
-    {
-      // Note: Date object is actually saved as value of primitive type
-      // (string), not as an object.
-      // In order to recognize that we are loading a date, we will check
-      // the type of property we are loading the date to.
-      // (This wouldn't work if value of Date property we are loading the
-      //  date to would be <null> - which is why it's not allowed to assign
-      //  <null> to Date properties or initialize them with <null>)
-      if (this.isDate(myProperty))
-      {
-        // Date object is not automatically created by JSON.parse(),
-        // only it's string representation. So we need to pass the JSON
-        // string representing value of date to a constructor of Date
-        // object to convert it to Date object.
-        return new Date(jsonObject);
-      }
-      else
-      {
-        return jsonObject;
-      }
-    }
-
-    // Here we are sure that jsonObject is an Object.
-
     // If our corresponding property is null, it wouldn't be able to
     // load itself from JSON, because you can't call methods on null
     // object. So we first need to assign a new instance of correct
@@ -565,7 +542,8 @@ export class SaveableObject extends AttributableClass
 
       return new Map(tmpArray);
     }
-    else if ('loadFromJsonObject' in myProperty)
+
+    if ('loadFromJsonObject' in myProperty)
     {
       // If we are loading into a saveable object, do it using it's
       // loadFromJsonObject() method.
@@ -573,15 +551,86 @@ export class SaveableObject extends AttributableClass
 
       return myProperty;
     }
-    else // We are loading object that is neither Date, Map nor SaveableObject.
+
+    // We are loading object that is neither Date, Map nor SaveableObject.
+    return this.loadPrimitiveObjectFromJson
+    (
+      myProperty,
+      jsonObject,
+      filePath
+    );
+  }
+
+  private loadPrimitiveVariable
+  (
+    propertyName: string,
+    myProperty: any,
+    jsonObject: any,
+    filePath: string
+  )
+  : any
+  {
+    // Note: Date object is actually saved as value of primitive type
+    // (string), not as an object.
+    // In order to recognize that we are loading a date, we will check
+    // the type of property we are loading the date to.
+    // (This wouldn't work if value of Date property we are loading the
+    //  date to would be <null> - which is why it's not allowed to assign
+    //  <null> to Date properties or initialize them with <null>)
+    if (this.isDate(myProperty))
     {
-      return this.loadPrimitiveObjectFromJson
+      // Date object is not automatically created by JSON.parse(),
+      // only it's string representation. So we need to pass the JSON
+      // string representing value of date to a constructor of Date
+      // object to convert it to Date object.
+      return new Date(jsonObject);
+    }
+
+    // Actual primitive values are just directly assigned.
+    return jsonObject;
+  }
+
+  private loadNonArrayVariable
+  (
+    propertyName: string,
+    myProperty: any,
+    jsonObject: any,
+    filePath: string
+  )
+  : any
+  {
+    if (typeof jsonObject === 'object')
+    {
+      return this.loadObjectVariable
       (
+        propertyName,
         myProperty,
         jsonObject,
         filePath
       );
     }
+    else
+    {
+      return this.loadPrimitiveVariable
+      (
+        propertyName,
+        myProperty,
+        jsonObject,
+        filePath
+      );
+    }
+  }
+
+  private saveMap(variable: any, description: string, className: string)
+  {
+    // When we are saving a Map object, we request it's contents
+    // formated as array of [key, value] pairs by calling it's
+    // .entries() method and then save this array as any regular
+    // array (values can be another objects or arrays, so we need
+    // to save it recursively).
+    let mapContents = this.extractMapContents(variable);
+
+    return this.saveArray(mapContents, description, className);
   }
 
   // Saves a property of type Array to a corresponding JSON Array object.
@@ -612,56 +661,48 @@ export class SaveableObject extends AttributableClass
       return null;
 
     if (Array.isArray(variable))
-    {
       return this.saveArray(variable, description, className);
-    }
-    else if (typeof variable === 'object')
-    {
-      // myProperty is a saveableObject
-      if ('saveToJsonObject' in variable)
-        return variable.saveToJsonObject();
 
-      if (this.isDate(variable))
-        return variable;
-
-      // When we are saving a Map object, we request it's contents
-      // formated as array of [key, value] pairs by calling it's
-      // .entries() method and then save this array as any regular
-      // array (values can be another objects or arrays, so we need to
-      // save it recursively).
-      if (this.isMap(variable))
-      {
-        let mapContents = this.extractMapContents(variable);
-
-        return this.saveArray(mapContents, description, className);
-      }
-
-      if (this.isPrimitiveJavascriptObject(variable))
-        return this.savePrimitiveObjectToJson(variable);
-
-      ASSERT_FATAL(false,
-        "Variable '" + description + "' in class '" + className + "'"
-        + " (or inherited from some of it's ancestors) is a class but"
-        + " is not inherited from SaveableObject. Make sure that you"
-        + " only use primitive types (numbers, strings), Arrays, basic"
-        + " javascript Objects, Dates, Maps or classes inherited from"
-        + " SaveableObject as properties of classes inherited from"
-        + " SaveableObject");
-    }
-    else  // Variable is of primitive type (number or string).
-    {
+    if (typeof variable !== 'object')
+      // Variable is of primitive type (number or string).
       return variable;
-    }
+    
+    // 'variable' is an entity (it's an instance of or is inherited
+    // from class Entity).
+    //   Entities are saved to a separate files. Only a string id
+    // of an entity is saved here.
+    if ('saveIdToJsonObject' in variable)
+      return variable.saveIdToJsonObject();
+
+    // 'variable' is a saveableObject (but not an entity).
+    if ('saveToJsonObject' in variable)
+      return variable.saveToJsonObject();
+
+    if (this.isDate(variable))
+      return variable;
+
+    if (this.isMap(variable))
+      return this.saveMap(variable, description, className);
+
+    if (this.isPrimitiveObject(variable))
+      return this.savePrimitiveObjectToJson(variable);
+
+    ASSERT_FATAL(false,
+      "Variable '" + description + "' in class '" + className + "'"
+      + " (or inherited from some of it's ancestors) is a class but"
+      + " is neither inherited from SaveableObject nor has a type that"
+      + " we know how to save. Make sure that you only use primitive"
+      + " types (numbers, strings), Arrays, primitive javascript Objects,"
+      + " Dates, Maps or classes inherited from SaveableObject as properties"
+      + " of classes inherited from SaveableObject. Or, if you want a new"
+      + " type to be saved, you need to add saving and loading functionality"
+      + " for it to SaveableObject.ts");
   }
 
   // Check if there is a static property named the same as property,
   // an if it's value contains: { isSaved = false; }
   private isSaved(propertyName: string, className: string): boolean
   {
-    /*
-    // Access static variable named the same as property.
-    let propertyAttributes = this.getPropertyAttributes(this, propertyName);
-    */
     // Access static variable named the same as property.
     let propertyAttributes = this.getPropertyAttributes(propertyName);
 
@@ -732,7 +773,7 @@ export class SaveableObject extends AttributableClass
     return primitiveObject;
   }
 
-  private isPrimitiveJavascriptObject(variable: any): boolean
+  private isPrimitiveObject(variable: any): boolean
   {
     return variable.constructor.name === 'Object';
   }
@@ -751,11 +792,11 @@ export class SaveableObject extends AttributableClass
     return variable.constructor.name === 'Map';
   }
 
-  private isId(jsonObject: Object, filePath: string): boolean
+  private isEntityReference(jsonObject: Object): boolean
   {
-    // Technically there can be an id saved with a 'null' value,
-    // but in that case we don't have to load it as an EntityId,
-    // because it will be null anyways.
+    // Technically there can be an entity reference saved with a 'null'
+    // value, but in that case we don't have to load it as an entity
+    // reference, because it will be null anyways.
     if (jsonObject === null)
       return false;
 
@@ -763,32 +804,13 @@ export class SaveableObject extends AttributableClass
       "Invalid jsonObject"))
       return false;
 
-    if (jsonObject[NamedClass.CLASS_NAME_PROPERTY] !== undefined)
-    {
-      if (jsonObject[NamedClass.CLASS_NAME_PROPERTY] === 'EntityId')
-        return true;
+    // Is there a 'className' property in JSON object with value
+    // 'EntityReference'?
+    if (jsonObject[NamedClass.CLASS_NAME_PROPERTY]
+        === Entity.ENTITY_REFERENCE_CLASS_NAME)
+      return true;
 
-      return false;
-    }
-
-    // Json objects don't have a type (they are plain javascript Objects),
-    // so we can't use instanceOf. We could test className, but that wouldn't
-    // work for ancestors of EntityId class (anyone who would inherit from
-    // class EntityId would have to add a special case here), so instead we
-    // check 'stringId' property which all ancestors of EntityId inherit.
-    ASSERT(jsonObject['id' /*EntityId.STRING_ID_PROPERTY*/] === undefined,
-      "There is a " + 'id' /*EntityId.STRING_ID_PROPERTY*/ + " property in"
-      + " Json object loaded from file " + filePath + " but a "
-      + NamedClass.CLASS_NAME_PROPERTY + " is missing. That"
-      + " probably means that you have either inherited from"
-      + " EntityId class or you have declared a property named "
-      + 'id' /*EntityId.STRING_ID_PROPERTY*/ + " in some random class."
-      + " If it's the first case, you will have to change code"
-      + " here where this ASSERT have been triggered. If it's the"
-      + " second case, you should name the property otherwise. If "
-      + " it's neither, good luck figuring out what's going on.");
-
-    return true;
+    return false;
   }
 
   private extractMapContents(map: Map<any, any>): Array<any>
@@ -803,67 +825,5 @@ export class SaveableObject extends AttributableClass
     }
     
     return result;
-  }
-
-  private loadIdPropertyFromJsonObject
-  (
-    propertyName: string,
-    jsonObject: any,
-    filePath: string
-  )
-  {
-    let stringId = jsonObject['stringId'/*EntityId.STRING_ID_PROPERTY*/];
-
-    if (!ASSERT(stringId !== undefined && stringId !== null,
-      "Errow while loading id from file " + filePath + ": Unable"
-      + " to load id, because passed 'jsonObject' doesn't contain"
-      + "property '" + 'stringId' /* EntityId.STRING_ID_PROPERTY*/ + "'"))
-      return null;
-
-    let id = Server.idProvider.get(stringId);
-
-    if (id !== undefined)
-    {
-      // Check that all properties of loaded id match existing id.
-      id.checkAgainstJsonObject(jsonObject, filePath);
-
-      // We are going to use existing id iven if loaded id doesn't
-      // match perfecly (if there were errors, they have been
-      // reported by id.checkAgainstJsonObject()).
-      this[propertyName] = id;
-    }
-    else
-    {
-      // Id doesn't exist in idProvider yet, so we need to
-      // create a new instance of EntityId.
-      // (This will create an EntityId with internal state ID_NOT_LOADED,
-      //  and it won't be registered in idProvider.)
-      id = SaveableObject.createInstance
-      (
-        {
-          className: jsonObject[NamedClass.CLASS_NAME_PROPERTY],
-          // We can't typecast to EntityId here, because class EntityId
-          // is inherited from SaveableObject so we can't include it from
-          // SaveableObject. It doesn't really matter, however, we are not
-          // going to do anything with it here.
-          typeCast: SaveableObject
-        }
-      );
-
-      // We need to set id to our property so we can use
-      // this.loadPropertyFromJsonObject().
-      this[propertyName] = id;
-
-      // Load it from it from json object.
-      this.loadPropertyFromJsonObject
-      (
-        jsonObject,
-        propertyName,
-        filePath
-      );
-
-      // Register loaded id in idProvider.
-      Server.idProvider.register(this[propertyName]);
-    }
   }
 }
