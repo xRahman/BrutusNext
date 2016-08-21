@@ -62,6 +62,11 @@ export class Entity extends AutoSaveableObject
       Kydz id nedostanu, tak se vytvari nova entita.
   - hmm, pujde to takhle, kdyz se volaji konstruktory dynamickych class?
   */
+  /*
+    Tak nakonec ani to ne. Entity vyrabi EntityManager. Holt se musim
+    spolehnout, ze nikdo nebude delat veci jako new Entity();
+  */
+  /*
   constructor(id: string)
   {
     super();
@@ -81,6 +86,7 @@ export class Entity extends AutoSaveableObject
     // proxy object through which the entity is accessed.
     return Server.entityManager.add(this);
   }
+  */
 
   // --------------- Public accessors -------------------
 

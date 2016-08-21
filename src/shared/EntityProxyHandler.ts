@@ -85,6 +85,42 @@ export class EntityProxyHandler
     this.invalidate();
   }
 
+  // If this.entity is not null, it's 'id' and 'className'
+  // variables will be compared to handler's 'id' and 'type'
+  // variables.
+  // -> Returns false if anything is amiss.
+  public sanityCheck(): boolean
+  {
+    if (this.entity === null)
+      return true;
+
+    let checkResult = true;
+
+    let id = this.entity.getId();
+
+    if (id !== null && this.id !== null)
+    {
+      if (!ASSERT(id === this.id,
+          "Id of entity " + this.entity.getErrorIdString()
+          + " differs from id saved in entity proxy handler"
+          + " (which is " + this.id + ")"))
+        checkResult = false;
+    }
+
+    let type = this.entity.className;
+
+    if (type !== null && this.type !== null)
+    {
+      if (!ASSERT(id === this.type,
+          "Class name of entity " + this.entity.getErrorIdString()
+          + " differs from type saved in entity proxy handler"
+          + " (which is " + this.type + ")"))
+        checkResult = false;
+    }
+
+    return checkResult;
+  }
+
   // -------------------  Traps -------------------------
   /// Note: It's possible that it will be necessary to implement some
   ///   of commented-out handlers in the future, so I'll let them be here.
@@ -127,8 +163,12 @@ export class EntityProxyHandler
   // A trap for getting property values.
   public get(target: any, property: any)
   {
+    if (property === 'load')
+      // TODO: Stejný popisek jako o if níže.
+      return this.load;
+
     // This hack traps calls of entity.isValid() method.
-    if (property === "isValid")
+    if (property === 'isValid')
       // Here we don't return this.isEntityValid() but the function
       // itself. That's because if function call is trapped by proxy
       // handler, first the function is requested by 'get' trap and
@@ -291,5 +331,33 @@ export class EntityProxyHandler
     }
 
     return false;
+  }
+
+  // This method allows invalid entity proxy to load itself.
+  //   'entity.load()' call is trapped by 'get' handler and
+  //  handler.load() (this method) is called).
+  private async load()
+  {
+    /// Idčko může být null - např. při loadu worldu.
+
+    /// TODO
+
+    /*
+    /// TODO: Zkonstruovat saveFileName
+    /// - blbost, to asi nebudu potřebovat, to umí entita sama v rámci své
+    ///   metody load().
+    */
+
+    /// TODO: Říct si EntityManageru o novou entitu
+    /// - tady bacha: Pokud mám idčko, tak je to ok, ale pokud nemám,
+    ///   tak nemám jak zkontrolovat, že neloaduju něco, co už loadnuté je.
+    /// - asi jediná možnost bude, zkontrolvoat to až po loadu - což ale
+    ///   nejspíš může udělat EntityManager sám (vyrobí si entitu, loadne ji,
+    ///   checkne, že ještě není v manageru a když ne, tak k ní vyrobí proxy
+    //    a tu vrátí).
+
+    /// TODO: Load this new entity using it's load() method.
+
+    await Server.entityManager.loadEntity(this);
   }
 }
