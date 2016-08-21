@@ -1,3 +1,13 @@
+TODO: Classu EntityRecord asi vyhodit z EntityManageru do samostatného
+  modulu.
+
+TODO: metoda createInstance() by neměla být v SaveableObjectu.
+  - místo toho by měla existovat Server.classFactory a na ní by měla
+    být metoda createInstance().
+TODO: Při té příležitosti do ní přeshnout i dynamicClasses, ať nestrašej
+  v global objectu.
+
+
 TODO: V SaveableObjectu (a možná i jinde) předávám do vnořených volání
  hromadu stejných parametrů.
  - zabalit je do objektu 'param', dost se tím ten kód zpřehlední.
@@ -1609,3 +1619,56 @@ TODO:
 
 
 - otestovat Proxy
+
+
+================================================
+
+Game.createWorld()
+{
+- chci nové idčko
+
+  // Tohle je asi ok
+  this.world = SaveableObject.createInstance
+    ({ className: param.prototype, typeCast: World });
+}
+
+Game.load()
+{
+  - potřebuju idčko loadnout ze souboru
+    (world má unikátní save name, takze nepotrebuju znat id, abych vedel,
+    z jakeho souboru se mam loadnout)
+
+  /// Tady by melo byt: createInvalidReference();
+  /// PS: Na to nemusim ani znat typ - respektive ano, musim ho zapsat do
+  ///    handleru.
+  this.world = SaveableObject.createInstance
+    ({ className: 'BrutusWorld', typeCast: World });
+
+  // Load current state of world from file.
+  await this.world.load();
+}
+
+SaveableObject.loadFromJson()
+{
+  - tady se loaduje invalid reference, to uz mam napsane.
+    (a dělá to EntityManager - to je důležité)
+}
+
+Tzn. asi bych nikde neměl sám volat SaveableObject.createInstance(),
+měl bych volat EntityManager.createInvalidReference()
+- proč rovnou invalid? Však klidně může být i valid, když zadám platné
+  idčko a entita už bude v EntityManageru...
+nebo EntityManager.loadReferenceFromJsonObject()
+- to už se děje, ze SaveableObjectu
+nebo EntityManager.createEntity()
+- to ještě neexistuje. Místo toho tam je metoda add(), která přidá už
+  existující referenci. Mělo by to asi být tak, že add() bude private
+  a zavolá se automaticky.
+
+[ok, už by snad měl jít zavolat load() na invalid referenci (ostatně i na
+ valid) a mělo by to entitu loadnout a přidat do EntityManageru]
+
+ IMPORTANT:
+ - bude existovat jen jedna funkce na vyrábění nových entit (tedy s novým
+   idčkem), a to EntityManager.createEntity().
+   - nikde jinde nemusím vyrábění nového idčka řešit.

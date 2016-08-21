@@ -19,6 +19,7 @@ import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {IdProvider} from '../shared/IdProvider';
 import {Entity} from '../shared/Entity';
 import {EntityProxyHandler} from '../shared/EntityProxyHandler';
+import {SaveableObject} from '../shared/SaveableObject';
 
 export class EntityManager
 {
@@ -41,6 +42,11 @@ export class EntityManager
   // If 'id' loaded from JSON already exists in EntityManager,
   // existing entity proxy is returned. Otherwise an 'invalid'
   // entity proxy is created and returned.
+  // Note:
+  //   This method doesn't actualy load an entity. If you want
+  // to load an entity from file, call load() on what's returned
+  // by this method.
+  // -> Retuns an entity proxy object (possibly referencing an invalid entity).
   public loadReferenceFromJsonObject
   (
     propertyName: string,
@@ -102,10 +108,113 @@ export class EntityManager
     );
   }
 
+  /// Tohle je blbost. Nemá smysl rozlišovat, jestli vytvářím valid nebo
+  /// invalid referenci - to záleží na tom, jestli id je v EntityManageru
+  /// nebo ne.
+  /*
+  public createInvalidReference(className: string, id: string): Entity
+  {
+    let handler = new EntityProxyHandler();
+
+    // 'id' can be null
+    // (this is used for example when loading world. World saves to file
+    // 'world.json' so we don't need to know world's id to be able to load it.)
+    handler.id = id;
+    handler.type = className;
+    handler.entity = null;
+
+    let entityProxy = new Proxy({}, handler);
+
+    return entityProxy;
+  }
+  */
+
+  // Creates an entity of type 'className' with a new id.
+  // Note:
+  //  This is the only place in whole code where new id's are generated
+  //  (or at least should be).
+  // -> Returns entity proxy (which is used instead of entity).
+  public createEntity(className: string): Entity
+  {
+    let handler = new EntityProxyHandler();
+
+    // Generate a new id for this new entity.
+    handler.id = this.idProvider.generateId();
+    handler.type = className;
+    handler.entity = null;
+
+    let entity = this.createBareEntity(handler);
+
+    let entityProxy = new Proxy({}, handler);
+    let entityRecord = new EntityRecord(entity, entityProxy, handler);
+
+    // Add newly created entity record to hashmap under entity's string id.
+    this.entityRecords.set(handler.id, entityRecord);
+
+    return entityProxy;
+  }
+
+  // Loads entity from file. Don't use this method, call entity.load()
+  // (this method is automatically called by entity proxy handler when you
+  // call load() method on your entity reference)
+  // (you shouldn't be able to call this method anyways, because you
+  // (hopefuly) have no way to get your hands on an entity proxy handler).
+  public async loadEntity(handler: EntityProxyHandler)
+  {
+    handler.sanityCheck();
+
+    // Note:
+    //   If entity already exists and we are re-loading it, the
+    // procedure is the same as if we are loading from invalid
+    // entity handler: A new entity will be created and all
+    // existing references to it will be update with a new one.
+    //   It means that the old entity will be discarded - which is
+    // ok, because noone should have direct refrerence to an entity,
+    // everyone else than EntityManager is only allowed to keep
+    // reference to an entity proxy, so noone will really notice the
+    // change of internal entity reference inside a proxy handler.
+
+    let entity = await this.createAndLoadEntity(handler);
+
+    if (entity === null)
+      // Errors have already been reported by this.createAndLoadEntity().
+      return;
+
+    // From now on, we will work with an id that has been loaded from file.
+    // (If handler had a different id, it was reported to mudlog in
+    //  this.createAndLoadEntity. 'handler.id' will get updated later
+    //  for all handlers stored in the entityRecord.)
+    let id = entity.getId();
+
+    // Check if id already exist in EntityManager.
+    // ('this.entityRecords.get()' returns undefined if there
+    //  is no such record in 'this.entityRecords')
+    let entityRecord: EntityRecord = this.entityRecords.get(id);
+
+    // If there is no entityRecord for our id in EntityManager,
+    // a new entityRecord will be created.
+    if (entityRecord === undefined)
+    {
+      let entityProxy = new Proxy({}, handler);
+
+      entityRecord = new EntityRecord(entity, entityProxy, handler);
+    }
+    else
+    {
+      // Ensure that handler is listed in existing entityRecord.
+      entityRecord.addHandler(handler);
+    }
+
+    // Update all handlers in entityRecord with (possibly) new
+    // information: id, entity type and entity reference.
+    entityRecord.updateProxyHandlers(id, entity.className, entity);
+  }
+
+  /*
   // Adds an entity to the hashmap under it's id.
   //   If entity doesn't have an id, a new one will be generated,
   // otherwise it will be added under it's existing id.
-  //   Returns entity proxy (which should be used instead of entity).
+  // -> Returns entity proxy (which should be used instead of entity).
   public add(entity: Entity)
   {
     let id = entity.getId();
@@ -126,6 +235,7 @@ export class EntityManager
 
     return entityProxy;
   }
+  */
 
   public updateReference(id: string, handler: EntityProxyHandler)
   {
@@ -168,9 +278,23 @@ export class EntityManager
   }
 
   // Returns entity proxy matching given id.
-  // Returns undefined if entity doesn't exist in EntityManager.
+  // -> Returns undefined if entity doesn't exist in EntityManager.
   public get(id: string): Entity
   {
+    if (id === null)
+    {
+      /// TODO: tohle je case pro loadování worldu (a možná i accountů
+      /// a dalších entit, které se neloadují na základě idčka, ale na
+      /// základě jména save filu (jiného než id.json).
+      /// get() by mělo vrátit invalid entity referenci, která se následně
+      /// loadne.
+      /// (hledat v EntityManageru není podle čeho, když není dopředu známé
+      /// idčko).
+
+      /// TODO: Něco jako this.createInvalidEntityProxy(),
+      /// teda až tu funkci oddivním.
+    }
+
     return this.entityRecords.get(id).getEntityProxy();
   }
 
@@ -192,12 +316,60 @@ export class EntityManager
   {
     let handler = new EntityProxyHandler();
 
+    /// BIG TODO: Tohle je celý divný
+
     // This also sets handler.entity to null.
     handler.loadFromJsonObject(propertyName, jsonObject, filePath);
 
     let entityProxy = new Proxy({}, handler);
 
     return entityProxy;
+  }
+
+  // Creates a new instance of entity of type stored in handler.type.
+  // Sets handler.id as id of a newly created entity instance.
+  // -> Returns a new instance of entity (not a proxy).
+  private createBareEntity(handler: EntityProxyHandler): Entity
+  {
+    ASSERT(handler.type !== null,
+      "Invalid 'type' on entity proxy handler");
+
+    let entity: Entity = SaveableObject.createInstance
+      ({ className: handler.type, typeCast: Entity });
+
+    // We need to set entity.id prior to loading so the save path can
+    // be constructed (filename contains id for most entities).
+    entity.setId(handler.id);
+
+    return entity;
+  }
+
+  private async createAndLoadEntity(handler: EntityProxyHandler)
+  {
+    ASSERT(handler.type !== null,
+      "Invalid 'type' on entity proxy handler");
+
+    let entity = this.createBareEntity(handler);
+
+    await entity.load();
+
+    if (!ASSERT(entity.getId() !== null,
+        "Entity " + entity.getErrorIdString() + " didn't have an id"
+        + " in it's save file. There must be an id saved in every"
+        + " entity save file. Entity is not updated in EntityManager"))
+        // If we don't know entity's id, we can't add it to EntityManager.
+      return null;
+
+    if (handler.id !== null)
+    {
+      if (!ASSERT(handler.id === entity.getId(),
+        "Id of entity " + entity.getErrorIdString() + " loaded from"
+        + " file doesn't match id " + handler.id + " saved in entity"
+        + " proxy handler"))
+        return null;
+    }
+
+    return entity;
   }
 }
 
@@ -233,6 +405,18 @@ class EntityRecord
   }
 
   // ---------------- Public methods --------------------
+
+  public updateProxyHandlers(id: string, type: string, entity: Entity)
+  {
+    let handler: EntityProxyHandler = null;
+
+    for (handler of this.proxyHandlers)
+    {
+      handler.id = id;
+      handler.type = type;
+      handler.entity = entity;
+    }
+  }
 
   public addHandler(handler: EntityProxyHandler)
   {
