@@ -8,10 +8,11 @@
 'use strict';
 
 import {ASSERT} from '../../shared/ASSERT';
+///import {EntityId} from '../../shared/EntityId';
 import {SaveableObject} from '../../shared/SaveableObject';
+import {Server} from '../../server/Server';
 import {Game} from '../../game/Game';
 import {GameEntity} from '../../game/GameEntity';
-import {EntityId} from '../../shared/EntityId';
 import {Realm} from '../../game/world/Realm';
 
 export class World extends GameEntity
@@ -24,11 +25,11 @@ export class World extends GameEntity
 
   // ---------------- Public class data -----------------
 
+  public systemRealm = null;
+  public systemArea = null;
+  public systemRoom = null;
   // The room newly created player characters spawn to.
-  public tutorialRoomId: EntityId = null;
-  public systemRoomId: EntityId = null;
-  public systemAreaId: EntityId = null;
-  public systemRealmId: EntityId = null;
+  public tutorialRoom = null;
 
   // -------------- Protected class data ----------------
 
@@ -44,8 +45,17 @@ export class World extends GameEntity
 
   // ---------------- Public methods --------------------
 
-  public createRealm(param: { name: string, prototype: string }): EntityId
+  /*
+  public createRealm(name: string, prototype: string ): Realm
   {
+
+    let realm = Server.entityManager.createEntity(prototype);
+
+    if (!ASSERT_FATAL(this.world !== null, "Failed to create world"))
+      return;
+
+    this.world.name = param.name;
+
     let newRealmId = this.createEntity
     (
       {
@@ -59,6 +69,32 @@ export class World extends GameEntity
     this.insertEntity(newRealmId);
 
     return newRealmId;
+  }
+  */
+
+  public createSystemRealm()
+  {
+    // Create a new realm prototype.
+    Game.prototypeManager.createPrototype('SystemRealm', 'Realm');
+    this.systemRealm = Game.createEntity('System Realm', 'SystemRealm');
+
+    // --- System Area ---
+
+    // Create a new area prototype.
+    Game.prototypeManager.createPrototype('SystemArea', 'Area');
+    this.systemArea = Game.createEntity('System Area', 'SystemArea');
+
+    // --- System Room ---
+
+    // Create a new room prototype.
+    Game.prototypeManager.createPrototype('SystemRoom', 'Room');
+    this.systemRoom = Game.createEntity('System Room', 'SystemRoom');
+
+    // --- Tutorial Room ---
+
+    // Create a new room prototype.
+    Game.prototypeManager.createPrototype('TutorialRoom', 'Room');
+    this.systemRoom = Game.createEntity('Tutorial Room', 'TutorialRoom');
   }
 
   // --------------- Protected methods ------------------
