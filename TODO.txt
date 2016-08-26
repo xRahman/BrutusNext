@@ -1,3 +1,27 @@
+TODO: createSystemRealm() a všechno uvnitř.
+
+ÚVAHA: Monžná se přece jen vrátím k classe Id (- nakonec ne)
+  - ne proto, že bych se chtěl zbavit přímých referencí, ale proto, že když
+    si někdo říká o entitu na základě stringového idčka, tak musí dodat i typ,
+    aby šla vrátit invalid entity se správně nastaveným typem v handleru (aby
+    pak podle něj šla vytvořit správná instance).
+Na druhou stranu ale kdy by se tahle classa použila?
+- jako dočasná proměnná při savování
+- jako dočasná proměnná při loadování
+Držet si ji nikdo nebude, protož držej se reference a tyhle informace jsou
+  schované v handleru.
+S tím souvisí:
+- kdo bude potřebovat volat entityManager.get()?
+  - asi to samé, pouze SaveableObject.loadReferenceFromJsonObject().
+  nebo ještě někdo?
+  - z nejěkých důvodů jsem tam chtěl ošetřit, když je "id" null
+[Tak nakonec ne]
+
+
+TODO: EntityManager by neměl vyčítat data z JSON objectu - to má dělat
+  SaveableObject.
+[přesunuto do SaveableObjectu]
+
 TODO: Classu EntityRecord asi vyhodit z EntityManageru do samostatného
   modulu.
 

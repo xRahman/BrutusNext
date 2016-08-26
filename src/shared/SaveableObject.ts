@@ -826,4 +826,83 @@ export class SaveableObject extends AttributableClass
     
     return result;
   }
+
+  // If 'id' loaded from JSON already exists in EntityManager,
+  // existing entity proxy will be returned. Otherwise an 'invalid'
+  // entity proxy will be created and returned.
+  // Note:
+  //   This method doesn't actualy load an entity. If you want
+  // to load an entity from file, call load() on what's returned
+  // by this method.
+  // -> Retuns an entity proxy object (possibly referencing an invalid entity).
+  public loadReferenceFromJsonObject
+  (
+    propertyName: string,
+    jsonObject: any,
+    filePath: string
+  )
+  : Entity
+  {
+    ASSERT_FATAL(jsonObject.className === Entity.ENTITY_REFERENCE_CLASS_NAME,
+      "Attempt to load entity reference from invalid JSON object");
+
+    let id = jsonObject.id;
+
+    ASSERT(id !== undefined && id !== null,
+      "Invalid 'id' when loading entity reference"
+      + " '" + propertyName + "' from JSON file "
+      + filePath);
+
+    let type = jsonObject.type;
+
+    ASSERT(type !== undefined && type !== null,
+      "Invalid 'type' when loading entity reference"
+      + " '" + propertyName + "' from JSON file "
+      + filePath);
+
+    // Return an existing entity proxy if entity exists in
+    // entityManager, invalid entity proxy otherwise.
+    return Server.entityManager.get(id, type);
+
+    /*
+    //let entityRecord = this.entityRecords.get(id);
+
+    if (entity !== undefined)
+      return entity;
+
+
+    // If an entity with this 'id' already exists in hashmap,
+    // just return it's proxy.
+    if (entityRecord !== undefined)
+    {
+      let entityProxy = entityRecord.entityProxy;
+
+      ASSERT(entityProxy !== undefined && entityProxy !== null,
+        "Invalid entity proxy in entity record of entity with id "
+        + id);
+
+      ASSERT(entityProxy.className === type,
+        "Error while loading entity reference"
+        + " '" + propertyName + "' from file "
+        + filePath + ": Property 'type' saved"
+        + " in JSON doesn't match type of existing"
+        + " entity " + entityProxy.getErrorStringId()
+        + " that matches id saved in JSON");
+
+      return entityProxy;
+    }
+
+    // If entity with this 'id' doesn't exist yet, a new proxy will
+    // be created and it's handler's reference to entity will be set
+    // to null.
+    // (When this proxy is accessed, it will automatically ask
+    //  EntityManager if the entity is already awailable.)
+    return Server.entityManager.createInvalidEntityProxy
+    (
+      propertyName,
+      jsonObject,
+      filePath
+    );
+    */
+  }
 }
