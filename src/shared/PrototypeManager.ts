@@ -63,9 +63,9 @@ export class PrototypeManager extends AutoSaveableObject
   //*/
 
   // Returns true on success.
-  public createPrototype(param: { name: string, ancestor: string }): boolean
+  public createPrototype(name: string, ancestor: string): boolean
   {
-    let prototypeData = this.createPrototypeData(param)
+    let prototypeData = this.createPrototypeData(name, ancestor);
 
     if (prototypeData === null)
       return false;
@@ -144,16 +144,15 @@ export class PrototypeManager extends AutoSaveableObject
   }
   */
 
-  private createPrototypeData(param: { name: string, ancestor: string })
-  : Prototype
+  private createPrototypeData(name: string, ancestor: string): Prototype
   {
-    if (!this.checkNewPrototypeDataParams(param.name, param.ancestor))
+    if (!this.checkNewPrototypeDataParams(name, ancestor))
       return null;
 
     let prototypeData = new Prototype();
 
-    prototypeData.name = param.name;
-    prototypeData.ancestor = param.ancestor;
+    prototypeData.name = name;
+    prototypeData.ancestor = ancestor;
 
     this.insertToPrototypeList(prototypeData.name, prototypeData);
 
