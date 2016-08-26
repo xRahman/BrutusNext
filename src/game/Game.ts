@@ -69,87 +69,34 @@ export class Game
 
   // ---------------- Public methods --------------------
 
+  public static createEntity(name: string, prototype: string)
+  {
+    let entity = Server.entityManager.createEntity(prototype);
+
+    if (!ASSERT_FATAL(entity !== null,
+      "Failed to create entity '" + name + "'"
+      + " with type '" + prototype + "'"));
+
+    return entity;
+  }
+
   // Creates and saves a new default world.
   // (this method sould only be used if you don't have 'data' directory yet)
   public async createDefaultWorld()
   {
-    // --- World ---
-
     // Create a new world prototype.
-    this.prototypeManager.createPrototype
-      ({ name: "BrutusWorld", ancestor: "World" });
+    this.prototypeManager.createPrototype('BrutusWorld', 'World');
+
+    if (!ASSERT(this.world === null,
+      "Attempt to create new world when there is already a world. There can"
+      + " only be one world per game at the moment. World is not created"))
+      return;
 
     // Create world 'BrutusNext World' based on this prototype.
-    this.createWorld
-      ({ name: "BrutusNext World", prototype: "BrutusWorld" });
+    this.world = Game.createEntity('BrutusNext World', 'BrutusWorld');
 
     // Create system realm.
     this.world.createSystemRealm();
-
-    /*
-    // Create a new realm prototype.
-    this.prototypeManager.createPrototype
-      ({ name: "SystemRealm", ancestor: "Realm" });
-
-    // Create realm 'System Realm' based on this prototype and add it to the
-    // world.
-    let systemRealmId = this.world.createRealm
-      ({ name: "System Realm", prototype: "SystemRealm" });
-
-    let systemRealm = systemRealmId.getEntity({ typeCast: Realm });
-
-    // Remember system realm id for future easy access.
-    this.world.systemRealmId = systemRealmId;
-
-    // --- System Area ---
-
-    // Create a new area prototype.
-    this.prototypeManager.createPrototype
-      ({ name: "SystemArea", ancestor: "Area" });
-
-    // Create area 'System Area' based on this prototype and add it to the
-    // realm.
-    let systemAreaId = systemRealm.createArea
-      ({ name: "System Area", prototype: "SystemArea" });
-
-    let systemArea = systemAreaId.getEntity({ typeCast: Area });
-
-    // Remember system area id for future easy access.
-    world.systemAreaId = systemAreaId;
-
-    // --- System Room ---
-
-    // Create a new room prototype.
-    this.prototypeManager.createPrototype
-      ({ name: "SystemRoom", ancestor: "Room" });
-
-    // Create room 'System Room' based on this prototype and add it to the
-    // area.
-    let systemRoomId = systemArea.createRoom
-      ({ name: "System Room", prototype: "SystemRoom" });
-
-    // Remember system room id for future easy access.
-    world.systemRoomId = systemRoomId;
-
-    systemRoomId.getEntity({ typeCast: Room }).roomFlags.set(RoomFlags.SYSTEM);
-
-    // --- Tutorial Room ---
-
-    // Create a new room prototype.
-    this.prototypeManager.createPrototype
-      ({ name: "TutorialRoom", ancestor: "Room" });
-
-    // Create room 'Tutorial Room' based on this prototype and add it to the
-    // area.
-    let tutorialRoomId = systemArea.createRoom
-      ({ name: "Tutorial Room", prototype: "TutorialRoom" });
-
-    // Remember system room id for future easy access.
-    // (Newly created player characters spawn to this room.)
-    world.tutorialRoomId = tutorialRoomId;
-    */
-
-    // ---------------------
 
     // Save all prototypes we have just created.
     this.prototypeManager.save();
@@ -225,23 +172,16 @@ export class Game
     // be instantiated from these dynamically created prototype classes).
     this.prototypeManager.createClasses();
 
-    /*
-    /// Tohle je blbě - přidělí to worldu nové idčko.
-    // 'BrutusWorld' is a prototype for world
-    // (it is created by createDefaultWorld()).
-    this.world = SaveableObject.createInstance
-      ({ className: 'BrutusWorld', typeCast: World });
-    */
-
-    this.world = Server.entityManager.get(null);
+    // 'entityManager.get()' will return invalid entity reference,
+    // because entity 'world' is not in entityManager yet. This invalid
+    // entity reference can, however, be used to load an entity from disk,
+    // which is exactly what we need to do.
+    //   Second parameter is a prototype class
+    // (class that will be instantiated).
+    this.world = Server.entityManager.get(null, 'BrutusWorld');
 
     // Load current state of world from file.
     await this.world.load();
-
-    /*
-    // Remember worldId that we just loaded from file.
-    this.worldId = world.getId();
-    */
   }
 
   // -------------- Protected class data ----------------
@@ -277,19 +217,4 @@ export class Game
   // --------------- Protected methods ------------------
 
   // ---------------- Private methods -------------------
-
-  private createWorld(param: { name: string, prototype: string })
-  {
-    if (!ASSERT(this.world === null,
-        "Attempt to add new world when there is already a world. There can"
-        + " only be one world per game at the moment. World is not added"))
-      return;
-
-    this.world = Server.entityManager.createEntity(param.prototype);
-
-    if (!ASSERT_FATAL(this.world !== null, "Failed to create world"))
-      return;
-
-    this.world.name = param.name;
-  }
 }

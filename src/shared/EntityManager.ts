@@ -12,6 +12,24 @@
   you access deleted entity, an error message will be logged.
 */
 
+/*
+  Note:
+    There is no 'add()' method. If you want to add an existing entity
+  to EntityManager, use:
+
+    let entity = Server.entityManager.get(id, type);
+
+  Then you can do:
+
+    if (!entity.isValid())
+      entity.load();
+
+  to load it from the disk. Entity record is only added to EntityManager
+  after entity is loaded. Untill then, you will have a invalid entity
+  reference (any access to properties of this reference will be logged
+  as error).
+*/
+
 'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
@@ -39,75 +57,6 @@ export class EntityManager
 
   // ---------------- Public methods --------------------
 
-  // If 'id' loaded from JSON already exists in EntityManager,
-  // existing entity proxy is returned. Otherwise an 'invalid'
-  // entity proxy is created and returned.
-  // Note:
-  //   This method doesn't actualy load an entity. If you want
-  // to load an entity from file, call load() on what's returned
-  // by this method.
-  // -> Retuns an entity proxy object (possibly referencing an invalid entity).
-  public loadReferenceFromJsonObject
-  (
-    propertyName: string,
-    jsonObject: any,
-    filePath: string
-  )
-  : Entity
-  {
-    ASSERT_FATAL(jsonObject.className === Entity.ENTITY_REFERENCE_CLASS_NAME,
-      "Attempt to load entity reference from invalid JSON object");
-
-    let id = jsonObject.id;
-
-    ASSERT(id !== undefined && id !== null,
-      "Invalid 'id' when loading entity reference"
-      + " '" + propertyName + "' from JSON file "
-      + filePath);
-
-    let type = jsonObject.type;
-
-    ASSERT(type !== undefined && type !== null,
-      "Invalid 'type' when loading entity reference"
-      + " '" + propertyName + "' from JSON file "
-      + filePath);
-
-    let entityRecord = this.entityRecords.get(id);
-
-    // If an entity with this 'id' already exists in hashmap,
-    // just return it's proxy.
-    if (entityRecord !== undefined)
-    {
-      let entityProxy = entityRecord.entityProxy;
-
-      ASSERT(entityProxy !== undefined && entityProxy !== null,
-        "Invalid entity proxy in entity record of entity with id "
-        + id);
-
-      ASSERT(entityProxy.className === type,
-        "Error while loading entity reference"
-        + " '" + propertyName + "' from file "
-        + filePath + ": Property 'type' saved"
-        + " in JSON doesn't match type of existing"
-        + " entity " + entityProxy.getErrorStringId()
-        + " that matches id saved in JSON");
-
-      return entityProxy;
-    }
-
-    // If entity with this 'id' doesn't exist yet, a new proxy will
-    // be created and it's handler's reference to entity will be set
-    // to null.
-    // (When this proxy is accessed, it will automatically ask
-    //  EntityManager if the entity is already awailable.)
-    return this.createInvalidEntityProxy
-    (
-      propertyName,
-      jsonObject,
-      filePath
-    );
-  }
-
   /// Tohle je blbost. Nemá smysl rozlišovat, jestli vytvářím valid nebo
   /// invalid referenci - to záleží na tom, jestli id je v EntityManageru
   /// nebo ne.
@@ -131,8 +80,7 @@ export class EntityManager
 
   // Creates an entity of type 'className' with a new id.
   // Note:
-  //  This is the only place in whole code where new id's are generated
-  //  (or at least should be).
+  //  This should be the only place in whole code where new id's are generated.
   // -> Returns entity proxy (which is used instead of entity).
   public createEntity(className: string): Entity
   {
@@ -237,6 +185,10 @@ export class EntityManager
   }
   */
 
+  // This method is used by etity handler when it's internal
+  // entity reference is null.
+  // -> Returns entity proxy if entity is available.
+  //    Returns invalid entity proxy otherwise.
   public updateReference(id: string, handler: EntityProxyHandler)
   {
     let entityRecord: EntityRecord = this.entityRecords.get(id);
@@ -277,25 +229,47 @@ export class EntityManager
     this.entityRecords.delete(entity.getId());
   }
 
-  // Returns entity proxy matching given id.
-  // -> Returns undefined if entity doesn't exist in EntityManager.
-  public get(id: string): Entity
+  // -> Returns entity proxy matching given id, undefined if entity
+  //    doesn't exist in EntityManager.
+  public get(id: string, type: string): Entity
   {
+    // 'type' is needed even if 'id' is null, because
+    // we need to know what class to instantiate in order to load
+    // the record from file.
+    ASSERT_FATAL(type !== null && type !== undefined,
+      "Missing of invalid 'type' argument");
+
+    // This check is done first so we save ourself searching a 'null'
+    // record in hashmap.
     if (id === null)
     {
-      /// TODO: tohle je case pro loadování worldu (a možná i accountů
-      /// a dalších entit, které se neloadují na základě idčka, ale na
-      /// základě jména save filu (jiného než id.json).
-      /// get() by mělo vrátit invalid entity referenci, která se následně
-      /// loadne.
-      /// (hledat v EntityManageru není podle čeho, když není dopředu známé
-      /// idčko).
-
-      /// TODO: Něco jako this.createInvalidEntityProxy(),
-      /// teda až tu funkci oddivním.
+      // This case is used for example when loading world. Wold is
+      // saved to a special filename (wold.json), so we don't need
+      // to know it's id in order to load it. In fact, world's id
+      // is loaded from it's save file.
+      return this.createInvalidEntityProxy(id, type);
     }
 
-    return this.entityRecords.get(id).getEntityProxy();
+    let entityRecord: EntityRecord = this.entityRecords.get(id);
+
+    // If an entity with this 'id' already exists in hashmap,
+    // return it's existing proxy.
+    if (entityRecord !== undefined)
+    {
+      let entityProxy = entityRecord.getEntityProxy();
+
+      ASSERT(entityProxy !== undefined && entityProxy !== null,
+        "Invalid entity proxy in entity record of entity with id "
+        + id);
+
+      ASSERT(entityProxy.className === type,
+        + "Type of entity " + entityProxy.getErrorStringId()
+        + " doesn't match requested type '" + type + "'");
+
+      return entityProxy;
+    }
+
+    return this.createInvalidEntityProxy(id, type);
   }
 
   // Check if entity exists in EntityManager.
@@ -306,6 +280,8 @@ export class EntityManager
 
   // --------------- Private methods -------------------
 
+  private createInvalidEntityProxy(id: string, type: string): Entity
+  /*
   private createInvalidEntityProxy
   (
     propertyName: string,
@@ -313,13 +289,14 @@ export class EntityManager
     filePath: string
   )
   : Entity
+  */
   {
     let handler = new EntityProxyHandler();
 
-    /// BIG TODO: Tohle je celý divný
-
-    // This also sets handler.entity to null.
-    handler.loadFromJsonObject(propertyName, jsonObject, filePath);
+    handler.id = id;
+    handler.type = type;
+    // Set handler.entity to null.
+    handler.invalidate();
 
     let entityProxy = new Proxy({}, handler);
 

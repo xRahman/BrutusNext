@@ -61,6 +61,7 @@ export class EntityProxyHandler
     ///this.id = null;
   }
 
+  /*
   public loadFromJsonObject
   (
     propertyName: string,
@@ -84,6 +85,7 @@ export class EntityProxyHandler
     // Set this.entity to null.
     this.invalidate();
   }
+  */
 
   // If this.entity is not null, it's 'id' and 'className'
   // variables will be compared to handler's 'id' and 'type'
