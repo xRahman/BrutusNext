@@ -42,6 +42,7 @@ export class Connection extends Entity
 
   public get ipAddress() { return this.socketDescriptor.getIpAddress(); }
 
+  /*
   public get ingameEntity(): GameEntity
   {
     if (this.ingameEntityId === null)
@@ -49,7 +50,9 @@ export class Connection extends Entity
 
     return this.ingameEntityId.getEntity({ typeCast: GameEntity });
   }
+  */
 
+  /*
   public get account()
   {
     if (this.accountId === null)
@@ -57,6 +60,7 @@ export class Connection extends Entity
 
     return this.accountId.getEntity({ typeCast: Account });
   }
+  */
 
   /*
   // Empty string means that we do not yet know what account does this
@@ -72,7 +76,7 @@ export class Connection extends Entity
   public ingameEntityId: EntityId = null;
   */
 
-  public ingameEntity: Entity = null;
+  public ingameEntity: GameEntity = null;
 
   // ------- Internal stage transition methods ----------
 
@@ -287,21 +291,21 @@ export class Connection extends Entity
         ASSERT(false, "Connection has not yet been initialized by"
           + "startLoginProcess(), it is not supposed to process any"
           + " commands yet");
-      break;
+        break;
 
       case Connection.stage.AUTHENTICATION:
         ASSERT(this.account === null,
           "Attempt to process authentication command on player connection"
           + "  that already has an account assigned");
         await this.authProcessor.processCommand(command);
-      break;
+        break;
 
       case Connection.stage.IN_LOBBY:
         ASSERT(this.account !== null,
           "Attempt to process lobby command on player connection that doesn't"
           + " have an account assigned");
         this.lobbyProcessor.processCommand(command);
-      break;
+        break;
 
       case Connection.stage.IN_GAME:
         ASSERT(this.account !== null,
@@ -313,16 +317,16 @@ export class Connection extends Entity
           + " have an ingame entity attached")
 
         this.ingameEntity.processCommand(command);
-      break;
+        break;
 
       case Connection.stage.LOGGED_OUT:
         ASSERT(false, "Player is logged out already, Connection"
           + " is not supposed to process any more commands");
-      break;
+        break;
 
       default:
         ASSERT(false, "Unknown stage");
-      break;
+        break;
     }
   }
 
@@ -462,10 +466,10 @@ export class Connection extends Entity
     return false;
   }
 
-  public attachToGameEntity(gameEntity: Entity)
+  public attachToGameEntity(gameEntity: GameEntity)
   {
     this.ingameEntity = gameEntity;
-    gameEntity.connectionId = this.getId();
+    gameEntity.connection = this;
   }
 
   public detachFromGameEntity()
@@ -502,7 +506,7 @@ export class Connection extends Entity
 
   private getOldConnection(account: Account): Connection
   {
-    if (account.connectionId !== null)
+    if (account.connection !== null)
     {
       return account.connection;
     }

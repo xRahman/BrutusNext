@@ -27,7 +27,11 @@ export class Account extends NamedEntity
   // Do not save and load property 'connection'.
   private static connection = { isSaved: false };
 
-  constructor(name: string, connection: connection)
+  /// TODO: Accounty se vyrábí stejně jako ostatní entity,
+  /// takže asi nebude průchozí předávat jim parametry v konstruktoru.
+  /// - i když, možná to přece jen nakonec půjde, zatím to tu nechám
+  ///constructor(name: string, connection: Connection)
+  constructor()
   {
     super();
 
@@ -36,9 +40,14 @@ export class Account extends NamedEntity
     // .json files to conform to the new version.
     this.version = 0;
 
+    /// TODO: Accounty se vyrábí stejně jako ostatní entity,
+    /// takže asi nebude průchozí předávat jim parametry v konstruktoru.
+    /// - i když, možná to přece jen nakonec půjde, zatím to tu nechám
+    /*
     this.connection = connection;
 
     this.name = name;
+    */
     // Account names are unique.
     this.isNameUnique = true;
   }

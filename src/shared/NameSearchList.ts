@@ -48,7 +48,7 @@ export class NameSearchList extends EntityList
 
   // Only checks entities with unique names.
   // -> Returns undefined if entity isn't loaded or doesn't exist.
-  public getEntityByName(name: string): NamedEntity
+  public getEntityByName(name: string)
   {
     return this.uniqueNames.get(name);
   }

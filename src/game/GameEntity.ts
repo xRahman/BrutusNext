@@ -137,6 +137,7 @@ export class GameEntity extends ContainerEntity
     return ancestorPath + className + "/";
   }
 
+  /*
   // Dynamically creates a new instance of requested class (param.prototype)
   // and inserts it to specified idList (param.idList).
   public createEntity<T>
@@ -167,6 +168,7 @@ export class GameEntity extends ContainerEntity
 
     return id;
   }
+  */
 
   public generatePrompt(): string
   {

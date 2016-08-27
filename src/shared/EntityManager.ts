@@ -36,8 +36,10 @@ import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {IdProvider} from '../shared/IdProvider';
 import {Entity} from '../shared/Entity';
+import {NamedEntity} from '../shared/NamedEntity';
 import {EntityProxyHandler} from '../shared/EntityProxyHandler';
 import {SaveableObject} from '../shared/SaveableObject';
+import {Server} from '../server/Server';
 
 export class EntityManager
 {
@@ -55,38 +57,56 @@ export class EntityManager
     this.idProvider = new IdProvider(timeOfBoot);
   }
 
+  // ------------- Public static methods ----------------
+
+  // Shortcut so you can use EntityManager.createNamedEntity()
+  // instead of Server.entityManager.createNamedEntity().
+  public static createNamedEntity<T>
+  (
+    name: string,
+    prototype: string,
+    typeCast: { new (...args: any[]): T }
+  )
+  : T
+  {
+    return Server.entityManager.createNamedEntity(name, prototype, typeCast);
+  }
+
   // ---------------- Public methods --------------------
 
-  /// Tohle je blbost. Nemá smysl rozlišovat, jestli vytvářím valid nebo
-  /// invalid referenci - to záleží na tom, jestli id je v EntityManageru
-  /// nebo ne.
-  /*
-  public createInvalidReference(className: string, id: string): Entity
+  public createNamedEntity<T>
+  (
+    name: string,
+    prototype: string,
+    typeCast: { new (...args: any[]): T }
+  )
+  : T
   {
-    let handler = new EntityProxyHandler();
+    // Here we are dynamically typecasting to 'NamedEntity' in order
+    // to be able to set entity.name.
+    let entity = this.createEntity(prototype, NamedEntity);
 
-    // 'id' can be null
-    // (this is used for example when loading world. World saves to file
-    // 'world.json' so we don't need to know world's id to be able to load it.)
-    handler.id = id;
-    handler.type = className;
-    handler.entity = null;
+    entity.name = name;
 
-    let entityProxy = new Proxy({}, handler);
-
-    return entityProxy;
+    // Here we are dynamically typecasting back to requested type.
+    return this.dynamicCast(entity, typeCast);
   }
-  */
 
   // Creates an entity of type 'className' with a new id.
-  // Note:
-  //  This should be the only place in whole code where new id's are generated.
   // -> Returns entity proxy (which is used instead of entity).
-  public createEntity(className: string): Entity
+  public createEntity<T>
+  (
+    className: string,
+    typeCast: { new (...args: any[]): T }
+  )
+  : T
   {
     let handler = new EntityProxyHandler();
 
     // Generate a new id for this new entity.
+    // Note:
+    //  This should be the only place in whole code where new id's
+    //  are generated.
     handler.id = this.idProvider.generateId();
     handler.type = className;
     handler.entity = null;
@@ -99,7 +119,7 @@ export class EntityManager
     // Add newly created entity record to hashmap under entity's string id.
     this.entityRecords.set(handler.id, entityRecord);
 
-    return entityProxy;
+    return this.dynamicCast(entityProxy, typeCast);
   }
 
   // Loads entity from file. Don't use this method, call entity.load()
@@ -157,33 +177,6 @@ export class EntityManager
     // information: id, entity type and entity reference.
     entityRecord.updateProxyHandlers(id, entity.className, entity);
   }
-
-  /*
-  // Adds an entity to the hashmap under it's id.
-  //   If entity doesn't have an id, a new one will be generated,
-  // otherwise it will be added under it's existing id.
-  // -> Returns entity proxy (which should be used instead of entity).
-  public add(entity: Entity)
-  {
-    let id = entity.getId();
-
-    // If entity doesn't have an id, a new one will be generated.
-    if (id === null)
-    {
-      id = this.idProvider.generateId();
-      entity.setId(id);
-    }
-
-    let handler = new EntityProxyHandler();
-    let entityProxy = new Proxy({}, handler);
-    let entityRecord = new EntityRecord(entity, entityProxy, handler);
-
-    // Add newly created entity record to hashmap under entity's string id.
-    this.entityRecords.set(id, entityRecord);
-
-    return entityProxy;
-  }
-  */
 
   // This method is used by etity handler when it's internal
   // entity reference is null.
@@ -281,15 +274,6 @@ export class EntityManager
   // --------------- Private methods -------------------
 
   private createInvalidEntityProxy(id: string, type: string): Entity
-  /*
-  private createInvalidEntityProxy
-  (
-    propertyName: string,
-    jsonObject: any,
-    filePath: string
-  )
-  : Entity
-  */
   {
     let handler = new EntityProxyHandler();
 
@@ -311,6 +295,7 @@ export class EntityManager
     ASSERT(handler.type !== null,
       "Invalid 'type' on entity proxy handler");
 
+    // TODO: Nežádat o instanci SaveableObject, ale DynamicClassFactory
     let entity: Entity = SaveableObject.createInstance
       ({ className: handler.type, typeCast: Entity });
 
@@ -347,6 +332,25 @@ export class EntityManager
     }
 
     return entity;
+  }
+
+  private dynamicCast<T>
+  (
+    entity: Entity,
+    type: { new (...args: any[]): T }
+  )
+  {
+    // Dynamic type check - we make sure that our newly created object
+    // is inherited from requested class (or an instance of the class itself).
+    ASSERT_FATAL(false,
+      "Type cast error: Newly created entity "
+      + "of type '" + type + "' is not an instance"
+      + " of requested type (" + type.name + ")");
+
+    // Here we typecast to <any> in order to pass entity
+    // as type T (you can't typecast directly to template type but you can
+    // typecast to <any> which is then automatically cast to template type).
+    return <any>entity;
   }
 }
 

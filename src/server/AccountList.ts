@@ -11,9 +11,11 @@ import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {FileSystem} from '../shared/fs/FileSystem';
 import {Server} from '../server/Server';
 import {NameSearchList} from '../shared/NameSearchList';
-import {EntityId} from '../shared/EntityId';
+///import {EntityId} from '../shared/EntityId';
+import {EntityManager} from '../shared/EntityManager';
 import {Account} from '../server/Account';
 import {Mudlog} from '../server/Mudlog';
+import {Connection} from '../server/Connection';
 
 export class AccountList extends NameSearchList
 {
@@ -25,20 +27,25 @@ export class AccountList extends NameSearchList
   (
     accountName: string,
     password: string,
-    connectionId: EntityId
+    connection: Connection
   )
-  : EntityId
+  : Account
   {
     ASSERT_FATAL(!this.exists(accountName),
       "Attempt to create account '"
       + accountName + "' which already exists");
 
-    let account = new Account(accountName, connectionId);
+    let account = EntityManager.createNamedEntity
+    (
+      accountName,
+      'Account',
+      Account
+    );
 
     // This creates and assigns hash. Actual password is not remembered.
     account.setPasswordHash(password);
 
-    let id = Server.idProvider.createId(account);
+    ///let id = Server.idProvider.createId(account);
 
     this.add(account);
 
@@ -53,7 +60,7 @@ export class AccountList extends NameSearchList
     // for await.)
     account.save();
 
-    return id;
+    return account;
   }
 
   // Returns true if account with given name exists.
@@ -69,27 +76,20 @@ export class AccountList extends NameSearchList
     return FileSystem.existsSync(path);
   }
 
-  // Return account id if account is already loaded, null otherwise.
-  public getAccountByName(accountName: string): Account
+  // -> Returns undefined if account isn't onlne or doesn't exist.
+  public getAccountByName(accountName: string)
   {
-    if (this.hasUniqueEntity(accountName))
-    {
-      // Attempt to re-log to an online account.
-      let id = this.getIdByName(accountName);
-
-      return id.getEntity({ typeCast: Account });
-    }
-
-    return null;
+    // Attempt to re-log to an online account.
+    return this.getEntityByName(accountName);
   }
 
-  public dropAccount(accountId: EntityId)
+  public dropAccount(account: Account)
   {
-    // Remove entity reference from id so the memory can be dealocated.
-    accountId.dropEntity();
+    // Remove id from thist.
+    this.remove(account);
 
-    // Remove id from idList.
-    this.remove(accountId);
+    // Remove entity reference EntityManager so the memory can be dealocated.
+    Server.entityManager.remove(account);
   }
 
   // -------------- Protected methods -------------------

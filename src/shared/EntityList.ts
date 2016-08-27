@@ -158,5 +158,13 @@ export class EntityList extends SaveableObject
     return this.entities.has(entity.getId());
   }
 
+  /*
+  // -> Returns undefined if entity is not in the list
+  public get(id: string): Entity
+  {
+    return this.entities.get(id);
+  }
+  */
+
   // -------------- Private methods -------------------
 }
