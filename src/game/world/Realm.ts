@@ -10,7 +10,7 @@ import {ASSERT} from '../../shared/ASSERT'
 import {SaveableObject} from '../../shared/SaveableObject';
 import {Game} from '../../game/Game';
 import {GameEntity} from '../../game/GameEntity';
-import {EntityId} from '../../shared/EntityId';
+///import {EntityId} from '../../shared/EntityId';
 import {Area} from '../../game/world/Area';
 
 export class Realm extends GameEntity

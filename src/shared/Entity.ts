@@ -8,7 +8,7 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
-import {EntityId} from '../shared/EntityId';
+///import {EntityId} from '../shared/EntityId';
 import {SaveableObject} from '../shared/SaveableObject';
 import {AutoSaveableObject} from '../shared/AutoSaveableObject';
 import {Server} from '../server/Server';
@@ -96,6 +96,18 @@ export class Entity extends AutoSaveableObject
 
   // ---------------- Public methods --------------------
 
+  public isValid(): boolean
+  {
+    // This function exists only for typescript to stop complaing
+    // that it doesn't exist. It should never be called, however,
+    // because 'isValid()' call should always be trapped by
+    // entity proxy (see EntityProxyHandler.get()).
+    ASSERT(false,
+      "Entity.isValid() function should never be called");
+
+    return false;
+  }
+
   public saveIdToJsonObject()
   {
     let jsonObject =
@@ -151,10 +163,16 @@ export class Entity extends AutoSaveableObject
   // if entity had been deleted.
   public async save()
   {
+    /*
     // 'entityDeleted' flag is on id, not on entity (because id
     // may persist even after entity is deleted).
     if (!ASSERT(this.getId().isEntityDeleted() === false,
         "Attemp to save deleted entity " + this.getErrorIdString()))
+      return;
+    */
+
+    if (!ASSERT(this.isValid(),
+        "Attemp to save invalid entity " + this.getErrorIdString()))
       return;
 
     await this.saveToFile(this.getSaveDirectory(), this.getSaveFileName());
@@ -167,7 +185,7 @@ export class Entity extends AutoSaveableObject
     if (this.getId() === null)
       return this.className;
 
-    return this.className + " (id: " + this.getId().getStringId() + ")";
+    return this.className + " (id: " + this.getId() + ")";
   }
 
   // Entity adds itself to approptiate IdList
@@ -178,11 +196,13 @@ export class Entity extends AutoSaveableObject
 
   // --------------- Protected methods ------------------
 
+  /*
   // This is used for creating save file names.
   protected getIdStringValue(): string
   {
     return this.id.getStringId();
   }
+  */
 
   protected getSaveDirectory(): string
   {
@@ -193,7 +213,7 @@ export class Entity extends AutoSaveableObject
 
   protected getSaveFileName(): string
   {
-    return this.id.getStringId() + '.json';
+    return this.id + '.json';
   }
 
   /*

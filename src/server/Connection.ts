@@ -23,11 +23,21 @@ import {Character} from '../game/characters/Character';
 
 export class Connection extends Entity
 {
-  constructor(protected socketDescriptor: SocketDescriptor)
+  private socketDescriptor: SocketDescriptor = null;
+
+  /*
+  constructor()
   {
     super();
 
     socketDescriptor.connection = this;
+  }
+  */
+
+  public setSocketDescriptor(socketDescriptor: SocketDescriptor)
+  {
+    socketDescriptor.connection = this;
+    this.socketDescriptor = socketDescriptor;
   }
 
   // ----------------- Public data ----------------------

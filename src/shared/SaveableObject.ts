@@ -432,7 +432,7 @@ export class SaveableObject extends AttributableClass
       // exists. An existing entity proxy is returned in
       // such case. An an 'invalid entity' proxy is created
       // and returned otherwise.
-      return Server.entityManager.loadReferenceFromJsonObject
+      return this.loadReferenceFromJsonObject
       (
         variableName,
         variable,

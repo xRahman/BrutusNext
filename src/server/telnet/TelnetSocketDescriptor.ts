@@ -226,10 +226,9 @@ export class TelnetSocketDescriptor extends SocketDescriptor
   {
     let player = "";
 
-    if (this.connection.accountId !== null)
+    if (this.connection.account !== null)
     {
-      let accountName =
-        this.connection.accountId.getEntity({ typeCast: Account }).name;
+      let accountName = this.connection.account.name;
 
       player = "Player " + accountName;
     }

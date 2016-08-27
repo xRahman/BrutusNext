@@ -9,7 +9,7 @@
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {Server} from '../server/Server';
-import {EntityId} from '../shared/EntityId';
+///import {EntityId} from '../shared/EntityId';
 import {SaveableObject} from '../shared/SaveableObject';
 import {Script} from '../shared/Script';
 import {Connection} from '../server/Connection';
@@ -60,6 +60,7 @@ export class GameEntity extends ContainerEntity
 
   // --------------- Public accessors -------------------
 
+  /*
   public get connection(): Connection
   {
     // We need to return null if connectionId is null, because
@@ -75,6 +76,7 @@ export class GameEntity extends ContainerEntity
 
     return this.connectionId.getEntity({ typeCast: Connection });
   }
+  */
 
   public setLocation(location: ContainerEntity) { this.location = location; }
   public getLocation() { return this.location; }
@@ -176,21 +178,21 @@ export class GameEntity extends ContainerEntity
     return "&gDummy_ingame_prompt >";
   }
 
-  public atachConnection(connectionId: EntityId)
+  public atachConnection(connection: Connection)
   {
-    ASSERT(this.connectionId !== null,
+    ASSERT(this.connection !== null,
       "Attempt to attach player connection to '" + this.getErrorIdString()
       + "' which already has a connection attached to it. If you want"
       + " to change which connection is attached to this entity, use"
       + " detachConnection() first and then attach a new one.");
 
-    this.connectionId = connectionId;
+    this.connection = connection;
   }
 
   public detachConnection()
   {
     // TODO
-    this.connectionId = null;
+    this.connection = null;
   }
 
   // Player connected to this entity is entering game.
@@ -232,12 +234,15 @@ export class GameEntity extends ContainerEntity
 
   // null if no player is connected to (is playing as) this entity,
   // connectionId otherwise.
-  private connectionId: EntityId = null;
+  public connection: Connection = null;
   // Flag saying that connectionId is not to be saved to JSON.
   private static playerConnectionId = { isSaved: false };
 
+  /// Tohle je z?ejm? poz?statek staršího p?ístupu k prototyp?m.
+  /*
   // EntityId of prototype entity. If it's null, this entity is a prototype.
-  protected prototypeId: EntityId = null;
+  protected prototype: EntityId = null;
+  */
 
   // --------------- Protected methods ------------------
 
@@ -268,7 +273,7 @@ export class GameEntity extends ContainerEntity
   // Entity this entity is contained in.
   // (Rooms are contained in Areas, characters may be in rooms or object,
   // objects may be in room or object, etc.)
-  protected location: GameEntity = null;
+  protected location = null;
 
   // ---------------- Command handlers ------------------
 
@@ -374,8 +379,7 @@ export class GameEntity extends ContainerEntity
 
 
 
-    let output =
-      this.location.getEntity({ typeCast: GameEntity }).printContents();
+    let output = this.location.printContents();
 
     if (output !== "")
       this.connection.sendAsBlock(output);

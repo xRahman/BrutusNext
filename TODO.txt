@@ -1,3 +1,15 @@
+TODO: Úplně se mi nelíbí, že fci entityManager.createUniqueEntity()
+ (a asi i createEntity()) dávám jako parametr stringovou reprezentaci
+ typu a za ní ještě typ.
+ - asi by bylo lepší udělat dvojice fcí, jedna (createDynamicEntity()?)
+   co dostane i string a druhá, která si vystačí s konstruktorem classy.
+   - nebo možná dát string jako volitelný parametr (kontrolovat to uvnitř
+     funkce).
+Jo a při tý příležitosti bych asi mohl udělat statické fce, abych nemusel
+chodit přes Server.entityManager....
+  (a nebo se na to vyprdnout a dělat to naopak vždycky, tj. zrušit tu
+  existující statickou zkratku)
+
 TODO: Sjednotit návratové hodnoty: Když něco není nalezeno, tak nevracet
   null, ale undefined
 
