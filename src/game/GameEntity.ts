@@ -15,7 +15,7 @@ import {Script} from '../shared/Script';
 import {Connection} from '../server/Connection';
 import {Game} from '../game/Game';
 import {ContainerEntity} from '../game/ContainerEntity';
-import {IdList} from '../shared/IdList'
+import {EntityList} from '../shared/EntityList'
 
 export class GameEntity extends ContainerEntity
 {
@@ -76,7 +76,7 @@ export class GameEntity extends ContainerEntity
     return this.connectionId.getEntity({ typeCast: Connection });
   }
 
-  public setLocation(location: EntityId) { this.location = location; }
+  public setLocation(location: ContainerEntity) { this.location = location; }
   public getLocation() { return this.location; }
 
   // -------------- Protected accessors -----------------
@@ -145,7 +145,7 @@ export class GameEntity extends ContainerEntity
     {
       name: string,
       prototype: string,
-      idList: IdList
+      idList: EntityList
     }
   )
   : EntityId
@@ -263,10 +263,10 @@ export class GameEntity extends ContainerEntity
 
   // -------------- Protected class data ---------------
 
-  // EntityId of an entity this entity is contained in.
+  // Entity this entity is contained in.
   // (Rooms are contained in Areas, characters may be in rooms or object,
   // objects may be in room or object, etc.)
-  protected location: EntityId = null;
+  protected location: GameEntity = null;
 
   // ---------------- Command handlers ------------------
 

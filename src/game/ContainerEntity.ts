@@ -17,8 +17,8 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
-import {Entity} from '../shared/Entity';
-import {IdList} from '../shared/IdList';
+///import {Entity} from '../shared/Entity';
+import {EntityList} from '../shared/EntityList';
 import {Game} from '../game/Game';
 import {GameEntity} from '../game/GameEntity';
 import {EntityId} from '../shared/EntityId';
@@ -63,23 +63,21 @@ export abstract class ContainerEntity extends CommandInterpretter
   // Every game entity can contain other game entities.
   // (Rooms contain characters and objects, bags contain other objects,
   //  sectors contain rooms, etc.)
-  protected contents = new IdList();
+  protected contents = new EntityList();
 
   // --------------- Protected methods ------------------
 
-  // Adds entity id to contents of this entity.
-  protected insertEntity(entityId: EntityId)
+  // Adds entity to contents of this entity.
+  protected insertEntity(entity: GameEntity)
   {
-    let entity = entityId.getEntity({ typeCast: GameEntity });
-
     this.contents.add(entity);
 
-    entity.setLocation(this.getId());
+    entity.setLocation(this);
   }
 
   // Removes entity if from contents of this entity.
-  public removeEntity(entityId: EntityId)
+  public removeEntity(entity: GameEntity)
   {
-    this.contents.remove(entityId);
+    this.contents.remove(entity);
   }
 }

@@ -34,6 +34,8 @@ export class Sector extends GameEntity
 
   // ---------------- Public methods --------------------
 
+  /// Momentáln? se to nikde nevolá, tak to nebudu ?ešit.
+  /*
   public createRoom(param: { name: string, prototype: string }): EntityId
   {
     let newRoomId = this.createEntity
@@ -50,6 +52,7 @@ export class Sector extends GameEntity
 
     return newRoomId;
   }
+  */
 
   // -------------- Protected class data ----------------
 

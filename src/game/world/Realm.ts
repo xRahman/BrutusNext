@@ -33,6 +33,8 @@ export class Realm extends GameEntity
 
   // ---------------- Public methods --------------------
 
+  /// Momentálně se to nikde nevolá, tak to nebudu řešit.
+  /*
   public createArea(param: { name: string, prototype: string }): EntityId
   {
     let newAreaId = this.createEntity
@@ -49,6 +51,7 @@ export class Realm extends GameEntity
 
     return newAreaId;
   }
+  */
 
   // -------------- Protected class data ----------------
 
