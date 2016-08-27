@@ -8,6 +8,7 @@
   which has already been deleted.
 */
 
+/*
 'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
@@ -298,3 +299,4 @@ export class EntityId extends SaveableObject
     return true;
   }
 }
+*/
