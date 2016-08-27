@@ -9,18 +9,19 @@
 import {ASSERT} from '../shared/ASSERT';
 //import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {NamedEntity} from '../shared/NamedEntity';
-import {IdList} from '../shared/IdList';
-import {EntityId} from '../shared/EntityId';
+import {EntityList} from '../shared/EntityList';
+import {Entity} from '../shared/Entity';
+///import {EntityId} from '../shared/EntityId';
 //import {SaveableObject} from '../shared/SaveableObject';
 //import {Server} from '../server/Server';
 
-export class NameSearchList extends IdList
+export class NameSearchList extends EntityList
 {
   // -------------- Private class data ----------------
 
-  // Hashmap<[ string, EntityId ]>
-  //   Key: stringId
-  //   Value: EntityId
+  // Hashmap<[ string, Entity ]>
+  //   Key: string id
+  //   Value: entity reference
   private uniqueNames = new Map();
   // Do not save or load property 'uniqueNames'.
   private static uniqueNames = { isSaved: false };
@@ -29,56 +30,44 @@ export class NameSearchList extends IdList
 
   // ---------------- Public methods --------------------
 
-  public add(entity: NamedEntity): EntityId
+  // -> Returns true if adding succeeded.
+  public add(entity: NamedEntity): boolean
   {
-    let id = super.add(entity);
-
-    if (id === null)
-      return null;
+    // Try to add an entity to the list using our ancestor's add() method.
+    if (super.add(entity) === null)
+      return false;
 
     // If entity has unique name, add it's id to the hashmap of unique names.
     if (entity.isNameUnique)
     {
-      this.uniqueNames.set(entity.name, id);
+      this.uniqueNames.set(entity.name, entity);
     }
 
-    return id;
+    return true;
   }
 
-  // Returns null if entity isn't loaded (or doesn't exist).
   // Only checks entities with unique names.
-  public getIdByName(name: string): EntityId
+  // -> Returns undefined if entity isn't loaded or doesn't exist.
+  public getEntityByName(name: string): NamedEntity
   {
-    let id = this.uniqueNames.get(name);
-
-    if (id !== undefined)
-    {
-      return id;
-    }
-
-    return null;
+    return this.uniqueNames.get(name);
   }
 
   // Removes entity id from this list, but doesn't delete entity from
   // memory.
-  public remove(entityId: EntityId)
+  public remove(entity: NamedEntity): boolean
   {
-    let entity = entityId.getEntity({ typeCast: NamedEntity });
-
-    if (entity === null)
-      return;
-
     if (entity.isNameUnique)
     {
       if (ASSERT(entity.name !== undefined,
-        "'name' property doesn't exist."))
+          "'name' property doesn't exist."))
       {
         // Remove record from hashmap storing ids of uniquely named entities.
         delete this.uniqueNames[entity.name];
       }
     }
 
-    super.remove(entityId);
+    return super.remove(entity);
   }
 
   public hasUniqueEntity(name: string): boolean

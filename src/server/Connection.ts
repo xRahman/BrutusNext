@@ -8,7 +8,7 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
-import {EntityId} from '../shared/EntityId';
+//import {EntityId} from '../shared/EntityId';
 import {Entity} from '../shared/Entity';
 import {Mudlog} from '../server/Mudlog';
 import {AdminLevels} from '../server/AdminLevels';
@@ -26,15 +26,19 @@ export class Connection extends Entity
   constructor(protected socketDescriptor: SocketDescriptor)
   {
     super();
+
+    socketDescriptor.connection = this;
   }
 
   // ----------------- Public data ----------------------
 
+  /*
   public setId(id: EntityId)
   {
     this.socketDescriptor.setConnectionId(id);
     super.setId(id);
   }
+  */
 
   public get ipAddress() { return this.socketDescriptor.getIpAddress(); }
 
@@ -54,14 +58,21 @@ export class Connection extends Entity
     return this.accountId.getEntity({ typeCast: Account });
   }
 
+  /*
   // Empty string means that we do not yet know what account does this
   // connection match to.
   public accountId: EntityId = null;
+  */
+  public account: Account = null;
 
+  /*
   // EntityId of entity this player connection is attached to.
   // (usually the character a player is playing, but it is possible for
   // immortals to 'switch' to any game entity)
   public ingameEntityId: EntityId = null;
+  */
+
+  public ingameEntity: Entity = null;
 
   // ------- Internal stage transition methods ----------
 
@@ -86,8 +97,8 @@ export class Connection extends Entity
         || this.stage === Connection.stage.IN_GAME,
       "Entering game from wrong stage");
 
-    ASSERT(this.accountId !== null,
-      "Invalid account id");
+    ASSERT(this.account !== null,
+      "Invalid account when entering game");
 
     this.stage = Connection.stage.IN_GAME;
 
@@ -197,8 +208,8 @@ export class Connection extends Entity
       AdminLevels.IMMORTAL
     );
 
-    this.accountId = account.getId();
-    account.connectionId = this.getId();
+    this.account = account;
+    account.connection = this;
     this.enterLobby();
   }
 
@@ -210,26 +221,26 @@ export class Connection extends Entity
     let accountManager = Server.accounts;
     let oldStage = Connection.stage.INITIAL;
     let oldConnection = this.getOldConnection(account);
-    let oldIngameEntityId = null;
+    let oldIngameEntity = null;
 
     // If old connection is still alive, we need to send a message
     // to it informing about usurping of connection and close it.
     if (oldConnection)
     {
       oldStage = oldConnection.stage;
-      oldIngameEntityId = oldConnection.ingameEntityId;
+      oldIngameEntity = oldConnection.ingameEntity;
 
       // If ids of old a new connection are the same, it means that
       // player is reconnecting using the same connection and so we
       // don't need to announce that his connection has been usurped
       // and we shouldn't close the connection.
       // (I'm not sure if it's even possible, but better be sure)
-      if (!oldConnection.getId().equals(this.getId()))
+      if (oldConnection.getId() !== this.getId())
       {
         oldConnection.announceConnectionBeingUsurped();
         // Set null to oldConnection.accountId to prevent account being
         // logged out when the connection closes.
-        oldConnection.accountId = null;
+        oldConnection.account = null;
         
         // Closes the socket, which will trigger 'close' event on it,
         // which will then be handled by closing the connection.
@@ -237,8 +248,8 @@ export class Connection extends Entity
       }
     }
 
-    account.connectionId = this.getId();
-    this.accountId = account.getId();
+    account.connection = this;
+    this.account = account;
 
     Mudlog.log
     (
@@ -251,12 +262,12 @@ export class Connection extends Entity
     // If player was in game before and we know what game entity she has
     // been connected to, send her back to the game.
     if (oldStage === Connection.stage.IN_GAME
-        && oldIngameEntityId !== null)
+        && oldIngameEntity !== null)
     {
 
       // If we know what entity has player been connected to before,
       // connect her to it again.
-      this.ingameEntityId = oldIngameEntityId;
+      this.ingameEntity = oldIngameEntity;
       this.reconnectToCharacter();
     }
     else
@@ -279,21 +290,21 @@ export class Connection extends Entity
       break;
 
       case Connection.stage.AUTHENTICATION:
-        ASSERT(this.accountId === null,
+        ASSERT(this.account === null,
           "Attempt to process authentication command on player connection"
           + "  that already has an account assigned");
         await this.authProcessor.processCommand(command);
       break;
 
       case Connection.stage.IN_LOBBY:
-        ASSERT(this.accountId !== null,
+        ASSERT(this.account !== null,
           "Attempt to process lobby command on player connection that doesn't"
           + " have an account assigned");
         this.lobbyProcessor.processCommand(command);
       break;
 
       case Connection.stage.IN_GAME:
-        ASSERT(this.accountId !== null,
+        ASSERT(this.account !== null,
           "Attempt to process ingame command on player connection that doesn't"
           + " have an account assigned");
 
@@ -439,7 +450,7 @@ export class Connection extends Entity
 
   public isInGame()
   {
-    if (this.ingameEntityId !== null)
+    if (this.ingameEntity !== null)
     {
       ASSERT(this.stage === Connection.stage.IN_GAME,
         "Player connection has ingame entity assigned but player connection"
@@ -451,9 +462,9 @@ export class Connection extends Entity
     return false;
   }
 
-  public attachToGameEntity(gameEntity)
+  public attachToGameEntity(gameEntity: Entity)
   {
-    this.ingameEntityId = gameEntity.id;
+    this.ingameEntity = gameEntity;
     gameEntity.connectionId = this.getId();
   }
 
@@ -642,7 +653,7 @@ export class Connection extends Entity
 
   private removeSelfFromManager()
   {
-    Server.connections.remove(this.getId());
+    Server.connections.remove(this);
   }
 
   private logoutAccount(action: string)
@@ -663,7 +674,7 @@ export class Connection extends Entity
     }
 
     this.account.logout(action);
-    this.accountId = null;
+    this.account = null;
   }
 
   private announcePlayerLostConnection(state: string)
@@ -684,7 +695,7 @@ export class Connection extends Entity
 
   private onSocketCloseWhenAuthenticating()
   {
-    if (!ASSERT(this.accountId === null,
+    if (!ASSERT(this.account === null,
       "Player connection is in AUTHENTICATION stage but has an account"
       + "assigned to it already. That's not supposed to happen"))
     {

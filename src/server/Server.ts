@@ -21,7 +21,7 @@ import {FileSystem} from '../shared/fs/FileSystem';
 import {FlagNamesManager} from '../shared/FlagNamesManager';
 import {Connection} from '../server/Connection';
 ///import {Mudlog} from '../server/Mudlog';
-import {IdList} from '../shared/IdList';
+import {EntityList} from '../shared/EntityList';
 import {AccountList} from '../server/AccountList';
 import {Game} from '../game/Game';
 import {TelnetServer} from '../server/telnet/TelnetServer';
@@ -48,7 +48,7 @@ export class Server
   // --------- idLists ---------
   // IdLists contain entity id's.
 
-  private connections = new IdList();
+  private connections = new EntityList();
   private accounts = new AccountList();
 
   // -------- managers --------

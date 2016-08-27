@@ -45,33 +45,6 @@ export class World extends GameEntity
 
   // ---------------- Public methods --------------------
 
-  /*
-  public createRealm(name: string, prototype: string ): Realm
-  {
-
-    let realm = Server.entityManager.createEntity(prototype);
-
-    if (!ASSERT_FATAL(this.world !== null, "Failed to create world"))
-      return;
-
-    this.world.name = param.name;
-
-    let newRealmId = this.createEntity
-    (
-      {
-        name: param.name,
-        prototype: param.prototype,
-        idList: Game.realms
-      }
-    );
-
-    // Add new realm id to the list of entities contained in the world.
-    this.insertEntity(newRealmId);
-
-    return newRealmId;
-  }
-  */
-
   public createSystemRealm()
   {
     // Create a new realm prototype.
