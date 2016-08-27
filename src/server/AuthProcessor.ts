@@ -36,6 +36,7 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
+import {EntityManager} from '../shared/EntityManager';
 import {Mudlog} from '../server/Mudlog';
 import {AdminLevels} from '../server/AdminLevels';
 import {Connection} from '../server/Connection';
@@ -45,11 +46,13 @@ import {AccountList} from '../server/AccountList';
 
 export class AuthProcessor
 {
+  /*
   // In this special case it's ok to hold direct reference to
   // Connection, because instance of AuthProcessor
   // is owned by the very Connection we are storing reference
   // of here. In any other case, unique stringId of Connection (within
   // Server.connections) needs to be used instead of a direct reference!
+  */
   constructor(protected connection: Connection) { }
 
   public static get MAX_ACCOUNT_NAME_LENGTH() { return 12; }
@@ -169,7 +172,16 @@ export class AuthProcessor
     }
     else
     {
+      account = EntityManager.createNamedEntity
+      (
+        this.accountName,
+        'Account',
+        Account
+      );
+      account.connection = this.connection;
+      /*
       account = new Account(this.accountName, this.connection.getId());
+      */
 
       // Account name is passed to check against character name saved
       // in file (they must by the same).
@@ -191,11 +203,11 @@ export class AuthProcessor
     // she can see it typed (which is the only option when using telnet).
 
     // Password accepted, create a new account.
-    let newAccountId = Server.accounts.createAccount
+    let account = Server.accounts.createAccount
     (
       this.accountName,
       password,
-      this.connection.getId()
+      this.connection
     );
 
     Mudlog.log
@@ -206,7 +218,7 @@ export class AuthProcessor
       AdminLevels.IMMORTAL
     );
 
-    this.connection.accountId = newAccountId;
+    this.connection.account = account;
     this.updateLoginInfo();
     this.stage = AuthProcessor.stage.DONE;
     this.connection.enterLobby();

@@ -11,7 +11,7 @@ import {Prototype} from '../shared/Prototype';
 import {VirtualMachine} from '../shared/vm/VirtualMachine';
 import {AdminLevels} from '../server/AdminLevels';
 import {Mudlog} from '../server/Mudlog';
-import {EntityId} from '../shared/EntityId';
+//import {EntityId} from '../shared/EntityId';
 import {GameEntity} from '../game/GameEntity';
 
 // 3rd party modules.
@@ -123,7 +123,7 @@ export class Script extends SaveableObject
         await script.internalDelay
         (
           miliseconds,     // Length of the delay.
-          entity.getId(),  // Id of entity on which the script was triggered.
+          entity,  // Id of entity on which the script was triggered.
           // Reference to compiled script function at the time of launching it.
           // (It will be used to check if script was recompiled whill it was
           //  running.)
@@ -281,13 +281,14 @@ export class Script extends SaveableObject
     script: Script,
     resolve,
     reject,
-    entityId: EntityId,
+    entity: GameEntity,
     compiledFunction: Function
   )
   {
     // TODO: Udelat neco s 'entityId', kdyz uz jsem ho sem propasoval
     // (testnout podle nej, jestli je entity jeste validni)
-    console.log(entityId.getStringId());
+    /// TODO: Nově tu mám referenci, takže stačí if (!entity.isValid())
+    console.log(entity.getId());
 
     // If the script code was recompiled while this script was
     // waiting for delay() to expire, this instance of script
@@ -342,7 +343,7 @@ export class Script extends SaveableObject
   private async internalDelay
   (
     miliseconds: number,
-    entityId: EntityId,
+    entity: GameEntity,
     compiledFunction: Function,
     scriptName: string
   )
@@ -379,7 +380,7 @@ export class Script extends SaveableObject
           this,     // Script object with compiled script.
           resolve,
           reject,
-          entityId,
+          entity,
           compiledFunction
         )
     );
