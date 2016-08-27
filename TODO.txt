@@ -1,4 +1,7 @@
+TODO: Zrušit z entity proměnné SAVE_DIRECTORY
+
 TODO: createSystemRealm() a všechno uvnitř.
+[done]
 
 ÚVAHA: Monžná se přece jen vrátím k classe Id (- nakonec ne)
   - ne proto, že bych se chtěl zbavit přímých referencí, ale proto, že když
