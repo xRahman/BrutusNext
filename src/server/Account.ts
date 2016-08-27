@@ -11,22 +11,23 @@ import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {FileSystem} from '../shared/fs/FileSystem';
 import {AdminLevels} from '../server/AdminLevels';
 import {Mudlog} from '../server/Mudlog';
-import {EntityId} from '../shared/EntityId';
+///import {EntityId} from '../shared/EntityId';
 import {NamedEntity} from '../shared/NamedEntity';
 import {Connection} from '../server/Connection';
 import {Server} from '../server/Server';
 import {Game} from '../game/Game';
+import {Character} from '../game/characters/Character';
 
 // Built-in node.js modules.
 import * as crypto from 'crypto';  // Import namespace 'crypto' from node.js
 
 export class Account extends NamedEntity
 {
-  public connectionId: EntityId = null;
-  // Do not save and load property 'connectionId'.
-  private static connectionId = { isSaved: false };
+  public connection: Connection = null;
+  // Do not save and load property 'connection'.
+  private static connection = { isSaved: false };
 
-  constructor(name: string, connectionId: EntityId)
+  constructor(name: string, connection: connection)
   {
     super();
 
@@ -35,7 +36,7 @@ export class Account extends NamedEntity
     // .json files to conform to the new version.
     this.version = 0;
 
-    this.connectionId = connectionId;
+    this.connection = connection;
 
     this.name = name;
     // Account names are unique.
@@ -46,10 +47,12 @@ export class Account extends NamedEntity
 
   // ----------------- Public data ----------------------
 
+  /*
   public get connection()
   {
     return this.connectionId.getEntity({ typeCast: Connection });
   }
+  */
 
   // List of character names this account has access to.
   public characters: Array<string> = [];
@@ -98,7 +101,7 @@ export class Account extends NamedEntity
     return this.connection.isInGame();
   }
 
-  public createCharacter(characterName: string): EntityId
+  public createCharacter(characterName: string): Character
   {
     let characterList = Game.characters;
 
@@ -110,30 +113,30 @@ export class Account extends NamedEntity
       return null;
     }
 
-    let characterId = characterList.createUniqueCharacter
+    let character = characterList.createUniqueCharacter
     (
       characterName,
-      this.connection.getId()
+      this.connection
     );
 
     // (Also handles error messages.)
-    if (!this.characterCreatedSuccessfuly(characterId, characterName))
+    if (!this.characterCreatedSuccessfuly(character, characterName))
       return null;
 
     this.addCharacter(characterName);
     this.logCharacterCreation(this.name, characterName);
 
-    return characterId;
+    return character;
   }
 
   private characterCreatedSuccessfuly
   (
-    characterId: EntityId,
+    character: Character,
     characterName: string
   )
   : boolean
   {
-    if (!ASSERT(characterId !== null,
+    if (!ASSERT(character !== null,
         "Failed to create new character (" + characterName + ")"))
     {
       this.connection.sendAsBlock
@@ -191,7 +194,7 @@ export class Account extends NamedEntity
       AdminLevels.IMMORTAL
     );
 
-    Server.accounts.dropAccount(this.getId());
+    Server.accounts.dropAccount(this);
   }
 
   /*

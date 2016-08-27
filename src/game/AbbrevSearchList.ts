@@ -20,8 +20,9 @@
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {NameSearchList} from '../shared/NameSearchList';
+import {EntityList} from '../shared/EntityList';
 import {GameEntity} from "../game/GameEntity";
-import {EntityId} from '../shared/EntityId';
+//import {EntityId} from '../shared/EntityId';
 
 export class AbbrevSearchList extends NameSearchList
 {
@@ -40,15 +41,21 @@ export class AbbrevSearchList extends NameSearchList
 
   // This hashmap maps abbreviations to the list of entities
   // corresponding to that abbreviation.
+  // Hashmap<[ string, EntityList ]>
+  //   Key: abbreviation (like "warrio").
+  //   Value: list of entity references that "listen" to this abbrev.
+  private abbrevList = new Map();
+  /*
   private abbrevList: { [abbrev: string]: EntityIdList } = {};
   // Do not save and load property 'abbrevList'.
+  */
   private static abbrevList = { isSaved: false };
 
   // ---------------- Public methods --------------------
 
   // Returns null if no such entity exists.
   // (search string should be something like "3.mob.orc_chief")
-  public search(searchString: string): EntityId
+  public search(searchString: string): GameEntity
   {
     let parseResult = this.parseSearchString(searchString);
     let cathegory = this.parseSearchCathegory(parseResult.cathegory);
@@ -65,29 +72,27 @@ export class AbbrevSearchList extends NameSearchList
     return this.findEntity(parseResult.name, parseResult.index, cathegory);
   }
 
-  public add(entity: GameEntity): EntityId
+  // -> Returns true if adding succeeded.
+  public add(entity: GameEntity): boolean
   {
-    let id = super.add(entity);
-
-    if (id === null)
-      return null;
+    if (super.add(entity) === false)
+      return false;
 
     // Add all aliases of this entity to abbrevSearchList.
     this.addToAbbrevList(entity);
 
-    return id;
+    return true;
   }
 
   // Removes entity id from this list, but doesn't delete the entity from
-  // the game.
-  public remove(entityId: EntityId)
+  // EntityManager.
+  // -> Returns true if deletion succeeded.
+  public remove(entity: GameEntity): boolean
   {
-    let entity = entityId.getEntity({ typeCast: GameEntity });
-
     // Remove all aliases of this entity from abbrevSearchList.
     this.removeFromAbbrevList(entity);
 
-    super.remove(entityId);
+    return super.remove(entity);
   }
 
   // ---------------- Private methods --------------------
@@ -102,11 +107,7 @@ export class AbbrevSearchList extends NameSearchList
       // Remove all possible abbreviations of each alias.
       for (let j = 0; j < alias.length; j++)
       {
-        this.removeEntityIdFromAbbreviation
-          (
-          alias.substring(0, j),
-          entity.getId()
-          );
+        this.removeEntityFromAbbreviation(alias.substring(0, j), entity);
       }
     }
   }
@@ -126,11 +127,7 @@ export class AbbrevSearchList extends NameSearchList
         // From 0 to i + 1, because we don't want to add empty string and
         // we do want to add last character of the string (substring()
         // doesn't include right limit to the result).
-        this.addEntityIdToAbbreviation
-          (
-          alias.substring(0, j + 1),
-          entity.getId()
-          );
+        this.addEntityToAbbreviation(alias.substring(0, j + 1), entity);
       }
     }
   }
@@ -140,17 +137,17 @@ export class AbbrevSearchList extends NameSearchList
     return fullString.indexOf(partialString) !== -1;
   }
 
-  private addEntityIdToAbbreviation(abbrev: string, entityId: EntityId)
+  private addEntityToAbbreviation(abbrev: string, entity: GameEntity)
   {
     let lowercaseAbbrev = abbrev.toLocaleLowerCase();
 
     if (this.abbrevList[lowercaseAbbrev] === undefined)
-      this.abbrevList[lowercaseAbbrev] = new EntityIdList();
+      this.abbrevList[lowercaseAbbrev] = new EntityList();
 
-    this.abbrevList[lowercaseAbbrev].addEntity(entityId);
+    this.abbrevList[lowercaseAbbrev].add(entity);
   }
 
-  private removeEntityIdFromAbbreviation(abbrev: string, entityId: EntityId)
+  private removeEntityFromAbbreviation(abbrev: string, entity: GameEntity)
   {
     let lowercaseAbbrev = abbrev.toLocaleLowerCase();
 
@@ -160,7 +157,7 @@ export class AbbrevSearchList extends NameSearchList
       + " in this.abbrevs");
 
     let numberOfItems =
-      this.abbrevList[lowercaseAbbrev].removeEntity(entityId);
+      this.abbrevList[lowercaseAbbrev].remove(entity);
 
     // If there are no items left for this abbreviation, we can delete
     // the property from hashmap.
@@ -168,28 +165,27 @@ export class AbbrevSearchList extends NameSearchList
       delete this.abbrevList[lowercaseAbbrev];
   }
 
-  private mergeResults(entityLists: Array<EntityIdList>): Array<EntityId>
+  private mergeResults(entityLists: Array<EntityList>): Array<GameEntity>
   {
-    let result: Array<EntityId> = [];
+    let result: Array<GameEntity> = [];
 
     if (entityLists.length === 0)
       return result;
 
-    let firstKeywordEntityList = entityLists[0].entities;
+    let firstKeywordEntityList = entityLists[0].getEntities();
     let processedEntity = null;
     let match = true;
 
     // Go through item list matching the first keyword.
-    for (let i = 0; i < firstKeywordEntityList.length; i++)
+    for (processedEntity of firstKeywordEntityList)
     {
       match = true;
-      processedEntity = firstKeywordEntityList[i];
 
       // For each processed entity check if it is also contained in entityLists
       // for the rest of keywords.
       for (let j = 1; j < entityLists.length; j++)
       {
-        if (!entityLists[j].contains(processedEntity))
+        if (!entityLists[j].has(processedEntity))
         {
           match = false;
           break;  // No need to check the rest of the lists.
@@ -249,11 +245,11 @@ export class AbbrevSearchList extends NameSearchList
 
   private filterResults
   (
-    candidates: Array<EntityId>,
+    candidates: Array<GameEntity>,
     searchIndex: number,
     cathegory: number
   )
-  : EntityId
+  : GameEntity
   {
     // This test it not necessary, it just saves going through the list
     // of candidates it there is less of them then requested index.
@@ -264,9 +260,7 @@ export class AbbrevSearchList extends NameSearchList
 
     for (let i = 0; i < searchIndex; i++)
     {
-      let candidate = candidates[i].getEntity({ typeCast: GameEntity });
-
-      if (this.validateResult(candidate, cathegory))
+      if (this.validateResult(candidates[i], cathegory))
         validResultsFound++;
 
       if (validResultsFound === searchIndex)
@@ -282,7 +276,7 @@ export class AbbrevSearchList extends NameSearchList
     searchIndex: number,
     cathegory: number
   )
-  : EntityId
+  : GameEntity
   {
     // Nothing can possibly match an empty, null or undefined searchName.
     if (!searchName)
@@ -293,7 +287,7 @@ export class AbbrevSearchList extends NameSearchList
 
     // This array will store a list of entities that listen to each of
     // abbreviations contained in abbrevArray.
-    let itemLists: Array<EntityIdList> = [];
+    let itemLists: Array<EntityList> = [];
 
     for (let i = 0; i < abbrevArray.length; i++)
     {
@@ -416,6 +410,7 @@ export class AbbrevSearchList extends NameSearchList
 
 // ---------------------- private module stuff -------------------------------
 
+/*
 // List of entityIds corresponding to a particular abbreviation.
 class EntityIdList
 {
@@ -448,3 +443,4 @@ class EntityIdList
     return this.entities.length;
   }
 }
+*/
