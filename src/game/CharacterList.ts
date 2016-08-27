@@ -8,10 +8,11 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
-import {EntityId} from '../shared/EntityId';
+///import {EntityId} from '../shared/EntityId';
 import {FileSystem} from '../shared/fs/FileSystem';
 import {AbbrevSearchList} from '../game/AbbrevSearchList';
 import {Server} from '../server/Server';
+import {Connection} from '../server/Connection';
 import {Game} from '../game/Game';
 import {Character} from '../game/characters/Character';
 
@@ -22,36 +23,46 @@ export class CharacterList extends AbbrevSearchList
   public createUniqueCharacter
   (
     name: string,
-    connectionId: EntityId
+    connection: Connection
   )
-  : EntityId
+  : Character
   {
     if (!ASSERT(!this.exists(name),
       "Attempt to create character '" + name + "' who already exists."
       + " Character is not created"))
       return null;
 
+    let character = Server.entityManager.createNamedEntity
+    (
+      name,
+      'Character',
+      Character
+    );
+
+    /*
     let character = new Character();
 
     character.name = name;
+    */
     character.isNameUnique = true;
-    character.atachConnection(connectionId);
+    character.atachConnection(connection);
 
+    /*
     let id = Server.idProvider.createId(character);
+    */
 
     // Save the character to the disk.
     // (We don't need to wait for save to finish so we don't need
     //  async/await here).
     character.save();
 
-    return id;
+    return character;
   }
 
+  // -> Returns undefined if character isn't loaded or doesn't exist.
   public getPlayerCharacter(characterName: string): Character
   {
-    let id = this.getIdByName(characterName);
-
-    return id.getEntity({ typeCast: Character });
+    return this.getEntityByName(characterName);
   }
 
   public exists(characterName: string)

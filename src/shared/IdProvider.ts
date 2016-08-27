@@ -26,7 +26,7 @@ import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {NamedClass} from '../shared/NamedClass';
 import {Entity} from '../shared/Entity';
-import {EntityId} from '../shared/EntityId';
+///import {EntityId} from '../shared/EntityId';
 
 export class IdProvider
 {
