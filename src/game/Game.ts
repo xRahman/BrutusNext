@@ -8,12 +8,13 @@
 
 import {ASSERT} from '../shared/ASSERT';
 import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
-import {Server} from '../server/Server';
-import {EntityId} from '../shared/EntityId';
+///import {EntityId} from '../shared/EntityId';
+import {EntityManager} from '../shared/EntityManager';
 import {SaveableObject} from '../shared/SaveableObject';
 import {PrototypeManager} from '../shared/PrototypeManager';
+///import {IdProvider} from '../shared/IdProvider';
+import {Server} from '../server/Server';
 import {CharacterList} from '../game/CharacterList';
-import {IdProvider} from '../shared/IdProvider';
 import {World} from '../game/world/World';
 import {Room} from '../game/world/Room';
 import {RoomFlags} from '../game/world/RoomFlags';
@@ -69,17 +70,6 @@ export class Game
 
   // ---------------- Public methods --------------------
 
-  public static createEntity(name: string, prototype: string)
-  {
-    let entity = Server.entityManager.createEntity(prototype);
-
-    if (!ASSERT_FATAL(entity !== null,
-      "Failed to create entity '" + name + "'"
-      + " with type '" + prototype + "'"));
-
-    return entity;
-  }
-
   // Creates and saves a new default world.
   // (this method sould only be used if you don't have 'data' directory yet)
   public async createDefaultWorld()
@@ -93,7 +83,12 @@ export class Game
       return;
 
     // Create world 'BrutusNext World' based on this prototype.
-    this.world = Game.createEntity('BrutusNext World', 'BrutusWorld');
+    this.world = EntityManager.createNamedEntity
+    (
+      'BrutusNext World',
+      'BrutusWorld',
+      World
+    );
 
     // Create system realm.
     this.world.createSystemRealm();
