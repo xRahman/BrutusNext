@@ -48,7 +48,7 @@ export class Character extends GameEntity
   // Sets birthroom (initial location), CHAR_IMMORTALITY flag.
   public init(account: Account)
   {
-    let world = Game.worldId.getEntity({ typeCast: World });
+    let world = Game.world;
 
     if (this.getAdminLevel() > AdminLevels.MORTAL)
     {

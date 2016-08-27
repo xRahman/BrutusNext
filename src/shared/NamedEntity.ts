@@ -25,6 +25,6 @@ export class NamedEntity extends Entity
       return this.className + " '" + this.name;
 
     return this.className + " '" + this.name + "'"
-      + " (id: " + id.getStringId() + ")";
+      + " (id: " + id + ")";
   }
 }

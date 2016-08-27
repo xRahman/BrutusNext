@@ -8,18 +8,19 @@
 'use strict';
 
 import {SaveableObject} from '../../shared/SaveableObject';
-import {EntityId} from '../../shared/EntityId';
+import {GameEntity} from '../../game/GameEntity';
+///import {EntityId} from '../../shared/EntityId';
 
 export class Exits extends SaveableObject
 {
   // Shortcuts to access commonly used exit names.
-  public get north() { return this.getExitId('north'); }
-  public get south() { return this.getExitId('south'); }
-  public get east() { return this.getExitId('east'); }
-  public get west() { return this.getExitId('west'); }
-  public get up() { return this.getExitId('up'); }
-  public get down() { return this.getExitId('down'); }
-  public get out() { return this.getExitId('out'); }
+  public get north() { return this.getExit('north'); }
+  public get south() { return this.getExit('south'); }
+  public get east() { return this.getExit('east'); }
+  public get west() { return this.getExit('west'); }
+  public get up() { return this.getExit('up'); }
+  public get down() { return this.getExit('down'); }
+  public get out() { return this.getExit('out'); }
 
   constructor()
   {
@@ -31,7 +32,7 @@ export class Exits extends SaveableObject
     this.version = 0;
   }
 
-  public getExitId(exitName: string): EntityId
+  public getExit(exitName: string): GameEntity
   {
     if (exitName in this.exits)
       return this.exits[exitName];
@@ -39,11 +40,12 @@ export class Exits extends SaveableObject
       return null;
   }
 
-  public addExit(exitName: string, exitId: EntityId)
+  public addExit(exitName: string, exit: GameEntity)
   {
-    this.exits[exitName] = exitId; 
+    this.exits[exitName] = exit; 
   }
 
-  // This hash map allows to access destination id using exit name.
-  protected exits: { [exitName: string]: EntityId } = {};
+  // TODO: P?ed?lat na new Map();
+  // This hash map allows to access destination entity using exit name.
+  protected exits: { [exitName: string]: GameEntity } = {};
 }

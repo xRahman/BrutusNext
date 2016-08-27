@@ -26,7 +26,7 @@
 import {ASSERT_FATAL} from '../../shared/ASSERT_FATAL';
 import {Mudlog} from '../../server/Mudlog';
 import {AdminLevels} from '../../server/AdminLevels';
-import {EntityId} from '../../shared/EntityId';
+///import {EntityId} from '../../shared/EntityId';
 import {Server} from '../../server/Server';
 import {Connection} from '../../server/Connection';
 import {TelnetSocketDescriptor}
@@ -183,12 +183,22 @@ export class TelnetServer
   private createConnection(socket)
   {
     let socketDescriptor = new TelnetSocketDescriptor(socket);
+
+    let connection = Server.entityManager.createEntity
+    (
+      'Connection',
+      Connection
+    );
+
+    connection.setSocketDescriptor(socketDescriptor);
+
+    /*
     let connection = new Connection(socketDescriptor);
 
     let id = Server.idProvider.createId(connection);
+    */
 
     Server.connections.add(connection);
-
 
     return connection;
   }

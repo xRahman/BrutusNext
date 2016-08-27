@@ -13,7 +13,7 @@ import {Server} from '../server/Server';
 import {Account} from '../server/Account';
 import {Game} from '../game/Game';
 import {GameEntity} from '../game/GameEntity';
-import {EntityId} from '../shared/EntityId';
+///import {EntityId} from '../shared/EntityId';
 import {Character} from '../game/characters/Character';
 import {Mudlog} from '../server/Mudlog';
 import {AdminLevels} from '../server/AdminLevels';
@@ -122,8 +122,7 @@ export class LobbyProcessor
 
   protected async processMenuChoice(choice: string)
   {
-    let account =
-      this.connection.accountId.getEntity({ typeCast: Account });
+    let account = this.connection.account;
 
     switch (choice)
     {
@@ -188,7 +187,7 @@ export class LobbyProcessor
 
   protected createCharacterAndEnterGame(account: Account)
   {
-    if (!ASSERT(this.connection.ingameEntityId === null,
+    if (!ASSERT(this.connection.ingameEntity === null,
       "Player account '" + account.name + "' has attempted to enter game"
       + "with ingame entity already attached"))
     {
@@ -201,15 +200,9 @@ export class LobbyProcessor
       return;
     }
 
-    let characterId = account.createCharacter(account.name);
-
-    if (characterId === null)
-      // Error messages are already handled by createrCharacter().
-      return;
+    let character = account.createCharacter(account.name);
 
     this.stage = LobbyProcessor.stage.NOT_IN_LOBBY;
-
-    let character = characterId.getEntity({ typeCast: Character });
 
     // Sets birthroom, immortal flag, etc.
     character.init(account);
