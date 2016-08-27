@@ -1,3 +1,7 @@
+TODO: Sjednotit návratové hodnoty: Když něco není nalezeno, tak nevracet
+  null, ale undefined
+
+
 TODO: Zrušit z entity proměnné SAVE_DIRECTORY
 
 TODO: createSystemRealm() a všechno uvnitř.

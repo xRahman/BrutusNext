@@ -38,6 +38,7 @@ export class SaveableObject extends AttributableClass
 
   // ---------------- Public methods --------------------
 
+  /// TODO: P?esunout tohle do DynamicClassFactory
   // Creates a new instance of type className.
   public static createInstance<T>
   (
