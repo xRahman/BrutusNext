@@ -130,6 +130,7 @@ export class EntityProxyHandler
   //// A trap for Object.getPrototypeOf.
   //public getPrototypeOf(target)
   //{
+  //  console.log("getPrototypeOf(target)");
   //}
 
   //// A trap for Object.setPrototypeOf.
@@ -150,6 +151,7 @@ export class EntityProxyHandler
   //// A trap for Object.getOwnPropertyDescriptor.
   //public getOwnPropertyDescriptor(target)
   //{
+  //  console.log("getOwnPropertyDescriptor(target)");
   //}
 
   //// A trap for Object.defineProperty.
@@ -165,19 +167,24 @@ export class EntityProxyHandler
   // A trap for getting property values.
   public get(target: any, property: any)
   {
-    if (property === 'load')
-      // TODO: Stejný popisek jako o if níže.
-      return this.load;
+    ///console.log("get(): " + property);
 
-    // This hack traps calls of entity.isValid() method.
+    // Note:
+    // When a function property access is trapped, only a function
+    // property is returned (like 'return this.dynicamCast;', not
+    // 'return this.dynamicCast();').
+    //   Fucntion will be called by whoever reuqested the property.
+
+    // Trap calls of entity.isValid() method.
     if (property === 'isValid')
-      // Here we don't return this.isEntityValid() but the function
-      // itself. That's because if function call is trapped by proxy
-      // handler, first the function is requested by 'get' trap and
-      // than the returned function is called. It means that someone
-      // else will call the function we return here, we are not supposed
-      // to call it ourselves.
+    {
+      // Entity reference is updated when someone asks if
+      // it's valid to provide them with up-to-date info.
+      if (this.entity === null)
+        this.updateEnityReference();
+
       return this.isEntityValid;
+    }
 
     // Does the referenced entity exist?
     // (isEntityValid() updates this.entity if it's possible)
@@ -207,6 +214,31 @@ export class EntityProxyHandler
       // properties.
       return InvalidValueProxyHandler.invalidVariable;
     }
+
+    // This is an awful hack I'd very much liked to not to use...
+    // But it's necessary in orderd for function trapping to work.
+    //   The reason is, that when you trap a function call, like
+    // 'proxy.dynamicCast()', it gets split in two parts:
+    // - first the property 'dynamicCast' is accessed
+    // - then it is called
+    // So all we can do in the first step is to return a reference
+    // to function, we can't call it ourseves. The problem is,
+    // that when it is called, it's 'this' will be proxy, not
+    // proxy handler - so there won't be any this.entity on it.
+    //   That's why '_internalEntity' property must be trapped as well,
+    // so it can be accessed in subsequent function call (it's not named
+    // 'entity' but rather '_internalEntity' to prevent using it by accident).
+    // (see EntityProxyHandler.dynamicCast() for example of such function).
+    if (property === '_internalEntity')
+      return this.entity;
+
+    // Trap calls of entity.dynamicCast() method.
+    if (property === 'dynamicCast')
+      return this.dynamicCast;
+
+    // Trap calls of entity.load() method.
+    if (property === 'load')
+      return this.load;
 
     return this.readProperty(property);
   }
@@ -279,7 +311,7 @@ export class EntityProxyHandler
       Mudlog.log
       (
         "Attempt to read an undefined property '" + property + "'"
-        + "of entity " + this.entity.getErrorIdString(),
+        + " of entity " + this.entity.getErrorIdString(),
         Mudlog.msgType.INVALID_PROPERTY_ACCESS,
         AdminLevels.IMMORTAL
       );
@@ -295,7 +327,7 @@ export class EntityProxyHandler
   private isEntityValid(): boolean
   {
     ASSERT(this.id !== null,
-      "Null stringId in EntityProxyHandler");
+      "Null id in EntityProxyHandler");
 
     if (this.entity === null)
     {
@@ -335,31 +367,20 @@ export class EntityProxyHandler
     return false;
   }
 
+  private dynamicCast<T>(type: { new (...args: any[]): T })
+  {
+    // Note: When this function is called, 'this' is not
+    // an EntityProxyHandler, but the proxy. So '_internalEntity'
+    // property access must be trapped in order for this
+    // function to work.
+    return this['_internalEntity'].dynamicCast(type);
+  }
+
   // This method allows invalid entity proxy to load itself.
   //   'entity.load()' call is trapped by 'get' handler and
   //  handler.load() (this method) is called).
   private async load()
   {
-    /// Idčko může být null - např. při loadu worldu.
-
-    /// TODO
-
-    /*
-    /// TODO: Zkonstruovat saveFileName
-    /// - blbost, to asi nebudu potřebovat, to umí entita sama v rámci své
-    ///   metody load().
-    */
-
-    /// TODO: Říct si EntityManageru o novou entitu
-    /// - tady bacha: Pokud mám idčko, tak je to ok, ale pokud nemám,
-    ///   tak nemám jak zkontrolovat, že neloaduju něco, co už loadnuté je.
-    /// - asi jediná možnost bude, zkontrolvoat to až po loadu - což ale
-    ///   nejspíš může udělat EntityManager sám (vyrobí si entitu, loadne ji,
-    ///   checkne, že ještě není v manageru a když ne, tak k ní vyrobí proxy
-    //    a tu vrátí).
-
-    /// TODO: Load this new entity using it's load() method.
-
     await Server.entityManager.loadEntity(this);
   }
 }
