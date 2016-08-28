@@ -177,6 +177,8 @@ export class Account extends NamedEntity
 
   public updateLastLoginInfo()
   {
+    /// TODO: ASSERT(this.connection !== null)
+
     this.lastLoginAddress = this.connection.ipAddress;
 
     // Creating a new Date object initializes it to current date and time.

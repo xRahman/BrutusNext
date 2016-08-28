@@ -96,29 +96,46 @@ export class Entity extends AutoSaveableObject
 
   // ---------------- Public methods --------------------
 
-  public dynamicCast<T>(type: { new (...args: any[]): T })
+  public dynamicTypeCheck<T>(type: { new (...args: any[]): T })
   {
     // Dynamic type check - we make sure that entity is inherited from
     // requested class (or an instance of the class itself).
-    ASSERT_FATAL(this instanceof type,
-      "Type cast error: Newly created entity "
-      + "of type '" + this.className + "' is not an instance"
-      + " of requested type (" + type.name + ")");
+    if (!ASSERT_FATAL(this instanceof type,
+        "Type cast error: Newly created entity "
+        + "of type '" + this.className + "' is not an instance"
+        + " of requested type (" + type.name + ")"))
+      return false;
 
     // Here we typecast to <any> in order to pass entity
     // as type T (you can't typecast directly to template type but you can
     // typecast to <any> which is then automatically cast to template type).
-    return <any>this;
+    return true;
   }
 
+  // This function exists only for typescript to stop complaing
+  // that it doesn't exist. It should never be called, however,
+  // because 'dynamicCast()' call should always be trapped by
+  // entity proxy (see EntityProxyHandler.get()).
+  public dynamicCast<T>(typeCast: { new (...args: any[]): T })
+  {
+    ASSERT(false,
+      "Entity.isValid() function should never be called. You somehow"
+      + " managed to get your hands on direct reference to entity"
+      + " instead of a proxy. That must never happen");
+
+    return null;
+  }
+
+  // This function exists only for typescript to stop complaing
+  // that it doesn't exist. It should never be called, however,
+  // because 'isValid()' call should always be trapped by
+  // entity proxy (see EntityProxyHandler.get()).
   public isValid(): boolean
   {
-    // This function exists only for typescript to stop complaing
-    // that it doesn't exist. It should never be called, however,
-    // because 'isValid()' call should always be trapped by
-    // entity proxy (see EntityProxyHandler.get()).
     ASSERT(false,
-      "Entity.isValid() function should never be called");
+      "Entity.isValid() function should never be called. You somehow"
+      + " managed to get your hands on direct reference to entity"
+      + " instead of a proxy. That must never happen");
 
     return false;
   }
@@ -175,7 +192,7 @@ export class Entity extends AutoSaveableObject
   }
 
   // Overrides AutoSaveableObject.save() to skip saving
-  // if entity had been deleted.
+  // if entity has been deleted.
   public async save()
   {
     /*
