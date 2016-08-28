@@ -24,6 +24,7 @@ import {AbbrevSearchList} from '../game/AbbrevSearchList';
 import {Area} from '../game/world/Area';
 import {Realm} from '../game/world/Realm';
 
+/*
 // Unlike "import {SomeClass} from 'SomeClass'", "require()" ensures that
 // required module _will_ be loaded here. This is necessary for using dynamic
 // classes because their constructors need to be added to 'global' object in
@@ -32,6 +33,7 @@ import {Realm} from '../game/world/Realm';
 //  This cannot be done in SaveableObject from some reason (it probably causes
 //  cyclic module dependance) even though it would make much more sense there.
 require('../game/DynamicClasses');
+*/
 
 // TEST:
 import {Script} from '../shared/Script';

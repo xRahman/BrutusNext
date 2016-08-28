@@ -95,6 +95,9 @@ export class EntityManager
     entity.name = name;
 
     // Here we are dynamically typecasting back to requested type.
+    //   Indirect call is used because 'dynamicCast' property doesn't
+    // exist on entity, it's created by trapping access to 'dynamicCast'
+    // property by a proxy.
     return entity.dynamicCast(typeCast);
   }
 

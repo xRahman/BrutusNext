@@ -167,6 +167,12 @@ export class EntityProxyHandler
   // A trap for getting property values.
   public get(target: any, property: any)
   {
+    // 'isProxy' property can be used for debugging to test if reference
+    //  is a proxy.
+    //    Value of 'isProxy' will be 'undefined' if reference isn't a proxy).
+    if (property === 'isProxy')
+      return "I'm a proxy";
+
     ///console.log("get(): " + property);
 
     // Note:
@@ -178,6 +184,8 @@ export class EntityProxyHandler
     // Trap calls of entity.isValid() method.
     if (property === 'isValid')
     {
+      ///console.log("EntityProxyHandler.get() trapped 'isValid'");
+
       // Entity reference is updated when someone asks if
       // it's valid to provide them with up-to-date info.
       if (this.entity === null)
@@ -326,6 +334,8 @@ export class EntityProxyHandler
 
   private isEntityValid(): boolean
   {
+    ///console.log("EntityProxyHandler.isEntityValid()");
+
     ASSERT(this.id !== null,
       "Null id in EntityProxyHandler");
 
@@ -373,7 +383,17 @@ export class EntityProxyHandler
     // an EntityProxyHandler, but the proxy. So '_internalEntity'
     // property access must be trapped in order for this
     // function to work.
-    return this['_internalEntity'].dynamicCast(type);
+
+    this['_internalEntity'].dynamicTypeCheck(type);
+
+    return <any>this;
+
+    /// Tohle byla pěkná blbost - vracel jsem tím přímo enetitu,
+    /// nikoliv proxy. Přímo entity se musím zeptat na typ (protože)
+    /// 'instanceof' operator na proxy se implicitně forwarduje na target,
+    /// což je {}, ale vracet musím přetypovanou proxy, ne přetypovanou
+    /// entitu!
+    ///return this['_internalEntity'].dynamicCast(type);
   }
 
   // This method allows invalid entity proxy to load itself.
