@@ -136,12 +136,14 @@ export class Server
   // Loads the game (or creates a new one if there is no ./data directory).
   public async run(telnetPort: number)
   {
-    test();
+    ///test();
 
     ASSERT_FATAL(this.game === null,
       "Error: game already exists. Server::run() can only be done once");
 
     this.game = new Game();
+
+    test();
 
     /*
     // If 'data' directory doesn't exist at all, create and save a new world.
@@ -194,46 +196,108 @@ export class Server
 // -------------- TEST ----------------------
 
 
-/// Tohle je potreba jen na to, aby to prelozilo stare harmony api
-/// na nove ES6 API (tj. aby šlo zavolat new Proxy(target, handler);
+// This module allows using new ES6 Proxy API through old harmony API
+// (it allows us to call 'new Proxy(target, handler)').
 var Proxy = require('harmony-proxy');
 
 
 import {EntityProxyHandler} from '../shared/EntityProxyHandler';
 
+/*
+class PEntity
+{
+  public x = 3;
+
+  public getThis()
+  {
+    return this;
+  }
+}
+
+class PHandler
+{
+  public entity = null;
+
+  public get(target: any, property: any)
+  {
+    console.log("PHandler.get()");
+
+    return this.entity[property];
+  }
+}
+*/
+
+import {NamedEntity} from '../shared/NamedEntity';
+import {SaveableObject} from '../shared/SaveableObject';
 
 function test()
 {
-  let entity1 =
-  {
-    x: 1,
-    fce: function() { console.log("fce entity1"); }
-  };
-
-  let entity2 =
-  {
-    x: 2,
-    fce: function() { console.log("fce entity2"); }
-  };
-
-  let handler = new EntityProxyHandler();
-
-  let proxy = new Proxy({}, handler);
-
   /*
-  handler.entity = entity1;
+  // Create a new world prototype.
+  Game.prototypeManager.createPrototype('BrutusWorld', 'World');
 
-  console.log("Proxy1.x = " + proxy.x);
-  proxy.fce();
+  let entity = SaveableObject.createInstance
+    ({ className: 'BrutusWorld', typeCast: NamedEntity });
+
+  if (entity instanceof NamedEntity)
+  {
+    console.log("Entity is an instance of NamedEntity");
+  }
+  else
+  {
+    console.log("No luck :\\");
+  }
   */
 
-  handler.entity = null;
+  /*
+  let entity = new PEntity();
+  let handler = new PHandler();
+  let proxy = new Proxy({}, handler);
 
-  proxy.fce();
-  proxy.y = 13;
-  let tmp = proxy.x;
-  tmp = proxy.i;
+  handler.entity = entity;
 
+//  console.log("X: " + proxy.x);
+
+  console.log("Before getThis()");
+
+  let anotherRef = proxy.getThis();
+
+  console.log("After getThis()");
+
+  console.log("X: " + anotherRef.x);
+  */
+  
+
+
+  //let entity1 =
+  //{
+  //  x: 1,
+  //  fce: function() { console.log("fce entity1"); }
+  //};
+
+  //let entity2 =
+  //{
+  //  x: 2,
+  //  fce: function() { console.log("fce entity2"); }
+  //};
+
+  //let handler = new EntityProxyHandler();
+
+  //let proxy = new Proxy({}, handler);
+
+  ///*
+  //handler.entity = entity1;
+
+  //console.log("Proxy1.x = " + proxy.x);
+  //proxy.fce();
+  //*/
+
+  //handler.entity = null;
+
+  //proxy.fce();
+  //proxy.y = 13;
+  //let tmp = proxy.x;
+  //tmp = proxy.i;
 
   /*
   console.log("Proxy_null.x = " + proxy.x);

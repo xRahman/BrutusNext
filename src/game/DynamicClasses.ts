@@ -12,10 +12,11 @@ global['dynamicClasses']['Script'] = Script;
 import {FlagNames} from '../shared/FlagNames';
 global['dynamicClasses']['FlagNames'] = FlagNames;
 
-/*
-import {EntityId} from '../shared/EntityId';
-global['dynamicClasses']['Id'] = EntityId;
-*/
+import {Connection} from '../server/Connection';
+global['dynamicClasses']['Connection'] = Connection;
+
+import {Account} from '../server/Account';
+global['dynamicClasses']['Account'] = Account;
 
 import {Character} from '../game/characters/Character';
 global['dynamicClasses']['Character'] = Character;

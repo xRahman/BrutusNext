@@ -96,6 +96,21 @@ export class Entity extends AutoSaveableObject
 
   // ---------------- Public methods --------------------
 
+  public dynamicCast<T>(type: { new (...args: any[]): T })
+  {
+    // Dynamic type check - we make sure that entity is inherited from
+    // requested class (or an instance of the class itself).
+    ASSERT_FATAL(this instanceof type,
+      "Type cast error: Newly created entity "
+      + "of type '" + this.className + "' is not an instance"
+      + " of requested type (" + type.name + ")");
+
+    // Here we typecast to <any> in order to pass entity
+    // as type T (you can't typecast directly to template type but you can
+    // typecast to <any> which is then automatically cast to template type).
+    return <any>this;
+  }
+
   public isValid(): boolean
   {
     // This function exists only for typescript to stop complaing
