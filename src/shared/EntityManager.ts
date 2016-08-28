@@ -41,6 +41,12 @@ import {EntityProxyHandler} from '../shared/EntityProxyHandler';
 import {SaveableObject} from '../shared/SaveableObject';
 import {Server} from '../server/Server';
 
+// 3rd party modules.
+
+// This module allows using new ES6 Proxy API through old harmony API
+// (it allows us to call 'new Proxy(target, handler)').
+var Proxy = require('harmony-proxy');
+
 export class EntityManager
 {
   // -------------- Private class data -----------------
@@ -89,7 +95,7 @@ export class EntityManager
     entity.name = name;
 
     // Here we are dynamically typecasting back to requested type.
-    return this.dynamicCast(entity, typeCast);
+    return entity.dynamicCast(typeCast);
   }
 
   // Creates an entity of type 'className' with a new id.
@@ -109,9 +115,10 @@ export class EntityManager
     //  are generated.
     handler.id = this.idProvider.generateId();
     handler.type = className;
-    handler.entity = null;
 
     let entity = this.createBareEntity(handler);
+
+    handler.entity = entity;
 
     let entityProxy = new Proxy({}, handler);
     let entityRecord = new EntityRecord(entity, entityProxy, handler);
@@ -119,7 +126,7 @@ export class EntityManager
     // Add newly created entity record to hashmap under entity's string id.
     this.entityRecords.set(handler.id, entityRecord);
 
-    return this.dynamicCast(entityProxy, typeCast);
+    return entityProxy.dynamicCast(typeCast);
   }
 
   // Loads entity from file. Don't use this method, call entity.load()
@@ -332,25 +339,6 @@ export class EntityManager
     }
 
     return entity;
-  }
-
-  private dynamicCast<T>
-  (
-    entity: Entity,
-    type: { new (...args: any[]): T }
-  )
-  {
-    // Dynamic type check - we make sure that our newly created object
-    // is inherited from requested class (or an instance of the class itself).
-    ASSERT_FATAL(false,
-      "Type cast error: Newly created entity "
-      + "of type '" + type + "' is not an instance"
-      + " of requested type (" + type.name + ")");
-
-    // Here we typecast to <any> in order to pass entity
-    // as type T (you can't typecast directly to template type but you can
-    // typecast to <any> which is then automatically cast to template type).
-    return <any>entity;
   }
 }
 
