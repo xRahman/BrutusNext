@@ -55,6 +55,11 @@ export class AccountList extends NameSearchList
     newAccount.firstAccountCheck();
     */
 
+    /*
+    console.log(account['_internalEntity'].name);
+    account.isValid();
+    */
+
     // Save the account info to the disk (so we know that the account exists).
     // (We don't need to wait for account to finish saving here, so no need
     // for await.)
