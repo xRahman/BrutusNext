@@ -9,7 +9,6 @@
 
 import {SaveableObject} from '../../shared/SaveableObject';
 import {GameEntity} from '../../game/GameEntity';
-///import {EntityId} from '../../shared/EntityId';
 
 export class Exits extends SaveableObject
 {
@@ -32,20 +31,19 @@ export class Exits extends SaveableObject
     this.version = 0;
   }
 
+  // -> returns undefined if exit doesn't exist.
   public getExit(exitName: string): GameEntity
   {
-    if (exitName in this.exits)
-      return this.exits[exitName];
-    else
-      return null;
+    return this.exits.get(exitName);
   }
 
   public addExit(exitName: string, exit: GameEntity)
   {
-    this.exits[exitName] = exit; 
+    this.exits.set(exitName, exit);
   }
 
-  // TODO: P?ed?lat na new Map();
-  // This hash map allows to access destination entity using exit name.
-  protected exits: { [exitName: string]: GameEntity } = {};
+  // Hashmap<[ string, GameEntity ]>
+  //   Key: exit name
+  //   Value: GameEntity this exit leads to.
+  private exits = new Map();
 }
