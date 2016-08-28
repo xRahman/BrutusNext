@@ -1,4 +1,7 @@
+TODO: metodu dynamicClast() asi přesunout z EntityManageru do Entity.
+
 TODO: Otestovat, že prirazeni this opravdu priradi proxy
+[Zda se, ze opravdu ano, uff!]
 
 TODO: Úplně se mi nelíbí, že fci entityManager.createUniqueEntity()
  (a asi i createEntity()) dávám jako parametr stringovou reprezentaci
