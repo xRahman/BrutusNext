@@ -1,3 +1,5 @@
+TODO: Otestovat, že prirazeni this opravdu priradi proxy
+
 TODO: Úplně se mi nelíbí, že fci entityManager.createUniqueEntity()
  (a asi i createEntity()) dávám jako parametr stringovou reprezentaci
  typu a za ní ještě typ.

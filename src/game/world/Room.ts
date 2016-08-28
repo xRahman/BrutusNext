@@ -29,6 +29,7 @@ export class Room extends GameEntity
 
   // --------------- Public accessors -------------------
 
+  /*
   public getRoomInfo()
   {
     if (this.roomInfo === null)
@@ -51,6 +52,7 @@ export class Room extends GameEntity
 
     return this.roomInfo;
   }
+  */
 
   // -------------- Protected accessors -----------------
 
@@ -75,11 +77,13 @@ export class Room extends GameEntity
     */
 
     /* --- TEST --- */
+    /*
     let roomPrototype = Room.prototype; // tohle znamena, ze si muzu prototyp
                                         // ulozit do promenne.
 
     roomPrototype.description = "Description set to prototype";
     contents += "&w" + this.description;
+    */
     /* --- TEST --- */
     
 
@@ -91,9 +95,13 @@ export class Room extends GameEntity
 
   // -------------- Protected class data ----------------
 
+  /// TODO: Tohle asi bude moct bejt rovnou tady, prototypy funguji
+  /// jinak (lepe)
+  /*
   // Description, extra descriptions, room flags, terrain type, etc.
   // If this is null, values from prototype are used.
   protected roomInfo: RoomInfo = null;
+  */
 
   /* --- TEST --- */
   public description: string;
@@ -104,12 +112,14 @@ export class Room extends GameEntity
 
   // --------------- Protected methods ------------------
 
+  /*
   // This is called when a new prototype is created.
   protected initializePrototypeData()
   {
     // Create roomInfo with default values.
     this.roomInfo = new RoomInfo();
   }
+  */
 
   // ---------------- Private methods -------------------
 }
