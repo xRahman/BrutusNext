@@ -177,7 +177,8 @@ export class Account extends NamedEntity
 
   public updateLastLoginInfo()
   {
-    /// TODO: ASSERT(this.connection !== null)
+    ASSERT(this.connection !== null,
+      "Invalid connection");
 
     this.lastLoginAddress = this.connection.ipAddress;
 
