@@ -6,7 +6,6 @@
 
 'use strict';
 
-import {ASSERT} from '../../shared/ASSERT'
 import {Account} from '../../server/Account';
 import {AdminLevels} from '../../server/AdminLevels';
 import {Game} from '../../game/Game';

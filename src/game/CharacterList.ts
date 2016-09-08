@@ -6,9 +6,7 @@
 
 'use strict';
 
-import {ASSERT} from '../shared/ASSERT';
-import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
-///import {EntityId} from '../shared/EntityId';
+import {ERROR} from '../shared/ERROR';
 import {FileSystem} from '../shared/fs/FileSystem';
 import {AbbrevSearchList} from '../game/AbbrevSearchList';
 import {Server} from '../server/Server';
@@ -27,10 +25,16 @@ export class CharacterList extends AbbrevSearchList
   )
   : Character
   {
-    if (!ASSERT(!this.exists(name),
-      "Attempt to create character '" + name + "' who already exists."
-      + " Character is not created"))
+    if (this.exists(name))
+    {
+      ERROR
+      (
+        "Attempt to create character '" + name + "' that already exists."
+        + " Character is not created"
+      );
+
       return null;
+    }
 
     let character = Server.entityManager.createNamedEntity
     (

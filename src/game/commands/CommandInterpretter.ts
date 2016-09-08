@@ -27,8 +27,8 @@
 
 'use strict';
 
-import {ASSERT} from '../../shared/ASSERT';
-import {ASSERT_FATAL} from '../../shared/ASSERT_FATAL';
+import {ERROR} from '../../shared/ERROR';
+import {FATAL_ERROR} from '../../shared/FATAL_ERROR';
 import {NamedEntity} from '../../shared/NamedEntity';
 import {CommandSearchList} from '../../game/commands/CommandSearchList';
 
@@ -39,7 +39,12 @@ export abstract class CommandInterpretter extends NamedEntity
   // This method allows you to add a new commands. 
   public static registerCommand(command: string, handler: string)
   {
-    ASSERT_FATAL(command !== "", "Attempt to register an empty command");
+    if (command === "")
+    {
+      ERROR("Attempt to register an empty command");
+
+      return;
+    }
 
     console.log("Registering command '" + command + "'");
     CommandInterpretter.commandSearchList.addCommand(command, handler);
@@ -50,10 +55,14 @@ export abstract class CommandInterpretter extends NamedEntity
   // Returns true if command is known and handled.
   public processCommand(commandString: string)
   {
-    if (!ASSERT(commandString !== "", "Attempt to process empty command"))
-      return false;
+    if (commandString === "")
+    {
+      ERROR("Attempt to process empty command");
 
-    // NOTE: In order to be able to dynamically add command to a specific
+      return false;
+    }
+
+    // Note: In order to be able to dynamically add command to a specific
     // instances of game entities, you would need to add non-static version
     // of commandSearchList and search in it here if none of staticaly bound
     // commands matched commandString.
