@@ -17,12 +17,10 @@
 
 'use strict';
 
-import {ASSERT} from '../shared/ASSERT';
-import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
+import {ERROR} from '../shared/ERROR';
 import {NameSearchList} from '../shared/NameSearchList';
 import {EntityList} from '../shared/EntityList';
 import {GameEntity} from "../game/GameEntity";
-//import {EntityId} from '../shared/EntityId';
 
 export class AbbrevSearchList extends NameSearchList
 {
@@ -149,20 +147,28 @@ export class AbbrevSearchList extends NameSearchList
 
   private removeEntityFromAbbreviation(abbrev: string, entity: GameEntity)
   {
-    let lowercaseAbbrev = abbrev.toLocaleLowerCase();
+    let lowerCaseAbbrev = abbrev.toLocaleLowerCase();
+    let abbrevList = this.abbrevList[lowerCaseAbbrev];
 
-    ASSERT_FATAL(this.abbrevList[lowercaseAbbrev] !== undefined,
-      "Attempt to remove abbrev item for abbreviation"
-      + " '" + lowercaseAbbrev + "' that does not exist"
-      + " in this.abbrevs");
+    if (abbrevList === undefined)
+    {
+      ERROR
+      (
+        "Attempt to remove abbrev item for abbreviation"
+        + " '" + lowerCaseAbbrev + "' that does not exist"
+        + " in this.abbrevs"
+      );
+
+      return;
+    }
 
     let numberOfItems =
-      this.abbrevList[lowercaseAbbrev].remove(entity);
+      this.abbrevList[lowerCaseAbbrev].remove(entity);
 
     // If there are no items left for this abbreviation, we can delete
     // the property from hashmap.
     if (numberOfItems === 0)
-      delete this.abbrevList[lowercaseAbbrev];
+      delete this.abbrevList[lowerCaseAbbrev];
   }
 
   private mergeResults(entityLists: Array<EntityList>): Array<GameEntity>
@@ -236,7 +242,7 @@ export class AbbrevSearchList extends NameSearchList
         break;
 
       default:
-        ASSERT(false, "Unknown search cathegory");
+        ERROR("Unknown search cathegory");
         break;
     }
 
