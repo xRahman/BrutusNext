@@ -6,10 +6,8 @@
 
 'use strict';
 
-import {ASSERT} from '../shared/ASSERT';
-import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
+import {ERROR} from '../shared/ERROR';
 import {Entity} from '../shared/Entity';
-///import {EntityId} from '../shared/EntityId';
 import {SaveableObject} from '../shared/SaveableObject';
 import {Server} from '../server/Server';
 
@@ -44,15 +42,19 @@ export class EntityList extends SaveableObject
   {
     let id = entity.getId();
 
-    if (!ASSERT(id !== null,
-        "Attempt to add entity " + entity.getErrorIdString()
-        + " which has 'null' id. Entity is not added"))
+    if (id === null)
+    {
+      ERROR("Attempt to add entity " + entity.getErrorIdString()
+        + " which has 'null' id. Entity is not added");
       return false;
+    }
 
-    if (!ASSERT(!this.entities.has(id),
-        "Attempt to add entity '" + entity.getErrorIdString() + "'"
-        + " which is already in the list. Entity is not added"))
+    if (this.entities.has(id))
+    {
+      ERROR("Attempt to add entity '" + entity.getErrorIdString() + "'"
+        + " which is already in the list. Entity is not added");
       return false;
+    }
 
     /// Entity is now stored directly in an id.
     /*
@@ -133,11 +135,13 @@ export class EntityList extends SaveableObject
   // -> Returns true if deletion succeeded.
   public remove(entity: Entity): boolean
   {
-    if (!ASSERT(this.entities.has(entity.getId()),
-        "Attempt to remove id '" + entity.getId() + "'"
-        + " from EntityList '" + this.className + "'"
-        + " that is not present in it"))
+    if (this.entities.has(entity.getId()) === false)
+    {
+      ERROR("Attempt to remove id '" + entity.getId() + "'"
+        + " from EntityList '" + this.className + "' that"
+        + " is not present in it");
       return false;
+    }
 
     this.entities.delete(entity.getId());
 

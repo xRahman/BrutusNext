@@ -12,7 +12,7 @@
 
 'use strict';
 
-import {ASSERT} from '../shared/ASSERT';
+import {ERROR} from '../shared/ERROR';
 import {Flags} from '../shared/Flags';
 import {SaveableObject} from '../shared/SaveableObject';
 
@@ -94,10 +94,12 @@ export class FlagNames extends SaveableObject
   {
     let flagValue = this.flagValues.get(flagName);
 
-    if (!ASSERT(flagValue !== undefined,
-        "Attempt to get value of flag type '" + flagName + "' which doesn't"
-        + " exist in FlagData of of " + this.flagsType))
+    if (flagValue === undefined)
+    {
+      ERROR("Attempt to get value of flag type '" + flagName + "' which"
+        + "  doesn't exist in FlagData of of " + this.flagsType);
       return -1;
+    }
 
     return flagValue;
   }
@@ -110,11 +112,13 @@ export class FlagNames extends SaveableObject
     let flagValue = this.flagValues.get(flagName);
 
     // Check that such flag doesn't exist yet.    
-    if (!ASSERT(flagValue === undefined,
-      "Attempt to add flag type '" + flagName + "' to"
-      + " FlagsData of " + this.flagsType + "which already"
-      + " contains it"))
+    if (flagValue !== undefined)
+    {
+      ERROR("Attempt to add flag type '" + flagName + "' to"
+        + " FlagsData of " + this.flagsType + "which already"
+        + " contains it");
       return;
+    }
 
     // Determine free value for a new flag.
     // (There may be 'holes' if for example someone deletes a deprecated

@@ -7,8 +7,6 @@
 
 'use strict';
 
-import {ASSERT} from '../shared/ASSERT';
-import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {AttributableClass} from '../shared/AttributableClass';
 
 export class EditableObject extends AttributableClass

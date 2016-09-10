@@ -22,11 +22,9 @@
 
 'use strict';
 
-import {ASSERT} from '../shared/ASSERT';
-import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
+import {FATAL_ERROR} from '../shared/FATAL_ERROR';
 import {NamedClass} from '../shared/NamedClass';
 import {Entity} from '../shared/Entity';
-///import {EntityId} from '../shared/EntityId';
 
 export class IdProvider
 {
@@ -58,6 +56,12 @@ export class IdProvider
 
   private generateId()
   {
+    if (this.timeOfBoot === null)
+    {
+      FATAL_ERROR("Uninicialized timeOfBoot in IdProvider."
+        + " Unable to generate ids");
+    }
+
     // Increment lastIssuedId first so we start with 1 (initial value is 0).
     this.lastIssuedId++;
 

@@ -6,8 +6,7 @@
 
 'use strict';
 
-import {ASSERT} from '../../shared/ASSERT';
-import {ASSERT_FATAL} from '../../shared/ASSERT_FATAL';
+import {ERROR} from '../../shared/ERROR';
 import {Mudlog} from '../../server/Mudlog';
 import {Account} from '../../server/Account';
 import {AdminLevels} from '../../server/AdminLevels';
@@ -271,8 +270,9 @@ export class TelnetSocketDescriptor extends SocketDescriptor
   {
     let registeredEvents =
       events.EventEmitter.listenerCount(this.socket, event);
-    ASSERT_FATAL(registeredEvents === 0,
-      "Event " + event + " is already registered on socket");
+
+    if (registeredEvents !== 0)
+      ERROR("Event " + event + " is already registered on socket");
   }
 
   /// TODO: Tohle je tezke provizorum. Zatim to pouze odstrani ze streamu

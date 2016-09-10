@@ -7,8 +7,8 @@
 
 'use strict';
 
-import {ASSERT} from '../shared/ASSERT';
-import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
+import {ERROR} from '../shared/ERROR';
+import {FATAL_ERROR} from '../shared/FATAL_ERROR';
 import {Entity} from '../shared/Entity';
 import {NamedClass} from '../shared/NamedClass';
 import {AttributableClass} from '../shared/AttributableClass';
@@ -25,7 +25,7 @@ export class SaveableObject extends AttributableClass
   // -------------- Protected class data ----------------
 
   // Version will be checked for. Default behaviour is to trigger
-  // a FATAL_ASSERT when versions don't match. You can override it
+  // an ERROR when versions don't match. You can override it
   // by overriding a checkVersion() method;
   protected version = 0;
 
@@ -54,25 +54,29 @@ export class SaveableObject extends AttributableClass
     ...args: any[]
   )
   {
-    let classNameIsValid =
-      param.className !== undefined
-      && param.className !== null
-      && param.className != "";
+    let classNameIsValid = param.className !== undefined
+                        && param.className !== null
+                        && param.className != "";
 
-    if (!ASSERT(classNameIsValid,
-        "Invalid class name passed to SaveableObject::createInstance()."
-        + " Instance is not created"))
+    if (!classNameIsValid)
+    {
+      ERROR("Invalid class name passed to SaveableObject.createInstance()."
+        + " Instance is not created");
       return null;
+    }
 
     // We will use global object to acces respective class constructor.
     let dynamicClasses = global[SaveableObject.DYNAMIC_CLASSES_PROPERTY];
 
-    if (!ASSERT(dynamicClasses[param.className] !== undefined,
-        "Attempt to createInstance() of unknown type"
-        + " '" + param.className + "'. You probably forgot to create"
-        + " or assign a prototype to your game entity or add a new"
-        + " class to DynamicClasses.ts. Instance is not created"))
+    if (dynamicClasses[param.className] === undefined)
+    {
+      ERROR("Attempt to createInstance() of unknown type"
+        + " '" + param.className + "'. You probably forgot"
+        + " to create or assign a prototype to your game"
+        + " entity or add a new class to DynamicClasses.ts."
+        + " Instance is not created");
       return null;
+    }
 
     // This accesses a class constructor by it's name. Consctructor of
     // each class that is supposed to be dynamically loaded here needs
@@ -88,11 +92,9 @@ export class SaveableObject extends AttributableClass
       // typecast to <any> which is then automatically cast to template type).
       return <any>newObject;
 
-    ASSERT(false,
-      "Type cast error: Newly created object "
+    ERROR("Type cast error: Newly created object "
       + "of type '" + param.className + "' is not an instance"
       + " of requested type (" + param.typeCast.name + ")");
-
     return null;
   }
 
@@ -115,28 +117,36 @@ export class SaveableObject extends AttributableClass
   public async saveToFile(directory: string, fileName: string)
   {
     let directoryIsValid = directory !== undefined
-      && directory !== null
-      && directory !== "";
+                        && directory !== null
+                        && directory !== "";
+
+    if (!directoryIsValid)
+    {
+      ERROR("Invalid 'directory' parameter when saving"
+        + " class " + this.className + "." + " Object is"
+        + " not saved");
+      return;
+    }
 
     let filenameIsValid = fileName !== undefined
-      && fileName !== null
-      && fileName !== "";
+                       && fileName !== null
+                       && fileName !== "";
 
-    if (!ASSERT(directoryIsValid,
-      "Invalid 'directory' parameter when saving class "
-      + this.className + "." + " Object is not saved"))
+    if (filenameIsValid)
+    {
+      ERROR("Invalid 'fileName' parameter when saving"
+        + " class " + this.className + ". Object is not"
+        + " saved");
       return;
+    }
 
-    if (!ASSERT(filenameIsValid,
-      "Invalid 'fileName' parameter when saving class "
-      + this.className + "." + " Object is not saved"))
+    if (directory.substr(directory.length - 1) !== '/')
+    {
+      ERROR("Error when saving class " + this.className + ":"
+        + " Directory path '" + directory + "' doesn't end with"
+        + "  '/ '. Object is not saved");
       return;
-
-    if (!ASSERT(directory.substr(directory.length - 1) === '/',
-      "Error when saving class " + this.className + ":"
-      + " Directory path '" + directory + "' doesn't end with '/ '."
-      + " Object is not saved"))
-      return;
+    }
 
     // Directory might not yet exist, so we better make sure it does.
     await FileSystem.ensureDirectoryExists(directory);
@@ -145,15 +155,24 @@ export class SaveableObject extends AttributableClass
 
   // -------------- Protected methods -------------------
 
-  protected checkVersion(jsonObject: Object, filePath: string)
+  protected checkVersion(jsonObject: Object, filePath: string): boolean
   {
-    ASSERT_FATAL('version' in jsonObject,
-      "There is no 'version' property in JSON data in file " + filePath);
+    if (!('version' in jsonObject))
+    {
+      ERROR("Missing 'version' property in JSON data"
+        + " in file " + filePath);
+      return false;
+    }
 
-    ASSERT_FATAL(jsonObject['version'] === this.version,
-      "Version of JSON data (" + jsonObject['version'] + ")"
-      + " in file " + filePath + " doesn't match required"
-      + " version (" + this.version + ")");
+    if (jsonObject['version'] !== this.version)
+    {
+      ERROR("Version of JSON data (" + jsonObject['version'] + ")"
+        + " in file " + filePath + " doesn't match required"
+        + " version (" + this.version + ")");
+      return false;
+    }
+
+    return true;
   }
 
   // Override this method if you need to load property of nonstandard type.
@@ -212,8 +231,11 @@ export class SaveableObject extends AttributableClass
     }
     catch (e)
     {
-      ASSERT_FATAL(false, "Syntax error in JSON string: "
+      // Here we need fatal error, because data might already
+      // be partialy loaded so we could end up with broken entity.
+      FATAL_ERROR("Syntax error in JSON string: "
         + e.message + " in file " + filePath);
+      return;
     }
 
     // filePath is passed just so it can be printed to error messages.
@@ -243,14 +265,19 @@ export class SaveableObject extends AttributableClass
   private loadFromJsonObject(jsonObject: Object, filePath: string)
   {
     // 'filePath' is passed just so it can be printed to error messages.
-    this.checkVersion(jsonObject, filePath);
+    if (!this.checkVersion(jsonObject, filePath))
+      return;
 
     // 'className' must be the same as it's saved value.
     this.checkClassName(jsonObject, filePath);
 
     // Using 'in' operator on object with null value would cause crash.
-    ASSERT_FATAL(jsonObject !== null,
-      "Invalid json object loaded from file " + filePath);
+    if (jsonObject === null)
+    {
+      // Here we need fatal error, because data might already
+      // be partialy loaded so we could end up with broken entity.
+      FATAL_ERROR("Invalid json object loaded from file " + filePath);
+    }
 
     // Now copy the data.
     for (let propertyName in jsonObject)
@@ -261,17 +288,24 @@ export class SaveableObject extends AttributableClass
       // className.
       if (propertyName === NamedClass.CLASS_NAME_PROPERTY)
       {
-        ASSERT_FATAL(this.className !== undefined,
-          "Loading object with saved '" + NamedClass.CLASS_NAME_PROPERTY + "'"
-          + " property into an instance that doesn't have"
-          + " a '" + NamedClass.CLASS_NAME_PROPERTY + "' property."
-          + " This should never happen");
+        if (this.className === undefined)
+        {
+          FATAL_ERROR("Loading object with saved"
+            + " '" + NamedClass.CLASS_NAME_PROPERTY + "'"
+            + " property into an instance that doesn't have"
+            + " a '" + NamedClass.CLASS_NAME_PROPERTY + "'"
+            + " property. This should never happen");
+        }
 
-        ASSERT_FATAL(jsonObject[propertyName] === this.className,
-          "Loading object with '" + NamedClass.CLASS_NAME_PROPERTY + "'"
-          + " property saved as '" + jsonObject[propertyName] + "' into an"
-          + " instance with '" + NamedClass.CLASS_NAME_PROPERTY + "'"
-          + this.className + ". This should never happen, types must match");
+        if (jsonObject[propertyName] === this.className)
+        {
+          FATAL_ERROR("Loading object with"
+            + " '" + NamedClass.CLASS_NAME_PROPERTY + "'"
+            + " property saved as '" + jsonObject[propertyName] + "'"
+            + " into an instance with '" + NamedClass.CLASS_NAME_PROPERTY + "'"
+            + " " + this.className + ". This should never happen, types must"
+            + " match");
+        }
       }
       else
       {
@@ -297,11 +331,13 @@ export class SaveableObject extends AttributableClass
     // over in following cycle that iterates properties.)
     let className = this.className;
 
-    ASSERT_FATAL(className !== undefined,
-      "Attempt to save a SaveableObject that doesn't have"
-      + " a " + NamedClass.CLASS_NAME_PROPERTY + " property."
-      + " I don't know how did you manage to do it - SaveableObject"
-      + " is inherited from NamedClass which does have it");
+    if (className === undefined)
+    {
+      FATAL_ERROR("Attempt to save a SaveableObject that doesn't"
+        + " have a " + NamedClass.CLASS_NAME_PROPERTY + " property."
+        + " I'd like to know how did you manage to do it - SaveableObject"
+        + " is inherited from NamedClass which does have it");
+    }
 
     jsonObject[NamedClass.CLASS_NAME_PROPERTY] = className;
 
@@ -323,15 +359,19 @@ export class SaveableObject extends AttributableClass
 
   private checkClassName (jsonObject: Object, filePath: string)
   {
-    ASSERT_FATAL(NamedClass.CLASS_NAME_PROPERTY in jsonObject,
-      "There is no '" + NamedClass.CLASS_NAME_PROPERTY + "' property"
-      + "in JSON data in file " + filePath);
+    if (!(NamedClass.CLASS_NAME_PROPERTY in jsonObject))
+    {
+      FATAL_ERROR("There is no '" + NamedClass.CLASS_NAME_PROPERTY + "'"
+        + " property in JSON data in file " + filePath);
+    }
 
-    ASSERT_FATAL(jsonObject[NamedClass.CLASS_NAME_PROPERTY] === this.className,
-      "Attempt to load JSON data of class"
-      + " (" + jsonObject[NamedClass.CLASS_NAME_PROPERTY] + ")"
-      + " in file " + filePath + " into instance of incompatible"
-      + " class (" + this.className + ")");
+    if (jsonObject[NamedClass.CLASS_NAME_PROPERTY] !== this.className)
+    {
+      FATAL_ERROR("Attempt to load JSON data of class"
+        + " (" + jsonObject[NamedClass.CLASS_NAME_PROPERTY] + ")"
+        + " in file " + filePath + " into instance of incompatible"
+        + " class (" + this.className + ")");
+    }
   }
 
   private async processBufferedSavingRequests()
@@ -448,9 +488,11 @@ export class SaveableObject extends AttributableClass
       && !this.isMap(variable)
     )
     {
-      ASSERT_FATAL(variable === null || Array.isArray(variable),
-        "Attempt to load array property '" + variableName + "' to"
-        + " a non-array property.");
+      if (variable !== null && !Array.isArray(variable))
+      {
+        ERROR("Attempt to load array property '" + variableName + "'"
+          + " to a non-array property");
+      }
 
       return this.loadArray(variableName, jsonVariable, filePath);
     }
@@ -688,8 +730,7 @@ export class SaveableObject extends AttributableClass
     if (this.isPrimitiveObject(variable))
       return this.savePrimitiveObjectToJson(variable);
 
-    ASSERT_FATAL(false,
-      "Variable '" + description + "' in class '" + className + "'"
+    FATAL_ERROR("Variable '" + description + "' in class '" + className + "'"
       + " (or inherited from some of it's ancestors) is a class but"
       + " is neither inherited from SaveableObject nor has a type that"
       + " we know how to save. Make sure that you only use primitive"
@@ -710,10 +751,14 @@ export class SaveableObject extends AttributableClass
     // If attributes for our property exist.
     if (propertyAttributes !== undefined)
     {
-      ASSERT_FATAL(propertyAttributes !== null,
-        "'null' propertyAtributes for property '" + propertyName + "'"
-        + "Make sure that 'static " + propertyName + "' declared in class"
-        + className + " (or in some of it's ancestors) is not null");
+      if (propertyAttributes === null)
+      {
+        FATAL_ERROR("'null' propertyAtributes for property"
+          + " '" + propertyName + "'. Make sure that 'static"
+          + " " + propertyName + "' declared in class"
+          + " " + className + " (or in some of it's ancestors)"
+          + " is not null");
+      }
 
       // And if there is 'isSaved' property in atributes.
       // (so something like: static property = { issaved: false };
@@ -801,9 +846,11 @@ export class SaveableObject extends AttributableClass
     if (jsonObject === null)
       return false;
 
-    if (!ASSERT(jsonObject !== undefined,
-      "Invalid jsonObject"))
+    if (jsonObject === undefined)
+    {
+      ERROR("Invalid jsonObject");
       return false;
+    }
 
     // Is there a 'className' property in JSON object with value
     // 'EntityReference'?
@@ -844,22 +891,26 @@ export class SaveableObject extends AttributableClass
   )
   : Entity
   {
-    ASSERT_FATAL(jsonObject.className === Entity.ENTITY_REFERENCE_CLASS_NAME,
-      "Attempt to load entity reference from invalid JSON object");
+    if (jsonObject.className !== Entity.ENTITY_REFERENCE_CLASS_NAME)
+      FATAL_ERROR("Attempt to load entity reference from invalid JSON object");
 
     let id = jsonObject.id;
 
-    ASSERT(id !== undefined && id !== null,
-      "Invalid 'id' when loading entity reference"
-      + " '" + propertyName + "' from JSON file "
-      + filePath);
+    if (id === undefined || id === null)
+    {
+     ERROR("Invalid 'id' when loading entity reference"
+        + " '" + propertyName + "' from JSON file "
+        + filePath);
+    }
 
     let type = jsonObject.type;
 
-    ASSERT(type !== undefined && type !== null,
-      "Invalid 'type' when loading entity reference"
-      + " '" + propertyName + "' from JSON file "
-      + filePath);
+    if (type === undefined || type === null)
+    {
+      ERROR("Invalid 'type' when loading entity reference"
+        + " '" + propertyName + "' from JSON file "
+        + filePath);
+    }
 
     // Return an existing entity proxy if entity exists in
     // entityManager, invalid entity proxy otherwise.

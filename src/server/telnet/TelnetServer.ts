@@ -23,10 +23,9 @@
 
 'use strict';
 
-import {ASSERT_FATAL} from '../../shared/ASSERT_FATAL';
+import {FATAL_ERROR} from '../../shared/FATAL_ERROR';
 import {Mudlog} from '../../server/Mudlog';
 import {AdminLevels} from '../../server/AdminLevels';
-///import {EntityId} from '../../shared/EntityId';
 import {Server} from '../../server/Server';
 import {Connection} from '../../server/Connection';
 import {TelnetSocketDescriptor}
@@ -75,10 +74,12 @@ export class TelnetServer
       () => { this.onServerStartsListening(); }
     );
 
-    Mudlog.log(
+    Mudlog.log
+    (
       "Starting telnet server at port " + this.port,
       Mudlog.msgType.SYSTEM_INFO,
-      AdminLevels.IMMORTAL);
+      AdminLevels.IMMORTAL
+    );
 
     this.telnetServer.listen(this.port);
   }
@@ -111,26 +112,26 @@ export class TelnetServer
   // Handles 'error' event of telnet server.
   protected onServerError(error)
   {
-    if (error.code === 'EADDRINUSE')
+    switch (error.code)
     {
-      ASSERT_FATAL(false,
-        "Cannot start telnet server on port "
-        + this.port + ": Address is already in use.\n"
-        + "Do you have a MUD server already running?");
-    }
+      case 'EADDRINUSE':
+        FATAL_ERROR("Cannot start telnet server on port"
+          + " " + this.port + ": Address is already in use.\n"
+          + " Do you have a MUD server already running?");
+        break;
 
-    if (error.code === 'EACCES')
-    {
-      ASSERT_FATAL(false,
-        "Cannot start telnet server on port "
-        + this.port + ": Permission denied.\n"
-        + "Are you trying to start it on a priviledged port without"
-        + " being root?");
-    }
+      case 'EACCES':
+        FATAL_ERROR("Cannot start telnet server on port"
+          + " " + this.port + ": Permission denied.\n"
+          + " Maybe you are trying to start it on a priviledged"
+          + " port without being root?");
+        break;
 
-    ASSERT_FATAL(false,
-      "Cannot start telnet server on port "
-      + this.port + ": Unknown error");
+      default:
+        FATAL_ERROR("Cannot start telnet server on port"
+          + " " + this.port + ": Unknown error");
+        break;
+    }
   }
 
   // This handler is registered directly by net.createServer()

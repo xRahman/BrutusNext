@@ -1,3 +1,20 @@
+New stuff:
+============
+
+Multiline strings
+------------------
+
+// Always put space at the start of a new line like this:
+
+ERROR("Unable to compose prototype save path for"
+  + " prototype '" + className + "' because dynamic"
+  + " class '" + className + "' doesn't exist. Prototype"
+  + " will be saved to " + errorPath + " instead");
+
+// This way it's easy to see that you missed a space.
+
+============================================
+
 Indentation
 ------------
 {
@@ -5,7 +22,7 @@ Indentation
 }
 
 Trailing spaces
-----------------------
+----------------
 
 // Don't leave spaces at the end of lines if possible.
 // Don't put spaces on empty lines if possible.

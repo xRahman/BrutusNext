@@ -11,7 +11,6 @@
 
 'use strict';
 
-import {ASSERT} from '../../shared/ASSERT'
 import {GameEntity} from '../../game/GameEntity';
 
 export class Dimension extends GameEntity

@@ -6,7 +6,6 @@
 
 'use strict';
 
-import {ASSERT} from '../../shared/ASSERT'
 import {SaveableObject} from '../../shared/SaveableObject';
 import {Game} from '../../game/Game';
 import {GameEntity} from '../../game/GameEntity';
