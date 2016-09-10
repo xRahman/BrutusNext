@@ -34,6 +34,9 @@ export class EntityList extends SaveableObject
 
   public getEntities() { return this.entities; }
 
+  // Number of entities in the list.
+  public get size() { return this.entities.size; }
+
   // ---------------- Public methods --------------------
 
   // -> Returns true if adding succeeded.

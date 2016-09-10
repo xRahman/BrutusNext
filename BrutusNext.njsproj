@@ -35,6 +35,8 @@
     <TypeScriptCompile Include="src\game\DynamicClasses.ts" />
     <TypeScriptCompile Include="src\shared\EntityManager.ts" />
     <TypeScriptCompile Include="src\shared\EntityProxyHandler.ts" />
+    <TypeScriptCompile Include="src\shared\ERROR.ts" />
+    <TypeScriptCompile Include="src\shared\FATAL_ERROR.ts" />
     <TypeScriptCompile Include="src\shared\InvalidValueProxyHandler.ts" />
     <TypeScriptCompile Include="src\shared\NamedEntity.ts" />
     <TypeScriptCompile Include="src\game\ScriptableEntity.ts" />

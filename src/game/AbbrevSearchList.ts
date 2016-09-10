@@ -43,10 +43,7 @@ export class AbbrevSearchList extends NameSearchList
   //   Key: abbreviation (like "warrio").
   //   Value: list of entity references that "listen" to this abbrev.
   private abbrevList = new Map();
-  /*
-  private abbrevList: { [abbrev: string]: EntityIdList } = {};
   // Do not save and load property 'abbrevList'.
-  */
   private static abbrevList = { isSaved: false };
 
   // ---------------- Public methods --------------------
@@ -137,40 +134,57 @@ export class AbbrevSearchList extends NameSearchList
 
   private addEntityToAbbreviation(abbrev: string, entity: GameEntity)
   {
-    let lowercaseAbbrev = abbrev.toLocaleLowerCase();
+    let lowerCaseAbbrev = abbrev.toLocaleLowerCase();
 
-    if (this.abbrevList[lowercaseAbbrev] === undefined)
-      this.abbrevList[lowercaseAbbrev] = new EntityList();
+    // get() Returns 'undefined' if item is not in hashmap.
+    let entityList = this.abbrevList.get(lowerCaseAbbrev);
 
-    this.abbrevList[lowercaseAbbrev].add(entity);
+    // If record with such key wasn't found in this.abbrevList, 
+    // a new EntityList will be created.
+    if (entityList === undefined)
+    {
+      entityList = new EntityList();
+
+      // Insert the new entityList to hashmap under key 'lowercaseAbbrev'.
+      this.abbrevList.set(lowerCaseAbbrev, entityList);
+    }
+
+    // Now we are sure that entityList exists in hashamp, so we can insert
+    // entity to it.
+    entityList.add(entity);
   }
 
   private removeEntityFromAbbreviation(abbrev: string, entity: GameEntity)
   {
     let lowerCaseAbbrev = abbrev.toLocaleLowerCase();
-    let abbrevList = this.abbrevList[lowerCaseAbbrev];
 
-    if (abbrevList === undefined)
+    // get() Returns 'undefined' if item is not in hashmap.
+    let entityList: EntityList = this.abbrevList.get(lowerCaseAbbrev);
+
+    // If record with such key wasn't found in this.abbrevList, 
+    // a new EntityList will be created.
+    if (entityList === undefined)
     {
-      ERROR
-      (
-        "Attempt to remove abbrev item for abbreviation"
-        + " '" + lowerCaseAbbrev + "' that does not exist"
-        + " in this.abbrevs"
-      );
+      ERROR("Attempt to remove entity " + entity.getErrorIdString()
+        + " with abbreviation '" + lowerCaseAbbrev + "' that does"
+        + " not exist in abbrevList hashamp");
 
+      // Abbrev doesn't exist in hashmap so there is nothing to remove.
       return;
     }
 
-    let numberOfItems =
-      this.abbrevList[lowerCaseAbbrev].remove(entity);
+    // Error message is handled by remove() if entity doesn't exist in
+    // hashmap.
+    entityList.remove(entity);
 
-    // If there are no items left for this abbreviation, we can delete
-    // the property from hashmap.
-    if (numberOfItems === 0)
-      delete this.abbrevList[lowerCaseAbbrev];
+    // If we have removed the last entity from entityList, we also
+    // need to delete whole record from this.abbrevList hashmap.
+    if (entityList.size == 0)
+      this.abbrevList.delete(lowerCaseAbbrev);
   }
 
+  // -> Returns array of GameEntities that are present in each entityList
+  //    stored in entityLists parameter.
   private mergeResults(entityLists: Array<EntityList>): Array<GameEntity>
   {
     let result: Array<GameEntity> = [];
@@ -182,7 +196,7 @@ export class AbbrevSearchList extends NameSearchList
     let processedEntity = null;
     let match = true;
 
-    // Go through item list matching the first keyword.
+    // Go through entity list matching the first keyword.
     for (processedEntity of firstKeywordEntityList)
     {
       match = true;
@@ -249,6 +263,10 @@ export class AbbrevSearchList extends NameSearchList
     return false;
   }
 
+  // If we are looking for something like '3.gray_orc', we need to count
+  // three entities that listen to 'gray_orc'. We also need to check
+  // visibility etc.
+  // -> returns entity number 'searchIndex' that satisfies the search.
   private filterResults
   (
     candidates: Array<GameEntity>,
@@ -278,40 +296,70 @@ export class AbbrevSearchList extends NameSearchList
 
   private findEntity
   (
+    // TODO: Asi by sem měl přibýt další parametr -> searchingEntity,
+    //   který se použije na testování visibility.
     searchName: string,
     searchIndex: number,
     cathegory: number
   )
   : GameEntity
   {
+
     // Nothing can possibly match an empty, null or undefined searchName.
     if (!searchName)
       return null;
 
+    // This array will store a list of entities that listen to each of
+    // abbreviations contained in abbrevArray.
+    // (returns null if any of these abbreviations is not found)
+    let entityLists = this.gatherEntityLists(searchName);
+
+    // If any of abbreviations present in searchName wasn't found,
+    // whole serch is a miss.
+    if (entityLists = null)
+      return;
+
+    // We have found lists of entities that listen to each of requested
+    // keywords (like 'orc' and 'chieftain' in 'orc_chieftain').
+    // Now we have to filter entities that listen to all of them.
+    let candidates = this.mergeResults(entityLists);
+
+    // If we are looking for something like '3.gray_orc', we need to count
+    // three entities that listen to 'gray_orc' and are visible to the
+    // searching entity.
+    return this.filterResults(candidates, searchIndex, cathegory);
+  }
+
+  // 'searchName' is something like 'orc_chieftain'
+  // -> Returns array containing an entityList for each abbreviation
+  //    in searchName. Returns null if any of abbreviations is not found.
+  private gatherEntityLists(searchName: string): Array<EntityList>
+  {
     // Split searchName into parts separated by underscores.
+    // (If searchName is something like 'ug_gra_orc',
+    //  abbrevArray will be [ 'ug', 'gra', 'orc' ]).
     let abbrevArray = searchName.split('_');
 
     // This array will store a list of entities that listen to each of
     // abbreviations contained in abbrevArray.
-    let itemLists: Array<EntityList> = [];
+    let entityLists: Array<EntityList> = [];
 
-    for (let i = 0; i < abbrevArray.length; i++)
+    for (let abbrev of abbrevArray)
     {
-      itemLists[i] = this.abbrevList[abbrevArray[i]];
+      // Request entityList corresponding to 'abbrev' from
+      // this.abbrevList hashmap.
+      // (get() returns undefined if 'abbrev' isn't in hashmap)
+      let entityList = this.abbrevList.get(abbrev);
 
-      // If one of requested abbreviations isn't even registered,
-      // our search is a miss.
-      if (itemLists[i] === undefined)
+      // If any of requested abbreviations isn't found,
+      // whole search is a miss.
+      if (entityList === undefined)
         return null;
+
+      entityLists.push(entityList);
     }
 
-    // We have found lists of entities that listen to each of requested
-    // keywords (like 'orc' and 'chieftain' in 'orc_chieftain').
-    // Now we have filter entities that listen to all of them.
-
-    let candidates = this.mergeResults(itemLists);
-
-    return this.filterResults(candidates, searchIndex, cathegory);
+    return entityLists
   }
 
   // Returns object containing index, cathegory and name parsed from
