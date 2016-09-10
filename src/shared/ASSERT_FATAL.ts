@@ -60,7 +60,7 @@ export function ASSERT_FATAL(condition: boolean, message: string)
     let errorMsg = "Fatal assertion failed: '" + message + "'" + "\n"
       + getTrimmedStackTrace();
 
-    Mudlog.log(errorMsg, Mudlog.msgType.ASSERT_FATAL, AdminLevels.IMMORTAL);
+    ///Mudlog.log(errorMsg, Mudlog.msgType.ASSERT_FATAL, AdminLevels.IMMORTAL);
 
     // Since promises are eating exceptions, throwing an error won't stop
     // the program if ASSERT_FATAL is triggered within asynchronous method.

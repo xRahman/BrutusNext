@@ -210,6 +210,12 @@ export class AuthProcessor
       this.connection
     );
 
+    if (account === null)
+      // We don't advance the stage so the next user input will trigger
+      // a getNewPassword() again.
+      // (error message is already handled by createAccount())
+      return;
+
     Mudlog.log
     (
       "New player: " + this.accountName

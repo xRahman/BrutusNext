@@ -9,8 +9,6 @@
 
 'use strict';
 
-import {ASSERT} from '../../shared/ASSERT'
-///import {EntityId} from '../../shared/EntityId';
 import {Game} from '../../game/Game';
 import {Sector} from '../../game/world/Sector';
 

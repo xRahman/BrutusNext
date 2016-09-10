@@ -6,8 +6,6 @@
 
 'use strict';
 
-import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
-
 export class NamedClass
 {
   public static get CLASS_NAME_PROPERTY() { return 'className'; }

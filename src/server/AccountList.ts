@@ -6,12 +6,10 @@
 
 'use strict';
 
-import {ASSERT} from '../shared/ASSERT';
-import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
+import {ERROR} from '../shared/ERROR';
 import {FileSystem} from '../shared/fs/FileSystem';
 import {Server} from '../server/Server';
 import {NameSearchList} from '../shared/NameSearchList';
-///import {EntityId} from '../shared/EntityId';
 import {EntityManager} from '../shared/EntityManager';
 import {Account} from '../server/Account';
 import {Mudlog} from '../server/Mudlog';
@@ -31,9 +29,12 @@ export class AccountList extends NameSearchList
   )
   : Account
   {
-    ASSERT_FATAL(!this.exists(accountName),
-      "Attempt to create account '"
-      + accountName + "' which already exists");
+    if (this.exists(accountName))
+    {
+      ERROR("Attempt to create account '" + accountName + "'"
+        + " which already exists. Account is not created");
+      return null;
+    }
 
     let account = EntityManager.createNamedEntity
     (

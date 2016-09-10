@@ -6,7 +6,6 @@
 
 'use strict';
 
-import {ASSERT} from '../../shared/ASSERT'
 import {GameEntity} from '../../game/GameEntity';
 import {Game} from '../../game/Game';
 import {RoomInfo} from '../../game/world/RoomInfo';

@@ -61,11 +61,12 @@ export class Mudlog
     let tmpErr: any = new Error();
 
     // Now we cut off first three lines from tmpErr.stack string.
-    //   First line contains just: 'Error:' which we don't need.
-    //   Second line contains name and line of ASSERT() function.
-    //   Third line contains name and line of getTrimmedStackTrace() function.
-    //   By second and third line we trim stack trace to begin on the line where
-    // assertion actually failed, which is exacly what user needs to see.
+    // - First line contains just: 'Error:' which we don't need.
+    // - Second line contains name and line of ERROR() function.
+    // - Third line contains name and line of getTrimmedStackTrace() function.
+    // By removing second and third line we trim stack trace to begin on the
+    // line where ERROR actually got triggered, which is exacly what user needs
+    // to see.
 
     // Break stack trace string into an array of lines.
     let stackTraceLines = tmpErr.stack.split('\n');

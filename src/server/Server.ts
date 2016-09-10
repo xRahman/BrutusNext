@@ -13,14 +13,12 @@
 
 'use strict';
 
-import {ASSERT} from '../shared/ASSERT';
-import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
-//import {IdProvider} from '../shared/IdProvider';
+import {ERROR} from '../shared/ERROR';
+import {FATAL_ERROR} from '../shared/FATAL_ERROR';
 import {EntityManager} from '../shared/EntityManager';
 import {FileSystem} from '../shared/fs/FileSystem';
 import {FlagNamesManager} from '../shared/FlagNamesManager';
 import {Connection} from '../server/Connection';
-///import {Mudlog} from '../server/Mudlog';
 import {EntityList} from '../shared/EntityList';
 import {AccountList} from '../server/AccountList';
 import {Game} from '../game/Game';
@@ -67,8 +65,8 @@ export class Server
 
   public static get timeOfBoot()
   {
-    ASSERT(Server.getInstance().timeOfBoot != null,
-      "Time of boot is not initialized yet");
+    if (Server.getInstance().timeOfBoot === null)
+      ERROR("Time of boot is not initialized yet");
 
     return Server.getInstance().timeOfBoot;
   }
@@ -111,11 +109,8 @@ export class Server
 
   static getInstance()
   {
-    ASSERT_FATAL
-    (
-      Server.instance !== null && Server.instance !== undefined,
-      "Instance of server doesn't exist yet"
-    );
+    if (Server.instance === null || Server.instance === undefined)
+      FATAL_ERROR("Instance of server doesn't exist yet");
 
     return Server.instance;
   }
@@ -124,9 +119,11 @@ export class Server
   // not already exist.
   static create()
   {
-    if (!ASSERT(Server.instance === undefined,
-      "Server already exists, not creating it"))
+    if (Server.instance !== undefined)
+    {
+      ERROR("Server already exists, not creating it");
       return;
+    }
 
     Server.instance = new Server();
   }
@@ -138,8 +135,11 @@ export class Server
   {
     ///test();
 
-    ASSERT_FATAL(this.game === null,
-      "Error: game already exists. Server::run() can only be done once");
+    if (this.game !== null)
+    {
+      ERROR("Game already exists. Server.run() can only be done once");
+      return;
+    }
 
     this.game = new Game();
 
@@ -177,8 +177,11 @@ export class Server
   // Creates an instance of telnet server and starts it.
   protected startTelnetServer(telnetPort: number)
   {
-    ASSERT_FATAL(this.telnetServer.isOpen === false,
-      "Telnet server is already running");
+    if (this.telnetServer.isOpen === true)
+    {
+      ERROR("Telnet server is already running");
+      return;
+    }
 
     this.telnetServer.start();
   }
@@ -186,8 +189,11 @@ export class Server
   // Creates an instance of http server and starts it.
   protected startHttpServer()
   {
-    ASSERT_FATAL(this.httpServer.isOpen === false,
-      "Http server is already running");
+    if (this.httpServer.isOpen === true)
+    {
+      ERROR("Http server is already running");
+      return;
+    }
 
     this.httpServer.start();
   }

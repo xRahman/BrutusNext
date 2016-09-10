@@ -60,7 +60,7 @@ export function ASSERT(condition: boolean, message: string)
     let errorMsg = "Assertion failed: '" + message + "'" + "\n"
       + getTrimmedStackTrace();
 
-    Mudlog.log(errorMsg, Mudlog.msgType.ASSERT, AdminLevels.CREATOR);
+    ///Mudlog.log(errorMsg, Mudlog.msgType.ASSERT, AdminLevels.CREATOR);
   }
 
   return condition;

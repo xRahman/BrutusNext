@@ -27,12 +27,8 @@ export class CharacterList extends AbbrevSearchList
   {
     if (this.exists(name))
     {
-      ERROR
-      (
-        "Attempt to create character '" + name + "' that already exists."
-        + " Character is not created"
-      );
-
+      ERROR("Attempt to create character '" + name + "'"
+        + " that already exists. Character is not created");
       return null;
     }
 

@@ -7,8 +7,7 @@
 
 'use strict';
 
-import {ASSERT} from '../shared/ASSERT';
-import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
+import {ERROR} from '../shared/ERROR';
 import {AutoSaveableObject} from '../shared/AutoSaveableObject';
 import {Flags} from '../shared/Flags';
 import {FlagNames} from '../shared/FlagNames';
@@ -47,11 +46,13 @@ export class FlagNamesManager extends AutoSaveableObject
     let saveNeeded = false;
     let flagsType = flags.className;
 
-    if (!ASSERT(this.ready === true,
-        "Attempt to request FlagNames for class '" + flagsType + "'"
+    if (this.ready === false)
+    {
+      ERROR("Attempt to request FlagNames for class '" + flagsType + "'"
         + " before FlagNamesManager is loaded. Make sure that you access"
-        + " Flags objects only after FlagNamesManager.load()"))
+        + " Flags objects only after FlagNamesManager.load()");
       return null;
+    }
 
     let flagNames = this.flagNamesList.get(flagsType);
 
@@ -91,9 +92,11 @@ export class FlagNamesManager extends AutoSaveableObject
     // Add new FlagNames object to hashmap.
     this.flagNamesList.set(key, flagNames);
 
-    if (!ASSERT(flagNames !== undefined,
-        "Failed to create FlagNames for class '" + key + "'"))
+    if (flagNames === undefined)
+    {
+      ERROR("Failed to create FlagNames for class '" + key + "'");
       return null;
+    }
 
     return flagNames;
   }
