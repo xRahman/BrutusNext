@@ -6,9 +6,7 @@
 
 'use strict';
 
-import {ASSERT} from '../shared/ASSERT';
-import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
-//import {EntityId} from '../shared/EntityId';
+import {ERROR} from '../shared/ERROR';
 import {Entity} from '../shared/Entity';
 import {Mudlog} from '../server/Mudlog';
 import {AdminLevels} from '../server/AdminLevels';
@@ -92,8 +90,8 @@ export class Connection extends Entity
 
   public startLoginProcess()
   {
-    ASSERT(this.stage === Connection.stage.INITIAL,
-      "Starting login process from wrong stage");
+    if (this.stage !== Connection.stage.INITIAL)
+      ERROR("Starting login process from wrong stage");
 
     this.stage = Connection.stage.AUTHENTICATION;
     this.authProcessor.startLoginProcess();
@@ -107,12 +105,17 @@ export class Connection extends Entity
 
   public async enterGame()
   {
-    ASSERT(this.stage === Connection.stage.IN_LOBBY
-        || this.stage === Connection.stage.IN_GAME,
-      "Entering game from wrong stage");
+    let validStage = this.stage === Connection.stage.IN_LOBBY
+                  || this.stage === Connection.stage.IN_GAME;
 
-    ASSERT(this.account !== null,
-      "Invalid account when entering game");
+    if (!validStage)
+      ERROR("Entering game from wrong stage");
+
+    if (this.account === null)
+    {
+      ERROR("Invalid account when entering game. Game not eneter");
+      return;
+    }
 
     this.stage = Connection.stage.IN_GAME;
 
@@ -188,26 +191,24 @@ export class Connection extends Entity
     ///      "&wThere was #" + Server.getNumberOfPlayers()
     ///      + " players since &W3. 4. 2016";
 
-    let lastLoginDate = "unknown date";
-
-    if (ASSERT(this.account.getLastLoginDate() !== null,
-      "Attempt to send last login info of account "
-      + this.account.name + " which doesn't have it"
-      + " initialized yet"))
+    if (this.account.getLastLoginDate() === null)
     {
-      /// Pozn: Pres telnet samozrejme nezjistit, jaky ma player nastaveny
-      /// locale, takze to bude nejspis locale serveru, nebo tak neco.
-      /// (Asi by se muselo nastavovat rucne v menu jaky chci mit format
-      ///  data a casu)
-      /// BTW toLocaleString('cs-CZ') nefunguje, porad je to anglicky format.
-      lastLoginDate = this.account.getLastLoginDate().toLocaleString();
+      ERROR("Attempt to send last login info of account"
+        + " " + this.account.name + " which doesn't have it"
+        + " initialized yet");
+      return "<unknown date>";
     }
+
+    /// Pozn: Pres telnet samozrejme nezjistit, jaky ma player nastaveny
+    /// locale, takze to bude nejspis locale serveru, nebo tak neco.
+    /// (Asi by se muselo nastavovat rucne v menu jaky chci mit format
+    ///  data a casu)
+    /// BTW toLocaleString('cs-CZ') nefunguje, porad je to anglicky format.
+    let lastLoginDate = this.account.getLastLoginDate().toLocaleString();
 
     let lastLoginInfo =
       "&wLast login: " + this.account.getLastLoginAddress()
       + " at " + lastLoginDate;
-
-///    this.sendAsPromptlessBlock(numberOfPlayersInfo);
 
     this.sendAsBlock(lastLoginInfo);
   }
@@ -298,44 +299,55 @@ export class Connection extends Entity
     switch (this.stage)
     {
       case Connection.stage.INITIAL:
-        ASSERT(false, "Connection has not yet been initialized by"
-          + "startLoginProcess(), it is not supposed to process any"
+        ERROR("Connection has not yet been initialized by"
+          + " startLoginProcess(), it is not supposed to process any"
           + " commands yet");
         break;
 
       case Connection.stage.AUTHENTICATION:
-        ASSERT(this.account === null,
-          "Attempt to process authentication command on player connection"
-          + "  that already has an account assigned");
+        if (this.account !== null)
+        {
+          ERROR("Attempt to process authentication command on player"
+            + " connection that already has an account assigned");
+        }
+
         await this.authProcessor.processCommand(command);
         break;
 
       case Connection.stage.IN_LOBBY:
-        ASSERT(this.account !== null,
-          "Attempt to process lobby command on player connection that doesn't"
-          + " have an account assigned");
+        if (this.account === null)
+        {
+          ERROR("Attempt to process lobby command on player"
+            + " connection that doesn't have an account assigned");
+          return;
+        }
+
         this.lobbyProcessor.processCommand(command);
         break;
 
       case Connection.stage.IN_GAME:
-        ASSERT(this.account !== null,
-          "Attempt to process ingame command on player connection that doesn't"
-          + " have an account assigned");
+        if (this.account === null)
+        {
+          ERROR("Attempt to process ingame command on player"
+            + " connection that doesn't have an account assigned");
+        }
 
-        ASSERT(this.isInGame(),
-          "Attempt to process ingame command on player connection that doesn't"
-          + " have an ingame entity attached")
+        if (this.isInGame())
+        {
+          ERROR("Attempt to process ingame command on player"
+            + " connection that doesn't have an ingame entity attached")
+        }
 
         this.ingameEntity.processCommand(command);
         break;
 
       case Connection.stage.LOGGED_OUT:
-        ASSERT(false, "Player is logged out already, Connection"
+        ERROR("Player is logged out already, Connection"
           + " is not supposed to process any more commands");
         break;
 
       default:
-        ASSERT(false, "Unknown stage");
+        ERROR("Unknown stage");
         break;
     }
   }
@@ -353,22 +365,23 @@ export class Connection extends Entity
   // by calling this method).
   public onSocketClose()
   {
-    if (!ASSERT(this.socketDescriptor.socketClosed === true,
-      "Attempt to call Connection:onSocketClose() before respective"
-      + " socket has been closed. Don't call Connection::onSocketClose()"
-      + " directly, use connection.close() instead."
-      + " That way a 'close' event will be triggered on socket and"
-      + " Connection::onSocketClose() will be called from the handler."))
+    if (this.socketDescriptor.socketClosed === false)
     {
+      ERROR("Attempt to call Connection.onSocketClose() before respective"
+        + " socket has been closed. Don't call Connection.onSocketClose()"
+        + " directly, use connection.close() instead."
+        + " That way a 'close' event will be triggered on socket and"
+        + " Connection.onSocketClose() will be called from the handler");
+    
       return;
     }
 
     switch (this.stage)
     {
       case Connection.stage.INITIAL:
-        ASSERT(false, "Connection has not yet been initialized by"
-          + "startLoginProcess(), it is not supposed to process any"
-          + " events yet");
+        ERROR("Connection has not yet been initialized by"
+          + " startLoginProcess(), it is not supposed to process"
+          + " any events yet");
       break;
 
       case Connection.stage.AUTHENTICATION:
@@ -420,36 +433,39 @@ export class Connection extends Entity
     switch (this.stage)
     {
       case Connection.stage.INITIAL:
-        ASSERT(false, "Connection has not yet been initialized by"
-          + "startLoginProcess(), it is not supposed generate prompt yet");
-      break;
+        ERROR("Connection has not yet been initialized by"
+          + " startLoginProcess(), it is not supposed generate"
+          + " prompt yet");
+        break;
 
       case Connection.stage.AUTHENTICATION:
         // generatePrompt() is not used while player is authenticating,
         // because it would lead to lots of internal states like "failed
         // password attempt", "password too short", etc.
-        ASSERT(false, "Player is authenticating, generatePrompt() should"
-          + " not be called right now");
-      break;
+        ERROR("Player is authenticating, generatePrompt()"
+          + " should not be called right now");
+        break;
 
       case Connection.stage.IN_LOBBY:
         prompt = this.lobbyProcessor.generatePrompt();
-      break;
+        break;
 
       case Connection.stage.IN_GAME:
-        if (ASSERT(this.ingameEntity !== null,
-          "Attempt to generatePrompt() on connection which doesn't"
-          + "have an ingame entity attached"))
+        if (this.ingameEntity === null)
         {
-          prompt = this.ingameEntity.generatePrompt();
+          ERROR("Attempt to generatePrompt() on connection"
+            + " which doesn't have an ingame entity attached");
+          break;
         }
-      break;
+
+        prompt = this.ingameEntity.generatePrompt();
+        break;
 
       // Player has correcly exited game from menu.
       case Connection.stage.LOGGED_OUT:
-        ASSERT(false, "Player has already logged out. Connection"
+        ERROR("Player has already logged out. Connection"
           + " is not supposed to generate prompt anymore");
-      break;
+        break;
     }
 
     // An empty space is added after the prompt to separate it from
@@ -466,9 +482,11 @@ export class Connection extends Entity
   {
     if (this.ingameEntity !== null)
     {
-      ASSERT(this.stage === Connection.stage.IN_GAME,
-        "Player connection has ingame entity assigned but player connection"
-        + " stage is not 'IN_GAME'");
+      if (this.stage !== Connection.stage.IN_GAME)
+      {
+        ERROR("Player connection has ingame entity assigned but"
+          + " player connection stage is not 'IN_GAME'");
+      }
 
       return true;
     }
@@ -484,9 +502,13 @@ export class Connection extends Entity
 
   public detachFromGameEntity()
   {
-    ASSERT(this.ingameEntity !== null,
-      "Attempt to detach ingame entity from " + this.account.name + "'s"
-      + "player connection when there is no ingame entity attached to it");
+    if (this.ingameEntity === null)
+    {
+      ERROR("Attempt to detach ingame entity"
+        + " from " + this.account.name + "'s"
+        + " player connection when there is"
+        + " no ingame entity attached to it");
+    }
 
     this.ingameEntity.detachConnection();
   }
@@ -594,10 +616,9 @@ export class Connection extends Entity
   {
     if (data === "")
     {
-      ASSERT(false,
-        "Attempt to send empty string to account "
-        + this.account.name + this.getPlayedCharacterName());
-
+      ERROR("Attempt to send empty string to"
+        + " character " + this.getPlayedCharacterName()
+        + " on acocunt " + this.account.name);
       return true;
     }
 
@@ -620,15 +641,16 @@ export class Connection extends Entity
         break;
     }
 
-    // Log an error (via ASSERT) if any newline characters are found.
+    // Log an error if any newline characters are found.
     if (newlineCharactersFound > 0)
     {
-
-      ASSERT(false,
-        "String '" + data + "' sent to player " + this.account.name
-        + this.getPlayedCharacterName() + " ends with newline characters."
-        + " Make sure that you don't add no '\\r' or '\\n' characters at any"
-        + " combination to the end of any strings that are sent to players");
+      ERROR("String '" + data + "' sent to character"
+        + " " + this.getPlayedCharacterName() + " on"
+        + " account " + this.account.name + " ends with"
+        + " newline characters. Make sure that you don't"
+        + " append any '\\r' or '\\n' characters at any"
+        + " combination to any strings that are sent to"
+        + " players");
     }
 
     return newlineCharactersFound;
@@ -638,11 +660,11 @@ export class Connection extends Entity
   {
     if (data.indexOf('\r') !== -1)
     {
-      ASSERT(false,
-        "String '" + data + "' sent to player " + this.account.name
-        + this.getPlayedCharacterName() + " contains '\\r' characters."
-        + " Make sure that you only use '\\n' in multiline strings");
-
+      ERROR("String '" + data + "' sent to character"
+        + " " + this.getPlayedCharacterName() + " on"
+        + " account " + this.account.name + " contains"
+        + " '\\r' characters. Make sure that you only"
+        + " use '\\n' in multiline strings");
       return true;
     }
 
@@ -677,13 +699,10 @@ export class Connection extends Entity
       let player = "Unknown player";
 
       if (this.authProcessor.getAccountName())
-      {
         player = "Player " + this.authProcessor.getAccountName();
-      }
 
-      ASSERT(false, "Attempt to logout player " + player + " who is not"
+      ERROR("Attempt to logout player " + player + " who is not"
         + " logged-in to an account");
-
       return;
     }
 
@@ -709,10 +728,12 @@ export class Connection extends Entity
 
   private onSocketCloseWhenAuthenticating()
   {
-    if (!ASSERT(this.account === null,
-      "Player connection is in AUTHENTICATION stage but has an account"
-      + "assigned to it already. That's not supposed to happen"))
+    if (this.account !== null)
     {
+      ERROR("Player connection is in AUTHENTICATION stage but has"
+        + " an account assigned to it already. That's not supposed"
+        + " to happen");
+
       // This should never be executed, but if an error occurs, it's
       // probably better not to be left with dangling account.
       this.logoutAccount("has been logged out");
@@ -738,9 +759,11 @@ export class Connection extends Entity
     if (this.account !== null)
       this.logoutAccount("has been logged out");
 
-    ASSERT(this.ingameEntity !== null,
-      "Player was in game but didn't have ingame entity attached."
-      + " That's not supposed to happen.");
+    if (this.ingameEntity === null)
+    {
+      ERROR("Player was in game but didn't have ingame"
+        + "  entity attached. That's not supposed to happen");
+    }
 
     if (this.ingameEntity)
       this.ingameEntity.detachConnection();

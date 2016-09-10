@@ -32,8 +32,7 @@
 
 'use strict';
 
-import {ASSERT} from '../shared/ASSERT';
-import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
+import {ERROR} from '../shared/ERROR';
 import {IdProvider} from '../shared/IdProvider';
 import {Entity} from '../shared/Entity';
 import {NamedEntity} from '../shared/NamedEntity';
@@ -68,12 +67,12 @@ export class EntityManager
   // Shortcut so you can use EntityManager.createNamedEntity()
   // instead of Server.entityManager.createNamedEntity().
   public static createNamedEntity<T>
-  (
+    (
     name: string,
     prototype: string,
     typeCast: { new (...args: any[]): T }
-  )
-  : T
+    )
+    : T
   {
     return Server.entityManager.createNamedEntity(name, prototype, typeCast);
   }
@@ -81,12 +80,12 @@ export class EntityManager
   // ---------------- Public methods --------------------
 
   public createNamedEntity<T>
-  (
+    (
     name: string,
     prototype: string,
     typeCast: { new (...args: any[]): T }
-  )
-  : T
+    )
+    : T
   {
     // Here we are dynamically typecasting to 'NamedEntity' in order
     // to be able to set entity.name.
@@ -104,11 +103,11 @@ export class EntityManager
   // Creates an entity of type 'className' with a new id.
   // -> Returns entity proxy (which is used instead of entity).
   public createEntity<T>
-  (
+    (
     className: string,
     typeCast: { new (...args: any[]): T }
-  )
-  : T
+    )
+    : T
   {
     let handler = new EntityProxyHandler();
 
@@ -216,11 +215,15 @@ export class EntityManager
   // (this is used for example when player quits the game).
   public remove(entity: Entity)
   {
+    // get() returns undefined if there is no such record in hashmap.
     let entityRecord = this.entityRecords.get(entity.getId());
 
-    ASSERT(entityRecord !== undefined,
-      "Attempt to remove entity " + entity.getErrorIdString()
-      + " from EntityManager which is not present in the manager");
+    if (entityRecord === undefined)
+    {
+      ERROR("Attempt to remove entity " + entity.getErrorIdString()
+        + " from EntityManager which is not present in the manager");
+      return;
+    }
 
     // Set to null all proxy handlers of this entity (so anyone who
     // still has a reference to entity proxy will know that entity is
@@ -239,8 +242,11 @@ export class EntityManager
     // 'type' is needed even if 'id' is null, because
     // we need to know what class to instantiate in order to load
     // the record from file.
-    ASSERT_FATAL(type !== null && type !== undefined,
-      "Missing of invalid 'type' argument");
+    if (type === null || type === undefined)
+    {
+      ERROR("Missing of invalid 'type' argument");
+      return null;
+    }
 
     // This check is done first so we save ourself searching a 'null'
     // record in hashmap.
@@ -261,13 +267,17 @@ export class EntityManager
     {
       let entityProxy = entityRecord.getEntityProxy();
 
-      ASSERT(entityProxy !== undefined && entityProxy !== null,
-        "Invalid entity proxy in entity record of entity with id "
-        + id);
+      if (entityProxy === undefined || entityProxy === null)
+      {
+        ERROR("Invalid entity proxy in entity record of"
+          + " entity with id " + id);
+      }
 
-      ASSERT(entityProxy.className === type,
-        + "Type of entity " + entityProxy.getErrorStringId()
-        + " doesn't match requested type '" + type + "'");
+      if (entityProxy.className !== type)
+      {
+        ERROR("Type of entity " + entityProxy.getErrorStringId()
+          + " doesn't match requested type '" + type + "'");
+      }
 
       return entityProxy;
     }
@@ -302,8 +312,12 @@ export class EntityManager
   // -> Returns a new instance of entity (not a proxy).
   private createBareEntity(handler: EntityProxyHandler): Entity
   {
-    ASSERT(handler.type !== null,
-      "Invalid 'type' on entity proxy handler");
+    if (handler.type === null)
+    {
+      ERROR("Invalid 'type' on entity proxy handler."
+        + " Entity is not created");
+      return null;
+    }
 
     // TODO: Nežádat o instanci SaveableObject, ale DynamicClassFactory
     let entity: Entity = SaveableObject.createInstance
@@ -318,27 +332,36 @@ export class EntityManager
 
   private async createAndLoadEntity(handler: EntityProxyHandler)
   {
-    ASSERT(handler.type !== null,
-      "Invalid 'type' on entity proxy handler");
+    if (handler.type === null)
+    {
+      ERROR("Invalid 'type' on entity proxy handler."
+        + " Entity s not created and loaded");
+      return null;
+    }
 
     let entity = this.createBareEntity(handler);
 
     await entity.load();
 
-    if (!ASSERT(entity.getId() !== null,
-        "Entity " + entity.getErrorIdString() + " didn't have an id"
-        + " in it's save file. There must be an id saved in every"
-        + " entity save file. Entity is not updated in EntityManager"))
-        // If we don't know entity's id, we can't add it to EntityManager.
+    if (entity.getId() === null)
+    {
+      ERROR("Entity " + entity.getErrorIdString() + " doesn't have an"
+        + " id in it's save file. There must be an id saved in every"
+        + " entity save file. Entity is not updated in EntityManager");
+
+      // If we don't know entity's id, we can't add it to EntityManager.
       return null;
+    }
 
     if (handler.id !== null)
     {
-      if (!ASSERT(handler.id === entity.getId(),
-        "Id of entity " + entity.getErrorIdString() + " loaded from"
-        + " file doesn't match id " + handler.id + " saved in entity"
-        + " proxy handler"))
+      if (handler.id !== entity.getId())
+      {
+        ERROR("Id of entity " + entity.getErrorIdString() + " loaded"
+          + " from file doesn't match id " + handler.id + " saved in"
+          + " entity proxy handler");
         return null;
+      }
     }
 
     return entity;
@@ -398,16 +421,19 @@ class EntityRecord
 
   public getEntity()
   {
-    ASSERT(this.entity !== null,
-      "Invalid entity reference in entity record in EntityManager");
+    if (this.entity === null)
+      ERROR("Invalid entity reference in entity record in EntityManager");
 
     return this.entity;
   }
 
   public getEntityProxy()
   {
-    ASSERT(this.entityProxy !== null,
-      "Invalid entity proxy reference in entity record in EntityManager");
+    if (this.entityProxy === null)
+    {
+      ERROR("Invalid entity proxy reference in entity"
+        + " record in EntityManager");
+    }
 
     return this.entityProxy;
   }

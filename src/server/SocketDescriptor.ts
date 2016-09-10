@@ -8,10 +8,8 @@
 
 'use strict';
 
-import {ASSERT} from '../shared/ASSERT';
-import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
+import {ERROR} from '../shared/ERROR';
 import {Server} from '../server/Server';
-//import {EntityId} from '../shared/EntityId';
 import {Connection} from '../server/Connection';
 
 // Built-in node.js modules.
@@ -21,8 +19,12 @@ export abstract class SocketDescriptor
 {
   constructor(protected socket: net.Socket)
   {
-    ASSERT(this.socket.address !== undefined,
-      "Missing address on socket");
+    if (this.socket.address === undefined)
+    {
+      ERROR("Missing address on socket");
+
+      this.ipAddress = null;
+    }
 
     // Remember ip address because we need to know it even after ours socket
     // closes.
@@ -43,8 +45,8 @@ export abstract class SocketDescriptor
 
   public getIpAddress(): string
   {
-    ASSERT(this.ipAddress != null,
-      "Ip address is not initialized on socket descriptor");
+    if (this.ipAddress === null)
+      ERROR("Ip address is not initialized on socket descriptor");
 
     return this.ipAddress;
   }
@@ -76,7 +78,7 @@ export abstract class SocketDescriptor
 
   // -------------- Protected class data ----------------
 
-  protected ipAddress: string = "";
+  protected ipAddress: string = null;
 
   // -------------- Protected methods -------------------
 

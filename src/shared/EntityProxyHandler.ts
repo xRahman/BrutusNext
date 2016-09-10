@@ -29,7 +29,7 @@
 'use strict';
 
 import {getTrimmedStackTrace} from '../shared/UTILS';
-import {ASSERT} from '../shared/ASSERT';
+import {ERROR} from '../shared/ERROR';
 import {Entity} from '../shared/Entity';
 import {InvalidValueProxyHandler} from '../shared/InvalidValueProxyHandler';
 import {Server} from '../server/Server';
@@ -102,22 +102,28 @@ export class EntityProxyHandler
 
     if (id !== null && this.id !== null)
     {
-      if (!ASSERT(id === this.id,
-          "Id of entity " + this.entity.getErrorIdString()
+      if (id !== this.id)
+      {
+        ERROR("Id of entity " + this.entity.getErrorIdString()
           + " differs from id saved in entity proxy handler"
-          + " (which is " + this.id + ")"))
+          + " (which is " + this.id + ")");
+
         checkResult = false;
+      }
     }
 
     let type = this.entity.className;
 
     if (type !== null && this.type !== null)
     {
-      if (!ASSERT(id === this.type,
-          "Class name of entity " + this.entity.getErrorIdString()
+      if (id !== this.type)
+      {
+        ERROR("Class name of entity " + this.entity.getErrorIdString()
           + " differs from type saved in entity proxy handler"
-          + " (which is " + this.type + ")"))
+          + " (which is " + this.type + ")");
+
         checkResult = false;
+      }
     }
 
     return checkResult;
@@ -336,8 +342,9 @@ export class EntityProxyHandler
   {
     ///console.log("EntityProxyHandler.isEntityValid()");
 
-    ASSERT(this.id !== null,
-      "Null id in EntityProxyHandler");
+    if (this.id === null)
+      ERROR("Null id in EntityProxyHandler");
+
 
     if (this.entity === null)
     {

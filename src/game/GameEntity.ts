@@ -6,10 +6,8 @@
 
 'use strict';
 
-import {ASSERT} from '../shared/ASSERT';
-import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
+import {ERROR} from '../shared/ERROR';
 import {Server} from '../server/Server';
-///import {EntityId} from '../shared/EntityId';
 import {SaveableObject} from '../shared/SaveableObject';
 import {Script} from '../shared/Script';
 import {Connection} from '../server/Connection';
@@ -83,16 +81,6 @@ export class GameEntity extends ContainerEntity
 
   // -------------- Protected accessors -----------------
 
-  /*
-  protected get SAVE_DIRECTORY()
-  {
-    ASSERT_FATAL(false,
-      "Attempt to access SAVE_DIRECTORY of abstract GameEntity class"
-      + " (" + this.getErrorIdString() + ")");
-
-    return "";
-  }
-  */
 
   // ---------------- Public methods --------------------
 
@@ -107,12 +95,14 @@ export class GameEntity extends ContainerEntity
     let className = this['className'];
     let errorPath = "_SAVE_PATH_CREATION_ERROR/";
 
-    if (!ASSERT(className !== undefined,
-        "Unable to compose entity save path because"
-        + " property 'className' doesn't exist on a class"
-        + " in a prototype chain. Save path will contain "
-        + errorPath + " instead"))
+    if (className === undefined)
+    {
+      ERROR("Unable to compose entity save path because"
+        + " property 'className' doesn't exist on any class"
+        + " in the prototype chain. Save path will contain"
+        + " " + errorPath + " instead");
       return errorPath;
+    }
 
     /// Jaky prototyp ma muj prototyp - jinak receno, jakeho mam predka.
     let ancestor = Object.getPrototypeOf(this.prototype);
@@ -123,13 +113,15 @@ export class GameEntity extends ContainerEntity
 
     errorPath = "_SAVE_PATH_CREATION_ERROR_" + className + "/";
 
-    if (!ASSERT(getAncestorSubDirectory !== undefined,
-        "Unable to compose correct save path for class"
+    if (getAncestorSubDirectory === undefined)
+    {
+      ERROR("Unable to compose correct save path for class"
         + " '" + className + "' because static method"
         + " 'getSaveSubDirectory' doesn't exist on it's"
         + " ancestor. Save path will contain " + errorPath
-        + " instead"))
+        + " instead");
       return errorPath;
+    }
 
     // Call getAncestorSubDirectory() with 'ancestor.constructor' as 'this'.
     // ('ancestor.constructor' and not just 'ancestor', it is a static method
@@ -180,11 +172,15 @@ export class GameEntity extends ContainerEntity
 
   public atachConnection(connection: Connection)
   {
-    ASSERT(this.connection !== null,
-      "Attempt to attach player connection to '" + this.getErrorIdString()
-      + "' which already has a connection attached to it. If you want"
-      + " to change which connection is attached to this entity, use"
-      + " detachConnection() first and then attach a new one.");
+    if (this.connection !== null)
+    {
+      ERROR("Attempt to attach player connection"
+        + " to '" + this.getErrorIdString() + "'"
+        + " which already has a connection attached."
+        + " If you want to change which connection is"
+        + " attached to this entity, use detachConnection()"
+        + " first and then attach a new one");
+    }
 
     this.connection = connection;
   }
@@ -256,9 +252,8 @@ export class GameEntity extends ContainerEntity
   // Creates a formatted string describing entity contents.
   protected printContents(): string
   {
-    ASSERT(false, "GameEntity::printContents() is not supposed to be"
-      + "called, it needs to be overriden");
-
+    ERROR("GameEntity.printContents() is not supposed"
+      + " to becalled, it needs to be overriden");
     return "";
   }
 
@@ -318,15 +313,19 @@ export class GameEntity extends ContainerEntity
   // Sends a text describing room contents to the player connection.
   protected showContainerContents()
   {
-    if (!ASSERT(this.connection !== null,
-        "Attempt to show room contents when there is no player connection" +
-         + "attached"))
+    if (this.connection === null)
+    {
+      ERROR("Attempt to show room contents to an entity"
+        + " that has no player connection attached");
       return;
+    }
 
-    if (!ASSERT(this.location !== null,
-        "Attempt to show contents of container of entity"
-        + "'" + this.name + "' which isn't contained in anything"))
+    if (this.location === null)
+    {
+      ERROR("Attempt to show contents of container of entity"
+        + " '" + this.name + "' which isn't placed in any container");
       return;
+    }
     
     // TODO: Check na slepotu.
     // neco jako:

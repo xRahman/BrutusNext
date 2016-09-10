@@ -7,8 +7,7 @@
 'use strict';
 
 import {dynamicCast} from '../shared/UTILS';
-import {ASSERT} from '../shared/ASSERT';
-import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
+import {ERROR} from '../shared/ERROR';
 import {SaveableObject} from '../shared/SaveableObject';
 import {AutoSaveableObject} from '../shared/AutoSaveableObject';
 import {Prototype} from '../shared/Prototype';
@@ -52,11 +51,13 @@ export class PrototypeManager extends AutoSaveableObject
     let key = name.toLowerCase();
 
     let prototype = this.prototypes.get(key);
-    
-    if (!ASSERT(prototype !== undefined,
-      "Attempt to access FlagsData for class '" + name + "'"
-      + "that doesn't have FlagsData in FlagsDataManager"))
+
+    if (prototype === undefined)
+    {
+      ERROR("Attempt to access FlagsData for class '" + name + "'"
+        + "that doesn't have FlagsData in FlagsDataManager");
       return null;
+    }
 
     return prototype;
   }
@@ -161,27 +162,31 @@ export class PrototypeManager extends AutoSaveableObject
 
   private checkNewPrototypeDataParams(name: string, ancestor: string): boolean
   {
-    if (!ASSERT(name !== ""
-             && name !== null
-             && name !== undefined,
-        "Attempt to create new prototype with empty or invalid name."
-        + " Prototype is not created"))
+    if (name === "" || name === null || name === undefined)
+    {
+      ERROR("Attempt to create new prototype with empty"
+        + " or invalid name. Prototype is not created");
       return false;
+    }
 
-    if (!ASSERT(ancestor !== ""
-             && ancestor !== null
-             && ancestor !== undefined,
-        "Attempt to create new prototype '" + name + "' with empty or invalid"
-        + " ancestor name. Prototype is not created"))
+    if (ancestor === "" || ancestor === null || ancestor === undefined)
+    {
+      ERROR("Attempt to create new prototype '" + name + "'"
+        + " with empty or invalid ancestor name. Prototype"
+        + " is not created");
       return false;
+    }
 
     // Prototype classes are stored in global.dynamicClasses.
     let dynamicClasses = global[SaveableObject.DYNAMIC_CLASSES_PROPERTY];
 
-    if (!ASSERT(dynamicClasses[name] === undefined,
-        "Attempt to create new prototype '" + name + "' but class of that name"
-        + " already exists. Prototype is not created"))
+    if (dynamicClasses[name] === undefined)
+    {
+      ERROR("Attempt to create new prototype '" + name + "'"
+        + "  but class of that name already exists. Prototype"
+        + " is not created");
       return false;
+    }
 
     return true;
   }

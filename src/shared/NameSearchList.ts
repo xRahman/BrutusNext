@@ -6,14 +6,10 @@
 
 'use strict';
 
-import {ASSERT} from '../shared/ASSERT';
-//import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
+import {ERROR} from '../shared/ERROR';
 import {NamedEntity} from '../shared/NamedEntity';
 import {EntityList} from '../shared/EntityList';
 import {Entity} from '../shared/Entity';
-///import {EntityId} from '../shared/EntityId';
-//import {SaveableObject} from '../shared/SaveableObject';
-//import {Server} from '../server/Server';
 
 export class NameSearchList extends EntityList
 {
@@ -39,9 +35,7 @@ export class NameSearchList extends EntityList
 
     // If entity has unique name, add it's id to the hashmap of unique names.
     if (entity.isNameUnique)
-    {
       this.uniqueNames.set(entity.name, entity);
-    }
 
     return true;
   }
@@ -59,11 +53,15 @@ export class NameSearchList extends EntityList
   {
     if (entity.isNameUnique)
     {
-      if (ASSERT(entity.name !== undefined,
-          "'name' property doesn't exist."))
+      if (entity.name !== undefined)
       {
         // Remove record from hashmap storing ids of uniquely named entities.
-        delete this.uniqueNames[entity.name];
+        this.uniqueNames.delete(entity.name);
+      }
+      else
+      {
+        ERROR("Unable to remove entity " + entity.getErrorIdString()
+          + " from NameSearchList because it doesn't have a 'name' property");
       }
     }
 
