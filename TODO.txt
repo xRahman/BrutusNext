@@ -1,4 +1,5 @@
-TODO: V abbrevSeachList.ts::170 se nejak divne maze z hashmapy. 
+TODO: V abbrevSeachList.ts::170 se nejak divne maze z hashmapy.
+[opraveno]
 
 TODO: metodu dynamicClast() asi přesunout z EntityManageru do Entity.
 
