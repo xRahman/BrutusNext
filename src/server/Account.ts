@@ -6,12 +6,10 @@
 
 'use strict';
 
-import {ASSERT} from '../shared/ASSERT';
-import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
+import {ERROR} from '../shared/ERROR';
 import {FileSystem} from '../shared/fs/FileSystem';
 import {AdminLevels} from '../server/AdminLevels';
 import {Mudlog} from '../server/Mudlog';
-///import {EntityId} from '../shared/EntityId';
 import {NamedEntity} from '../shared/NamedEntity';
 import {Connection} from '../server/Connection';
 import {Server} from '../server/Server';
@@ -85,11 +83,19 @@ export class Account extends NamedEntity
   public getLastLoginAddress() { return this.lastLoginAddress; }
   public getLastLoginDate()
   {
-    ASSERT(typeof this.lastLoginDate !== 'string',
-      "Wrong type of date object encountered in Account. This probably"
-      + " means that you have initialized a Date object with <null> value"
-      + " or assigned <null> to it prior to loading from file. You must not"
-      + " not assign <null> to properties of type Date.");
+    if (typeof this.lastLoginDate === 'string')
+    {
+      // Date objects are saved as string in JSON so there must be
+      // a conversion when date is loaded from file. If you try to
+      // load a date variable with value 'null', however, SaveableObject
+      // has no way to know what type is it supposed to load into, because
+      // null value doesn't know it's type. So the string which is saved
+      // in JSON is assigned directly, without a conversion to Date object.
+      ERROR("Wrong type of date object encountered in Account. This probably"
+        + " means that you have initialized a Date object with <null> value"
+        + " or assigned <null> to it prior to loading from file. You must not"
+        + " not assign <null> to properties of type Date.");
+    }
 
     return this.lastLoginDate;
   }
@@ -128,7 +134,7 @@ export class Account extends NamedEntity
       this.connection
     );
 
-    // (Also handles error messages.)
+    // (Also handles error messages)
     if (!this.characterCreatedSuccessfuly(character, characterName))
       return null;
 
@@ -145,9 +151,10 @@ export class Account extends NamedEntity
   )
   : boolean
   {
-    if (!ASSERT(character !== null,
-        "Failed to create new character (" + characterName + ")"))
+    if (character === null)
     {
+      ERROR("Failed to create new character (" + characterName + ")");
+
       this.connection.sendAsBlock
       (
         "&wAn error occured while creating"
@@ -167,20 +174,31 @@ export class Account extends NamedEntity
 
   public getCharacterName(charNumber: number): string
   {
-    ASSERT_FATAL(charNumber >= 0 && charNumber < this.getNumberOfCharacters(),
-      "Attempt to get name of character number " + charNumber
-      + " from account " + this.name + " which only has "
-      + this.getNumberOfCharacters() + " characters.");
+    if (charNumber < 0 || charNumber >= this.getNumberOfCharacters())
+    {
+      ERROR("Attempt to get name of character"
+        + " number " + charNumber + " from account"
+        + " " + this.name + " which only has "
+        + " " + this.getNumberOfCharacters()
+        + " characters");
+      return null;
+    }
 
     return this.characters[charNumber];
   }
 
   public updateLastLoginInfo()
   {
-    ASSERT(this.connection !== null,
-      "Invalid connection");
-
-    this.lastLoginAddress = this.connection.ipAddress;
+    if (this.connection !== null)
+    {
+      this.lastLoginAddress = this.connection.ipAddress;
+    }
+    else
+    {
+      ERROR("Unable to update ip adress in last login info of"
+        + " accout " + this.name + " because this.connection"
+        + " is null");
+    }
 
     // Creating a new Date object initializes it to current date and time.
     this.lastLoginDate = new Date();
@@ -258,9 +276,12 @@ export class Account extends NamedEntity
 
   private addCharacter(characterName: string)
   {
-    if (!ASSERT(characterName !== "",
-      "Attempt to add new character with empty name"))
+    if (characterName === "")
+    {
+      ERROR("Attempt to add new character with empty name to"
+        + " account " + this.name + ". Character is not added");
       return;
+    }
 
     /// Zpet k odkazovani postav jmeny.
     ///     Duvod pro ukladani postav v souboru podle jmena postavy je,
@@ -282,12 +303,8 @@ export class Account extends NamedEntity
 
   private reportCharacterAlreadyExists(characterName: string)
   {
-    ASSERT
-    (
-      false,
-      "Attempt to create character '" + characterName + "'"
-      + " that already exists."
-    );
+    ERROR("Attempt to create character '" + characterName + "'"
+      + " that already exists");
 
     // Notify the player what went wrong.
     if (this.connection)

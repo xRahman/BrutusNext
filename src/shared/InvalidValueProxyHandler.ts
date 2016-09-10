@@ -15,7 +15,6 @@
 'use strict';
 
 import {getTrimmedStackTrace} from '../shared/UTILS';
-import {ASSERT} from '../shared/ASSERT';
 import {AdminLevels} from '../server/AdminLevels';
 import {Mudlog} from '../server/Mudlog';
 

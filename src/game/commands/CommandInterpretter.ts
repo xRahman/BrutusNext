@@ -28,7 +28,6 @@
 'use strict';
 
 import {ERROR} from '../../shared/ERROR';
-import {FATAL_ERROR} from '../../shared/FATAL_ERROR';
 import {NamedEntity} from '../../shared/NamedEntity';
 import {CommandSearchList} from '../../game/commands/CommandSearchList';
 
@@ -42,7 +41,6 @@ export abstract class CommandInterpretter extends NamedEntity
     if (command === "")
     {
       ERROR("Attempt to register an empty command");
-
       return;
     }
 
@@ -58,7 +56,6 @@ export abstract class CommandInterpretter extends NamedEntity
     if (commandString === "")
     {
       ERROR("Attempt to process empty command");
-
       return false;
     }
 

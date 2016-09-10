@@ -6,8 +6,6 @@
 
 'use strict';
 
-import {ERROR} from '../../shared/ERROR';
-import {FATAL_ERROR} from '../../shared/FATAL_ERROR';
 import {Connection} from '../../server/Connection';
 
 export class StringEditor

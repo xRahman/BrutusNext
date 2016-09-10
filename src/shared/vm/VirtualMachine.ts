@@ -24,8 +24,7 @@
 
 'use strict';
 
-///import {getTrimmedStackTrace} from '../../shared/UTILS';
-import {ASSERT} from '../../shared/ASSERT';
+import {ERROR} from '../../shared/ERROR';
 import {Mudlog} from '../../server/Mudlog';
 import {AdminLevels} from '../../server/AdminLevels';
 
@@ -117,13 +116,17 @@ export class VirtualMachine
   //  some reason even though they are exported in /headers/node.d.ts)
   public static executeVmScript(scriptName, vmScript, vmContext)
   {
-    if (!ASSERT(vmContext !== null,
-        "Invalid vmContext"))
+    if (vmContext === null)
+    {
+      ERROR("Invalid vmContext");
       return;
+    }
 
-    if (!ASSERT(vmScript !== null,
-        "Invalid vmScript"))
+    if (vmScript === null)
+    {
+      ERROR("Invalid vmScript");
       return;
+    }
 
     try
     {

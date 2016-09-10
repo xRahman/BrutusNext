@@ -6,13 +6,10 @@
 
 'use strict';
 
-import {ASSERT} from '../shared/ASSERT';
-import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
-///import {EntityId} from '../shared/EntityId';
+import {ERROR} from '../shared/ERROR';
 import {EntityManager} from '../shared/EntityManager';
 import {SaveableObject} from '../shared/SaveableObject';
 import {PrototypeManager} from '../shared/PrototypeManager';
-///import {IdProvider} from '../shared/IdProvider';
 import {Server} from '../server/Server';
 import {CharacterList} from '../game/CharacterList';
 import {World} from '../game/world/World';
@@ -79,10 +76,13 @@ export class Game
     // Create a new world prototype.
     this.prototypeManager.createPrototype('BrutusWorld', 'World');
 
-    if (!ASSERT(this.world === null,
-      "Attempt to create new world when there is already a world. There can"
-      + " only be one world per game at the moment. World is not created"))
+    if (this.world !== null)
+    {
+      ERROR("Attempt to create new world when there"
+        + " already is a world. There can only be one"
+        + " world per game. World is not created");
       return;
+    }
 
     // Create world 'BrutusNext World' based on this prototype.
     this.world = EntityManager.createNamedEntity

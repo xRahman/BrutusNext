@@ -25,7 +25,7 @@
 
 'use strict';
 
-import {ASSERT} from '../shared/ASSERT';
+import {ERROR} from '../shared/ERROR';
 import {NamedClass} from '../shared/NamedClass';
 import {SaveableObject} from '../shared/SaveableObject';
 import {VirtualMachine} from '../shared/vm/VirtualMachine';
@@ -208,7 +208,7 @@ export class Prototype extends SaveableObject
     NewClass[NamedClass.CLASS_NAME_PROPERTY] = this.name;
 
     // Assigns newly created type to global.dynamicClasses.
-    // Triggers assert if we failed to create it.
+    // Triggers an error if we failed to create it.
     this.registerDynamicClass(NewClass);
 
     return NewClass;
@@ -219,9 +219,7 @@ export class Prototype extends SaveableObject
   {
     if (dynamicClass === null)
     {
-      ASSERT(false,
-        "Failed to dynamically create class '" + this.name + "'");
-
+      ERROR("Failed to dynamically create class '" + this.name + "'");
       return;
     }
 
@@ -234,20 +232,24 @@ export class Prototype extends SaveableObject
   //+
   private classCreationCheck(): boolean
   {
-    if (!ASSERT(this.name !== "",
-        "Attempt to create class with empty type name."
-        + " Class is not created"))
+    if (this.name === "")
+    {
+      ERROR("Attempt to create class with empty"
+        + " type name. Class is not created");
       return false;
+    }
 
     // Dynamic classes are stored in global.dynamicClasses.
     let dynamicClasses = global[SaveableObject.DYNAMIC_CLASSES_PROPERTY];
 
     // Type that we want to create must not yet exist.
-    if (!ASSERT(dynamicClasses[this.name] === undefined,
-        "Attempt to create class '" + this.name + "' (with ancestor"
-        + " '" + this.ancestor + "') that already exists."
-        + "Class is not created"))
+    if (dynamicClasses[this.name] !== undefined)
+    {
+      ERROR("Attempt to create class '" + this.name + "'"
+        + " (with ancestor '" + this.ancestor + "') that"
+        + " already exists. Class is not created");
       return false;
+    }
 
     return true;
   }
@@ -297,23 +299,27 @@ export class Prototype extends SaveableObject
   //+
   private getAncestorClass(): { new (...args: any[]): GameEntity }
   {
-    if (!ASSERT(this.ancestor !== "",
-        "Attempt to create class '" + this.name + "' with empty"
+    if (this.ancestor === "")
+    {
+      ERROR("Attempt to create class '" + this.name + "' with empty"
         + " ancestor name (that's not allowed, dynamic classes must be"
         + " inherided from something that's inherited from GameEntity)."
-        + " Class is not created"))
+        + " Class is not created");
       return null;
+    }
 
     // Dynamic classes are stored in global.dynamicClasses.
     let dynamicClasses = global[SaveableObject.DYNAMIC_CLASSES_PROPERTY];
     let AncestorClass = dynamicClasses[this.ancestor];
 
     // Ancestor type must exist.
-    if (!ASSERT(AncestorClass !== undefined,
-        "Attempt to create class '" + this.name + "' inherited from"
-        + " nonexisting ancestor class '" + this.ancestor + "'."
-        + " Class is not created"))
+    if (AncestorClass === undefined)
+    {
+      ERROR("Attempt to create class '" + this.name + "' inherited"
+        + " from nonexisting ancestor class '" + this.ancestor + "'."
+        + " Class is not created");
       return null;
+    }
 
     return AncestorClass;
   }

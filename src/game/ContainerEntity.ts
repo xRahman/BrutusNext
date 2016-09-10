@@ -15,13 +15,9 @@
 
 'use strict';
 
-import {ASSERT} from '../shared/ASSERT';
-import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
-///import {Entity} from '../shared/Entity';
 import {EntityList} from '../shared/EntityList';
 import {Game} from '../game/Game';
 import {GameEntity} from '../game/GameEntity';
-///import {EntityId} from '../shared/EntityId';
 import {CommandInterpretter} from '../game/commands/CommandInterpretter';
 
 export abstract class ContainerEntity extends CommandInterpretter

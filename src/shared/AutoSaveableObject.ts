@@ -14,8 +14,7 @@
 
 'use strict';
 
-import {ASSERT} from '../shared/ASSERT';
-import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
+import {ERROR} from '../shared/ERROR';
 import {SaveableObject} from '../shared/SaveableObject';
 import {FileSystem} from '../shared/fs/FileSystem';
 
@@ -48,9 +47,11 @@ export abstract class AutoSaveableObject extends SaveableObject
     //  it will mean Room.SAVE_DIRECTORY)
     let saveDirectory = this.constructor['SAVE_DIRECTORY'];
 
-    if (!ASSERT(saveDirectory !== undefined,
-        "Missing static SAVE_DIRECTORY property on class " + this.className))
+    if (saveDirectory === undefined)
     {
+      ERROR("Missing static SAVE_DIRECTORY property"
+        + " on class " + this.className);
+
       // If static variable SAVE_DIRECTORY is missing,, data will be saved
       // to directory './data/_MISSING_SAVE_DIRECTORY_ERROR'.
       return "./data/_MISSING_SAVE_DIRECTORY_ERROR";
@@ -71,9 +72,11 @@ export abstract class AutoSaveableObject extends SaveableObject
     //  it will mean Room.SAVE_FILE_NAME)
     let saveFileName = this.constructor['SAVE_FILE_NAME'];
 
-    if (!ASSERT(saveFileName !== undefined,
-      "Missing static SAVE_FILE_NAME property on class " + this.className))
+    if (saveFileName === undefined)
     {
+      ERROR("Missing static SAVE_FILE_NAME property"
+        + " on class " + this.className);
+
       // If static variable SAVE_FILE_NAME is missing, data will be saved
       // to file '_MISSING_SAVE_FILE_NAME_'.
       return "_MISSING_SAVE_FILE_NAME_" + this.className + ".json";
@@ -88,10 +91,10 @@ export abstract class AutoSaveableObject extends SaveableObject
     let fileName = this.getSaveFileName();
     let fullPath = directory + fileName;
 
-    if (!ASSERT(directory.substr(directory.length - 1) === '/',
-      "Directory path '" + directory + "' doesn't end with '/'."
-      + "The '/' is added automatically, but it should be fixed anyways"))
+    if (directory.substr(directory.length - 1) !== '/')
     {
+      ERROR("Directory path '" + directory + "' doesn't end with '/'."
+        + "The '/' is added automatically, but it should be fixed anyways");
       return this.getSaveDirectory() + '/' + this.getSaveFileName();
     }
 

@@ -6,8 +6,8 @@
 
 'use strict';
 
-import {ASSERT} from '../shared/ASSERT';
-import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
+import {ERROR} from '../shared/ERROR';
+import {FATAL_ERROR} from '../shared/FATAL_ERROR';
 import {Connection} from '../server/Connection';
 import {Server} from '../server/Server';
 import {Account} from '../server/Account';
@@ -55,7 +55,7 @@ export class LobbyProcessor
     switch (this.getStage())
     {
       case LobbyProcessor.stage.INITIAL:
-        ASSERT(false, "LobbyProcessor has not yet been initialized, prompt"
+        ERROR("LobbyProcessor has not yet been initialized, prompt"
           + " is not supposed be generated yet");
         break;
 
@@ -65,14 +65,12 @@ export class LobbyProcessor
         break;
 
       case LobbyProcessor.stage.NOT_IN_LOBBY:
-        ASSERT(false, "Player is not in lobby,"
-          + " LobbyProcessor is not supposed generate prompt");
+        ERROR("Player is not in lobby, LobbyProcessor"
+          + " is not supposed generate prompt");
         break;
 
       default:
-        ASSERT(false,
-          "Unknown lobby stage: "
-          + this.getStage());
+        ERROR("Unknown lobby stage: " + this.getStage());
         break;
     }
 
@@ -81,9 +79,14 @@ export class LobbyProcessor
 
   public enterMenu()
   {
-    ASSERT(this.stage === LobbyProcessor.stage.INITIAL
-        || this.stage === LobbyProcessor.stage.NOT_IN_LOBBY,
-      "Entering game menu from invalid lobby stage (" + this.stage + ")");
+    let validStage = this.stage === LobbyProcessor.stage.INITIAL
+                  || this.stage === LobbyProcessor.stage.NOT_IN_LOBBY;
+
+    if (!validStage)
+    {
+      ERROR("Entering game menu from invalid"
+        + " lobby stage (" + this.stage + ")");
+    }
 
     this.stage = LobbyProcessor.stage.IN_MENU;
   }
@@ -93,7 +96,7 @@ export class LobbyProcessor
     switch (this.stage)
     {
       case LobbyProcessor.stage.INITIAL:
-        ASSERT(false, "LobbyProcessor has not yet been initialized, it is not"
+        ERROR("LobbyProcessor has not yet been initialized, it is not"
           + " supposed to process any commands yet");
         break;
 
@@ -102,12 +105,12 @@ export class LobbyProcessor
         break;
 
        case LobbyProcessor.stage.NOT_IN_LOBBY:
-        ASSERT(false, "LobbyProcessor is not supposed to process any commands"
+        ERROR("LobbyProcessor is not supposed to process any commands"
           + " when user is not in lobby");
         break;
 
       default:
-        ASSERT(false, "Unknown lobby stage: " + this.stage);
+        ERROR("Unknown lobby stage: " + this.stage);
         break;
     }
   }
@@ -122,37 +125,19 @@ export class LobbyProcessor
 
   protected async processMenuChoice(choice: string)
   {
-    let account = this.connection.account;
-
     switch (choice)
     {
       case "0": // Quit the game.
         this.quitGame();
-      break;
+        break;
 
       case "1": // Enter the game.
-        // Create a new character if there is none on this account yet.
-        /// (for now player can only have one character and her name is the
-        /// same as account name)
-        if (account.getNumberOfCharacters() === 0)
-        {
-          this.createCharacterAndEnterGame(account);
-        }
-        else
-        {
-          // Enter game with first character (number '0').
-          // (because for now players only have one character)
-          //   Asynchronous reading from the file.
-          // (The rest of the code will execute only after the reading is done.)
-          // We need async call because we want to wait after player's character
-          // is loaded from file before actually entering the game.
-          await this.enterGame(account.getCharacterName(0));
-        }
-      break;
+        await this.enterGame();
+        break;
 
       default:
         this.connection.sendAsBlock("\nThat's not a menu choice!");
-      break;
+        break;
     }
   }
 
@@ -163,7 +148,42 @@ export class LobbyProcessor
     this.connection.quitGame();
   }
 
-  protected async enterGame(characterName: string)
+  protected async enterGame()
+  {
+    let account = this.connection.account;
+
+    if (account === null)
+    {
+      ERROR("Invalid account on connection");
+      return;
+    }
+
+    // Create a new character if there is none on this account yet.
+    /// (for now player can only have one character and her name is the
+    /// same as account name)
+    if (account.getNumberOfCharacters() === 0)
+    {
+      this.createCharacterAndEnterGame(account);
+    }
+    else
+    {
+      // Enter game with first character (number '0').
+      // (because for now players only have one character)
+      let characterName = account.getCharacterName(0);
+
+      if (characterName === null)
+        // Error is already reported by getCharacterName().
+        return;
+
+      // Asynchronous reading from the file.
+      // (the rest of the code will execute only after the reading is done)
+      //   We need async call because we want to wait after player's
+      //  character is loaded from file before actually entering the game.
+      await this.enterGameAsCharacter(characterName);
+    }
+  }
+
+  protected async enterGameAsCharacter(characterName: string)
   {
     this.stage = LobbyProcessor.stage.NOT_IN_LOBBY;
 
@@ -187,10 +207,18 @@ export class LobbyProcessor
 
   protected createCharacterAndEnterGame(account: Account)
   {
-    if (!ASSERT(this.connection.ingameEntity === null,
-      "Player account '" + account.name + "' has attempted to enter game"
-      + "with ingame entity already attached"))
+    if (this.connection === null)
     {
+      ERROR("Invalid player connection on account " + account.name
+        + " Character is not created");
+      return;
+    }
+
+    if (this.connection.ingameEntity !== null)
+    {
+      ERROR("Player account '" + account.name + "' has attempted"
+        + " to enter game with ingame entity already attached");
+
       this.connection.sendAsBlock
       (
         "&wAn error occured while entering game."
@@ -243,14 +271,16 @@ export class LobbyProcessor
     // (The rest of the code will execute only after the reading is done.)
     await character.load();
 
-    ASSERT_FATAL(character.getId() !== null,
-      "Invalid id in saved file of character: " + character.name);
+    if (character.getId() === null)
+      FATAL_ERROR("Invalid id in saved file of character: " + character.name);
 
-    if (!ASSERT(characterFileName === character.name,
-      "Character name saved in file (" + character.name + ")"
-      + " doesn't match character file name (" + characterFileName + ")."
-      + " Renaming character to match file name."))
+
+    if (characterFileName !== character.name)
     {
+      ERROR("Character name saved in file (" + character.name + ")"
+        + " doesn't match character file name (" + characterFileName + ")."
+        + " Renaming character to match file name");
+
       character.name = characterFileName;
     }
   }

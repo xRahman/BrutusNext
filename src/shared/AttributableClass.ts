@@ -22,7 +22,6 @@
 
 'use strict';
 
-import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
 import {NamedClass} from '../shared/NamedClass';
 
 export class AttributableClass extends NamedClass

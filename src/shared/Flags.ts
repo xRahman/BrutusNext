@@ -6,7 +6,6 @@
 
 'use strict';
 
-import {ASSERT} from '../shared/ASSERT';
 import {FlagNames} from '../shared/FlagNames';
 import {SaveableObject} from '../shared/SaveableObject';
 import {Server} from '../server/Server';

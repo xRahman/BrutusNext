@@ -7,8 +7,6 @@
 
 'use strict';
 
-import {ASSERT} from '../../shared/ASSERT';
-///import {EntityId} from '../../shared/EntityId';
 import {EntityManager} from '../../shared/EntityManager';
 import {SaveableObject} from '../../shared/SaveableObject';
 import {Server} from '../../server/Server';

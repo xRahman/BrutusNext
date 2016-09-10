@@ -6,9 +6,7 @@
 
 'use strict';
 
-import {ASSERT} from '../shared/ASSERT';
-import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
-///import {EntityId} from '../shared/EntityId';
+import {ERROR} from '../shared/ERROR';
 import {SaveableObject} from '../shared/SaveableObject';
 import {AutoSaveableObject} from '../shared/AutoSaveableObject';
 import {Server} from '../server/Server';
@@ -100,11 +98,13 @@ export class Entity extends AutoSaveableObject
   {
     // Dynamic type check - we make sure that entity is inherited from
     // requested class (or an instance of the class itself).
-    if (!ASSERT_FATAL(this instanceof type,
-        "Type cast error: Newly created entity "
-        + "of type '" + this.className + "' is not an instance"
-        + " of requested type (" + type.name + ")"))
+    if (!(this instanceof type))
+    {
+      ERROR("Type cast error: Newly created entity of type"
+        + " '" + this.className + "' is not an instance of"
+        + " requested type (" + type.name + ")");
       return false;
+    }
 
     // Here we typecast to <any> in order to pass entity
     // as type T (you can't typecast directly to template type but you can
@@ -118,11 +118,9 @@ export class Entity extends AutoSaveableObject
   // entity proxy (see EntityProxyHandler.get()).
   public dynamicCast<T>(typeCast: { new (...args: any[]): T })
   {
-    ASSERT(false,
-      "Entity.isValid() function should never be called. You somehow"
-      + " managed to get your hands on direct reference to entity"
-      + " instead of a proxy. That must never happen");
-
+    ERROR("Entity.isValid() function should never be called. You"
+      + " somehow managed to get your hands on direct reference to"
+      + " entity instead of a proxy. That must never happen");
     return null;
   }
 
@@ -132,11 +130,9 @@ export class Entity extends AutoSaveableObject
   // entity proxy (see EntityProxyHandler.get()).
   public isValid(): boolean
   {
-    ASSERT(false,
-      "Entity.isValid() function should never be called. You somehow"
-      + " managed to get your hands on direct reference to entity"
-      + " instead of a proxy. That must never happen");
-
+    ERROR("Entity.isValid() function should never be called. You"
+      + " somehow managed to get your hands on direct reference to"
+      + " entity instead of a proxy. That must never happen");
     return false;
   }
 
@@ -165,20 +161,24 @@ export class Entity extends AutoSaveableObject
     let errorPath =
       rootDirectory + "_SAVE_PATH_CREATION_ERROR/" + className + "/";
 
-    if (!ASSERT(PrototypeClass !== undefined,
-      "Unable to compose prototype save path for prototype"
-      + " '" + className + "' because dynamic class"
-      + " '" + className + "' doesn't exist."
-      + " Prototype will be saved to " + errorPath + " instead"))
+    if (PrototypeClass === undefined)
+    {
+      ERROR("Unable to compose prototype save path for"
+        + " prototype '" + className + "' because dynamic"
+        + " class '" + className + "' doesn't exist. Prototype"
+        + " will be saved to " + errorPath + " instead");
       return errorPath;
+    }
 
-    if (!ASSERT(PrototypeClass['getSaveSubDirectory'] !== undefined,
-      "Unable to compose prototype save path for prototype"
-      + " '" + className + "' because dynamic class"
-      + " '" + className + "' doesn't have static method"
-      + " 'getSaveSubDirectory'. Prototype will be saved"
-      + " to " + errorPath + " instead"))
+    if (PrototypeClass['getSaveSubDirectory'] === undefined)
+    {
+      ERROR("Unable to compose prototype save path for"
+        + " prototype '" + className + "' because dynamic"
+        + " class '" + className + "' doesn't have static"
+        + " method 'getSaveSubDirectory'. Prototype will"
+        + " be saved to " + errorPath + " instead");
       return errorPath;
+    }
 
     return rootDirectory + PrototypeClass.getSaveSubDirectory();
   }
@@ -195,17 +195,11 @@ export class Entity extends AutoSaveableObject
   // if entity has been deleted.
   public async save()
   {
-    /*
-    // 'entityDeleted' flag is on id, not on entity (because id
-    // may persist even after entity is deleted).
-    if (!ASSERT(this.getId().isEntityDeleted() === false,
-        "Attemp to save deleted entity " + this.getErrorIdString()))
+    if (this.isValid() === false)
+    {
+      ERROR("Attemp to save invalid entity " + this.getErrorIdString());
       return;
-    */
-
-    if (!ASSERT(this.isValid(),
-        "Attemp to save invalid entity " + this.getErrorIdString()))
-      return;
+    }
 
     await this.saveToFile(this.getSaveDirectory(), this.getSaveFileName());
   }
