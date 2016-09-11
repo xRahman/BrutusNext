@@ -4,7 +4,7 @@
   Utility functions.
 
 */
-
+/*
 'use strict';
 
 import {ASSERT} from '../shared/ASSERT';
@@ -51,7 +51,6 @@ export function dynamicCast<T>(instance, typeCast: { new (...args: any[]): T }):
     + " of requested type (" + typeCast.name + ")");
 }
 
-/*
 /// TEST:
 export async function delay(miliseconds: number)
 {

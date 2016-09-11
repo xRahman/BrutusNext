@@ -94,26 +94,8 @@ export class Entity extends AutoSaveableObject
 
   // ---------------- Public methods --------------------
 
-  public dynamicTypeCheck<T>(type: { new (...args: any[]): T })
-  {
-    // Dynamic type check - we make sure that entity is inherited from
-    // requested class (or an instance of the class itself).
-    if (!(this instanceof type))
-    {
-      ERROR("Type cast error: Newly created entity of type"
-        + " '" + this.className + "' is not an instance of"
-        + " requested type (" + type.name + ")");
-      return false;
-    }
-
-    // Here we typecast to <any> in order to pass entity
-    // as type T (you can't typecast directly to template type but you can
-    // typecast to <any> which is then automatically cast to template type).
-    return true;
-  }
-
-  // This function exists only for typescript to stop complaing
-  // that it doesn't exist. It should never be called, however,
+  // This function exists only for typescript to stop complaining
+  // that it doesn't exist. It should never be executed, however,
   // because 'dynamicCast()' call should always be trapped by
   // entity proxy (see EntityProxyHandler.get()).
   public dynamicCast<T>(typeCast: { new (...args: any[]): T })
@@ -121,11 +103,25 @@ export class Entity extends AutoSaveableObject
     ERROR("Entity.isValid() function should never be called. You"
       + " somehow managed to get your hands on direct reference to"
       + " entity instead of a proxy. That must never happen");
+
     return null;
   }
 
-  // This function exists only for typescript to stop complaing
-  // that it doesn't exist. It should never be called, however,
+  // This function exists only for typescript to stop complaining
+  // that it doesn't exist. It should never be executed, however,
+  // because 'dynamicTypeCheck()' call should always be trapped by
+  // entity proxy (see EntityProxyHandler.get()).
+  private dynamicTypeCheck<T>(type: { new (...args: any[]): T })
+  {
+    ERROR("Entity.dynamicTypeCheck() function should never be called."
+      + " You somehow managed to get your hands on direct reference"
+      + " to entity instead of a proxy. That must never happen");
+
+    return false;
+  }
+
+  // This function exists only for typescript to stop complaining
+  // that it doesn't exist. It should never be executed, however,
   // because 'isValid()' call should always be trapped by
   // entity proxy (see EntityProxyHandler.get()).
   public isValid(): boolean
@@ -133,6 +129,7 @@ export class Entity extends AutoSaveableObject
     ERROR("Entity.isValid() function should never be called. You"
       + " somehow managed to get your hands on direct reference to"
       + " entity instead of a proxy. That must never happen");
+
     return false;
   }
 
