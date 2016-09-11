@@ -14,7 +14,7 @@
 
 'use strict';
 
-import {getTrimmedStackTrace} from '../shared/UTILS';
+//import {getTrimmedStackTrace} from '../shared/UTILS';
 import {AdminLevels} from '../server/AdminLevels';
 import {Mudlog} from '../server/Mudlog';
 
@@ -86,7 +86,7 @@ export class InvalidValueProxyHandler
     Mudlog.log
     (
       "Attempt to read property '" + property + "' of an invalid variable\n"
-      + getTrimmedStackTrace(),
+      + Mudlog.getTrimmedStackTrace(),
       Mudlog.msgType.INVALID_VARIABLE_ACCESS,
       AdminLevels.IMMORTAL
     );
@@ -105,7 +105,7 @@ export class InvalidValueProxyHandler
     (
       "Attempt to write to property '" + property + "'"
       + " of an invalid variable\n"
-      + getTrimmedStackTrace(),
+      + Mudlog.getTrimmedStackTrace(),
       Mudlog.msgType.INVALID_VARIABLE_ACCESS,
       AdminLevels.IMMORTAL
     );

@@ -56,8 +56,8 @@ import {AdminLevels} from '../server/AdminLevels';
 // Sends error message and a stack trace to syslog.
 export function ERROR(message: string)
 {
-  let errorMsg = "ERROR: '" + message + "'" + "\n"
+  let errorMsg = message + "\n"
       + Mudlog.getTrimmedStackTrace();
 
-  Mudlog.log(errorMsg, Mudlog.msgType.ERROR, AdminLevels.ELDER_GOD);
+  Mudlog.log(errorMsg, Mudlog.msgType.RUNTIME_ERROR, AdminLevels.ELDER_GOD);
 }

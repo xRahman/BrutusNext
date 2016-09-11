@@ -56,10 +56,15 @@ import {AdminLevels} from '../server/AdminLevels';
 // Sends error message and a stack trace to syslog.
 export function FATAL_ERROR(message: string)
 {
-  let errorMsg = "FATAL ERROR: '" + message + "'" + "\n"
+  let errorMsg = message + "\n"
       + Mudlog.getTrimmedStackTrace();
 
-  Mudlog.log(errorMsg, Mudlog.msgType.ERROR, AdminLevels.IMMORTAL);
+  Mudlog.log
+  (
+    errorMsg,
+    Mudlog.msgType.FATAL_RUNTIME_ERROR,
+    AdminLevels.IMMORTAL
+  );
 
   // Since promises are eating exceptions, throwing an error won't stop
   // the program if FATAL_ERROR is called from within asynchronous method.
