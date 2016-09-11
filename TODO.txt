@@ -1,7 +1,8 @@
 TODO: V abbrevSeachList.ts::170 se nejak divne maze z hashmapy.
 [opraveno]
 
-TODO: metodu dynamicClast() asi přesunout z EntityManageru do Entity.
+TODO: metodu dynamicCast() asi přesunout z EntityManageru do Entity.
+[je presunuta do EntityProxyHandleru]
 
 TODO: Otestovat, že prirazeni this opravdu priradi proxy
 [Zda se, ze opravdu ano, uff!]

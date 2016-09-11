@@ -21,8 +21,8 @@ export class Mudlog
 {
   public static msgType =
   {
-    ERROR:                   "ERROR",
-    FATAL_ERROR:             "FATAL_ERROR",
+    RUNTIME_ERROR:           "RUNTIME_ERROR",
+    FATAL_RUNTIME_ERROR:     "FATAL_RUNTIME_ERROR",
     SYSTEM_INFO:             "SYSTEM INFO",
     SYSTEM_ERROR:            "SYSTEM ERROR",
     SCRIPT_COMPILE_ERROR:    "SCRIPT COMPILE ERROR",

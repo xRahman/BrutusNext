@@ -43,11 +43,11 @@
   They are named with CAPS to diferentiate them from assert() function that
   might be some day introduced to JavaScript.
 */
-
+/*
 'use strict';
 
 // Import required classes.
-import {getTrimmedStackTrace} from '../shared/UTILS';
+//import {getTrimmedStackTrace} from '../shared/UTILS';
 import {Mudlog} from '../server/Mudlog';
 import {AdminLevels} from '../server/AdminLevels';
 
@@ -76,3 +76,4 @@ export function ASSERT_FATAL(condition: boolean, message: string)
   // which would lead to queer, unexpected behaviour.
   return true;
 }
+*/

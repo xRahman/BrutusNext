@@ -80,12 +80,12 @@ export class EntityManager
   // ---------------- Public methods --------------------
 
   public createNamedEntity<T>
-    (
+  (
     name: string,
     prototype: string,
     typeCast: { new (...args: any[]): T }
-    )
-    : T
+  )
+  : T
   {
     // Here we are dynamically typecasting to 'NamedEntity' in order
     // to be able to set entity.name.
@@ -103,11 +103,11 @@ export class EntityManager
   // Creates an entity of type 'className' with a new id.
   // -> Returns entity proxy (which is used instead of entity).
   public createEntity<T>
-    (
+  (
     className: string,
     typeCast: { new (...args: any[]): T }
-    )
-    : T
+  )
+  : T
   {
     let handler = new EntityProxyHandler();
 

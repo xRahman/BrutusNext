@@ -28,8 +28,9 @@
 
 'use strict';
 
-import {getTrimmedStackTrace} from '../shared/UTILS';
+//import {getTrimmedStackTrace} from '../shared/UTILS';
 import {ERROR} from '../shared/ERROR';
+import {FATAL_ERROR} from '../shared/FATAL_ERROR';
 import {Entity} from '../shared/Entity';
 import {InvalidValueProxyHandler} from '../shared/InvalidValueProxyHandler';
 import {Server} from '../server/Server';
@@ -207,7 +208,7 @@ export class EntityProxyHandler
       Mudlog.log
       (
         "Attempt to read property '" + property + "' of an invalid entity\n"
-        + getTrimmedStackTrace(),
+        + Mudlog.getTrimmedStackTrace(),
         Mudlog.msgType.INVALID_ENTITY_ACCESS,
         AdminLevels.IMMORTAL
       );
@@ -246,6 +247,10 @@ export class EntityProxyHandler
     if (property === '_internalEntity')
       return this.entity;
 
+    // Trap calls of entity.dynamicTypeCheck() method.
+    if (property === 'dynamicTypeCheck')
+      return this.dynamicTypeCheck;
+
     // Trap calls of entity.dynamicCast() method.
     if (property === 'dynamicCast')
       return this.dynamicCast;
@@ -273,7 +278,7 @@ export class EntityProxyHandler
       (
         "Attempt to write to property '" + property + "'"
         + " of an invalid entity\n"
-        + getTrimmedStackTrace(),
+        + Mudlog.getTrimmedStackTrace(),
         Mudlog.msgType.INVALID_ENTITY_ACCESS,
         AdminLevels.IMMORTAL
       );
@@ -386,21 +391,34 @@ export class EntityProxyHandler
 
   private dynamicCast<T>(type: { new (...args: any[]): T })
   {
-    // Note: When this function is called, 'this' is not
-    // an EntityProxyHandler, but the proxy. So '_internalEntity'
-    // property access must be trapped in order for this
-    // function to work.
-
-    this['_internalEntity'].dynamicTypeCheck(type);
+    // Note: When this function is called, 'this' is not an
+    // EntityProxyHandler, but the proxy. So 'dynamicTypeCheck'
+    // property access must be trapped in order for this call
+    // to work.
+    this.dynamicTypeCheck(type);
 
     return <any>this;
+  }
 
-    /// Tohle byla pěkná blbost - vracel jsem tím přímo enetitu,
-    /// nikoliv proxy. Přímo entity se musím zeptat na typ (protože)
-    /// 'instanceof' operator na proxy se implicitně forwarduje na target,
-    /// což je {}, ale vracet musím přetypovanou proxy, ne přetypovanou
-    /// entitu!
-    ///return this['_internalEntity'].dynamicCast(type);
+  private dynamicTypeCheck<T>(type: { new (...args: any[]): T })
+  {
+    // Note: When this function is called, 'this' is not an
+    // EntityProxyHandler, but the proxy. So '_internalEntity'
+    // property access must be trapped in order for this to work.
+    let internalEntity = this['_internalEntity'];
+
+    // Dynamic type check - we make sure that entity is inherited from
+    // requested class (or an instance of the class itself).
+    if (!(internalEntity instanceof type))
+    {
+      FATAL_ERROR("Type cast error: Newly created entity of type"
+        + " '" + internalEntity.className + "' is not an instance of"
+        + " requested type (" + type.name + ")");
+
+      return false;
+    }
+
+    return true;
   }
 
   // This method allows invalid entity proxy to load itself.

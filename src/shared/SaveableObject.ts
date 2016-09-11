@@ -132,7 +132,7 @@ export class SaveableObject extends AttributableClass
                        && fileName !== null
                        && fileName !== "";
 
-    if (filenameIsValid)
+    if (!filenameIsValid)
     {
       ERROR("Invalid 'fileName' parameter when saving"
         + " class " + this.className + ". Object is not"
