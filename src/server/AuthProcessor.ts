@@ -34,8 +34,7 @@
 
 'use strict';
 
-import {ASSERT} from '../shared/ASSERT';
-import {ASSERT_FATAL} from '../shared/ASSERT_FATAL';
+import {ERROR} from '../shared/ERROR';
 import {EntityManager} from '../shared/EntityManager';
 import {Mudlog} from '../server/Mudlog';
 import {AdminLevels} from '../server/AdminLevels';
@@ -67,7 +66,7 @@ export class AuthProcessor
     switch (this.stage)
     {
       case AuthProcessor.stage.INITIAL:
-        ASSERT(false, "AuthProcessor has not yet been initialized, it is not"
+        ERROR("AuthProcessor has not yet been initialized, it is not"
           + " supposed to process any commands yet");
       break;
 
@@ -84,12 +83,12 @@ export class AuthProcessor
       break;
 
       case AuthProcessor.stage.DONE:
-        ASSERT(false, "AuthProcessor has already done it's job, it is not"
+        ERROR("AuthProcessor has already done it's job, it is not"
           + " supposed to process any more commands");
       break;
 
       default:
-        ASSERT(false, "Unknown stage: " + this.stage);
+        ERROR("Unknown stage: " + this.stage);
       break;
     }
   }
@@ -160,8 +159,19 @@ export class AuthProcessor
   {
     let accountManager = Server.accounts;
 
-    ASSERT_FATAL(this.connection.getId() != null,
-      "Invalid player connection id");
+    if (this.connection === null)
+    {
+      ERROR("Invalid connection in account " + this.accountName
+        + " Aborting checkPassword()");
+      return;
+    }
+
+    if (this.connection.getId() === null)
+    {
+      ERROR("Invalid player connection id in account " + this.accountName
+        + " Aborting checkPassword()");
+      return;
+    }
 
     // Check if account info is already loaded.
     let account = accountManager.getAccountByName(this.accountName);
@@ -179,9 +189,6 @@ export class AuthProcessor
         Account
       );
       account.connection = this.connection;
-      /*
-      account = new Account(this.accountName, this.connection.getId());
-      */
 
       // Account name is passed to check against character name saved
       // in file (they must by the same).
@@ -344,14 +351,20 @@ export class AuthProcessor
     // (the rest of the code will execute only after the reading is done)
     await account.load();
 
-    ASSERT_FATAL(account.getId() !== null,
-      "Null id in saved file of account: " + account.name);
-
-    if (!ASSERT(this.accountName === account.name,
-      "Account name saved in file (" + account.name + ")"
-      + " doesn't match account file name (" + this.accountName + ")."
-      + " Renaming account to match file name."))
+    if (account.getId() === null)
     {
+      ERROR("Null id in saved file of account " + account.name
+        + " Aborting loadAccount()");
+      account = null;
+      return;
+    }
+
+    if (this.accountName !== account.name)
+    {
+      ERROR("Account name saved in file (" + account.name + ")"
+        + " doesn't match account file name (" + this.accountName + ")."
+        + " Renaming account to match file name");
+    
       account.name = this.accountName;
     }
   }

@@ -6,7 +6,6 @@
 
 'use strict';
 
-import {dynamicCast} from '../shared/UTILS';
 import {ERROR} from '../shared/ERROR';
 import {SaveableObject} from '../shared/SaveableObject';
 import {AutoSaveableObject} from '../shared/AutoSaveableObject';
@@ -180,10 +179,10 @@ export class PrototypeManager extends AutoSaveableObject
     // Prototype classes are stored in global.dynamicClasses.
     let dynamicClasses = global[SaveableObject.DYNAMIC_CLASSES_PROPERTY];
 
-    if (dynamicClasses[name] === undefined)
+    if (dynamicClasses[name] !== undefined)
     {
       ERROR("Attempt to create new prototype '" + name + "'"
-        + "  but class of that name already exists. Prototype"
+        + " but class of that name already exists. Prototype"
         + " is not created");
       return false;
     }
@@ -209,11 +208,8 @@ export class PrototypeManager extends AutoSaveableObject
     for (let entry of this.prototypes.entries())
     {
       // An entry of hashmap is a [key, value] array.
-      /// Tohle asi nebudu vubec potrebovat.
-      /// TODO: V tom pripade by stacilo cyklovat pres values misto pres
-      ///   entries.
-      //let lowercasePrototypeName = entry[0];
-      let prototype = dynamicCast(entry[1], Prototype);
+      ///let prototype = dynamicCast(entry[1], Prototype);
+      let prototype = entry[1];
       let prototypeName = prototype.name;
 
       /*
