@@ -1,3 +1,18 @@
+
+TODO: TrimType.PROXY_HANDLER uvnitr get() by se mel trimovat jen o 4
+[Snad done]
+
+TODO: Přesunout EntityRecord do samostatného souboru
+
+TODO: Jit trochu jinak na error messages:
+  - Vsemu rikat ACCESS_VIOLATION a o co presne jde upresnit v doplnujicim
+    message.
+
+
+TODO: Poresit zacykleni pri vypisu stack trace pri invalid property accessu.
+- a asi taky trimovani o jiny pocet radku nez pri ERRORu
+[tak to uz zrejme necykli, nejspis jsem to necim opravil]
+
 TODO: V abbrevSeachList.ts::170 se nejak divne maze z hashmapy.
 [opraveno]
 

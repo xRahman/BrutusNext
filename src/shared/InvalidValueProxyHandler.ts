@@ -79,15 +79,27 @@ export class InvalidValueProxyHandler
   // A trap for getting property values.
   public get(target: any, property: any): any
   {
+    // If someone accesses 'constructor' on us.
+    if (property === 'constructor')
+      return function() { }
+
+    // If someone accesses 'name' on us.
+    if (property === 'name')
+      return "<InvalidVariable>";
+
+    // If someone calls 'valueOf()' on us.
+    if (property === 'valueOf')
+      return function() { return "<InvalidVariable>"; }
+
     // If someone calls 'toString()' on us.
-    if (property === "toString")
+    if (property === 'toString')
       return function() { return "<InvalidVariable>"; }
 
     Mudlog.log
     (
       "Attempt to read property '" + property + "' of an invalid variable\n"
-      + Mudlog.getTrimmedStackTrace(),
-      Mudlog.msgType.INVALID_VARIABLE_ACCESS,
+        + Mudlog.getTrimmedStackTrace(Mudlog.TrimType.PROXY_HANDLER),
+      Mudlog.msgType.INVALID_ACCESS,
       AdminLevels.IMMORTAL
     );
 
@@ -105,8 +117,8 @@ export class InvalidValueProxyHandler
     (
       "Attempt to write to property '" + property + "'"
       + " of an invalid variable\n"
-      + Mudlog.getTrimmedStackTrace(),
-      Mudlog.msgType.INVALID_VARIABLE_ACCESS,
+        + Mudlog.getTrimmedStackTrace(Mudlog.TrimType.PROXY_HANDLER),
+      Mudlog.msgType.INVALID_ACCESS,
       AdminLevels.IMMORTAL
     );
 
@@ -133,18 +145,21 @@ export class InvalidValueProxyHandler
   // A trap for a function call.
   public apply(target, thisArg, argumentsList)
   {
+    /// DEBUG:
+    ///console.log("Entering InvalidValueProxyHandler.apply()");
+    ///process.exit(1);
+
     Mudlog.log
     (
-      "Attempt to call an invalid function",
-
-      ///   Calling getTrimmedStackTrace() had been causing
-      ///  recursion so I had to remove it from here.
-      //"Attempt to call an invalid function\n"
-      //+ getTrimmedStackTrace(),
-
-      Mudlog.msgType.INVALID_VARIABLE_ACCESS,
+      "Attempt to call function on an invalid variable\n"
+        + Mudlog.getTrimmedStackTrace(Mudlog.TrimType.PROXY_HANDLER),
+      Mudlog.msgType.INVALID_ACCESS,
       AdminLevels.IMMORTAL
     );
+
+    /// DEBUG:
+    ///console.log("After mudlog...)");
+    ///process.exit(1);
 
     // Calling invalid variable as a function returns invalid variable.
     return InvalidValueProxyHandler.invalidVariable;

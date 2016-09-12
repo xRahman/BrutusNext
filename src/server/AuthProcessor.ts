@@ -75,11 +75,17 @@ export class AuthProcessor
       break;
 
       case AuthProcessor.stage.PASSWORD:
+        ///// DEBUG:
+        //console.log("AuthProcessor.stage.PASSWORD");
+        //process.exit(1);
         await this.checkPassword(command);
       break;
 
       case AuthProcessor.stage.NEW_PASSWORD:
-        this.getNewPassword(command);
+        ///// DEBUG:
+        //console.log("AuthProcessor.stage.NEW_PASSWORD");
+        //process.exit(1);
+        this.getNewPassword(command); 
       break;
 
       case AuthProcessor.stage.DONE:

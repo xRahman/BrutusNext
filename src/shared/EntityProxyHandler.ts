@@ -57,9 +57,9 @@ export class EntityProxyHandler
   {
     this.entity = null;
 
-    /// Tohle je asi blbost. Těžko můžu obnovit referenci,
-    /// když zapmenu idčko.
-    ///this.id = null;
+    // Note: Doing 'this.id = null;' here would be a really bad idea,
+    // because we could hardly reclaim the reference to the entity later
+    // if we forgot it's id.
   }
 
   /*
@@ -117,11 +117,12 @@ export class EntityProxyHandler
 
     if (type !== null && this.type !== null)
     {
-      if (id !== this.type)
+      if (type !== this.type)
       {
-        ERROR("Class name of entity " + this.entity.getErrorIdString()
-          + " differs from type saved in entity proxy handler"
-          + " (which is " + this.type + ")");
+        ERROR("Class name '" + type + "' of entity"
+          + " " + this.entity.getErrorIdString()
+          + " differs from type '" + this.type + "'"
+          + " saved in entity proxy handler");
 
         checkResult = false;
       }
@@ -178,7 +179,7 @@ export class EntityProxyHandler
     //  is a proxy.
     //    Value of 'isProxy' will be 'undefined' if reference isn't a proxy).
     if (property === 'isProxy')
-      return "I'm a proxy";
+      return true;
 
     ///console.log("get(): " + property);
 
@@ -198,20 +199,35 @@ export class EntityProxyHandler
       if (this.entity === null)
         this.updateEnityReference();
 
-      return this.isEntityValid;
+      return this.isEntityValidTrapHandler;
     }
 
     // Does the referenced entity exist?
     // (isEntityValid() updates this.entity if it's possible)
     if (this.isEntityValid() === false)
     {
+      /// DEBUG:
+      ///console.log("Entity is not valid");
+      ///process.exit(1);
+
+      // This happens when printing out stack trace when accessing invalid
+      // variable. Properties are scanned, which would lead to spam
+      // to syslog with missleading information. Returning empty function
+      // prevents such spam).
+      if (property === 'constructor')
+        return function() { };
+
       Mudlog.log
       (
         "Attempt to read property '" + property + "' of an invalid entity\n"
-        + Mudlog.getTrimmedStackTrace(),
-        Mudlog.msgType.INVALID_ENTITY_ACCESS,
+          + Mudlog.getTrimmedStackTrace(Mudlog.TrimType.PROXY_HANDLER),
+        Mudlog.msgType.INVALID_ACCESS,
         AdminLevels.IMMORTAL
       );
+
+      /// DEBUG:
+      ///console.log("After mudlog");
+      ///process.exit(1);
 
       // 'InvalidValueProxyHandler.invalidVariable' is a function proxy,
       // so it is callable.
@@ -247,17 +263,22 @@ export class EntityProxyHandler
     if (property === '_internalEntity')
       return this.entity;
 
+    // This is the same case as with '_internalEntity' trap above.
+    // It's an ugly hack but, unfortunatelly, necessary one.
+    if (property === '_proxyHandler')
+      return this;
+
     // Trap calls of entity.dynamicTypeCheck() method.
     if (property === 'dynamicTypeCheck')
-      return this.dynamicTypeCheck;
+      return this.dynamicTypeCheckTrapHandler;
 
     // Trap calls of entity.dynamicCast() method.
     if (property === 'dynamicCast')
-      return this.dynamicCast;
+      return this.dynamicCastTrapHandler;
 
     // Trap calls of entity.load() method.
     if (property === 'load')
-      return this.load;
+      return this.loadTrapHandler;
 
     return this.readProperty(property);
   }
@@ -278,8 +299,8 @@ export class EntityProxyHandler
       (
         "Attempt to write to property '" + property + "'"
         + " of an invalid entity\n"
-        + Mudlog.getTrimmedStackTrace(),
-        Mudlog.msgType.INVALID_ENTITY_ACCESS,
+        + Mudlog.getTrimmedStackTrace(Mudlog.TrimType.PROXY_HANDLER),
+        Mudlog.msgType.INVALID_ACCESS,
         AdminLevels.IMMORTAL
       );
 
@@ -322,6 +343,16 @@ export class EntityProxyHandler
 
   private readProperty(property: string)
   {
+    /// DEBUG:
+    ///console.log("Entering readProperty()");
+    ///process.exit(1);
+
+    if (this.entity['isProxy'] === true)
+    {
+      FATAL_ERROR("Internal entity reference is a proxy."
+        + " It must be an unproxied reference");
+    }
+
     let value = this.entity[property];
 
     // Are we accessing a valid property?
@@ -330,8 +361,9 @@ export class EntityProxyHandler
       Mudlog.log
       (
         "Attempt to read an undefined property '" + property + "'"
-        + " of entity " + this.entity.getErrorIdString(),
-        Mudlog.msgType.INVALID_PROPERTY_ACCESS,
+          + " of entity " + this.entity.getErrorIdString() + "\n"
+          + Mudlog.getTrimmedStackTrace(Mudlog.TrimType.PROXY_HANDLER_PLUS_ONE),
+        Mudlog.msgType.INVALID_ACCESS,
         AdminLevels.IMMORTAL
       );
 
@@ -345,14 +377,24 @@ export class EntityProxyHandler
 
   private isEntityValid(): boolean
   {
-    ///console.log("EntityProxyHandler.isEntityValid()");
+    if (this['isProxy'] === true)
+    {
+      FATAL_ERROR("Validity check is run on entity proxy"
+        + " rather than on entity proxy handler. Make sure"
+        + " that you use isEntityValidTrapHandler() instead"
+        + " of isEntityValid() when you return property from"
+        + " property access trap handlers");
+    }
 
     if (this.id === null)
       ERROR("Null id in EntityProxyHandler");
 
-
     if (this.entity === null)
     {
+      /// DEBUG:
+      ///console.log("this.entity is null, calling updateEnityReference()");
+      ///process.exit(1);
+
       // If we don't have a valid entity reference, we will
       // ask EntityManager if the entity exists (this can
       // happen for example if player quits - so our reference
@@ -371,36 +413,63 @@ export class EntityProxyHandler
   private updateEnityReference(): boolean
   {
     if (this.id === null)
+    {
+      /// Nejsem si jistej, jestli je správně, aby tohle byl error,
+      /// ale nejspíš jo.
+      ERROR("Attempt to update entity reference of proxy handler with"
+        + " null id");
+
       // If we don't have a string id, there is no way we can
       // update our entity reference.
       return false;
+    }
 
     //let entity = Server.entityManager.get(this.id);
-    let entity = Server.entityManager.updateReference(this.id, this);
+    let entity = Server.entityManager.updateReference(this);
+
+    /// DEBUG:
+    ///console.log("After Server.entityManager.updateReference(this)");
+    ///process.exit(1);
 
     if (entity !== undefined)
     {
+      /// DEBUG:
+      ///console.log("Entity is NOT undefined, returning true");
+      ///process.exit(1);
+
       // Update our internal reference if entity does exist.
       this.entity = entity;
 
       return true;
     }
 
+    /// DEBUG:
+    ///console.log("Entity is undefined, returning false");
+    ///process.exit(1);
+
     return false;
   }
 
-  private dynamicCast<T>(type: { new (...args: any[]): T })
+  // ------------ Private trap handlers ----------------
+
+  // IMPORTANT:
+  //   These functions are called from handlers trapping
+  // property access. Keep in mind that it means that their
+  // 'this' is not an EntityProxyhandler but rather a Proxy
+  // on which the access is trapped.
+
+  private dynamicCastTrapHandler<T>(type: { new (...args: any[]): T })
   {
     // Note: When this function is called, 'this' is not an
     // EntityProxyHandler, but the proxy. So 'dynamicTypeCheck'
     // property access must be trapped in order for this call
     // to work.
-    this.dynamicTypeCheck(type);
+    this['dynamicTypeCheck'](type);
 
     return <any>this;
   }
 
-  private dynamicTypeCheck<T>(type: { new (...args: any[]): T })
+  private dynamicTypeCheckTrapHandler<T>(type: { new (...args: any[]): T })
   {
     // Note: When this function is called, 'this' is not an
     // EntityProxyHandler, but the proxy. So '_internalEntity'
@@ -421,11 +490,26 @@ export class EntityProxyHandler
     return true;
   }
 
+  private isEntityValidTrapHandler(): boolean
+  {
+    // Note: When this function is called, 'this' is not an
+    // EntityProxyHandler, but the proxy. So '_proxyHandler'
+    // property access must be trapped in order for this to work.
+    let proxyHandler = this['_proxyHandler'];
+
+    return proxyHandler.isEntityValid();
+  }
+
   // This method allows invalid entity proxy to load itself.
   //   'entity.load()' call is trapped by 'get' handler and
   //  handler.load() (this method) is called).
-  private async load()
+  private async loadTrapHandler()
   {
-    await Server.entityManager.loadEntity(this);
+    // Note: When this function is called, 'this' is not an
+    // EntityProxyHandler, but the proxy. So '_proxyHandler'
+    // property access must be trapped in order for this to work.
+    let proxyHandler = this['_proxyHandler'];
+
+    await Server.entityManager.loadEntity(proxyHandler);
   }
 }

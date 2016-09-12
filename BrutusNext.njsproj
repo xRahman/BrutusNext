@@ -6,7 +6,7 @@
     <ProjectGuid>{8b7ac23b-1c09-4c19-8be8-b52eb1089c09}</ProjectGuid>
     <ProjectHome />
     <ProjectView>ProjectFiles</ProjectView>
-    <StartupFile>BrutusNext.ts</StartupFile>
+    <StartupFile>./src/BrutusNext.ts</StartupFile>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>./build</OutputPath>
     <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{349c5851-65df-11da-9384-00065b846f21};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
@@ -20,12 +20,36 @@
     <TypeScriptModuleKind>CommonJs</TypeScriptModuleKind>
     <TypeScriptModuleResolution>node</TypeScriptModuleResolution>
     <NodeExeArguments>--harmony_rest_parameters --harmony_proxies</NodeExeArguments>
-    <TypeScriptOutDir>./src</TypeScriptOutDir>
-    <TypeScriptRootDir>./src</TypeScriptRootDir>
+    <TypeScriptOutDir>./build</TypeScriptOutDir>
+    <TypeScriptRootDir>.</TypeScriptRootDir>
     <TypeScriptSourceRoot>./src</TypeScriptSourceRoot>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
-  <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <TypeScriptJSXEmit>None</TypeScriptJSXEmit>
+    <TypeScriptCompileOnSaveEnabled>True</TypeScriptCompileOnSaveEnabled>
+    <TypeScriptNoImplicitAny>False</TypeScriptNoImplicitAny>
+    <TypeScriptRemoveComments>False</TypeScriptRemoveComments>
+    <TypeScriptOutFile />
+    <TypeScriptOutDir>
+    </TypeScriptOutDir>
+    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
+    <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
+    <TypeScriptMapRoot>
+    </TypeScriptMapRoot>
+    <TypeScriptSourceRoot>
+    </TypeScriptSourceRoot>
+    <TypeScriptModuleKind>CommonJS</TypeScriptModuleKind>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <TypeScriptJSXEmit>None</TypeScriptJSXEmit>
+    <TypeScriptCompileOnSaveEnabled>True</TypeScriptCompileOnSaveEnabled>
+    <TypeScriptNoImplicitAny>False</TypeScriptNoImplicitAny>
+    <TypeScriptRemoveComments>False</TypeScriptRemoveComments>
+    <TypeScriptOutFile />
+    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
+    <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
+    <TypeScriptMapRoot>./build</TypeScriptMapRoot>
+  </PropertyGroup>
   <ItemGroup>
     <TypeScriptCompile Include="src\BrutusNext.ts" />
     <TypeScriptCompile Include="src\editor\OLC\StringEditor.ts" />

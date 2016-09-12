@@ -238,6 +238,27 @@ import {SaveableObject} from '../shared/SaveableObject';
 
 function test()
 {
+  let account = EntityManager.createNamedEntity
+  (
+    "Test",
+    'Account',
+    Account
+  );
+
+  /*
+  let x = account['blah'];
+  account['blah'] = 13;
+  */
+
+  ///console.log("Before remove");
+
+  Server.entityManager.remove(account);
+
+  ///console.log("Account in EntityManager after remove: "
+  ///  + Server.entityManager.has(account.getId()));
+
+  account['blah']();
+
   /*
   // Create a new world prototype.
   Game.prototypeManager.createPrototype('BrutusWorld', 'World');
