@@ -206,9 +206,9 @@ export class Entity extends AutoSaveableObject
   public getErrorIdString()
   {
     if (this.getId() === null)
-      return this.className;
+      return "{ className: " + this.className + ", id: null }";
 
-    return this.className + " (id: " + this.getId() + ")";
+    return "{ className: " + this.className + ", id: " + this.getId() + " }";
   }
 
   // Entity adds itself to approptiate IdList

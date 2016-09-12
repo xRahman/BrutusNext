@@ -133,8 +133,8 @@ export class EntityManager
 
   // Loads entity from file. Don't use this method, call entity.load()
   // (this method is automatically called by entity proxy handler when you
-  // call load() method on your entity reference)
-  // (you shouldn't be able to call this method anyways, because you
+  // call load() method on your entity reference).
+  // (You shouldn't be able to call this method anyways, because you
   // (hopefuly) have no way to get your hands on an entity proxy handler).
   public async loadEntity(handler: EntityProxyHandler)
   {
@@ -190,10 +190,10 @@ export class EntityManager
   // This method is used by etity handler when it's internal
   // entity reference is null.
   // -> Returns entity proxy if entity is available.
-  //    Returns invalid entity proxy otherwise.
-  public updateReference(id: string, handler: EntityProxyHandler)
+  //    Returns undefined otherwise.
+  public updateReference(handler: EntityProxyHandler)
   {
-    let entityRecord: EntityRecord = this.entityRecords.get(id);
+    let entityRecord: EntityRecord = this.entityRecords.get(handler.id);
 
     if (entityRecord === undefined)
       return undefined;
@@ -225,14 +225,25 @@ export class EntityManager
       return;
     }
 
-    // Set to null all proxy handlers of this entity (so anyone who
+    // Remove a record from hashmap (so when anyone ask for this
+    // entity using it's string id, he will get undefined).
+    if (this.entityRecords.delete(entity.getId()) === false)
+    {
+      ERROR("Failed to delete record '" + entity.getId() + "' from"
+        + " EntityManager");
+    }
+
+    // IMPORTANT: This must be done after deleting a record from
+    // EntityManager, because entity is actualy a proxy and accessing
+    // 'getId' property on it would lead to updateReference() call,
+    // which would fail, because entity reference in proxyhandler would
+    // already by null but entityRecord would still be present in
+    // EntityManager.
+
+    // Set all proxy handlers of this entity to null (so anyone who
     // still has a reference to entity proxy will know that entity is
     // no longer valid).
     entityRecord.invalidate();
-
-    // Remove a record from hashmap (so when anyone ask for this
-    // entity using it's string id, he will get undefined).
-    this.entityRecords.delete(entity.getId());
   }
 
   // -> Returns entity proxy matching given id, undefined if entity
@@ -431,7 +442,7 @@ class EntityRecord
   {
     if (this.entityProxy === null)
     {
-      ERROR("Invalid entity proxy reference in entity"
+      ERROR("null entity proxy reference in entity"
         + " record in EntityManager");
     }
 
@@ -444,14 +455,15 @@ class EntityRecord
     // needed, because whole record will get removed from
     // EntityManager right after invalidate() is called, but
     // better be sure.
+    // (On the other hand by doing this will will get an error
+    //  message when someone tries to access these variables so
+    //  it's proably a good idea to do this)
     this.entity = null;
     this.entityProxy = null;
 
     // This, on the other hand, IS needed. All existing references
     // to entity need to be invalidated.
     for (let handler of this.proxyHandlers)
-    {
       handler.invalidate();
-    }
   }
 }
