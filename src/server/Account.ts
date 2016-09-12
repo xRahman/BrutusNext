@@ -195,7 +195,7 @@ export class Account extends NamedEntity
     }
     else
     {
-      ERROR("Unable to update ip adress in last login info of"
+      ERROR("Unable to update ip adress of last login info of"
         + " accout " + this.name + " because this.connection"
         + " is null");
     }

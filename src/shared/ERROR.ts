@@ -57,7 +57,7 @@ import {AdminLevels} from '../server/AdminLevels';
 export function ERROR(message: string)
 {
   let errorMsg = message + "\n"
-      + Mudlog.getTrimmedStackTrace();
+    + Mudlog.getTrimmedStackTrace(Mudlog.TrimType.ERROR);
 
   Mudlog.log(errorMsg, Mudlog.msgType.RUNTIME_ERROR, AdminLevels.ELDER_GOD);
 }

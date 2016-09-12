@@ -22,9 +22,12 @@ export class NamedEntity extends Entity
     let id = this.getId();
 
     if (id === null)
-      return this.className + " '" + this.name;
+    {
+      return "{ className: " + this.className + ","
+           + " name: " + this.name + ", id: null }";
+    }
 
-    return this.className + " '" + this.name + "'"
-      + " (id: " + id + ")";
+    return "{ className: " + this.className + ", name: " + this.name + ","
+      + " id: " + id + " }";
   }
 }
