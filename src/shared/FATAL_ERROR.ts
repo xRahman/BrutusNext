@@ -57,7 +57,7 @@ import {AdminLevels} from '../server/AdminLevels';
 export function FATAL_ERROR(message: string)
 {
   let errorMsg = message + "\n"
-      + Mudlog.getTrimmedStackTrace();
+    + Mudlog.getTrimmedStackTrace(Mudlog.TrimType.ERROR);
 
   Mudlog.log
   (
