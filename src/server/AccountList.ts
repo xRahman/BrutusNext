@@ -45,6 +45,7 @@ export class AccountList extends NameSearchList
 
     // This creates and assigns hash. Actual password is not remembered.
     account.setPasswordHash(password);
+    account.connection = connection;
 
     ///let id = Server.idProvider.createId(account);
 

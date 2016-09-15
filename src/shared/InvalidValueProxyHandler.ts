@@ -22,7 +22,7 @@ import {Mudlog} from '../server/Mudlog';
 // (harmony) proxy API. So basically it allows us to call
 // 'new Proxy(target, handler);' even though ES6 proxies are
 // not imlemented in node.js yet.
-let Proxy = require('harmony-proxy');
+///let Proxy = require('harmony-proxy');
 
 // This handler of javascript Proxy object is used to emulate 'invalid value'
 // variable. Access to these variables is trapped and logged.
@@ -95,6 +95,11 @@ export class InvalidValueProxyHandler
     if (property === 'toString')
       return function() { return "<InvalidVariable>"; }
 
+    // If someone calls 'inspect' on us.
+    // (This happens when utils.inspect() is used.)
+    if (property === 'inspect')
+      return function() { return "<InvalidVariable>"; }
+
     Mudlog.log
     (
       "Attempt to read property '" + property + "' of an invalid variable\n"
@@ -145,21 +150,26 @@ export class InvalidValueProxyHandler
   // A trap for a function call.
   public apply(target, thisArg, argumentsList)
   {
-    /// DEBUG:
-    ///console.log("Entering InvalidValueProxyHandler.apply()");
-    ///process.exit(1);
-
-    Mudlog.log
-    (
-      "Attempt to call function on an invalid variable\n"
-        + Mudlog.getTrimmedStackTrace(Mudlog.TrimType.PROXY_HANDLER),
-      Mudlog.msgType.INVALID_ACCESS,
-      AdminLevels.IMMORTAL
-    );
-
-    /// DEBUG:
-    ///console.log("After mudlog...)");
-    ///process.exit(1);
+    /// This error message is more missleading than helpful so it will
+    /// be removed.
+    ///   When a function is called, get() handler is triggered first
+    /// and it's error message is printed. Then the actual function
+    /// is called and apply() handler ui called (that's where we are
+    /// now) so there would be another error message regarding the
+    /// same event.
+    ///   Furthemore, this error message would be prinded when
+    /// utils.inspect() is used on an entity proxy, because inspect()
+    /// function is accessed and called in that case. So we would get\
+    /// an error message to syslog, that doesn't really belong to an
+    /// error (inspecting an invalid entity is ok, it returns
+    /// <InvalidEntity>).
+    //Mudlog.log
+    //(
+    //  "Attempt to call function on an invalid variable\n"
+    //    + Mudlog.getTrimmedStackTrace(Mudlog.TrimType.PROXY_HANDLER),
+    //  Mudlog.msgType.INVALID_ACCESS,
+    //  AdminLevels.IMMORTAL
+    //);
 
     // Calling invalid variable as a function returns invalid variable.
     return InvalidValueProxyHandler.invalidVariable;
