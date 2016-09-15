@@ -7,6 +7,9 @@
 
 'use strict';
 
+/// DEBUG:
+const util = require('util');
+
 import {ERROR} from '../shared/ERROR';
 import {FATAL_ERROR} from '../shared/FATAL_ERROR';
 import {Entity} from '../shared/Entity';
@@ -36,9 +39,13 @@ export class SaveableObject extends AttributableClass
   protected saveRequests: Array<string> = [];
   protected static saveRequests = { isSaved: false };
 
+  protected isProxy = false;
+  // (note: This property is not saved)
+  protected static isProxy = { isSaved: false };
+
   // ---------------- Public methods --------------------
 
-  /// TODO: P?esunout tohle do DynamicClassFactory
+  /// TODO: Přesunout tohle do DynamicClassFactory
   // Creates a new instance of type className.
   public static createInstance<T>
   (
@@ -297,7 +304,7 @@ export class SaveableObject extends AttributableClass
             + " property. This should never happen");
         }
 
-        if (jsonObject[propertyName] === this.className)
+        if (jsonObject[propertyName] !== this.className)
         {
           FATAL_ERROR("Loading object with"
             + " '" + NamedClass.CLASS_NAME_PROPERTY + "'"
@@ -341,18 +348,34 @@ export class SaveableObject extends AttributableClass
 
     jsonObject[NamedClass.CLASS_NAME_PROPERTY] = className;
 
-    // Cycle through all properties in this object.
-    for (let property in this)
+    /// DEBUG:
+    console.log("SaveableObject.saveToJsonObject()");
+
+    // If 'this' is a proxy, 'for .. in' operator won't work on it,
+    // because 'handler.enumerate()' which used to trap it has been
+    // deprecated in ES7. So we have to use a hack - directly access
+    // internal entity of proxy by trapping access to '_internalEntity'
+    // property and use 'for .. in' operator on it.
+    let sourceObject = this;
+
+    if (this.isProxy === true)
+      sourceObject = this['_internalEntity'];
+
+    // Cycle through all properties in source object.
+    for (let property in sourceObject)
     {
       // Skip 'name' property because it's already saved thanks to
       // previous hack.
       // (this.isSaved() checks static attribute property.isSaved)
       // (className is passed only for more specific error messages)
-      if (property !== 'name' && this.isSaved(property, className))
+      if (property !== 'name' && sourceObject.isSaved(property, className))
       {
-        this.savePropertyToJsonObject(jsonObject, property);
+        sourceObject.savePropertyToJsonObject(jsonObject, property);
       }
     }
+
+    /// DEBUG:
+    ///console.log("jsonObject: " + util.inspect(jsonObject));
 
     return jsonObject;
   }
@@ -461,7 +484,7 @@ export class SaveableObject extends AttributableClass
   : any
   {
     // First handle the case that property in JSON has null value. In that
-    // case our property also needs to be null, no matter what type it is.
+    // case our property will also be null, no matter what type it is.
     if (jsonVariable === null)
       return null;
 
@@ -483,8 +506,8 @@ export class SaveableObject extends AttributableClass
     if
     (
       Array.isArray(jsonVariable)
-      // Hashmaps (class Map) are saved as array but we need them
-      // to load as non-array variable.
+      // Hashmaps (class Map) are saved as array but we need
+      // to load them as non-array variable.
       && !this.isMap(variable)
     )
     {
@@ -620,7 +643,7 @@ export class SaveableObject extends AttributableClass
     // (This wouldn't work if value of Date property we are loading the
     //  date to would be <null> - which is why it's not allowed to assign
     //  <null> to Date properties or initialize them with <null>)
-    if (this.isDate(myProperty))
+    if (myProperty !== null && this.isDate(myProperty))
     {
       // Date object is not automatically created by JSON.parse(),
       // only it's string representation. So we need to pass the JSON
@@ -703,6 +726,10 @@ export class SaveableObject extends AttributableClass
     if (variable === null)
       return null;
 
+    // DEBUG:
+    if (variable.isProxy === true)
+      console.log("SaveableObject.saveVariable: 'variable' is a proxy");
+
     if (Array.isArray(variable))
       return this.saveArray(variable, description, className);
 
@@ -781,12 +808,28 @@ export class SaveableObject extends AttributableClass
   // (this check is done within this.saveVariable() call)
   private savePrimitiveObjectToJson(variable: any): Object
   {
+    if (variable === null)
+    {
+      ERROR("Null varible. Primitive Object is not saved to JSON");
+      return false;
+    }
+
     let jsonObject: Object = {};
-    
-    for (let property in variable)
+     
+    // If 'variable' is a proxy, 'for .. in' operator won't work on it,
+    // because 'handler.enumerate()' which used to trap it has been
+    // deprecated in ES7. So we have to use a hack - directly access
+    // internal entity of proxy by trapping access to '_internalEntity'
+    // property and use 'for .. in' operator on it.
+    let sourceObject = variable;
+
+    if (variable.isProxy === true)
+      sourceObject = variable['_internalEntity'];
+
+    for (let property in sourceObject)
     {
       jsonObject[property] =
-        this.saveVariable(variable[property], property, 'Object');
+        this.saveVariable(sourceObject[property], property, 'Object');
     }
 
     return jsonObject;
@@ -821,11 +864,23 @@ export class SaveableObject extends AttributableClass
 
   private isPrimitiveObject(variable: any): boolean
   {
+    if (variable === null)
+    {
+      ERROR("Null varible");
+      return false;
+    }
+
     return variable.constructor.name === 'Object';
   }
 
   private isDate(variable: any): boolean
   {
+    if (variable === null)
+    {
+      ERROR("Null varible");
+      return false;
+    }
+
     // Dirty hack to check if object is of type 'Date'.
     ///return Object.prototype.toString.call(variable) === '[object Date]';
     return variable.constructor.name === 'Date';
@@ -833,6 +888,12 @@ export class SaveableObject extends AttributableClass
 
   private isMap(variable: any): boolean
   {
+    if (variable === null)
+    {
+      ERROR("Null varible");
+      return false;
+    }
+
     // Dirty hack to check if object is of type 'Map'.
     ///return Object.prototype.toString.call(variable) === '[object Map]';
     return variable.constructor.name === 'Map';

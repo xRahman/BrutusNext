@@ -8,5 +8,7 @@
         "**/*.js": { "when": "$(basename).ts"}
     },
      // Controls the font size.
-    "editor.fontSize": 18    
+    "editor.fontSize": 20,
+    "editor.rulers": [80],
+    "window.zoomLevel": 2
 }

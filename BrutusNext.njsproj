@@ -19,7 +19,8 @@
     <TypeScriptTarget>ES6</TypeScriptTarget>
     <TypeScriptModuleKind>CommonJs</TypeScriptModuleKind>
     <TypeScriptModuleResolution>node</TypeScriptModuleResolution>
-    <NodeExeArguments>--harmony_rest_parameters --harmony_proxies</NodeExeArguments>
+    <NodeExeArguments>
+    </NodeExeArguments>
     <TypeScriptOutDir>./build</TypeScriptOutDir>
     <TypeScriptRootDir>.</TypeScriptRootDir>
     <TypeScriptSourceRoot>./src</TypeScriptSourceRoot>

@@ -145,6 +145,9 @@ export class Server
 
     test();
 
+    /// DEBUG:
+    console.log("Server.run()");
+
     /*
     // If 'data' directory doesn't exist at all, create and save a new world.
     if (!FileSystem.existsSync("./data/"))
@@ -202,9 +205,11 @@ export class Server
 // -------------- TEST ----------------------
 
 
+/*
 // This module allows using new ES6 Proxy API through old harmony API
 // (it allows us to call 'new Proxy(target, handler)').
-var Proxy = require('harmony-proxy');
+var Proxy = require(harmony-proxy');
+*/
 
 
 import {EntityProxyHandler} from '../shared/EntityProxyHandler';
@@ -238,6 +243,7 @@ import {SaveableObject} from '../shared/SaveableObject';
 
 function test()
 {
+  /*
   let account = EntityManager.createNamedEntity
   (
     "Test",
@@ -245,10 +251,17 @@ function test()
     Account
   );
 
-  /*
+  //Server.entityManager.remove(account);
+
+  console.log("Property list:");
+
+  for (let property in account)
+  {
+    console.log("property: " + property);
+  }
+
   let x = account['blah'];
   account['blah'] = 13;
-  */
 
   ///console.log("Before remove");
 
@@ -258,6 +271,7 @@ function test()
   ///  + Server.entityManager.has(account.getId()));
 
   account['blah']();
+  */
 
   /*
   // Create a new world prototype.

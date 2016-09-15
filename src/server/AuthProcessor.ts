@@ -229,6 +229,12 @@ export class AuthProcessor
       // (error message is already handled by createAccount())
       return;
 
+    /// DEBUG:
+    if (this.connection === null)
+    {
+      ERROR("Null conection in AuthProcessor");
+    }
+
     Mudlog.log
     (
       "New player: " + this.accountName
@@ -353,7 +359,7 @@ export class AuthProcessor
     accountFileName: string
   )
   {
-    // Asynchronous reading from the file.
+    // Asynchronous reading from file.
     // (the rest of the code will execute only after the reading is done)
     await account.load();
 

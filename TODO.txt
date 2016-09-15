@@ -1,3 +1,22 @@
+TODO: Zkontrolovat, že všude, kde něco dereferencuju, je to oifované
+  (zejména v SaveableObjectu).
+
+TODO: V SaveableObjectu sjednotit jména parametrů, aby to nebylo jednou
+  'myProperty' a podruhé 'variable', když obojí znamená totéž.
+
+TODO: Ještě jednou se zamyslet nad tím, jestli má smysl chybový výpis v apply()
+  handleru InvalidValueProxyHandleru.
+  - pravděpodobně nemá, navíc to pak spamuje při systémových voláních (výpis
+  do konzole, util.inspect, apod..
+[Asi tam fakt být nemá. Okomentováno]
+
+TODO: V SaveableObjectu
+  - operátor 'in' nefunguje na proxy, je třeba ho volat nad entitou.
+  - to se týká i případu if ('saveIdToJsonObject' in variable)
+[done] 
+
+TODO: Vyzkoumat, proč se mi savujou skoro prázdný entity
+[snad done]
 
 TODO: TrimType.PROXY_HANDLER uvnitr get() by se mel trimovat jen o 4
 [Snad done]
@@ -7,6 +26,7 @@ TODO: Přesunout EntityRecord do samostatného souboru
 TODO: Jit trochu jinak na error messages:
   - Vsemu rikat ACCESS_VIOLATION a o co presne jde upresnit v doplnujicim
     message.
+[done]
 
 
 TODO: Poresit zacykleni pri vypisu stack trace pri invalid property accessu.
