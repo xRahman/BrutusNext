@@ -58,7 +58,7 @@ export class Character extends GameEntity
     else
     {
       // Mortals enter game in Tutorial Room.
-      this.setLocation(world.tutorialRoomId);
+      this.setLocation(world.tutorialRoom);
     }
   }
 
