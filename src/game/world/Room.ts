@@ -8,12 +8,16 @@
 
 import {GameEntity} from '../../game/GameEntity';
 import {Game} from '../../game/Game';
-import {RoomInfo} from '../../game/world/RoomInfo';
 import {RoomFlags} from '../../game/world/RoomFlags';
 import {Exits} from '../../game/world/Exits';
 
 export class Room extends GameEntity
 {
+  /// TODO: 'description' by možná mohly mít všechny entity.
+  public description = "Unfinished room.";
+  /// TODO: 'extraDescriptions' by možná mohly mít všechny entity.
+  public extraDescriptions = [];
+
   public roomFlags = new RoomFlags();
 
   constructor()
@@ -101,10 +105,6 @@ export class Room extends GameEntity
   // If this is null, values from prototype are used.
   protected roomInfo: RoomInfo = null;
   */
-
-  /* --- TEST --- */
-  public description: string;
-  /* --- TEST --- */
 
   // List of exits to other entities (usually rooms).
   protected exits = new Exits();
