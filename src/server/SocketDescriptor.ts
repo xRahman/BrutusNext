@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Abstract ancestor for descriptors encapsulating specific types of sockecs
+  Abstract ancestor for descriptors encapsulating specific types of sockets
   (like telnet socket).
 
 */
