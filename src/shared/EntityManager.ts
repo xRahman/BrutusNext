@@ -35,6 +35,7 @@
 import {ERROR} from '../shared/ERROR';
 import {IdProvider} from '../shared/IdProvider';
 import {Entity} from '../shared/Entity';
+import {EntityRecord} from '../shared/EntityRecord';
 import {NamedEntity} from '../shared/NamedEntity';
 import {EntityProxyHandler} from '../shared/EntityProxyHandler';
 import {SaveableObject} from '../shared/SaveableObject';
@@ -402,94 +403,5 @@ export class EntityManager
     }
 
     return entity;
-  }
-}
-
-// ---------------------- private module stuff -------------------------------
-
-class EntityRecord
-{
-  public entity = null;
-  public entityProxy = null;
-
-  // Set<[ EntityProxyHandler ]>
-  //   Value: javascript proxy object handler
-  // There can be more than one handler assigned to the entity.
-  // It happens for example when player quits the game and logs
-  // back in. If someone still has a reference to player's entity
-  // proxy and tries to access it now, proxy handler will ask
-  // EntityManager if its referenced entity exists. If it does,
-  // entity reference in the old proxy handler will get updated.
-  // But this means that more than one reference to entity will
-  // exist from that time on, becuase a new handler has been created
-  // for the new instance of entity (when the player logged back in).
-  //   In order for EntityManager to be able to invalidate all references
-  // to entity when the player quits again, it needs to remember all
-  // existing not invalidated handlers (then the handler is invalidated,
-  // its reference can be safely forgotten).
-  public proxyHandlers = new Set();
-
-  constructor(entity: Entity, entityProxy: Entity, handler: EntityProxyHandler)
-  {
-    this.entity = entity;
-    this.entityProxy = entityProxy;
-    this.addHandler(handler);
-  }
-
-  // ---------------- Public methods --------------------
-
-  public updateProxyHandlers(id: string, type: string, entity: Entity)
-  {
-    let handler: EntityProxyHandler = null;
-
-    for (handler of this.proxyHandlers)
-    {
-      handler.id = id;
-      handler.type = type;
-      handler.entity = entity;
-    }
-  }
-
-  public addHandler(handler: EntityProxyHandler)
-  {
-    if (!this.proxyHandlers.has(handler))
-      this.proxyHandlers.add(handler);
-  }
-
-  public getEntity()
-  {
-    if (this.entity === null)
-      ERROR("Invalid entity reference in entity record in EntityManager");
-
-    return this.entity;
-  }
-
-  public getEntityProxy()
-  {
-    if (this.entityProxy === null)
-    {
-      ERROR("null entity proxy reference in entity"
-        + " record in EntityManager");
-    }
-
-    return this.entityProxy;
-  }
-
-  public invalidate()
-  {
-    // Setting our internal variables to null is probably not
-    // needed, because whole record will get removed from
-    // EntityManager right after invalidate() is called, but
-    // better be sure.
-    // (On the other hand by doing this will will get an error
-    //  message when someone tries to access these variables so
-    //  it's proably a good idea to do this)
-    this.entity = null;
-    this.entityProxy = null;
-
-    // This, on the other hand, IS needed. All existing references
-    // to entity need to be invalidated.
-    for (let handler of this.proxyHandlers)
-      handler.invalidate();
   }
 }
