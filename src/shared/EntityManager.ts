@@ -44,7 +44,7 @@ import {Server} from '../server/Server';
 
 // This module allows using new ES6 Proxy API through old harmony API
 // (it allows us to call 'new Proxy(target, handler)').
-var Proxy = require('harmony-proxy');
+///var Proxy = require('harmony-proxy');
 
 export class EntityManager
 {
@@ -67,12 +67,12 @@ export class EntityManager
   // Shortcut so you can use EntityManager.createNamedEntity()
   // instead of Server.entityManager.createNamedEntity().
   public static createNamedEntity<T>
-    (
+  (
     name: string,
     prototype: string,
     typeCast: { new (...args: any[]): T }
-    )
-    : T
+  )
+  : T
   {
     return Server.entityManager.createNamedEntity(name, prototype, typeCast);
   }
@@ -131,7 +131,7 @@ export class EntityManager
     return entityProxy.dynamicCast(typeCast);
   }
 
-  // Loads entity from file. Don't use this method, call entity.load()
+  // Loads entity from file. Don't use this method, call entity.load() instead
   // (this method is automatically called by entity proxy handler when you
   // call load() method on your entity reference).
   // (You shouldn't be able to call this method anyways, because you
@@ -144,7 +144,7 @@ export class EntityManager
     //   If entity already exists and we are re-loading it, the
     // procedure is the same as if we are loading from invalid
     // entity handler: A new entity will be created and all
-    // existing references to it will be update with a new one.
+    // existing references to it will be updated.
     //   It means that the old entity will be discarded - which is
     // ok, because noone should have direct refrerence to an entity,
     // everyone else than EntityManager is only allowed to keep
@@ -330,9 +330,35 @@ export class EntityManager
       return null;
     }
 
+    // Here we assign 'undefined' on purpose. We will test if 'name'
+    // is 'undefined' later.
+    let name = undefined;
+
+    if (handler.entity !== null)
+    {
+      // If entity has a name, we need to remember it because it might
+      // be needed for loading entity from file (for example accounts
+      // are saved to files named <AccountName>.json).
+      // (If entity doesn't have a name, value of 'name' will be 'undefined'.)
+      name = handler.entity['name'];
+    }
+
     // TODO: Nežádat o instanci SaveableObject, ale DynamicClassFactory
     let entity: Entity = SaveableObject.createInstance
       ({ className: handler.type, typeCast: Entity });
+
+    // Set the old name back if entity had a name before.
+    if (name !== undefined)
+    {
+      if (entity['name'] === undefined)
+      {
+        ERROR("Entity " + entity.getErrorIdString()
+          + " doesn't have a 'name' property even though"
+          + " it had it before it was re-created"); 
+      }
+
+      entity['name'] = name;
+    }
 
     // We need to set entity.id prior to loading so the save path can
     // be constructed (filename contains id for most entities).

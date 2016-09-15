@@ -332,7 +332,7 @@ export class Connection extends Entity
             + " connection that doesn't have an account assigned");
         }
 
-        if (this.isInGame())
+        if (!this.isInGame())
         {
           ERROR("Attempt to process ingame command on player"
             + " connection that doesn't have an ingame entity attached")
@@ -480,18 +480,16 @@ export class Connection extends Entity
 
   public isInGame()
   {
-    if (this.ingameEntity !== null)
-    {
-      if (this.stage !== Connection.stage.IN_GAME)
-      {
-        ERROR("Player connection has ingame entity assigned but"
-          + " player connection stage is not 'IN_GAME'");
-      }
+    if (this.ingameEntity === null)
+      return false;
 
-      return true;
+    if (this.stage !== Connection.stage.IN_GAME)
+    {
+      ERROR("Player connection has ingame entity assigned but"
+        + " player connection stage is not 'IN_GAME'");
     }
 
-    return false;
+    return true;
   }
 
   public attachToGameEntity(gameEntity: GameEntity)

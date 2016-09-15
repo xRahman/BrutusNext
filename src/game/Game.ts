@@ -6,6 +6,9 @@
 
 'use strict';
 
+/// DEBUG:
+const util = require('util');
+
 import {ERROR} from '../shared/ERROR';
 import {EntityManager} from '../shared/EntityManager';
 import {SaveableObject} from '../shared/SaveableObject';
@@ -96,7 +99,9 @@ export class Game
     this.world.createSystemRealm();
 
     // Save all prototypes we have just created.
-    this.prototypeManager.save();
+// DEBUG:
+///    this.prototypeManager.save();
+    console.log("Game.createDefaultWorld()");
 
     // Save the world we have just created.
     this.world.save();

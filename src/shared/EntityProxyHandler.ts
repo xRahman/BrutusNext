@@ -37,6 +37,8 @@ import {Server} from '../server/Server';
 import {AdminLevels} from '../server/AdminLevels';
 import {Mudlog} from '../server/Mudlog';
 
+const util = require('util');
+
 export class EntityProxyHandler
 {
   // Reference to an entity we are proxyfying.
@@ -167,10 +169,32 @@ export class EntityProxyHandler
   //{
   //}
 
-  //// A trap for the in operator.
-  //public has(target)
-  //{
-  //}
+  // A trap for the in operator.
+  // (But not for: 'for .. in' operator - that's not possible to trap). 
+  public has(target: any, property: any): boolean
+  {
+    /// DEBUG:
+    console.log(">> EntityProxyHandler.has() launched");
+
+    // Does the referenced entity exist?
+    // (isEntityValid() updates this.entity if it's possible)
+    if (this.isEntityValid() === false)
+    {
+      Mudlog.log
+      (
+        "Attempt to use 'in' operator on an invalid entity\n"
+          + Mudlog.getTrimmedStackTrace(Mudlog.TrimType.PROXY_HANDLER),
+        Mudlog.msgType.INVALID_ACCESS,
+        AdminLevels.IMMORTAL
+      );
+
+      // Invalid entity doesn't have any properties (it's value is null),
+      // so 'in' operator will always return false in this case.
+      return false;
+    }
+
+    return property in this.entity;
+  }
 
   // A trap for getting property values.
   public get(target: any, property: any)
@@ -216,6 +240,11 @@ export class EntityProxyHandler
       // prevents such spam).
       if (property === 'constructor')
         return function() { };
+
+      // If someone calls 'inspect' on us.
+      // (It happens when utils.inspect() is used.)
+      if (property === 'inspect')
+        return function() { return "<InvalidEntity>"; }
 
       Mudlog.log
       (
@@ -327,6 +356,9 @@ export class EntityProxyHandler
   //// A trap for Object.getOwnPropertyNames.
   //public ownKeys(target)
   //{
+  //  console.log(">> EntityProxyHandler.ownKeys() launched");
+  //
+  //  return Object.getOwnPropertyNames(this.entity);
   //}
 
   //// A trap for a function call.
@@ -336,6 +368,11 @@ export class EntityProxyHandler
 
   //// A trap for the new operator.
   //public construct(target)
+  //{
+  //}
+
+  /// DO NOT USE THIS. It has been deprecated in ES7
+  //public enumerate(target: any): any
   //{
   //}
 
@@ -353,11 +390,29 @@ export class EntityProxyHandler
         + " It must be an unproxied reference");
     }
 
+    // If someone calls 'inspect' on us.
+    // (This happens when utils.inspect() is used.)
+    if (property === 'inspect')
+    {
+      return function()
+      {
+        // When the inspect function will be called, 'this'
+        // won't be EntityHandler but entity proxy, so this.entity
+        // would be undefined (entity doesn't have property 'entity'
+        // on it. So we need to get handler.entity by trapping
+        // access to '_internalEntity' property);
+        let internalEntity = this['_internalEntity'];
+
+        return util.inspect(internalEntity);
+      }
+    }
+
     let value = this.entity[property];
 
     // Are we accessing a valid property?
     if (value === undefined)
     {
+      // DEBUG:
       Mudlog.log
       (
         "Attempt to read an undefined property '" + property + "'"

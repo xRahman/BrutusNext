@@ -24,6 +24,9 @@ export abstract class AutoSaveableObject extends SaveableObject
   
   public async save()
   {
+    // DEBUG:
+    console.log("AutoSaveableObject.save()");
+
     await this.saveToFile(this.getSaveDirectory(), this.getSaveFileName());
   }
 
