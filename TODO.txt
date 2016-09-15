@@ -1,3 +1,12 @@
+TODO: Možná založit adresář /game/search a dát do něj AbbrevSearchLis.ts
+  (časem by tam mohlo být vyhledávání v grafu místností, apod.)
+
+TODO: Možná založit adresář /shared/entities a dát tam vše, co se týká
+  entit
+
+TODO: Možná založit adresář /shared/error a dát tam ERROR a FATAL_ERROR
+
+
 TODO: Zkontrolovat, že všude, kde něco dereferencuju, je to oifované
   (zejména v SaveableObjectu).
 
