@@ -7,7 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/error/ERROR';
-import {Mudlog} from '../../../server/Mudlog';
+import {Syslog} from '../../../server/Syslog';
 import {Account} from '../../../server/account/Account';
 import {AdminLevels} from '../../../server/AdminLevels';
 import {Server} from '../../../server/Server';
@@ -238,11 +238,11 @@ export class TelnetSocketDescriptor extends SocketDescriptor
 
     // I don't really know what kind of errors can happen here.
     // For now let's just log the error and close the connection.
-    Mudlog.log
+    Syslog.log
     (
       player
       + " has encounterd a socket error, closing the connection. " + error,
-      Mudlog.msgType.SYSTEM_ERROR,
+      Syslog.msgType.SYSTEM_ERROR,
       AdminLevels.IMMORTAL
     );
 

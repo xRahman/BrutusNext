@@ -50,14 +50,14 @@
 'use strict';
 
 // Import required classes.
-import {Mudlog} from '../../server/Mudlog';
+import {Syslog} from '../../server/Syslog';
 import {AdminLevels} from '../../server/AdminLevels';
 
 // Sends error message and a stack trace to syslog.
 export function ERROR(message: string)
 {
   let errorMsg = message + "\n"
-    + Mudlog.getTrimmedStackTrace(Mudlog.TrimType.ERROR);
+    + Syslog.getTrimmedStackTrace(Syslog.TrimType.ERROR);
 
-  Mudlog.log(errorMsg, Mudlog.msgType.RUNTIME_ERROR, AdminLevels.ELDER_GOD);
+  Syslog.log(errorMsg, Syslog.msgType.RUNTIME_ERROR, AdminLevels.ELDER_GOD);
 }

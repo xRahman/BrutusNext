@@ -16,7 +16,6 @@ import {Entity} from '../../shared/entity/Entity';
 import {NamedClass} from '../../shared/NamedClass';
 import {AttributableClass} from '../../shared/AttributableClass';
 import {FileSystem} from '../../shared/fs/FileSystem';
-import {Mudlog} from '../../server/Mudlog';
 import {Server} from '../../server/Server';
 
 let beautify = require('js-beautify').js_beautify;

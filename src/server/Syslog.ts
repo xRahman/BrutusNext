@@ -5,11 +5,10 @@
 
   Usage example:
 
-    import {Mudlog} from '../server/Mudlog';
+    import {Syslog} from '../server/Syslog';
 
-    Mudlog.log(
-      "Loading mobile data...",
-      Mudlog.msgType.SYSTEM, Mudlog.levels.CREATOR);
+    Syslog.log("Loading mobile data...",
+      Syslog.msgType.SYSTEM, Syslog.levels.CREATOR);
 */
 
 'use strict';
@@ -25,7 +24,7 @@ enum TrimType
   PROXY_HANDLER_PLUS_ONE
 }
 
-export class Mudlog
+export class Syslog
 {
   // Make 'TrimType' enum a static member of this class.
   public static TrimType = TrimType;
