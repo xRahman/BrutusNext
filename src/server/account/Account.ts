@@ -9,7 +9,7 @@
 import {ERROR} from '../../shared/error/ERROR';
 import {FileSystem} from '../../shared/fs/FileSystem';
 import {AdminLevels} from '../../server/AdminLevels';
-import {Mudlog} from '../../server/Mudlog';
+import {Syslog} from '../../server/Syslog';
 import {NamedEntity} from '../../shared/entity/NamedEntity';
 import {Connection} from '../../server/connection/Connection';
 import {Server} from '../../server/Server';
@@ -217,10 +217,10 @@ export class Account extends NamedEntity
       return;
     */
 
-    Mudlog.log
+    Syslog.log
     (
       accountName + " [" + ipAddress + "] " + action,
-      Mudlog.msgType.SYSTEM_INFO,
+      Syslog.msgType.SYSTEM_INFO,
       AdminLevels.IMMORTAL
     );
 
@@ -320,11 +320,11 @@ export class Account extends NamedEntity
 
   private logCharacterCreation(accountName: string, characterName: string)
   {
-    Mudlog.log
+    Syslog.log
     (
       "Player " + this.name + " has created a new character: "
       + characterName,
-      Mudlog.msgType.SYSTEM_INFO,
+      Syslog.msgType.SYSTEM_INFO,
       AdminLevels.IMMORTAL
     );
   }

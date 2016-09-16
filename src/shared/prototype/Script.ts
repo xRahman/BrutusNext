@@ -10,7 +10,7 @@ import {SaveableObject} from '../../shared/fs/SaveableObject';
 import {Prototype} from '../../shared/prototype/Prototype';
 import {VirtualMachine} from '../../shared/vm/VirtualMachine';
 import {AdminLevels} from '../../server/AdminLevels';
-import {Mudlog} from '../../server/Mudlog';
+import {Syslog} from '../../server/Syslog';
 import {GameEntity} from '../../game/GameEntity';
 
 // 3rd party modules.
@@ -97,12 +97,12 @@ export class Script extends SaveableObject
 
       if (script.internalFunction === null)
       {
-        Mudlog.log
+        Syslog.log
         (
           "Internal script function of script " + script.getFullName()
           + " doesn't exist yet. Script must be compiled before"
           + " it can be used",
-          Mudlog.msgType.SCRIPT_RUNTIME_ERROR,
+          Syslog.msgType.SCRIPT_RUNTIME_ERROR,
           AdminLevels.IMMORTAL
         );
 
@@ -326,10 +326,10 @@ export class Script extends SaveableObject
     }
     catch (e)
     {
-      Mudlog.log
+      Syslog.log
       (
         "Transpile error in script " + scriptName + ": " + e.message,
-        Mudlog.msgType.SCRIPT_COMPILE_ERROR,
+        Syslog.msgType.SCRIPT_COMPILE_ERROR,
         AdminLevels.IMMORTAL
       );
 
@@ -351,11 +351,11 @@ export class Script extends SaveableObject
     // the script will wait 1 milisecond.
     if (miliseconds === undefined)
     {
-      Mudlog.log
+      Syslog.log
       (
         "Missing 'miliseconds' parameter of 'await delay()' in script "
         + scriptName + ". Script will wait for 1 milisecond",
-        Mudlog.msgType.SCRIPT_RUNTIME_ERROR,
+        Syslog.msgType.SCRIPT_RUNTIME_ERROR,
         AdminLevels.IMMORTAL
       );
 

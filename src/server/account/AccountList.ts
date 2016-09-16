@@ -12,7 +12,6 @@ import {Server} from '../../server/Server';
 import {NameSearchList} from '../../shared/entity/NameSearchList';
 import {EntityManager} from '../../shared/entity/EntityManager';
 import {Account} from '../../server/account/Account';
-import {Mudlog} from '../../server/Mudlog';
 import {Connection} from '../../server/connection/Connection';
 
 export class AccountList extends NameSearchList

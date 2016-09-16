@@ -50,25 +50,25 @@
 'use strict';
 
 // Import required classes.
-import {Mudlog} from '../../server/Mudlog';
+import {Syslog} from '../../server/Syslog';
 import {AdminLevels} from '../../server/AdminLevels';
 
 // Sends error message and a stack trace to syslog.
 export function FATAL_ERROR(message: string)
 {
   let errorMsg = message + "\n"
-    + Mudlog.getTrimmedStackTrace(Mudlog.TrimType.ERROR);
+    + Syslog.getTrimmedStackTrace(Syslog.TrimType.ERROR);
 
-  Mudlog.log
+  Syslog.log
   (
     errorMsg,
-    Mudlog.msgType.FATAL_RUNTIME_ERROR,
+    Syslog.msgType.FATAL_RUNTIME_ERROR,
     AdminLevels.IMMORTAL
   );
 
   // Since promises are eating exceptions, throwing an error won't stop
   // the program if FATAL_ERROR is called from within asynchronous method.
-  // So we rather print stack trace ourselves (using Mudlog.log() above)
+  // So we rather print stack trace ourselves (using Syslog.log() above)
   // and exit the program manually.
   process.exit(1);
 }

@@ -14,7 +14,6 @@ import {Account} from '../../server/account/Account';
 import {Game} from '../../game/Game';
 import {GameEntity} from '../../game/GameEntity';
 import {Character} from '../../game/character/Character';
-import {Mudlog} from '../../server/Mudlog';
 import {AdminLevels} from '../../server/AdminLevels';
 
 export class LobbyProcessor
