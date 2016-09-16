@@ -1,0 +1,5 @@
+/// TODO
+- jak na alokaci
+(už jsem to zapoměl, ale tuším, že většinou se radí nepředalokovávat, tj.
+začít prostě s 'let pole = [];' a pak dávat 'pole.push(item);').
+  - někde jsem ale tuším tu prealokaci přece jen použil.

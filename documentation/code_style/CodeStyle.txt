@@ -87,38 +87,43 @@ Line width
 Function headers:
 -----------------
 
-// Don't insert white spaces neither in between function name and '('
-// nor in between '(' or ')' and parameter name, but do insert single space
+// Don't insert white spaces neither in between function name and '(' nor
+// in between '(' or ')' and parameter name, but do insert single space
 // after ','.
 
 function myHappyFunction(firstParam, secondParam)
 {
 }
 
-// If you need to split parameter list to multiple lines, put even the
-// first one on the next line (so that all parameters align up) and indent
-// it with 4 spaces:
+// If you need to split parameter list to multiple lines, put each parameter
+// on the new line and indent parameters with usual 2 spaces. Brackets
+// are each placed to new line as well as return value. This way you can
+// also easily comment any parameter.
 
-function myHappyFunction(
-    firstParam,
-    secondParam,
-    thirdParam,
-    fourthParam)
+function myHappyFunction
+(
+  firstParam,
+  // Comment of secondParam.
+  secondParam,
+  thirdParam,
+  fourthParam
+)
+: returnValue
 {
   // ..
 }
 
-// (4 spaces indentation helps distinguish parameter list from blocks and
-// function bodies)
-
 // This also applies when you are calling a function with long parameter list:
 
 {
-  myHappyFunction(
-      "One hundred and one",
-      "One hundred and two",
-      "One hundred and three",
-      "One hundred and four");
+  myHappyFunction
+  (
+    "One hundred and one",
+    "One hundred and two",
+    "One hundred and three",
+    // 104 is skipped on purpose.
+    "One hundred and five"
+  );
 }
 
 Blocks, function bodies, etc.
@@ -138,7 +143,7 @@ var person =
 // Try to keep blocks and functions as short as possible. More than one page
 // (20 lines) is only acceptable if you reduced every subblock to a single
 // non-block statement.
-//   E.G. switch with only cases like this:
+//   E.G. switch with many cases should look like this:
 
   case 1:
     if (sunIsShining)
@@ -218,7 +223,7 @@ var isValueValid =
   && value < 100
   && value != 13;
 
-// Always put newline after expression:
+// Always put newline after condition:
 
 if (isNight)
   visibility = 0;
@@ -243,54 +248,54 @@ Use PascalCase (starting with uppercase letter) for constructors and TODO
 Closures as function params
 ----------------------------
 
-// 4 space indentation and all params on separate lines rules do apply here.
-
-function doSomething(
-    firstParam,
-    secondParam = function()
-    {
-      // ..
-    })
+function doSomething
+(
+  firstParam,
+  secondParam = function()
+  {
+    // ..
+  }
+)
 {
  // If there is a body, it's formatted as usual.
 }
-
-// Yes, this means that round opening bracket can stand at the end of the line.
 
 
 Variables declaration
 ----------------------
 
-// Declare each variable with separate 'var' and put it on a separate line.
+// Declare each variable with separate 'let' and put it on a separate line.
+// PS: Never use 'var', only use 'let' or 'const'.
 
-var variable1 = 1;
-var variable2 = 2;
-var stringVariable = "It's cold here.";
+let variable1 = 1;
+let variable2 = 2;
+let stringVariable = "It's cold here.";
 
-// Don't declare like this: var varible1, varible2 = 3;
+// Don't declare like this: let varible1, varible2 = 3;
 
-
-// Declare all variables at the start of the block or function body.
-// (this is because unlike in C, variables in JavaScript exist from the
-// beginning of the block even before actual declaration)
-// And you should write short blocks and function bodies anyways ;-)
 
 // You can also declare variable within cycle header like this:
-for (var i = 0; i < myArray.length(); i++)
+for (let i = 0; i < tmpArray.length(); i++)
 {
   // ...
 }
 
 // If you have a meaningful value for it, initialize variables at declaration.
-// Don't initialize at all costs, though, like: var stringVariable = "";
-//   This is because uninitialized variable have value of "undefined" so you
+// You don't have to initialize at all costs, however, like:
+//   let stringVariable = "";
+// This is because uninitialized variable have value of "undefined" so you
 // can test it for (not) being initialized like this:
 
-var x;
-var txt = "x is initialized";
+let x;
+let txt = "x is initialized";
 
 if (x === undefined)
 {
   txt = "x is not initialized";
 }
 
+// However, I usualy try to inicialize each variable and if I need a variable
+// with value of 'undefined', I do it explicitly like this and add a comment:
+
+// Assigning 'undefined' on purpose. We will test for it later.
+let x = undefined;

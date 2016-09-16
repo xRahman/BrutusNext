@@ -1,0 +1,5 @@
+// TODO
+- implements bit vectors
+- use class Flags if possible (it encapsulates FastBitVector and adds
+  some functionality, like automatic updating of new flag names, etc.
+  See /src/shared/flags/Flags.ts for details)
