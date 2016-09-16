@@ -6,10 +6,9 @@
 
 'use strict';
 
-import {SaveableObject} from '../../shared/SaveableObject';
+import {SaveableObject} from '../../shared/fs/SaveableObject';
 import {Game} from '../../game/Game';
 import {GameEntity} from '../../game/GameEntity';
-///import {EntityId} from '../../shared/EntityId';
 import {Area} from '../../game/world/Area';
 
 export class Realm extends GameEntity

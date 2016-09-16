@@ -7,7 +7,7 @@
 
 'use strict';
 
-import {SaveableObject} from '../shared/SaveableObject';
+import {SaveableObject} from '../shared/fs/SaveableObject';
 
 export class ExtraDescription extends SaveableObject
 {

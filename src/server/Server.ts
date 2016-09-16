@@ -13,18 +13,18 @@
 
 'use strict';
 
-import {ERROR} from '../shared/ERROR';
-import {FATAL_ERROR} from '../shared/FATAL_ERROR';
-import {EntityManager} from '../shared/EntityManager';
+import {ERROR} from '../shared/error/ERROR';
+import {FATAL_ERROR} from '../shared/error/FATAL_ERROR';
+import {EntityManager} from '../shared/entity/EntityManager';
 import {FileSystem} from '../shared/fs/FileSystem';
-import {FlagNamesManager} from '../shared/FlagNamesManager';
-import {Connection} from '../server/Connection';
-import {EntityList} from '../shared/EntityList';
-import {AccountList} from '../server/AccountList';
+import {FlagNamesManager} from '../shared/flags/FlagNamesManager';
+import {Connection} from '../server/connection/Connection';
+import {EntityList} from '../shared/entity/EntityList';
+import {AccountList} from '../server/account/AccountList';
 import {Game} from '../game/Game';
-import {TelnetServer} from '../server/telnet/TelnetServer';
-import {HttpServer} from '../server/http/HttpServer';
-import {Account} from '../server/Account';
+import {TelnetServer} from '../server/net/telnet/TelnetServer';
+import {HttpServer} from '../server/net/http/HttpServer';
+import {Account} from '../server/account/Account';
 
 export class Server
 {
@@ -212,7 +212,7 @@ var Proxy = require(harmony-proxy');
 */
 
 
-import {EntityProxyHandler} from '../shared/EntityProxyHandler';
+///import {EntityProxyHandler} from '../shared/entity/EntityProxyHandler';
 
 /*
 class PEntity
@@ -238,8 +238,8 @@ class PHandler
 }
 */
 
-import {NamedEntity} from '../shared/NamedEntity';
-import {SaveableObject} from '../shared/SaveableObject';
+///import {NamedEntity} from '../shared/entity/NamedEntity';
+///import {SaveableObject} from '../shared/fs/SaveableObject';
 
 function test()
 {

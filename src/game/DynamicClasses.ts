@@ -6,19 +6,19 @@ if (global['dynamicClasses'] === undefined)
 // their constructors added to 'global' object for load functions
 // to be able to create instances of correct types.
 
-import {Script} from '../shared/Script';
+import {Script} from '../shared/prototype/Script';
 //global['dynamicClasses']['Script'] = Script;
 
-import {FlagNames} from '../shared/FlagNames';
+import {FlagNames} from '../shared/flags/FlagNames';
 //global['dynamicClasses']['FlagNames'] = FlagNames;
 
-import {Connection} from '../server/Connection';
+import {Connection} from '../server/connection/Connection';
 //global['dynamicClasses']['Connection'] = Connection;
 
-import {Account} from '../server/Account';
+import {Account} from '../server/account/Account';
 //global['dynamicClasses']['Account'] = Account;
 
-import {Character} from '../game/characters/Character';
+import {Character} from '../game/character/Character';
 //global['dynamicClasses']['Character'] = Character;
 
 import {Area} from '../game/world/Area';
@@ -41,19 +41,19 @@ import {World} from '../game/world/World';
 
 export function initDynamicClasses()
 {
-//  import {Script} from '../shared/Script';
+//  import {Script} from '../shared/prototype/Script';
   global['dynamicClasses']['Script'] = Script;
 
-//  import {FlagNames} from '../shared/FlagNames';
+//  import {FlagNames} from '../shared/flags/FlagNames';
   global['dynamicClasses']['FlagNames'] = FlagNames;
 
-//  import {Connection} from '../server/Connection';
+//  import {Connection} from '../server/connection/Connection';
   global['dynamicClasses']['Connection'] = Connection;
 
-//  import {Account} from '../server/Account';
+//  import {Account} from '../server/account/Account';
   global['dynamicClasses']['Account'] = Account;
 
-//  import {Character} from '../game/characters/Character';
+//  import {Character} from '../game/character/Character';
   global['dynamicClasses']['Character'] = Character;
 
 //  import {Area} from '../game/world/Area';

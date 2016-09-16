@@ -9,12 +9,12 @@
 /// DEBUG:
 const util = require('util');
 
-import {ERROR} from '../shared/ERROR';
-import {EntityManager} from '../shared/EntityManager';
-import {SaveableObject} from '../shared/SaveableObject';
-import {PrototypeManager} from '../shared/PrototypeManager';
+import {ERROR} from '../shared/error/ERROR';
+import {EntityManager} from '../shared/entity/EntityManager';
+import {SaveableObject} from '../shared/fs/SaveableObject';
+import {PrototypeManager} from '../shared/prototype/PrototypeManager';
 import {Server} from '../server/Server';
-import {CharacterList} from '../game/CharacterList';
+import {CharacterList} from '../game/character/CharacterList';
 import {World} from '../game/world/World';
 import {Room} from '../game/world/Room';
 import {RoomFlags} from '../game/world/RoomFlags';
@@ -36,7 +36,7 @@ require('../game/DynamicClasses');
 */
 
 // TEST:
-import {Script} from '../shared/Script';
+import {Script} from '../shared/prototype/Script';
 
 export class Game
 {
