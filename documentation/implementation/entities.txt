@@ -1,3 +1,20 @@
+New version:
+
+- only string ids are used now. References to Proxy objects encapsulating
+  entities are used instead of ids. Such references are able to auto-update
+  themselves in runtime on access (for example if player quits and logs back
+  in, your plr: Character reference will still be valid after that) and they
+  automatically log any invalid access.
+- You should still use entity.isValid() to check validity of your reference
+  (for example in scripts after wait()), but if you don't and you try to
+  acccess invalid reference, mud will not crash and your attempt will be
+  reported as error.
+
+- reading from or calling methods of invalid entity returns <InvalidVariable>,
+  which is also a Proxy that traps and reports any access to it. 
+
+/// DEPRECATED:
+/*
 What are ids good for?
 ----------------------
 
@@ -75,3 +92,4 @@ count of how many ids were issued in this boot). This way all ids are always
 universally unique so you can safely merge work that you made on different
 server instances (unless you would launch two instances at exactly the same
 milisecond - don't do that ;-)).
+*/
