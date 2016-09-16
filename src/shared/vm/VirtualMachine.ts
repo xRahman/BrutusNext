@@ -24,7 +24,7 @@
 
 'use strict';
 
-import {ERROR} from '../../shared/ERROR';
+import {ERROR} from '../../shared/error/ERROR';
 import {Mudlog} from '../../server/Mudlog';
 import {AdminLevels} from '../../server/AdminLevels';
 

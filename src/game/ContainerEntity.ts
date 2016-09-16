@@ -15,10 +15,10 @@
 
 'use strict';
 
-import {EntityList} from '../shared/EntityList';
+import {EntityList} from '../shared/entity/EntityList';
 import {Game} from '../game/Game';
 import {GameEntity} from '../game/GameEntity';
-import {CommandInterpretter} from '../game/commands/CommandInterpretter';
+import {CommandInterpretter} from '../game/command/CommandInterpretter';
 
 export abstract class ContainerEntity extends CommandInterpretter
 {

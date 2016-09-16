@@ -6,14 +6,14 @@
 
 'use strict';
 
-import {ERROR} from '../shared/ERROR';
+import {ERROR} from '../shared/error/ERROR';
 import {Server} from '../server/Server';
-import {SaveableObject} from '../shared/SaveableObject';
-import {Script} from '../shared/Script';
-import {Connection} from '../server/Connection';
+import {SaveableObject} from '../shared/fs/SaveableObject';
+import {Script} from '../shared/prototype/Script';
+import {Connection} from '../server/connection/Connection';
 import {Game} from '../game/Game';
 import {ContainerEntity} from '../game/ContainerEntity';
-import {EntityList} from '../shared/EntityList'
+import {EntityList} from '../shared/entity/EntityList'
 
 export class GameEntity extends ContainerEntity
 {
@@ -234,7 +234,7 @@ export class GameEntity extends ContainerEntity
   // Flag saying that connectionId is not to be saved to JSON.
   private static playerConnectionId = { isSaved: false };
 
-  /// Tohle je z?ejm? poz?statek staršího p?ístupu k prototyp?m.
+  /// Tohle je z?ejm? poz?statek starï¿½ï¿½ho p?ï¿½stupu k prototyp?m.
   /*
   // EntityId of prototype entity. If it's null, this entity is a prototype.
   protected prototype: EntityId = null;
