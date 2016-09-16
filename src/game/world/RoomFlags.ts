@@ -26,7 +26,7 @@
 
 'use strict';
 
-import {Flags} from '../../shared/Flags';
+import {Flags} from '../../shared/flags/Flags';
 
 export class RoomFlags extends Flags
 {

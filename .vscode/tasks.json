@@ -1,3 +1,4 @@
+// Automatic rebuild on file save.
 {
     // See https://go.microsoft.com/fwlink/?LinkId=733558
     // for the documentation about the tasks.json format
@@ -7,5 +8,20 @@
     "args": ["-w", "-p", "."],
     "showOutput": "silent",
     "isWatching": true,
-    "problemMatcher": "$tsc-watch"
+    "problemMatcher": "$tsc"
 }
+/*
+// Varianta na rebuild all:
+// (pred tim je treba vypnout task bezici ve watch modu - napriklad
+// zavrenim a znovuspustenim VS code - a smazat adresar /build)
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "0.1.0",
+    "command": "tsc",
+    "isShellCommand": true,
+    "args": ["-p", "."],
+    "showOutput": "silent",
+    "problemMatcher": "$tsc"
+}
+*/
