@@ -24,7 +24,7 @@
 'use strict';
 
 import {FATAL_ERROR} from '../../../shared/error/FATAL_ERROR';
-import {Mudlog} from '../../../server/Mudlog';
+import {Syslog} from '../../../server/Syslog';
 import {AdminLevels} from '../../../server/AdminLevels';
 import {Server} from '../../../server/Server';
 import {Connection} from '../../../server/connection/Connection';
@@ -74,10 +74,10 @@ export class TelnetServer
       () => { this.onServerStartsListening(); }
     );
 
-    Mudlog.log
+    Syslog.log
     (
       "Starting telnet server at port " + this.port,
-      Mudlog.msgType.SYSTEM_INFO,
+      Syslog.msgType.SYSTEM_INFO,
       AdminLevels.IMMORTAL
     );
 
@@ -101,10 +101,10 @@ export class TelnetServer
   {
     this.isOpen = true;
 
-    Mudlog.log
+    Syslog.log
     (
       "Telnet server is up and listening to the new connections",
-      Mudlog.msgType.SYSTEM_INFO,
+      Syslog.msgType.SYSTEM_INFO,
       AdminLevels.IMMORTAL
     );
   }
@@ -138,20 +138,20 @@ export class TelnetServer
   // (it processes a new connection request)
   protected onNewConnection(socket: net.Socket)
   {
-    Mudlog.log
+    Syslog.log
     (
       "TELNET SERVER: Received a new connection request from "
       + socket.remoteAddress,
-      Mudlog.msgType.SYSTEM_INFO,
+      Syslog.msgType.SYSTEM_INFO,
       AdminLevels.IMMORTAL
     );
 
     if (!this.isOpen)
     {
-      Mudlog.log
+      Syslog.log
       (
         "TELNET SERVER: Denying connection request: Server is closed",
-        Mudlog.msgType.SYSTEM_INFO,
+        Syslog.msgType.SYSTEM_INFO,
         AdminLevels.IMMORTAL
       );
 
