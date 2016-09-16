@@ -7,8 +7,8 @@
 
 'use strict';
 
-import {EntityManager} from '../../shared/EntityManager';
-import {SaveableObject} from '../../shared/SaveableObject';
+import {EntityManager} from '../../shared/entity/EntityManager';
+import {SaveableObject} from '../../shared/fs/SaveableObject';
 import {Server} from '../../server/Server';
 import {Game} from '../../game/Game';
 import {GameEntity} from '../../game/GameEntity';

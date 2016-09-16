@@ -17,9 +17,9 @@
 
 'use strict';
 
-import {ERROR} from '../shared/ERROR';
-import {NameSearchList} from '../shared/NameSearchList';
-import {EntityList} from '../shared/EntityList';
+import {ERROR} from '../shared/error/ERROR';
+import {NameSearchList} from '../shared/entity/NameSearchList';
+import {EntityList} from '../shared/entity/EntityList';
 import {GameEntity} from "../game/GameEntity";
 
 export class AbbrevSearchList extends NameSearchList
