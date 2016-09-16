@@ -7,7 +7,7 @@
 
 /*
   Accessing properties of InvalidValueProxyHandler.invalidVariable
-  prints error to mudlog. If a property of invalidVariable is read,
+  prints error to syslog. If a property of invalidVariable is read,
   of a method of invalidVariable is called, return value is again
   invalidVariable.
 */
@@ -15,7 +15,7 @@
 'use strict';
 
 import {AdminLevels} from '../../server/AdminLevels';
-import {Mudlog} from '../../server/Mudlog';
+import {Syslog} from '../../server/Syslog';
 
 // This handler of javascript Proxy object is used to emulate 'invalid value'
 // variable. Access to these variables is trapped and logged.
@@ -93,11 +93,11 @@ export class InvalidValueProxyHandler
     if (property === 'inspect')
       return function() { return "<InvalidVariable>"; }
 
-    Mudlog.log
+    Syslog.log
     (
       "Attempt to read property '" + property + "' of an invalid variable\n"
-        + Mudlog.getTrimmedStackTrace(Mudlog.TrimType.PROXY_HANDLER),
-      Mudlog.msgType.INVALID_ACCESS,
+        + Syslog.getTrimmedStackTrace(Syslog.TrimType.PROXY_HANDLER),
+      Syslog.msgType.INVALID_ACCESS,
       AdminLevels.IMMORTAL
     );
 
@@ -111,12 +111,12 @@ export class InvalidValueProxyHandler
     console.log("InvalidFunctionProxyHandler.set trap triggered for property: "
       + property);
 
-    Mudlog.log
+    Syslog.log
     (
       "Attempt to write to property '" + property + "'"
       + " of an invalid variable\n"
-        + Mudlog.getTrimmedStackTrace(Mudlog.TrimType.PROXY_HANDLER),
-      Mudlog.msgType.INVALID_ACCESS,
+        + Syslog.getTrimmedStackTrace(Syslog.TrimType.PROXY_HANDLER),
+      Syslog.msgType.INVALID_ACCESS,
       AdminLevels.IMMORTAL
     );
 
@@ -156,11 +156,11 @@ export class InvalidValueProxyHandler
     /// an error message to syslog, that doesn't really belong to an
     /// error (inspecting an invalid entity is ok, it returns
     /// <InvalidEntity>).
-    //Mudlog.log
+    //Syslog.log
     //(
     //  "Attempt to call function on an invalid variable\n"
-    //    + Mudlog.getTrimmedStackTrace(Mudlog.TrimType.PROXY_HANDLER),
-    //  Mudlog.msgType.INVALID_ACCESS,
+    //    + Syslog.getTrimmedStackTrace(Syslog.TrimType.PROXY_HANDLER),
+    //  Syslog.msgType.INVALID_ACCESS,
     //  AdminLevels.IMMORTAL
     //);
 

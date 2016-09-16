@@ -36,7 +36,7 @@
 
 import {ERROR} from '../../shared/error/ERROR';
 import {EntityManager} from '../../shared/entity/EntityManager';
-import {Mudlog} from '../../server/Mudlog';
+import {Syslog} from '../../server/Syslog';
 import {AdminLevels} from '../../server/AdminLevels';
 import {Connection} from '../../server/connection/Connection';
 import {Server} from '../../server/Server';
@@ -235,11 +235,11 @@ export class AuthProcessor
       ERROR("Null conection in AuthProcessor");
     }
 
-    Mudlog.log
+    Syslog.log
     (
       "New player: " + this.accountName
       + " [" + this.connection.ipAddress + "]",
-      Mudlog.msgType.SYSTEM_INFO,
+      Syslog.msgType.SYSTEM_INFO,
       AdminLevels.IMMORTAL
     );
 
@@ -425,11 +425,11 @@ export class AuthProcessor
 
   private announcePasswordFailure()
   {
-    Mudlog.log
+    Syslog.log
     (
       "Bad PW: " + this.accountName
       + " [" + this.connection.ipAddress + "]",
-      Mudlog.msgType.SYSTEM_INFO,
+      Syslog.msgType.SYSTEM_INFO,
       AdminLevels.IMMORTAL
     );
 

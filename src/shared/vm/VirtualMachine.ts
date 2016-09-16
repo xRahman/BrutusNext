@@ -25,7 +25,7 @@
 'use strict';
 
 import {ERROR} from '../../shared/error/ERROR';
-import {Mudlog} from '../../server/Mudlog';
+import {Syslog} from '../../server/Syslog';
 import {AdminLevels} from '../../server/AdminLevels';
 
 // Built-in node.js modules.
@@ -97,11 +97,11 @@ export class VirtualMachine
     }
     catch (e)
     {
-      Mudlog.log
+      Syslog.log
       (
         "Compile error in script " + scriptName + ": " + e.message,
           ///+ getTrimmedStackTrace(),
-        Mudlog.msgType.SCRIPT_COMPILE_ERROR,
+        Syslog.msgType.SCRIPT_COMPILE_ERROR,
         AdminLevels.IMMORTAL
       );
 
@@ -137,27 +137,27 @@ export class VirtualMachine
     {
       /*
       /// TODO: Pokud mi bude fungovat dynamické vytváření class bez vmScriptu,
-      /// tak první mudlog potřebovat nebudu.
+      /// tak první syslog potřebovat nebudu.
 
       // What this error means depends on type of vmScript we have run.
       if (scriptName === 'Class declaration system script')
       {
-        Mudlog.log
+        Syslog.log
         (
           "Runtime error while executing " + scriptName + ": " + e.message
           + "Check VirtualMachine.createClassDeclarationScript()",
-          Mudlog.msgType.SCRIPT_COMPILE_ERROR,
+          Syslog.msgType.SCRIPT_COMPILE_ERROR,
           AdminLevels.IMMORTAL
         );
       }
       else
       {
       */
-      Mudlog.log
+      Syslog.log
       (
         "Failed to create function from mud script "
         + scriptName + ": " + e.message,
-        Mudlog.msgType.SCRIPT_COMPILE_ERROR,
+        Syslog.msgType.SCRIPT_COMPILE_ERROR,
         AdminLevels.IMMORTAL
       );
       /*

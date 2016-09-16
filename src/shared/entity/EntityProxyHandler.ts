@@ -35,7 +35,7 @@ import {InvalidValueProxyHandler}
   from '../../shared/entity/InvalidValueProxyHandler';
 import {Server} from '../../server/Server';
 import {AdminLevels} from '../../server/AdminLevels';
-import {Mudlog} from '../../server/Mudlog';
+import {Syslog} from '../../server/Syslog';
 
 const util = require('util');
 
@@ -180,11 +180,11 @@ export class EntityProxyHandler
     // (isEntityValid() updates this.entity if it's possible)
     if (this.isEntityValid() === false)
     {
-      Mudlog.log
+      Syslog.log
       (
         "Attempt to use 'in' operator on an invalid entity\n"
-          + Mudlog.getTrimmedStackTrace(Mudlog.TrimType.PROXY_HANDLER),
-        Mudlog.msgType.INVALID_ACCESS,
+          + Syslog.getTrimmedStackTrace(Syslog.TrimType.PROXY_HANDLER),
+        Syslog.msgType.INVALID_ACCESS,
         AdminLevels.IMMORTAL
       );
 
@@ -246,16 +246,16 @@ export class EntityProxyHandler
       if (property === 'inspect')
         return function() { return "<InvalidEntity>"; }
 
-      Mudlog.log
+      Syslog.log
       (
         "Attempt to read property '" + property + "' of an invalid entity\n"
-          + Mudlog.getTrimmedStackTrace(Mudlog.TrimType.PROXY_HANDLER),
-        Mudlog.msgType.INVALID_ACCESS,
+          + Syslog.getTrimmedStackTrace(Syslog.TrimType.PROXY_HANDLER),
+        Syslog.msgType.INVALID_ACCESS,
         AdminLevels.IMMORTAL
       );
 
       /// DEBUG:
-      ///console.log("After mudlog");
+      ///console.log("After syslog");
       ///process.exit(1);
 
       // 'InvalidValueProxyHandler.invalidVariable' is a function proxy,
@@ -324,12 +324,12 @@ export class EntityProxyHandler
     // (isEntityValid() updates this.entity if it's possible)
     if (this.isEntityValid() === false)
     {
-      Mudlog.log
+      Syslog.log
       (
         "Attempt to write to property '" + property + "'"
         + " of an invalid entity\n"
-        + Mudlog.getTrimmedStackTrace(Mudlog.TrimType.PROXY_HANDLER),
-        Mudlog.msgType.INVALID_ACCESS,
+        + Syslog.getTrimmedStackTrace(Syslog.TrimType.PROXY_HANDLER),
+        Syslog.msgType.INVALID_ACCESS,
         AdminLevels.IMMORTAL
       );
 
@@ -413,12 +413,12 @@ export class EntityProxyHandler
     if (value === undefined)
     {
       // DEBUG:
-      Mudlog.log
+      Syslog.log
       (
         "Attempt to read an undefined property '" + property + "'"
           + " of entity " + this.entity.getErrorIdString() + "\n"
-          + Mudlog.getTrimmedStackTrace(Mudlog.TrimType.PROXY_HANDLER_PLUS_ONE),
-        Mudlog.msgType.INVALID_ACCESS,
+          + Syslog.getTrimmedStackTrace(Syslog.TrimType.PROXY_HANDLER_PLUS_ONE),
+        Syslog.msgType.INVALID_ACCESS,
         AdminLevels.IMMORTAL
       );
 

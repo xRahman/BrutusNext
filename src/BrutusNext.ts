@@ -18,7 +18,7 @@
 
 'use strict';
 
-import {Mudlog} from './server/Mudlog';
+import {Syslog} from './server/Syslog';
 import {Server} from './server/Server';
 import {AdminLevels} from './server/AdminLevels';
 
@@ -85,10 +85,10 @@ function parseCmdlineParams()
 async function main()
 {
   // Log our name and version.
-  Mudlog.log
+  Syslog.log
   (
     packageDotJson.name + " server v. " + packageDotJson.version,
-    Mudlog.msgType.SYSTEM_INFO,
+    Syslog.msgType.SYSTEM_INFO,
     AdminLevels.IMMORTAL
   );
 

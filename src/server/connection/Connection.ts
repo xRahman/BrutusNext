@@ -8,7 +8,7 @@
 
 import {ERROR} from '../../shared/error/ERROR';
 import {Entity} from '../../shared/entity/Entity';
-import {Mudlog} from '../../server/Mudlog';
+import {Syslog} from '../../server/Syslog';
 import {AdminLevels} from '../../server/AdminLevels';
 import {Server} from '../../server/Server';
 import {SocketDescriptor} from '../../server/net/SocketDescriptor';
@@ -216,10 +216,10 @@ export class Connection extends Entity
   // Handles situation when player connects to previously offline account .
   public connectToAccount(account: Account)
   {
-    Mudlog.log
+    Syslog.log
     (
       account.name + " [" + this.ipAddress + "] has logged in",
-      Mudlog.msgType.SYSTEM_INFO,
+      Syslog.msgType.SYSTEM_INFO,
       AdminLevels.IMMORTAL
     );
 
@@ -266,11 +266,11 @@ export class Connection extends Entity
     account.connection = this;
     this.account = account;
 
-    Mudlog.log
+    Syslog.log
     (
       account.name + " [" + this.ipAddress + "] has reconnected."
       + " Closing the old connection",
-      Mudlog.msgType.SYSTEM_INFO,
+      Syslog.msgType.SYSTEM_INFO,
       AdminLevels.IMMORTAL
     );
 
@@ -715,11 +715,11 @@ export class Connection extends Entity
     if (this.authProcessor.getAccountName())
       player = "Player " + this.authProcessor.getAccountName();
 
-    Mudlog.log
+    Syslog.log
     (
       player + " [" + this.ipAddress + "]"
       + " lost (or closed) connection" + state,
-      Mudlog.msgType.SYSTEM_INFO,
+      Syslog.msgType.SYSTEM_INFO,
       AdminLevels.IMMORTAL
     );
   }

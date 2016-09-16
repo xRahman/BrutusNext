@@ -6,7 +6,7 @@
 
 'use strict';
 
-import {Mudlog} from '../../server/Mudlog';
+import {Syslog} from '../../server/Syslog';
 import {AdminLevels} from '../../server/AdminLevels';
 
 // Built-in node.js modules.
@@ -39,10 +39,10 @@ export class FileSystem
       if (error.code === 'ENOENT')
         reason = "File doesn't exist"
 
-      Mudlog.log
+      Syslog.log
       (
         "Error loading file '" + filePath + "': " + reason,
-        Mudlog.msgType.SYSTEM_ERROR,
+        Syslog.msgType.SYSTEM_ERROR,
         AdminLevels.IMMORTAL
       );
 
@@ -66,10 +66,10 @@ export class FileSystem
     }
     catch (error)
     {
-      Mudlog.log
+      Syslog.log
       (
         "Error saving file '" + filePath + "': " + error.code,
-        Mudlog.msgType.SYSTEM_ERROR,
+        Syslog.msgType.SYSTEM_ERROR,
         AdminLevels.IMMORTAL
       );
 
@@ -91,10 +91,10 @@ export class FileSystem
     }
     catch (error)
     {
-      Mudlog.log
+      Syslog.log
       (
         "Error loading file '" + filePath + "': " + error.code,
-        Mudlog.msgType.SYSTEM_ERROR,
+        Syslog.msgType.SYSTEM_ERROR,
         AdminLevels.IMMORTAL
       );
 

@@ -1,23 +1,29 @@
 TODO: Přidat do /documentation soubor se seznamem používaných datových
   struktur a návodem k použití (Object, Array, Map, FastBitSet,
   FastPriorityQueue, Enum...).
+[přidal jsem na to adresář]
 
-TODO: Mudlog přejmenovat na syslog a možná ho přesunout do /shared 
+TODO: Mudlog přejmenovat na Syslog a možná ho přesunout do /shared
+- nechám ho v /server, protože bude posílat text online charům.
+[přejmenováno]
 
 TODO: Sjednotit názvy adresářů. Neměl by se jeden jemnovat characterS
   a druhej /entity (na druhou stranu /flags by asi mělo zůstat. I když...)
+[flags zůstaly, zbytek je v jednotmém ísle]
 
 TODO: Pokud budu implementovat EditableObject (jako že asi jo), tak
   ho nejspíš přesunout ze /shared do /editor
 
 TODO: Možná založit adresář /game/search a dát do něj AbbrevSearchLis.ts
   (časem by tam mohlo být vyhledávání v grafu místností, apod.)
+[tohle zatím dělat nebudu]
 
 TODO: Možná založit adresář /shared/entities a dát tam vše, co se týká
   entit
+[done]
 
 TODO: Možná založit adresář /shared/error a dát tam ERROR a FATAL_ERROR
-
+[done]
 
 TODO: Zkontrolovat, že všude, kde něco dereferencuju, je to oifované
   (zejména v SaveableObjectu).
