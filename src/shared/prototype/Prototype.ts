@@ -30,6 +30,7 @@ import {NamedClass} from '../../shared/NamedClass';
 import {SaveableObject} from '../../shared/fs/SaveableObject';
 import {VirtualMachine} from '../../shared/vm/VirtualMachine';
 import {Script} from '../../shared/prototype/Script';
+import {Server} from '../../server/Server';
 import {GameEntity} from '../../game/GameEntity';
 
 export class Prototype extends SaveableObject
@@ -181,13 +182,8 @@ export class Prototype extends SaveableObject
   //+
   private declareClass()
   {
-    // Mozna panikarim moc brzo a chyba je jinde...
-    /*
-    /// Tak takhle to bohuzel nepujde, protoze 
-    /// let NewClass = class extends Ancestor { };
-    /// spatne nastavi NewClass.prototype (ukazuje sam na sebe, misto na
-    /// instanci predka). Takze asi zpet k declaration scriptum...
-    */
+    /// TODO: Přesunout tohle do ClassFactory.
+
     let Ancestor = this.getAncestorClass();
 
     if (Ancestor === undefined || Ancestor === null)
@@ -207,26 +203,23 @@ export class Prototype extends SaveableObject
     ///    dynamicky vytvorenych class neni nastaveny).
     NewClass[NamedClass.CLASS_NAME_PROPERTY] = this.name;
 
-    // Assigns newly created type to global.dynamicClasses.
-    // Triggers an error if we failed to create it.
-    this.registerDynamicClass(NewClass);
+    // Registers newly created class in classFactory.
+    // Prints error message if we failed to create the class.
+    this.registerClass(NewClass);
 
     return NewClass;
   }
 
   //+
-  private registerDynamicClass(dynamicClass)
+  private registerClass(Class)
   {
-    if (dynamicClass === null)
+    if (Class === null)
     {
       ERROR("Failed to dynamically create class '" + this.name + "'");
       return;
     }
 
-    // Dynamic classes are stored in global.dynamicClasses.
-    let dynamicClasses = global[SaveableObject.DYNAMIC_CLASSES_PROPERTY];
-
-    dynamicClasses[this.name] = dynamicClass;
+    Server.classFactory.registerClass(this.name, Class);
   }
 
   //+
@@ -239,11 +232,8 @@ export class Prototype extends SaveableObject
       return false;
     }
 
-    // Dynamic classes are stored in global.dynamicClasses.
-    let dynamicClasses = global[SaveableObject.DYNAMIC_CLASSES_PROPERTY];
-
-    // Type that we want to create must not yet exist.
-    if (dynamicClasses[this.name] !== undefined)
+    // Class that we want to create must not yet exist.
+    if (Server.classFactory.classExists(this.name))
     {
       ERROR("Attempt to create class '" + this.name + "'"
         + " (with ancestor '" + this.ancestor + "') that"
@@ -255,7 +245,10 @@ export class Prototype extends SaveableObject
   }
 
   /*
-  //+
+  /// This is no longer used.
+  /// Classes are now created by declaring a new unnamed class and
+  /// setting parameters to it. 
+
   // Dynamically creates a new class by running class declaration
   // code on node.js virtual machine.
   //   Returns newly created class or null.
@@ -296,7 +289,6 @@ export class Prototype extends SaveableObject
   }
   */
 
-  //+
   private getAncestorClass(): { new (...args: any[]): GameEntity }
   {
     if (this.ancestor === "")
@@ -308,9 +300,7 @@ export class Prototype extends SaveableObject
       return null;
     }
 
-    // Dynamic classes are stored in global.dynamicClasses.
-    let dynamicClasses = global[SaveableObject.DYNAMIC_CLASSES_PROPERTY];
-    let AncestorClass = dynamicClasses[this.ancestor];
+    let AncestorClass = Server.classFactory.getClass(this.ancestor); 
 
     // Ancestor type must exist.
     if (AncestorClass === undefined)
@@ -324,17 +314,7 @@ export class Prototype extends SaveableObject
     return AncestorClass;
   }
 
-  //+
-  /*
-  public setPrototypeData<T>
-  (
-    // This hieroglyph stands for constructor of a class, which in
-    // in javascript represent the class itself (so this way you can
-    // pass type as a parameter).
-    prototypeClass: { new (...args: any[]): T }
-  )
-  */
-  public setPrototypeData(prototypeClass)
+  public setPrototypeData(prototypeClass: any)
   {
     for (let i = 0; i < this.data.length; i++)
     {
@@ -349,16 +329,7 @@ export class Prototype extends SaveableObject
     }
   }
 
-  /*
-  public setMethods<T>
-  (
-    // This hieroglyph stands for constructor of a class, which in
-    // in javascript represent the class itself (so this way you can
-    // pass type as a parameter).
-    prototypeClass: { new (...args: any[]): T }
-  )
-  */
-  public setMethods(prototypeClass)
+  public setMethods(prototypeClass: any)
   {
     // Iterate over all values in this.scripts hashmap.
     for (let script of this.scripts.values())

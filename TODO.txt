@@ -1,3 +1,8 @@
+TODO: Dodělat ClassFactory (zbývá Prototype a PrototypeManager)
+
+TODO: Možná do ClassFactory přesunout i vytváření nových class (to je tuším
+  v prototypu).
+
 TODO: Přidat do /documentation soubor se seznamem používaných datových
   struktur a návodem k použití (Object, Array, Map, FastBitSet,
   FastPriorityQueue, Enum...).
@@ -7,9 +12,10 @@ TODO: Mudlog přejmenovat na Syslog a možná ho přesunout do /shared
 - nechám ho v /server, protože bude posílat text online charům.
 [přejmenováno]
 
-TODO: Sjednotit názvy adresářů. Neměl by se jeden jemnovat characterS
-  a druhej /entity (na druhou stranu /flags by asi mělo zůstat. I když...)
-[flags zůstaly, zbytek je v jednotmém ísle]
+TODO: Sjednotit názvy adresářů. Neměl by se jeden jemnovat characters
+ (se 's' na konci) a druhej /entity (na druhou stranu /flags by asi mělo
+ zůstat. I když...)
+[flags zůstaly, zbytek je v jednotmém čísle]
 
 TODO: Pokud budu implementovat EditableObject (jako že asi jo), tak
   ho nejspíš přesunout ze /shared do /editor
