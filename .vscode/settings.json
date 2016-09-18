@@ -10,5 +10,6 @@
      // Controls the font size.
     "editor.fontSize": 20,
     "editor.rulers": [80],
-    "window.zoomLevel": 2
+    "editor.tabSize": 2,
+    "window.zoomLevel": -0.2
 }
