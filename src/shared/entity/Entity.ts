@@ -152,9 +152,7 @@ export class Entity extends AutoSaveableObject
   // like './data/prototypes/')
   public static getSaveDirectory(className: string, rootDirectory: string)
   {
-    // Prototype classes are stored in global.dynamicClasses.
-    let dynamicClasses = global[SaveableObject.DYNAMIC_CLASSES_PROPERTY];
-    let PrototypeClass = dynamicClasses[className];
+    let PrototypeClass = Server.classFactory.getClass(className);
     let errorPath =
       rootDirectory + "_SAVE_PATH_CREATION_ERROR/" + className + "/";
 
@@ -182,9 +180,10 @@ export class Entity extends AutoSaveableObject
 
   protected static getSaveSubDirectory()
   {
-    /// Prázdný string, protože se to přilepuje k './data/entities/' případně
-    /// k './data/prototypes/' a až teprve potomci (např. Account nebo
-    /// GameEntity) mají nějaké podadresáře (/Account).
+    // We return empty string, because it will be added to
+    // './data/entities/' or to './data/prototypes/'. only
+    // our descendants (like Account) create subdirectories
+    // (like './data/entities/Account').
     return "";
   }
 

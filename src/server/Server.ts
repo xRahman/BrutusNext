@@ -20,6 +20,7 @@ import {FileSystem} from '../shared/fs/FileSystem';
 import {FlagNamesManager} from '../shared/flags/FlagNamesManager';
 import {Connection} from '../server/connection/Connection';
 import {EntityList} from '../shared/entity/EntityList';
+import {ClassFactory} from '../shared/ClassFactory';
 import {AccountList} from '../server/account/AccountList';
 import {Game} from '../game/Game';
 import {TelnetServer} from '../server/net/telnet/TelnetServer';
@@ -35,6 +36,9 @@ export class Server
   // -------------- Private class data -----------------
 
   private timeOfBoot = new Date();
+
+  // Allows creation of new classes in runtime.
+  private classFactory = new ClassFactory();
 
   // --- singleton instances ---
   // (There is only one such instance per server.)
@@ -99,6 +103,11 @@ export class Server
   public static get entityManager()
   {
     return Server.getInstance().entityManager;
+  }
+
+  public static get classFactory()
+  {
+    return Server.getInstance().classFactory;
   }
 
   static get DEFAULT_TELNET_PORT() { return 4443; }

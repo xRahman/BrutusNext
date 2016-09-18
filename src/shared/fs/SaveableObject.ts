@@ -22,7 +22,6 @@ let beautify = require('js-beautify').js_beautify;
 
 export class SaveableObject extends AttributableClass
 {
-  public static get DYNAMIC_CLASSES_PROPERTY() { return 'dynamicClasses'; }
 
   // -------------- Protected class data ----------------
 
@@ -43,66 +42,6 @@ export class SaveableObject extends AttributableClass
   protected static isProxy = { isSaved: false };
 
   // ---------------- Public methods --------------------
-
-  /// TODO: Přesunout tohle do DynamicClassFactory
-  // Creates a new instance of type className.
-  public static createInstance<T>
-  (
-    param:
-    {
-      className: string,
-      // This hieroglyph stands for constructor of a class, which in
-      // in javascript represent the class itself (so this way you can
-      // pass type as a parameter).
-      typeCast: { new (...args: any[]): T }
-    },
-    // Any extra arguments will be passed to the class constructor.
-    ...args: any[]
-  )
-  {
-    let classNameIsValid = param.className !== undefined
-                        && param.className !== null
-                        && param.className != "";
-
-    if (!classNameIsValid)
-    {
-      ERROR("Invalid class name passed to SaveableObject.createInstance()."
-        + " Instance is not created");
-      return null;
-    }
-
-    // We will use global object to acces respective class constructor.
-    let dynamicClasses = global[SaveableObject.DYNAMIC_CLASSES_PROPERTY];
-
-    if (dynamicClasses[param.className] === undefined)
-    {
-      ERROR("Attempt to createInstance() of unknown type"
-        + " '" + param.className + "'. You probably forgot"
-        + " to create or assign a prototype to your game"
-        + " entity or add a new class to DynamicClasses.ts."
-        + " Instance is not created");
-      return null;
-    }
-
-    // This accesses a class constructor by it's name. Consctructor of
-    // each class that is supposed to be dynamically loaded here needs
-    // to be added to global.dynamicClasses - this is done when prototype
-    // class is dynamically created.
-    let newObject = new dynamicClasses[param.className](...args);
-
-    // Dynamic type check - we make sure that our newly created object
-    // is inherited from requested class (or an instance of the class itself).
-    if (newObject instanceof param.typeCast)
-      // Here we typecast to <any> in order to pass newObject
-      // as type T (you can't typecast directly to template type but you can
-      // typecast to <any> which is then automatically cast to template type).
-      return <any>newObject;
-
-    ERROR("Type cast error: Newly created object "
-      + "of type '" + param.className + "' is not an instance"
-      + " of requested type (" + param.typeCast.name + ")");
-    return null;
-  }
 
   public async loadFromFile(filePath: string)
   {
@@ -556,7 +495,7 @@ export class SaveableObject extends AttributableClass
       {
         // If there is a 'className' property, create a new instance
         // of such type.
-        myProperty = SaveableObject.createInstance
+        myProperty = Server.classFactory.createInstance
         (
           {
             className: jsonObject[NamedClass.CLASS_NAME_PROPERTY],
