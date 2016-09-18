@@ -344,8 +344,7 @@ export class EntityManager
       name = handler.entity['name'];
     }
 
-    // TODO: Nežádat o instanci SaveableObject, ale DynamicClassFactory
-    let entity: Entity = SaveableObject.createInstance
+    let entity: Entity = Server.classFactory.createInstance
       ({ className: handler.type, typeCast: Entity });
 
     // Set the old name back if entity had a name before.

@@ -1,0 +1,12 @@
+{
+  "name": "Rahman",
+  "className": "Account",
+  "version": 0,
+  "id": "7-it8wl5d9",
+  "isNameUnique": true,
+  "characters": ["Rahman"],
+  "timeOfCreation": "2016-09-18T17:35:20.321Z",
+  "lastLoginAddress": "::1",
+  "lastLoginDate": "2016-09-18T17:35:20.325Z",
+  "passwordHash": "9a519a0f7d29f1ffa549fada8b667b02"
+}

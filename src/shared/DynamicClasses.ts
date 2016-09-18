@@ -19,17 +19,20 @@ import {Room} from '../game/world/Room';
 import {Sector} from '../game/world/Sector';
 import {World} from '../game/world/World';
 
-export function initDynamicClasses(dynamicClasses: Map<any, any>)
+export class DynamicClasses
 {
-  dynamicClasses.set('Script', Script);
-  dynamicClasses.set('FlagNames', FlagNames);
-  dynamicClasses.set('Connection', Connection);
-  dynamicClasses.set('Account', Account);
-  dynamicClasses.set('Character', Character);
-  dynamicClasses.set('Area', Area);
-  dynamicClasses.set('Dimension', Dimension);
-  dynamicClasses.set('Realm', Realm);
-  dynamicClasses.set('Room', Room);
-  dynamicClasses.set('Sector', Sector);
-  dynamicClasses.set('World', World);
+  public static init(dynamicClasses: Map<any, any>)
+  {
+    dynamicClasses.set('Script', Script);
+    dynamicClasses.set('FlagNames', FlagNames);
+    dynamicClasses.set('Connection', Connection);
+    dynamicClasses.set('Account', Account);
+    dynamicClasses.set('Character', Character);
+    dynamicClasses.set('Area', Area);
+    dynamicClasses.set('Dimension', Dimension);
+    dynamicClasses.set('Realm', Realm);
+    dynamicClasses.set('Room', Room);
+    dynamicClasses.set('Sector', Sector);
+    dynamicClasses.set('World', World);
+  }
 }

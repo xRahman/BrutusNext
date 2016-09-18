@@ -11,6 +11,7 @@ import {SaveableObject} from '../../shared/fs/SaveableObject';
 import {AutoSaveableObject} from '../../shared/fs/AutoSaveableObject';
 import {Prototype} from '../../shared/prototype/Prototype';
 import {Entity} from '../../shared/entity/Entity';
+import {Server} from '../../server/Server';
 
 export class PrototypeManager extends AutoSaveableObject
 {
@@ -176,10 +177,7 @@ export class PrototypeManager extends AutoSaveableObject
       return false;
     }
 
-    // Prototype classes are stored in global.dynamicClasses.
-    let dynamicClasses = global[SaveableObject.DYNAMIC_CLASSES_PROPERTY];
-
-    if (dynamicClasses[name] !== undefined)
+    if (Server.classFactory.classExists(name))
     {
       ERROR("Attempt to create new prototype '" + name + "'"
         + " but class of that name already exists. Prototype"

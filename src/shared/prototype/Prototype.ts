@@ -70,7 +70,7 @@ export class Prototype extends SaveableObject
 
   // ---------------- Public methods --------------------
 
-  // Creates a new script and adds it to this prototype.
+  // Creates a new ingame script and adds it to this prototype.
   public createScript(scriptName: string): Script
   {
     let script = new Script();
@@ -87,6 +87,7 @@ export class Prototype extends SaveableObject
   // prototype.
   public createClass()
   {
+    /*
     if (!this.classCreationCheck())
       return;
 
@@ -95,6 +96,13 @@ export class Prototype extends SaveableObject
 
     if (NewClass === undefined || NewClass === null)
       // Error is already reported by this.performClassCreation().
+      return;
+    */
+
+    let NewClass = Server.classFactory.createClass(this.name, this.ancestor);
+
+    if (NewClass === null)
+      // Error is already reported by createClass().
       return;
     
     // Set data members to new class prototype.
@@ -179,6 +187,7 @@ export class Prototype extends SaveableObject
   }
   */
 
+  /*
   //+
   private declareClass()
   {
@@ -221,7 +230,9 @@ export class Prototype extends SaveableObject
 
     Server.classFactory.registerClass(this.name, Class);
   }
+  */
 
+  /*
   //+
   private classCreationCheck(): boolean
   {
@@ -243,6 +254,7 @@ export class Prototype extends SaveableObject
 
     return true;
   }
+  */
 
   /*
   /// This is no longer used.
@@ -289,6 +301,7 @@ export class Prototype extends SaveableObject
   }
   */
 
+  /*
   private getAncestorClass(): { new (...args: any[]): GameEntity }
   {
     if (this.ancestor === "")
@@ -313,6 +326,7 @@ export class Prototype extends SaveableObject
 
     return AncestorClass;
   }
+  */
 
   public setPrototypeData(prototypeClass: any)
   {

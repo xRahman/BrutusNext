@@ -6,9 +6,10 @@
 
 'use strict';
 
-import {initDynamicClasses} from '../shared/DynamicClasses.ts';
-import {ERROR} from '../shared/error/ERROR.ts';
-import {FATAL_ERROR} from '../shared/error/FATAL_ERROR.ts';
+import {DynamicClasses} from '../shared/DynamicClasses';
+import {ERROR} from '../shared/error/ERROR';
+import {FATAL_ERROR} from '../shared/error/FATAL_ERROR';
+import {NamedClass} from '../shared/NamedClass';
 
 export class ClassFactory
 {
@@ -19,10 +20,46 @@ export class ClassFactory
 
   constructor()
   {
-    initDynamicClasses(this.dynamicClasses);
+    DynamicClasses.init(this.dynamicClasses);
   }
 
   // ---------------- Public methods --------------------
+
+  // Declares a new class named 'className' and inherited from
+  // 'ancestorName' and set it's ['className'] property to
+  // 'className'. Also registers the new class in classFactory.
+  // -> Returns newly declared class (it's constructor) or null
+  //    if creation failed.
+  public createClass(className: string, ancestorName: string)
+  {
+    if (!this.isNameValid(className))
+    {
+      ERROR("Attempt to create class with invalid"
+        + " class name. Class is not created");
+      return null;
+    }
+
+    if (!this.isNameValid(ancestorName))
+    {
+      ERROR("Attempt to create class with invalid"
+        + " ancestor name. Class is not created");
+      return null;
+    } 
+
+    // Class that we want to create must not yet exist.
+    if (this.classExists(className))
+    {
+      ERROR("Attempt to create class '" + className + "'"
+        + " (with ancestor '" + ancestorName + "') that"
+        + " already exists. Class is not created");
+      return null;
+    }
+
+    // Dynamicaly create a new class using a script run on virtual machine.
+    let NewClass = this.declareClass(className, ancestorName);
+
+    return NewClass;
+  }
 
   public classExists(className: string): boolean
   {
@@ -31,11 +68,7 @@ export class ClassFactory
 
   public registerClass(className: string, Class)
   {
-    let isClassNameValid = className !== ""
-                   && className !== null
-                   && className !== undefined;
-    
-    if (!isClassNameValid)
+    if (!this.isNameValid(className))
     {
       ERROR("Attemt to register Class with invalid className");
       return;
@@ -89,11 +122,7 @@ export class ClassFactory
     ...args: any[]
   )
   {
-    let isClassNameValid = param.className !== undefined
-                        && param.className !== null
-                        && param.className != "";
-
-    if (!isClassNameValid)
+    if (!this.isNameValid(param.className))
     {
       ERROR("Invalid class name. Instance is not created");
       return null;
@@ -120,5 +149,61 @@ export class ClassFactory
       + " of requested type (" + param.typeCast.name + ")");
 
     return null;
+  }
+
+  // ---------------- Private methods -------------------
+
+  private isNameValid(name: string): boolean
+  {
+    return name !== "" && name !== null && name !== undefined;
+  }
+
+  private declareClass(className: string, ancestorName: string)
+  {
+    // If the type of Ancestor variable doesn't make sense to you,
+    // it's because it really doesn't make sense. It's type is
+    // a constructor of that class, but we don't have no way to know
+    // what class that is here, so we use NamedClass as return Value
+    // which is a class so it satistfied Typescript's type checking.
+    // (This little hack is needed so Typescript will let us dynamically
+    // declare a new class extended from Ancestor).  
+    let Ancestor: { new (...args: any[]): NamedClass } =
+      this.getClass(ancestorName); 
+
+    // Ancestor class must exist.
+    if (Ancestor === undefined)
+    {
+      ERROR("Attempt to create class '" + className + "' inherited"
+        + " from nonexisting ancestor class '" + ancestorName + "'."
+        + " Class is not created");
+      return null;
+    }
+
+    /// DEBUG:
+    console.log("Declaring class '" + className + "'");
+
+    // Note that dynamically declared class can't have a name
+    // (that's why we are not using constructor.name but rather our own
+    //  property 'className'. See NamedClass::className for details).
+    let NewClass = class extends Ancestor { };
+
+    if (NewClass === undefined)
+    {
+      ERROR("Failed to declare new class (" + className + ")");
+      return null;
+    }
+
+    // This overrides static accessor 'className' inherited from
+    // NamedClass, which is necessary, because that accessor returns
+    // constructor.name, which is undefined for dynamically declared
+    // class (and the property is locked against changing so it cannot
+    // be set by any means).
+    NewClass[NamedClass.CLASS_NAME_PROPERTY] = className;
+
+    // Registers newly created class in classFactory.
+    // Prints error message if we failed to create the class.
+    this.registerClass(className, NewClass);
+
+    return NewClass;
   }
 }
