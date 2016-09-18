@@ -1,0 +1,26 @@
+﻿Bookmarks
+----------
+
+1) install Bookmarks extension
+- Hit Ctrl+Shift+P and type the ext install and press enter, then type Bookmark and press enter.
+- Install Bookmarks (not Numbered Bookmarks)
+- Click "Enable"
+
+2) File -> Preferences -> Keyboard shortcuts
+(opens file keybindings.json)
+
+Paste following:
+
+// Place your key bindings in this file to overwrite the defaults
+
+[
+
+  { "key": "ctrl+f2",       "command": "bookmarks.toggle",
+
+                                    "when": "editorTextFocus" },
+
+  { "key": "f2",            "command": "bookmarks.jumpToNext",
+
+                                    "when": "editorTextFocus" }
+
+]
