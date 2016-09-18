@@ -1,3 +1,8 @@
+TODO: Výhledově přesunout některá nastavení z workspace settings (ve VS code)
+  do user settings. User settings by to ale pak asi chtělo přidat do gitu,
+  ať je mám vždycky po ruce. 
+  
+
 TODO: Dodělat ClassFactory (zbývá Prototype a PrototypeManager)
 
 TODO: Možná do ClassFactory přesunout i vytváření nových class (to je tuším
