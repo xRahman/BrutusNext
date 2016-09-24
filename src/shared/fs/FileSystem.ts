@@ -7,7 +7,7 @@
 'use strict';
 
 import {Syslog} from '../../server/Syslog';
-import {AdminLevels} from '../../server/AdminLevels';
+import {AdminLevel} from '../../server/AdminLevel';
 
 // Built-in node.js modules.
 import * as fs from 'fs';  // Import namespace 'fs' from node.js
@@ -43,7 +43,7 @@ export class FileSystem
       (
         "Error loading file '" + filePath + "': " + reason,
         Syslog.msgType.SYSTEM_ERROR,
-        AdminLevels.IMMORTAL
+        AdminLevel.IMMORTAL
       );
 
       // Throw the exception so the mud will get terminated with error
@@ -70,7 +70,7 @@ export class FileSystem
       (
         "Error saving file '" + filePath + "': " + error.code,
         Syslog.msgType.SYSTEM_ERROR,
-        AdminLevels.IMMORTAL
+        AdminLevel.IMMORTAL
       );
 
       // Throw the exception so the mud will get terminated with error
@@ -95,7 +95,7 @@ export class FileSystem
       (
         "Error loading file '" + filePath + "': " + error.code,
         Syslog.msgType.SYSTEM_ERROR,
-        AdminLevels.IMMORTAL
+        AdminLevel.IMMORTAL
       );
 
       // Throw the exception so the mud will get terminated with error

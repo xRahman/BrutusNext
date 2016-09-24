@@ -34,7 +34,7 @@ import {Entity} from '../../shared/entity/Entity';
 import {InvalidValueProxyHandler}
   from '../../shared/entity/InvalidValueProxyHandler';
 import {Server} from '../../server/Server';
-import {AdminLevels} from '../../server/AdminLevels';
+import {AdminLevel} from '../../server/AdminLevel';
 import {Syslog} from '../../server/Syslog';
 
 const util = require('util');
@@ -185,7 +185,7 @@ export class EntityProxyHandler
         "Attempt to use 'in' operator on an invalid entity\n"
           + Syslog.getTrimmedStackTrace(Syslog.TrimType.PROXY_HANDLER),
         Syslog.msgType.INVALID_ACCESS,
-        AdminLevels.IMMORTAL
+        AdminLevel.IMMORTAL
       );
 
       // Invalid entity doesn't have any properties (it's value is null),
@@ -251,7 +251,7 @@ export class EntityProxyHandler
         "Attempt to read property '" + property + "' of an invalid entity\n"
           + Syslog.getTrimmedStackTrace(Syslog.TrimType.PROXY_HANDLER),
         Syslog.msgType.INVALID_ACCESS,
-        AdminLevels.IMMORTAL
+        AdminLevel.IMMORTAL
       );
 
       /// DEBUG:
@@ -330,7 +330,7 @@ export class EntityProxyHandler
         + " of an invalid entity\n"
         + Syslog.getTrimmedStackTrace(Syslog.TrimType.PROXY_HANDLER),
         Syslog.msgType.INVALID_ACCESS,
-        AdminLevels.IMMORTAL
+        AdminLevel.IMMORTAL
       );
 
       // Return value of 'set' trap noramlly indicates if writing succeeded.
@@ -419,7 +419,7 @@ export class EntityProxyHandler
           + " of entity " + this.entity.getErrorIdString() + "\n"
           + Syslog.getTrimmedStackTrace(Syslog.TrimType.PROXY_HANDLER_PLUS_ONE),
         Syslog.msgType.INVALID_ACCESS,
-        AdminLevels.IMMORTAL
+        AdminLevel.IMMORTAL
       );
 
       // 'invalidVariable' that traps all access to it and reports

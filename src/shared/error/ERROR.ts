@@ -51,7 +51,7 @@
 
 // Import required classes.
 import {Syslog} from '../../server/Syslog';
-import {AdminLevels} from '../../server/AdminLevels';
+import {AdminLevel} from '../../server/AdminLevel';
 
 // Sends error message and a stack trace to syslog.
 export function ERROR(message: string)
@@ -59,5 +59,5 @@ export function ERROR(message: string)
   let errorMsg = message + "\n"
     + Syslog.getTrimmedStackTrace(Syslog.TrimType.ERROR);
 
-  Syslog.log(errorMsg, Syslog.msgType.RUNTIME_ERROR, AdminLevels.ELDER_GOD);
+  Syslog.log(errorMsg, Syslog.msgType.RUNTIME_ERROR, AdminLevel.ELDER_GOD);
 }
