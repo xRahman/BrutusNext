@@ -6,8 +6,19 @@
 
 'use strict';
 
-export class AdminLevels
+export enum AdminLevels
 {
+  MORTAL,   
+  IMMORTAL, 
+  GOD,
+  GREATER_GOD,
+  ELDER_GOD,
+  CREATOR
+}
+
+/*
+export class AdminLevels
+{ 
   public static get MORTAL()      { return 0; }
   public static get IMMORTAL()    { return 1; }
   public static get GOD()         { return 2; }
@@ -15,3 +26,4 @@ export class AdminLevels
   public static get ELDER_GOD()   { return 4; }
   public static get CREATOR()     { return 5; }
 }
+*/
