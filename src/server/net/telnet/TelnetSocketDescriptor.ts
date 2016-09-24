@@ -9,7 +9,7 @@
 import {ERROR} from '../../../shared/error/ERROR';
 import {Syslog} from '../../../server/Syslog';
 import {Account} from '../../../server/account/Account';
-import {AdminLevels} from '../../../server/AdminLevels';
+import {AdminLevel} from '../../../server/AdminLevel';
 import {Server} from '../../../server/Server';
 import {SocketDescriptor} from '../../../server/net/SocketDescriptor';
 import {Connection} from '../../../server/connection/Connection';
@@ -243,7 +243,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
       player
       + " has encounterd a socket error, closing the connection. " + error,
       Syslog.msgType.SYSTEM_ERROR,
-      AdminLevels.IMMORTAL
+      AdminLevel.IMMORTAL
     );
 
     this.closeSocket();

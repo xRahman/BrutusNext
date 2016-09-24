@@ -25,7 +25,7 @@
 
 import {FATAL_ERROR} from '../../../shared/error/FATAL_ERROR';
 import {Syslog} from '../../../server/Syslog';
-import {AdminLevels} from '../../../server/AdminLevels';
+import {AdminLevel} from '../../../server/AdminLevel';
 import {Server} from '../../../server/Server';
 import {Connection} from '../../../server/connection/Connection';
 import {TelnetSocketDescriptor}
@@ -78,7 +78,7 @@ export class TelnetServer
     (
       "Starting telnet server at port " + this.port,
       Syslog.msgType.SYSTEM_INFO,
-      AdminLevels.IMMORTAL
+      AdminLevel.IMMORTAL
     );
 
     this.telnetServer.listen(this.port);
@@ -105,7 +105,7 @@ export class TelnetServer
     (
       "Telnet server is up and listening to the new connections",
       Syslog.msgType.SYSTEM_INFO,
-      AdminLevels.IMMORTAL
+      AdminLevel.IMMORTAL
     );
   }
 
@@ -143,7 +143,7 @@ export class TelnetServer
       "TELNET SERVER: Received a new connection request from "
       + socket.remoteAddress,
       Syslog.msgType.SYSTEM_INFO,
-      AdminLevels.IMMORTAL
+      AdminLevel.IMMORTAL
     );
 
     if (!this.isOpen)
@@ -152,7 +152,7 @@ export class TelnetServer
       (
         "TELNET SERVER: Denying connection request: Server is closed",
         Syslog.msgType.SYSTEM_INFO,
-        AdminLevels.IMMORTAL
+        AdminLevel.IMMORTAL
       );
 
       // Half - closes the socket. i.e., it sends a FIN packet.

@@ -14,7 +14,7 @@
 
 'use strict';
 
-import {AdminLevels} from '../../server/AdminLevels';
+import {AdminLevel} from '../../server/AdminLevel';
 import {Syslog} from '../../server/Syslog';
 
 // This handler of javascript Proxy object is used to emulate 'invalid value'
@@ -98,7 +98,7 @@ export class InvalidValueProxyHandler
       "Attempt to read property '" + property + "' of an invalid variable\n"
         + Syslog.getTrimmedStackTrace(Syslog.TrimType.PROXY_HANDLER),
       Syslog.msgType.INVALID_ACCESS,
-      AdminLevels.IMMORTAL
+      AdminLevel.IMMORTAL
     );
 
     // Reading a property of invalid variable returns invalid variable.
@@ -117,7 +117,7 @@ export class InvalidValueProxyHandler
       + " of an invalid variable\n"
         + Syslog.getTrimmedStackTrace(Syslog.TrimType.PROXY_HANDLER),
       Syslog.msgType.INVALID_ACCESS,
-      AdminLevels.IMMORTAL
+      AdminLevel.IMMORTAL
     );
 
     // Return value of 'set' trap noramlly indicates if writing succeeded.
