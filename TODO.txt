@@ -1,12 +1,212 @@
+TODO: Na AdminLevels by asi fakt byl lepsi enum.
+[snad done]
+
+TODO: Loadovat chary do konkrétní roomy.
+[To je tak napul. Rahman ma nastavenou 'location', Zuzka ne a nove zalozene
+chary taky ne]
+
+TODO: Když se zakládá první character, udělat z něj implementora a dát ho do
+  SystemRoom.
+  - možná se bude hodit držet si systemRoomId ve Worldu jako proměnnou.
+[jakz takz]
+- Zatim spis nejakztakz
+TODO (stále)
+
+TODO: Přidat do accountu seznam charů, které mají admin práva (nebo možná na
+  char flagu, že má admin práva - checkne se this.playerConnection, přes ni
+  account a na něm je adminLevel).
+
+TODO: Zkontrolovat, že dobře loguje BAD PW attempt
+
+TODO: Charactery savovat na disk v lowercasu
+  - ze dvou duvodu:
+    1) aby neslo vytvorit soucasne char Zuzka a zuzka
+    2) aby se slo prihlasit case-insensitive verzi
+  - nebo se na to vykaslat a enforcovet Prvnivelke pismeno ve jmene charu?
+    (Asi prece jen bude hezci, kdyz na disku budou chary savnute s velkym)
+  - kazdopadne to case-insensitive prihlaseni by fungovat melo.
+
+TODO: Immlevely ukladat nekam jinam nez k charu
+- (asi do AccountManageru?)
+
+------------------------------------------------------------------------------
+
+TODO: Vyzkoumat, jak je to udelane, ze v putty neni pri zadavani videt heslo
+
+TODO: Do zahlavi souboru nakreslit stromy dedicnosti.
+
+TODO: Udelat tridu Command, do ktere se vrazi cely command string, a ktera
+  s nim bude umet pracovat (parsovat argumenty, atd.)
+- Tohle je otazka. Koukal jsem na to a mozna to neni az tak dobry napad,
+  v ruznych situacich se command parsuje ruzne (kazdy skill to muze delat
+  jinak, napr.)
+
+TODO: Zkontrolovat, ze datove properties, ktere maji get i set a pri
+getu a setu se s nima nedela nic vic nez prirazeni a cteni, jsou rovnou
+public.
+
+TODO: Ve vsech classach hodit data na zacatek.
+
+TODO: OLC
+
+TODO (výhledově): Dodělat do AbbrevSearchListu funkčnost, že dokud je v něm
+  málo záznamů, tak se vůbec nebude konstruovat vyhledávací struktura, prostě
+  se lineárně projde pole aliasů (to proto, aby se zbytečně nezabírala paměť
+  vyhledávací strukturou pro pár mobů v roomě, pát itemů v inventáři, atp.)
+
+TODO: Otestovat AbbrevSearchList
+  - pridat do nějakého roomu pár characterů
+  - implementovat příkaz tell (globální search)
+  - implementovat nějaký social do roomu (search v roomu)
+
+TODO: Zprovoznit příkaz na založení nové entity (na Brutusu se tohle děje,
+  když dám editovat dosud neexistující objekt)
+
+TODO (hodně výhledově): Zajistit, aby se ze skriptů nedal nastavovat
+  Account::adminLevel a nedaly dělat věci, na které je třeba adminLevel > 0.
+  (viz ./documentation/code_architecture/admins)
+
+TODO: Zprovoznit prikaz look (zatim asi jen do roomy)
+[kostra by snad byla]
+
+TODO: Používat 'new Map' místo 'new Object' (hlavně proto, že dynamicky
+  generované klíče mohou kolidovat s existujícíma properties na objektu).
+  - vyzkoušeno a přidáno do Saveableobjectu
+TODO: Udělat to všude
+
+TODO: Všude, kde se to hodí, předělat předávání parmetrů. Předávání objektem
+  dělá kód mnohem čitelnější .
+  - tímhle si nakonec nejsem až tak jistej.
+
+TODO: Zvážit, jestli nepřejmenovat všechny proměnné typu newArray (zrušit new).
+
+TODO: Optimalizovat savovani prototypu, kdyz se zmeni jen jeden prototyp
+  (takze neni treba savovat uplne vsechny prototypy)
+  - mozna metodou Prototype::save(), ktera zavola save prototypeManageru
+    na konkretni prototyp?
+
+TODO: Pokusit se sjendotit dynamic typecast (metodou z UTILS?)
+  - ideálně ji přesunout někam jinam (někam do entity inheritance chainu)
+
+TODO: Projít všechny FATAL errory a zkontrolovat, jestli musí být FATAL.
+
+IMPORTANT TODO: U prototypu savovat jen přetížené properties, ne ty
+  z prototypu.
+
+TODO: Velmi výhledově se zamyslet nad lepším formátem savutých skriptů
+  (hjson? samostatný soubor?), protože je to přece jen kód a bude se
+  například diffovat v gitu (co na něm který immortal změnil?)
+
+TODO: Casem odstranit consoli ze skriptoveho sandboxu.
+
+TODO: Checkovatko na memoryleaky
+
+TODO: Kontrola, že skript dostal správné parametry.
+  - A to ve fci Script.scriptFunction (deklarovane v constuctoru classy Script)
+
+TODO: Nastavitelný Lock proti opakovanému spouštění běžícího skriptu.
+
+TODO: script.recompile
+
+TODO: script.rename (nebo možná Prototype.renameScript)
+
+TODO: Asi všude zrušit property deklarované jako parametry konstruktorů
+  (ne vždy se konstruktor volá se všemi parametry a pak se stane to, že
+  property není inicializovaná. Kromě toho to znepřehledňuje kód - hůř
+  se hledá, co je nějaká property zač.)
+
+TODO: Ještě jednou zvážit typescriptové enumy (Entity.satus, atpod.).
+  - použít se dají (je třeba je deklarovat mimo classu a a do classy je pak
+    dát jako static proměnnou).
+TODO: Projít kód a zvážit, kde by se spíš hodil enum.
+
+TODO: Typescript používat inline místo linkem.
+
+TODO: Odstraněním saveTree z PrototypeManageru jsem přišel o informaci, jaké
+  prototypy se mají načíst při startu hry.
+  - nějak to pořešit.
+Jedna možnost je, prostě prolézt celý adresář /Prototypes
+
+TODO: Při loadu game entity kontrolovat, že savnutá 'location' (její stringové
+  idčko) odpovídá tomu, do čeho entitu loaduju (stejné stringové idčko).
+  - pokud neodpovídá, tak odmítnout entitu přiřadit
+    (Tohle ošetřuje situaci, kdy se jeden player savne, dá item druhému
+    playerovi, ten se savne a následně spadne mud. Tomu prvnímu to při loadu
+    item nedá, protože nebude sedět location. Tomu druhému load projde.
+    - to samé platí i pro restorování ze zálohy.)
+
+TODO: Classu EntityRecord asi vyhodit z EntityManageru do samostatného
+  modulu.
+
+TODO: V SaveableObjectu (a možná i jinde) předávám do vnořených volání
+ hromadu stejných parametrů.
+ - zabalit je do objektu 'param', dost se tím ten kód zpřehlední.
+
 TODO: Výhledově přesunout některá nastavení z workspace settings (ve VS code)
   do user settings. User settings by to ale pak asi chtělo přidat do gitu,
   ať je mám vždycky po ruce. 
-  
+
+TODO: Pokud budu implementovat EditableObject (jako že asi jo), tak
+  ho nejspíš přesunout ze /shared do /editor
+
+TODO: Zkontrolovat, že všude, kde něco dereferencuju, je to oifované
+  (zejména v SaveableObjectu).
+
+TODO: V SaveableObjectu sjednotit jména parametrů, aby to nebylo jednou
+  'myProperty' a podruhé 'variable', když obojí znamená totéž.
+
+TODO: Úplně se mi nelíbí, že fci entityManager.createUniqueEntity()
+ (a asi i createEntity()) dávám jako parametr stringovou reprezentaci
+ typu a za ní ještě typ.
+ - asi by bylo lepší udělat dvojice fcí, jedna (createDynamicEntity()?)
+   co dostane i string a druhá, která si vystačí s konstruktorem classy.
+   - nebo možná dát string jako volitelný parametr (kontrolovat to uvnitř
+     funkce).
+Jo a při tý příležitosti bych asi mohl udělat statické fce, abych nemusel
+chodit přes Server.entityManager....
+  (a nebo se na to vyprdnout a dělat to naopak vždycky, tj. zrušit tu
+  existující statickou zkratku)
+
+TODO: Sjednotit návratové hodnoty: Když něco není nalezeno, tak nevracet
+  null, ale undefined
+TODO: Zrušit z entity proměnné SAVE_DIRECTORY
+
+---------------
+
+Úvahy o hot reloadu
+  - nakonec asi bude nejjednodušší udělat si to růčo, podobně jako
+    save/load. Nejspíš tak, že se po reloadu modulu vytvoří instance
+    příslušné entity a všechny existující entity v game entity containeru
+    si vždycky najdou svůj nový "prototyp" (nejspíše podle className),
+    projdou všechny svoje properties (jdou projít i metody?), metody si
+    přiřadí ty z nového "prototypu", existující property si nechají
+    (možná zruší ty, které na novém "prototypu" nejsou) a přidají ty, co
+    má nový "prototyp" navíc - zkopírováním, takže budou inicializované
+    podle nového kódu.
+  - reload proběhne automaticky, protože poběží watch na změny příslušných
+    souborů.
+
+
+------------------------------------------------------
+
+Vyhledove rozbehat tslint
+
+===============================================================================
+===============================================================================  
+
+TODO: co se stane, když mi umře entita, na které běží async skript?
+[to už by mělo být ošetřené]
+
+TODO: Možná založit adresář /game/search a dát do něj AbbrevSearchLis.ts
+  (časem by tam mohlo být vyhledávání v grafu místností, apod.)
+[tohle zatím dělat nebudu]
 
 TODO: Dodělat ClassFactory (zbývá Prototype a PrototypeManager)
+[done]
 
 TODO: Možná do ClassFactory přesunout i vytváření nových class (to je tuším
   v prototypu).
+[done]
 
 TODO: Přidat do /documentation soubor se seznamem používaných datových
   struktur a návodem k použití (Object, Array, Map, FastBitSet,
@@ -22,25 +222,12 @@ TODO: Sjednotit názvy adresářů. Neměl by se jeden jemnovat characters
  zůstat. I když...)
 [flags zůstaly, zbytek je v jednotmém čísle]
 
-TODO: Pokud budu implementovat EditableObject (jako že asi jo), tak
-  ho nejspíš přesunout ze /shared do /editor
-
-TODO: Možná založit adresář /game/search a dát do něj AbbrevSearchLis.ts
-  (časem by tam mohlo být vyhledávání v grafu místností, apod.)
-[tohle zatím dělat nebudu]
-
 TODO: Možná založit adresář /shared/entities a dát tam vše, co se týká
   entit
 [done]
 
 TODO: Možná založit adresář /shared/error a dát tam ERROR a FATAL_ERROR
 [done]
-
-TODO: Zkontrolovat, že všude, kde něco dereferencuju, je to oifované
-  (zejména v SaveableObjectu).
-
-TODO: V SaveableObjectu sjednotit jména parametrů, aby to nebylo jednou
-  'myProperty' a podruhé 'variable', když obojí znamená totéž.
 
 TODO: Ještě jednou se zamyslet nad tím, jestli má smysl chybový výpis v apply()
   handleru InvalidValueProxyHandleru.
@@ -67,7 +254,6 @@ TODO: Jit trochu jinak na error messages:
     message.
 [done]
 
-
 TODO: Poresit zacykleni pri vypisu stack trace pri invalid property accessu.
 - a asi taky trimovani o jiny pocet radku nez pri ERRORu
 [tak to uz zrejme necykli, nejspis jsem to necim opravil]
@@ -80,24 +266,6 @@ TODO: metodu dynamicCast() asi přesunout z EntityManageru do Entity.
 
 TODO: Otestovat, že prirazeni this opravdu priradi proxy
 [Zda se, ze opravdu ano, uff!]
-
-TODO: Úplně se mi nelíbí, že fci entityManager.createUniqueEntity()
- (a asi i createEntity()) dávám jako parametr stringovou reprezentaci
- typu a za ní ještě typ.
- - asi by bylo lepší udělat dvojice fcí, jedna (createDynamicEntity()?)
-   co dostane i string a druhá, která si vystačí s konstruktorem classy.
-   - nebo možná dát string jako volitelný parametr (kontrolovat to uvnitř
-     funkce).
-Jo a při tý příležitosti bych asi mohl udělat statické fce, abych nemusel
-chodit přes Server.entityManager....
-  (a nebo se na to vyprdnout a dělat to naopak vždycky, tj. zrušit tu
-  existující statickou zkratku)
-
-TODO: Sjednotit návratové hodnoty: Když něco není nalezeno, tak nevracet
-  null, ale undefined
-
-
-TODO: Zrušit z entity proměnné SAVE_DIRECTORY
 
 TODO: createSystemRealm() a všechno uvnitř.
 [done]
@@ -119,24 +287,16 @@ S tím souvisí:
   - z nejěkých důvodů jsem tam chtěl ošetřit, když je "id" null
 [Tak nakonec ne]
 
-
 TODO: EntityManager by neměl vyčítat data z JSON objectu - to má dělat
   SaveableObject.
 [přesunuto do SaveableObjectu]
-
-TODO: Classu EntityRecord asi vyhodit z EntityManageru do samostatného
-  modulu.
 
 TODO: metoda createInstance() by neměla být v SaveableObjectu.
   - místo toho by měla existovat Server.classFactory a na ní by měla
     být metoda createInstance().
 TODO: Při té příležitosti do ní přeshnout i dynamicClasses, ať nestrašej
   v global objectu.
-
-
-TODO: V SaveableObjectu (a možná i jinde) předávám do vnořených volání
- hromadu stejných parametrů.
- - zabalit je do objektu 'param', dost se tím ten kód zpřehlední.
+[done]
 
 TODO: EntityManager.proxyHandler by mozna nemuselo bejt pole (ale mapa).
   - nakonec to bude Set
@@ -156,29 +316,17 @@ TODO: Ošetřit savování referencí na entity v SaveableObjectu.
       (kromě entity = null). Nebo možná prostě jen pamatovat si idčko
       (protože EntityProxyHandler teď vlastně slouží jako původní class Id).
 TODO: Přetypovat idčka z Id na string.
+[některé věci jsou jinak, ale v zásadě done]
 
 TODO: Odchytavat pristup na neexistujici property.
 [done]
 
-
-TODO: Při loadu game entity kontrolovat, že savnutá 'location' (její stringové
-  idčko) odpovídá tomu, do čeho entitu loaduju (stejné stringové idčko).
-  - pokud neodpovídá, tak odmítnout entitu přiřadit
-    (Tohle ošetřuje situaci, kdy se jeden player savne, dá item druhému
-    playerovi, ten se savne a následně spadne mud. Tomu prvnímu to při loadu
-    item nedá, protože nebude sedět location. Tomu druhému load projde.
-    - to samé platí i pro restorování ze zálohy.)
-
-
 Pozn.: Accounty se mi savují postaru do /Accounts/Rahman.json, což je nakonec
   asi dobře. Každopádně to chce zkontrolovat.
-
-TODO: Odstraněním saveTree z PrototypeManageru jsem přišel o informaci, jaké
-  prototypy se mají načíst při startu hry.
-  - nějak to pořešit.
-Jedna možnost je, prostě prolézt celý adresář /Prototypes
+[snad ok]
 
 TODO: Opravit savovani entit.
+[snad done]
 
 TODO: Opravit AttributableClass
   - protože super.metoda dělá něco trochu jiného, než jsem si myslel
@@ -191,11 +339,10 @@ TODO: Opravit AttributableClass
     - v tom případě tam naopak šaškuju zbytečně složitě...
 [Hmm, tak zjevně jsem to dělal zbytečně složitě.]
 
-
 TODO: Opravdu to udělat, zní to rozumně.
 BIG IDEA: Zuršit ASSERTY.
   Místo toho používat:
-
+  //
   if (condition === false)
   {
     ERROR
@@ -203,26 +350,24 @@ BIG IDEA: Zuršit ASSERTY.
       "message"
     );
   }
-
+  //
   - Ve skutečnosti stejně ty asserty píšu vždycky do podmínek a navíc ten
     zápis if (!ASSERT(condition, "message")) není moc intuitivní.
   - vyřeší to problém s tím, že se mi provádí kód na skládání stringu,
     přestože string není potřeba.
-
-
+[done]
 
 TODO: Korektne vycistit SaveableObject od pozustatku EntityId.
   (protože EntityId nemůže být includnuté v SaveableObjectu, byl
    by to křížový include (nebo je z něj zděděné). On to sice typescript
    compiler povolí, ale zuchne to pak v runtimu).
-
-TODO: Nad AdminLevels by asi fakt byl lepsi enum.
-
-TODO: Typescript používat inline místo linkem.
+[done]
 
 TODO: Asi se fakt vrátnit k Id místo EntityId.
+[nakonec to je úplně jinak]
 
 IDEA: Přesunout fci getTrimmedStackTrace do modulu Mudlog a zrušit UTILS.
+[done]
 
 TODO: Specialni kod na loadovani idcek musi byt primo v SaveableObjectu,
   ne az v Entity. Sice jen Entity muze mit idcko, ale to neznamena, ze si
@@ -232,7 +377,7 @@ TODO: Specialni kod na loadovani idcek musi byt primo v SaveableObjectu,
 TODO: Zavest pocitadlo rozdanych referenci v IdManageru
   - kdyz klesne na 0, tak je mozne idcko vyhodit z manageru.
 - Tak jinak, misto toho idProvider drzi idcka ve WeakMape
-[done]
+[Nakonec je to úplně jinak, ale done]
 
 IDEA: Idcko se automaticky zaregistruje v IdManageru, pokud jsou parametry
   konstruktoru definovane.
@@ -251,11 +396,12 @@ TODO: Nastavovat idčkům status.
 
 TODO: V SaveableObjectu sjednotit fce isPrimitiveObject, isDate, atd.
       - pokud bude fungovat .constructor.name, tak používat to.
-{nahozeno, je to treba otestovat}
+[done]
 
 TODO: Všude po volání entityId.getEntity() dát check na to, že result
       není null.
       (entityId.getEntity() může vrátit null. Dereference by pak shodila hru)
+[už je to úplně jinak]
 
 IDEA: Sloučit AbbrevSeachList a IdSearch list do jedné classy
       (AbbrevSearchList prostě bude zděděnej z IdListu)
@@ -293,9 +439,8 @@ Obecně se držet schématu:
   - EntityManager obsahuje entity (což jsou instance)
   - FlagNamesManager obsahuje instance FlagNames objektů
   - PrototypeManager obsahuje instance Prototypů
-
-- List obsahuje idčka
--------------
+  - List obsahuje idčka
+[v zásadě done]
 
 TODO: Přidat classu IdSearchList a přesunout do ni abbrevSearchList z IdListu.
 [done]
@@ -319,21 +464,15 @@ TODO: Id přejmenovat na EntityId (a classu EntityId zrušit).
   - tohle si asi ještě rozmyslím... I když...
 [done]
 
-TODO: Ještě jednou zvážit typescriptové enumy (Entity.satus, atpod.).
-
 TODO: Výhledově dát 'dynamicClasses' někam jinam než do global objectu.
   - asi do serveru
 TODO: Výhledově nějak líp pořešit dynamické classy než přes dynamicClasses.ts
   (možná všechny moduly requirovat místo importovat?)
+[done]
 
 TODO: S loadováním/savováním hashmap jsem se, zdá se, radoval předčasně
   - opravit loadování SaveableObjectů uložených v hashmapě.
 [snad už ok]
-
-TODO: Asi všude zrušit property deklarované jako parametry konstruktorů
-  (ne vždy se konstruktor volá se všemi parametry a pak se stane to, že
-  property není inicializovaná. Kromě toho to znepřehledňuje kód - hůř
-  se hledá, co je nějaká property zač.)
 
 TOFIX:
 ARGH - directReference v Idckach je udelana spatne :\
@@ -347,37 +486,12 @@ Jak to spravit?
     vždycky si budu muset říct containeru, aby mi Idčko vyrobilo
     (já mu dám stringId a on mi buď vrátí referenci na existující instanci Id,
     nebo si ji vyrobí...)
-[zatím netestováno]
-
-TODO: Zkontrolovat všechny komentáře v modulu Script
-
-TODO: Kontrola, že skript dostal správné parametry.
-  - A to ve fci Script.scriptFunction (deklarovane v constuctoru classy Script)
-
-TODO: Nastavitelný Lock proti opakovanému spouštění běžícího skriptu.
-
-TODO: script.recompile
-
-TODO: script.rename (nebo možná Prototype.renameScript)
-
-TODO: co se stane, když mi umře entita, na které běží async skript?
-
-
-
-TODO: Checkovatko na memoryleaky
-
+[je to celé jinak]
 
 TODO: entity.stopScript(scriptName);
 TODO: entity.stopAllScripts();
 - musí to vycházet z entity, ne ze Skriptu
 [idea has been dropped. attachovat/detachovat scripty na entity nebude možné]
-
-
-
-TODO: Casem odstranit consoli ze skriptoveho sandboxu.
-
-TODO: Immlevely ukladat nekam jinam nez k charu
-- (asi do AccountManageru?)
 
 TODO: Skripty v Prototypu dávat do hashmapy místo do pole (protože bude třeba
   umět skript najít například při 'edit TutorialRoom.onLoad');
@@ -416,11 +530,6 @@ TODO: Změnit NamedClass, aby className nebyla property na instanci,
   ale statická property (tj. na constructoru).
 [done]
 
-
-TODO: Velmi výhledově se zamyslet nad lepším formátem savutých skriptů
-  (hjson? samostatný soubor?), protože je to přece jen kód a bude se
-  například diffovat v gitu (co na něm který immortal změnil?)
-
 TODO: Zjistit, jestli by classDeclarationScript nemohl byt zkompilovany
   jen jednou (a brat si parametry ze sandboxu).
 [pokud mi bude fungovat vyrábění class bez skriptu, tak tohle nebude potřeba]
@@ -435,18 +544,8 @@ TODO: Testnout, jestli můžu z jednoho sandboxu vyrobit dvě skriptové funkce,
   které budou mít různé skriptName.
 [done, nemůžu]
 
-IMPORTANT TODO: U prototypu savovat jen přetížené properties, ne ty
-  z prototypu.
-
 TODO: Instance savovat do /data/instances
-
-TODO: Charactery savovat na disk v lowercasu
-  - ze dvou duvodu:
-    1) aby neslo vytvorit soucasne char Zuzka a zuzka
-    2) aby se slo prihlasit case-insensitive verzi
-  - nebo se na to vykaslat a enforcovet Prvnivelke pismeno ve jmene charu?
-    (Asi prece jen bude hezci, kdyz na disku budou chary savnute s velkym)
-  - kazdopadne to case-insensitive prihlaseni by fungovat melo.
+[snad done]
 
 TODO: Zkontrolovat, ze jsem Flags-related classy prejmenoval spravne
 [snad jo]
@@ -457,17 +556,8 @@ TODO: Presunout flagNamesManager ze Serveru do Game
    - nejspíš to budu muset přesunout zpět.
 [done (přesunuto zpět)]
 
-TODO: Optimalizovat savovani prototypu, kdyz se zmeni jen jeden prototyp
-  (takze neni treba savovat uplne vsechny prototypy)
-  - mozna metodou Prototype::save(), ktera zavola save prototypeManageru
-    na konkretni prototyp?
-
-TODO: Pokusit se sjendotit dynamic typecast (metodou z UTILS?)
-  - ideálně ji přesunout někam jinam (někam do entity inheritance chainu)
-
-TODO: Projít všechny FATAL asserty a zkontrolovat, jestli musí být FATAL.
-
 TODO: Projít nově vytvořená data a opravit všechny chyby
+[done]
 
 TODO: Při savu Map objectu je vždycky první prvek 'undefined'
 [fixed]
@@ -475,23 +565,22 @@ TODO: Při savu Map objectu je vždycky první prvek 'undefined'
 TODO: Přejmenovat FlagsData na FlagData a FlagsDataManager na FlagDataManager
 [done]
 
-TODO: Zkontrolovat, že dobře loguje BAD PW attempt
-
 TODO: Promyslet a zkontrolovat, jak SaveableObject pracuje s null hodnotama
 - nejspíš je tam navíc ten ASSERT, kterej to kontroluje, null už by to mělo
   zvládat (buď se vytvoří objekt správného typu, nebo se přímo přiřadí hodnota
   loadnutá z JSONu)
+[done]
 
 TODO: Možná mám někde zbytečně metody save() a load()
   - jsou v IdableSaveableObjectu (takže pokud je něco zděděné přímo ze
     saveableObjectu, tak to tyhle metody nemá.)
+[snad done]
 
 TODO: Zacina bitvector od nuly nebo od jednicky? Zjistit.
 [zjevne od nuly, takze to mam spravne]
 
 TODO: Loadovani/savovani classy 'Map' v SaveableObjectu
 [snad]
-
 
 TODO: Adresářová struktura prototypů (a asi i v rámci PrototypeDataManageru)
 [snad done]
@@ -509,7 +598,7 @@ TODO: Nekam naimplementovat metody setPrototypeData() a setMethods() :-)
 [Zatím je jen setPrototypeData()]
 TODO: setMethods()
 TODO: Skripty
-
+[done]
 
 TODO: V PrototypeData doplnit typ k predavanym typum (ja vim, zni to divne...)
 [Jakz takz, nekde jsem neprisel na to, jak na to]
@@ -525,7 +614,7 @@ TODO: Zvážit, jestli nedávat dynamické classy (repsketive jejich konstruktor
 někam jinam než přímo do global objectu (asi do global.dynamicClasses ?).
 [done]
 TODO: Popravdě možná spíš pod server, nebo tak něco... Těžko říct.
-
+[done]
 
 TODO: Zrušit prefixy z flagů.
 [done]
@@ -533,8 +622,6 @@ TODO: Zrušit prefixy z flagů.
 TODO: vsechna createNew asi prejmenovat jen na create (když něco vytvářím,
   tak je jasné, že to bude nové).
 [done]
-
-TODO: Zvážit, jestli nepřejmenovat všechny proměnné typu newArray (zrušit new).
 
 TODO: Přidat do SaveableObjectu savovani classy Map.
   (Ono to možná funguje samo, chce to každopádně zkontrolovat.)
@@ -544,30 +631,12 @@ TODO: Přidat do SaveableObjectu savovani classy Map.
 TODO: implementovat flagy (bitvector engine).
 [done]
 
-TODO: Přidat do accountu seznam charů, které mají admin práva (nebo možná na
-  char flagu, že má admin práva - checkne se this.playerConnection, přes ni
-  account a na něm je adminLevel).
-
 TODO: Udělat vlastní FS modul, ať jsou všechny souborové fce na jednom místě.
 [done]
-
-TODO: Když se zakládá první character, udělat z něj implementora a dát ho do
-  SystemRoom.
-  - možná se bude hodit držet si systemRoomId ve Worldu jako proměnnou.
-[jakz takz]
-- Zatim spis nejakztakz
-TODO (stále)
 
 TODO: Nastavovat entity.location (kdyz entitu vkladam do nejake jine).
 [Snad done (mozna ne vsude)]
 
-TODO: Všude, kde se to hodí, předělat předávání parmetrů. Předávání objektem
-  dělá kód mnohem čitelnější .
-
-TODO: Používat 'new Map' místo 'new Object' (hlavně proto, že dynamicky
-  generované klíče mohou kolidovat s existujícíma properties na objektu).
-  - vyzkoušeno a přidáno do Saveableobjectu
-TODO: Udělat to všude
 
 IDEA: Udělat z IDčka generic - id.getObject() pak vždycky vrátí správný typ.
 [Tohle nepůjde]
@@ -576,6 +645,7 @@ IDEA: Udělat z IDčka generic - id.getObject() pak vždycky vrátí správný t
 
 TODO: predelat vsechna idcka v savech na EntityId
 - to asi pořeším tím, že vyrobím celý svět znovu.
+[done]
 
 TODO: Pri vytvareni noveho sveta generovat mistnostem nejake defaultni
   RoomInfo.
@@ -583,23 +653,7 @@ TODO: Pri vytvareni noveho sveta generovat mistnostem nejake defaultni
   konstruktor nedostane jako parametr template - nebo mozna dve funkce, jedna
   na vytvoreni templatove roomy a druha na vytvoreni odvozene roomy?)
 /* Predelavam cely koncept prototypu, takze tohle bude cele jinak */
-
-TODO: Zprovoznit prikaz look (zatim asi jen do roomy)
-[kostra by snad byla]
-
-TODO: Loadovat chary do konkrétní roomy.
-[To je tak napul. Rahman ma nastavenou 'location', Zuzka ne a nove zalozene
-chary taky ne]
-
-TODO: Zprovoznit příkaz na založení nové entity (na Brutusu se tohle děje,
-  když dám editovat dosud neexistující objekt)
-
-
-TODO (hodně výhledově): Zajistit, aby se ze skriptů nedal nastavovat
-  Account::adminLevel a nedaly dělat věci, na které je třeba adminLevel > 0.
-  (viz ./documentation/code_architecture/admins)
-
--------------
+[je to jinak]
 
 TODO: Idcka dostala přímou referenci na odkazovaný objekt
   - při vytváření objektu je třeba tuhle referenci v idčku inicializovat
@@ -611,24 +665,6 @@ TODO: V AbbrevSearchListu nahradit prime odkazy na GameEntity Idckama (idcko
   ma ted v sobe primy odkaz, takze to nebude vyrazne pomalejsi).
 [snad done]
 
-TODO: Otestovat AbbrevSearchList
-  - pridat do nějakého roomu pár characterů
-  - implementovat příkaz tell (globální search)
-  - implementovat nějaký social do roomu (search v roomu)
-
-Úvahy o hot reloadu
-  - nakonec asi bude nejjednodušší udělat si to růčo, podobně jako
-    save/load. Nejspíš tak, že se po reloadu modulu vytvoří instance
-    příslušné entity a všechny existující entity v game entity containeru
-    si vždycky najdou svůj nový "prototyp" (nejspíše podle className),
-    projdou všechny svoje properties (jdou projít i metody?), metody si
-    přiřadí ty z nového "prototypu", existující property si nechají
-    (možná zruší ty, které na novém "prototypu" nejsou) a přidají ty, co
-    má nový "prototyp" navíc - zkopírováním, takže budou inicializované
-    podle nového kódu.
-  - reload proběhne automaticky, protože poběží watch na změny příslušných
-    souborů.
-
 TODO: Zprovoznit resolvování aliasů složených z více klíčových slov
    v AbbrevSearchListu:
    - Dám do něj jednotlivě všechna klíčová slova z alias listu.
@@ -637,44 +673,21 @@ TODO: Zprovoznit resolvování aliasů složených z více klíčových slov
     které se nachází ve všech těchto polích.
 [snad done, zatím netestováno]
 
-TODO (výhledově): Dodělat do AbbrevSearchListu funkčnost, že dokud je v něm
-  málo záznamů, tak se vůbec nebude konstruovat vyhledávací struktura, prostě
-  se lineárně projde pole aliasů (to proto, aby se zbytečně nezabírala paměť
-  vyhledávací strukturou pro pár mobů v roomě, pát itemů v inventáři, atp.)
 
 TODO: Vsude doplnit metodu getErrorIdString() a dusledne ji pouzivat v
   chybovych hlaskach.
-
-
-TODO: OLC
-
-
-
+[done]
 
 TODO: Checkovat, ze loadnute id odpovida idcku, podle ktereho jsem
   entitu naloadoval.
   (a taky ze id odpovida nazvu souboru, pokud entita neni unikatni)
+[snad done]
 
 
 TODO: Zautomatizovat protopyování - asi by to měly umět všechny gameEntity
 minimálně do té míry, že si budou držet odkaz na prototyp (idčko) a budou
 automaticky prototypovat 'name'.
-
-TODO: Do zahlavi souboru nakreslit stromy dedicnosti.
-
-TODO: Udelat tridu Command, do ktere se vrazi cely command string, a ktera
-  s nim bude umet pracovat (parsovat argumenty, atd.)
-- Tohle je otazka. Koukal jsem na to a mozna to neni az tak dobry napad,
-  v ruznych situacich se command parsuje ruzne (kazdy skill to muze delat
-  jinak, napr.)
-
-TODO: Zkontrolovat, ze datove properties, ktere maji get i set a pri
-getu a setu se s nima nedela nic vic nez prirazeni a cteni, jsou rovnou
-public.
-
-TODO: Ve vsech classach hodit protected data na konec.
-- mozna spis vsechna data k sobe a treba ten blok s deklaraci dat jeste nejak
-  graficky odlisit, treba odsazenim
+[tohle je jinak]
 
 
 ---------------------------------------
@@ -683,6 +696,7 @@ TODO: Upravit LobbyProcessor, aby prompt posilal pres generatePrompt()
 [done]
 - Pro AuthProcessor to neni dobrej napad, vedlo by to ke spouste internich
   stavu
+[done]
 
 TODO: v metode PlayerConnection::generatePrompt()
 /// TODO: switch na stage lobby processoru by mel byt v LobbyProcessoru
@@ -735,7 +749,6 @@ TODO: Zprovoznit start z neexistujicich dat
 
 TODO: Opravit barvy
 [done]
-
 
 TODO: loadovani a savovani obyc objektu (nezdedenych ze SaveableObject)
 - kdyz objekt nema loadFromJsonObject, tak do nej proste priradit to, co se
@@ -806,8 +819,6 @@ TODO: Nejspis budu muset zrusit zrani newlinu na konci inputu, holt si to
 */
 [rozhodnuto: Newliny na konci outputu se zerou, je povolena newline pred
 outputem - pouziva se na oddeleni outputu od player commandu]
-
-TODO: Vyzkoumat, jak je to udelane, ze v putty neni pri zadavani videt heslo
 
 TODO: Poresit barvu player inputu
 /*
@@ -895,37 +906,34 @@ Staci mi, ze se idcka davaji do hashmapy?
 
 V cem se lisi:
 EntityManager, IdContainer, EntityContainer?
-
-IdContainer
-/* Mel by se jmenovat asi spis IdableItemsContainer */
-- neni z niceho zdedeny
-- je to template (IdContainer<T extends IdableSaveableObject>)
-- itemy jsou v hashmape
-Umi:
-  - pridat item pod existujicim idckem
-  - vygenerovat itemu idcko a pod nim ho pridat
-  - odebrat item z containeru
-  - odpovedet, jestli je item daneho idcka v containeru
-  - vratit item podle idcka (pres hashmapu)
-IMPORTANT: IdContainer nedrzi idcka, ale primo itemy!
-
-EntityManager
-- neni z niceho zdedeny
-- je to template (EntityManager<T extends GameEntity>)
-- vubec si nedrzi idcka ani itemy, drzi si pouze abbrevSeachList a uniqueNames
-Umi:
-  - pridat item pod existujicim idckem
-  - pridat novy item do Game.entities (tam se mu vygeneruje idcko)
-  - checknout, jestli je entita v Game.entities (nikoliv jestli je v manageru)
-  - vratit entitu (vezme ji z Game.entities, necheckuje, jestli mu idcko patri - nema jak)
-  - odebrat entitu z manageru
-- jestli ma entita unikatni jmeno nebo ne je vlastnost entity, manager ji podle toho zaradi do
-  seznamu unikatnich jmen nebo ne
-
-EntityContainer
-- je zdedeny z predka GameEntity (EntityContainer extends CommandInterpretter)
-- zatim nema nic, ale mel by mit SaveableArray idcek
-- mel by asi umet so same, co EntityManager (ale unikatni jmena ho asi nezajimaji)
+  IdContainer
+  /* Mel by se jmenovat asi spis IdableItemsContainer */
+  - neni z niceho zdedeny
+  - je to template (IdContainer<T extends IdableSaveableObject>)
+  - itemy jsou v hashmape
+  Umi:
+    - pridat item pod existujicim idckem
+    - vygenerovat itemu idcko a pod nim ho pridat
+    - odebrat item z containeru
+    - odpovedet, jestli je item daneho idcka v containeru
+    - vratit item podle idcka (pres hashmapu)
+    IMPORTANT: IdContainer nedrzi idcka, ale primo itemy!
+  EntityManager
+  - neni z niceho zdedeny
+  - je to template (EntityManager<T extends GameEntity>)
+  - vubec si nedrzi idcka ani itemy, drzi si pouze abbrevSeachList a uniqueNames
+  Umi:
+    - pridat item pod existujicim idckem
+    - pridat novy item do Game.entities (tam se mu vygeneruje idcko)
+    - checknout, jestli je entita v Game.entities (nikoliv jestli je v manageru)
+    - vratit entitu (vezme ji z Game.entities, necheckuje, jestli mu idcko patri - nema jak)
+    - odebrat entitu z manageru
+  - jestli ma entita unikatni jmeno nebo ne je vlastnost entity, manager ji podle toho zaradi do
+    seznamu unikatnich jmen nebo ne
+  EntityContainer
+  - je zdedeny z predka GameEntity (EntityContainer extends CommandInterpretter)
+  - zatim nema nic, ale mel by mit SaveableArray idcek
+  - mel by asi umet so same, co EntityManager (ale unikatni jmena ho asi nezajimaji)
 [Done - jmenuje se to IdList]
 
 save() a load() by mel automaticky savnout/loadnout i vsechny obsazene entity,
@@ -938,9 +946,10 @@ Zaver: GameEntity by v sobe proste mela mit entity manager
 
 ------------------------------------------------------------------------
 
-Ke zvážení: Dávat před string idčko nějakou předponu, třeba e jako entity, a jako account?
-- teoreticky by se pak dala generovat "spotřební" idčka (třeba timery) s jinou předponou zase
-od začátku
+Ke zvážení: Dávat před string idčko nějakou předponu, třeba e jako entity,
+  a jako account?
+- teoreticky by se pak dala generovat "spotřební" idčka (třeba timery) s jinou
+  předponou zase od začátku
 [Zatim na to kaslat]
 
 Nesavovat playerConnectionId
@@ -952,8 +961,6 @@ Load/save entityContainerů
 Check, že existují adresáře, do kterých se mám savnout (možná je automaticky
 vyrobit, pokud neexistují?).
 [done]
-
-
 
 -----------------------------------------------------
 
@@ -978,18 +985,10 @@ Hodne vyhledove:
 [exceptiony jsou jakz takz poresene tim, ze se odchyti a vyhodi znova, takze
 to vypise stack]
 
-------------------------------------------------------
-
-Vyhledove rozbehat tslint
-
-
-
-
 
 ===============================================================
 Uvahy k prototypovani, skriptovani, hot reloadu, etc.
 -------------------------------------------------------
-
 
     /*
     // TEST:
@@ -1579,16 +1578,35 @@ Co by bylo potřeba, aby se daly savovat playerovy entity do /Acccounts?
       někdo jiný.
 
 
-[09:51] Rahman       : <64> Zacinam si cim dal vic klonit k tomu, nesavovat itemy do player filu ale do /Objects
+[09:51] Rahman       : <64> Zacinam si cim dal vic klonit k tomu, nesavovat
+                            itemy do player filu ale do /Objects
 [09:51] Rahman       : <64> Hlavnim duvodem je obrana proti duplikovani itemu
-[09:52] Rahman       : <64> Kdyz jeden player napise 'save', da item druhemu playerovi, ten napise 'save' a nasledne spadne mud bez savu, tak je ten item savnuty ve dvou pfilech
+[09:52] Rahman       : <64> Kdyz jeden player napise 'save', da item druhemu
+                            playerovi, ten napise 'save' a nasledne spadne mud
+                            bez savu, tak je ten item savnuty ve dvou pfilech
 [09:52] Rahman       : <64> a kazdy z nich ma jako ownera jineho playera
-[09:54] Rahman       : <64> zatimco kdyz bude u playera savnute jen stringove idcko itemu a item bude jinde, tak timhle vznikne stav, kdy item je savnuty dvakrat na stejne misto a dva ruzni playeri maji na nej odkaz (tvari se, ze je item jejich)
-[09:55] Rahman       : <64> jenze item ma u sebe savnutou 'location', takze kdyz se logne ten prvni player, tak mu muzu rict 'sorry, tenhle item uz ma nekdo jiny'
-[09:56] Rahman       : <64> samozrejme to znamena, ze bude peklo rucne vytahnout playera ze zalohy, protoze jeho itemy budou rozstrkane vsude mozne
-[09:56] Rahman       : <64> na druhou stranu to pujde celkem jednoduse zautomatizovat, takze ho budes moct restornout za behu primo ze hry
-[09:57] Rahman       : <64> proste si vytahnes prislusnou verzi z gitu do jineho adresare (protoze v gitu bude ulne vsechno) a forcnes playera, at se loadne ze /zaloha/data misto z /mud/data
-[09:58] Rahman       : <64> a pri te prilezitosti to muze item po itemu kontrolovat, jestli nahodou neexistuji v ostre verzi a nema je nekdo jiny, takze se zabrani duplicitam
+[09:54] Rahman       : <64> zatimco kdyz bude u playera savnute jen stringove
+                            idcko itemu a item bude jinde, tak timhle vznikne
+                            stav, kdy item je savnuty dvakrat na stejne misto
+                            a dva ruzni playeri maji na nej odkaz (tvari se, ze
+                            je item jejich)
+[09:55] Rahman       : <64> jenze item ma u sebe savnutou 'location', takze
+                            kdyz se logne ten prvni player, tak mu muzu rict
+                            'sorry, tenhle item uz ma nekdo jiny'
+[09:56] Rahman       : <64> samozrejme to znamena, ze bude peklo rucne
+                            vytahnout playera ze zalohy, protoze jeho itemy
+                            budou rozstrkane vsude mozne
+[09:56] Rahman       : <64> na druhou stranu to pujde celkem jednoduse
+                            zautomatizovat, takze ho budes moct restornout za
+                            behu primo ze hry
+[09:57] Rahman       : <64> proste si vytahnes prislusnou verzi z gitu do
+                            jineho adresare (protoze v gitu bude ulne vsechno)
+                            a forcnes playera, at se loadne ze /zaloha/data
+                            misto z /mud/data
+[09:58] Rahman       : <64> a pri te prilezitosti to muze item po itemu
+                            kontrolovat, jestli nahodou neexistuji v ostre
+                            verzi a nema je nekdo jiny, takze se zabrani
+                            duplicitam
 
 
 Ad unique names
@@ -1798,3 +1816,6 @@ nebo EntityManager.createEntity()
  - bude existovat jen jedna funkce na vyrábění nových entit (tedy s novým
    idčkem), a to EntityManager.createEntity().
    - nikde jinde nemusím vyrábění nového idčka řešit.
+
+===============================================================================
+===============================================================================
