@@ -7,7 +7,7 @@
 'use strict';
 
 import {Account} from '../../server/account/Account';
-import {AdminLevels} from '../../server/AdminLevels';
+import {AdminLevel} from '../../server/AdminLevel';
 import {Game} from '../../game/Game';
 import {GameEntity} from '../../game/GameEntity';
 import {World} from '../../game/world/World';
@@ -19,7 +19,7 @@ export class Character extends GameEntity
 
   protected timeOfCreation = new Date();
 
-  private adminLevel = AdminLevels.MORTAL;
+  private adminLevel = AdminLevel.MORTAL;
 
   constructor()
   {
@@ -49,7 +49,7 @@ export class Character extends GameEntity
   {
     let world = Game.world;
 
-    if (this.getAdminLevel() > AdminLevels.MORTAL)
+    if (this.getAdminLevel() > AdminLevel.MORTAL)
     {
       // Immortals enter game in System Room.
       this.setLocation(world.systemRoomId);

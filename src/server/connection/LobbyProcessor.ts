@@ -14,7 +14,7 @@ import {Account} from '../../server/account/Account';
 import {Game} from '../../game/Game';
 import {GameEntity} from '../../game/GameEntity';
 import {Character} from '../../game/character/Character';
-import {AdminLevels} from '../../server/AdminLevels';
+import {AdminLevel} from '../../server/AdminLevel';
 
 export class LobbyProcessor
 {

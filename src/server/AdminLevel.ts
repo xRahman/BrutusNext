@@ -6,7 +6,7 @@
 
 'use strict';
 
-export enum AdminLevels
+export enum AdminLevel
 {
   MORTAL,   
   IMMORTAL, 
@@ -17,7 +17,7 @@ export enum AdminLevels
 }
 
 /*
-export class AdminLevels
+export class AdminLevel
 { 
   public static get MORTAL()      { return 0; }
   public static get IMMORTAL()    { return 1; }

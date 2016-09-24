@@ -9,7 +9,7 @@
 import {SaveableObject} from '../../shared/fs/SaveableObject';
 import {Prototype} from '../../shared/prototype/Prototype';
 import {VirtualMachine} from '../../shared/vm/VirtualMachine';
-import {AdminLevels} from '../../server/AdminLevels';
+import {AdminLevel} from '../../server/AdminLevel';
 import {Syslog} from '../../server/Syslog';
 import {GameEntity} from '../../game/GameEntity';
 
@@ -103,7 +103,7 @@ export class Script extends SaveableObject
           + " doesn't exist yet. Script must be compiled before"
           + " it can be used",
           Syslog.msgType.SCRIPT_RUNTIME_ERROR,
-          AdminLevels.IMMORTAL
+          AdminLevel.IMMORTAL
         );
 
         return;
@@ -330,7 +330,7 @@ export class Script extends SaveableObject
       (
         "Transpile error in script " + scriptName + ": " + e.message,
         Syslog.msgType.SCRIPT_COMPILE_ERROR,
-        AdminLevels.IMMORTAL
+        AdminLevel.IMMORTAL
       );
 
       return null;
@@ -356,7 +356,7 @@ export class Script extends SaveableObject
         "Missing 'miliseconds' parameter of 'await delay()' in script "
         + scriptName + ". Script will wait for 1 milisecond",
         Syslog.msgType.SCRIPT_RUNTIME_ERROR,
-        AdminLevels.IMMORTAL
+        AdminLevel.IMMORTAL
       );
 
       miliseconds = 1;

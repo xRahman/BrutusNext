@@ -8,7 +8,7 @@
 
 import {ERROR} from '../../shared/error/ERROR';
 import {FileSystem} from '../../shared/fs/FileSystem';
-import {AdminLevels} from '../../server/AdminLevels';
+import {AdminLevel} from '../../server/AdminLevel';
 import {Syslog} from '../../server/Syslog';
 import {NamedEntity} from '../../shared/entity/NamedEntity';
 import {Connection} from '../../server/connection/Connection';
@@ -221,7 +221,7 @@ export class Account extends NamedEntity
     (
       accountName + " [" + ipAddress + "] " + action,
       Syslog.msgType.SYSTEM_INFO,
-      AdminLevels.IMMORTAL
+      AdminLevel.IMMORTAL
     );
 
     Server.accounts.dropAccount(this);
@@ -325,7 +325,7 @@ export class Account extends NamedEntity
       "Player " + this.name + " has created a new character: "
       + characterName,
       Syslog.msgType.SYSTEM_INFO,
-      AdminLevels.IMMORTAL
+      AdminLevel.IMMORTAL
     );
   }
 }

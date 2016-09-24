@@ -1,5 +1,46 @@
-TODO: Na AdminLevels by asi fakt byl lepsi enum.
-[snad done]
+TODO: Metoda Game.info()
+  - to samé co u sendu (na druhou stranu info je asi vždycky info?)
+  - možná ne Game.info, ale game.send(message, INFO);
+  Pozn: Procyklovat přes všechny connection, nikoliv přes všechny herní
+    entity (nemá smysl procházet entity, kterým se nic posílat nebude).
+
+TODO: Promotovací a demotovací syslog hláška a info.
+
+TODO: Metoda send()
+  - nebude to sendToChar(), protože posílat string jde kde čemu, ne pouze
+    charům.
+  TODO: Zvážit, jestli by by to nemělo bejt nějak oflagované, aby se to
+    podle toho dalo třeba gagovat nebo automaticky obarvovat.
+    - asi určitě ano.
+
+TODO: Automatické přidávání (a případně i žraní) tečky na konci věty.
+  - automaticky ji přidávat za text v příkazu send(), pokud tam není.
+  - automaticky ji žrát z ERROR stringů.
+
+IDEA: Pouze admin charactery mají private referenci na admins: Admins
+    (důležité je, že je ta reference private v třídě Character, takže
+    potomci se na ni nedostanou přímo, ale pouze voláním existující metody)
+  - Metoda udělá co:
+    - zavolá this.admins.doSomething(this, action, params);
+  + server má 'admins: Admins;' taky jako privátní proměnnou.
+
+
+TODO: Zvážit, jestli by stack tarce nešel získávat elegantněji než z error
+  objectu, viz:
+ using System.Diagnostics;
+ StackTrace st = new StackTrace();
+ Console.WriteLine(st.GetFrame(1).GetMethod().Name);
+
+TODO: Přejmenovat AdminLevels na AdminLevel
+[done]
+
+TODO: Nastavit idčko v entitě jako immutable property.
+
+TODO: Immlevely ukladat nekam jinam nez k charu
+- (asi do AccountManageru?)
+TODO: Udělat na to classu Admins
+  - instance v Serveru nebo v Game? Asi v serveru, protože práva se týkají
+    i serverových věcí. 
 
 TODO: Loadovat chary do konkrétní roomy.
 [To je tak napul. Rahman ma nastavenou 'location', Zuzka ne a nove zalozene
@@ -26,8 +67,8 @@ TODO: Charactery savovat na disk v lowercasu
     (Asi prece jen bude hezci, kdyz na disku budou chary savnute s velkym)
   - kazdopadne to case-insensitive prihlaseni by fungovat melo.
 
-TODO: Immlevely ukladat nekam jinam nez k charu
-- (asi do AccountManageru?)
+TODO: Na AdminLevels by asi fakt byl lepsi enum.
+[snad done]
 
 ------------------------------------------------------------------------------
 

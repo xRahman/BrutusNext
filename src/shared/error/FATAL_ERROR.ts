@@ -51,7 +51,7 @@
 
 // Import required classes.
 import {Syslog} from '../../server/Syslog';
-import {AdminLevels} from '../../server/AdminLevels';
+import {AdminLevel} from '../../server/AdminLevel';
 
 // Sends error message and a stack trace to syslog.
 export function FATAL_ERROR(message: string)
@@ -63,7 +63,7 @@ export function FATAL_ERROR(message: string)
   (
     errorMsg,
     Syslog.msgType.FATAL_RUNTIME_ERROR,
-    AdminLevels.IMMORTAL
+    AdminLevel.IMMORTAL
   );
 
   // Since promises are eating exceptions, throwing an error won't stop
