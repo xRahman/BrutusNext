@@ -1,3 +1,11 @@
+
+TODO: Zrušit automatické updatování invalid referencí.
+
+TODO: class Admins (a ani EntityList) nemůže interně používat reference
+  jako klíč v hashmapě, musí používat stringId. A to proto, že mohou
+  existovat různé proxy odkazující na stejnou entitu, takže by se do seznamu
+  mohla dostat jedna entita víckrát.
+
 TODO: Vyzkoušet save/load Admins
 
 TODO: Vyzkoušet, co se stane, když savnu objekt s invalid referencí
@@ -1927,3 +1935,8 @@ idčka.
     to nevyřešilo proměnné s referencí.
 - na druhou stranu to pomůže najít chyby, které by automatická revalidace
   reference zamaskovala.
+
+===============================================================================
+
+IDEA: Admin rights by se ještě daly udělat přes WeakMapu - savovat je
+  jako info mimo objekt. Asi to ale není moc praktické
