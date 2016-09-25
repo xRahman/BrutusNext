@@ -1,3 +1,13 @@
+TODO: Vyzkoušet save/load Admins
+
+TODO: Vyzkoušet, co se stane, když savnu objekt s invalid referencí
+  (hráč třeba odlognul).
+  - mělo by se savnou idčko.
+
+TODO: Z invalid reference by asi pořád mělo jít vytáhnout idčko,
+  name a className.
+  - tzn. trapovat přístupy na tyhle fce/proměnné.
+
 TODO: Metoda Game.info()
   - to samé co u sendu (na druhou stranu info je asi vždycky info?)
   - možná ne Game.info, ale game.send(message, INFO);
@@ -1860,3 +1870,60 @@ nebo EntityManager.createEntity()
 
 ===============================================================================
 ===============================================================================
+
+Ještě jednou proxies and references
+------------------------------------
+
+Jedna mapa (weak?):
+- to nejde, protože do weak mapy se dá dát jen object
+Entity ----------------> Proxy 
+
+Proxy  --------------->  Entity
+
+- Reference, kterou dávám k dispozici
+  - ta ukazuje na proxy, za kterou je další proxy reference, kterou nedávám
+    k dispozici
+    - ta ukazuje na entitu
+
+Id - potřebuju najít unikátní proxy
+
+- Nic, asi to nemá řešení.
+
+Plyne z toho:
+--------------
+- class EntityList nesmí interně držet přímo reference, protože by se pak
+mohlo stát, že tam nějaká entita bude dvakrát (dvě různé reference na proxy
+budou ukazovat na stejnou entitu).
+  To samé platí pro všechny ostantní classy, které by chtěly držet reference
+  na entity (ContainerEntity, Admins, atd.)
+
+- ve skriptu se nebude smět porovnávat reference na entitu, tj. něco
+  ve stylu if (actor === ch)...
+Tohle je dost průšvih, budou z toho určitě vznikat chyby, které se budou
+extrémně špatně hledat...
+  Jediná útěcha může být, že časem do Javascriptu přibude nějaká featura, která
+  to celé umožní udělat líp:
+
+  [16:56] Rahman       : potreboval bych bud moznost predefinovat porovnavaci
+                        operatory (abych mohl rict, ze jsou si dve entity
+                        rovne, i kdyz maji ruznou referenci),
+  [16:57] Rahman       : nebo mit moznost pouzivat weak reference (abych mohl
+                        vratit existujici referenci a negenerovalo to
+                        memoryleaky),
+  [16:57] Rahman       : nebo mit moznost predefinovat assignment operator,
+                        abych mohl pocitat, kolik referenci existuje.
+
+===============================================================================
+
+Ještě by šlo zvážit, že by se invalid entity reference nevalidovaly
+automaticky. Tzn. že jakýkoliv přístup na invlid entity by byl chybný,
+a to i v případě, že někdo jiný mezi tím znovu instancioval entitu stejného
+idčka.
+- nevyřeší to problém s porovnáním, protože to nemám jak trapnout.
+  Pořád mi to řekne, že mám jinou entitu.
+- nevyřeší to asi ani idlisty, protože mrtvá entita se z nich automaticky
+  nevyhodí.
+  - entita by si musela pamatovat, ve kterých listech je uložena (a stejně by
+    to nevyřešilo proměnné s referencí.
+- na druhou stranu to pomůže najít chyby, které by automatická revalidace
+  reference zamaskovala.

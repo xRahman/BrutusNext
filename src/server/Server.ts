@@ -152,7 +152,7 @@ export class Server
 
     this.game = new Game();
 
-    test();
+    await test();
 
     /// DEBUG:
     console.log("Server.run()");
@@ -250,8 +250,58 @@ class PHandler
 ///import {NamedEntity} from '../shared/entity/NamedEntity';
 ///import {SaveableObject} from '../shared/fs/SaveableObject';
 
-function test()
+async function delay(miliseconds: number)
 {
+  return new Promise<void>
+  (
+    resolve =>
+    {
+        setTimeout(resolve, miliseconds);
+    }
+  );
+}
+
+async function test()
+{
+  let account = EntityManager.createNamedEntity
+  (
+    "Test",
+    'Account',
+    Account
+  );
+
+  let tmp = account;
+
+  let weakMap = new WeakMap();
+
+  weakMap.set(account, "blah");
+
+  account = null;
+
+  console.log(">>>>> TEST: " + weakMap.has(account));
+  console.log(">>>>> TEST: " + weakMap.has(tmp));
+
+  /*
+  let entityList = new Map();
+  let reference = {};
+  let id = { id: "id" };
+
+  entityList.set("id", id);
+
+  let weakMap = new WeakMap();
+  
+  weakMap.set(id, reference);
+
+  ///console.log(">>>>> TEST: " + weakMap.length);
+
+  reference = null;
+
+  await delay(2000);
+
+  console.log(">>>>> TEST: " + weakMap.get(id));
+  */
+
+
   /*
   let account = EntityManager.createNamedEntity
   (

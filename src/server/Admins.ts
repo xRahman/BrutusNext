@@ -32,6 +32,7 @@
       si zažádala o ticket).
 */
 
+/*
 import {ERROR} from '../shared/error/ERROR';
 import {AdminLevel} from '../server/AdminLevel';
 import {Syslog} from '../server/Syslog';
@@ -42,8 +43,8 @@ import {AutoSaveableObject} from '../shared/fs/AutoSaveableObject';
 
 export class Admins extends AutoSaveableObject
 {
-  // Hashmap<[ string, AdminLevel ]>
-  //   Key: entity id
+  // Hashmap<[ Entity, AdminLevel ]>
+  //   Key: entity reference
   //   Value: admin level.
   private adminList = new Map();
 
@@ -78,7 +79,7 @@ export class Admins extends AutoSaveableObject
       return;
     }
 
-    let level = this.adminList.get(entity.getId());
+    let level = this.adminList.get(entity);
 
     if (level === undefined)
       return AdminLevel.MORTAL;
@@ -87,14 +88,14 @@ export class Admins extends AutoSaveableObject
     {
       // There should only be entities with admin level
       // higher than 'MORTAL' in this.adminList. The fact
-      // that an entity has admin level 'MORAL' is implied
+      // that an entity has admin level 'MORTAL' is implied
       // by it not being present in the list.
       ERROR("Entity " + entity.getErrorIdString()
         + " exists in Admins but it's admin level is"
         + " " + AdminLevel[AdminLevel.MORTAL] + "."
         + " Removing it from Admins");
 
-      this.adminList.delete(entity.getId());
+      this.adminList.delete(entity);
     }
 
     return level;
@@ -174,14 +175,14 @@ export class Admins extends AutoSaveableObject
     }
 
     // If target already is an admin, remove him from the list.
-    if (this.adminList.has(target.getId()))
-      this.adminList.delete(target.getId());
+    if (this.adminList.has(target)
+      this.adminList.delete(target);
 
     // And add him with a new admin level
     // (MORTALS are not added, the fact that they are not
     //  present in adminList signifies that they are MORTALS).
     if (level > AdminLevel.MORTAL)
-      this.adminList.set(target.getId(), level);
+      this.adminList.set(target, level);
   }
 
   public actionSanityCheck
@@ -238,3 +239,4 @@ export class Admins extends AutoSaveableObject
     );
   }
 }
+*/
