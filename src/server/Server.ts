@@ -272,6 +272,14 @@ async function test()
 
   let tmp = account;
 
+  console.log("----------- Before comparison ------------");
+
+  if (account === tmp)
+    console.log("References are the same");
+
+  console.log("----------- After comparison ------------");
+
+  /*
   let weakMap = new WeakMap();
 
   weakMap.set(account, "blah");
@@ -280,6 +288,7 @@ async function test()
 
   console.log(">>>>> TEST: " + weakMap.has(account));
   console.log(">>>>> TEST: " + weakMap.has(tmp));
+  */
 
   /*
   let entityList = new Map();
