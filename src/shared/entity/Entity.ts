@@ -94,6 +94,30 @@ export class Entity extends AutoSaveableObject
 
   // ---------------- Public methods --------------------
 
+  // Compares entity to give entity reference by string ids.
+  // (You should never compare two references directly, because
+  //  there can be more than one reference for any single entity
+  //  because references to entity proxies are used. Always use
+  //  this method instead.) 
+  public equals(entity: Entity)
+  {
+    if (entity === null || entity.isValid() === false)
+    {
+      ERROR("Attempt to compare entity " + this.getErrorIdString()
+        + " to an invalid entity");
+      return false;
+    }
+
+    if (this.isValid() === false)
+    {
+      ERROR("Attempt to compare entity " + entity.getErrorIdString()
+        + " to invalid entity " + this.getErrorIdString());
+      return false;
+    }
+
+    return this.getId() === entity.getId(); 
+  }
+
   // This function exists only for typescript to stop complaining
   // that it doesn't exist. It should never be executed, however,
   // because 'dynamicCast()' call should always be trapped by

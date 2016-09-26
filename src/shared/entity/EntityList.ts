@@ -82,7 +82,7 @@ export class EntityList extends SaveableObject
   // Loads all entities of which there are ids in this list.
   public async load(containerIdString: string)
   {
-    // Iterate over all value in this.entityIds hashmap.
+    // Iterate over all value in this.entities hashmap.
     for (let entity of this.entities.values())
     {
       if (entity.isValid())
