@@ -199,7 +199,7 @@ export class Connection extends Entity
       return "<unknown date>";
     }
 
-    /// Pozn: Pres telnet samozrejme nezjistit, jaky ma player nastaveny
+    /// Pozn: Pres telnet samozrejme nezjistim, jaky ma player nastaveny
     /// locale, takze to bude nejspis locale serveru, nebo tak neco.
     /// (Asi by se muselo nastavovat rucne v menu jaky chci mit format
     ///  data a casu)

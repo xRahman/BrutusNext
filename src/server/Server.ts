@@ -110,13 +110,13 @@ export class Server
     return Server.getInstance().classFactory;
   }
 
-  static get DEFAULT_TELNET_PORT() { return 4443; }
-  static get DEFAULT_HTTP_PORT() { return 4445; }
+  public static get DEFAULT_TELNET_PORT() { return 4443; }
+  public static get DEFAULT_HTTP_PORT() { return 4445; }
 
 
   // ---------------- Static methods --------------------
 
-  static getInstance()
+  public static getInstance()
   {
     if (Server.instance === null || Server.instance === undefined)
       FATAL_ERROR("Instance of server doesn't exist yet");
@@ -126,7 +126,7 @@ export class Server
 
   // Creates an instance of a server. Server is a singleton, so it must
   // not already exist.
-  static create()
+  public static create()
   {
     if (Server.instance !== undefined)
     {
@@ -135,6 +135,12 @@ export class Server
     }
 
     Server.instance = new Server();
+  }
+
+  // Creates an array 
+  public static getGlobalMessageRecipients()
+  {
+
   }
 
   // ---------------- Public methods --------------------

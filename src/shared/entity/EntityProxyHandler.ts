@@ -450,13 +450,20 @@ export class EntityProxyHandler
       ///console.log("this.entity is null, calling updateEnityReference()");
       ///process.exit(1);
 
-      // If we don't have a valid entity reference, we will
-      // ask EntityManager if the entity exists (this can
-      // happen for example if player quits - so our reference
-      // is set to null - and then logs back again. In that case
-      // our reference to entity is still null but entity exists
-      // in entityManager, so we have to ask for it).
-      return this.updateEnityReference();
+      // Entity validity is no longer updated on each property access,
+      // it is only updated on 'isValid()' call. This way you will
+      // get error message if you try to access invalid entity reference
+      // without calling 'isValid()' first.
+      /// /*
+      /// If we don't have a valid entity reference, we will
+      /// ask EntityManager if the entity exists (this can
+      /// happen for example if player quits - so our reference
+      /// is set to null - and then logs back again. In that case
+      /// our reference to entity is still null but entity exists
+      /// in entityManager, so we have to ask for it).
+      /// return this.updateEnityReference();
+      /// */
+      return false;
     }
 
     return true;
