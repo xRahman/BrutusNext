@@ -1,22 +1,47 @@
+ÚVAHA: Má smysl pamatovat si seznam entit, kterým jsem poslal Message?
+- Když mi lidi odejdou z roomu, tak posílat jim ten samý vzkaz (vázaný na room)
+  už nebude dávat smysl...
+- asi je to blbost, message se prostě pošle všem valid targetům v okamžiku
+  volání message.send() a zapomatuje se jen co se posílalo, ne komu.
+- Každý recipient si bude své message dávat do své vlastní historie, takže
+  'this' bude recipient při jejím parsování.
+  - pokud bych si chtěl pamatovat například visibilitu v okamžiku poslání
+    zprávy, tak si ji musím uložit asi do té historie, mimo vlastní Message
+    (protože Message je sdílený záznam pro všechny, kdo jej dostali).
+TODO: Zrušit Message.recipients.
+  - Komu se pošle tell? Na to se asi přece jen bude muset recipient nastavit.
 
-TODO: Zrušit automatické updatování invalid referencí.
+TODO: Funkce Entity.send(sender, string) by přece jen mohla existovat,
+  interně vyrobí Message a pošle si ho.
 
-TODO: class Admins (a ani EntityList) nemůže interně používat reference
-  jako klíč v hashmapě, musí používat stringId. A to proto, že mohou
-  existovat různé proxy odkazující na stejnou entitu, takže by se do seznamu
-  mohla dostat jedna entita víckrát.
+IDEA: Založit class Message
+  // Asi by mel existovat nejaky anonymni sender (system? nebo world?)
+  - sender
+  // muze jich byt vic
+  // nemusi byt inicializovane hned od zacatku
+  - recipients
+    // TELL, GOSSIP, SKILL, COMMAND
+    // Podle typu se bude obarvovat a gagovat.
+  - type
+Proč?
+  Protože si je pak můžu házet do bufferu (takže budu mít historii),
+  a buffer různě zpětně filtrovat
+message.send()
+  - tj. nepoužívalo by se sendToChar() ani char.send(), ale vždycky
+    message.send().
+message.format()
+  - něco jako act() na Brutusu
+- Je fakt, že tímhle můžu dost šetřit paměť, nemusím mít u každého
+  playera zkopírovnaé každé INFO, můžu to mít na jednom místě jako
+  Message a v playerově messageHistory na něj mít pouze odkaz.
+- budu se moct zpětně podívat, kdo psal message v době, kdy jsem měl
+  blind (je teda otázka, jestli je to žádoucí featura, ale půjde to.
+  Jo a taky je otázka, jestli by blind měl mít vliv na to, co SLYŠÍM ;))
+  (I když vlastně já to slyším, jen nevím, kdo to řekl. No...).
 
 TODO: Vyzkoušet save/load Admins
 
-TODO: Vyzkoušet, co se stane, když savnu objekt s invalid referencí
-  (hráč třeba odlognul).
-  - mělo by se savnou idčko.
-
-TODO: Z invalid reference by asi pořád mělo jít vytáhnout idčko,
-  name a className.
-  - tzn. trapovat přístupy na tyhle fce/proměnné.
-
-TODO: Metoda Game.info()
+TODO: Metoda Game.sendToAll()
   - to samé co u sendu (na druhou stranu info je asi vždycky info?)
   - možná ne Game.info, ale game.send(message, INFO);
   Pozn: Procyklovat přes všechny connection, nikoliv přes všechny herní
@@ -42,15 +67,11 @@ IDEA: Pouze admin charactery mají private referenci na admins: Admins
     - zavolá this.admins.doSomething(this, action, params);
   + server má 'admins: Admins;' taky jako privátní proměnnou.
 
-
 TODO: Zvážit, jestli by stack tarce nešel získávat elegantněji než z error
   objectu, viz:
  using System.Diagnostics;
  StackTrace st = new StackTrace();
  Console.WriteLine(st.GetFrame(1).GetMethod().Name);
-
-TODO: Přejmenovat AdminLevels na AdminLevel
-[done]
 
 TODO: Nastavit idčko v entitě jako immutable property.
 
@@ -71,24 +92,17 @@ TODO: Když se zakládá první character, udělat z něj implementora a dát ho
 - Zatim spis nejakztakz
 TODO (stále)
 
-TODO: Přidat do accountu seznam charů, které mají admin práva (nebo možná na
-  char flagu, že má admin práva - checkne se this.playerConnection, přes ni
-  account a na něm je adminLevel).
-
 TODO: Zkontrolovat, že dobře loguje BAD PW attempt
 
-TODO: Charactery savovat na disk v lowercasu
-  - ze dvou duvodu:
-    1) aby neslo vytvorit soucasne char Zuzka a zuzka
-    2) aby se slo prihlasit case-insensitive verzi
-  - nebo se na to vykaslat a enforcovet Prvnivelke pismeno ve jmene charu?
-    (Asi prece jen bude hezci, kdyz na disku budou chary savnute s velkym)
-  - kazdopadne to case-insensitive prihlaseni by fungovat melo.
-
-TODO: Na AdminLevels by asi fakt byl lepsi enum.
-[snad done]
-
 ------------------------------------------------------------------------------
+
+TODO: Vyzkoušet, co se stane, když savnu objekt s invalid referencí
+  (hráč třeba odlognul).
+  - mělo by se savnou idčko.
+
+TODO: Z invalid reference by asi pořád mělo jít vytáhnout idčko,
+  name a className.
+  - tzn. trapovat přístupy na tyhle fce/proměnné.
 
 TODO: Vyzkoumat, jak je to udelane, ze v putty neni pri zadavani videt heslo
 
@@ -251,6 +265,42 @@ TODO: Zrušit z entity proměnné SAVE_DIRECTORY
 Vyhledove rozbehat tslint
 
 ===============================================================================
+
+TODO: Přidat do accountu seznam charů, které mají admin práva (nebo možná na
+  char flagu, že má admin práva - checkne se this.playerConnection, přes ni
+  account a na něm je adminLevel).
+[Tohle bude jinak - pres classu Admins]
+
+TODO: Charactery savovat na disk v lowercasu
+  - ze dvou duvodu:
+    1) aby neslo vytvorit soucasne char Zuzka a zuzka
+    2) aby se slo prihlasit case-insensitive verzi
+  - nebo se na to vykaslat a enforcovet Prvnivelke pismeno ve jmene charu?
+    (Asi prece jen bude hezci, kdyz na disku budou chary savnute s velkym)
+  - kazdopadne to case-insensitive prihlaseni by fungovat melo.
+[Forcuje se Prvni Velke]
+
+TODO: Zrušit automatické updatování invalid referencí.
+  - automaticky se updatuje při volání isValid()
+  - neupdatuje se při přístupu na ostatní properties.
+[done]
+
+TODO: class Admins (a ani EntityList) nemůže interně používat reference
+  jako klíč v hashmapě, musí používat stringId. A to proto, že mohou
+  existovat různé proxy odkazující na stejnou entitu, takže by se do seznamu
+  mohla dostat jedna entita víckrát.
+  - Admins jsou předělané (interně je klíč string id, metody si ho vytahují
+    z reference na entitu).
+  - EntityListu se to kupodivu netýká, protože ty už stringovým idčkem klíčují
+    (reference na entitu je hodnota klíčovaná stringovým idčkem, což je ok).
+[done]
+
+TODO: Přejmenovat AdminLevels na AdminLevel
+[done]
+
+TODO: Na AdminLevels by asi fakt byl lepsi enum.
+[snad done]
+
 ===============================================================================  
 
 TODO: co se stane, když mi umře entita, na které běží async skript?

@@ -7,9 +7,8 @@
         "**/.DS_Store": true,
         "**/*.js": { "when": "$(basename).ts"}
     },
-     // Controls the font size.
-    "editor.fontSize": 20,
     "editor.rulers": [80],
     "editor.tabSize": 2,
-    "window.zoomLevel": -0.2
+      // The default end of line character.
+    "files.eol": "\n",
 }

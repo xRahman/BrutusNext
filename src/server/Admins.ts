@@ -7,6 +7,14 @@
 'use strict';
 
 /*
+  IMPORTANT: Right now, adminLevels hashmap cannot store references
+  to entities, because there may be multiple references to the same
+  entity (for example if player quits and logs back in). So we have
+  to keep string ids instead of references to ensure that each
+  admin is present only once.
+*/
+
+/*
   TODO: Aby nešlo ze skriptu provádět akce, na které skript nemá
   práva (třeba setovat někomu nějaké staty), tak to asi bude potřeba
   udělat výrazně složitěji:
@@ -32,7 +40,7 @@
       si zažádala o ticket).
 */
 
-/*
+
 import {ERROR} from '../shared/error/ERROR';
 import {AdminLevel} from '../server/AdminLevel';
 import {Syslog} from '../server/Syslog';
@@ -43,10 +51,10 @@ import {AutoSaveableObject} from '../shared/fs/AutoSaveableObject';
 
 export class Admins extends AutoSaveableObject
 {
-  // Hashmap<[ Entity, AdminLevel ]>
-  //   Key: entity reference
+  // Hashmap<[ string, AdminLevel ]>
+  //   Key: entity id
   //   Value: admin level.
-  private adminList = new Map();
+  private adminLevels = new Map();
 
   // ---------------- Public methods --------------------
 
@@ -79,7 +87,7 @@ export class Admins extends AutoSaveableObject
       return;
     }
 
-    let level = this.adminList.get(entity);
+    let level = this.adminLevels.get(entity.getId());
 
     if (level === undefined)
       return AdminLevel.MORTAL;
@@ -95,7 +103,7 @@ export class Admins extends AutoSaveableObject
         + " " + AdminLevel[AdminLevel.MORTAL] + "."
         + " Removing it from Admins");
 
-      this.adminList.delete(entity);
+      this.adminLevels.delete(entity.getId());
     }
 
     return level;
@@ -162,7 +170,7 @@ export class Admins extends AutoSaveableObject
   // ---------------- Private methods -------------------
 
   // -> Returns true if there are no characters with admin rights.
-  private isEmpty() { return this.adminList.size === 0; }
+  private isEmpty() { return this.adminLevels.size === 0; }
 
   // Sets specified admin level to a character. Doesn't check
   // if actor is allowed to do such promotion.
@@ -175,14 +183,14 @@ export class Admins extends AutoSaveableObject
     }
 
     // If target already is an admin, remove him from the list.
-    if (this.adminList.has(target)
-      this.adminList.delete(target);
+    if (this.adminLevels.has(target.getId()))
+      this.adminLevels.delete(target.getId());
 
     // And add him with a new admin level
     // (MORTALS are not added, the fact that they are not
     //  present in adminList signifies that they are MORTALS).
     if (level > AdminLevel.MORTAL)
-      this.adminList.set(target, level);
+      this.adminLevels.set(target.getId(), level);
   }
 
   public actionSanityCheck
@@ -239,4 +247,3 @@ export class Admins extends AutoSaveableObject
     );
   }
 }
-*/
