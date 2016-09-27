@@ -44,6 +44,7 @@
 import {ERROR} from '../shared/error/ERROR';
 import {AdminLevel} from '../server/AdminLevel';
 import {Syslog} from '../server/Syslog';
+import {Message} from '../server/message/Message';
 import {Game} from '../game/Game';
 import {GameEntity} from '../game/GameEntity';
 import {Character} from '../game/character/Character';
@@ -61,7 +62,7 @@ export class Admins extends AutoSaveableObject
   public onCharacterEnteringGame(character: Character)
   {
     /// TODO
-    /// Pokud he character immortal, ak mu setnout referenci
+    /// Pokud je character immortal, ak mu setnout referenci
     // na Server.admins, aby přes ni mohl promotovat, demotovat a tak.
   }
 
@@ -120,15 +121,17 @@ export class Admins extends AutoSaveableObject
 
     if (targetAdminLevel === AdminLevel.CREATOR)
     {
-      actor.send(target.name + " already has"
-        + " the highest possible admin level.");
+      actor.sendToSelf(target.name + " already has"
+        + " the highest possible admin level.",
+        Message.Type.COMMAND);
       return;
     }
 
     if (actorAdminLevel <= targetAdminLevel)
     {
-      actor.send("You can't promote " + target.name +
-        " to higher admin level than your own.");
+      actor.sendToSelf("You can't promote " + target.name +
+        " to higher admin level than your own.",
+        Message.Type.COMMAND);
       return;
     }
 
@@ -149,21 +152,23 @@ export class Admins extends AutoSaveableObject
 
     if (actorAdminLevel <= targetAdminLevel)
     {
-      actor.send("You can only demote targets"
-        + " below your own admin level.");
+      actor.sendToSelf("You can only demote"
+        + "  targets below your own admin level.",
+        Message.Type.COMMAND);
       return;
     }
 
     if (targetAdminLevel === AdminLevel.MORTAL)
     {
-      actor.send(target.name + " already has"
-        + " the lowest possible admin level.");
+      actor.sendToSelf(target.name + " already has"
+        + " the lowest possible admin level.",
+        Message.Type.COMMAND);
       return;
     }
 
     let newLevel = targetAdminLevel - 1;
 
-    this.announceAction(actor, target, "deomote", newLevel);
+    this.announceAction(actor, target, "demote", newLevel);
     this.setAdminLevel(target, targetAdminLevel - 1);
   }
 
@@ -236,7 +241,7 @@ export class Admins extends AutoSaveableObject
       + " to level " + AdminLevel[level];
 
     // Send info message to all online players.
-    Game.send(message);
+    Game.sendToAll(actor, message, Message.Type.INFO);
 
     // Send info message to syslog.
     Syslog.log

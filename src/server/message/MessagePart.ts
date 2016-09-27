@@ -9,33 +9,55 @@
 
 'use strict';
 
+import {Message} from '../../server/message/Message';
+
 export class MessagePart
 {
   // -------------- Static class data -------------------
 
   // ---------------- Public class data -----------------
 
-  public type: MessagePart.Type = null;
-  public formattedText = null;
+  public messageType: Message.Type = null;
+  public messagePartType: MessagePart.Type = null;
+  public text = null;
 
   // -------------- Private class data -----------------
 
+
+  constructor
+  (
+    text: string,
+    messageType: Message.Type,
+    messagePartType: MessagePart.Type
+  )
+  {
+    this.messageType = messageType;
+    this.messagePartType = messagePartType;
+
+    // Add colore according to message type
+    this.text = this.format(text);
+  }
+
   // --------------- Static accessors -------------------
+
+  public getText(): string
+  {
+    return this.text;
+  }
 
   // ---------------- Static methods --------------------
 
   // ---------------- Public methods --------------------
 
-  public format(text: string)
-  {
-    // TODO: Formatování textu podle typu.
-    this.formattedText = text;
-  }
-
   // --------------- Protected methods ------------------
 
   // ---------------- Private methods -------------------
 
+  private format(text: string): string
+  {
+    // TODO: Formatování textu podle typu.
+    return text;
+  }
 }
 
 // Module is exported so you can use MessagePart.Type from outside
@@ -45,12 +67,15 @@ export module MessagePart
 {
   export enum Type
   {
+    // This is used when message only has one part or if all
+    // parts are "of the same type".
+    SAME_AS_MESSAGE,
     // For example a line with the name of the room.
     TITLE,
     // Description of the room, object, mob, etc.
     DESCRIPTION,
     // List of exits.
-    EXITS,
+    EXIT,
     // Contents of the room or other container.
     CONTENTS
   }

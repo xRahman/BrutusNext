@@ -11,11 +11,20 @@
   exits, etc.
 */
 
+/*
+  Message remembers everything, including parts that will be
+  gagged or otherwise filtered. It means that you can retrieve
+  original, ungagged (or differently gagged) messages from the
+  history.
+*/
+
 'use strict';
 
 import {ERROR} from '../../shared/error/ERROR';
+import {Server} from '../../server/Server';
+import {Connection} from '../../server/connection/Connection';
+import {MessagePart} from '../../server/message/MessagePart';
 import {GameEntity} from '../../game/GameEntity';
-import {MessagePart} from '../../shared/message/MessagePart';
 
 export class Message
 {
@@ -23,13 +32,12 @@ export class Message
 
   // ---------------- Public class data -----------------
 
+  public sender: GameEntity = null;
   public type: Message.Type = null;
   public target: Message.Target = null;
   public sendToSelf = true;
 
   // -------------- Private class data -----------------
-
-  private sender: GameEntity = null;
 
   // Recipient should only be set when this.type is
   // Message.Type.SINGLE_RECIPIENT and thissendToSelf
@@ -46,10 +54,7 @@ export class Message
 
   public addMessagePart(text: string, type: MessagePart.Type)
   {
-    let messagePart = new MessagePart();
-
-    messagePart.type = type;
-    messagePart.format(text);
+    let messagePart = new MessagePart(text, this.type, type);
 
     if (this.messageParts === null)
       this.messageParts = [];
@@ -57,9 +62,8 @@ export class Message
     this.messageParts.push(messagePart);
   }
 
-  // Set's message recipient. Use this if the message should only
-  // be sent to one target.
-  private setRecipient(recipient: GameEntity)
+  // Use this if the message should only be sent to one target.
+  public setRecipient(recipient: GameEntity)
   {
     if (recipient === null || recipient.isValid() === false)
     {
@@ -74,58 +78,16 @@ export class Message
       return;
     }
 
+    this.target = Message.Target.SINGLE_RECIPIENT;
+
     // 'equals()' compares entities by their string ids.
-    if (this.sendToSelf === true && !recipient.equals(this.sender))
-    {
-      ERROR("Attempt to set message recipient when"
-        + " 'sendToSelf' set to true. Recipient is not"
-        + " set, message will be sent to sender");
-      // Just to be sure.
-      this.recipient = null;
-      return;
-    }
+    if (recipient.equals(this.sender))
+      this.sendToSelf = true;
+    else
+      this.sendToSelf = false;
 
     this.recipient = recipient;
   }
-
-  /*
-  public gatherRecipients()
-  {
-    if (this.sender === null)
-    {
-      ERROR("Invalid sender. Set message.sender before you call"
-        + " gatherRecipients()");
-      return;
-    }
-
-    switch (this.target)
-    {
-      case Message.Target.SINGLE_RECIPIENT:
-        this.gatherSingleRecipient();
-        break;
-
-      case Message.Target.ALL_IN_ROOM:
-        this.gatherRoomRecipients();
-        break;
-
-      case Message.Target.ALL_IN_SHOUTING_DISTANCE:
-        this.gatherShoutRecipients();
-        break;
-
-      case Message.Target.EVERYONE_IN_GAME:
-        this.gatherAllInGameRecipients();
-        break;
-
-      case Message.Target.ALL_ACTIVE_CONNECTIONS:
-        this.gatherAllConnections();
-        break;
-
-      default:
-        ERROR("Unknown message target");
-        break;
-    }
-  }
-  */
 
   // Sends the message to all of it's recipients.
   public send()
@@ -140,32 +102,23 @@ export class Message
     switch (this.target)
     {
       case Message.Target.SINGLE_RECIPIENT:
-        /// TODO: Přesunout tenhle test dovnitř metody, která se tu bude
-        /// volat.
-        if (this.recipient === null)
-        {
-          ERROR("Message recipient has not been inicialized."
-            + " Use message.setRecipient() before message.send()."
-            + " Message is not sent");
-          return;
-        }
-        //this.gatherSingleRecipient();
+        this.sendToEntity(this.recipient);
         break;
 
       case Message.Target.ALL_IN_ROOM:
-        //this.gatherRoomRecipients();
+        this.sendToRoom();
         break;
 
       case Message.Target.ALL_IN_SHOUTING_DISTANCE:
-        //this.gatherShoutRecipients();
+        this.sendToShout();
         break;
 
-      case Message.Target.EVERYONE_IN_GAME:
-        //this.gatherAllInGameRecipients();
+      case Message.Target.ALL_IN_GAME:
+        this.sendToGame();
         break;
 
       case Message.Target.ALL_ACTIVE_CONNECTIONS:
-        //this.gatherAllConnections();
+        this.sendToAllConnections({ onlyInGame: false });
         break;
 
       default:
@@ -192,6 +145,7 @@ export class Message
       case Message.Type.WIZNET:
       case Message.Type.SHOUT:
       case Message.Type.EMOTE:
+      case Message.Type.INFO:
         return true;
     }
 
@@ -202,46 +156,96 @@ export class Message
 
   // ---------------- Private methods -------------------
 
-
-  private gatherSingleRecipient()
+  private composeRawMessage(): string
   {
-    if (this.sender === null)
+    let data = "";
+
+    for (let messagePart of this.messageParts)
+      data += messagePart.getText();
+
+    return data;
+  }
+
+  private sendToEntity(target: GameEntity)
+  {
+    if (target === null || target.isValid() === false)
     {
-      ERROR("Invalid sender. Set message.sender before you call"
-        + " gatherRecipients()");
+      ERROR("Invalid message recipient. Message is not sent");
       return;
     }
 
-    // Empty the list of recipients so there are no
-    // leftovers.
-    this.recipients = [];
+    // Null connection means that no player is connected to this entity. 
+    if (target.connection === null)
+      target.addOfflineMessage(this);
 
-    if (this.sendToSelf === true)
+
+    this.sendToConnection(target.connection);
+  }
+
+  private sendToConnection(connection: Connection)
+  {
+    if (connection.isValid() === false)
     {
-      this.recipients.push(this.sender);
+      ERROR("Invalid message recipient. Message is not sent");
       return;
     }
 
-    ERROR("Attempt to gather single recipient for message"
-      + " that is not sent to self. Don't call gatherRecipients()"
-      + " if there is just one of them, use setRecipient() instead"); 
+    let data = this.composeRawMessage();
+    
+    switch (this.type)
+    {
+      // /// Posílání samothéno promptu skrz message asi nebude k ničemu potřeba,
+      // /// uvidíme.
+      // case Message.Type.PROMPT:
+      //   // Send data to the connection without adding any newlines.
+      //   // (It means that player will type right next to this output.)
+      //   connection.sendAsPrompt(data);
+      //   break;
+      
+      default:
+        // Send data as block, followed by prompt.
+        // (It means that a newline or an empty line will be added to data,
+        //  followed by player's prompt.)
+        connection.sendAsBlock(data);
+        break;
+    }
   }
 
-  private gatherRoomRecipients()
+  private sendToRoom()
   {
-    /// TODO
+    // TODO
   }
 
-  private gatherShoutRecipients()
+  private sendToShout()
   {
-    /// TODO
+    // TODO
+
+    /// Pozn: Shouting distance (počet roomů) přečíst ze sendera.
   }
 
-  private gatherAllInGameRecipients()
+  private sendToGame()
   {
-    // We need to ask the Server, because we need to iterate
-    // over all active connections.
-    this.recipients = Server.getGlobalMessageRecipients();
+    this.sendToAllConnections({ onlyInGame: true });
+  }
+
+  private sendToAllConnections(param: { onlyInGame: boolean })
+  {
+    let connections = Server.connections.getEntities();
+    let connection: Connection = null;
+
+    for (connection of connections.values())
+    {
+      // Skip invalid connections.
+      if (connection === null || !connection.isValid())
+        break;
+
+      // Skip connections that don't have an ingame entity attached
+      // if we are only sending to ingame entities.
+      if (param.onlyInGame === true && connection.ingameEntity === null)
+        break;
+
+      this.sendToConnection(connection);
+    }
   }
 }
 
@@ -269,19 +273,21 @@ export module Message
     WIZNET,
     SHOUT,
     EMOTE,
+    INFO,
     // --------------------- System messages ---------------------
     SYSLOG,
     ERROR,
     SYSTEM_INFO,
     // --------------------- Prompt messages ---------------------
-    PROMPT,
+    /// Prompt se asi bude přilepovat automaticky.
+    /// PROMPT,
     // ------------------------- Commands ------------------------
     // Skill messages
     SKILL,
     // Spell messages
     SPELL,
     // (Output from non-skill commands like 'who', 'promote', etc.).
-    GENERIC_COMMAND,
+    COMMAND,
     // Output from 'look', 'examine', etc.
     INSPECT 
   }
@@ -293,8 +299,10 @@ export module Message
     SINGLE_RECIPIENT,
     ALL_IN_ROOM,
     ALL_IN_SHOUTING_DISTANCE,
-    EVERYONE_IN_GAME,
-    // This sends the message even to players in menu,
+    // Send the message to all game entities that have
+    // a player connection attached.
+    ALL_IN_GAME,
+    // Send the message even to players in menu,
     // in OLC, entering their password, etc.
     ALL_ACTIVE_CONNECTIONS
   }
