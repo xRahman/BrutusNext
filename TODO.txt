@@ -1,3 +1,6 @@
+TODO: Syslog má nějaký msgType a Message má type. Možná by se to dalo Sloučit
+  (pod Message.type, protože to je obecnější).
+
 ÚVAHA: Má smysl pamatovat si seznam entit, kterým jsem poslal Message?
 - Když mi lidi odejdou z roomu, tak posílat jim ten samý vzkaz (vázaný na room)
   už nebude dávat smysl...
@@ -10,6 +13,7 @@
     (protože Message je sdílený záznam pro všechny, kdo jej dostali).
 TODO: Zrušit Message.recipients.
   - Komu se pošle tell? Na to se asi přece jen bude muset recipient nastavit.
+[done]
 
 TODO: Funkce Entity.send(sender, string) by přece jen mohla existovat,
   interně vyrobí Message a pošle si ho.

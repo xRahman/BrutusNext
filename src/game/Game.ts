@@ -13,7 +13,10 @@ import {ERROR} from '../shared/error/ERROR';
 import {EntityManager} from '../shared/entity/EntityManager';
 import {SaveableObject} from '../shared/fs/SaveableObject';
 import {PrototypeManager} from '../shared/prototype/PrototypeManager';
+import {Message} from '../server/message/Message';
+import {MessagePart} from '../server/message/MessagePart';
 import {Server} from '../server/Server';
+import {GameEntity} from '../game/GameEntity';
 import {CharacterList} from '../game/character/CharacterList';
 import {World} from '../game/world/World';
 import {Room} from '../game/world/Room';
@@ -57,6 +60,25 @@ export class Game
   public static get prototypeManager()
   {
     return Server.game.prototypeManager;
+  }
+
+  // Sends a message to all ingame entities
+  // that have a player connection attached.
+  public static sendToAll
+  (
+    sender: GameEntity,
+    text: string,
+    messageType: Message.Type
+  )
+  {
+    let message = new Message();
+
+    message.type = messageType;
+    message.sender = sender;
+    message.target = Message.Target.ALL_IN_GAME;
+    message.addMessagePart(text, MessagePart.Type.SAME_AS_MESSAGE);
+
+    message.send();
   }
 
   // ---------------- Public methods --------------------

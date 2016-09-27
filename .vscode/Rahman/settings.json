@@ -1,10 +1,7 @@
 // Place your settings in this file to overwrite the default settings
 {
    // Controls if suggestions should be accepted 'Enter' - in addition to 'Tab'. Helps to avoid ambiguity between inserting new lines or accepting suggestions.
-  "editor.acceptSuggestionOnEnter": false,
-
-  // Controls if quick suggestions should show up or not while typing
-  "editor.quickSuggestions": false,
+  "editor.acceptSuggestionOnEnter": true,
 
   // Controls if the editor should automatically close brackets after opening them
   "editor.autoClosingBrackets": false,
@@ -12,5 +9,5 @@
   // Controls the font size.
   "editor.fontSize": 20,
 
-  "window.zoomLevel": -0.2,
+  "window.zoomLevel": -0.2
 }
