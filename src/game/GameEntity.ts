@@ -7,9 +7,11 @@
 'use strict';
 
 import {ERROR} from '../shared/error/ERROR';
-import {Server} from '../server/Server';
 import {SaveableObject} from '../shared/fs/SaveableObject';
 import {Script} from '../shared/prototype/Script';
+import {Server} from '../server/Server';
+import {Message} from '../server/message/Message';
+import {MessagePart} from '../server/message/MessagePart';
 import {Connection} from '../server/connection/Connection';
 import {Game} from '../game/Game';
 import {ContainerEntity} from '../game/ContainerEntity';
@@ -84,51 +86,30 @@ export class GameEntity extends ContainerEntity
 
   // ---------------- Public methods --------------------
 
-  // Overrides Entity.getSaveSubDirectory().
-  protected static getSaveSubDirectory()
+  // Make this entity to send a message to itself.
+  // ('text' is automatically colored according to given 'messageType').
+  public sendToSelf(text: string, messageType: Message.Type)
   {
-    // Note:
-    //   Because we are in a static method, 'this' is actualy the class
-    // constructor and it's properties are static properties of the
-    // class.
+    this.receiveMessage(this, text, messageType);
+  }
 
-    let className = this['className'];
-    let errorPath = "_SAVE_PATH_CREATION_ERROR/";
+  // Sends a message to this entity.
+  // ('text' is automatically colored according to given 'messageType').
+  public receiveMessage
+  (
+    sender: GameEntity,
+    text: string,
+    messageType: Message.Type
+  )
+  {
+    let message = new Message();
 
-    if (className === undefined)
-    {
-      ERROR("Unable to compose entity save path because"
-        + " property 'className' doesn't exist on any class"
-        + " in the prototype chain. Save path will contain"
-        + " " + errorPath + " instead");
-      return errorPath;
-    }
+    message.type = messageType;
+    message.sender = sender;
+    message.setRecipient(this);
+    message.addMessagePart(text, MessagePart.Type.SAME_AS_MESSAGE);
 
-    /// Jaky prototyp ma muj prototyp - jinak receno, jakeho mam predka.
-    let ancestor = Object.getPrototypeOf(this.prototype);
-
-    // Staticka property ancestora.
-    let getAncestorSubDirectory =
-      ancestor.constructor['getSaveSubDirectory'];
-
-    errorPath = "_SAVE_PATH_CREATION_ERROR_" + className + "/";
-
-    if (getAncestorSubDirectory === undefined)
-    {
-      ERROR("Unable to compose correct save path for class"
-        + " '" + className + "' because static method"
-        + " 'getSaveSubDirectory' doesn't exist on it's"
-        + " ancestor. Save path will contain " + errorPath
-        + " instead");
-      return errorPath;
-    }
-
-    // Call getAncestorSubDirectory() with 'ancestor.constructor' as 'this'.
-    // ('ancestor.constructor' and not just 'ancestor', it is a static method
-    //  so 'this' must be the class constructor, not an instance).
-    let ancestorPath = getAncestorSubDirectory.call(ancestor.constructor);
-    
-    return ancestorPath + className + "/";
+    message.send();
   }
 
   /*
@@ -226,6 +207,17 @@ export class GameEntity extends ContainerEntity
   }
   */
 
+  public addOfflineMessage(message: Message)
+  {
+    /// TODO
+    /// (Přidávání offline zpráv do fronty, výpis offline zpráv
+    ///  při loginu, případně později příkazem)
+    /// - pozor, message může být libovolný output ze serveru včetně
+    ///   hlášek do místnosti, promtu, atd. Pokud se má do bufferu
+    ///   offline messagů dávat jen komunikace, je třeba filtrovat
+    ///   přes message.isCommunication().
+  }
+
   // -------------- Private class data ----------------
 
   // null if no player is connected to (is playing as) this entity,
@@ -241,6 +233,53 @@ export class GameEntity extends ContainerEntity
   */
 
   // --------------- Protected methods ------------------
+
+  // Overrides Entity.getSaveSubDirectory().
+  protected static getSaveSubDirectory()
+  {
+    // Note:
+    //   Because we are in a static method, 'this' is actualy the class
+    // constructor and it's properties are static properties of the
+    // class.
+
+    let className = this['className'];
+    let errorPath = "_SAVE_PATH_CREATION_ERROR/";
+
+    if (className === undefined)
+    {
+      ERROR("Unable to compose entity save path because"
+        + " property 'className' doesn't exist on any class"
+        + " in the prototype chain. Save path will contain"
+        + " " + errorPath + " instead");
+      return errorPath;
+    }
+
+    /// Jaky prototyp ma muj prototyp - jinak receno, jakeho mam predka.
+    let ancestor = Object.getPrototypeOf(this.prototype);
+
+    // Staticka property ancestora.
+    let getAncestorSubDirectory =
+      ancestor.constructor['getSaveSubDirectory'];
+
+    errorPath = "_SAVE_PATH_CREATION_ERROR_" + className + "/";
+
+    if (getAncestorSubDirectory === undefined)
+    {
+      ERROR("Unable to compose correct save path for class"
+        + " '" + className + "' because static method"
+        + " 'getSaveSubDirectory' doesn't exist on it's"
+        + " ancestor. Save path will contain " + errorPath
+        + " instead");
+      return errorPath;
+    }
+
+    // Call getAncestorSubDirectory() with 'ancestor.constructor' as 'this'.
+    // ('ancestor.constructor' and not just 'ancestor', it is a static method
+    //  so 'this' must be the class constructor, not an instance).
+    let ancestorPath = getAncestorSubDirectory.call(ancestor.constructor);
+    
+    return ancestorPath + className + "/";
+  }
 
   // Send message to the connected player that command is not recognized.
   protected unknownCommand()
