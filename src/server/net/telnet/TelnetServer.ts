@@ -26,6 +26,7 @@
 import {FATAL_ERROR} from '../../../shared/error/FATAL_ERROR';
 import {Syslog} from '../../../server/Syslog';
 import {AdminLevel} from '../../../server/AdminLevel';
+import {Message} from '../../../server/message/Message';
 import {Server} from '../../../server/Server';
 import {Connection} from '../../../server/connection/Connection';
 import {TelnetSocketDescriptor}
@@ -77,7 +78,7 @@ export class TelnetServer
     Syslog.log
     (
       "Starting telnet server at port " + this.port,
-      Syslog.msgType.SYSTEM_INFO,
+      Message.Type.SYSTEM_INFO,
       AdminLevel.IMMORTAL
     );
 
@@ -104,7 +105,7 @@ export class TelnetServer
     Syslog.log
     (
       "Telnet server is up and listening to the new connections",
-      Syslog.msgType.SYSTEM_INFO,
+      Message.Type.SYSTEM_INFO,
       AdminLevel.IMMORTAL
     );
   }
@@ -142,7 +143,7 @@ export class TelnetServer
     (
       "TELNET SERVER: Received a new connection request from "
       + socket.remoteAddress,
-      Syslog.msgType.SYSTEM_INFO,
+      Message.Type.SYSTEM_INFO,
       AdminLevel.IMMORTAL
     );
 
@@ -151,7 +152,7 @@ export class TelnetServer
       Syslog.log
       (
         "TELNET SERVER: Denying connection request: Server is closed",
-        Syslog.msgType.SYSTEM_INFO,
+        Message.Type.SYSTEM_INFO,
         AdminLevel.IMMORTAL
       );
 

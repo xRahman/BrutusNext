@@ -16,6 +16,7 @@
 
 import {AdminLevel} from '../../server/AdminLevel';
 import {Syslog} from '../../server/Syslog';
+import {Message} from '../../server/message/Message';
 
 // This handler of javascript Proxy object is used to emulate 'invalid value'
 // variable. Access to these variables is trapped and logged.
@@ -97,7 +98,7 @@ export class InvalidValueProxyHandler
     (
       "Attempt to read property '" + property + "' of an invalid variable\n"
         + Syslog.getTrimmedStackTrace(Syslog.TrimType.PROXY_HANDLER),
-      Syslog.msgType.INVALID_ACCESS,
+      Message.Type.INVALID_ACCESS,
       AdminLevel.IMMORTAL
     );
 
@@ -116,7 +117,7 @@ export class InvalidValueProxyHandler
       "Attempt to write to property '" + property + "'"
       + " of an invalid variable\n"
         + Syslog.getTrimmedStackTrace(Syslog.TrimType.PROXY_HANDLER),
-      Syslog.msgType.INVALID_ACCESS,
+      Message.Type.INVALID_ACCESS,
       AdminLevel.IMMORTAL
     );
 
