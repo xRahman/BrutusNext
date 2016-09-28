@@ -211,17 +211,10 @@ export class Message
     /// Pozn: Shouting distance (počet roomů) přečíst ze sendera.
   }
 
-  public sendToAllInGame(sender: GameEntity, visibility: AdminLevel)
-  {
-    this.sendToAllConnections(sender, { onlyInGame: true }, visibility);
-  }
-
-  public sendToAllConnections
-  (
-    sender: GameEntity, 
-    param: { onlyInGame: boolean },
-    visibility: AdminLevel
-  )
+  // Sends message to all player connections that have a valid ingame entity.
+  // 'visibility' limits recipients to certain admin level or higher.
+  // (Used to send gossips, global infos, syslog, etc.).
+  public sendToAllIngameConnections(sender: GameEntity, visibility: AdminLevel)
   {
     let connections = Server.connections.getEntities();
     let connection: Connection = null;
@@ -232,9 +225,38 @@ export class Message
       if (connection === null || !connection.isValid())
         break;
 
-      // Skip connections that don't have an ingame entity attached
-      // if we are only sending to ingame entities.
-      if (param.onlyInGame === true && connection.ingameEntity === null)
+      // Skip connections that don't have an ingame entity attached.
+      if (connection.ingameEntity === null)
+        break;
+
+      // Skip connections with invalid ingame entity.
+      if (connection.ingameEntity.isValid() === false)
+        break;
+
+      // Skip game entities which don't have sufficient admin level
+      // to see this message.
+      if (Server.getAdminLevel(connection.ingameEntity) < visibility)
+        break;
+
+      this.sendToConnection(sender, connection);
+    }
+  }
+
+  // Sends message even to players in menu, entering password, etc.
+  // (Used for messages like shutdown countdown.)
+  public sendToAllConnections
+  (
+    sender: GameEntity,
+    visibility: AdminLevel
+  )
+  {
+    let connections = Server.connections.getEntities();
+    let connection: Connection = null;
+
+    for (connection of connections.values())
+    {
+      // Skip invalid connections.
+      if (connection === null || !connection.isValid())
         break;
 
       this.sendToConnection(sender, connection);
