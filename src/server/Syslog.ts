@@ -16,19 +16,26 @@
 /// TODO: Az bude log file, tak napsat odchytavani vyjimek, aby se stack trace
 ///       zapisoval do log filu.
 
+import {Message} from '../server/message/Message';
 
+/*
 enum TrimType
 {
   ERROR,
   PROXY_HANDLER,
   PROXY_HANDLER_PLUS_ONE
 }
+*/
 
 export class Syslog
 {
+  /*
   // Make 'TrimType' enum a static member of this class.
   public static TrimType = TrimType;
+  */
 
+  /// Přesunuto do Message.Type
+  /*
   public static msgType =
   {
     RUNTIME_ERROR:           "RUNTIME ERROR",
@@ -37,15 +44,16 @@ export class Syslog
     SYSTEM_ERROR:            "SYSTEM ERROR",
     SCRIPT_COMPILE_ERROR:    "SCRIPT COMPILE ERROR",
     SCRIPT_RUNTIME_ERROR:    "SCRIPT RUNTIME ERROR",
-    INVALID_ACCESS:          "INVALID_ACCESS"
+    INVALID_ACCESS:          "INVALID ACCESS"
   }
+  */
 
   // Outputs message to log file. Also sends it to online immortals
   // of required or greater level.
   public static log
   (
     message: string,
-    msgType: string,
+    msgType: Message.Type,
     level: number
   )
   {
@@ -54,20 +62,20 @@ export class Syslog
     if (true)
     ///if (level.value >= char.level)
     {
-      console.log("[" + msgType + "] " + message);
+      console.log("[" + Message.Type[msgType] + "] " + message);
     }
   }
 
   // Creates Error() object, reads stack trace from it.
   // Returns string containing stack trace trimmed to start
   // with function where ERROR actually got triggered.
-  public static getTrimmedStackTrace(trimType: TrimType): string
+  public static getTrimmedStackTrace(trimType: Syslog.TrimType): string
   {
     let trimValue = 0;
 
     switch (trimType)
     {
-      case TrimType.ERROR:
+      case Syslog.TrimType.ERROR:
         // If the stack trace is requested by ERROR() function,
         // cut off first three lines from tmpErr.stack string.
         // - First line contains just: 'Error:' which we don't need.
@@ -79,7 +87,7 @@ export class Syslog
         trimValue = 3;
         break;
 
-      case TrimType.PROXY_HANDLER:
+      case Syslog.TrimType.PROXY_HANDLER:
         // If the stack trace is requested by EntityProxyHandler,
         // we cut off first five lines from tmpErr.stack string.
         // - first three are the same as with ERROR, the other one
@@ -87,7 +95,7 @@ export class Syslog
         trimValue = 4;
         break;
 
-      case TrimType.PROXY_HANDLER_PLUS_ONE:
+      case Syslog.TrimType.PROXY_HANDLER_PLUS_ONE:
         // If the stack trace is requested by EntityProxyHandler,
         // we cut off first five lines from tmpErr.stack string.
         // - first three are the same as with ERROR, another two
@@ -110,5 +118,19 @@ export class Syslog
     let stackTrace = stackTraceLines.join('\n');
 
     return stackTrace;
+  }
+}
+
+// ------------------ Type declarations ----------------------
+
+// Module is exported so you can use Syslog.TrimType from outside this file.
+// It must be declared after the class because Typescript says so...
+export module Syslog
+{
+  export enum TrimType
+  {
+    ERROR,
+    PROXY_HANDLER,
+    PROXY_HANDLER_PLUS_ONE
   }
 }

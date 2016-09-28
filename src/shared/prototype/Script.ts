@@ -11,6 +11,7 @@ import {Prototype} from '../../shared/prototype/Prototype';
 import {VirtualMachine} from '../../shared/vm/VirtualMachine';
 import {AdminLevel} from '../../server/AdminLevel';
 import {Syslog} from '../../server/Syslog';
+import {Message} from '../../server/message/Message';
 import {GameEntity} from '../../game/GameEntity';
 
 // 3rd party modules.
@@ -102,7 +103,7 @@ export class Script extends SaveableObject
           "Internal script function of script " + script.getFullName()
           + " doesn't exist yet. Script must be compiled before"
           + " it can be used",
-          Syslog.msgType.SCRIPT_RUNTIME_ERROR,
+          Message.Type.SCRIPT_RUNTIME_ERROR,
           AdminLevel.IMMORTAL
         );
 
@@ -329,7 +330,7 @@ export class Script extends SaveableObject
       Syslog.log
       (
         "Transpile error in script " + scriptName + ": " + e.message,
-        Syslog.msgType.SCRIPT_COMPILE_ERROR,
+        Message.Type.SCRIPT_COMPILE_ERROR,
         AdminLevel.IMMORTAL
       );
 
@@ -355,7 +356,7 @@ export class Script extends SaveableObject
       (
         "Missing 'miliseconds' parameter of 'await delay()' in script "
         + scriptName + ". Script will wait for 1 milisecond",
-        Syslog.msgType.SCRIPT_RUNTIME_ERROR,
+        Message.Type.SCRIPT_RUNTIME_ERROR,
         AdminLevel.IMMORTAL
       );
 

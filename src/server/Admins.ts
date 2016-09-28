@@ -247,7 +247,7 @@ export class Admins extends AutoSaveableObject
     Syslog.log
     (
       message,
-      Syslog.msgType.SYSTEM_INFO,
+      Message.Type.SYSTEM_INFO,
       AdminLevel.IMMORTAL
     );
   }

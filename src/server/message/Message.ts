@@ -52,9 +52,9 @@ export class Message
 
   // ---------------- Public methods --------------------
 
-  public addMessagePart(text: string, type: MessagePart.Type)
+  public addMessagePart(text: string, msgPartType: MessagePart.Type)
   {
-    let messagePart = new MessagePart(text, this.type, type);
+    let messagePart = new MessagePart(text, this.type, msgPartType);
 
     if (this.messageParts === null)
       this.messageParts = [];
@@ -249,6 +249,8 @@ export class Message
   }
 }
 
+// ------------------ Type declarations ----------------------
+
 /*
   Pozn: Jedna možnost je používat Cathegory a pak nějaké subcathegory,
     druhá možnost je udělat enum co nejpodrobnější a nad ním postavit
@@ -259,7 +261,7 @@ export class Message
 
 // Module is exported so you can use Message.Type and Message.Target
 // from outside this file. It must be declared after the class because
-// Typescript says it...
+// Typescript says so...
 export module Message
 {
   export enum Type
@@ -274,10 +276,14 @@ export module Message
     SHOUT,
     EMOTE,
     INFO,
-    // --------------------- System messages ---------------------
-    SYSLOG,
-    ERROR,
+    // --------------------- Syslog messages ---------------------
+    RUNTIME_ERROR,
+    FATAL_RUNTIME_ERROR,
     SYSTEM_INFO,
+    SYSTEM_ERROR,
+    SCRIPT_COMPILE_ERROR,
+    SCRIPT_RUNTIME_ERROR,
+    INVALID_ACCESS,
     // --------------------- Prompt messages ---------------------
     /// Prompt se asi bude přilepovat automaticky.
     /// PROMPT,

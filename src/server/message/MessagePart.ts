@@ -23,7 +23,6 @@ export class MessagePart
 
   // -------------- Private class data -----------------
 
-
   constructor
   (
     text: string,
@@ -60,9 +59,11 @@ export class MessagePart
   }
 }
 
+// ------------------ Type declarations ----------------------
+
 // Module is exported so you can use MessagePart.Type from outside
 // this file. It must be declared after the class because Typescript
-// says it...
+// says so...
 export module MessagePart
 {
   export enum Type
