@@ -38,6 +38,7 @@ import {ERROR} from '../../shared/error/ERROR';
 import {EntityManager} from '../../shared/entity/EntityManager';
 import {Syslog} from '../../server/Syslog';
 import {AdminLevel} from '../../server/AdminLevel';
+import {Message} from '../../server/message/Message';
 import {Connection} from '../../server/connection/Connection';
 import {Server} from '../../server/Server';
 import {Account} from '../../server/account/Account';
@@ -239,7 +240,7 @@ export class AuthProcessor
     (
       "New player: " + this.accountName
       + " [" + this.connection.ipAddress + "]",
-      Syslog.msgType.SYSTEM_INFO,
+      Message.Type.SYSTEM_INFO,
       AdminLevel.IMMORTAL
     );
 
@@ -429,7 +430,7 @@ export class AuthProcessor
     (
       "Bad PW: " + this.accountName
       + " [" + this.connection.ipAddress + "]",
-      Syslog.msgType.SYSTEM_INFO,
+      Message.Type.SYSTEM_INFO,
       AdminLevel.IMMORTAL
     );
 

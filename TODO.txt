@@ -1,81 +1,21 @@
-TODO: Syslog má nějaký msgType a Message má type. Možná by se to dalo Sloučit
-  (pod Message.type, protože to je obecnější).
+TODO: Syslog by se měl posílat charům (které na to mají admin level)
 
-ÚVAHA: Má smysl pamatovat si seznam entit, kterým jsem poslal Message?
-- Když mi lidi odejdou z roomu, tak posílat jim ten samý vzkaz (vázaný na room)
-  už nebude dávat smysl...
-- asi je to blbost, message se prostě pošle všem valid targetům v okamžiku
-  volání message.send() a zapomatuje se jen co se posílalo, ne komu.
-- Každý recipient si bude své message dávat do své vlastní historie, takže
-  'this' bude recipient při jejím parsování.
-  - pokud bych si chtěl pamatovat například visibilitu v okamžiku poslání
-    zprávy, tak si ji musím uložit asi do té historie, mimo vlastní Message
-    (protože Message je sdílený záznam pro všechny, kdo jej dostali).
-TODO: Zrušit Message.recipients.
-  - Komu se pošle tell? Na to se asi přece jen bude muset recipient nastavit.
-[done]
-
-TODO: Funkce Entity.send(sender, string) by přece jen mohla existovat,
-  interně vyrobí Message a pošle si ho.
-
-IDEA: Založit class Message
-  // Asi by mel existovat nejaky anonymni sender (system? nebo world?)
-  - sender
-  // muze jich byt vic
-  // nemusi byt inicializovane hned od zacatku
-  - recipients
-    // TELL, GOSSIP, SKILL, COMMAND
-    // Podle typu se bude obarvovat a gagovat.
-  - type
-Proč?
-  Protože si je pak můžu házet do bufferu (takže budu mít historii),
-  a buffer různě zpětně filtrovat
-message.send()
-  - tj. nepoužívalo by se sendToChar() ani char.send(), ale vždycky
-    message.send().
-message.format()
-  - něco jako act() na Brutusu
-- Je fakt, že tímhle můžu dost šetřit paměť, nemusím mít u každého
-  playera zkopírovnaé každé INFO, můžu to mít na jednom místě jako
-  Message a v playerově messageHistory na něj mít pouze odkaz.
-- budu se moct zpětně podívat, kdo psal message v době, kdy jsem měl
-  blind (je teda otázka, jestli je to žádoucí featura, ale půjde to.
-  Jo a taky je otázka, jestli by blind měl mít vliv na to, co SLYŠÍM ;))
-  (I když vlastně já to slyším, jen nevím, kdo to řekl. No...).
+TODO: Předělat posílání všech stringů ve hře, aby používaly Message.
 
 TODO: Vyzkoušet save/load Admins
 
-TODO: Metoda Game.sendToAll()
-  - to samé co u sendu (na druhou stranu info je asi vždycky info?)
-  - možná ne Game.info, ale game.send(message, INFO);
-  Pozn: Procyklovat přes všechny connection, nikoliv přes všechny herní
-    entity (nemá smysl procházet entity, kterým se nic posílat nebude).
-
 TODO: Promotovací a demotovací syslog hláška a info.
-
-TODO: Metoda send()
-  - nebude to sendToChar(), protože posílat string jde kde čemu, ne pouze
-    charům.
-  TODO: Zvážit, jestli by by to nemělo bejt nějak oflagované, aby se to
-    podle toho dalo třeba gagovat nebo automaticky obarvovat.
-    - asi určitě ano.
 
 TODO: Automatické přidávání (a případně i žraní) tečky na konci věty.
   - automaticky ji přidávat za text v příkazu send(), pokud tam není.
   - automaticky ji žrát z ERROR stringů.
 
 IDEA: Pouze admin charactery mají private referenci na admins: Admins
-    (důležité je, že je ta reference private v třídě Character, takže
+    (důležité je, že je ta reference private v třídě GameEntity, takže
     potomci se na ni nedostanou přímo, ale pouze voláním existující metody)
   - Metoda udělá co:
     - zavolá this.admins.doSomething(this, action, params);
   + server má 'admins: Admins;' taky jako privátní proměnnou.
-
-TODO: Zvážit, jestli by stack tarce nešel získávat elegantněji než z error
-  objectu, viz:
- using System.Diagnostics;
- StackTrace st = new StackTrace();
- Console.WriteLine(st.GetFrame(1).GetMethod().Name);
 
 TODO: Nastavit idčko v entitě jako immutable property.
 
@@ -99,6 +39,15 @@ TODO (stále)
 TODO: Zkontrolovat, že dobře loguje BAD PW attempt
 
 ------------------------------------------------------------------------------
+
+TODO: Zvážit, jestli by stack tarce nešel získávat elegantněji než z error
+  objectu, viz:
+ using System.Diagnostics;
+ StackTrace st = new StackTrace();
+ Console.WriteLine(st.GetFrame(1).GetMethod().Name);
+
+TODO: Sjednotit styl, jakým se píšou Enumy (asi na ten z Message.ts, protože
+  potřebuju typ používat v jiných modulech).
 
 TODO: Vyzkoušet, co se stane, když savnu objekt s invalid referencí
   (hráč třeba odlognul).
@@ -269,6 +218,75 @@ TODO: Zrušit z entity proměnné SAVE_DIRECTORY
 Vyhledove rozbehat tslint
 
 ===============================================================================
+
+TODO: Funkce Entity.send(sender, string) by přece jen mohla existovat,
+  interně vyrobí Message a pošle si ho.
+[done]
+
+IDEA: Založit class Message
+  // Asi by mel existovat nejaky anonymni sender (system? nebo world?)
+  - sender
+  // muze jich byt vic
+  // nemusi byt inicializovane hned od zacatku
+  - recipients
+    // TELL, GOSSIP, SKILL, COMMAND
+    // Podle typu se bude obarvovat a gagovat.
+  - type
+Proč?
+  Protože si je pak můžu házet do bufferu (takže budu mít historii),
+  a buffer různě zpětně filtrovat
+message.send()
+  - tj. nepoužívalo by se sendToChar() ani char.send(), ale vždycky
+    message.send().
+message.format()
+  - něco jako act() na Brutusu
+- Je fakt, že tímhle můžu dost šetřit paměť, nemusím mít u každého
+  playera zkopírovnaé každé INFO, můžu to mít na jednom místě jako
+  Message a v playerově messageHistory na něj mít pouze odkaz.
+- budu se moct zpětně podívat, kdo psal message v době, kdy jsem měl
+  blind (je teda otázka, jestli je to žádoucí featura, ale půjde to.
+  Jo a taky je otázka, jestli by blind měl mít vliv na to, co SLYŠÍM ;))
+  (I když vlastně já to slyším, jen nevím, kdo to řekl. No...).
+[done]
+
+TODO: Metoda Game.sendToAll()
+  - to samé co u sendu (na druhou stranu info je asi vždycky info?)
+  - možná ne Game.info, ale game.send(message, INFO);
+  Pozn: Procyklovat přes všechny connection, nikoliv přes všechny herní
+    entity (nemá smysl procházet entity, kterým se nic posílat nebude).
+[done]
+
+TODO: Metoda send()
+  - nebude to sendToChar(), protože posílat string jde kde čemu, ne pouze
+    charům.
+  TODO: Zvážit, jestli by by to nemělo bejt nějak oflagované, aby se to
+    podle toho dalo třeba gagovat nebo automaticky obarvovat.
+    - asi určitě ano.
+nakonec existují metody:
+  sendToSelf()
+  receiveMessage()
+[done]
+
+TODO: Možná parametr 'type' u Messagů přejmenovat na 'msgType'.
+[done]
+
+TODO: Syslog má nějaký msgType a Message má type. Možná by se to dalo Sloučit
+  (pod Message.type, protože to je obecnější).
+[done]
+
+ÚVAHA: Má smysl pamatovat si seznam entit, kterým jsem poslal Message?
+- Když mi lidi odejdou z roomu, tak posílat jim ten samý vzkaz (vázaný na room)
+  už nebude dávat smysl...
+- asi je to blbost, message se prostě pošle všem valid targetům v okamžiku
+  volání message.send() a zapomatuje se jen co se posílalo, ne komu.
+- Každý recipient si bude své message dávat do své vlastní historie, takže
+  'this' bude recipient při jejím parsování.
+  - pokud bych si chtěl pamatovat například visibilitu v okamžiku poslání
+    zprávy, tak si ji musím uložit asi do té historie, mimo vlastní Message
+    (protože Message je sdílený záznam pro všechny, kdo jej dostali).
+TODO: Zrušit Message.recipients.
+  - Komu se pošle tell? Na to se asi přece jen bude muset recipient nastavit.
+[done]
 
 TODO: Přidat do accountu seznam charů, které mají admin práva (nebo možná na
   char flagu, že má admin práva - checkne se this.playerConnection, přes ni

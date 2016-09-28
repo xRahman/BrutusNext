@@ -36,6 +36,7 @@ import {InvalidValueProxyHandler}
 import {Server} from '../../server/Server';
 import {AdminLevel} from '../../server/AdminLevel';
 import {Syslog} from '../../server/Syslog';
+import {Message} from '../../server/message/Message';
 
 const util = require('util');
 
@@ -184,7 +185,7 @@ export class EntityProxyHandler
       (
         "Attempt to use 'in' operator on an invalid entity\n"
           + Syslog.getTrimmedStackTrace(Syslog.TrimType.PROXY_HANDLER),
-        Syslog.msgType.INVALID_ACCESS,
+        Message.Type.INVALID_ACCESS,
         AdminLevel.IMMORTAL
       );
 
@@ -250,7 +251,7 @@ export class EntityProxyHandler
       (
         "Attempt to read property '" + property + "' of an invalid entity\n"
           + Syslog.getTrimmedStackTrace(Syslog.TrimType.PROXY_HANDLER),
-        Syslog.msgType.INVALID_ACCESS,
+        Message.Type.INVALID_ACCESS,
         AdminLevel.IMMORTAL
       );
 
@@ -329,7 +330,7 @@ export class EntityProxyHandler
         "Attempt to write to property '" + property + "'"
         + " of an invalid entity\n"
         + Syslog.getTrimmedStackTrace(Syslog.TrimType.PROXY_HANDLER),
-        Syslog.msgType.INVALID_ACCESS,
+        Message.Type.INVALID_ACCESS,
         AdminLevel.IMMORTAL
       );
 
@@ -418,7 +419,7 @@ export class EntityProxyHandler
         "Attempt to read an undefined property '" + property + "'"
           + " of entity " + this.entity.getErrorIdString() + "\n"
           + Syslog.getTrimmedStackTrace(Syslog.TrimType.PROXY_HANDLER_PLUS_ONE),
-        Syslog.msgType.INVALID_ACCESS,
+        Message.Type.INVALID_ACCESS,
         AdminLevel.IMMORTAL
       );
 
