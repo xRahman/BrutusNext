@@ -10,6 +10,7 @@ import {ERROR} from '../../shared/error/ERROR';
 import {FileSystem} from '../../shared/fs/FileSystem';
 import {AdminLevel} from '../../server/AdminLevel';
 import {Syslog} from '../../server/Syslog';
+import {Message} from '../../server/message/Message';
 import {NamedEntity} from '../../shared/entity/NamedEntity';
 import {Connection} from '../../server/connection/Connection';
 import {Server} from '../../server/Server';
@@ -220,7 +221,7 @@ export class Account extends NamedEntity
     Syslog.log
     (
       accountName + " [" + ipAddress + "] " + action,
-      Syslog.msgType.SYSTEM_INFO,
+      Message.Type.SYSTEM_INFO,
       AdminLevel.IMMORTAL
     );
 
@@ -324,7 +325,7 @@ export class Account extends NamedEntity
     (
       "Player " + this.name + " has created a new character: "
       + characterName,
-      Syslog.msgType.SYSTEM_INFO,
+      Message.Type.SYSTEM_INFO,
       AdminLevel.IMMORTAL
     );
   }

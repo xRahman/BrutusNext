@@ -52,6 +52,7 @@
 // Import required classes.
 import {Syslog} from '../../server/Syslog';
 import {AdminLevel} from '../../server/AdminLevel';
+import {Message} from '../../server/message/Message';
 
 // Sends error message and a stack trace to syslog.
 export function FATAL_ERROR(message: string)
@@ -62,7 +63,7 @@ export function FATAL_ERROR(message: string)
   Syslog.log
   (
     errorMsg,
-    Syslog.msgType.FATAL_RUNTIME_ERROR,
+    Message.Type.FATAL_RUNTIME_ERROR,
     AdminLevel.IMMORTAL
   );
 

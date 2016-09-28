@@ -8,6 +8,7 @@
 
 import {Syslog} from '../../server/Syslog';
 import {AdminLevel} from '../../server/AdminLevel';
+import {Message} from '../../server/message/Message';
 
 // Built-in node.js modules.
 import * as fs from 'fs';  // Import namespace 'fs' from node.js
@@ -42,7 +43,7 @@ export class FileSystem
       Syslog.log
       (
         "Error loading file '" + filePath + "': " + reason,
-        Syslog.msgType.SYSTEM_ERROR,
+        Message.Type.SYSTEM_ERROR,
         AdminLevel.IMMORTAL
       );
 
@@ -69,7 +70,7 @@ export class FileSystem
       Syslog.log
       (
         "Error saving file '" + filePath + "': " + error.code,
-        Syslog.msgType.SYSTEM_ERROR,
+        Message.Type.SYSTEM_ERROR,
         AdminLevel.IMMORTAL
       );
 
@@ -94,7 +95,7 @@ export class FileSystem
       Syslog.log
       (
         "Error loading file '" + filePath + "': " + error.code,
-        Syslog.msgType.SYSTEM_ERROR,
+        Message.Type.SYSTEM_ERROR,
         AdminLevel.IMMORTAL
       );
 

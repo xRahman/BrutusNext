@@ -10,6 +10,7 @@ import {ERROR} from '../../shared/error/ERROR';
 import {Entity} from '../../shared/entity/Entity';
 import {Syslog} from '../../server/Syslog';
 import {AdminLevel} from '../../server/AdminLevel';
+import {Message} from '../../server/message/Message';
 import {Server} from '../../server/Server';
 import {SocketDescriptor} from '../../server/net/SocketDescriptor';
 import {Account} from '../../server/account/Account';
@@ -219,7 +220,7 @@ export class Connection extends Entity
     Syslog.log
     (
       account.name + " [" + this.ipAddress + "] has logged in",
-      Syslog.msgType.SYSTEM_INFO,
+      Message.Type.SYSTEM_INFO,
       AdminLevel.IMMORTAL
     );
 
@@ -270,7 +271,7 @@ export class Connection extends Entity
     (
       account.name + " [" + this.ipAddress + "] has reconnected."
       + " Closing the old connection",
-      Syslog.msgType.SYSTEM_INFO,
+      Message.Type.SYSTEM_INFO,
       AdminLevel.IMMORTAL
     );
 
@@ -719,7 +720,7 @@ export class Connection extends Entity
     (
       player + " [" + this.ipAddress + "]"
       + " lost (or closed) connection" + state,
-      Syslog.msgType.SYSTEM_INFO,
+      Message.Type.SYSTEM_INFO,
       AdminLevel.IMMORTAL
     );
   }

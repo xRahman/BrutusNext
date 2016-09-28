@@ -8,6 +8,7 @@
 
 import {ERROR} from '../../../shared/error/ERROR';
 import {Syslog} from '../../../server/Syslog';
+import {Message} from '../../../server/message/Message';
 import {Account} from '../../../server/account/Account';
 import {AdminLevel} from '../../../server/AdminLevel';
 import {Server} from '../../../server/Server';
@@ -242,7 +243,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     (
       player
       + " has encounterd a socket error, closing the connection. " + error,
-      Syslog.msgType.SYSTEM_ERROR,
+      Message.Type.SYSTEM_ERROR,
       AdminLevel.IMMORTAL
     );
 

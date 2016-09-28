@@ -27,6 +27,7 @@
 import {ERROR} from '../../shared/error/ERROR';
 import {Syslog} from '../../server/Syslog';
 import {AdminLevel} from '../../server/AdminLevel';
+import {Message} from '../../server/message/Message';
 
 // Built-in node.js modules.
 const vm = require('vm');
@@ -101,7 +102,7 @@ export class VirtualMachine
       (
         "Compile error in script " + scriptName + ": " + e.message,
           ///+ getTrimmedStackTrace(),
-        Syslog.msgType.SCRIPT_COMPILE_ERROR,
+        Message.Type.SCRIPT_COMPILE_ERROR,
         AdminLevel.IMMORTAL
       );
 
@@ -157,7 +158,7 @@ export class VirtualMachine
       (
         "Failed to create function from mud script "
         + scriptName + ": " + e.message,
-        Syslog.msgType.SCRIPT_COMPILE_ERROR,
+        Message.Type.SCRIPT_COMPILE_ERROR,
         AdminLevel.IMMORTAL
       );
       /*
