@@ -16,6 +16,7 @@ import {PrototypeManager} from '../shared/prototype/PrototypeManager';
 import {Message} from '../server/message/Message';
 import {MessagePart} from '../server/message/MessagePart';
 import {Server} from '../server/Server';
+import {AdminLevel} from '../server/AdminLevel';
 import {GameEntity} from '../game/GameEntity';
 import {CharacterList} from '../game/character/CharacterList';
 import {World} from '../game/world/World';
@@ -68,17 +69,14 @@ export class Game
   (
     sender: GameEntity,
     text: string,
-    messageType: Message.Type
+    msgType: Message.Type,
+    visibility: AdminLevel
   )
   {
-    let message = new Message();
+    let message = new Message(msgType);
 
-    message.type = messageType;
-    message.sender = sender;
-    message.target = Message.Target.ALL_IN_GAME;
     message.addMessagePart(text, MessagePart.Type.SAME_AS_MESSAGE);
-
-    message.send();
+    message.sendToAllInGame(sender, visibility);
   }
 
   // ---------------- Public methods --------------------
