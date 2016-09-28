@@ -76,7 +76,7 @@ export class Game
     let message = new Message(msgType);
 
     message.addMessagePart(text, MessagePart.Type.SAME_AS_MESSAGE);
-    message.sendToAllInGame(sender, visibility);
+    message.sendToAllIngameConnections(sender, visibility);
   }
 
   // ---------------- Public methods --------------------
