@@ -123,7 +123,7 @@ export class Syslog
 
 // ------------------ Type declarations ----------------------
 
-// Module is exported so you can use Syslog.TrimType from outside this file.
+// Module is exported so you can use enum type from outside this file.
 // It must be declared after the class because Typescript says so...
 export module Syslog
 {

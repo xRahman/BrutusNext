@@ -61,9 +61,8 @@ export class MessagePart
 
 // ------------------ Type declarations ----------------------
 
-// Module is exported so you can use MessagePart.Type from outside
-// this file. It must be declared after the class because Typescript
-// says so...
+// Module is exported so you can use enum type from outside this file.
+// It must be declared after the class because Typescript says so...
 export module MessagePart
 {
   export enum Type
