@@ -1,3 +1,9 @@
+TODO: Static metoda Server.getAdminLevel();
+  - metoda serveru a ne entity, aby si ji entita nemohla predefinovat
+    a vracet creatora ;-)
+
+TODO: Visibility dává smysl jen u sendToAllIngameConnections
+
 TODO: class Admins by se asi měla jmenovat spíš AdminList.
 
 TODO: Je dobrý nápad nastavovat messagi target?
@@ -6,13 +12,18 @@ TODO: Je dobrý nápad nastavovat messagi target?
    sendToShoutingDistance(), sendToAllInGame(), SendToAllConnections()).
   - v těhle funkcích se pak případně může zapamatovat, komu jsem to
     posílal a tak.
+[done]
 
 TODO: Kdo bude sender u Syslog messagů? Standardní message se filtrují
   podle visibility sendera...
   - možná přiadat do sendu parametr reciever_level s defaultní hodnotou
     MORTAL?
     (možná jen do plošných sendů. "Tady máš message speciálně pro tebe, ale
-     nemůžeš si ho přečíst, protože na to nemáš admin level" je asi blbost :-)) 
+     nemůžeš si ho přečíst, protože na to nemáš admin level" je asi blbost :-))
+- sender bude null.
+- visibility už jde messagům předávat (ale nekontroluje se ;-)).
+
+TODO: Chekovat u messagů visibility. 
 
 TODO: Co když je imm do něčeho switchnutý?
   - asi se mu budou message bufferovat, podobně jako když je LD, a vypíšou
