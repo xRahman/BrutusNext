@@ -29,9 +29,16 @@ import {GameEntity} from '../../game/GameEntity';
 
 export class Message
 {
-  constructor(msgType: Message.Type)
+  // Use 'text' parameter for single-part messages. Ommit it and call
+  // message.addMessagePart() for multi-part messages.
+  constructor(msgType: Message.Type, text: string = null)
   {
     this.type = msgType;
+
+    if (text !== null)
+    {
+      this.addMessagePart(text, MessagePart.Type.SAME_AS_MESSAGE);
+    }
   }
 
   // -------------- Static class data -------------------
@@ -313,9 +320,8 @@ export class Message
     - zkusím druhou možnost, uvidíme.
 */
 
-// Module is exported so you can use Message.Type and Message.Target
-// from outside this file. It must be declared after the class because
-// Typescript says so...
+// Module is exported so you can use enum type from outside this file.
+// It must be declared after the class because Typescript says so...
 export module Message
 {
   export enum Type
