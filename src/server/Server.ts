@@ -18,11 +18,13 @@ import {FATAL_ERROR} from '../shared/error/FATAL_ERROR';
 import {EntityManager} from '../shared/entity/EntityManager';
 import {FileSystem} from '../shared/fs/FileSystem';
 import {FlagNamesManager} from '../shared/flags/FlagNamesManager';
+import {AdminList} from '../server/AdminList';
 import {Connection} from '../server/connection/Connection';
 import {EntityList} from '../shared/entity/EntityList';
 import {ClassFactory} from '../shared/ClassFactory';
 import {AccountList} from '../server/account/AccountList';
 import {Game} from '../game/Game';
+import {GameEntity} from '../game/GameEntity';
 import {TelnetServer} from '../server/net/telnet/TelnetServer';
 import {HttpServer} from '../server/net/http/HttpServer';
 import {Account} from '../server/account/Account';
@@ -34,6 +36,9 @@ export class Server
   protected static instance: Server;
 
   // -------------- Private class data -----------------
+
+  // Keeps track of who has which admin rights.
+  private adminList = new AdminList();
 
   private timeOfBoot = new Date();
 
@@ -122,6 +127,11 @@ export class Server
       FATAL_ERROR("Instance of server doesn't exist yet");
 
     return Server.instance;
+  }
+
+  public static getAdminLevel(entity: GameEntity)
+  {
+    return Server.getInstance().adminList.getAdminLevel(entity);
   }
 
   // Creates an instance of a server. Server is a singleton, so it must
