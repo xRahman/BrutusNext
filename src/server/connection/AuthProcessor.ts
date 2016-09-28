@@ -207,6 +207,12 @@ export class AuthProcessor
 
   protected getNewPassword(password: string)
   {
+    if (this.connection === null)
+    {
+      ERROR("Null conection. Password is not processed");
+      return;
+    }
+
     if (!this.isPasswordValid(password))
       // We don't advance the stage so the next user input will trigger
       // a getNewPassword() again.
@@ -229,12 +235,6 @@ export class AuthProcessor
       // a getNewPassword() again.
       // (error message is already handled by createAccount())
       return;
-
-    /// DEBUG:
-    if (this.connection === null)
-    {
-      ERROR("Null conection in AuthProcessor");
-    }
 
     Syslog.log
     (

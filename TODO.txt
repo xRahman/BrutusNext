@@ -1,3 +1,23 @@
+TODO: class Admins by se asi měla jmenovat spíš AdminList.
+
+TODO: Je dobrý nápad nastavovat messagi target?
+- možná by bylo lepší prostě zavolat příslušnou metodu
+  (sendToConnection(), sendToGameEntity(), sendToAllInRoom(),
+   sendToShoutingDistance(), sendToAllInGame(), SendToAllConnections()).
+  - v těhle funkcích se pak případně může zapamatovat, komu jsem to
+    posílal a tak.
+
+TODO: Kdo bude sender u Syslog messagů? Standardní message se filtrují
+  podle visibility sendera...
+  - možná přiadat do sendu parametr reciever_level s defaultní hodnotou
+    MORTAL?
+    (možná jen do plošných sendů. "Tady máš message speciálně pro tebe, ale
+     nemůžeš si ho přečíst, protože na to nemáš admin level" je asi blbost :-)) 
+
+TODO: Co když je imm do něčeho switchnutý?
+  - asi se mu budou message bufferovat, podobně jako když je LD, a vypíšou
+    se, když se odswitchne.
+
 TODO: Syslog by se měl posílat charům (které na to mají admin level)
 
 TODO: Předělat posílání všech stringů ve hře, aby používaly Message.

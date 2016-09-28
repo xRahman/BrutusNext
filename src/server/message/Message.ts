@@ -24,26 +24,34 @@ import {ERROR} from '../../shared/error/ERROR';
 import {Server} from '../../server/Server';
 import {Connection} from '../../server/connection/Connection';
 import {MessagePart} from '../../server/message/MessagePart';
+import {AdminLevel} from '../../server/AdminLevel';
 import {GameEntity} from '../../game/GameEntity';
 
 export class Message
 {
+  constructor(msgType: Message.Type)
+  {
+    this.type = msgType;
+  }
+
   // -------------- Static class data -------------------
 
   // ---------------- Public class data -----------------
 
-  public sender: GameEntity = null;
-  public type: Message.Type = null;
-  public target: Message.Target = null;
-  public sendToSelf = true;
+  ///public target: Message.Target = null;
+  ///public sendToSelf = true;
 
   // -------------- Private class data -----------------
 
+  /*
   // Recipient should only be set when this.type is
-  // Message.Type.SINGLE_RECIPIENT and thissendToSelf
+  // Message.Type.SINGLE_RECIPIENT and this.sendToSelf
   // is false.
   private recipient: GameEntity = null;
+  */
 
+  private sender: GameEntity = null;
+  private type: Message.Type = null;
   private messageParts: Array<MessagePart> = null;
 
   // --------------- Static accessors -------------------
@@ -62,6 +70,7 @@ export class Message
     this.messageParts.push(messagePart);
   }
 
+  /*
   // Use this if the message should only be sent to one target.
   public setRecipient(recipient: GameEntity)
   {
@@ -88,7 +97,9 @@ export class Message
 
     this.recipient = recipient;
   }
+  */
 
+  /*
   // Sends the message to all of it's recipients.
   public send()
   {
@@ -124,6 +135,109 @@ export class Message
       default:
         ERROR("Unknown message target");
         break;
+    }
+  }
+  */
+
+  // Sends the message directly to player connection. This is used
+  // to send message to player is menu, entering password, etc.,
+  // who don't have ingame entity attached.
+  private sendToConnection(sender: GameEntity, connection: Connection)
+  {
+    /// Tohle je trochu divné. Když pošlu message všem na mudu (třeba INFO),
+    /// tak se this.message nastaví tolikrát, kolik bude adresátů.
+    /// - Moc nevím, co s tím. Je teda otázka, jestli je vůbec potřeba single
+    ///   sendera pamatovat (ale asi jo, abych mohl kontrolovat visibilitu,
+    //    když budu procházet message history).
+    this.sender = sender;
+
+    if (connection.isValid() === false)
+    {
+      ERROR("Invalid target connection. Message is not sent");
+      return;
+    }
+
+    let data = this.composeRawMessage();
+    
+    switch (this.type)
+    {
+      // /// Posílání samothéno promptu skrz message asi nebude k ničemu potřeba,
+      // /// uvidíme.
+      // case Message.Type.PROMPT:
+      //   // Send data to the connection without adding any newlines.
+      //   // (It means that player will type right next to this output.)
+      //   connection.sendAsPrompt(data);
+      //   break;
+      
+      default:
+        // Send data as block, followed by prompt.
+        // (It means that a newline or an empty line will be added to data,
+        //  followed by player's prompt.)
+        connection.sendAsBlock(data);
+        break;
+    }
+  }
+
+  // Send the message to a single game entity.
+  // 'sender' can be null (for example for command output).
+  public sendToGameEntity(sender: GameEntity, target: GameEntity)
+  {
+    if (target === null || target.isValid() === false)
+    {
+      ERROR("Invalid message recipient. Message is not sent");
+      return;
+    }
+
+    // Null connection means that no player is connected to this entity. 
+    if (target.connection === null)
+    {
+      target.addOfflineMessage(sender, this);
+    }
+    else
+    {
+      this.sendToConnection(sender, target.connection);
+    }
+  }
+
+  public sendToRoom(sender: GameEntity)
+  {
+    // TODO
+  }
+
+  public sendToShout(sender: GameEntity)
+  {
+    // TODO
+
+    /// Pozn: Shouting distance (počet roomů) přečíst ze sendera.
+  }
+
+  public sendToAllInGame(sender: GameEntity, visibility: AdminLevel)
+  {
+    this.sendToAllConnections(sender, { onlyInGame: true }, visibility);
+  }
+
+  public sendToAllConnections
+  (
+    sender: GameEntity, 
+    param: { onlyInGame: boolean },
+    visibility: AdminLevel
+  )
+  {
+    let connections = Server.connections.getEntities();
+    let connection: Connection = null;
+
+    for (connection of connections.values())
+    {
+      // Skip invalid connections.
+      if (connection === null || !connection.isValid())
+        break;
+
+      // Skip connections that don't have an ingame entity attached
+      // if we are only sending to ingame entities.
+      if (param.onlyInGame === true && connection.ingameEntity === null)
+        break;
+
+      this.sendToConnection(sender, connection);
     }
   }
 
@@ -165,94 +279,12 @@ export class Message
 
     return data;
   }
-
-  private sendToEntity(target: GameEntity)
-  {
-    if (target === null || target.isValid() === false)
-    {
-      ERROR("Invalid message recipient. Message is not sent");
-      return;
-    }
-
-    // Null connection means that no player is connected to this entity. 
-    if (target.connection === null)
-      target.addOfflineMessage(this);
-
-
-    this.sendToConnection(target.connection);
-  }
-
-  private sendToConnection(connection: Connection)
-  {
-    if (connection.isValid() === false)
-    {
-      ERROR("Invalid message recipient. Message is not sent");
-      return;
-    }
-
-    let data = this.composeRawMessage();
-    
-    switch (this.type)
-    {
-      // /// Posílání samothéno promptu skrz message asi nebude k ničemu potřeba,
-      // /// uvidíme.
-      // case Message.Type.PROMPT:
-      //   // Send data to the connection without adding any newlines.
-      //   // (It means that player will type right next to this output.)
-      //   connection.sendAsPrompt(data);
-      //   break;
-      
-      default:
-        // Send data as block, followed by prompt.
-        // (It means that a newline or an empty line will be added to data,
-        //  followed by player's prompt.)
-        connection.sendAsBlock(data);
-        break;
-    }
-  }
-
-  private sendToRoom()
-  {
-    // TODO
-  }
-
-  private sendToShout()
-  {
-    // TODO
-
-    /// Pozn: Shouting distance (počet roomů) přečíst ze sendera.
-  }
-
-  private sendToGame()
-  {
-    this.sendToAllConnections({ onlyInGame: true });
-  }
-
-  private sendToAllConnections(param: { onlyInGame: boolean })
-  {
-    let connections = Server.connections.getEntities();
-    let connection: Connection = null;
-
-    for (connection of connections.values())
-    {
-      // Skip invalid connections.
-      if (connection === null || !connection.isValid())
-        break;
-
-      // Skip connections that don't have an ingame entity attached
-      // if we are only sending to ingame entities.
-      if (param.onlyInGame === true && connection.ingameEntity === null)
-        break;
-
-      this.sendToConnection(connection);
-    }
-  }
 }
 
 // ------------------ Type declarations ----------------------
 
 /*
-  Pozn: Jedna možnost je používat Cathegory a pak nějaké subcathegory,
+  Pozn: Jedna možnost je používat Cathegory a pak nějaké Subcathegory,
     druhá možnost je udělat enum co nejpodrobnější a nad ním postavit
     nějaké grupy (třeba metodou isCommunication, která prostě vyjmenuje
     všechny hodnoty enumu, které spadají do komunikace).
@@ -277,12 +309,21 @@ export module Message
     EMOTE,
     INFO,
     // --------------------- Syslog messages ---------------------
+    // Sent when ERROR() triggered somewhere in code.
     RUNTIME_ERROR,
+    // Sent when FATAL_ERROR() triggers somewhere in code.
     FATAL_RUNTIME_ERROR,
+    // System reports that something is ok (game is successfuly loaded, etc.).
     SYSTEM_INFO,
+    // System reports that something didn't go as expected
+    // (socket errors, file read errors, etc.)
     SYSTEM_ERROR,
+    // Sent when ingame script fails to compile (for example due to syntax errors).
     SCRIPT_COMPILE_ERROR,
+    // Sent when ingame script encounters runtime error.
     SCRIPT_RUNTIME_ERROR,
+    // Send when someone tries to access invalid entity reference
+    // or invalid value variable.
     INVALID_ACCESS,
     // --------------------- Prompt messages ---------------------
     /// Prompt se asi bude přilepovat automaticky.
@@ -298,10 +339,14 @@ export module Message
     INSPECT 
   }
 
+  /*
   // Note: Whether sender should receive the message or not
   //   is indicated by sendToSelf flag.
   export enum Target
   {
+    // This is used to send messages to player in menu, entering password, etc.
+    // (They don't have a game entity attached yet.)
+    CONNECTION,
     SINGLE_RECIPIENT,
     ALL_IN_ROOM,
     ALL_IN_SHOUTING_DISTANCE,
@@ -312,4 +357,5 @@ export module Message
     // in OLC, entering their password, etc.
     ALL_ACTIVE_CONNECTIONS
   }
+  */
 }
