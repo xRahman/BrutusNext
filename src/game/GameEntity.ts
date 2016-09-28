@@ -102,9 +102,8 @@ export class GameEntity extends ContainerEntity
     msgType: Message.Type
   )
   {
-    let message = new Message(msgType);
+    let message = new Message(msgType, text);
 
-    message.addMessagePart(text, MessagePart.Type.SAME_AS_MESSAGE);
     message.sendToGameEntity(sender, this);
   }
 

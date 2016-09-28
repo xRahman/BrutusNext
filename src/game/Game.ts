@@ -73,9 +73,8 @@ export class Game
     visibility: AdminLevel
   )
   {
-    let message = new Message(msgType);
-
-    message.addMessagePart(text, MessagePart.Type.SAME_AS_MESSAGE);
+    let message = new Message(msgType, text);
+    
     message.sendToAllIngameConnections(sender, visibility);
   }
 
