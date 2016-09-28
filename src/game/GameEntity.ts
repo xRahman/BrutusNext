@@ -99,17 +99,13 @@ export class GameEntity extends ContainerEntity
   (
     sender: GameEntity,
     text: string,
-    messageType: Message.Type
+    msgType: Message.Type
   )
   {
-    let message = new Message();
+    let message = new Message(msgType);
 
-    message.type = messageType;
-    message.sender = sender;
-    message.setRecipient(this);
     message.addMessagePart(text, MessagePart.Type.SAME_AS_MESSAGE);
-
-    message.send();
+    message.sendToGameEntity(sender, this);
   }
 
   /*
@@ -207,7 +203,7 @@ export class GameEntity extends ContainerEntity
   }
   */
 
-  public addOfflineMessage(message: Message)
+  public addOfflineMessage(sender: GameEntity, message: Message)
   {
     /// TODO
     /// (Přidávání offline zpráv do fronty, výpis offline zpráv
