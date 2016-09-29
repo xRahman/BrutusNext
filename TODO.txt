@@ -1,44 +1,20 @@
-TODO: Řešit jinak single-part a jinak multi-part message, minimálně
-  teda při vytváření. Volat na single-part messagi extra addMessagePart()
-  je opruz.
-  - asi to oiffovat v konstruktoru, že parametr 'text' je volitelný.
-    (nebo možná volitelný parametr messagePartType).
-- hlavně bych chtěl vyhodit partType SAME_AS_MESSAGE, což bych asi udělal
-  přesunem textu u jednopartového message přímo do message. Ale pak by mi
-  zas chyběla metoda format(), hmm. 
+TODO: V LobbyProcessoru predelat menu
+- po zalozeni accountu tam bude:
+     0) Quit game
+     1) Create new character
+- po zalozeni prvniho charu tam bude:
+     0) Quit game
+     1) Enter game as Zuzka
+     2) Create new character
 
-TODO: Static metoda Server.getAdminLevel();
-  - metoda serveru a ne entity, aby si ji entita nemohla predefinovat
-    a vracet creatora ;-)
+TODO: Projít celý kód a ze všech protected funkcí, které nemusí být
+  protected, udělat private.
 
-TODO: Visibility dává smysl jen u sendToAllIngameConnections
-
-TODO: class Admins by se asi měla jmenovat spíš AdminList.
-
-TODO: Je dobrý nápad nastavovat messagi target?
-- možná by bylo lepší prostě zavolat příslušnou metodu
-  (sendToConnection(), sendToGameEntity(), sendToAllInRoom(),
-   sendToShoutingDistance(), sendToAllInGame(), SendToAllConnections()).
-  - v těhle funkcích se pak případně může zapamatovat, komu jsem to
-    posílal a tak.
-[done]
-
-TODO: Kdo bude sender u Syslog messagů? Standardní message se filtrují
-  podle visibility sendera...
-  - možná přiadat do sendu parametr reciever_level s defaultní hodnotou
-    MORTAL?
-    (možná jen do plošných sendů. "Tady máš message speciálně pro tebe, ale
-     nemůžeš si ho přečíst, protože na to nemáš admin level" je asi blbost :-))
-- sender bude null.
-- visibility už jde messagům předávat (ale nekontroluje se ;-)).
-
-TODO: Chekovat u messagů visibility. 
+TODO Po promotu/demotu savnout AdminList.
 
 TODO: Co když je imm do něčeho switchnutý?
   - asi se mu budou message bufferovat, podobně jako když je LD, a vypíšou
     se, když se odswitchne.
-
-TODO: Syslog by se měl posílat charům (které na to mají admin level)
 
 TODO: Předělat posílání všech stringů ve hře, aby používaly Message.
 
@@ -258,6 +234,51 @@ TODO: Zrušit z entity proměnné SAVE_DIRECTORY
 Vyhledove rozbehat tslint
 
 ===============================================================================
+
+TODO: Syslog by se měl posílat charům (které na to mají admin level)
+[done]
+
+TODO: Řešit jinak single-part a jinak multi-part message, minimálně
+  teda při vytváření. Volat na single-part messagi extra addMessagePart()
+  je opruz.
+  - asi to oiffovat v konstruktoru, že parametr 'text' je volitelný.
+    (nebo možná volitelný parametr messagePartType).
+- hlavně bych chtěl vyhodit partType SAME_AS_MESSAGE, což bych asi udělal
+  přesunem textu u jednopartového message přímo do message. Ale pak by mi
+  zas chyběla metoda format(), hmm. 
+[done]
+
+TODO: Static metoda Server.getAdminLevel();
+  - metoda serveru a ne entity, aby si ji entita nemohla predefinovat
+    a vracet creatora ;-)
+[done]
+
+TODO: Visibility dává smysl jen u sendToAllIngameConnections
+[done]
+
+TODO: class Admins by se asi měla jmenovat spíš AdminList.
+[done]
+
+TODO: Je dobrý nápad nastavovat messagi target?
+- možná by bylo lepší prostě zavolat příslušnou metodu
+  (sendToConnection(), sendToGameEntity(), sendToAllInRoom(),
+   sendToShoutingDistance(), sendToAllInGame(), SendToAllConnections()).
+  - v těhle funkcích se pak případně může zapamatovat, komu jsem to
+    posílal a tak.
+[done]
+
+TODO: Kdo bude sender u Syslog messagů? Standardní message se filtrují
+  podle visibility sendera...
+  - možná přiadat do sendu parametr reciever_level s defaultní hodnotou
+    MORTAL?
+    (možná jen do plošných sendů. "Tady máš message speciálně pro tebe, ale
+     nemůžeš si ho přečíst, protože na to nemáš admin level" je asi blbost :-))
+- sender bude null.
+- visibility už jde messagům předávat (ale nekontroluje se ;-)).
+[done]
+
+TODO: Chekovat u messagů visibility.
+[done]
 
 TODO: Funkce Entity.send(sender, string) by přece jen mohla existovat,
   interně vyrobí Message a pošle si ho.

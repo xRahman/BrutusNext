@@ -18,6 +18,7 @@
 'use strict';
 
 import {ERROR} from '../shared/error/ERROR';
+import {Utils} from '../shared/Utils';
 import {NameSearchList} from '../shared/entity/NameSearchList';
 import {EntityList} from '../shared/entity/EntityList';
 import {GameEntity} from "../game/GameEntity";
@@ -127,10 +128,12 @@ export class AbbrevSearchList extends NameSearchList
     }
   }
 
-  private isAbbrev(partialString: string, fullString: string): boolean
-  {
-    return fullString.indexOf(partialString) !== -1;
-  }
+  /// Moved to Utils.ts
+  // private isAbbrev(partialString: string, fullString: string): boolean
+  // {
+  //   return fullString.indexOf(partialString) !== -1;
+  // }
+  
 
   private addEntityToAbbreviation(abbrev: string, entity: GameEntity)
   {
@@ -438,24 +441,24 @@ export class AbbrevSearchList extends NameSearchList
   {
     let cathegory = AbbrevSearchList.searchCathegory.ANYTHING;
 
-    if (this.isAbbrev(cathegoryString, "mob"))
+    if (Utils.isAbbrev(cathegoryString, "mob"))
       cathegory = AbbrevSearchList.searchCathegory.MOB;
 
-    if (this.isAbbrev(cathegoryString, "player")
-      || this.isAbbrev(cathegoryString, "plr"))
+    if (Utils.isAbbrev(cathegoryString, "player")
+      || Utils.isAbbrev(cathegoryString, "plr"))
       cathegory = AbbrevSearchList.searchCathegory.PLAYER;
 
-    if (this.isAbbrev(cathegoryString, "follower"))
+    if (Utils.isAbbrev(cathegoryString, "follower"))
       cathegory = AbbrevSearchList.searchCathegory.FOLLOWER;
 
-    if (this.isAbbrev(cathegoryString, "charmed"))
+    if (Utils.isAbbrev(cathegoryString, "charmed"))
       cathegory = AbbrevSearchList.searchCathegory.CHARMED;
 
-    if (this.isAbbrev(cathegoryString, "group")
-      || this.isAbbrev(cathegoryString, "grp"))
+    if (Utils.isAbbrev(cathegoryString, "group")
+      || Utils.isAbbrev(cathegoryString, "grp"))
       cathegory = AbbrevSearchList.searchCathegory.GROUP;
 
-    if (this.isAbbrev(cathegoryString, "object"))
+    if (Utils.isAbbrev(cathegoryString, "object"))
       cathegory = AbbrevSearchList.searchCathegory.OBJECT;
 
     return cathegory;

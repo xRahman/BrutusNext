@@ -209,7 +209,8 @@ export class AuthProcessor
   {
     if (this.connection === null)
     {
-      ERROR("Null conection. Password is not processed");
+      ERROR("Null conection on account " + this.accountName + "."
+        + " Password is not processed");
       return;
     }
 
