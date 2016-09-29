@@ -123,18 +123,33 @@ export class LobbyProcessor
 
   protected async processMenuChoice(choice: string)
   {
+    /*
+    // We use our own function to parse number from the string,
+    // because javascript string->number conversion are totally
+    // crazy.
+    let index = this.parseIndex(choice);
+    */
+
     switch (choice)
     {
       case "0": // Quit the game.
         this.quitGame();
         break;
 
-      case "1": // Enter the game.
-        await this.enterGame();
+      case "1": // Create new character.
+        this.createCharacter();
         break;
 
+/*
+      case "2": // Enter the game.
+        await this.enterGame();
+        break;
+*/
+
       default:
-        this.connection.sendAsBlock("\nThat's not a menu choice!");
+        if (await this.processCharacterChoice(choice) === false)
+          // TODO: Posílat message, ne přímo string
+          this.connection.sendAsBlock("\nThat's not a menu choice!");
         break;
     }
   }
@@ -146,7 +161,8 @@ export class LobbyProcessor
     this.connection.quitGame();
   }
 
-  protected async enterGame()
+/*
+  protected async enterGame(charIndex: number)
   {
     let account = this.connection.account;
 
@@ -155,6 +171,8 @@ export class LobbyProcessor
       ERROR("Invalid account on connection");
       return;
     }
+
+    /// TODO: Check, že charIndex ukazuje na existující character.
 
     // Create a new character if there is none on this account yet.
     /// (for now player can only have one character and her name is the
@@ -180,8 +198,9 @@ export class LobbyProcessor
       await this.enterGameAsCharacter(characterName);
     }
   }
+  */
 
-  protected async enterGameAsCharacter(characterName: string)
+  protected async enterGame(characterName: string)
   {
     this.stage = LobbyProcessor.stage.NOT_IN_LOBBY;
 
@@ -203,6 +222,7 @@ export class LobbyProcessor
     }
   }
 
+  /*
   protected createCharacterAndEnterGame(account: Account)
   {
     if (this.connection === null)
@@ -236,6 +256,7 @@ export class LobbyProcessor
     this.attachConnectionToGameEntity(character);
     this.connection.enterGame();
   }
+  */
   
   protected async loadCharacter(characterName: string)
   {
@@ -286,5 +307,40 @@ export class LobbyProcessor
   protected attachConnectionToGameEntity(gameEntity: GameEntity)
   {
     this.connection.attachToGameEntity(gameEntity);
+  }
+
+  // ---------------- Private methods --------------------
+
+  private async processCharacterChoice(choice: string)
+  {
+    let account = this.connection.account;
+
+    if (account === null)
+    {
+      ERROR("Invalid account on connection");
+      return;
+    }
+
+    // 'getCharacterNameByAbbrev()' returns null if 'choice'
+    // isn't an abbreviation of any character names on account.
+    let characterName = account.getCharacterNameByAbbrev(choice);
+
+    if (characterName === null)
+      return false;
+      
+    await this.enterGame(characterName);
+
+    return true;
+  }
+
+  private createCharacter()
+  {
+    /// TODO
+
+    /*
+    let character = account.createCharacter(account.name);
+
+    Server.onCharacterCreation(character);
+    */
   }
 }
