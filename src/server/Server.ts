@@ -129,6 +129,14 @@ export class Server
     return Server.instance;
   }
 
+  // If there are no admins yet, sets the highest possible admin rights
+  // to the character (in other words, the first character created when
+  // the mud is 'freshly installed' gets maximum admin rights).
+  public static onCharacterCreation(character: GameEntity)
+  {
+    Server.getInstance().adminList.onCharacterCreation(character);
+  }
+
   public static getAdminLevel(entity: GameEntity)
   {
     return Server.getInstance().adminList.getAdminLevel(entity);

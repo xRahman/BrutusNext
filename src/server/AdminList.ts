@@ -59,14 +59,14 @@ export class AdminList extends AutoSaveableObject
 
   // ---------------- Public methods --------------------
 
-  public onCharacterEnteringGame(character: Character)
+  public onCharacterEnteringGame(character: GameEntity)
   {
     /// TODO
     /// Pokud je character immortal, ak mu setnout referenci
     // na Server.admins, aby přes ni mohl promotovat, demotovat a tak.
   }
 
-  public onCharacterCreation(character: Character)
+  public onCharacterCreation(character: GameEntity)
   {
     // If there is no other character with admin rights when
     // a new character is created, make this new character
