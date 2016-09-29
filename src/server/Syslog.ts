@@ -17,6 +17,7 @@
 ///       zapisoval do log filu.
 
 import {Message} from '../server/message/Message';
+import {AdminLevel} from '../server/AdminLevel';
 
 /*
 enum TrimType
@@ -52,18 +53,24 @@ export class Syslog
   // of required or greater level.
   public static log
   (
-    message: string,
+    text: string,
     msgType: Message.Type,
-    level: number
+    adminLevel: AdminLevel
   )
   {
-    // TODO: Kontrolovat level charu, az bude existovat
-    // (zatim se loguje vsechno)
-    if (true)
-    ///if (level.value >= char.level)
-    {
-      console.log("[" + Message.Type[msgType] + "] " + message);
-    }
+    let entry = "[" + Message.Type[msgType] + "] " + text;
+    let message = new Message(msgType, entry);
+
+    // Send log entry to all online characters that have appropriate
+    // admin level. Syslog messages don't have sender ('sender'
+    // parameter is null).
+    message.sendToAllIngameConnections(null, adminLevel);
+    
+    // Output to stdout.
+    console.log(entry);
+
+    // Output to log file.
+    /// TODO
   }
 
   // Creates Error() object, reads stack trace from it.

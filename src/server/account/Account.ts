@@ -7,6 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../shared/error/ERROR';
+import {Utils} from '../../shared/Utils';
 import {FileSystem} from '../../shared/fs/FileSystem';
 import {AdminLevel} from '../../server/AdminLevel';
 import {Syslog} from '../../server/Syslog';
@@ -63,13 +64,26 @@ export class Account extends NamedEntity
   */
 
   // List of character names this account has access to.
-  public characters: Array<string> = [];
+  public characterNames: Array<string> = [];
 
   // timeOfCreation initializes to current time, but for existing
   // accounts will be overwritten when loading from file. 
   public timeOfCreation = new Date();
 
   // ---------------- Public methods --------------------
+
+  // -> Returns full name of the character matching to 'abbrev'.
+  // -> Returns 'null' if no match is found.
+  public getCharacterNameByAbbrev(abbrev: string): string
+  {
+    for (let characterName of this.characterNames)
+    {
+      if (Utils.isAbbrev(abbrev, characterName))
+        return characterName;
+    }
+
+    return null;
+  }
 
   // Overrides Entity.getSaveSubDirectory().
   protected static getSaveSubDirectory()
@@ -170,7 +184,7 @@ export class Account extends NamedEntity
 
   public getNumberOfCharacters(): number
   {
-    return this.characters.length;
+    return this.characterNames.length;
   }
 
   public getCharacterName(charNumber: number): string
@@ -185,7 +199,7 @@ export class Account extends NamedEntity
       return null;
     }
 
-    return this.characters[charNumber];
+    return this.characterNames[charNumber];
   }
 
   public updateLastLoginInfo()
@@ -296,7 +310,7 @@ export class Account extends NamedEntity
     /// vyhodu, ze si nemusim nekde stranou drzet seznam existujicich jmen,
     /// muzu proste checknout, jestli existuje soubor daneho jmena.
 
-    this.characters.push(characterName);
+    this.characterNames.push(characterName);
 
     // This doesn't need to be synchronous.
     this.save();
