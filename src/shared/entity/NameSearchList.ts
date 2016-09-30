@@ -13,7 +13,7 @@ import {Entity} from '../../shared/entity/Entity';
 
 export class NameSearchList extends EntityList
 {
-  // -------------- Private class data ----------------
+  //------------------ Private data ---------------------
 
   // Hashmap<[ string, Entity ]>
   //   Key: string id

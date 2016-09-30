@@ -1,3 +1,26 @@
+TODO: Asi přejmenovat MessagePart.format na MessagePart.addBaseColor()
+[done]
+
+TODO: Šaškování s promptem přesunout z Connection do Message.
+- bude se vůbec nějakej message posílat jinak než jako prompt?
+  - multipart message totiž asi řeší kusy, které se jako prompt neposílají.
+
+TODO: Zavést color code pro message_base_color (aby se dala měnit barva
+  celé zprávy s tím, že to zachová barvu zvýrazněných slov).
+[done]
+
+TODO: Zrušit color kódy z AUTH_PROMPT messagů, přidávat je až v classe
+  Message.
+  - částečně done. Z messagů jsou zrušeny, ještě se ale nepřidávají
+    v Message (respektive MessagePart.format().
+
+TODO: Zautomatizovat přidávání mezery za prompt mesage.
+  - asi v Message.composeRawMessage().
+
+TODO: Connection bude mít public metodu send(), která bude jako parametr
+  chtít Message (aby se nedalo volat connection.send() přímo).
+  - ta pak zavolá message.getRawText().
+
 TODO: V LobbyProcessoru predelat menu
 - po zalozeni accountu tam bude:
      0) Quit game

@@ -12,7 +12,7 @@ import {AttributableClass} from '../shared/AttributableClass';
 export class EditableObject extends AttributableClass
 {
 
-  // -------------- Protected class data ----------------
+  //----------------- Protected data --------------------
 
 
   // -------------- Protected methods -------------------

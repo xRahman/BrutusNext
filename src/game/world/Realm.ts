@@ -51,7 +51,7 @@ export class Realm extends GameEntity
   }
   */
 
-  // -------------- Protected class data ----------------
+  //----------------- Protected data --------------------
 
   // --------------- Protected methods ------------------
 

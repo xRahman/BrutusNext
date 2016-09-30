@@ -35,6 +35,7 @@
 'use strict';
 
 import {ERROR} from '../../shared/error/ERROR';
+import {Utils} from '../../shared/Utils';
 import {EntityManager} from '../../shared/entity/EntityManager';
 import {Syslog} from '../../server/Syslog';
 import {AdminLevel} from '../../server/AdminLevel';
@@ -46,17 +47,15 @@ import {AccountList} from '../../server/account/AccountList';
 
 export class AuthProcessor
 {
-  /*
-  // In this special case it's ok to hold direct reference to
-  // Connection, because instance of AuthProcessor
-  // is owned by the very Connection we are storing reference
-  // of here. In any other case, unique stringId of Connection (within
-  // Server.connections) needs to be used instead of a direct reference!
-  */
-  constructor(protected connection: Connection) { }
-
   public static get MAX_ACCOUNT_NAME_LENGTH() { return 12; }
   public static get MIN_ACCOUNT_NAME_LENGTH() { return 2; }
+
+  constructor(protected connection: Connection) { }
+
+  //------------------ Private data ---------------------
+
+  private stage = AuthProcessor.Stage.INITIAL;
+  private accountName = "";
 
   // ---------------- Public methods --------------------
 
@@ -66,30 +65,30 @@ export class AuthProcessor
   {
     switch (this.stage)
     {
-      case AuthProcessor.stage.INITIAL:
+      case AuthProcessor.Stage.INITIAL:
         ERROR("AuthProcessor has not yet been initialized, it is not"
           + " supposed to process any commands yet");
       break;
 
-      case AuthProcessor.stage.LOGIN:
+      case AuthProcessor.Stage.LOGIN:
         this.loginAttempt(command);
       break;
 
-      case AuthProcessor.stage.PASSWORD:
+      case AuthProcessor.Stage.PASSWORD:
         ///// DEBUG:
         //console.log("AuthProcessor.stage.PASSWORD");
         //process.exit(1);
         await this.checkPassword(command);
       break;
 
-      case AuthProcessor.stage.NEW_PASSWORD:
+      case AuthProcessor.Stage.NEW_PASSWORD:
         ///// DEBUG:
         //console.log("AuthProcessor.stage.NEW_PASSWORD");
         //process.exit(1);
         this.getNewPassword(command); 
       break;
 
-      case AuthProcessor.stage.DONE:
+      case AuthProcessor.Stage.DONE:
         ERROR("AuthProcessor has already done it's job, it is not"
           + " supposed to process any more commands");
       break;
@@ -102,34 +101,21 @@ export class AuthProcessor
 
   public startLoginProcess()
   {
-    this.connection.sendAsPrompt("&gWelcome to &RBrutus &YNext!\n"
-      + "&wBy what name do you wish to be known? ");
+    // Note: We are intentionally overriding default base color
+    // for AUTH_PROMPT messages here with '&g' at the start of
+    // the string.
+    this.sendAuthPrompt
+    (
+      "&gWelcome to the &RBrutus &YNext!\n"
+      + "&wBy what account name do you want to be recognized?"
+    );
 
-/// Account name variant:
-///    this.connection.send("&gWelcome to the &RBrutus &YNext!\n"
-///      + "By what account name do you want to be recognized? ");
-
-    this.stage = AuthProcessor.stage.LOGIN;
+    this.stage = AuthProcessor.Stage.LOGIN;
   }
 
-  // -------------- Protected class data ----------------
+  // --------------- Private methods --------------------
 
-  protected static stage =
-  {
-    INITIAL: 'INITIAL', // Initial stage.
-    LOGIN: 'LOGIN',
-    PASSWORD: 'PASSWORD',
-    NEW_PASSWORD: 'NEW_PASSWORD',
-    DONE: 'DONE'
-  }
-
-  protected stage = AuthProcessor.stage.INITIAL;
-
-  protected accountName = "";
-
-  // --------------- Protected methods ------------------
-
-  protected loginAttempt(accountName: string)
+  private loginAttempt(accountName: string)
   {
     if (!this.isAccountNameValid(accountName))
       // We don't advance the stage so the next user input will trigger
@@ -137,8 +123,7 @@ export class AuthProcessor
       return;
 
     // Make the first letter uppercase and the rest lowercase.
-    accountName = accountName[0].toUpperCase()
-      + accountName.toLowerCase().substr(1);
+    accountName = Utils.upperCaseFirstCharacter(accountName);
 
     // We are not going to attempt to log in to this account untill we receive
     // password so we need to remember account name until then.
@@ -147,22 +132,19 @@ export class AuthProcessor
     if (Server.accounts.exists(accountName))
     {
       // Existing user. Ask for password.
-      this.connection.sendAsPrompt("&wPassword: ");
-      this.stage = AuthProcessor.stage.PASSWORD;
+      this.sendAuthPrompt("Password:");
+      this.stage = AuthProcessor.Stage.PASSWORD;
     }
     else
     {
       // New user. Ask for a new password.
-      this.connection.sendAsPrompt("&wCreating a new character...\n"
-        + "Please enter a password you want to use: ");
-/// Account name variant
-///      this.connection.send("&wCreating a new user account...\n"
-///        + "Please enter a password for your account: ");
-      this.stage = AuthProcessor.stage.NEW_PASSWORD;
+      this.sendAuthPrompt("Creating a new user account...\n"
+        + "Please enter a password for your account:");
+      this.stage = AuthProcessor.Stage.NEW_PASSWORD;
     }
   }
 
-  protected async checkPassword(password: string)
+  private async checkPassword(password: string)
   {
     let accountManager = Server.accounts;
 
@@ -205,7 +187,7 @@ export class AuthProcessor
     }
   }
 
-  protected getNewPassword(password: string)
+  private getNewPassword(password: string)
   {
     if (this.connection === null)
     {
@@ -247,26 +229,20 @@ export class AuthProcessor
 
     this.connection.account = account;
     this.updateLoginInfo();
-    this.stage = AuthProcessor.stage.DONE;
+    this.stage = AuthProcessor.Stage.DONE;
     this.connection.enterLobby();
     this.connection.sendMotd({ withPrompt: true });
   }
-
-  // ----------- Auxiliary private methods --------------
 
   private isAccountNameValid(accountName: string): boolean
   {
     if (!accountName)
     {
-      this.connection.sendAsPrompt
+      this.sendAuthPrompt
       (
-        "&wYou really need to enter a name to log in, sorry.\n"
-        + "Please enter a valid name: "
+        "You really need to enter an account name to log in, sorry.\n"
+        + "Please enter a valid name:"
       );
-      /// Account name variant:
-      ///      this.connection.send(
-      ///        "&wYou really need to enter an account name to log in, sorry.\n"
-      ///        + "Please enter valid account name: ");
 
       return false;
     }
@@ -274,50 +250,43 @@ export class AuthProcessor
     // Only letters for now.
     let regExp = /[^A-Za-z]/;
 
-    /// Account name variant:
+    /// 'numbers allowed' variant:
     // This regexp will evaluate as true if tested string contains any
     // non-alphanumeric characters.
     ///    let regExp = /[^A-Za-z0-9]/;
 
     if (regExp.test(accountName) === true)
     {
-      this.connection.sendAsPrompt
+      this.sendAuthPrompt
       (
-        "&wName can only contain english letters.\n"
-        + "Please enter a valid name: "
+        "Account name can only contain english letters.\n"
+        + "Please enter a valid account name:"
       );
-   /// Account name variant:
-   ///      this.connection.send(
-   ///        "&wAccount name can only contain english letters and numbers.\n"
-   ///        + "Please enter valid account name: ");
 
       return false;
     }
 
     if (accountName.length > AuthProcessor.MAX_ACCOUNT_NAME_LENGTH)
     {
-      this.connection.sendAsPrompt
+      this.sendAuthPrompt
       (
-        "&wCould you please pick something shorter, like up to "
-        + AuthProcessor.MAX_ACCOUNT_NAME_LENGTH + " characters?\n"
-        + "Please enter a valid name: "
+        "Please pick something up to " + AuthProcessor.MAX_ACCOUNT_NAME_LENGTH
+        + " characters.\n"
+        + "Enter a valid account name:"
       );
-      /// Account name variant
-      ///      + "Please enter valid account name: ");
 
       return false;
     }
 
     if (accountName.length < AuthProcessor.MIN_ACCOUNT_NAME_LENGTH)
     {
-      this.connection.sendAsPrompt
+      this.sendAuthPrompt
       (
-        "&wCould you please pick a name that is at least "
-        + AuthProcessor.MIN_ACCOUNT_NAME_LENGTH + " characters long?\n"
-        + "Please enter a valid name: "
+        "Could you please pick a name that is at least"
+        + " " + AuthProcessor.MIN_ACCOUNT_NAME_LENGTH
+        + " characters long?\n"
+        + "Enter a valid account name: "
       );
-      /// Account name variant
-      ///      + "Please enter valid account name: ");
 
       return false;
     }
@@ -329,10 +298,10 @@ export class AuthProcessor
   {
     if (!password)
     {
-      this.connection.sendAsPrompt
+      this.sendAuthPrompt
       (
-        "&wYou really need to enter a password, sorry.\n"
-        + "Please enter a valid password: "
+        "You really need to enter a password, sorry.\n"
+        + "Please enter a valid password:"
       );
 
       return false;
@@ -342,11 +311,11 @@ export class AuthProcessor
 
     if (password.length < MIN_PASSWORD_LENGTH)
     {
-      this.connection.sendAsPrompt
+      this.sendAuthPrompt
       (
-        "&wDo you know the joke about passwords needing to be at least "
+        "Do you know the joke about passwords needing to be at least "
         + MIN_PASSWORD_LENGTH + " characters long?\n"
-        + "Please enter a valid password: "
+        + "Enter a valid password:"
       );
 
       return false;
@@ -397,7 +366,7 @@ export class AuthProcessor
     if (account.checkPassword(password))
     {
       // Password checks so we are done with authenticating.
-      this.stage = AuthProcessor.stage.DONE;
+      this.stage = AuthProcessor.Stage.DONE;
 
       // Structured parameters is used instead of simple bool to enforce
       // more verbosity when calling processPasswordCheck().
@@ -435,9 +404,9 @@ export class AuthProcessor
       AdminLevel.IMMORTAL
     );
 
-    this.connection.sendAsPrompt
+    this.sendAuthPrompt
     (
-      "&wWrong password.\n"
+      "Wrong password.\n"
       + "Password: "
     );
   }
@@ -453,5 +422,29 @@ export class AuthProcessor
   private updateLoginInfo()
   {
     this.connection.account.updateLastLoginInfo();
+  }
+
+  private sendAuthPrompt(text: string)
+  {
+    let message = new Message(Message.Type.AUTH_PROMPT, text);
+
+    // There is no applicable sender, so the first parameter is null.
+    message.sendToConnection(null, this.connection);
+  }
+}
+
+// ------------------ Type declarations ----------------------
+
+// Module is exported so you can use enum type from outside this file.
+// It must be declared after the class because Typescript says so...
+export module AuthProcessor
+{
+  export enum Stage
+  {
+    INITIAL, // Initial stage.
+    LOGIN,
+    PASSWORD,
+    NEW_PASSWORD,
+    DONE
   }
 }

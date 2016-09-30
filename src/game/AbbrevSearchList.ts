@@ -25,7 +25,7 @@ import {GameEntity} from "../game/GameEntity";
 
 export class AbbrevSearchList extends NameSearchList
 {
-  // -------------- Protected class data ----------------
+  //----------------- Protected data --------------------
 
   private static searchCathegory =
   {

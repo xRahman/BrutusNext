@@ -23,7 +23,7 @@ import {CommandInterpretter} from '../game/command/CommandInterpretter';
 export abstract class ContainerEntity extends CommandInterpretter
 {
 
-  // ---------------- Public class data -----------------
+  //------------------ Public data ----------------------
 
   // --------------- Public accessors -------------------
 
@@ -54,7 +54,7 @@ export abstract class ContainerEntity extends CommandInterpretter
     await this.contents.load(this.getErrorIdString());
   }
 
-  // -------------- Protected class data ----------------
+  //----------------- Protected data --------------------
 
   // Every game entity can contain other game entities.
   // (Rooms contain characters and objects, bags contain other objects,

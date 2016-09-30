@@ -11,7 +11,7 @@ import {FATAL_ERROR} from '../../shared/error/FATAL_ERROR';
 
 export class IdProvider
 {
-  // -------------- Private class data -----------------
+  //------------------ Private data ---------------------
 
   // Number of issued ids in this boot.
   private lastIssuedId = 0;

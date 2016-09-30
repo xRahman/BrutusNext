@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  A single connection to the game.
+  A connection to the server.
 */
 
 'use strict';
@@ -22,92 +22,39 @@ import {Character} from '../../game/character/Character';
 
 export class Connection extends Entity
 {
-  private socketDescriptor: SocketDescriptor = null;
-
-  /*
-  constructor()
-  {
-    super();
-
-    socketDescriptor.connection = this;
-  }
-  */
-
-  public setSocketDescriptor(socketDescriptor: SocketDescriptor)
-  {
-    socketDescriptor.connection = this;
-    this.socketDescriptor = socketDescriptor;
-  }
-
   // ----------------- Public data ----------------------
 
-  /*
-  public setId(id: EntityId)
-  {
-    this.socketDescriptor.setConnectionId(id);
-    super.setId(id);
-  }
-  */
-
-  public get ipAddress() { return this.socketDescriptor.getIpAddress(); }
-
-  /*
-  public get ingameEntity(): GameEntity
-  {
-    if (this.ingameEntityId === null)
-      return null;
-
-    return this.ingameEntityId.getEntity({ typeCast: GameEntity });
-  }
-  */
-
-  /*
-  public get account()
-  {
-    if (this.accountId === null)
-      return null;
-
-    return this.accountId.getEntity({ typeCast: Account });
-  }
-  */
-
-  /*
-  // Empty string means that we do not yet know what account does this
-  // connection match to.
-  public accountId: EntityId = null;
-  */
   public account: Account = null;
-
-  /*
-  // EntityId of entity this player connection is attached to.
-  // (usually the character a player is playing, but it is possible for
-  // immortals to 'switch' to any game entity)
-  public ingameEntityId: EntityId = null;
-  */
-
   public ingameEntity: GameEntity = null;
 
-  // ------- Internal stage transition methods ----------
+  //------------------ Private data ---------------------
+
+  private stage = Connection.Stage.INITIAL;
+  private socketDescriptor: SocketDescriptor = null;
+  private authProcessor = new AuthProcessor(this);
+  private lobbyProcessor = new LobbyProcessor(this);
+
+  // -------- Public stage transition methods -----------
 
   public startLoginProcess()
   {
-    if (this.stage !== Connection.stage.INITIAL)
+    if (this.stage !== Connection.Stage.INITIAL)
       ERROR("Starting login process from wrong stage");
 
-    this.stage = Connection.stage.AUTHENTICATION;
+    this.stage = Connection.Stage.AUTHENTICATION;
     this.authProcessor.startLoginProcess();
   }
 
   public enterLobby()
   {
-    this.stage = Connection.stage.IN_LOBBY;
+    this.stage = Connection.Stage.IN_LOBBY;
     this.lobbyProcessor.enterMenu();
   }
 
   public async enterGame()
   {
-    let validStage = this.stage === Connection.stage.IN_LOBBY
-                  || this.stage === Connection.stage.IN_GAME;
+    let validStage = this.stage === Connection.Stage.IN_LOBBY
+                  || this.stage === Connection.Stage.IN_GAME;
 
     if (!validStage)
       ERROR("Entering game from wrong stage");
@@ -118,7 +65,7 @@ export class Connection extends Entity
       return;
     }
 
-    this.stage = Connection.stage.IN_GAME;
+    this.stage = Connection.Stage.IN_GAME;
 
     this.sendAsPromptlessBlock
     (
@@ -134,12 +81,12 @@ export class Connection extends Entity
     this.announceReconnecting();
     this.ingameEntity.announcePlayerReconnecting();
 
-    this.stage = Connection.stage.IN_GAME;
+    this.stage = Connection.Stage.IN_GAME;
   }
 
   public quitGame()
   {
-    this.stage = Connection.stage.LOGGED_OUT;
+    this.stage = Connection.Stage.LOGGED_OUT;
 
     // Close the socket. Event 'close' will be generated on it,
     // which will lead to the player being logged out.
@@ -158,6 +105,22 @@ export class Connection extends Entity
 
   // ---------------- Public methods --------------------
 
+  public get ipAddress() { return this.socketDescriptor.getIpAddress(); }
+
+  public setSocketDescriptor(socketDescriptor: SocketDescriptor)
+  {
+    if (socketDescriptor === null || socketDescriptor === undefined)
+    {
+      ERROR("Invalid socket descriptor");
+      return;
+    } 
+
+    socketDescriptor.connection = this;
+    this.socketDescriptor = socketDescriptor;
+  }
+
+  /// Co to je za blbost, connection se přece nesavuje.
+  /*
   // Overrides Entity.getSaveSubDirectory().
   protected static getSaveSubDirectory()
   {
@@ -167,6 +130,7 @@ export class Connection extends Entity
     // class.
     return this.className + "/";
   }
+  */
 
   public sendMotd(param: { withPrompt: boolean })
   {
@@ -235,7 +199,7 @@ export class Connection extends Entity
   public reconnectToAccount(account: Account)
   {
     let accountManager = Server.accounts;
-    let oldStage = Connection.stage.INITIAL;
+    let oldStage = Connection.Stage.INITIAL;
     let oldConnection = this.getOldConnection(account);
     let oldIngameEntity = null;
 
@@ -277,7 +241,7 @@ export class Connection extends Entity
 
     // If player was in game before and we know what game entity she has
     // been connected to, send her back to the game.
-    if (oldStage === Connection.stage.IN_GAME
+    if (oldStage === Connection.Stage.IN_GAME
         && oldIngameEntity !== null)
     {
 
@@ -299,13 +263,13 @@ export class Connection extends Entity
   {
     switch (this.stage)
     {
-      case Connection.stage.INITIAL:
+      case Connection.Stage.INITIAL:
         ERROR("Connection has not yet been initialized by"
           + " startLoginProcess(), it is not supposed to process any"
           + " commands yet");
         break;
 
-      case Connection.stage.AUTHENTICATION:
+      case Connection.Stage.AUTHENTICATION:
         if (this.account !== null)
         {
           ERROR("Attempt to process authentication command on player"
@@ -315,7 +279,7 @@ export class Connection extends Entity
         await this.authProcessor.processCommand(command);
         break;
 
-      case Connection.stage.IN_LOBBY:
+      case Connection.Stage.IN_LOBBY:
         if (this.account === null)
         {
           ERROR("Attempt to process lobby command on player"
@@ -326,7 +290,7 @@ export class Connection extends Entity
         this.lobbyProcessor.processCommand(command);
         break;
 
-      case Connection.stage.IN_GAME:
+      case Connection.Stage.IN_GAME:
         if (this.account === null)
         {
           ERROR("Attempt to process ingame command on player"
@@ -342,7 +306,7 @@ export class Connection extends Entity
         this.ingameEntity.processCommand(command);
         break;
 
-      case Connection.stage.LOGGED_OUT:
+      case Connection.Stage.LOGGED_OUT:
         ERROR("Player is logged out already, Connection"
           + " is not supposed to process any more commands");
         break;
@@ -353,6 +317,7 @@ export class Connection extends Entity
     }
   }
 
+  // Close the connection.
   public close()
   {
     // Closes the socket, which will trigger 'close' event on it, which
@@ -360,7 +325,7 @@ export class Connection extends Entity
     this.socketDescriptor.closeSocket();
   }
 
-  // Close the connection.
+  // Handles 'close' event triggered on socket.
   // (Don't call this directly, use this.close() instad. Closing the
   // socket will trigger 'close' event, which will be handled
   // by calling this method).
@@ -379,67 +344,46 @@ export class Connection extends Entity
 
     switch (this.stage)
     {
-      case Connection.stage.INITIAL:
+      case Connection.Stage.INITIAL:
         ERROR("Connection has not yet been initialized by"
           + " startLoginProcess(), it is not supposed to process"
           + " any events yet");
       break;
 
-      case Connection.stage.AUTHENTICATION:
+      case Connection.Stage.AUTHENTICATION:
         this.onSocketCloseWhenAuthenticating();
       break;
 
-      case Connection.stage.IN_LOBBY:
+      case Connection.Stage.IN_LOBBY:
         this.onSocketCloseWhenInLobby();
       break;
 
-      case Connection.stage.IN_GAME:
+      case Connection.Stage.IN_GAME:
         this.onSocketCloseWhenInGame();
       break;
 
       // Player has correcly exited game from menu.
-      case Connection.stage.LOGGED_OUT:
+      case Connection.Stage.LOGGED_OUT:
         this.onSocketCloseWhenLoggedOut();
       break;
     }
   }
 
-  // Send data to the connection without adding any newlines.
-  // (It means that player will type right next to this output.)
-  public sendAsPrompt(data: string)
-  {
-    this.send(data, { asBlock: false, addPrompt: false });
-  }
 
-  // Send data as block, followed by prompt.
-  // (It means that a newline or an empty line will be added to data,
-  //  followed by player's prompt.)
-  public sendAsBlock(data: string)
-  {
-    this.send(data, { asBlock: true, addPrompt: true });
-  }
-
-  // Send data as block without prompt.
-  // (It means that a newline or an empty line will be added to data,
-  //  but no prompt.)
-  public sendAsPromptlessBlock(data: string)
-  {
-    this.send(data, { asBlock: true, addPrompt: false });
-  }
-
+  /*
   public generatePrompt(): string
   {
     let prompt = "&g>";
 
     switch (this.stage)
     {
-      case Connection.stage.INITIAL:
+      case Connection.Stage.INITIAL:
         ERROR("Connection has not yet been initialized by"
           + " startLoginProcess(), it is not supposed generate"
           + " prompt yet");
         break;
 
-      case Connection.stage.AUTHENTICATION:
+      case Connection.Stage.AUTHENTICATION:
         // generatePrompt() is not used while player is authenticating,
         // because it would lead to lots of internal states like "failed
         // password attempt", "password too short", etc.
@@ -447,11 +391,11 @@ export class Connection extends Entity
           + " should not be called right now");
         break;
 
-      case Connection.stage.IN_LOBBY:
+      case Connection.Stage.IN_LOBBY:
         prompt = this.lobbyProcessor.generatePrompt();
         break;
 
-      case Connection.stage.IN_GAME:
+      case Connection.Stage.IN_GAME:
         if (this.ingameEntity === null)
         {
           ERROR("Attempt to generatePrompt() on connection"
@@ -463,7 +407,7 @@ export class Connection extends Entity
         break;
 
       // Player has correcly exited game from menu.
-      case Connection.stage.LOGGED_OUT:
+      case Connection.Stage.LOGGED_OUT:
         ERROR("Player has already logged out. Connection"
           + " is not supposed to generate prompt anymore");
         break;
@@ -478,13 +422,14 @@ export class Connection extends Entity
 
     return prompt;
   }
+  */
 
   public isInGame()
   {
     if (this.ingameEntity === null)
       return false;
 
-    if (this.stage !== Connection.stage.IN_GAME)
+    if (this.stage !== Connection.Stage.IN_GAME)
     {
       ERROR("Player connection has ingame entity assigned but"
         + " player connection stage is not 'IN_GAME'");
@@ -512,23 +457,37 @@ export class Connection extends Entity
     this.ingameEntity.detachConnection();
   }
 
-  // -------------- Protected class data ----------------
-
-  protected authProcessor = new AuthProcessor(this);
-  protected lobbyProcessor = new LobbyProcessor(this);
-
-  protected static stage =
+  public sendMessage(message: Message)
   {
-    INITIAL: 'INITIAL', // Initial stage.
-    AUTHENTICATION: 'AUTHENTICATION',
-    IN_LOBBY: 'IN_LOBBY',
-    IN_GAME: 'IN_GAME',
-    LOGGED_OUT: 'LOGGED_OUT'
+    // TODO
   }
 
-  protected stage = Connection.stage.INITIAL;
+  // --------------- Private methods --------------------
 
-  // ----------- Auxiliary private methods --------------
+  /*
+  // Send data to the connection without adding any newlines.
+  // (It means that player will type right next to this output.)
+  private sendAsPrompt(data: string)
+  {
+    this.send(data, { asBlock: false, addPrompt: false });
+  }
+
+  // Send data as block, followed by prompt.
+  // (It means that a newline or an empty line will be added to data,
+  //  followed by player's prompt.)
+  private sendAsBlock(data: string)
+  {
+    this.send(data, { asBlock: true, addPrompt: true });
+  }
+
+  // Send data as block without prompt.
+  // (It means that a newline or an empty line will be added to data,
+  //  but no prompt.)
+  private sendAsPromptlessBlock(data: string)
+  {
+    this.send(data, { asBlock: true, addPrompt: false });
+  }
+  */
 
   private announceReconnecting()
   {
@@ -553,11 +512,12 @@ export class Connection extends Entity
     );
   }
 
+  /*
   // Sends a string to the user.
   // (automatically handles inserting of empty lines)
   private send(data: string, mode: { asBlock: boolean, addPrompt: boolean })
   {
-    if (this.isDataEmpty(data))
+    if (this.isEmpty(data))
       return;
 
     let newlineCharactersFound = this.countEndingNewlineCharacters(data);
@@ -570,13 +530,12 @@ export class Connection extends Entity
 
     // Now we are sure that data doesn't end with newline characters.
 
-    // This converts all newline characters to '\r\n'
+    // Convert all newline characters to '\r\n'
     if (this.containsNewlineCharacters(data))
       data = this.normalizeNewlineCharacters(data);
 
     if (mode.asBlock)
     {
-
       // Now add a default newline to separate messages from each other.
       data += '\r\n';
 
@@ -597,6 +556,7 @@ export class Connection extends Entity
 
     this.socketDescriptor.send(data);
   }
+  */
 
 
   private getPlayedCharacterName(): string
@@ -611,7 +571,7 @@ export class Connection extends Entity
     }
   }
 
-  private isDataEmpty(data: string): boolean
+  private isEmpty(data: string): boolean
   {
     if (data === "")
     {
@@ -779,5 +739,21 @@ export class Connection extends Entity
       this.logoutAccount("has logged out");
 
     this.removeSelfFromManager();
+  }
+}
+
+// ------------------ Type declarations ----------------------
+
+// Module is exported so you can use enum type from outside this file.
+// It must be declared after the class because Typescript says so...
+export module Connection
+{
+  export enum Stage
+  {
+    INITIAL, // Initial stage.
+    AUTHENTICATION,
+    IN_LOBBY,
+    IN_GAME,
+    LOGGED_OUT
   }
 }
