@@ -16,7 +16,7 @@ import {Connection} from '../../server/connection/Connection';
 
 export class AccountList extends NameSearchList
 {
-  // -------------- Private class data -----------------
+  //------------------ Private data ---------------------
 
   // ---------------- Public methods --------------------
 

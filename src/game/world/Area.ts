@@ -35,7 +35,7 @@ export class Area extends Sector
   /// Pozn: Area tu nic nemá, protože je zděděná ze Sectoru, kde
   ///  je veškerá funkcionalita. Možná to nakonec bude jinak...
 
-  // -------------- Protected class data ----------------
+  //----------------- Protected data --------------------
 
   // --------------- Protected methods ------------------
 

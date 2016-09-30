@@ -23,7 +23,7 @@ let beautify = require('js-beautify').js_beautify;
 export class SaveableObject extends AttributableClass
 {
 
-  // -------------- Protected class data ----------------
+  //----------------- Protected data --------------------
 
   // Version will be checked for. Default behaviour is to trigger
   // an ERROR when versions don't match. You can override it

@@ -52,7 +52,7 @@ export class GameEntity extends ContainerEntity
   }
   */
 
-  // ---------------- Public class data -----------------
+  //------------------ Public data ----------------------
 
   public name = "Unnamed Entity";
   public isNameUnique = false;
@@ -213,7 +213,7 @@ export class GameEntity extends ContainerEntity
     ///   přes message.isCommunication().
   }
 
-  // -------------- Private class data ----------------
+  //------------------ Private data ---------------------
 
   // null if no player is connected to (is playing as) this entity,
   // connectionId otherwise.

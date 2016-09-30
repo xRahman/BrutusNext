@@ -49,7 +49,7 @@ import {Server} from '../../server/Server';
 
 export class EntityManager
 {
-  // -------------- Private class data -----------------
+  //------------------ Private data ---------------------
 
   // Hashmap<[ string, EntityRecord ]>
   //   Key: string id

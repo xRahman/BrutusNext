@@ -27,12 +27,16 @@ export class LobbyProcessor
 
   public static get GAME_MENU()
   {
-    return "&wWelcome to &RBRUTUS &YNext!\n"
-      + "\n"
-      + "&G0&g) &bExit from &RBRUTUS &YNext.\n"
-      + "&G1&g) &BEnter the game.\n"
-      + "\n"
-      + "&wMake your choice: ";
+    return '&wWelcome to &RBRUTUS &YNext!\n'
+      + '\n'
+      + '&wPlease enter\n'
+      + '&g"&G0&g" &bto exit from &RBRUTUS &YNext.\n'
+      + '&g"&G1&g" &Bto create new character.\n';
+  }
+
+  public static get MAKE_CHOICE()
+  {
+    return "\n&wMake your choice: ";
   }
 
   // ----------------- Public data ----------------------
@@ -115,7 +119,7 @@ export class LobbyProcessor
 
   public getStage() { return this.stage; }
 
-  // -------------- Protected class data ----------------
+  //----------------- Protected data --------------------
 
   protected stage = LobbyProcessor.stage.INITIAL;
 

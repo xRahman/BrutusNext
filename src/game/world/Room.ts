@@ -96,7 +96,7 @@ export class Room extends GameEntity
     return contents;
   }
 
-  // -------------- Protected class data ----------------
+  //----------------- Protected data --------------------
 
   /// TODO: Tohle asi bude moct bejt rovnou tady, prototypy funguji
   /// jinak (lepe)

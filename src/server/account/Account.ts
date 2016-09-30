@@ -255,7 +255,7 @@ export class Account extends NamedEntity
   }
   */
 
-  // -------------- Protected class data ----------------
+  //----------------- Protected data --------------------
 
   protected lastLoginAddress = "";
   protected lastLoginDate = new Date(0);
@@ -283,7 +283,7 @@ export class Account extends NamedEntity
     return Account.SAVE_DIRECTORY;
   }
 
-  // -------------- Private class data ----------------
+  //------------------ Private data ---------------------
 
   private passwordHash = "";
 

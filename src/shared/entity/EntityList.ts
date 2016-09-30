@@ -13,7 +13,7 @@ import {Server} from '../../server/Server';
 
 export class EntityList extends SaveableObject
 {
-  // -------------- Private class data ----------------
+  //------------------ Private data ---------------------
 
   // Hashmap<[ string, Entity ]>
   //   Key: string id
