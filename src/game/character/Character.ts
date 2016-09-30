@@ -92,7 +92,7 @@ export class Character extends GameEntity
     // }
   }
 
-  // -------------- Protected class data ----------------
+  //----------------- Protected data --------------------
 
   // --------------- Protected methods ------------------
 

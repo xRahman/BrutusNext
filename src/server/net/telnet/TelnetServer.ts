@@ -45,6 +45,16 @@ export class TelnetServer
   // Do we accept new connections?
   public isOpen = false;
 
+  //------------------ Private data ---------------------
+
+  private telnetServer: net.Server;
+
+  private static events =
+  {
+    SERVER_STARTED_LISTENING: 'listening',
+    SERVER_ERROR: 'error',
+  }
+
   // ---------------- Public methods --------------------
 
   public getPort() { return this.port; }
@@ -60,7 +70,7 @@ export class TelnetServer
       net.createServer((socket) => { this.onNewConnection(socket); });
 
     // Register handler for server errors (like attempt to run the server
-    // on unavailable port).
+    // on an unavailable port).
     this.telnetServer.on
     (
       TelnetServer.events.SERVER_ERROR,
@@ -85,33 +95,23 @@ export class TelnetServer
     this.telnetServer.listen(this.port);
   }
 
-  // -------------- Protected class data ----------------
-
-  protected telnetServer: net.Server;
-
-  protected static events =
-  {
-    SERVER_STARTED_LISTENING: 'listening',
-    SERVER_ERROR: 'error',
-  }
-
   // ---------------- Event handlers --------------------
 
   // Handles 'listening' event of telnet server.
-  protected onServerStartsListening()
+  private onServerStartsListening()
   {
     this.isOpen = true;
 
     Syslog.log
     (
       "Telnet server is up and listening to the new connections",
-      Message.Type.SYSTEM_INFO,
+      Message.Type.TELNET_SERVER,
       AdminLevel.IMMORTAL
     );
   }
 
   // Handles 'error' event of telnet server.
-  protected onServerError(error)
+  private onServerError(error)
   {
     switch (error.code)
     {
@@ -137,31 +137,18 @@ export class TelnetServer
 
   // This handler is registered directly by net.createServer()
   // (it processes a new connection request)
-  protected onNewConnection(socket: net.Socket)
+  private onNewConnection(socket: net.Socket)
   {
     Syslog.log
     (
-      "TELNET SERVER: Received a new connection request from "
-      + socket.remoteAddress,
-      Message.Type.SYSTEM_INFO,
+      "Received a new connection request from"
+      + " " + socket.remoteAddress,
+      Message.Type.TELNET_SERVER,
       AdminLevel.IMMORTAL
     );
 
-    if (!this.isOpen)
-    {
-      Syslog.log
-      (
-        "TELNET SERVER: Denying connection request: Server is closed",
-        Message.Type.SYSTEM_INFO,
-        AdminLevel.IMMORTAL
-      );
-
-      // Half - closes the socket. i.e., it sends a FIN packet.
-      // It is possible the server will still send some data.
-      socket.end();
-
+    if (!this.isServerOpen(socket))
       return;
-    }
 
     /// Tady by se asi resil IP ban. Zatim si to tu necham
     /*
@@ -178,9 +165,10 @@ export class TelnetServer
 
     let connection = this.createConnection(socket);
     
-    
     connection.startLoginProcess();
   }
+
+  // ---------------- Private methods --------------------
 
   private createConnection(socket)
   {
@@ -193,15 +181,30 @@ export class TelnetServer
     );
 
     connection.setSocketDescriptor(socketDescriptor);
-
-    /*
-    let connection = new Connection(socketDescriptor);
-
-    let id = Server.idProvider.createId(connection);
-    */
-
     Server.connections.add(connection);
 
     return connection;
+  }
+
+  private isServerOpen(socket: net.Socket)
+  {
+    if (this.isOpen === false)
+    {
+      Syslog.log
+      (
+        "Denying connection request from" + socket.remoteAddress + ","
+        + " server is closed",
+        Message.Type.TELNET_SERVER,
+        AdminLevel.IMMORTAL
+      );
+
+      // Half-closes the socket by sending a FIN packet.
+      // It is possible the server will still send some data.
+      socket.end();
+
+      return false;
+    }
+
+    return true;
   }
 }

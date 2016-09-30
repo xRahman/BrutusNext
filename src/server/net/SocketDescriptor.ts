@@ -76,7 +76,7 @@ export abstract class SocketDescriptor
   // Closes the socket, ending the connection.
   public abstract closeSocket();
 
-  // -------------- Protected class data ----------------
+  //----------------- Protected data --------------------
 
   protected ipAddress: string = null;
 

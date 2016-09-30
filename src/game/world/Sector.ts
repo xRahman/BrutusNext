@@ -32,7 +32,7 @@ export class Sector extends GameEntity
 
   // ---------------- Public methods --------------------
 
-  /// Momentáln? se to nikde nevolá, tak to nebudu ?ešit.
+  /// Momentï¿½ln? se to nikde nevolï¿½, tak to nebudu ?eï¿½it.
   /*
   public createRoom(param: { name: string, prototype: string }): EntityId
   {
@@ -52,7 +52,7 @@ export class Sector extends GameEntity
   }
   */
 
-  // -------------- Protected class data ----------------
+  //----------------- Protected data --------------------
 
   // --------------- Protected methods ------------------
 

@@ -35,7 +35,7 @@ export class Server
 
   protected static instance: Server;
 
-  // -------------- Private class data -----------------
+  //------------------ Private data ---------------------
 
   // Keeps track of who has which admin rights.
   private adminList = new AdminList();

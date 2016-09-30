@@ -13,16 +13,6 @@ import {Message} from '../../server/message/Message';
 
 export class MessagePart
 {
-  // -------------- Static class data -------------------
-
-  // ---------------- Public class data -----------------
-
-  public messageType: Message.Type = null;
-  public messagePartType: MessagePart.Type = null;
-  public text = null;
-
-  // -------------- Private class data -----------------
-
   constructor
   (
     text: string,
@@ -33,9 +23,20 @@ export class MessagePart
     this.messageType = messageType;
     this.messagePartType = messagePartType;
 
-    // Add colore according to message type
-    this.text = this.format(text);
+    // Add base color according to message (or message part) type.
+    this.text = this.addBaseColor(text);
   }
+
+  // -------------- Static class data -------------------
+
+  //------------------ Public data ----------------------
+
+  public messageType: Message.Type = null;
+  public messagePartType: MessagePart.Type = null;
+  public text = null;
+
+  //------------------ Private data ---------------------
+
 
   // --------------- Static accessors -------------------
 
@@ -52,10 +53,25 @@ export class MessagePart
 
   // ---------------- Private methods -------------------
 
-  private format(text: string): string
+  private addBaseColor(text: string): string
   {
-    // TODO: Formatování textu podle typu.
-    return text;
+    // There is no point in formatting empty string.
+    if (text.length === 0)
+      return text;
+
+    // If text already starts with a color code, don't 
+    if (text[0] === '&' && text.length >= 2)
+      return text;
+
+    let baseColor = "&w";
+
+    // TODO: Nastavení baseColor textu podle typu.
+    //
+    // switch (this.type)
+    // {
+    // }
+
+    return baseColor + text;
   }
 }
 

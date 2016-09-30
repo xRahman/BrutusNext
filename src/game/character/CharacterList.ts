@@ -77,7 +77,7 @@ export class CharacterList extends AbbrevSearchList
     return FileSystem.existsSync(path);
   }
 
-  // -------------- Protected class data ----------------
+  //----------------- Protected data --------------------
  
   // -------------- Protected methods -------------------
 

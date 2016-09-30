@@ -45,7 +45,7 @@ export class CommandSearchList
     }
   }
 
-  // -------------- Protected class data ----------------
+  //----------------- Protected data --------------------
 
   // This hashmap maps abbreviations to the list of items (of type T)
   // corresponding to that abbreviation.

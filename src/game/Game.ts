@@ -194,7 +194,7 @@ export class Game
     await this.world.load();
   }
 
-  // -------------- Protected class data ----------------
+  //----------------- Protected data --------------------
 
   // -------- idLists ---------
   // IdLists only contain entity id's (instances of

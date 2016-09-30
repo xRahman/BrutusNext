@@ -7,6 +7,13 @@
 
 export module Utils
 {
+  // Makes the first character of 'str' uppercase and the rest lowercase.
+  export function upperCaseFirstCharacter(str: string)
+  {
+    return str[0].toUpperCase()
+      + str.toLowerCase().substr(1);
+  }
+
   export function isAbbrev(abbrev: string, fullString: string): boolean
   {
     return fullString.indexOf(abbrev) !== -1;

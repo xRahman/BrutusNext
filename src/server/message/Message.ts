@@ -43,12 +43,12 @@ export class Message
 
   // -------------- Static class data -------------------
 
-  // ---------------- Public class data -----------------
+  //------------------ Public data ----------------------
 
   ///public target: Message.Target = null;
   ///public sendToSelf = true;
 
-  // -------------- Private class data -----------------
+  //------------------ Private data ---------------------
 
   /*
   // Recipient should only be set when this.type is
@@ -149,7 +149,7 @@ export class Message
   // Sends the message directly to player connection. This is used
   // to send message to player is menu, entering password, etc.,
   // who don't have ingame entity attached.
-  private sendToConnection(sender: GameEntity, connection: Connection)
+  public sendToConnection(sender: GameEntity, connection: Connection)
   {
     /// Tohle je trochu divné. Když pošlu message všem na mudu (třeba INFO),
     /// tak se this.message nastaví tolikrát, kolik bude adresátů.
@@ -164,7 +164,7 @@ export class Message
       return;
     }
 
-    let data = this.composeRawMessage();
+    let data = this.composeMessage();
     
     switch (this.type)
     {
@@ -299,14 +299,75 @@ export class Message
 
   // ---------------- Private methods -------------------
 
-  private composeRawMessage(): string
+  private generatePrompt(): string
+  {
+    let prompt = "&g>";
+
+    /// TODO: Generovat prompt.
+
+    return prompt;
+  }
+
+  private triggersPrompt(): boolean
+  {
+    switch (this.type)
+    {
+      case Message.Type.AUTH_PROMPT:
+        return false;
+
+      default:
+        return true;
+    }
+  }
+
+  // Puts message parts together, adds prompt if necessary,
+  // adds a space if neccessary (to separate user input).
+  private composeMessage(): string
   {
     let data = "";
 
+    // Put all message parts together.
     for (let messagePart of this.messageParts)
       data += messagePart.getText();
+ 
+    if (this.triggersPrompt())
+    {
+      /// TODO: Přidat prázný řádek (nebo newlinu v brief módu) mezi
+      /// message a prompt.
 
-    return data;
+      data += this.generatePrompt();
+    } 
+
+    /// Zatím mě nenapadá případ, kdy by za poslaným messagem nemohl přijít
+    /// user input, takže tenhle comment je asi zbytečnej.
+    /*
+    // Pokud je message prompt, případně pokud za ním prompt následuje,
+    // tak za něj přilepit mezeru, pokud tam ještě není.
+    // - aby byl user input oddělenej od outputu (na terminálech, kde se píše
+    //   přímo do textu).
+    */ 
+
+    // Add space to the end of the message to separate it from user input.
+    // (Only if it doesn't end with space already or with a newline.) 
+    return this.addSpace(data);
+  }
+
+  // Adds a ' ' character to the end of the string if it doesn't
+  // already end with space or newline.
+  private addSpace(data: string): string
+  {
+    let lastCharacter = data[data.length - 1];
+    let lastTwoCharacters = data.substr(data.length - 2, 2);
+
+    let endsWithSpace = lastCharacter === ' ';
+    let endsWithNewline = lastCharacter === '\n'
+                       || lastTwoCharacters === '\r\n'
+                       || lastTwoCharacters === '\n\r';  
+    
+    if (endsWithSpace || endsWithNewline)
+      return data;
+
+    return data + " ";
   }
 }
 
@@ -346,6 +407,8 @@ export module Message
     // System reports that something didn't go as expected
     // (socket errors, file read errors, etc.)
     SYSTEM_ERROR,
+    // Messages from telnet server.
+    TELNET_SERVER,
     // Sent when ingame script fails to compile (for example due to syntax errors).
     SCRIPT_COMPILE_ERROR,
     // Sent when ingame script encounters runtime error.
@@ -356,6 +419,8 @@ export module Message
     // --------------------- Prompt messages ---------------------
     /// Prompt se asi bude přilepovat automaticky.
     /// PROMPT,
+    // Authentication messages like "Enter your password:"
+    AUTH_PROMPT,
     // ------------------------- Commands ------------------------
     // Skill messages
     SKILL,
