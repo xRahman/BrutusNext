@@ -19,6 +19,8 @@ import {Connection} from '../../../server/connection/Connection';
 import * as net from 'net';  // Import namespace 'net' from node.js
 import * as events from 'events';  // Import namespace 'events' from node.js
 
+// Note: There is also a '&_' code, which means 'return to base color'.
+// (Base color is determined by color code at the very beginning of the string.)
 const ANSI =
 {
   '&n': '\u001b[0m',
@@ -102,13 +104,39 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     this.initSocket();
   }
 
-  // ----------------- Public data ----------------------
+  //------------------ Private data ---------------------
+
+  private static events =
+  {
+    SOCKET_RECEIVED_DATA: 'data',
+    SOCKET_ERROR: 'error',
+    SOCKET_CLOSE: 'close'
+  }
+
+  // Buffer to accumulate incomplete parts of data stream.
+  private inputBuffer = "";
+
+  // Command lines waiting to be processed.
+  private commandsBuffer = [];
 
   // ---------------- Public methods --------------------
+
+  public static isColorCode(code: string): boolean
+  {    
+    if (code in ANSI)
+      return true;
+
+    return false;
+  }
 
   // Sends a string to the user.
   public send(data: string)
   {
+    // Replaces color codes notifying return to message base color with
+    // message base color code.
+    // (Message base color is determined by the leading color code of the message).
+    data = this.expandBaseColor(data);
+
     // Convert MUD color codes to ANSI color codes.
     /// (note: this only works for telnet and classic MUD clients)
     data = this.ansify(data);
@@ -168,21 +196,6 @@ export class TelnetSocketDescriptor extends SocketDescriptor
   {
     this.socket.end();
   }
- 
-  // -------------- Protected class data ----------------
-
-  protected static events =
-  {
-    SOCKET_RECEIVED_DATA: 'data',
-    SOCKET_ERROR: 'error',
-    SOCKET_CLOSE: 'close'
-  }
-
-  // Buffer to accumulate incomplete parts of data stream.
-  protected inputBuffer = "";
-
-  // Command lines waiting to be processed.
-  protected commandsBuffer = [];
 
   // ---------------- Event handlers --------------------
 
@@ -492,5 +505,32 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     */
 
     return data;
+  }
+
+  // Replaces color codes notifying return to message base color with
+  // message base color code.
+  // (Message base color is determined by the leading color code of the message).
+  protected expandBaseColor(data: string): string
+  {
+    // Extract 2 characters starting at index '0'. 
+    let baseColor = data.substr(0, 2);
+
+    if (TelnetSocketDescriptor.isColorCode(baseColor) === false)
+    {
+      ERROR("Message '" + data + "' doesn't start with color code"
+        + " so it is not possible to determine message base color."
+        + " Leading color code is supposed to be added in"
+        + " MessagePart.format()");
+      
+      // Use '&w' as base color.
+      baseColor = '&w';
+      data = baseColor + data;
+    }
+
+    // '&_' stands for 'return to base color'.
+    let regExp = new RegExp('&_', 'g');
+
+    // Replace all '&_' sequences with baseColor.
+    return data.replace(regExp, baseColor);
   }
 }

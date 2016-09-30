@@ -63,7 +63,7 @@ export class HttpServer
     this.isOpen = true;
   }
 
-  // -------------- Protected class data ----------------
+  //----------------- Protected data --------------------
 
   protected httpServer;
   
