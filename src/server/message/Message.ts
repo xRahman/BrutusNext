@@ -21,6 +21,7 @@
 'use strict';
 
 import {ERROR} from '../../shared/error/ERROR';
+import {Utils} from '../../shared/Utils';
 import {Server} from '../../server/Server';
 import {Connection} from '../../server/connection/Connection';
 import {MessagePart} from '../../server/message/MessagePart';
@@ -430,6 +431,53 @@ export module Message
     COMMAND,
     // Output from 'look', 'examine', etc.
     INSPECT 
+  }
+
+  // Extends enum with value attributes and getAttributes() method.
+  export namespace Type
+  {
+    let attributes =
+    {
+      TELL:                 { color: { base: '&w', quotes: '&w', speech: '&c' } },
+      GOSSIP:               { color: '&w' },
+      GOSSIPEMOTE:          { color: '&w' },
+      SAY:                  { color: '&w' },
+      QUEST:                { color: '&w' },
+      WIZNET:               { color: '&w' },
+      SHOUT:                { color: '&w' },
+      EMOTE:                { color: '&w' },
+      INFO:                 { color: '&w' },
+      // --------------------- Syslog messages ---------------------
+      RUNTIME_ERROR:        { color: '&w' },
+      FATAL_RUNTIME_ERROR:  { color: '&w' },
+      SYSTEM_INFO:          { color: '&w' },
+      SYSTEM_ERROR:         { color: '&w' },
+      TELNET_SERVER:        { color: '&w' },
+      SCRIPT_COMPILE_ERROR: { color: '&w' },
+      SCRIPT_RUNTIME_ERROR: { color: '&w' },
+      INVALID_ACCESS:       { color: '&w' },
+      // --------------------- Prompt messages ---------------------
+      /// PROMPT:           { color: '&w' },
+      AUTH_PROMPT:          { color: '&w' },
+      // ------------------------- Commands ------------------------
+      SKILL:                { color: '&w' },
+      SPELL:                { color: '&w' },
+      COMMAND:              { color: '&w' },
+      INSPECT:              { color: '&w' }
+    }
+    
+    // -> Returns null if enum value isn't found.
+    export function getAttributes(value: Type)
+    {
+      // Full name of the enum (used in error message if value isn't found
+      // in attributes).
+      let enumName = 'Part.Type';
+
+      // "Dereferenced" enmum value (it's string representation).
+      let stringValue = Message.Type[value];
+
+      return Utils.getEnumAttributes(attributes, enumName, stringValue);
+    }
   }
 
   /*

@@ -4,9 +4,30 @@
   Various utility functions.
 */
 
+'use strict';
+
+import {ERROR} from '../shared/error/ERROR';
 
 export module Utils
 {
+  // Extracts 'property' value from 'attributes' object describing an enym 'enumName'.
+  export function getEnumAttributes
+  (
+    attributes: Object,
+    enumName: string,
+    property: string
+  )
+  {
+    if (property in attributes)
+      return attributes[property];
+
+    ERROR("Enum value " + property + " doesn't exist in attributes"
+          + " of enum " + enumName + ". You probably added a value"
+          + " to the enum but forgot to add it to it's attributes");
+
+    return null;
+  }
+
   // Makes the first character of 'str' uppercase and the rest lowercase.
   export function upperCaseFirstCharacter(str: string)
   {
