@@ -1,13 +1,6 @@
-TODO: Asi přejmenovat MessagePart.format na MessagePart.addBaseColor()
-[done]
-
 TODO: Šaškování s promptem přesunout z Connection do Message.
 - bude se vůbec nějakej message posílat jinak než jako prompt?
   - multipart message totiž asi řeší kusy, které se jako prompt neposílají.
-
-TODO: Zavést color code pro message_base_color (aby se dala měnit barva
-  celé zprávy s tím, že to zachová barvu zvýrazněných slov).
-[done]
 
 TODO: Zrušit color kódy z AUTH_PROMPT messagů, přidávat je až v classe
   Message.
@@ -257,6 +250,14 @@ TODO: Zrušit z entity proměnné SAVE_DIRECTORY
 Vyhledove rozbehat tslint
 
 ===============================================================================
+
+TODO: Asi přejmenovat MessagePart.format na MessagePart.addBaseColor()
+[done]
+
+TODO: Zavést color code pro message_base_color (aby se dala měnit barva
+  celé zprávy s tím, že to zachová barvu zvýrazněných slov).
+[done]
+
 
 TODO: Syslog by se měl posílat charům (které na to mají admin level)
 [done]
