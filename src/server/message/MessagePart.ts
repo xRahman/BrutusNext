@@ -105,6 +105,22 @@ export class MessagePart
 
   private getColorByMessageType(): string
   {
+    // Access attributes for enum value 'this.messageType';
+    let attributes = Message.Type.getAttributes(this.messageType); 
+
+    if
+    (
+      attributes === null
+      || attributes.color === undefined
+      || attributes.color.base === undefined
+    )
+    {
+      return '&w';
+    }
+
+    return attributes.color.base;
+
+    /*
     let color = '&w';
 
     switch (this.messageType)
@@ -222,7 +238,7 @@ export class MessagePart
         ERROR();
         break;
     }
-
+    */
   }
 
   private getColorByMessagePartType(): string
@@ -233,10 +249,17 @@ export class MessagePart
     // Access attributes for enum value 'this.messagePartType';
     let attributes = MessagePart.Type.getAttributes(this.messagePartType); 
 
-    if (attributes === null || attributes.color === undefined)
+    if
+    (
+         attributes === null
+      || attributes.color === undefined
+      || attributes.color.base === undefined
+    )
+    {
       return '&w';
+    }
 
-    return attributes.color;
+    return attributes.color.base;
 
     /*
     let color = '&w';
@@ -317,14 +340,14 @@ export module MessagePart
   {
     let attributes =
     {
-      SAME_AS_MESSAGE:      { color: '&w' },
-      TITLE:                { color: '&R' },
-      DESCRIPTION:          { color: '&w' },
-      EXIT:                 { color: '&y' },
-      OBJECT_ON_THE_GROUND: { color: '&g' },
-      OBJECT_IN_CONTAINER:  { color: '&g' },
-      MOB_IN_THE_ROOM:      { color: '&y' },
-      MOB_IN_A_CONTAINER:   { color: '&y' }
+      SAME_AS_MESSAGE:      { color: { base: '&w' } },
+      TITLE:                { color: { base: '&R' } },
+      DESCRIPTION:          { color: { base: '&w' } },
+      EXIT:                 { color: { base: '&y' } },
+      OBJECT_ON_THE_GROUND: { color: { base: '&g' } },
+      OBJECT_IN_CONTAINER:  { color: { base: '&g' } },
+      MOB_IN_THE_ROOM:      { color: { base: '&y' } },
+      MOB_IN_A_CONTAINER:   { color: { base: '&y' } }
     }
     
     // -> Returns null if enum value isn't found.

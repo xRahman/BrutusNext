@@ -58,6 +58,7 @@ export class Message
   private recipient: GameEntity = null;
   */
 
+  // 'sender' can be null (for example for syslog messages, global infos, etc.) 
   private sender: GameEntity = null;
   private type: Message.Type = null;
   private messageParts: Array<MessagePart> = null;
@@ -67,6 +68,40 @@ export class Message
   // ---------------- Static methods --------------------
 
   // ---------------- Public methods --------------------
+
+  // Puts message parts together, adds prompt if necessary,
+  // adds a space if neccessary (to separate user input).
+  public compose(): string
+  {
+    let data = "";
+
+    // Put all message parts together.
+    for (let messagePart of this.messageParts)
+      data += messagePart.getText();
+ 
+    if (this.triggersPrompt())
+    {
+      /// TODO: Přidat prázný řádek (nebo newlinu v brief módu) mezi
+      /// message a prompt.
+
+      data += this.generatePrompt();
+    } 
+
+    /// Zatím mě nenapadá případ, kdy by za poslaným messagem nemohl přijít
+    /// user input, takže tenhle comment je asi zbytečnej.
+    /*
+    // Pokud je message prompt, případně pokud za ním prompt následuje,
+    // tak za něj přilepit mezeru, pokud tam ještě není.
+    // - aby byl user input oddělenej od outputu (na terminálech, kde se píše
+    //   přímo do textu).
+    */
+
+    data = this.normalizeNewlines(data);
+
+    // Add space to the end of the message to separate it from user input.
+    // (Only if it doesn't end with space already or with a newline.) 
+    return this.addSpace(data);
+  }
 
   public addMessagePart(text: string, msgPartType: MessagePart.Type)
   {
@@ -150,23 +185,17 @@ export class Message
   // Sends the message directly to player connection. This is used
   // to send message to player is menu, entering password, etc.,
   // who don't have ingame entity attached.
-  public sendToConnection(sender: GameEntity, connection: Connection)
+  public sendToConnection(connection: Connection)
   {
-    /// Tohle je trochu divné. Když pošlu message všem na mudu (třeba INFO),
-    /// tak se this.message nastaví tolikrát, kolik bude adresátů.
-    /// - Moc nevím, co s tím. Je teda otázka, jestli je vůbec potřeba single
-    ///   sendera pamatovat (ale asi jo, abych mohl kontrolovat visibilitu,
-    //    když budu procházet message history).
-    this.sender = sender;
-
-    if (connection.isValid() === false)
+    if (connection === null || connection.isValid() === false)
     {
       ERROR("Invalid target connection. Message is not sent");
       return;
     }
 
-    let data = this.composeMessage();
+    connection.sendMessage(this);
     
+    /*
     switch (this.type)
     {
       // /// Posílání samothéno promptu skrz message asi nebude k ničemu potřeba,
@@ -181,9 +210,10 @@ export class Message
         // Send data as block, followed by prompt.
         // (It means that a newline or an empty line will be added to data,
         //  followed by player's prompt.)
-        connection.sendAsBlock(data);
+        connection.sendMessage(this);
         break;
     }
+    */
   }
 
   // Send the message to a single game entity.
@@ -196,6 +226,8 @@ export class Message
       return;
     }
 
+    this.sender = sender;
+
     // Null connection means that no player is connected to this entity. 
     if (target.connection === null)
     {
@@ -203,17 +235,21 @@ export class Message
     }
     else
     {
-      this.sendToConnection(sender, target.connection);
+      this.sendToConnection(target.connection);
     }
   }
 
   public sendToRoom(sender: GameEntity)
   {
+    this.sender = sender;
+
     // TODO
   }
 
   public sendToShout(sender: GameEntity)
   {
+    this.sender = sender;
+
     // TODO
 
     /// Pozn: Shouting distance (počet roomů) přečíst ze sendera.
@@ -224,6 +260,8 @@ export class Message
   // (Used to send gossips, global infos, syslog, etc.).
   public sendToAllIngameConnections(sender: GameEntity, visibility: AdminLevel)
   {
+    this.sender = sender;
+
     let connections = Server.connections.getEntities();
     let connection: Connection = null;
 
@@ -246,7 +284,7 @@ export class Message
       if (Server.getAdminLevel(connection.ingameEntity) < visibility)
         break;
 
-      this.sendToConnection(sender, connection);
+      this.sendToConnection(connection);
     }
   }
 
@@ -258,6 +296,8 @@ export class Message
     visibility: AdminLevel
   )
   {
+    this.sender = sender;
+
     let connections = Server.connections.getEntities();
     let connection: Connection = null;
 
@@ -267,7 +307,7 @@ export class Message
       if (connection === null || !connection.isValid())
         break;
 
-      this.sendToConnection(sender, connection);
+      this.sendToConnection(connection);
     }
   }
 
@@ -321,36 +361,17 @@ export class Message
     }
   }
 
-  // Puts message parts together, adds prompt if necessary,
-  // adds a space if neccessary (to separate user input).
-  private composeMessage(): string
+  // Make sure that all newlines are representedy by '\r\n'.
+  private normalizeNewlines(data: string): string
   {
-    let data = "";
-
-    // Put all message parts together.
-    for (let messagePart of this.messageParts)
-      data += messagePart.getText();
- 
-    if (this.triggersPrompt())
+    if (data && data.length > 0)
     {
-      /// TODO: Přidat prázný řádek (nebo newlinu v brief módu) mezi
-      /// message a prompt.
+      // First remove all '\r' characters, then replace all '\n'
+      // characters with '\r\n'.
+      data = data.replace(/\r/gi, "").replace(/\n/gi, '\r\n');
+    }
 
-      data += this.generatePrompt();
-    } 
-
-    /// Zatím mě nenapadá případ, kdy by za poslaným messagem nemohl přijít
-    /// user input, takže tenhle comment je asi zbytečnej.
-    /*
-    // Pokud je message prompt, případně pokud za ním prompt následuje,
-    // tak za něj přilepit mezeru, pokud tam ještě není.
-    // - aby byl user input oddělenej od outputu (na terminálech, kde se píše
-    //   přímo do textu).
-    */ 
-
-    // Add space to the end of the message to separate it from user input.
-    // (Only if it doesn't end with space already or with a newline.) 
-    return this.addSpace(data);
+    return data;
   }
 
   // Adds a ' ' character to the end of the string if it doesn't
@@ -438,32 +459,32 @@ export module Message
   {
     let attributes =
     {
-      TELL:                 { color: { base: '&w', quotes: '&w', speech: '&c' } },
-      GOSSIP:               { color: '&w' },
-      GOSSIPEMOTE:          { color: '&w' },
-      SAY:                  { color: '&w' },
-      QUEST:                { color: '&w' },
-      WIZNET:               { color: '&w' },
-      SHOUT:                { color: '&w' },
-      EMOTE:                { color: '&w' },
-      INFO:                 { color: '&w' },
+      TELL:                 { color: { base: '&g', quotes: '&w', speech: '&C' } },
+      GOSSIP:               { color: { base: '&m', quotes: '&w', speech: '&y' } },
+      GOSSIPEMOTE:          { color: { base: '&m',               speech: '&c' } },
+      SAY:                  { color: { base: '&w', quotes: '&w', speech: '&c' } },
+      QUEST:                { color: { base: '&g', quotes: '&w', speech: '&c' } },
+      WIZNET:               { color: { base: '&C',  colon: '&w', speech: '&c' } },
+      SHOUT:                { color: { base: '&G', quotes: '&w', speech: '&y' } },
+      EMOTE:                { color: { base: '&g' } },
+      INFO:                 { color: { base: '&W',   info: '&R', speech: '&w' } },
       // --------------------- Syslog messages ---------------------
-      RUNTIME_ERROR:        { color: '&w' },
-      FATAL_RUNTIME_ERROR:  { color: '&w' },
-      SYSTEM_INFO:          { color: '&w' },
-      SYSTEM_ERROR:         { color: '&w' },
-      TELNET_SERVER:        { color: '&w' },
-      SCRIPT_COMPILE_ERROR: { color: '&w' },
-      SCRIPT_RUNTIME_ERROR: { color: '&w' },
-      INVALID_ACCESS:       { color: '&w' },
+      RUNTIME_ERROR:        { color: { base: '&w' } },
+      FATAL_RUNTIME_ERROR:  { color: { base: '&g' } },
+      SYSTEM_INFO:          { color: { base: '&g' } },
+      SYSTEM_ERROR:         { color: { base: '&g' } },
+      TELNET_SERVER:        { color: { base: '&g' } },
+      SCRIPT_COMPILE_ERROR: { color: { base: '&g' } },
+      SCRIPT_RUNTIME_ERROR: { color: { base: '&g' } },
+      INVALID_ACCESS:       { color: { base: '&g' } },
       // --------------------- Prompt messages ---------------------
-      /// PROMPT:           { color: '&w' },
-      AUTH_PROMPT:          { color: '&w' },
+      /// PROMPT:           { color: { base: '&w' } },
+      AUTH_PROMPT:          { color: { base: '&w' } },
       // ------------------------- Commands ------------------------
-      SKILL:                { color: '&w' },
-      SPELL:                { color: '&w' },
-      COMMAND:              { color: '&w' },
-      INSPECT:              { color: '&w' }
+      SKILL:                { color: { base: '&g' } },
+      SPELL:                { color: { base: '&g' } },
+      COMMAND:              { color: { base: '&g' } },
+      INSPECT:              { color: { base: '&g' } }
     }
     
     // -> Returns null if enum value isn't found.
