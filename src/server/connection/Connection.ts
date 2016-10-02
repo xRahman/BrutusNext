@@ -459,7 +459,15 @@ export class Connection extends Entity
 
   public sendMessage(message: Message)
   {
-    // TODO
+    if (message === null || message === undefined)
+    {
+      ERROR("Invalid message");
+      return;
+    }
+
+    let data = message.compose();
+
+    this.socketDescriptor.send(data)
   }
 
   // --------------- Private methods --------------------
@@ -615,6 +623,7 @@ export class Connection extends Entity
     return newlineCharactersFound;
   }
 
+  /*
   private containsNewlineCharacters(data: string): boolean
   {
     if (data.indexOf('\r') !== -1)
@@ -632,7 +641,9 @@ export class Connection extends Entity
 
     return false;
   }
+  */
 
+  /*
   private normalizeNewlineCharacters(data: string): string
   {
     // Make sure that all newlines are representedy by '\r\n'.
@@ -645,6 +656,7 @@ export class Connection extends Entity
 
     return data;
   }
+  */
 
   private removeSelfFromManager()
   {
