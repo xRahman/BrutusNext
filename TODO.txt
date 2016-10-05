@@ -1,3 +1,24 @@
+TODO: Z enmumů v AuthProcessoru, LobbyProcessoru a možná i Connection
+  vyhodit hodnotu INITIAL a místo ní používat 'null'.
+
+ÚVAHA: Potřebuju vůbec k něčemu MessageType? Teoreticky na filtrování
+  celých messagů, třeba jestli chci vidět gossip.
+IDEA: Udělat to šalamounsky:
+- Základ bude MessagePart.Type
+  - tady budou všechny možný typy message partů
+- Message.Type budou:
+  - buď celé kategorie jednopartových messagů (např. COMMUNICATION)
+  - nebo jednotlivé vícepártové message (třeba who)
+
+TODO: Barvy messagů přesunout do nějaké samostatné struktury, ideálně
+  i do samostatného modulu (MessageColors.ts).
+  - pořád se budou indexovat message typem
+  - getovací metody, dostanou messageType a coloredSectionType
+    ("base", "quotes", etc.)
+    - zaindexuje to message typem, checkne to, že existuje property
+      příslušného jména, vrátí to barvu (nebo defaultní barvu, když něco
+      failne).
+
 TODO: Šaškování s promptem přesunout z Connection do Message.
 - bude se vůbec nějakej message posílat jinak než jako prompt?
   - multipart message totiž asi řeší kusy, které se jako prompt neposílají.
@@ -6,6 +27,26 @@ TODO: Zrušit color kódy z AUTH_PROMPT messagů, přidávat je až v classe
   Message.
   - částečně done. Z messagů jsou zrušeny, ještě se ale nepřidávají
     v Message (respektive MessagePart.format().
+KE ZVÁŽENÍ:
+  Tohle je ve skutečnosti otázka. Určitě nepůjde obarvovat komplet všechno
+  až uvnitř Message, to by se musely používat nějaké symbolické názvy barev
+  (což by teda šlo, třeba něco jako <color:TELL.quotes>). Pokud ale budu
+  stringy obarvovat tam, kde se vyrábí (a brát si barvy z MessageColors),
+  tak pak moc nedává smysl přidávat base color až uvnitř Message (i když,
+  ušetří to obarvování syslogu a podobných jednobarevných messagů, takže to
+  asi smysl má, hmm...)
+OK, asi to nakonec nechám tak, jak to mám. BASE color se bude přiřazovat
+  automaticky v Message, interní barvy se budou dávat do stringů tam, kde
+  se vyrábí stringy.
+  - potom ale nepůjde přebarvit už jednou vyrobený string podle nového barevného
+    schématu, hmm.
+  - když bych někdy chtěl dělat lokalizaci, tak barevné kódy (ať už přímo
+    kódy barev nebo nějaké symbolické varianty) budou muset být součástí
+    překladových stringů. Na druhou stranu překladové stringy je taky třeba
+    nějak skládat do sebe a ty skládací algoritmy musí být v kódu, takže
+    možná dává větší smysl mít barvy jako součástí těch skládacích algoritmů
+    a za překladové stringy pokládat ty malé jednobarevné kusy, ze kterých
+    se message skládá...  
 
 TODO: Zautomatizovat přidávání mezery za prompt mesage.
   - asi v Message.composeRawMessage().
