@@ -10,6 +10,7 @@ import {ERROR} from '../shared/error/ERROR';
 
 export module Utils
 {
+  /*
   // Extracts 'property' value from 'attributes' object describing an enym 'enumName'.
   export function getEnumAttributes
   (
@@ -27,6 +28,7 @@ export module Utils
 
     return null;
   }
+  */
 
   // Makes the first character of 'str' uppercase and the rest lowercase.
   export function upperCaseFirstCharacter(str: string)

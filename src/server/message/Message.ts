@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Any message that is send to players.
+  Any text that is send to players.
 */
 
 /*
@@ -30,16 +30,19 @@ import {GameEntity} from '../../game/GameEntity';
 
 export class Message
 {
-  // Use 'text' parameter for single-part messages. Ommit it and call
-  // message.addMessagePart() for multi-part messages.
-  constructor(msgType: Message.Type, text: string = null)
+  // Use 'msgPartType' and 'text' parameter for single-part messages.
+  // Ommit them and call message.addMessagePart() for multi-part messages.
+  constructor
+  (
+    msgType: Message.Type,
+    msgPartType: MessagePart.Type = null,
+    text: string = null
+  )
   {
     this.type = msgType;
 
-    if (text !== null)
-    {
-      this.addMessagePart(text, MessagePart.Type.SAME_AS_MESSAGE);
-    }
+    if (msgPartType !== null && text !== null)
+      this.addMessagePart(text, msgPartType);
   }
 
   // -------------- Static class data -------------------
@@ -311,6 +314,8 @@ export class Message
     }
   }
 
+  /// Message.Type can now be used instead.
+  /*
   public isCommunication(): boolean
   {
     if (this.type === null)
@@ -335,6 +340,7 @@ export class Message
 
     return false;
   }
+  */
 
   // --------------- Protected methods ------------------
 
@@ -409,51 +415,20 @@ export module Message
 {
   export enum Type
   {
-    // -------------------- Communication ------------------------
-    TELL,
-    GOSSIP,
-    GOSSIPEMOTE,
-    SAY,
-    QUEST,
-    WIZNET,
-    SHOUT,
-    EMOTE,
-    INFO,
-    // --------------------- Syslog messages ---------------------
-    // Sent when ERROR() triggered somewhere in code.
-    RUNTIME_ERROR,
-    // Sent when FATAL_ERROR() triggers somewhere in code.
-    FATAL_RUNTIME_ERROR,
-    // System reports that something is ok (game is successfuly loaded, etc.).
-    SYSTEM_INFO,
-    // System reports that something didn't go as expected
-    // (socket errors, file read errors, etc.)
-    SYSTEM_ERROR,
-    // Messages from telnet server.
-    TELNET_SERVER,
-    // Sent when ingame script fails to compile (for example due to syntax errors).
-    SCRIPT_COMPILE_ERROR,
-    // Sent when ingame script encounters runtime error.
-    SCRIPT_RUNTIME_ERROR,
-    // Send when someone tries to access invalid entity reference
-    // or invalid value variable.
-    INVALID_ACCESS,
-    // --------------------- Prompt messages ---------------------
-    /// Prompt se asi bude přilepovat automaticky.
-    /// PROMPT,
-    // Authentication messages like "Enter your password:"
-    AUTH_PROMPT,
-    // ------------------------- Commands ------------------------
-    // Skill messages
-    SKILL,
-    // Spell messages
-    SPELL,
-    // (Output from non-skill commands like 'who', 'promote', etc.).
+    // ==================  Single-part Messages ==================
+
+    COMMUNICATION,
+    SYSLOG,
+    PROMPT,
     COMMAND,
-    // Output from 'look', 'examine', etc.
-    INSPECT 
+
+    // ==================  Multi-part Messages ===================
+
+    ROOM_CONTENTS,
+    CONTAINER_CONTENTS
   }
 
+  /*
   // Extends enum with value attributes and getAttributes() method.
   export namespace Type
   {
@@ -500,6 +475,7 @@ export module Message
       return Utils.getEnumAttributes(attributes, enumName, stringValue);
     }
   }
+  */
 
   /*
   // Note: Whether sender should receive the message or not
