@@ -44,12 +44,14 @@ export class MessagePart
   constructor
   (
     text: string,
-    messageType: Message.Type,
-    messagePartType: MessagePart.Type
+    /// messageType: Message.Type,
+    /// messagePartType: MessagePart.Type
+    type: MessagePart.Type
   )
   {
-    this.messageType = messageType;
-    this.messagePartType = messagePartType;
+    /// this.messageType = messageType;
+    /// this.messagePartType = messagePartType;
+    this.type = type;
 
     // Add base color according to message (or message part) type.
     this.text = this.addBaseColor(text);
@@ -59,8 +61,8 @@ export class MessagePart
 
   //------------------ Public data ----------------------
 
-  public messageType: Message.Type = null;
-  public messagePartType: MessagePart.Type = MessagePart.Type.SAME_AS_MESSAGE;
+  /// public messageType: Message.Type = null;
+  public type: MessagePart.Type = null;
   public text = null;
 
   //------------------ Private data ---------------------
@@ -316,25 +318,82 @@ export module MessagePart
 {
   export enum Type
   {
-    // This is used when message only has one part or if all
-    // parts are "of the same type".
-    SAME_AS_MESSAGE,
-    // For example a line with the name of the room.
-    TITLE,
-    // Description of the room, object, mob, etc.
-    DESCRIPTION,
-    // List of exits.
-    EXIT,
-    // Object name when listed on the ground.
+    // ==================  Single-part Messages ==================
+
+    // -------------------- Communication ------------------------
+
+    TELL,
+    GOSSIP,
+    GOSSIPEMOTE,
+    SAY,
+    QUEST,
+    WIZNET,
+    SHOUT,
+    EMOTE,
+    INFO,
+
+    // --------------------- Syslog messages ---------------------
+
+    // Sent when ERROR() triggered somewhere in code.
+    RUNTIME_ERROR,
+    // Sent when FATAL_ERROR() triggers somewhere in code.
+    FATAL_RUNTIME_ERROR,
+    // System reports that something is ok (game is successfuly loaded, etc.).
+    SYSTEM_INFO,
+    // System reports that something didn't go as expected
+    // (socket errors, file read errors, etc.)
+    SYSTEM_ERROR,
+    // Messages from telnet server.
+    TELNET_SERVER,
+    // Sent when ingame script fails to compile (for example due to syntax errors).
+    SCRIPT_COMPILE_ERROR,
+    // Sent when ingame script encounters runtime error.
+    SCRIPT_RUNTIME_ERROR,
+    // Send when someone tries to access invalid entity reference
+    // or invalid value variable.
+    INVALID_ACCESS,
+
+    // --------------------- Prompt messages ---------------------
+
+    /// Prompt se asi bude přilepovat automaticky.
+    /// PROMPT,
+    // Authentication messages like "Enter your password:"
+    AUTH_PROMPT,
+
+    // ------------------------- Commands ------------------------
+
+    // Skill messages
+    SKILL,
+    // Spell messages
+    SPELL,
+    // (Output from non-skill commands like 'who', 'promote', etc.).
+    COMMAND,
+    // Output from 'look', 'examine', etc.
+    INSPECT,
+
+    // ==================  Multi-part Messages ===================
+
+    // ---------------------- Room Contents ----------------------
+    // (Shows when you use 'look' command in a room.)
+
+    ROOM_NAME,
+    ROOM_DESCRIPTION,
+    ROOM_EXIT_DESCRIPTION,
     OBJECT_ON_THE_GROUND,
-    // Object name when listed in a container or inventory.
-    OBJECT_IN_CONTAINER,
-    // Mob when listed in room contents.
     MOB_IN_THE_ROOM,
-    // Mob when lister in container or inventory contents.
+
+    // --------------------- Container Contents ------------------
+    // (Shows when you use 'examine container' or when you use 'look'
+    //  when inside a container.)
+
+    CONTAINER_NAME,
+    CONTAINER_DESCRIPTION,
+    CONTAINER_EXIT,
+    OBJECT_IN_CONTAINER,
     MOB_IN_A_CONTAINER
   }
 
+  /*
   // Extends enum with value attributes and getAttributes() method.
   export namespace Type
   {
@@ -362,5 +421,6 @@ export module MessagePart
 
       return Utils.getEnumAttributes(attributes, enumName, stringValue);
     }
+    */
   }
 }
