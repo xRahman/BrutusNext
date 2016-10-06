@@ -17,6 +17,7 @@
 ///       zapisoval do log filu.
 
 import {Message} from '../server/message/Message';
+import {MessagePart} from '../server/message/MessagePart';
 import {AdminLevel} from '../server/AdminLevel';
 
 /*
@@ -54,11 +55,11 @@ export class Syslog
   public static log
   (
     text: string,
-    msgType: Message.Type,
+    msgType: MessagePart.Type,
     adminLevel: AdminLevel
   )
   {
-    let entry = "[" + Message.Type[msgType] + "] " + text;
+    let entry = "[" + MessagePart.Type[msgType] + "] " + text;
     let message = new Message(msgType, entry);
 
     // Send log entry to all online characters that have appropriate

@@ -4,7 +4,10 @@
   Color codes used for all kind of messages.
 */
 
-class MessageColors
+import {ERROR} from '../../shared/error/ERROR';
+import {MessagePart} from '../../server/message/MessagePart';
+
+export class MessageColors
 {
   // Colors for each MessagePart.Type.
   private static colors =
@@ -13,58 +16,105 @@ class MessageColors
 
     // -------------------- Communication ------------------------
     
-    TELL:                  { base: '&g', quotes: '&w', speech: '&C' },
-    GOSSIP:                { base: '&m', quotes: '&w', speech: '&y' },
-    GOSSIPEMOTE:           { base: '&m',               speech: '&c' },
-    SAY:                   { base: '&w', quotes: '&w', speech: '&c' },
-    QUEST:                 { base: '&g', quotes: '&w', speech: '&c' },
-    WIZNET:                { base: '&C', colon : '&w', speech: '&c' },
-    SHOUT:                 { base: '&G', quotes: '&w', speech: '&y' },
-    EMOTE:                 { base: '&g'                             },
-    INFO:                  { base: '&W', info  : '&R', speech: '&w' },
+    TELL:                  { BASE: '&g', QUOTES: '&w', SPEECH: '&C' },
+    GOSSIP:                { BASE: '&m', QUOTES: '&w', SPEECH: '&y' },
+    GOSSIPEMOTE:           { BASE: '&m',               SPEECH: '&c' },
+    SAY:                   { BASE: '&w', QUOTES: '&w', SPEECH: '&c' },
+    QUEST:                 { BASE: '&g', QUOTES: '&w', SPEECH: '&c' },
+    WIZNET:                { BASE: '&C', COLON : '&w', SPEECH: '&c' },
+    SHOUT:                 { BASE: '&G', QUOTES: '&w', SPEECH: '&y' },
+    EMOTE:                 { BASE: '&g'                             },
+    INFO:                  { BASE: '&W', INFO  : '&R', SPEECH: '&w' },
 
     // --------------------- Syslog messages ---------------------
 
-    RUNTIME_ERROR:         { base: '&w' },
-    FATAL_RUNTIME_ERROR:   { base: '&g' },
-    SYSTEM_INFO:           { base: '&g' },
-    SYSTEM_ERROR:          { base: '&g' },
-    TELNET_SERVER:         { base: '&g' },
-    SCRIPT_COMPILE_ERROR:  { base: '&g' },
-    SCRIPT_RUNTIME_ERROR:  { base: '&g' },
-    INVALID_ACCESS:        { base: '&g' },
+    RUNTIME_ERROR:         { BASE: '&w' },
+    FATAL_RUNTIME_ERROR:   { BASE: '&g' },
+    SYSTEM_INFO:           { BASE: '&g' },
+    SYSTEM_ERROR:          { BASE: '&g' },
+    TELNET_SERVER:         { BASE: '&g' },
+    SCRIPT_COMPILE_ERROR:  { BASE: '&g' },
+    SCRIPT_RUNTIME_ERROR:  { BASE: '&g' },
+    INVALID_ACCESS:        { BASE: '&g' },
 
     // --------------------- Prompt messages ---------------------
 
-    /// PROMPT:            { base: '&w' },
-    AUTH_PROMPT:           { base: '&w' },
+    /// PROMPT:            { BASE: '&w' },
+    AUTH_PROMPT:           { BASE: '&w' },
 
     // ------------------------- Commands ------------------------
 
-    SKILL:                 { base: '&g' },
-    SPELL:                 { base: '&g' },
-    COMMAND:               { base: '&g' },
-    INSPECT:               { base: '&g' },
+    SKILL:                 { BASE: '&g' },
+    SPELL:                 { BASE: '&g' },
+    COMMAND:               { BASE: '&g' },
+    INSPECT:               { BASE: '&g' },
 
     // ==================  Multi-part Messages ===================
 
     // ---------------------- Room Contents ----------------------
     // (Shows when you use 'look' command in a room.)
 
-    ROOM_NAME:             { base: '&g' },
-    ROOM_DESCRIPTION:      { base: '&g' },
-    ROOM_EXIT:             { base: '&g' },
-    OBJECT_ON_THE_GROUND:  { base: '&g' },
-    MOB_IN_THE_ROOM:       { base: '&g' },
+    ROOM_NAME:             { BASE: '&g' },
+    ROOM_DESCRIPTION:      { BASE: '&g' },
+    ROOM_EXIT:             { BASE: '&g' },
+    OBJECT_ON_THE_GROUND:  { BASE: '&g' },
+    MOB_IN_THE_ROOM:       { BASE: '&g' },
 
     // --------------------- Container Contents ------------------
     // (Shows when you use 'examine container' or when you use 'look'
     //  when inside a container.)
 
-    CONTAINER_NAME:        { base: '&g' },
-    CONTAINER_DESCRIPTION: { base: '&g' },
-    CONTAINER_EXIT:        { base: '&g' },
-    OBJECT_IN_CONTAINER:   { base: '&g' },
-    MOB_IN_A_CONTAINER:    { base: '&g' }
+    CONTAINER_NAME:        { BASE: '&g' },
+    CONTAINER_DESCRIPTION: { BASE: '&g' },
+    CONTAINER_EXIT:        { BASE: '&g' },
+    OBJECT_IN_CONTAINER:   { BASE: '&g' },
+    MOB_IN_A_CONTAINER:    { BASE: '&g' }
+  }
+
+  // Accesses MessageColors.colors table, prints error if there is no
+  // such record.
+  public static get
+  (
+    msgPartType: MessagePart.Type,
+    colorType: MessageColors.ColorType
+  )
+  : string
+  {
+    const defaultColor = '&w';
+    let colorRecord = MessageColors.colors[MessagePart[msgPartType]];
+
+    if (colorRecord === undefined)
+    {
+      ERROR("Missing color record for messagePartType"
+        + " '" + MessagePart[msgPartType] + "'" );
+      return defaultColor;
+    }
+
+    let color = colorRecord[colorType];
+
+    if (color === undefined)
+    {
+      ERROR("Unknown color type '" + colorType + "' for"
+        + " messagePartType '" + MessagePart[msgPartType] + "'" );
+      return defaultColor;
+    }
+
+    return color; 
+  }
+}
+
+// ------------------ Type declarations ----------------------
+
+// Module is exported so you can use enum type from outside this file.
+// It must be declared after the class because Typescript says so...
+export module MessageColors
+{
+  export enum ColorType
+  {
+    BASE,
+    QUOTES,
+    SPEECH,
+    COLON,
+    INFO
   }
 }

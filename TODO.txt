@@ -1,3 +1,9 @@
+TODO: Možná by stálo za to přesunout MessagePart.Type do Message a říkat jí
+  Message.Type a původní MessageType přejmenovat na Message.Cathegory.
+  - sice to bude trochu matoucí v rámci implementace MessagePart a Message,
+    ale bude to možná dávat vštší smysl při použití zvenku (a hlavně bude
+    stačit includovat Message).
+
 TODO: Z enmumů v AuthProcessoru, LobbyProcessoru a možná i Connection
   vyhodit hodnotu INITIAL a místo ní používat 'null'.
 
