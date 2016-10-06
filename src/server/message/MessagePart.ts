@@ -12,32 +12,7 @@
 import {ERROR} from '../../shared/error/ERROR';
 import {Utils} from '../../shared/Utils';
 import {Message} from '../../server/message/Message';
-
-/*
-export module MessagePart
-{
-  export class Type
-  {
-    // This is used when message only has one part or if all
-    // parts are "of the same type".
-    SAME_AS_MESSAGE;
-    // For example a line with the name of the room.
-    TITLE,
-    // Description of the room, object, mob, etc.
-    DESCRIPTION,
-    // List of exits.
-    EXIT,
-    // Object name when listed on the ground.
-    OBJECT_ON_THE_GROUND,
-    // Object name when listed in a container or inventory.
-    OBJECT_IN_CONTAINER,
-    // Mob when listed in room contents.
-    MOB_IN_THE_ROOM,
-    // Mob when lister in container or inventory contents.
-    MOB_IN_A_CONTAINER
-  }
-}
-*/
+import {MessageColors} from '../../server/message/MessageColors';
 
 export class MessagePart
 {
@@ -70,10 +45,12 @@ export class MessagePart
 
   // --------------- Static accessors -------------------
 
+  /*
   public getText(): string
   {
     return this.text;
   }
+  */
 
   // ---------------- Static methods --------------------
 
@@ -89,22 +66,17 @@ export class MessagePart
     if (text.length === 0)
       return text;
 
-    // If text already starts with a color code, don't 
+    // Don't add base color if text already starts with color code.
     if (text[0] === '&' && text.length >= 2)
       return text;
 
-    let baseColor = this.getColorByMessagePartType();
-
-    
-    // TODO: Nastavení baseColor textu podle typu.
-    //
-    // switch (this.type)
-    // {
-    // }
+    ///let baseColor = this.getColorByMessagePartType();
+    let baseColor = MessageColors.get(this.type, MessageColors.ColorType.BASE);
 
     return baseColor + text;
   }
 
+  /*
   private getColorByMessageType(): string
   {
     // Access attributes for enum value 'this.messageType';
@@ -122,7 +94,6 @@ export class MessagePart
 
     return attributes.color.base;
 
-    /*
     let color = '&w';
 
     switch (this.messageType)
@@ -240,11 +211,13 @@ export class MessagePart
         ERROR();
         break;
     }
-    */
   }
+  */
 
+  /*
   private getColorByMessagePartType(): string
   {
+    /// return MessageColors.get(this.type, MessageColors.ColorType.BASE);
     if (this.messagePartType === MessagePart.Type.SAME_AS_MESSAGE)
       return this.getColorByMessageType();
 
@@ -263,7 +236,8 @@ export class MessagePart
 
     return attributes.color.base;
 
-    /*
+
+
     let color = '&w';
 
     switch (this.messagePartType)
@@ -305,8 +279,8 @@ export class MessagePart
     }
 
     return color;
-    */
   }
+  */
 }
 
 // ------------------ Type declarations ----------------------
@@ -393,6 +367,8 @@ export module MessagePart
     MOB_IN_A_CONTAINER
   }
 
+  /// Tohle nakonec nepoužiju. Nechám si to tu jako příklad jak
+  /// implementovat obecné atributy k enumu.
   /*
   // Extends enum with value attributes and getAttributes() method.
   export namespace Type
@@ -421,6 +397,7 @@ export module MessagePart
 
       return Utils.getEnumAttributes(attributes, enumName, stringValue);
     }
-    */
+    
   }
+  */
 }
