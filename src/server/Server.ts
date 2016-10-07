@@ -19,10 +19,12 @@ import {EntityManager} from '../shared/entity/EntityManager';
 import {FileSystem} from '../shared/fs/FileSystem';
 import {FlagNamesManager} from '../shared/flags/FlagNamesManager';
 import {AdminList} from '../server/AdminList';
+import {AdminLevel} from '../server/AdminLevel';
 import {Connection} from '../server/connection/Connection';
 import {EntityList} from '../shared/entity/EntityList';
 import {ClassFactory} from '../shared/ClassFactory';
 import {AccountList} from '../server/account/AccountList';
+import {Message} from '../server/message/Message';
 import {Game} from '../game/Game';
 import {GameEntity} from '../game/GameEntity';
 import {TelnetServer} from '../server/net/telnet/TelnetServer';
@@ -90,10 +92,13 @@ export class Server
     return Server.getInstance().accounts;
   }
 
+  /// 'connections' probably shouldn't be directly accessible. 
+  /*
   public static get connections()
   {
     return Server.getInstance().connections;
   }
+  */
 
   public static get telnetServer()
   {
@@ -159,6 +164,53 @@ export class Server
   public static getGlobalMessageRecipients()
   {
 
+  }
+
+  public static sendToAllConnections(message: Message, visibility: AdminLevel)
+  {
+    let connections = Server.getInstance().connections.getEntities();
+    let connection: Connection = null;
+
+    for (connection of connections.values())
+    {
+      // Skip invalid connections.
+      if (connection === null || !connection.isValid())
+        break;
+
+      message.sendToConnection(connection);
+    }
+  }
+
+  public static sendToAllIngameConnections
+  (
+    message: Message,
+    visibility: AdminLevel
+  )
+  {
+    let connections = Server.getInstance().connections.getEntities();
+    let connection: Connection = null;
+
+    for (connection of connections.values())
+    {
+      // Skip invalid connections.
+      if (connection === null || !connection.isValid())
+        break;
+
+      // Skip connections that don't have an ingame entity attached.
+      if (connection.ingameEntity === null)
+        break;
+
+      // Skip connections with invalid ingame entity.
+      if (connection.ingameEntity.isValid() === false)
+        break;
+
+      // Skip game entities that don't have sufficient admin level
+      // to see this message.
+      if (Server.getAdminLevel(connection.ingameEntity) < visibility)
+        break;
+
+      message.sendToConnection(connection);
+    }
   }
 
   // ---------------- Public methods --------------------

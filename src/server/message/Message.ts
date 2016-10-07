@@ -4,67 +4,40 @@
   Any text that is send to players.
 */
 
-/*
-  A message can consist of multiple MessageParts. For example
-  if you look into the room, a single message will be created
-  but it will consist of room name, room description, list of
-  exits, etc.
-*/
-
-/*
-  Message remembers everything, including parts that will be
-  gagged or otherwise filtered. It means that you can retrieve
-  original, ungagged (or differently gagged) messages from the
-  history.
-*/
-
 'use strict';
 
 import {ERROR} from '../../shared/error/ERROR';
 import {Utils} from '../../shared/Utils';
 import {Server} from '../../server/Server';
 import {Connection} from '../../server/connection/Connection';
-import {MessagePart} from '../../server/message/MessagePart';
+import {MessageColors} from '../../server/message/MessageColors';
+import {TelnetSocketDescriptor}
+  from '../../server/net/telnet/TelnetSocketDescriptor';
 import {AdminLevel} from '../../server/AdminLevel';
 import {GameEntity} from '../../game/GameEntity';
 
 export class Message
 {
-  // Use 'msgPartType' and 'text' parameter for single-part messages.
-  // Ommit them and call message.addMessagePart() for multi-part messages.
-  constructor
-  (
-    msgType: Message.Type,
-    msgPartType: MessagePart.Type = null,
-    text: string = null
-  )
+  constructor(text: string, msgType: Message.Type)
   {
     this.type = msgType;
 
-    if (msgPartType !== null && text !== null)
-      this.addMessagePart(text, msgPartType);
+    this.text = text;
   }
 
   // -------------- Static class data -------------------
 
+  // Newlines are normalized to this one before message is sent.
+  static get NEW_LINE() { return '/r/n'; }
+
   //------------------ Public data ----------------------
 
-  ///public target: Message.Target = null;
-  ///public sendToSelf = true;
-
   //------------------ Private data ---------------------
-
-  /*
-  // Recipient should only be set when this.type is
-  // Message.Type.SINGLE_RECIPIENT and this.sendToSelf
-  // is false.
-  private recipient: GameEntity = null;
-  */
 
   // 'sender' can be null (for example for syslog messages, global infos, etc.) 
   private sender: GameEntity = null;
   private type: Message.Type = null;
-  private messageParts: Array<MessagePart> = null;
+  private text: string = null;
 
   // --------------- Static accessors -------------------
 
@@ -72,118 +45,25 @@ export class Message
 
   // ---------------- Public methods --------------------
 
-  // Puts message parts together, adds prompt if necessary,
+  // Adds base color, adds prompt if necessary,
   // adds a space if neccessary (to separate user input).
   public compose(): string
   {
-    let data = "";
-
-    // Put all message parts together.
-    for (let messagePart of this.messageParts)
-      data += messagePart.getText();
- 
-    if (this.triggersPrompt())
-    {
-      /// TODO: Přidat prázný řádek (nebo newlinu v brief módu) mezi
-      /// message a prompt.
-
-      data += this.generatePrompt();
-    } 
-
-    /// Zatím mě nenapadá případ, kdy by za poslaným messagem nemohl přijít
-    /// user input, takže tenhle comment je asi zbytečnej.
-    /*
-    // Pokud je message prompt, případně pokud za ním prompt následuje,
-    // tak za něj přilepit mezeru, pokud tam ještě není.
-    // - aby byl user input oddělenej od outputu (na terminálech, kde se píše
-    //   přímo do textu).
-    */
-
+    let data = Utils.trimRight(this.text);
+    
     data = this.normalizeNewlines(data);
 
+    if (this.triggersPrompt())
+    {
+      // Two newlines create an empty line between message body and prompt.
+      data += Message.NEW_LINE + Message.NEW_LINE + this.generatePrompt();
+    }
+
     // Add space to the end of the message to separate it from user input.
-    // (Only if it doesn't end with space already or with a newline.) 
+    // (Only if it doesn't end with space already or with a newline - it
+    //  might be part of generated prompt.) 
     return this.addSpace(data);
   }
-
-  public addMessagePart(text: string, msgPartType: MessagePart.Type)
-  {
-    let messagePart = new MessagePart(text, this.type, msgPartType);
-
-    if (this.messageParts === null)
-      this.messageParts = [];
-
-    this.messageParts.push(messagePart);
-  }
-
-  /*
-  // Use this if the message should only be sent to one target.
-  public setRecipient(recipient: GameEntity)
-  {
-    if (recipient === null || recipient.isValid() === false)
-    {
-      ERROR("Invalid message recipient");
-      return;
-    }
-
-    if (this.sender === null)
-    {
-      ERROR("Invalid sender. Set message.sender before you call"
-        + " setRecipient()");
-      return;
-    }
-
-    this.target = Message.Target.SINGLE_RECIPIENT;
-
-    // 'equals()' compares entities by their string ids.
-    if (recipient.equals(this.sender))
-      this.sendToSelf = true;
-    else
-      this.sendToSelf = false;
-
-    this.recipient = recipient;
-  }
-  */
-
-  /*
-  // Sends the message to all of it's recipients.
-  public send()
-  {
-    if (this.sender === null || !this.sender.isValid())
-    {
-      ERROR("Invalid sender. Set message.sender before you call"
-        + " gatherRecipients()");
-      return;
-    }
-
-    switch (this.target)
-    {
-      case Message.Target.SINGLE_RECIPIENT:
-        this.sendToEntity(this.recipient);
-        break;
-
-      case Message.Target.ALL_IN_ROOM:
-        this.sendToRoom();
-        break;
-
-      case Message.Target.ALL_IN_SHOUTING_DISTANCE:
-        this.sendToShout();
-        break;
-
-      case Message.Target.ALL_IN_GAME:
-        this.sendToGame();
-        break;
-
-      case Message.Target.ALL_ACTIVE_CONNECTIONS:
-        this.sendToAllConnections({ onlyInGame: false });
-        break;
-
-      default:
-        ERROR("Unknown message target");
-        break;
-    }
-  }
-  */
 
   // Sends the message directly to player connection. This is used
   // to send message to player is menu, entering password, etc.,
@@ -197,26 +77,6 @@ export class Message
     }
 
     connection.sendMessage(this);
-    
-    /*
-    switch (this.type)
-    {
-      // /// Posílání samothéno promptu skrz message asi nebude k ničemu potřeba,
-      // /// uvidíme.
-      // case Message.Type.PROMPT:
-      //   // Send data to the connection without adding any newlines.
-      //   // (It means that player will type right next to this output.)
-      //   connection.sendAsPrompt(data);
-      //   break;
-      
-      default:
-        // Send data as block, followed by prompt.
-        // (It means that a newline or an empty line will be added to data,
-        //  followed by player's prompt.)
-        connection.sendMessage(this);
-        break;
-    }
-    */
   }
 
   // Send the message to a single game entity.
@@ -231,7 +91,7 @@ export class Message
 
     this.sender = sender;
 
-    // Null connection means that no player is connected to this entity. 
+    // Null connection means that no player is connected to target entity. 
     if (target.connection === null)
     {
       target.addOfflineMessage(sender, this);
@@ -256,6 +116,7 @@ export class Message
     // TODO
 
     /// Pozn: Shouting distance (počet roomů) přečíst ze sendera.
+    /// (tady bude sender povinny)
   }
 
   // Sends message to all player connections that have a valid ingame entity.
@@ -265,30 +126,7 @@ export class Message
   {
     this.sender = sender;
 
-    let connections = Server.connections.getEntities();
-    let connection: Connection = null;
-
-    for (connection of connections.values())
-    {
-      // Skip invalid connections.
-      if (connection === null || !connection.isValid())
-        break;
-
-      // Skip connections that don't have an ingame entity attached.
-      if (connection.ingameEntity === null)
-        break;
-
-      // Skip connections with invalid ingame entity.
-      if (connection.ingameEntity.isValid() === false)
-        break;
-
-      // Skip game entities which don't have sufficient admin level
-      // to see this message.
-      if (Server.getAdminLevel(connection.ingameEntity) < visibility)
-        break;
-
-      this.sendToConnection(connection);
-    }
+    Server.sendToAllIngameConnections(this, visibility);
   }
 
   // Sends message even to players in menu, entering password, etc.
@@ -301,20 +139,11 @@ export class Message
   {
     this.sender = sender;
 
-    let connections = Server.connections.getEntities();
-    let connection: Connection = null;
-
-    for (connection of connections.values())
-    {
-      // Skip invalid connections.
-      if (connection === null || !connection.isValid())
-        break;
-
-      this.sendToConnection(connection);
-    }
+    Server.sendToAllConnections(this, visibility);
   }
 
   /// Message.Type can now be used instead.
+  /// (Or maybe not. It'll better leave this here.)
   /*
   public isCommunication(): boolean
   {
@@ -374,7 +203,7 @@ export class Message
     {
       // First remove all '\r' characters, then replace all '\n'
       // characters with '\r\n'.
-      data = data.replace(/\r/gi, "").replace(/\n/gi, '\r\n');
+      data = data.replace(/\r/gi, "").replace(/\n/gi, Message.NEW_LINE);
     }
 
     return data;
@@ -397,22 +226,93 @@ export class Message
 
     return data + " ";
   }
+
+  private addBaseColor(str: string): string
+  {
+    // There is no point in formatting an empty string.
+    if (str.length === 0)
+      return str;
+
+    let baseColor = MessageColors.getBaseColor(this.type);
+
+    // Replace 'base color' dummy codes with actual color
+    // code for base color ('base color' codes ('&_') needs
+    // to be parsed and replaced here, because we may loose
+    // information about base color if text starts with some
+    // other color).
+    str = str.replace(/&_/gi, baseColor)
+
+    // Get up to two characters beginning at index 0.
+    let firstTwoCharacters = str.substr(0, 2);
+
+    // Add base color to the start of the string, but only if
+    // it doesn't start with color code.
+    if (TelnetSocketDescriptor.isColorCode(firstTwoCharacters))
+      return baseColor + str;
+    else
+      return str;      
+  }
 }
 
 // ------------------ Type declarations ----------------------
-
-/*
-  Pozn: Jedna možnost je používat Cathegory a pak nějaké Subcathegory,
-    druhá možnost je udělat enum co nejpodrobnější a nad ním postavit
-    nějaké grupy (třeba metodou isCommunication, která prostě vyjmenuje
-    všechny hodnoty enumu, které spadají do komunikace).
-    - zkusím druhou možnost, uvidíme.
-*/
 
 // Module is exported so you can use enum type from outside this file.
 // It must be declared after the class because Typescript says so...
 export module Message
 {
+  export enum Type
+  {
+    // -------------------- Communication ------------------------
+
+    TELL,
+    GOSSIP,
+    GOSSIPEMOTE,
+    SAY,
+    QUEST,
+    WIZNET,
+    SHOUT,
+    EMOTE,
+    INFO,
+
+    // --------------------- Syslog messages ---------------------
+
+    // Sent when ERROR() triggered somewhere in code.
+    RUNTIME_ERROR,
+    // Sent when FATAL_ERROR() triggers somewhere in code.
+    FATAL_RUNTIME_ERROR,
+    // System reports that something is ok (game is successfuly loaded, etc.).
+    SYSTEM_INFO,
+    // System reports that something didn't go as expected
+    // (socket errors, file read errors, etc.)
+    SYSTEM_ERROR,
+    // Messages from telnet server.
+    TELNET_SERVER,
+    // Sent when ingame script fails to compile (for example due to syntax errors).
+    SCRIPT_COMPILE_ERROR,
+    // Sent when ingame script encounters runtime error.
+    SCRIPT_RUNTIME_ERROR,
+    // Send when someone tries to access invalid entity reference
+    // or invalid value variable.
+    INVALID_ACCESS,
+
+    // --------------------- Prompt messages ---------------------
+
+    /// Prompt se asi bude přilepovat automaticky.
+    /// PROMPT,
+    // Authentication messages like "Enter your password:"
+    AUTH_PROMPT,
+
+    // ------------------------- Commands ------------------------
+
+    // Skill messages
+    SKILL,
+    // Spell messages
+    SPELL,
+    // (Output from non-skill commands like 'who', 'promote', etc.).
+    COMMAND
+  }
+
+  /*
   export enum Type
   {
     // ==================  Single-part Messages ==================
@@ -427,7 +327,10 @@ export module Message
     ROOM_CONTENTS,
     CONTAINER_CONTENTS
   }
+  */
 
+  /// Tohle nakonec nepoužiju. Nechám si to tu jako příklad jak
+  /// implementovat obecné atributy k enumu.
   /*
   // Extends enum with value attributes and getAttributes() method.
   export namespace Type
