@@ -16,6 +16,7 @@ import {NamedEntity} from '../../shared/entity/NamedEntity';
 import {Connection} from '../../server/connection/Connection';
 import {Server} from '../../server/Server';
 import {Game} from '../../game/Game';
+import {GameEntity} from '../../game/GameEntity';
 import {Character} from '../../game/character/Character';
 
 // Built-in node.js modules.
@@ -71,6 +72,24 @@ export class Account extends NamedEntity
   public timeOfCreation = new Date();
 
   // ---------------- Public methods --------------------
+
+  // Send message to this account.
+  public receive
+  (
+    // Don't add starting and ending color code, they will be added automatically
+    // according to msgType. You can use '&_' code as 'base color', that is the
+    // color that will be automatically aded to the start of the message.
+    //   Use '\n' to mark newlines (it will be automatically converted to '\r\n').
+    text: string,
+    msgType: Message.Type
+  )
+  {
+    if (this.connection !== null && this.connection.isValid())
+    {
+      let message = new Message(text, msgType);
+      message.sendToConnection(this.connection);
+    }
+  }
 
   // -> Returns full name of the character matching to 'abbrev'.
   // -> Returns 'null' if no match is found.
@@ -170,10 +189,11 @@ export class Account extends NamedEntity
     {
       ERROR("Failed to create new character (" + characterName + ")");
 
-      this.connection.sendAsBlock
+      this.receive
       (
-        "&wAn error occured while creating"
-        + " your character. Please contact implementors."
+        "An error occured while creating"
+        + " your character. Please contact implementors.",
+        Message.Type.AUTH_ERROR
       );
 
       return false;
@@ -324,11 +344,12 @@ export class Account extends NamedEntity
     // Notify the player what went wrong.
     if (this.connection)
     {
-      this.connection.sendAsBlock
+      this.receive
       (
         "Something is wrong, character named '" + characterName + "'"
         + " already exists. Please contact implementors and ask them to"
-        + "resolve this issue."
+        + "resolve this issue.",
+        Message.Type.AUTH_ERROR
       );
     }
   }

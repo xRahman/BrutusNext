@@ -35,10 +35,11 @@ export class MessageColors
     SCRIPT_RUNTIME_ERROR:  '&g',
     INVALID_ACCESS:        '&g',
 
-    // --------------------- Prompt messages ---------------------
+    // ------------------ Authentication messages ----------------
 
-    /// PROMPT:            '&w',
     AUTH_PROMPT:           '&w',
+    AUTH_INFO:             '&w',
+    AUTH_ERROR:            '&w',
 
     // ------------------------- Commands ------------------------
 
