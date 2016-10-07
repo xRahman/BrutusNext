@@ -6,7 +6,7 @@
   (For example a description of a room in a message sent when
    player looks into the room.)
 */
-
+/*
 'use strict';
 
 import {ERROR} from '../../shared/error/ERROR';
@@ -45,12 +45,10 @@ export class MessagePart
 
   // --------------- Static accessors -------------------
 
-  /*
   public getText(): string
   {
     return this.text;
   }
-  */
 
   // ---------------- Static methods --------------------
 
@@ -62,7 +60,7 @@ export class MessagePart
 
   private addBaseColor(text: string): string
   {
-    // There is no point in formatting empty string.
+    // There is no point in formatting an empty string.
     if (text.length === 0)
       return text;
 
@@ -76,7 +74,7 @@ export class MessagePart
     return baseColor + text;
   }
 
-  /*
+  
   private getColorByMessageType(): string
   {
     // Access attributes for enum value 'this.messageType';
@@ -212,9 +210,9 @@ export class MessagePart
         break;
     }
   }
-  */
+  
 
-  /*
+  
   private getColorByMessagePartType(): string
   {
     /// return MessageColors.get(this.type, MessageColors.ColorType.BASE);
@@ -280,7 +278,7 @@ export class MessagePart
 
     return color;
   }
-  */
+  
 }
 
 // ------------------ Type declarations ----------------------
@@ -366,38 +364,5 @@ export module MessagePart
     OBJECT_IN_CONTAINER,
     MOB_IN_A_CONTAINER
   }
-
-  /// Tohle nakonec nepoužiju. Nechám si to tu jako příklad jak
-  /// implementovat obecné atributy k enumu.
-  /*
-  // Extends enum with value attributes and getAttributes() method.
-  export namespace Type
-  {
-    let attributes =
-    {
-      SAME_AS_MESSAGE:      { color: { base: '&w' } },
-      TITLE:                { color: { base: '&R' } },
-      DESCRIPTION:          { color: { base: '&w' } },
-      EXIT:                 { color: { base: '&y' } },
-      OBJECT_ON_THE_GROUND: { color: { base: '&g' } },
-      OBJECT_IN_CONTAINER:  { color: { base: '&g' } },
-      MOB_IN_THE_ROOM:      { color: { base: '&y' } },
-      MOB_IN_A_CONTAINER:   { color: { base: '&y' } }
-    }
-    
-    // -> Returns null if enum value isn't found.
-    export function getAttributes(value: Type)
-    {
-      // Full name of the enum (used in error message if value isn't found
-      // in attributes).
-      let enumName = 'MessagePart.Type';
-
-      // "Dereferenced" enmum value (it's string representation).
-      let stringValue = MessagePart.Type[value];
-
-      return Utils.getEnumAttributes(attributes, enumName, stringValue);
-    }
-    
-  }
-  */
 }
+*/
