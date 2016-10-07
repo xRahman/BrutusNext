@@ -92,13 +92,10 @@ export class Server
     return Server.getInstance().accounts;
   }
 
-  /// 'connections' probably shouldn't be directly accessible. 
-  /*
   public static get connections()
   {
     return Server.getInstance().connections;
   }
-  */
 
   public static get telnetServer()
   {

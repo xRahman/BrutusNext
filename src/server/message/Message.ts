@@ -189,6 +189,8 @@ export class Message
     switch (this.type)
     {
       case Message.Type.AUTH_PROMPT:
+      case Message.Type.AUTH_INFO:
+      case Message.Type.AUTH_ERROR:
         return false;
 
       default:
@@ -295,12 +297,14 @@ export module Message
     // or invalid value variable.
     INVALID_ACCESS,
 
-    // --------------------- Prompt messages ---------------------
+    // ------------------ Authentication messages ----------------
 
-    /// Prompt se asi bude přilepovat automaticky.
-    /// PROMPT,
     // Authentication messages like "Enter your password:"
     AUTH_PROMPT,
+    // Authentication messages like "You have reconnected to your character."
+    AUTH_INFO,
+    // Something went wrong while authenticating.
+    AUTH_ERROR,
 
     // ------------------------- Commands ------------------------
 

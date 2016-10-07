@@ -14,7 +14,6 @@ import {EntityManager} from '../shared/entity/EntityManager';
 import {SaveableObject} from '../shared/fs/SaveableObject';
 import {PrototypeManager} from '../shared/prototype/PrototypeManager';
 import {Message} from '../server/message/Message';
-import {MessagePart} from '../server/message/MessagePart';
 import {Server} from '../server/Server';
 import {AdminLevel} from '../server/AdminLevel';
 import {GameEntity} from '../game/GameEntity';
@@ -65,7 +64,7 @@ export class Game
 
   // Sends a message to all ingame entities
   // that have a player connection attached.
-  public static sendToAll
+  public static sendToAllPlayers
   (
     sender: GameEntity,
     text: string,
@@ -73,7 +72,7 @@ export class Game
     visibility: AdminLevel
   )
   {
-    let message = new Message(msgType, text);
+    let message = new Message(text, msgType);
     
     message.sendToAllIngameConnections(sender, visibility);
   }

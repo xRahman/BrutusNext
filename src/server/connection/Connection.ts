@@ -67,11 +67,20 @@ export class Connection extends Entity
 
     this.stage = Connection.Stage.IN_GAME;
 
+    this.receive
+    (
+      "\nWelcome to the land of &RBrutus&YNext!&_"
+      + " May your visit here be... &GInteresting&_.",
+      Message.Type.AUTH_INFO
+    );
+
+    /*
     this.sendAsPromptlessBlock
     (
       "\n&gWelcome to the land of &RBrutus&YNext!"
       + " &gMay your visit here be... &GInteresting."
     );
+    */
 
     this.ingameEntity.announcePlayerEnteringGame();
   }
@@ -497,9 +506,25 @@ export class Connection extends Entity
   }
   */
 
+  // Send message to this account.
+  private receive
+  (
+    // Don't add starting and ending color code, they will be added automatically
+    // according to msgType. You can use '&_' code as 'base color', that is the
+    // color that will be automatically aded to the start of the message.
+    //   Use '\n' to mark newlines (it will be automatically converted to '\r\n').
+    text: string,
+    msgType: Message.Type
+  )
+  {
+    let message = new Message(text, msgType);
+    message.sendToConnection(this);
+  }
+
   private announceReconnecting()
   {
-    this.sendAsBlock("&wYou have reconnected to your character.");
+    this.receive("You have reconnected to your character.",
+      Message.Type.AUTH_INFO);
   }
 
   private getOldConnection(account: Account): Connection
