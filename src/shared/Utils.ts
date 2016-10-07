@@ -30,6 +30,20 @@ export module Utils
   }
   */
 
+  // Removes all whitespace characters from the beginning of the string,
+  // including tabs and line feeds.
+  export function trimLeft(str: string): string
+  {
+	  return str.replace(/^\s+/,"");
+  }
+
+  // Removes all whitespace characters from the end of the string,
+  // including tabs and line feeds.
+  export function trimRight(str: string): string
+  {
+    return str.replace(/\s+$/,"");
+  }
+
   // Makes the first character of 'str' uppercase and the rest lowercase.
   export function upperCaseFirstCharacter(str: string)
   {

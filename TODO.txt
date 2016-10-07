@@ -3,6 +3,11 @@ TODO: Možná by stálo za to přesunout MessagePart.Type do Message a říkat j
   - sice to bude trochu matoucí v rámci implementace MessagePart a Message,
     ale bude to možná dávat vštší smysl při použití zvenku (a hlavně bude
     stačit includovat Message).
+A nebo se na MessagePart vykašlat úplně.
+  - což dává smysl i vzhledek k pojetí base color, kdy je to první barva
+    v odesílaném packetu a vztahuje se na celý packet (každý message se nakonec
+    odešle jako celý packet).
+  => odpadne mi separátní obarvování exitů a tak.
 
 TODO: Z enmumů v AuthProcessoru, LobbyProcessoru a možná i Connection
   vyhodit hodnotu INITIAL a místo ní používat 'null'.
