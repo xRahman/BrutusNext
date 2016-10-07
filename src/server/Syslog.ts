@@ -17,7 +17,6 @@
 ///       zapisoval do log filu.
 
 import {Message} from '../server/message/Message';
-import {MessagePart} from '../server/message/MessagePart';
 import {AdminLevel} from '../server/AdminLevel';
 
 /*
@@ -55,12 +54,12 @@ export class Syslog
   public static log
   (
     text: string,
-    msgType: MessagePart.Type,
+    msgType: Message.Type,
     adminLevel: AdminLevel
   )
   {
-    let entry = "[" + MessagePart.Type[msgType] + "] " + text;
-    let message = new Message(msgType, entry);
+    let entry = "[" + Message.Type[msgType] + "] " + text;
+    let message = new Message(entry, msgType);
 
     // Send log entry to all online characters that have appropriate
     // admin level. Syslog messages don't have sender ('sender'

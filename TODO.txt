@@ -1,3 +1,13 @@
+IDEA: Možná to s messagama udělat trošku jinak:
+  - místo GameEntity.receiveMessage, Game.sendCosi, AuthProcessor.sendCosi atd.
+    udělat statické metody do Message. Takže půjde psát např.:
+    Message.sendToConnection(connection, text, msgType, sender);
+    - statická metoda prostě založí new Message() a pošle ho.
+sounds goood
+
+TODO: Server možná zpřístupňuje věci, které by mohly zpracovávat
+  metody Serveru. 
+
 TODO: Možná by stálo za to přesunout MessagePart.Type do Message a říkat jí
   Message.Type a původní MessageType přejmenovat na Message.Cathegory.
   - sice to bude trochu matoucí v rámci implementace MessagePart a Message,

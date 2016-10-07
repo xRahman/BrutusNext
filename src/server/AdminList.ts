@@ -121,7 +121,7 @@ export class AdminList extends AutoSaveableObject
 
     if (targetAdminLevel === AdminLevel.CREATOR)
     {
-      actor.sendToSelf(target.name + " already has"
+      actor.receive(target.name + " already has"
         + " the highest possible admin level.",
         Message.Type.COMMAND);
       return;
@@ -129,7 +129,7 @@ export class AdminList extends AutoSaveableObject
 
     if (actorAdminLevel <= targetAdminLevel)
     {
-      actor.sendToSelf("You can't promote " + target.name +
+      actor.receive("You can't promote " + target.name +
         " to higher admin level than your own.",
         Message.Type.COMMAND);
       return;
@@ -152,7 +152,7 @@ export class AdminList extends AutoSaveableObject
 
     if (actorAdminLevel <= targetAdminLevel)
     {
-      actor.sendToSelf("You can only demote"
+      actor.receive("You can only demote"
         + "  targets below your own admin level.",
         Message.Type.COMMAND);
       return;
@@ -160,7 +160,7 @@ export class AdminList extends AutoSaveableObject
 
     if (targetAdminLevel === AdminLevel.MORTAL)
     {
-      actor.sendToSelf(target.name + " already has"
+      actor.receive(target.name + " already has"
         + " the lowest possible admin level.",
         Message.Type.COMMAND);
       return;
@@ -241,7 +241,7 @@ export class AdminList extends AutoSaveableObject
       + " to level " + AdminLevel[level];
 
     // Send info message to all online players.
-    Game.sendToAll(actor, message, Message.Type.INFO, AdminLevel.MORTAL);
+    Game.sendToAllPlayers(actor, message, Message.Type.INFO, AdminLevel.MORTAL);
 
     // Send info message to syslog.
     Syslog.log

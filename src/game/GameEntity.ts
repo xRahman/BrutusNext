@@ -11,7 +11,6 @@ import {SaveableObject} from '../shared/fs/SaveableObject';
 import {Script} from '../shared/prototype/Script';
 import {Server} from '../server/Server';
 import {Message} from '../server/message/Message';
-import {MessagePart} from '../server/message/MessagePart';
 import {Connection} from '../server/connection/Connection';
 import {Game} from '../game/Game';
 import {ContainerEntity} from '../game/ContainerEntity';
@@ -86,26 +85,37 @@ export class GameEntity extends ContainerEntity
 
   // ---------------- Public methods --------------------
 
+  // Send message to this entity.
+  public receive
+  (
+    // Don't add starting and ending color code, they will be added automatically
+    // according to msgType. You can use '&_' code as 'base color', that is the
+    // color that will be automatically aded to the start of the message.
+    //   Use '\n' to mark newlines (it will be automatically converted to '\r\n').
+    text: string,
+    msgType: Message.Type,
+    // 'sender' can be null if there is no appropriate sending entity
+    // (for example when player is receiving output from using a command).
+    sender: GameEntity = null
+  )
+  {
+    let message = new Message(text, msgType);
+
+    message.sendToGameEntity(sender, this);
+  }
+
+  /// sendMessage() je intuitivnější název, navíc stačí jedna metoda
+  /// (nenapadá mě případ, kdy by bylo potřeba sendToSelf() a když by
+  /// se přece nějakej našel, stačí dát receiving entitu do parametru
+  /// 'sender').
+  /*
   // Make this entity to send a message to itself.
-  // ('text' is automatically colored according to given 'messageType').
+  // ('text' is automatically colored according to given 'msgType').
   public sendToSelf(text: string, messageType: Message.Type)
   {
     this.receiveMessage(this, text, messageType);
   }
-
-  // Sends a message to this entity.
-  // ('text' is automatically colored according to given 'messageType').
-  public receiveMessage
-  (
-    sender: GameEntity,
-    text: string,
-    msgType: Message.Type
-  )
-  {
-    let message = new Message(msgType, text);
-
-    message.sendToGameEntity(sender, this);
-  }
+  */
 
   /*
   // Dynamically creates a new instance of requested class (param.prototype)
@@ -279,8 +289,7 @@ export class GameEntity extends ContainerEntity
   // Send message to the connected player that command is not recognized.
   protected unknownCommand()
   {
-    if (this.connection)
-      this.connection.sendAsBlock("&gHuh?!?");
+    this.receive("Huh?!?", Message.Type.COMMAND);
   }
 
   // Creates a formatted string describing entity contents.
@@ -320,21 +329,17 @@ export class GameEntity extends ContainerEntity
   // Prevents accidental quitting without typing full 'quit' commmand.s
   protected doQui(argument: string)
   {
-    if (this.connection)
-    {
-      this.connection
-        .sendAsBlock("&gYou have to type quit--no less, to quit!");
-    }
+    this.receive("You have to type quit--no less, to quit!", Message.Type.COMMAND);
   }
 
   protected doQuit(argument: string)
   {
+    this.receive("Goodbye, friend.. Come back soon!", Message.Type.COMMAND);
+
     if (this.connection)
     {
       this.announcePlayerLeavingGame();
       this.connection.enterLobby();
-      this.connection
-        .sendAsBlock("\n&gGoodbye, friend.. Come back soon!");
       this.connection.detachFromGameEntity();
     }
   }
@@ -410,11 +415,9 @@ export class GameEntity extends ContainerEntity
 
     /* --- TEST --- */
 
-
-
     let output = this.location.printContents();
 
     if (output !== "")
-      this.connection.sendAsBlock(output);
+      this.receive(output, Message.Type.COMMAND);
   }
 }

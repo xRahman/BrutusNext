@@ -426,10 +426,9 @@ export class AuthProcessor
 
   private sendAuthPrompt(text: string)
   {
-    let message = new Message(Message.Type.AUTH_PROMPT, text);
+    let message = new Message(text, Message.Type.AUTH_PROMPT);
 
-    // There is no applicable sender, so the first parameter is null.
-    message.sendToConnection(null, this.connection);
+    message.sendToConnection(this.connection);
   }
 }
 
