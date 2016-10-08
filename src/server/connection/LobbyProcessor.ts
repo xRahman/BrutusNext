@@ -36,105 +36,28 @@ export class LobbyProcessor
 
   public static get MAKE_CHOICE()
   {
-    return "\n&wMake your choice: ";
+    return "\n&wMake your choice:";
   }
 
   // ----------------- Public data ----------------------
-
-  public static stage =
-  {
-    INITIAL: 'INITIAL', // Initial stage.
-    IN_MENU: 'IN_MENU',
-    NOT_IN_LOBBY: 'NOT_IN_LOBBY'
-  }
 
   // ---------------- Public methods --------------------
 
   public generatePrompt(): string
   {
-    let prompt = "&g>";
-
-    switch (this.getStage())
-    {
-      case LobbyProcessor.stage.INITIAL:
-        ERROR("LobbyProcessor has not yet been initialized, prompt"
-          + " is not supposed be generated yet");
-        break;
-
-      case LobbyProcessor.stage.IN_MENU:
-        // When player is in lobby, menu is his prompt.
-        prompt = LobbyProcessor.GAME_MENU;
-        break;
-
-      case LobbyProcessor.stage.NOT_IN_LOBBY:
-        ERROR("Player is not in lobby, LobbyProcessor"
-          + " is not supposed generate prompt");
-        break;
-
-      default:
-        ERROR("Unknown lobby stage: " + this.getStage());
-        break;
-    }
-
-    return prompt;
+    return LobbyProcessor.GAME_MENU;
   }
 
+  /*
   public enterMenu()
   {
-    let validStage = this.stage === LobbyProcessor.stage.INITIAL
-                  || this.stage === LobbyProcessor.stage.NOT_IN_LOBBY;
-
-    if (!validStage)
-    {
-      ERROR("Entering game menu from invalid"
-        + " lobby stage (" + this.stage + ")");
-    }
-
-    this.stage = LobbyProcessor.stage.IN_MENU;
+    /// Možná poslat motd a menu?
   }
+  */
 
-  public processCommand(command: string)
+  public async processCommand(command: string)
   {
-    switch (this.stage)
-    {
-      case LobbyProcessor.stage.INITIAL:
-        ERROR("LobbyProcessor has not yet been initialized, it is not"
-          + " supposed to process any commands yet");
-        break;
-
-      case LobbyProcessor.stage.IN_MENU:
-        this.processMenuChoice(command);
-        break;
-
-       case LobbyProcessor.stage.NOT_IN_LOBBY:
-        ERROR("LobbyProcessor is not supposed to process any commands"
-          + " when user is not in lobby");
-        break;
-
-      default:
-        ERROR("Unknown lobby stage: " + this.stage);
-        break;
-    }
-  }
-
-  public getStage() { return this.stage; }
-
-  //----------------- Protected data --------------------
-
-  protected stage = LobbyProcessor.stage.INITIAL;
-
-  // --------------- Protected methods ------------------
-
-  protected async processMenuChoice(choice: string)
-  {
-    /*
-    // We use our own function to parse number from the string,
-    // because javascript string->number conversion are totally
-    // crazy.
-    let index = this.parseIndex(choice);
-    */
-
-    switch (choice)
+    switch (command)
     {
       case "0": // Quit the game.
         this.quitGame();
@@ -144,70 +67,24 @@ export class LobbyProcessor
         this.createCharacter();
         break;
 
-/*
-      case "2": // Enter the game.
-        await this.enterGame();
-        break;
-*/
-
       default:
-        if (await this.processCharacterChoice(choice) === false)
-          // TODO: Posílat message, ne přímo string
-          this.connection.sendAsBlock("\nThat's not a menu choice!");
+        await this.processCharacterChoice(command);
         break;
     }
   }
+
+  //----------------- Protected data --------------------
+
+  // --------------- Protected methods ------------------
 
   protected quitGame()
   {
     this.connection.sendAsPrompt("&wGoodbye. Have a nice day...");
-    this.stage = LobbyProcessor.stage.NOT_IN_LOBBY;
     this.connection.quitGame();
   }
 
-/*
-  protected async enterGame(charIndex: number)
-  {
-    let account = this.connection.account;
-
-    if (account === null)
-    {
-      ERROR("Invalid account on connection");
-      return;
-    }
-
-    /// TODO: Check, že charIndex ukazuje na existující character.
-
-    // Create a new character if there is none on this account yet.
-    /// (for now player can only have one character and her name is the
-    /// same as account name)
-    if (account.getNumberOfCharacters() === 0)
-    {
-      this.createCharacterAndEnterGame(account);
-    }
-    else
-    {
-      // Enter game with first character (number '0').
-      // (because for now players only have one character)
-      let characterName = account.getCharacterName(0);
-
-      if (characterName === null)
-        // Error is already reported by getCharacterName().
-        return;
-
-      // Asynchronous reading from the file.
-      // (the rest of the code will execute only after the reading is done)
-      //   We need async call because we want to wait after player's
-      //  character is loaded from file before actually entering the game.
-      await this.enterGameAsCharacter(characterName);
-    }
-  }
-  */
-
   protected async enterGame(characterName: string)
   {
-    this.stage = LobbyProcessor.stage.NOT_IN_LOBBY;
-
     let characterList = Game.characters;
 
     // Check if character is already online.
@@ -225,42 +102,6 @@ export class LobbyProcessor
       this.connection.enterGame();
     }
   }
-
-  /*
-  protected createCharacterAndEnterGame(account: Account)
-  {
-    if (this.connection === null)
-    {
-      ERROR("Invalid player connection on account " + account.name
-        + " Character is not created");
-      return;
-    }
-
-    if (this.connection.ingameEntity !== null)
-    {
-      ERROR("Player account '" + account.name + "' has attempted"
-        + " to enter game with ingame entity already attached");
-
-      this.connection.sendAsBlock
-      (
-        "&wAn error occured while entering game."
-        + " Please contact implementors."
-      );
-
-      return;
-    }
-
-    let character = account.createCharacter(account.name);
-
-    this.stage = LobbyProcessor.stage.NOT_IN_LOBBY;
-
-    // Sets birthroom, immortal flag, etc.
-    character.init(account);
-
-    this.attachConnectionToGameEntity(character);
-    this.connection.enterGame();
-  }
-  */
   
   protected async loadCharacter(characterName: string)
   {
@@ -315,26 +156,41 @@ export class LobbyProcessor
 
   // ---------------- Private methods --------------------
 
-  private async processCharacterChoice(choice: string)
+  // Checks if 'name' matches (is an abbreviation of) any character names
+  // on the account.
+  // -> Returns matching full character name on success,
+  //    null if 'name' does't match any of the character names on the account.
+  private matchCharacterName(name: string): string
   {
     let account = this.connection.account;
 
-    if (account === null)
+    if (account === null || account.isValid() === false)
     {
-      ERROR("Invalid account on connection");
+      ERROR("Invalid account");
       return;
     }
 
     // 'getCharacterNameByAbbrev()' returns null if 'choice'
     // isn't an abbreviation of any character names on account.
-    let characterName = account.getCharacterNameByAbbrev(choice);
+    return account.getCharacterNameByAbbrev(name);
+  }
 
+  private async processCharacterChoice(choice: string)
+  {
+    let characterName = this.matchCharacterName(choice);
+        
     if (characterName === null)
-      return false;
-      
-    await this.enterGame(characterName);
+    {
+      // TODO: Posílat message, ne přímo string
+      this.connection.sendAsBlock
+      (
+        "\nThat's neither a menu choice nor the name of your character."
+        + "\nPlease enter valid menu choice or the name of one of your characters."
+      );
+      return;
+    }
 
-    return true;
+    await this.enterGame(characterName);
   }
 
   private createCharacter()

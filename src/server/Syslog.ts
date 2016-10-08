@@ -64,7 +64,7 @@ export class Syslog
     // Send log entry to all online characters that have appropriate
     // admin level. Syslog messages don't have sender ('sender'
     // parameter is null).
-    message.sendToAllIngameConnections(null, adminLevel);
+    message.sendToAllIngameConnections(adminLevel);
     
     // Output to stdout.
     console.log(entry);
