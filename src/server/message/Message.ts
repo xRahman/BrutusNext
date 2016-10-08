@@ -43,31 +43,111 @@ export class Message
 
   // ---------------- Static methods --------------------
 
-  // ---------------- Public methods --------------------
-
-  // Adds base color, adds prompt if necessary,
-  // adds a space if neccessary (to separate user input).
-  public compose(): string
+  // Creates a new message and sends it directly to player connection.
+  // This is used to send message to player is menu, entering password,
+  // etc., who don't have ingame entity attached.
+  public static sendToConnection
+  (
+    text: string,
+    msgType: Message.Type,
+    connection: Connection
+  )
   {
-    let data = Utils.trimRight(this.text);
-    
-    data = this.normalizeNewlines(data);
+    let message = new Message(text, msgType);
 
-    if (this.triggersPrompt())
-    {
-      // Two newlines create an empty line between message body and prompt.
-      data += Message.NEW_LINE + Message.NEW_LINE + this.generatePrompt();
-    }
-
-    // Add space to the end of the message to separate it from user input.
-    // (Only if it doesn't end with space already or with a newline - it
-    //  might be part of generated prompt.) 
-    return this.addSpace(data);
+    message.sendToConnection(connection);
   }
 
-  // Sends the message directly to player connection. This is used
-  // to send message to player is menu, entering password, etc.,
-  // who don't have ingame entity attached.
+  // Creates a new message and sends it to a single game entity.
+  // 'sender' can be null (for example for command output).
+  public static sendToGameEntity
+  (
+    text: string,
+    msgType: Message.Type,
+    target: GameEntity,
+    sender: GameEntity = null
+  )
+  {
+    let message = new Message(text, msgType);
+
+    message.sendToGameEntity(target, sender);
+  }
+
+  // Creates a new message and sends it to all entities
+  // in the same container (usually room) as sender.
+  public static sendToSay
+  (
+    text: string,
+    msgType: Message.Type,
+    sender: GameEntity
+  )
+  {
+    // Sender must be valid so we can find her location.
+    if (sender === null || sender.isValid() === false)
+    {
+      ERROR("Invalid sender. Message is not sent");
+      return;
+    }
+
+    let message = new Message(text, msgType);
+
+    message.sendToSay(sender);
+  }
+
+  // Creates a new message and sends it to all entities
+  // in shouting distance of sender.
+  public static sendToShout
+  (
+    text: string,
+    msgType: Message.Type,
+    sender: GameEntity
+  )
+  {
+    // Sender must be valid so we can find her location.
+    if (sender === null || sender.isValid() === false)
+    {
+      ERROR("Invalid sender. Message is not sent");
+      return;
+    }
+
+    let message = new Message(text, msgType);
+
+    message.sendToShout(sender);
+  }
+
+  // Creates a new message and sends it to all player connections
+  // that have a valid ingame entity. 'visibility' limits recipients
+  // to certain admin level or higher.
+  // (Used to send gossips, global infos, syslog, etc.).
+  public static sendToAllIngameConnections
+  (
+    text: string,
+    msgType: Message.Type,
+    visibility: AdminLevel,
+    sender: GameEntity = null)
+  {
+    let message = new Message(text, msgType);
+
+    message.sendToAllIngameConnections(visibility, sender);
+  }
+
+  // Creates a new message and sends it even to players
+  // in menu, entering password, etc.
+  // (Used for messages like shutdown countdown.)
+  public static sendToAllConnections
+  (
+    text: string,
+    msgType: Message.Type,
+    sender: GameEntity
+  )
+  {
+    let message = new Message(text, msgType);
+
+    message.sendToAllConnections(sender);
+  }
+
+  // ---------------- Public methods --------------------
+
   public sendToConnection(connection: Connection)
   {
     if (connection === null || connection.isValid() === false)
@@ -79,9 +159,7 @@ export class Message
     connection.sendMessage(this);
   }
 
-  // Send the message to a single game entity.
-  // 'sender' can be null (for example for command output).
-  public sendToGameEntity(sender: GameEntity, target: GameEntity)
+  public sendToGameEntity(target: GameEntity, sender: GameEntity = null)
   {
     if (target === null || target.isValid() === false)
     {
@@ -102,15 +180,29 @@ export class Message
     }
   }
 
-  public sendToRoom(sender: GameEntity)
+  public sendToSay(sender: GameEntity = null)
   {
+    // Sender must be valid so we can find her location.
+    if (sender === null || sender.isValid() === false)
+    {
+      ERROR("Invalid sender. Message is not sent");
+      return;
+    }
+
     this.sender = sender;
 
     // TODO
   }
 
-  public sendToShout(sender: GameEntity)
+  public sendToShout(sender: GameEntity = null)
   {
+    // Sender must be valid so we can find her location.
+    if (sender === null || sender.isValid() === false)
+    {
+      ERROR("Invalid sender. Message is not sent");
+      return;
+    }
+
     this.sender = sender;
 
     // TODO
@@ -122,7 +214,7 @@ export class Message
   // Sends message to all player connections that have a valid ingame entity.
   // 'visibility' limits recipients to certain admin level or higher.
   // (Used to send gossips, global infos, syslog, etc.).
-  public sendToAllIngameConnections(sender: GameEntity, visibility: AdminLevel)
+  public sendToAllIngameConnections(visibility: AdminLevel, sender: GameEntity = null)
   {
     this.sender = sender;
 
@@ -131,15 +223,11 @@ export class Message
 
   // Sends message even to players in menu, entering password, etc.
   // (Used for messages like shutdown countdown.)
-  public sendToAllConnections
-  (
-    sender: GameEntity,
-    visibility: AdminLevel
-  )
+  public sendToAllConnections(sender: GameEntity = null)
   {
     this.sender = sender;
 
-    Server.sendToAllConnections(this, visibility);
+    Server.sendToAllConnections(this);
   }
 
   /// Message.Type can now be used instead.
@@ -175,6 +263,41 @@ export class Message
 
   // ---------------- Private methods -------------------
 
+  // Adds base color, adds prompt if necessary,
+  // adds a space if neccessary (to separate user input).
+  private compose(): string
+  {
+    // Remove all white spaces (including tabs and newlines)
+    // from the end of the string.
+    let data = Utils.trimRight(this.text);
+
+    // Adds color code depending on Message.type to the beginning of the
+    // string (only if there isn't already a color code there), replaces
+    // all '&_' codes (meaning 'return to base color') with base color
+    // color code.
+    data = this.addBaseColor(data);
+    
+    // Changes all '\n', '\r\n' or '\n\r\' to sequence specified
+    // in Message.NEW_LINE (which is '\r\n'). 
+    data = this.normalizeNewlines(data);
+
+    // Add ingame prompt if this type of message triggers it.
+    if (this.triggersPrompt())
+    {
+      // Two newlines create an empty line between message body and prompt.
+      data += Message.NEW_LINE
+            + Message.NEW_LINE
+      /// TODO: Ve skutečnosti asi spíš target.generatePrompt(),
+            /// tj. target budu muset předávat jako parametr.
+            + this.generatePrompt();
+    }
+
+    // Add space to the end of the message to separate it from user input.
+    // (Only if it doesn't end with space already or with a newline - it
+    //  might be part of generated prompt.) 
+    return this.addSpace(data);
+  }
+
   private generatePrompt(): string
   {
     let prompt = "&g>";
@@ -191,6 +314,7 @@ export class Message
       case Message.Type.AUTH_PROMPT:
       case Message.Type.AUTH_INFO:
       case Message.Type.AUTH_ERROR:
+      case Message.Type.CONNECTION_INFO:
         return false;
 
       default:
@@ -305,6 +429,10 @@ export module Message
     AUTH_INFO,
     // Something went wrong while authenticating.
     AUTH_ERROR,
+
+    // -------------------- Connection messages ------------------
+    
+    CONNECTION_INFO,
 
     // ------------------------- Commands ------------------------
 
