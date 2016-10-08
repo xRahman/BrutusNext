@@ -62,21 +62,6 @@ export class Game
     return Server.game.prototypeManager;
   }
 
-  // Sends a message to all ingame entities
-  // that have a player connection attached.
-  public static sendToAllPlayers
-  (
-    sender: GameEntity,
-    text: string,
-    msgType: Message.Type,
-    visibility: AdminLevel
-  )
-  {
-    let message = new Message(text, msgType);
-    
-    message.sendToAllIngameConnections(sender, visibility);
-  }
-
   // ---------------- Public methods --------------------
 
   // Creates and saves a new default world.

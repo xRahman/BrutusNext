@@ -41,6 +41,10 @@ export class MessageColors
     AUTH_INFO:             '&w',
     AUTH_ERROR:            '&w',
 
+    // -------------------- Connection messages ------------------
+    
+    CONNECTION_INFO:       '&g',
+
     // ------------------------- Commands ------------------------
 
     SKILL:                 '&g',

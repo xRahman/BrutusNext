@@ -19,8 +19,8 @@ import {Connection} from '../../../server/connection/Connection';
 import * as net from 'net';  // Import namespace 'net' from node.js
 import * as events from 'events';  // Import namespace 'events' from node.js
 
-// Note: There is also a '&_' code, which means 'return to base color'.
-// (Base color is determined by color code at the very beginning of the string.)
+// Note: There is also a '&_' code, which means 'return to base color'
+// (base color depends on Message.Type, see MessageColors.ts).
 const ANSI =
 {
   '&n': '\u001b[0m',
@@ -132,13 +132,18 @@ export class TelnetSocketDescriptor extends SocketDescriptor
   // Sends a string to the user.
   public send(data: string)
   {
-    // Replaces color codes notifying return to message base color with
-    // message base color code.
-    // (Message base color is determined by the leading color code of the message).
-    data = this.expandBaseColor(data);
+    /// Base color code (&_) is now replaced with it's respective
+    /// color code in Message.compose(), because we would loose
+    /// the knowledge of what was the base color if string starts
+    /// with other color than base color (or we would have to make it
+    /// start with two color codes, which wouldn't be nice).
+    /// // Replaces color codes notifying return to message base color with
+    /// // message base color code.
+    /// // (Message base color is determined by the leading color code of the message).
+    /// data = this.expandBaseColor(data);
 
     // Convert MUD color codes to ANSI color codes.
-    /// (note: this only works for telnet and classic MUD clients)
+    // Note: this only works for telnet and classic MUD clients.
     data = this.ansify(data);
 
     this.socket.write(data);
@@ -201,7 +206,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
 
   protected async onSocketReceivedData(data: string)
   {
-    // inputBuffer is used to store incomplete parts of commands.
+    // this.inputBuffer is used to store incomplete parts of commands.
     // If there is something in it, add new data to it and process it all
     // as a whole.
     data = this.inputBuffer + data;
@@ -214,7 +219,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     // (This is often used by player to refresh prompt)
     if (data !== '\r\n')
     {
-      // If nothing remains after parse, that means data container
+      // If nothing remains after parse, it means that data contained
       // only protocol-specific data so there is nothing else to do.
       if ((data = this.parseProtocolData(data)) == "")
         return;
@@ -229,10 +234,6 @@ export class TelnetSocketDescriptor extends SocketDescriptor
       return;
 
     await this.processInput(input);
-
-    // All commands are processed, mark the buffer as empty.
-    // (if will also hopefully flag allocated data for freeing from memory)
-    this.commandsBuffer = [];
   }
 
   protected onSocketError(error)
@@ -470,13 +471,17 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     // processed (.push.apply() appends an array to another array).
     this.commandsBuffer.push.apply(this.commandsBuffer, lines);
 
-    // Handle each line as a separate command. Also trim it (remove leading
-    // and trailing white spaces) before processing.
-    for (let i = 0; i < this.commandsBuffer.length; i++)
+    // Handle each line as a separate command.
+    for (let command of this.commandsBuffer)
     {
-      await this.connection
-        .processCommand(this.commandsBuffer[i].trim());
+      // Trim the command (remove leading and trailing white spaces)
+      // before processing.
+      await this.connection.processCommand(command.trim());
     }
+
+    // All commands are processed, mark the buffer as empty.
+    // (if will also hopefully flag allocated data for freeing from memory)
+    this.commandsBuffer = [];
   }
 
   // Converts MUD color codes (e.g. "&gSomething &wcolorful&g)
@@ -507,6 +512,9 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     return data;
   }
 
+  /// Base color code (&_) is now replaced with it's respective
+  /// color code in Message.
+  /*
   // Replaces color codes notifying return to message base color with
   // message base color code.
   // (Message base color is determined by the leading color code of the message).
@@ -525,12 +533,15 @@ export class TelnetSocketDescriptor extends SocketDescriptor
       // Use '&w' as base color.
       baseColor = '&w';
       data = baseColor + data;
-    }
 
+      data = baseColor + data;
+    }
+    
     // '&_' stands for 'return to base color'.
     let regExp = new RegExp('&_', 'g');
 
     // Replace all '&_' sequences with baseColor.
     return data.replace(regExp, baseColor);
   }
+  */
 }

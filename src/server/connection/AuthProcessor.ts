@@ -54,7 +54,7 @@ export class AuthProcessor
 
   //------------------ Private data ---------------------
 
-  private stage = AuthProcessor.Stage.INITIAL;
+  private stage = null;
   private accountName = "";
 
   // ---------------- Public methods --------------------
@@ -65,7 +65,7 @@ export class AuthProcessor
   {
     switch (this.stage)
     {
-      case AuthProcessor.Stage.INITIAL:
+      case null:
         ERROR("AuthProcessor has not yet been initialized, it is not"
           + " supposed to process any commands yet");
       break;
@@ -101,9 +101,10 @@ export class AuthProcessor
 
   public startLoginProcess()
   {
-    // Note: We are intentionally overriding default base color
-    // for AUTH_PROMPT messages here with '&g' at the start of
-    // the string.
+    // We are intentionally overriding default base color
+    // for AUTH_PROMPT messages here with '&g' at the start
+    // of the string.
+
     this.sendAuthPrompt
     (
       "&gWelcome to the &RBrutus &YNext!\n"
@@ -426,9 +427,12 @@ export class AuthProcessor
 
   private sendAuthPrompt(text: string)
   {
-    let message = new Message(text, Message.Type.AUTH_PROMPT);
-
-    message.sendToConnection(this.connection);
+    Message.sendToConnection
+    (
+      text,
+      Message.Type.AUTH_PROMPT,
+      this.connection
+    );
   }
 }
 
@@ -440,7 +444,6 @@ export module AuthProcessor
 {
   export enum Stage
   {
-    INITIAL, // Initial stage.
     LOGIN,
     PASSWORD,
     NEW_PASSWORD,

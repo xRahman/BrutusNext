@@ -73,6 +73,7 @@ export class Account extends NamedEntity
 
   // ---------------- Public methods --------------------
 
+  /*
   // Send message to this account.
   public receive
   (
@@ -90,6 +91,7 @@ export class Account extends NamedEntity
       message.sendToConnection(this.connection);
     }
   }
+  */
 
   // -> Returns full name of the character matching to 'abbrev'.
   // -> Returns 'null' if no match is found.
