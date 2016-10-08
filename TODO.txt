@@ -1,3 +1,8 @@
+TODO: Přejmenovat Connection.receive() na něco jiného (něco ve stylu
+  sendAuthPrompt v authManageru) - a nastavovat msgType až uvnitř téhle
+  metody.
+  (neměla by to být obecná metoda na posílání messagů connectionu).
+
 IDEA: Možná to s messagama udělat trošku jinak:
   - místo GameEntity.receiveMessage, Game.sendCosi, AuthProcessor.sendCosi atd.
     udělat statické metody do Message. Takže půjde psát např.:

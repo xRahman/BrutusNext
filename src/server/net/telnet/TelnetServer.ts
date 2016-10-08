@@ -66,8 +66,10 @@ export class TelnetServer
     // called when there is a new connection request.
     // (Handler is called using lambda expression (() => {}) to ensure that
     // corect 'this' will be passed to it. )
-    this.telnetServer =
-      net.createServer((socket) => { this.onNewConnection(socket); });
+    this.telnetServer = net.createServer
+    (
+      (socket) => { this.onNewConnection(socket); }
+    );
 
     // Register handler for server errors (like attempt to run the server
     // on an unavailable port).

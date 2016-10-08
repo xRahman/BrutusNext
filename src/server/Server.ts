@@ -157,13 +157,10 @@ export class Server
     Server.instance = new Server();
   }
 
-  // Creates an array 
-  public static getGlobalMessageRecipients()
-  {
-
-  }
-
-  public static sendToAllConnections(message: Message, visibility: AdminLevel)
+  // Sends a message to all player connections
+  // (used by Message.sendToAllConnections()).
+ 
+  public static sendToAllConnections(message: Message)
   {
     let connections = Server.getInstance().connections.getEntities();
     let connection: Connection = null;
@@ -178,6 +175,9 @@ export class Server
     }
   }
 
+  // Sends a message to all player connections that have an ingame
+  // entity attached and have required (or higher) AdminLevel
+  // (used by Message.sendToAllIngameConnections()).
   public static sendToAllIngameConnections
   (
     message: Message,

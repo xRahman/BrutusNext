@@ -241,7 +241,12 @@ export class AdminList extends AutoSaveableObject
       + " to level " + AdminLevel[level];
 
     // Send info message to all online players.
-    Game.sendToAllPlayers(actor, message, Message.Type.INFO, AdminLevel.MORTAL);
+    Message.sendToAllIngameConnections
+    (
+      message,
+      Message.Type.INFO,
+      AdminLevel.MORTAL
+    );
 
     // Send info message to syslog.
     Syslog.log

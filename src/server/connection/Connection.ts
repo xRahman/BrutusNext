@@ -29,7 +29,7 @@ export class Connection extends Entity
 
   //------------------ Private data ---------------------
 
-  private stage = Connection.Stage.INITIAL;
+  private stage = null;
   private socketDescriptor: SocketDescriptor = null;
   private authProcessor = new AuthProcessor(this);
   private lobbyProcessor = new LobbyProcessor(this);
@@ -38,7 +38,7 @@ export class Connection extends Entity
 
   public startLoginProcess()
   {
-    if (this.stage !== Connection.Stage.INITIAL)
+    if (this.stage !== null)
       ERROR("Starting login process from wrong stage");
 
     this.stage = Connection.Stage.AUTHENTICATION;
@@ -66,12 +66,10 @@ export class Connection extends Entity
     }
 
     this.stage = Connection.Stage.IN_GAME;
-
-    this.receive
+    this.sendConnectionInfo
     (
       "\nWelcome to the land of &RBrutus&YNext!&_"
-      + " May your visit here be... &GInteresting&_.",
-      Message.Type.AUTH_INFO
+      + " May your visit here be... &GInteresting&_."
     );
 
     /*
@@ -208,7 +206,7 @@ export class Connection extends Entity
   public reconnectToAccount(account: Account)
   {
     let accountManager = Server.accounts;
-    let oldStage = Connection.Stage.INITIAL;
+    let oldStage = null;
     let oldConnection = this.getOldConnection(account);
     let oldIngameEntity = null;
 
@@ -272,7 +270,7 @@ export class Connection extends Entity
   {
     switch (this.stage)
     {
-      case Connection.Stage.INITIAL:
+      case null:
         ERROR("Connection has not yet been initialized by"
           + " startLoginProcess(), it is not supposed to process any"
           + " commands yet");
@@ -353,7 +351,7 @@ export class Connection extends Entity
 
     switch (this.stage)
     {
-      case Connection.Stage.INITIAL:
+      case null:
         ERROR("Connection has not yet been initialized by"
           + " startLoginProcess(), it is not supposed to process"
           + " any events yet");
@@ -506,25 +504,15 @@ export class Connection extends Entity
   }
   */
 
-  // Send message to this account.
-  private receive
-  (
-    // Don't add starting and ending color code, they will be added automatically
-    // according to msgType. You can use '&_' code as 'base color', that is the
-    // color that will be automatically aded to the start of the message.
-    //   Use '\n' to mark newlines (it will be automatically converted to '\r\n').
-    text: string,
-    msgType: Message.Type
-  )
+  // Send connection-related message to this player connection.
+  private sendConnectionInfo(text: string)
   {
-    let message = new Message(text, msgType);
-    message.sendToConnection(this);
+    Message.sendToConnection(text, Message.Type.CONNECTION_INFO, this);
   }
 
   private announceReconnecting()
   {
-    this.receive("You have reconnected to your character.",
-      Message.Type.AUTH_INFO);
+    this.sendConnectionInfo("You have reconnected to your character.");
   }
 
   private getOldConnection(account: Account): Connection
@@ -539,7 +527,7 @@ export class Connection extends Entity
 
   private announceConnectionBeingUsurped()
   {
-    this.sendAsPromptlessBlock
+    this.sendConnectionInfo
     (
       "Somebody (hopefuly you) has just connected to this account."
     );
@@ -787,7 +775,6 @@ export module Connection
 {
   export enum Stage
   {
-    INITIAL, // Initial stage.
     AUTHENTICATION,
     IN_LOBBY,
     IN_GAME,
