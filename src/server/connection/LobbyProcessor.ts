@@ -11,6 +11,7 @@ import {FATAL_ERROR} from '../../shared/error/FATAL_ERROR';
 import {Connection} from '../../server/connection/Connection';
 import {Server} from '../../server/Server';
 import {Account} from '../../server/account/Account';
+import {Message} from '../../server/message/Message';
 import {Game} from '../../game/Game';
 import {GameEntity} from '../../game/GameEntity';
 import {Character} from '../../game/character/Character';
@@ -36,16 +37,47 @@ export class LobbyProcessor
 
   public static get MAKE_CHOICE()
   {
-    return "\n&wMake your choice:";
+    return "\n\n&wMake your choice:";
   }
 
   // ----------------- Public data ----------------------
 
   // ---------------- Public methods --------------------
 
+  /*
   public generatePrompt(): string
   {
     return LobbyProcessor.GAME_MENU;
+  }
+  */
+
+  public sendMenu()
+  {
+    let menu = LobbyProcessor.GAME_MENU;
+
+    if (this.connection === null || this.connection.isValid() === false)
+    {
+      ERROR("Invalid connection, game menu is not sent");
+      return;
+    }
+
+    let account = this.connection.account;
+
+    if (account === null || account.isValid() === false)
+    {
+      ERROR("Invalid account, game menu is not sent");
+      return;
+    }
+
+    // Add an option to enter game as each of characters on the account. 
+    for (let characterName of account.characterNames)
+    {
+      menu += '\n&g"&G' + characterName + '&g"&w to enter game as ' + characterName + ".";
+    }
+
+    menu += LobbyProcessor.MAKE_CHOICE;
+
+    Message.sendToConnection(menu, Message.Type.GAME_MENU, this.connection);
   }
 
   /*
@@ -79,7 +111,13 @@ export class LobbyProcessor
 
   protected quitGame()
   {
-    this.connection.sendAsPrompt("&wGoodbye. Have a nice day...");
+    Message.sendToConnection
+    (
+      "&wGoodbye.\n"
+      + "Have a nice day...",
+      Message.Type.AUTH_INFO,
+      this.connection
+    );
     this.connection.quitGame();
   }
 
@@ -181,12 +219,14 @@ export class LobbyProcessor
         
     if (characterName === null)
     {
-      // TODO: Posílat message, ne přímo string
-      this.connection.sendAsBlock
+      Message.sendToConnection
       (
         "\nThat's neither a menu choice nor the name of your character."
-        + "\nPlease enter valid menu choice or the name of one of your characters."
+        + "\nPlease enter valid menu choice or the name of one of your characters.",
+        Message.Type.GAME_MENU,
+        this.connection
       );
+
       return;
     }
 

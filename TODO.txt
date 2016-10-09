@@ -1,3 +1,18 @@
+TODO: Message by asi neměly začínat na '\n'
+  - odřádkování by se mělo řešit v Message.compose().
+
+TODO: Savovat Server
+  (zatim kvuli MOTD, ale možná přibudou i další properties na savování).
+  - možná ne celý server, ale jen do něj vložit SaveableObject?
+
+IDEA - jak řešit MOTD:
+  - metoda getMotd() prostě jen vrátí obarvený string s motd,
+    který se pak z různých míst pošle různě.
+    - hra ho pošle jako Message.Type.COMMAND
+    - AuthProcessor za něj (nebo možná před něj přilepí) last login info
+      (taky getLLI() a taky pouze string) a pošle to celé jako
+      Message.Type.LOGIN_INFO 
+
 TODO: Přejmenovat Connection.receive() na něco jiného (něco ve stylu
   sendAuthPrompt v authManageru) - a nastavovat msgType až uvnitř téhle
   metody.

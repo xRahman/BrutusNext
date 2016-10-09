@@ -39,6 +39,9 @@ export class Server
 
   //------------------ Private data ---------------------
 
+  // 'null' means no message of the day is set at the moment.
+  private messageOfTheDay = null;
+
   // Keeps track of who has which admin rights.
   private adminList = new AdminList();
 
@@ -208,6 +211,17 @@ export class Server
 
       message.sendToConnection(connection);
     }
+  }
+
+  // -> Returns null if no message of the day is set at the moment.
+  public static getMotd(): string
+  {
+    let motd = Server.getInstance().messageOfTheDay;
+
+    if (motd === null)
+      return "There is no message of the day  at this time.";
+
+    return "&gMessage of the day:\n&_" + motd;
   }
 
   // ---------------- Public methods --------------------
