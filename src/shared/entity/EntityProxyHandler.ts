@@ -175,7 +175,7 @@ export class EntityProxyHandler
   public has(target: any, property: any): boolean
   {
     /// DEBUG:
-    console.log(">> EntityProxyHandler.has() launched");
+    ///console.log(">> EntityProxyHandler.has() launched");
 
     // Does the referenced entity exist?
     // (isEntityValid() updates this.entity if it's possible)
@@ -413,7 +413,6 @@ export class EntityProxyHandler
     // Are we accessing a valid property?
     if (value === undefined)
     {
-      // DEBUG:
       Syslog.log
       (
         "Attempt to read an undefined property '" + property + "'"

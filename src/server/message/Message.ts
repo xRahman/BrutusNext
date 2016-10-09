@@ -28,7 +28,7 @@ export class Message
   // -------------- Static class data -------------------
 
   // Newlines are normalized to this one before message is sent.
-  static get NEW_LINE() { return '/r/n'; }
+  static get NEW_LINE() { return '\r\n'; }
 
   //------------------ Public data ----------------------
 

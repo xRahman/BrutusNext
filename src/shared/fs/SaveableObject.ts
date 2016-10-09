@@ -287,7 +287,7 @@ export class SaveableObject extends AttributableClass
     jsonObject[NamedClass.CLASS_NAME_PROPERTY] = className;
 
     /// DEBUG:
-    console.log("SaveableObject.saveToJsonObject()");
+    ///console.log("SaveableObject.saveToJsonObject()");
 
     // If 'this' is a proxy, 'for .. in' operator won't work on it,
     // because 'handler.enumerate()' which used to trap it has been
@@ -664,9 +664,9 @@ export class SaveableObject extends AttributableClass
     if (variable === null)
       return null;
 
-    // DEBUG:
-    if (variable.isProxy === true)
-      console.log("SaveableObject.saveVariable: 'variable' is a proxy");
+    /// DEBUG:
+    ///if (variable.isProxy === true)
+    ///  console.log("SaveableObject.saveVariable: 'variable' is a proxy");
 
     if (Array.isArray(variable))
       return this.saveArray(variable, description, className);

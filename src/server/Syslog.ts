@@ -16,6 +16,7 @@
 /// TODO: Az bude log file, tak napsat odchytavani vyjimek, aby se stack trace
 ///       zapisoval do log filu.
 
+import {Server} from '../server/Server';
 import {Message} from '../server/message/Message';
 import {AdminLevel} from '../server/AdminLevel';
 
@@ -61,10 +62,15 @@ export class Syslog
     let entry = "[" + Message.Type[msgType] + "] " + text;
     let message = new Message(entry, msgType);
 
-    // Send log entry to all online characters that have appropriate
-    // admin level. Syslog messages don't have sender ('sender'
-    // parameter is null).
-    message.sendToAllIngameConnections(adminLevel);
+    // We need to check if server instance exists, because syslog
+    // messages can be sent even before a server instance is created.
+    if (Server.instanceExists())
+    {
+      // Send log entry to all online characters that have appropriate
+      // admin level. Syslog messages don't have sender ('sender'
+      // parameter is null).
+      message.sendToAllIngameConnections(adminLevel);
+    }
     
     // Output to stdout.
     console.log(entry);
