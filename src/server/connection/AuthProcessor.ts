@@ -94,18 +94,13 @@ export class AuthProcessor
         this.acceptMotd();
         break;
 
-      case AuthProcessor.Stage.DONE:
-        ERROR("AuthProcessor has already done it's job, it is not"
-          + " supposed to process any more commands");
-        break;
-
       default:
         ERROR("Unknown stage: " + this.stage);
         break;
     }
   }
 
-  public startLoginProcess()
+  public startAuthenticating()
   {
     // We are intentionally overriding default base color
     // for AUTH_PROMPT messages here with '&g' at the start
@@ -261,7 +256,7 @@ export class AuthProcessor
 
   private acceptMotd()
   {
-    this.stage = AuthProcessor.Stage.DONE;
+    this.connection.finishAuthenticating();
     this.connection.enterLobby();
   }
 
@@ -418,7 +413,7 @@ export class AuthProcessor
       account.updateLastLoginInfo();
 
       // Password checks so we are done with authenticating.
-      this.stage = AuthProcessor.Stage.DONE;
+      this.connection.finishAuthenticating();
     }
     else
     {
@@ -509,7 +504,6 @@ export module AuthProcessor
     LOGIN,
     PASSWORD,
     NEW_PASSWORD,
-    MOTD,
-    DONE
+    MOTD
   }
 }

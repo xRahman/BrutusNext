@@ -1,3 +1,6 @@
+TOODO: Vyházet debugovací spam z logu.
+[done]
+
 TODO: Message by asi neměly začínat na '\n'
   - odřádkování by se mělo řešit v Message.compose().
 

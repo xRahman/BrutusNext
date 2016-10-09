@@ -93,7 +93,6 @@ export class Game
     // Save all prototypes we have just created.
 // DEBUG:
 ///    this.prototypeManager.save();
-    console.log("Game.createDefaultWorld()");
 
     // Save the world we have just created.
     this.world.save();
