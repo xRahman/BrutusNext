@@ -61,12 +61,12 @@ export class MessageColors
   // such record.
   public static getBaseColor(msgType: Message.Type): string
   {
-    let baseColor = MessageColors.baseColors[Message[msgType]];
+    let baseColor = MessageColors.baseColors[Message.Type[msgType]];
 
     if (baseColor === undefined)
     {
-      ERROR("Missing color for Message.Type"
-        + " '" + Message[msgType] + "'" );
+      ERROR("Missing base color for Message.Type"
+        + " '" + Message.Type[msgType] + "'" );
       // Default base color is '&w'.
       return '&w';
     }

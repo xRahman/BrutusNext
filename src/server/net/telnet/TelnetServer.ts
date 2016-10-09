@@ -167,7 +167,7 @@ export class TelnetServer
 
     let connection = this.createConnection(socket);
     
-    connection.startLoginProcess();
+    connection.startAuthenticating();
   }
 
   // ---------------- Private methods --------------------

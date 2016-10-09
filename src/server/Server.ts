@@ -126,6 +126,11 @@ export class Server
 
   // ---------------- Static methods --------------------
 
+  public static instanceExists()
+  {
+    return Server.instance !== null && Server.instance !== undefined;
+  }
+
   public static getInstance()
   {
     if (Server.instance === null || Server.instance === undefined)
@@ -219,7 +224,7 @@ export class Server
     let motd = Server.getInstance().messageOfTheDay;
 
     if (motd === null)
-      return "There is no message of the day  at this time.";
+      return "There is no message of the day at this time.";
 
     return "&gMessage of the day:\n&_" + motd;
   }
@@ -240,9 +245,6 @@ export class Server
     this.game = new Game();
 
     await test();
-
-    /// DEBUG:
-    console.log("Server.run()");
 
     /*
     // If 'data' directory doesn't exist at all, create and save a new world.
@@ -350,6 +352,7 @@ async function delay(miliseconds: number)
 
 async function test()
 {
+  /*
   let account = EntityManager.createNamedEntity
   (
     "Test",
@@ -365,6 +368,7 @@ async function test()
     console.log("References are the same");
 
   console.log("----------- After comparison ------------");
+  */
 
   /*
   let weakMap = new WeakMap();
