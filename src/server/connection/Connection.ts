@@ -41,14 +41,14 @@ export class Connection extends Entity
     if (this.stage !== null)
       ERROR("Starting login process from wrong stage");
 
-    this.stage = Connection.Stage.AUTHENTICATION;
     this.authProcessor.startLoginProcess();
+    this.stage = Connection.Stage.AUTHENTICATION;
   }
 
   public enterLobby()
   {
+    this.lobbyProcessor.sendMenu();
     this.stage = Connection.Stage.IN_LOBBY;
-    this.lobbyProcessor.enterMenu();
   }
 
   public async enterGame()
@@ -61,26 +61,18 @@ export class Connection extends Entity
 
     if (this.account === null)
     {
-      ERROR("Invalid account when entering game. Game not eneter");
+      ERROR("Invalid account when entering game. Game not entered");
       return;
     }
 
-    this.stage = Connection.Stage.IN_GAME;
     this.sendConnectionInfo
     (
       "\nWelcome to the land of &RBrutus&YNext!&_"
       + " May your visit here be... &GInteresting&_."
     );
 
-    /*
-    this.sendAsPromptlessBlock
-    (
-      "\n&gWelcome to the land of &RBrutus&YNext!"
-      + " &gMay your visit here be... &GInteresting."
-    );
-    */
-
     this.ingameEntity.announcePlayerEnteringGame();
+    this.stage = Connection.Stage.IN_GAME;
   }
 
   public reconnectToCharacter()
@@ -126,19 +118,7 @@ export class Connection extends Entity
     this.socketDescriptor = socketDescriptor;
   }
 
-  /// Co to je za blbost, connection se přece nesavuje.
   /*
-  // Overrides Entity.getSaveSubDirectory().
-  protected static getSaveSubDirectory()
-  {
-    // Note:
-    //   Because we are in a static method, 'this' is actualy the class
-    // constructor and it's properties are static properties of the
-    // class.
-    return this.className + "/";
-  }
-  */
-
   public sendMotd(param: { withPrompt: boolean })
   {
     let motd = "\n&wThere is no message of the day at this time.";
@@ -150,7 +130,9 @@ export class Connection extends Entity
     else
       this.sendAsPromptlessBlock(motd);
   }
+  */
 
+  /*
   public sendLastLoginInfo()
   {
     // Last login info looks like:
@@ -184,6 +166,7 @@ export class Connection extends Entity
 
     this.sendAsBlock(lastLoginInfo);
   }
+  */
 
   // Handles situation when player connects to previously offline account .
   public connectToAccount(account: Account)
@@ -472,9 +455,7 @@ export class Connection extends Entity
       return;
     }
 
-    let data = message.compose();
-
-    this.socketDescriptor.send(data)
+    this.socketDescriptor.send(message.compose());
   }
 
   // --------------- Private methods --------------------

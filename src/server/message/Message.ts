@@ -259,19 +259,15 @@ export class Message
   }
   */
 
-  // --------------- Protected methods ------------------
-
-  // ---------------- Private methods -------------------
-
-  // Adds base color, adds prompt if necessary,
-  // adds a space if neccessary (to separate user input).
-  private compose(): string
+  // Composes the full message text
+  // (adds base color, adds prompt, adds a space to separate user input).
+  public compose(): string
   {
     // Remove all white spaces (including tabs and newlines)
     // from the end of the string.
     let data = Utils.trimRight(this.text);
 
-    // Adds color code depending on Message.type to the beginning of the
+    // Add color code depending on Message.type to the beginning of the
     // string (only if there isn't already a color code there), replaces
     // all '&_' codes (meaning 'return to base color') with base color
     // color code.
@@ -298,6 +294,10 @@ export class Message
     return this.addSpace(data);
   }
 
+  // --------------- Protected methods ------------------
+
+  // ---------------- Private methods -------------------
+
   private generatePrompt(): string
   {
     let prompt = "&g>";
@@ -314,7 +314,9 @@ export class Message
       case Message.Type.AUTH_PROMPT:
       case Message.Type.AUTH_INFO:
       case Message.Type.AUTH_ERROR:
+      case Message.Type.LOGIN_INFO:
       case Message.Type.CONNECTION_INFO:
+      case Message.Type.GAME_MENU:
         return false;
 
       default:
@@ -429,10 +431,16 @@ export module Message
     AUTH_INFO,
     // Something went wrong while authenticating.
     AUTH_ERROR,
+    // Screen show before entering menu (MOTD, last logind info).
+    LOGIN_INFO,
 
     // -------------------- Connection messages ------------------
     
     CONNECTION_INFO,
+
+    // ------------------------- Game menu -----------------------
+
+    GAME_MENU,
 
     // ------------------------- Commands ------------------------
 
