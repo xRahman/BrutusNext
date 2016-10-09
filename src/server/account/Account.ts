@@ -73,26 +73,6 @@ export class Account extends NamedEntity
 
   // ---------------- Public methods --------------------
 
-  /*
-  // Send message to this account.
-  public receive
-  (
-    // Don't add starting and ending color code, they will be added automatically
-    // according to msgType. You can use '&_' code as 'base color', that is the
-    // color that will be automatically aded to the start of the message.
-    //   Use '\n' to mark newlines (it will be automatically converted to '\r\n').
-    text: string,
-    msgType: Message.Type
-  )
-  {
-    if (this.connection !== null && this.connection.isValid())
-    {
-      let message = new Message(text, msgType);
-      message.sendToConnection(this.connection);
-    }
-  }
-  */
-
   // -> Returns full name of the character matching to 'abbrev'.
   // -> Returns 'null' if no match is found.
   public getCharacterNameByAbbrev(abbrev: string): string
@@ -116,8 +96,15 @@ export class Account extends NamedEntity
     return this.className + "/";
   }
 
-  public getLastLoginAddress() { return this.lastLoginAddress; }
-  public getLastLoginDate()
+  public getLastLoginAddress()
+  {
+    if (this.lastLoginAddress === null)
+      return "<unknown ip address>";
+
+    return this.lastLoginAddress;
+  }
+  
+  public getLastLoginDate(): string
   {
     if (typeof this.lastLoginDate === 'string')
     {
@@ -131,9 +118,27 @@ export class Account extends NamedEntity
         + " means that you have initialized a Date object with <null> value"
         + " or assigned <null> to it prior to loading from file. You must not"
         + " not assign <null> to properties of type Date.");
+
+      return "<invalid date>";
     }
 
-    return this.lastLoginDate;
+    if (this.lastLoginDate !== null)
+    {
+      /// Pozn: Pres telnet samozrejme nezjistim, jaky ma player nastaveny
+      /// locale, takze to bude nejspis locale serveru, nebo tak neco.
+      /// (Asi by se muselo nastavovat rucne v menu jaky chci mit format
+      ///  data a casu)
+      /// BTW toLocaleString('cs-CZ') nefunguje, porad je to anglicky format.
+      return this.lastLoginDate.toLocaleString();
+    }
+    else
+    {
+      ERROR("Attempt to request last login date of account"
+        + " " + this.name + " which doesn't have it"
+        + " initialized yet");
+
+      return "<unknown date>";
+    }
   }
 
   // Only hash of the password is stored
@@ -191,12 +196,8 @@ export class Account extends NamedEntity
     {
       ERROR("Failed to create new character (" + characterName + ")");
 
-      this.receive
-      (
-        "An error occured while creating"
-        + " your character. Please contact implementors.",
-        Message.Type.AUTH_ERROR
-      );
+      this.sendAuthError("An error occured while creating"
+        + " your character. Please contact admins.");
 
       return false;
     }
@@ -271,7 +272,7 @@ export class Account extends NamedEntity
     if (FileSystem.isEmpty(Account.SAVE_DIRECTORY))
     {
       // We are creating the first account on this mud installation.
-      // Mark it as implementor account.
+      // Mark it as creator account.
       this.adminLevel = AdminLevels.CREATOR;
     }
   }
@@ -279,7 +280,7 @@ export class Account extends NamedEntity
 
   //----------------- Protected data --------------------
 
-  protected lastLoginAddress = "";
+  protected lastLoginAddress = null;
   protected lastLoginDate = new Date(0);
 
   // --------------- Protected methods ------------------
@@ -310,6 +311,11 @@ export class Account extends NamedEntity
   private passwordHash = "";
 
   // ---------------- Private methods --------------------
+
+  private sendAuthError(text: string)
+  {
+    Message.sendToConnection(text, Message.Type.AUTH_ERROR, this.connection);
+  }
 
   private addCharacter(characterName: string)
   {
@@ -346,13 +352,10 @@ export class Account extends NamedEntity
     // Notify the player what went wrong.
     if (this.connection)
     {
-      this.receive
-      (
-        "Something is wrong, character named '" + characterName + "'"
-        + " already exists. Please contact implementors and ask them to"
-        + "resolve this issue.",
-        Message.Type.AUTH_ERROR
-      );
+      this.sendAuthError("Something is wrong, character"
+        + " named '" + characterName + "' already exists."
+        + " Please contact admins and ask them to resolve"
+        + " this issue.");
     }
   }
 
