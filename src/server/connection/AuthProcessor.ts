@@ -68,34 +68,40 @@ export class AuthProcessor
       case null:
         ERROR("AuthProcessor has not yet been initialized, it is not"
           + " supposed to process any commands yet");
-      break;
+        break;
 
       case AuthProcessor.Stage.LOGIN:
         this.loginAttempt(command);
-      break;
+        break;
 
       case AuthProcessor.Stage.PASSWORD:
         ///// DEBUG:
         //console.log("AuthProcessor.stage.PASSWORD");
         //process.exit(1);
         await this.checkPassword(command);
-      break;
+        break;
 
       case AuthProcessor.Stage.NEW_PASSWORD:
         ///// DEBUG:
         //console.log("AuthProcessor.stage.NEW_PASSWORD");
         //process.exit(1);
-        this.getNewPassword(command); 
-      break;
+        this.getNewPassword(command);
+        break;
+
+      case AuthProcessor.Stage.MOTD:
+        // Any command (including just pressing enter) will
+        // carry us on to the next stage.
+        this.acceptMotd();
+        break;
 
       case AuthProcessor.Stage.DONE:
         ERROR("AuthProcessor has already done it's job, it is not"
           + " supposed to process any more commands");
-      break;
+        break;
 
       default:
         ERROR("Unknown stage: " + this.stage);
-      break;
+        break;
     }
   }
 
@@ -188,25 +194,20 @@ export class AuthProcessor
     }
   }
 
-  private getNewPassword(password: string)
+  private acceptNewPassword(password: string): boolean
   {
     if (this.connection === null)
     {
       ERROR("Null conection on account " + this.accountName + "."
         + " Password is not processed");
-      return;
+      return false;
     }
 
-    if (!this.isPasswordValid(password))
-      // We don't advance the stage so the next user input will trigger
-      // a getNewPassword() again.
-      return;
+    return this.isPasswordValid(password);
+  }
 
-    // Note:
-    //   There is no point in asking user to retype the password when
-    // she can see it typed (which is the only option when using telnet).
-
-    // Password accepted, create a new account.
+  private createAccount(password: string): Account
+  {
     let account = Server.accounts.createAccount
     (
       this.accountName,
@@ -214,12 +215,13 @@ export class AuthProcessor
       this.connection
     );
 
-    if (account === null)
-      // We don't advance the stage so the next user input will trigger
-      // a getNewPassword() again.
-      // (error message is already handled by createAccount())
-      return;
+    this.connection.account = account;
 
+    return account;
+  }
+
+  private announceNewPlayer()
+  {
     Syslog.log
     (
       "New player: " + this.accountName
@@ -227,12 +229,40 @@ export class AuthProcessor
       Message.Type.SYSTEM_INFO,
       AdminLevel.IMMORTAL
     );
+  }
 
-    this.connection.account = account;
-    this.updateLoginInfo();
+  private getNewPassword(password: string)
+  {
+    if (this.acceptNewPassword(password) === false)
+    {
+      // We don't advance this.stage so the next user input will trigger
+      // a getNewPassword() again.
+      return;
+    }
+
+    // Password accepted, create a new account.
+    let account = this.createAccount(password);
+
+    if (account === null)
+      // We don't advance the stage so the next user input will trigger
+      // a getNewPassword() again.
+      // (error message is already handled by createAccount())
+      return;
+
+    this.announceNewPlayer();
+    this.sendLoginInfo();
+
+    // Updates login info to current values.
+    account.updateLastLoginInfo();
+
+    // Stage MOTD will just wait for any command to proceed to the menu. 
+    this.stage = AuthProcessor.Stage.MOTD;
+  }
+
+  private acceptMotd()
+  {
     this.stage = AuthProcessor.Stage.DONE;
     this.connection.enterLobby();
-    this.connection.sendMotd({ withPrompt: true });
   }
 
   private isAccountNameValid(accountName: string): boolean
@@ -362,21 +392,22 @@ export class AuthProcessor
     param: { reconnecting: boolean }
   )
   {
-    let accountManager = Server.accounts;
-
-    if (account.checkPassword(password))
+    if (account === null || account.isValid() === false)
     {
-      // Password checks so we are done with authenticating.
-      this.stage = AuthProcessor.Stage.DONE;
+      ERROR("Invalid account");
+      return;
+    }
 
-      // Structured parameters is used instead of simple bool to enforce
-      // more verbosity when calling processPasswordCheck().
-      if (param.reconnecting)
+    if (account.checkPassword(password) === true)
+    {
+      if (param.reconnecting === true)
       {
         this.connection.reconnectToAccount(account);
       }
       else
       {
+        let accountManager = Server.accounts;
+
         // Add newly loaded account to accountManager (under it's original id).
         accountManager.add(account);
 
@@ -384,7 +415,10 @@ export class AuthProcessor
       }
 
       this.sendLoginInfo();
-      this.updateLoginInfo();
+      account.updateLastLoginInfo();
+
+      // Password checks so we are done with authenticating.
+      this.stage = AuthProcessor.Stage.DONE;
     }
     else
     {
@@ -412,17 +446,45 @@ export class AuthProcessor
     );
   }
 
+  // Last login info looks like:
+  //
+  // There was #377256 players since 3.1.2002
+  //
+  // Last login: localhost at Sat Apr 2 20:40:06 2016
+  private getLastLoginInfo(): string
+  {
+    ///    let numberOfPlayersInfo =
+    ///      "&wThere was #" + Server.getNumberOfPlayers()
+    ///      + " players since &W3. 4. 2016";
+
+    if (this.connection === null || this.connection.isValid() === false)
+    {
+      ERROR("Invalid connection");
+      return "<Error while retrieving last login info>";
+    }
+
+    let account = this.connection.account;
+
+    if (account === null || account.isValid() === false)
+    {
+      ERROR("Invalid account");
+      return "<Error while retrieving last login info>";
+    }
+
+    return "Last login: " + account.getLastLoginAddress()
+         + " at " + account.getLastLoginDate();
+  }
+
   // Sends a login info (motd, last login, etc.).
   private sendLoginInfo()
   {
-    this.connection.sendMotd({ withPrompt: false });
-    this.connection.sendLastLoginInfo();
-  }
+    let loginInfo = Server.getMotd()
+                  + "\n"
+                  + this.getLastLoginInfo()
+                  + "\n"
+                  + "*** PRESS RETURN:";
 
-  // Updates login info to current values.
-  private updateLoginInfo()
-  {
-    this.connection.account.updateLastLoginInfo();
+    Message.sendToConnection(loginInfo, Message.Type.LOGIN_INFO, this.connection);
   }
 
   private sendAuthPrompt(text: string)
@@ -447,6 +509,7 @@ export module AuthProcessor
     LOGIN,
     PASSWORD,
     NEW_PASSWORD,
+    MOTD,
     DONE
   }
 }

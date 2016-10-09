@@ -40,10 +40,15 @@ export class MessageColors
     AUTH_PROMPT:           '&w',
     AUTH_INFO:             '&w',
     AUTH_ERROR:            '&w',
+    LOGIN_INFO:            '&w',
 
     // -------------------- Connection messages ------------------
     
     CONNECTION_INFO:       '&g',
+
+    // ------------------------- Game menu -----------------------
+
+    GAME_MENU:             '&w',
 
     // ------------------------- Commands ------------------------
 
