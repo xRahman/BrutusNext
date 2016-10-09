@@ -53,29 +53,11 @@ export class LobbyProcessor
 
   public sendMenu()
   {
-    let menu = LobbyProcessor.GAME_MENU;
+    let menu = this.composeMenu();
 
-    if (this.connection === null || this.connection.isValid() === false)
-    {
-      ERROR("Invalid connection, game menu is not sent");
+    if (menu === null)
+      // Menu coundn't be composed so there is nothing to send.
       return;
-    }
-
-    let account = this.connection.account;
-
-    if (account === null || account.isValid() === false)
-    {
-      ERROR("Invalid account, game menu is not sent");
-      return;
-    }
-
-    // Add an option to enter game as each of characters on the account. 
-    for (let characterName of account.characterNames)
-    {
-      menu += '\n&g"&G' + characterName + '&g"&w to enter game as ' + characterName + ".";
-    }
-
-    menu += LobbyProcessor.MAKE_CHOICE;
 
     Message.sendToConnection(menu, Message.Type.GAME_MENU, this.connection);
   }
@@ -118,6 +100,7 @@ export class LobbyProcessor
       Message.Type.AUTH_INFO,
       this.connection
     );
+    this.connection.leaveLobby();
     this.connection.quitGame();
   }
 
@@ -131,12 +114,14 @@ export class LobbyProcessor
     if (character)
     {
       this.attachConnectionToGameEntity(character);
+      this.connection.leaveLobby();
       this.connection.reconnectToCharacter();
     }
     else
     {
       await this.loadCharacter(characterName);
 
+      this.connection.leaveLobby();
       this.connection.enterGame();
     }
   }
@@ -242,5 +227,34 @@ export class LobbyProcessor
 
     Server.onCharacterCreation(character);
     */
+  }
+
+  private composeMenu(): string
+  {
+    let menu = LobbyProcessor.GAME_MENU;
+
+    if (this.connection === null || this.connection.isValid() === false)
+    {
+      ERROR("Invalid connection, game menu is not sent");
+      return null;
+    }
+
+    let account = this.connection.account;
+
+    if (account === null || account.isValid() === false)
+    {
+      ERROR("Invalid account, game menu is not sent");
+      return null;
+    }
+
+    // Add an option to enter game as each of characters on the account. 
+    for (let characterName of account.characterNames)
+    {
+      menu += '\n&g"&G' + characterName + '&g"&w to enter game as ' + characterName + ".";
+    }
+
+    menu += LobbyProcessor.MAKE_CHOICE;
+
+    return menu;
   }
 }

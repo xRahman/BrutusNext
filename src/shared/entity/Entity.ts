@@ -152,7 +152,8 @@ export class Entity extends AutoSaveableObject
   {
     ERROR("Entity.isValid() function should never be called. You"
       + " somehow managed to get your hands on direct reference to"
-      + " entity instead of a proxy. That must never happen");
+      + " entity " + this.getErrorIdString() + " instead of a proxy."
+      + " That must never happen");
 
     return false;
   }

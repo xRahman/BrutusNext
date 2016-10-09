@@ -31,24 +31,48 @@ export class Connection extends Entity
 
   private stage = null;
   private socketDescriptor: SocketDescriptor = null;
-  private authProcessor = new AuthProcessor(this);
-  private lobbyProcessor = new LobbyProcessor(this);
+  private authProcessor = null;
+  private lobbyProcessor = null;
 
   // -------- Public stage transition methods -----------
 
-  public startLoginProcess()
+  public startAuthenticating()
   {
     if (this.stage !== null)
       ERROR("Starting login process from wrong stage");
 
-    this.authProcessor.startLoginProcess();
+    if (this.authProcessor !== null)
+      ERROR("AuthProcessor already exists");
+
+    this.authProcessor = new AuthProcessor(this);
+    this.authProcessor.startAuthenticating();
     this.stage = Connection.Stage.AUTHENTICATION;
+  }
+
+  public finishAuthenticating()
+  {
+    if (this.authProcessor)
+      ERROR("Authenticating is already finished (or it didn't even start)");
+
+    this.authProcessor = null;
   }
 
   public enterLobby()
   {
+    if (this.lobbyProcessor !== null)
+      ERROR("LobbyProcessor already exists");
+
+    this.lobbyProcessor = new LobbyProcessor(this);
     this.lobbyProcessor.sendMenu();
     this.stage = Connection.Stage.IN_LOBBY;
+  }
+
+  public leaveLobby()
+  {
+    if (this.lobbyProcessor)
+      ERROR("Lobby processor is already dealocated");
+
+    this.lobbyProcessor = null;
   }
 
   public async enterGame()
@@ -254,46 +278,21 @@ export class Connection extends Entity
     switch (this.stage)
     {
       case null:
-        ERROR("Connection has not yet been initialized by"
-          + " startLoginProcess(), it is not supposed to process any"
-          + " commands yet");
+        ERROR("Connection has not yet been initialized"
+          + " by startLoginProcess(), it is not supposed"
+          + " to process any commands yet");
         break;
 
       case Connection.Stage.AUTHENTICATION:
-        if (this.account !== null)
-        {
-          ERROR("Attempt to process authentication command on player"
-            + " connection that already has an account assigned");
-        }
-
-        await this.authProcessor.processCommand(command);
+        await this.processAuthCommand(command);
         break;
 
       case Connection.Stage.IN_LOBBY:
-        if (this.account === null)
-        {
-          ERROR("Attempt to process lobby command on player"
-            + " connection that doesn't have an account assigned");
-          return;
-        }
-
-        this.lobbyProcessor.processCommand(command);
+        this.processLobbyCommand(command);
         break;
 
       case Connection.Stage.IN_GAME:
-        if (this.account === null)
-        {
-          ERROR("Attempt to process ingame command on player"
-            + " connection that doesn't have an account assigned");
-        }
-
-        if (!this.isInGame())
-        {
-          ERROR("Attempt to process ingame command on player"
-            + " connection that doesn't have an ingame entity attached")
-        }
-
-        this.ingameEntity.processCommand(command);
+        this.processIngameCommand(command);
         break;
 
       case Connection.Stage.LOGGED_OUT:
@@ -485,6 +484,61 @@ export class Connection extends Entity
   }
   */
 
+  private async processAuthCommand(command: string)
+  {
+    if (this.account !== null)
+    {
+      ERROR("Attempt to process authentication command on player"
+        + " connection that already has an account assigned");
+    }
+
+    if (this.authProcessor === null)
+    {
+      ERROR("AuthProcessor is not inicialized, command will not be processed"
+        + " on account " + this.account.getErrorIdString());
+      return;
+    }
+
+    await this.authProcessor.processCommand(command);
+  }
+
+  private processLobbyCommand(command: string)
+  {
+    if (this.account === null)
+    {
+      ERROR("Attempt to process lobby command on player"
+        + " connection that doesn't have an account assigned");
+      return;
+    }
+
+    if (this.lobbyProcessor === null)
+    {
+      ERROR("Lobby processor is not inicialized"
+        + " on account " + this.account.getErrorIdString() + "."
+        + " Command will not be processed"); 
+      return;
+    }
+
+    this.lobbyProcessor.processCommand(command);
+  }
+
+  private processIngameCommand(command: string)
+  {
+    if (this.account === null)
+    {
+      ERROR("Attempt to process ingame command on player"
+        + " connection that doesn't have an account assigned");
+    }
+
+    if (!this.isInGame())
+    {
+      ERROR("Attempt to process ingame command on player"
+        + " connection that doesn't have an ingame entity attached")
+    }
+
+    this.ingameEntity.processCommand(command);
+  }
+
   // Send connection-related message to this player connection.
   private sendConnectionInfo(text: string)
   {
@@ -663,6 +717,12 @@ export class Connection extends Entity
     {
       let player = "Unknown player";
 
+      if (this.authProcessor === null)
+      {
+        ERROR("AuthProcessor is not inicialized, player won't get logged out");
+        return;
+      }
+
       if (this.authProcessor.getAccountName())
         player = "Player " + this.authProcessor.getAccountName();
 
@@ -678,6 +738,12 @@ export class Connection extends Entity
   private announcePlayerLostConnection(state: string)
   {
     let player = "Unknown player";
+
+    if (this.authProcessor === null)
+    {
+      ERROR("AuthProcessor not inicialized, lost connection will not be announced");
+      return;
+    }
 
     if (this.authProcessor.getAccountName())
       player = "Player " + this.authProcessor.getAccountName();
