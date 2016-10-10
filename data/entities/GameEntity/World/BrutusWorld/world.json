@@ -1,0 +1,35 @@
+{
+  "name": "BrutusNext World",
+  "className": "BrutusWorld",
+  "version": 0,
+  "id": "1-iu47vwkg",
+  "isNameUnique": false,
+  "contents":
+  {
+    "className": "EntityList",
+    "version": 0,
+    "entities": []
+  },
+  "aliases": [],
+  "connection": null,
+  "location": null,
+  "systemRealm":
+  {
+    "className": "EntityReference",
+    "type": "SystemRealm",
+    "id": "2-iu47vwkg"
+  },
+  "systemArea":
+  {
+    "className": "EntityReference",
+    "type": "SystemArea",
+    "id": "3-iu47vwkg"
+  },
+  "systemRoom":
+  {
+    "className": "EntityReference",
+    "type": "TutorialRoom",
+    "id": "5-iu47vwkg"
+  },
+  "tutorialRoom": null
+}

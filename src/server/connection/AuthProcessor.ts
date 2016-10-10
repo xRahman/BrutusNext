@@ -150,40 +150,31 @@ export class AuthProcessor
   {
     let accountManager = Server.accounts;
 
-    if (this.connection === null)
+    if (this.connection === null || this.connection.isValid() === false)
     {
       ERROR("Invalid connection in account " + this.accountName
         + " Aborting checkPassword()");
       return;
     }
 
-    if (this.connection.getId() === null)
-    {
-      ERROR("Invalid player connection id in account " + this.accountName
-        + " Aborting checkPassword()");
-      return;
-    }
-
     // Check if account info is already loaded.
+    // (getAccountByName() returns 'undefined' if account isn't loaded in memory) 
     let account = accountManager.getAccountByName(this.accountName);
 
-    if (account)
+    if (account !== undefined)
     {
       this.processPasswordCheck(account, password, { reconnecting: true });
     }
     else
     {
-      account = EntityManager.createNamedEntity
-      (
-        this.accountName,
-        'Account',
-        Account
-      );
-      account.connection = this.connection;
-
       // Account name is passed to check against character name saved
       // in file (they must by the same).
+      // (Parameter 'account' will be changed as side effect)
       await this.loadAccount(account, this.accountName);
+
+      if (account === null || account === undefined || account.isValid() === false)
+        // Error is already reported by loadAcccount().
+        return;
 
       this.processPasswordCheck(account, password, { reconnecting: false });
     }
@@ -355,21 +346,37 @@ export class AuthProcessor
 
   private async loadAccount
   (
+    // Parameter 'account' is changed as side effect.
+    // (because async methods can't return value)
     account: Account,
     accountFileName: string
   )
   {
+    /*
+    /// TODO: Tady se nesmí volat createNamedEntity(), musí se volat
+    ///   něco, co vytvoří invalid referenci s prázdným idčkem (protože
+    ///   idčko se musí loadnou ze souboru. 
+    account = EntityManager.createNamedEntity
+    (
+      this.accountName,
+      'Account',
+      Account
+    );
+    */
+    account = EntityManager.createReference(null, 'Account', Account);
+
     // Asynchronous reading from file.
     // (the rest of the code will execute only after the reading is done)
     await account.load();
 
-    if (account.getId() === null)
+    if (account === null || account === undefined || account.isValid() === false)
     {
-      ERROR("Null id in saved file of account " + account.name
-        + " Aborting loadAccount()");
+      ERROR("Failed to load account " + account.name);
       account = null;
       return;
     }
+
+    account.connection = this.connection;
 
     if (this.accountName !== account.name)
     {
@@ -390,7 +397,7 @@ export class AuthProcessor
     param: { reconnecting: boolean }
   )
   {
-    if (account === null || account.isValid() === false)
+    if (account === null || account === undefined || account.isValid() === false)
     {
       ERROR("Invalid account");
       return;

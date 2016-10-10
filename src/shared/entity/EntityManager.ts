@@ -17,7 +17,7 @@
     There is no 'add()' method. If you want to add an existing entity
   to EntityManager, use:
 
-    let entity = Server.entityManager.get(id, type);
+    let entity = EntityManager.createReference(id, type);
 
   Then you can do:
 
@@ -65,6 +65,19 @@ export class EntityManager
 
   // ------------- Public static methods ----------------
 
+  // -> Returns entity proxy matching given id.
+  //    Returns undefined if entity doesn't exist in EntityManager.
+  public static get<T>
+  (
+    id: string,
+    type: string,
+    typeCast: { new (...args: any[]): T }
+  )
+  : T
+  {
+    return Server.entityManager.get(id, type, typeCast);
+  }
+
   // Shortcut so you can use EntityManager.createNamedEntity()
   // instead of Server.entityManager.createNamedEntity().
   public static createNamedEntity<T>
@@ -76,6 +89,20 @@ export class EntityManager
   : T
   {
     return Server.entityManager.createNamedEntity(name, prototype, typeCast);
+  }
+
+  // -> Returns existing reference if entity already exists in EntityManager.
+  //    Returns invalid reference if entity with such id doen't exist yet.
+  //      (you can then use entity.load() to load if from disk)
+  public static createReference<T>
+  (
+    id: string,
+    type: string,
+    typeCast: { new (...args: any[]): T }
+  )
+  : T
+  {
+    return Server.entityManager.createReference(id, type, typeCast);
   }
 
   // ---------------- Public methods --------------------
@@ -247,9 +274,15 @@ export class EntityManager
     entityRecord.invalidate();
   }
 
-  // -> Returns entity proxy matching given id, undefined if entity
-  //    doesn't exist in EntityManager.
-  public get(id: string, type: string): Entity
+  // -> Returns entity proxy matching given id.
+  //    Returns undefined if entity doesn't exist in EntityManager.
+  public get<T>
+  (
+    id: string,
+    type: string,
+    typeCast: { new (...args: any[]): T }
+  )
+  : T
   {
     // 'type' is needed even if 'id' is null, because
     // we need to know what class to instantiate in order to load
@@ -257,44 +290,41 @@ export class EntityManager
     if (type === null || type === undefined)
     {
       ERROR("Missing of invalid 'type' argument");
-      return null;
+      return undefined;
     }
 
     // This check is done first so we save ourself searching a 'null'
     // record in hashmap.
-    if (id === null)
+    if (id === null || id === undefined || id === "")
     {
-      // This case is used for example when loading world. Wold is
-      // saved to a special filename (wold.json), so we don't need
-      // to know it's id in order to load it. In fact, world's id
-      // is loaded from it's save file.
-      return this.createInvalidEntityProxy(id, type);
+      ERROR("Invalid id");
+      return undefined;
     }
 
     let entityRecord: EntityRecord = this.entityRecords.get(id);
+    
+    if (entityRecord === undefined)
+      return undefined;
 
-    // If an entity with this 'id' already exists in hashmap,
-    // return it's existing proxy.
-    if (entityRecord !== undefined)
+    // Now we know that the record for the entity with this 'id' exists
+    // in hashmap, so we will return it's existing proxy. But let's do
+    // some sanity checks first.
+
+    let entityProxy = entityRecord.getEntityProxy();
+
+    if (entityProxy === undefined || entityProxy === null)
     {
-      let entityProxy = entityRecord.getEntityProxy();
-
-      if (entityProxy === undefined || entityProxy === null)
-      {
-        ERROR("Invalid entity proxy in entity record of"
-          + " entity with id " + id);
-      }
-
-      if (entityProxy.className !== type)
-      {
-        ERROR("Type of entity " + entityProxy.getErrorStringId()
-          + " doesn't match requested type '" + type + "'");
-      }
-
-      return entityProxy;
+      ERROR("Invalid entity proxy in entity record of"
+        + " entity with id " + id);
     }
 
-    return this.createInvalidEntityProxy(id, type);
+    if (entityProxy.className !== type)
+    {
+      ERROR("Type of entity " + entityProxy.getErrorStringId()
+        + " doesn't match requested type '" + type + "'");
+    }
+
+    return entityProxy.dynamicCast(typeCast);
   }
 
   // Check if entity exists in EntityManager.
@@ -303,9 +333,39 @@ export class EntityManager
     return this.entityRecords.has(id);
   }
 
+  // -> Returns existing reference if entity already exists in EntityManager.
+  //    Returns invalid reference if entity with such id doen't exist yet.
+  //      (you can then use entity.load() to load if from disk)
+  public createReference<T>
+  (
+    id: string,
+    type: string,
+    typeCast: { new (...args: any[]): T }
+  )
+  : T
+  {
+    // Check of null or undefined if first to save us searching in hashmap
+    // (null id is used for example for loading world or accounts, because
+    // their id is not known until it's loaded from disk.)
+    if (id === null || id === undefined)
+      return this.createInvalidEntityReference(id, type, typeCast);
+
+    if (this.has(id))
+      return this.get(id, type, typeCast);
+
+    return this.createInvalidEntityReference(id, type, typeCast);
+  } 
+
   // --------------- Private methods -------------------
 
-  private createInvalidEntityProxy(id: string, type: string): Entity
+  // Purposedly creates an invalid reference
+  private createInvalidEntityReference<T>
+  (
+    id: string,
+    type: string,
+    typeCast: { new (...args: any[]): T }
+  )
+  : T
   {
     let handler = new EntityProxyHandler();
 
@@ -390,15 +450,12 @@ export class EntityManager
       return null;
     }
 
-    if (handler.id !== null)
+    if (handler.id !== null && handler.id !== entity.getId())
     {
-      if (handler.id !== entity.getId())
-      {
-        ERROR("Id of entity " + entity.getErrorIdString() + " loaded"
-          + " from file doesn't match id " + handler.id + " saved in"
-          + " entity proxy handler");
-        return null;
-      }
+      ERROR("Id of entity " + entity.getErrorIdString() + " loaded"
+        + " from file doesn't match id " + handler.id + " in entity"
+        + " proxy handler");
+      return null;
     }
 
     return entity;

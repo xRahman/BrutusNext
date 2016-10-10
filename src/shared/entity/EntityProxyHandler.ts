@@ -109,7 +109,7 @@ export class EntityProxyHandler
       if (id !== this.id)
       {
         ERROR("Id of entity " + this.entity.getErrorIdString()
-          + " differs from id saved in entity proxy handler"
+          + " differs from id in entity proxy handler"
           + " (which is " + this.id + ")");
 
         checkResult = false;
@@ -125,7 +125,7 @@ export class EntityProxyHandler
         ERROR("Class name '" + type + "' of entity"
           + " " + this.entity.getErrorIdString()
           + " differs from type '" + this.type + "'"
-          + " saved in entity proxy handler");
+          + " in entity proxy handler");
 
         checkResult = false;
       }
@@ -442,7 +442,7 @@ export class EntityProxyHandler
     }
 
     if (this.id === null)
-      ERROR("Null id in EntityProxyHandler");
+      return false;
 
     if (this.entity === null)
     {
