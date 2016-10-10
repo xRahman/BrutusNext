@@ -230,7 +230,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     let input = this.cutOffUnifinishedCommand(data);
 
     // Check if there is something to process right now.
-    if (input === "")
+    if (input === null)
       return;
 
     await this.processInput(input);
@@ -433,12 +433,13 @@ export class TelnetSocketDescriptor extends SocketDescriptor
 
   // Transfers the ending of data stream that is not finished by newline
   // to the input buffer and cuts it off of the data.
+  // -> Returns null if there are no data to be processed right now.
   protected cutOffUnifinishedCommand(data: string): string
   {
     // Telnet protocol doesn't ensure that packet ends with newline. It
-    // means that we can only process part of the input up untill the last
+    // means that we can only process part of the input up until the last
     // newline (if there is any). There rest (or everything, if there is no
-    // newline in input at all) needs to be buffered untill the rest of the
+    // newline in input at all) needs to be buffered until the rest of the
     // data arrives.
     let lastNewlineIndex = data.lastIndexOf('\r\n');
 
@@ -447,18 +448,32 @@ export class TelnetSocketDescriptor extends SocketDescriptor
       // If there is no newline in input, just buffer the data.
       this.inputBuffer += data;
 
-      return "";
+      return null;
     }
 
     if (lastNewlineIndex !== data.length - 2)
     {
       // If there is a newline in input and there is something after
-      // the last '\r\n\', add it to input buffer.
-      // (+2 to skip '\r\n\')
+      // the last '\r\n', add it to input buffer.
+      // (+2 to skip '\r\n')
       this.inputBuffer += data.substring(lastNewlineIndex + 2);
     }
 
-    // Cut off the buffered part of data.
+    // If the last newline of inputBuffer is located at it's very beginning,
+    // it means that user has sent just a newline - by hitting enter without
+    // typing anything.
+    if (lastNewlineIndex === 0)
+      // We must return empty string rather than '\r\n', becuase data will
+      // later be split by newlines, so returning newline would result in
+      // two "" commands instead of just one (string '\r\n' split by '\r\n'
+      // results in ["", ""]).
+      return "";
+
+    // Otherwise we cut off the buffered part of data including the last
+    // newline, so the last newline won't get processed as a separate command
+    // (that would mess the things up).
+    // (substr() extracts 'lastNewlineIndex' characters from 'data' beginning
+    // at index '0')
     return data.substr(0, lastNewlineIndex);
   }
 
@@ -474,8 +489,8 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     // Handle each line as a separate command.
     for (let command of this.commandsBuffer)
     {
-      // Trim the command (remove leading and trailing white spaces)
-      // before processing.
+      // Trim the command (remove leading and trailing white
+      // spaces, including newlines) before processing.
       await this.connection.processCommand(command.trim());
     }
 

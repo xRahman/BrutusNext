@@ -89,8 +89,8 @@ export class AuthProcessor
         break;
 
       case AuthProcessor.Stage.MOTD:
-        // Any command (including just pressing enter) will
-        // carry us on to the next stage.
+        // Any command (including just pressing enter)
+        // will carry us on to the next stage.
         this.acceptMotd();
         break;
 
