@@ -245,7 +245,10 @@ export class AuthProcessor
       return;
 
     this.announceNewPlayer();
-    this.sendLoginInfo();
+
+    // Parameter 'newAccount' set to 'true' means that lastLoginInfo will
+    // not be sent (it doesn't make sense for freshly created account). 
+    this.sendLoginInfo({ newAccount: true });
 
     // Updates login info to current values.
     account.updateLastLoginInfo();
@@ -409,7 +412,11 @@ export class AuthProcessor
         this.connection.connectToAccount(account);
       }
 
-      this.sendLoginInfo();
+      // Parameter 'newAccount' set to 'false' means that lastLoginInfo will be sent. 
+      this.sendLoginInfo({ newAccount: false });
+
+      // This must be done after login info is sent
+      // (so the previous values will be sent to player).
       account.updateLastLoginInfo();
 
       // Password checks so we are done with authenticating.
@@ -471,13 +478,18 @@ export class AuthProcessor
   }
 
   // Sends a login info (motd, last login, etc.).
-  private sendLoginInfo()
+  private sendLoginInfo(param: { newAccount: boolean })
   {
-    let loginInfo = Server.getMotd()
-                  + "\n"
-                  + this.getLastLoginInfo()
-                  + "\n"
-                  + "*** PRESS RETURN:";
+    let loginInfo = Server.getMotd() + "\n";
+
+    // Last login info is only send for existing accounts,
+    // it doesn't make sense for a freshly created account.
+    if (param.newAccount === false)
+    {
+      loginInfo += this.getLastLoginInfo() + "\n";
+    }
+
+    loginInfo += "*** PRESS RETURN:";
 
     Message.sendToConnection(loginInfo, Message.Type.LOGIN_INFO, this.connection);
   }
