@@ -207,7 +207,7 @@ export class LobbyProcessor
       Message.sendToConnection
       (
         "That's neither a menu choice nor the name of your character."
-        + "\nPlease enter valid menu choice or the name of one of your characters.",
+        + "\nPlease enter valid menu choice or the name of one of your characters:",
         Message.Type.GAME_MENU,
         this.connection
       );

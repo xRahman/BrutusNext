@@ -51,7 +51,7 @@ export class Connection extends Entity
 
   public finishAuthenticating()
   {
-    if (this.authProcessor)
+    if (this.authProcessor === null)
       ERROR("Authenticating is already finished (or it didn't even start)");
 
     this.authProcessor = null;
@@ -486,12 +486,6 @@ export class Connection extends Entity
 
   private async processAuthCommand(command: string)
   {
-    if (this.account !== null)
-    {
-      ERROR("Attempt to process authentication command on player"
-        + " connection that already has an account assigned");
-    }
-
     if (this.authProcessor === null)
     {
       ERROR("AuthProcessor is not inicialized, command will not be processed"

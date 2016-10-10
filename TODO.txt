@@ -1,3 +1,7 @@
+TODO: Sjednotit metody TelnetSocketDescriptor.normalizeCRLF
+  a Message.normalizeNewlines (asi do Utils)
+TODO: Sjednotit taky konstantu NEW_LINE 
+
 TODO: Zařídit, aby se šlo na jeden account lognout s vícero connectionama
   aby do hry šlo vlézt s jedním mortalem a vícero immortalama či testplayerama.
 
