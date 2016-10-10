@@ -2,7 +2,7 @@
   "name": "BrutusNext World",
   "className": "BrutusWorld",
   "version": 0,
-  "id": "1-iu2pmghq",
+  "id": "1-iu3wk5jk",
   "isNameUnique": false,
   "contents":
   {
@@ -17,19 +17,19 @@
   {
     "className": "EntityReference",
     "type": "SystemRealm",
-    "id": "2-iu2pmghq"
+    "id": "2-iu3wk5jk"
   },
   "systemArea":
   {
     "className": "EntityReference",
     "type": "SystemArea",
-    "id": "3-iu2pmghq"
+    "id": "3-iu3wk5jk"
   },
   "systemRoom":
   {
     "className": "EntityReference",
     "type": "TutorialRoom",
-    "id": "5-iu2pmghq"
+    "id": "5-iu3wk5jk"
   },
   "tutorialRoom": null
 }

@@ -91,7 +91,7 @@ export class Connection extends Entity
 
     this.sendConnectionInfo
     (
-      "\nWelcome to the land of &RBrutus&YNext!&_"
+      "Welcome to the land of &RBrutus&YNext!&_"
       + " May your visit here be... &GInteresting&_."
     );
 
@@ -145,7 +145,7 @@ export class Connection extends Entity
   /*
   public sendMotd(param: { withPrompt: boolean })
   {
-    let motd = "\n&wThere is no message of the day at this time.";
+    let motd = "&wThere is no message of the day at this time.";
 
     // TODO: Umoznit nastavovat MOTD a tady ho posilat, pokud je nastavene.
 
