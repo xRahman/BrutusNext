@@ -27,9 +27,6 @@ export class Message
 
   // -------------- Static class data -------------------
 
-  // Newlines are normalized to this one before message is sent.
-  static get NEW_LINE() { return '\r\n'; }
-
   //------------------ Public data ----------------------
 
   //------------------ Private data ---------------------
@@ -273,16 +270,18 @@ export class Message
     // color code.
     data = this.addBaseColor(data);
     
-    // Changes all '\n', '\r\n' or '\n\r\' to sequence specified
-    // in Message.NEW_LINE (which is '\r\n'). 
-    data = this.normalizeNewlines(data);
+    // Make sure that all newlines are representedy by '\r\n'.
+    data = Utils.normalizeCRLF(data);
 
     // Add ingame prompt if this type of message triggers it.
     if (this.triggersPrompt())
     {
+      /// NOTE: Pokud bych chtěl implementovat COMPACT_MODE, tady by se
+      /// asi přidávala jen jedna newlina (prompt by nebyl odřádkovaný).
+
       // Two newlines create an empty line between message body and prompt.
-      data += Message.NEW_LINE
-            + Message.NEW_LINE
+      data += TelnetSocketDescriptor.NEW_LINE
+            + TelnetSocketDescriptor.NEW_LINE
       /// TODO: Ve skutečnosti asi spíš target.generatePrompt(),
             /// tj. target budu muset předávat jako parametr.
             + this.generatePrompt();
@@ -291,7 +290,16 @@ export class Message
     // Add space to the end of the message to separate it from user input.
     // (Only if it doesn't end with space already or with a newline - it
     //  might be part of generated prompt.) 
-    return this.addSpace(data);
+    data = this.addSpace(data);
+
+    /// NOTE: Pokud bych chtěl implementovat COMPACT_MODE, tady by se
+    /// newlina nepřidávala (mezi messagi by pak nebyl prázdný řádek).
+
+    // Add newline to the start of the message, so there is an empty line
+    // between every two messages.
+    data = TelnetSocketDescriptor.NEW_LINE + data;
+
+    return data;
   }
 
   // --------------- Protected methods ------------------
@@ -303,6 +311,7 @@ export class Message
     let prompt = "&g>";
 
     /// TODO: Generovat prompt.
+    /// - Ve skutečnosti by prompt měla generovat asi jen GameEntita.
 
     return prompt;
   }
@@ -324,21 +333,8 @@ export class Message
     }
   }
 
-  // Make sure that all newlines are representedy by '\r\n'.
-  private normalizeNewlines(data: string): string
-  {
-    if (data && data.length > 0)
-    {
-      // First remove all '\r' characters, then replace all '\n'
-      // characters with '\r\n'.
-      data = data.replace(/\r/gi, "").replace(/\n/gi, Message.NEW_LINE);
-    }
-
-    return data;
-  }
-
-  // Adds a ' ' character to the end of the string if it doesn't
-  // already end with space or newline.
+  // Adds a ' ' character to the end of the string if it
+  // doesn't already end with space or newline.
   private addSpace(data: string): string
   {
     let lastCharacter = data[data.length - 1];

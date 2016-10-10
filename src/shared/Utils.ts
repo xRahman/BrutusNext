@@ -7,9 +7,23 @@
 'use strict';
 
 import {ERROR} from '../shared/error/ERROR';
+import {TelnetSocketDescriptor} from '../server/net/telnet/TelnetSocketDescriptor';
 
 export module Utils
 {
+  // Make sure that all newlines are representedy by '\r\n'.
+  export function normalizeCRLF(data: string)
+  {
+    if (data && data.length > 0)
+    {
+      // First remove all '\r' characters, then replace all '\n'
+      // characters with '\r\n'.
+      data = data.replace(/\r/gi, "").replace(/\n/gi, TelnetSocketDescriptor.NEW_LINE);
+    }
+
+    return data;
+  }
+
   /*
   // Extracts 'property' value from 'attributes' object describing an enym 'enumName'.
   export function getEnumAttributes
