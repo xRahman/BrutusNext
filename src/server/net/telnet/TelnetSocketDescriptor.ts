@@ -7,6 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/error/ERROR';
+import {Utils} from '../../../shared/Utils';
 import {Syslog} from '../../../server/Syslog';
 import {Message} from '../../../server/message/Message';
 import {Account} from '../../../server/account/Account';
@@ -103,6 +104,13 @@ export class TelnetSocketDescriptor extends SocketDescriptor
 
     this.initSocket();
   }
+
+  // -------------- Static class data -------------------
+
+  // Newlines are normalized to this sequence both before
+  // sending (in Message.compose()) and after receiving
+  // (in TelnetSocketDescriptor.onSocketReceivedData()).
+  static get NEW_LINE() { return '\r\n'; }
 
   //------------------ Private data ---------------------
 
@@ -212,16 +220,18 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     data = this.inputBuffer + data;
     this.inputBuffer = "";
 
-     // Ensure that all newlines are in format CR;LF ('\r\n').
-    data = this.normalizeCRLF(data);
+    // Make sure that all newlines are representedy by '\r\n'.
+    data = Utils.normalizeCRLF(data);
 
     // Do not parse protocol data if user sent just an empty newline.
     // (This is often used by player to refresh prompt)
-    if (data !== '\r\n')
+    if (data !== TelnetSocketDescriptor.NEW_LINE)
     {
-      // If nothing remains after parse, it means that data contained
+      data = this.parseProtocolData(data);
+
+      // If parseProtocolData() returned 'null', it means that data contained
       // only protocol-specific data so there is nothing else to do.
-      if ((data = this.parseProtocolData(data)) == "")
+      if (data === null)
         return;
     }
 
@@ -272,15 +282,6 @@ export class TelnetSocketDescriptor extends SocketDescriptor
 
   // -------------- Protected methods -------------------
 
-  // Ensures that all newlines are in format CR;LF ('\r\n').
-  protected normalizeCRLF(data: string)
-  {
-    if (data && data.length)
-      data = data.replace(/(\r\n|\n\r)/gi, '\n').replace(/\n/gi, '\r\n');
-
-    return data;
-  }
-
   protected checkEventHandlerAbsence(event: string)
   {
     let registeredEvents =
@@ -293,12 +294,14 @@ export class TelnetSocketDescriptor extends SocketDescriptor
   /// TODO: Tohle je tezke provizorum. Zatim to pouze odstrani ze streamu
   /// komunikacni kody, nic to podle nich nenastavuje. Asi by taky bylo fajn
   /// nedelat to rucne, ale najit na to nejaky modul.
-  //
+  ///
   // Processes any protocol-specific data and removes it from the data stream.
-  protected parseProtocolData(data: string)
+  // -> Returns null if there is nothing left after protocol-specific data
+  //    is removed.
+  protected parseProtocolData(data: string): string
   {
     if (data === "") // Nothing to parse.
-      return;
+      return null;
 
     if (data.indexOf('\xff\xfb\xc9') !== -1)
     {
@@ -341,7 +344,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
         ///log('incomplete GMCP package', this);
         this.inputBuffer = data;
 
-        return "";
+        return null;
       }
 
       let j = data.match(/\xff\xfa\xc9([^]+?)\xff\xf0/gm);
@@ -362,7 +365,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
       {
         this.inputBuffer = data;
 
-        return "";
+        return null;
       }
       else
         this.inputBuffer = '';
@@ -441,7 +444,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     // newline (if there is any). There rest (or everything, if there is no
     // newline in input at all) needs to be buffered until the rest of the
     // data arrives.
-    let lastNewlineIndex = data.lastIndexOf('\r\n');
+    let lastNewlineIndex = data.lastIndexOf(TelnetSocketDescriptor.NEW_LINE);
 
     if (lastNewlineIndex === -1)
     {
@@ -451,11 +454,11 @@ export class TelnetSocketDescriptor extends SocketDescriptor
       return null;
     }
 
+    // If there is a newline in input and there is something after
+    // the last '\r\n', add the 'something' to input buffer.
     if (lastNewlineIndex !== data.length - 2)
     {
-      // If there is a newline in input and there is something after
-      // the last '\r\n', add it to input buffer.
-      // (+2 to skip '\r\n')
+      // +2 to skip '\r\n'.
       this.inputBuffer += data.substring(lastNewlineIndex + 2);
     }
 
@@ -480,7 +483,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
   protected async processInput(input: string)
   {
     // Split input by newlines.
-    let lines = input.split('\r\n');
+    let lines = input.split(TelnetSocketDescriptor.NEW_LINE);
 
     // And push each line as a separate command to commandsBuffer[] to be
     // processed (.push.apply() appends an array to another array).
