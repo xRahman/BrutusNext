@@ -1,3 +1,6 @@
+TODO: Zařídit, aby se šlo na jeden account lognout s vícero connectionama
+  aby do hry šlo vlézt s jedním mortalem a vícero immortalama či testplayerama.
+
 TOODO: Vyházet debugovací spam z logu.
 [done]
 

@@ -30,7 +30,7 @@ export class LobbyProcessor
   {
     return '&wWelcome to &RBRUTUS &YNext!\n'
       + '\n'
-      + '&wPlease enter\n'
+      + '&wPlease enter:\n'
       + '&g"&G0&g" &bto exit from &RBRUTUS &YNext.\n'
       + '&g"&G1&g" &Bto create new character.\n';
   }
@@ -206,7 +206,7 @@ export class LobbyProcessor
     {
       Message.sendToConnection
       (
-        "\nThat's neither a menu choice nor the name of your character."
+        "That's neither a menu choice nor the name of your character."
         + "\nPlease enter valid menu choice or the name of one of your characters.",
         Message.Type.GAME_MENU,
         this.connection
