@@ -1,1 +1,0 @@
-rmdir /Q /S data

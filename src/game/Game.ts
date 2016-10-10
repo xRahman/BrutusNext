@@ -165,13 +165,13 @@ export class Game
     // be instantiated from these dynamically created prototype classes).
     this.prototypeManager.createClasses();
 
-    // 'entityManager.get()' will return invalid entity reference,
+    // 'entityManager.createReference()' will return invalid entity reference,
     // because entity 'world' is not in entityManager yet. This invalid
     // entity reference can, however, be used to load an entity from disk,
     // which is exactly what we need to do.
     //   Second parameter is a prototype class
     // (class that will be instantiated).
-    this.world = Server.entityManager.get(null, 'BrutusWorld');
+    this.world = Server.entityManager.createReference(null, 'BrutusWorld', World);
 
     // Load current state of world from file.
     await this.world.load();

@@ -13,6 +13,7 @@ const util = require('util');
 import {ERROR} from '../../shared/error/ERROR';
 import {FATAL_ERROR} from '../../shared/error/FATAL_ERROR';
 import {Entity} from '../../shared/entity/Entity';
+import {EntityManager} from '../../shared/entity/EntityManager';
 import {NamedClass} from '../../shared/NamedClass';
 import {AttributableClass} from '../../shared/AttributableClass';
 import {FileSystem} from '../../shared/fs/FileSystem';
@@ -913,7 +914,7 @@ export class SaveableObject extends AttributableClass
 
     // Return an existing entity proxy if entity exists in
     // entityManager, invalid entity proxy otherwise.
-    return Server.entityManager.get(id, type);
+    return EntityManager.createReference(id, type, Entity);
 
     /*
     //let entityRecord = this.entityRecords.get(id);
