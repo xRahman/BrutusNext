@@ -69,7 +69,7 @@ export class Connection extends Entity
 
   public leaveLobby()
   {
-    if (this.lobbyProcessor)
+    if (this.lobbyProcessor === null)
       ERROR("Lobby processor is already dealocated");
 
     this.lobbyProcessor = null;
