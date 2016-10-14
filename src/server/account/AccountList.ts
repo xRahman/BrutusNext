@@ -10,6 +10,7 @@ import {ERROR} from '../../shared/error/ERROR';
 import {FileSystem} from '../../shared/fs/FileSystem';
 import {Server} from '../../server/Server';
 import {NameSearchList} from '../../shared/entity/NameSearchList';
+import {Entity} from '../../shared/entity/Entity';
 import {EntityManager} from '../../shared/entity/EntityManager';
 import {Account} from '../../server/account/Account';
 import {Connection} from '../../server/connection/Connection';
@@ -19,6 +20,50 @@ export class AccountList extends NameSearchList
   //------------------ Private data ---------------------
 
   // ---------------- Public methods --------------------
+
+  // -> Returns account 'accountName' loaded from disk.
+  //    Returns null if account 'accountName' doesn't exist.
+  public async loadAccount(accountName: string, connection: Connection)
+  {
+    // First check that account doesn't already exist. 
+    let account = this.getAccountByName(accountName);
+
+    // If it doesn't there is no point in loading it again.
+    if (account !== undefined)
+    {
+      ERROR("Attempt to create account '" + accountName + "'"
+        + " which already exists. Account is not created");
+      return account;
+    }
+
+    // Second parameter of loadNamedEntity is used for dynamic type cast.
+    account = await EntityManager.loadNamedEntity
+    (
+      accountName,
+      NameSearchList.UniqueNamesCathegory.accounts,
+      Account);
+
+    if (Entity.isValid(account))
+    {
+      ERROR("Failed to load account " + account.name);
+      return null;
+    }
+
+    account.connection = connection;
+
+    if (accountName !== account.name)
+    {
+      ERROR("Account name saved in file (" + account.name + ")"
+        + " doesn't match account file name (" + accountName + ")."
+        + " Renaming account to match file name");
+    
+      account.name = accountName;
+    }
+
+    this.add(account);
+
+    return account;
+  }
 
   public createAccount
   (
@@ -37,16 +82,17 @@ export class AccountList extends NameSearchList
 
     let account = EntityManager.createNamedEntity
     (
+      // Name of the entity to create.
       accountName,
+      // Name of the prototype class.
       'Account',
+      // Dynamic type cast.
       Account
     );
 
     // This creates and assigns hash. Actual password is not remembered.
     account.setPasswordHash(password);
     account.connection = connection;
-
-    ///let id = Server.idProvider.createId(account);
 
     this.add(account);
 
