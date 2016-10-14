@@ -110,25 +110,22 @@ export class ClassFactory
   //   let instance = classFactory.createInstance('Account', Acount);
   public createInstance<T>
   (
-    param:
-    {
-      className: string,
-      // This hieroglyph stands for constructor of a class, which in
-      // in javascript represent the class itself (so this way you can
-      // pass type as a parameter).
-      typeCast: { new (...args: any[]): T }
-    },
+    className: string,
+    // This hieroglyph stands for constructor of a class, which in
+    // in javascript represent the class itself (so this way you can
+    // pass type as a parameter).
+    typeCast: { new (...args: any[]): T },
     // Any extra arguments will be passed to the class constructor.
     ...args: any[]
   )
   {
-    if (!this.isNameValid(param.className))
+    if (!this.isNameValid(className))
     {
       ERROR("Invalid class name. Instance is not created");
       return null;
     }
 
-    let Class = this.getClass(param.className);
+    let Class = this.getClass(className);
 
     if (Class === undefined)
       // Error is already reported by getClas().
@@ -138,15 +135,18 @@ export class ClassFactory
 
     // Dynamic type check - we make sure that our newly created instance
     // is inherited from requested class or is an instance of that class.
-    if (instance instanceof param.typeCast)
+    if (instance instanceof typeCast)
       // Here we typecast to <any> in order to pass newObject
       // as type T (you can't typecast directly to template type but you can
       // typecast to <any> which is then automatically cast to template type).
       return <any>instance;
 
+    /// TODO: Typecast.name nemusi existovat (u dynamicky vytvorenych class, coz
+    ///   jsou vsechny prototypy).
+    /// - nebo mozna jo? Zkontrolovat
     ERROR("Type cast error: Newly created instance of"
-      + " class '" + param.className + "' is not an instance"
-      + " of requested type (" + param.typeCast.name + ")");
+      + " class '" + className + "' is not an instance"
+      + " of requested type (" + typeCast.name + ")");
 
     return null;
   }

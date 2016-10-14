@@ -498,10 +498,8 @@ export class SaveableObject extends AttributableClass
         // of such type.
         myProperty = Server.classFactory.createInstance
         (
-          {
-            className: jsonObject[NamedClass.CLASS_NAME_PROPERTY],
-            typeCast: SaveableObject
-          }
+          jsonObject[NamedClass.CLASS_NAME_PROPERTY],
+          SaveableObject
         );
       }
     }
@@ -680,8 +678,8 @@ export class SaveableObject extends AttributableClass
     // from class Entity).
     //   Entities are saved to a separate files. Only a string id
     // of an entity is saved here.
-    if ('saveIdToJsonObject' in variable)
-      return variable.saveIdToJsonObject();
+    if ('saveReferenceToJsonObject' in variable)
+      return variable.saveReferenceToJsonObject();
 
     // 'variable' is a saveableObject (but not an entity).
     if ('saveToJsonObject' in variable)
@@ -903,6 +901,7 @@ export class SaveableObject extends AttributableClass
         + filePath);
     }
 
+    /*
     let type = jsonObject.type;
 
     if (type === undefined || type === null)
@@ -911,10 +910,11 @@ export class SaveableObject extends AttributableClass
         + " '" + propertyName + "' from JSON file "
         + filePath);
     }
+    */
 
     // Return an existing entity proxy if entity exists in
     // entityManager, invalid entity proxy otherwise.
-    return EntityManager.createReference(id, type, Entity);
+    return EntityManager.createReference(id, Entity);
 
     /*
     //let entityRecord = this.entityRecords.get(id);

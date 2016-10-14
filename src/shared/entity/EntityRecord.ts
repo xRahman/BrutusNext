@@ -48,7 +48,6 @@ export class EntityRecord
     for (handler of this.proxyHandlers)
     {
       handler.id = id;
-      handler.type = type;
       handler.entity = entity;
     }
   }

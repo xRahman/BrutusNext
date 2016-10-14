@@ -11,6 +11,7 @@ const util = require('util');
 
 import {ERROR} from '../shared/error/ERROR';
 import {EntityManager} from '../shared/entity/EntityManager';
+import {NameSearchList} from '../shared/entity/NameSearchList';
 import {SaveableObject} from '../shared/fs/SaveableObject';
 import {PrototypeManager} from '../shared/prototype/PrototypeManager';
 import {Message} from '../server/message/Message';
@@ -165,16 +166,24 @@ export class Game
     // be instantiated from these dynamically created prototype classes).
     this.prototypeManager.createClasses();
 
+    /*
     // 'entityManager.createReference()' will return invalid entity reference,
     // because entity 'world' is not in entityManager yet. This invalid
     // entity reference can, however, be used to load an entity from disk,
     // which is exactly what we need to do.
     //   Second parameter is a prototype class
     // (class that will be instantiated).
-    this.world = Server.entityManager.createReference(null, 'BrutusWorld', World);
+    this.world = Server.entityManager.createReference(null, World);
 
     // Load current state of world from file.
     await this.world.load();
+    */
+    this.world = await EntityManager.loadNamedEntity
+    (
+      'Brutus World',
+      NameSearchList.UniqueNamesCathegory.worlds,
+      World
+    );
   }
 
   //----------------- Protected data --------------------
