@@ -1,0 +1,101 @@
+Async functions and methods
+-----------------------------
+
+Asynchronous function looks like this:
+
+  async function test() {}
+
+And is used like this:
+
+  await test();
+
+
+The point is, that code following after 'await' executed only after
+async function finishes. So you can do stuff like:
+
+  public async load()
+  {
+    await loadFromFile();
+
+    postLoadStuff();
+  } 
+
+
+IMPORTANT: Make sure that all functions in async call chain are 'async' (like The
+  load() method in example above).
+
+If you ommited async before load() and called load() somewhere, it would NOT wait
+  for loadFromFile() to finish. You have to make load() async and do 'await load()'
+  when you want to call it.
+
+Internal implementation of async functions
+-------------------------------------------
+
+Internnaly, all async functions return value of type Promise.
+
+Promises can be resolved or rejected.
+- Resolving the Promise does exactly what was said - code after 'await'
+  will continue to execute.
+- Rejecting the Promise 
+
+
+IMPORTANT: If you want to wait for 3rd party functions, they have to be 'promisified'
+  first (thay have to resolve or reject Promise). That's why we don't use module 'fs',
+  but rather module named 'fs-promise'.
+
+
+Return value of async functions
+--------------------------------
+
+Async functions and methods CAN return any value (even though I just told you that they
+always return value of type Promise).
+
+This is done internaly by 'promisifying' any return value of 'async' function. So when
+you do:
+
+  async function test()
+  {
+    return false;
+  }
+
+It actually returns Promise<boolean>, that is a Promise object, that is resolved
+to 'boolean' value.
+
+You don't usually have to care about this, because it's done automatically, except
+for one case: When you want to specify a return value type.
+
+If you do:
+
+  async function test(): boolean
+  {
+    return false;
+  }
+
+it won't compiple - because async function MUST return a Promise. So you have to do:
+
+  async function test(): Promise<boolean>
+  {
+    return false;
+  }
+
+which will compile without problems. It's probably better to not to explicitly
+specify return value of async functions (compiler will than guess the type from
+the type of returned value and it will compile without issues).
+
+
+All ingame script functions are async
+--------------------------------------
+
+Scripts are async functions so you can use await sleep(miliseconds) in them.
+
+
+Stopping Scripts
+-----------------
+
+The only way I know how to stop a running async function is to reject Promise
+inside the called function instead of resolving it. This is done deep inside
+implementation of sleep() function.
+
+Rejecting the Promise throws an exceptions, which would halt the program if it
+wasn't caught. The catching of script cancellation exceptions is done on highest
+possible level in /src/BrutusNext.ts by handling 'unhandledRejection' event.

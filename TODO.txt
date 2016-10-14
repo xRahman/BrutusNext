@@ -1,3 +1,61 @@
+TODO: Přibyla static metoda Entity.isValid(entity);
+  - použít ji všude, kde dává smysl ji použít.
+
+TODO: V class Entity:
+  - setId() by mohlo checkovat, že id je null a nepovolit setnutí, pokud není
+    (tzn. id by bylo "write once").
+DONE
+
+TODO: Předělat všechny async fce, které by mohly vracet hodnotu, ale nevrací,
+  protože jsem si myslel, že to nejde.
+
+/// TODO (ClassFactory.createInstance()): Typecast.name nemusi existovat
+///   (u dynamicky vytvorenych class, coz jsou vsechny prototypy).
+/// - nebo mozna jo (mohlo by to byt v NamedClass nějak ošéfované)?
+      Zkontrolovat
+      - tak není, je tam jen className. takže TODO (opravit to v ClassFactory)
+
+TODO: Nesavovat property 'id'
+  - id bude vzdycky dano jmenem souboru.
+
+TODO: Nesavovat typ odkazované entity do objektů, ze kterých je odkazována
+  - protože pak nepůjde měnit typ entit (savnuté odkazy by se pak loadovaly
+    špatně).
+- místo toho savovat jen stringId, podle kterého se načte soubor (do
+  generického Objectu, takže v pohodě), z něj se přečte className a až podle
+  něj se vyrobí instance.
+- problém bude s Accountama, Worldem a podobně, kde nejde z idčka odvodit
+  cesta k save filu.
+  - Obojí by asi šlo odvodit z jména...
+Takže:
+- odstranit className z id recordu v savech
+- charactery savovat nadvakrát. V /data/characters budou soubory pouze
+  s idčkem (tj. bude se tím překládat jméno na idčko a bude se tím kontrolovat,
+    že je jméno unikátní)
+Asi bude nejlepší udělat to úplně jednotně, tj.:
+  - všechny uniqueNamedEntities budou mít soubor v adresáři data/uniqueNames
+    - v něm budou podadrešáře (/world, /account, /character), unikátnost
+      bude per adresář (což zajistí prostě to, že to budou soubory v adresáři).  
+    Tyhle soubory budou obsahovat pouze idčko...
+...
+Hmm, už vím, na co jsem potřeboval typ v id recordu - bez něj nedokážu
+  zkonstruovat adresář, do kterého se to savuje. Musely by být všechny entity
+  v jednom adresáři
+  - vadí to něčemu?
+    Nebude to tak přehledné na disku, nepůjde třeba jednoduše prohledat jen
+    všechny moby...
+...
+Ze hry budu chtít dělat:
+  stat file Zuzka
+  stat file account Rahman
+  načtení accountu při logování do hry (podle jména accountu)
+  pejmenování charu (takže by asi jména charů neměla být přímo v accountu) 
+...
+- asi bude nejlepší nesavovat vůbec entity.name do hlavního souboru,
+  - to je blbost, protože bych pak nedohledal jméno čistě na základě idčka.
+Nedá se nic dělat, jméno musí být na dvou místech.
+
+
 TODO: Zařídit, aby se šlo na jeden account lognout s vícero connectionama
   aby do hry šlo vlézt s jedním mortalem a vícero immortalama či testplayerama.
 

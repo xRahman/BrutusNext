@@ -41,16 +41,18 @@ export class Entity extends AutoSaveableObject
   public static State = State;
   */
 
-  ///public static get ID_PROPERTY() { return 'id'; }
   public static get ENTITY_REFERENCE_CLASS_NAME()
   {
-    return 'EntityReference';
+    return 'Reference';
   }
 
   // ----------------- Private data ----------------------
 
   ///private id: EntityId = null;
   private id: string = null;
+  // Property 'id' is not saved to file, because it is saved
+  // as the name of the saved file (like 7-iu5by22s.json).
+  private static id = { isSaved: false };
 
   /*
   Mozna spis jinak:
@@ -86,11 +88,30 @@ export class Entity extends AutoSaveableObject
   }
   */
 
+  // ------------- Public static methods ----------------
+
+  public static isValid(entity: Entity)
+  {
+    return entity !== null
+        && entity !== undefined
+        && entity.isValid() === true;
+  }
+
   // --------------- Public accessors -------------------
 
   public getId() { return this.id; }
-  ///public setId(id: EntityId) { this.id = id; }
-  public setId(id: string) { this.id = id; }
+  public setId(id: string)
+  {
+    // Id can only be set once.
+    if (this.id !== null)
+    {
+      ERROR("Attempt to set id of entity " + this.getErrorIdString
+        + " that already has an id. Id is not set");
+      return;
+    }
+
+    this.id = id;
+  }
 
   // ---------------- Public methods --------------------
 
@@ -158,14 +179,13 @@ export class Entity extends AutoSaveableObject
     return false;
   }
 
-  public saveIdToJsonObject()
+  public saveReferenceToJsonObject()
   {
     let jsonObject =
     {
-      // No class 'EntityReference' actually exists. When this record
+      // No class 'Reference' actually exists. When this record
       // is loaded, an entity proxy is created.
       className: Entity.ENTITY_REFERENCE_CLASS_NAME,
-      type: this.className,
       id: this.getId()
     };
 
