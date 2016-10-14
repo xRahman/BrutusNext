@@ -51,8 +51,10 @@ export class EntityProxyHandler
   // Id of an entity we are proxyfying.
   public id: string = null;
 
+  /*
   // Type (className) of an entity we are proxyfying.
   public type: string = null;
+  */
 
   // ---------------- Public methods --------------------
 
@@ -91,9 +93,8 @@ export class EntityProxyHandler
   }
   */
 
-  // If this.entity is not null, it's 'id' and 'className'
-  // variables will be compared to handler's 'id' and 'type'
-  // variables.
+  // If this.entity is not null, it's 'id variable will be compared
+  // to handler's 'id' variable.
   // -> Returns false if anything is amiss.
   public sanityCheck(): boolean
   {
@@ -116,6 +117,7 @@ export class EntityProxyHandler
       }
     }
 
+    /*
     let type = this.entity.className;
 
     if (type !== null && this.type !== null)
@@ -130,8 +132,36 @@ export class EntityProxyHandler
         checkResult = false;
       }
     }
+    */
 
     return checkResult;
+  }
+
+
+  /// WORK IN PROGRESS
+  public loadEntity(): Entity
+  {
+    if (this.id === null || this.id === undefined || this.id === "")
+    {
+      ERROR("Invalid id in proxy handler, unable to load entity");
+      return null;
+    }
+
+    let fileName = "/data/entities/" + this.id + ".json";
+    let jsonObject = loadJsonObjectFromFile(fileName);
+    let className = jsonObject.className; 
+
+    if (className === null || className === undefined)
+    {
+      ERROR("Invalid className in " + fileName + ". Unable to load entity");
+      return null;
+    } 
+
+    let entity = Server.classFactory.createInstance(className, Entity);
+
+    entity.loadFromJsonObject(jsonObject);
+
+    return entity;
   }
 
   // -------------------  Traps -------------------------
@@ -227,6 +257,40 @@ export class EntityProxyHandler
       return this.isEntityValidTrapHandler;
     }
 
+    // Trap calls of entity.load() method.
+    if (property === 'load')
+      return this.loadTrapHandler;
+
+        // This is an awful hack I'd very much liked to not to use...
+    // But it's necessary in orderd for function trapping to work.
+    //   The reason is, that when you trap a function call, like
+    // 'proxy.dynamicCast()', it gets split in two parts:
+    // - first the property 'dynamicCast' is accessed
+    // - then it is called
+    // So all we can do in the first step is to return a reference
+    // to function, we can't call it ourseves. The problem is,
+    // that when it is called, it's 'this' will be proxy, not
+    // proxy handler - so there won't be any this.entity on it.
+    //   That's why '_internalEntity' property must be trapped as well,
+    // so it can be accessed in subsequent function call (it's not named
+    // 'entity' but rather '_internalEntity' to prevent using it by accident).
+    // (see EntityProxyHandler.dynamicCast() for example of such function).
+    if (property === '_internalEntity')
+      return this.entity;
+
+    // This is the same case as with '_internalEntity' trap above.
+    // It's an ugly hack but, unfortunatelly, necessary one.
+    if (property === '_proxyHandler')
+      return this;
+
+    // Trap calls of entity.dynamicTypeCheck() method.
+    if (property === 'dynamicTypeCheck')
+      return this.dynamicTypeCheckTrapHandler;
+
+    // Trap calls of entity.dynamicCast() method.
+    if (property === 'dynamicCast')
+      return this.dynamicCastTrapHandler;
+
     // Does the referenced entity exist?
     // (isEntityValid() updates this.entity if it's possible)
     if (this.isEntityValid() === false)
@@ -275,40 +339,6 @@ export class EntityProxyHandler
       // properties.
       return InvalidValueProxyHandler.invalidVariable;
     }
-
-    // This is an awful hack I'd very much liked to not to use...
-    // But it's necessary in orderd for function trapping to work.
-    //   The reason is, that when you trap a function call, like
-    // 'proxy.dynamicCast()', it gets split in two parts:
-    // - first the property 'dynamicCast' is accessed
-    // - then it is called
-    // So all we can do in the first step is to return a reference
-    // to function, we can't call it ourseves. The problem is,
-    // that when it is called, it's 'this' will be proxy, not
-    // proxy handler - so there won't be any this.entity on it.
-    //   That's why '_internalEntity' property must be trapped as well,
-    // so it can be accessed in subsequent function call (it's not named
-    // 'entity' but rather '_internalEntity' to prevent using it by accident).
-    // (see EntityProxyHandler.dynamicCast() for example of such function).
-    if (property === '_internalEntity')
-      return this.entity;
-
-    // This is the same case as with '_internalEntity' trap above.
-    // It's an ugly hack but, unfortunatelly, necessary one.
-    if (property === '_proxyHandler')
-      return this;
-
-    // Trap calls of entity.dynamicTypeCheck() method.
-    if (property === 'dynamicTypeCheck')
-      return this.dynamicTypeCheckTrapHandler;
-
-    // Trap calls of entity.dynamicCast() method.
-    if (property === 'dynamicCast')
-      return this.dynamicCastTrapHandler;
-
-    // Trap calls of entity.load() method.
-    if (property === 'load')
-      return this.loadTrapHandler;
 
     return this.readProperty(property);
   }
@@ -537,6 +567,22 @@ export class EntityProxyHandler
     // EntityProxyHandler, but the proxy. So '_internalEntity'
     // property access must be trapped in order for this to work.
     let internalEntity = this['_internalEntity'];
+
+    if (internalEntity === undefined)
+    {
+      ERROR("Undefined internal entity reference in entity proxy handler."
+       + " This is not supposed to ever happen so I don't have any hints"
+       + " about possible cause, sorry. Returning 'false'");
+       return false;
+    }
+
+    if (internalEntity === null)
+    {
+      ERROR("Invalid internal entity reference in entity proxy handler."
+        + " Make sure you check entity.isValid() before you call"
+        + " entity.dynamicTypeCheck() or entity.dynamicCast()."
+        + " Returning 'false'");
+    }
 
     // Dynamic type check - we make sure that entity is inherited from
     // requested class (or an instance of the class itself).

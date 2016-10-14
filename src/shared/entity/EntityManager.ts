@@ -17,7 +17,7 @@
     There is no 'add()' method. If you want to add an existing entity
   to EntityManager, use:
 
-    let entity = EntityManager.createReference(id, type);
+    let entity = EntityManager.createReference(id);
 
   Then you can do:
 
@@ -34,9 +34,12 @@
 
 import {ERROR} from '../../shared/error/ERROR';
 import {IdProvider} from '../../shared/entity/IdProvider';
+
 import {Entity} from '../../shared/entity/Entity';
+import {IdRecord} from '../../shared/entity/IdRecord';
 import {EntityRecord} from '../../shared/entity/EntityRecord';
 import {NamedEntity} from '../../shared/entity/NamedEntity';
+import {NameSearchList} from '../../shared/entity/NameSearchList';
 import {EntityProxyHandler} from '../../shared/entity/EntityProxyHandler';
 import {SaveableObject} from '../../shared/fs/SaveableObject';
 import {Server} from '../../server/Server';
@@ -70,12 +73,11 @@ export class EntityManager
   public static get<T>
   (
     id: string,
-    type: string,
     typeCast: { new (...args: any[]): T }
   )
   : T
   {
-    return Server.entityManager.get(id, type, typeCast);
+    return Server.entityManager.get(id, typeCast);
   }
 
   // Shortcut so you can use EntityManager.createNamedEntity()
@@ -91,18 +93,32 @@ export class EntityManager
     return Server.entityManager.createNamedEntity(name, prototype, typeCast);
   }
 
+  // Shortcut so you can use EntityManager.loadNamedEntity()
+  // instead of Server.entityManager.loadNamedEntity().
+  public static async loadNamedEntity<T>
+  (
+    name: string,
+    cathegory: NameSearchList.UniqueNamesCathegory,
+    typeCast: { new (...args: any[]): T }
+  )
+  // Return type is actualy <T>, Promise will get resolved automatically.
+  : Promise<T>
+  {
+    return await Server.entityManager.
+      loadNamedEntity(name, cathegory, typeCast);
+  }
+
   // -> Returns existing reference if entity already exists in EntityManager.
   //    Returns invalid reference if entity with such id doen't exist yet.
   //      (you can then use entity.load() to load if from disk)
   public static createReference<T>
   (
     id: string,
-    type: string,
     typeCast: { new (...args: any[]): T }
   )
   : T
   {
-    return Server.entityManager.createReference(id, type, typeCast);
+    return Server.entityManager.createReference(id, typeCast);
   }
 
   // ---------------- Public methods --------------------
@@ -128,6 +144,48 @@ export class EntityManager
     return entity.dynamicCast(typeCast);
   }
 
+  // Loads uniquely named entity from file
+  // (it must not exist in EntityManager yet). 
+  // -> Returns reference to the loaded entity.
+  public async loadNamedEntity<T>
+  (
+    name: string,
+    cathegory: NameSearchList.UniqueNamesCathegory,
+    typeCast: { new (...args: any[]): T }
+  )
+  // Return type is actualy <T>, Promise will get resolved automatically.
+  : Promise<T>
+  {
+    // Names are unique only within each cathegory, so you can have
+    // account named Rahman and also character named Rahman.
+    let cathegoryName = NameSearchList.UniqueNamesCathegory[cathegory];
+
+    // In order to load any entity, we need to know it's id.
+    // Uniquelly named entities have their id saved in special
+    // file on disk, so we need to load id from this file first.
+    let id = await this.loadNamedEntityId(name, cathegoryName);
+
+    if (id === null || id === undefined)
+      // Error is already reported by loadNamedEntityId()
+      return null;
+
+    // Now we know the id of our named entity.
+    // Before we load it from the disk, we better
+    // that it doesn't already exist in EntityManager.  
+    let entity = this.get(id, Entity);
+
+    // If entity already exists in EntityManager, there
+    // is no point in loading it from the disk.
+    if (entity !== undefined)
+    {
+      ERROR("Attempt to load entity " + entity.getErrorIdString()
+        + " which is already loaded in EntityManager");
+      return entity.dynamicCast(typeCast);
+    }
+
+    return await this.loadEntityById(id, typeCast);
+  }
+
   // Creates an entity of type 'className' with a new id.
   // -> Returns entity proxy (which is used instead of entity).
   public createEntity<T>
@@ -137,17 +195,16 @@ export class EntityManager
   )
   : T
   {
-    let handler = new EntityProxyHandler();
-
     // Generate a new id for this new entity.
     // Note:
     //  This should be the only place in whole code where new id's
     //  are generated.
-    handler.id = this.idProvider.generateId();
-    handler.type = className;
+    let id = this.idProvider.generateId();
 
-    let entity = this.createBareEntity(handler);
+    let handler = new EntityProxyHandler();
+    let entity = this.createBareEntity(className, id);
 
+    handler.id = id;
     handler.entity = entity;
 
     let entityProxy = new Proxy({}, handler);
@@ -167,6 +224,10 @@ export class EntityManager
   public async loadEntity(handler: EntityProxyHandler)
   {
     handler.sanityCheck();
+
+    /// Tohle je asi blbost. Když přeloaduju entitu, tak tím zruším
+    /// nesavnuté změny - to může být pořeba při editování, ale za běhu
+    /// hry to není žádoucí.
 
     // Note:
     //   If entity already exists and we are re-loading it, the
@@ -239,7 +300,7 @@ export class EntityManager
     return entityRecord.getEntityProxy();
   }
 
-  // Removes entity from manager but doesn't delete it
+  // Removes entity from manager but doesn't delete it from disk
   // (this is used for example when player quits the game).
   public remove(entity: Entity)
   {
@@ -279,11 +340,11 @@ export class EntityManager
   public get<T>
   (
     id: string,
-    type: string,
     typeCast: { new (...args: any[]): T }
   )
   : T
   {
+    /*
     // 'type' is needed even if 'id' is null, because
     // we need to know what class to instantiate in order to load
     // the record from file.
@@ -292,6 +353,7 @@ export class EntityManager
       ERROR("Missing of invalid 'type' argument");
       return undefined;
     }
+    */
 
     // This check is done first so we save ourself searching a 'null'
     // record in hashmap.
@@ -318,11 +380,13 @@ export class EntityManager
         + " entity with id " + id);
     }
 
+    /*
     if (entityProxy.className !== type)
     {
       ERROR("Type of entity " + entityProxy.getErrorStringId()
         + " doesn't match requested type '" + type + "'");
     }
+    */
 
     return entityProxy.dynamicCast(typeCast);
   }
@@ -339,21 +403,20 @@ export class EntityManager
   public createReference<T>
   (
     id: string,
-    type: string,
     typeCast: { new (...args: any[]): T }
   )
   : T
   {
-    // Check of null or undefined if first to save us searching in hashmap
+    // Check of null or undefined id first to save us searching in hashmap
     // (null id is used for example for loading world or accounts, because
     // their id is not known until it's loaded from disk.)
     if (id === null || id === undefined)
-      return this.createInvalidEntityReference(id, type, typeCast);
+      return this.createInvalidEntityReference(id, typeCast);
 
     if (this.has(id))
-      return this.get(id, type, typeCast);
+      return this.get(id, typeCast);
 
-    return this.createInvalidEntityReference(id, type, typeCast);
+    return this.createInvalidEntityReference(id, typeCast);
   } 
 
   // --------------- Private methods -------------------
@@ -362,7 +425,6 @@ export class EntityManager
   private createInvalidEntityReference<T>
   (
     id: string,
-    type: string,
     typeCast: { new (...args: any[]): T }
   )
   : T
@@ -370,7 +432,6 @@ export class EntityManager
     let handler = new EntityProxyHandler();
 
     handler.id = id;
-    handler.type = type;
     // Set handler.entity to null.
     handler.invalidate();
 
@@ -382,15 +443,18 @@ export class EntityManager
   // Creates a new instance of entity of type stored in handler.type.
   // Sets handler.id as id of a newly created entity instance.
   // -> Returns a new instance of entity (not a proxy).
-  private createBareEntity(handler: EntityProxyHandler): Entity
+  private createBareEntity(className: string, id: string): Entity
   {
+    /*
     if (handler.type === null)
     {
       ERROR("Invalid 'type' on entity proxy handler."
         + " Entity is not created");
       return null;
     }
+    */
 
+    /*
     // Here we assign 'undefined' on purpose. We will test if 'name'
     // is 'undefined' later.
     let name = undefined;
@@ -403,10 +467,11 @@ export class EntityManager
       // (If entity doesn't have a name, value of 'name' will be 'undefined'.)
       name = handler.entity['name'];
     }
+    */
 
-    let entity: Entity = Server.classFactory.createInstance
-      ({ className: handler.type, typeCast: Entity });
+    let entity: Entity = Server.classFactory.createInstance(className, Entity );
 
+    /*
     // Set the old name back if entity had a name before.
     if (name !== undefined)
     {
@@ -419,28 +484,30 @@ export class EntityManager
 
       entity['name'] = name;
     }
+    */
 
-    // We need to set entity.id prior to loading so the save path can
-    // be constructed (filename contains id for most entities).
-    entity.setId(handler.id);
+    entity.setId(id);
 
     return entity;
   }
 
   private async createAndLoadEntity(handler: EntityProxyHandler)
   {
+    /*
     if (handler.type === null)
     {
       ERROR("Invalid 'type' on entity proxy handler."
         + " Entity s not created and loaded");
       return null;
     }
+    */
 
-    let entity = this.createBareEntity(handler);
+    ///let entity = this.createBareEntity(handler);
+    ///await entity.load();
 
-    await entity.load();
+    let entity = await handler.loadEntity();
 
-    if (entity.getId() === null)
+    if (entity.getId() === null || entity.getId() === undefined)
     {
       ERROR("Entity " + entity.getErrorIdString() + " doesn't have an"
         + " id in it's save file. There must be an id saved in every"
@@ -459,5 +526,54 @@ export class EntityManager
     }
 
     return entity;
+  }
+
+  // Loads entity id from file corresponding to unique entity
+  // name and it's unique names cathegory.
+  // -> Returns id loaded from file.
+  //    Returns null in case of failure.
+  private async loadNamedEntityId(name: string, cathegory: string)
+  {
+    // File path is something like '/data/accounts/Rahman.json'.
+    let filePath = "/data/" + cathegory + "/" + name + ".json";
+
+    let idRecord = new IdRecord();
+
+    await idRecord.loadFromFile(filePath);
+
+    if (idRecord.id === null || idRecord.id === undefined)
+    {
+      ERROR("Failed to load id from file " + filePath);
+      return null;
+    }
+
+    return idRecord.id;
+  }
+
+  private async loadEntityById<T>
+  (
+    id: string,
+    typeCast: { new (...args: any[]): T }
+  )
+  // Return type is actualy <T>, Promise will get resolved automatically.
+  : Promise<T>
+  {
+    // First check if such entity already exists in EntityManager.
+    let entity = this.get(id, Entity);
+
+    // If it does, there is no point in loading it - any unsaved changes
+    // would be lost.
+    if (entity !== undefined)
+    {
+      ERROR("Attempt to load entity " + entity.getErrorIdString()
+        + " which already exists in EntityManager");
+      return entity.dynamicCast(typeCast);
+    }
+
+    entity = this.createInvalidEntityReference(id, Entity);
+
+    await entity.load();
+
+    return entity.dynamicCast(typeCast);
   }
 }
