@@ -137,33 +137,6 @@ export class EntityProxyHandler
     return checkResult;
   }
 
-
-  /// WORK IN PROGRESS
-  public loadEntity(): Entity
-  {
-    if (this.id === null || this.id === undefined || this.id === "")
-    {
-      ERROR("Invalid id in proxy handler, unable to load entity");
-      return null;
-    }
-
-    let fileName = "/data/entities/" + this.id + ".json";
-    let jsonObject = loadJsonObjectFromFile(fileName);
-    let className = jsonObject.className; 
-
-    if (className === null || className === undefined)
-    {
-      ERROR("Invalid className in " + fileName + ". Unable to load entity");
-      return null;
-    } 
-
-    let entity = Server.classFactory.createInstance(className, Entity);
-
-    entity.loadFromJsonObject(jsonObject);
-
-    return entity;
-  }
-
   // -------------------  Traps -------------------------
   /// Note: It's possible that it will be necessary to implement some
   ///   of commented-out handlers in the future, so I'll let them be here.
@@ -618,6 +591,15 @@ export class EntityProxyHandler
     // property access must be trapped in order for this to work.
     let proxyHandler = this['_proxyHandler'];
 
-    await Server.entityManager.loadEntity(proxyHandler);
+    // Note: We are intentionally passing the proxy as parameter
+    //   (by passing 'this'). It will be needed in order to add
+    //   a record to EntityManager without creating a new proxy
+    //   (that would also be possible, but it would create another
+    //   reference pointing to the same entity, so it's better to
+    //   reuse existing reference).
+    // However, typescript doesn't know that 'this' is not an
+    // EntityProxyHandler, so we have to typecast 'this' to <any>
+    // to bypass incorrect type check.
+    await Server.entityManager.loadEntity(proxyHandler, <any>this);
   }
 }

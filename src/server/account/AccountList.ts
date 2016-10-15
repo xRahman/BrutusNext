@@ -9,6 +9,7 @@
 import {ERROR} from '../../shared/error/ERROR';
 import {FileSystem} from '../../shared/fs/FileSystem';
 import {Server} from '../../server/Server';
+import {UniqueNames} from '../../shared/entity/UniqueNames';
 import {NameSearchList} from '../../shared/entity/NameSearchList';
 import {Entity} from '../../shared/entity/Entity';
 import {EntityManager} from '../../shared/entity/EntityManager';
@@ -40,7 +41,7 @@ export class AccountList extends NameSearchList
     account = await EntityManager.loadNamedEntity
     (
       accountName,
-      NameSearchList.UniqueNamesCathegory.accounts,
+      UniqueNames.Cathegory.accounts,
       Account);
 
     if (Entity.isValid(account))

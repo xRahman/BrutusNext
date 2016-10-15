@@ -1,3 +1,41 @@
+TODO: V rámci EntityManager.loadNamedEntity() je třeba přidat entitu
+  do EntityManageru.
+
+TODO: Možná založit classu na unikátní jména - UniqueNames
+  - bude umět checknout existenci souboru v příslušném adresáři
+  - bude mít enum s kategoriemi (v NameSearchListu to fakt není
+    moc intuitivní).
+[done]
+TODO: Někde se checkuje unikátnost jmen -> přesunout to do classy
+  UniqueNames
+- V character listu se to checkuje (metodou existsSync()).
+
+Entity.load() nemusí umět číst unique name soubory - entita vždycky zná
+  svoje idčko.
+Entity.save() musí umět savnout unique name soubor, protože když se změní
+jméno entity, musí se změnit tenhle soubor.
+
+V Accountu nesmí být přímo jména charů.
+- protože když přejmenuju entitu, tak by odkaz z accountu přestal fungovat.
+  - když tam budou idčka, tak je to v pohodě.
+To ale znamená, že account bude muset při loadu načíst všechny chary
+  - minimálně do té míry, aby z nich mohl přečíst jména (aby je mohlo game menu
+    vypsat hráči a aby se hráč mohl loadnout s konkrétním charem.)
+- možná bych mohl vyžadovat, že přejmenovat char jde jen s online acocuntem
+  (tedy je to metoda accountu, pak by v accountu mohla zůstat jména...)
+
+IDEA: V menu bych možná mohl vypsat víc informací o charu. Což ale zase
+  znamená, že bych buď musel všechny ty chary načíst (aspoň do JSON objectu),
+  nebo si to info pamatovat v accountu (stejně jako jméno charu).
+  - ovšem věci jako level se potenciálně mohou měnit i když account nebude
+    online (offline reward za questy třeba?)....
+
+Moc to komplikuju, podrobnější info o charech v accountu teď rozhodně
+implementovat nebudu - není to zásadní pro prvotní hratelnou verzi.
+(ale počítat bych s tím mohl...)
+
+----------------
+
 TODO: Přibyla static metoda Entity.isValid(entity);
   - použít ji všude, kde dává smysl ji použít.
 
