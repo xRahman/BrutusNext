@@ -14,7 +14,7 @@
 
 /*
   Note:
-    There is no 'add()' method. If you want to add an existing entity
+    There is no public 'add()' method. If you want to add an existing entity
   to EntityManager, use:
 
     let entity = EntityManager.createReference(id);
@@ -37,6 +37,7 @@ import {IdProvider} from '../../shared/entity/IdProvider';
 
 import {Entity} from '../../shared/entity/Entity';
 import {IdRecord} from '../../shared/entity/IdRecord';
+import {UniqueNames} from '../../shared/entity/UniqueNames';
 import {EntityRecord} from '../../shared/entity/EntityRecord';
 import {NamedEntity} from '../../shared/entity/NamedEntity';
 import {NameSearchList} from '../../shared/entity/NameSearchList';
@@ -98,7 +99,7 @@ export class EntityManager
   public static async loadNamedEntity<T>
   (
     name: string,
-    cathegory: NameSearchList.UniqueNamesCathegory,
+    cathegory: UniqueNames.Cathegory,
     typeCast: { new (...args: any[]): T }
   )
   // Return type is actualy <T>, Promise will get resolved automatically.
@@ -131,6 +132,9 @@ export class EntityManager
   )
   : T
   {
+    /// TODO: Check unikátnosti jména
+    /// TODO: uniqueNamesCathegory (aby šlo checknout unikátnost jména).
+
     // Here we are dynamically typecasting to 'NamedEntity' in order
     // to be able to set entity.name.
     let entity = this.createEntity(prototype, NamedEntity);
@@ -150,7 +154,7 @@ export class EntityManager
   public async loadNamedEntity<T>
   (
     name: string,
-    cathegory: NameSearchList.UniqueNamesCathegory,
+    cathegory: UniqueNames.Cathegory,
     typeCast: { new (...args: any[]): T }
   )
   // Return type is actualy <T>, Promise will get resolved automatically.
@@ -158,7 +162,7 @@ export class EntityManager
   {
     // Names are unique only within each cathegory, so you can have
     // account named Rahman and also character named Rahman.
-    let cathegoryName = NameSearchList.UniqueNamesCathegory[cathegory];
+    let cathegoryName = UniqueNames.Cathegory[cathegory];
 
     // In order to load any entity, we need to know it's id.
     // Uniquelly named entities have their id saved in special
@@ -208,14 +212,13 @@ export class EntityManager
     handler.entity = entity;
 
     let entityProxy = new Proxy({}, handler);
-    let entityRecord = new EntityRecord(entity, entityProxy, handler);
 
-    // Add newly created entity record to hashmap under entity's string id.
-    this.entityRecords.set(handler.id, entityRecord);
+    this.add(entityProxy, handler);
 
     return entityProxy.dynamicCast(typeCast);
   }
 
+  /*
   // Loads entity from file. Don't use this method, call entity.load() instead
   // (this method is automatically called by entity proxy handler when you
   // call load() method on your entity reference).
@@ -272,8 +275,76 @@ export class EntityManager
     }
 
     // Update all handlers in entityRecord with (possibly) new
-    // information: id, entity type and entity reference.
-    entityRecord.updateProxyHandlers(id, entity.className, entity);
+    // information: entity reference and entity id.
+    entityRecord.updateProxyHandlers(entity);
+  }
+  */
+
+  // Loads entity from file. Don't use this method, call entity.load() instead
+  // (this method is automatically called by entity proxy handler when you
+  // call load() method on your entity reference).
+  // (You shouldn't be able to call this method anyways, because you
+  // (hopefuly) have no way to get your hands on an entity proxy handler).
+  public async loadEntity(handler: EntityProxyHandler, proxy: Entity)
+  {
+    handler.sanityCheck();
+
+    if (handler.id === null || handler.id === undefined || handler.id === "")
+    {
+      ERROR("Invalid id in proxy handler, unable to load entity");
+      return;
+    }
+
+    // Note: Both 'handler.entity !== null' and 'this.has(handler.id)'
+    // say the same thing, because each existing instance of an entity
+    // should have a record in EntityManager, but you never know what
+    // can go wrong so we better check both. 
+    if (handler.entity !== null || this.has(handler.id))
+    {
+      ERROR("It is not possible to load entity"
+        + " " + handler.entity.getErrorIdString()
+        + " because it is already loaded in memory"
+        + " - all unsaved changes would be lost."
+        + " If you really need to lose unsaved changes"
+        + " on this entity, remove() it from EntityManager"
+        + " to delete it from memory and then call load()"
+        + " on it. Entity is not modified");
+      return;
+    }
+
+    let loadResult: { jsonObject: Object, className: string }
+       = Entity.loadJsonOject(handler.id);
+
+    if (loadResult.jsonObject === null || loadResult.className === null)
+      // Error is already reported by Entity.loadJsonObject().
+      return;
+
+    // Now we can create an instance of the correct class.
+    let entity =
+      Server.classFactory.createInstance(loadResult.className, Entity);
+
+    // And let it load itself from jsonObject.
+    entity.loadFromJsonObject(loadResult.jsonObject);
+
+    // Update internal entity reference of our entity proxy handler. 
+    handler.entity = entity;
+
+    // Add entity to EntityManager
+    // (we have checked before that our id doesn't exist in the
+    // manager yet, so it's safe to do so).
+    // Note:
+    //   Here we are reusing reference to proxy that was passed to
+    //   us as parameter by 'load()' trap handler in EntityProxyHandler,
+    //   so we don't create a duplicit proxy reference to the same entity.
+    this.add(proxy, handler);
+
+    // Note: 
+    //   We don't have to update proxy handlers inside entityRecord
+    // here, because we have just checked that there has been no record
+    // for our entity in the manager before. So we have just created
+    // a new entityRecord (by calling this.add()) and it only contains
+    // the handler we have just passed to it, that has it's internal
+    // entity reference updated.
   }
 
   // This method is used by etity handler when it's internal
@@ -421,6 +492,46 @@ export class EntityManager
 
   // --------------- Private methods -------------------
 
+  // Adds entity to the manager.
+  private add(entityProxy: Entity, handler: EntityProxyHandler)
+  {
+    let entity = handler.entity;
+
+    if (entity === null)
+    {
+      ERROR("Attempt to add <null> entity to EntityManager. That is not"
+        + " allowed. There may only be existing entity instances in the"
+        + " manager. Record is not added");
+      return;
+    }
+
+    let entityRecord = new EntityRecord(entity, entityProxy, handler);
+
+    // Add newly created entity record to hashmap under entity's string id.
+    this.entityRecords.set(handler.id, entityRecord);
+  }
+
+  createInvalidEntityProxy<T>
+  (
+    id: string,
+    handler: EntityProxyHandler,
+    typeCast: { new (...args: any[]): T }
+  )
+  : T
+  {
+    handler.id = id;
+    // Set handler.entity to null.
+    handler.invalidate();
+
+    let entityProxy = new Proxy({}, handler);
+
+    // Note: We don't add invalid reference to the manager.
+    // Only existing entity instances are added - which invalid
+    // reference doesn't have.
+
+    return entityProxy;
+  }
+
   // Purposedly creates an invalid reference
   private createInvalidEntityReference<T>
   (
@@ -431,13 +542,7 @@ export class EntityManager
   {
     let handler = new EntityProxyHandler();
 
-    handler.id = id;
-    // Set handler.entity to null.
-    handler.invalidate();
-
-    let entityProxy = new Proxy({}, handler);
-
-    return entityProxy;
+    return this.createInvalidEntityProxy(id, handler, typeCast);
   }
 
   // Creates a new instance of entity of type stored in handler.type.
@@ -491,16 +596,16 @@ export class EntityManager
     return entity;
   }
 
+  /*
   private async createAndLoadEntity(handler: EntityProxyHandler)
   {
-    /*
-    if (handler.type === null)
-    {
-      ERROR("Invalid 'type' on entity proxy handler."
-        + " Entity s not created and loaded");
-      return null;
-    }
-    */
+    /// if (handler.type === null)
+    /// {
+    ///   ERROR("Invalid 'type' on entity proxy handler."
+    ///     + " Entity s not created and loaded");
+    ///   return null;
+    /// }
+
 
     ///let entity = this.createBareEntity(handler);
     ///await entity.load();
@@ -527,6 +632,7 @@ export class EntityManager
 
     return entity;
   }
+  */
 
   // Loads entity id from file corresponding to unique entity
   // name and it's unique names cathegory.
@@ -570,8 +676,30 @@ export class EntityManager
       return entity.dynamicCast(typeCast);
     }
 
+    /*
+    let handler = new EntityProxyHandler();
+
+    /// TODO: Možná je to blbost - entity.load() asi musí
+    // umět přidat entitu do manageru
+
+    // We don't use createInvalidEntityReference here, because
+    // we need to know the handler in order to be able to add
+    // newly created entity to the manager.
+    entity = this.createInvalidEntityProxy(id, handler, Entity);
+
+    // This will work, because entity is a proxy and 'load()' call
+    // is trapped by the handler.
+    await entity.load();
+
+    // Add newly created entity to the manager.
+    this.add(entity, handler);
+    */
+
     entity = this.createInvalidEntityReference(id, Entity);
 
+    // This will work, because entity is a proxy and 'load()' call
+    // is trapped by the handler. 'load()' handler will also add
+    // entity to the manager.
     await entity.load();
 
     return entity.dynamicCast(typeCast);
