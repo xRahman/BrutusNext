@@ -7,6 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../shared/error/ERROR';
+import {NamedClass} from '../../shared/NamedClass';
 import {SaveableObject} from '../../shared/fs/SaveableObject';
 import {AutoSaveableObject} from '../../shared/fs/AutoSaveableObject';
 import {Server} from '../../server/Server';
@@ -89,6 +90,49 @@ export class Entity extends AutoSaveableObject
   */
 
   // ------------- Public static methods ----------------
+
+  // -> If loading fails, result.jsonObject will be null.
+  public static loadJsonOject(id: string)
+  {
+    // Return value of this method.
+    let result = { jsonObject: null, className: null };
+
+    let filePath = Entity.getSavePath(id);
+
+    // First we load data from file into generic (untyped)
+    // javascript Object.
+    result.jsonObject = SaveableObject.loadJsonObjectFromFile(filePath);
+
+    // Then we extract 'className' property from jsonObject
+    // that we have just loaded, so we know what class do we
+    //  need to create an instance of.
+    result.className = result.jsonObject[NamedClass.CLASS_NAME_PROPERTY]; 
+
+    if (result.className === null || result.className === undefined)
+    {
+      ERROR("Invalid className in " + filePath + ". Unable to load entity");
+      result.className = null
+      result.jsonObject = null;
+    }
+
+    return result;
+  }
+
+  // Instances of entities are all saved to /data/entities as <id>.json
+  // (the method is static because in order to load an entity, save path
+  //  needs to be constructed before entity exists).
+  public static getSavePath(id: string)
+  {
+    if (id === null || id === undefined || id === "")
+    {
+      let invalidPath = '/data/entities/_SAVE_PATH_CREATION_ERROR.json';
+
+      ERROR("Invalid id, " + invalidPath + " will be used");
+      return invalidPath; 
+    }
+
+     return "/data/entities/" + id + ".json";
+  }
 
   public static isValid(entity: Entity)
   {

@@ -11,6 +11,7 @@ const util = require('util');
 
 import {ERROR} from '../shared/error/ERROR';
 import {EntityManager} from '../shared/entity/EntityManager';
+import {UniqueNames} from '../shared/entity/UniqueNames';
 import {NameSearchList} from '../shared/entity/NameSearchList';
 import {SaveableObject} from '../shared/fs/SaveableObject';
 import {PrototypeManager} from '../shared/prototype/PrototypeManager';
@@ -181,7 +182,7 @@ export class Game
     this.world = await EntityManager.loadNamedEntity
     (
       'Brutus World',
-      NameSearchList.UniqueNamesCathegory.worlds,
+      UniqueNames.Cathegory.worlds,
       World
     );
   }
