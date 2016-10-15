@@ -9,6 +9,7 @@
 
 import {Script} from '../shared/prototype/Script';
 import {FlagNames} from '../shared/flags/FlagNames';
+import {IdRecord} from '../shared/entity/IdRecord';
 import {Connection} from '../server/connection/Connection';
 import {Account} from '../server/account/Account';
 import {Character} from '../game/character/Character';
@@ -25,6 +26,7 @@ export class DynamicClasses
   {
     dynamicClasses.set('Script', Script);
     dynamicClasses.set('FlagNames', FlagNames);
+    dynamicClasses.set('IdRecord', IdRecord);
     dynamicClasses.set('Connection', Connection);
     dynamicClasses.set('Account', Account);
     dynamicClasses.set('Character', Character);

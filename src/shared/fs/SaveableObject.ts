@@ -42,10 +42,67 @@ export class SaveableObject extends AttributableClass
   // (note: This property is not saved)
   protected static isProxy = { isSaved: false };
 
+
+  // ------------- Public static methods ----------------
+
+  // Loads a generic (untyped) javascript Object from specified file.
+  // Note:
+  //   It is a static method because entities need to be able to load
+  //   jsonObject first and create an instance of SaveableObject from
+  //   type information read from it - so the loading of jsonObject
+  //   must be possible without having an instance of SaveableObject.
+  // -> Returns null if loading fails.
+  public static async loadJsonObjectFromFile(filePath: string)
+  {
+    //  Unlike writing the same file while it is saving, loading from
+    //  the same file while it is loading is not a problem (according
+    //  to node.js filestream documentation). So we don't need to bother
+    //  with loading locks.
+
+    // Asynchronous reading from the file.
+    // (the rest of the code will execute only after the reading is done)
+    let jsonString = await FileSystem.readFile(filePath);
+
+    // filePath is passed just so it can be printed to error messages.
+    let jsonObject = SaveableObject.loadFromJsonString(jsonString, filePath);
+
+    return jsonObject; 
+  }
+
+  private static loadFromJsonString(jsonString: string, filePath: string)
+  {
+    let jsonObject = {};
+
+    try
+    {
+      jsonObject = JSON.parse(jsonString);
+    }
+    catch (e)
+    {
+      // Here we need fatal error, because data might already
+      // be partialy loaded so we could end up with broken entity.
+      FATAL_ERROR("Syntax error in JSON string: "
+        + e.message + " in file " + filePath);
+      return null;
+    }
+
+    return jsonObject;
+  }
+
   // ---------------- Public methods --------------------
 
   public async loadFromFile(filePath: string)
   {
+    // Static method is used because entities need to be able to load
+    // jsonObject first and create an instance of SaveableObject from
+    // type information read from it - so the loading of jsonObject
+    // must be possible without having an instance of SaveableObject.
+    let jsonObject = SaveableObject.loadJsonObjectFromFile(filePath);
+
+    // 'filePath' is passed just so it can be printed to error messages.
+    this.loadFromJsonObject(jsonObject, filePath);
+
+    /*
     //  Unlike writing the same file while it is saving, loading from
     //  the same file while it is loading is not a problem (according
     //  to node.js filestream documentation). So we don't need to bother
@@ -58,6 +115,7 @@ export class SaveableObject extends AttributableClass
 
     // filePath is passed just so it can be printed to error messages.
     this.loadFromJsonString(jsonString, filePath);
+    */
   }
 
   public async saveToFile(directory: string, fileName: string)
@@ -167,6 +225,7 @@ export class SaveableObject extends AttributableClass
     this.saveRequests = [];
   }
 
+  /*
   private loadFromJsonString(jsonString: string, filePath: string)
   {
     let jsonObject = {};
@@ -187,6 +246,7 @@ export class SaveableObject extends AttributableClass
     // filePath is passed just so it can be printed to error messages.
     this.loadFromJsonObject(jsonObject, filePath);
   }
+  */
 
   private saveToJsonString(): string
   {

@@ -1,29 +1,61 @@
 O co jde:
 ----------
 
-Entity (mobové, roomy, acocunty, connection, atd.) jsou vždycky instance nějakého typu.
-Mají unikátní stringové idčko, které se nemění, ani když je entity savnuta na disk
-a znovu loadnuta.
+Entity (mobové, roomy, acocunty, connection, atd.) jsou vždycky instance
+nějakého typu. Mají unikátní stringové idčko, které se nemění, ani když je
+entity savnuta na disk a znovu loadnuta.
 
-Aby se mohlo v kódu pracovat přímo s referencí (tj. aby entita mohla být přímo
-v proměnné), tak jsou entity obalené javascriptovým Proxy objectem. Ten odchytává
-přístupy na membery dané proměnné a hlásí do syslogu, když se někdo snaží přistupovat
-na entitu, která už byla dealokována. Umí taky oživit existující referenci (proměnnou)
-poté, co byla entita znovu někým loadnuta z disku (nebo ji sám znovu loadnout).
+Aby se mohlo v kódu pracovat přímo s referencí (tj. aby entita mohla být
+přímo v proměnné), tak jsou entity obalené javascriptovým Proxy objectem.
+Ten odchytává přístupy na membery dané proměnné a hlásí do syslogu, když
+se někdo snaží přistupovat na entitu, která už byla dealokována. Umí taky
+oživit existující referenci (proměnnou) poté, co byla entita znovu někým
+loadnuta z disku (nebo ji sám znovu loadnout).
 
-V oživování je ale zádrhel:
-- referencí na tu samou entitu může v jeden okamžik existovat víc. Když si například
-  někdo ve skriptu zapamatuje nějaký char, tak na něj bude mít referenci po celou dobu
-  běhu skriptu. Po každém sleepu by měl testnout char.isValid(), protože se může stát,
-  že mezi tím daný char umřel a byl dealokován.
-- když někdo bude chtít znovu oživit tu samou entitu (třeba když se hráč znovu logne),
-  tak je třeba dát všem existujícím referencím vědět, že je tahle entita znovu živá.
-  To je právě princip "preserving identity" a problém je, že to nejde.
+Jak je to realizované:
+  Odchytávání přístupů na entitu implementuje class EntityProxyHandler.
+  Má v soubě svou interní referenci na entitu. Když někdo entitu smaže,
+  tak se tahle reference nastaví na null - podle toho proxy pozná, že
+  se někdo snaží hrabat na invalid entitu.
+
+Problém je v oživování entit (když třeba hráč znovu logne):
+- referencí na tu samou entitu může v jeden okamžik existovat víc. Když si
+  například někdo ve skriptu zapamatuje nějaký char, tak na něj bude mít
+  referenci po celou dobu běhu skriptu. Po každém sleepu by měl testnout
+  char.isValid(), protože se může stát, že mezi tím daný char umřel a byl
+  dealokován.
+- když někdo bude chtít znovu oživit tu samou entitu (třeba když se hráč
+  znovu logne), tak je třeba dát všem existujícím referencím vědět, že
+  je tahle entita znovu živá. To je právě princip "preserving identity"
+  a problém je, že to nejde.
 Proč to nejde:
-- protože bych si někde musel držet seznam všech existujících referencí (což nejde),
-  nebo všech někdy aktivovaných idček (což by strašně žralo paměť). V praxi musím
-  po "smrti" entity zapomenout, že takové idčko bylo online. To znamená, že mám
-  několik referencí (nevím kolik, nevím kdo je vlastní), se stejným idčkem,
+- protože bych si někde musel držet seznam všech existujících referencí
+  (což nejde), nebo všech někdy aktivovaných idček (což by strašně žralo
+  paměť). V praxi musím po "smrti" entity zapomenout, že takové idčko bylo
+  online. To znamená, že mám několik referencí (nevím kolik, nevím kdo je
+  vlastní), se stejným idčkem.
+  - To například znamená, že když napíšu 'if (ch !== actor) ...', tak nemám
+    jistotu, že se jedná o různé entity - protože může existovat víc referencí
+    na stejnou entitu.
 
-TODO: Tohle není moc dobře pochopitelné. Budu muset vysvětlit, co to je internal entity
-  reference. 
+Možná řešní:
+1) použít weak reference. Díky tomu bych mohl držet seznam entit, na které
+   někdo má referenci (protože weak referenced object se automaticky dealokuje,
+   když na něj nikdo jinej nemá referenci).
+   - to bohužel Javascript neumožňuje.
+
+2) Přetížit operátor porovnání referencí a porovnávat podle idček.
+   - to bohužel Javascript taky neumí.
+
+3) Přetížit assignment operator, abych mohl pocitat, kolik referenci existuje.
+   - to taky nejde.
+
+
+   Důsledke (IMPORTANT):
+   -----------------------
+
+   Důsledky jsou:
+   - že se ve skriptech nesmí porovnávat reference na entity
+   - že classy se seznamem entity (EntityListy) nesmí držet přímo
+     reference, musí si držet idčka (aby bylo zajištěno, že je
+     v nich každá entita nejvýše jednou).

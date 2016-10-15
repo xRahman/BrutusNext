@@ -41,13 +41,19 @@ export class EntityRecord
 
   // ---------------- Public methods --------------------
 
-  public updateProxyHandlers(id: string, type: string, entity: Entity)
+  public updateProxyHandlers(entity: Entity)
   {
-    let handler: EntityProxyHandler = null;
-
-    for (handler of this.proxyHandlers)
+    for (let handler of this.proxyHandlers)
     {
-      handler.id = id;
+      if (handler.id !== entity.getId())
+      {
+        ERROR("One of proxy handlers of entity"
+          + " " + entity.getErrorIdString() + " has"
+          + " different id (" + handler.id + ")."
+          + " setting it's id to " + entity.getId());
+        handler.id = entity.getId();
+      }
+
       handler.entity = entity;
     }
   }
