@@ -8,6 +8,7 @@
 
 import {ERROR} from '../../shared/error/ERROR';
 import {FileSystem} from '../../shared/fs/FileSystem';
+import {UniqueNames} from '../../shared/entity/UniqueNames';
 import {AbbrevSearchList} from '../../game/AbbrevSearchList';
 import {Server} from '../../server/Server';
 import {Connection} from '../../server/connection/Connection';
@@ -35,6 +36,7 @@ export class CharacterList extends AbbrevSearchList
     let character = Server.entityManager.createNamedEntity
     (
       name,
+      UniqueNames.Cathegory.characters,
       'Character',
       Character
     );
@@ -65,16 +67,23 @@ export class CharacterList extends AbbrevSearchList
     return this.getEntityByName(characterName);
   }
 
-  public exists(characterName: string)
+  public async exists(characterName: string)
   {
     // First check if character is already online so we can save reading from
     // disk.
     if (this.hasUniqueEntity(characterName))
       return true;
 
+    return await UniqueNames.exists
+    (
+      characterName,
+      UniqueNames.Cathegory.characters
+    );
+    /*
     let path = Character.SAVE_DIRECTORY + "unique/" + characterName + ".json";
 
     return FileSystem.existsSync(path);
+    */
   }
 
   //----------------- Protected data --------------------

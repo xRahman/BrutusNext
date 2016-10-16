@@ -53,7 +53,7 @@ export class Account extends NamedEntity
     this.isNameUnique = true;
   }
 
-  public static get SAVE_DIRECTORY() { return "./data/accounts/"; }
+  ///public static get SAVE_DIRECTORY() { return "./data/accounts/"; }
 
   // ----------------- Public data ----------------------
 
@@ -294,17 +294,21 @@ export class Account extends NamedEntity
     return hashFacility.digest('hex');
   }
 
+  /*
   // What file will this account be saved to.
   protected getSaveFileName(): string
   {
     return this.name + ".json";
   }
+  */
 
+  /*
   // What path will this account be saved to.
   protected getSaveDirectory(): string
   {
     return Account.SAVE_DIRECTORY;
   }
+  */
 
   //------------------ Private data ---------------------
 

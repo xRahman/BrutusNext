@@ -70,7 +70,7 @@ export class AuthProcessor
         break;
 
       case AuthProcessor.Stage.LOGIN:
-        this.loginAttempt(command);
+        await this.loginAttempt(command);
         break;
 
       case AuthProcessor.Stage.PASSWORD:
@@ -84,7 +84,7 @@ export class AuthProcessor
         ///// DEBUG:
         //console.log("AuthProcessor.stage.NEW_PASSWORD");
         //process.exit(1);
-        this.getNewPassword(command);
+        await this.getNewPassword(command);
         break;
 
       case AuthProcessor.Stage.MOTD:
@@ -116,7 +116,7 @@ export class AuthProcessor
 
   // --------------- Private methods --------------------
 
-  private loginAttempt(accountName: string)
+  private async loginAttempt(accountName: string)
   {
     if (!this.isAccountNameValid(accountName))
       // We don't advance the stage so the next user input will trigger
@@ -130,7 +130,7 @@ export class AuthProcessor
     // password so we need to remember account name until then.
     this.accountName = accountName;
 
-    if (Server.accounts.exists(accountName))
+    if (await Server.accounts.exists(accountName))
     {
       // Existing user. Ask for password.
       this.sendAuthPrompt("Password:");
@@ -218,9 +218,9 @@ export class AuthProcessor
     return this.isPasswordValid(password);
   }
 
-  private createAccount(password: string): Account
+  private async createAccount(password: string): Promise<Account>
   {
-    let account = Server.accounts.createAccount
+    let account = await Server.accounts.createAccount
     (
       this.accountName,
       password,
@@ -243,7 +243,7 @@ export class AuthProcessor
     );
   }
 
-  private getNewPassword(password: string)
+  private async getNewPassword(password: string)
   {
     if (this.acceptNewPassword(password) === false)
     {
@@ -253,7 +253,7 @@ export class AuthProcessor
     }
 
     // Password accepted, create a new account.
-    let account = this.createAccount(password);
+    let account = await this.createAccount(password);
 
     if (account === null)
       // We don't advance the stage so the next user input will trigger

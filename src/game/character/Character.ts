@@ -33,10 +33,12 @@ export class Character extends GameEntity
 
   // --------------- Public accessors -------------------
 
+  /*
   public static get SAVE_DIRECTORY()
   {
     return "./data/characters/";
   }
+  */
 
   public getTimeOfCreation() { return this.timeOfCreation; }
 
