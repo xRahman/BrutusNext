@@ -1,3 +1,18 @@
+TODO: Projít všechno zděděné z Entity a odstranit zbytky staré
+  adresářové struktury
+
+TODO: Rename named entity - musí přesavovat soubor v /data/names
+
+TODO: Rozhodnout, co se bude savovat v accountu (idčka?, jména + další info?)
+
+TODO: Projít save()
+  - u named i generic entit.
+
+TODO: Možná unikátní jména dávat do adresáře /data/names/
+[done]
+
+TODO: Zkontrolovat, že celý chain používající FS.exists() je async.
+
 TODO: V rámci EntityManager.loadNamedEntity() je třeba přidat entitu
   do EntityManageru.
 

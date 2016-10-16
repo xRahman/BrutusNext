@@ -6,8 +6,23 @@
 
 'use strict';
 
+import {FileSystem} from '../../shared/fs/FileSystem';
+
 export class UniqueNames
 {
+  public static getFilePath(name: string, cathegory: UniqueNames.Cathegory)
+  {
+    // Path is something like '/data/names/accounts/Rahman.json'.
+    return '/data/names/' + UniqueNames.Cathegory[cathegory]
+      + '/' + name + '/json';
+  }
+
+  public static async exists(name: string, cathegory: UniqueNames.Cathegory)
+  {
+    let filePath = UniqueNames.getFilePath(name, cathegory);
+
+    return await FileSystem.exists(filePath);
+  }
 }
 
 // ------------------ Type declarations ----------------------
@@ -16,17 +31,20 @@ export class UniqueNames
 // It must be declared after the class because Typescript says so...
 export module UniqueNames
 {
-  // Names of unique-named entities are unique only within each cathegory,
-  // so you can have for example account Rahman and character Rahman.
-  // These cathegories also serve as names of directories in /data with
-  // files translating unique names to entity ids. So there will be
-  // file /data/accounts/Rahman.json and /data/characters/Rahman.json.
-  // (this is the reason why cathegories are lower case - so we don't have
-  // uppercase names of directories in /data)
+  // Names of unique-named entities are unique only within each
+  // cathegory, so you can have for example account Rahman and
+  // character Rahman. These cathegories also serve as names of
+  // directories in /data with files translating unique Names to
+  // entity ids. So there will be file /data/names/accounts/Rahman.json
+  // and  /data/names/characters/Rahman.json.
+  // (this is the reason why cathegories are lower case - so we don't
+  // have uppercase names of directories in /data)
   export enum Cathegory
   {
     accounts,
     characters,
-    worlds,
+    // Various world locations.
+    // (Rooms, Realms, Areas, the name of the world itself, etc.)
+    world
   }
 }

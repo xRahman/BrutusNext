@@ -86,12 +86,19 @@ export class EntityManager
   public static createNamedEntity<T>
   (
     name: string,
+    cathegory: UniqueNames.Cathegory,
     prototype: string,
     typeCast: { new (...args: any[]): T }
   )
   : T
   {
-    return Server.entityManager.createNamedEntity(name, prototype, typeCast);
+    return Server.entityManager.createNamedEntity
+    (
+      name,
+      cathegory,
+      prototype,
+      typeCast
+    );
   }
 
   // Shortcut so you can use EntityManager.loadNamedEntity()
@@ -124,14 +131,23 @@ export class EntityManager
 
   // ---------------- Public methods --------------------
 
+  // -> Returns null if such entity already exists.
   public createNamedEntity<T>
   (
     name: string,
+    cathegory: UniqueNames.Cathegory,
     prototype: string,
     typeCast: { new (...args: any[]): T }
   )
   : T
   {
+    if (UniqueNames.exists(name, cathegory))
+    {
+      ERROR("Attempt to create unique entity '" + name + "'"
+        + " in cathegory '" + cathegory + "' which already exists."
+        + " Entity is not created");
+      return null;
+    }
     /// TODO: Check unikátnosti jména
     /// TODO: uniqueNamesCathegory (aby šlo checknout unikátnost jména).
 
@@ -149,7 +165,7 @@ export class EntityManager
   }
 
   // Loads uniquely named entity from file
-  // (it must not exist in EntityManager yet). 
+  // (it must not exist in EntityManager). 
   // -> Returns reference to the loaded entity.
   public async loadNamedEntity<T>
   (
@@ -160,14 +176,10 @@ export class EntityManager
   // Return type is actualy <T>, Promise will get resolved automatically.
   : Promise<T>
   {
-    // Names are unique only within each cathegory, so you can have
-    // account named Rahman and also character named Rahman.
-    let cathegoryName = UniqueNames.Cathegory[cathegory];
-
     // In order to load any entity, we need to know it's id.
     // Uniquelly named entities have their id saved in special
     // file on disk, so we need to load id from this file first.
-    let id = await this.loadNamedEntityId(name, cathegoryName);
+    let id = await this.loadNamedEntityId(name, cathegory);
 
     if (id === null || id === undefined)
       // Error is already reported by loadNamedEntityId()
@@ -638,10 +650,15 @@ export class EntityManager
   // name and it's unique names cathegory.
   // -> Returns id loaded from file.
   //    Returns null in case of failure.
-  private async loadNamedEntityId(name: string, cathegory: string)
+  private async loadNamedEntityId
+  (
+    name: string,
+    cathegory: UniqueNames.Cathegory
+  )
   {
-    // File path is something like '/data/accounts/Rahman.json'.
-    let filePath = "/data/" + cathegory + "/" + name + ".json";
+    // File path is something like '/data/names/accounts/Rahman.json'.
+    ///let filePath = "/data/" + cathegory + "/" + name + ".json";
+    let filePath = UniqueNames.getFilePath(name, cathegory);
 
     let idRecord = new IdRecord();
 
