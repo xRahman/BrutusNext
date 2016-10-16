@@ -66,15 +66,15 @@ export class AccountList extends NameSearchList
     return account;
   }
 
-  public createAccount
+  public async createAccount
   (
     accountName: string,
     password: string,
     connection: Connection
   )
-  : Account
+  : Promise<Account>
   {
-    if (this.exists(accountName))
+    if (await this.exists(accountName))
     {
       ERROR("Attempt to create account '" + accountName + "'"
         + " which already exists. Account is not created");
@@ -85,6 +85,8 @@ export class AccountList extends NameSearchList
     (
       // Name of the entity to create.
       accountName,
+      // Cathegory in which the name must be unique.
+      UniqueNames.Cathegory.accounts,
       // Name of the prototype class.
       'Account',
       // Dynamic type cast.
@@ -117,16 +119,18 @@ export class AccountList extends NameSearchList
   }
 
   // Returns true if account with given name exists.
-  public exists(accountName: string)
+  public async exists(accountName: string)
   {
     // First check if account is already online so we can save ourselves
     // reading from disk.
     if (this.hasUniqueEntity(accountName))
       return true;
 
-    let path = Account.SAVE_DIRECTORY + accountName + ".json";
-
-    return FileSystem.existsSync(path);
+    return await UniqueNames.exists
+    (
+      accountName,
+      UniqueNames.Cathegory.accounts
+    );
   }
 
   // -> Returns undefined if account isn't onlne or doesn't exist.

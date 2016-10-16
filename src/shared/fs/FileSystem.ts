@@ -114,6 +114,11 @@ export class FileSystem
     return fs.existsSync(filePath);
   }
 
+  public static async exists(filePath: string)
+  {
+    return promisifiedFS.exists(filePath);
+  }
+
   public static async ensureDirectoryExists(directory: string)
   {
     await promisifiedFS.ensureDir(directory);
