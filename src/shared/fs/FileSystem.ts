@@ -42,7 +42,34 @@ export class FileSystem
 
       Syslog.log
       (
-        "Error loading file '" + filePath + "': " + reason,
+        "Unable to load file '" + filePath + "': " + reason,
+        Message.Type.SYSTEM_ERROR,
+        AdminLevel.IMMORTAL
+      );
+
+      // Throw the exception so the mud will get terminated with error
+      // message.
+      // (Create a new Error object, because the one we have cought here
+      // doesn't contain stack trace.)
+      throw new Error;
+    }
+
+    return data;
+  }
+
+  public static readFileSync(filePath: string)
+  {
+    let data = null;
+
+    try
+    {
+      data = fs.readFileSync(filePath, FileSystem.FILE_ENCODING);
+    }
+    catch (error)
+    {
+      Syslog.log
+      (
+        "Unable to load file '" + filePath + "': " + error.code,
         Message.Type.SYSTEM_ERROR,
         AdminLevel.IMMORTAL
       );
@@ -69,7 +96,7 @@ export class FileSystem
     {
       Syslog.log
       (
-        "Error saving file '" + filePath + "': " + error.code,
+        "Unable to save file '" + filePath + "': " + error.code,
         Message.Type.SYSTEM_ERROR,
         AdminLevel.IMMORTAL
       );
@@ -82,41 +109,35 @@ export class FileSystem
     }
   }
 
-  public static readFileSync(filePath: string)
+  public static async deleteFile(filePath: string)
   {
-    let data = null;
-
     try
     {
-      data = fs.readFileSync(filePath, FileSystem.FILE_ENCODING);
+      await promisifiedFS.unlink(filePath);
     }
     catch (error)
     {
       Syslog.log
       (
-        "Error loading file '" + filePath + "': " + error.code,
+        "Unable to delete file '" + filePath + "': " + error.code,
         Message.Type.SYSTEM_ERROR,
         AdminLevel.IMMORTAL
       );
 
-      // Throw the exception so the mud will get terminated with error
-      // message.
-      // (Create a new Error object, because the one we have cought here
-      // doesn't contain stack trace.)
-      throw new Error;
+      return false;
     }
 
-    return data;
+    return true;
+  }
+
+  public static async exists(filePath: string)
+  {
+    return await promisifiedFS.exists(filePath);
   }
 
   public static existsSync(filePath: string)
   {
     return fs.existsSync(filePath);
-  }
-
-  public static async exists(filePath: string)
-  {
-    return promisifiedFS.exists(filePath);
   }
 
   public static async ensureDirectoryExists(directory: string)

@@ -86,6 +86,7 @@ export class Account extends NamedEntity
     return null;
   }
 
+  /*
   // Overrides Entity.getSaveSubDirectory().
   protected static getSaveSubDirectory()
   {
@@ -95,6 +96,7 @@ export class Account extends NamedEntity
     // class.
     return this.className + "/";
   }
+  */
 
   public getLastLoginAddress()
   {
