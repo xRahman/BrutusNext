@@ -85,6 +85,7 @@ export class Game
     this.world = EntityManager.createNamedEntity
     (
       'BrutusNext World',
+      UniqueNames.Cathegory.world,
       'BrutusWorld',
       World
     );
@@ -182,7 +183,7 @@ export class Game
     this.world = await EntityManager.loadNamedEntity
     (
       'Brutus World',
-      UniqueNames.Cathegory.worlds,
+      UniqueNames.Cathegory.world,
       World
     );
   }
