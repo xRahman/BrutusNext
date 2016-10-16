@@ -23,6 +23,17 @@ export class UniqueNames
 
     return await FileSystem.exists(filePath);
   }
+
+  public static async deleteNameLockFile
+  (
+    name: string,
+    cathegory: UniqueNames.Cathegory
+  )
+  {
+    let filePath = UniqueNames.getFilePath(name, cathegory);
+
+    await FileSystem.
+  }
 }
 
 // ------------------ Type declarations ----------------------
