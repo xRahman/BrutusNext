@@ -24,6 +24,8 @@ export class UniqueNames
     return await FileSystem.exists(filePath);
   }
 
+  // -> Returns 'true' if file was successfuly deleted.
+  //    Returns 'false' otherwise. 
   public static async deleteNameLockFile
   (
     name: string,
@@ -32,7 +34,7 @@ export class UniqueNames
   {
     let filePath = UniqueNames.getFilePath(name, cathegory);
 
-    await FileSystem.
+    return await FileSystem.deleteFile(filePath);
   }
 }
 
