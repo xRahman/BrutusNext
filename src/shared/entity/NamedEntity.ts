@@ -76,7 +76,7 @@ export class NamedEntity extends Entity
     }
 
     
-    createNameLockFile();
+    UniqueNames.createNameLockFile();
 
     // Now we can do the actual change.
 
@@ -115,8 +115,8 @@ export class NamedEntity extends Entity
     {
       ERROR("Attempt to change name of entity "
         + this.getErrorIdString() + " to '"
-        + name + "', which already exists. Name"
-        + " is not changed");
+        + name + "', which already exists."
+        + " Name is not changed");
       return false;
     }
 
