@@ -36,7 +36,7 @@ import {ERROR} from '../../shared/error/ERROR';
 import {IdProvider} from '../../shared/entity/IdProvider';
 
 import {Entity} from '../../shared/entity/Entity';
-import {IdRecord} from '../../shared/entity/IdRecord';
+import {NameLockRecord} from '../../shared/entity/IdRecord';
 import {UniqueNames} from '../../shared/entity/UniqueNames';
 import {EntityRecord} from '../../shared/entity/EntityRecord';
 import {NamedEntity} from '../../shared/entity/NamedEntity';
@@ -658,9 +658,9 @@ export class EntityManager
   {
     // File path is something like '/data/names/accounts/Rahman.json'.
     ///let filePath = "/data/" + cathegory + "/" + name + ".json";
-    let filePath = UniqueNames.getFilePath(name, cathegory);
+    let filePath = UniqueNames.getNameLockFilePath(name, cathegory);
 
-    let idRecord = new IdRecord();
+    let idRecord = new NameLockRecord();
 
     await idRecord.loadFromFile(filePath);
 
