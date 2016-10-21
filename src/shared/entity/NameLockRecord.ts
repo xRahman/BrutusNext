@@ -10,7 +10,7 @@
 
 import {SaveableObject} from '../../shared/fs/SaveableObject';
 
-export class IdRecord extends SaveableObject
+export class NameLockRecord extends SaveableObject
 {
   // Note: Unlike Entity classes, we want and id property to be saved.
   public id: string = null;
