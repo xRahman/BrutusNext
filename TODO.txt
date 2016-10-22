@@ -3,7 +3,26 @@ TODO: SaveableOject, bufferování requestů
     savnuto (a ideálně poté, co je savnut její request, ne až když se
     dosavují úplně všechny, co přišly v průběhu savování).
 - jak to udělat?
-  - 
+IDEA: Každy si savne svůj vlastní request (a jen ten jeden).
+- pokud je nějaký request v bufferu, tak musím dát do fronty
+  svůj resolve callback, abych dostal slovo, až na mě dojde řada.
+CONSIDERATION: Deduplikovat requesty ano, ale pouze ty, které se
+  ještě nezpracovávají. Aktuálně zpracovávaný request je třeba zopakovat,
+  kdy přijde ten samej, protože se mezi tím mohou změnit data, která se
+  mají savnout.
+IDEA: Možná by se save procesy měly registrovat globálně. Teď spoléhám
+  na to, že se každý SaveableObject savuje do jiného souboru, ale to nemusí
+  být 100%
+ALGORITHM:
+1) Checknu, jestli je cílový soubor v globálním registru právě savovaných
+   souborů.
+   - pokud ne, tak se zaregistruju, savnu, odregistruju.
+   - pokud ano, musím svůj request přidat do globálního bufferu
+     (deduplikace, ale pouze u requestů, které se ještě nezačaly savovat)
+globální saveProcessBuffer bude hashmapa.
+  klíč: savePath
+  value: true/false? Možná taky odkaz na následující save proces.
+
 
 TODO: Handle file operation return variables in SaveableObject.
 
