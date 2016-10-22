@@ -197,7 +197,7 @@ export class Connection extends Entity
   {
     Syslog.log
     (
-      account.name + " [" + this.ipAddress + "] has logged in",
+      account.getName() + " [" + this.ipAddress + "] has logged in",
       Message.Type.SYSTEM_INFO,
       AdminLevel.IMMORTAL
     );
@@ -247,7 +247,7 @@ export class Connection extends Entity
 
     Syslog.log
     (
-      account.name + " [" + this.ipAddress + "] has reconnected."
+      account.getName() + " [" + this.ipAddress + "] has reconnected."
       + " Closing the old connection",
       Message.Type.SYSTEM_INFO,
       AdminLevel.IMMORTAL
@@ -438,7 +438,7 @@ export class Connection extends Entity
     if (this.ingameEntity === null)
     {
       ERROR("Attempt to detach ingame entity"
-        + " from " + this.account.name + "'s"
+        + " from " + this.account.getName() + "'s"
         + " player connection when there is"
         + " no ingame entity attached to it");
     }
@@ -613,7 +613,7 @@ export class Connection extends Entity
   {
     if (this.ingameEntity !== null)
     {
-      return " playing character " + this.ingameEntity.name;
+      return " playing character " + this.ingameEntity.getName();
     }
     else
     {
@@ -627,7 +627,7 @@ export class Connection extends Entity
     {
       ERROR("Attempt to send empty string to"
         + " character " + this.getPlayedCharacterName()
-        + " on acocunt " + this.account.name);
+        + " on acocunt " + this.account.getName());
       return true;
     }
 
@@ -655,11 +655,11 @@ export class Connection extends Entity
     {
       ERROR("String '" + data + "' sent to character"
         + " " + this.getPlayedCharacterName() + " on"
-        + " account " + this.account.name + " ends with"
-        + " newline characters. Make sure that you don't"
-        + " append any '\\r' or '\\n' characters at any"
-        + " combination to any strings that are sent to"
-        + " players");
+        + " account " + this.account.getName() + " ends"
+        + " with newline characters. Make sure that you"
+        + " don't append any '\\r' or '\\n' characters"
+        + " at any combination to any strings that are"
+        + " sent to players");
     }
 
     return newlineCharactersFound;

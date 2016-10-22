@@ -73,7 +73,7 @@ export class Room extends GameEntity
   // Creates a formatted string describing room contents.
   protected printContents(): string
   {
-    let contents = "&R" + this.name;
+    let contents = "&R" + this.getName();
     contents += "\n";
     /*
     contents += "&w" + this.getRoomInfo().description;
