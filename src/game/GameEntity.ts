@@ -53,8 +53,11 @@ export class GameEntity extends ContainerEntity
 
   //------------------ Public data ----------------------
 
+  /// Tohle je v NamedEntity
+  /*
   public name = "Unnamed Entity";
   public isNameUnique = false;
+  */
   public aliases: Array<String> = [];
 
   // --------------- Public accessors -------------------
@@ -362,7 +365,8 @@ export class GameEntity extends ContainerEntity
     if (this.location === null)
     {
       ERROR("Attempt to show contents of container of entity"
-        + " '" + this.name + "' which isn't placed in any container");
+        + " '" + this.getErrorIdString() + "' which isn't placed"
+        + " in any container");
       return;
     }
     

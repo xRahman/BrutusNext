@@ -9,7 +9,8 @@
 
 import {EntityManager} from '../../shared/entity/EntityManager';
 import {SaveableObject} from '../../shared/fs/SaveableObject';
-import {UniqueNames} from '../../shared/entity/UniqueNames';
+//import {UniqueNames} from '../../shared/entity/UniqueNames';
+import {NamedEntity} from '../../shared/entity/NamedEntity';
 import {Server} from '../../server/Server';
 import {Game} from '../../game/Game';
 import {GameEntity} from '../../game/GameEntity';
@@ -54,7 +55,7 @@ export class World extends GameEntity
     this.systemRealm = EntityManager.createNamedEntity
     (
       'System Realm',
-      UniqueNames.Cathegory.world,
+      NamedEntity.UniqueNameCathegory.world,
       'SystemRealm',
       Realm
     );
@@ -66,7 +67,7 @@ export class World extends GameEntity
     this.systemArea = EntityManager.createNamedEntity
     (
       'System Area',
-      UniqueNames.Cathegory.world,
+      NamedEntity.UniqueNameCathegory.world,
       'SystemArea',
       Area
     );
@@ -78,7 +79,7 @@ export class World extends GameEntity
     this.systemRoom = EntityManager.createNamedEntity
     (
       'System Room',
-      UniqueNames.Cathegory.world,
+      NamedEntity.UniqueNameCathegory.world,
       'SystemRoom',
       Room
     );
@@ -90,7 +91,7 @@ export class World extends GameEntity
     this.systemRoom = EntityManager.createNamedEntity
     (
       'Tutorial Room',
-      UniqueNames.Cathegory.world,
+      NamedEntity.UniqueNameCathegory.world,
       'TutorialRoom',
       Room
     );

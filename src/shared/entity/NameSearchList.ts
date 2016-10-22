@@ -34,8 +34,8 @@ export class NameSearchList extends EntityList
       return false;
 
     // If entity has unique name, add it's id to the hashmap of unique names.
-    if (entity.isNameUnique)
-      this.uniqueNames.set(entity.name, entity);
+    if (entity.isNameUnique())
+      this.uniqueNames.set(entity.getName(), entity);
 
     return true;
   }
@@ -53,10 +53,10 @@ export class NameSearchList extends EntityList
   {
     if (entity.isNameUnique)
     {
-      if (entity.name !== undefined)
+      if (entity.getName !== undefined)
       {
         // Remove record from hashmap storing ids of uniquely named entities.
-        this.uniqueNames.delete(entity.name);
+        this.uniqueNames.delete(entity.getName());
       }
       else
       {

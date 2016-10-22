@@ -36,8 +36,8 @@ import {ERROR} from '../../shared/error/ERROR';
 import {IdProvider} from '../../shared/entity/IdProvider';
 
 import {Entity} from '../../shared/entity/Entity';
-import {NameLockRecord} from '../../shared/entity/IdRecord';
-import {UniqueNames} from '../../shared/entity/UniqueNames';
+import {NameLockRecord} from '../../shared/entity/NameLockRecord';
+///import {UniqueNames} from '../../shared/entity/UniqueNames';
 import {EntityRecord} from '../../shared/entity/EntityRecord';
 import {NamedEntity} from '../../shared/entity/NamedEntity';
 import {NameSearchList} from '../../shared/entity/NameSearchList';
@@ -86,7 +86,7 @@ export class EntityManager
   public static createNamedEntity<T>
   (
     name: string,
-    cathegory: UniqueNames.Cathegory,
+    cathegory: NamedEntity.UniqueNameCathegory,
     prototype: string,
     typeCast: { new (...args: any[]): T }
   )
@@ -106,7 +106,7 @@ export class EntityManager
   public static async loadNamedEntity<T>
   (
     name: string,
-    cathegory: UniqueNames.Cathegory,
+    cathegory: NamedEntity.UniqueNameCathegory,
     typeCast: { new (...args: any[]): T }
   )
   // Return type is actualy <T>, Promise will get resolved automatically.
@@ -135,13 +135,13 @@ export class EntityManager
   public createNamedEntity<T>
   (
     name: string,
-    cathegory: UniqueNames.Cathegory,
+    cathegory: NamedEntity.UniqueNameCathegory,
     prototype: string,
     typeCast: { new (...args: any[]): T }
   )
   : T
   {
-    if (UniqueNames.exists(name, cathegory))
+    if (NamedEntity.isNameTaken(name, cathegory))
     {
       ERROR("Attempt to create unique entity '" + name + "'"
         + " in cathegory '" + cathegory + "' which already exists."
@@ -155,7 +155,7 @@ export class EntityManager
     // to be able to set entity.name.
     let entity = this.createEntity(prototype, NamedEntity);
 
-    entity.name = name;
+    entity.setUniqueName(name, cathegory);
 
     // Here we are dynamically typecasting back to requested type.
     //   Indirect call is used because 'dynamicCast' property doesn't
@@ -170,7 +170,7 @@ export class EntityManager
   public async loadNamedEntity<T>
   (
     name: string,
-    cathegory: UniqueNames.Cathegory,
+    cathegory: NamedEntity.UniqueNameCathegory,
     typeCast: { new (...args: any[]): T }
   )
   // Return type is actualy <T>, Promise will get resolved automatically.
@@ -653,12 +653,11 @@ export class EntityManager
   private async loadNamedEntityId
   (
     name: string,
-    cathegory: UniqueNames.Cathegory
+    cathegory: NamedEntity.UniqueNameCathegory
   )
   {
     // File path is something like '/data/names/accounts/Rahman.json'.
-    ///let filePath = "/data/" + cathegory + "/" + name + ".json";
-    let filePath = UniqueNames.getNameLockFilePath(name, cathegory);
+    let filePath = NamedEntity.getNameLockFilePath(name, cathegory);
 
     let idRecord = new NameLockRecord();
 

@@ -8,6 +8,7 @@
 
 import {ERROR} from '../../shared/error/ERROR';
 import {FATAL_ERROR} from '../../shared/error/FATAL_ERROR';
+import {NamedEntity} from '../../shared/entity/NamedEntity';
 import {Connection} from '../../server/connection/Connection';
 import {Server} from '../../server/Server';
 import {Account} from '../../server/account/Account';
@@ -132,11 +133,16 @@ export class LobbyProcessor
 
     let character = new Character();
 
-    character.name = characterName;
+    character.setUniqueName
+    (
+      characterName,
+      NamedEntity.UniqueNameCathegory.characters
+    );
+    ///character.name = characterName;
 
     // This needs to be set before loading so character will load from
     // correct directory.
-    character.isNameUnique = true;
+    ///character.isNameUnique = true;
 
     // Character name is passed to check against character name saved
     // in file (they must by the same).
@@ -159,16 +165,28 @@ export class LobbyProcessor
     await character.load();
 
     if (character.getId() === null)
-      FATAL_ERROR("Invalid id in saved file of character: " + character.name);
-
-
-    if (characterFileName !== character.name)
     {
-      ERROR("Character name saved in file (" + character.name + ")"
+      FATAL_ERROR("Invalid id in saved file of character:"
+        + " " + character.getName());
+    }
+
+
+    if (characterFileName !== character.getName())
+    {
+      ERROR("Character name saved in file (" + character.getName() + ")"
+        + " doesn't match character file name (" + characterFileName + ")");
+
+      /// Přejmenovat character není tak jednoduchý - characterName jednoduchý
+      /// unikátní, tzn. je třeba zkontrolovat unikátnost.
+      /// TODO:
+      /// - Navíc to možná bude celé jinak, používají se teď nameLockFily.
+      /*
+      ERROR("Character name saved in file (" + character.getName() + ")"
         + " doesn't match character file name (" + characterFileName + ")."
         + " Renaming character to match file name");
 
       character.name = characterFileName;
+      */
     }
   }
 

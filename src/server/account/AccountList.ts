@@ -9,7 +9,8 @@
 import {ERROR} from '../../shared/error/ERROR';
 import {FileSystem} from '../../shared/fs/FileSystem';
 import {Server} from '../../server/Server';
-import {UniqueNames} from '../../shared/entity/UniqueNames';
+//import {UniqueNames} from '../../shared/entity/UniqueNames';
+import {NamedEntity} from '../../shared/entity/NamedEntity';
 import {NameSearchList} from '../../shared/entity/NameSearchList';
 import {Entity} from '../../shared/entity/Entity';
 import {EntityManager} from '../../shared/entity/EntityManager';
@@ -41,7 +42,7 @@ export class AccountList extends NameSearchList
     account = await EntityManager.loadNamedEntity
     (
       accountName,
-      UniqueNames.Cathegory.accounts,
+      NamedEntity.UniqueNameCathegory.accounts,
       Account);
 
     if (Entity.isValid(account))
@@ -86,7 +87,7 @@ export class AccountList extends NameSearchList
       // Name of the entity to create.
       accountName,
       // Cathegory in which the name must be unique.
-      UniqueNames.Cathegory.accounts,
+      NamedEntity.UniqueNameCathegory.accounts,
       // Name of the prototype class.
       'Account',
       // Dynamic type cast.
@@ -126,10 +127,10 @@ export class AccountList extends NameSearchList
     if (this.hasUniqueEntity(accountName))
       return true;
 
-    return await UniqueNames.exists
+    return await NamedEntity.isNameTaken
     (
       accountName,
-      UniqueNames.Cathegory.accounts
+      NamedEntity.UniqueNameCathegory.accounts
     );
   }
 

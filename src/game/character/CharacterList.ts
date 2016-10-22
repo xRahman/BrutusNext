@@ -8,7 +8,8 @@
 
 import {ERROR} from '../../shared/error/ERROR';
 import {FileSystem} from '../../shared/fs/FileSystem';
-import {UniqueNames} from '../../shared/entity/UniqueNames';
+import {NamedEntity} from '../../shared/entity/NamedEntity';
+///import {UniqueNames} from '../../shared/entity/UniqueNames';
 import {AbbrevSearchList} from '../../game/AbbrevSearchList';
 import {Server} from '../../server/Server';
 import {Connection} from '../../server/connection/Connection';
@@ -36,17 +37,25 @@ export class CharacterList extends AbbrevSearchList
     let character = Server.entityManager.createNamedEntity
     (
       name,
-      UniqueNames.Cathegory.characters,
+      NamedEntity.UniqueNameCathegory.characters,
       'Character',
       Character
     );
+
+    // Check if character has been created succesfully.
+    // (it might not be true for example if unique name was already taken)
+    if (character === null)
+      return null;
 
     /*
     let character = new Character();
 
     character.name = name;
     */
-    character.isNameUnique = true;
+    
+    /// Tohle už dělá EntityManager.createNamedEntity().
+    ///character.isNameUnique = true;
+
     character.atachConnection(connection);
 
     /*
@@ -69,21 +78,16 @@ export class CharacterList extends AbbrevSearchList
 
   public async exists(characterName: string)
   {
-    // First check if character is already online so we can save reading from
-    // disk.
+    // First check if character is already online so we can
+    // save reading from disk.
     if (this.hasUniqueEntity(characterName))
       return true;
 
-    return await UniqueNames.exists
+    return await NamedEntity.isNameTaken
     (
       characterName,
-      UniqueNames.Cathegory.characters
+      NamedEntity.UniqueNameCathegory.characters
     );
-    /*
-    let path = Character.SAVE_DIRECTORY + "unique/" + characterName + ".json";
-
-    return FileSystem.existsSync(path);
-    */
   }
 
   //----------------- Protected data --------------------

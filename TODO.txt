@@ -1,3 +1,12 @@
+TODO: SaveableOject, bufferování requestů
+  - mělo by to být tak, že saveToFile() se vrátí až poté, co je skutečně
+    savnuto (a ideálně poté, co je savnut její request, ne až když se
+    dosavují úplně všechny, co přišly v průběhu savování).
+- jak to udělat?
+  - 
+
+TODO: Handle file operation return variables in SaveableObject.
+
 IDEA: vykašlat se na flagu isNameUnique, savovat pouze cathegory.
 - když je cathegory null, jméno není unique.
 

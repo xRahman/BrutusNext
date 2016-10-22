@@ -153,7 +153,9 @@ export class SaveableObject extends AttributableClass
     }
 
     // Directory might not yet exist, so we better make sure it does.
-    await FileSystem.ensureDirectoryExists(directory);
+    if (await FileSystem.ensureDirectoryExists(directory) === false)
+      return;
+
     await this.saveContentsToFile(directory + fileName);
   }
 
@@ -209,20 +211,47 @@ export class SaveableObject extends AttributableClass
 
   private async saveContentsToFile(filePath: string)
   {
-    // If we are already saving ourselves, the request will be added
-    // to the buffer and processed after ongoing saving ends.
-    if (this.bufferSaveRequest(filePath))
-      return;
-    
+    //// BIG TODO
+    /*
+    let resolveCallback = null;
+    let promise = new Promise
+    (
+      (resolve, reject) => { resolveCallback = resolve; }
+    );
+
+    resolveCallback();
+    */
+
+    // this.saveRequests serves both as buffer for request and as lock
+    // indicating that we are already saving something.
+    let isSaving = this.saveRequests.length !== 0;
+
+    // The general idea is:
+    // - Either there is an instance of saveContentsToFile() async method
+    //   already running (indicated by 'isSaving === true').
+    //   - In that case we just add the request to the buffer and let the
+    //     older instance of saveContentsToFile() method process it
+    //     (because it is still running so it will get to our request
+    //      eventually).
+    // - Or it is not.
+    //   - In that case we are becomming the running code that will save
+    //     this request and all future requests that will come before all
+    //     saving is done.
+
+    // Add request to the buffer.
+    this.bufferSaveRequest(filePath);
+
     // If we are not saving ourselves right now, process buffered requests.
+    if (!isSaving)
+    {
+      // Asynchronous saving to file.
+      // (the rest of the code will execute only after the saving is done)
+      await this.processBufferedSavingRequests();
 
-    // Asynchronous saving to file.
-    // (the rest of the code will execute only after the saving is done)
-    await this.processBufferedSavingRequests();
-
-    // All save requests are processed, mark the buffer as empty.
-    // (if will also hopefully flag allocated data for freeing from memory)
-    this.saveRequests = [];
+      // All save requests are processed, mark the buffer as empty.
+      // (if will also hopefully flag allocated data for freeing from memory)
+      this.saveRequests = [];
+    }
   }
 
   /*
@@ -398,7 +427,7 @@ export class SaveableObject extends AttributableClass
 
   private async processBufferedSavingRequests()
   {
-    for (let i = 0; i < this.saveRequests.length; i++)
+    for (let saveRequests of this.saveRequests)
     {
       // Save ourselves to json string each time we are saving ourselves,
       // because our current stat might change while we were saving (remember
@@ -408,10 +437,19 @@ export class SaveableObject extends AttributableClass
 
       // Asynchronous saving to file.
       // (the rest of the code will execute only after the saving is done)
-      await FileSystem.writeFile(this.saveRequests[i], jsonString);
+      await FileSystem.writeFile(saveRequests, jsonString);
     }
   }
 
+  private bufferSaveRequest(filePath: string)
+  {
+    // Only push requests to save to different path.
+    // (there is no point in future resaving to the same file multiple times)
+    if (this.saveRequests.indexOf(filePath) !== -1)
+      this.saveRequests.push(filePath);
+  }
+
+  /*
   // Returns true when request is buffered and there is no need to process
   // it right now.
   private bufferSaveRequest(filePath: string): boolean
@@ -440,6 +478,7 @@ export class SaveableObject extends AttributableClass
     // and return false to indicate, that it needs to be processed right away.
     return false;
   }
+  */
 
   // Loads a property of type Array from a JSON Array object.
   private loadArray
