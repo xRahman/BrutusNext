@@ -17,6 +17,7 @@ import {EntityManager} from '../../shared/entity/EntityManager';
 import {NamedClass} from '../../shared/NamedClass';
 import {AttributableClass} from '../../shared/AttributableClass';
 import {FileSystem} from '../../shared/fs/FileSystem';
+import {SavingRegister} from '../../shared/fs/SavingRegister';
 import {Server} from '../../server/Server';
 
 let beautify = require('js-beautify').js_beautify;
@@ -209,26 +210,76 @@ export class SaveableObject extends AttributableClass
 
   // --------------- Private methods --------------------
 
-  private async saveContentsToFile(filePath: string)
+  // This is just a generic async function that will finish
+  // when 'promise' passed as it's parameter gets resolved.
+  // (it only makes sense if you also store 'resolve' callback
+  //  of the promise so you can call it to finish this awaiter)
+  private saveAwaiter(promise: Promise<void>)
   {
-    //// BIG TODO
-    /*
-    let resolveCallback = null;
-    let promise = new Promise
+    return promise;
+  }
+
+  /*
+  // Creates a generic Promise<void> object. Also Returns
+  // it's 'resolve' handler, so you can resolve the promise
+  // manully.
+  private createPromise()
+  {
+    // Return value of this method.
+    let result = { callback: null, promise: null };
+
+    result.promise = new Promise
     (
-      (resolve, reject) => { resolveCallback = resolve; }
+      (resolve, reject) =>
+      {
+        // Here we will just remember 'resolve' callback function.
+        result.callback = resolve;
+      }
     );
 
-    resolveCallback();
-    */
+    return result;
+  }
+  */
 
-    // this.saveRequests serves both as buffer for request and as lock
+  private async saveContentsToFile(filePath: string)
+  {
+    // Following code is addresing 'feature' of node.js file saving
+    // functions, which says that we must not attempt saving the same
+    // file until any previous saving finishes (otherwise it is not
+    // guaranteed that file will be saved correctly).
+    //   To ensure this, we use SavingRegister to register all saving
+    // that is being done to each file and buffer requests if necessary.   
+    let promise = SavingRegister.requestSaving(filePath);
+
+    // If SavingRegister.requestSaving returned 'null', it
+    // means that 'filePath' is not being saved right now
+    // so we can start saving right away.
+    //   Otherwise we need to wait (using the promise we have
+    // just obtained) for our turn.
+    // Note:
+    //   saveAwaiter() function will get finished by SavingRegister
+    // by calling resolve callback of the promise we have just been
+    // issued when previous saving finishes and it's our turn. 
+    if (promise !== null)
+      await this.saveAwaiter(promise);
+
+    /// TODO: Zrusit saving buffer a vse kolem nej.
+
+    this.doTheFuckingSaving();
+
+    // Remove the lock and also call resolve callback of whoever
+    // might be waiting after us.
+    SavingRegister.reportFinishedSaving(filePath);
+
+    /*
+    // 'this.saveRequests' serves both as buffer for request and as lock
     // indicating that we are already saving something.
-    let isSaving = this.saveRequests.length !== 0;
-
+    //   If there is some request in the queue before we add ours in it,
+    // it must mean that it is being processed already.
+    //
     // The general idea is:
-    // - Either there is an instance of saveContentsToFile() async method
-    //   already running (indicated by 'isSaving === true').
+    // - Either there is an instance of processBufferedSavingRequests()
+    //   async method already running (indicated by 'isSaving === true').
     //   - In that case we just add the request to the buffer and let the
     //     older instance of saveContentsToFile() method process it
     //     (because it is still running so it will get to our request
@@ -237,13 +288,44 @@ export class SaveableObject extends AttributableClass
     //   - In that case we are becomming the running code that will save
     //     this request and all future requests that will come before all
     //     saving is done.
+    let isSaving = this.saveRequests.length !== 0;
 
+    // Here we create a generic Promise<void> object. We also obtain
+    // it's 'resolve' callback, so we can resolve this promise by
+    // calling result.callback(). This will later be used to finish
+    // saveAwaiter() when our save request gets processed.
+    let result: { callback: null, promise: null } = this.createPromise();
+
+    /// TODO: Pokud se request nepřidá (protože jde o opakovaný request
+    ///   o save do stejného file), tak je stejně třeba přidat callback,
+    ///   aby se mohlo ukončit čekání na tenhle save request. 
+
+    // Push callback to saveRequests along with saveFilePath.
     // Add request to the buffer.
-    this.bufferSaveRequest(filePath);
+    this.bufferSaveRequest(filePath, result.callback);
+
 
     // If we are not saving ourselves right now, process buffered requests.
     if (!isSaving)
     {
+      // Here we purposedly call this.processBufferedSavingRequests()
+      // without 'await', even though it is an async function.
+      //   The reason is, that we don't really want to wait for all
+      // save requests to be processed, we want to return as soon as
+      // OUR save request gets processed.
+      //   This is dobe by awaiting for our special 'awaiter' async
+      // function, which will get manually resolved when corresponding
+      // save request is processed by calling it's resolve callback. 
+      this.processBufferedSavingRequests();
+    }
+
+    // Now wait for our request to get processed.
+    // (waiting will end when this.processBufferedSavingRequests()
+    // calls our resolve callback)
+    await this.saveAwaiter(result.promise);
+    */
+
+    /*
       // Asynchronous saving to file.
       // (the rest of the code will execute only after the saving is done)
       await this.processBufferedSavingRequests();
@@ -251,7 +333,7 @@ export class SaveableObject extends AttributableClass
       // All save requests are processed, mark the buffer as empty.
       // (if will also hopefully flag allocated data for freeing from memory)
       this.saveRequests = [];
-    }
+    */
   }
 
   /*
@@ -438,7 +520,18 @@ export class SaveableObject extends AttributableClass
       // Asynchronous saving to file.
       // (the rest of the code will execute only after the saving is done)
       await FileSystem.writeFile(saveRequests, jsonString);
+
+      /// TODO: Remove request from the queue
+      /// TODO: Call callback to finish waiting for this saving process.
     }
+
+    /// TODO: Ne tak rychle. Pokud mi někdo může přidávat requesty
+    /// v průběhu zpracování, tak to znamená, že je musím odebírat
+    // po jednom a v každém cyklu znovu testovat, jestli tam náhodou
+    // nějaký nepřibyl.
+
+    // All save requests are processed, mark the buffer as empty.
+    this.saveRequests = [];
   }
 
   private bufferSaveRequest(filePath: string)
