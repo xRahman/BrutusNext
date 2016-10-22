@@ -234,8 +234,6 @@ export class Server
   // Loads the game (or creates a new one if there is no ./data directory).
   public async run(telnetPort: number)
   {
-    ///test();
-
     if (this.game !== null)
     {
       ERROR("Game already exists. Server.run() can only be done once");
@@ -244,6 +242,7 @@ export class Server
 
     this.game = new Game();
 
+    /// TEST
     await test();
 
     /*
@@ -350,8 +349,38 @@ async function delay(miliseconds: number)
   );
 }
 
+function resolveTest(promise: Promise<void>): Promise<void>
+{
+  console.log("Entering resolveTest()");
+
+  return promise;
+}
+
 async function test()
 {
+  let resolveCallback = null;
+
+  console.log("Creating Promise");
+
+  let promise = new Promise
+  (
+    (resolve, reject) =>
+    {
+      // Here we will just remember 'resolve' callback function.
+      resolveCallback = resolve;
+    }
+  );
+
+  console.log("Setting timeout");
+
+  setTimeout(resolveCallback, 2000);
+
+  console.log("Awaiting resolveTest()");
+
+  await resolveTest(promise);
+
+  console.log("resolveTest() returned");
+
   /*
   let account = EntityManager.createNamedEntity
   (
