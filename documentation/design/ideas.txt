@@ -1,4 +1,11 @@
-﻿IDEA: Barvy textu místnosti podle room sectoru?
+﻿Follow a battle-Follow
+- obyč (tj. grupové) follow nebude followovat, když je někdo z grupy
+  v boji
+  - jen bacha na to, aby to nebylo zmatkovité. 
+
+-----------------------------------------------------------------
+
+IDEA: Barvy textu místnosti podle room sectoru?
 - tmavě modrá voda, světle modrá (nebo cyan) in flight, etc.?
 
 

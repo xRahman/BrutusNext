@@ -252,7 +252,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
 
     if (this.connection.account !== null)
     {
-      let accountName = this.connection.account.name;
+      let accountName = this.connection.account.getName();
 
       player = "Player " + accountName;
     }

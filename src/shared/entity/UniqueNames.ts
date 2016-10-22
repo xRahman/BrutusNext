@@ -3,62 +3,14 @@
 
   Auxiliary class that checks uniqueness of entity names.
 */
-
+/*
 'use strict';
 
-import {FileSystem} from '../../shared/fs/FileSystem';
-import {NameLockRecord} from '../../shared/entity/NameLockRecord';
+///import {FileSystem} from '../../shared/fs/FileSystem';
+///import {NameLockRecord} from '../../shared/entity/NameLockRecord';
 
 export class UniqueNames
 {
-  public static getNameLockFilePath
-  (
-    name: string,
-    cathegory: UniqueNames.Cathegory
-  )
-  {
-    // Path is something like '/data/names/accounts/Rahman.json'.
-    return '/data/names/' + UniqueNames.Cathegory[cathegory]
-      + '/' + name + '/json';
-  }
-
-  public static async exists(name: string, cathegory: UniqueNames.Cathegory)
-  {
-    let filePath = UniqueNames.getNameLockFilePath(name, cathegory);
-
-    return await FileSystem.exists(filePath);
-  }
-
-  // -> Returns 'true' if file is successfuly created.
-  //    Returns 'false' otherwise.
-  public static async createNameLockFile
-  (
-    id: string,
-    name: string,
-    cathegory: UniqueNames.Cathegory
-  )
-  {
-    let nameLockRecord = new NameLockRecord();
-    let filePath = UniqueNames.getNameLockFilePath(name, cathegory);
-
-    nameLockRecord.id = id;
-
-    /// TODO: Rozložit filePath na directory a fileName.
-    await nameLockRecord.saveToFile(filePath);
-  }
-
-  // -> Returns 'true' if file is successfuly deleted.
-  //    Returns 'false' otherwise. 
-  public static async deleteNameLockFile
-  (
-    name: string,
-    cathegory: UniqueNames.Cathegory
-  )
-  {
-    let filePath = UniqueNames.getNameLockFilePath(name, cathegory);
-
-    return await FileSystem.deleteFile(filePath);
-  }
 }
 
 // ------------------ Type declarations ----------------------
@@ -84,3 +36,4 @@ export module UniqueNames
     world
   }
 }
+*/
