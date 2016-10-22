@@ -121,7 +121,7 @@ export class AdminList extends AutoSaveableObject
 
     if (targetAdminLevel === AdminLevel.CREATOR)
     {
-      actor.receive(target.name + " already has"
+      actor.receive(target.getName() + " already has"
         + " the highest possible admin level.",
         Message.Type.COMMAND);
       return;
@@ -129,7 +129,7 @@ export class AdminList extends AutoSaveableObject
 
     if (actorAdminLevel <= targetAdminLevel)
     {
-      actor.receive("You can't promote " + target.name +
+      actor.receive("You can't promote " + target.getName() +
         " to higher admin level than your own.",
         Message.Type.COMMAND);
       return;
@@ -160,7 +160,7 @@ export class AdminList extends AutoSaveableObject
 
     if (targetAdminLevel === AdminLevel.MORTAL)
     {
-      actor.receive(target.name + " already has"
+      actor.receive(target.getName() + " already has"
         + " the lowest possible admin level.",
         Message.Type.COMMAND);
       return;
@@ -237,7 +237,7 @@ export class AdminList extends AutoSaveableObject
     level: AdminLevel
   )
   {
-    let message = target.name + " has been " + action + "d"
+    let message = target.getName() + " has been " + action + "d"
       + " to level " + AdminLevel[level];
 
     // Send info message to all online players.

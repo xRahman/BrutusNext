@@ -49,8 +49,14 @@ export class Account extends NamedEntity
 
     this.name = name;
     */
+
+    /// Tohle už takhle jednoduše nastavit nejde, na setování this.name je
+    /// třeba použít:
+    /// this.setUniqueName(name, NamedEntity.UniqueNameCathegory.accounts);
+    /*
     // Account names are unique.
     this.isNameUnique = true;
+    */
   }
 
   ///public static get SAVE_DIRECTORY() { return "./data/accounts/"; }
@@ -136,7 +142,7 @@ export class Account extends NamedEntity
     else
     {
       ERROR("Attempt to request last login date of account"
-        + " " + this.name + " which doesn't have it"
+        + " " + this.getName() + " which doesn't have it"
         + " initialized yet");
 
       return "<unknown date>";
@@ -182,7 +188,7 @@ export class Account extends NamedEntity
       return null;
 
     this.addCharacter(characterName);
-    this.logCharacterCreation(this.name, characterName);
+    this.logCharacterCreation(this.getName(), characterName);
 
     return character;
   }
@@ -218,7 +224,7 @@ export class Account extends NamedEntity
     {
       ERROR("Attempt to get name of character"
         + " number " + charNumber + " from account"
-        + " " + this.name + " which only has "
+        + " " + this.getName() + " which only has "
         + " " + this.getNumberOfCharacters()
         + " characters");
       return null;
@@ -236,7 +242,7 @@ export class Account extends NamedEntity
     else
     {
       ERROR("Unable to update ip adress of last login info of"
-        + " accout " + this.name + " because this.connection"
+        + " accout " + this.getName() + " because this.connection"
         + " is null");
     }
 
@@ -246,7 +252,7 @@ export class Account extends NamedEntity
 
   public logout(action: string)
   {
-    let accountName = this.name;
+    let accountName = this.getName();
     let ipAddress = this.connection.ipAddress;
 
     /*
@@ -328,7 +334,7 @@ export class Account extends NamedEntity
     if (characterName === "")
     {
       ERROR("Attempt to add new character with empty name to"
-        + " account " + this.name + ". Character is not added");
+        + " account " + this.getName() + ". Character is not added");
       return;
     }
 
@@ -369,7 +375,7 @@ export class Account extends NamedEntity
   {
     Syslog.log
     (
-      "Player " + this.name + " has created a new character: "
+      "Player " + this.getName() + " has created a new character: "
       + characterName,
       Message.Type.SYSTEM_INFO,
       AdminLevel.IMMORTAL
