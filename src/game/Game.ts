@@ -90,6 +90,9 @@ export class Game
       World
     );
 
+    if (this.world === null)
+      return;
+
     // Create system realm.
     this.world.createSystemRealm();
 

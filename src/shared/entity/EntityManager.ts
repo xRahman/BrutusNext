@@ -145,7 +145,7 @@ export class EntityManager
   // Return type is actualy <T>, Promise will get resolved automatically.
   : Promise<T>
   {
-    if (NamedEntity.isNameTaken(name, cathegory))
+    if (await NamedEntity.isNameTaken(name, cathegory))
     {
       ERROR("Attempt to create unique entity '" + name + "' in cathegory"
         + " '" + NamedEntity.UniqueNameCathegory[cathegory] + "' which"
