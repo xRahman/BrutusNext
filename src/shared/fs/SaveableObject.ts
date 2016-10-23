@@ -32,17 +32,9 @@ export class SaveableObject extends AttributableClass
   // by overriding a checkVersion() method;
   protected version = 0;
 
-  // Buffer to stack save requests issued while already saving ourselves.
-  // Also serves as lock - if it's not null, it means we are already saving
-  // ourselves.
-  // (note: This property is not saved)
-  protected saveRequests: Array<string> = [];
-  protected static saveRequests = { isSaved: false };
-
   protected isProxy = false;
   // (note: This property is not saved)
   protected static isProxy = { isSaved: false };
-
 
   // ------------- Public static methods ----------------
 
@@ -94,6 +86,12 @@ export class SaveableObject extends AttributableClass
 
   public async loadFromFile(filePath: string)
   {
+    // Note:
+    //  Unlike writing the same file while it is saving, loading from
+    //  the same file while it is loading is not a problem (according
+    //  to node.js filestream documentation). So we don't need to bother
+    //  with loading locks.
+
     // Static method is used because entities need to be able to load
     // jsonObject first and create an instance of SaveableObject from
     // type information read from it - so the loading of jsonObject
@@ -102,21 +100,6 @@ export class SaveableObject extends AttributableClass
 
     // 'filePath' is passed just so it can be printed to error messages.
     this.loadFromJsonObject(jsonObject, filePath);
-
-    /*
-    //  Unlike writing the same file while it is saving, loading from
-    //  the same file while it is loading is not a problem (according
-    //  to node.js filestream documentation). So we don't need to bother
-    //  with loading locks.
-
-    // Asynchronous reading from the file.
-    // (the rest of the code will execute only after the reading is done)
-    //jsonString = await promisifiedFS.readFile(filePath, 'utf8');
-    let jsonString = await FileSystem.readFile(filePath);
-
-    // filePath is passed just so it can be printed to error messages.
-    this.loadFromJsonString(jsonString, filePath);
-    */
   }
 
   public async saveToFile(directory: string, fileName: string)
@@ -213,42 +196,24 @@ export class SaveableObject extends AttributableClass
   // This is just a generic async function that will finish
   // when 'promise' passed as it's parameter gets resolved.
   // (it only makes sense if you also store 'resolve' callback
-  //  of the promise so you can call it to finish this awaiter)
+  //  of the promise so you can call it to finish this awaiter.
+  //  See SavingRecord.addRequest() for example how is it done)
   private saveAwaiter(promise: Promise<void>)
   {
     return promise;
   }
 
-  /*
-  // Creates a generic Promise<void> object. Also Returns
-  // it's 'resolve' handler, so you can resolve the promise
-  // manully.
-  private createPromise()
-  {
-    // Return value of this method.
-    let result = { callback: null, promise: null };
-
-    result.promise = new Promise
-    (
-      (resolve, reject) =>
-      {
-        // Here we will just remember 'resolve' callback function.
-        result.callback = resolve;
-      }
-    );
-
-    return result;
-  }
-  */
-
-  private async saveContentsToFile(filePath: string)
+  // -> Returns 'true' if contents was succesfully written.
+  //    Returns 'false' otherwise.
+  private async saveContentsToFile(filePath: string): Promise<boolean>
   {
     // Following code is addresing 'feature' of node.js file saving
     // functions, which says that we must not attempt saving the same
     // file until any previous saving finishes (otherwise it is not
     // guaranteed that file will be saved correctly).
     //   To ensure this, we use SavingRegister to register all saving
-    // that is being done to each file and buffer requests if necessary.   
+    // that is being done to each file and buffer saving requests if
+    // necessary.   
     let promise = SavingRegister.requestSaving(filePath);
 
     // If SavingRegister.requestSaving returned 'null', it
@@ -259,105 +224,22 @@ export class SaveableObject extends AttributableClass
     // Note:
     //   saveAwaiter() function will get finished by SavingRegister
     // by calling resolve callback of the promise we have just been
-    // issued when previous saving finishes and it's our turn. 
+    // issued when previous saving finishes. 
     if (promise !== null)
       await this.saveAwaiter(promise);
 
-    /// TODO: Zrusit saving buffer a vse kolem nej.
+    // Now it's our turn so we can save ourselves.
+    let jsonString = this.saveToJsonString();
 
-    this.doTheFuckingSaving();
+    let success = await FileSystem.writeFile(filePath, jsonString);
 
-    // Remove the lock and also call resolve callback of whoever
-    // might be waiting after us.
+    // Remove the lock.
+    // (it will also trigger calling of resolve callback
+    //  of whoever might be waiting after us)
     SavingRegister.reportFinishedSaving(filePath);
 
-    /*
-    // 'this.saveRequests' serves both as buffer for request and as lock
-    // indicating that we are already saving something.
-    //   If there is some request in the queue before we add ours in it,
-    // it must mean that it is being processed already.
-    //
-    // The general idea is:
-    // - Either there is an instance of processBufferedSavingRequests()
-    //   async method already running (indicated by 'isSaving === true').
-    //   - In that case we just add the request to the buffer and let the
-    //     older instance of saveContentsToFile() method process it
-    //     (because it is still running so it will get to our request
-    //      eventually).
-    // - Or it is not.
-    //   - In that case we are becomming the running code that will save
-    //     this request and all future requests that will come before all
-    //     saving is done.
-    let isSaving = this.saveRequests.length !== 0;
-
-    // Here we create a generic Promise<void> object. We also obtain
-    // it's 'resolve' callback, so we can resolve this promise by
-    // calling result.callback(). This will later be used to finish
-    // saveAwaiter() when our save request gets processed.
-    let result: { callback: null, promise: null } = this.createPromise();
-
-    /// TODO: Pokud se request nepřidá (protože jde o opakovaný request
-    ///   o save do stejného file), tak je stejně třeba přidat callback,
-    ///   aby se mohlo ukončit čekání na tenhle save request. 
-
-    // Push callback to saveRequests along with saveFilePath.
-    // Add request to the buffer.
-    this.bufferSaveRequest(filePath, result.callback);
-
-
-    // If we are not saving ourselves right now, process buffered requests.
-    if (!isSaving)
-    {
-      // Here we purposedly call this.processBufferedSavingRequests()
-      // without 'await', even though it is an async function.
-      //   The reason is, that we don't really want to wait for all
-      // save requests to be processed, we want to return as soon as
-      // OUR save request gets processed.
-      //   This is dobe by awaiting for our special 'awaiter' async
-      // function, which will get manually resolved when corresponding
-      // save request is processed by calling it's resolve callback. 
-      this.processBufferedSavingRequests();
-    }
-
-    // Now wait for our request to get processed.
-    // (waiting will end when this.processBufferedSavingRequests()
-    // calls our resolve callback)
-    await this.saveAwaiter(result.promise);
-    */
-
-    /*
-      // Asynchronous saving to file.
-      // (the rest of the code will execute only after the saving is done)
-      await this.processBufferedSavingRequests();
-
-      // All save requests are processed, mark the buffer as empty.
-      // (if will also hopefully flag allocated data for freeing from memory)
-      this.saveRequests = [];
-    */
+    return success;
   }
-
-  /*
-  private loadFromJsonString(jsonString: string, filePath: string)
-  {
-    let jsonObject = {};
-
-    try
-    {
-      jsonObject = JSON.parse(jsonString);
-    }
-    catch (e)
-    {
-      // Here we need fatal error, because data might already
-      // be partialy loaded so we could end up with broken entity.
-      FATAL_ERROR("Syntax error in JSON string: "
-        + e.message + " in file " + filePath);
-      return;
-    }
-
-    // filePath is passed just so it can be printed to error messages.
-    this.loadFromJsonObject(jsonObject, filePath);
-  }
-  */
 
   private saveToJsonString(): string
   {
@@ -458,9 +340,6 @@ export class SaveableObject extends AttributableClass
 
     jsonObject[NamedClass.CLASS_NAME_PROPERTY] = className;
 
-    /// DEBUG:
-    ///console.log("SaveableObject.saveToJsonObject()");
-
     // If 'this' is a proxy, 'for .. in' operator won't work on it,
     // because 'handler.enumerate()' which used to trap it has been
     // deprecated in ES7. So we have to use a hack - directly access
@@ -484,9 +363,6 @@ export class SaveableObject extends AttributableClass
       }
     }
 
-    /// DEBUG:
-    ///console.log("jsonObject: " + util.inspect(jsonObject));
-
     return jsonObject;
   }
 
@@ -506,72 +382,6 @@ export class SaveableObject extends AttributableClass
         + " class (" + this.className + ")");
     }
   }
-
-  private async processBufferedSavingRequests()
-  {
-    for (let saveRequests of this.saveRequests)
-    {
-      // Save ourselves to json string each time we are saving ourselves,
-      // because our current stat might change while we were saving (remember
-      // this is an async function so next step in this for cycle will be
-      // processed only after the previous saving ended).
-      let jsonString = this.saveToJsonString();
-
-      // Asynchronous saving to file.
-      // (the rest of the code will execute only after the saving is done)
-      await FileSystem.writeFile(saveRequests, jsonString);
-
-      /// TODO: Remove request from the queue
-      /// TODO: Call callback to finish waiting for this saving process.
-    }
-
-    /// TODO: Ne tak rychle. Pokud mi někdo může přidávat requesty
-    /// v průběhu zpracování, tak to znamená, že je musím odebírat
-    // po jednom a v každém cyklu znovu testovat, jestli tam náhodou
-    // nějaký nepřibyl.
-
-    // All save requests are processed, mark the buffer as empty.
-    this.saveRequests = [];
-  }
-
-  private bufferSaveRequest(filePath: string)
-  {
-    // Only push requests to save to different path.
-    // (there is no point in future resaving to the same file multiple times)
-    if (this.saveRequests.indexOf(filePath) !== -1)
-      this.saveRequests.push(filePath);
-  }
-
-  /*
-  // Returns true when request is buffered and there is no need to process
-  // it right now.
-  private bufferSaveRequest(filePath: string): boolean
-  {
-    // saveRequests serves both as buffer for request and as lock indicating
-    // that we are already saving something (it it contains something).
-    if (this.saveRequests.length !== 0)
-    {
-      // Saving to the same file while it is still being saved is not safe
-      // (according to node.js filestream documentation). So if this occurs,
-      // we won't initiate another save at once, just remember that a request
-      // has been issued (and where are we supposed to save ourselves).
-
-      // Only push requests to save to different path.
-      // (there is no point in future resaving to the same file multiple times)
-      if (this.saveRequests.indexOf(filePath) !== -1)
-        this.saveRequests.push(filePath);
-
-      return true;
-    }
-
-    // If saving is not going on right now, push the request to the
-    // buffer,
-    this.saveRequests.push(filePath);
-
-    // and return false to indicate, that it needs to be processed right away.
-    return false;
-  }
-  */
 
   // Loads a property of type Array from a JSON Array object.
   private loadArray
@@ -855,10 +665,6 @@ export class SaveableObject extends AttributableClass
     if (variable === null)
       return null;
 
-    /// DEBUG:
-    ///if (variable.isProxy === true)
-    ///  console.log("SaveableObject.saveVariable: 'variable' is a proxy");
-
     if (Array.isArray(variable))
       return this.saveArray(variable, description, className);
 
@@ -1093,60 +899,8 @@ export class SaveableObject extends AttributableClass
         + filePath);
     }
 
-    /*
-    let type = jsonObject.type;
-
-    if (type === undefined || type === null)
-    {
-      ERROR("Invalid 'type' when loading entity reference"
-        + " '" + propertyName + "' from JSON file "
-        + filePath);
-    }
-    */
-
     // Return an existing entity proxy if entity exists in
     // entityManager, invalid entity proxy otherwise.
     return EntityManager.createReference(id, Entity);
-
-    /*
-    //let entityRecord = this.entityRecords.get(id);
-
-    if (entity !== undefined)
-      return entity;
-
-
-    // If an entity with this 'id' already exists in hashmap,
-    // just return it's proxy.
-    if (entityRecord !== undefined)
-    {
-      let entityProxy = entityRecord.entityProxy;
-
-      ASSERT(entityProxy !== undefined && entityProxy !== null,
-        "Invalid entity proxy in entity record of entity with id "
-        + id);
-
-      ASSERT(entityProxy.className === type,
-        "Error while loading entity reference"
-        + " '" + propertyName + "' from file "
-        + filePath + ": Property 'type' saved"
-        + " in JSON doesn't match type of existing"
-        + " entity " + entityProxy.getErrorStringId()
-        + " that matches id saved in JSON");
-
-      return entityProxy;
-    }
-
-    // If entity with this 'id' doesn't exist yet, a new proxy will
-    // be created and it's handler's reference to entity will be set
-    // to null.
-    // (When this proxy is accessed, it will automatically ask
-    //  EntityManager if the entity is already awailable.)
-    return Server.entityManager.createInvalidEntityProxy
-    (
-      propertyName,
-      jsonObject,
-      filePath
-    );
-    */
   }
 }

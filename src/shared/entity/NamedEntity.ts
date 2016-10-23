@@ -81,7 +81,7 @@ export class NamedEntity extends Entity
 
     if (this.name === newName && this.uniqueNameCathegory === newCathegory)
       // No change, so there is nothing to do.
-      return;
+      return true;
 
     // Check if the new name is available.
     if (await NamedEntity.isNameTaken(newName, newCathegory))

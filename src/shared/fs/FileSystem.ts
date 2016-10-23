@@ -94,6 +94,8 @@ export class FileSystem
     return data;
   }
 
+  // -> Returns 'true' if file was succesfully written.
+  //    Returns 'false' otherwise.
   public static async writeFile(filePath: string, data: string)
   {
     try
@@ -111,12 +113,18 @@ export class FileSystem
         AdminLevel.IMMORTAL
       );
 
+      /*
       // Throw the exception so the mud will get terminated with error
       // message.
       // (create a new Error object, because the one we have cought here
       // doesn't contain stack trace)
       throw new Error;
+      */
+
+      return false;
     }
+
+    return true;
   }
 
   // -> Returns 'true' if file was succesfully deleted.

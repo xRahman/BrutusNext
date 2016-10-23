@@ -83,16 +83,17 @@ export class EntityManager
 
   // Shortcut so you can use EntityManager.createNamedEntity()
   // instead of Server.entityManager.createNamedEntity().
-  public static createNamedEntity<T>
+  public static async createNamedEntity<T>
   (
     name: string,
     cathegory: NamedEntity.UniqueNameCathegory,
     prototype: string,
     typeCast: { new (...args: any[]): T }
   )
-  : T
+  // Return type is actualy <T>, Promise will get resolved automatically.
+  : Promise<T>
   {
-    return Server.entityManager.createNamedEntity
+    return await Server.entityManager.createNamedEntity
     (
       name,
       cathegory,
@@ -131,31 +132,33 @@ export class EntityManager
 
   // ---------------- Public methods --------------------
 
-  // -> Returns null if such entity already exists.
-  public createNamedEntity<T>
+  // Creates uniquelly named entity.
+  // -> Returns null if such entity already exists or cannot be created
+  //    for other reasons.
+  public async createNamedEntity<T>
   (
     name: string,
     cathegory: NamedEntity.UniqueNameCathegory,
     prototype: string,
     typeCast: { new (...args: any[]): T }
   )
-  : T
+  // Return type is actualy <T>, Promise will get resolved automatically.
+  : Promise<T>
   {
     if (NamedEntity.isNameTaken(name, cathegory))
     {
-      ERROR("Attempt to create unique entity '" + name + "'"
-        + " in cathegory '" + cathegory + "' which already exists."
-        + " Entity is not created");
+      ERROR("Attempt to create unique entity '" + name + "' in cathegory"
+        + " '" + NamedEntity.UniqueNameCathegory[cathegory] + "' which"
+        + " already exists. Entity is not created");
       return null;
     }
-    /// TODO: Check unikátnosti jména
-    /// TODO: uniqueNamesCathegory (aby šlo checknout unikátnost jména).
 
     // Here we are dynamically typecasting to 'NamedEntity' in order
     // to be able to set entity.name.
     let entity = this.createEntity(prototype, NamedEntity);
 
-    entity.setUniqueName(name, cathegory);
+    if (await entity.setUniqueName(name, cathegory) === false)
+      return null;
 
     // Here we are dynamically typecasting back to requested type.
     //   Indirect call is used because 'dynamicCast' property doesn't

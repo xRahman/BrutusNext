@@ -82,7 +82,7 @@ export class Game
     }
 
     // Create world 'BrutusNext World' based on this prototype.
-    this.world = EntityManager.createNamedEntity
+    this.world = await EntityManager.createNamedEntity
     (
       'BrutusNext World',
       NamedEntity.UniqueNameCathegory.world,
