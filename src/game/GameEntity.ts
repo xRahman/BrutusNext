@@ -195,6 +195,7 @@ export class GameEntity extends ContainerEntity
   // that a player character has just entered game).
   public announcePlayerReconnecting() { }
 
+  /*
   protected getSaveDirectory(): string
   {
     let SAVE_DIRECTORY = super.getSaveDirectory();
@@ -204,6 +205,7 @@ export class GameEntity extends ContainerEntity
     else
       return SAVE_DIRECTORY;
   }
+  */
 
   /*
   protected getSaveFileName(): string

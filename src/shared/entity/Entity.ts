@@ -7,6 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../shared/error/ERROR';
+import {FATAL_ERROR} from '../../shared/error/FATAL_ERROR';
 import {NamedClass} from '../../shared/NamedClass';
 import {SaveableObject} from '../../shared/fs/SaveableObject';
 import {AutoSaveableObject} from '../../shared/fs/AutoSaveableObject';
@@ -97,11 +98,11 @@ export class Entity extends AutoSaveableObject
     // Return value of this method.
     let result = { jsonObject: null, className: null };
 
-    let filePath = Entity.getSavePath(id);
+    let path = Entity.getSavePath(id);
 
     // First we load data from file into generic (untyped)
     // javascript Object.
-    result.jsonObject = SaveableObject.loadJsonObjectFromFile(filePath);
+    result.jsonObject = SaveableObject.loadJsonObjectFromFile(path);
 
     // Then we extract 'className' property from jsonObject
     // that we have just loaded, so we know what class do we
@@ -110,7 +111,7 @@ export class Entity extends AutoSaveableObject
 
     if (result.className === null || result.className === undefined)
     {
-      ERROR("Invalid className in " + filePath + ". Unable to load entity");
+      ERROR("Invalid className in " + path + ". Unable to load entity");
       result.className = null
       result.jsonObject = null;
     }
@@ -118,20 +119,20 @@ export class Entity extends AutoSaveableObject
     return result;
   }
 
-  // Instances of entities are all saved to /data/entities as <id>.json
+  // Instances of entities are all saved to ./data/entities as <id>.json
   // (the method is static because in order to load an entity, save path
   //  needs to be constructed before entity exists).
   public static getSavePath(id: string)
   {
     if (id === null || id === undefined || id === "")
     {
-      let invalidPath = '/data/entities/_SAVE_PATH_CREATION_ERROR.json';
+      let invalidPath = './data/entities/_SAVE_PATH_CREATION_ERROR.json';
 
       ERROR("Invalid id, " + invalidPath + " will be used");
       return invalidPath; 
     }
 
-     return "/data/entities/" + id + ".json";
+     return "./data/entities/" + id + ".json";
   }
 
   public static isValid(entity: Entity)
@@ -189,9 +190,9 @@ export class Entity extends AutoSaveableObject
   // entity proxy (see EntityProxyHandler.get()).
   public dynamicCast<T>(typeCast: { new (...args: any[]): T })
   {
-    ERROR("Entity.isValid() function should never be called. You"
-      + " somehow managed to get your hands on direct reference to"
-      + " entity instead of a proxy. That must never happen");
+    ERROR("Entity.dynamicCast() function should never be called."
+      + " You somehow managed to get your hands on direct reference"
+      + " to entity instead of a proxy. That must never happen");
 
     return null;
   }
@@ -236,10 +237,47 @@ export class Entity extends AutoSaveableObject
     return jsonObject;
   }
 
+  // Overrides AutoSaveableObject.getSaveDirectory().
+  protected getSaveDirectory(): string
+  {
+    /*
+    let idIsValid = this.getId() !== null
+                 && this.getId() !== undefined
+                 && this.getId() !== "";
+
+    if (!idIsValid)
+    {
+      ERROR("Unable to compose save directory, because"
+        + " entity " + this.getErrorIdString() + " has"
+        + " an invalid id");
+      return null;
+    }
+    */
+
+    return './data/entities/';
+  }
+
+  protected getSaveFileName(): string
+  {
+    let idIsValid = this.getId() !== null
+                 && this.getId() !== undefined
+                 && this.getId() !== "";
+
+    if (!idIsValid)
+    {
+      ERROR("Unable to compose save directory, because"
+        + " entity " + this.getErrorIdString() + " has"
+        + " an invalid id");
+      return null;
+    }
+
+    return this.getId() + '.json';
+  }
+
   // Constructs a save directory for an entity of type 'className'
   // by appending it to 'rootDirectory' (which should be something
   // like './data/prototypes/')
-  public static getSaveDirectory(className: string, rootDirectory: string)
+  public static getPrototypeSaveDirectory(className: string, rootDirectory: string)
   {
     let PrototypeClass = Server.classFactory.getClass(className);
     let errorPath =
@@ -286,7 +324,11 @@ export class Entity extends AutoSaveableObject
       return;
     }
 
-    await this.saveToFile(this.getSaveDirectory(), this.getSaveFileName());
+    await this.saveToFile
+    (
+      this.getPrototypeSaveDirectory(),
+      this.getSaveFileName()
+    );
   }
 
   // Returns something like 'Connection (id: d-imt2xk99)'
@@ -315,17 +357,19 @@ export class Entity extends AutoSaveableObject
   }
   */
 
-  protected getSaveDirectory(): string
+  protected getPrototypeSaveDirectory(): string
   {
     /// TODO: Možná ten prefix schovat na nějaké lepší místo...
     /// (třeba k hashmapě, která bude mapovat idčka na entity)
-    return Entity.getSaveDirectory(this.className, './data/entities/');
+    return Entity.getPrototypeSaveDirectory(this.className, './data/entities/');
   }
 
+  /*
   protected getSaveFileName(): string
   {
     return this.id + '.json';
   }
+  */
 
   /*
   protected getSaveDirectory(): string
@@ -357,4 +401,18 @@ export class Entity extends AutoSaveableObject
     return this.getIdStringValue() + ".json";
   }
   */
+
+  // This method exists only to prevent accidental
+  // delcaring of 'then' property. See error message
+  // inside this method for more info.
+  protected then()
+  {
+    FATAL_ERROR("Attempt to access 'then' property"
+      + " of entity " + this.getErrorIdString() + "."
+      + " Property 'then' is accessed by async functions"
+      + " when their returun value in order to check if"
+      + " return value is already a Promise or it needs"
+      + " to be promisified. It's an ugly hack, but it"
+      + " forces us never to use property named 'then'");
+  }
 }

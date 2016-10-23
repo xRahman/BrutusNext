@@ -139,12 +139,12 @@ export class NamedEntity extends Entity
   )
   {
     // Name lock file path is something like
-    // '/data/names/accounts/Rahman.json'.
+    // './data/names/accounts/Rahman.json'.
     // It's existence means that account name
     // 'Rahman' is already used.
-    let filePath = NamedEntity.getNameLockFilePath(name, cathegory);
+    let path = NamedEntity.getNameLockFilePath(name, cathegory);
 
-    return await FileSystem.exists(filePath);
+    return await FileSystem.exists(path);
   }
 
   private static getNameLockFileName(name: string)
@@ -155,8 +155,8 @@ export class NamedEntity extends Entity
 
   private static getNameLockDirectory(cathegory: NamedEntity.UniqueNameCathegory)
   {
-    // Name lock directory is something like '/data/names/accounts/'.
-    return '/data/names/' + NamedEntity.UniqueNameCathegory[cathegory] + '/';
+    // Name lock directory is something like './data/names/accounts/'.
+    return './data/names/' + NamedEntity.UniqueNameCathegory[cathegory] + '/';
   }
 
   public static getNameLockFilePath
@@ -165,7 +165,7 @@ export class NamedEntity extends Entity
     cathegory: NamedEntity.UniqueNameCathegory
   )
   {
-    // Path is something like '/data/names/accounts/Rahman.json'.
+    // Path is something like './data/names/accounts/Rahman.json'.
     return NamedEntity.getNameLockDirectory(cathegory)
       + NamedEntity.getNameLockFileName(name);
   }
@@ -180,7 +180,7 @@ export class NamedEntity extends Entity
   {
     let nameLockRecord = new NameLockRecord();
 
-    // Name lock directory is something like '/data/names/accounts/'.
+    // Name lock directory is something like './data/names/accounts/'.
     let directory = NamedEntity.getNameLockDirectory(cathegory);
 
     // Name lock file name is something like 'Rahman.json'.
@@ -197,10 +197,13 @@ export class NamedEntity extends Entity
   //    Returns 'false' otherwise. 
   private async deleteNameLockFile()
   {
-    let filePath =
-      NamedEntity.getNameLockFilePath(this.name, this.uniqueNameCathegory);
+    let path = NamedEntity.getNameLockFilePath
+    (
+      this.name,
+      this.uniqueNameCathegory
+    );
 
-    return await FileSystem.deleteFile(filePath);
+    return await FileSystem.deleteFile(path);
   }
 }
 
@@ -210,14 +213,14 @@ export class NamedEntity extends Entity
 // It must be declared after the class because Typescript says so...
 export module NamedEntity
 {
-  // Names of unique-named entities are unique only within each
-  // cathegory, so you can have for example account Rahman and
-  // character Rahman. These cathegories also serve as names of
-  // directories in /data with files translating unique Names to
-  // entity ids. So there will be file /data/names/accounts/Rahman.json
-  // and  /data/names/characters/Rahman.json.
+  // Names of unique-named entities are unique only within each cathegory,
+  // so you can have for example account Rahman and character Rahman.
+  // These cathegories also serve as names of directories in ./data with
+  // files translating unique Names to entity ids. So there will be
+  // file './data/names/accounts/Rahman.json'
+  // and './data/names/characters/Rahman.json'.
   // (this is the reason why cathegories are lower case - so we don't
-  // have uppercase names of directories in /data)
+  // have uppercase names of directories in ./data)
   export enum UniqueNameCathegory
   {
     accounts,

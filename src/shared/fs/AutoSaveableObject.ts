@@ -24,10 +24,13 @@ export abstract class AutoSaveableObject extends SaveableObject
   
   public async save()
   {
-    // DEBUG:
-    console.log("AutoSaveableObject.save()");
+    let directory = this.getSaveDirectory();
+    let fileName = this.getSaveFileName();
 
-    await this.saveToFile(this.getSaveDirectory(), this.getSaveFileName());
+    if (directory === null || fileName === null)
+      return;
+
+    await this.saveToFile(directory, fileName);
   }
 
   public async load()
