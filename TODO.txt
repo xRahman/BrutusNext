@@ -1,3 +1,32 @@
+TODO: World má sice reference na vybrané entity, ale ty entity v něm
+  nejsou vložené (respektive Realmy v něm nejsou vložené, ten zbytek
+  zas rekuzivně do svého nadřazeného konteineru), takže se nesavujou.
+
+TODO:
+  - ne všechny entity v rámci worldu by měly mít unikátní jména.
+    Třeba roomy by nemusely.
+Hmm, to bych asi měl nějak ošetřit na úrovni prototypu - jestli setName()
+  setne unikátní jméno nebo ne (čili možná cathegory nesetovat v rámci
+  setName, ale v konstruktoru/deklaraci?). 
+
+TODO: getSaveDirectory může vrátit null
+  - obecně při vytváření cesty nemá smysl dělat něco jako "INVALID_SAVE",
+    protože by se mi stejně přepisovaly entity přes sebe.
+
+IDEA: Množení referencí by šlo ještě vyřešit tak, že isValid() nebude
+  automaticky obnovovat referenci - tj. bude to nutit k tomu, vždycky
+  si od Entity manageru vzít novou referenci, když ta stará přestala
+  být valid.
+  - To je asi rozumné řešení, protože automatická validace dotazem na
+    isValid() není zrovna intuitivní - zahlásí mi to chybu na invalid
+    přístup, já si pak na stejné místo dám isValid() a ono se to najednou
+    bude tvářit jako validní reference.
+Výhledově by samozřejmě stále bylo fajn, kdyby to šlo pořešit úplně
+automaticky a reference zachovávaly identitu, ale dokud to nepůjde, tak
+je asi nejlepší řešení prostě jen hlásit invalid reference jako invalid
+a nechat na uživateli, ať si je sám updatne na aktuální, když to potřebuje.
+
+
 TODO: SaveableOject, bufferování requestů
   - mělo by to být tak, že saveToFile() se vrátí až poté, co je skutečně
     savnuto (a ideálně poté, co je savnut její request, ne až když se

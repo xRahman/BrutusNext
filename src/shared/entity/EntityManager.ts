@@ -659,16 +659,16 @@ export class EntityManager
     cathegory: NamedEntity.UniqueNameCathegory
   )
   {
-    // File path is something like '/data/names/accounts/Rahman.json'.
-    let filePath = NamedEntity.getNameLockFilePath(name, cathegory);
+    // File path is something like './data/names/accounts/Rahman.json'.
+    let path = NamedEntity.getNameLockFilePath(name, cathegory);
 
     let idRecord = new NameLockRecord();
 
-    await idRecord.loadFromFile(filePath);
+    await idRecord.loadFromFile(path);
 
     if (idRecord.id === null || idRecord.id === undefined)
     {
-      ERROR("Failed to load id from file " + filePath);
+      ERROR("Failed to load id from file " + path);
       return null;
     }
 

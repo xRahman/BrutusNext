@@ -116,7 +116,7 @@ export abstract class Flags extends SaveableObject
   (
     jsonObject: Object,
     propertyName: string,
-    filePath: string
+    path: string
   )
   {
     if (propertyName === 'flags')
@@ -127,7 +127,7 @@ export abstract class Flags extends SaveableObject
     }
     else
     {
-      super.loadPropertyFromJsonObject(jsonObject, propertyName, filePath);
+      super.loadPropertyFromJsonObject(jsonObject, propertyName, path);
     }
   }
 

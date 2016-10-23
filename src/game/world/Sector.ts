@@ -28,7 +28,7 @@ export class Sector extends GameEntity
 
   // -------------- Protected accessors -----------------
 
-  protected static get SAVE_DIRECTORY() { return "./data/sectors/"; }
+  ///protected static get SAVE_DIRECTORY() { return "./data/sectors/"; }
 
   // ---------------- Public methods --------------------
 

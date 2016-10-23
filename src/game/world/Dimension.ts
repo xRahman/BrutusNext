@@ -25,7 +25,7 @@ export class Dimension extends GameEntity
     this.version = 0;
   }
 
-  protected static get SAVE_DIRECTORY() { return "./data/dimensions/"; }
+  ///protected static get SAVE_DIRECTORY() { return "./data/dimensions/"; }
 
   // --------------- Public accessors -------------------
 
