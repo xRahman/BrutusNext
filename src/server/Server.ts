@@ -338,6 +338,8 @@ class PHandler
 ///import {NamedEntity} from '../shared/entity/NamedEntity';
 ///import {SaveableObject} from '../shared/fs/SaveableObject';
 
+// -------------------- test async delaye ---------------------------
+
 async function delay(miliseconds: number)
 {
   return new Promise<void>
@@ -349,16 +351,18 @@ async function delay(miliseconds: number)
   );
 }
 
-function resolveTest(promise: Promise<void>): Promise<void>
+// ------ test on-demand ukončování čekající async funkce ------------
+
+function resolveAwaiter(promise: Promise<void>): Promise<void>
 {
   console.log("Entering resolveTest()");
 
   return promise;
 }
 
-async function test()
+async function resolveTest()
 {
-  let resolveCallback = null;
+    let resolveCallback = null;
 
   console.log("Creating Promise");
 
@@ -377,9 +381,16 @@ async function test()
 
   console.log("Awaiting resolveTest()");
 
-  await resolveTest(promise);
+  await resolveAwaiter(promise);
 
   console.log("resolveTest() returned");
+}
+
+// ---------------------------------------------------------
+
+async function test()
+{
+  ///await resolveTest();
 
   /*
   let account = EntityManager.createNamedEntity
