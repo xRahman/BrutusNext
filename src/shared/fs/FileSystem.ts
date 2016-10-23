@@ -30,7 +30,12 @@ export class FileSystem
     {
       // Asynchronous reading from the file.
       // (the rest of the code will execute only after the reading is done)
-      data = await promisifiedFS.readFile(filePath, FileSystem.FILE_ENCODING);
+      data = await promisifiedFS.readFile
+      (
+        ///'"' + filePath + '"',
+        filePath,
+        FileSystem.FILE_ENCODING
+      );
     }
     catch (error)
     {
@@ -69,7 +74,12 @@ export class FileSystem
 
     try
     {
-      data = fs.readFileSync(filePath, FileSystem.FILE_ENCODING);
+      data = fs.readFileSync
+      (
+        ///'"' + filePath + '"',
+        filePath,
+        FileSystem.FILE_ENCODING
+      );
     }
     catch (error)
     {
@@ -102,7 +112,13 @@ export class FileSystem
     {
       // Asynchronous saving to file.
       // (the rest of the code will execute only after the saving is done)
-      await promisifiedFS.writeFile(filePath, data, FileSystem.FILE_ENCODING);
+      await promisifiedFS.writeFile
+      (
+        ///'"' + filePath + '"',
+        filePath,
+        data,
+        FileSystem.FILE_ENCODING
+      );
     }
     catch (error)
     {
@@ -133,6 +149,7 @@ export class FileSystem
   {
     try
     {
+      ///await promisifiedFS.unlink('"' + filePath + '"');
       await promisifiedFS.unlink(filePath);
     }
     catch (error)
@@ -152,12 +169,13 @@ export class FileSystem
 
   public static async exists(filePath: string)
   {
-    return await promisifiedFS.exists(filePath);
+    return await promisifiedFS.exists('"' + filePath + '"');
+    ///return await promisifiedFS.exists(filePath);
   }
 
   public static existsSync(filePath: string)
   {
-    return fs.existsSync(filePath);
+    return fs.existsSync('"' + filePath + '"');
   }
 
   // -> Returns 'true' if directory existed or was succesfully created.
@@ -166,6 +184,7 @@ export class FileSystem
   {
     try
     {
+      //await promisifiedFS.ensureDir('"' + directory + '"');
       await promisifiedFS.ensureDir(directory);
     }
     catch (error)
@@ -186,16 +205,17 @@ export class FileSystem
 
   // Directory is empty if it doesn't exist or there no files in it.
   // File is empty if it doesn't exist or it has zero size.
-  public static async isEmpty(path: string)
+  public static async isEmpty(filePath: string)
   {
-    ///return extfs.isEmptySync(path);
-    return await promisifiedFS.isEmpty(path);
+    ///return await promisifiedFS.isEmpty('"' + filePath + '"');
+    return await promisifiedFS.isEmpty(filePath);
   }
 
   // Directory is empty if it doesn't exist or there no files in it.
   // File is empty if it doesn't exist or it has zero size.
-  public static isEmptySync(path: string)
+  public static isEmptySync(filePath: string)
   {
-    return extfs.isEmptySync(path);
+    ///return extfs.isEmptySync('"' + filePath + '"');
+    return extfs.isEmptySync(filePath);
   }
 }

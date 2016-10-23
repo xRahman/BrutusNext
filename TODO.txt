@@ -22,12 +22,13 @@ ALGORITHM:
 globální saveProcessBuffer bude hashmapa.
   klíč: savePath
   value: true/false? Možná taky odkaz na následující save proces.
-
+[done]
 
 TODO: Handle file operation return variables in SaveableObject.
 
 IDEA: vykašlat se na flagu isNameUnique, savovat pouze cathegory.
 - když je cathegory null, jméno není unique.
+[done]
 
 TODO: Sjednotit FileSystem
  - buď tam házet FATAL_ERROR
@@ -37,16 +38,12 @@ je fatal_error.
 - ideálně asi vracet ten boolean (obecně by měl mud být co nejodolnější proti
   crashům).
 
-IDEA: Unikátnost jména nastavovat do static atributů
-(jako isSaved, tak isUnique)
-  - na druhou stranu pak se mi to nesavne do souboru, takže to asi není
-    dobrej nápad.
-
 TODO: Projít všechno zděděné z Entity a odstranit zbytky staré
   adresářové struktury
 
 TODO: Rename named entity - musí přesavovat soubor v /data/names
- - viz class NamedEntity  
+ - viz class NamedEntity
+ [snad done]
 
 TODO: Rozhodnout, co se bude savovat v accountu (idčka?, jména + další info?)
 
