@@ -165,7 +165,7 @@ export class Account extends NamedEntity
     return this.connection.isInGame();
   }
 
-  public createCharacter(characterName: string): Character
+  public async createCharacter(characterName: string): Promise<Character>
   {
     let characterList = Game.characters;
 
@@ -177,7 +177,7 @@ export class Account extends NamedEntity
       return null;
     }
 
-    let character = characterList.createUniqueCharacter
+    let character = await characterList.createUniqueCharacter
     (
       characterName,
       this.connection

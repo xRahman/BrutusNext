@@ -79,7 +79,8 @@ export class LobbyProcessor
         break;
 
       case "1": // Create new character.
-        this.createCharacter();
+        ///await this.createCharacter(command);
+        await this.getCharacterName();
         break;
 
       default:
@@ -236,12 +237,40 @@ export class LobbyProcessor
     await this.enterGame(characterName);
   }
 
-  private createCharacter()
+  private async getCharacterName()
+  {
+    /// TODO:
+    /// Poslat prompt "Enter character name:"
+    /// Přepnout stage na GET_CHARACTER_NAME
+  }
+
+  private async createCharacter()
   {
     /// TODO
+    /// Tohle nebude tak jednoduchý - tohle je pouze state change function,
+    /// po zmačknutí jedničky v menu (create character). Měla by jen hodit
+    // prompt na Enter character name, vlastní vytváření characteru bude až
+    // v další fázi.
+    // - místo téhle funkce by měla být getCharacterName();
 
     /*
-    let character = account.createCharacter(account.name);
+    if (this.connection === null || this.connection.isValid() === false)
+    {
+      ERROR("Invalid connection, character is not created");
+      return null;
+    }
+
+    let account = this.connection.account;
+
+    if (account === null || account.isValid() === false)
+    {
+      ERROR("Invalid account, character is not created");
+      return null;
+    }
+
+    
+    let character =
+      await this.connection.account.createCharacter(characterName);
 
     Server.onCharacterCreation(character);
     */
