@@ -48,11 +48,11 @@ export class World extends GameEntity
 
   // ---------------- Public methods --------------------
 
-  public createSystemRealm()
+  public async createSystemRealm()
   {
     // Create a new realm prototype.
     Game.prototypeManager.createPrototype('SystemRealm', 'Realm');
-    this.systemRealm = EntityManager.createNamedEntity
+    this.systemRealm = await EntityManager.createNamedEntity
     (
       'System Realm',
       NamedEntity.UniqueNameCathegory.world,
@@ -64,7 +64,7 @@ export class World extends GameEntity
 
     // Create a new area prototype.
     Game.prototypeManager.createPrototype('SystemArea', 'Area');
-    this.systemArea = EntityManager.createNamedEntity
+    this.systemArea = await EntityManager.createNamedEntity
     (
       'System Area',
       NamedEntity.UniqueNameCathegory.world,
@@ -76,7 +76,7 @@ export class World extends GameEntity
 
     // Create a new room prototype.
     Game.prototypeManager.createPrototype('SystemRoom', 'Room');
-    this.systemRoom = EntityManager.createNamedEntity
+    this.systemRoom = await EntityManager.createNamedEntity
     (
       'System Room',
       NamedEntity.UniqueNameCathegory.world,
@@ -88,7 +88,7 @@ export class World extends GameEntity
 
     // Create a new room prototype.
     Game.prototypeManager.createPrototype('TutorialRoom', 'Room');
-    this.systemRoom = EntityManager.createNamedEntity
+    this.systemRoom = await EntityManager.createNamedEntity
     (
       'Tutorial Room',
       NamedEntity.UniqueNameCathegory.world,

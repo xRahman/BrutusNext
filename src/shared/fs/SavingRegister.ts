@@ -1,7 +1,9 @@
 /*
   Part of BrutusNEXT
 
-  TODO
+  Keeps track of all saving to physical files so we can prevent
+  simultaneous saving to the same file (which could lead to files
+  not being saved correctly).
 */
 
 'use strict';
@@ -11,10 +13,14 @@ import {SavingRecord} from '../../shared/fs/SavingRecord';
 
 export class SavingRegister
 {
+  //------------------ Private data ---------------------
+
   // Hashmap<[ string, SavingRecord ]>
   //   Key: full save path
   //   Value: SavingRecord
-  public static savingProcesses = new Map();
+  private static savingProcesses = new Map();
+
+  // ---------------- Static methods --------------------
 
   // -> Returns Promise if file is being saved right now so
   //      the caller needs to wait (using the returned Promise).

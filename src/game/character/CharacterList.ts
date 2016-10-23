@@ -20,12 +20,12 @@ export class CharacterList extends AbbrevSearchList
 {
   // ---------------- Public methods --------------------
 
-  public createUniqueCharacter
+  public async createUniqueCharacter
   (
     name: string,
     connection: Connection
   )
-  : Character
+  : Promise<Character>
   {
     if (this.exists(name))
     {
@@ -34,7 +34,7 @@ export class CharacterList extends AbbrevSearchList
       return null;
     }
 
-    let character = Server.entityManager.createNamedEntity
+    let character = await Server.entityManager.createNamedEntity
     (
       name,
       NamedEntity.UniqueNameCathegory.characters,

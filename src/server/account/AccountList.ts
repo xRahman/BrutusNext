@@ -82,7 +82,7 @@ export class AccountList extends NameSearchList
       return null;
     }
 
-    let account = EntityManager.createNamedEntity
+    let account = await EntityManager.createNamedEntity
     (
       // Name of the entity to create.
       accountName,
@@ -93,6 +93,11 @@ export class AccountList extends NameSearchList
       // Dynamic type cast.
       Account
     );
+
+    // Check if account has been created succesfully.
+    // (it might not be true for example if unique name was already taken)
+    if (account === null)
+      return null;
 
     // This creates and assigns hash. Actual password is not remembered.
     account.setPasswordHash(password);

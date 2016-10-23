@@ -1,18 +1,16 @@
 /*
   Part of BrutusNEXT
 
-  TODO
+  Keeps track of multiple requests to save the same file.
 */
 
 /*
-/// Ok, tak ne. Na deduplikaci requestu se vykaslu, je to moc slozity
-/// a v praxi se nejspis beztak nikdy nestane, ze by to bylo potreba.
-  Each SavingRecord corresponds to a single save file (with full path).
-  If more the two requests to save the same object (to save the same file)
-  came, we don't really want to save the object multiple times.
-    We need to save it once more, because there might be changes in data
-  that are already saved (even though the whole saving is not yet done),
-  but there is no point in resaving the same file more than once.
+  Note:
+    It would make sense to 'deduplicate' saving requests (beside the one
+    currencly beeing processed), because it doesn't make much sense to
+    resave the same file multiple times. But I'm not going to implement
+    it right now, because it wouldn't be trivial and it will probably be
+    extremely rare scenario anyways.
 */
 
 'use strict';
@@ -24,15 +22,19 @@ let FastPriorityQueue = require('fastpriorityqueue');
 
 export class SavingRecord
 {
-  // FastPriorityQueue of resolve callbacks.
-  public requests = null;
+  //------------------ Private data ---------------------
 
-  // 'resolveCallback' is a function used to finish
-  // waiting before processing next request.
+  // FastPriorityQueue of resolve callbacks.
+  private requests = null;
+
+  // ---------------- Public methods --------------------
+
   // -> Returns Promise which the caller need to use to wait for his turn.
   //    (by using 'await saveAwaiter(promise);')
   public addRequest(): Promise<void>
   {
+    // Callback function used to finish waiting before processing
+    // next saving request.
     let resolveCallback = null;
 
     // First we are going to create a new Promise object and
@@ -41,7 +43,7 @@ export class SavingRecord
     //   Explanation: Whoever initiated saving request needs to
     // wait using 'await saveAwaiter(promise);'. We will finish
     // this wait by calling respective resolve callback for this
-    // promise so the caller starts his own saving.
+    // promise so the caller proceeds with his own saving.
     let promise = new Promise
     (
       (resolve, reject) =>
@@ -61,8 +63,10 @@ export class SavingRecord
     return promise;
   }
 
-  // You should call hasMoreRequest() to ensure that there
-  // is something to pop before calling popRequest().
+  // Retrieves one item from the start of the queue.
+  // Note:
+  //   You should call hasMoreRequest() to ensure that there
+  //   is something to pop before calling popRequest().
   // -> Returns null if there no item to pop from the queue.
   public pollRequest()
   {
