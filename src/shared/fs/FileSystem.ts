@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {ERROR} from '../../shared/error/ERROR';
 import {Syslog} from '../../server/Syslog';
 import {AdminLevel} from '../../server/AdminLevel';
 import {Message} from '../../server/message/Message';
@@ -22,8 +23,11 @@ export class FileSystem
   private static get FILE_ENCODING() { return 'utf8'; }
 
   // -> Returns null if file could not be read.
-  public static async readFile(filePath: string)
+  public static async readFile(path: string)
   {
+    if (!FileSystem.isPathRelative(path))
+      return null;
+
     let data = null;
 
     try
@@ -32,8 +36,8 @@ export class FileSystem
       // (the rest of the code will execute only after the reading is done)
       data = await promisifiedFS.readFile
       (
-        ///'"' + filePath + '"',
-        filePath,
+        ///'"' + path + '"',
+        path,
         FileSystem.FILE_ENCODING
       );
     }
@@ -48,7 +52,7 @@ export class FileSystem
 
       Syslog.log
       (
-        "Unable to load file '" + filePath + "': " + reason,
+        "Unable to load file '" + path + "': " + reason,
         Message.Type.SYSTEM_ERROR,
         AdminLevel.IMMORTAL
       );
@@ -68,16 +72,19 @@ export class FileSystem
   }
 
   // -> Returns null if file could not be read.
-  public static readFileSync(filePath: string)
+  public static readFileSync(path: string)
   {
+    if (!FileSystem.isPathRelative(path))
+      return null;
+
     let data = null;
 
     try
     {
       data = fs.readFileSync
       (
-        ///'"' + filePath + '"',
-        filePath,
+        ///'"' + path + '"',
+        path,
         FileSystem.FILE_ENCODING
       );
     }
@@ -85,7 +92,7 @@ export class FileSystem
     {
       Syslog.log
       (
-        "Unable to load file '" + filePath + "': " + error.code,
+        "Unable to load file '" + path + "': " + error.code,
         Message.Type.SYSTEM_ERROR,
         AdminLevel.IMMORTAL
       );
@@ -106,16 +113,19 @@ export class FileSystem
 
   // -> Returns 'true' if file was succesfully written.
   //    Returns 'false' otherwise.
-  public static async writeFile(filePath: string, data: string)
+  public static async writeFile(path: string, data: string)
   {
+    if (!FileSystem.isPathRelative(path))
+      return false;
+
     try
     {
       // Asynchronous saving to file.
       // (the rest of the code will execute only after the saving is done)
       await promisifiedFS.writeFile
       (
-        ///'"' + filePath + '"',
-        filePath,
+        ///'"' + path + '"',
+        path,
         data,
         FileSystem.FILE_ENCODING
       );
@@ -124,7 +134,7 @@ export class FileSystem
     {
       Syslog.log
       (
-        "Unable to save file '" + filePath + "': " + error.code,
+        "Unable to save file '" + path + "': " + error.code,
         Message.Type.SYSTEM_ERROR,
         AdminLevel.IMMORTAL
       );
@@ -145,18 +155,21 @@ export class FileSystem
 
   // -> Returns 'true' if file was succesfully deleted.
   //    Returns 'false' otherwise.
-  public static async deleteFile(filePath: string)
+  public static async deleteFile(path: string)
   {
+    if (!FileSystem.isPathRelative(path))
+      return false;
+
     try
     {
-      ///await promisifiedFS.unlink('"' + filePath + '"');
-      await promisifiedFS.unlink(filePath);
+      ///await promisifiedFS.unlink('"' + path + '"');
+      await promisifiedFS.unlink(path);
     }
     catch (error)
     {
       Syslog.log
       (
-        "Unable to delete file '" + filePath + "': " + error.code,
+        "Unable to delete file '" + path + "': " + error.code,
         Message.Type.SYSTEM_ERROR,
         AdminLevel.IMMORTAL
       );
@@ -167,21 +180,31 @@ export class FileSystem
     return true;
   }
 
-  public static async exists(filePath: string)
+  public static async exists(path: string)
   {
-    return await promisifiedFS.exists('"' + filePath + '"');
-    ///return await promisifiedFS.exists(filePath);
+    if (!FileSystem.isPathRelative(path))
+      return false;
+
+    ///return await promisifiedFS.exists('"' + path + '"');
+    return await promisifiedFS.exists(path);
   }
 
-  public static existsSync(filePath: string)
+  public static existsSync(path: string)
   {
-    return fs.existsSync('"' + filePath + '"');
+    if (!FileSystem.isPathRelative(path))
+      return false;
+
+    ///return fs.existsSync('"' + path + '"');
+    return fs.existsSync(path);
   }
 
   // -> Returns 'true' if directory existed or was succesfully created.
   //    Returns 'false' otherwise. 
   public static async ensureDirectoryExists(directory: string)
   {
+    if (!FileSystem.isPathRelative(directory))
+      return false;
+
     try
     {
       //await promisifiedFS.ensureDir('"' + directory + '"');
@@ -205,17 +228,35 @@ export class FileSystem
 
   // Directory is empty if it doesn't exist or there no files in it.
   // File is empty if it doesn't exist or it has zero size.
-  public static async isEmpty(filePath: string)
+  public static async isEmpty(path: string)
   {
-    ///return await promisifiedFS.isEmpty('"' + filePath + '"');
-    return await promisifiedFS.isEmpty(filePath);
+    if (!FileSystem.isPathRelative(path))
+      return false;
+
+    ///return await promisifiedFS.isEmpty('"' + path + '"');
+    return await promisifiedFS.isEmpty(path);
   }
 
   // Directory is empty if it doesn't exist or there no files in it.
   // File is empty if it doesn't exist or it has zero size.
-  public static isEmptySync(filePath: string)
+  public static isEmptySync(path: string)
   {
-    ///return extfs.isEmptySync('"' + filePath + '"');
-    return extfs.isEmptySync(filePath);
+    if (!FileSystem.isPathRelative(path))
+      return false;
+
+    ///return extfs.isEmptySync('"' + path + '"');
+    return extfs.isEmptySync(path);
+  }
+
+  private static isPathRelative(path: string): boolean
+  {
+    if (path.substr(0, 2) !== './')
+    {
+      ERROR("File path '" + path + "' is not relative."
+        + " Ensure that it starts with './'");
+      return false;
+    }
+
+    return true;
   }
 }

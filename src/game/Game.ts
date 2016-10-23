@@ -6,9 +6,6 @@
 
 'use strict';
 
-/// DEBUG:
-const util = require('util');
-
 import {ERROR} from '../shared/error/ERROR';
 import {EntityManager} from '../shared/entity/EntityManager';
 import {NamedEntity} from '../shared/entity/NamedEntity';
@@ -84,7 +81,7 @@ export class Game
     // Create world 'BrutusNext World' based on this prototype.
     this.world = await EntityManager.createNamedEntity
     (
-      'BrutusNext World',
+      'Brutus World',
       NamedEntity.UniqueNameCathegory.world,
       'BrutusWorld',
       World
