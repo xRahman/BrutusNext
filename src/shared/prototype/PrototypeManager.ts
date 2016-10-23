@@ -97,7 +97,11 @@ export class PrototypeManager extends AutoSaveableObject
   {
     /// Tady by spravne melo byt super.save(), ale diky bugu v aktualni
     /// verzi v8 enginu nejde pouzit super uvnitr chainu asyc funkci.
-    await this.saveToFile(this.getSaveDirectory(), this.getSaveFileName());
+    await this.saveToFile
+    (
+      this.getSaveDirectory(),
+      this.getSaveFileName()
+    );
 
     await this.savePrototypes();
   }
@@ -256,15 +260,15 @@ export class PrototypeManager extends AutoSaveableObject
       let fileName = prototypeName + ".json";
        // Directory is relative to the save location of prototypeDataManger,
       // so we need to put it together.
-      let filePath =
+      let path =
         this.getSaveDirectory()
         + prototypeLocation.path
         + prototypeLocation.fileName;
 
-      await prototype.loadFromFile(filePath);
+      await prototype.loadFromFile(path);
 
       //// Scripts are saved to separate files.
-      //await prototype.loadScripts(filePath);
+      //await prototype.loadScripts(path);
 
 
       this.insertToPrototypeList(prototypeName, prototype);
@@ -274,7 +278,12 @@ export class PrototypeManager extends AutoSaveableObject
 
   private getPrototypeSavePath(prototypeName: string)
   {
-    return Entity.getSaveDirectory(prototypeName, this.getSaveDirectory());
+    //return Entity.getSaveDirectory(prototypeName, this.getSaveDirectory());
+    return Entity.getPrototypeSaveDirectory
+    (
+      prototypeName,
+      this.getSaveDirectory()
+    );
 
     /*
     // Prototype classes are stored in global.dynamicClasses.

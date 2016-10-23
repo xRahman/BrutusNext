@@ -7,9 +7,6 @@
 
 'use strict';
 
-/// DEBUG:
-const util = require('util');
-
 import {ERROR} from '../../shared/error/ERROR';
 import {FATAL_ERROR} from '../../shared/error/FATAL_ERROR';
 import {Entity} from '../../shared/entity/Entity';
@@ -132,7 +129,7 @@ export class SaveableObject extends AttributableClass
     {
       ERROR("Error when saving class " + this.className + ":"
         + " Directory path '" + directory + "' doesn't end with"
-        + "  '/ '. Object is not saved");
+        + " '/'. Object is not saved");
       return;
     }
 

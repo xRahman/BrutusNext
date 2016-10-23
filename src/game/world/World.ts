@@ -24,7 +24,7 @@ export class World extends GameEntity
 
   // -------------- Protected accessors -----------------
 
-  protected static get SAVE_DIRECTORY() { return "./data/"; }
+  ///protected static get SAVE_DIRECTORY() { return "./data/"; }
 
   //------------------ Public data ----------------------
 

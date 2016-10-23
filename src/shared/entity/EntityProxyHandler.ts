@@ -72,7 +72,7 @@ export class EntityProxyHandler
   (
     propertyName: string,
     jsonObject: any,
-    filePath: string
+    path: string
   )
   {
     this.id = jsonObject.id;
@@ -81,12 +81,12 @@ export class EntityProxyHandler
     ASSERT(this.id !== undefined && this.id !== null,
       "Invalid 'id' when loading entity reference"
       + " '" + propertyName + "' from JSON file "
-      + filePath);
+      + path);
 
     ASSERT(this.type !== undefined && this.type !== null,
       "Invalid 'type' when loading entity reference"
       + " '" + propertyName + "' from JSON file "
-      + filePath);
+      + path);
 
     // Set this.entity to null.
     this.invalidate();
@@ -177,9 +177,6 @@ export class EntityProxyHandler
   // (But not for: 'for .. in' operator - that's not possible to trap). 
   public has(target: any, property: any): boolean
   {
-    /// DEBUG:
-    ///console.log(">> EntityProxyHandler.has() launched");
-
     // Does the referenced entity exist?
     // (isEntityValid() updates this.entity if it's possible)
     if (this.isEntityValid() === false)
@@ -203,6 +200,19 @@ export class EntityProxyHandler
   // A trap for getting property values.
   public get(target: any, property: any)
   {
+    // This HACK is needed to circumvent HACK in implementation of
+    // async functions.
+    //   When an async function returns value, it tries to acces 'then'
+    // property of return value - probably to determine if return value
+    // is a Promise and promisify it if it's isn't.
+    //   If the return value is an entity proxy, it will trap this access
+    // and because 'then' property usually doesn't exist on entities, it
+    // would be reported as access to nonexisting property.
+    //   For the same reason then() method exists in Entity to ensure
+    // that it's not ever declared.
+    if (property === 'then')
+      return undefined;
+
     // 'isProxy' property can be used for debugging to test if reference
     //  is a proxy.
     //    Value of 'isProxy' will be 'undefined' if reference isn't a proxy).
@@ -268,10 +278,6 @@ export class EntityProxyHandler
     // (isEntityValid() updates this.entity if it's possible)
     if (this.isEntityValid() === false)
     {
-      /// DEBUG:
-      ///console.log("Entity is not valid");
-      ///process.exit(1);
-
       // This happens when printing out stack trace when accessing invalid
       // variable. Properties are scanned, which would lead to spam
       // to syslog with missleading information. Returning empty function
@@ -291,10 +297,6 @@ export class EntityProxyHandler
         Message.Type.INVALID_ACCESS,
         AdminLevel.IMMORTAL
       );
-
-      /// DEBUG:
-      ///console.log("After syslog");
-      ///process.exit(1);
 
       // 'InvalidValueProxyHandler.invalidVariable' is a function proxy,
       // so it is callable.
@@ -384,10 +386,6 @@ export class EntityProxyHandler
 
   private readProperty(property: string)
   {
-    /// DEBUG:
-    ///console.log("Entering readProperty()");
-    ///process.exit(1);
-
     if (this.entity['isProxy'] === true)
     {
       FATAL_ERROR("Internal entity reference is a proxy."
@@ -449,23 +447,10 @@ export class EntityProxyHandler
 
     if (this.entity === null)
     {
-      /// DEBUG:
-      ///console.log("this.entity is null, calling updateEnityReference()");
-      ///process.exit(1);
-
-      // Entity validity is no longer updated on each property access,
+      // Entity validity is not updated on each property access,
       // it is only updated on 'isValid()' call. This way you will
-      // get error message if you try to access invalid entity reference
-      // without calling 'isValid()' first.
-      /// /*
-      /// If we don't have a valid entity reference, we will
-      /// ask EntityManager if the entity exists (this can
-      /// happen for example if player quits - so our reference
-      /// is set to null - and then logs back again. In that case
-      /// our reference to entity is still null but entity exists
-      /// in entityManager, so we have to ask for it).
-      /// return this.updateEnityReference();
-      /// */
+      // get error message if you try to access invalid entity
+      // reference without calling 'isValid()' first.
       return false;
     }
 
@@ -489,28 +474,15 @@ export class EntityProxyHandler
       return false;
     }
 
-    //let entity = Server.entityManager.get(this.id);
     let entity = Server.entityManager.updateReference(this);
-
-    /// DEBUG:
-    ///console.log("After Server.entityManager.updateReference(this)");
-    ///process.exit(1);
 
     if (entity !== undefined)
     {
-      /// DEBUG:
-      ///console.log("Entity is NOT undefined, returning true");
-      ///process.exit(1);
-
       // Update our internal reference if entity does exist.
       this.entity = entity;
 
       return true;
     }
-
-    /// DEBUG:
-    ///console.log("Entity is undefined, returning false");
-    ///process.exit(1);
 
     return false;
   }

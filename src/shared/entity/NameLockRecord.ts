@@ -3,7 +3,7 @@
 
   Auxiliary class that saves and loads files that
   translate unique entity names to respective ids.
-  (for example /data/names/accounts/Rahman.json)
+  (for example ./data/names/accounts/Rahman.json)
 */
 
 'use strict';

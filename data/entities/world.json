@@ -1,0 +1,19 @@
+{
+  "name": "Brutus World",
+  "className": "BrutusWorld",
+  "version": 0,
+  "uniqueNameCathegory": 2,
+  "contents":
+  {
+    "className": "EntityList",
+    "version": 0,
+    "entities": []
+  },
+  "aliases": [],
+  "connection": null,
+  "location": null,
+  "systemRealm": null,
+  "systemArea": null,
+  "systemRoom": null,
+  "tutorialRoom": null
+}
