@@ -245,18 +245,15 @@ export class Server
     /// TEST
     await test();
 
-    /*
     // If 'data' directory doesn't exist at all, create and save a new world.
-    if (!FileSystem.existsSync("./data/"))
+    if (!FileSystem.existsSync('./data/'))
     {
-    */
-      // Flag flagNamesManager as ready without loading from file
+      // Mark flagNamesManager as ready without loading from file
       // (there is nowhere to load it from so we will just start
       //  with empty instance).
       this.flagNamesManager.ready = true;
 
       await this.game.createDefaultWorld();
-    /*
     }
     else
     {
@@ -266,7 +263,6 @@ export class Server
       // Load the game.
       await this.game.load();
     }
-    */
 
     this.startTelnetServer(telnetPort);
     this.startHttpServer();
