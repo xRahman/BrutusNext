@@ -92,7 +92,7 @@ async function main()
   Server.create();
   // Run the server at specified telnet port.
   // (Server.run() is async function)
-  Server.getInstance().run(cmdlineParser.port);
+  await Server.getInstance().run(cmdlineParser.port);
 }
 
 // Run the main() function.

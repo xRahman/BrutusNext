@@ -81,6 +81,18 @@ export class EntityManager
     return Server.entityManager.get(id, typeCast);
   }
 
+  // Shortcut so you can use EntityManager.createEntity()
+  // instead of Server.entityManager.createEntity().
+  public static createEntity<T>
+  (
+    className: string,
+    typeCast: { new (...args: any[]): T }
+  )
+  : T
+  {
+    return Server.entityManager.createEntity(className, typeCast);
+  }
+
   // Shortcut so you can use EntityManager.createNamedEntity()
   // instead of Server.entityManager.createNamedEntity().
   public static async createNamedEntity<T>
@@ -589,7 +601,7 @@ export class EntityManager
     }
     */
 
-    let entity: Entity = Server.classFactory.createInstance(className, Entity );
+    let entity: Entity = Server.classFactory.createInstance(className, Entity);
 
     /*
     // Set the old name back if entity had a name before.

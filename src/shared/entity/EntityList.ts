@@ -106,22 +106,11 @@ export class EntityList extends SaveableObject
   }
 
   // Saves all entities of which there are ids in this list.
-  public async save(containerIdString: string)
+  public async save()
   {
     // Iterate over all value in this.entityIds hashmap.
     for (let entity of this.entities.values())
     {
-      /// Reference na entitu (tedy proxy handler) nebude trackovat,
-      /// ze je entita smazana. Bude to proste invalid reference
-      /// a po pripadnem loadnuti z disku to stale bude invalid reference.
-      //
-      //if (!ASSERT(id.isEntityDeleted() === false,
-      //    "ContainerEntity " + containerIdString + " contains"
-      //    + " deleted entity with id " + id.getStringId() + ". Entity"
-      //    + " must be removed from its container before it is deleted"))
-      //  // There is no point in saving a deleted entity.
-      //  break;
-
       if (entity.isValid() === false)
         // There is no point in saving an entity that is not loaded in memory.
         break;
