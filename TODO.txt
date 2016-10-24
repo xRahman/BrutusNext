@@ -1,3 +1,8 @@
+ÚVAHA: /data/entities by možná mohly mít strukturu podle struktury světa,
+ tj. world/realms/areas/rooms etc.
+- když bych chtěl dejme tomu statnout nějakej offline room (může to vůbec
+  nastat?) tak mu prostě dám tuhle celou cestu. 
+
 TODO: World má sice reference na vybrané entity, ale ty entity v něm
   nejsou vložené (respektive Realmy v něm nejsou vložené, ten zbytek
   zas rekuzivně do svého nadřazeného konteineru), takže se nesavujou.

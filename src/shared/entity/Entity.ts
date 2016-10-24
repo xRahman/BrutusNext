@@ -277,7 +277,11 @@ export class Entity extends AutoSaveableObject
   // Constructs a save directory for an entity of type 'className'
   // by appending it to 'rootDirectory' (which should be something
   // like './data/prototypes/')
-  public static getPrototypeSaveDirectory(className: string, rootDirectory: string)
+  public static getPrototypeSaveDirectory
+  (
+    className: string,
+    rootDirectory: string
+  )
   {
     let PrototypeClass = Server.classFactory.getClass(className);
     let errorPath =

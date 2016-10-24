@@ -9,7 +9,6 @@
 
 import {EntityManager} from '../../shared/entity/EntityManager';
 import {SaveableObject} from '../../shared/fs/SaveableObject';
-//import {UniqueNames} from '../../shared/entity/UniqueNames';
 import {NamedEntity} from '../../shared/entity/NamedEntity';
 import {Server} from '../../server/Server';
 import {Game} from '../../game/Game';
@@ -60,6 +59,10 @@ export class World extends GameEntity
       Realm
     );
 
+    // Even though we keep direct reference to systemRealm, we stil
+    // need to add it to our contents so it's correctly saved, etc.
+    this.insertEntity(this.systemRealm);
+
     // --- System Area ---
 
     // Create a new area prototype.
@@ -72,38 +75,48 @@ export class World extends GameEntity
       Area
     );
 
+    // Add System Area to contents of System Realm.
+    this.systemRealm.insertEntity(this.systemArea);
+
     // --- System Room ---
 
     // Create a new room prototype.
     Game.prototypeManager.createPrototype('SystemRoom', 'Room');
-    this.systemRoom = await EntityManager.createNamedEntity
+    //this.systemRoom = await EntityManager.createNamedEntity
+    this.systemRoom = EntityManager.createEntity
     (
-      'System Room',
-      NamedEntity.UniqueNameCathegory.world,
       'SystemRoom',
       Room
     );
+    this.systemRoom.setName("System Room");
+
+    // Add System Room to contents of System Area.
+    this.systemArea.insertEntity(this.systemRoom);
 
     // --- Tutorial Room ---
 
     // Create a new room prototype.
     Game.prototypeManager.createPrototype('TutorialRoom', 'Room');
-    this.systemRoom = await EntityManager.createNamedEntity
+    this.tutorialRoom = EntityManager.createEntity
     (
-      'Tutorial Room',
-      NamedEntity.UniqueNameCathegory.world,
       'TutorialRoom',
       Room
     );
+    this.tutorialRoom.setName("Tutorial Room");
+
+    // Add Tutorial Room to contents of System Area.
+    this.systemArea.insertEntity(this.tutorialRoom);
   }
 
   // --------------- Protected methods ------------------
 
+  /*
   // What file is the world saved to.
   protected getSaveFileName(): string
   {
     return "world.json";
   }
+  */
 
   // ---------------- Private methods -------------------
 }

@@ -19,8 +19,8 @@ export class PrototypeManager extends AutoSaveableObject
   //   Key: prototype name
   //   Value: prototype
   public prototypes = new Map();
-  // Do not save variable prototypes
-  // (individual prototypes are saved to separate files).
+  // Do not save variable prototypes.
+  // (individual prototypes are saved to separate files)
   public static prototypes = { isSaved: false };
 
   /*

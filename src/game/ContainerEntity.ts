@@ -15,6 +15,8 @@
 
 'use strict';
 
+import {ERROR} from '../shared/error/ERROR';
+import {Entity} from '../shared/entity/Entity';
 import {EntityList} from '../shared/entity/EntityList';
 import {Game} from '../game/Game';
 import {GameEntity} from '../game/GameEntity';
@@ -29,6 +31,7 @@ export abstract class ContainerEntity extends CommandInterpretter
 
   // ---------------- Public methods --------------------
 
+  // Overrides AutoSaveableObject.save()
   // When saving an entity, all referenced entities are saved as well.
   // (This way when you save world, everything in it will get saved)
   public async save()
@@ -37,7 +40,8 @@ export abstract class ContainerEntity extends CommandInterpretter
     /// verzi v8 enginu nejde pouzit super uvnitr chainu asyc funkci.
     await this.saveToFile(this.getSaveDirectory(), this.getSaveFileName());
 
-    await this.contents.save(this.getErrorIdString());
+    ///await this.contents.save(this.getErrorIdString());
+    await this.contents.save();
   }
 
   // When loading an entity, all referenced entities are loaded as well.
@@ -66,6 +70,23 @@ export abstract class ContainerEntity extends CommandInterpretter
   // Adds entity to contents of this entity.
   protected insertEntity(entity: GameEntity)
   {
+    if (entity === null || entity === undefined)
+    {
+      ERROR("Attempt to insert invalid entity to"
+        + " contents of " + this.getErrorIdString()
+        + " Entity is not inserted.");
+      return;
+    }
+
+    if (!entity.isValid())
+    {
+      ERROR("Attempt to insert invalid entity"
+        + " " + entity.getErrorIdString() + " to"
+        + " contents of " + this.getErrorIdString()
+        + " Entity is not inserted.");
+      return;
+    }
+
     this.contents.add(entity);
 
     entity.setLocation(this);
