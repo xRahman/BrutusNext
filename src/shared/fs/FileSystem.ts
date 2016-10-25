@@ -22,6 +22,10 @@ export class FileSystem
 {
   private static get FILE_ENCODING() { return 'utf8'; }
 
+  public static get JSON_EXTENSION() { return '.json'; }
+
+  // ---------------- Public methods -------------------- 
+
   // -> Returns null if file could not be read.
   public static async readFile(path: string)
   {
@@ -248,6 +252,66 @@ export class FileSystem
     return extfs.isEmptySync(path);
   }
 
+  // -> Returns array of file names in directory, including
+  //      subdirectories, excluding '.' and '..'.
+  // -> Returns 'null' on error.
+  public static async readDirectoryContents(path: string)
+  {
+    if (!FileSystem.isPathRelative(path))
+      return null;
+
+    let fileNames = null;
+
+    try
+    {
+      fileNames = promisifiedFS.readdir(path);
+    }
+    catch (error)
+    {
+      Syslog.log
+      (
+        "Unable to read directory '" + path + "':"
+        + " " + error.code,
+        Message.Type.SYSTEM_ERROR,
+        AdminLevel.IMMORTAL
+      );
+
+      return null;
+    }
+
+    return fileNames;
+  }
+
+  // -> Returns 'false' if 'path' is not a directory or an error occured.
+  public static async isDirectory(path: string): Promise<boolean>
+  {
+    if (!FileSystem.isPathRelative(path))
+      return false;
+
+    let fileStats = await FileSystem.statFile(path);
+
+    if (fileStats === null)
+      return false;
+
+    return fileStats.isDirectory();
+  }
+
+  // -> Returns 'false' if 'path' is not a file or an error occured.
+  public static async isFile(path: string): Promise<boolean>
+  {
+    if (!FileSystem.isPathRelative(path))
+      return false;
+
+    let fileStats = await FileSystem.statFile(path);
+
+    if (fileStats === null)
+      return false;
+
+    return fileStats.isFile();
+  }
+
+  // ---------------- Private methods ------------------- 
+
   private static isPathRelative(path: string): boolean
   {
     if (path.substr(0, 2) !== './')
@@ -258,5 +322,34 @@ export class FileSystem
     }
 
     return true;
+  }
+
+  // -> Returns 'FS.Stats' object describing specified file.
+  // -> Returns 'null' on error.
+  private static async statFile(path: string)
+  {
+    if (!FileSystem.isPathRelative(path))
+      return null;
+
+    let fileStats = null;
+
+    try
+    {
+      fileStats = promisifiedFS.stat(path);
+    }
+    catch (error)
+    {
+      Syslog.log
+      (
+        "Unable to stat file '" + path + "':"
+        + " " + error.code,
+        Message.Type.SYSTEM_ERROR,
+        AdminLevel.IMMORTAL
+      );
+
+      return null;
+    }
+
+    return fileStats;
   }
 }

@@ -88,6 +88,64 @@ export class GameEntity extends ContainerEntity
 
   // ---------------- Public methods --------------------
 
+    // -> Returns 'null' if directory cannot be composed.
+  public static getPrototypeSaveDirectory()
+  {
+    // Note:
+    //   Because we are in a static method, 'this' is actualy the class
+    // constructor and it's properties are static properties of the
+    // class.
+
+    // General idea:
+    //   We are going to recursively call the same method on our ancestor.
+    // To do that we have to traverse the prototype chain.
+
+    // In Javascript, the prototype of a class prototype is it's ancestor.
+    // (trust me, it's not worth the brain know to try to understand it ;-))
+    let ancestor = Object.getPrototypeOf(this.prototype);
+
+    // In Javascript, constructor of the class is the class.
+    let AncestorClass = ancestor.constructor;
+
+    let ancestorClassName = AncestorClass['className'];
+
+    if (ancestorClassName === undefined)
+    {
+      ERROR("Unable to compose prototype save directory because"
+        + " property 'className' doesn't exist on ancestor");
+      return null;
+    }
+
+    // This ends the recursion.
+    //   When we traverse the prototype chain up to 'GameEntity' class,
+    // the recursion is finished. 'GameEntity' is not appended to the
+    // class to save unnecessary step in resulting directory structure.
+    if (ancestorClassName === 'GameEntity')
+      return "";
+
+    // We are not at 'GameEntity' yet, so we need to call the same method
+    // on our ancestor.
+
+    let ancestorMethod = AncestorClass['getPrototypeSaveDirectory'];
+
+    if (ancestorMethod === undefined)
+    {
+      ERROR("Unable to compose prototype save directory"
+        + " of class '" + ancestorClassName + "' because static"
+        + " method 'getPrototypeSaveDirectory()' doesn't"
+        + " exist on it's ancestor");
+      return null;
+    }
+
+    // Call getAncestorSubDirectory() static method of AncestorClass.
+    // (AncestorClass is passed as 'this')
+    let ancestorDirectory = ancestorMethod.call(AncestorClass);
+    
+    // And finally we jast concatenate the strings. The result
+    // will be something like: '/Room/SystemRoom/'
+    return ancestorDirectory + ancestorClassName + '/';
+  }
+
   // Send message to this entity.
   public receive
   (
@@ -236,60 +294,7 @@ export class GameEntity extends ContainerEntity
   // Flag saying that connectionId is not to be saved to JSON.
   private static playerConnectionId = { isSaved: false };
 
-  /// Tohle je z?ejm? poz?statek star��ho p?�stupu k prototyp?m.
-  /*
-  // EntityId of prototype entity. If it's null, this entity is a prototype.
-  protected prototype: EntityId = null;
-  */
-
   // --------------- Protected methods ------------------
-
-  // Overrides Entity.getSaveSubDirectory().
-  protected static getSaveSubDirectory()
-  {
-    // Note:
-    //   Because we are in a static method, 'this' is actualy the class
-    // constructor and it's properties are static properties of the
-    // class.
-
-    let className = this['className'];
-    let errorPath = "_SAVE_PATH_CREATION_ERROR/";
-
-    if (className === undefined)
-    {
-      ERROR("Unable to compose entity save path because"
-        + " property 'className' doesn't exist on any class"
-        + " in the prototype chain. Save path will contain"
-        + " " + errorPath + " instead");
-      return errorPath;
-    }
-
-    /// Jaky prototyp ma muj prototyp - jinak receno, jakeho mam predka.
-    let ancestor = Object.getPrototypeOf(this.prototype);
-
-    // Staticka property ancestora.
-    let getAncestorSubDirectory =
-      ancestor.constructor['getSaveSubDirectory'];
-
-    errorPath = "_SAVE_PATH_CREATION_ERROR_" + className + "/";
-
-    if (getAncestorSubDirectory === undefined)
-    {
-      ERROR("Unable to compose correct save path for class"
-        + " '" + className + "' because static method"
-        + " 'getSaveSubDirectory' doesn't exist on it's"
-        + " ancestor. Save path will contain " + errorPath
-        + " instead");
-      return errorPath;
-    }
-
-    // Call getAncestorSubDirectory() with 'ancestor.constructor' as 'this'.
-    // ('ancestor.constructor' and not just 'ancestor', it is a static method
-    //  so 'this' must be the class constructor, not an instance).
-    let ancestorPath = getAncestorSubDirectory.call(ancestor.constructor);
-    
-    return ancestorPath + className + "/";
-  }
 
   // Send message to the connected player that command is not recognized.
   protected unknownCommand()
