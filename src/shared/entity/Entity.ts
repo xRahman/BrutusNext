@@ -93,7 +93,7 @@ export class Entity extends AutoSaveableObject
   // ------------- Public static methods ----------------
 
   // -> If loading fails, result.jsonObject will be null.
-  public static loadJsonOject(id: string)
+  public static async loadJsonOject(id: string)
   {
     // Return value of this method.
     let result = { jsonObject: null, className: null };
@@ -102,7 +102,7 @@ export class Entity extends AutoSaveableObject
 
     // First we load data from file into generic (untyped)
     // javascript Object.
-    result.jsonObject = SaveableObject.loadJsonObjectFromFile(path);
+    result.jsonObject = await SaveableObject.loadJsonObjectFromFile(path);
 
     // Then we extract 'className' property from jsonObject
     // that we have just loaded, so we know what class do we
@@ -111,7 +111,8 @@ export class Entity extends AutoSaveableObject
 
     if (result.className === null || result.className === undefined)
     {
-      ERROR("Invalid className in " + path + ". Unable to load entity");
+      ERROR("Invalid or missing className in " + path + "."
+        + " Unable to load entity");
       result.className = null
       result.jsonObject = null;
     }
@@ -274,9 +275,11 @@ export class Entity extends AutoSaveableObject
     return this.getId() + '.json';
   }
 
+  /*
   // Constructs a save directory for an entity of type 'className'
   // by appending it to 'rootDirectory' (which should be something
   // like './data/prototypes/')
+  // -> Returns 'null' if path cannot be composed.
   public static getPrototypeSaveDirectory
   (
     className: string,
@@ -284,26 +287,38 @@ export class Entity extends AutoSaveableObject
   )
   {
     let PrototypeClass = Server.classFactory.getClass(className);
-    let errorPath =
-      rootDirectory + "_SAVE_PATH_CREATION_ERROR/" + className + "/";
+
+    /// let errorPath =
+    ///  rootDirectory + "_SAVE_PATH_CREATION_ERROR/" + className + "/";
 
     if (PrototypeClass === undefined)
     {
+      /// ERROR("Unable to compose prototype save path for"
+      ///   + " prototype '" + className + "' because dynamic"
+      ///   + " class '" + className + "' doesn't exist. Prototype"
+      ///   + " will be saved to " + errorPath + " instead");
+      /// return errorPath;
+
       ERROR("Unable to compose prototype save path for"
         + " prototype '" + className + "' because dynamic"
-        + " class '" + className + "' doesn't exist. Prototype"
-        + " will be saved to " + errorPath + " instead");
-      return errorPath;
+        + " class '" + className + "' doesn't exist");
+      return null;
     }
 
     if (PrototypeClass['getSaveSubDirectory'] === undefined)
     {
+      /// ERROR("Unable to compose prototype save path for"
+      ///   + " prototype '" + className + "' because dynamic"
+      ///   + " class '" + className + "' doesn't have static"
+      ///   + " method 'getSaveSubDirectory'. Prototype will"
+      ///   + " be saved to " + errorPath + " instead");
+      /// return errorPath;
+
       ERROR("Unable to compose prototype save path for"
         + " prototype '" + className + "' because dynamic"
         + " class '" + className + "' doesn't have static"
-        + " method 'getSaveSubDirectory'. Prototype will"
-        + " be saved to " + errorPath + " instead");
-      return errorPath;
+        + " method 'getSaveSubDirectory'");
+      return null;
     }
 
     return rootDirectory + PrototypeClass.getSaveSubDirectory();
@@ -317,6 +332,7 @@ export class Entity extends AutoSaveableObject
     // (like './data/entities/Account').
     return "";
   }
+  */
 
   // Overrides AutoSaveableObject.save() to skip saving
   // if entity has been deleted.
@@ -330,7 +346,7 @@ export class Entity extends AutoSaveableObject
 
     await this.saveToFile
     (
-      this.getPrototypeSaveDirectory(),
+      this.getSaveDirectory(),
       this.getSaveFileName()
     );
   }
@@ -361,12 +377,14 @@ export class Entity extends AutoSaveableObject
   }
   */
 
+  /*
   protected getPrototypeSaveDirectory(): string
   {
     /// TODO: Možná ten prefix schovat na nějaké lepší místo...
     /// (třeba k hashmapě, která bude mapovat idčka na entity)
     return Entity.getPrototypeSaveDirectory(this.className, './data/entities/');
   }
+  */
 
   /*
   protected getSaveFileName(): string

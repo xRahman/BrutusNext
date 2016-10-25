@@ -98,8 +98,10 @@ export class ClassFactory
     if (Class === undefined)
     {
       FATAL_ERROR("Attempt to request a nonexistent dynamic"
-      + " class '" + className + ". Maybe you forgot to add"
-      + " your new class to DynamicClasses.ts?");
+      + " class '" + className + ". If it's a prototype class,"
+      + " it needs to have a .json file in ./data/prototypes."
+      + " If it's declared in source code, it needs to be listed"
+      + " in DynamicClasses.ts");
     }
 
     return Class;

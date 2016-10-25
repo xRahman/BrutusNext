@@ -517,7 +517,7 @@ export class EntityProxyHandler
     {
       ERROR("Undefined internal entity reference in entity proxy handler."
        + " This is not supposed to ever happen so I don't have any hints"
-       + " about possible cause, sorry. Returning 'false'");
+       + " about possible cause, sorry");
        return false;
     }
 
@@ -525,8 +525,8 @@ export class EntityProxyHandler
     {
       ERROR("Invalid internal entity reference in entity proxy handler."
         + " Make sure you check entity.isValid() before you call"
-        + " entity.dynamicTypeCheck() or entity.dynamicCast()."
-        + " Returning 'false'");
+        + " entity.dynamicTypeCheck() or entity.dynamicCast()");
+        return false;
     }
 
     // Dynamic type check - we make sure that entity is inherited from
