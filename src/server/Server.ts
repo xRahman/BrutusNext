@@ -252,6 +252,7 @@ export class Server
       // (there is nowhere to load it from so we will just start
       //  with empty instance).
       this.flagNamesManager.ready = true;
+      await this.flagNamesManager.save();
 
       await this.game.createDefaultWorld();
     }

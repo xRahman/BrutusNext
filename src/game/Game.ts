@@ -103,12 +103,13 @@ export class Game
   // Loads initial state of the game from disk.
   public async load()
   {
-    // Load prototype data for all prototypes.
     await this.prototypeManager.load();
-
+   
+    /*
     // Create javascript classes from prototype data (all game entities will
     // be instantiated from these dynamically created prototype classes).
     this.prototypeManager.createClasses();
+    */
 
     /*
     // 'entityManager.createReference()' will return invalid entity reference,

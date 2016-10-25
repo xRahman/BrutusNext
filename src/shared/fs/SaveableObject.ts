@@ -81,6 +81,7 @@ export class SaveableObject extends AttributableClass
 
   // ---------------- Public methods --------------------
 
+  /// TODO: Return true on success.
   public async loadFromFile(filePath: string)
   {
     // Note:
@@ -93,7 +94,7 @@ export class SaveableObject extends AttributableClass
     // jsonObject first and create an instance of SaveableObject from
     // type information read from it - so the loading of jsonObject
     // must be possible without having an instance of SaveableObject.
-    let jsonObject = SaveableObject.loadJsonObjectFromFile(filePath);
+    let jsonObject = await SaveableObject.loadJsonObjectFromFile(filePath);
 
     // 'filePath' is passed just so it can be printed to error messages.
     this.loadFromJsonObject(jsonObject, filePath);
