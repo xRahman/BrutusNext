@@ -339,8 +339,8 @@ export class EntityManager
       return;
     }
 
-    let loadResult: { jsonObject: Object, className: string }
-       = Entity.loadJsonOject(handler.id);
+    let loadResult: { jsonObject: Object, className: string };
+    loadResult = await Entity.loadJsonOject(handler.id);
 
     if (loadResult.jsonObject === null || loadResult.className === null)
       // Error is already reported by Entity.loadJsonObject().

@@ -27,13 +27,14 @@
 
 import {ERROR} from '../../shared/error/ERROR';
 import {NamedClass} from '../../shared/NamedClass';
-import {SaveableObject} from '../../shared/fs/SaveableObject';
+import {AutoSaveableObject} from '../../shared/fs/AutoSaveableObject';
 import {VirtualMachine} from '../../shared/vm/VirtualMachine';
 import {Script} from '../../shared/prototype/Script';
+import {PrototypeManager} from '../../shared/prototype/PrototypeManager';
 import {Server} from '../../server/Server';
 import {GameEntity} from '../../game/GameEntity';
 
-export class Prototype extends SaveableObject
+export class Prototype extends AutoSaveableObject
 {
   // Name of the class that will represent this prototype.
   public name: string = "";
@@ -113,221 +114,6 @@ export class Prototype extends SaveableObject
     this.setMethods(NewClass);
   }
 
-  // ---------------- Private methods -------------------
-
-  /*
-  // Creates a piece of code, that, when run using 'vm' module of node.js,
-  // declares a new type.
-  private createDeclarationScript(): string
-  {
-    let script = "";
-
-    // Note:
-    //   'this' inside the script is a sandbox object on which
-    // the script will be run.
-
-    
-      //Ono se to chová dost zvláštně - jako by property sandbox objektu
-      //byly read-only. "let x = result;" projde (čtení z proměnné
-      //sandbox.result), ale "result = 13;" neprojde (zápis do
-      //proměnné sandbox.result - místo toho se musí napsat
-      //"this.result = 13;").
-    
-
-    // 'use strict' is necessary in order to use ES6 class declaration.
-    script += "'use strict'; "
-    // this.Ancestor is a property of sandbox object.
-    script += "let " + this.ancestor + " = this.Ancestor;"
-    script += "class " + this.name + " extends " + this.ancestor;
-    script += "{";
-    script += "}";
-    // this.result is a property of sandbox object.
-    script += "this.result = " + this.name + ";";
-
-    return script;
-  }
-  */
-
-  /*
-  private compileScript(script: string)
-  {
-    let vmScript = null;
-
-    try
-    {
-      // Compile the script using node.js.
-      vmScript = new vm.Script(script, { displayErrors: true });
-    }
-    catch (e)
-    {
-      ASSERT(false, "Script compile error: " + e.message);
-
-      return null;
-    }
-
-    return vmScript;
-  }
-  */
-
-  /*
-  // (The types should be vm.Script and vm.Context, but it doesn't work for
-  //  some reason even though they are exported in /headers/node.d.ts)
-  private executeVmScript(vmScript, vmContext)
-  {
-    try
-    {
-      // Execute the script using 'vm' module of node.js.
-      vmScript.runInContext(vmContext);
-    }
-    catch (e)
-    {
-      ASSERT(false, "Script runtime error: " + e.message);
-      return;
-    }
-  }
-  */
-
-  /*
-  //+
-  private declareClass()
-  {
-    /// TODO: Přesunout tohle do ClassFactory.
-
-    let Ancestor = this.getAncestorClass();
-
-    if (Ancestor === undefined || Ancestor === null)
-      // Error is already reported by this.getAncestorClass().
-      return null;
-
-    /// DEBUG:
-    console.log("Declaring class '" + this.name + "'");
-
-    // Note that dynamically declared class can't have a name.
-    // (That's why we are not using constructor.name but rather our own
-    //  property 'className'. See NamedClass::className for details.)
-    let NewClass = class extends Ancestor { };
-
-    /// Pozn.: Tohle prepise staticky accessor zdedeny z NamedClass
-    ///   (coz je dobre, protoze ten vraci constructor.name, ktery u
-    ///    dynamicky vytvorenych class neni nastaveny).
-    NewClass[NamedClass.CLASS_NAME_PROPERTY] = this.name;
-
-    // Registers newly created class in classFactory.
-    // Prints error message if we failed to create the class.
-    this.registerClass(NewClass);
-
-    return NewClass;
-  }
-
-  //+
-  private registerClass(Class)
-  {
-    if (Class === null)
-    {
-      ERROR("Failed to dynamically create class '" + this.name + "'");
-      return;
-    }
-
-    Server.classFactory.registerClass(this.name, Class);
-  }
-  */
-
-  /*
-  //+
-  private classCreationCheck(): boolean
-  {
-    if (this.name === "")
-    {
-      ERROR("Attempt to create class with empty"
-        + " type name. Class is not created");
-      return false;
-    }
-
-    // Class that we want to create must not yet exist.
-    if (Server.classFactory.classExists(this.name))
-    {
-      ERROR("Attempt to create class '" + this.name + "'"
-        + " (with ancestor '" + this.ancestor + "') that"
-        + " already exists. Class is not created");
-      return false;
-    }
-
-    return true;
-  }
-  */
-
-  /*
-  /// This is no longer used.
-  /// Classes are now created by declaring a new unnamed class and
-  /// setting parameters to it. 
-
-  // Dynamically creates a new class by running class declaration
-  // code on node.js virtual machine.
-  //   Returns newly created class or null.
-  // (generic type is only used to typecheck parameter, which is class)
-  private runClassDeclarationScript<T>
-  (
-    // This hieroglyph stands for constructor of a class, which in
-    // in javascript represent the class itself (so this way you can
-    // pass type as a parameter).
-    Ancestor: { new (...args: any[]): T }
-  )
-  {
-    // This is printed to error messages if an error occurs.
-    let scriptName = 'Class declaration system script';
-
-    let declarationScriptcode =
-      VirtualMachine.createClassDeclarationScript(this.name, this.ancestor);
-
-    // Compile the declaration script.
-    let vmScript =
-      VirtualMachine.compileVmScript(scriptName, declarationScriptcode);
-
-    // Object that will be used as sandbox to run script in.
-    // A static sandbox object is used, because contextifying an object
-    // takes quite a long time.
-    let contextifiedSandbox =
-      VirtualMachine.contextifiedClassDeclarationSandbox;
-
-    contextifiedSandbox.Ancestor = Ancestor;
-
-    // Run the compiled code within our sandbox object.
-    // this.executeVmScript(vmScript, contextifiedSandbox);
-    VirtualMachine.executeVmScript(scriptName, vmScript, contextifiedSandbox);
-
-    // Read the return value from 'result' variable on sandbox.
-    // (Result is null in case of failure.)
-    return contextifiedSandbox.result;
-  }
-  */
-
-  /*
-  private getAncestorClass(): { new (...args: any[]): GameEntity }
-  {
-    if (this.ancestor === "")
-    {
-      ERROR("Attempt to create class '" + this.name + "' with empty"
-        + " ancestor name (that's not allowed, dynamic classes must be"
-        + " inherided from something that's inherited from GameEntity)."
-        + " Class is not created");
-      return null;
-    }
-
-    let AncestorClass = Server.classFactory.getClass(this.ancestor); 
-
-    // Ancestor type must exist.
-    if (AncestorClass === undefined)
-    {
-      ERROR("Attempt to create class '" + this.name + "' inherited"
-        + " from nonexisting ancestor class '" + this.ancestor + "'."
-        + " Class is not created");
-      return null;
-    }
-
-    return AncestorClass;
-  }
-  */
-
   public setPrototypeData(prototypeClass: any)
   {
     for (let i = 0; i < this.data.length; i++)
@@ -355,5 +141,39 @@ export class Prototype extends SaveableObject
       //  prototype if it does't exist and assign a scriptFunction to it.)
       prototypeClass.prototype[script.name] = script.scriptFunction;
     }
+  }
+
+  // --------------- Protected methods ------------------
+
+  protected getSaveFileName()
+  {
+    return this.name + ".json";
+  }
+
+  // -> Returns 'null' if directory cannot be composed.
+  protected getSaveDirectory()
+  {
+    let PrototypeClass = Server.classFactory.getClass(this.name);
+
+    if (PrototypeClass === undefined)
+    {
+      ERROR("Unable to compose prototype save path for"
+        + " prototype '" + this.name + "' because dynamic"
+        + " class '" + this.name + "' doesn't exist");
+      return null;
+    }
+
+    if (PrototypeClass['getPrototypeSaveDirectory'] === undefined)
+    {
+      ERROR("Unable to compose prototype save path for"
+        + " prototype '" + this.name + "' because dynamic"
+        + " class '" + this.name + "' doesn't have static"
+        + " method 'getPrototypeSaveDirectory()'");
+      return null;
+    }
+
+    let subdirectory = PrototypeClass.getPrototypeSaveDirectory();
+
+    return PrototypeManager.SAVE_DIRECTORY + subdirectory;
   }
 }
