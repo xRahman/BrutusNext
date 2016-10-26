@@ -6,10 +6,12 @@
 
 'use strict';
 
-import {DynamicClasses} from '../shared/DynamicClasses';
 import {ERROR} from '../shared/error/ERROR';
 import {FATAL_ERROR} from '../shared/error/FATAL_ERROR';
+import {DynamicClasses} from '../shared/DynamicClasses';
 import {NamedClass} from '../shared/NamedClass';
+import {DateRecord} from '../shared/fs/DateRecord';
+import {Hashmap} from '../shared/fs/Hashmap';
 
 export class ClassFactory
 {
@@ -151,6 +153,22 @@ export class ClassFactory
       + " of requested type (" + typeCast.name + ")");
 
     return null;
+  }
+
+  // Creates a new DateRecord object.
+  // (this method only exists to prevent circular importing
+  //   of SaveableObject and DateRecord modules)
+  public createDateRecord(date: Date)
+  {
+    return new DateRecord(date);
+  }
+
+  // Creates a new MapRecord object.
+  // (this method only exists to prevent circular importing
+  //   of SaveableObject and MapRecord modules)
+  public createHashmap(map: Map<any, any>)
+  {
+    return new Hashmap(map);
   }
 
   // ---------------- Private methods -------------------

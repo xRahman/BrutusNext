@@ -116,6 +116,12 @@ export class Prototype extends AutoSaveableObject
 
   public setPrototypeData(prototypeClass: any)
   {
+    if (this.data === null || this.data === undefined)
+    {
+      ERROR("Invalid this.data in prototype '" + this.name + "'");
+      return;
+    }
+
     for (let i = 0; i < this.data.length; i++)
     {
       let property = this.data[i].property;
