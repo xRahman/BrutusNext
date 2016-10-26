@@ -19,9 +19,11 @@ import {Server} from '../../server/Server';
 
 let beautify = require('js-beautify').js_beautify;
 
+/// DEBUG:
+///let Util = require('util');
+
 export class SaveableObject extends AttributableClass
 {
-
   //----------------- Protected data --------------------
 
   // Version will be checked for. Default behaviour is to trigger
@@ -381,38 +383,7 @@ export class SaveableObject extends AttributableClass
     }
   }
 
-  // Loads a property of type Array from a JSON Array object.
-  private loadArray
-  (
-    propertyName: string,
-    jsonArray: Array<any>,
-    filePath: string
-  )
-  {
-    // We know the length of the array we are going to populate.
-    let newArray = new Array(jsonArray.length);
-
-    for (let i = 0; i < jsonArray.length; i++)
-    {
-      // 'item' needs to be set to null prior to calling loadVariable(),
-      // so an instance of the correct type will be created.
-      let item = null;
-
-      item = this.loadVariable
-      (
-        "Array Item",
-        item,
-        jsonArray[i],
-        filePath
-      );
-
-      newArray.push(item);
-    }
-
-    return newArray;
-  }
-
-  // Loads a single variable from JSON object.
+  // Loads a single variable from corresponding JSON object.
   private loadVariable
   (
     variableName: string,
@@ -427,45 +398,77 @@ export class SaveableObject extends AttributableClass
     if (jsonVariable === null)
       return null;
 
-    if (this.isEntityReference(jsonVariable))
-    {
-      // Entity reference is loaded by EntityManager,
-      // because we need to check if such entity already
-      // exists. An existing entity proxy is returned in
-      // such case. An an 'invalid entity' proxy is created
-      // and returned otherwise.
-      return this.loadReferenceFromJsonObject
-      (
-        variableName,
-        variable,
-        filePath
-      );
-    }
-
-    if
-    (
-      Array.isArray(jsonVariable)
-      // Hashmaps (class Map) are saved as array but we need
-      // to load them as non-array variable.
-      && !this.isMap(variable)
-    )
-    {
-      if (variable !== null && !Array.isArray(variable))
-      {
-        ERROR("Attempt to load array property '" + variableName + "'"
-          + " to a non-array property");
-      }
-
-      return this.loadArray(variableName, jsonVariable, filePath);
-    }
-    
-    return this.loadNonArrayVariable
+    // Attempt to load variable as Date object.
+    let result: any = this.loadAsDate
     (
       variableName,
       variable,
       jsonVariable,
       filePath
     );
+
+    if (result !== null)
+      return result;
+
+    // Attempt to load variable as Map object.
+    result = this.loadAsMap
+    (
+      variableName,
+      variable,
+      jsonVariable,
+      filePath
+    );
+
+    if (result !== null)
+      return result;
+
+    // Attempt to load variable as entity reference.
+    result = this.loadAsEntityReference
+    (
+      variableName,
+      variable,
+      jsonVariable,
+      filePath
+    );
+
+    if (result !== null)
+      return result;
+
+    // Attempt to load variable as Array.
+    result = this.loadAsArray
+    (
+      variableName,
+      variable,
+      jsonVariable,
+      filePath
+    );
+
+    if (result !== null)
+      return result;
+
+    // Attempt to load variable as Object.
+    result = this.loadAsObject
+    (
+      variableName,
+      variable,
+      jsonVariable,
+      filePath
+    );
+    
+    // If variable has neither of types we have just tried,
+    // we load it as primitive type (variables of primitive
+    // types are simply assigned).
+    return jsonVariable;
+
+    /*
+    return this.loadPrimitiveVariable
+    (
+      variableName,
+      variable,
+      jsonVariable,
+      filePath
+    );
+    */
   }
 
   // If myProperty is null, a new instance of correct type will be
@@ -507,63 +510,7 @@ export class SaveableObject extends AttributableClass
     return myProperty;
   }
 
-  private loadObjectVariable
-  (
-    propertyName: string,
-    myProperty: any,
-    jsonObject: any,
-    filePath: string
-  )
-  : any
-  {
-    // If our corresponding property is null, it wouldn't be able to
-    // load itself from JSON, because you can't call methods on null
-    // object. So we first need to assign a new instance of correct
-    // type to it - the type is saved in JSON in 'className' property.
-    myProperty = this.createNewIfNull
-    (
-      propertyName,
-      myProperty,
-      jsonObject,
-      filePath
-    );
-
-    // Now we are sure that myProperty isn't null (either it wasn't
-    // null or we have just assigned a new instance of correct type in
-    // it). So we can safely load it from corresponding JSON.
-
-    if (this.isMap(myProperty))
-    {
-      // When we are loading instance of class Map, data are actually
-      // saved as array of [key, value] pairs and we need to recreate
-      // our Map object from it.
-
-      // But first we need to properly load items within this array,
-      // because they may be SaveableObjects and simple assigning
-      // wouldn't be enough.
-      let tmpArray = this.loadArray(propertyName, jsonObject, filePath);
-
-      return new Map(tmpArray);
-    }
-
-    if ('loadFromJsonObject' in myProperty)
-    {
-      // If we are loading into a saveable object, do it using it's
-      // loadFromJsonObject() method.
-      myProperty.loadFromJsonObject(jsonObject, filePath);
-
-      return myProperty;
-    }
-
-    // We are loading object that is neither Date, Map nor SaveableObject.
-    return this.loadPrimitiveObjectFromJson
-    (
-      myProperty,
-      jsonObject,
-      filePath
-    );
-  }
-
+  /*
   private loadPrimitiveVariable
   (
     propertyName: string,
@@ -592,8 +539,10 @@ export class SaveableObject extends AttributableClass
     // Actual primitive values are just directly assigned.
     return jsonObject;
   }
+  */
 
-  private loadNonArrayVariable
+  /*
+  private defaultLoadVariable
   (
     propertyName: string,
     myProperty: any,
@@ -623,9 +572,56 @@ export class SaveableObject extends AttributableClass
       );
     }
   }
+  */
+
+  private saveDate(variable: any, description: string, className: string)
+  {
+    if (variable === null || variable === undefined)
+    {
+      ERROR("Invalid variable, unable to save date");
+      return null;
+    }
+
+    // Note:
+    //   We could save Date directly as it's JSON string
+    // representation. However, then it would be saved as
+    // a plain string so there would be no way to determine
+    // that it's actualy a Date object. So instead we create
+    // an auxiliary DateRecord class, that stringifies the
+    // date but saves as any other SaveableObject, that means
+    // including className property.
+    //   This way we can load date even into a null variable,
+    // because type can be read from className saved in JSON
+    // file.
+
+    // (We use classFactory to create an instance of DateRecord
+    // here to prevent circular importing of SaveableObject and
+    // DateRecord modules.)
+    let dateRecord = Server.classFactory.createDateRecord(variable);
+    
+    return dateRecord.saveToJsonObject();
+  }
 
   private saveMap(variable: any, description: string, className: string)
   {
+    // Note:
+    //   We could save Map directly as it's Array representation.
+    // However, then it would be saved as a plain Array so there
+    // would be no way to determine that it's actualy a Map object.
+    // So instead we create an auxiliary Hashmap class, that
+    // converts Map to Array but saves as any other SaveableObject,
+    // that means including className property.
+    //   This way we can load haspmap even into a null variable,
+    // because type can be read from className saved in JSON file.
+
+    // (We use classFactory to create an instance of Hashmap
+    // here to prevent circular importing of SaveableObject and
+    // Hashmap modules.)
+    let hashmap = Server.classFactory.createHashmap(variable);
+
+    return hashmap.saveToJsonObject();
+
+    /*
     // When we are saving a Map object, we request it's contents
     // formated as array of [key, value] pairs by calling it's
     // .entries() method and then save this array as any regular
@@ -634,6 +630,7 @@ export class SaveableObject extends AttributableClass
     let mapContents = this.extractMapContents(variable);
 
     return this.saveArray(mapContents, description, className);
+    */
   }
 
   // Saves a property of type Array to a corresponding JSON Array object.
@@ -681,8 +678,12 @@ export class SaveableObject extends AttributableClass
     if ('saveToJsonObject' in variable)
       return variable.saveToJsonObject();
 
+    /*
     if (this.isDate(variable))
       return variable;
+    */
+    if (this.isDate(variable))
+      return this.saveDate(variable, description, className);
 
     if (this.isMap(variable))
       return this.saveMap(variable, description, className);
@@ -832,11 +833,12 @@ export class SaveableObject extends AttributableClass
     return variable.constructor.name === 'Map';
   }
 
-  private isEntityReference(jsonObject: Object): boolean
+  private commonRecordCheck(jsonObject: Object): boolean
   {
-    // Technically there can be an entity reference saved with a 'null'
-    // value, but in that case we don't have to load it as an entity
-    // reference, because it will be null anyways.
+    // Technically there can be a special record (entity reference,
+    // date record or map record) saved with 'null' value, but in
+    // that case we don't have to load it as special record, because
+    // it will be null anyways.
     if (jsonObject === null)
       return false;
 
@@ -845,6 +847,40 @@ export class SaveableObject extends AttributableClass
       ERROR("Invalid jsonObject");
       return false;
     }
+
+    return true;
+  }
+
+  private isDateRecord(jsonObject: Object): boolean
+  {
+    if (this.commonRecordCheck(jsonObject) === false)
+      return false;
+
+    // Is there a 'className' property in JSON object
+    // with value 'DateRecord'?
+    if (jsonObject[NamedClass.CLASS_NAME_PROPERTY] === 'DateRecord')
+      return true;
+
+    return false;
+  }
+
+  private isHashmap(jsonObject: Object): boolean
+  {
+    if (this.commonRecordCheck(jsonObject) === false)
+      return false;
+
+    // Is there a 'className' property in JSON object
+    // with value 'Hashmap'?
+    if (jsonObject[NamedClass.CLASS_NAME_PROPERTY] === 'Hashmap')
+      return true;
+
+    return false;
+  }
+
+  private isEntityReference(jsonObject: Object): boolean
+  {
+    if (this.commonRecordCheck(jsonObject) === false)
+      return false;
 
     // Is there a 'className' property in JSON object with value
     // 'EntityReference'?
@@ -855,6 +891,7 @@ export class SaveableObject extends AttributableClass
     return false;
   }
 
+  /*
   private extractMapContents(map: Map<any, any>): Array<any>
   {
     let result = [];
@@ -867,6 +904,150 @@ export class SaveableObject extends AttributableClass
     }
     
     return result;
+  }
+  */
+
+  private validJsonObjectCheck
+  (
+    propertyName: string,
+    jsonObject: any,
+    filePath: string
+  )
+  : boolean
+  {
+    if (jsonObject === null)
+    {
+      ERROR("Null jsonObject when loading property"
+        + " '" + propertyName + "' from file"
+        + " " + filePath + ". Property not loaded");
+      return false;
+    }
+
+    return true;
+  }
+
+  // -> Returns 'null' if jsonVariable is not a Date or if loading failed.
+  private loadAsDate
+  (
+    variableName: string,
+    variable: any,
+    jsonVariable: any,
+    filePath: string
+  )
+  {
+    if (!this.isDateRecord(jsonVariable))
+      return null;
+
+    if (variable !== null && !this.isDate(variable))
+    {
+      ERROR("Attempt to load Date property '" + variableName + "'"
+        + " from file " + filePath + " to a non-Date property");
+      return null;
+    }
+
+    return this.loadDateFromJsonObject
+    (
+      variableName,
+      jsonVariable,
+      filePath
+    );
+  }
+
+  private loadDateFromJsonObject
+  (
+    propertyName: string,
+    jsonObject: any,
+    filePath: string
+  )
+  : Date
+  {
+    if (!this.validJsonObjectCheck(propertyName, jsonObject, filePath))
+      return null;
+
+    let date = jsonObject.date;
+
+    if (date === undefined || date === null)
+    {
+     ERROR("Missing or invalid 'date' when loading date record"
+        + " '" + propertyName + "' from JSON file " + filePath);
+    }
+
+    return new Date(date);
+  }
+
+  // -> Returns 'null' if jsonVariable is not a Map or if loading failed.
+  private loadAsMap
+  (
+    variableName: string,
+    variable: any,
+    jsonVariable: any,
+    filePath: string
+  )
+  {
+    if (!this.isHashmap(jsonVariable))
+      return null;
+
+    if (variable !== null && !this.isMap(variable))
+    {
+      ERROR("Attempt to load Map property '" + variableName + "'"
+        + " from file " + filePath + " to a non-Map property");
+      return null;
+    }
+
+    return this.loadMapFromJsonObject
+    (
+      variableName,
+      jsonVariable,
+      filePath
+    );
+  }
+
+  private loadMapFromJsonObject
+  (
+    propertyName: string,
+    jsonObject: any,
+    filePath: string
+  )
+  : Map<any, any>
+  {
+    if (!this.validJsonObjectCheck(propertyName, jsonObject, filePath))
+      return null;
+
+    if (jsonObject.map === undefined || jsonObject.map === null)
+    {
+      ERROR("Missing or invalid 'map' property when loading"
+        + " map record '" + propertyName + "' from JSON file"
+        + " " + filePath);
+      return null;
+    }
+
+    // Our hashmap is stored as array in jsonObject.map property.
+    //   But first we need to properly load items within this array,
+    // because they may be SaveableObjects or special records.
+    let mapArray = this.loadArray(propertyName, jsonObject.map, filePath);
+
+    return new Map(mapArray);
+  }
+
+  // -> Returns 'null' if jsonVariable is not an entity reference
+  //      or if loading failed.
+  private loadAsEntityReference
+  (
+    variableName: string,
+    variable: any,
+    jsonVariable: any,
+    filePath: string
+  )
+  {
+    if (!this.isEntityReference(jsonVariable))
+      return null;
+
+    return this.loadReferenceFromJsonObject
+    (
+      variableName,
+      jsonVariable,
+      filePath
+    );
   }
 
   // If 'id' loaded from JSON already exists in EntityManager,
@@ -885,20 +1066,191 @@ export class SaveableObject extends AttributableClass
   )
   : Entity
   {
-    if (jsonObject.className !== Entity.ENTITY_REFERENCE_CLASS_NAME)
-      FATAL_ERROR("Attempt to load entity reference from invalid JSON object");
+    if (!this.validJsonObjectCheck(propertyName, jsonObject, filePath))
+      return null;
+
+    /*
+    if (!this.isEntityReference(jsonObject))
+    {
+      FATAL_ERROR("Attempt to load entity reference"
+        + " '" + propertyName + "' from JSON object"
+        + " loaded from file " + filePath + " that is"
+        + " not a Reference");
+      return null;
+    }
+    */
 
     let id = jsonObject.id;
 
     if (id === undefined || id === null)
     {
-     ERROR("Invalid 'id' when loading entity reference"
-        + " '" + propertyName + "' from JSON file "
-        + filePath);
+      ERROR("Missing or invalid 'id' property when loading"
+        + " entity reference '" + propertyName + "' from JSON"
+        + " file " + filePath);
     }
 
     // Return an existing entity proxy if entity exists in
     // entityManager, invalid entity proxy otherwise.
     return EntityManager.createReference(id, Entity);
+  }
+
+    // -> Returns 'null' if jsonVariable is not an Array or if loading failed.
+  private loadAsArray
+  (
+    variableName: string,
+    variable: any,
+    jsonVariable: any,
+    filePath: string
+  )
+  {
+    if (!Array.isArray(jsonVariable))
+      return null;
+
+    if (variable !== null && !Array.isArray(variable))
+    {
+      ERROR("Attempt to load Array property '" + variableName + "'"
+        + " from file " + filePath + " to a non-Array property");
+      return null;
+    }
+
+    if (variable !== null && !Array.isArray(variable))
+    {
+      ERROR("Attempt to load array property '" + variableName + "'"
+        + " from file " + filePath + " to a non-array property");
+      return null
+    }
+
+    return this.loadArray(variableName, jsonVariable, filePath)
+  }
+
+  // Loads a property of type Array from a JSON Array object.
+  private loadArray
+  (
+    propertyName: string,
+    jsonArray: Array<any>,
+    filePath: string
+  )
+  {
+    if (jsonArray === null || jsonArray === undefined)
+    {
+      ERROR("Attempt to loadArray from invalid jsonObject"
+        + " '" + propertyName + "' loaded from file " + filePath);
+      return null;
+    }
+    
+    if (!Array.isArray(jsonArray))
+    {
+      ERROR("Attempt to loadArray from non-array jsonObject"
+        + " '" + propertyName + "' loaded from file " + filePath);
+      return null;
+    }
+
+    let newArray = [];
+
+    for (let i = 0; i < jsonArray.length; i++)
+    {
+      // 'item' needs to be set to null prior to calling loadVariable(),
+      // so an instance of the correct type will be created.
+      let item = null;
+
+      item = this.loadVariable
+      (
+        "Array Item",
+        item,
+        jsonArray[i],
+        filePath
+      );
+
+      newArray.push(item);
+    }
+
+    return newArray;
+  }
+
+  // -> Returns 'null' if jsonVariable is not an Object or if loading failed.
+  private loadAsObject
+  (
+    variableName: string,
+    variable: any,
+    jsonVariable: any,
+    filePath: string
+  )
+  {
+    if (typeof jsonVariable !== 'object')
+      return null;
+
+    if (variable !== null && typeof variable !== 'object')
+    {
+      ERROR("Attempt to load Object property '" + variableName + "'"
+        + " from file " + filePath + " to a non-Object property");
+      return null;
+    }
+
+    return this.loadObjectVariable
+    (
+      variableName,
+      variable,
+      jsonVariable,
+      filePath
+    );
+  }
+
+  private loadObjectVariable
+  (
+    propertyName: string,
+    myProperty: any,
+    jsonObject: any,
+    filePath: string
+  )
+  : any
+  {
+    // If our corresponding property is null, it wouldn't be able to
+    // load itself from JSON, because you can't call methods on null
+    // object. So we first need to assign a new instance of correct
+    // type to it - the type is saved in JSON in 'className' property.
+    myProperty = this.createNewIfNull
+    (
+      propertyName,
+      myProperty,
+      jsonObject,
+      filePath
+    );
+
+    // Now we are sure that myProperty isn't null (either it wasn't
+    // null or we have just assigned a new instance of correct type in
+    // it). So we can safely load it from corresponding JSON.
+
+    /*
+    if (this.isMap(myProperty))
+    {
+      // When we are loading instance of class Map, data are actually
+      // saved as array of [key, value] pairs and we need to recreate
+      // our Map object from it.
+
+      // But first we need to properly load items within this array,
+      // because they may be SaveableObjects and simple assigning
+      // wouldn't be enough.
+      let tmpArray = this.loadArray(propertyName, jsonObject, filePath);
+
+      return new Map(tmpArray);
+    }
+    */
+
+    if ('loadFromJsonObject' in myProperty)
+    {
+      // If we are loading into a saveable object, do it using it's
+      // loadFromJsonObject() method.
+      myProperty.loadFromJsonObject(jsonObject, filePath);
+
+      return myProperty;
+    }
+
+    // We are loading object that is neither Date, Map nor SaveableObject.
+    return this.loadPrimitiveObjectFromJson
+    (
+      myProperty,
+      jsonObject,
+      filePath
+    );
   }
 }
