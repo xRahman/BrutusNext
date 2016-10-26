@@ -263,9 +263,6 @@ export class PrototypeManager extends AutoSaveableObject
 
   private async loadPrototype(path: string)
   {
-    /// DEBUG:
-    console.log("Loading prototype " + path);
-
     let prototype = new Prototype();
 
     await prototype.loadFromFile(path);
@@ -304,9 +301,6 @@ export class PrototypeManager extends AutoSaveableObject
   {
     for (let fileName of fileNames)
     {
-      /// DEBUG:
-      console.log("Processing fileName " + fileName);
-
       let extensionLength = FileSystem.JSON_EXTENSION.length;
 
       // First we check that 'fileName' doesn't end with '.json'. This way
@@ -328,9 +322,6 @@ export class PrototypeManager extends AutoSaveableObject
 
   private async loadPrototypes(directory: string)
   {
-    /// DEBUG:
-    console.log("Loading prototypes from " + directory);    
-
     // Returns an array of filenames excluding '.' and '..'.
     let fileNames = await FileSystem.readDirectoryContents(directory);
 
