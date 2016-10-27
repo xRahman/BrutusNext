@@ -43,10 +43,12 @@ export class Entity extends AutoSaveableObject
   public static State = State;
   */
 
+  /*
   public static get ENTITY_REFERENCE_CLASS_NAME()
   {
     return 'Reference';
   }
+  */
 
   // ----------------- Private data ----------------------
 
@@ -225,18 +227,21 @@ export class Entity extends AutoSaveableObject
     return false;
   }
 
-  public saveReferenceToJsonObject()
+  /*
+  // This function exists only for typescript to stop complaining
+  // that it doesn't exist. It should never be executed, however,
+  // because 'isEtity()' call should always be trapped by
+  // entity proxy (see EntityProxyHandler.get()).
+  public isEntity(): boolean
   {
-    let jsonObject =
-    {
-      // No class 'Reference' actually exists. When this record
-      // is loaded, an entity proxy is created.
-      className: Entity.ENTITY_REFERENCE_CLASS_NAME,
-      id: this.getId()
-    };
+    ERROR("Entity.isEntity() function should never be called. You"
+      + " somehow managed to get your hands on direct reference to"
+      + " entity " + this.getErrorIdString() + " instead of a proxy."
+      + " That must never happen");
 
-    return jsonObject;
+    return false;
   }
+  */
 
   // Overrides AutoSaveableObject.getSaveDirectory().
   protected getSaveDirectory(): string
