@@ -574,7 +574,20 @@ export class SaveableObject extends AttributableClass
   }
   */
 
-  private saveDate(variable: any, description: string, className: string)
+  private saveEntityReference(variable: any)
+  {
+    if (variable === null || variable === undefined)
+    {
+      ERROR("Invalid variable, unable to save entity reference");
+      return null;
+    }
+
+    let reference = Server.classFactory.createReferenceRecord(variable);
+    
+    return reference.saveToJsonObject();
+  }
+
+  private saveDate(variable: any)
   {
     if (variable === null || variable === undefined)
     {
@@ -602,7 +615,7 @@ export class SaveableObject extends AttributableClass
     return dateRecord.saveToJsonObject();
   }
 
-  private saveMap(variable: any, description: string, className: string)
+  private saveMap(variable: any)
   {
     // Note:
     //   We could save Map directly as it's Array representation.
@@ -617,20 +630,9 @@ export class SaveableObject extends AttributableClass
     // (We use classFactory to create an instance of Hashmap
     // here to prevent circular importing of SaveableObject and
     // Hashmap modules.)
-    let hashmap = Server.classFactory.createHashmap(variable);
+    let hashmap = Server.classFactory.createHashmapRecord(variable);
 
     return hashmap.saveToJsonObject();
-
-    /*
-    // When we are saving a Map object, we request it's contents
-    // formated as array of [key, value] pairs by calling it's
-    // .entries() method and then save this array as any regular
-    // array (values can be another objects or arrays, so we need
-    // to save it recursively).
-    let mapContents = this.extractMapContents(variable);
-
-    return this.saveArray(mapContents, description, className);
-    */
   }
 
   // Saves a property of type Array to a corresponding JSON Array object.
@@ -653,43 +655,49 @@ export class SaveableObject extends AttributableClass
   }
 
   // Saves a single variable to a corresponding JSON object.
-  // (description is a string used for error message. It should describe
-  //  the property as well as possible - what's it's name, what it's in, etc.)
-  private saveVariable(variable: any, description: string, className: string)
+  // -> Returns JSON Object representing 'variable'. 
+  private saveVariable
+  (
+    // Data to be saved.
+    variable: any,
+    // String used for error messages.
+    // (It should describe the property as well as
+    //  possible - what's it's name, what it's in, etc.)
+    description: string,
+    // Name of the class we are just saving.
+    className: string
+  )
   {
     if (variable === null)
       return null;
 
+    // Variable is of primitive type (number or string).
+    if (this.isPrimitiveValue(variable))
+      // Primitive values are just assigned.
+      return variable;
+
     if (Array.isArray(variable))
       return this.saveArray(variable, description, className);
-
-    if (typeof variable !== 'object')
-      // Variable is of primitive type (number or string).
-      return variable;
     
-    // 'variable' is an entity (it's an instance of or is inherited
-    // from class Entity).
-    //   Entities are saved to a separate files. Only a string id
-    // of an entity is saved here.
-    if ('saveReferenceToJsonObject' in variable)
-      return variable.saveReferenceToJsonObject();
+    // Access to 'isEntity' property is trapped by proxy.
+    // (see EntityProxyHandler.get()).
+    if (variable.isEntity === true)
+      // Entities are saved to a separate files. Only a string
+      // id of an entity is saved here.
+      return this.saveEntityReference(variable);
 
     // 'variable' is a saveableObject (but not an entity).
-    if ('saveToJsonObject' in variable)
+    if (this.isSaveableObject(variable))
       return variable.saveToJsonObject();
 
-    /*
     if (this.isDate(variable))
-      return variable;
-    */
-    if (this.isDate(variable))
-      return this.saveDate(variable, description, className);
+      return this.saveDate(variable);
 
     if (this.isMap(variable))
-      return this.saveMap(variable, description, className);
+      return this.saveMap(variable);
 
     if (this.isPrimitiveObject(variable))
-      return this.savePrimitiveObjectToJson(variable);
+      return this.savePrimitiveObject(variable);
 
     FATAL_ERROR("Variable '" + description + "' in class '" + className + "'"
       + " (or inherited from some of it's ancestors) is a class but"
@@ -740,7 +748,7 @@ export class SaveableObject extends AttributableClass
   // is to determine if some of them are SaveableObjects so they need
   // to be saved using their saveToJsonObject() method.
   // (this check is done within this.saveVariable() call)
-  private savePrimitiveObjectToJson(variable: any): Object
+  private savePrimitiveObject(variable: any): Object
   {
     if (variable === null)
     {
@@ -794,6 +802,29 @@ export class SaveableObject extends AttributableClass
     }
 
     return primitiveObject;
+  }
+
+  // Variable is of primitive type (number or string).
+  private isPrimitiveValue(variable: any): boolean
+  {
+    return typeof variable !== 'object';
+  }
+
+  /*
+  private isEntity(variable: any): boolean
+  {
+    // Note:
+    //   Access to 'isEntity' property is trapped by proxy.
+    // (see EntityProxyHandler.get()). If variable doesn't
+    // have 'isEntity' property, the value is 'undefined'
+    // which, compared to 'true', will return 'false.
+    return variable.isEntity === true;
+  }
+  */
+
+  private isSaveableObject(variable: any): boolean
+  {
+    return ('saveToJsonObject' in variable);
   }
 
   private isPrimitiveObject(variable: any): boolean
@@ -883,9 +914,8 @@ export class SaveableObject extends AttributableClass
       return false;
 
     // Is there a 'className' property in JSON object with value
-    // 'EntityReference'?
-    if (jsonObject[NamedClass.CLASS_NAME_PROPERTY]
-        === Entity.ENTITY_REFERENCE_CLASS_NAME)
+    // 'Reference'?
+    if (jsonObject[NamedClass.CLASS_NAME_PROPERTY] === 'Reference')
       return true;
 
     return false;
@@ -1042,7 +1072,7 @@ export class SaveableObject extends AttributableClass
     if (!this.isEntityReference(jsonVariable))
       return null;
 
-    return this.loadReferenceFromJsonObject
+    return this.loadReference
     (
       variableName,
       jsonVariable,
@@ -1058,7 +1088,7 @@ export class SaveableObject extends AttributableClass
   // to load an entity from file, call load() on what's returned
   // by this method.
   // -> Retuns an entity proxy object (possibly referencing an invalid entity).
-  public loadReferenceFromJsonObject
+  public loadReference
   (
     propertyName: string,
     jsonObject: any,
@@ -1068,17 +1098,6 @@ export class SaveableObject extends AttributableClass
   {
     if (!this.validJsonObjectCheck(propertyName, jsonObject, filePath))
       return null;
-
-    /*
-    if (!this.isEntityReference(jsonObject))
-    {
-      FATAL_ERROR("Attempt to load entity reference"
-        + " '" + propertyName + "' from JSON object"
-        + " loaded from file " + filePath + " that is"
-        + " not a Reference");
-      return null;
-    }
-    */
 
     let id = jsonObject.id;
 
@@ -1219,22 +1238,6 @@ export class SaveableObject extends AttributableClass
     // Now we are sure that myProperty isn't null (either it wasn't
     // null or we have just assigned a new instance of correct type in
     // it). So we can safely load it from corresponding JSON.
-
-    /*
-    if (this.isMap(myProperty))
-    {
-      // When we are loading instance of class Map, data are actually
-      // saved as array of [key, value] pairs and we need to recreate
-      // our Map object from it.
-
-      // But first we need to properly load items within this array,
-      // because they may be SaveableObjects and simple assigning
-      // wouldn't be enough.
-      let tmpArray = this.loadArray(propertyName, jsonObject, filePath);
-
-      return new Map(tmpArray);
-    }
-    */
 
     if ('loadFromJsonObject' in myProperty)
     {

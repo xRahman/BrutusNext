@@ -240,6 +240,17 @@ export class EntityProxyHandler
       return this.isEntityValidTrapHandler;
     }
 
+    // Trap calls of entity.isEtity() method.
+    if (property === 'isEntity')
+    {
+      // Note:
+      //   'variable.isEntity' is tested by SaveableObject to
+      // determine if property should be saved as a reference
+      // rather then directly. This is true even for invalid
+      // references - that's why we always return 'true' here.
+      return true;
+    }
+
     // Trap calls of entity.load() method.
     if (property === 'load')
       return this.loadTrapHandler;
