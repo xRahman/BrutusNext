@@ -1,32 +1,11 @@
-TODO: Použít classu Reference na savování entity referencí.
-
-IDEA: classu MapRecord přejmenovat na Hashmap.
-- možná něco podobného i s Date record... (ale co?) DateObject?
-- DateRecord asi nakonec není úplně zlé (když to Date být nemůže).
-
-TODO: More verbose error messages in SaveableObject.
-
-TODO: Na savovaní Entity Reference taky udělat samosatnou classu.
-  (jako DateRecord nebo MapRecord (asi Reference?)).
-
 TODO: Nepoužívat Map<any, any> (což je implicitní, když napíšu
   jen newMap()), ale konkrétní typy.
   - tím mi zároveň odpadnou z commentu.
-
-IDEA: classy Map a Date by se asi neměly do JSONu savovat přímo svou
-  primtivní reprezentací (tj. string, respektive array), ale jako Object
-  s nějakou className).
-Důvod: Půjdou pak loadnout i do null proměnné, protože typ půjde poznat
-  z JSON objectu.
 
 ÚVAHA: /data/entities by možná mohly mít strukturu podle struktury světa,
  tj. world/realms/areas/rooms etc.
 - když bych chtěl dejme tomu statnout nějakej offline room (může to vůbec
   nastat?) tak mu prostě dám tuhle celou cestu. 
-
-TODO: World má sice reference na vybrané entity, ale ty entity v něm
-  nejsou vložené (respektive Realmy v něm nejsou vložené, ten zbytek
-  zas rekuzivně do svého nadřazeného konteineru), takže se nesavujou.
 
 TODO:
   - ne všechny entity v rámci worldu by měly mít unikátní jména.
@@ -52,38 +31,7 @@ automaticky a reference zachovávaly identitu, ale dokud to nepůjde, tak
 je asi nejlepší řešení prostě jen hlásit invalid reference jako invalid
 a nechat na uživateli, ať si je sám updatne na aktuální, když to potřebuje.
 
-
-TODO: SaveableOject, bufferování requestů
-  - mělo by to být tak, že saveToFile() se vrátí až poté, co je skutečně
-    savnuto (a ideálně poté, co je savnut její request, ne až když se
-    dosavují úplně všechny, co přišly v průběhu savování).
-- jak to udělat?
-IDEA: Každy si savne svůj vlastní request (a jen ten jeden).
-- pokud je nějaký request v bufferu, tak musím dát do fronty
-  svůj resolve callback, abych dostal slovo, až na mě dojde řada.
-CONSIDERATION: Deduplikovat requesty ano, ale pouze ty, které se
-  ještě nezpracovávají. Aktuálně zpracovávaný request je třeba zopakovat,
-  kdy přijde ten samej, protože se mezi tím mohou změnit data, která se
-  mají savnout.
-IDEA: Možná by se save procesy měly registrovat globálně. Teď spoléhám
-  na to, že se každý SaveableObject savuje do jiného souboru, ale to nemusí
-  být 100%
-ALGORITHM:
-1) Checknu, jestli je cílový soubor v globálním registru právě savovaných
-   souborů.
-   - pokud ne, tak se zaregistruju, savnu, odregistruju.
-   - pokud ano, musím svůj request přidat do globálního bufferu
-     (deduplikace, ale pouze u requestů, které se ještě nezačaly savovat)
-globální saveProcessBuffer bude hashmapa.
-  klíč: savePath
-  value: true/false? Možná taky odkaz na následující save proces.
-[done]
-
 TODO: Handle file operation return variables in SaveableObject.
-
-IDEA: vykašlat se na flagu isNameUnique, savovat pouze cathegory.
-- když je cathegory null, jméno není unique.
-[done]
 
 TODO: Sjednotit FileSystem
  - buď tam házet FATAL_ERROR
@@ -105,22 +53,10 @@ TODO: Rozhodnout, co se bude savovat v accountu (idčka?, jména + další info?
 TODO: Projít save()
   - u named i generic entit.
 
-TODO: Možná unikátní jména dávat do adresáře /data/names/
-[done]
-
 TODO: Zkontrolovat, že celý chain používající FS.exists() je async.
 
 TODO: V rámci EntityManager.loadNamedEntity() je třeba přidat entitu
   do EntityManageru.
-
-TODO: Možná založit classu na unikátní jména - UniqueNames
-  - bude umět checknout existenci souboru v příslušném adresáři
-  - bude mít enum s kategoriemi (v NameSearchListu to fakt není
-    moc intuitivní).
-[done]
-TODO: Někde se checkuje unikátnost jmen -> přesunout to do classy
-  UniqueNames
-- V character listu se to checkuje (metodou existsSync()).
 
 Entity.load() nemusí umět číst unique name soubory - entita vždycky zná
   svoje idčko.
@@ -464,6 +400,73 @@ TODO: Zrušit z entity proměnné SAVE_DIRECTORY
 Vyhledove rozbehat tslint
 
 ===============================================================================
+
+TODO: World má sice reference na vybrané entity, ale ty entity v něm
+  nejsou vložené (respektive Realmy v něm nejsou vložené, ten zbytek
+  zas rekuzivně do svého nadřazeného konteineru), takže se nesavujou.
+[done]
+
+TODO: Možná založit classu na unikátní jména - UniqueNames
+  - bude umět checknout existenci souboru v příslušném adresáři
+  - bude mít enum s kategoriemi (v NameSearchListu to fakt není
+    moc intuitivní).
+[done]
+TODO: Někde se checkuje unikátnost jmen -> přesunout to do classy
+  UniqueNames
+- V character listu se to checkuje (metodou existsSync()).
+[nakonec je to jinak, dělá to přímo NamedEntity]
+
+IDEA: vykašlat se na flagu isNameUnique, savovat pouze cathegory.
+- když je cathegory null, jméno není unique.
+[done]
+
+TODO: Možná unikátní jména dávat do adresáře /data/names/
+[done]
+
+TODO: SaveableOject, bufferování requestů
+  - mělo by to být tak, že saveToFile() se vrátí až poté, co je skutečně
+    savnuto (a ideálně poté, co je savnut její request, ne až když se
+    dosavují úplně všechny, co přišly v průběhu savování).
+- jak to udělat?
+IDEA: Každy si savne svůj vlastní request (a jen ten jeden).
+- pokud je nějaký request v bufferu, tak musím dát do fronty
+  svůj resolve callback, abych dostal slovo, až na mě dojde řada.
+CONSIDERATION: Deduplikovat requesty ano, ale pouze ty, které se
+  ještě nezpracovávají. Aktuálně zpracovávaný request je třeba zopakovat,
+  kdy přijde ten samej, protože se mezi tím mohou změnit data, která se
+  mají savnout.
+IDEA: Možná by se save procesy měly registrovat globálně. Teď spoléhám
+  na to, že se každý SaveableObject savuje do jiného souboru, ale to nemusí
+  být 100%
+ALGORITHM:
+1) Checknu, jestli je cílový soubor v globálním registru právě savovaných
+   souborů.
+   - pokud ne, tak se zaregistruju, savnu, odregistruju.
+   - pokud ano, musím svůj request přidat do globálního bufferu
+     (deduplikace, ale pouze u requestů, které se ještě nezačaly savovat)
+globální saveProcessBuffer bude hashmapa.
+  klíč: savePath
+  value: true/false? Možná taky odkaz na následující save proces.
+[done]
+
+TODO: Použít classu Reference na savování entity referencí.
+[done]
+
+IDEA: classu MapRecord přejmenovat na Hashmap.
+- možná něco podobného i s Date record... (ale co?) DateObject?
+- DateRecord asi nakonec není úplně zlé (když to Date být nemůže).
+[done]
+
+TODO: Na savovaní Entity Reference taky udělat samosatnou classu.
+  (jako DateRecord nebo MapRecord (asi Reference?)).
+[done]
+
+IDEA: classy Map a Date by se asi neměly do JSONu savovat přímo svou
+  primtivní reprezentací (tj. string, respektive array), ale jako Object
+  s nějakou className).
+Důvod: Půjdou pak loadnout i do null proměnné, protože typ půjde poznat
+  z JSON objectu.
+[done]
 
 TODO: Sjednotit metody TelnetSocketDescriptor.normalizeCRLF
   a Message.normalizeNewlines (asi do Utils)

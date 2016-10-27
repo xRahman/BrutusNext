@@ -12,6 +12,8 @@ import {DynamicClasses} from '../shared/DynamicClasses';
 import {NamedClass} from '../shared/NamedClass';
 import {DateRecord} from '../shared/fs/DateRecord';
 import {Hashmap} from '../shared/fs/Hashmap';
+import {Reference} from '../shared/fs/Reference';
+import {Entity} from '../shared/entity/Entity';
 
 export class ClassFactory
 {
@@ -155,18 +157,26 @@ export class ClassFactory
     return null;
   }
 
+  // Creates a new Reference object.
+  // (this method is here to prevent circular importing
+  //   of SaveableObject and Reference modules)
+  public createReferenceRecord(entity: Entity)
+  {
+    return new Reference(entity);
+  }
+
   // Creates a new DateRecord object.
-  // (this method only exists to prevent circular importing
+  // (this method is here to prevent circular importing
   //   of SaveableObject and DateRecord modules)
   public createDateRecord(date: Date)
   {
     return new DateRecord(date);
   }
 
-  // Creates a new MapRecord object.
-  // (this method only exists to prevent circular importing
-  //   of SaveableObject and MapRecord modules)
-  public createHashmap(map: Map<any, any>)
+  // Creates a new Hashmap object.
+  // (this method is here to prevent circular importing
+  //   of SaveableObject and Hashmap modules)
+  public createHashmapRecord(map: Map<any, any>)
   {
     return new Hashmap(map);
   }
