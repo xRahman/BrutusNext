@@ -128,15 +128,22 @@ export class Prototype extends AutoSaveableObject
       let value = this.data[i].value;
 
       // [] represends dynamic access to class property - property will be
-      // created if it doesn't exist (properties are assigned to class
+      // created if it doesn't exist. Properties are assigned to class
       // prototype so all game entities of this type will automatically
-      // inherit them).
+      // inherit them.
       prototypeClass.prototype[property] = value;
     }
   }
 
   public setMethods(prototypeClass: any)
   {
+    if (this.scripts === null)
+    {
+      ERROR("Invalid this.scripts in prorptype " + this.name + "."
+        + " Script methods are not set to prototype class");
+      return;
+    }
+
     // Iterate over all values in this.scripts hashmap.
     for (let script of this.scripts.values())
     {
