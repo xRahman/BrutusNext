@@ -9,9 +9,9 @@
 'use strict';
 
 import {ERROR} from '../../shared/error/ERROR';
-import {SavingRecord} from '../../shared/fs/SavingRecord';
+import {SaveingQueue} from '../../shared/fs/SavingQueue';
 
-export class SavingRegister
+export class SavingManager
 {
   //------------------ Private data ---------------------
 
@@ -28,12 +28,12 @@ export class SavingRegister
   //      so it is possible to start saving right away.
   public static requestSaving(filePath: string): Promise<void>
   {
-    let savingRecord = SavingRegister.savingProcesses.get(filePath);
+    let savingRecord = SavingManager.savingProcesses.get(filePath);
 
     if (savingRecord === undefined)
     {
       // Nobody is saving to the filePath yet.
-      savingRecord = new SavingRecord();
+      savingRecord = new SaveingQueue();
 
       // Note: We don't push a resolve callback for the first
       // request, because it will be processed right away.
@@ -47,8 +47,8 @@ export class SavingRegister
 
   public static reportFinishedSaving(filePath: string)
   {
-    let savingRecord: SavingRecord =
-      SavingRegister.savingProcesses.get(filePath);
+    let savingRecord: SaveingQueue =
+      SavingManager.savingProcesses.get(filePath);
 
     if (savingRecord === undefined)
     {
@@ -63,7 +63,7 @@ export class SavingRegister
     {
       // By deleting the savingRecord from hashmap, we mark
       // 'filePath' as not being saved right now.
-      if (!SavingRegister.savingProcesses.delete(filePath))
+      if (!SavingManager.savingProcesses.delete(filePath))
       {
         ERROR("Failed to remove savingRecord for file"
           + " " + filePath + " from SavingRegister");

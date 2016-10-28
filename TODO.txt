@@ -1,3 +1,4 @@
+
 TODO: Nepoužívat Map<any, any> (což je implicitní, když napíšu
   jen newMap()), ale konkrétní typy.
   - tím mi zároveň odpadnou z commentu.
