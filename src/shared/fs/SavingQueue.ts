@@ -20,7 +20,7 @@ import {ERROR} from '../../shared/error/ERROR';
 // 3rd party modules.
 let FastPriorityQueue = require('fastpriorityqueue');
 
-export class SavingRecord
+export class SaveingQueue
 {
   //------------------ Private data ---------------------
 

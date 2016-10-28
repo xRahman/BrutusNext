@@ -14,7 +14,8 @@ import {EntityManager} from '../../shared/entity/EntityManager';
 import {NamedClass} from '../../shared/NamedClass';
 import {AttributableClass} from '../../shared/AttributableClass';
 import {FileSystem} from '../../shared/fs/FileSystem';
-import {SavingRegister} from '../../shared/fs/SavingRegister';
+import {SavingManager} from '../../shared/fs/SavingManager';
+import {IndirectValue} from '../../shared/fs/IndirectValue';
 import {Server} from '../../server/Server';
 
 let beautify = require('js-beautify').js_beautify;
@@ -214,7 +215,7 @@ export class SaveableObject extends AttributableClass
     //   To ensure this, we use SavingRegister to register all saving
     // that is being done to each file and buffer saving requests if
     // necessary.   
-    let promise = SavingRegister.requestSaving(filePath);
+    let promise = SavingManager.requestSaving(filePath);
 
     // If SavingRegister.requestSaving returned 'null', it
     // means that 'filePath' is not being saved right now
@@ -236,7 +237,7 @@ export class SaveableObject extends AttributableClass
     // Remove the lock.
     // (it will also trigger calling of resolve callback
     //  of whoever might be waiting after us)
-    SavingRegister.reportFinishedSaving(filePath);
+    SavingManager.reportFinishedSaving(filePath);
 
     return success;
   }
@@ -574,6 +575,7 @@ export class SaveableObject extends AttributableClass
   }
   */
 
+  /*
   private saveEntityReference(variable: any)
   {
     if (variable === null || variable === undefined)
@@ -586,7 +588,9 @@ export class SaveableObject extends AttributableClass
     
     return reference.saveToJsonObject();
   }
+  */
 
+  /*
   private saveDate(variable: any)
   {
     if (variable === null || variable === undefined)
@@ -614,7 +618,9 @@ export class SaveableObject extends AttributableClass
     
     return dateRecord.saveToJsonObject();
   }
+  */
 
+  /*
   private saveMap(variable: any)
   {
     // Note:
@@ -634,6 +640,7 @@ export class SaveableObject extends AttributableClass
 
     return hashmap.saveToJsonObject();
   }
+  */
 
   // Saves a property of type Array to a corresponding JSON Array object.
   private saveArray(array: Array<any>, arrayName: string, className: string)
@@ -684,17 +691,18 @@ export class SaveableObject extends AttributableClass
     if (variable.isEntity === true)
       // Entities are saved to a separate files. Only a string
       // id of an entity is saved here.
-      return this.saveEntityReference(variable);
+      return IndirectValue.createEntitySaver(variable).saveToJsonObject();
 
     // 'variable' is a saveableObject (but not an entity).
     if (this.isSaveableObject(variable))
       return variable.saveToJsonObject();
 
     if (this.isDate(variable))
-      return this.saveDate(variable);
+      //return this.saveDate(variable);
+      return IndirectValue.createDateSaver(variable).saveToJsonObject();
 
     if (this.isMap(variable))
-      return this.saveMap(variable);
+      return IndirectValue.createMapSaver(variable).saveToJsonObject();
 
     if (this.isPrimitiveObject(variable))
       return this.savePrimitiveObject(variable);
@@ -864,63 +872,6 @@ export class SaveableObject extends AttributableClass
     return variable.constructor.name === 'Map';
   }
 
-  private commonRecordCheck(jsonObject: Object): boolean
-  {
-    // Technically there can be a special record (entity reference,
-    // date record or map record) saved with 'null' value, but in
-    // that case we don't have to load it as special record, because
-    // it will be null anyways.
-    if (jsonObject === null)
-      return false;
-
-    if (jsonObject === undefined)
-    {
-      ERROR("Invalid jsonObject");
-      return false;
-    }
-
-    return true;
-  }
-
-  private isDateRecord(jsonObject: Object): boolean
-  {
-    if (this.commonRecordCheck(jsonObject) === false)
-      return false;
-
-    // Is there a 'className' property in JSON object
-    // with value 'DateRecord'?
-    if (jsonObject[NamedClass.CLASS_NAME_PROPERTY] === 'DateRecord')
-      return true;
-
-    return false;
-  }
-
-  private isHashmap(jsonObject: Object): boolean
-  {
-    if (this.commonRecordCheck(jsonObject) === false)
-      return false;
-
-    // Is there a 'className' property in JSON object
-    // with value 'Hashmap'?
-    if (jsonObject[NamedClass.CLASS_NAME_PROPERTY] === 'Hashmap')
-      return true;
-
-    return false;
-  }
-
-  private isEntityReference(jsonObject: Object): boolean
-  {
-    if (this.commonRecordCheck(jsonObject) === false)
-      return false;
-
-    // Is there a 'className' property in JSON object with value
-    // 'Reference'?
-    if (jsonObject[NamedClass.CLASS_NAME_PROPERTY] === 'Reference')
-      return true;
-
-    return false;
-  }
-
   /*
   private extractMapContents(map: Map<any, any>): Array<any>
   {
@@ -965,10 +916,10 @@ export class SaveableObject extends AttributableClass
     filePath: string
   )
   {
-    if (!this.isDateRecord(jsonVariable))
+    if (!IndirectValue.isDate(jsonVariable))
       return null;
 
-    if (variable !== null && !this.isDate(variable))
+    if (variable !== null && !IndirectValue.isDate(variable))
     {
       ERROR("Attempt to load Date property '" + variableName + "'"
         + " from file " + filePath + " to a non-Date property");
@@ -1014,7 +965,7 @@ export class SaveableObject extends AttributableClass
     filePath: string
   )
   {
-    if (!this.isHashmap(jsonVariable))
+    if (!IndirectValue.isMap(jsonVariable))
       return null;
 
     if (variable !== null && !this.isMap(variable))
@@ -1069,7 +1020,7 @@ export class SaveableObject extends AttributableClass
     filePath: string
   )
   {
-    if (!this.isEntityReference(jsonVariable))
+    if (!IndirectValue.isReference(jsonVariable))
       return null;
 
     return this.loadReference
@@ -1113,7 +1064,7 @@ export class SaveableObject extends AttributableClass
     return EntityManager.createReference(id, Entity);
   }
 
-    // -> Returns 'null' if jsonVariable is not an Array or if loading failed.
+  // -> Returns 'null' if jsonVariable is not an Array or if loading failed.
   private loadAsArray
   (
     variableName: string,
