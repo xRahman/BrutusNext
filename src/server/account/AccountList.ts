@@ -42,7 +42,7 @@ export class AccountList extends NameSearchList
     account = await EntityManager.loadNamedEntity
     (
       accountName,
-      NamedEntity.UniqueNameCathegory.accounts,
+      NamedEntity.NameCathegory.accounts,
       Account
     );
 
@@ -88,7 +88,7 @@ export class AccountList extends NameSearchList
       // Name of the entity to create.
       accountName,
       // Cathegory in which the name must be unique.
-      NamedEntity.UniqueNameCathegory.accounts,
+      NamedEntity.NameCathegory.accounts,
       // Name of the prototype class.
       'Account',
       // Dynamic type cast.
@@ -136,7 +136,7 @@ export class AccountList extends NameSearchList
     return await NamedEntity.isNameTaken
     (
       accountName,
-      NamedEntity.UniqueNameCathegory.accounts
+      NamedEntity.NameCathegory.accounts
     );
   }
 

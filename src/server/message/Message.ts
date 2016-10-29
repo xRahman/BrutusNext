@@ -430,6 +430,11 @@ export module Message
     // Screen show before entering menu (MOTD, last logind info).
     LOGIN_INFO,
 
+    // --------------------- Chargen messages --------------------
+
+    // Chargen messages like "What's the name of your character?".
+    CHARGEN_PROMPT,
+
     // -------------------- Connection messages ------------------
     
     CONNECTION_INFO,

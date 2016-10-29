@@ -98,7 +98,7 @@ export class EntityManager
   public static async createNamedEntity<T>
   (
     name: string,
-    cathegory: NamedEntity.UniqueNameCathegory,
+    cathegory: NamedEntity.NameCathegory,
     prototype: string,
     typeCast: { new (...args: any[]): T }
   )
@@ -119,7 +119,7 @@ export class EntityManager
   public static async loadNamedEntity<T>
   (
     name: string,
-    cathegory: NamedEntity.UniqueNameCathegory,
+    cathegory: NamedEntity.NameCathegory,
     typeCast: { new (...args: any[]): T }
   )
   // Return type is actualy <T>, Promise will get resolved automatically.
@@ -154,7 +154,7 @@ export class EntityManager
   public async createNamedEntity<T>
   (
     name: string,
-    cathegory: NamedEntity.UniqueNameCathegory,
+    cathegory: NamedEntity.NameCathegory,
     prototype: string,
     typeCast: { new (...args: any[]): T }
   )
@@ -164,7 +164,7 @@ export class EntityManager
     if (await NamedEntity.isNameTaken(name, cathegory))
     {
       ERROR("Attempt to create unique entity '" + name + "' in cathegory"
-        + " '" + NamedEntity.UniqueNameCathegory[cathegory] + "' which"
+        + " '" + NamedEntity.NameCathegory[cathegory] + "' which"
         + " already exists. Entity is not created");
       return null;
     }
@@ -189,7 +189,7 @@ export class EntityManager
   public async loadNamedEntity<T>
   (
     name: string,
-    cathegory: NamedEntity.UniqueNameCathegory,
+    cathegory: NamedEntity.NameCathegory,
     typeCast: { new (...args: any[]): T }
   )
   // Return type is actualy <T>, Promise will get resolved automatically.
@@ -620,7 +620,7 @@ export class EntityManager
   private async loadNamedEntityId
   (
     name: string,
-    cathegory: NamedEntity.UniqueNameCathegory
+    cathegory: NamedEntity.NameCathegory
   )
   {
     // File path is something like './data/names/accounts/Rahman.json'.

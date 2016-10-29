@@ -22,7 +22,7 @@ export class NamedEntity extends Entity
   */
   // In what cathegory is this name unique (accounts, characters, world...).
   // Value 'null' means that the name is not unique.
-  private uniqueNameCathegory: NamedEntity.UniqueNameCathegory = null;
+  private uniqueNameCathegory: NamedEntity.NameCathegory = null;
 
   // --------------- Public accessors -------------------
 
@@ -70,7 +70,7 @@ export class NamedEntity extends Entity
   public async setUniqueName
   (
     newName: string,
-    newCathegory: NamedEntity.UniqueNameCathegory
+    newCathegory: NamedEntity.NameCathegory
   )
   {
     if (newName === null || newName === undefined || newName === "")
@@ -135,7 +135,7 @@ export class NamedEntity extends Entity
   public static async isNameTaken
   (
     name: string,
-    cathegory: NamedEntity.UniqueNameCathegory
+    cathegory: NamedEntity.NameCathegory
   )
   {
     // Name lock file path is something like
@@ -153,16 +153,16 @@ export class NamedEntity extends Entity
     return name + '.json';
   }
 
-  private static getNameLockDirectory(cathegory: NamedEntity.UniqueNameCathegory)
+  private static getNameLockDirectory(cathegory: NamedEntity.NameCathegory)
   {
     // Name lock directory is something like './data/names/accounts/'.
-    return './data/names/' + NamedEntity.UniqueNameCathegory[cathegory] + '/';
+    return './data/names/' + NamedEntity.NameCathegory[cathegory] + '/';
   }
 
   public static getNameLockFilePath
   (
     name: string,
-    cathegory: NamedEntity.UniqueNameCathegory
+    cathegory: NamedEntity.NameCathegory
   )
   {
     // Path is something like './data/names/accounts/Rahman.json'.
@@ -175,7 +175,7 @@ export class NamedEntity extends Entity
   public async createNameLockFile
   (
     name: string,
-    cathegory: NamedEntity.UniqueNameCathegory
+    cathegory: NamedEntity.NameCathegory
   )
   {
     let nameLockRecord = new NameLockRecord();
@@ -221,7 +221,7 @@ export module NamedEntity
   // and './data/names/characters/Rahman.json'.
   // (this is the reason why cathegories are lower case - so we don't
   // have uppercase names of directories in ./data)
-  export enum UniqueNameCathegory
+  export enum NameCathegory
   {
     accounts,
     characters,
