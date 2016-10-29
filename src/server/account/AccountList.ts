@@ -27,10 +27,10 @@ export class AccountList extends NameSearchList
   //    Returns null if account 'accountName' doesn't exist.
   public async loadAccount(accountName: string, connection: Connection)
   {
-    // First check that account doesn't already exist. 
+    // First check if account is already loaded. 
     let account = this.getAccountByName(accountName);
 
-    // If it doesn't there is no point in loading it again.
+    // If it is already loaded, there is no point in loading it again.
     if (account !== undefined)
     {
       ERROR("Attempt to create account '" + accountName + "'"
@@ -43,9 +43,10 @@ export class AccountList extends NameSearchList
     (
       accountName,
       NamedEntity.UniqueNameCathegory.accounts,
-      Account);
+      Account
+    );
 
-    if (Entity.isValid(account))
+    if (!Entity.isValid(account))
     {
       ERROR("Failed to load account " + account.name);
       return null;
@@ -139,7 +140,7 @@ export class AccountList extends NameSearchList
     );
   }
 
-  // -> Returns undefined if account isn't onlne or doesn't exist.
+  // -> Returns undefined if account isn't online or doesn't exist.
   public getAccountByName(accountName: string)
   {
     // Attempt to re-log to an online account.

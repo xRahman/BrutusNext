@@ -83,7 +83,7 @@ export class IndirectValue
     let saveableObject = new SaveableObject();
 
     // Date is saved as it's JSON string representation to property 'date'.
-    saveableObject['date'] = JSON.stringify(date);
+    saveableObject['date'] = date.toJSON();
 
     // We can't override 'className' property, because it's an accessor
     // (see NamedClass.className), so we use Proxy to trap acces to

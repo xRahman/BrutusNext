@@ -37,10 +37,10 @@ import {GameEntity} from '../../game/GameEntity';
 export class Prototype extends AutoSaveableObject
 {
   // Name of the class that will represent this prototype.
-  public name: string = "";
+  public name: string = null;
 
   // Name of the class we will be inherited from.
-  public ancestor: string = "";
+  public ancestor: string = null;
 
   // Prototype data members and their values.
   public data = new Array<{ property: string, value: any }>();
