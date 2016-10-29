@@ -125,8 +125,12 @@ export class EntityManager
   // Return type is actualy <T>, Promise will get resolved automatically.
   : Promise<T>
   {
-    return await Server.entityManager.
-      loadNamedEntity(name, cathegory, typeCast);
+    return await Server.entityManager.loadNamedEntity
+    (
+      name,
+      cathegory,
+      typeCast
+    );
   }
 
   // -> Returns existing reference if entity already exists in EntityManager.
@@ -200,6 +204,9 @@ export class EntityManager
       // Error is already reported by loadNamedEntityId()
       return null;
 
+    /// This check is done in this.loadEntityById() again so there
+    /// is no point in doing it here as well.
+    /*
     // Now we know the id of our named entity.
     // Before we load it from the disk, we better
     // that it doesn't already exist in EntityManager.  
@@ -213,6 +220,7 @@ export class EntityManager
         + " which is already loaded in EntityManager");
       return entity.dynamicCast(typeCast);
     }
+    */
 
     return await this.loadEntityById(id, typeCast);
   }
@@ -244,68 +252,6 @@ export class EntityManager
 
     return entityProxy.dynamicCast(typeCast);
   }
-
-  /*
-  // Loads entity from file. Don't use this method, call entity.load() instead
-  // (this method is automatically called by entity proxy handler when you
-  // call load() method on your entity reference).
-  // (You shouldn't be able to call this method anyways, because you
-  // (hopefuly) have no way to get your hands on an entity proxy handler).
-  public async loadEntity(handler: EntityProxyHandler)
-  {
-    handler.sanityCheck();
-
-    /// Tohle je asi blbost. Když přeloaduju entitu, tak tím zruším
-    /// nesavnuté změny - to může být pořeba při editování, ale za běhu
-    /// hry to není žádoucí.
-
-    // Note:
-    //   If entity already exists and we are re-loading it, the
-    // procedure is the same as if we are loading from invalid
-    // entity handler: A new entity will be created and all
-    // existing references to it will be updated.
-    //   It means that the old entity will be discarded - which is
-    // ok, because noone should have direct refrerence to an entity,
-    // everyone else than EntityManager is only allowed to keep
-    // reference to an entity proxy, so noone will really notice the
-    // change of internal entity reference inside a proxy handler.
-
-    let entity = await this.createAndLoadEntity(handler);
-
-    if (entity === null)
-      // Errors have already been reported by this.createAndLoadEntity().
-      return;
-
-    // From now on, we will work with an id that has been loaded from file.
-    // (If handler had a different id, it was reported to mudlog in
-    //  this.createAndLoadEntity. 'handler.id' will get updated later
-    //  for all handlers stored in the entityRecord.)
-    let id = entity.getId();
-
-    // Check if id already exist in EntityManager.
-    // ('this.entityRecords.get()' returns undefined if there
-    //  is no such record in 'this.entityRecords')
-    let entityRecord: EntityRecord = this.entityRecords.get(id);
-
-    // If there is no entityRecord for our id in EntityManager,
-    // a new entityRecord will be created.
-    if (entityRecord === undefined)
-    {
-      let entityProxy = new Proxy({}, handler);
-
-      entityRecord = new EntityRecord(entity, entityProxy, handler);
-    }
-    else
-    {
-      // Ensure that handler is listed in existing entityRecord.
-      entityRecord.addHandler(handler);
-    }
-
-    // Update all handlers in entityRecord with (possibly) new
-    // information: entity reference and entity id.
-    entityRecord.updateProxyHandlers(entity);
-  }
-  */
 
   // Loads entity from file. Don't use this method, call entity.load() instead
   // (this method is automatically called by entity proxy handler when you
@@ -339,7 +285,7 @@ export class EntityManager
       return;
     }
 
-    let loadResult: { jsonObject: Object, className: string };
+    let loadResult: { jsonObject: Object, className: string, path: string };
     loadResult = await Entity.loadJsonOject(handler.id);
 
     if (loadResult.jsonObject === null || loadResult.className === null)
@@ -351,10 +297,16 @@ export class EntityManager
       Server.classFactory.createInstance(loadResult.className, Entity);
 
     // And let it load itself from jsonObject.
-    entity.loadFromJsonObject(loadResult.jsonObject);
+    if (!entity.loadFromJsonObject(loadResult.jsonObject, loadResult.path))
+      return;
 
     // Update internal entity reference of our entity proxy handler. 
     handler.entity = entity;
+
+    // Also update entity's id.
+    // (id is not saved to file, because it is used as file name so there
+    //  would be unnecessary duplicity).
+    entity.setId(handler.id);
 
     // Add entity to EntityManager
     // (we have checked before that our id doesn't exist in the
@@ -707,28 +659,9 @@ export class EntityManager
       return entity.dynamicCast(typeCast);
     }
 
-    /*
-    let handler = new EntityProxyHandler();
-
-    /// TODO: Možná je to blbost - entity.load() asi musí
-    // umět přidat entitu do manageru
-
-    // We don't use createInvalidEntityReference here, because
-    // we need to know the handler in order to be able to add
-    // newly created entity to the manager.
-    entity = this.createInvalidEntityProxy(id, handler, Entity);
-
-    // This will work, because entity is a proxy and 'load()' call
-    // is trapped by the handler.
-    await entity.load();
-
-    // Add newly created entity to the manager.
-    this.add(entity, handler);
-    */
-
     entity = this.createInvalidEntityReference(id, Entity);
 
-    // This will work, because entity is a proxy and 'load()' call
+    // This works because entity is a proxy and 'load()' call
     // is trapped by the handler. 'load()' handler will also add
     // entity to the manager.
     await entity.load();

@@ -1,3 +1,8 @@
+TODO: Zkontrolovat, že connection.close() dealokuje
+  vše, co má dealokovat (odebrat account z listu, etc).
+
+TODO: Přejmenovat všechny 'filePath' v SaveableObjectu (a asi i jinde)
+  na 'path'.
 
 TODO: Nepoužívat Map<any, any> (což je implicitní, když napíšu
   jen newMap()), ale konkrétní typy.
