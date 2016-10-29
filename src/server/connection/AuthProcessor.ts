@@ -34,6 +34,7 @@
 
 'use strict';
 
+import {Settings} from '../../Settings';
 import {ERROR} from '../../shared/error/ERROR';
 import {Utils} from '../../shared/Utils';
 import {EntityManager} from '../../shared/entity/EntityManager';
@@ -139,36 +140,31 @@ export class AuthProcessor
     }
   }
 
-  // Checks if account 'this.accountName' exists in accountManager,
-  // attempts to load it if it doesn't.
-  // -> Returns found or loaded account (or null if it doesn't exist)
-  //    and boolean flag indicating if account was found or loaded.
-  private async getAccount()
+  // -> Returns 'null' if account doesn't exist or can't be loaded.
+  private async loadAccount(): Promise<Account>
   {
-    // Return value of this method.
-    let result = { account: null, reconnecting: false };
+    // loadAccount() returns null if account doesn't exist on the disk.
+    let account = await Server.accounts.loadAccount
+    (
+      this.accountName,
+      this.connection
+    );
 
-    let accountManager = Server.accounts;
-
-    // Check if account is already loaded.
-    // (getAccountByName() returns 'undefined' if account isn't in the manager) 
-    result.account = accountManager.getAccountByName(this.accountName);
-
-    // If account already exists in accountManager, we just return it.
-    if (result.account !== undefined)
+    if (account === null || account.isValid() === false)
     {
-      result.reconnecting = true;
-      return result;
+      this.announceAccountLoadFailure();
+
+      /// TODO: Zkontrolovat, že connection.close() dealokuje
+      /// vše, co má dealokovat (odebrat account z listu, etc). 
+
+      // There is no point in requesting password again
+      // because the same error will probably occur again. 
+      this.connection.close();
+
+      return null;
     }
 
-    // If account doesn't exist in accountManager, we need to load it from
-    // the disk.
-    // (loadAccount() returns null if account doesn't exist on the disk)
-    result.account =
-      await Server.accounts.loadAccount(this.accountName, this.connection);
-
-    // result.reconnecting has it's inital value (false).
-    return result;
+    return account;
   }
 
   private async checkPassword(password: string)
@@ -177,27 +173,31 @@ export class AuthProcessor
     {
       ERROR("Invalid connection in AuthProcessor when trying"
         + " to check password of account " + this.accountName);
+      // We can't even send message to the player here because
+      // we don't have a valid connection to send it to.
       return;
     }
 
-    let query: { account: Account, reconnecting: boolean } = null;
+    // 'this.authenticate' returns 'null' if authentication
+    // fails for any reason (password doesn't match or there
+    // is some error). 
+    let account = await this.authenticate(password);
 
-    // Check if account is already online (result.reconnecting will be true),
-    // load it from disk otherwise (result.reconnecting will be false).
-    query = await this.getAccount();
-
-    if (query.account === null)
-      // Error is already reported by findAccount().
+    if (account === null)
+      // We don't advance stage here.
+      // - Either password didn't match and another
+      //   pasword prompt has been sent to player.
+      //   (in this case another user imput will
+      //    trigger checkPassword() again)
+      // - Or there was some serios error and player
+      //   has been disconnected.
       return;
 
-    // Attempt to log into the account with a password. If password,
-    // checks, stage will advance to AuthProcessor.Stage.MOTD. 
-    this.authenticate
-    (
-      query.account,
-      password,
-      query.reconnecting
-    );
+    // Sends login info (motd, last login, etc.). 
+    this.sendLoginInfo(account, { sendLastLoginInfo: true });
+
+    // Stage MOTD will wait for any command to proceed to the menu. 
+    this.stage = AuthProcessor.Stage.MOTD;
   }
 
   private acceptNewPassword(password: string): boolean
@@ -258,9 +258,11 @@ export class AuthProcessor
     this.announceNewPlayer();
 
     // LastLoginInfo (ip address and last login date will not
-    // be sent (it doesn't make sense for freshly created account).
-    //   Also advance the stage to AuthProcessor.Stage.MOTD. 
+    // be sent (it doesn't make sense for freshly created account). 
     this.sendLoginInfo(account, { sendLastLoginInfo: false });
+
+    // Stage MOTD will wait for any command to proceed to the menu. 
+    this.stage = AuthProcessor.Stage.MOTD;
   }
 
   private acceptMotd()
@@ -359,85 +361,96 @@ export class AuthProcessor
     return true;
   }
 
-  /*
-  // -> Returns account 'accountName' loaded from disk.
-  //    Returns null if account 'accountName' doesn't exist.
-  private async loadAccount(accountName: string)
-  {
-    // Second parameter of loadNamedEntity is used for dynamic type cast.
-    let account = await EntityManager.loadNamedEntity(accountName, Account);
-
-    if (account === null || account === undefined || account.isValid() === false)
-    {
-      ERROR("Failed to load account " + account.name);
-      return null;
-    }
-
-    account.connection = this.connection;
-
-    if (this.accountName !== account.name)
-    {
-      ERROR("Account name saved in file (" + account.name + ")"
-        + " doesn't match account file name (" + this.accountName + ")."
-        + " Renaming account to match file name");
-    
-      account.name = this.accountName;
-    }
-
-    return account;
-  }
-  */
-
   private connectToAccount(account: Account, reconnecting: boolean)
   {
+    if (this.connection === null || this.connection.isValid() === false)
+    {
+      ERROR("Invalid connection on account " + this.accountName);
+      return;
+    }
+    
     if (reconnecting === true)
     {
       this.connection.reconnectToAccount(account);
     }
     else
     {
-      let accountManager = Server.accounts;
+      if (Server.accounts === null)
+      {
+        ERROR("Invalid account manager");
+        return;
+      }
 
       // Add newly loaded account to accountManager (under it's original id).
-      accountManager.add(account);
+      Server.accounts.add(account);
 
       this.connection.connectToAccount(account);
     }
   }
 
-  // Checks password against that stored in account,
-  // advances stage appropriately.
-  private authenticate
-  (
-    account: Account,
-    password: string,
-    reconnecting: boolean
-  )
+  // Finds user account or loads it from disk, checks if password match,
+  // connects user to account on success.
+  // -> Returns 'null' if password doesn't match or there is some error.    
+  private async authenticate(password: string): Promise<Account>
+  {
+    let reconnecting = true;
+
+    // Check if account is already loaded.
+    // (getAccountByName() returns 'undefined' if account isn't in the manager) 
+    let account = Server.accounts.getAccountByName(this.accountName);
+
+    // If account doesn't exist in accountManager, we need to load it from
+    // the disk.
+    if (account === undefined)
+    {
+      account = await this.loadAccount();
+
+      if (account === null)
+        // Player got disconnected by LoadAccount(),
+        // there is nothing more to do.      
+        return null;
+
+      reconnecting = false;
+    }
+
+    // Attempt to log into the account with a password. 
+    if (!this.validatePassword(account, password))
+      return null;
+
+    this.connectToAccount(account, reconnecting);
+
+    return account;
+  }
+
+  // Checks password against that stored in account.
+  // -> Returns 'false' on failure.
+  private validatePassword(account: Account, password: string)
   {
     if (account === null || account.isValid() === false)
     {
       ERROR("Invalid account");
-      return;
+      return false;
     }
 
-    if (account.checkPassword(password) === false)
+    if (!account.checkPassword(password))
     {
+      // Also sends another password prompt.
       this.announceWrongPassword();
 
-      // We don't advance the stage so the next user input will trigger
-      // a checkPassword() again.
-      return;
+      return false;
     }
 
-    this.connectToAccount(account, reconnecting);
-
-    // Sends login info (motd, last login, etc.).
-    //  Also advance the stage to AuthProcessor.Stage.MOTD. 
-    this.sendLoginInfo(account, { sendLastLoginInfo: true });
+    return true;
   }
 
   private announceWrongPassword()
   {
+    if (this.connection === null || this.connection.isValid() === false)
+    {
+      ERROR("Invalid connection");
+      return;
+    }
+
     Syslog.log
     (
       "Bad PW: " + this.accountName
@@ -450,6 +463,25 @@ export class AuthProcessor
     (
       "Wrong password or account name.\n"
       + "Password: "
+    );
+  }
+
+  private announceAccountLoadFailure()
+  {
+    // Let admins know what went wrong.
+    Syslog.log
+    (
+      "Failed to load account " + this.accountName + "."
+      + " Disconnecting player",
+      Message.Type.SYSTEM_ERROR,
+      AdminLevel.IMMORTAL
+    );
+
+    // Let the player know what went wrong.
+    this.sendAuthPrompt
+    (
+      "Unable to load your account.\n"
+      + "Please contact admins at " + Settings.adminEmail + "."
     );
   }
 
@@ -509,9 +541,6 @@ export class AuthProcessor
     // This must be done after login info is sent
     // (so the previous values will be sent to player).
     account.updateLastLoginInfo();
-
-    // Stage MOTD will wait for any command to proceed to the menu. 
-    this.stage = AuthProcessor.Stage.MOTD;
   }
 
   private sendAuthPrompt(text: string)

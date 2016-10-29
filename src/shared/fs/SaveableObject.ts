@@ -5,6 +5,21 @@
   data in JSON format.
 */
 
+/*
+  Note:
+    Only saved properties are loaded. Properties that are not present in the
+    save will not get overwritten. It means that you can add new properties
+    to existing classes without converting existing save files (but you should
+    initialize them with default values of course).
+
+  Note:
+    Only properties that exist on the class that is being loaded are loaded
+    from save. It means that you can remove properties from existing classes
+    without converting existing save files. 
+
+    (See loadFromJsonObject() and loadPrimitiveObject() methods for details.) 
+*/
+
 'use strict';
 
 import {ERROR} from '../../shared/error/ERROR';
@@ -44,7 +59,7 @@ export class SaveableObject extends AttributableClass
   //   jsonObject first and create an instance of SaveableObject from
   //   type information read from it - so the loading of jsonObject
   //   must be possible without having an instance of SaveableObject.
-  // -> Returns null if loading fails.
+  // -> Returns 'null' if loading fails.
   public static async loadJsonObjectFromFile(filePath: string)
   {
     //  Unlike writing the same file while it is saving, loading from
@@ -62,6 +77,9 @@ export class SaveableObject extends AttributableClass
     return jsonObject; 
   }
 
+  // ------------- Private static methods ---------------
+
+  // -> Returns 'null' if loading fails.
   private static loadFromJsonString(jsonString: string, filePath: string)
   {
     let jsonObject = {};
@@ -84,8 +102,8 @@ export class SaveableObject extends AttributableClass
 
   // ---------------- Public methods --------------------
 
-  /// TODO: Return true on success.
-  public async loadFromFile(filePath: string)
+  // -> Returns 'true' on success.
+  public async loadFromFile(filePath: string): Promise<boolean>
   {
     // Note:
     //  Unlike writing the same file while it is saving, loading from
@@ -99,11 +117,16 @@ export class SaveableObject extends AttributableClass
     // must be possible without having an instance of SaveableObject.
     let jsonObject = await SaveableObject.loadJsonObjectFromFile(filePath);
 
+    if (jsonObject === null)
+      return false;
+
     // 'filePath' is passed just so it can be printed to error messages.
-    this.loadFromJsonObject(jsonObject, filePath);
+    return this.loadFromJsonObject(jsonObject, filePath);
   }
 
+  // -> Returns 'true' on success.
   public async saveToFile(directory: string, fileName: string)
+  : Promise<boolean>
   {
     let directoryIsValid = directory !== undefined
                         && directory !== null
@@ -114,7 +137,7 @@ export class SaveableObject extends AttributableClass
       ERROR("Invalid 'directory' parameter when saving"
         + " class " + this.className + "." + " Object is"
         + " not saved");
-      return;
+      return false;
     }
 
     let filenameIsValid = fileName !== undefined
@@ -126,7 +149,7 @@ export class SaveableObject extends AttributableClass
       ERROR("Invalid 'fileName' parameter when saving"
         + " class " + this.className + ". Object is not"
         + " saved");
-      return;
+      return false;
     }
 
     if (directory.substr(directory.length - 1) !== '/')
@@ -139,9 +162,48 @@ export class SaveableObject extends AttributableClass
 
     // Directory might not yet exist, so we better make sure it does.
     if (await FileSystem.ensureDirectoryExists(directory) === false)
-      return;
+      return false;
 
-    await this.saveContentsToFile(directory + fileName);
+    return await this.saveContentsToFile(directory + fileName);
+  }
+
+  // -> Returns 'false' if loading fails.
+  public loadFromJsonObject(jsonObject: Object, filePath: string): boolean
+  {
+    if (!this.loadFromJsonObjectCheck(jsonObject, filePath))
+      return false;
+
+    // Now copy the data.
+    for (let propertyName in jsonObject)
+    {
+      // Property 'className' will not be assigned (it's read-only
+      // and static so it wouldn't make sense anyways), but we will
+      // check that we are loading ourselves into a class with matching
+      // className.
+      if (propertyName === NamedClass.CLASS_NAME_PROPERTY)
+      {
+        if (!this.loadClassNameCheck(jsonObject, propertyName, filePath))
+          return false;
+      }
+      else
+      {
+        // Note:
+        //   Only properties that exist on the class that is being loaded
+        // are loaded from save. It means that you can remove properties
+        // from existing classes without converting existing save files.
+        // (no syslog message is generated)
+        if (this[propertyName] !== undefined)
+          // Note:
+          //   We are cycling over properties in JSON object, not in
+          // SaveableObject that is being loaded. It means that properties
+          // that are not present in the save will not get overwritten.
+          // This allows adding new properties to existing classes without
+          // the need to convert all save files.
+          this.loadPropertyFromJsonObject(jsonObject, propertyName, filePath);
+      }
+    }
+
+    return true;
   }
 
   // -------------- Protected methods -------------------
@@ -262,56 +324,64 @@ export class SaveableObject extends AttributableClass
     return jsonString;
   }
 
-  private loadFromJsonObject(jsonObject: Object, filePath: string)
+  // -> Returns 'false' if check fails.
+  private loadFromJsonObjectCheck
+  (
+    jsonObject: Object,
+    filePath: string
+  )
+  : boolean
   {
     // 'filePath' is passed just so it can be printed to error messages.
     if (!this.checkVersion(jsonObject, filePath))
-      return;
+      return false;
 
     // 'className' must be the same as it's saved value.
-    this.checkClassName(jsonObject, filePath);
+    if (!this.checkClassName(jsonObject, filePath))
+      return false;
 
     // Using 'in' operator on object with null value would cause crash.
     if (jsonObject === null)
     {
       // Here we need fatal error, because data might already
       // be partialy loaded so we could end up with broken entity.
-      FATAL_ERROR("Invalid json object loaded from file " + filePath);
+      ERROR("Invalid json object loaded from file " + filePath);
+      return false;
     }
 
-    // Now copy the data.
-    for (let propertyName in jsonObject)
+    return true;
+  }
+
+  // -> Returns 'false' if check fails.
+  private loadClassNameCheck
+  (
+    jsonObject: Object,
+    propertyName: string,
+    filePath: string
+  ): boolean
+  {
+    if (this.className === undefined)
     {
-      // Property 'className' will not be assigned (it's read-only
-      // and static so it wouldn't make sense anyways), but we will
-      // check that we are loading ourselves into a class with matching
-      // className.
-      if (propertyName === NamedClass.CLASS_NAME_PROPERTY)
-      {
-        if (this.className === undefined)
-        {
-          FATAL_ERROR("Loading object with saved"
-            + " '" + NamedClass.CLASS_NAME_PROPERTY + "'"
-            + " property into an instance that doesn't have"
-            + " a '" + NamedClass.CLASS_NAME_PROPERTY + "'"
-            + " property. This should never happen");
-        }
-
-        if (jsonObject[propertyName] !== this.className)
-        {
-          FATAL_ERROR("Loading object with"
-            + " '" + NamedClass.CLASS_NAME_PROPERTY + "'"
-            + " property saved as '" + jsonObject[propertyName] + "'"
-            + " into an instance with '" + NamedClass.CLASS_NAME_PROPERTY + "'"
-            + " " + this.className + ". This should never happen, types must"
-            + " match");
-        }
-      }
-      else
-      {
-        this.loadPropertyFromJsonObject(jsonObject, propertyName, filePath);
-      }
+      ERROR("Loading object with saved"
+        + " '" + NamedClass.CLASS_NAME_PROPERTY + "'"
+        + " property into an instance that doesn't have"
+        + " a '" + NamedClass.CLASS_NAME_PROPERTY + "'"
+        + " property. This should never happen");
+      return false;
     }
+
+    if (jsonObject[propertyName] !== this.className)
+    {
+      ERROR("Loading object with"
+        + " '" + NamedClass.CLASS_NAME_PROPERTY + "'"
+        + " property saved as '" + jsonObject[propertyName] + "'"
+        + " into an instance with '" + NamedClass.CLASS_NAME_PROPERTY + "'"
+        + " " + this.className + ". This should never happen, types must"
+        + " match");
+      return false;
+    }
+
+    return true;
   }
 
   private saveToJsonObject(): Object
@@ -359,29 +429,32 @@ export class SaveableObject extends AttributableClass
       // (this.isSaved() checks static attribute property.isSaved)
       // (className is passed only for more specific error messages)
       if (property !== 'name' && sourceObject.isSaved(property, className))
-      {
         sourceObject.savePropertyToJsonObject(jsonObject, property);
-      }
     }
 
     return jsonObject;
   }
 
-  private checkClassName (jsonObject: Object, filePath: string)
+  // -> Returns 'true' on success.
+  private checkClassName (jsonObject: Object, filePath: string): boolean
   {
     if (!(NamedClass.CLASS_NAME_PROPERTY in jsonObject))
     {
-      FATAL_ERROR("There is no '" + NamedClass.CLASS_NAME_PROPERTY + "'"
+      ERROR("There is no '" + NamedClass.CLASS_NAME_PROPERTY + "'"
         + " property in JSON data in file " + filePath);
+      return false;
     }
 
     if (jsonObject[NamedClass.CLASS_NAME_PROPERTY] !== this.className)
     {
-      FATAL_ERROR("Attempt to load JSON data of class"
+      ERROR("Attempt to load JSON data of class"
         + " (" + jsonObject[NamedClass.CLASS_NAME_PROPERTY] + ")"
         + " in file " + filePath + " into instance of incompatible"
         + " class (" + this.className + ")");
+      return false;
     }
+
+    return true;
   }
 
   // Loads a single variable from corresponding JSON object.
@@ -460,16 +533,6 @@ export class SaveableObject extends AttributableClass
     // we load it as primitive type (variables of primitive
     // types are simply assigned).
     return jsonVariable;
-
-    /*
-    return this.loadPrimitiveVariable
-    (
-      variableName,
-      variable,
-      jsonVariable,
-      filePath
-    );
-    */
   }
 
   // If myProperty is null, a new instance of correct type will be
@@ -510,137 +573,6 @@ export class SaveableObject extends AttributableClass
 
     return myProperty;
   }
-
-  /*
-  private loadPrimitiveVariable
-  (
-    propertyName: string,
-    myProperty: any,
-    jsonObject: any,
-    filePath: string
-  )
-  : any
-  {
-    // Note: Date object is actually saved as value of primitive type
-    // (string), not as an object.
-    // In order to recognize that we are loading a date, we will check
-    // the type of property we are loading the date to.
-    // (This wouldn't work if value of Date property we are loading the
-    //  date to would be <null> - which is why it's not allowed to assign
-    //  <null> to Date properties or initialize them with <null>)
-    if (myProperty !== null && this.isDate(myProperty))
-    {
-      // Date object is not automatically created by JSON.parse(),
-      // only it's string representation. So we need to pass the JSON
-      // string representing value of date to a constructor of Date
-      // object to convert it to Date object.
-      return new Date(jsonObject);
-    }
-
-    // Actual primitive values are just directly assigned.
-    return jsonObject;
-  }
-  */
-
-  /*
-  private defaultLoadVariable
-  (
-    propertyName: string,
-    myProperty: any,
-    jsonObject: any,
-    filePath: string
-  )
-  : any
-  {
-    if (typeof jsonObject === 'object')
-    {
-      return this.loadObjectVariable
-      (
-        propertyName,
-        myProperty,
-        jsonObject,
-        filePath
-      );
-    }
-    else
-    {
-      return this.loadPrimitiveVariable
-      (
-        propertyName,
-        myProperty,
-        jsonObject,
-        filePath
-      );
-    }
-  }
-  */
-
-  /*
-  private saveEntityReference(variable: any)
-  {
-    if (variable === null || variable === undefined)
-    {
-      ERROR("Invalid variable, unable to save entity reference");
-      return null;
-    }
-
-    let reference = Server.classFactory.createReferenceRecord(variable);
-    
-    return reference.saveToJsonObject();
-  }
-  */
-
-  /*
-  private saveDate(variable: any)
-  {
-    if (variable === null || variable === undefined)
-    {
-      ERROR("Invalid variable, unable to save date");
-      return null;
-    }
-
-    // Note:
-    //   We could save Date directly as it's JSON string
-    // representation. However, then it would be saved as
-    // a plain string so there would be no way to determine
-    // that it's actualy a Date object. So instead we create
-    // an auxiliary DateRecord class, that stringifies the
-    // date but saves as any other SaveableObject, that means
-    // including className property.
-    //   This way we can load date even into a null variable,
-    // because type can be read from className saved in JSON
-    // file.
-
-    // (We use classFactory to create an instance of DateRecord
-    // here to prevent circular importing of SaveableObject and
-    // DateRecord modules.)
-    let dateRecord = Server.classFactory.createDateRecord(variable);
-    
-    return dateRecord.saveToJsonObject();
-  }
-  */
-
-  /*
-  private saveMap(variable: any)
-  {
-    // Note:
-    //   We could save Map directly as it's Array representation.
-    // However, then it would be saved as a plain Array so there
-    // would be no way to determine that it's actualy a Map object.
-    // So instead we create an auxiliary Hashmap class, that
-    // converts Map to Array but saves as any other SaveableObject,
-    // that means including className property.
-    //   This way we can load haspmap even into a null variable,
-    // because type can be read from className saved in JSON file.
-
-    // (We use classFactory to create an instance of Hashmap
-    // here to prevent circular importing of SaveableObject and
-    // Hashmap modules.)
-    let hashmap = Server.classFactory.createHashmapRecord(variable);
-
-    return hashmap.saveToJsonObject();
-  }
-  */
 
   // Saves a property of type Array to a corresponding JSON Array object.
   private saveArray(array: Array<any>, arrayName: string, className: string)
@@ -789,7 +721,7 @@ export class SaveableObject extends AttributableClass
   // is to determine if some of them are SaveableObjects so they need
   // to be loaded using their loadFromJsonObject() method.
   // (this check is done within this.loadVariable() call)
-  private loadPrimitiveObjectFromJson
+  private loadPrimitiveObject
   (
     primitiveObject: any,
     jsonObject: any,
@@ -799,14 +731,27 @@ export class SaveableObject extends AttributableClass
     // Now copy the data.
     for (let propertyName in jsonObject)
     {
-      // This will create property 'property' if it doesn't exist.
-      primitiveObject[propertyName] = this.loadVariable
-      (
-        propertyName,
-        primitiveObject[propertyName],
-        jsonObject[propertyName],
-        filePath
-      );
+      // Note:
+      //   Only properties that exist on the object that is being loaded
+      // are loaded from save. It means that you can remove properties
+      // from existing objects without converting existing save files.
+      // (no syslog message is generated)
+      if (primitiveObject[propertyName] !== undefined)
+      {
+        // Note:
+        //   We are cycling over properties in JSON object, not in
+        // object that is being loaded. It means that properties
+        // that are not present in the save will not get overwritten.
+        // This allows adding new properties to existing classes without
+        // the need to convert all save files.
+        primitiveObject[propertyName] = this.loadVariable
+        (
+          propertyName,
+          primitiveObject[propertyName],
+          jsonObject[propertyName],
+          filePath
+        );
+      }
     }
 
     return primitiveObject;
@@ -919,7 +864,7 @@ export class SaveableObject extends AttributableClass
     if (!IndirectValue.isDate(jsonVariable))
       return null;
 
-    if (variable !== null && !IndirectValue.isDate(variable))
+    if (variable !== null && !this.isDate(variable))
     {
       ERROR("Attempt to load Date property '" + variableName + "'"
         + " from file " + filePath + " to a non-Date property");
@@ -949,8 +894,9 @@ export class SaveableObject extends AttributableClass
 
     if (date === undefined || date === null)
     {
-     ERROR("Missing or invalid 'date' when loading date record"
+      ERROR("Missing or invalid 'date' when loading date record"
         + " '" + propertyName + "' from JSON file " + filePath);
+      return null;
     }
 
     return new Date(date);
@@ -1200,7 +1146,7 @@ export class SaveableObject extends AttributableClass
     }
 
     // We are loading object that is neither Date, Map nor SaveableObject.
-    return this.loadPrimitiveObjectFromJson
+    return this.loadPrimitiveObject
     (
       myProperty,
       jsonObject,
