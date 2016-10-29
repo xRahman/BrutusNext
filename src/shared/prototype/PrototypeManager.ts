@@ -265,7 +265,11 @@ export class PrototypeManager extends AutoSaveableObject
   {
     let prototype = new Prototype();
 
-    await prototype.loadFromFile(path);
+    if (await prototype.loadFromFile(path) === false)
+    {
+      ERROR("Failed to load prototype " + path);
+      return;
+    }
 
     // Creates a javascript class based on prototype data.
     prototype.createClass();

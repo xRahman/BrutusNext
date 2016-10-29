@@ -106,7 +106,7 @@ export class TelnetServer
 
     Syslog.log
     (
-      "Telnet server is up and listening to the new connections",
+      "Telnet server is up and listening to new connections",
       Message.Type.TELNET_SERVER,
       AdminLevel.IMMORTAL
     );

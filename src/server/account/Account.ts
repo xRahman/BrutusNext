@@ -73,7 +73,7 @@ export class Account extends NamedEntity
   // List of character names this account has access to.
   public characterNames: Array<string> = [];
 
-  // timeOfCreation initializes to current time, but for existing
+  // 'timeOfCreation' initializes to current time, but for existing
   // accounts will be overwritten when loading from file. 
   public timeOfCreation = new Date();
 

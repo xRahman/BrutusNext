@@ -56,23 +56,6 @@ export class EntityList extends SaveableObject
       return false;
     }
 
-    /// Entity is now stored directly in an id.
-    /*
-    // If entity isn't in global container holding all entities yet, add
-    // it there.
-    if (!Server.idManager.hasEntity(id))
-    {
-      if (entity.getId() === null)
-      {
-        Server.idManager.addUnderNewId(entity);
-      }
-      else
-      {
-        Server.idManager.addUnderExistingId(entity);
-      }
-    }
-    */
-
     // Add id to hashmap under it's string id.
     this.entities.set(id, entity);
 
