@@ -5,15 +5,6 @@
 */
 
 /*
-  Implementation note:
-    The system is built to use user accounts separated from characters,
-    so you could for example have more than one character on a single
-    account.
-
-    However, currently the game is set up so that there is no need for
-    a user to have more characters. So we'll just pretend that we are
-    creating a character even though it's actually an account.
-
   Security note:
     Sending unencrypted password is... Well let's hope its temporary
     solution.
@@ -54,7 +45,7 @@ export class AuthProcessor
 
   //------------------ Private data ---------------------
 
-  private stage = null;
+  private stage: AuthProcessor.Stage = null;
   private accountName = "";
 
   // ---------------- Public methods --------------------
@@ -113,7 +104,7 @@ export class AuthProcessor
 
   private async loginAttempt(accountName: string)
   {
-    if (!this.isAccountNameValid(accountName))
+    if (!this.isNameValid(accountName))
       // We don't advance the stage so the next user input will trigger
       // a loginAttempt() again.
       return;
@@ -154,12 +145,11 @@ export class AuthProcessor
     {
       this.announceAccountLoadFailure();
 
-      /// TODO: Zkontrolovat, že connection.close() dealokuje
-      /// vše, co má dealokovat (odebrat account z listu, etc). 
-
       // There is no point in requesting password again
-      // because the same error will probably occur again. 
-      this.connection.close();
+      // because the same error will probably occur again.
+      // So we will just disconnect the player.
+      this.connection.finishAuthenticating();
+      this.connection.quitGame();
 
       return null;
     }
@@ -173,8 +163,8 @@ export class AuthProcessor
     {
       ERROR("Invalid connection in AuthProcessor when trying"
         + " to check password of account " + this.accountName);
-      // We can't even send message to the player here because
-      // we don't have a valid connection to send it to.
+      // We can't even send the player a message about what went wrong
+      // here because we don't have a valid connection to send it to.
       return;
     }
 
@@ -271,14 +261,14 @@ export class AuthProcessor
     this.connection.enterLobby();
   }
 
-  private isAccountNameValid(accountName: string): boolean
+  private isNameValid(name: string): boolean
   {
-    if (!accountName)
+    if (!name)
     {
       this.sendAuthPrompt
       (
         "You really need to enter an account name to log in, sorry.\n"
-        + "Please enter a valid name:"
+        + "Please enter a valid account name:"
       );
 
       return false;
@@ -292,7 +282,7 @@ export class AuthProcessor
     // non-alphanumeric characters.
     ///    let regExp = /[^A-Za-z0-9]/;
 
-    if (regExp.test(accountName) === true)
+    if (regExp.test(name) === true)
     {
       this.sendAuthPrompt
       (
@@ -303,7 +293,7 @@ export class AuthProcessor
       return false;
     }
 
-    if (accountName.length > AuthProcessor.MAX_ACCOUNT_NAME_LENGTH)
+    if (name.length > AuthProcessor.MAX_ACCOUNT_NAME_LENGTH)
     {
       this.sendAuthPrompt
       (
@@ -315,7 +305,7 @@ export class AuthProcessor
       return false;
     }
 
-    if (accountName.length < AuthProcessor.MIN_ACCOUNT_NAME_LENGTH)
+    if (name.length < AuthProcessor.MIN_ACCOUNT_NAME_LENGTH)
     {
       this.sendAuthPrompt
       (
@@ -369,7 +359,7 @@ export class AuthProcessor
       return;
     }
     
-    if (reconnecting === true)
+    if (reconnecting)
     {
       this.connection.reconnectToAccount(account);
     }
@@ -380,9 +370,6 @@ export class AuthProcessor
         ERROR("Invalid account manager");
         return;
       }
-
-      // Add newly loaded account to accountManager (under it's original id).
-      Server.accounts.add(account);
 
       this.connection.connectToAccount(account);
     }

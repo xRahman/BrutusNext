@@ -27,7 +27,7 @@ export class LobbyProcessor
   // Sever.connections) needs to be used instead of a direct reference!
   constructor(protected connection: Connection) { }
 
-  public static get GAME_MENU()
+  private static get GAME_MENU()
   {
     return '&wWelcome to &RBRUTUS &YNext!\n'
       + '\n'
@@ -36,7 +36,7 @@ export class LobbyProcessor
       + '&g"&G1&g" &Bto create new character.\n';
   }
 
-  public static get MAKE_CHOICE()
+  private static get MAKE_CHOICE()
   {
     return "\n\n&wMake your choice:";
   }
@@ -44,13 +44,6 @@ export class LobbyProcessor
   // ----------------- Public data ----------------------
 
   // ---------------- Public methods --------------------
-
-  /*
-  public generatePrompt(): string
-  {
-    return LobbyProcessor.GAME_MENU;
-  }
-  */
 
   public sendMenu()
   {
@@ -63,13 +56,6 @@ export class LobbyProcessor
     Message.sendToConnection(menu, Message.Type.GAME_MENU, this.connection);
   }
 
-  /*
-  public enterMenu()
-  {
-    /// Možná poslat motd a menu?
-  }
-  */
-
   public async processCommand(command: string)
   {
     switch (command)
@@ -79,8 +65,7 @@ export class LobbyProcessor
         break;
 
       case "1": // Create new character.
-        ///await this.createCharacter(command);
-        await this.getCharacterName();
+        await this.enterChargen();
         break;
 
       default:
@@ -137,7 +122,7 @@ export class LobbyProcessor
     character.setUniqueName
     (
       characterName,
-      NamedEntity.UniqueNameCathegory.characters
+      NamedEntity.NameCathegory.characters
     );
     ///character.name = characterName;
 
@@ -237,13 +222,13 @@ export class LobbyProcessor
     await this.enterGame(characterName);
   }
 
-  private async getCharacterName()
+  private async enterChargen()
   {
-    /// TODO:
-    /// Poslat prompt "Enter character name:"
-    /// Přepnout stage na GET_CHARACTER_NAME
+    this.connection.leaveLobby();
+    this.connection.enterChargen();
   }
 
+  /*
   private async createCharacter()
   {
     /// TODO
@@ -253,7 +238,6 @@ export class LobbyProcessor
     // v další fázi.
     // - místo téhle funkce by měla být getCharacterName();
 
-    /*
     if (this.connection === null || this.connection.isValid() === false)
     {
       ERROR("Invalid connection, character is not created");
@@ -273,8 +257,8 @@ export class LobbyProcessor
       await this.connection.account.createCharacter(characterName);
 
     Server.onCharacterCreation(character);
-    */
   }
+  */
 
   private composeMenu(): string
   {
