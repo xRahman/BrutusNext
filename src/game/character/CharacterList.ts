@@ -37,7 +37,7 @@ export class CharacterList extends AbbrevSearchList
     let character = await Server.entityManager.createNamedEntity
     (
       name,
-      NamedEntity.UniqueNameCathegory.characters,
+      NamedEntity.NameCathegory.characters,
       'Character',
       Character
     );
@@ -86,7 +86,7 @@ export class CharacterList extends AbbrevSearchList
     return await NamedEntity.isNameTaken
     (
       characterName,
-      NamedEntity.UniqueNameCathegory.characters
+      NamedEntity.NameCathegory.characters
     );
   }
 

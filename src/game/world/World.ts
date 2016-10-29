@@ -54,7 +54,7 @@ export class World extends GameEntity
     this.systemRealm = await EntityManager.createNamedEntity
     (
       'System Realm',
-      NamedEntity.UniqueNameCathegory.world,
+      NamedEntity.NameCathegory.world,
       'SystemRealm',
       Realm
     );
@@ -70,7 +70,7 @@ export class World extends GameEntity
     this.systemArea = await EntityManager.createNamedEntity
     (
       'System Area',
-      NamedEntity.UniqueNameCathegory.world,
+      NamedEntity.NameCathegory.world,
       'SystemArea',
       Area
     );

@@ -42,6 +42,10 @@ export class MessageColors
     AUTH_ERROR:            '&w',
     LOGIN_INFO:            '&w',
 
+    // --------------------- Chargen messages --------------------
+
+    CHARGEN_PROMPT:        '&w',
+
     // -------------------- Connection messages ------------------
     
     CONNECTION_INFO:       '&g',

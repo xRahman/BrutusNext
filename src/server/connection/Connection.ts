@@ -16,6 +16,7 @@ import {SocketDescriptor} from '../../server/net/SocketDescriptor';
 import {Account} from '../../server/account/Account';
 import {AuthProcessor} from '../../server/connection/AuthProcessor';
 import {LobbyProcessor} from '../../server/connection/LobbyProcessor';
+import {ChargenProcessor} from '../../server/connection/ChargenProcessor';
 import {Game} from '../../game/Game';
 import {GameEntity} from '../../game/GameEntity';
 import {Character} from '../../game/character/Character';
@@ -29,17 +30,18 @@ export class Connection extends Entity
 
   //------------------ Private data ---------------------
 
-  private stage = null;
+  private stage: Connection.Stage = null;
   private socketDescriptor: SocketDescriptor = null;
-  private authProcessor = null;
-  private lobbyProcessor = null;
+  private authProcessor: AuthProcessor = null;
+  private lobbyProcessor: LobbyProcessor = null;
+  private chargenProcessor: ChargenProcessor = null;
 
   // -------- Public stage transition methods -----------
 
   public startAuthenticating()
   {
     if (this.stage !== null)
-      ERROR("Starting login process from wrong stage");
+      ERROR("Starting authenticating from wrong stage");
 
     if (this.authProcessor !== null)
       ERROR("AuthProcessor already exists");
@@ -75,10 +77,29 @@ export class Connection extends Entity
     this.lobbyProcessor = null;
   }
 
+  public enterChargen()
+  {
+    if (this.chargenProcessor !== null)
+      ERROR("ChargenProcessor already exists");
+
+    this.chargenProcessor = new ChargenProcessor(this);
+    this.chargenProcessor.start();
+    this.stage = Connection.Stage.IN_CHARGEN;
+  }
+
+  public leaveChargen()
+  {
+    if (this.chargenProcessor === null)
+      ERROR("Chargen processor is already dealocated");
+
+    this.chargenProcessor = null;
+  }
+
   public async enterGame()
   {
     let validStage = this.stage === Connection.Stage.IN_LOBBY
-                  || this.stage === Connection.Stage.IN_GAME;
+                  || this.stage === Connection.Stage.IN_GAME
+                  || this.stage === Connection.Stage.IN_CHARGEN;
 
     if (!validStage)
       ERROR("Entering game from wrong stage");
@@ -204,7 +225,6 @@ export class Connection extends Entity
 
     this.account = account;
     account.connection = this;
-    this.enterLobby();
   }
 
   // Handles situation when player reconnects to the already loaded
@@ -289,6 +309,10 @@ export class Connection extends Entity
 
       case Connection.Stage.IN_LOBBY:
         this.processLobbyCommand(command);
+        break;
+
+      case Connection.Stage.IN_CHARGEN:
+        await this.processChargenCommand(command);
         break;
 
       case Connection.Stage.IN_GAME:
@@ -514,6 +538,26 @@ export class Connection extends Entity
     }
 
     this.lobbyProcessor.processCommand(command);
+  }
+
+  private async processChargenCommand(command: string)
+  {
+    if (this.account === null)
+    {
+      ERROR("Attempt to process chargen command on player"
+        + " connection that doesn't have an account assigned");
+      return;
+    }
+
+    if (this.chargenProcessor === null)
+    {
+      ERROR("Chargen processor is not inicialized"
+        + " on account " + this.account.getErrorIdString() + "."
+        + " Command will not be processed"); 
+      return;
+    }
+
+    await this.chargenProcessor.processCommand(command);
   }
 
   private processIngameCommand(command: string)
@@ -818,6 +862,7 @@ export module Connection
   {
     AUTHENTICATION,
     IN_LOBBY,
+    IN_CHARGEN,
     IN_GAME,
     LOGGED_OUT
   }
