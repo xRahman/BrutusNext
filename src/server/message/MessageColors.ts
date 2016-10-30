@@ -39,7 +39,6 @@ export class MessageColors
 
     AUTH_PROMPT:           '&w',
     AUTH_INFO:             '&w',
-    AUTH_ERROR:            '&w',
     LOGIN_INFO:            '&w',
 
     // --------------------- Chargen messages --------------------
@@ -49,6 +48,7 @@ export class MessageColors
     // -------------------- Connection messages ------------------
     
     CONNECTION_INFO:       '&g',
+    CONNECTION_ERROR:      '&R',
 
     // ------------------------- Game menu -----------------------
 

@@ -144,6 +144,10 @@ export class NamedEntity extends Entity
     // 'Rahman' is already used.
     let path = NamedEntity.getNameLockFilePath(name, cathegory);
 
+    /// DEBUG:
+    console.log("Testing existence of " + path + " :"
+      + await FileSystem.exists(path));
+
     return await FileSystem.exists(path);
   }
 

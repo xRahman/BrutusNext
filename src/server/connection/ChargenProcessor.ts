@@ -6,7 +6,7 @@
 
 'use strict';
 
-///import {Settings} from '../../Settings';
+import {Settings} from '../../Settings';
 import {ERROR} from '../../shared/error/ERROR';
 import {Utils} from '../../shared/Utils';
 import {NamedEntity} from '../../shared/entity/NamedEntity';
@@ -15,8 +15,10 @@ import {NamedEntity} from '../../shared/entity/NamedEntity';
 ///import {AdminLevel} from '../../server/AdminLevel';
 import {Message} from '../../server/message/Message';
 import {Connection} from '../../server/connection/Connection';
-///import {Server} from '../../server/Server';
+import {Server} from '../../server/Server';
 ///import {Account} from '../../server/account/Account';
+import {Game} from '../../game/Game';
+import {Character} from '../../game/character/Character';
 
 export class ChargenProcessor
 {
@@ -74,27 +76,17 @@ export class ChargenProcessor
       // a processCharacterName() again.
       return;
 
-    /// TODO:
+    let character = await this.createCharacter(name);
 
-    /*
-    // We are not going to attempt to log in to this account untill we receive
-    // password so we need to remember account name until then.
-    this.accountName = accountName;
+    if (character === null)
+    {
+      /// TODO: oznamit hraci, ze se nepovedlo vytvorit character
+      /// TODO: disconnectnout ho (this.connection.quitGame());
+      this.characterCreationFailure(name);
+      return;
+    }
 
-    if (await Server.accounts.exists(accountName))
-    {
-      // Existing user. Ask for password.
-      this.sendAuthPrompt("Password:");
-      this.stage = AuthProcessor.Stage.PASSWORD;
-    }
-    else
-    {
-      // New user. Ask for a new password.
-      this.sendAuthPrompt("Creating a new user account...\n"
-        + "Please enter a password for your account:");
-      this.stage = AuthProcessor.Stage.NEW_PASSWORD;
-    }
-    */
+    this.enterGame(character);
   }
 
   private sendChargenPrompt(text: string)
@@ -193,6 +185,62 @@ export class ChargenProcessor
     }
 
     return available;
+  }
+
+  // -> Returns 'null' if characred couldn't be created.
+  private async createCharacter(name: string): Promise<Character>
+  {
+    if (this.connection === null || this.connection.isValid() === false)
+    {
+      ERROR("Invalid connection, character is not created");
+      return null;
+    }
+
+    let account = this.connection.account;
+
+    if (account === null || account.isValid() === false)
+    {
+      ERROR("Invalid account, character is not created");
+      return null;
+    }
+
+    let character = await this.connection.account.createCharacter(name);
+
+    if (character === null)
+      return null;
+
+    Server.onCharacterCreation(character);
+
+    return character;
+  }
+
+  private enterGame(character: Character)
+  {
+    if (this.connection === null || this.connection.isValid() === false)
+    {
+      ERROR("Invalid connection, unable to enter game");
+      return;
+    }
+
+    this.connection.attachToGameEntity(character);
+    this.connection.leaveChargen();
+    this.connection.enterGame();
+  }
+
+  protected characterCreationFailure(name: string)
+  {
+    // Notify the player what went wrong.
+    if (this.connection !== null && this.connection.isValid())
+    {
+      this.sendChargenError("Something is wrong, character"
+        + " named '" + name + "' already exists."
+        + " Please contact admins at " + Settings.adminEmail
+        + " and ask them to resolve this issue.");
+    }
+    
+
+    // Disconnect the player.
+    this.connection.quitGame();
   }
 }
 
