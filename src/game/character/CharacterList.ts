@@ -81,7 +81,12 @@ export class CharacterList extends AbbrevSearchList
     // First check if character is already online so we can
     // save reading from disk.
     if (this.hasUniqueEntity(characterName))
+    {
+      /// DEBUG:
+      console.log("this.hasUniqueEntity returned true");
+
       return true;
+    }
 
     return await NamedEntity.isNameTaken
     (

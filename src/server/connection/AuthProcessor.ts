@@ -163,8 +163,6 @@ export class AuthProcessor
     {
       ERROR("Invalid connection in AuthProcessor when trying"
         + " to check password of account " + this.accountName);
-      // We can't even send the player a message about what went wrong
-      // here because we don't have a valid connection to send it to.
       return;
     }
 
@@ -434,7 +432,7 @@ export class AuthProcessor
   {
     if (this.connection === null || this.connection.isValid() === false)
     {
-      ERROR("Invalid connection");
+      ERROR("Invalid connection on account " + this.accountName);
       return;
     }
 
@@ -485,7 +483,7 @@ export class AuthProcessor
 
     if (this.connection === null || this.connection.isValid() === false)
     {
-      ERROR("Invalid connection");
+      ERROR("Invalid connection on account " + this.accountName);
       return "<Error while retrieving last login info>";
     }
 

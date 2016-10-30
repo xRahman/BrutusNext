@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {Settings} from '../../Settings';
 import {ERROR} from '../../shared/error/ERROR';
 import {Utils} from '../../shared/Utils';
 import {FileSystem} from '../../shared/fs/FileSystem';
@@ -314,7 +315,12 @@ export class Account extends NamedEntity
 
   private sendAuthError(text: string)
   {
-    Message.sendToConnection(text, Message.Type.AUTH_ERROR, this.connection);
+    Message.sendToConnection
+    (
+      text,
+      Message.Type.CONNECTION_ERROR,
+      this.connection
+    );
   }
 
   private addCharacter(characterName: string)
@@ -348,15 +354,6 @@ export class Account extends NamedEntity
   {
     ERROR("Attempt to create character '" + characterName + "'"
       + " that already exists");
-
-    // Notify the player what went wrong.
-    if (this.connection)
-    {
-      this.sendAuthError("Something is wrong, character"
-        + " named '" + characterName + "' already exists."
-        + " Please contact admins and ask them to resolve"
-        + " this issue.");
-    }
   }
 
   private logCharacterCreation(accountName: string, characterName: string)
