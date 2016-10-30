@@ -322,9 +322,10 @@ export class Message
     {
       case Message.Type.AUTH_PROMPT:
       case Message.Type.AUTH_INFO:
-      case Message.Type.AUTH_ERROR:
       case Message.Type.LOGIN_INFO:
+      case Message.Type.CHARGEN_PROMPT:
       case Message.Type.CONNECTION_INFO:
+      case Message.Type.CONNECTION_ERROR:
       case Message.Type.GAME_MENU:
         return false;
 
@@ -425,8 +426,6 @@ export module Message
     AUTH_PROMPT,
     // Authentication messages like "You have reconnected to your character."
     AUTH_INFO,
-    // Something went wrong while authenticating.
-    AUTH_ERROR,
     // Screen show before entering menu (MOTD, last logind info).
     LOGIN_INFO,
 
@@ -438,6 +437,8 @@ export module Message
     // -------------------- Connection messages ------------------
     
     CONNECTION_INFO,
+    // Something went wrong that causes player to get disconnected.
+    CONNECTION_ERROR,
 
     // ------------------------- Game menu -----------------------
 

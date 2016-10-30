@@ -1,3 +1,18 @@
+TODO: To, že se player disconnectuje přes connection.quitGame(), není
+  zrovna intuitivní. Mělo by se to dělat přes connection.disconnect()
+  (nebo close()).
+
+TODO: Misto Message.Type.AUTH_ERROR zavest SYSTEM_ERROR
+  (ať nemám 20 různých druhů error messagů)
+  - tak ne SYSTEM_ERROR (to už existuje), ale CONNECTION_ERROR.
+
+BIG TODO: Vícenásobná dědičnost prototypů (a možná i hard codu, viz:
+  https://typescript.codeplex.com/wikipage?title=Mixins%20in%20TypeScript)
+Implementation: Nedělat dědičnot nastavením prototypu svému prototypu, ale
+  zkopírováním všech properties z předků do svého prototypu.
+  - Znamená to bohužel, že při každé změně libovolného prototypu bude potřeba
+    updatnout všechny prototypy, které jsou z něj zděděné.
+
 TODO: Zkontrolovat, že connection.close() dealokuje
   vše, co má dealokovat (odebrat account z listu, etc).
 
