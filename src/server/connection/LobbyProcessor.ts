@@ -76,10 +76,16 @@ export class LobbyProcessor
 
   //----------------- Protected data --------------------
 
-  // --------------- Protected methods ------------------
+  // ---------------- Private methods --------------------
 
-  protected quitGame()
+  private quitGame()
   {
+    if (this.connection === null || this.connection.isValid() === false)
+    {
+      ERROR("Invalid connection, unable to quit game");
+      return;
+    }
+
     Message.sendToConnection
     (
       "&wGoodbye.\n"
@@ -91,8 +97,14 @@ export class LobbyProcessor
     this.connection.quitGame();
   }
 
-  protected async enterGame(characterName: string)
+  private async enterGame(characterName: string)
   {
+    if (this.connection === null || this.connection.isValid() === false)
+    {
+      ERROR("Invalid connection, unable to enter game");
+      return;
+    }
+
     let characterList = Game.characters;
 
     // Check if character is already online.
@@ -100,7 +112,7 @@ export class LobbyProcessor
 
     if (character)
     {
-      this.attachConnectionToGameEntity(character);
+      this.connection.attachToGameEntity(character);
       this.connection.leaveLobby();
       this.connection.reconnectToCharacter();
     }
@@ -113,8 +125,14 @@ export class LobbyProcessor
     }
   }
   
-  protected async loadCharacter(characterName: string)
+  private async loadCharacter(characterName: string)
   {
+    if (this.connection === null || this.connection.isValid() === false)
+    {
+      ERROR("Invalid connection, unable to load character");
+      return;
+    }
+
     let characterList = Game.characters;
 
     let character = new Character();
@@ -124,11 +142,6 @@ export class LobbyProcessor
       characterName,
       NamedEntity.NameCathegory.characters
     );
-    ///character.name = characterName;
-
-    // This needs to be set before loading so character will load from
-    // correct directory.
-    ///character.isNameUnique = true;
 
     // Character name is passed to check against character name saved
     // in file (they must by the same).
@@ -137,10 +150,10 @@ export class LobbyProcessor
     // Add newly loaded character to characterManager (under it's original id).
     characterList.addPlayerCharacterUnderExistingId(character);
 
-    this.attachConnectionToGameEntity(character);
+    this.connection.attachToGameEntity(character);
   }
 
-  protected async loadCharacterFromFile
+  private async loadCharacterFromFile
   (
     character: Character,
     characterFileName: string
@@ -155,7 +168,6 @@ export class LobbyProcessor
       FATAL_ERROR("Invalid id in saved file of character:"
         + " " + character.getName());
     }
-
 
     if (characterFileName !== character.getName())
     {
@@ -175,13 +187,6 @@ export class LobbyProcessor
       */
     }
   }
-
-  protected attachConnectionToGameEntity(gameEntity: GameEntity)
-  {
-    this.connection.attachToGameEntity(gameEntity);
-  }
-
-  // ---------------- Private methods --------------------
 
   // Checks if 'name' matches (is an abbreviation of) any character names
   // on the account.
@@ -224,52 +229,25 @@ export class LobbyProcessor
 
   private async enterChargen()
   {
+    if (this.connection === null || this.connection.isValid() === false)
+    {
+      ERROR("Invalid connection");
+      return false;
+    }
+
     this.connection.leaveLobby();
     this.connection.enterChargen();
   }
 
-  /*
-  private async createCharacter()
-  {
-    /// TODO
-    /// Tohle nebude tak jednoduchý - tohle je pouze state change function,
-    /// po zmačknutí jedničky v menu (create character). Měla by jen hodit
-    // prompt na Enter character name, vlastní vytváření characteru bude až
-    // v další fázi.
-    // - místo téhle funkce by měla být getCharacterName();
-
-    if (this.connection === null || this.connection.isValid() === false)
-    {
-      ERROR("Invalid connection, character is not created");
-      return null;
-    }
-
-    let account = this.connection.account;
-
-    if (account === null || account.isValid() === false)
-    {
-      ERROR("Invalid account, character is not created");
-      return null;
-    }
-
-    
-    let character =
-      await this.connection.account.createCharacter(characterName);
-
-    Server.onCharacterCreation(character);
-  }
-  */
-
   private composeMenu(): string
   {
-    let menu = LobbyProcessor.GAME_MENU;
-
     if (this.connection === null || this.connection.isValid() === false)
     {
       ERROR("Invalid connection, game menu is not sent");
       return null;
     }
 
+    let menu = LobbyProcessor.GAME_MENU;
     let account = this.connection.account;
 
     if (account === null || account.isValid() === false)
