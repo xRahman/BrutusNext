@@ -9,7 +9,7 @@
 'use strict';
 
 import {ERROR} from '../../shared/error/ERROR';
-import {SaveingQueue} from '../../shared/fs/SavingQueue';
+import {SavingQueue} from '../../shared/fs/SavingQueue';
 
 export class SavingManager
 {
@@ -26,34 +26,34 @@ export class SavingManager
   //      the caller needs to wait (using the returned Promise).
   //    Returns null if this file isn't beeing saved right now
   //      so it is possible to start saving right away.
-  public static requestSaving(filePath: string): Promise<void>
+  public static requestSaving(path: string): Promise<void>
   {
-    let savingRecord = SavingManager.savingProcesses.get(filePath);
+    let savingRecord = SavingManager.savingProcesses.get(path);
 
     if (savingRecord === undefined)
     {
-      // Nobody is saving to the filePath yet.
-      savingRecord = new SaveingQueue();
+      // Nobody is saving to the path yet.
+      savingRecord = new SavingQueue();
 
       // Note: We don't push a resolve callback for the first
       // request, because it will be processed right away.
-      this.savingProcesses.set(filePath, savingRecord);
+      this.savingProcesses.set(path, savingRecord);
       return null;
     }
     
-    // Someone is already saving to the filePath.
+    // Someone is already saving to the path.
     return savingRecord.addRequest();
   }
 
-  public static reportFinishedSaving(filePath: string)
+  public static reportFinishedSaving(path: string)
   {
-    let savingRecord: SaveingQueue =
-      SavingManager.savingProcesses.get(filePath);
+    let savingRecord: SavingQueue =
+      SavingManager.savingProcesses.get(path);
 
     if (savingRecord === undefined)
     {
       ERROR("Attempt to report finished saving of file"
-        + " " + filePath + " which is not registered as"
+        + " " + path + " which is not registered as"
         + " being saved");
       // We can't really do much if we don't have a saving record.
       return;
@@ -62,17 +62,17 @@ export class SavingManager
     if (savingRecord.hasMoreRequests() === false)
     {
       // By deleting the savingRecord from hashmap, we mark
-      // 'filePath' as not being saved right now.
-      if (!SavingManager.savingProcesses.delete(filePath))
+      // 'path' as not being saved right now.
+      if (!SavingManager.savingProcesses.delete(path))
       {
         ERROR("Failed to remove savingRecord for file"
-          + " " + filePath + " from SavingRegister");
+          + " " + path + " from SavingRegister");
       }
 
       return;
     }
 
-    // There are more saving requets in the queue for filePath.
+    // There are more saving requets in the queue for path.
 
     // Retrieve the first item from the queue.
     let resolveCallback = savingRecord.pollRequest();
@@ -80,7 +80,7 @@ export class SavingManager
     if (resolveCallback === null || resolveCallback === undefined)
     {
       ERROR("Invalid resolve callback in savingRecord for file"
-        + " " + filePath);
+        + " " + path);
       return;
     }
 
@@ -89,10 +89,10 @@ export class SavingManager
     // lead to the next saving to proceed.
     //   Note: 'savingRecord' stays in the queue even if
     // there are no more requets in it's queue to indicate
-    // that 'filePath' is being saved right now. It will
+    // that 'path' is being saved right now. It will
     // be removed from SavingRegister.savingProcesses when
     // reportFinishedSaving is called again (presuming there
-    // won't be any more save requets for this filePath untill
+    // won't be any more save requets for this path until
     // the saving is finished).
     resolveCallback();
   }

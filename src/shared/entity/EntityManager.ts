@@ -25,7 +25,7 @@
       entity.load();
 
   to load it from the disk. Entity record is only added to EntityManager
-  after entity is loaded. Untill then, you will have a invalid entity
+  after entity is loaded. Until then, you will have a invalid entity
   reference (any access to properties of this reference will be logged
   as error).
 */
