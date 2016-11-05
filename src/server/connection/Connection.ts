@@ -15,7 +15,7 @@ import {Server} from '../../server/Server';
 import {SocketDescriptor} from '../../server/net/SocketDescriptor';
 import {Account} from '../../server/account/Account';
 import {AuthProcessor} from '../../server/connection/AuthProcessor';
-import {LobbyProcessor} from '../../server/connection/LobbyProcessor';
+import {MenuProcessor} from '../../server/connection/MenuProcessor';
 import {ChargenProcessor} from '../../server/connection/ChargenProcessor';
 import {Game} from '../../game/Game';
 import {GameEntity} from '../../game/GameEntity';
@@ -33,7 +33,7 @@ export class Connection extends Entity
   private stage: Connection.Stage = null;
   private socketDescriptor: SocketDescriptor = null;
   private authProcessor: AuthProcessor = null;
-  private lobbyProcessor: LobbyProcessor = null;
+  private menuProcessor: MenuProcessor = null;
   private chargenProcessor: ChargenProcessor = null;
 
   // -------- Public stage transition methods -----------
@@ -59,22 +59,22 @@ export class Connection extends Entity
     this.authProcessor = null;
   }
 
-  public enterLobby()
+  public enterMenu()
   {
-    if (this.lobbyProcessor !== null)
-      ERROR("LobbyProcessor already exists");
+    if (this.menuProcessor !== null)
+      ERROR("MenuProcessor already exists");
 
-    this.lobbyProcessor = new LobbyProcessor(this);
-    this.lobbyProcessor.sendMenu();
-    this.stage = Connection.Stage.IN_LOBBY;
+    this.menuProcessor = new MenuProcessor(this);
+    this.menuProcessor.sendMenu();
+    this.stage = Connection.Stage.IN_MENU;
   }
 
-  public leaveLobby()
+  public leaveMenu()
   {
-    if (this.lobbyProcessor === null)
-      ERROR("Lobby processor is already dealocated");
+    if (this.menuProcessor === null)
+      ERROR("MenuProcessor is already dealocated");
 
-    this.lobbyProcessor = null;
+    this.menuProcessor = null;
   }
 
   public enterChargen()
@@ -97,7 +97,7 @@ export class Connection extends Entity
 
   public async enterGame()
   {
-    let validStage = this.stage === Connection.Stage.IN_LOBBY
+    let validStage = this.stage === Connection.Stage.IN_MENU
                   || this.stage === Connection.Stage.IN_GAME
                   || this.stage === Connection.Stage.IN_CHARGEN;
 
@@ -287,8 +287,8 @@ export class Connection extends Entity
     else
     {
       // If player was anywhere else before, or if we didn't manage to
-      // retrieve her previous stage or active entity, send her to the lobby.
-      this.enterLobby();
+      // retrieve her previous stage or active entity, send her to the menu.
+      this.enterMenu();
     }
   }
 
@@ -307,8 +307,8 @@ export class Connection extends Entity
         await this.processAuthCommand(command);
         break;
 
-      case Connection.Stage.IN_LOBBY:
-        this.processLobbyCommand(command);
+      case Connection.Stage.IN_MENU:
+        this.processMenuCommand(command);
         break;
 
       case Connection.Stage.IN_CHARGEN:
@@ -367,8 +367,8 @@ export class Connection extends Entity
         this.onSocketCloseWhenAuthenticating();
         break;
 
-      case Connection.Stage.IN_LOBBY:
-        this.onSocketCloseWhenInLobby();
+      case Connection.Stage.IN_MENU:
+        this.onSocketCloseWhenInMenu();
         break;
 
       case Connection.Stage.IN_CHARGEN:
@@ -386,61 +386,6 @@ export class Connection extends Entity
         break;
     }
   }
-
-
-  /*
-  public generatePrompt(): string
-  {
-    let prompt = "&g>";
-
-    switch (this.stage)
-    {
-      case Connection.Stage.INITIAL:
-        ERROR("Connection has not yet been initialized by"
-          + " startLoginProcess(), it is not supposed generate"
-          + " prompt yet");
-        break;
-
-      case Connection.Stage.AUTHENTICATION:
-        // generatePrompt() is not used while player is authenticating,
-        // because it would lead to lots of internal states like "failed
-        // password attempt", "password too short", etc.
-        ERROR("Player is authenticating, generatePrompt()"
-          + " should not be called right now");
-        break;
-
-      case Connection.Stage.IN_LOBBY:
-        prompt = this.lobbyProcessor.generatePrompt();
-        break;
-
-      case Connection.Stage.IN_GAME:
-        if (this.ingameEntity === null)
-        {
-          ERROR("Attempt to generatePrompt() on connection"
-            + " which doesn't have an ingame entity attached");
-          break;
-        }
-
-        prompt = this.ingameEntity.generatePrompt();
-        break;
-
-      // Player has correcly exited game from menu.
-      case Connection.Stage.LOGGED_OUT:
-        ERROR("Player has already logged out. Connection"
-          + " is not supposed to generate prompt anymore");
-        break;
-    }
-
-    // An empty space is added after the prompt to separate it from
-    // player input.
-    prompt += " ";
-
-    if (this.containsNewlineCharacters(prompt))
-      prompt = this.normalizeNewlineCharacters(prompt);
-
-    return prompt;
-  }
-  */
 
   public isInGame()
   {
@@ -525,24 +470,24 @@ export class Connection extends Entity
     await this.authProcessor.processCommand(command);
   }
 
-  private processLobbyCommand(command: string)
+  private processMenuCommand(command: string)
   {
     if (this.account === null)
     {
-      ERROR("Attempt to process lobby command on player"
+      ERROR("Attempt to process menu command on player"
         + " connection that doesn't have an account assigned");
       return;
     }
 
-    if (this.lobbyProcessor === null)
+    if (this.menuProcessor === null)
     {
-      ERROR("Lobby processor is not inicialized"
+      ERROR("MenuProcessor is not inicialized"
         + " on account " + this.account.getErrorIdString() + "."
         + " Command will not be processed"); 
       return;
     }
 
-    this.lobbyProcessor.processCommand(command);
+    this.menuProcessor.processCommand(command);
   }
 
   private async processChargenCommand(command: string)
@@ -816,7 +761,7 @@ export class Connection extends Entity
     this.removeSelfFromManager();
   }
 
-  private onSocketCloseWhenInLobby()
+  private onSocketCloseWhenInMenu()
   {
     this.announcePlayerLostConnection(" when in menu");
 
@@ -876,7 +821,7 @@ export module Connection
   export enum Stage
   {
     AUTHENTICATION,
-    IN_LOBBY,
+    IN_MENU,
     IN_CHARGEN,
     IN_GAME,
     LOGGED_OUT
