@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Handles user lobby.
+  Handles game menu.
 */
 
 'use strict';
@@ -18,10 +18,10 @@ import {GameEntity} from '../../game/GameEntity';
 import {Character} from '../../game/character/Character';
 import {AdminLevel} from '../../server/AdminLevel';
 
-export class LobbyProcessor
+export class MenuProcessor
 {
   // In this special case it's ok to hold direct reference to
-  // Connection, because our instance of LobbyProcessor
+  // Connection, because our instance of MenuProcessor
   // is owned by the very Connection we are storing reference
   // of here. In any other case, unique id of Connection (within
   // Sever.connections) needs to be used instead of a direct reference!
@@ -93,7 +93,7 @@ export class LobbyProcessor
       Message.Type.AUTH_INFO,
       this.connection
     );
-    this.connection.leaveLobby();
+    this.connection.leaveMenu();
     this.connection.quitGame();
   }
 
@@ -113,14 +113,14 @@ export class LobbyProcessor
     if (character)
     {
       this.connection.attachToGameEntity(character);
-      this.connection.leaveLobby();
+      this.connection.leaveMenu();
       this.connection.reconnectToCharacter();
     }
     else
     {
       await this.loadCharacter(characterName);
 
-      this.connection.leaveLobby();
+      this.connection.leaveMenu();
       this.connection.enterGame();
     }
   }
@@ -235,7 +235,7 @@ export class LobbyProcessor
       return false;
     }
 
-    this.connection.leaveLobby();
+    this.connection.leaveMenu();
     this.connection.enterChargen();
   }
 
@@ -247,7 +247,7 @@ export class LobbyProcessor
       return null;
     }
 
-    let menu = LobbyProcessor.GAME_MENU;
+    let menu = MenuProcessor.GAME_MENU;
     let account = this.connection.account;
 
     if (account === null || account.isValid() === false)
@@ -262,7 +262,7 @@ export class LobbyProcessor
       menu += '\n&g"&G' + characterName + '&g"&w to enter game as ' + characterName + ".";
     }
 
-    menu += LobbyProcessor.MAKE_CHOICE;
+    menu += MenuProcessor.MAKE_CHOICE;
 
     return menu;
   }
