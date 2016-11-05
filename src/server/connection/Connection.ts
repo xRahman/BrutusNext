@@ -334,7 +334,7 @@ export class Connection extends Entity
   public close()
   {
     // Closes the socket, which will trigger 'close' event on it, which
-    // will be handlec by calling onSocketClose() on this connection.
+    // will be handled by calling onSocketClose() on this connection.
     this.socketDescriptor.closeSocket();
   }
 
@@ -361,24 +361,29 @@ export class Connection extends Entity
         ERROR("Connection has not yet been initialized by"
           + " startLoginProcess(), it is not supposed to process"
           + " any events yet");
-      break;
+        break;
 
       case Connection.Stage.AUTHENTICATION:
         this.onSocketCloseWhenAuthenticating();
-      break;
+        break;
 
       case Connection.Stage.IN_LOBBY:
         this.onSocketCloseWhenInLobby();
-      break;
+        break;
+
+      case Connection.Stage.IN_CHARGEN:
+        this.onSocketCloseWhenInChargen();
+        break;
+
 
       case Connection.Stage.IN_GAME:
         this.onSocketCloseWhenInGame();
-      break;
+        break;
 
       // Player has correcly exited game from menu.
       case Connection.Stage.LOGGED_OUT:
         this.onSocketCloseWhenLoggedOut();
-      break;
+        break;
     }
   }
 
@@ -814,6 +819,16 @@ export class Connection extends Entity
   private onSocketCloseWhenInLobby()
   {
     this.announcePlayerLostConnection(" when in menu");
+
+    if (this.account !== null)
+      this.logoutAccount("has been logged out");
+
+    this.removeSelfFromManager();
+  }
+
+  private onSocketCloseWhenInChargen()
+  {
+    this.announcePlayerLostConnection(" when in chargen");
 
     if (this.account !== null)
       this.logoutAccount("has been logged out");
