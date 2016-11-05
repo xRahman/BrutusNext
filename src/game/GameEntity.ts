@@ -349,7 +349,7 @@ export class GameEntity extends ContainerEntity
     if (this.connection)
     {
       this.announcePlayerLeavingGame();
-      this.connection.enterLobby();
+      this.connection.enterMenu();
       this.connection.detachFromGameEntity();
     }
   }
