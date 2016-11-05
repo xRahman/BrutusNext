@@ -60,7 +60,7 @@ export class SaveableObject extends AttributableClass
   //   type information read from it - so the loading of jsonObject
   //   must be possible without having an instance of SaveableObject.
   // -> Returns 'null' if loading fails.
-  public static async loadJsonObjectFromFile(filePath: string)
+  public static async loadJsonObjectFromFile(path: string)
   {
     //  Unlike writing the same file while it is saving, loading from
     //  the same file while it is loading is not a problem (according
@@ -69,10 +69,10 @@ export class SaveableObject extends AttributableClass
 
     // Asynchronous reading from the file.
     // (the rest of the code will execute only after the reading is done)
-    let jsonString = await FileSystem.readFile(filePath);
+    let jsonString = await FileSystem.readFile(path);
 
-    // filePath is passed just so it can be printed to error messages.
-    let jsonObject = SaveableObject.loadFromJsonString(jsonString, filePath);
+    // 'path' is passed just so it can be printed to error messages.
+    let jsonObject = SaveableObject.loadFromJsonString(jsonString, path);
 
     return jsonObject; 
   }
@@ -80,7 +80,7 @@ export class SaveableObject extends AttributableClass
   // ------------- Private static methods ---------------
 
   // -> Returns 'null' if loading fails.
-  private static loadFromJsonString(jsonString: string, filePath: string)
+  private static loadFromJsonString(jsonString: string, path: string)
   {
     let jsonObject = {};
 
@@ -93,7 +93,7 @@ export class SaveableObject extends AttributableClass
       // Here we need fatal error, because data might already
       // be partialy loaded so we could end up with broken entity.
       FATAL_ERROR("Syntax error in JSON string: "
-        + e.message + " in file " + filePath);
+        + e.message + " in file " + path);
       return null;
     }
 
@@ -103,7 +103,7 @@ export class SaveableObject extends AttributableClass
   // ---------------- Public methods --------------------
 
   // -> Returns 'true' on success.
-  public async loadFromFile(filePath: string): Promise<boolean>
+  public async loadFromFile(path: string): Promise<boolean>
   {
     // Note:
     //  Unlike writing the same file while it is saving, loading from
@@ -115,13 +115,13 @@ export class SaveableObject extends AttributableClass
     // jsonObject first and create an instance of SaveableObject from
     // type information read from it - so the loading of jsonObject
     // must be possible without having an instance of SaveableObject.
-    let jsonObject = await SaveableObject.loadJsonObjectFromFile(filePath);
+    let jsonObject = await SaveableObject.loadJsonObjectFromFile(path);
 
     if (jsonObject === null)
       return false;
 
-    // 'filePath' is passed just so it can be printed to error messages.
-    return this.loadFromJsonObject(jsonObject, filePath);
+    // 'path' is passed just so it can be printed to error messages.
+    return this.loadFromJsonObject(jsonObject, path);
   }
 
   // -> Returns 'true' on success.
@@ -168,9 +168,9 @@ export class SaveableObject extends AttributableClass
   }
 
   // -> Returns 'false' if loading fails.
-  public loadFromJsonObject(jsonObject: Object, filePath: string): boolean
+  public loadFromJsonObject(jsonObject: Object, path: string): boolean
   {
-    if (!this.loadFromJsonObjectCheck(jsonObject, filePath))
+    if (!this.loadFromJsonObjectCheck(jsonObject, path))
       return false;
 
     // Now copy the data.
@@ -182,7 +182,7 @@ export class SaveableObject extends AttributableClass
       // className.
       if (propertyName === NamedClass.CLASS_NAME_PROPERTY)
       {
-        if (!this.loadClassNameCheck(jsonObject, propertyName, filePath))
+        if (!this.loadClassNameCheck(jsonObject, propertyName, path))
           return false;
       }
       else
@@ -199,7 +199,7 @@ export class SaveableObject extends AttributableClass
           // that are not present in the save will not get overwritten.
           // This allows adding new properties to existing classes without
           // the need to convert all save files.
-          this.loadPropertyFromJsonObject(jsonObject, propertyName, filePath);
+          this.loadPropertyFromJsonObject(jsonObject, propertyName, path);
       }
     }
 
@@ -208,19 +208,19 @@ export class SaveableObject extends AttributableClass
 
   // -------------- Protected methods -------------------
 
-  protected checkVersion(jsonObject: Object, filePath: string): boolean
+  protected checkVersion(jsonObject: Object, path: string): boolean
   {
     if (!('version' in jsonObject))
     {
       ERROR("Missing 'version' property in JSON data"
-        + " in file " + filePath);
+        + " in file " + path);
       return false;
     }
 
     if (jsonObject['version'] !== this.version)
     {
       ERROR("Version of JSON data (" + jsonObject['version'] + ")"
-        + " in file " + filePath + " doesn't match required"
+        + " in file " + path + " doesn't match required"
         + " version (" + this.version + ")");
       return false;
     }
@@ -234,7 +234,7 @@ export class SaveableObject extends AttributableClass
   (
     jsonObject: Object,
     propertyName: string,
-    filePath: string
+    path: string
   )
   {
     this[propertyName] = this.loadVariable
@@ -242,7 +242,7 @@ export class SaveableObject extends AttributableClass
       propertyName,
       this[propertyName],
       jsonObject[propertyName],
-      filePath
+      path
     );
   }
 
@@ -268,7 +268,7 @@ export class SaveableObject extends AttributableClass
 
   // -> Returns 'true' if contents was succesfully written.
   //    Returns 'false' otherwise.
-  private async saveContentsToFile(filePath: string): Promise<boolean>
+  private async saveContentsToFile(path: string): Promise<boolean>
   {
     // Following code is addresing 'feature' of node.js file saving
     // functions, which says that we must not attempt saving the same
@@ -277,10 +277,10 @@ export class SaveableObject extends AttributableClass
     //   To ensure this, we use SavingRegister to register all saving
     // that is being done to each file and buffer saving requests if
     // necessary.   
-    let promise = SavingManager.requestSaving(filePath);
+    let promise = SavingManager.requestSaving(path);
 
     // If SavingRegister.requestSaving returned 'null', it
-    // means that 'filePath' is not being saved right now
+    // means that 'path' is not being saved right now
     // so we can start saving right away.
     //   Otherwise we need to wait (using the promise we have
     // just obtained) for our turn.
@@ -294,12 +294,12 @@ export class SaveableObject extends AttributableClass
     // Now it's our turn so we can save ourselves.
     let jsonString = this.saveToJsonString();
 
-    let success = await FileSystem.writeFile(filePath, jsonString);
+    let success = await FileSystem.writeFile(path, jsonString);
 
     // Remove the lock.
     // (it will also trigger calling of resolve callback
     //  of whoever might be waiting after us)
-    SavingManager.reportFinishedSaving(filePath);
+    SavingManager.reportFinishedSaving(path);
 
     return success;
   }
@@ -328,16 +328,16 @@ export class SaveableObject extends AttributableClass
   private loadFromJsonObjectCheck
   (
     jsonObject: Object,
-    filePath: string
+    path: string
   )
   : boolean
   {
-    // 'filePath' is passed just so it can be printed to error messages.
-    if (!this.checkVersion(jsonObject, filePath))
+    // 'path' is passed just so it can be printed to error messages.
+    if (!this.checkVersion(jsonObject, path))
       return false;
 
     // 'className' must be the same as it's saved value.
-    if (!this.checkClassName(jsonObject, filePath))
+    if (!this.checkClassName(jsonObject, path))
       return false;
 
     // Using 'in' operator on object with null value would cause crash.
@@ -345,7 +345,7 @@ export class SaveableObject extends AttributableClass
     {
       // Here we need fatal error, because data might already
       // be partialy loaded so we could end up with broken entity.
-      ERROR("Invalid json object loaded from file " + filePath);
+      ERROR("Invalid json object loaded from file " + path);
       return false;
     }
 
@@ -357,7 +357,7 @@ export class SaveableObject extends AttributableClass
   (
     jsonObject: Object,
     propertyName: string,
-    filePath: string
+    path: string
   ): boolean
   {
     if (this.className === undefined)
@@ -436,12 +436,12 @@ export class SaveableObject extends AttributableClass
   }
 
   // -> Returns 'true' on success.
-  private checkClassName (jsonObject: Object, filePath: string): boolean
+  private checkClassName (jsonObject: Object, path: string): boolean
   {
     if (!(NamedClass.CLASS_NAME_PROPERTY in jsonObject))
     {
       ERROR("There is no '" + NamedClass.CLASS_NAME_PROPERTY + "'"
-        + " property in JSON data in file " + filePath);
+        + " property in JSON data in file " + path);
       return false;
     }
 
@@ -449,7 +449,7 @@ export class SaveableObject extends AttributableClass
     {
       ERROR("Attempt to load JSON data of class"
         + " (" + jsonObject[NamedClass.CLASS_NAME_PROPERTY] + ")"
-        + " in file " + filePath + " into instance of incompatible"
+        + " in file " + path + " into instance of incompatible"
         + " class (" + this.className + ")");
       return false;
     }
@@ -463,7 +463,7 @@ export class SaveableObject extends AttributableClass
     variableName: string,
     variable: any,
     jsonVariable: any,
-    filePath: string
+    path: string
   )
   : any
   {
@@ -478,7 +478,7 @@ export class SaveableObject extends AttributableClass
       variableName,
       variable,
       jsonVariable,
-      filePath
+      path
     );
 
     if (result !== null)
@@ -490,7 +490,7 @@ export class SaveableObject extends AttributableClass
       variableName,
       variable,
       jsonVariable,
-      filePath
+      path
     );
 
     if (result !== null)
@@ -502,7 +502,7 @@ export class SaveableObject extends AttributableClass
       variableName,
       variable,
       jsonVariable,
-      filePath
+      path
     );
 
     if (result !== null)
@@ -514,7 +514,7 @@ export class SaveableObject extends AttributableClass
       variableName,
       variable,
       jsonVariable,
-      filePath
+      path
     );
 
     if (result !== null)
@@ -526,7 +526,7 @@ export class SaveableObject extends AttributableClass
       variableName,
       variable,
       jsonVariable,
-      filePath
+      path
     );
     
     // If variable has neither of types we have just tried,
@@ -542,7 +542,7 @@ export class SaveableObject extends AttributableClass
     propertyName: string,
     myProperty: any,
     jsonObject: Object,
-    filePath: string
+    path: string
   )
   {
     if (myProperty === null)
@@ -725,7 +725,7 @@ export class SaveableObject extends AttributableClass
   (
     primitiveObject: any,
     jsonObject: any,
-    filePath: string
+    path: string
   )
   {
     // Now copy the data.
@@ -749,7 +749,7 @@ export class SaveableObject extends AttributableClass
           propertyName,
           primitiveObject[propertyName],
           jsonObject[propertyName],
-          filePath
+          path
         );
       }
     }
@@ -837,7 +837,7 @@ export class SaveableObject extends AttributableClass
   (
     propertyName: string,
     jsonObject: any,
-    filePath: string
+    path: string
   )
   : boolean
   {
@@ -845,7 +845,7 @@ export class SaveableObject extends AttributableClass
     {
       ERROR("Null jsonObject when loading property"
         + " '" + propertyName + "' from file"
-        + " " + filePath + ". Property not loaded");
+        + " " + path + ". Property not loaded");
       return false;
     }
 
@@ -858,7 +858,7 @@ export class SaveableObject extends AttributableClass
     variableName: string,
     variable: any,
     jsonVariable: any,
-    filePath: string
+    path: string
   )
   {
     if (!IndirectValue.isDate(jsonVariable))
@@ -867,7 +867,7 @@ export class SaveableObject extends AttributableClass
     if (variable !== null && !this.isDate(variable))
     {
       ERROR("Attempt to load Date property '" + variableName + "'"
-        + " from file " + filePath + " to a non-Date property");
+        + " from file " + path + " to a non-Date property");
       return null;
     }
 
@@ -875,7 +875,7 @@ export class SaveableObject extends AttributableClass
     (
       variableName,
       jsonVariable,
-      filePath
+      path
     );
   }
 
@@ -883,11 +883,11 @@ export class SaveableObject extends AttributableClass
   (
     propertyName: string,
     jsonObject: any,
-    filePath: string
+    path: string
   )
   : Date
   {
-    if (!this.validJsonObjectCheck(propertyName, jsonObject, filePath))
+    if (!this.validJsonObjectCheck(propertyName, jsonObject, path))
       return null;
 
     let date = jsonObject.date;
@@ -895,7 +895,7 @@ export class SaveableObject extends AttributableClass
     if (date === undefined || date === null)
     {
       ERROR("Missing or invalid 'date' when loading date record"
-        + " '" + propertyName + "' from JSON file " + filePath);
+        + " '" + propertyName + "' from JSON file " + path);
       return null;
     }
 
@@ -908,7 +908,7 @@ export class SaveableObject extends AttributableClass
     variableName: string,
     variable: any,
     jsonVariable: any,
-    filePath: string
+    path: string
   )
   {
     if (!IndirectValue.isMap(jsonVariable))
@@ -917,7 +917,7 @@ export class SaveableObject extends AttributableClass
     if (variable !== null && !this.isMap(variable))
     {
       ERROR("Attempt to load Map property '" + variableName + "'"
-        + " from file " + filePath + " to a non-Map property");
+        + " from file " + path + " to a non-Map property");
       return null;
     }
 
@@ -925,7 +925,7 @@ export class SaveableObject extends AttributableClass
     (
       variableName,
       jsonVariable,
-      filePath
+      path
     );
   }
 
@@ -933,25 +933,25 @@ export class SaveableObject extends AttributableClass
   (
     propertyName: string,
     jsonObject: any,
-    filePath: string
+    path: string
   )
   : Map<any, any>
   {
-    if (!this.validJsonObjectCheck(propertyName, jsonObject, filePath))
+    if (!this.validJsonObjectCheck(propertyName, jsonObject, path))
       return null;
 
     if (jsonObject.map === undefined || jsonObject.map === null)
     {
       ERROR("Missing or invalid 'map' property when loading"
         + " map record '" + propertyName + "' from JSON file"
-        + " " + filePath);
+        + " " + path);
       return null;
     }
 
     // Our hashmap is stored as array in jsonObject.map property.
     //   But first we need to properly load items within this array,
     // because they may be SaveableObjects or special records.
-    let mapArray = this.loadArray(propertyName, jsonObject.map, filePath);
+    let mapArray = this.loadArray(propertyName, jsonObject.map, path);
 
     return new Map(mapArray);
   }
@@ -963,7 +963,7 @@ export class SaveableObject extends AttributableClass
     variableName: string,
     variable: any,
     jsonVariable: any,
-    filePath: string
+    path: string
   )
   {
     if (!IndirectValue.isReference(jsonVariable))
@@ -973,7 +973,7 @@ export class SaveableObject extends AttributableClass
     (
       variableName,
       jsonVariable,
-      filePath
+      path
     );
   }
 
@@ -989,11 +989,11 @@ export class SaveableObject extends AttributableClass
   (
     propertyName: string,
     jsonObject: any,
-    filePath: string
+    path: string
   )
   : Entity
   {
-    if (!this.validJsonObjectCheck(propertyName, jsonObject, filePath))
+    if (!this.validJsonObjectCheck(propertyName, jsonObject, path))
       return null;
 
     let id = jsonObject.id;
@@ -1002,7 +1002,7 @@ export class SaveableObject extends AttributableClass
     {
       ERROR("Missing or invalid 'id' property when loading"
         + " entity reference '" + propertyName + "' from JSON"
-        + " file " + filePath);
+        + " file " + path);
     }
 
     // Return an existing entity proxy if entity exists in
@@ -1016,7 +1016,7 @@ export class SaveableObject extends AttributableClass
     variableName: string,
     variable: any,
     jsonVariable: any,
-    filePath: string
+    paht: string
   )
   {
     if (!Array.isArray(jsonVariable))
@@ -1025,18 +1025,18 @@ export class SaveableObject extends AttributableClass
     if (variable !== null && !Array.isArray(variable))
     {
       ERROR("Attempt to load Array property '" + variableName + "'"
-        + " from file " + filePath + " to a non-Array property");
+        + " from file " + paht + " to a non-Array property");
       return null;
     }
 
     if (variable !== null && !Array.isArray(variable))
     {
       ERROR("Attempt to load array property '" + variableName + "'"
-        + " from file " + filePath + " to a non-array property");
+        + " from file " + paht + " to a non-array property");
       return null
     }
 
-    return this.loadArray(variableName, jsonVariable, filePath)
+    return this.loadArray(variableName, jsonVariable, paht)
   }
 
   // Loads a property of type Array from a JSON Array object.
@@ -1044,20 +1044,20 @@ export class SaveableObject extends AttributableClass
   (
     propertyName: string,
     jsonArray: Array<any>,
-    filePath: string
+    path: string
   )
   {
     if (jsonArray === null || jsonArray === undefined)
     {
       ERROR("Attempt to loadArray from invalid jsonObject"
-        + " '" + propertyName + "' loaded from file " + filePath);
+        + " '" + propertyName + "' loaded from file " + path);
       return null;
     }
     
     if (!Array.isArray(jsonArray))
     {
       ERROR("Attempt to loadArray from non-array jsonObject"
-        + " '" + propertyName + "' loaded from file " + filePath);
+        + " '" + propertyName + "' loaded from file " + path);
       return null;
     }
 
@@ -1074,7 +1074,7 @@ export class SaveableObject extends AttributableClass
         "Array Item",
         item,
         jsonArray[i],
-        filePath
+        path
       );
 
       newArray.push(item);
@@ -1089,7 +1089,7 @@ export class SaveableObject extends AttributableClass
     variableName: string,
     variable: any,
     jsonVariable: any,
-    filePath: string
+    path: string
   )
   {
     if (typeof jsonVariable !== 'object')
@@ -1098,7 +1098,7 @@ export class SaveableObject extends AttributableClass
     if (variable !== null && typeof variable !== 'object')
     {
       ERROR("Attempt to load Object property '" + variableName + "'"
-        + " from file " + filePath + " to a non-Object property");
+        + " from file " + path + " to a non-Object property");
       return null;
     }
 
@@ -1107,7 +1107,7 @@ export class SaveableObject extends AttributableClass
       variableName,
       variable,
       jsonVariable,
-      filePath
+      path
     );
   }
 
@@ -1116,7 +1116,7 @@ export class SaveableObject extends AttributableClass
     propertyName: string,
     myProperty: any,
     jsonObject: any,
-    filePath: string
+    path: string
   )
   : any
   {
@@ -1129,7 +1129,7 @@ export class SaveableObject extends AttributableClass
       propertyName,
       myProperty,
       jsonObject,
-      filePath
+      path
     );
 
     // Now we are sure that myProperty isn't null (either it wasn't
@@ -1140,7 +1140,7 @@ export class SaveableObject extends AttributableClass
     {
       // If we are loading into a saveable object, do it using it's
       // loadFromJsonObject() method.
-      myProperty.loadFromJsonObject(jsonObject, filePath);
+      myProperty.loadFromJsonObject(jsonObject, path);
 
       return myProperty;
     }
@@ -1150,7 +1150,7 @@ export class SaveableObject extends AttributableClass
     (
       myProperty,
       jsonObject,
-      filePath
+      path
     );
   }
 }
