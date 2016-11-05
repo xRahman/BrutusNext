@@ -256,7 +256,7 @@ export class AuthProcessor
   private acceptMotd()
   {
     this.connection.finishAuthenticating();
-    this.connection.enterLobby();
+    this.connection.enterMenu();
   }
 
   private isNameValid(name: string): boolean
