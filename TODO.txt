@@ -15,6 +15,7 @@ Implementation: Nedělat dědičnot nastavením prototypu svému prototypu, ale
 
 TODO: Zkontrolovat, že connection.close() dealokuje
   vše, co má dealokovat (odebrat account z listu, etc).
+- asi jo...
 
 TODO: Přejmenovat všechny 'filePath' v SaveableObjectu (a asi i jinde)
   na 'path'.
