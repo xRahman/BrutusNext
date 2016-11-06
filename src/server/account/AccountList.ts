@@ -21,6 +21,10 @@ export class AccountList extends NameSearchList
 {
   //------------------ Private data ---------------------
 
+  // A set of account names that are soft locked (= only in
+  // memory, not on disk using a name lock file) as taken.
+  private nameLocks = new Set<string>();
+
   // ---------------- Public methods --------------------
 
   // -> Returns account 'accountName' loaded from disk.
@@ -76,12 +80,17 @@ export class AccountList extends NameSearchList
   )
   : Promise<Account>
   {
+    /// This check would always fail, becuase we are using soft name
+    /// locks now. And it is also checked inside a createNamedEntity()
+    /// so this check here has been redundant anyways.
+    /*
     if (await this.exists(accountName))
     {
       ERROR("Attempt to create account '" + accountName + "'"
         + " which already exists. Account is not created");
       return null;
     }
+    */
 
     let account = await EntityManager.createNamedEntity
     (
@@ -125,17 +134,22 @@ export class AccountList extends NameSearchList
     return account;
   }
 
-  // Returns true if account with given name exists.
-  public async exists(accountName: string)
+  // -> Returns 'true' if account with given name exists.
+  public async exists(name: string)
   {
     // First check if account is already online so we can save ourselves
     // reading from disk.
-    if (this.hasUniqueEntity(accountName))
+    if (this.hasUniqueEntity(name))
+      return true;
+
+    // Also check for 'soft' name locks. This is used to prevent two
+    // users to simultaneously create an account with the same name.
+    if (this.nameLocks.has(name))
       return true;
 
     return await NamedEntity.isNameTaken
     (
-      accountName,
+      name,
       NamedEntity.NameCathegory.accounts
     );
   }
@@ -154,6 +168,20 @@ export class AccountList extends NameSearchList
 
     // Remove entity reference EntityManager so the memory can be dealocated.
     Server.entityManager.remove(account);
+  }
+
+  // Sets account name as taken in the memory but doesn't create name lock
+  // file. This is used when user entered a new account name but hasn't
+  // provided a password yet, so account hasn't yet been created.
+  public setSoftNameLock(name: string)
+  {
+    this.nameLocks.add(name);
+  }
+
+  // Removes a 'soft' lock on acount name.
+  public removeSoftNameLock(name: string)
+  {
+    this.nameLocks.delete(name);
   }
 
   // -------------- Protected methods -------------------

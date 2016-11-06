@@ -93,8 +93,7 @@ export class NamedEntity extends Entity
       return false;
     }
 
-    // If file with name lock file exists for the current
-    // name, delete it.
+    // If name lock file exists for the old name, delete it.
     if (this.isNameUnique())
     {
       if (await this.deleteNameLockFile() === false)
@@ -145,10 +144,15 @@ export class NamedEntity extends Entity
     let path = NamedEntity.getNameLockFilePath(name, cathegory);
 
     /// DEBUG:
+    let exists = await FileSystem.exists(path);
     console.log("Testing existence of " + path + " :"
-      + await FileSystem.exists(path));
+      + exists);
+    return exists;
+    ///
 
+    /*
     return await FileSystem.exists(path);
+    */
   }
 
   private static getNameLockFileName(name: string)

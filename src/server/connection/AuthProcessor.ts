@@ -70,7 +70,7 @@ export class AuthProcessor
         break;
 
       case AuthProcessor.Stage.NEW_PASSWORD:
-        await this.getNewPassword(command);
+        await this.newPassword(command);
         break;
 
       case AuthProcessor.Stage.MOTD:
@@ -112,8 +112,8 @@ export class AuthProcessor
     // Make the first letter uppercase and the rest lowercase.
     accountName = Utils.upperCaseFirstCharacter(accountName);
 
-    // We are not going to attempt to log in to this account until we receive
-    // password so we need to remember account name until then.
+    // We are not going to attempt to log in to this account until we
+    // receive password so we need to remember account name until then.
     this.accountName = accountName;
 
     if (await Server.accounts.exists(accountName))
@@ -128,6 +128,12 @@ export class AuthProcessor
       this.sendAuthPrompt("Creating a new user account...\n"
         + "Please enter a password for your account:");
       this.stage = AuthProcessor.Stage.NEW_PASSWORD;
+
+      // We also need to prevent other players to create account
+      // with the same name before our user enters her password.
+      //   It's because the name lock file (which tells us that
+      // a name is taken) is only created after we know the password.
+      Server.accounts.setSoftNameLock(accountName);
     }
   }
 
@@ -149,7 +155,7 @@ export class AuthProcessor
       // because the same error will probably occur again.
       // So we will just disconnect the player.
       this.connection.finishAuthenticating();
-      this.connection.quitGame();
+      this.connection.close();
 
       return null;
     }
@@ -188,18 +194,6 @@ export class AuthProcessor
     this.stage = AuthProcessor.Stage.MOTD;
   }
 
-  private acceptNewPassword(password: string): boolean
-  {
-    if (this.connection === null)
-    {
-      ERROR("Null conection on account " + this.accountName + "."
-        + " Password is not processed");
-      return false;
-    }
-
-    return this.isPasswordValid(password);
-  }
-
   private async createAccount(password: string): Promise<Account>
   {
     let account = await Server.accounts.createAccount
@@ -208,6 +202,10 @@ export class AuthProcessor
       password,
       this.connection
     );
+
+    // 'createAccount()' has created a name lock file, so we can
+    // free soft lock on 'this.accountName'.
+    Server.accounts.removeSoftNameLock(this.accountName);
 
     this.connection.account = account;
 
@@ -225,9 +223,9 @@ export class AuthProcessor
     );
   }
 
-  private async getNewPassword(password: string)
+  private async newPassword(password: string)
   {
-    if (this.acceptNewPassword(password) === false)
+    if (!this.isPasswordValid(password))
     {
       // We don't advance this.stage so the next user input will trigger
       // a getNewPassword() again.
@@ -321,6 +319,13 @@ export class AuthProcessor
 
   private isPasswordValid(password: string): boolean
   {
+    if (this.connection === null)
+    {
+      ERROR("Null conection on account " + this.accountName + "."
+        + " Password is not processed");
+      return false;
+    }
+
     if (!password)
     {
       this.sendAuthPrompt

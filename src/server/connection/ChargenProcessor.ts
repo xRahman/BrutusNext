@@ -64,25 +64,26 @@ export class ChargenProcessor
   private async processCharacterName(name: string)
   {
     if (!this.isNameValid(name))
-      // We don't advance the stage so the next user input will trigger
-      // a processCharacterName() again.
+      // We don't advance the stage so the next user input will
+      // trigger a processCharacterName() again.
       return;
 
     // Make the first letter uppercase and the rest lowercase.
     name = Utils.upperCaseFirstCharacter(name);
 
     if (!await this.isNameAvailable(name))
-      // We don't advance the stage so the next user input will trigger
-      // a processCharacterName() again.
+      // We don't advance the stage so the next user input will
+      // trigger a processCharacterName() again.
       return;
 
     let character = await this.createCharacter(name);
 
     if (character === null)
     {
-      /// TODO: oznamit hraci, ze se nepovedlo vytvorit character
-      /// TODO: disconnectnout ho (this.connection.quitGame());
-      this.characterCreationFailure(name);
+      this.announceCharacterCreationFailure(name);
+
+      // Disconnect the player.
+      this.connection.close();
       return;
     }
 
@@ -222,25 +223,25 @@ export class ChargenProcessor
       return;
     }
 
-    this.connection.attachToGameEntity(character);
     this.connection.leaveChargen();
-    this.connection.enterGame();
+    this.connection.enterGame(character);
   }
 
-  protected characterCreationFailure(name: string)
+  protected announceCharacterCreationFailure(name: string)
   {
     // Notify the player what went wrong.
     if (this.connection !== null && this.connection.isValid())
     {
-      this.sendChargenError("Something is wrong, character"
+      Message.sendToConnection
+      (
+        "Something is wrong, character"
         + " named '" + name + "' already exists."
         + " Please contact admins at " + Settings.adminEmail
-        + " and ask them to resolve this issue.");
+        + " and ask them to resolve this issue.",
+        Message.Type.CONNECTION_ERROR,
+        this.connection
+      );
     }
-    
-
-    // Disconnect the player.
-    this.connection.quitGame();
   }
 }
 
