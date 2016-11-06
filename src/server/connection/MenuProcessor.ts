@@ -93,8 +93,9 @@ export class MenuProcessor
       Message.Type.AUTH_INFO,
       this.connection
     );
+    
     this.connection.leaveMenu();
-    this.connection.quitGame();
+    this.connection.close();
   }
 
   private async enterGame(characterName: string)
@@ -110,22 +111,21 @@ export class MenuProcessor
     // Check if character is already online.
     let character = characterList.getPlayerCharacter(characterName);
 
+    this.connection.leaveMenu();
+
+    // If the character is online, reconnect to it.
     if (character)
     {
-      this.connection.attachToGameEntity(character);
-      this.connection.leaveMenu();
-      this.connection.reconnectToCharacter();
+      this.connection.reconnectToCharacter(character);
+      return;
     }
-    else
-    {
-      await this.loadCharacter(characterName);
 
-      this.connection.leaveMenu();
-      this.connection.enterGame();
-    }
+    // Otherwise load it from the disk.
+    character = await this.loadCharacter(characterName);
+    this.connection.enterGame(character);
   }
   
-  private async loadCharacter(characterName: string)
+  private async loadCharacter(characterName: string): Promise<Character>
   {
     if (this.connection === null || this.connection.isValid() === false)
     {
@@ -150,7 +150,7 @@ export class MenuProcessor
     // Add newly loaded character to characterManager (under it's original id).
     characterList.addPlayerCharacterUnderExistingId(character);
 
-    this.connection.attachToGameEntity(character);
+    return character;
   }
 
   private async loadCharacterFromFile
@@ -259,7 +259,8 @@ export class MenuProcessor
     // Add an option to enter game as each of characters on the account. 
     for (let characterName of account.characterNames)
     {
-      menu += '\n&g"&G' + characterName + '&g"&w to enter game as ' + characterName + ".";
+      menu += '\n&g"&G' + characterName + '&g"&w to enter game as'
+        + " '" + characterName + "'.";
     }
 
     menu += MenuProcessor.MAKE_CHOICE;

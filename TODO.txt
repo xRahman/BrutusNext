@@ -1,6 +1,38 @@
+TODO: V AuthProcessoru bych asi měl rovnou v loginAttempt() načíst
+  account a zapamatovat si ho.
+- tím, že si pamatuju jen accountName se jednak několikrát provádí check
+  na unikátnost jména
+  - a navíc se může stát, že než zadám heslo, tak někdo založí ten samý
+   account a mě to pak failne.
+Když založím account rovnou, tak tím zároveň vytvořím lock.
+- na druhou stranu by asi bylo fajn mít aspoň nějakou DOS protection,
+  tj. ideálně nezahazovat account hned (při nepovedeném hesle, shozené
+  lince, atd.), ale až po nějakém timeoutu.
+(druhá možnost je, udělat si ten lock v paměti. Tj. někde zaregistrovat,
+ že se někdo snaží přihlásit pod daným jménem...)
+ - buď je account online (někdo se reloguje), pak není co lockovat
+   (ale možná by bylo dobré si pamatovat rovnou ten account místo accountName)
+ - nebo online není, pak je třeba vyrobit lock
+Ok, udělám si lock v paměti (hashmapou se jmény accountu - respektive asi
+  spíš setem).
+  - odstranit ho je třeba v okamžiku, kdy se vyrobí lockFile, případně když
+    se closne connection.
+
+TODO: Jelikož mám soft lock na accountName, tak už nemusím znova checkovat,
+  že je volné, když vytvářím account.
+  (na druhou stranu to se možná dělá automaticky...)
+
+IDEA: Místo NamedEntity (createNamedEntity(), atd.) používat
+  UniqueEntity (createUniqueEntity).
+
+TODO: settings.ts možná hodit spíš do rootu projektu, než do ./src
+  (a možná by to měl být spíš settings.json)
+
 TODO: To, že se player disconnectuje přes connection.quitGame(), není
   zrovna intuitivní. Mělo by se to dělat přes connection.disconnect()
   (nebo close()).
+- zavírat přes connection.close().
+[done]
 
 TODO: Misto Message.Type.AUTH_ERROR zavest SYSTEM_ERROR
   (ať nemám 20 různých druhů error messagů)
