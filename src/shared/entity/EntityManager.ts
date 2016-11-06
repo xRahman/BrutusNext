@@ -161,6 +161,11 @@ export class EntityManager
   // Return type is actualy <T>, Promise will get resolved automatically.
   : Promise<T>
   {
+    /// Tohle se testuje v rámci setUniqueName(), takže by se to volalo
+    /// dvakrát po sobě.
+    /// - je lepší zbytečně naalokovat paměť pro entitu, než dvakrát
+    /// hrabat na disk.
+    /*
     if (await NamedEntity.isNameTaken(name, cathegory))
     {
       ERROR("Attempt to create unique entity '" + name + "' in cathegory"
@@ -168,6 +173,7 @@ export class EntityManager
         + " already exists. Entity is not created");
       return null;
     }
+    */
 
     // Here we are dynamically typecasting to 'NamedEntity' in order
     // to be able to set entity.name.
