@@ -95,7 +95,8 @@ export class Connection extends Entity
     this.chargenProcessor = null;
   }
 
-  public async enterGame()
+  // Connection will be attached to 'entity' prior to entering the game.
+  public async enterGame(entity: GameEntity)
   {
     let validStage = this.stage === Connection.Stage.IN_MENU
                   || this.stage === Connection.Stage.IN_GAME
@@ -110,6 +111,14 @@ export class Connection extends Entity
       return;
     }
 
+    if (!Entity.isValid(entity))
+    {
+      ERROR("Invalid entity when entering game. Game not entered");
+      return;
+    }
+
+    this.attachToGameEntity(entity);
+
     this.sendConnectionInfo
     (
       "Welcome to the land of &RBrutus&YNext!&_"
@@ -120,21 +129,21 @@ export class Connection extends Entity
     this.stage = Connection.Stage.IN_GAME;
   }
 
-  public reconnectToCharacter()
+  // Connection will be attached to 'entity' prior to entering the game.
+  public reconnectToCharacter(entity: GameEntity)
   {
+    if (!Entity.isValid(entity))
+    {
+      ERROR("Invalid entity when entering game. Game not entered");
+      return;
+    }
+
+    this.attachToGameEntity(entity);
+
     this.announceReconnecting();
     this.ingameEntity.announcePlayerReconnecting();
 
     this.stage = Connection.Stage.IN_GAME;
-  }
-
-  public quitGame()
-  {
-    this.stage = Connection.Stage.LOGGED_OUT;
-
-    // Close the socket. Event 'close' will be generated on it,
-    // which will lead to the player being logged out.
-    this.close();
   }
 
   public returnFromStringEditor()
@@ -281,8 +290,7 @@ export class Connection extends Entity
 
       // If we know what entity has player been connected to before,
       // connect her to it again.
-      this.ingameEntity = oldIngameEntity;
-      this.reconnectToCharacter();
+      this.reconnectToCharacter(oldIngameEntity);
     }
     else
     {
@@ -333,6 +341,8 @@ export class Connection extends Entity
   // Close the connection.
   public close()
   {
+    this.stage = Connection.Stage.LOGGED_OUT;
+
     // Closes the socket, which will trigger 'close' event on it, which
     // will be handled by calling onSocketClose() on this connection.
     this.socketDescriptor.closeSocket();
@@ -756,6 +766,17 @@ export class Connection extends Entity
       // This should never be executed, but if an error occurs, it's
       // probably better not to be left with dangling account.
       this.logoutAccount("has been logged out");
+    }
+
+    // If the connection is closed while player is authenticating,
+    // we also need to remove soft lock on accountName so it is
+    // freed to be used.
+    if (this.authProcessor !== null)
+    {
+      let accountName = this.authProcessor.getAccountName();
+
+      if (accountName !== null)
+        Server.accounts.removeSoftNameLock(accountName);
     }
 
     this.removeSelfFromManager();
