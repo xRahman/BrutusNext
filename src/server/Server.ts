@@ -418,6 +418,7 @@ async function test()
   proxy1['data'].push(3);
   */
 
+  /*
   Test.prototype['data'] = [1, 2];
   ///Test.prototype['data'] = "abc";
 
@@ -432,7 +433,7 @@ async function test()
 
   console.log("Test1: " + test1['data']);
   console.log("Test2: " + test2['data']);
-
+  */
 
 
   ///await resolveTest();
