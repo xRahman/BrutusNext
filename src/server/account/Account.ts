@@ -154,30 +154,36 @@ export class Account extends NamedEntity
     return this.connection.isInGame();
   }
 
-  public async createCharacter(characterName: string): Promise<Character>
+  public async createCharacter(name: string): Promise<Character>
   {
     let characterList = Game.characters;
 
-    if (characterList.exists(characterName))
+    if (characterList === null)
+    {
+      ERROR("Invalid character list");
+      return;
+    }
+
+    if (await characterList.exists(name))
     {
       // Handle error messages.
-      this.reportCharacterAlreadyExists(characterName);
+      this.reportCharacterAlreadyExists(name);
 
       return null;
     }
 
     let character = await characterList.createUniqueCharacter
     (
-      characterName,
+      name,
       this.connection
     );
 
     // (Also handles error messages)
-    if (!this.characterCreatedSuccessfuly(character, characterName))
+    if (!this.characterCreatedSuccessfuly(character, name))
       return null;
 
-    this.addCharacter(characterName);
-    this.logCharacterCreation(this.getName(), characterName);
+    this.addCharacter(name);
+    this.logCharacterCreation(this.getName(), name);
 
     return character;
   }
@@ -193,8 +199,12 @@ export class Account extends NamedEntity
     {
       ERROR("Failed to create new character (" + characterName + ")");
 
+      /// This should be send from top-level command handler in
+      /// chargen processor, not here. 
+      /*
       this.sendAuthError("An error occured while creating"
         + " your character. Please contact admins.");
+      */
 
       return false;
     }
@@ -313,6 +323,7 @@ export class Account extends NamedEntity
 
   // ---------------- Private methods --------------------
 
+  /*
   private sendAuthError(text: string)
   {
     Message.sendToConnection
@@ -322,6 +333,7 @@ export class Account extends NamedEntity
       this.connection
     );
   }
+  */
 
   private addCharacter(characterName: string)
   {

@@ -1,3 +1,62 @@
+TODO: Posílat info o uncaught exceptionech do syslogu.
+
+IMPORTANT:
+  Při dědění z prototypu se údajně neinstancují non-primitive properties,
+tj. když má prototyp např. array, tak všechny jeho instance referencují
+tu samou instanci pole.
+Řešení:
+  Inicializovat datové properties v konstruktoru.
+  - jinak řečeno, prototyp by měl mít konstruktor, kterej projde data[],
+    udělá z nich kopie a nasetuje je insatnci, kterou vytváří.
+  - na druhou stranu tohle pak nebude dělat to, že změnou prototypu se změní
+    všechny existující instance...
+TODO: Vyzkoušet to
+ - fakt to tak je :\
+[done]
+TODO: Jediné "řešení", co mě zatím napadá, je zavolat Object.freeze() na
+  všechny non-primitive property prototypu - pak nejde ani přidávat prvky
+  do pole.
+  - ideálně rekurzivně.
+- hází to pak TypeError při pokusu takovou property měnit.
+
+BIG TODO: Rekurzivně freezovat všechny non-primitive property na dynamických
+  prototypech.
+
+
+TODO: vícenásobná dědičnost prototypů
+
+
+TODO: Zvážit savování enumů stringovou hodnotou místo intu
+- mělo by to výhodu v tom, že se to nerozbije, když někdo přidá hodnotu
+  doprostřed enumu (tj. posunou se intové values).
+- asi bych to musel savovat jako IndirectValue, abych při loadu
+  zjistil, podle jakého enumu se ta hodnota má dereferencovat (ze stringu
+  na int).
+    Na to bych ale asi musel umět dynamicky přistoupit na enum podle jména
+    ve stringu.
+    - jinak řečeno, musel bych přidat enumy do dynamicClasses...
+
+TODO: Při zakládání nového charu to mockrát checkuje existenci name lock file.
+
+TODO: Při zakládání accountu se existence name lock file checkuje dvakrát.
+- poprvé když hráč zadá jméno accountu
+    (tam je to asi nutné, protože je třeba rozhodnout, jestli se loguje
+     na existující account, nebo zakládá nový).
+     - i když, Linux se vždycky ptá rovnou na heslo a až pak ověřuje.
+       (i když v Linuxu se zas nezakládá účet prostým přilogováním)
+       každopádně by to asi šlo pozdržet a ověřovat až po zadání hesla. Jen
+       by to asi bylo míň uživatelsky přítulné (že jsem se přesal v account
+       name bych se dozvěděl až po zadání hesla... To je asi špatně).
+- podruhé když se nový account zakládá.
+    Je to tady nutné? Teoreticky ten check už mám hotový. Na druhou stranu
+    když ho tu neudělám, tak se nedozvím, že přepisuju existující name lock
+    file (a že je někde nějaká chyba).
+=> Asi jsou fakt oba checky nutné.
+
+TODO: V ChargenProcessoru po neúspěšném isNameAvailable() zřejmě
+  chybí nový prompt.
+  - testnout a případně opravit.
+
 TODO: V AuthProcessoru bych asi měl rovnou v loginAttempt() načíst
   account a zapamatovat si ho.
 - tím, že si pamatuju jen accountName se jednak několikrát provádí check
