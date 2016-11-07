@@ -1,3 +1,7 @@
+TODO: K "welcome" mesage v connection.enterGame() by měl bejt přilepenej
+  look do roomu.
+  - nebo teda aspoň bezprostředně následovat.
+
 TODO: Posílat info o uncaught exceptionech do syslogu.
 
 IMPORTANT:

@@ -27,12 +27,14 @@ export class CharacterList extends AbbrevSearchList
   )
   : Promise<Character>
   {
+    /*
     if (await this.exists(name))
     {
       ERROR("Attempt to create character '" + name + "'"
         + " that already exists. Character is not created");
       return null;
     }
+    */
 
     let character = await Server.entityManager.createNamedEntity
     (
