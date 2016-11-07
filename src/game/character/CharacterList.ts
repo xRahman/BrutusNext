@@ -27,7 +27,7 @@ export class CharacterList extends AbbrevSearchList
   )
   : Promise<Character>
   {
-    if (this.exists(name))
+    if (await this.exists(name))
     {
       ERROR("Attempt to create character '" + name + "'"
         + " that already exists. Character is not created");
@@ -76,11 +76,11 @@ export class CharacterList extends AbbrevSearchList
     return this.getEntityByName(characterName);
   }
 
-  public async exists(characterName: string)
+  public async exists(name: string)
   {
     // First check if character is already online so we can
     // save reading from disk.
-    if (this.hasUniqueEntity(characterName))
+    if (this.hasUniqueEntity(name))
     {
       /// DEBUG:
       console.log("this.hasUniqueEntity returned true");
@@ -90,7 +90,7 @@ export class CharacterList extends AbbrevSearchList
 
     return await NamedEntity.isNameTaken
     (
-      characterName,
+      name,
       NamedEntity.NameCathegory.characters
     );
   }

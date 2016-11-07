@@ -337,6 +337,7 @@ class PHandler
 
 // -------------------- test async delaye ---------------------------
 
+/*
 async function delay(miliseconds: number)
 {
   return new Promise<void>
@@ -347,9 +348,11 @@ async function delay(miliseconds: number)
     }
   );
 }
+*/
 
 // ------ test on-demand ukončování čekající async funkce ------------
 
+/*
 function resolveAwaiter(promise: Promise<void>): Promise<void>
 {
   console.log("Entering resolveTest()");
@@ -382,11 +385,56 @@ async function resolveTest()
 
   console.log("resolveTest() returned");
 }
+*/
+
+// ---------------------------------------------------------
+
+class PHandler
+{
+  public set(target: any, property: any, value: any, receiver: any)
+  {
+    console.log("PHandler.set()");
+
+    target[property] = value;
+  }
+}
+
+let Test = class TestClass
+{ 
+}
 
 // ---------------------------------------------------------
 
 async function test()
 {
+  /*
+  Test.prototype['data'] = [1, 2];
+
+  let handler = new PHandler();
+
+  let proxy1 = new Proxy(new Test, <any>handler);
+  let proxy2 = new Proxy(new Test, <any>handler);
+
+  proxy1['data'].push(3);
+  */
+
+  Test.prototype['data'] = [1, 2];
+  ///Test.prototype['data'] = "abc";
+
+  let test1 = new Test();
+  let test2 = new Test();
+
+  Object.freeze(test1['data']);
+
+  ///test1['data'] = "def";
+  test1['data'][1] = 5;
+  ///test1['data'].push(3);
+
+  console.log("Test1: " + test1['data']);
+  console.log("Test2: " + test2['data']);
+
+
+
   ///await resolveTest();
 
   /*
