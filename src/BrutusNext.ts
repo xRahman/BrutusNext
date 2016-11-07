@@ -59,6 +59,64 @@ process.on
   }
 );
 
+function typeErrorPossibleExplanation()
+{
+  let message = "Possible explanation:"
+             + " Someone might be trying to dynamically modify non-primitive"
+             + " property (Array, Object, etc.) of some class instance with"
+             + " a dynamic prototype. This is intentionally disabled by"
+             + " freezing all non-primitive properties on entity prototypes,"
+             + " because non-primitive properties are inherited to instances"
+             + " only as references. It means that when you modify"
+             + " a non-primitive property (like Array, Object, etc.) on an"
+             + " entity, the change will affect all instances of that class,"
+             + " because it will happen on prototype rather than on your"
+             + " instance. If that's the reason for this error, the solution"
+             + " is to  manually clone the property you want to modify and"
+             + " than do the change on the clone (that's what inheritance"
+             + " should do automatically but doesn't do it).";
+
+  /// TODO: Posílat to do syslogu, ne jen do konzole.
+  console.log(message);  
+}
+
+// This handler catches all uncaught exceptions.
+// It can be used to explain what they could posibly
+// mean and also syslog them so immortals know what
+// happened and it is logged.
+process.on
+(
+  'uncaughtException',
+  err =>
+  {
+    /// TODO: Poslat hlášku do syslogu.
+
+    if (err.name === "TypeError")
+    {
+      /// TODO: Posílat to do syslogu, ne jen do konzole.
+      console.log(err.name + " occured: " + err.message);
+      typeErrorPossibleExplanation();
+      /*
+      if (err.message.search("object is not extensible") != -1)
+      {
+        typeErrorPossibleExplanation();
+      }
+
+      if (err.message.search("Cannot assign to read only property") != -1)
+      {
+        typeErrorPossibleExplanation();
+      }
+      */
+
+      throw err;
+    }
+    else
+    {
+      throw err;
+    }
+  }
+)
+
 // Parses commandline parameters.
 // - Return object imported from 'commander' module.
 function parseCmdlineParams()
