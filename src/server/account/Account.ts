@@ -164,6 +164,7 @@ export class Account extends NamedEntity
       return;
     }
 
+    /*
     if (await characterList.exists(name))
     {
       // Handle error messages.
@@ -171,6 +172,7 @@ export class Account extends NamedEntity
 
       return null;
     }
+    */
 
     let character = await characterList.createUniqueCharacter
     (

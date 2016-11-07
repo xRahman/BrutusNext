@@ -372,7 +372,7 @@ export class Message
 
     // Add base color to the start of the string, but only if
     // it doesn't start with color code.
-    if (TelnetSocketDescriptor.isColorCode(firstTwoCharacters))
+    if (!TelnetSocketDescriptor.isColorCode(firstTwoCharacters))
       return baseColor + str;
     else
       return str;      
