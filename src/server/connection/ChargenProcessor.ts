@@ -43,7 +43,7 @@ export class ChargenProcessor
         break;
 
       case ChargenProcessor.Stage.GET_CHARACTER_NAME:
-        await this.processCharacterName(command);
+        await this.newCharacterName(command);
         break;
 
       default:
@@ -61,7 +61,7 @@ export class ChargenProcessor
 
   // --------------- Private methods --------------------
 
-  private async processCharacterName(name: string)
+  private async newCharacterName(name: string)
   {
     if (!this.isNameValid(name))
       // We don't advance the stage so the next user input will
@@ -75,6 +75,9 @@ export class ChargenProcessor
       // We don't advance the stage so the next user input will
       // trigger a processCharacterName() again.
       return;
+
+    /// DEBUG:
+    console.log("After isNameAvailable() check");
 
     let character = await this.createCharacter(name);
 
@@ -155,7 +158,8 @@ export class ChargenProcessor
       (
         "Could you please pick a name that is at least"
         + " " + ChargenProcessor.MIN_CHARACTER_NAME_LENGTH
-        + " characters long?\n"
+        + " characters long?"
+        + "\n"
         + "Enter a valid character name: "
       );
 
@@ -181,6 +185,7 @@ export class ChargenProcessor
       this.sendChargenPrompt
       (
         "Sorry, this name is not available."
+        + "\n"
         + "Please enter another character name:"
       );
     }
@@ -205,11 +210,12 @@ export class ChargenProcessor
       return null;
     }
 
-    let character = await this.connection.account.createCharacter(name);
+    let character = await account.createCharacter(name);
 
     if (character === null)
       return null;
 
+    /// TODO: Tohle by se možná mohlo volat uvnitř account.createCharacter(). 
     Server.onCharacterCreation(character);
 
     return character;
@@ -234,8 +240,7 @@ export class ChargenProcessor
     {
       Message.sendToConnection
       (
-        "Something is wrong, character"
-        + " named '" + name + "' already exists."
+        "Something is wrong, character '" + name + "' already exists."
         + " Please contact admins at " + Settings.adminEmail
         + " and ask them to resolve this issue.",
         Message.Type.CONNECTION_ERROR,

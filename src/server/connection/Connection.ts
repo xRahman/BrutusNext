@@ -122,7 +122,8 @@ export class Connection extends Entity
     this.sendConnectionInfo
     (
       "Welcome to the land of &RBrutus&YNext!&_"
-      + " May your visit here be... &GInteresting&_."
+      + "\n"
+      + "May your visit here be... &GInteresting&_."
     );
 
     this.ingameEntity.announcePlayerEnteringGame();
