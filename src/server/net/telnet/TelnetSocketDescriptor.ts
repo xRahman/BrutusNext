@@ -261,15 +261,20 @@ export class TelnetSocketDescriptor extends SocketDescriptor
       player = "Unknown player";
     }
 
-    // I don't really know what kind of errors can happen here.
-    // For now let's just log the error and close the connection.
-    Syslog.log
-    (
-      player
-      + " has encounterd a socket error, closing the connection. " + error,
-      Message.Type.SYSTEM_ERROR,
-      AdminLevel.IMMORTAL
-    );
+    // Sending the syslog message to closed socket would result in
+    // another error, which would result in stack overflow.
+    if (!this.socketClosed)
+    {
+      // I don't really know what kind of errors can happen here.
+      // For now let's just log the error and close the connection.
+      Syslog.log
+      (
+        player
+        + " has encounterd a socket error, closing the connection. " + error,
+        Message.Type.SYSTEM_ERROR,
+        AdminLevel.IMMORTAL
+      );
+    }
 
     this.closeSocket();
   }

@@ -122,8 +122,7 @@ export class Connection extends Entity
     this.sendConnectionInfo
     (
       "Welcome to the land of &RBrutus&YNext!&_"
-      + "\n"
-      + "May your visit here be... &GInteresting&_."
+      + " May your visit here be... &GInteresting&_."
     );
 
     this.ingameEntity.announcePlayerEnteringGame();
@@ -737,15 +736,21 @@ export class Connection extends Entity
   private announcePlayerLostConnection(state: string)
   {
     let player = "Unknown player";
+    let accountName = null;
 
-    if (this.authProcessor === null)
+    if (this.authProcessor !== null)
     {
+      accountName = this.authProcessor.getAccountName()
       ERROR("AuthProcessor not inicialized, lost connection will not be announced");
       return;
     }
+    else if(this.account !== null && this.account.isValid())
+    {
+      accountName = this.account.getName();
+    }
 
-    if (this.authProcessor.getAccountName())
-      player = "Player " + this.authProcessor.getAccountName();
+    if (accountName !== null)
+      player = "Player " + accountName;
 
     Syslog.log
     (
