@@ -1,3 +1,5 @@
+TODO: Checknout, že je první založený char creator.
+
 TODO:
 Syslog message "Player X entered game with character Y"
 Syslog message "Player X playing character Y has left the game"
