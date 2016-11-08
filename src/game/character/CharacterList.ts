@@ -77,6 +77,16 @@ export class CharacterList extends AbbrevSearchList
   //    Returns null if character 'name' doesn't exist or couldn't be loaded.
   public async loadCharacter(name: string)
   {
+    let character = await super.loadNamedEntity
+    (
+      name,
+      NamedEntity.NameCathegory.characters,
+      Character
+    );
+
+    return character;
+
+    /*
     // First check if character is already loaded. 
     let character = this.getCharacterByName(name);
 
@@ -107,13 +117,12 @@ export class CharacterList extends AbbrevSearchList
       /// Přejmenovat entitu s unikátním jménem není tak jednoduché,
       /// šaškuje se při tom s name lock filama. Asi bude nejjednodušší
       /// prostě to jen nareportovat jako error
-      /*
-      ERROR("Character name saved in file (" + character.getName() + ")"
-        + " doesn't match character file name (" + name + ")."
-        + " Renaming character to match file name");
-    
-      character.name = name;
-      */
+      ///
+      ///ERROR("Character name saved in file (" + character.getName() + ")"
+      ///  + " doesn't match character file name (" + name + ")."
+      ///  + " Renaming character to match file name");
+      ///
+      ///character.name = name;
 
       ERROR("Character name saved in file (" + character.getName() + ")"
         + " doesn't match character file name (" + name + ")"
@@ -122,8 +131,7 @@ export class CharacterList extends AbbrevSearchList
     }
 
     this.add(character);
-
-    return character;
+    */
   }
 
   // -> Returns undefined if character isn't loaded or doesn't exist.
