@@ -59,6 +59,8 @@ process.on
   }
 );
 
+/// Asi to nakonec udělám přes Proxy, takže tohle nebude platit
+/*
 function typeErrorPossibleExplanation()
 {
   let message = "Possible explanation:"
@@ -79,6 +81,7 @@ function typeErrorPossibleExplanation()
   /// TODO: Posílat to do syslogu, ne jen do konzole.
   console.log(message);  
 }
+*/
 
 // This handler catches all uncaught exceptions.
 // It can be used to explain what they could posibly
@@ -91,12 +94,13 @@ process.on
   {
     /// TODO: Poslat hlášku do syslogu.
 
+    /*
     if (err.name === "TypeError")
     {
       /// TODO: Posílat to do syslogu, ne jen do konzole.
       console.log(err.name + " occured: " + err.message);
       typeErrorPossibleExplanation();
-      /*
+
       if (err.message.search("object is not extensible") != -1)
       {
         typeErrorPossibleExplanation();
@@ -106,14 +110,12 @@ process.on
       {
         typeErrorPossibleExplanation();
       }
-      */
 
       throw err;
     }
-    else
-    {
-      throw err;
-    }
+    */
+
+    throw err;
   }
 )
 

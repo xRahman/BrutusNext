@@ -27,44 +27,44 @@ export class AccountList extends NameSearchList
 
   // ---------------- Public methods --------------------
 
-  // -> Returns account 'accountName' loaded from disk.
-  //    Returns null if account 'accountName' doesn't exist.
-  public async loadAccount(accountName: string, connection: Connection)
+  // -> Returns account loaded from disk.
+  //    Returns null if account 'name' doesn't exist or couldn't be loaded.
+  public async loadAccount(name: string, connection: Connection)
   {
     // First check if account is already loaded. 
-    let account = this.getAccountByName(accountName);
+    let account = this.getAccountByName(name);
 
     // If it is already loaded, there is no point in loading it again.
     if (account !== undefined)
     {
-      ERROR("Attempt to create account '" + accountName + "'"
-        + " which already exists. Account is not created");
+      ERROR("Attempt to load account '" + name + "'"
+        + " which already exists. Returning existing account");
       return account;
     }
 
     // Second parameter of loadNamedEntity is used for dynamic type cast.
     account = await EntityManager.loadNamedEntity
     (
-      accountName,
+      name,
       NamedEntity.NameCathegory.accounts,
       Account
     );
 
     if (!Entity.isValid(account))
     {
-      ERROR("Failed to load account " + account.name);
+      ERROR("Failed to load account " + name);
       return null;
     }
 
     account.connection = connection;
 
-    if (accountName !== account.name)
+    if (name !== account.name)
     {
       ERROR("Account name saved in file (" + account.name + ")"
-        + " doesn't match account file name (" + accountName + ")."
+        + " doesn't match account file name (" + name + ")."
         + " Renaming account to match file name");
     
-      account.name = accountName;
+      account.name = name;
     }
 
     this.add(account);
@@ -155,10 +155,9 @@ export class AccountList extends NameSearchList
   }
 
   // -> Returns undefined if account isn't online or doesn't exist.
-  public getAccountByName(accountName: string)
+  public getAccountByName(name: string)
   {
-    // Attempt to re-log to an online account.
-    return this.getEntityByName(accountName);
+    return this.getEntityByName(name);
   }
 
   public dropAccount(account: Account)
