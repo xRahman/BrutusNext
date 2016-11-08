@@ -295,7 +295,7 @@ export class MenuProcessor
     for (let characterName of account.characterNames)
     {
       menu += '\n&g"&G' + characterName + '&g"&w to enter game as'
-        + " '" + characterName + "'.";
+        + ' ' + characterName + '.';
     }
 
     menu += MenuProcessor.MAKE_CHOICE;

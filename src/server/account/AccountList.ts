@@ -31,6 +31,19 @@ export class AccountList extends NameSearchList
   //    Returns null if account 'name' doesn't exist or couldn't be loaded.
   public async loadAccount(name: string, connection: Connection)
   {
+    let account = await super.loadNamedEntity
+    (
+      name,
+      NamedEntity.NameCathegory.accounts,
+      Account
+    );
+
+    if (account !== null)
+      account.connection = connection;
+
+    return account;
+
+    /*
     // First check if account is already loaded. 
     let account = this.getAccountByName(name);
 
@@ -68,8 +81,7 @@ export class AccountList extends NameSearchList
     }
 
     this.add(account);
-
-    return account;
+    */
   }
 
   public async createAccount

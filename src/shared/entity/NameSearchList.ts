@@ -6,10 +6,12 @@
 
 'use strict';
 
+import {Utils} from '../../shared/Utils';
 import {ERROR} from '../../shared/error/ERROR';
 import {NamedEntity} from '../../shared/entity/NamedEntity';
 import {EntityList} from '../../shared/entity/EntityList';
 import {Entity} from '../../shared/entity/Entity';
+import {EntityManager} from '../../shared/entity/EntityManager';
 
 export class NameSearchList extends EntityList
 {
@@ -25,6 +27,65 @@ export class NameSearchList extends EntityList
   // --------------- Public accessors -------------------
 
   // ---------------- Public methods --------------------
+
+  public async loadNamedEntity<T>
+  (
+    name: string,
+    cathegory: NamedEntity.NameCathegory,
+    typeCast: { new (...args: any[]): T }
+  )
+  : Promise<T>
+  {
+    if (!typeCast)
+    {
+      ERROR("Invalid typeCast parameter");
+      return null;
+    }
+
+    // This will be used in error messages (somehing like 'character').
+    let type = typeCast.name.toLowerCase();
+    // This will be used in error messages (somehing like 'Character').
+    let capitalizedType = Utils.upperCaseFirstCharacter(type);
+
+    // First check if entity is already loaded in memory. 
+    let entity = this.getEntityByName(name);
+
+    // If it is already loaded, there is no point in loading it again.
+    if (entity !== undefined)
+    {
+      ERROR("Attempt to load " + type + " '" + name + "'"
+        + " which already exists. Returning existing " +  type);
+      return entity;
+    }
+
+    // Second parameter of loadNamedEntity is used for dynamic type cast.
+    entity = await EntityManager.loadNamedEntity
+    (
+      name,
+      cathegory,
+      typeCast
+    );
+
+    if (!Entity.isValid(entity))
+    {
+      ERROR("Failed to load " + type + " " + name);
+      return null;
+    }
+
+    ///account.connection = connection;
+
+    if (name !== entity.getName())
+    {
+      ERROR(capitalizedType + " name saved in file (" + entity.getName() + ")"
+        + " doesn't match " + type + " file name (" + name + ")"
+        + capitalizedType + " is not loaded");
+        return null;
+    }
+
+    this.add(entity);
+
+    return entity;
+  }
 
   // -> Returns true if adding succeeded.
   public add(entity: NamedEntity): boolean
