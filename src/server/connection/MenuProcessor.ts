@@ -8,6 +8,7 @@
 
 import {ERROR} from '../../shared/error/ERROR';
 import {FATAL_ERROR} from '../../shared/error/FATAL_ERROR';
+import {Utils} from '../../shared/Utils';
 import {NamedEntity} from '../../shared/entity/NamedEntity';
 import {Connection} from '../../server/connection/Connection';
 import {Server} from '../../server/Server';
@@ -33,7 +34,7 @@ export class MenuProcessor
       + '\n'
       + '&wPlease enter:\n'
       + '&g"&G0&g" &bto exit from &RBRUTUS &YNext.\n'
-      + '&g"&G1&g" &Bto create new character.\n';
+      + '&g"&G1&g" &Bto create new character.';
   }
 
   private static get MAKE_CHOICE()
@@ -69,7 +70,7 @@ export class MenuProcessor
         break;
 
       default:
-        await this.processCharacterChoice(command);
+        await this.characterChoice(command);
         break;
     }
   }
@@ -114,7 +115,7 @@ export class MenuProcessor
     this.connection.leaveMenu();
 
     // If the character is online, reconnect to it.
-    if (character)
+    if (character && character.isValid())
     {
       this.connection.reconnectToCharacter(character);
       return;
@@ -137,6 +138,8 @@ export class MenuProcessor
 
     let character = new Character();
 
+    /// TODO: Tohle možná udělat nechci - bude to nejspíš chtít vytvořit
+    /// name lock file, což nepůjde, protože už existuje.
     character.setUniqueName
     (
       characterName,
@@ -202,12 +205,15 @@ export class MenuProcessor
       return;
     }
 
+    // Make the first letter uppercase and the rest lowercase.
+    name = Utils.upperCaseFirstCharacter(name); 
+
     // 'getCharacterNameByAbbrev()' returns null if 'choice'
     // isn't an abbreviation of any character names on account.
     return account.getCharacterNameByAbbrev(name);
   }
 
-  private async processCharacterChoice(choice: string)
+  private async characterChoice(choice: string)
   {
     let characterName = this.matchCharacterName(choice);
         
@@ -216,7 +222,9 @@ export class MenuProcessor
       Message.sendToConnection
       (
         "That's neither a menu choice nor the name of your character."
-        + "\nPlease enter valid menu choice or the name of one of your characters:",
+        + "\n"
+        + "Please enter a valid menu choice or a name of one of your"
+        + " characters:",
         Message.Type.GAME_MENU,
         this.connection
       );
