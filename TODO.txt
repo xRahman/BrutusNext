@@ -1,8 +1,18 @@
+TODO:
+Syslog message "Player X entered game with character Y"
+Syslog message "Player X playing character Y has left the game"
+
+
+TODO: Za všechny message přidávat defaultní "ukončovací" barvu
+- a to proto, že tak bude obarven player input (a ten by asi měl
+  mít vždycky stejnou barvu).
+
 TODO: K "welcome" mesage v connection.enterGame() by měl bejt přilepenej
   look do roomu.
   - nebo teda aspoň bezprostředně následovat.
 
 TODO: Posílat info o uncaught exceptionech do syslogu.
+  (v BrutusNext.ts)
 
 IMPORTANT:
   Při dědění z prototypu se údajně neinstancují non-primitive properties,
@@ -22,9 +32,22 @@ TODO: Jediné "řešení", co mě zatím napadá, je zavolat Object.freeze() na
   do pole.
   - ideálně rekurzivně.
 - hází to pak TypeError při pokusu takovou property měnit.
-
 BIG TODO: Rekurzivně freezovat všechny non-primitive property na dynamických
   prototypech.
+- tak nakonec ne. Lepší bude dát všechny vnořené objekty za Proxy.
+TODO: Při inicializování dat prototypu udělat z vnořených objektů (tj.
+  ze všech non-primitive properties) Proxy.
+- chce to nový proxyHandler
+  Proxyhandler vnořeného objektu bude mít v sobě:
+  - referenci na entitu (respektive teda na prototyp), do které je vnořený)
+  - jméno property, kterou představuje (respektive nejvyšší level, pokud
+    je to víckrát zanořené).
+  V set() trapě:
+    - Přes jméno property checkne, jestli už je na instanci entity naalokovaná
+      instance vnořeného objektu.
+      - pokud jo, tak do ní rovnou zapíše
+      - pokud ne, tak ji nejdřív naalokuje a pak do ní zapíše
+
 
 
 TODO: vícenásobná dědičnost prototypů

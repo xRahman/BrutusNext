@@ -158,7 +158,7 @@ export class Message
 
   public sendToGameEntity(target: GameEntity, sender: GameEntity = null)
   {
-    if (target === null || target.isValid() === false)
+    if (target === null || !target.isValid())
     {
       ERROR("Invalid message recipient. Message is not sent");
       return;
