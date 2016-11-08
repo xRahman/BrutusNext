@@ -1,3 +1,16 @@
+TODO: loadAccount v AccountListu a loadCharacter v CharacterListu
+  jsou téměř totožné fce - nějak to sjednotit.
+[done]
+
+TODO: Pojmenované listy (AccountList) by se mohly jmenovat prostě Accounts
+  (sedělo by to pak s názvem proměnných: public accounts: Accounts)
+
+TODO: Ještě jednou se zamyslet nad unikátními jmény
+ (unikátnost by se mohla setovat už v konstruktoru, každopádně teda
+  nezávisle na setName()...)
+
+TODO: Ještě jednou projít celý proces vytváření a loadování entit.
+
 TODO: Checknout, že je první založený char creator.
 
 TODO:
