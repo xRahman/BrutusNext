@@ -6,10 +6,12 @@
 
 'use strict';
 
+import {Settings} from '../../Settings';
 import {ERROR} from '../../shared/error/ERROR';
 import {FATAL_ERROR} from '../../shared/error/FATAL_ERROR';
 import {Utils} from '../../shared/Utils';
 import {NamedEntity} from '../../shared/entity/NamedEntity';
+import {Syslog} from '../../server/Syslog';
 import {Connection} from '../../server/connection/Connection';
 import {Server} from '../../server/Server';
 import {Account} from '../../server/account/Account';
@@ -110,7 +112,7 @@ export class MenuProcessor
     let characterList = Game.characters;
 
     // Check if character is already online.
-    let character = characterList.getPlayerCharacter(characterName);
+    let character = characterList.getCharacterByName(characterName);
 
     this.connection.leaveMenu();
 
@@ -126,8 +128,31 @@ export class MenuProcessor
     this.connection.enterGame(character);
   }
   
-  private async loadCharacter(characterName: string): Promise<Character>
+  private async loadCharacter(name: string): Promise<Character>
   {
+    // loadAccount() returns null if account doesn't exist on the disk.
+    let character = await Game.characters.loadCharacter(name);
+
+    if (character === null || !character.isValid())
+    {
+      this.announceCharacterLoadFailure(name);
+
+      /*
+      // There is no point in requesting password again
+      // because the same error will probably occur again.
+      // So we will just disconnect the player.
+      this.connection.finishAuthenticating();
+      this.connection.close();
+      */
+
+      return null;
+    }
+
+    return character;
+    /*
+    /// DEBUG:
+    console.log("loadCharacter()");
+
     if (this.connection === null || this.connection.isValid() === false)
     {
       ERROR("Invalid connection, unable to load character");
@@ -154,8 +179,10 @@ export class MenuProcessor
     characterList.addPlayerCharacterUnderExistingId(character);
 
     return character;
+    */
   }
 
+  /*
   private async loadCharacterFromFile
   (
     character: Character,
@@ -181,15 +208,16 @@ export class MenuProcessor
       /// unikátní, tzn. je třeba zkontrolovat unikátnost.
       /// TODO:
       /// - Navíc to možná bude celé jinak, používají se teď nameLockFily.
-      /*
-      ERROR("Character name saved in file (" + character.getName() + ")"
-        + " doesn't match character file name (" + characterFileName + ")."
-        + " Renaming character to match file name");
-
-      character.name = characterFileName;
-      */
+      ///
+      ///ERROR("Character name saved in file (" + character.getName() + ")"
+      ///  + " doesn't match character file name (" + characterFileName + ")."
+      ///  + " Renaming character to match file name");
+      ///
+      ///character.name = characterFileName;
+      
     }
   }
+  */
 
   // Checks if 'name' matches (is an abbreviation of) any character names
   // on the account.
@@ -228,7 +256,6 @@ export class MenuProcessor
         Message.Type.GAME_MENU,
         this.connection
       );
-
       return;
     }
 
@@ -274,5 +301,26 @@ export class MenuProcessor
     menu += MenuProcessor.MAKE_CHOICE;
 
     return menu;
+  }
+
+  private announceCharacterLoadFailure(name: string)
+  {
+    // Let admins know what went wrong.
+    Syslog.log
+    (
+      "Failed to load character " + name,
+      Message.Type.SYSTEM_ERROR,
+      AdminLevel.IMMORTAL
+    );
+
+
+    // Let the player know what went wrong.
+    Message.sendToConnection
+    (
+      "Unable to load your character.\n"
+      + "Please contact admins at " + Settings.adminEmail + ".",
+      Message.Type.CONNECTION_ERROR,
+      this.connection
+    );
   }
 }

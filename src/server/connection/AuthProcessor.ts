@@ -147,7 +147,7 @@ export class AuthProcessor
       this.connection
     );
 
-    if (account === null || account.isValid() === false)
+    if (account === null || !account.isValid())
     {
       this.announceAccountLoadFailure();
 
@@ -468,10 +468,12 @@ export class AuthProcessor
     );
 
     // Let the player know what went wrong.
-    this.sendAuthPrompt
+    Message.sendToConnection
     (
       "Unable to load your account.\n"
-      + "Please contact admins at " + Settings.adminEmail + "."
+      + "Please contact admins at " + Settings.adminEmail + ".",
+      Message.Type.CONNECTION_ERROR,
+      this.connection
     );
   }
 
