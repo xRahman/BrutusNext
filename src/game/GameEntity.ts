@@ -162,7 +162,7 @@ export class GameEntity extends ContainerEntity
   {
     let message = new Message(text, msgType);
 
-    message.sendToGameEntity(sender, this);
+    message.sendToGameEntity(this, sender);
   }
 
   /// sendMessage() je intuitivnější název, navíc stačí jedna metoda
@@ -339,15 +339,18 @@ export class GameEntity extends ContainerEntity
   // Prevents accidental quitting without typing full 'quit' commmand.s
   protected doQui(argument: string)
   {
-    this.receive("You have to type quit--no less, to quit!", Message.Type.COMMAND);
+    this.receive
+    (
+      "You have to type quit--no less, to quit!",
+      Message.Type.COMMAND
+    );
   }
 
   protected doQuit(argument: string)
   {
-    this.receive("Goodbye, friend.. Come back soon!", Message.Type.COMMAND);
-
     if (this.connection)
     {
+      this.receive("Goodbye, friend.. Come back soon!", Message.Type.COMMAND);
       this.announcePlayerLeavingGame();
       this.connection.enterMenu();
       this.connection.detachFromGameEntity();
