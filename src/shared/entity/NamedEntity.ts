@@ -87,7 +87,7 @@ export class NamedEntity extends Entity
     if (await NamedEntity.isNameTaken(newName, newCathegory))
     {
       ERROR("Attempt to change the name of entity "
-        + this.getErrorIdString() + " to '" + name + "',"
+        + this.getErrorIdString() + " to '" + newName + "',"
         + " which already exists. Name is not changed");
       return false;
     }
