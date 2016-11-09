@@ -40,7 +40,7 @@ export class NameSearchList extends EntityList
     {
       ERROR("Invalid typeCast parameter");
       return null;
-    }
+    } 
 
     // This will be used in error messages (somehing like 'character').
     let type = typeCast.name.toLowerCase();
@@ -53,6 +53,26 @@ export class NameSearchList extends EntityList
     // If it is already loaded, there is no point in loading it again.
     if (entity !== undefined)
     {
+      if (entity === null)
+      {
+        ERROR("'null' found in entity list while attempting"
+          + " to load " + type + " " + name + ". " + capitalizedType
+          + " is not loaded");
+        return null;
+      }
+
+      if (!entity.isValid())
+      {
+        ERROR("Attempt to load " + type + " '" + name + "'"
+          + " which already exists but is not valid. This"
+          + " can happen for example if you forget to update"
+          + " removeFromLists() method, so when " + type
+          + " is removed from EntityManager (and thus becomes"
+          + " invalid), it is not removed from entity list."
+          + " " + capitalizedType + " is not loaded");
+        return null;
+      }
+
       ERROR("Attempt to load " + type + " '" + name + "'"
         + " which already exists. Returning existing " +  type);
       return entity;

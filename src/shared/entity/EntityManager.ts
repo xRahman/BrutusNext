@@ -358,8 +358,20 @@ export class EntityManager
 
   // Removes entity from manager but doesn't delete it from disk
   // (this is used for example when player quits the game).
+  // Also removes entity from entity lists so it can no longer
+  // be searched for.
   public remove(entity: Entity)
   {
+    if (entity === null || entity === undefined)
+    {
+      ERROR("Attempt to remove 'null' or 'undefined'"
+        + " entity from EntityManager");
+      return;
+    }
+
+    // Remove entity from entity lists so it can no longer be searched for.
+    entity.removeFromLists();
+
     // get() returns undefined if there is no such record in hashmap.
     let entityRecord = this.entityRecords.get(entity.getId());
 
@@ -661,7 +673,8 @@ export class EntityManager
     if (entity !== undefined)
     {
       ERROR("Attempt to load entity " + entity.getErrorIdString()
-        + " which already exists in EntityManager");
+        + " which already exists in EntityManager. Returning"
+        + " existing entity");
       return entity.dynamicCast(typeCast);
     }
 

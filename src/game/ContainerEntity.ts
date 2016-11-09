@@ -92,7 +92,7 @@ export abstract class ContainerEntity extends CommandInterpretter
     entity.setLocation(this);
   }
 
-  // Removes entity if from contents of this entity.
+  // Removes entity from contents of this entity.
   public removeEntity(entity: GameEntity)
   {
     this.contents.remove(entity);

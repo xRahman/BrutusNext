@@ -395,6 +395,10 @@ export class Connection extends Entity
         this.onSocketCloseWhenLoggedOut();
         break;
     }
+
+    // Delete this connection from memory.
+    // (also removes it from Server.connections list)
+    Server.entityManager.remove(this);
   }
 
   public isInGame()
@@ -704,7 +708,27 @@ export class Connection extends Entity
   }
   */
 
+  /*
   private removeSelfFromManager()
+  {
+    Server.connections.remove(this);
+  }
+  */
+
+  /*
+  // Entity adds itself to approptiate EntityLists so it can be
+  // searched by name, etc. This doesn't add entity to EntityManager.
+  // (overrides Entity.addToLists())
+  public addToLists()
+  {
+    Server.connections.add(this);
+  }
+  */
+
+  // Entity removes itself from EntityLists so it can no longer
+  // be searched by name, etc. This doesn't remove entity from EntityManager.
+  // (overrides Entity.removeFromlists())
+  public removeFromLists()
   {
     Server.connections.remove(this);
   }
@@ -785,7 +809,7 @@ export class Connection extends Entity
         Server.accounts.removeSoftNameLock(accountName);
     }
 
-    this.removeSelfFromManager();
+    ///this.removeFromLists();
   }
 
   private onSocketCloseWhenInMenu()
@@ -795,7 +819,7 @@ export class Connection extends Entity
     if (this.account !== null)
       this.logoutAccount("has been logged out");
 
-    this.removeSelfFromManager();
+    ///this.removeFromLists();
   }
 
   private onSocketCloseWhenInChargen()
@@ -805,7 +829,7 @@ export class Connection extends Entity
     if (this.account !== null)
       this.logoutAccount("has been logged out");
 
-    this.removeSelfFromManager();
+    ///this.removeFromLists();
   }
 
   private onSocketCloseWhenInGame()
@@ -827,7 +851,7 @@ export class Connection extends Entity
     /// TODO: Neco udelat s ingame entitou (hodit ji link-death).
     /// (momentalne proste zustane viset ve hre)
 
-    this.removeSelfFromManager();
+    ///this.removeFromLists();
   }
 
   private onSocketCloseWhenLoggedOut()
@@ -835,7 +859,7 @@ export class Connection extends Entity
     if (this.account !== null)
       this.logoutAccount("has logged out");
 
-    this.removeSelfFromManager();
+    ///this.removeFromLists();
   }
 }
 
