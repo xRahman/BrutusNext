@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {Settings} from '../../Settings';
 import {ERROR} from '../../shared/error/ERROR';
 import {Utils} from '../../shared/Utils';
 import {Server} from '../../server/Server';
@@ -26,6 +27,12 @@ export class Message
   }
 
   // -------------- Static class data -------------------
+
+  public static get PLEASE_CONTACT_ADMINS()
+  {
+    return "Please contact admins at " + Settings.adminEmail
+         + " and ask them to resolve this issue."
+  }
 
   //------------------ Public data ----------------------
 

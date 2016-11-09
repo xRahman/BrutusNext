@@ -209,11 +209,19 @@ export class Entity extends AutoSaveableObject
     return "{ className: " + this.className + ", id: " + this.getId() + " }";
   }
 
-  // Entity adds itself to approptiate IdList
-  // (so it can be searched by name, etc).
-  // Note:
-  //   This method is overriden by descendants which are inserted to IdList.
-  public addToIdList() { }
+  /// Tohle možná nepoužiju - entity nejspíš budou do listů přidávat
+  /// různé funkce podle aktuální potřeby... 
+  /*
+  // Entity adds itself to approptiate EntityLists so it can be
+  // searched by name, etc. This doesn't add entity to EntityManager.
+  // (this method needs to be overriden by descendants)
+  public addToLists() { }
+  */
+
+  // Entity removes itself from EntityLists so it can no longer
+  // be searched by name, etc. This doesn't remove entity from EntityManager.
+  // (this method needs to be overriden by descendants)
+  public removeFromLists() {}
 
   // --------------- Protected methods ------------------
 

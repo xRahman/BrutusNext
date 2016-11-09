@@ -25,7 +25,6 @@
 
 'use strict';
 
-import {Settings} from '../../Settings';
 import {ERROR} from '../../shared/error/ERROR';
 import {Utils} from '../../shared/Utils';
 import {EntityManager} from '../../shared/entity/EntityManager';
@@ -471,7 +470,7 @@ export class AuthProcessor
     Message.sendToConnection
     (
       "Unable to load your account.\n"
-      + "Please contact admins at " + Settings.adminEmail + ".",
+        + Message.PLEASE_CONTACT_ADMINS,
       Message.Type.CONNECTION_ERROR,
       this.connection
     );
