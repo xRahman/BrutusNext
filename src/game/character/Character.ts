@@ -94,6 +94,14 @@ export class Character extends GameEntity
     // }
   }
 
+  // Entity removes itself from EntityLists so it can no longer
+  // be searched by name, etc. This doesn't remove entity from EntityManager.
+  // (overrides Entity.removeFromLists())
+  public removeFromLists()
+  {
+    Game.characters.remove(this);
+  }
+
   //----------------- Protected data --------------------
 
   // --------------- Protected methods ------------------
