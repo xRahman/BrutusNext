@@ -30,8 +30,8 @@ export class Message
 
   public static get PLEASE_CONTACT_ADMINS()
   {
-    return "Please contact admins at " + Settings.adminEmail
-         + " and ask them to resolve this issue."
+    return "&wPlease contact admins at " + Settings.adminEmail
+         + " &wand ask them to resolve this issue."
   }
 
   //------------------ Public data ----------------------
@@ -294,6 +294,11 @@ export class Message
             + this.generatePrompt();
     }
 
+    // Ads MessageColors.INPUT_COLOR at the end of the message
+    // if it doesn't already end with it. This ensures that player
+    // input will aways be colored this way.
+    data = this.addPlayerInputColor(data);
+
     // Add space to the end of the message to separate it from user input.
     // (Only if it doesn't end with space already or with a newline - it
     //  might be part of generated prompt.) 
@@ -339,6 +344,25 @@ export class Message
       default:
         return true;
     }
+  }
+
+  // Adds MessageColors.INPUT_COLOR at the end of the message
+  // if it doesn't already end with it. This ensures that player
+  // input will aways be colored this way.
+  public addPlayerInputColor(data: string): string
+  {
+    // First we will remove all white space characters from
+    // the end of the message, because they don't affect color.
+    let trimmedData = Utils.trimRight(data);
+    let lastTwoCharacters = trimmedData.substr(data.length - 2, 2);
+
+    // If data (after trimming whitspace characters) already
+    // ends with MessageColors.INPUT_COLOR, there is no need
+    // to add it.
+    if (lastTwoCharacters === MessageColors.INPUT_COLOR)
+      return data;
+
+    return data + MessageColors.INPUT_COLOR;
   }
 
   // Adds a ' ' character to the end of the string if it
