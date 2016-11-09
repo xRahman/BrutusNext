@@ -9,6 +9,13 @@ import {Message} from '../../server/message/Message';
 
 export class MessageColors
 {
+  // All messages should end with this color so player
+  // input always uses it. 
+  public static get INPUT_COLOR()
+  {
+    return '&w';
+  }
+
   // Base message colors for each Message.Type.
   private static baseColors =
   {

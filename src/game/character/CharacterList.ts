@@ -65,6 +65,8 @@ export class CharacterList extends AbbrevSearchList
     let id = Server.idProvider.createId(character);
     */
 
+    this.add(character);
+
     // Save the character to the disk.
     // (We don't need to wait for save to finish so we don't need
     //  async/await here).
