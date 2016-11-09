@@ -125,6 +125,11 @@ export class MenuProcessor
 
     // Otherwise load it from the disk.
     character = await this.loadCharacter(characterName);
+
+    if (character === null)
+      // Error messages are already handler by loadCharacter().
+      return;
+
     this.connection.enterGame(character);
   }
   
@@ -137,13 +142,10 @@ export class MenuProcessor
     {
       this.announceCharacterLoadFailure(name);
 
-      /*
       // There is no point in requesting password again
       // because the same error will probably occur again.
       // So we will just disconnect the player.
-      this.connection.finishAuthenticating();
       this.connection.close();
-      */
 
       return null;
     }
@@ -313,12 +315,11 @@ export class MenuProcessor
       AdminLevel.IMMORTAL
     );
 
-
     // Let the player know what went wrong.
     Message.sendToConnection
     (
       "Unable to load your character.\n"
-      + "Please contact admins at " + Settings.adminEmail + ".",
+        + Message.PLEASE_CONTACT_ADMINS,
       Message.Type.CONNECTION_ERROR,
       this.connection
     );

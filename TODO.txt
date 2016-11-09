@@ -1,3 +1,9 @@
+TODO: CONNECTION_ERROR message by asi neměly být prompt (končit mezerou).
+
+TODO: Sjednotit statická volání EntityManager.doCosi() a nepřímá volání
+  Server.entityManager.doCosi()
+- možná by entityManager mohl být komplet statický?
+
 TODO: loadAccount v AccountListu a loadCharacter v CharacterListu
   jsou téměř totožné fce - nějak to sjednotit.
 [done]

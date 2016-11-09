@@ -241,8 +241,7 @@ export class ChargenProcessor
       Message.sendToConnection
       (
         "Something is wrong, character '" + name + "' already exists."
-        + " Please contact admins at " + Settings.adminEmail
-        + " and ask them to resolve this issue.",
+          + Message.PLEASE_CONTACT_ADMINS,
         Message.Type.CONNECTION_ERROR,
         this.connection
       );

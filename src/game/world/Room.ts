@@ -63,12 +63,28 @@ export class Room extends GameEntity
 
   // ---------------- Public methods --------------------
 
-  // Entity adds itself to approptiate IdList
-  // (so it can be searched by name, etc).
-  public addToIdList()
+  /// Tohle možná nepoužiju - entity nejspíš budou do listů přidávat
+  /// různé funkce podle aktuální potřeby... 
+  /*
+  // Entity adds itself to approptiate EntityLists so it can be
+  // searched by name, etc. This doesn't add entity to EntityManager.
+  // (overrides Entity.addToLists())
+  public addToLists()
   {
-    Game.rooms.addEntityUnderExistingId(this);
+    /// TODO
+    ///Game.rooms.addEntityUnderExistingId(this);
   }
+  */
+
+  /*
+  // Entity removes itself from EntityLists so it can no longer
+  // be searched by name, etc. This doesn't remove entity from EntityManager.
+  // (overrides Entity.removeFromLists())
+  public removeFromLists()
+  {
+    /// TODO
+  }
+  */
 
   // Creates a formatted string describing room contents.
   protected printContents(): string

@@ -348,13 +348,24 @@ export class GameEntity extends ContainerEntity
 
   protected doQuit(argument: string)
   {
-    if (this.connection)
+    if (this.connection === null)
+      // This is not an error - most game entities don't have
+      // a player connection attached. 
+      return;
+    
+    if (!this.connection.isValid())
     {
-      this.receive("Goodbye, friend.. Come back soon!", Message.Type.COMMAND);
-      this.announcePlayerLeavingGame();
-      this.connection.enterMenu();
-      this.connection.detachFromGameEntity();
+      ERROR("Invalid connection on entity " + this.getErrorIdString());
+      return;
     }
+
+    this.receive("Goodbye, friend.. Come back soon!", Message.Type.COMMAND);
+    this.announcePlayerLeavingGame();
+    this.connection.enterMenu();
+    this.connection.detachFromGameEntity();
+
+    // Remove entity from memory and from all entity lists.
+    Server.entityManager.remove(this);
   }
 
   // ---------------- Command handler processors ------------------
