@@ -9,5 +9,5 @@
 
 export class Settings
 {
-  public static adminEmail = "support@brutusmud.net";
+  public static adminEmail = "&csupport&w@&cbrutusmud&w.&cnet";
 }

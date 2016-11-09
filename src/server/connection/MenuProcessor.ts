@@ -30,11 +30,14 @@ export class MenuProcessor
   // Sever.connections) needs to be used instead of a direct reference!
   constructor(protected connection: Connection) { }
 
+  private static get WELCOME()
+  {
+    return '&wWelcome to &RBRUTUS &YNext!';
+  }
+
   private static get GAME_MENU()
   {
-    return '&wWelcome to &RBRUTUS &YNext!\n'
-      + '\n'
-      + '&wPlease enter:\n'
+    return '&wPlease enter:\n'
       + '&g"&G0&g" &bto exit from &RBRUTUS &YNext.\n'
       + '&g"&G1&g" &Bto create new character.';
   }
@@ -50,7 +53,10 @@ export class MenuProcessor
 
   public sendMenu()
   {
-    let menu = this.composeMenu();
+    let menu = MenuProcessor.WELCOME
+      + "\n"
+      + "\n"
+      + this.composeMenu();
 
     if (menu === null)
       // Menu coundn't be composed so there is nothing to send.
@@ -232,8 +238,19 @@ export class MenuProcessor
     if (account === null || account.isValid() === false)
     {
       ERROR("Invalid account");
-      return;
+      return null;
     }
+
+    if (name === null || name === undefined)
+    {
+      ERROR("Invalid name");
+      return null;
+    }
+
+    if (name === "")
+      // This is not an error, empty string means that user
+      // have pressed 'return' instead of typing a menu option.
+      return null;
 
     // Make the first letter uppercase and the rest lowercase.
     name = Utils.upperCaseFirstCharacter(name); 
@@ -246,15 +263,24 @@ export class MenuProcessor
   private async characterChoice(choice: string)
   {
     let characterName = this.matchCharacterName(choice);
-        
+
     if (characterName === null)
     {
+      let message =
+        "That's neither a menu choice nor the name of your character."
+        + "\n"
+        + "\n"
+        + this.composeMenu();
+
       Message.sendToConnection
       (
+        message,
+        /*
         "That's neither a menu choice nor the name of your character."
         + "\n"
         + "Please enter a valid menu choice or a name of one of your"
         + " characters:",
+        */
         Message.Type.GAME_MENU,
         this.connection
       );

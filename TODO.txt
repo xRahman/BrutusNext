@@ -4,10 +4,6 @@ TODO: Sjednotit statická volání EntityManager.doCosi() a nepřímá volání
   Server.entityManager.doCosi()
 - možná by entityManager mohl být komplet statický?
 
-TODO: loadAccount v AccountListu a loadCharacter v CharacterListu
-  jsou téměř totožné fce - nějak to sjednotit.
-[done]
-
 TODO: Pojmenované listy (AccountList) by se mohly jmenovat prostě Accounts
   (sedělo by to pak s názvem proměnných: public accounts: Accounts)
 
@@ -23,10 +19,6 @@ TODO:
 Syslog message "Player X entered game with character Y"
 Syslog message "Player X playing character Y has left the game"
 
-
-TODO: Za všechny message přidávat defaultní "ukončovací" barvu
-- a to proto, že tak bude obarven player input (a ten by asi měl
-  mít vždycky stejnou barvu).
 
 TODO: K "welcome" mesage v connection.enterGame() by měl bejt přilepenej
   look do roomu.
@@ -47,7 +39,6 @@ tu samou instanci pole.
     všechny existující instance...
 TODO: Vyzkoušet to
  - fakt to tak je :\
-[done]
 TODO: Jediné "řešení", co mě zatím napadá, je zavolat Object.freeze() na
   všechny non-primitive property prototypu - pak nejde ani přidávat prvky
   do pole.
@@ -135,11 +126,6 @@ IDEA: Místo NamedEntity (createNamedEntity(), atd.) používat
 TODO: settings.ts možná hodit spíš do rootu projektu, než do ./src
   (a možná by to měl být spíš settings.json)
 
-TODO: To, že se player disconnectuje přes connection.quitGame(), není
-  zrovna intuitivní. Mělo by se to dělat přes connection.disconnect()
-  (nebo close()).
-- zavírat přes connection.close().
-[done]
 
 TODO: Misto Message.Type.AUTH_ERROR zavest SYSTEM_ERROR
   (ať nemám 20 různých druhů error messagů)
@@ -205,10 +191,6 @@ je fatal_error.
 TODO: Projít všechno zděděné z Entity a odstranit zbytky staré
   adresářové struktury
 
-TODO: Rename named entity - musí přesavovat soubor v /data/names
- - viz class NamedEntity
- [snad done]
-
 TODO: Rozhodnout, co se bude savovat v accountu (idčka?, jména + další info?)
 
 TODO: Projít save()
@@ -247,11 +229,6 @@ implementovat nebudu - není to zásadní pro prvotní hratelnou verzi.
 
 TODO: Přibyla static metoda Entity.isValid(entity);
   - použít ji všude, kde dává smysl ji použít.
-
-TODO: V class Entity:
-  - setId() by mohlo checkovat, že id je null a nepovolit setnutí, pokud není
-    (tzn. id by bylo "write once").
-DONE
 
 TODO: Předělat všechny async fce, které by mohly vracet hodnotu, ale nevrací,
   protože jsem si myslel, že to nejde.
@@ -561,6 +538,30 @@ TODO: Zrušit z entity proměnné SAVE_DIRECTORY
 Vyhledove rozbehat tslint
 
 ===============================================================================
+
+TODO: loadAccount v AccountListu a loadCharacter v CharacterListu
+  jsou téměř totožné fce - nějak to sjednotit.
+[done]
+
+TODO: To, že se player disconnectuje přes connection.quitGame(), není
+  zrovna intuitivní. Mělo by se to dělat přes connection.disconnect()
+  (nebo close()).
+- zavírat přes connection.close().
+[done]
+
+TODO: Rename named entity - musí přesavovat soubor v /data/names
+ - viz class NamedEntity
+[snad done]
+
+TODO: V class Entity:
+  - setId() by mohlo checkovat, že id je null a nepovolit setnutí, pokud není
+    (tzn. id by bylo "write once").
+[done]
+
+TODO: Za všechny message přidávat defaultní "ukončovací" barvu
+- a to proto, že tak bude obarven player input (a ten by asi měl
+  mít vždycky stejnou barvu).
+[done]
 
 TODO: World má sice reference na vybrané entity, ale ty entity v něm
   nejsou vložené (respektive Realmy v něm nejsou vložené, ten zbytek
