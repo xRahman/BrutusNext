@@ -10,6 +10,7 @@ TODO: Pojmenované listy (AccountList) by se mohly jmenovat prostě Accounts
 TODO: Ještě jednou se zamyslet nad unikátními jmény
  (unikátnost by se mohla setovat už v konstruktoru, každopádně teda
   nezávisle na setName()...)
+- teď už do toho asi vrtat nebudu.
 
 TODO: Ještě jednou projít celý proces vytváření a loadování entit.
 
