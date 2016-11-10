@@ -130,10 +130,37 @@ export class ClassFactory
     let Class = this.getClass(className);
 
     if (Class === undefined)
-      // Error is already reported by getClas().
+      // Error is already reported by getClass().
       return null;
 
     let instance = new Class(...args);
+
+/////////////////////
+    if (instance['instantiateProperties'] === undefined)
+    {
+      ERROR("Unable to instantiate dynamic class " + className
+        + " because it is not an InstantiableClass");
+      return null;
+    }
+
+    // This is a workaround for 'feature' of javascript prototype
+    // inheritance that non-primitive properties are passed to
+    // instances as references rather than instantiated as well.
+    //   Instantiating properties means, that for each non-primitive
+    // property (Object, Array, etc.) we recursively create an empty
+    // {}, but with prototype whitch is the corresponding property
+    // on entity prototype. Or, in other words, inherited from
+    // corresponding property on entity prototype.
+    //   This will exploit the fact that inheritance of primitive
+    // properties (numbers, strings, etc.) works fine - when such
+    // property is written to instance, it will really be written
+    // to the instance so it will become instance's 'own' property.
+    // 'inheriting' non-primitive properties also works for methods,
+    // so 'instantiated' non-primitive properties will have the same
+    // functionality as on the entity prototype, even though they
+    // are not classes but rather generic Objects.
+    instance.instantiateProperties();
+/////////////////////
 
     // Dynamic type check - we make sure that our newly created instance
     // is inherited from requested class or is an instance of that class.
@@ -143,9 +170,6 @@ export class ClassFactory
       // typecast to <any> which is then automatically cast to template type).
       return <any>instance;
 
-    /// TODO: Typecast.name nemusi existovat (u dynamicky vytvorenych class, coz
-    ///   jsou vsechny prototypy).
-    /// - nebo mozna jo? Zkontrolovat
     ERROR("Type cast error: Newly created instance of"
       + " class '" + className + "' is not an instance"
       + " of requested type (" + typeCast.name + ")");
