@@ -1,65 +1,80 @@
 /*
   Part of BrutusNEXT
 
-  Impements handler of javascript Proxy object that is used instead of
-  entities.
+  Impements handler of javascript Proxy object that is used instead
+  of non-entity object properties (like Arrays, {} Objects, non-Entity
+  classes, etc).
+
+  It's purpose is:
+  1) report access of undefined properties.
+  2) implement missing prototype inheritance functionality
+     (see implementation notes)
 */
 
 /*
-  IMPORTANT:
-    Never use this yourself! Always request new entities from EntityManager.
-  They will be proxified for you automatically.
+  Implementation notes:
+  
+  Prototype inheritance in Javascript is broken when it comes
+  to non-primitive properties. When an instance of a class is created,
+  only references to non-primitive properties are given to it. This
+  means that if any instance chances something on it's non-primitive
+  property (like entity.data.x = 13), the change will happen on class
+  prototype (on entity.prototype) and thus affect ALL instances.
+
+  To prevent this, all non-primitive properties of dynamic prototypes
+  (= of those prototype classes that we dynamically create in runtime)
+  are actually javascript Proxies that trap setting values to their
+  properties. When someone tries to set something on such object,
+  proxy handler (= this class) will first check if this property
+  is properly instantiated and it will create it's instance if it's not.
+
+  As a side effect, Proxies also allow us to trap and report access to
+  undefined properties.
 */
 
 /*
   How does it work:
     Handler is a class that implemets traps - special functions
   (get, set, etc.) which all called whenever a Proxy object is accessed.
-  So because we use 'new Proxy(handler)' instead of 'new Entity()', we
+  So because we use 'new Proxy(handler)' instead of 'new Object()', we
   are able to trap any access to entity properties.
-
-  This is used to "trap" access to deleted entity, so instead of just
-  throwing type error or something like that (and crashing the server along
-  the way), we report this event to syslog and return another Proxy object,
-  which serves as 'invalid value' variable (it traps all access to this
-  variable and reports it as invalid).
-
 */
 
 'use strict';
 
-import {ERROR} from '../../shared/error/ERROR';
-import {FATAL_ERROR} from '../../shared/error/FATAL_ERROR';
+///import {ERROR} from '../../shared/error/ERROR';
+///import {FATAL_ERROR} from '../../shared/error/FATAL_ERROR';
 import {Entity} from '../../shared/entity/Entity';
-import {InvalidValueProxyHandler}
-  from '../../shared/entity/InvalidValueProxyHandler';
-import {Server} from '../../server/Server';
-import {AdminLevel} from '../../server/AdminLevel';
-import {Syslog} from '../../server/Syslog';
-import {Message} from '../../server/message/Message';
+///import {InvalidValueProxyHandler}
+///  from '../../shared/entity/InvalidValueProxyHandler';
+///import {Server} from '../../server/Server';
+///import {AdminLevel} from '../../server/AdminLevel';
+///import {Syslog} from '../../server/Syslog';
+///import {Message} from '../../server/message/Message';
 
 // Module 'util' is included, because we have to trap util.inspect
 // call to preserve it's functionality.
 const util = require('util');
 
-export class EntityProxyHandler
+export class ObjectProxyHandler
 {
   // Reference to an entity we are proxyfying.
   // If this is null, all access to entity properties will be logged
   // as invalid and 'invalid variable' will be returned if properties
   // are read or methods are called.
-  public entity: Entity = null;
+  public prototype: Entity = null;
 
-  // Id of an entity we are proxyfying.
-  public id: string = null;
+  // Name of the non-primitive property on entity that is to be instantiated. 
+  public property: string = null;
 
-  /*
-  // Type (className) of an entity we are proxyfying.
-  public type: string = null;
-  */
+  // Reference to constructor that should be invoked to create an isntance
+  // of this object. 'null' if this is a generic object which is not
+  // constructed.
+  public dynamicClass = null;
 
   // ---------------- Public methods --------------------
 
+  /*
   public invalidate()
   {
     this.entity = null;
@@ -68,32 +83,6 @@ export class EntityProxyHandler
     // because we could hardly reclaim the reference to the entity later
     // if we forgot it's id.
   }
-
-  /*
-  public loadFromJsonObject
-  (
-    propertyName: string,
-    jsonObject: any,
-    path: string
-  )
-  {
-    this.id = jsonObject.id;
-    this.type = jsonObject.type;
-
-    ASSERT(this.id !== undefined && this.id !== null,
-      "Invalid 'id' when loading entity reference"
-      + " '" + propertyName + "' from JSON file "
-      + path);
-
-    ASSERT(this.type !== undefined && this.type !== null,
-      "Invalid 'type' when loading entity reference"
-      + " '" + propertyName + "' from JSON file "
-      + path);
-
-    // Set this.entity to null.
-    this.invalidate();
-  }
-  */
 
   // If this.entity is not null, it's 'id variable will be compared
   // to handler's 'id' variable.
@@ -118,23 +107,6 @@ export class EntityProxyHandler
         checkResult = false;
       }
     }
-
-    /*
-    let type = this.entity.className;
-
-    if (type !== null && this.type !== null)
-    {
-      if (type !== this.type)
-      {
-        ERROR("Class name '" + type + "' of entity"
-          + " " + this.entity.getErrorIdString()
-          + " differs from type '" + this.type + "'"
-          + " in entity proxy handler");
-
-        checkResult = false;
-      }
-    }
-    */
 
     return checkResult;
   }
@@ -587,4 +559,5 @@ export class EntityProxyHandler
     // to bypass incorrect type check.
     await Server.entityManager.loadEntity(proxyHandler, <any>this);
   }
+  */
 }
