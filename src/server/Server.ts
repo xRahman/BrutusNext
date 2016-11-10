@@ -407,6 +407,10 @@ let Test = class TestClass
 
 async function test()
 {
+  let a = {};
+
+  a['doSomething']();
+
   /*
   Test.prototype['data'] = [1, 2];
 

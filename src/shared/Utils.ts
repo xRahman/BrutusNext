@@ -7,10 +7,26 @@
 'use strict';
 
 import {ERROR} from '../shared/error/ERROR';
+import {AdminLevel} from '../server/AdminLevel';
+import {Syslog} from '../server/Syslog';
+import {Message} from '../server/message/Message';
 import {TelnetSocketDescriptor} from '../server/net/telnet/TelnetSocketDescriptor';
 
 export module Utils
 {
+  // Reports exception to Syslog, not just to console.
+  export function reportException(err: Error)
+  {
+    Syslog.log
+    (
+      "Uncaught exception"
+        + "\n"
+        + err.stack,
+      Message.Type.FATAL_RUNTIME_ERROR,
+      AdminLevel.IMMORTAL
+    );
+  }
+
   // Make sure that all newlines are representedy by '\r\n'.
   export function normalizeCRLF(data: string)
   {

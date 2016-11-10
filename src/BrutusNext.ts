@@ -18,6 +18,7 @@
 
 'use strict';
 
+import {Utils} from './shared/Utils';
 import {Server} from './server/Server';
 import {Syslog} from './server/Syslog';
 import {Message} from './server/message/Message';
@@ -54,7 +55,12 @@ process.on
     }
     else
     {
+      Utils.reportException(err);
+      process.exit(1);
+
+      /*
       throw err;
+      */
     }
   }
 );
@@ -92,7 +98,8 @@ process.on
   'uncaughtException',
   err =>
   {
-    /// TODO: Poslat hlášku do syslogu.
+    Utils.reportException(err);
+    process.exit(1);
 
     /*
     if (err.name === "TypeError")
