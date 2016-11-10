@@ -405,11 +405,30 @@ let Test = class TestClass
 
 // ---------------------------------------------------------
 
+class A
+{
+  //public x = 13;
+
+  constructor (public x = 13) {}
+}
+
+class B extends A
+{
+}
+
 async function test()
 {
-  let a = {};
+  let a = new A;
+  let b = Object.create(a);
 
-  a['doSomething']();
+  console.log("a.hasOwnProperty(x): " + a.hasOwnProperty('x'));
+  console.log("b.hasOwnProperty(x): " + b.hasOwnProperty('x'));
+
+
+
+  /// Potřebuju vyzkoušet, že proměnná inicializovaná na classe se
+  /// setne do prototypu, ne do instancí.
+
 
   /*
   Test.prototype['data'] = [1, 2];

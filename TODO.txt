@@ -60,7 +60,47 @@ TODO: Při inicializování dat prototypu udělat z vnořených objektů (tj.
       instance vnořeného objektu.
       - pokud jo, tak do ní rovnou zapíše
       - pokud ne, tak ji nejdřív naalokuje a pak do ní zapíše
+- musím si pamatovat referenci svého nejbližšího nadřazeného containeru
+  a jméno property v něm, abych mohl poskládat dereference chain (a tudíž
+  setnout správnou property poté, co naalokuju kopii v instanci). 
+- musím umět poznat, jestli ta reference vede na entitu, nebo na vnořený
+  objekt.
+  - instance už možná může mít referenci na nadřazenej container 'null',
+    protože už nebude potřebovat ten chain zkonstruovat.
+- musím umět poznat, že už instance existuje
+  - to by asi mělo jít porovnáním referencí - dokud není instancováno,
+    tak by reference měly být rovné. 
+TODO: Alokování dynamických class
+  - asi jen className a ne přímo reference na kostruktor classy, ať není
+  problém, když někdo ten prototyp vytvoří znovu (i když, hrozí to vůbec?
+  změny se budou dělat setováním na existujícím prototypu. Problém může být
+  jen přejmenování - a to zapamatované jméno neřeší, špíš naopak komplikuje)
 
+[18:53] Rahman       : <64> Hmm, tak zatim to vypada, ze se savem/loadem nebude
+                            vubec zadnej problem, jen musim rekurzivne
+                            instanciovat entitu pred tim, nez ji necham
+                            naloadovat
+[18:54] Rahman       : <64> rekurzivni instanciovani udelat to, ze proleze
+                            property prototypu a rekurznivne vyrobi prazdne
+                            objekty zdedenych z tech na prototypu
+[18:55] Rahman       : <64> tj. pri loadu bud ten prazdny objekt uz bude
+                            existovat a pak se do nej proste zapise
+[18:55] Rahman       : <64> nebo existovat nebude, ale v tom pripade neexistuje
+                           ani na prototypu (protoze jsem duplikoval vsechny
+                           property z prototypu), takze je to proste vec,
+                           kterou ma instance navic oproti prototypu a tudiz
+                           ji staci proste vytvorit a zapsat do ni to, co 
+[18:56] Rahman       : <64> je v loadnutem JSONU
+
+IDEA: SaveableObject bude savovat jen own properties.
+  - což by mělo být ok, protože když se do nějaké zděděné property něco
+    zapíše, tak se z toho stane own property
+    - ovšem to platí pouze pro primitivní typy
+- to asi znamená, že bych měl všem SaveableObjectům při instancování
+  instancovat jejich neprimitivní properties.
+
+ÚVAHY:
+- Prtotypy asi můžu taky vyrábět přes Object.create() místo new class ...
 
 
 TODO: vícenásobná dědičnost prototypů
