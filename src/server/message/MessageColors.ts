@@ -34,7 +34,7 @@ export class MessageColors
     // --------------------- Syslog messages ---------------------
 
     RUNTIME_ERROR:         '&w',
-    FATAL_RUNTIME_ERROR:   '&g',
+    FATAL_RUNTIME_ERROR:   '&R',
     SYSTEM_INFO:           '&g',
     SYSTEM_ERROR:          '&g',
     TELNET_SERVER:         '&g',
