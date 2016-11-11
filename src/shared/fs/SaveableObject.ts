@@ -27,7 +27,7 @@ import {FATAL_ERROR} from '../../shared/error/FATAL_ERROR';
 import {Entity} from '../../shared/entity/Entity';
 import {EntityManager} from '../../shared/entity/EntityManager';
 import {NamedClass} from '../../shared/NamedClass';
-import {AttributableClass} from '../../shared/AttributableClass';
+import {InstantiableClass} from '../../shared/InstantiableClass';
 import {FileSystem} from '../../shared/fs/FileSystem';
 import {SavingManager} from '../../shared/fs/SavingManager';
 import {IndirectValue} from '../../shared/fs/IndirectValue';
@@ -38,7 +38,7 @@ let beautify = require('js-beautify').js_beautify;
 /// DEBUG:
 ///let Util = require('util');
 
-export class SaveableObject extends AttributableClass
+export class SaveableObject extends InstantiableClass
 {
   //----------------- Protected data --------------------
 
