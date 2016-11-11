@@ -424,6 +424,10 @@ export class EntityProxyHandler
 
     let value = this.entity[property];
 
+    /// This is probably not such a good idea. It would prevent
+    /// checking if a property exist on an instance (because if
+    //  it didn't exist, reading it would be reported as error).
+    /*
     // Are we accessing a valid property?
     if (value === undefined)
     {
@@ -440,6 +444,7 @@ export class EntityProxyHandler
       // it as invalid.
       return InvalidValueProxyHandler.invalidVariable;
     }
+    */
 
     return value;
   }
