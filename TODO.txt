@@ -1,3 +1,6 @@
+TODO: Změna prototypu
+- kromě jiného bude třeba znovu zavolat instantiateProperties().
+
 TODO: CONNECTION_ERROR message by asi neměly být prompt (končit mezerou).
 
 TODO: Sjednotit statická volání EntityManager.doCosi() a nepřímá volání
