@@ -41,6 +41,14 @@ import {AttributableClass} from '../shared/AttributableClass';
 
 export class InstantiableClass extends AttributableClass
 {
+  /*
+  constructor()
+  {
+    super();
+    this.instantiateProperties();
+  }
+  */
+
   // ---------------- Public methods --------------------
 
   public instantiateProperties()

@@ -248,6 +248,8 @@ export class Server
     // If 'data' directory doesn't exist at all, create and save a new world.
     if (!FileSystem.existsSync('./data/'))
     {
+      await this.classFactory.init();
+
       // Mark flagNamesManager as ready without loading from file
       // (there is nowhere to load it from so we will just start
       //  with empty instance).
@@ -258,6 +260,8 @@ export class Server
     }
     else
     {
+      await this.classFactory.init();
+
       await this.flagNamesManager.load();
       this.flagNamesManager.ready = true;
 
@@ -405,30 +409,21 @@ let Test = class TestClass
 
 // ---------------------------------------------------------
 
-class A
-{
-  //public x = 13;
+import {InstantiableClass} from '../shared/InstantiableClass';
 
-  constructor (public x = 13) {}
+class X extends InstantiableClass
+{
+  public x = 11;
 }
 
-class B extends A
+class Y extends InstantiableClass
 {
+  public y = 17;
 }
 
 async function test()
 {
-  let a = new A;
-  let b = Object.create(a);
-
-  console.log("a.hasOwnProperty(x): " + a.hasOwnProperty('x'));
-  console.log("b.hasOwnProperty(x): " + b.hasOwnProperty('x'));
-
-
-
-  /// Potřebuju vyzkoušet, že proměnná inicializovaná na classe se
-  /// setne do prototypu, ne do instancí.
-
+  ///console.log("Is x instance of X? " + (x instanceof X));
 
   /*
   Test.prototype['data'] = [1, 2];
