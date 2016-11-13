@@ -58,14 +58,7 @@ export class ClassFactory
     }
     else
     {
-      prototypeEntity = Server.entityManager.createNamedEntity
-      (
-        'Entity',
-        NamedEntity.NameCathegory.prototypes,
-        // 'null' prototypeId means that create entity will be
-        // based on 'new Entity'.
-        null
-      );
+      prototypeEntity = Server.entityManager.createThePrototypeEntity();
     }
 
     // Even if dynamic classes assignment has been loaded
@@ -146,6 +139,12 @@ export class ClassFactory
 
     // Add Class to hashmap under the key 'className'.
     this.dynamicClasses.set(className, Class);
+  }
+
+  // -> Returns 'undefined' if no such prototype exists.
+  public getPrototypeId(prototypeName: string)
+  {
+    return this.prototypes.get(prototypeName);
   }
 
   public getClass(className: string)

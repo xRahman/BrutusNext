@@ -41,8 +41,7 @@ export class CharacterList extends AbbrevSearchList
     (
       name,
       NamedEntity.NameCathegory.characters,
-      'Character',
-      Character
+      'Character'
     );
 
     // Check if character has been created succesfully.
@@ -82,8 +81,7 @@ export class CharacterList extends AbbrevSearchList
     let character = await super.loadNamedEntity
     (
       name,
-      NamedEntity.NameCathegory.characters,
-      Character
+      NamedEntity.NameCathegory.characters
     );
 
     return character;
