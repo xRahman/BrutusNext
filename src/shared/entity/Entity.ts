@@ -8,7 +8,8 @@
 
 import {ERROR} from '../../shared/error/ERROR';
 import {FATAL_ERROR} from '../../shared/error/FATAL_ERROR';
-import {NamedClass} from '../../shared/NamedClass';
+///import {NamedClass} from '../../shared/NamedClass';
+import {PrototypeEntity} from '../../shared/entity/PrototypeEntity';
 import {SaveableObject} from '../../shared/fs/SaveableObject';
 import {AutoSaveableObject} from '../../shared/fs/AutoSaveableObject';
 import {Server} from '../../server/Server';
@@ -29,7 +30,7 @@ export class Entity extends AutoSaveableObject
   public static async loadJsonOject(id: string)
   {
     // Return value of this method.
-    let result = { jsonObject: null, className: null, path: null };
+    let result = { jsonObject: null, prototypeId: null, path: null };
 
     result.path = Entity.getSavePath(id);
 
@@ -41,13 +42,14 @@ export class Entity extends AutoSaveableObject
     // Then we extract 'className' property from jsonObject
     // that we have just loaded, so we know what class do we
     //  need to create an instance of.
-    result.className = result.jsonObject[NamedClass.CLASS_NAME_PROPERTY]; 
+    result.prototypeId =
+      result.jsonObject[PrototypeEntity.PROTOTYPE_ID_PROPERTY]; 
 
-    if (result.className === null || result.className === undefined)
+    if (result.prototypeId === null || result.prototypeId === undefined)
     {
       ERROR("Invalid or missing className in " + result.path + "."
         + " Unable to load entity");
-      result.className = null
+      result.prototypeId = null
       result.jsonObject = null;
     }
 

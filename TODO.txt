@@ -1,5 +1,161 @@
+TODO: Savování prototypeId
+  - a vytváření instance na základě prototypu při loadu
+
+TODO: Savování/loadování class, které nejsou entity
+
+/*
+  Prototypy jsou regulerní entity, a to včetně prototypu "Entity'
+  - jako osatní entity jsou v EntityManageru
+  - jsou za EntityProxyHandlerem
+
+  Hledat podle jména prototypu je ok, ale držet se musí vždy jen idčko
+  - tj. v editoru můžu jako předka zadat "Character", ale do prototypu
+    se uloží idčko získané přeložením "Character" na idčko.
+*/
+
+TODO: Budu potřebovat dvě varianty ClassFactory.createInstance():
+  - createInstanceByPrototypeId()
+  - createInstanceByClass()
+ (protože ne všechny classy mají idčka - třeba takové Exits nemají)
+ - přes createInstanceByClass() by se možná mohla vyrábět i THE prototype
+   Entity  
+
+TODO: Určitě přejmenovat NamedEntity na UniqueEntity
+  - bude se to míň plést s NamedClass
+
+TODO: Uppercasovat hodnoty v NamedEntity.NameCathegory
+  - lowercasovat to až při savu/loadu
+  - asi by se to taky mohlo jmenovat prostě NamedEntity.Cathegory 
+
+TODO: Intantiovat taky Acconty, Connectiony a podobně
+  (a nemyslím tím jejich properties, ale přímo Account. Zatím se to děje
+   jen u GameEntit, protože ty jsou vždycky za nějakým dynamickým prototypem)
+Tohle je komplikované. Znamená to:
+1) v ClassFactory si nepamatovat konstruktory, ale prototypy (tedy instance).
+   tj. nikoliv Account, ale new Account.
+2) v ClassFactory.createInstance() nedělat new Account, ale
+   Object.create(accountPrototype).
+3) Při vytváření dynamických prototypů pak asi nebude potřeba setovat
+   properties do Class.prototype, místo toho se budou setovat do
+   classPrototype, který si drží ClassFactory.
+- možná by se pak class Prototype nemusela překopírovávat do Entity,
+  mohla by se umět savovat sama o sobě. A nebyl by důvod držet je
+  v PrototypeManageru, když by si je držela ClassFactory...
+  - plus funkcionalita na vyrábění (a savování) skriptů by asi byla
+    v nějakém zděděném mezistupni
+  Znamenalo by to, že kód skriptů by měla každá instance?
+  - neznamenalo, byl by jen na prototypu.
+SOUNDS GOOOD
+
+  /*
+    3 vrstvy:
+
+    mergnute_prototypy (predkove)
+          |
+          v
+    primy_prototyp
+          |
+          v
+    Object.create(primy_prototyp)
+
+    - v primem prototypu budou jen nezdedene, pridane properties
+    - v mergnutych_prototypech budou nakopirovane properties z prototypu predku
+
+    Kazdy prototyp by měl mít seznam mergnutých prototypů, které jsou z něj
+    zděděné, a které je nutné přenenerovat při jeho změně.
+
+    Přejmenovávání prototypů
+    - správné řešení by asi bylo, neodkazovat se na předka jménem, ale idčkem
+      (protože předek je entita)
+    - problém je, že to pak bude špatně čitelné na disku...
+    Asi by to znamenalo, že i prototype savy by byly pojmenované idčkem,
+    stejně jako entity.
+    - měla by to být unikátní jména. Takže možná prostě přidat kategorii
+      "prototypes"?
+    - pak mi zas zmizí ta interní struktura...
+
+    Smazání prototypu
+    - je možné, pouze když nemá žádné potomky
+      (tj. je třeba nejdřív potomkům nastavit, že jsou zděděné z něčeho jiného)
+
+    Přejmenování prototypu
+    - prostě se změní classname, plus se musí přejmenovat adresáře
+      v /prorotypes a dost možná i v /entities (pokud i tam bude struktura
+      podle dědičnosti.
+
+    Prototypy v entity manageru
+    - pokud budou prototypy přímo entity, tak asi mohou být přímo
+      v EntityManageru místo v ClassFactory
+      (classFactory pořád bude muset držet dynamické classy z kódu)
+  - tak ne, prototypy by přece jen měly být v ClassFactory.
+
+    Adresáře asi mohou být skrupturované podle typů
+    - díky tomu by mohlo jít celkem snadno přejmenovávat classy v kódu,
+      bude k tomu stačit současně přejmenovat adresáře ve struktuře
+      (v /entities a v /prorotypes)
+      - top-level prototypy budou to, z čeho jsou zděděné brát ze jména
+        nadřazeného adresáře
+        (tj. když ancestors === [], tak to znamená, že hledám dynamickou
+        classu se stejným jménem jako adresář.
+        - respektive možná ne classu, ale prototyp stejného jména, ale
+          s malým písmenem (account). To by znamenalo, že adresáře uvnitř
+          struktury budou malými písmeny (i když dynamické prototypy asi
+          ne...)
+  */
+
+Jak to udělat se jmény?
+- když prostě zdědím PrototypeEntity z NamedEntity a setnu jí unique name,
+  tak všechny vytvořené instance automaticky budou mít to stejné jméno...
+  (leda bych to hacknul v createInstance()...)
+
+IDEA: Kašlat na stringová idčka, použít reference
+  - problém s loadováním z disku. Z adresáře si přečtu jméno typu,
+    tj. pořád potřebuju ta jména. 
+
+IDEA: Určitě používat UpperCase jména, protože dynamické prototypy by
+  v lowercasu nebyly čitelné (leda by to byl camelCase). Není to název
+  proměnné, je to klíč v hasmapě, takže to klidně může být přímo ClassName.
+
+TAKŽE:
+- jméno předka se bude brát z názvu adresáře, aby při přejmenování prototypu
+  stačilo přejmenovat adresář.
+  - předci se vůbec nebudou savovat - kurnik ne, to nejde, to by nešla udělat
+    vícenásobná dědičnost.
+
+- určitě používat idčka. Ideálně teda vyrobit "dummy" prototypy i pro
+  hardcoded classy.
+
+- nemělo by se savovat, jaké mám předky, ale jaké mám potomky. Díky tomu
+  půjde lodnout všechny prototypy rekurzivně - jen musí existovat kořen.
+  (PrototypeManager?)
+
+ALGORITHM loadování prototypů:
+0) Pokud při startu hry neexistuje save GameEntity, tak se vytoří.
+   (seznam classNames se vezme z DynamicClasses, idčka se vygenerují)
+   - asi by se měla automaticky updatovat, i když náhodou existuje.
+1) Loadnu GameEntity 
+   - ta má seznam idček hardcoded prototypů.
+   - z /data/names/prototypes si přečtu příslušné classNames.
+   - Vytvořím instance (přes new className) a loadnu je z disku.
+     - v savech je seznam idček potomků.
+2) Rekurzivně instancuju potomky (už ne přes new? I když vlastně asi
+   jo, tohle jsou prototypy).
+   - tak ne, musím to dělat přes Object.create(), jinak by se mi v každém
+     potomkovi znovu vytvořily všechny inicializované proměnné předků.
+     - čili prostě vždycky loadnu generický JSON object - ale ideálně
+       do instance, kterou jsem vytvořil přes Object.create(ancestor).
+
+Pozn: V savech kromě primary potomků asi budou ještě secondary ancestoři
+ (tj. ne přímý ancestor, jen doplňkoví, jako třeba Shaman).
+ - ono vůbec asi zní jako docela dobrý nápad ty secondary funkcionality
+   nedědit přímo z Entity.
+  
+
+
 TODO: Změna prototypu
 - kromě jiného bude třeba znovu zavolat instantiateProperties().
+
+TODO: volat instantiateProperties() taky při vytvoření prototypu.
 
 TODO: CONNECTION_ERROR message by asi neměly být prompt (končit mezerou).
 
