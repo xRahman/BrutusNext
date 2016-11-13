@@ -166,6 +166,19 @@ export class EntityManager
   }
   */
 
+  // Creates the prototype entity that is the ancestor of all other entities. 
+  public async createThePrototypeEntity()
+  {
+    // 'null' id means that entity will be based on 'new Entity'
+    let entity = this.createEntity(null);
+    let cathegory = NamedEntity.NameCathegory.prototypes;
+
+    if (await entity.setUniqueName('Entity', cathegory) === false)
+      return null;
+
+    return entity;
+  }
+
   // Creates uniquelly named entity.
   //   If 'prototypeId' is null, instance will be based on 'new Entity()'
   //   (this is used to create THE prototype entity which is ancestor
@@ -176,9 +189,19 @@ export class EntityManager
   (
     name: string,
     cathegory: NamedEntity.NameCathegory,
-    prototypeId: string,
+    prototypeName: string,
   )
   {
+    let prototypeId = Server.classFactory.getPrototypeId(prototypeName);
+
+    if (prototypeId === undefined)
+    {
+      ERROR("Attempt to create unique entity '" + name + "'"
+        + " based on prototype '" + prototypeName + "'"
+        + " that doesn't exist in ClassFactory");
+      return null;
+    }
+
     // Here we are dynamically typecasting to 'NamedEntity' in order
     // to be able to set entity.name.
     let entity = this.createEntity(prototypeId);

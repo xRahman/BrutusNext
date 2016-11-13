@@ -1,3 +1,5 @@
+TODO: Nahradit PrototypeManager.createPrototype() něčím aktuálnějším.
+
 TODO: Savování prototypeId
   - a vytváření instance na základě prototypu při loadu
 
