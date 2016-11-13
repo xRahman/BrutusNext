@@ -34,8 +34,7 @@ export class AccountList extends NameSearchList
     let account = await super.loadNamedEntity
     (
       name,
-      NamedEntity.NameCathegory.accounts,
-      Account
+      NamedEntity.NameCathegory.accounts
     );
 
     if (account !== null)
@@ -104,16 +103,11 @@ export class AccountList extends NameSearchList
     }
     */
 
-    let account = await EntityManager.createNamedEntity
+    let account = await Server.entityManager.createNamedEntity
     (
-      // Name of the entity to create.
       accountName,
-      // Cathegory in which the name must be unique.
       NamedEntity.NameCathegory.accounts,
-      // Name of the prototype class.
-      'Account',
-      // Dynamic type cast.
-      Account
+      'Account'
     );
 
     // Check if account has been created succesfully.

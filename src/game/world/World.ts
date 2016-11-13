@@ -51,12 +51,11 @@ export class World extends GameEntity
   {
     // Create a new realm prototype.
     Game.prototypeManager.createPrototype('SystemRealm', 'Realm');
-    this.systemRealm = await EntityManager.createNamedEntity
+    this.systemRealm = await Server.entityManager.createNamedEntity
     (
       'System Realm',
       NamedEntity.NameCathegory.world,
-      'SystemRealm',
-      Realm
+      'SystemRealm'
     );
 
     // Even though we keep direct reference to systemRealm, we stil
@@ -67,12 +66,11 @@ export class World extends GameEntity
 
     // Create a new area prototype.
     Game.prototypeManager.createPrototype('SystemArea', 'Area');
-    this.systemArea = await EntityManager.createNamedEntity
+    this.systemArea = await Server.entityManager.createNamedEntity
     (
       'System Area',
       NamedEntity.NameCathegory.world,
-      'SystemArea',
-      Area
+      'SystemArea'
     );
 
     // Add System Area to contents of System Realm.
@@ -82,12 +80,7 @@ export class World extends GameEntity
 
     // Create a new room prototype.
     Game.prototypeManager.createPrototype('SystemRoom', 'Room');
-    //this.systemRoom = await EntityManager.createNamedEntity
-    this.systemRoom = EntityManager.createEntity
-    (
-      'SystemRoom',
-      Room
-    );
+    this.systemRoom = Server.entityManager.createEntity('SystemRoom');
     this.systemRoom.setName("System Room");
 
     // Add System Room to contents of System Area.
@@ -97,11 +90,7 @@ export class World extends GameEntity
 
     // Create a new room prototype.
     Game.prototypeManager.createPrototype('TutorialRoom', 'Room');
-    this.tutorialRoom = EntityManager.createEntity
-    (
-      'TutorialRoom',
-      Room
-    );
+    this.tutorialRoom = Server.entityManager.createEntity('TutorialRoom');
     this.tutorialRoom.setName("Tutorial Room");
 
     // Add Tutorial Room to contents of System Area.
