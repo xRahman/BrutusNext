@@ -232,6 +232,7 @@ export module NamedEntity
   {
     accounts,
     characters,
+    prototypes,
     // Various world locations.
     // (Rooms, Realms, Areas, the name of the world itself, etc.)
     world
