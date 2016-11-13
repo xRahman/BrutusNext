@@ -79,12 +79,11 @@ export class Game
     }
 
     // Create world 'BrutusNext World' based on this prototype.
-    this.world = await EntityManager.createNamedEntity
+    this.world = await Server.entityManager.createNamedEntity
     (
       'Brutus World',
       NamedEntity.NameCathegory.world,
-      'BrutusWorld',
-      World
+      'BrutusWorld'
     );
 
     if (this.world === null)
@@ -123,11 +122,10 @@ export class Game
     // Load current state of world from file.
     await this.world.load();
     */
-    this.world = await EntityManager.loadNamedEntity
+    this.world = await Server.entityManager.loadNamedEntity
     (
       'Brutus World',
-      NamedEntity.NameCathegory.world,
-      World
+      NamedEntity.NameCathegory.world
     );
   }
 

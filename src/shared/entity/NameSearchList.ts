@@ -12,6 +12,7 @@ import {NamedEntity} from '../../shared/entity/NamedEntity';
 import {EntityList} from '../../shared/entity/EntityList';
 import {Entity} from '../../shared/entity/Entity';
 import {EntityManager} from '../../shared/entity/EntityManager';
+import {Server} from '../../server/Server'
 
 export class NameSearchList extends EntityList
 {
@@ -28,25 +29,12 @@ export class NameSearchList extends EntityList
 
   // ---------------- Public methods --------------------
 
-  public async loadNamedEntity<T>
+  public async loadNamedEntity
   (
     name: string,
-    cathegory: NamedEntity.NameCathegory,
-    typeCast: { new (...args: any[]): T }
+    cathegory: NamedEntity.NameCathegory
   )
-  : Promise<T>
   {
-    if (!typeCast)
-    {
-      ERROR("Invalid typeCast parameter");
-      return null;
-    } 
-
-    // This will be used in error messages (somehing like 'character').
-    let type = typeCast.name.toLowerCase();
-    // This will be used in error messages (somehing like 'Character').
-    let capitalizedType = Utils.upperCaseFirstCharacter(type);
-
     // First check if entity is already loaded in memory. 
     let entity = this.getEntityByName(name);
 
@@ -56,49 +44,46 @@ export class NameSearchList extends EntityList
       if (entity === null)
       {
         ERROR("'null' found in entity list while attempting"
-          + " to load " + type + " " + name + ". " + capitalizedType
-          + " is not loaded");
+          + " to load named entity '" + name + "'. Entity is"
+          + " not loaded");
         return null;
       }
 
       if (!entity.isValid())
       {
-        ERROR("Attempt to load " + type + " '" + name + "'"
+        ERROR("Attempt to load named entity '" + name + "'"
           + " which already exists but is not valid. This"
           + " can happen for example if you forget to update"
-          + " removeFromLists() method, so when " + type
-          + " is removed from EntityManager (and thus becomes"
+          + " removeFromLists() method, so when entity is"
+          + " removed from EntityManager (and thus becomes"
           + " invalid), it is not removed from entity list."
-          + " " + capitalizedType + " is not loaded");
+          + " entity is not loaded");
         return null;
       }
 
-      ERROR("Attempt to load " + type + " '" + name + "'"
-        + " which already exists. Returning existing " +  type);
+      ERROR("Attempt to load named entity '" + name + "'"
+        + " which already exists. Returning existing entity");
       return entity;
     }
 
     // Second parameter of loadNamedEntity is used for dynamic type cast.
-    entity = await EntityManager.loadNamedEntity
+    entity = await Server.entityManager.loadNamedEntity
     (
       name,
-      cathegory,
-      typeCast
+      cathegory
     );
 
     if (!Entity.isValid(entity))
     {
-      ERROR("Failed to load " + type + " " + name);
+      ERROR("Failed to load named entity '" + name + "'");
       return null;
     }
 
-    ///account.connection = connection;
-
     if (name !== entity.getName())
     {
-      ERROR(capitalizedType + " name saved in file (" + entity.getName() + ")"
-        + " doesn't match " + type + " file name (" + name + ")"
-        + capitalizedType + " is not loaded");
+      ERROR("Entity name saved in file (" + entity.getName() + ")"
+        + " doesn't match save file name (" + name + ")."
+        + " Entity is not loaded");
         return null;
     }
 
