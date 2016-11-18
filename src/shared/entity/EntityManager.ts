@@ -166,9 +166,12 @@ export class EntityManager
   }
   */
 
-  // Creates the prototype entity that is the ancestor of all other entities. 
-  public async createThePrototypeEntity()
+  public async createPrototypeEntity(Class: any)
   {
+    /// TODO...
+    let prototype = new Class;
+    
+
     // 'null' id means that entity will be based on 'new Entity'
     let entity = this.createEntity(null);
     let cathegory = NamedEntity.NameCathegory.prototypes;
