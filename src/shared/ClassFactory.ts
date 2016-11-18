@@ -33,14 +33,16 @@ export class ClassFactory
 
   constructor()
   {
-    DynamicClasses.init(this.dynamicClasses);
+    ///DynamicClasses.init(this.dynamicClasses);
   }
 
   // ---------------- Public methods --------------------
 
-  public async init()
+  public async initEntityPrototypes()
   {
-    let saveExists = await NamedEntity.isNameTaken
+    let constructors = DynamicClasses.constructors;
+
+    let prorotypeEntitySaveExists = await NamedEntity.isNameTaken
     (
       "Entity",
       NamedEntity.NameCathegory.prototypes
@@ -48,7 +50,7 @@ export class ClassFactory
 
     let prototypeEntity = null;
 
-    if (saveExists)
+    if (prorotypeEntitySaveExists)
     {
       prototypeEntity = await Server.entityManager.loadNamedEntity
       (
@@ -58,7 +60,7 @@ export class ClassFactory
     }
     else
     {
-      prototypeEntity = Server.entityManager.createThePrototypeEntity();
+      prototypeEntity = Server.entityManager.createPrototypeEntity(Entity);
     }
 
     // Even if dynamic classes assignment has been loaded

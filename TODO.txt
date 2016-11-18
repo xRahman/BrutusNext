@@ -1,3 +1,104 @@
+TODO: ClassFactory.createInstance() stačí jen jedna.
+  - jednak může poznat, jestli je potřeba vytvořit prototyp
+    nebo instanci
+  - a za druhé mi asi nic nebrání vyrobit při startu prototypy
+    i pro classy, které nejsou entity.
+Potřebuju umět:
+- createInstance() podle ClassName (i když je to entita)
+- createInstance() podle idčka
+createInstance() se podívá do class
+- když nenajde, tak se podívá do idček
+(obojí povede na prototyp?)
+Tak ne - mapu id -> entity přece nepotřebuju, ta už je v EntityManageru.
+=> to znamená, že v ClassFactory mi stačí držet className -> instance prototypu
+Algoritmus pro init bude:
+1) V DynamicClasses.init se budou rovnou vyrábět instance prototypu
+   - tak ne. Protože potřebuju rozhodnout, jestli je to entita nebo ne.
+   - takže tady se pouze nastaví konstructory class, prototypové instance
+     se z nic vyrobí až v ClassFactory.initPrototypes().
+2) V ClassFactory.initEntityPrototypes se přidají entity do EntityManageru.
+Algoritmus pro createInstance() bude:
+1) mrkni do ClassFactory.prototypes
+2) pokud tam 'prototypeNameOrId' není, tak to ještě může být idčko, takže
+   mrkni ještě do EntityManageru.
+
+ClassFactory.initPrototypes()
+{
+  if (isEntity)
+  {
+    let internalPrototype = new Entity; // obecne new Class
+
+    let prototype = EntityManager.createEntityFromPrototype
+    (
+      internalPrototype,
+      NamedEntity.Cathegory.prototypes
+    )
+  }
+  else
+  {
+    let prototype = this.createPrototype(Class);
+  }
+
+  this.add(prototype);
+}
+
+public ClassFactory.createInstance(prototype)
+{
+  instance = Oject.create(prototype);
+  instance.instantiateProperties();
+
+  return instance;
+}
+
+public ClassFactory.getClassPrototype(className)
+{
+  return this.prototypes.get(className);
+}
+
+private ClassFactory.createPrototype(Class)
+{
+  prototype = new Class;
+
+  return createInstance(prototype);
+}
+
+------------------------------------------
+
+public EntityManager.createEntity(prototypeId, nameCathegory)
+{
+  let prototype = this.getEntity(prototypeId);
+
+  this.createEntityFromPrototype(prototype, nameCathegory)
+
+  proxify(bareEntity);
+}
+
+public EntityManager.createEntityFromPrototype(prototype, nameCathegory = null)
+{
+  let bareEntity = ClassFactory.createInstance(prototype);
+
+  bareEntity.setId(generateId());
+
+  let proxy = proxify(bareEntity);
+
+  if (nameCathegory !== null)
+    setUniqueName(proxy);
+
+  return proxy;
+}
+
+------------------------------------------
+
+SaveableObject.loadCosi()
+{
+  className = loadFromFile();
+
+  let prototype = ClassFactory.getClassPrototype(className);
+
+  ClassFactory.createInstance(prototype);
+}
+
+
 TODO: Nahradit PrototypeManager.createPrototype() něčím aktuálnějším.
 
 TODO: Savování prototypeId
