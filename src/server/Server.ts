@@ -245,11 +245,16 @@ export class Server
     /// TEST
     await test();
 
-    // If 'data' directory doesn't exist at all, create and save a new world.
-    if (!FileSystem.existsSync('./data/'))
-    {
-      await this.classFactory.init();
+    // We must check if './data/' directory exists Before
+    // initEntityPrototypes() is called, because './data/'
+    // will be created by it if it doesn't exist.
+    let createDefaultData = !FileSystem.existsSync('./data/');
 
+    await this.classFactory.initEntityPrototypes();
+
+    // If 'data' directory doesn't exist at all, create and save a new world.
+    if (createDefaultData)
+    {
       // Mark flagNamesManager as ready without loading from file
       // (there is nowhere to load it from so we will just start
       //  with empty instance).
@@ -260,8 +265,6 @@ export class Server
     }
     else
     {
-      await this.classFactory.init();
-
       await this.flagNamesManager.load();
       this.flagNamesManager.ready = true;
 
