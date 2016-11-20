@@ -18,11 +18,14 @@ import {Server} from '../server/Server';
 
 export class ClassFactory
 {
-  //   Key:   entity id if prototype has it, lowercase class
-  //            name otherwise (like 'account')
-  //   Value: prototype object (entity or something else)
+  // Only non-entity classes have their prototype object here.
+  // Enity prototype objects are regular entities and you will
+  // find them in EntityManager.
+  //   Key:   class name
+  //   Value: prototype object
   private prototypes = new Map<string, any>();
 
+  /*
   /// Pozn: dynamicClasses pořád potřebuju, protože ne všechny
   ///   classy jsou entity.
 
@@ -30,6 +33,7 @@ export class ClassFactory
   //   Key: class name
   //   Value: constructor of the class
   private dynamicClasses = new Map();
+  */
 
   constructor()
   {
@@ -38,11 +42,63 @@ export class ClassFactory
 
   // ---------------- Public methods --------------------
 
+  private initEntityPrototypes(classes: Array<any>, prototypeEntity: PrototypeEntity)
+  {
+
+    for (let Class of classes)
+    {
+      if (!prototypeEntity.descendants.has(Class.name))
+      {
+        // Vytvor prototype entitu
+        // Pridej jeji id do prototypeEntity.descendants
+      }
+    }
+  }
+
+  private initNonEntityPrototypes(classes: Array<any>)
+  {
+    for (let Class of classes)
+    {
+      this.prototypes.set(Class.name, new Class);
+    }
+  }
+
+  public async initPrototypes()
+  {
+    let dynamicClasses = DynamicClasses.init();
+
+    /// Tohle dělám proto, že do prototypeEntity.descendants se
+    /// loadnou idčka prototypových entity (Characteru, atd.)
+    /// - samozřejmě jen ta, která jsou savnutá. Stále je potřeba
+    // projít všechny entity classy v dynamicClasses a doplnit idčka
+    // (dogenerovat entity) pro ty classy, které ještě idčko nemají.
+    let prototypeEntity = this.initPrototypeEntity();
+
+    let entityClasses = [];
+    let nonEntityClasses = [];
+
+    for (let Class of dynamicClasses)
+    {
+      if (this.isEntity(Class))
+      {
+        entityClasses.push(Class);
+      }
+      else
+      {
+        nonEntityClasses.push(Class);
+      }
+    }
+
+    this.initEntityPrototypes(entityClasses, prototypeEntity);
+    this.initNonEntityPrototypes(nonEntityClasses);
+  }
+
+  /*
   public async initEntityPrototypes()
   {
     let constructors = DynamicClasses.constructors;
 
-    let prorotypeEntitySaveExists = await NamedEntity.isNameTaken
+    let saveExists = await NamedEntity.isNameTaken
     (
       "Entity",
       NamedEntity.NameCathegory.prototypes
@@ -50,7 +106,7 @@ export class ClassFactory
 
     let prototypeEntity = null;
 
-    if (prorotypeEntitySaveExists)
+    if (saveExists)
     {
       prototypeEntity = await Server.entityManager.loadNamedEntity
       (
@@ -60,7 +116,7 @@ export class ClassFactory
     }
     else
     {
-      prototypeEntity = Server.entityManager.createPrototypeEntity(Entity);
+      prototypeEntity = this.createPrototype(Entity);
     }
 
     // Even if dynamic classes assignment has been loaded
@@ -71,7 +127,34 @@ export class ClassFactory
 
     await prototypeEntity.save();
   }
+  */
 
+  // Creates a new object based on object 'prototype'.
+  // Non-primitive properties will also be recursively
+  // instantiated.
+  public createInstance(prototype: NamedClass)
+  {
+    // Object.create() will create a new object with 'prototype'
+    // as it's prototype. This will change all 'own' properties
+    // (those initialized in constructor or in class body of
+    // prototype) to 'inherited' properties (so that changing the
+    // value on prototype will change the value for all instances
+    // that don't have that property overriden.
+    let instance = Object.create(prototype);
+
+    return this.instantiateProperties(instance, prototype.className);
+  }
+
+  // Only searches for prototypes that are not entities.
+  // (to search for entity prototype using entity id use
+  //  EntityManager.get(id))
+  // -> Returns 'undefined' if such prototype doesn't exist.
+  public getPrototype(className)
+  {
+    return this.prototypes.get(className);
+  }
+
+  /*
   // Declares a new class named 'className' and inherited from
   // 'ancestorName' and set it's ['className'] property to
   // 'className'. Also registers the new class in classFactory.
@@ -107,17 +190,23 @@ export class ClassFactory
 
     return NewClass;
   }
+  */
 
+  /*
   public prototypeExists(className: string): boolean
   {
     return this.prototypes.has(className);
   }
+  */
 
+  /*
   public classExists(className: string): boolean
   {
     return this.dynamicClasses.has(className);
   }
+  */
 
+  /*
   public registerClass(className: string, Class)
   {
     if (!this.isNameValid(className))
@@ -142,13 +231,17 @@ export class ClassFactory
     // Add Class to hashmap under the key 'className'.
     this.dynamicClasses.set(className, Class);
   }
+  */
 
+  /*
   // -> Returns 'undefined' if no such prototype exists.
   public getPrototypeId(prototypeName: string)
   {
     return this.prototypes.get(prototypeName);
   }
+  */
 
+  /*
   public getClass(className: string)
   {
     let Class = this.dynamicClasses.get(className);
@@ -164,7 +257,9 @@ export class ClassFactory
 
     return Class;
   }
+  */
 
+  /*
   // Creates an instance based on prototype 'new Class'.
   //   This is done instad of just using 'new Class' as
   // a class instance, because we want initialized class
@@ -189,7 +284,9 @@ export class ClassFactory
 
     return this.createInstance(new Class);
   }
+  */
 
+  /*
   // Creates a new instance based on prototype specified by 'prototypeId'.
   public createPrototypeInstance(prototypeId: string)
   {
@@ -217,6 +314,7 @@ export class ClassFactory
 
     return this.createInstance(prototype);
   }
+  */
 
   /*
   // Creates a new instance of type className.
@@ -322,11 +420,40 @@ export class ClassFactory
     return instance;
   }
 
+  // Creates a prototype object as an instance of 'Class'.
+  private createPrototype(Class: any)
+  {
+    return new Class;
+  }
+
+  private async initPrototypeEntity()
+  {
+    let saveExists = await NamedEntity.isNameTaken
+    (
+      "Entity",
+      NamedEntity.NameCathegory.prototypes
+    );
+
+    if (saveExists)
+    {
+      return await Server.entityManager.loadNamedEntity
+      (
+        'Entity',
+        NamedEntity.NameCathegory.prototypes
+      );
+    }
+
+    return this.createPrototype(Entity);
+  }
+
+  /*
   private isNameValid(name: string): boolean
   {
     return name !== "" && name !== null && name !== undefined;
   }
+  */
 
+  /*
   private declareClass(className: string, ancestorName: string)
   {
     // If the type of Ancestor variable doesn't make sense to you,
@@ -375,28 +502,14 @@ export class ClassFactory
 
     return NewClass;
   }
+  */
 
   private isEntity(Class: any)
   {
     return Class.prototype['getId'] !== undefined;
   }
 
-  // Creates a new object based on 'prototype'. It's non-primitive
-  // properties will also be recursively instantiated.
-  private createInstance(prototype: NamedClass)
-  {
-    // Object.create() will create a new object with 'prototype'
-    // as it's prototype. This will change all 'own' properties
-    // (those initialized in constructor or in class body of
-    // prototype) to 'inherited' properties (so that changing the
-    // value on prototype will change the value for all instances
-    // that don't have that property overriden.
-    let instance = Object.create(prototype);
-
-    return this.instantiateProperties(instance, prototype.className);
-  }
-
-
+  /*
   private assignPrototypes(prototypeEntity: PrototypeEntity)
   {
     this.prototypes.clear();
@@ -448,4 +561,5 @@ export class ClassFactory
       }
     }
   }
+  */
 }

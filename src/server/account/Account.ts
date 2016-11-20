@@ -13,7 +13,7 @@ import {FileSystem} from '../../shared/fs/FileSystem';
 import {AdminLevel} from '../../server/AdminLevel';
 import {Syslog} from '../../server/Syslog';
 import {Message} from '../../server/message/Message';
-import {NamedEntity} from '../../shared/entity/NamedEntity';
+import {PrototypeEntity} from '../../shared/entity/PrototypeEntity';
 import {Connection} from '../../server/connection/Connection';
 import {Server} from '../../server/Server';
 import {Game} from '../../game/Game';
@@ -23,7 +23,7 @@ import {Character} from '../../game/character/Character';
 // Built-in node.js modules.
 import * as crypto from 'crypto';  // Import namespace 'crypto' from node.js
 
-export class Account extends NamedEntity
+export class Account extends PrototypeEntity
 {
   public connection: Connection = null;
   // Do not save and load property 'connection'.
