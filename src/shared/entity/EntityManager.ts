@@ -166,6 +166,7 @@ export class EntityManager
   }
   */
 
+  /*
   public async createPrototypeEntity(Class: any)
   {
     /// TODO...
@@ -181,7 +182,9 @@ export class EntityManager
 
     return entity;
   }
+  */
 
+  /*
   // Creates uniquelly named entity.
   //   If 'prototypeId' is null, instance will be based on 'new Entity()'
   //   (this is used to create THE prototype entity which is ancestor
@@ -214,6 +217,7 @@ export class EntityManager
 
     return entity;
   }
+  */
 
   /*
   // Creates uniquelly named entity.
@@ -244,6 +248,12 @@ export class EntityManager
   }
   */
 
+  /// TODO: Sloučit do loadEntity(cathegory)
+  /// - podle kathegory se buď loadne přímo idčko,
+  ///   nebo nejdřív přečte name lock file.
+  /// Tak asi ne, je to blbost. loadEntity() se provolává z handleru
+  /// při odchycení entity.load() - takže už to sloučené defacto je. 
+  ///
   // Loads uniquely named entity from file
   // (it must not exist in EntityManager). 
   // -> Returns reference to the loaded entity.
@@ -291,6 +301,68 @@ export class EntityManager
   }
   */
 
+  public createEntity
+  (
+    name: string,
+    cathegory: NamedEntity.NameCathegory,
+    prototypeId: string
+  )
+  {
+    let prototype = this.get(prototypeId, Entity);
+
+    if (prototype === undefined)
+    {
+      ERROR("Unable to create entity based on prototype id"
+        + " '" + prototypeId + "' in cathegory"
+        + " '" + NamedEntity.NameCathegory[cathegory] + "'");
+      return null;
+    }
+
+    return this.createEntityFromPrototype(name, cathegory, prototype);
+  }
+
+  public createEntityFromPrototype
+  (
+    name: string,
+    cathegory: NamedEntity.NameCathegory = null,
+    prototype: Entity
+  )
+  {
+    // Generate an id for this new entity.
+    //////////////////////////////////////////////////////////////
+    //  This should be the only place in whole code where new id's
+    //  are generated.
+    ///////////////////////////////////////////////////////////////
+    let id = this.idProvider.generateId();
+
+    let entity = Server.classFactory.createInstance(prototype);
+
+    entity.setId(id);
+
+    let proxy = this.proxify(entity);
+
+    proxy.setName(name, cathegory);
+
+    return proxy;
+  }
+
+  // Creates an entity proxy handler for 'entity'.
+  // Also adds the proxified entity to the EntityManager.
+  private proxify(entity: Entity)
+  {
+    let handler = new EntityProxyHandler();
+
+    handler.id = entity.getId();
+    handler.entity = entity;
+
+    let proxy = new Proxy({}, handler);
+
+    this.add(proxy, handler);
+
+    return proxy;
+  }
+
+  /*
   // Creates an entity of type 'className' with a new id.
   //   If 'prototypeId' is null, instance will be based on 'new Entity()'
   //   (this is used to create THE prototype entity which is ancestor
@@ -319,6 +391,7 @@ export class EntityManager
 
     ///return entityProxy.dynamicCast(typeCast);
   }
+  */
 
   /*
   // Creates an entity of type 'className' with a new id.
@@ -389,9 +462,25 @@ export class EntityManager
       // Error is already reported by Entity.loadJsonObject().
       return;
 
+    let prototype = null;
+
+    // Prototype Entity dosn't have a prototype id. 
+    if (loadResult.prototypeId === null)
+    {
+      prototype = new Entity;
+    }
+    else
+    {
+      prototype = this.get(loadResult.prototypeId, Entity);
+    }
+
     // Now we can create an instance of the correct class.
+    /*
     let entity =
       Server.classFactory.createPrototypeInstance(loadResult.prototypeId);
+    */
+    let entity =
+      Server.classFactory.createInstance(prototype);
 
     // And let it load itself from jsonObject.
     if (!entity.loadFromJsonObject(loadResult.jsonObject, loadResult.path))
@@ -423,6 +512,9 @@ export class EntityManager
     // entity reference updated.
   }
 
+  /// TODO: Zrušit
+  ///
+  /*
   // This method is used by etity handler when it's internal
   // entity reference is null.
   // -> Returns entity proxy if entity is available.
@@ -446,6 +538,7 @@ export class EntityManager
     // This will return an entity proxy.
     return entityRecord.getEntityProxy();
   }
+  */
 
   // Removes entity from manager but doesn't delete it from disk
   // (this is used for example when player quits the game).
@@ -556,6 +649,11 @@ export class EntityManager
     return this.entityRecords.has(id);
   }
 
+  /// TODO: Asi to sloučit s get() - get prostě bude vždycky
+  /// vracet referenci.
+  /// - loadnout invalid referenci je ok. Není ok updatovat invalid
+  ///   referenci, když v manageru už je jiná reference pro stejné id.
+  ///
   // -> Returns existing reference if entity already exists in EntityManager.
   //    Returns invalid reference if entity with such id doen't exist yet.
   //      (you can then use entity.load() to load if from disk)
@@ -599,6 +697,7 @@ export class EntityManager
     this.entityRecords.set(handler.id, entityRecord);
   }
 
+  /*
   createInvalidEntityProxy<T>
   (
     id: string,
@@ -619,6 +718,7 @@ export class EntityManager
 
     return entityProxy;
   }
+  */
 
   // Purposedly creates an invalid reference
   private createInvalidEntityReference<T>
@@ -633,6 +733,7 @@ export class EntityManager
     return this.createInvalidEntityProxy(id, handler, typeCast);
   }
 
+  /*
   // Creates a new instance of entity based on prototype specified by
   // 'prototypeId' and with an id 'entityId'.
   //   If 'prototypeId' is null, instance will be based on 'new Entity()'
@@ -646,6 +747,7 @@ export class EntityManager
 
     return entity;
   }
+  */
 
   /*
   // Creates a new instance of entity of type stored in handler.type.

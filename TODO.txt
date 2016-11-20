@@ -1,3 +1,6 @@
+TODO: The prototype Entity by měla mít prototypeId = null
+
+
 TODO: ClassFactory.createInstance() stačí jen jedna.
   - jednak může poznat, jestli je potřeba vytvořit prototyp
     nebo instanci
@@ -26,11 +29,11 @@ ClassFactory.initPrototypes()
 {
   if (isEntity)
   {
-    let internalPrototype = new Entity; // obecne new Class
+    let prototypeEntity = new Entity; // obecne new Class
 
     let prototype = EntityManager.createEntityFromPrototype
     (
-      internalPrototype,
+      prototypeEntity,
       NamedEntity.Cathegory.prototypes
     )
   }
@@ -50,7 +53,7 @@ public ClassFactory.createInstance(prototype)
   return instance;
 }
 
-public ClassFactory.getClassPrototype(className)
+public ClassFactory.getPrototype(className)
 {
   return this.prototypes.get(className);
 }
@@ -68,9 +71,9 @@ public EntityManager.createEntity(prototypeId, nameCathegory)
 {
   let prototype = this.getEntity(prototypeId);
 
-  this.createEntityFromPrototype(prototype, nameCathegory)
+  let entity = this.createEntityFromPrototype(prototype, nameCathegory)
 
-  proxify(bareEntity);
+  this.proxify(entity);
 }
 
 public EntityManager.createEntityFromPrototype(prototype, nameCathegory = null)
@@ -93,7 +96,7 @@ SaveableObject.loadCosi()
 {
   className = loadFromFile();
 
-  let prototype = ClassFactory.getClassPrototype(className);
+  let prototype = ClassFactory.getPrototype(className);
 
   ClassFactory.createInstance(prototype);
 }
