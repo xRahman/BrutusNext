@@ -18,13 +18,18 @@ import {NamedEntity} from '../../shared/entity/NamedEntity';
 
 export class PrototypeEntity extends NamedEntity
 {
-  // Array of string ids of descendant prototype entities.
-  public descendants = new Array<string>();
-
   public static get PROTOTYPE_ID_PROPERTY()
   {
     return "prototypeId";
   }
+
+  // Only the prototype Entity at the root of prototype 
+  // tree should have prototypeId = null.
+  public prototypeId = null;
+
+  //   Key:   prototype name
+  //   Value: id of prototype entity
+  public descendants = new Map<string, string>();
 
   /*
   // Name of the class that will represent this prototype.

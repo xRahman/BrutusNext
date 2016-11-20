@@ -28,10 +28,10 @@
 'use strict';
 
 import {ERROR} from '../../shared/error/ERROR';
-import {NamedEntity} from '../../shared/entity/NamedEntity';
+import {PrototypeEntity} from '../../shared/entity/PrototypeEntity';
 import {CommandSearchList} from '../../game/command/CommandSearchList';
 
-export abstract class CommandInterpretter extends NamedEntity
+export abstract class CommandInterpretter extends PrototypeEntity
 {
   // ---------------- Static methods -------------------- 
 
