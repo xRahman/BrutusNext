@@ -4,6 +4,16 @@
   Allows classes to compile script and serve as prototypes.
 */
 
+/*
+  The difference between prototype entity and regular entity
+  is, that ancestor of prototype entity (referenced by entity's
+  ancestorId) has entity's id listed among it's descendants.
+    This causes the entity to be loaded as prototype when the
+  server starts (because all descendant entities are recursively
+  loaded at that time begening from the root prototype entity).
+
+*/
+
 'use strict';
 
 ///import {ERROR} from '../../shared/error/ERROR';
@@ -27,9 +37,7 @@ export class PrototypeEntity extends NamedEntity
   // tree should have prototypeId = null.
   public prototypeId = null;
 
-  //   Key:   prototype name
-  //   Value: id of prototype entity
-  public descendants = new Map<string, string>();
+  public descendantIds = [];
 
   /*
   // Name of the class that will represent this prototype.

@@ -100,43 +100,24 @@ export class EntityProxyHandler
   // -> Returns false if anything is amiss.
   public sanityCheck(): boolean
   {
+    if (this.id === null || this.id === undefined || this.id === "")
+      return false;
+
+    // If entity doesn't exist yet, there is no point in checking
+    // it's id - we consider handler to be valid.
     if (this.entity === null)
       return true;
 
-    let checkResult = true;
-
-    let id = this.entity.getId();
-
-    if (id !== null && this.id !== null)
+    if (this.entity.getId() !== this.id)
     {
-      if (id !== this.id)
-      {
-        ERROR("Id of entity " + this.entity.getErrorIdString()
-          + " differs from id in entity proxy handler"
-          + " (which is " + this.id + ")");
+      ERROR("Id of entity " + this.entity.getErrorIdString()
+        + " differs from id in entity proxy handler"
+        + " (which is " + this.id + ")");
 
-        checkResult = false;
-      }
+      return false;
     }
 
-    /*
-    let type = this.entity.className;
-
-    if (type !== null && this.type !== null)
-    {
-      if (type !== this.type)
-      {
-        ERROR("Class name '" + type + "' of entity"
-          + " " + this.entity.getErrorIdString()
-          + " differs from type '" + this.type + "'"
-          + " in entity proxy handler");
-
-        checkResult = false;
-      }
-    }
-    */
-
-    return checkResult;
+    return true;
   }
 
   // -------------------  Traps -------------------------
