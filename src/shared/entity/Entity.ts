@@ -45,9 +45,11 @@ export class Entity extends AutoSaveableObject
     result.prototypeId =
       result.jsonObject[PrototypeEntity.PROTOTYPE_ID_PROPERTY]; 
 
-    if (result.prototypeId === null || result.prototypeId === undefined)
+    // Note: 'null' prototypeId is allowed, because the root prototype
+    // entity doesn't have any prototype.
+    if (result.prototypeId === undefined)
     {
-      ERROR("Invalid or missing className in " + result.path + "."
+      ERROR("Missing className in " + result.path + "."
         + " Unable to load entity");
       result.prototypeId = null
       result.jsonObject = null;

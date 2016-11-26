@@ -1,4 +1,45 @@
+Jinak:
+- nechci implementovat prototype chain v rámci hardcoded class.
+  Když chci instanci přímo hardcoded classy, tak bych měl udělat
+  (Object.create(new Class)).instantiateProtperties();
+  - to způsobí, že se na prototypu nainicializuje všechno, co je hardcoded,
+    a instance to bude korektně dědit díky Object.create()
+    a instantiateProperties().
+  - Díky tomuhle postupu můžu korektně udělat instanci libovolné hardcoded
+    classy
+    - není možné kombinovat hardcoded classu se savem, ale to je asi ok
+      ... vždycky můžu z hardcoded classy zdědit prototyp a ten savnout.
+Ok, teď už jen musím nějak zajistit, že se z hardcoded classy dá zdědit
+  editovatelná classa.
+  - problém je přejmenovávání hardcoded class, proto jsem chtěl idčka.
+    Kdybych totiž hardcoded předka odkazoval jménem, při přejmenování
+    bych musel změnit tenhle odkaz ve všech přímých potomcích (no, asi by
+    to taky šlo...)
+  - idčka bych asi mohl držet stranou, třeba v tvrdém savu EntityManageru
+    nebo ClassFactory.
+    - savovala by se asi mapa <id, className>.
+    - a v initu by se vytvářely hardcoded prototype entity prostě jako isntance
+      daných entit.
+    - při vytváření editovatelného prototypu by se idčko předka hledalo nejdřív
+      v harcodedPrototypes a pak v EntityManageru.
+  - stále by zůstalo automatické dogenerovávání idček pro nové hardcoded
+    classy.
+
+Stále taky zůstává, že se do prototypové instance hardcoded classy savují
+  idčka editovatelných potomků
+  - to znamená, že v hashmapě musí být nějaký savovatelný record.
+
+---------------
+
+- entity.load() použitá na the root prototype entitu jako prototype
+  použije 'new Entity'.
+ 
+---------------
+
 TODO: The prototype Entity by měla mít prototypeId = null
+- to má, protože to je defaultní hodnota.
+
+TODO: Ostatním entitám je třeba nastavovat prototypeId.
 
 
 TODO: ClassFactory.createInstance() stačí jen jedna.

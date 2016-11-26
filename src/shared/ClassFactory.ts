@@ -8,6 +8,9 @@
 
 import {ERROR} from '../shared/error/ERROR';
 import {FATAL_ERROR} from '../shared/error/FATAL_ERROR';
+import {IdProvider} from '../shared/entity/IdProvider';
+import {PrototypeRecord} from '../shared/PrototypeRecord';
+import {AutoSaveableObject} from '../shared/fs/AutoSaveableObject';
 import {Entity} from '../shared/entity/Entity';
 import {NamedEntity} from '../shared/entity/NamedEntity';
 import {EntityManager} from '../shared/entity/EntityManager';
@@ -16,14 +19,52 @@ import {DynamicClasses} from '../shared/DynamicClasses';
 import {NamedClass} from '../shared/NamedClass';
 import {Server} from '../server/Server';
 
-export class ClassFactory
+export class ClassFactory extends AutoSaveableObject
 {
+  private static get SAVE_DIRECTORY()
+  {
+    return "./data/";
+  }
+
+  private static get SAVE_FILE_NAME()
+  {
+    return "ClassFactory.json";
+  }
+
+  /*
+    Co potřebuju:
+    - podle idčka předka najít objekt, ze kterého se zdědím
+    - seznam idček editovatelných potomků, abych mohl rekurzivně
+      loadnout prototypy
+    - podle jména classy zjistit, jestli už má idčko a případně jaké.
+  */
+
+  // Hashmap matching id assigned to a hardcoded entity class
+  // to it's prototypeObject instance and the list of ids of
+  // it's editable descentants.
+  //   Key:   id assigned to a hardcoded entity class.
+  //   Value: list of ids of descendants.
+  private hardcodedPrototypeRecords = new Map<string, PrototypeRecord>();
+
+  // Hashamp matching name of hardcoded entity class (like 'Character')
+  // to it's assigned id. This allows prototypes inherited from these
+  // hardcoded classes to refer to them using an id instead of class name,
+  // which simplifies renaming of hardcoded classes (this map is update
+  // each time the server starts, so you can rename any class in code without
+  // the need to change the reference in saved prototypes which are inherited
+  // from that class).
+  //   Key:   name od hardcoded entity class
+  //   Value: assigned id.
+  private hardcodedPrototypeIds = new Map<string, string>(); 
+
   // Only non-entity classes have their prototype object here.
   // Enity prototype objects are regular entities and you will
   // find them in EntityManager.
   //   Key:   class name
   //   Value: prototype object
-  private prototypes = new Map<string, any>();
+  private nonEntityPrototypes = new Map<string, any>();
+  // Do not save property 'nonEntityPrototypes'.
+  private static nonEntityPrototypes = { isSaved: false };
 
   /*
   /// Pozn: dynamicClasses pořád potřebuju, protože ne všechny
@@ -35,62 +76,64 @@ export class ClassFactory
   private dynamicClasses = new Map();
   */
 
-  constructor()
+  constructor(private idProvider: IdProvider)
   {
-    ///DynamicClasses.init(this.dynamicClasses);
+    super();    
   }
 
   // ---------------- Public methods --------------------
 
-  private initEntityPrototypes(classes: Array<any>, prototypeEntity: PrototypeEntity)
-  {
-
-    for (let Class of classes)
-    {
-      if (!prototypeEntity.descendants.has(Class.name))
-      {
-        // Vytvor prototype entitu
-        // Pridej jeji id do prototypeEntity.descendants
-      }
-    }
-  }
-
-  private initNonEntityPrototypes(classes: Array<any>)
-  {
-    for (let Class of classes)
-    {
-      this.prototypes.set(Class.name, new Class);
-    }
-  }
-
   public async initPrototypes()
   {
-    let dynamicClasses = DynamicClasses.init();
-
-    /// Tohle dělám proto, že do prototypeEntity.descendants se
-    /// loadnou idčka prototypových entity (Characteru, atd.)
-    /// - samozřejmě jen ta, která jsou savnutá. Stále je potřeba
-    // projít všechny entity classy v dynamicClasses a doplnit idčka
-    // (dogenerovat entity) pro ty classy, které ještě idčko nemají.
-    let prototypeEntity = this.initPrototypeEntity();
+    // Assign constructors of dynamic classes to DynamicClasses.constructors. 
+    DynamicClasses.init();
 
     let entityClasses = [];
-    let nonEntityClasses = [];
 
-    for (let Class of dynamicClasses)
+    // Split dynamicClasses into two groups:
+    // - to those that are descended from class Entity
+    //   (so they do have an id).
+    // - and those that are descended from something else
+    //   (so they don't have an id).
+    for (let Class of DynamicClasses.constructors.values())
     {
-      if (this.isEntity(Class))
+      if (!this.isEntity(Class))
       {
-        entityClasses.push(Class);
+        // Non-entity class prototypes are just an instances
+        // of these classes (created by 'new Class'). We store
+        // them in this.nonEntityPrototypes. 
+        this.nonEntityPrototypes.set(Class.name, new Class);
       }
       else
       {
-        nonEntityClasses.push(Class);
+        // Entity classes (those that have an id) are not
+        // instantiated right away, because we need to create
+        // id's for them if they don't exist yet.
+        entityClasses.push(Class);
       }
     }
 
-    this.initEntityPrototypes(entityClasses, prototypeEntity);
-    this.initNonEntityPrototypes(nonEntityClasses);
+    // Now create prototype instances of dynamic entity classes.
+    // Note that editable entity prototypes are not stored in ClassFactory
+    // but rather in EntityManager, because they are regular entities
+    // (they can be edited, you can stat them from the game, etc.).
+    await this.initEntityPrototypes(entityClasses);
+  }
+
+  // Creates a new object based on object 'prototype'.
+  // Non-primitive properties will also be recursively
+  // instantiated.
+  public createInstance(prototype: NamedClass)
+  {
+    // Object.create() will create a new object with 'prototype'
+    // as it's prototype. This will change all 'own' properties
+    // (those initialized in constructor or in class body of
+    // prototype) to 'inherited' properties (so that changing the
+    // value on prototype will change the value for all instances
+    // that don't have that property overriden.
+    let instance = Object.create(prototype);
+
+    return this.instantiateObjectProperties(instance, prototype.className);
   }
 
   /*
@@ -129,30 +172,16 @@ export class ClassFactory
   }
   */
 
-  // Creates a new object based on object 'prototype'.
-  // Non-primitive properties will also be recursively
-  // instantiated.
-  public createInstance(prototype: NamedClass)
-  {
-    // Object.create() will create a new object with 'prototype'
-    // as it's prototype. This will change all 'own' properties
-    // (those initialized in constructor or in class body of
-    // prototype) to 'inherited' properties (so that changing the
-    // value on prototype will change the value for all instances
-    // that don't have that property overriden.
-    let instance = Object.create(prototype);
-
-    return this.instantiateProperties(instance, prototype.className);
-  }
-
+  /*
   // Only searches for prototypes that are not entities.
   // (to search for entity prototype using entity id use
   //  EntityManager.get(id))
   // -> Returns 'undefined' if such prototype doesn't exist.
   public getPrototype(className)
   {
-    return this.prototypes.get(className);
+    return this.nonEntityPrototypes.get(className);
   }
+  */
 
   /*
   // Declares a new class named 'className' and inherited from
@@ -390,43 +419,16 @@ export class ClassFactory
 
   // ---------------- Private methods -------------------
 
-  private instantiateProperties(instance: any, className: string)
-  {
-    if (instance['instantiateProperties'] === undefined)
-    {
-      ERROR("Unable to instantiate dynamic class " + className
-        + " because it is not an InstantiableClass");
-      return null;
-    }
-
-    // This is a workaround for 'feature' of javascript prototype
-    // inheritance that non-primitive properties are passed to
-    // instances as references rather than instantiated as well.
-    //   Instantiating properties means, that for each non-primitive
-    // property (Object, Array, etc.) we recursively create an empty
-    // {}, but with prototype whitch is the corresponding property
-    // on entity prototype. Or, in other words, inherited from
-    // corresponding property on entity prototype.
-    //   This will exploit the fact that inheritance of primitive
-    // properties (numbers, strings, etc.) works fine - when such
-    // property is written to instance, it will really be written
-    // to the instance so it will become instance's 'own' property.
-    // 'inheriting' non-primitive properties also works for methods,
-    // so 'instantiated' non-primitive properties will have the same
-    // functionality as on the entity prototype, even though they
-    // are not classes but rather generic Objects.
-    instance.instantiateProperties();
-
-    return instance;
-  }
-
+  /*
   // Creates a prototype object as an instance of 'Class'.
   private createPrototype(Class: any)
   {
     return new Class;
   }
+  */
 
-  private async initPrototypeEntity()
+  /*
+  private async loadRootPrototypeEntity()
   {
     let saveExists = await NamedEntity.isNameTaken
     (
@@ -445,6 +447,7 @@ export class ClassFactory
 
     return this.createPrototype(Entity);
   }
+  */
 
   /*
   private isNameValid(name: string): boolean
@@ -504,11 +507,6 @@ export class ClassFactory
   }
   */
 
-  private isEntity(Class: any)
-  {
-    return Class.prototype['getId'] !== undefined;
-  }
-
   /*
   private assignPrototypes(prototypeEntity: PrototypeEntity)
   {
@@ -562,4 +560,152 @@ export class ClassFactory
     }
   }
   */
+
+  /*
+  private getPrototypeIds(rootPrototypeEntity: Entity)
+  {
+    //   Key:   class name
+    //   Value: id of respective prototype entity
+    let ids = new Map<string, string>();
+
+    // We also add the root prototype entity id to the hasmap, so
+    // it can be searched for when creating it's direct descendants.
+    ids.set(rootPrototypeEntity.constructor.name, rootPrototypeEntity.getId());
+
+    for (let id of rootPrototypeEntity.descendantIds)
+    {
+      ids.set()
+    }
+
+    return ids;
+  }
+  */
+
+  /*
+  private createPrototypeEntity(Class: any)
+  {
+    let ancestorName = Class.prototype.name;
+
+    let ancestor = ;
+
+    // If class doesn't have an id yet, we ask EntityManager
+    // to create a new entity inherited from prototypeEntity id.
+    return Server.entityManager.createEntity
+    (
+      Class.name,
+      NamedEntity.NameCathegory.prototypes,
+      ancestor.getId()
+    );
+  }
+  */
+
+  private instantiateObjectProperties(instance: any, className: string)
+  {
+    if (instance['instantiateProperties'] === undefined)
+    {
+      ERROR("Unable to instantiate dynamic class " + className
+        + " because it is not an InstantiableClass");
+      return null;
+    }
+
+    // This is a workaround for 'feature' of javascript prototype
+    // inheritance that non-primitive properties are passed to
+    // instances as references rather than instantiated as well.
+    //   Instantiating properties means, that for each non-primitive
+    // property (Object, Array, etc.) we recursively create an empty
+    // {}, but with prototype whitch is the corresponding property
+    // on entity prototype. Or, in other words, inherited from
+    // corresponding property on entity prototype.
+    //   This will exploit the fact that inheritance of primitive
+    // properties (numbers, strings, etc.) works fine - when such
+    // property is written to instance, it will really be written
+    // to the instance so it will become instance's 'own' property.
+    // 'inheriting' non-primitive properties also works for methods,
+    // so 'instantiated' non-primitive properties will have the same
+    // functionality as on the entity prototype, even though they
+    // are not classes but rather generic Objects.
+    instance.instantiateProperties();
+
+    return instance;
+  }
+
+  private isEntity(Class: any)
+  {
+    return Class.prototype['getId'] !== undefined;
+  }
+
+  private createPrototypeObject(id: string, Class: any)
+  {
+    let record = this.hardcodedPrototypeRecords.get(id);
+
+    if (record === undefined)
+    {
+      ERROR("Unable to find prototype record corresponding"
+        + " to id '" + id + "'. All records from"
+        + " ClassFactory.hardcodedPrototypeIds"
+        + " hashmap must have a corresponding record"
+        + " in ClassFactory.hardcodedPrototypeRecords"
+        + " hashmap");
+      return;
+    }
+
+    if (record.prototypeObject !== null)
+      ERROR("Prototype record for id '" + id + "'"
+        + " already has a prototypeObject assigned");
+    
+    record.prototypeObject = this.createInstance(new Class);
+  }
+
+  private createPrototypeRecord(Class: any)
+  {
+    let id = this.idProvider.generateId();
+
+    // Note that prototypeRecord.descendantIds will be
+    // empty - that's ok, because if the class didn't
+    // already have prototypeRecord, its newly added to
+    // the code so it can't have any descendant prototypes
+    // yet. 
+    let prototypeRecord = new PrototypeRecord();
+
+    // Add newly created prototypeRecord to
+    // this.hardcodedPrototypeRecords hashmap.
+    this.hardcodedPrototypeRecords.set(id, prototypeRecord);
+
+    // And also add an entry mapping class name to
+    // the id to this.hardcodedPrototypeIds hashmap.
+    this.hardcodedPrototypeIds.set(id, Class.name);
+  }
+
+  private async initEntityPrototypes(classes: Array<any>)
+  {
+    // Load ClassFactory from the save. This will load
+    // hardcodedPrototypeRecords and hardcodedPrototypeIds
+    // hashmaps.
+    await this.load();
+
+    // It is possible that not all of the hardcoded entity classes have
+    // an id stored in ClassFactory save. This can either happen when the
+    // server is launched for the first time and there is no /data yet,
+    // or when someone has added some new entity classes to the code. Either
+    // way, we are going to automatically generate id's for those classes
+    // that lack them.
+
+    // Go through all dynamic entity classes specified in
+    // DynamicClasses.init().
+    for (let Class of classes)
+    {
+      // First we check if our class already has an id assigned.
+      // (hashmap returns 'undefined' if it doesn't contain requested entry)
+      let id = this.hardcodedPrototypeIds.get(Class.name);
+
+      if (id === undefined)
+        this.createPrototypeRecord(Class);
+
+      // Now we know that prototypeRecord for the processed
+      // class exists, because either it has been present in
+      // ClassFactory save or we have just created it.
+      //   So we can create a prototype object for the Class.
+      this.createPrototypeObject(id, Class);
+    }
+  }
 }
