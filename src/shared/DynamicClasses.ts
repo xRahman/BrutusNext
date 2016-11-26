@@ -3,9 +3,10 @@
 
   All classes that are dynamically loaded (basically all that
   are saved to or loaded from JSON) need to be listed here and
-  their constructors added to initDynamicClasses() function
-  to be able to create instances of correct types.
+  their constructors added to init() function to be allow creating
+  of their instances.
 */
+
 import {Server} from '../server/Server';
 import {Script} from '../shared/prototype/Script';
 import {FlagNames} from '../shared/flags/FlagNames';
@@ -28,18 +29,19 @@ export class DynamicClasses
 
   public static init()
   {
+    // Classes need to be listed in order of inheritance (ancestors first).
     this.set(Script);
     this.set(FlagNames);
     this.set(NameLockRecord);
     this.set(Connection);
     this.set(Account);
     this.set(Character);
-    this.set(Area);
-    this.set(Dimension);
-    this.set(Realm);
-    this.set(Room);
-    this.set(Sector);
     this.set(World);
+    this.set(Realm);
+    this.set(Dimension);
+    this.set(Sector);
+    this.set(Area);
+    this.set(Room);
 
     /*
     DynamicClasses.set(Script);

@@ -15,6 +15,7 @@
 
 import {ERROR} from '../shared/error/ERROR';
 import {FATAL_ERROR} from '../shared/error/FATAL_ERROR';
+import {IdProvider} from '../shared/entity/IdProvider';
 import {EntityManager} from '../shared/entity/EntityManager';
 import {FileSystem} from '../shared/fs/FileSystem';
 import {FlagNamesManager} from '../shared/flags/FlagNamesManager';
@@ -56,6 +57,7 @@ export class Server
   private game = null;
   private telnetServer = new TelnetServer(Server.DEFAULT_TELNET_PORT);
   private httpServer = new HttpServer(Server.DEFAULT_HTTP_PORT);
+  private idProvider = new IdProvider(this.timeOfBoot);
   
   // --------- idLists ---------
   // IdLists contain entity id's.
@@ -250,7 +252,7 @@ export class Server
     // will be created by it if it doesn't exist.
     let createDefaultData = !FileSystem.existsSync('./data/');
 
-    await this.classFactory.initEntityPrototypes();
+    await this.classFactory.initPrototypes();
 
     // If 'data' directory doesn't exist at all, create and save a new world.
     if (createDefaultData)
