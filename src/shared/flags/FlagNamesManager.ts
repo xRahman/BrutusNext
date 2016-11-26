@@ -31,7 +31,7 @@ export class FlagNamesManager extends AutoSaveableObject
 
   private static get SAVE_FILE_NAME()
   {
-    return "flagNamesManager.json";
+    return "FlagNamesManager.json";
   }
 
   // ---------------- Public methods --------------------

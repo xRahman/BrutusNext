@@ -20,7 +20,7 @@ export class IdProvider
 
   // ---------------- Public methods --------------------
 
-  private generateId()
+  public generateId()
   {
     if (this.timeOfBoot === null)
     {
