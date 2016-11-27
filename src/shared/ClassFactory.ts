@@ -46,13 +46,11 @@ export class ClassFactory extends AutoSaveableObject
   //   Value: list of ids of descendants.
   private hardcodedPrototypeRecords = new Map<string, PrototypeRecord>();
 
-  // Hashamp matching name of hardcoded entity class (like 'Character')
-  // to it's assigned id. This allows prototypes inherited from these
+  // Hashamp matching name of hardcoded entity classes (like 'Character')
+  // to their assigned ids. This allows prototypes inherited from these
   // hardcoded classes to refer to them using an id instead of class name,
-  // which simplifies renaming of hardcoded classes (this map is update
-  // each time the server starts, so you can rename any class in code without
-  // the need to change the reference in saved prototypes which are inherited
-  // from that class).
+  // which allows renaming of hardcoded classes without the need to also
+  // change the name in all save files that reference them.
   //   Key:   name od hardcoded entity class
   //   Value: assigned id.
   private hardcodedPrototypeIds = new Map<string, string>(); 
@@ -90,13 +88,13 @@ export class ClassFactory extends AutoSaveableObject
 
     let entityClasses = [];
 
-    // Split dynamicClasses into two groups:
-    // - to those that are descended from class Entity
-    //   (so they do have an id).
-    // - and those that are descended from something else
-    //   (so they don't have an id).
     for (let Class of DynamicClasses.constructors.values())
     {
+      // Split dynamicClasses into two groups:
+      // - to those that are descended from class Entity
+      //   (so they do have an id).
+      // - and those that are descended from something else
+      //   (so they don't have an id).
       if (!this.isEntity(Class))
       {
         // Non-entity class prototypes are just an instances
@@ -123,7 +121,7 @@ export class ClassFactory extends AutoSaveableObject
   // Creates a new object based on object 'prototype'.
   // Non-primitive properties will also be recursively
   // instantiated.
-  public createInstance(prototype: NamedClass)
+  public createInstance(prototypeObject: NamedClass)
   {
     // Object.create() will create a new object with 'prototype'
     // as it's prototype. This will change all 'own' properties
@@ -131,46 +129,63 @@ export class ClassFactory extends AutoSaveableObject
     // prototype) to 'inherited' properties (so that changing the
     // value on prototype will change the value for all instances
     // that don't have that property overriden.
-    let instance = Object.create(prototype);
+    let instance = Object.create(prototypeObject);
 
-    return this.instantiateObjectProperties(instance, prototype.className);
+    return this.instantiateObjectProperties
+    (
+      instance,
+      prototypeObject.className
+    );
   }
 
-  /*
-  public async initEntityPrototypes()
+  // 'prototype' can be a class name or an entity id.
+  // (Note that prototype object can also be a regular entity,
+  //  if it's an editable dynamic prototype. In that case, you
+  //  won't find it here in ClassFactory, you have to get it
+  //  from EntityManager. See EntityManager.getPrototypeObject())
+  // -> Returns 'undefined' if 'prototype' isn't found.
+  public getPrototypeObject(prototype: string)
   {
-    let constructors = DynamicClasses.constructors;
+    // Check if 'prototype' exists in this.hardcodedPrototypeIds.
+    // (so that it's a class name).
+    let prototypeId = this.hardcodedPrototypeIds.get(prototype);
+    let prototypeRecord = null;
 
-    let saveExists = await NamedEntity.isNameTaken
-    (
-      "Entity",
-      NamedEntity.NameCathegory.prototypes
-    );
-
-    let prototypeEntity = null;
-
-    if (saveExists)
+    if (prototypeId !== undefined)
     {
-      prototypeEntity = await Server.entityManager.loadNamedEntity
-      (
-        'Entity',
-        NamedEntity.NameCathegory.prototypes
-      );
+      // 'this.hardcodedPrototypeIds' only translates prototype
+      // classNames to respective ids, so to get our prototypeObject
+      // we need to request corresponding prototypeRecord from
+      // this.hardcodedPrototypeIds using this id.
+      prototypeRecord = this.hardcodedPrototypeIds.get(prototypeId);
     }
     else
     {
-      prototypeEntity = this.createPrototype(Entity);
+      // If 'prototope' didn't exist in this.hardcodedPrototypeIds,
+      // it means that's its not a valid prototype class name, but
+      // it still can be a valid prototype id - which we can determine
+      // by searching it in  this.hardcodedPrototypeRecords.
+      prototypeRecord = this.hardcodedPrototypeIds.get(prototype);
     }
 
-    // Even if dynamic classes assignment has been loaded
-    // (by loading prototypeEntity from disk), we still
-    // do it in order to add newly added dynamic classes
-    // that don't have a prototypeId yet.  
-    this.assignPrototypes(prototypeEntity);
+    if (prototypeRecord === undefined || prototypeRecord === null)
+      return undefined;
 
-    await prototypeEntity.save();
+    // Now we have a prototype record corresponding to requested
+    // 'prototype', but we need to return a prototypeObect contained
+    // in this record.
+    //   So we check the prototypeObject is valid:
+    if (prototypeRecord.prototypeObject === null)
+    {
+      ERROR("Attempt to request prototypeObject of prototype"
+        + " " + prototype + " which doesn't have it initialized"
+        + " in it's prototype record yet");
+      return undefined;
+    }
+
+    // And return it.
+    return prototypeRecord.prototypeObject;
   }
-  */
 
   /*
   // Only searches for prototypes that are not entities.
@@ -653,7 +668,13 @@ export class ClassFactory extends AutoSaveableObject
       ERROR("Prototype record for id '" + id + "'"
         + " already has a prototypeObject assigned");
     
-    record.prototypeObject = this.createInstance(new Class);
+    /// IMHO tady nepotřebuju createInstance (tj. Object.create()
+    /// a instancování properties), protože půjde o prototype
+    /// object, který odstíní vlastní vytváření konkrétních intancí.
+    /// - prototyp coby Object.create() potřebuju pouze u editovatelných
+    ///   prototypů, a to právě proto, aby byly editovatelné. 
+    ///record.prototypeObject = this.createInstance(new Class);
+    record.prototypeObject = new Class;
   }
 
   private createPrototypeRecord(Class: any)
@@ -676,7 +697,7 @@ export class ClassFactory extends AutoSaveableObject
     this.hardcodedPrototypeIds.set(id, Class.name);
   }
 
-  private async initEntityPrototypes(classes: Array<any>)
+  private async initEntityPrototypes(entityClasses: Array<any>)
   {
     // Load ClassFactory from the save. This will load
     // hardcodedPrototypeRecords and hardcodedPrototypeIds
@@ -692,7 +713,7 @@ export class ClassFactory extends AutoSaveableObject
 
     // Go through all dynamic entity classes specified in
     // DynamicClasses.init().
-    for (let Class of classes)
+    for (let Class of entityClasses)
     {
       // First we check if our class already has an id assigned.
       // (hashmap returns 'undefined' if it doesn't contain requested entry)
