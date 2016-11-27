@@ -1,3 +1,9 @@
+TODO: Kromě mapy id -> prototypeObject potřebuju ještě
+      className -> prototypeObject
+(Protože chci tvořit instance hardcoded entit z kódu a nemůžu jako parametr
+ předávat idčko.)
+- blbnu, to tam samozřejmě už je.
+
 Jinak:
 - nechci implementovat prototype chain v rámci hardcoded class.
   Když chci instanci přímo hardcoded classy, tak bych měl udělat
