@@ -163,21 +163,22 @@ export class EntityManager
   public createEntity
   (
     name: string,
+    // 'cathegory = null' means that entity won't have unique name.
     cathegory: NamedEntity.NameCathegory,
-    prototypeId: string
+    // Class name or entity id.
+    prototype: string
   )
   {
-    let prototype = this.get(prototypeId, Entity);
+    let prototypeObject = this.getPrototypeObject(prototype);
 
-    if (prototype === undefined)
+    if (prototypeObject === undefined)
     {
-      ERROR("Unable to create entity based on prototype id"
-        + " '" + prototypeId + "' in cathegory"
-        + " '" + NamedEntity.NameCathegory[cathegory] + "'");
+      ERROR("Unable to create entity '" + name + "' based"
+        + " on prototype '" + prototype + "'");
       return null;
     }
 
-    return this.createEntityFromPrototype(name, cathegory, prototype);
+    return this.createEntityFromPrototype(name, cathegory, prototypeObject);
   }
 
   // Loads entity from file. Don't use this method, call entity.load() instead
@@ -830,17 +831,35 @@ export class EntityManager
   private createEntityFromPrototype
   (
     name: string,
-    cathegory: NamedEntity.NameCathegory = null,
-    prototype: Entity
+    cathegory: NamedEntity.NameCathegory,
+    prototypeObject: Entity
   )
   {
     // Generate an id for this new entity.
     let id = this.idProvider.generateId();
 
-    let entity = Server.classFactory.createInstance(prototype);
+    // Note that entity is not really an instance in the sense of
+    // 'new Class', but rather an empty object with prototypeObject
+    // set as it's prototype using Object.create(). It's non-primitive
+    // properties are also instantiated like this. This way, any property
+    // not set to entity after it's creation is actually read from the
+    // prototypeObject, which means that if you edit a prototype,
+    // changes will propagate to all entities instantiated from it,
+    // which don't have that property overriden. 
+    let entity = Server.classFactory.createInstance(prototypeObject);
+
+    if (entity['setId'] === undefined)
+    {
+      ERROR("Attempt to create entity '" + name + "' from prototype which"
+        + " is not an instance of Entity class or it's descendants");
+      return null;
+    }
 
     entity.setId(id);
 
+    // Create a Javascript Proxy Object that will trap access
+    // of entity properties and report en error if an invalid
+    // (deleted) entity is accessed.
     let proxy = this.proxify(entity);
 
     proxy.setName(name, cathegory);
@@ -862,5 +881,22 @@ export class EntityManager
     this.add(proxy, handler);
 
     return proxy;
+  }
+
+  // 'prototype' can be a class name or an entity id.
+  // -> Returns 'undefined' if 'prototype' isn't found.
+  private getPrototypeObject(prototype: string)
+  {
+    // Check if 'prototype' is stored in ClassFactory.
+    // (so that's ehtier an class name or an id of
+    //  hardcoded class like 'Character')
+    let prototypeObject = Server.classFactory.getPrototypeObject(prototype);
+
+    if (prototypeObject !== undefined)
+      return prototypeObject;
+
+    // Check if 'prototype' exists in EntityManager.
+    // (so that it's an id of editable prototype entity)
+    return this.get(prototype, Object);
   }
 }

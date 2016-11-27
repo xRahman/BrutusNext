@@ -48,9 +48,6 @@ export class Server
 
   private timeOfBoot = new Date();
 
-  // Allows creation of new classes in runtime.
-  private classFactory = new ClassFactory();
-
   // --- singleton instances ---
   // (There is only one such instance per server.)
 
@@ -58,6 +55,9 @@ export class Server
   private telnetServer = new TelnetServer(Server.DEFAULT_TELNET_PORT);
   private httpServer = new HttpServer(Server.DEFAULT_HTTP_PORT);
   private idProvider = new IdProvider(this.timeOfBoot);
+
+    // Allows creation of new classes in runtime.
+  private classFactory = new ClassFactory(this.idProvider);
   
   // --------- idLists ---------
   // IdLists contain entity id's.
@@ -69,7 +69,7 @@ export class Server
   // Unlike idLists, managers store actual instances, not just references.
 
   // Contains all entities (accounts, connections, all game entities).
-  private entityManager = new EntityManager(this.timeOfBoot);
+  private entityManager = new EntityManager(this.idProvider);
 
   // flagNamesManager is in Server instead of Game, because flags are needed
   // even outside of game (for example account flags).
@@ -247,8 +247,8 @@ export class Server
     /// TEST
     await test();
 
-    // We must check if './data/' directory exists Before
-    // initEntityPrototypes() is called, because './data/'
+    // We must check if './data/' directory exists before
+    // initPrototypes() is called, because './data/'
     // will be created by it if it doesn't exist.
     let createDefaultData = !FileSystem.existsSync('./data/');
 
