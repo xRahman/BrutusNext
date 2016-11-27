@@ -139,7 +139,7 @@ export class EntityManager
 
   // ---------------- Public methods --------------------
 
-    // Loads uniquely named entity from file
+  // Loads uniquely named entity from file
   // (it must not exist in EntityManager). 
   // -> Returns reference to the loaded entity.
   public async loadNamedEntity
@@ -169,7 +169,7 @@ export class EntityManager
     prototype: string
   )
   {
-    let prototypeObject = this.getPrototypeObject(prototype);
+    let prototypeObject = Server.classFactory.getPrototypeObject(prototype);
 
     if (prototypeObject === undefined)
     {
@@ -881,22 +881,5 @@ export class EntityManager
     this.add(proxy, handler);
 
     return proxy;
-  }
-
-  // 'prototype' can be a class name or an entity id.
-  // -> Returns 'undefined' if 'prototype' isn't found.
-  private getPrototypeObject(prototype: string)
-  {
-    // Check if 'prototype' is stored in ClassFactory.
-    // (so that's ehtier an class name or an id of
-    //  hardcoded class like 'Character')
-    let prototypeObject = Server.classFactory.getPrototypeObject(prototype);
-
-    if (prototypeObject !== undefined)
-      return prototypeObject;
-
-    // Check if 'prototype' exists in EntityManager.
-    // (so that it's an id of editable prototype entity)
-    return this.get(prototype, Object);
   }
 }
