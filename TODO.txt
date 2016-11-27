@@ -1,3 +1,21 @@
+TODO: getPrototypeObject z EntityManageru zrušit.
+- místo toho zavolat rovnou getPrototypeObject z ClassFactory a z ní
+  volat EntityManager.get().
+
+TODO: EntityManager.loadEntity(id: string)
+- vykašlat se na trapčení s vytvářením invalid reference a následným
+  loadováním.
+
+TODO: Assignování idček při vytváření nového prototypu
+  (ancestor do entity, descendants do předka).
+  - tj. nějaké createPrototype()
+    - asi v EntityManageru, protože dynamicky vytvářené prototypy
+      budou vždycky entity.
+    - a možná by mělo existovat i něco jako convertToPrototype()
+
+Entity.load()
+Entity.save()
+
 TODO: Kromě mapy id -> prototypeObject potřebuju ještě
       className -> prototypeObject
 (Protože chci tvořit instance hardcoded entit z kódu a nemůžu jako parametr

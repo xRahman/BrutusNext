@@ -138,53 +138,22 @@ export class ClassFactory extends AutoSaveableObject
     );
   }
 
-  // 'prototype' can be a class name or an entity id.
-  // (Note that prototype object can also be a regular entity,
-  //  if it's an editable dynamic prototype. In that case, you
-  //  won't find it here in ClassFactory, you have to get it
-  //  from EntityManager. See EntityManager.getPrototypeObject())
+  // 'prototype' can be a hardcoded class name or an entity id.
   // -> Returns 'undefined' if 'prototype' isn't found.
   public getPrototypeObject(prototype: string)
   {
-    // Check if 'prototype' exists in this.hardcodedPrototypeIds.
-    // (so that it's a class name).
-    let prototypeId = this.hardcodedPrototypeIds.get(prototype);
-    let prototypeRecord = null;
+    // Reuested prototype can either exist in ClassFactory,
+    // if it's a hardcoded class, or in EtityManager, if it's
+    // an editable prototype.
 
-    if (prototypeId !== undefined)
-    {
-      // 'this.hardcodedPrototypeIds' only translates prototype
-      // classNames to respective ids, so to get our prototypeObject
-      // we need to request corresponding prototypeRecord from
-      // this.hardcodedPrototypeIds using this id.
-      prototypeRecord = this.hardcodedPrototypeIds.get(prototypeId);
-    }
-    else
-    {
-      // If 'prototope' didn't exist in this.hardcodedPrototypeIds,
-      // it means that's its not a valid prototype class name, but
-      // it still can be a valid prototype id - which we can determine
-      // by searching it in  this.hardcodedPrototypeRecords.
-      prototypeRecord = this.hardcodedPrototypeIds.get(prototype);
-    }
+    // First we check if 'prototype' exists in ClassFactory.
+    let prototypeObject = this.searchPrototypeInClassFactory(prototype);
 
-    if (prototypeRecord === undefined || prototypeRecord === null)
-      return undefined;
+    if (prototypeObject !== undefined)
+      return prototypeObject;
 
-    // Now we have a prototype record corresponding to requested
-    // 'prototype', but we need to return a prototypeObect contained
-    // in this record.
-    //   So we check the prototypeObject is valid:
-    if (prototypeRecord.prototypeObject === null)
-    {
-      ERROR("Attempt to request prototypeObject of prototype"
-        + " " + prototype + " which doesn't have it initialized"
-        + " in it's prototype record yet");
-      return undefined;
-    }
-
-    // And return it.
-    return prototypeRecord.prototypeObject;
+    // Then we check if 'prototype' exists in EntityManager.
+    return Server.entityManager.get(prototype, Object);
   }
 
   /*
@@ -728,5 +697,55 @@ export class ClassFactory extends AutoSaveableObject
       //   So we can create a prototype object for the Class.
       this.createPrototypeObject(id, Class);
     }
+  }
+
+  // Searches for prototypeRecord matching 'prototype both in
+  // this.hardcodedPrototypeIds and in this.hardcodedPrototypeRecords.
+  // -> Returns 'undefined' if matching prototypeRecord isn't found.
+  private getPrototypeRecord(prototype: string)
+  {
+    // Check if 'prototype' exists in this.hardcodedPrototypeIds
+    // (so that it's a class name).
+    let prototypeId = this.hardcodedPrototypeIds.get(prototype);
+
+    if (prototypeId !== undefined)
+    {
+      // 'this.hardcodedPrototypeIds' only translates prototype
+      // classNames to respective ids, so to get our prototypeRecord
+      // we need to request it from this.hardcodedPrototypeRecords
+      // the id we have just obtained.
+      return this.hardcodedPrototypeRecords.get(prototypeId);
+    }
+
+    // If 'prototope' doesn't exist in this.hardcodedPrototypeIds,
+    // it means that's its not a valid prototype class name, but
+    // it still can be a valid prototype id - which we can determine
+    // by searching it in  this.hardcodedPrototypeRecords.
+    return this.hardcodedPrototypeRecords.get(prototype);
+  }
+
+  // Searches for 'prototype' both in this.hardcodedPrototypeIds
+  // and in this.hardcodedPrototypeRecords.
+  // -> Returns 'undefined' if 'prototype' isn't found.
+  private searchPrototypeInClassFactory(prototype: string)
+  {
+    let prototypeRecord = this.getPrototypeRecord(prototype);
+
+    if (prototypeRecord === undefined || prototypeRecord === null)
+      return undefined;
+
+    // Now we have a prototype record corresponding to requested
+    // 'prototype', but we need to return a prototypeObect contained
+    // in this record.
+    //   So we check the prototypeObject is valid:
+    if (prototypeRecord.prototypeObject === null)
+    {
+      ERROR("Attempt to request prototypeObject of prototype"
+        + " " + prototype + " which doesn't have it initialized"
+        + " in it's prototype record yet");
+      return undefined;
+    }
+
+    return prototypeRecord.prototypeObject;
   }
 }
