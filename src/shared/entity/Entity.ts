@@ -9,7 +9,7 @@
 import {ERROR} from '../../shared/error/ERROR';
 import {FATAL_ERROR} from '../../shared/error/FATAL_ERROR';
 ///import {NamedClass} from '../../shared/NamedClass';
-import {PrototypeEntity} from '../../shared/entity/PrototypeEntity';
+///import {PrototypeEntity} from '../../shared/entity/PrototypeEntity';
 import {SaveableObject} from '../../shared/fs/SaveableObject';
 import {AutoSaveableObject} from '../../shared/fs/AutoSaveableObject';
 import {Server} from '../../server/Server';
@@ -26,14 +26,11 @@ export class Entity extends AutoSaveableObject
 
   // ------------- Public static methods ----------------
 
-  // -> If loading fails, result.jsonObject will be null.
-  public static async loadJsonOject(id: string)
+  /// Obsolete.
+  /*
+  // -> Returns 'null' if loading fails.
+  public static async loadJsonOject(path: string)
   {
-    // Return value of this method.
-    let result = { jsonObject: null, prototypeId: null, path: null };
-
-    result.path = Entity.getSavePath(id);
-
     // First we load data from file into generic (untyped)
     // javascript Object.
     result.jsonObject =
@@ -57,6 +54,7 @@ export class Entity extends AutoSaveableObject
 
     return result;
   }
+  */
 
   // Instances of entities are all saved to ./data/entities as <id>.json
   // (the method is static because in order to load an entity, save path

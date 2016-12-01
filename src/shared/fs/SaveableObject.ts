@@ -72,9 +72,7 @@ export class SaveableObject extends InstantiableClass
     let jsonString = await FileSystem.readFile(path);
 
     // 'path' is passed just so it can be printed to error messages.
-    let jsonObject = SaveableObject.loadFromJsonString(jsonString, path);
-
-    return jsonObject; 
+    return SaveableObject.loadFromJsonString(jsonString, path); 
   }
 
   // ------------- Private static methods ---------------
