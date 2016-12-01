@@ -37,6 +37,7 @@ import {IdProvider} from '../../shared/entity/IdProvider';
 import {Entity} from '../../shared/entity/Entity';
 import {NameLockRecord} from '../../shared/entity/NameLockRecord';
 import {EntityRecord} from '../../shared/entity/EntityRecord';
+import {PrototypeEntity} from '../../shared/entity/PrototypeEntity';
 import {NamedEntity} from '../../shared/entity/NamedEntity';
 import {NameSearchList} from '../../shared/entity/NameSearchList';
 import {EntityProxyHandler} from '../../shared/entity/EntityProxyHandler';
@@ -162,20 +163,15 @@ export class EntityManager
 
   public async loadEntity(id: string)
   {
-    // First check if such entity already exists in EntityManager.
+    // First check if such entity already exists in EntityManager
+    // (get() returns 'undefined' if entity is not found).
     let entity = this.get(id, Entity);
 
     // If it does, there is no point in loading it - any unsaved changes
     // would be lost.
     if (entity !== undefined)
     {
-      ERROR("It is not possible to load entity"
-        + " " + entity.getErrorIdString() + " because it"
-        + " is already loaded in EntityManager. All unsaved"
-        + " changes would be lost. If you really need to lose"
-        + " unsaved changes on this entity, remove() it from"
-        + " EntityManager and then call EntityManager.loadEntity()."
-        + " Entity is not loaded");
+      this.reportEntityExists(entity);
       return entity;
     }
 
@@ -197,7 +193,57 @@ export class EntityManager
 ///    // entity to the manager.
 ///    await entity.load();
 
-    return entity;
+    /// TODO: Vykašlat se na loadResult.
+    /// Loadnout jsonObject a z něj pak přečíst ten zbytek samostatnými
+    /// metodami.
+    ///  Ještě lépe: o vytažení potřebných údajů z jsonObjectu se postará
+    /// přímo loadEntityFromJsonObject().
+    // Note: 'null' prototypeId is allowed, because the root prototype
+    // entity doesn't have any prototype.
+    ///let loadResult: { jsonObject: Object, prototypeId: string, path: string };
+
+    /*
+    // First we load jsonObject from the entity save file and read 
+    // 'prototypeId' from it.
+    loadResult = await Entity.loadJsonOject(id);
+    
+    if (loadResult.jsonObject === null)
+      // Error is already reported by Entity.loadJsonObject().
+      return;
+
+    // Now we load entity from json object and assign it to
+    // our entity proxy handler.
+    entity = this.loadEntityFromJsonObject
+    (
+      loadResult.prototypeId,
+      loadResult.jsonObject,
+      loadResult.path,
+      id
+    );
+    */
+
+    /// TODO: Ještě z toho potřebuju vytáhnout 'path', ze které
+    /// se loadovalo, abych ho mohl dávat do chybových hlášek.
+    /// 3 možnosti:
+    /// - nejdřív vytvořit path a pak ho dát Entity.loadJsonOject()
+    ///   jako parametr místo 'id'.
+    /// - nastavit path jako side effect (zapsat ho do parametru)
+    ///    (to je kostrbaté, musel by to být objekt).
+    /// - vracet loadResult
+    /// Ok, takže použít. řešení č. 1
+
+    let path = Entity.getSavePath(id);
+    let jsonObject = await SaveableObject.loadJsonObjectFromFile(path);
+
+    if (jsonObject === null)
+      // Error is already reported by SaveableObject.loadJsonObjectFromFile().
+      return;
+
+    // 'path' is passed just to make error messages more informative.
+    entity = this.loadEntityFromJsonObject(jsonObject, id, path);
+
+    // Create a proxy object for 'entity' and add it to the manager.
+    return this.addEntity(entity);
   }
 
   public createEntity
@@ -221,6 +267,7 @@ export class EntityManager
     return this.createEntityFromPrototype(name, cathegory, prototypeObject);
   }
 
+  /// TODO: Předělat (nebo úplně zrušit entity.load()).
   // Loads entity from file. Don't use this method, call entity.load() instead
   // (this method is automatically called by entity proxy handler when you
   // call load() method on your entity reference).
@@ -268,7 +315,7 @@ export class EntityManager
     //   us as parameter by 'load()' trap handler in EntityProxyHandler,
     //   so we can be sure that we are not creating a duplicit proxy
     //   reference to the same entity.
-    this.add(proxy, handler);
+    this.addProxy(proxy, handler);
 
     // Note: 
     //   We don't have to update proxy handlers inside entityRecord
@@ -388,6 +435,8 @@ export class EntityManager
     return this.entityRecords.has(id);
   }
 
+  /// Tohohle se taky chci zbavit.
+  /*
   /// TODO: Asi to sloučit s get() - get prostě bude vždycky
   /// vracet referenci.
   /// - loadnout invalid referenci je ok. Není ok updatovat invalid
@@ -413,7 +462,8 @@ export class EntityManager
       return this.get(id, typeCast);
 
     return this.createInvalidEntityReference(id, typeCast);
-  } 
+  }
+  */
 
   /*
   // Creates THE prototype entity (one and only)
@@ -717,8 +767,8 @@ export class EntityManager
   }
   */
 
-  // Adds entity to the manager.
-  private add(entityProxy: Entity, handler: EntityProxyHandler)
+  // Adds entity proxy to the manager.
+  private addProxy(proxy: Entity, handler: EntityProxyHandler)
   {
     let entity = handler.entity;
 
@@ -730,12 +780,14 @@ export class EntityManager
       return;
     }
 
-    let entityRecord = new EntityRecord(entity, entityProxy, handler);
+    let entityRecord = new EntityRecord(entity, proxy, handler);
 
     // Add newly created entity record to hashmap under entity's string id.
     this.entityRecords.set(handler.id, entityRecord);
   }
 
+  /// Tohohle se chci zbavit.
+  /*
   // Purposedly creates an invalid reference
   private createInvalidEntityReference<T>
   (
@@ -748,6 +800,7 @@ export class EntityManager
 
     return this.createInvalidEntityProxy(id, handler, typeCast);
   }
+  */
 
   // Loads entity id from file corresponding to unique entity
   // name and it's unique names cathegory.
@@ -774,6 +827,9 @@ export class EntityManager
     return idRecord.id;
   }
 
+  /// Tohle už je taky obsolete - místo toho je
+  /// ClassFactory.getPrototypeObject().
+  /*
   // -> Returns entity specified by 'prototypeId' or a new Entity
   //    if 'prototypeId' is null (that should only be true for
   //    the root prototype entity).
@@ -793,31 +849,106 @@ export class EntityManager
     // retreive it from the EntityManager.
     return this.get(prototypeId, Entity);
   }
+  */
 
+  // -> Returns prototype id read from 'jsonObject', 'null' if it's not there. 
+  private readPrototypeIdFromJsonObject
+  (
+    jsonObject: Object,
+    // 'path' is passed just to make error messages more informative.
+    path: string
+  )
+  {
+    if (jsonObject === null || jsonObject === undefined)
+    {
+      ERROR("Invalid json object loaded from file"
+        + " " + path + " Entity is not loaded");
+      return null;
+    }
+
+    let prototypeId = jsonObject[PrototypeEntity.PROTOTYPE_ID_PROPERTY]; 
+
+    if (prototypeId === undefined || prototypeId === null)
+    {
+      ERROR("Missing className in file " + path + "."
+        + " Entity is not loaded");
+      return null;
+    }
+
+    return prototypeId;
+  }
+
+  // -> Returns prototype object matching prototypeId in 'jsonObject'
+  //    or 'null' if the property isn't valid.
+  private getPrototypeForJsonObject(jsonObject: Object, path: string)
+  {
+    let prototypeId = this.readPrototypeIdFromJsonObject(jsonObject, path);
+
+    if (prototypeId === null)
+      // Error is already reported by readPrototypeIdFromJsonObject().
+      return null;
+
+    let prototypeObject = Server.classFactory.getPrototypeObject(prototypeId);
+
+    if (prototypeObject === undefined)
+    {
+      ERROR("Cannot find prototype object for prototype"
+        + " " + prototypeId + ". Entity is not loaded");
+      return null;
+    }
+
+    return prototypeObject;
+  }
+
+  // Creates an instance of an entity, loads it from 'jsonObject'
+  // and sets 'entityId' to it. Doesn't create a proxy object.
+  // Doesn't add the entity to the manager.
+  // -> Returns loaded entity (not a proxy) or 'null' on load failure. 
   private loadEntityFromJsonObject
   (
-    prototypeId: string,
     jsonObject: Object,
-    path: string,
-    handlerId: string
+    id: string,
+    // 'path' is passed just to make error messages more informative.
+    path: string
   )
   : Entity
   {
-    let prototype = this.getPrototype(prototypeId);
+    let prototypeObject = this.getPrototypeForJsonObject(jsonObject, path);
 
-    // Now we can create an instance based on the prototype.
-    let entity = Server.classFactory.createInstance(prototype);
+    if (prototypeObject === null)
+      // Error is already reported by getPrototypeForJsonObject().
+      return null
+
+    // Now we can create an instance based on the prototype object.
+    let entity = Server.classFactory.createInstance(prototypeObject);
 
     // And let it load itself from jsonObject.
+    // ('path' is passed just to make error messages more informative)
     if (!entity.loadFromJsonObject(jsonObject, path))
-      return;
+      return null;
 
     // Also update entity's id.
-    // (it is not saved to file, because id is used as file name
-    //  so there would be unnecessary duplicity).
-    entity.setId(handlerId);
+    // (it is not saved to file, because id is used as file
+    //  name so there would be unnecessary duplicity).
+    entity.setId(id);
+
+    return entity;
   }
 
+  private reportEntityExists(entity: Entity)
+  {
+    ERROR("It is not possible to load entity"
+      + " " + entity.getErrorIdString() + " because it"
+      + " is already loaded in EntityManager. All unsaved"
+      + " changes would be lost. If you really need to lose"
+      + " unsaved changes on this entity, remove() it from"
+      + " EntityManager and then call EntityManager.loadEntity()."
+      + " Entity is not loaded");
+  }
+
+  /// Tohle bych ideálně neměl potřebovat - ale asi si udělám
+  /// podobnou funkci, která se bude volat z createEntity().
+  /*
   // -> Returns true if entity referenced by handler already exists
   //    in memory or in EntityManager.
   private entityExists(handler: EntityProxyHandler): boolean
@@ -841,7 +972,12 @@ export class EntityManager
 
     return false;
   }
+  */
 
+  // Creates a new entity based on 'prototypeObject', encapsulates
+  // the result in a javascript proxy object to trap access to invalid
+  // entity and adds the proxy to the manager.
+  // -> Returns the proxy that should be used to access the entity.
   private createEntityFromPrototype
   (
     name: string,
@@ -871,28 +1007,31 @@ export class EntityManager
 
     entity.setId(id);
 
-    // Create a Javascript Proxy Object that will trap access
-    // of entity properties and report en error if an invalid
-    // (deleted) entity is accessed.
-    let proxy = this.proxify(entity);
+    let proxy = this.addEntity(entity);
 
     proxy.setName(name, cathegory);
 
     return proxy;
   }
 
-  // Creates an entity proxy handler for 'entity'.
-  // Also adds the proxified entity to the EntityManager.
-  private proxify(entity: Entity)
+  // Creates an entity proxy handler for 'entity', than
+  // adds the proxy to the manager.
+  // -> Returns the proxy that should be used to access the entity.
+  private addEntity(entity: Entity)
   {
     let handler = new EntityProxyHandler();
 
     handler.id = entity.getId();
     handler.entity = entity;
 
+    // Create a Javascript Proxy Object that will trap access
+    // of entity properties (using EntityProxyHandler we have
+    // just created) and report en error if an invalid (deleted)
+    // entity is accessed.
     let proxy = new Proxy({}, handler);
 
-    this.add(proxy, handler);
+    // Add the proxy to the manager.
+    this.addProxy(proxy, handler);
 
     return proxy;
   }
