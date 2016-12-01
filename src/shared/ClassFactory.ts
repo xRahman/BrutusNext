@@ -123,14 +123,19 @@ export class ClassFactory extends AutoSaveableObject
   // instantiated.
   public createInstance(prototypeObject: NamedClass)
   {
-    // Object.create() will create a new object with 'prototype'
-    // as it's prototype. This will change all 'own' properties
-    // (those initialized in constructor or in class body of
-    // prototype) to 'inherited' properties (so that changing the
-    // value on prototype will change the value for all instances
-    // that don't have that property overriden.
+    // Object.create() will create a new object with 'prototypeObject'
+    // as it's prototype. This will ensure that all 'own' properties
+    // of 'prorotypeObject' (those initialized in constructor or in
+    // class body of prototype) become 'inherited' properties on our
+    // instance (so that changing the value on prototype will change
+    // the value for all instances that don't have that property overriden).
     let instance = Object.create(prototypeObject);
 
+    // We also need to use Object.create() for all non-primitive properties,
+    // because in javascript such properties are only inherited by copying
+    // a reference to such property on prototype object, which would mean
+    // that changing a property of a non-primitive property on an instance
+    // would actualy change that value on prototype.
     return this.instantiateObjectProperties
     (
       instance,
@@ -142,17 +147,17 @@ export class ClassFactory extends AutoSaveableObject
   // -> Returns 'undefined' if 'prototype' isn't found.
   public getPrototypeObject(prototype: string)
   {
-    // Reuested prototype can either exist in ClassFactory,
+    // Reuested prototype object can either exist in ClassFactory,
     // if it's a hardcoded class, or in EtityManager, if it's
     // an editable prototype.
 
-    // First we check if 'prototype' exists in ClassFactory.
+    // Check if 'prototype' exists in ClassFactory.
     let prototypeObject = this.searchPrototypeInClassFactory(prototype);
 
     if (prototypeObject !== undefined)
       return prototypeObject;
 
-    // Then we check if 'prototype' exists in EntityManager.
+    // Check if 'prototype' exists in EntityManager.
     return Server.entityManager.get(prototype, Object);
   }
 

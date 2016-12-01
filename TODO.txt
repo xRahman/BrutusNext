@@ -1,10 +1,40 @@
+TODO: EntityManager.getPrototype() asi nebude dobře
+- a stejně tak i EntityManager.loadEntityFromJsonObject(), ze které se volá
+(správně bude asi ClassFactory.getPrototypeObject()).
+
 TODO: getPrototypeObject z EntityManageru zrušit.
 - místo toho zavolat rovnou getPrototypeObject z ClassFactory a z ní
   volat EntityManager.get().
+[done]
 
 TODO: EntityManager.loadEntity(id: string)
 - vykašlat se na trapčení s vytvářením invalid reference a následným
   loadováním.
+Ono to asi v podstatě existuje, jmenuje se to loadEntityById().
+- asi by to šlo přejmenovat na loadEntity().
+--- konfliktí to s funkcí loadEntity(), která se volá z load() handleru
+    proxy 
+- a každopádně by to mělo být public.
+/*
+  ÚVAHA:
+  Chci entity.save()?
+  - určitě ano (ale to s loadováním nesouvisí).
+  Chci entity.load()?
+  - asi by se to hodilo třeba v případě, že bych měl referenci na playera,
+    který mi quitnul - při znovupřipojení bych mohl chtít na tuhle referenci
+    zavolat prostě load().
+  - na druhou stranu co mi brání udělat 'character = loadEntity(id);' ?
+  - ta první varianta (character.load()) by obnovila funkčnost ostatních
+    existujících referencí...
+   
+  Každopádně to ale znamená, že nepotřebuju žádné 'createInvalidreference()'.
+  - když referenci nemám, tak zavolám prostě loadEntity().
+*/
+TODO:
+- Prozatím zrušit load() trapu z EntityProxyHandleru
+- Zrušit starou fce EntityManager.loadEntity() a udělat z ní novou loadEntity()
+- možná starou loadEntity() přejmenovat na onLoadTrapHandler()
+
 
 TODO: Assignování idček při vytváření nového prototypu
   (ancestor do entity, descendants do předka).
