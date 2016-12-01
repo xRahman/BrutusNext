@@ -561,6 +561,14 @@ export class EntityProxyHandler
     // EntityProxyHandler, but the proxy. So '_proxyHandler'
     // property access must be trapped in order for this to work.
     let proxyHandler = this['_proxyHandler'];
+    let id = proxyHandler.id; 
+
+    if (id === null || id === undefined)
+    {
+      ERROR("Missing or invalid id in entity proxy handler."
+        + " Entity is not loaded");
+      return;
+    }
 
     // Note: We are intentionally passing the proxy as parameter
     //   (by passing 'this'). It will be needed in order to add
@@ -571,6 +579,10 @@ export class EntityProxyHandler
     // However, typescript doesn't know that 'this' is not an
     // EntityProxyHandler, so we have to typecast 'this' to <any>
     // to bypass incorrect type check.
-    await Server.entityManager.loadEntity(proxyHandler, <any>this);
+    await Server.entityManager.loadExistingEntityProxy
+    (
+      proxyHandler,
+      <any>this
+    );
   }
 }

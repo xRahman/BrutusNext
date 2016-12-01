@@ -157,13 +157,53 @@ export class EntityManager
       // Error is already reported by loadNamedEntityId()
       return null;
 
-    return await this.loadEntityById(id);
+    return await this.loadEntity(id);
+  }
+
+  public async loadEntity(id: string)
+  {
+    // First check if such entity already exists in EntityManager.
+    let entity = this.get(id, Entity);
+
+    // If it does, there is no point in loading it - any unsaved changes
+    // would be lost.
+    if (entity !== undefined)
+    {
+      ERROR("It is not possible to load entity"
+        + " " + entity.getErrorIdString() + " because it"
+        + " is already loaded in EntityManager. All unsaved"
+        + " changes would be lost. If you really need to lose"
+        + " unsaved changes on this entity, remove() it from"
+        + " EntityManager and then call EntityManager.loadEntity()."
+        + " Entity is not loaded");
+      return entity;
+    }
+
+    /// TODO:
+    /// - vytvořit prototype object
+    ///   (na to potřebuju znát idčko nebo jméno, tj. nejspíš nejdřív loadnout
+    ///    JSON object, přečíst to z něj a až pak vyrobit instanci entity,
+    ///    kterou nechám loadnout)
+    ///   -- ona to možná už dělá fce loadEntity(), která se volá z load()
+    ///      handleru.
+    ///   Je to tak, tzn. zbytek vzít z fce loadExistingEntityProxy()
+    ///   (tu bude taky potřeba upravit (nebo zrušit), btw).
+
+
+///    entity = this.createInvalidEntityReference(id, Entity);
+///
+///    // This works because entity is a proxy and 'load()' call
+///    // is trapped by the handler. 'load()' handler will also add
+///    // entity to the manager.
+///    await entity.load();
+
+    return entity;
   }
 
   public createEntity
   (
     name: string,
-    // 'cathegory = null' means that entity won't have unique name.
+    // 'cathegory = null' means that the name won't be unique.
     cathegory: NamedEntity.NameCathegory,
     // Class name or entity id.
     prototype: string
@@ -186,7 +226,7 @@ export class EntityManager
   // call load() method on your entity reference).
   // (You shouldn't even be able to call this method anyways, because you
   // (hopefuly) have no way to get your hands on an entity proxy handler).
-  public async loadEntity(handler: EntityProxyHandler, proxy: Entity)
+  public async loadExistingEntityProxy(handler: EntityProxyHandler, proxy: Entity)
   {
     if (!handler.sanityCheck())
     {
@@ -711,8 +751,7 @@ export class EntityManager
 
   // Loads entity id from file corresponding to unique entity
   // name and it's unique names cathegory.
-  // -> Returns id loaded from file.
-  //    Returns null in case of failure.
+  // -> Returns id loaded from file or 'null' in case of failure.
   private async loadNamedEntityId
   (
     name: string,
@@ -733,31 +772,6 @@ export class EntityManager
     }
 
     return idRecord.id;
-  }
-
-  private async loadEntityById(id: string)
-  {
-    // First check if such entity already exists in EntityManager.
-    let entity = this.get(id, Entity);
-
-    // If it does, there is no point in loading it - any unsaved changes
-    // would be lost.
-    if (entity !== undefined)
-    {
-      ERROR("Attempt to load entity " + entity.getErrorIdString()
-        + " which already exists in EntityManager. Returning"
-        + " existing entity");
-      return entity;
-    }
-
-    entity = this.createInvalidEntityReference(id, Entity);
-
-    // This works because entity is a proxy and 'load()' call
-    // is trapped by the handler. 'load()' handler will also add
-    // entity to the manager.
-    await entity.load();
-
-    return entity;
   }
 
   // -> Returns entity specified by 'prototypeId' or a new Entity
