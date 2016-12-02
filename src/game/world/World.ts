@@ -51,11 +51,11 @@ export class World extends GameEntity
   {
     // Create a new realm prototype.
     Game.prototypeManager.createPrototype('SystemRealm', 'Realm');
-    this.systemRealm = await Server.entityManager.createNamedEntity
+    this.systemRealm = await Server.entityManager.createEntity
     (
       'System Realm',
-      NamedEntity.NameCathegory.world,
-      'SystemRealm'
+      Realm,
+      NamedEntity.NameCathegory.world
     );
 
     // Even though we keep direct reference to systemRealm, we stil
@@ -66,11 +66,11 @@ export class World extends GameEntity
 
     // Create a new area prototype.
     Game.prototypeManager.createPrototype('SystemArea', 'Area');
-    this.systemArea = await Server.entityManager.createNamedEntity
+    this.systemArea = await Server.entityManager.createEntity
     (
       'System Area',
-      NamedEntity.NameCathegory.world,
-      'SystemArea'
+      Area,
+      NamedEntity.NameCathegory.world
     );
 
     // Add System Area to contents of System Realm.
@@ -80,8 +80,12 @@ export class World extends GameEntity
 
     // Create a new room prototype.
     Game.prototypeManager.createPrototype('SystemRoom', 'Room');
-    this.systemRoom = Server.entityManager.createEntity('SystemRoom');
-    this.systemRoom.setName("System Room");
+    this.systemRoom = Server.entityManager.createEntity
+    (
+      'System Room',
+      Room
+    );
+    ///this.systemRoom.setName("System Room");
 
     // Add System Room to contents of System Area.
     this.systemArea.insertEntity(this.systemRoom);
@@ -90,8 +94,12 @@ export class World extends GameEntity
 
     // Create a new room prototype.
     Game.prototypeManager.createPrototype('TutorialRoom', 'Room');
-    this.tutorialRoom = Server.entityManager.createEntity('TutorialRoom');
-    this.tutorialRoom.setName("Tutorial Room");
+    this.tutorialRoom = Server.entityManager.createEntity
+    (
+      'Tutorial Room',
+      Room
+    );
+    ///this.tutorialRoom.setName("Tutorial Room");
 
     // Add Tutorial Room to contents of System Area.
     this.systemArea.insertEntity(this.tutorialRoom);
