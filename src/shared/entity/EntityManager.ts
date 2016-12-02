@@ -184,19 +184,49 @@ export class EntityManager
     return this.addEntityAsProxy(entity);
   }
 
-  public createEntity
+  /*
+  public createEntity<T>
   (
     name: string,
-    // 'cathegory = null' means that the name won't be unique.
-    cathegory: NamedEntity.NameCathegory,
-    // Class (like Account) or entity id.
-    prototype: any
+    typeCast: { new (...args: any[]): T }
   )
-  {
-    let prototypeId = this.extractPrototypeId(prototype);
+  : Entity;
 
+  public createEntity<T>
+  (
+    name: string,
+    typeCast: { new (...args: any[]): T },
+    cathegory: NamedEntity.NameCathegory
+  )
+  : Entity;
+
+  public createEntity<T>
+  (
+    name: string,
+    typeCast: { new (...args: any[]): T },
+    prototypeId: string
+  )
+  : Entity;
+  */
+
+  public createEntity<T>
+  (
+    name: string,
+    // Either a prototype entity id, or a class (like Account).
+    typeCast: { new (...args: any[]): T },
+    // If 'cathegory' is 'null', the name won't be unique.
+    cathegory: NamedEntity.NameCathegory = null,
+    // If 'prototypeId' is 'null', 'typeCast' will be used as prototype.
+    prototypeId: string = null
+  )
+  : T
+  {
+    // In order to create entity from harcoded class (like Account),
+    // 'prototypeId' parameter is ommited (or null). Class name of
+    // 'typeCast' parameter will be used instead of 'prototypeId' to
+    //  identify the prototype object.
     if (prototypeId === null)
-      return;
+      prototypeId = typeCast.name;
 
     let prototypeObject = Server.classFactory.getPrototypeObject(prototypeId);
 
@@ -207,7 +237,14 @@ export class EntityManager
       return null;
     }
 
-    return this.createEntityFromPrototype(name, cathegory, prototypeObject);
+    let entity = this.createEntityFromPrototype
+    (
+      name,
+      cathegory,
+      prototypeObject
+    );
+
+    return entity.dynamicCast(typeCast);
   }
 
   /// Prozatím entity.load() úplně disabluju.
@@ -726,7 +763,7 @@ export class EntityManager
       return;
     }
 
-    let entityRecord = new EntityRecord(entity, proxy, handler);
+    let entityRecord = new EntityRecord(proxy, handler);
 
     // Add newly created entity record to hashmap under entity's string id.
     this.entityRecords.set(handler.id, entityRecord);
