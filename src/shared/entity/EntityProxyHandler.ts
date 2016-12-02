@@ -215,10 +215,13 @@ export class EntityProxyHandler
     {
       ///console.log("EntityProxyHandler.get() trapped 'isValid'");
 
+      /// Prozatím nepůjde "oživit" mrtvou referenci.
+      /*
       // Entity reference is updated when someone asks if
       // it's valid to provide them with up-to-date info.
       if (this.entity === null)
         this.updateEnityReference();
+      */
 
       return this.isEntityValidTrapHandler;
     }
@@ -234,11 +237,14 @@ export class EntityProxyHandler
       return true;
     }
 
+    /// Prozatím entity.load() úplně disabluju.
+    /*
     // Trap calls of entity.load() method.
     if (property === 'load')
       return this.loadTrapHandler;
+    */
 
-        // This is an awful hack I'd very much liked to not to use...
+    // This is an awful hack I'd very much liked to not to use...
     // But it's necessary in orderd for function trapping to work.
     //   The reason is, that when you trap a function call, like
     // 'proxy.dynamicCast()', it gets split in two parts:
@@ -456,6 +462,8 @@ export class EntityProxyHandler
     return true;
   }
 
+  /// Prozatím nepůjde "oživit" mrtvou referenci.
+  /*
   // Requests current reference to entity from Server.entityManager
   // and updates this.reference with a new value.
   //   Returns false if entity is unavailable.
@@ -485,6 +493,7 @@ export class EntityProxyHandler
 
     return false;
   }
+  */
 
   // ------------ Private trap handlers ----------------
 
@@ -552,6 +561,8 @@ export class EntityProxyHandler
     return proxyHandler.isEntityValid();
   }
 
+  /// Prozatím entity.load() úplně disabluju.
+  /*
   // This method allows invalid entity proxy to load itself.
   //   'entity.load()' call is trapped by 'get' handler and
   //  handler.load() (this method) is called).
@@ -585,4 +596,5 @@ export class EntityProxyHandler
       <any>this
     );
   }
+  */
 }
