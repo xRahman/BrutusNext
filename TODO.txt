@@ -1,3 +1,10 @@
+TODO: V createEntity() bych asi přece jen měl dělat dynamickej typecast
+- už proto, že když vyrábím entitu z hardoced prototypu, tak tu classu
+  stejně předávám...
+- možná by šlo vždycky předávat classu (typecast) a dát prototypeId jako
+  nepovinnej parametr
+  - tzn. by se vzalo typeCast.name, pokud by prootypeId bylo 'null'.
+
 TODO: Fci EntityManager.createEntity() dávat jako parametr 'prototype'
   přímo classu místo jejího jména, tj. createEntity(Account) místo
   createEntity('Account').

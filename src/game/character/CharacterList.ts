@@ -40,8 +40,8 @@ export class CharacterList extends AbbrevSearchList
     let character = await Server.entityManager.createEntity
     (
       name,
+      Character,
       NamedEntity.NameCathegory.characters,
-      'Character'
     );
 
     // Check if character has been created succesfully.
