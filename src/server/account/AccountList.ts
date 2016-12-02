@@ -106,8 +106,8 @@ export class AccountList extends NameSearchList
     let account = await Server.entityManager.createEntity
     (
       accountName,
+      Account,
       NamedEntity.NameCathegory.accounts,
-      'Account'
     );
 
     // Check if account has been created succesfully.

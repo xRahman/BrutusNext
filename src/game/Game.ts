@@ -79,11 +79,11 @@ export class Game
     }
 
     // Create world 'BrutusNext World' based on this prototype.
-    this.world = await Server.entityManager.createNamedEntity
+    this.world = await Server.entityManager.createEntity
     (
       'Brutus World',
-      NamedEntity.NameCathegory.world,
-      'BrutusWorld'
+      World,
+      NamedEntity.NameCathegory.world
     );
 
     if (this.world === null)
@@ -151,8 +151,10 @@ export class Game
   // -------- managers --------
   // Unlike idLists, managers store actual instances, not just entity ids.
 
+  /*
   // Dynamically creates classes from which game entities are inherited.
   protected prototypeManager = new PrototypeManager();
+  */
 
   // --- Direct references ---
 
