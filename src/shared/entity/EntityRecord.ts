@@ -12,9 +12,13 @@ import {EntityProxyHandler} from '../../shared/entity/EntityProxyHandler';
 
 export class EntityRecord
 {
+  /*
   public entity = null;
+  */
   public entityProxy = null;
+  public proxyHandler = null;
 
+  /*
   // Set<[ EntityProxyHandler ]>
   //   Value: javascript proxy object handler
   // There can be more than one handler assigned to the entity.
@@ -31,16 +35,29 @@ export class EntityRecord
   // existing not invalidated handlers (then the handler is invalidated,
   // its reference can be safely forgotten).
   public proxyHandlers = new Set();
+  */
 
-  constructor(entity: Entity, entityProxy: Entity, handler: EntityProxyHandler)
+  constructor
+  (
+    /* entity: Entity, */
+    entityProxy: Entity,
+    handler: EntityProxyHandler
+  )
   {
+    /*
     this.entity = entity;
+    */
     this.entityProxy = entityProxy;
+    this.proxyHandler = handler;
+
+    /*
     this.addHandler(handler);
+    */
   }
 
   // ---------------- Public methods --------------------
 
+  /*
   public updateProxyHandlers(entity: Entity)
   {
     for (let handler of this.proxyHandlers)
@@ -57,13 +74,17 @@ export class EntityRecord
       handler.entity = entity;
     }
   }
+  */
 
+  /*
   public addHandler(handler: EntityProxyHandler)
   {
     if (!this.proxyHandlers.has(handler))
       this.proxyHandlers.add(handler);
   }
+  */
 
+  /*
   public getEntity()
   {
     if (this.entity === null)
@@ -71,6 +92,7 @@ export class EntityRecord
 
     return this.entity;
   }
+  */
 
   public getEntityProxy()
   {
@@ -85,6 +107,9 @@ export class EntityRecord
 
   public invalidate()
   {
+    // This is the important part - set proxyHandler.entity to 'null'.
+    this.proxyHandler.invalidate();
+
     // Setting our internal variables to null is probably not
     // needed, because whole record will get removed from
     // EntityManager right after invalidate() is called, but
@@ -92,12 +117,17 @@ export class EntityRecord
     // (On the other hand by doing this will will get an error
     //  message when someone tries to access these variables so
     //  it's proably a good idea to do this)
+    /*
     this.entity = null;
+    */
     this.entityProxy = null;
+    this.proxyHandler = null;
 
+    /*
     // This, on the other hand, IS needed. All existing references
     // to entity need to be invalidated.
     for (let handler of this.proxyHandlers)
       handler.invalidate();
+    */
   }
 }
