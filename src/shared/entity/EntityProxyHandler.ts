@@ -65,8 +65,12 @@ export class EntityProxyHandler
     this.entity = null;
 
     // Note: Doing 'this.id = null;' here would be a really bad idea,
-    // because we could hardly reclaim the reference to the entity later
-    // if we forgot it's id.
+    //   because we could hardly reclaim the reference to the entity later
+    //   if we forgot it's id.
+    // Update:
+    //   Reclaiming of existing reference is deprecated now, but there is
+    //   still no reason to invalidate internal id reference so better not
+    //   do it.
   }
 
   /*

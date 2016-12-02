@@ -189,16 +189,21 @@ export class EntityManager
     name: string,
     // 'cathegory = null' means that the name won't be unique.
     cathegory: NamedEntity.NameCathegory,
-    // Class name or entity id.
-    prototype: string
+    // Class (like Account) or entity id.
+    prototype: any
   )
   {
-    let prototypeObject = Server.classFactory.getPrototypeObject(prototype);
+    let prototypeId = this.extractPrototypeId(prototype);
+
+    if (prototypeId === null)
+      return;
+
+    let prototypeObject = Server.classFactory.getPrototypeObject(prototypeId);
 
     if (prototypeObject === undefined)
     {
       ERROR("Unable to create entity '" + name + "' based"
-        + " on prototype '" + prototype + "'");
+        + " on prototype '" + prototypeId + "'");
       return null;
     }
 
@@ -993,5 +998,42 @@ export class EntityManager
     // Read prototype id from 'jsonObject', create a new entity
     // based on that prototype and load it from jsonObject.
     return this.loadEntityFromJsonObject(jsonObject, id, path);
+  }
+
+  // This auxiliary function handles parameter overloading.
+  // 'prototype' can either be a string entity id, or it can
+  // be a class constructor (like Account) - in that case we
+  // extract and return 'name' property from the class constructor.
+  private extractPrototypeId(prototype: any)
+  {
+    let prototypeId = prototype;
+
+    // 'prototype' parameter can either be an entity id (which is a string)
+    // of a class constructor (like Account). So if it's not a string,
+    // we supposet its a class and we attempt to read it's 'name' property.
+    if (!(typeof prototype === 'string' || prototype instanceof String))
+    {
+      prototypeId = prototype.name;
+
+      if (prototypeId === undefined)
+      {
+        ERROR("Unable to create entity because 'prototype' parameter"
+          + " is neither string nor a class constructor. You need to"
+          + " pass either an id of a prototype entity or a class (like"
+          + " Account)");
+        return null;
+      }
+
+      if (!(typeof prototypeId === 'string' || prototypeId instanceof String))
+      {
+        ERROR("Unable to create entity because 'prototype' parameter"
+          + " is not a string and prototype.name is not a string either."
+          + " You need to pass either an id of a prototype entity or a class"
+          + " (like Account)");
+        return null;
+      }
+    }
+
+    return prototypeId;
   }
 }
