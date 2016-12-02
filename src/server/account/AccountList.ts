@@ -103,7 +103,7 @@ export class AccountList extends NameSearchList
     }
     */
 
-    let account = await Server.entityManager.createNamedEntity
+    let account = await Server.entityManager.createEntity
     (
       accountName,
       NamedEntity.NameCathegory.accounts,
