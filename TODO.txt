@@ -1,6 +1,43 @@
+TODO: Fci EntityManager.createEntity() dávat jako parametr 'prototype'
+  přímo classu místo jejího jména, tj. createEntity(Account) místo
+  createEntity('Account').
+  - interně se pak přečte Class.name.
+- bude se teda muset testovat, jestli 'prototype' je string, ale to je
+  snad ok.
+Výhoda: Typescript to zvaliduje.
+- ještě možná jinak: Co mi brání použít jako klíč hashmapy přímo class
+  constructor, tj. Account místo 'Account'?
+  Díky tomu nebudu muset extrahovat Account.name...
+Tak ne, to nejde - protože hashmapu přiřařující idčka classám potřebuju
+  savovat, tudíž klíč musí být strinové class name.
+
+TODO: Zrušit automatické updatování referencí
+  (místo toho si user musí vzít novou referenci:
+    if (!entity.isValid())
+      entity = EntityManager.get(id);
+- Zrušit pole proxyhandlerů v EntityRecordu
+Co si potřebuju pamatovat?
+- určitě proxy, protože tu vracím, když někdo chce entitu
+- a určitě proxyHandler, protože tomu nastavuju .entity na null,
+  když smažu entitu.
+=> stále potřebuju EntityRecord
+
+TODO: Možná by mohlo jít přes invalid referenci získat valid referenci
+  nějakou fcí:
+    character = character.getCurrentReference();
+    // Mělo by se to jmenovat getNěco(), aby z toho bylo jasné, že
+    // je výsledek třeba přiřadit.
+(Aby se ve skriptu nemuselo psát EntityManager.cosi)
+- Úplně ideálně by se to mělo volat v opačném pořadí, tj. takhle:
+  character = character.getCurrentReference();
+  if (!character.isValid())
+     return;
+
 TODO: EntityManager.getPrototype() asi nebude dobře
 - a stejně tak i EntityManager.loadEntityFromJsonObject(), ze které se volá
 (správně bude asi ClassFactory.getPrototypeObject()).
+- zrušeno
+[done]
 
 TODO: getPrototypeObject z EntityManageru zrušit.
 - místo toho zavolat rovnou getPrototypeObject z ClassFactory a z ní
@@ -34,7 +71,7 @@ TODO:
 - Prozatím zrušit load() trapu z EntityProxyHandleru
 - Zrušit starou fce EntityManager.loadEntity() a udělat z ní novou loadEntity()
 - možná starou loadEntity() přejmenovat na onLoadTrapHandler()
-
+[done]
 
 TODO: Assignování idček při vytváření nového prototypu
   (ancestor do entity, descendants do předka).
@@ -90,11 +127,7 @@ Stále taky zůstává, že se do prototypové instance hardcoded classy savují
  
 ---------------
 
-TODO: The prototype Entity by měla mít prototypeId = null
-- to má, protože to je defaultní hodnota.
-
-TODO: Ostatním entitám je třeba nastavovat prototypeId.
-
+TODO: Entitám je třeba nastavovat prototypeId.
 
 TODO: ClassFactory.createInstance() stačí jen jedna.
   - jednak může poznat, jestli je potřeba vytvořit prototyp
@@ -119,6 +152,7 @@ Algoritmus pro createInstance() bude:
 1) mrkni do ClassFactory.prototypes
 2) pokud tam 'prototypeNameOrId' není, tak to ještě může být idčko, takže
    mrkni ještě do EntityManageru.
+[done]
 
 ClassFactory.initPrototypes()
 {
@@ -214,13 +248,6 @@ TODO: Savování/loadování class, které nejsou entity
     se uloží idčko získané přeložením "Character" na idčko.
 */
 
-TODO: Budu potřebovat dvě varianty ClassFactory.createInstance():
-  - createInstanceByPrototypeId()
-  - createInstanceByClass()
- (protože ne všechny classy mají idčka - třeba takové Exits nemají)
- - přes createInstanceByClass() by se možná mohla vyrábět i THE prototype
-   Entity  
-
 TODO: Určitě přejmenovat NamedEntity na UniqueEntity
   - bude se to míň plést s NamedClass
 
@@ -228,7 +255,7 @@ TODO: Uppercasovat hodnoty v NamedEntity.NameCathegory
   - lowercasovat to až při savu/loadu
   - asi by se to taky mohlo jmenovat prostě NamedEntity.Cathegory 
 
-TODO: Intantiovat taky Acconty, Connectiony a podobně
+TODO: Instantiovat taky Acconty, Connectiony a podobně
   (a nemyslím tím jejich properties, ale přímo Account. Zatím se to děje
    jen u GameEntit, protože ty jsou vždycky za nějakým dynamickým prototypem)
 Tohle je komplikované. Znamená to:

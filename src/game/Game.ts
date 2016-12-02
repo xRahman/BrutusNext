@@ -11,7 +11,7 @@ import {EntityManager} from '../shared/entity/EntityManager';
 import {NamedEntity} from '../shared/entity/NamedEntity';
 import {NameSearchList} from '../shared/entity/NameSearchList';
 import {SaveableObject} from '../shared/fs/SaveableObject';
-import {PrototypeManager} from '../shared/prototype/PrototypeManager';
+///import {PrototypeManager} from '../shared/prototype/PrototypeManager';
 import {Message} from '../server/message/Message';
 import {Server} from '../server/Server';
 import {AdminLevel} from '../server/AdminLevel';
