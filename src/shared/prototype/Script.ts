@@ -7,7 +7,7 @@
 'use strict';
 
 import {SaveableObject} from '../../shared/fs/SaveableObject';
-import {Prototype} from '../../shared/prototype/Prototype';
+///import {Prototype} from '../../shared/prototype/Prototype';
 import {VirtualMachine} from '../../shared/vm/VirtualMachine';
 import {AdminLevel} from '../../server/AdminLevel';
 import {Syslog} from '../../server/Syslog';
