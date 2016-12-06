@@ -222,7 +222,7 @@ export class EntityManager
   : T
   {
     // In order to create entity from harcoded class (like Account),
-    // 'prototypeId' parameter is ommited (or null). Class name of
+    // 'prototypeId' parameter is omitted (or null). Class name of
     // 'typeCast' parameter will be used instead of 'prototypeId' to
     //  identify the prototype object.
     if (prototypeId === null)
@@ -244,6 +244,10 @@ export class EntityManager
       prototypeObject
     );
 
+    // Dynamic cast means runtime check that 'entity' really is inherited
+    // from the type we are casting to. IT also changes the type of return
+    // value to the type of 'typeCast' parameter. It means that typescript
+    // will allow you to access properties of that type on returned 'entity'. 
     return entity.dynamicCast(typeCast);
   }
 

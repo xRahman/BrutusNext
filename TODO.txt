@@ -4,6 +4,7 @@ TODO: V createEntity() bych asi přece jen měl dělat dynamickej typecast
 - možná by šlo vždycky předávat classu (typecast) a dát prototypeId jako
   nepovinnej parametr
   - tzn. by se vzalo typeCast.name, pokud by prootypeId bylo 'null'.
+[done]
 
 TODO: Fci EntityManager.createEntity() dávat jako parametr 'prototype'
   přímo classu místo jejího jména, tj. createEntity(Account) místo
@@ -17,12 +18,15 @@ Výhoda: Typescript to zvaliduje.
   Díky tomu nebudu muset extrahovat Account.name...
 Tak ne, to nejde - protože hashmapu přiřařující idčka classám potřebuju
   savovat, tudíž klíč musí být strinové class name.
+[tak nakonec jinak - když není uvedeno prototypeId, prototyp se bere
+ z parametru 'typeCast']
 
 TODO: Zrušit automatické updatování referencí
   (místo toho si user musí vzít novou referenci:
     if (!entity.isValid())
       entity = EntityManager.get(id);
 - Zrušit pole proxyhandlerů v EntityRecordu
+[done]
 Co si potřebuju pamatovat?
 - určitě proxy, protože tu vracím, když někdo chce entitu
 - a určitě proxyHandler, protože tomu nastavuju .entity na null,
