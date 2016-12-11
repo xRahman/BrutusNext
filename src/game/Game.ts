@@ -67,18 +67,20 @@ export class Game
   // (this method sould only be used if you don't have 'data' directory yet)
   public async createDefaultWorld()
   {
+    /*
     // Create a new world prototype.
     this.prototypeManager.createPrototype('BrutusWorld', 'World');
+    */
 
     if (this.world !== null)
     {
-      ERROR("Attempt to create new world when there"
+      ERROR("Attempt to create default world when there"
         + " already is a world. There can only be one"
         + " world per game. World is not created");
       return;
     }
 
-    // Create world 'BrutusNext World' based on this prototype.
+    // Create world 'BrutusNext World' based on prototype World.
     this.world = await Server.entityManager.createEntity
     (
       'Brutus World',
@@ -87,13 +89,18 @@ export class Game
     );
 
     if (this.world === null)
+    {
+      ERROR("Failed to create default world");
       return;
+    }
 
     // Create system realm.
     await this.world.createSystemRealm();
 
+    /*
     // Save all prototypes we have just created.
     this.prototypeManager.save();
+    */
 
     // Save the world we have just created.
     await this.world.save();
@@ -102,7 +109,7 @@ export class Game
   // Loads initial state of the game from disk.
   public async load()
   {
-    await this.prototypeManager.load();
+    ///await this.prototypeManager.load();
    
     /*
     // Create javascript classes from prototype data (all game entities will

@@ -1,88 +1,20 @@
-TODO: V createEntity() bych asi přece jen měl dělat dynamickej typecast
-- už proto, že když vyrábím entitu z hardoced prototypu, tak tu classu
-  stejně předávám...
-- možná by šlo vždycky předávat classu (typecast) a dát prototypeId jako
-  nepovinnej parametr
-  - tzn. by se vzalo typeCast.name, pokud by prootypeId bylo 'null'.
-[done]
+Loadování referencí
+-------------------
+- Contents by se měl loadovat jinak než volné reference.
+  - Měl by se nejdřív loadnout obsah containeru, aby se pak
+    do něj mohly dát existující reference.
+- Volný reference (jako kdo castnul tenhle spell) se asi skutečně
+  má loadnout jako invalid entity, pokud cílová entity není loadnutá
+  - to taky znamená, že je s ní nutno pracovat s předpokladem, že
+    může být invalid (vždycky si říct o currentReference a pak ji
+    ještě testnout na isValid()).
+TODO: LoadContents
+  - savovat a loadovat to jinak než ReferenceRecord.
 
-TODO: Fci EntityManager.createEntity() dávat jako parametr 'prototype'
-  přímo classu místo jejího jména, tj. createEntity(Account) místo
-  createEntity('Account').
-  - interně se pak přečte Class.name.
-- bude se teda muset testovat, jestli 'prototype' je string, ale to je
-  snad ok.
-Výhoda: Typescript to zvaliduje.
-- ještě možná jinak: Co mi brání použít jako klíč hashmapy přímo class
-  constructor, tj. Account místo 'Account'?
-  Díky tomu nebudu muset extrahovat Account.name...
-Tak ne, to nejde - protože hashmapu přiřařující idčka classám potřebuju
-  savovat, tudíž klíč musí být strinové class name.
-[tak nakonec jinak - když není uvedeno prototypeId, prototyp se bere
- z parametru 'typeCast']
+TODO: Zprovoznit loadování RefereceRecordu
+  - nejspíš skrze createReference.
 
-TODO: Zrušit automatické updatování referencí
-  (místo toho si user musí vzít novou referenci:
-    if (!entity.isValid())
-      entity = EntityManager.get(id);
-- Zrušit pole proxyhandlerů v EntityRecordu
-[done]
-Co si potřebuju pamatovat?
-- určitě proxy, protože tu vracím, když někdo chce entitu
-- a určitě proxyHandler, protože tomu nastavuju .entity na null,
-  když smažu entitu.
-=> stále potřebuju EntityRecord
-
-TODO: Možná by mohlo jít přes invalid referenci získat valid referenci
-  nějakou fcí:
-    character = character.getCurrentReference();
-    // Mělo by se to jmenovat getNěco(), aby z toho bylo jasné, že
-    // je výsledek třeba přiřadit.
-(Aby se ve skriptu nemuselo psát EntityManager.cosi)
-- Úplně ideálně by se to mělo volat v opačném pořadí, tj. takhle:
-  character = character.getCurrentReference();
-  if (!character.isValid())
-     return;
-
-TODO: EntityManager.getPrototype() asi nebude dobře
-- a stejně tak i EntityManager.loadEntityFromJsonObject(), ze které se volá
-(správně bude asi ClassFactory.getPrototypeObject()).
-- zrušeno
-[done]
-
-TODO: getPrototypeObject z EntityManageru zrušit.
-- místo toho zavolat rovnou getPrototypeObject z ClassFactory a z ní
-  volat EntityManager.get().
-[done]
-
-TODO: EntityManager.loadEntity(id: string)
-- vykašlat se na trapčení s vytvářením invalid reference a následným
-  loadováním.
-Ono to asi v podstatě existuje, jmenuje se to loadEntityById().
-- asi by to šlo přejmenovat na loadEntity().
---- konfliktí to s funkcí loadEntity(), která se volá z load() handleru
-    proxy 
-- a každopádně by to mělo být public.
-/*
-  ÚVAHA:
-  Chci entity.save()?
-  - určitě ano (ale to s loadováním nesouvisí).
-  Chci entity.load()?
-  - asi by se to hodilo třeba v případě, že bych měl referenci na playera,
-    který mi quitnul - při znovupřipojení bych mohl chtít na tuhle referenci
-    zavolat prostě load().
-  - na druhou stranu co mi brání udělat 'character = loadEntity(id);' ?
-  - ta první varianta (character.load()) by obnovila funkčnost ostatních
-    existujících referencí...
-   
-  Každopádně to ale znamená, že nepotřebuju žádné 'createInvalidreference()'.
-  - když referenci nemám, tak zavolám prostě loadEntity().
-*/
-TODO:
-- Prozatím zrušit load() trapu z EntityProxyHandleru
-- Zrušit starou fce EntityManager.loadEntity() a udělat z ní novou loadEntity()
-- možná starou loadEntity() přejmenovat na onLoadTrapHandler()
-[done]
+---------------
 
 TODO: Assignování idček při vytváření nového prototypu
   (ancestor do entity, descendants do předka).
@@ -94,153 +26,7 @@ TODO: Assignování idček při vytváření nového prototypu
 Entity.load()
 Entity.save()
 
-TODO: Kromě mapy id -> prototypeObject potřebuju ještě
-      className -> prototypeObject
-(Protože chci tvořit instance hardcoded entit z kódu a nemůžu jako parametr
- předávat idčko.)
-- blbnu, to tam samozřejmě už je.
-
-Jinak:
-- nechci implementovat prototype chain v rámci hardcoded class.
-  Když chci instanci přímo hardcoded classy, tak bych měl udělat
-  (Object.create(new Class)).instantiateProtperties();
-  - to způsobí, že se na prototypu nainicializuje všechno, co je hardcoded,
-    a instance to bude korektně dědit díky Object.create()
-    a instantiateProperties().
-  - Díky tomuhle postupu můžu korektně udělat instanci libovolné hardcoded
-    classy
-    - není možné kombinovat hardcoded classu se savem, ale to je asi ok
-      ... vždycky můžu z hardcoded classy zdědit prototyp a ten savnout.
-Ok, teď už jen musím nějak zajistit, že se z hardcoded classy dá zdědit
-  editovatelná classa.
-  - problém je přejmenovávání hardcoded class, proto jsem chtěl idčka.
-    Kdybych totiž hardcoded předka odkazoval jménem, při přejmenování
-    bych musel změnit tenhle odkaz ve všech přímých potomcích (no, asi by
-    to taky šlo...)
-  - idčka bych asi mohl držet stranou, třeba v tvrdém savu EntityManageru
-    nebo ClassFactory.
-    - savovala by se asi mapa <id, className>.
-    - a v initu by se vytvářely hardcoded prototype entity prostě jako isntance
-      daných entit.
-    - při vytváření editovatelného prototypu by se idčko předka hledalo nejdřív
-      v harcodedPrototypes a pak v EntityManageru.
-  - stále by zůstalo automatické dogenerovávání idček pro nové hardcoded
-    classy.
-
-Stále taky zůstává, že se do prototypové instance hardcoded classy savují
-  idčka editovatelných potomků
-  - to znamená, že v hashmapě musí být nějaký savovatelný record.
-
----------------
-
-- entity.load() použitá na the root prototype entitu jako prototype
-  použije 'new Entity'.
- 
----------------
-
 TODO: Entitám je třeba nastavovat prototypeId.
-
-TODO: ClassFactory.createInstance() stačí jen jedna.
-  - jednak může poznat, jestli je potřeba vytvořit prototyp
-    nebo instanci
-  - a za druhé mi asi nic nebrání vyrobit při startu prototypy
-    i pro classy, které nejsou entity.
-Potřebuju umět:
-- createInstance() podle ClassName (i když je to entita)
-- createInstance() podle idčka
-createInstance() se podívá do class
-- když nenajde, tak se podívá do idček
-(obojí povede na prototyp?)
-Tak ne - mapu id -> entity přece nepotřebuju, ta už je v EntityManageru.
-=> to znamená, že v ClassFactory mi stačí držet className -> instance prototypu
-Algoritmus pro init bude:
-1) V DynamicClasses.init se budou rovnou vyrábět instance prototypu
-   - tak ne. Protože potřebuju rozhodnout, jestli je to entita nebo ne.
-   - takže tady se pouze nastaví konstructory class, prototypové instance
-     se z nic vyrobí až v ClassFactory.initPrototypes().
-2) V ClassFactory.initEntityPrototypes se přidají entity do EntityManageru.
-Algoritmus pro createInstance() bude:
-1) mrkni do ClassFactory.prototypes
-2) pokud tam 'prototypeNameOrId' není, tak to ještě může být idčko, takže
-   mrkni ještě do EntityManageru.
-[done]
-
-ClassFactory.initPrototypes()
-{
-  if (isEntity)
-  {
-    let prototypeEntity = new Entity; // obecne new Class
-
-    let prototype = EntityManager.createEntityFromPrototype
-    (
-      prototypeEntity,
-      NamedEntity.Cathegory.prototypes
-    )
-  }
-  else
-  {
-    let prototype = this.createPrototype(Class);
-  }
-
-  this.add(prototype);
-}
-
-public ClassFactory.createInstance(prototype)
-{
-  instance = Oject.create(prototype);
-  instance.instantiateProperties();
-
-  return instance;
-}
-
-public ClassFactory.getPrototype(className)
-{
-  return this.prototypes.get(className);
-}
-
-private ClassFactory.createPrototype(Class)
-{
-  prototype = new Class;
-
-  return createInstance(prototype);
-}
-
-------------------------------------------
-
-public EntityManager.createEntity(prototypeId, nameCathegory)
-{
-  let prototype = this.getEntity(prototypeId);
-
-  let entity = this.createEntityFromPrototype(prototype, nameCathegory)
-
-  this.proxify(entity);
-}
-
-public EntityManager.createEntityFromPrototype(prototype, nameCathegory = null)
-{
-  let bareEntity = ClassFactory.createInstance(prototype);
-
-  bareEntity.setId(generateId());
-
-  let proxy = proxify(bareEntity);
-
-  if (nameCathegory !== null)
-    setUniqueName(proxy);
-
-  return proxy;
-}
-
-------------------------------------------
-
-SaveableObject.loadCosi()
-{
-  className = loadFromFile();
-
-  let prototype = ClassFactory.getPrototype(className);
-
-  ClassFactory.createInstance(prototype);
-}
-
 
 TODO: Nahradit PrototypeManager.createPrototype() něčím aktuálnějším.
 
@@ -977,6 +763,239 @@ TODO: Zrušit z entity proměnné SAVE_DIRECTORY
 Vyhledove rozbehat tslint
 
 ===============================================================================
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+===============================================================================
+
+TODO: ClassFactory.createInstance() stačí jen jedna.
+  - jednak může poznat, jestli je potřeba vytvořit prototyp
+    nebo instanci
+  - a za druhé mi asi nic nebrání vyrobit při startu prototypy
+    i pro classy, které nejsou entity.
+Potřebuju umět:
+- createInstance() podle ClassName (i když je to entita)
+- createInstance() podle idčka
+createInstance() se podívá do class
+- když nenajde, tak se podívá do idček
+(obojí povede na prototyp?)
+Tak ne - mapu id -> entity přece nepotřebuju, ta už je v EntityManageru.
+=> to znamená, že v ClassFactory mi stačí držet className -> instance prototypu
+Algoritmus pro init bude:
+1) V DynamicClasses.init se budou rovnou vyrábět instance prototypu
+   - tak ne. Protože potřebuju rozhodnout, jestli je to entita nebo ne.
+   - takže tady se pouze nastaví konstructory class, prototypové instance
+     se z nic vyrobí až v ClassFactory.initPrototypes().
+2) V ClassFactory.initEntityPrototypes se přidají entity do EntityManageru.
+Algoritmus pro createInstance() bude:
+1) mrkni do ClassFactory.prototypes
+2) pokud tam 'prototypeNameOrId' není, tak to ještě může být idčko, takže
+   mrkni ještě do EntityManageru.
+[done]
+/*
+ClassFactory.initPrototypes()
+{
+  if (isEntity)
+  {
+    let prototypeEntity = new Entity; // obecne new Class
+
+    let prototype = EntityManager.createEntityFromPrototype
+    (
+      prototypeEntity,
+      NamedEntity.Cathegory.prototypes
+    )
+  }
+  else
+  {
+    let prototype = this.createPrototype(Class);
+  }
+
+  this.add(prototype);
+}
+
+public ClassFactory.createInstance(prototype)
+{
+  instance = Oject.create(prototype);
+  instance.instantiateProperties();
+
+  return instance;
+}
+
+public ClassFactory.getPrototype(className)
+{
+  return this.prototypes.get(className);
+}
+
+private ClassFactory.createPrototype(Class)
+{
+  prototype = new Class;
+
+  return createInstance(prototype);
+}
+
+------------------------------------------
+
+public EntityManager.createEntity(prototypeId, nameCathegory)
+{
+  let prototype = this.getEntity(prototypeId);
+
+  let entity = this.createEntityFromPrototype(prototype, nameCathegory)
+
+  this.proxify(entity);
+}
+
+public EntityManager.createEntityFromPrototype(prototype, nameCathegory = null)
+{
+  let bareEntity = ClassFactory.createInstance(prototype);
+
+  bareEntity.setId(generateId());
+
+  let proxy = proxify(bareEntity);
+
+  if (nameCathegory !== null)
+    setUniqueName(proxy);
+
+  return proxy;
+}
+
+------------------------------------------
+
+SaveableObject.loadCosi()
+{
+  className = loadFromFile();
+
+  let prototype = ClassFactory.getPrototype(className);
+
+  ClassFactory.createInstance(prototype);
+}
+*/
+
+TODO: Kromě mapy id -> prototypeObject potřebuju ještě
+      className -> prototypeObject
+(Protože chci tvořit instance hardcoded entit z kódu a nemůžu jako parametr
+ předávat idčko.)
+- blbnu, to tam samozřejmě už je.
+[done]
+
+Jinak:
+- nechci implementovat prototype chain v rámci hardcoded class.
+  Když chci instanci přímo hardcoded classy, tak bych měl udělat
+  (Object.create(new Class)).instantiateProtperties();
+  - to způsobí, že se na prototypu nainicializuje všechno, co je hardcoded,
+    a instance to bude korektně dědit díky Object.create()
+    a instantiateProperties().
+  - Díky tomuhle postupu můžu korektně udělat instanci libovolné hardcoded
+    classy
+    - není možné kombinovat hardcoded classu se savem, ale to je asi ok
+      ... vždycky můžu z hardcoded classy zdědit prototyp a ten savnout.
+Ok, teď už jen musím nějak zajistit, že se z hardcoded classy dá zdědit
+  editovatelná classa.
+  - problém je přejmenovávání hardcoded class, proto jsem chtěl idčka.
+    Kdybych totiž hardcoded předka odkazoval jménem, při přejmenování
+    bych musel změnit tenhle odkaz ve všech přímých potomcích (no, asi by
+    to taky šlo...)
+  - idčka bych asi mohl držet stranou, třeba v tvrdém savu EntityManageru
+    nebo ClassFactory.
+    - savovala by se asi mapa <id, className>.
+    - a v initu by se vytvářely hardcoded prototype entity prostě jako isntance
+      daných entit.
+    - při vytváření editovatelného prototypu by se idčko předka hledalo nejdřív
+      v harcodedPrototypes a pak v EntityManageru.
+  - stále by zůstalo automatické dogenerovávání idček pro nové hardcoded
+    classy.
+Stále taky zůstává, že se do prototypové instance hardcoded classy savují
+  idčka editovatelných potomků
+  - to znamená, že v hashmapě musí být nějaký savovatelný record.
+[snad done]
+
+TODO: V createEntity() bych asi přece jen měl dělat dynamickej typecast
+- už proto, že když vyrábím entitu z hardoced prototypu, tak tu classu
+  stejně předávám...
+- možná by šlo vždycky předávat classu (typecast) a dát prototypeId jako
+  nepovinnej parametr
+  - tzn. by se vzalo typeCast.name, pokud by prootypeId bylo 'null'.
+[done]
+
+TODO: Fci EntityManager.createEntity() dávat jako parametr 'prototype'
+  přímo classu místo jejího jména, tj. createEntity(Account) místo
+  createEntity('Account').
+  - interně se pak přečte Class.name.
+- bude se teda muset testovat, jestli 'prototype' je string, ale to je
+  snad ok.
+Výhoda: Typescript to zvaliduje.
+- ještě možná jinak: Co mi brání použít jako klíč hashmapy přímo class
+  constructor, tj. Account místo 'Account'?
+  Díky tomu nebudu muset extrahovat Account.name...
+Tak ne, to nejde - protože hashmapu přiřařující idčka classám potřebuju
+  savovat, tudíž klíč musí být strinové class name.
+[tak nakonec jinak - když není uvedeno prototypeId, prototyp se bere
+ z parametru 'typeCast']
+
+TODO: Zrušit automatické updatování referencí
+  (místo toho si user musí vzít novou referenci:
+    if (!entity.isValid())
+      entity = EntityManager.get(id);
+- Zrušit pole proxyhandlerů v EntityRecordu
+Co si potřebuju pamatovat?
+- určitě proxy, protože tu vracím, když někdo chce entitu
+- a určitě proxyHandler, protože tomu nastavuju .entity na null,
+  když smažu entitu.
+=> stále potřebuju EntityRecord
+[done]
+
+TODO: EntityManager.getPrototype() asi nebude dobře
+- a stejně tak i EntityManager.loadEntityFromJsonObject(), ze které se volá
+(správně bude asi ClassFactory.getPrototypeObject()).
+- zrušeno
+[done]
+
+TODO: getPrototypeObject z EntityManageru zrušit.
+- místo toho zavolat rovnou getPrototypeObject z ClassFactory a z ní
+  volat EntityManager.get().
+[done]
+
+TODO: Možná by mohlo jít přes invalid referenci získat valid referenci
+  nějakou fcí:
+    character = character.getCurrentReference();
+    // Mělo by se to jmenovat getNěco(), aby z toho bylo jasné, že
+    // je výsledek třeba přiřadit.
+(Aby se ve skriptu nemuselo psát EntityManager.cosi)
+- Úplně ideálně by se to mělo volat v opačném pořadí, tj. takhle:
+  character = character.getCurrentReference();
+  if (!character.isValid())
+     return;
+
+TODO: EntityManager.loadEntity(id: string)
+- vykašlat se na trapčení s vytvářením invalid reference a následným
+  loadováním.
+Ono to asi v podstatě existuje, jmenuje se to loadEntityById().
+- asi by to šlo přejmenovat na loadEntity().
+--- konfliktí to s funkcí loadEntity(), která se volá z load() handleru
+    proxy 
+- a každopádně by to mělo být public.
+/*
+  ÚVAHA:
+  Chci entity.save()?
+  - určitě ano (ale to s loadováním nesouvisí).
+  Chci entity.load()?
+  - asi by se to hodilo třeba v případě, že bych měl referenci na playera,
+    který mi quitnul - při znovupřipojení bych mohl chtít na tuhle referenci
+    zavolat prostě load().
+  - na druhou stranu co mi brání udělat 'character = loadEntity(id);' ?
+  - ta první varianta (character.load()) by obnovila funkčnost ostatních
+    existujících referencí...
+   
+  Každopádně to ale znamená, že nepotřebuju žádné 'createInvalidreference()'.
+  - když referenci nemám, tak zavolám prostě loadEntity().
+*/
+TODO:
+- Prozatím zrušit load() trapu z EntityProxyHandleru
+- Zrušit starou fce EntityManager.loadEntity() a udělat z ní novou loadEntity()
+- možná starou loadEntity() přejmenovat na onLoadTrapHandler()
+[done]
+
+- entity.load() použitá na the root prototype entitu jako prototype
+  použije 'new Entity'.
+[tohle už je jinak]
+
 
 TODO: loadAccount v AccountListu a loadCharacter v CharacterListu
   jsou téměř totožné fce - nějak to sjednotit.
