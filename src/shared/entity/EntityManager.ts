@@ -423,6 +423,8 @@ export class EntityManager
   }
 
   /// Tohohle se taky chci zbavit.
+  /// - Tak nakonec ne. Je to potřeba, když se loaduje reference
+  ///   ze souboru.
   /*
   /// TODO: Asi to sloučit s get() - get prostě bude vždycky
   /// vracet referenci.
