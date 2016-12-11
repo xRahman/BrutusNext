@@ -545,7 +545,10 @@ export class SaveableObject extends InstantiableClass
   {
     if (myProperty === null)
     {
-      if (jsonObject[NamedClass.CLASS_NAME_PROPERTY] === undefined)
+      // Read class name from JSON.
+      let className = jsonObject[NamedClass.CLASS_NAME_PROPERTY];
+
+      if (className === undefined)
       {
         // If there isn't a 'className' property in jsonObject,
         // property is a basic javascript object.
@@ -559,13 +562,13 @@ export class SaveableObject extends InstantiableClass
       }
       else
       {
-        // If there is a 'className' property, create a new instance
-        // of such type.
-        myProperty = Server.classFactory.createInstance
-        (
-          jsonObject[NamedClass.CLASS_NAME_PROPERTY],
-          SaveableObject
-        );
+        // If there is a 'className' property in JSON, create a new instance
+        // of that type.
+
+        let prototypeObject =
+          Server.classFactory.getPrototypeObject(className);
+
+        myProperty = Server.classFactory.createInstance(prototypeObject);
       }
     }
 
