@@ -958,7 +958,7 @@ export class SaveableObject extends InstantiableClass
   }
 
   // -> Returns 'null' if jsonVariable is not an entity reference
-  //      or if loading failed.
+  //    or if loading failed.
   private loadAsEntityReference
   (
     variableName: string,
@@ -1008,7 +1008,7 @@ export class SaveableObject extends InstantiableClass
 
     // Return an existing entity proxy if entity exists in
     // entityManager, invalid entity proxy otherwise.
-    return EntityManager.createReference(id, Entity);
+    return Server.entityManager.createReference(id);
   }
 
   // -> Returns 'null' if jsonVariable is not an Array or if loading failed.

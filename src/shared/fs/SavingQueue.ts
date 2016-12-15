@@ -31,7 +31,7 @@ export class SavingQueue
 
   // -> Returns Promise which the caller need to use to wait for his turn.
   //    (by using 'await saveAwaiter(promise);')
-  public addRequest(): Promise<void>
+  public addRequest(): Promise<{}>
   {
     // Callback function used to finish waiting before processing
     // next saving request.
