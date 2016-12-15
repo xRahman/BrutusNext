@@ -425,34 +425,27 @@ export class EntityManager
   /// Tohohle se taky chci zbavit.
   /// - Tak nakonec ne. Je to potřeba, když se loaduje reference
   ///   ze souboru.
-  /*
-  /// TODO: Asi to sloučit s get() - get prostě bude vždycky
-  /// vracet referenci.
   /// - loadnout invalid referenci je ok. Není ok updatovat invalid
   ///   referenci, když v manageru už je jiná reference pro stejné id.
   ///
   // -> Returns existing reference if entity already exists in EntityManager.
   //    Returns invalid reference if entity with such id doen't exist yet.
   //      (you can then use entity.load() to load if from disk)
-  public createReference<T>
-  (
-    id: string,
-    typeCast: { new (...args: any[]): T }
-  )
-  : T
+  public createReference(id: string): Entity
   {
+    /*
     // Check of null or undefined id first to save us searching in hashmap
     // (null id is used for example for loading world or accounts, because
     // their id is not known until it's loaded from disk.)
     if (id === null || id === undefined)
       return this.createInvalidEntityReference(id, typeCast);
+    */
 
     if (this.has(id))
-      return this.get(id, typeCast);
+      return this.get(id, Entity);
 
-    return this.createInvalidEntityReference(id, typeCast);
+    return this.createInvalidEntityReference(id);
   }
-  */
 
   /*
   // Creates THE prototype entity (one and only)
@@ -775,21 +768,23 @@ export class EntityManager
     this.entityRecords.set(handler.id, entityRecord);
   }
 
-  /// Tohohle se chci zbavit.
-  /*
-  // Purposedly creates an invalid reference
-  private createInvalidEntityReference<T>
-  (
-    id: string,
-    typeCast: { new (...args: any[]): T }
-  )
-  : T
+  // Creates an entity proxy with null 'internalEntity'.
+  // Doesn't add it to the manager - so if you want to use
+  // this reference, you have to call .getCurrentReference()
+  // first and .isValid() next to check if it became valid.
+  private createInvalidEntityReference(id: string)
   {
     let handler = new EntityProxyHandler();
 
-    return this.createInvalidEntityProxy(id, handler, typeCast);
+    handler.id = id;
+
+    // Set handler.entity to null.
+    handler.invalidate();
+
+    let proxy = new Proxy({}, handler);
+
+    return proxy;
   }
-  */
 
   // Loads entity id from file corresponding to unique entity
   // name and it's unique names cathegory.
