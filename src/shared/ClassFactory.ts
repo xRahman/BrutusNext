@@ -64,6 +64,10 @@ export class ClassFactory extends AutoSaveableObject
   // Do not save property 'nonEntityPrototypes'.
   private static nonEntityPrototypes = { isSaved: false };
 
+  private idProvider: IdProvider = null;
+  // Do not save property 'idProvider'.
+  private static idProvider = { isSaved: false };
+
   /*
   /// Pozn: dynamicClasses pořád potřebuju, protože ne všechny
   ///   classy jsou entity.
@@ -74,14 +78,16 @@ export class ClassFactory extends AutoSaveableObject
   private dynamicClasses = new Map();
   */
 
-  constructor(private idProvider: IdProvider)
+  constructor(idProvider: IdProvider)
   {
-    super();    
+    super();
+
+    this.idProvider = idProvider;
   }
 
   // ---------------- Public methods --------------------
 
-  public async initPrototypes()
+  public async initPrototypes(createDefaultData: boolean)
   {
     // Assign constructors of dynamic classes to DynamicClasses.constructors. 
     DynamicClasses.init();
@@ -115,7 +121,7 @@ export class ClassFactory extends AutoSaveableObject
     // Note that editable entity prototypes are not stored in ClassFactory
     // but rather in EntityManager, because they are regular entities
     // (they can be edited, you can stat them from the game, etc.).
-    await this.initEntityPrototypes(entityClasses);
+    await this.initEntityPrototypes(entityClasses, createDefaultData);
   }
 
   // Creates a new object based on object 'prototype'.
@@ -123,6 +129,12 @@ export class ClassFactory extends AutoSaveableObject
   // instantiated.
   public createInstance(prototypeObject: NamedClass)
   {
+    if (!(prototypeObject === null || typeof prototypeObject === 'object'))
+    {
+      ERROR("Prototype object can only be 'null' or 'object'");
+      return null;
+    }
+
     // Object.create() will create a new object with 'prototypeObject'
     // as it's prototype. This will ensure that all 'own' properties
     // of 'prorotypeObject' (those initialized in constructor or in
@@ -651,6 +663,7 @@ export class ClassFactory extends AutoSaveableObject
     record.prototypeObject = new Class;
   }
 
+  // -> Returns created id.
   private createPrototypeRecord(Class: any)
   {
     let id = this.idProvider.generateId();
@@ -668,15 +681,24 @@ export class ClassFactory extends AutoSaveableObject
 
     // And also add an entry mapping class name to
     // the id to this.hardcodedPrototypeIds hashmap.
-    this.hardcodedPrototypeIds.set(id, Class.name);
+    this.hardcodedPrototypeIds.set(Class.name, id);
+
+    return id;
   }
 
-  private async initEntityPrototypes(entityClasses: Array<any>)
+  private async initEntityPrototypes
+  (
+    entityClasses: Array<any>,
+    createDefaultData: boolean
+  )
   {
-    // Load ClassFactory from the save. This will load
-    // hardcodedPrototypeRecords and hardcodedPrototypeIds
-    // hashmaps.
-    await this.load();
+    if (!createDefaultData)
+    {
+      // Load ClassFactory from the save. This will load
+      // hardcodedPrototypeRecords and hardcodedPrototypeIds
+      // hashmaps.
+      await this.load();
+    }
 
     // It is possible that not all of the hardcoded entity classes have
     // an id stored in ClassFactory save. This can either happen when the
@@ -694,7 +716,7 @@ export class ClassFactory extends AutoSaveableObject
       let id = this.hardcodedPrototypeIds.get(Class.name);
 
       if (id === undefined)
-        this.createPrototypeRecord(Class);
+        id = this.createPrototypeRecord(Class);
 
       // Now we know that prototypeRecord for the processed
       // class exists, because either it has been present in
@@ -729,10 +751,22 @@ export class ClassFactory extends AutoSaveableObject
     return this.hardcodedPrototypeRecords.get(prototype);
   }
 
-  // Searches for 'prototype' both in this.hardcodedPrototypeIds
-  // and in this.hardcodedPrototypeRecords.
+  // Searches for 'prototype' in the ClassFactory.
   // -> Returns 'undefined' if 'prototype' isn't found.
   private searchPrototypeInClassFactory(prototype: string)
+  {
+    // First search in non-entity prototypes.
+    let prototypeObject = this.nonEntityPrototypes.get(prototype);
+
+    if (prototypeObject !== undefined)
+      return prototypeObject;
+
+    return this.searchEntityPrototype(prototype);
+  }
+
+  // -> Returns prototypeObject if non-entity 'prototype' exists
+  //    in ClassFactory, 'undefined' otherwise.
+  private searchEntityPrototype(prototype: string)
   {
     let prototypeRecord = this.getPrototypeRecord(prototype);
 

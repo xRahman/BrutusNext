@@ -9,8 +9,8 @@
     "noEmitOnError": true,
     "outDir": "build",
     "rootDir": "src",
-    "sourceMap": true
-    //"sourceRoot": "src"
+    "sourceMap": true,
+    "sourceRoot": "src"
   },
   /*"files":
   [

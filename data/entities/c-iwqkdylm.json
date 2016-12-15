@@ -1,0 +1,37 @@
+{
+  "name": "System Area",
+  "className": "Area",
+  "location":
+  {
+    "className": "Reference",
+    "version": 0,
+    "id": "b-iwqkdylm"
+  },
+  "uniqueNameCathegory": 3,
+  "version": 0,
+  "prototypeId": null,
+  "descendantIds": [],
+  "contents":
+  {
+    "className": "EntityList",
+    "version": 0,
+    "entities":
+    {
+      "className": "Map",
+      "version": 0,
+      "map": [["d-iwqkdylm",
+      {
+        "className": "Reference",
+        "version": 0,
+        "id": "d-iwqkdylm"
+      }], ["e-iwqkdylm",
+      {
+        "className": "Reference",
+        "version": 0,
+        "id": "e-iwqkdylm"
+      }]]
+    }
+  },
+  "aliases": [],
+  "connection": null
+}
