@@ -1,0 +1,294 @@
+{
+  "className": "ClassFactory",
+  "version": 0,
+  "hardcodedPrototypeRecords":
+  {
+    "className": "Map",
+    "version": 0,
+    "map": [["1-iwqkdylm",
+    {
+      "className": "PrototypeRecord",
+      "version": 0,
+      "descendantIds": [],
+      "prototypeObject":
+      {
+        "className": "Connection",
+        "version": 0,
+        "account": null,
+        "ingameEntity": null,
+        "stage": null,
+        "socketDescriptor": null,
+        "authProcessor": null,
+        "menuProcessor": null,
+        "chargenProcessor": null
+      }
+    }], ["2-iwqkdylm",
+    {
+      "className": "PrototypeRecord",
+      "version": 0,
+      "descendantIds": [],
+      "prototypeObject":
+      {
+        "name": "Unnamed Entity",
+        "className": "Account",
+        "version": 0,
+        "uniqueNameCathegory": null,
+        "prototypeId": null,
+        "descendantIds": [],
+        "characterNames": [],
+        "timeOfCreation":
+        {
+          "className": "Date",
+          "version": 0,
+          "date": "2016-12-15T16:47:11.072Z"
+        },
+        "lastLoginAddress": null,
+        "lastLoginDate":
+        {
+          "className": "Date",
+          "version": 0,
+          "date": "1970-01-01T00:00:00.000Z"
+        },
+        "passwordHash": ""
+      }
+    }], ["3-iwqkdylm",
+    {
+      "className": "PrototypeRecord",
+      "version": 0,
+      "descendantIds": [],
+      "prototypeObject":
+      {
+        "name": "Unnamed Entity",
+        "className": "Character",
+        "version": 0,
+        "uniqueNameCathegory": null,
+        "prototypeId": null,
+        "descendantIds": [],
+        "contents":
+        {
+          "className": "EntityList",
+          "version": 0,
+          "entities":
+          {
+            "className": "Map",
+            "version": 0,
+            "map": []
+          }
+        },
+        "aliases": [],
+        "connection": null,
+        "location": null,
+        "characterFlags":
+        {
+          "className": "CharacterFlags",
+          "version": 0,
+          "flags": []
+        },
+        "timeOfCreation":
+        {
+          "className": "Date",
+          "version": 0,
+          "date": "2016-12-15T16:47:11.072Z"
+        },
+        "adminLevel": 0
+      }
+    }], ["4-iwqkdylm",
+    {
+      "className": "PrototypeRecord",
+      "version": 0,
+      "descendantIds": [],
+      "prototypeObject":
+      {
+        "name": "Unnamed Entity",
+        "className": "World",
+        "version": 0,
+        "uniqueNameCathegory": null,
+        "prototypeId": null,
+        "descendantIds": [],
+        "contents":
+        {
+          "className": "EntityList",
+          "version": 0,
+          "entities":
+          {
+            "className": "Map",
+            "version": 0,
+            "map": []
+          }
+        },
+        "aliases": [],
+        "connection": null,
+        "location": null,
+        "systemRealm": null,
+        "systemArea": null,
+        "systemRoom": null,
+        "tutorialRoom": null
+      }
+    }], ["5-iwqkdylm",
+    {
+      "className": "PrototypeRecord",
+      "version": 0,
+      "descendantIds": [],
+      "prototypeObject":
+      {
+        "name": "Unnamed Entity",
+        "className": "Realm",
+        "version": 0,
+        "uniqueNameCathegory": null,
+        "prototypeId": null,
+        "descendantIds": [],
+        "contents":
+        {
+          "className": "EntityList",
+          "version": 0,
+          "entities":
+          {
+            "className": "Map",
+            "version": 0,
+            "map": []
+          }
+        },
+        "aliases": [],
+        "connection": null,
+        "location": null
+      }
+    }], ["6-iwqkdylm",
+    {
+      "className": "PrototypeRecord",
+      "version": 0,
+      "descendantIds": [],
+      "prototypeObject":
+      {
+        "name": "Unnamed Entity",
+        "className": "Dimension",
+        "version": 0,
+        "uniqueNameCathegory": null,
+        "prototypeId": null,
+        "descendantIds": [],
+        "contents":
+        {
+          "className": "EntityList",
+          "version": 0,
+          "entities":
+          {
+            "className": "Map",
+            "version": 0,
+            "map": []
+          }
+        },
+        "aliases": [],
+        "connection": null,
+        "location": null
+      }
+    }], ["7-iwqkdylm",
+    {
+      "className": "PrototypeRecord",
+      "version": 0,
+      "descendantIds": [],
+      "prototypeObject":
+      {
+        "name": "Unnamed Entity",
+        "className": "Sector",
+        "version": 0,
+        "uniqueNameCathegory": null,
+        "prototypeId": null,
+        "descendantIds": [],
+        "contents":
+        {
+          "className": "EntityList",
+          "version": 0,
+          "entities":
+          {
+            "className": "Map",
+            "version": 0,
+            "map": []
+          }
+        },
+        "aliases": [],
+        "connection": null,
+        "location": null
+      }
+    }], ["8-iwqkdylm",
+    {
+      "className": "PrototypeRecord",
+      "version": 0,
+      "descendantIds": [],
+      "prototypeObject":
+      {
+        "name": "Unnamed Entity",
+        "className": "Area",
+        "version": 0,
+        "uniqueNameCathegory": null,
+        "prototypeId": null,
+        "descendantIds": [],
+        "contents":
+        {
+          "className": "EntityList",
+          "version": 0,
+          "entities":
+          {
+            "className": "Map",
+            "version": 0,
+            "map": []
+          }
+        },
+        "aliases": [],
+        "connection": null,
+        "location": null
+      }
+    }], ["9-iwqkdylm",
+    {
+      "className": "PrototypeRecord",
+      "version": 0,
+      "descendantIds": [],
+      "prototypeObject":
+      {
+        "name": "Unnamed Entity",
+        "className": "Room",
+        "version": 0,
+        "uniqueNameCathegory": null,
+        "prototypeId": null,
+        "descendantIds": [],
+        "contents":
+        {
+          "className": "EntityList",
+          "version": 0,
+          "entities":
+          {
+            "className": "Map",
+            "version": 0,
+            "map": []
+          }
+        },
+        "aliases": [],
+        "connection": null,
+        "location": null,
+        "description": "Unfinished room.",
+        "extraDescriptions": [],
+        "roomFlags":
+        {
+          "className": "RoomFlags",
+          "version": 0,
+          "flags": []
+        },
+        "exits":
+        {
+          "className": "Exits",
+          "version": 0,
+          "exits":
+          {
+            "className": "Map",
+            "version": 0,
+            "map": []
+          }
+        }
+      }
+    }]]
+  },
+  "hardcodedPrototypeIds":
+  {
+    "className": "Map",
+    "version": 0,
+    "map": [["Connection", "1-iwqkdylm"], ["Account", "2-iwqkdylm"], ["Character", "3-iwqkdylm"], ["World", "4-iwqkdylm"], ["Realm", "5-iwqkdylm"], ["Dimension", "6-iwqkdylm"], ["Sector", "7-iwqkdylm"], ["Area", "8-iwqkdylm"], ["Room", "9-iwqkdylm"]]
+  }
+}

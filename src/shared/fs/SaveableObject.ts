@@ -568,7 +568,19 @@ export class SaveableObject extends InstantiableClass
         let prototypeObject =
           Server.classFactory.getPrototypeObject(className);
 
-        myProperty = Server.classFactory.createInstance(prototypeObject);
+        if (prototypeObject === undefined)
+        {
+          ERROR("Property '" + propertyName + "' loaded from"
+            + " file '" + path + "' is of type '" + className + "'"
+            + " which doesn't exist in ClassFactory. It probably"
+            + " means that you forgot to add class '" + className + "'"
+            + " to DynamicClasses.ts");
+          myProperty = null;
+        }
+        else
+        {
+          myProperty = Server.classFactory.createInstance(prototypeObject);
+        }
       }
     }
 
@@ -1132,6 +1144,13 @@ export class SaveableObject extends InstantiableClass
       jsonObject,
       path
     );
+
+    if (myProperty === null || myProperty === undefined)
+    {
+      ERROR("Failed to instantiate property '" + propertyName + "'"
+        + " when loading from file '" + path + "'");
+      return null;
+    }
 
     // Now we are sure that myProperty isn't null (either it wasn't
     // null or we have just assigned a new instance of correct type in

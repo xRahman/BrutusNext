@@ -1,0 +1,10 @@
+{
+  "className": "FlagNamesManager",
+  "version": 0,
+  "flagNamesList":
+  {
+    "className": "Map",
+    "version": 0,
+    "map": []
+  }
+}
