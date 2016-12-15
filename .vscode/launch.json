@@ -21,19 +21,7 @@
             },
             "console": "externalTerminal",
             "sourceMaps": true,
-            "outDir": "${workspaceRoot}/build"
-        },
-        {
-            "name": "Attach",
-            "type": "node",
-            "request": "attach",
-            "port": 5858,
-            "address": "localhost",
-            "restart": false,
-            "sourceMaps": true,
-            "outDir": "${workspaceRoot}/build",
-            "localRoot": "${workspaceRoot}",
-            "remoteRoot": null
+            "outFiles": [ "${workspaceRoot}/build/**/*.js" ]
         }
     ]
 }

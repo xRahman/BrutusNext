@@ -1,0 +1,27 @@
+﻿Intented project structure:
+- source files are located in /src
+- generated javascript files (and respective souce maps) are located in /build
+
+What must be set:
+-----------------
+
+1) In tsconfig.json:
+
+  "outDir": "build",
+
+  "rootDir": "src",
+
+  "sourceMap": true,
+  // This is very important - it makes the compiler to add "sourceRoot" parameter
+  // to generated .map files so the path to original typescript file can be constructed.
+  // (parameters "sourceRoot" plus "sources" must together give the correct path)
+  "sourceRoot": "src"
+
+2) in /.vscode/launch.json:
+
+  "sourceMaps": true,
+  // The '/build/' part is important here.
+  "outFiles": [ "${workspaceRoot}/build/**/*.js" ]
+
+Note that source maps contain absolute paths - it means that they are only valid on
+the machine where they were generated.
