@@ -1,0 +1,46 @@
+{
+  "name": "Tutorial Room",
+  "className": "Room",
+  "uniqueNameCathegory": null,
+  "location":
+  {
+    "className": "Reference",
+    "version": 0,
+    "id": "c-iwqkdylm"
+  },
+  "version": 0,
+  "prototypeId": null,
+  "descendantIds": [],
+  "contents":
+  {
+    "className": "EntityList",
+    "version": 0,
+    "entities":
+    {
+      "className": "Map",
+      "version": 0,
+      "map": []
+    }
+  },
+  "aliases": [],
+  "connection": null,
+  "description": "Unfinished room.",
+  "extraDescriptions": [],
+  "roomFlags":
+  {
+    "className": "RoomFlags",
+    "version": 0,
+    "flags": []
+  },
+  "exits":
+  {
+    "className": "Exits",
+    "version": 0,
+    "exits":
+    {
+      "className": "Map",
+      "version": 0,
+      "map": []
+    }
+  }
+}

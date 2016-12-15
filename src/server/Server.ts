@@ -252,7 +252,11 @@ export class Server
     // will be created by it if it doesn't exist.
     let createDefaultData = !FileSystem.existsSync('./data/');
 
-    await this.classFactory.initPrototypes();
+    await this.classFactory.initPrototypes(createDefaultData);
+
+    // 'initPrototypes' may have added new records to the ClassFactory
+    // so we need to save them.
+    await this.classFactory.save();
 
     // If 'data' directory doesn't exist at all, create and save a new world.
     if (createDefaultData)

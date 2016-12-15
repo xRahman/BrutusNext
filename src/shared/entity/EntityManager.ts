@@ -1003,6 +1003,12 @@ export class EntityManager
   // -> Returns the proxy that should be used to access the entity.
   private addEntityAsProxy(entity: Entity)
   {
+    if (entity === null || entity === undefined)
+    {
+      ERROR("Invalid parameter 'entity'");
+      return null;
+    }
+
     let handler = new EntityProxyHandler();
 
     handler.id = entity.getId();

@@ -10,6 +10,7 @@
 import {Server} from '../server/Server';
 import {Script} from '../shared/prototype/Script';
 import {FlagNames} from '../shared/flags/FlagNames';
+import {PrototypeRecord} from '../shared/PrototypeRecord';
 import {NameLockRecord} from '../shared/entity/NameLockRecord';
 import {Connection} from '../server/connection/Connection';
 import {Account} from '../server/account/Account';
@@ -32,6 +33,7 @@ export class DynamicClasses
     // Classes need to be listed in order of inheritance (ancestors first).
     this.set(Script);
     this.set(FlagNames);
+    this.set(PrototypeRecord);
     this.set(NameLockRecord);
     this.set(Connection);
     this.set(Account);
