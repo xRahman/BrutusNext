@@ -430,8 +430,24 @@ class Y extends InstantiableClass
   public y = 17;
 }
 
+// ---------------------------------------------------------
+
+/*
+class StaticPropertyTest
+{
+  public static x = 10;
+}
+*/
+
 async function test()
 {
+  /*
+  let o = Object.create(new StaticPropertyTest);
+
+  console.log(">>>>> " + o.constructor['x']);
+  */
+
+
   ///console.log("Is x instance of X? " + (x instanceof X));
 
   /*
