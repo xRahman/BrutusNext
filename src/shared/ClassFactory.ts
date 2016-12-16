@@ -44,7 +44,7 @@ export class ClassFactory extends AutoSaveableObject
   // it's editable descentants.
   //   Key:   id assigned to a hardcoded entity class.
   //   Value: list of ids of descendants.
-  private hardcodedPrototypeRecords = new Map<string, PrototypeRecord>();
+  private hardcodedEntityPrototypeRecords = new Map<string, PrototypeRecord>();
 
   // Hashamp matching name of hardcoded entity classes (like 'Character')
   // to their assigned ids. This allows prototypes inherited from these
@@ -53,11 +53,9 @@ export class ClassFactory extends AutoSaveableObject
   // change the name in all save files that reference them.
   //   Key:   name od hardcoded entity class
   //   Value: assigned id.
-  private hardcodedPrototypeIds = new Map<string, string>(); 
+  private hardcodedEntityPrototypeIds = new Map<string, string>(); 
 
   // Only non-entity classes have their prototype object here.
-  // Enity prototype objects are regular entities and you will
-  // find them in EntityManager.
   //   Key:   class name
   //   Value: prototype object
   private nonEntityPrototypes = new Map<string, any>();
@@ -104,7 +102,7 @@ export class ClassFactory extends AutoSaveableObject
       if (!this.isEntity(Class))
       {
         // Non-entity class prototypes are just an instances
-        // of these classes (created by 'new Class'). We store
+        // of these classes (created as 'new Class'). We store
         // them in this.nonEntityPrototypes. 
         this.nonEntityPrototypes.set(Class.name, new Class);
       }
@@ -112,7 +110,7 @@ export class ClassFactory extends AutoSaveableObject
       {
         // Entity classes (those that have an id) are not
         // instantiated right away, because we need to create
-        // id's for them if they don't exist yet.
+        // id's for them if they don't have it yet.
         entityClasses.push(Class);
       }
     }
@@ -637,7 +635,7 @@ export class ClassFactory extends AutoSaveableObject
 
   private createPrototypeObject(id: string, Class: any)
   {
-    let record = this.hardcodedPrototypeRecords.get(id);
+    let record = this.hardcodedEntityPrototypeRecords.get(id);
 
     if (record === undefined)
     {
@@ -651,8 +649,10 @@ export class ClassFactory extends AutoSaveableObject
     }
 
     if (record.prototypeObject !== null)
+    {
       ERROR("Prototype record for id '" + id + "'"
         + " already has a prototypeObject assigned");
+    }
     
     /// IMHO tady nepotřebuju createInstance (tj. Object.create()
     /// a instancování properties), protože půjde o prototype
@@ -677,11 +677,11 @@ export class ClassFactory extends AutoSaveableObject
 
     // Add newly created prototypeRecord to
     // this.hardcodedPrototypeRecords hashmap.
-    this.hardcodedPrototypeRecords.set(id, prototypeRecord);
+    this.hardcodedEntityPrototypeRecords.set(id, prototypeRecord);
 
     // And also add an entry mapping class name to
     // the id to this.hardcodedPrototypeIds hashmap.
-    this.hardcodedPrototypeIds.set(Class.name, id);
+    this.hardcodedEntityPrototypeIds.set(Class.name, id);
 
     return id;
   }
@@ -713,7 +713,7 @@ export class ClassFactory extends AutoSaveableObject
     {
       // First we check if our class already has an id assigned.
       // (hashmap returns 'undefined' if it doesn't contain requested entry)
-      let id = this.hardcodedPrototypeIds.get(Class.name);
+      let id = this.hardcodedEntityPrototypeIds.get(Class.name);
 
       if (id === undefined)
         id = this.createPrototypeRecord(Class);
@@ -733,7 +733,7 @@ export class ClassFactory extends AutoSaveableObject
   {
     // Check if 'prototype' exists in this.hardcodedPrototypeIds
     // (so that it's a class name).
-    let prototypeId = this.hardcodedPrototypeIds.get(prototype);
+    let prototypeId = this.hardcodedEntityPrototypeIds.get(prototype);
 
     if (prototypeId !== undefined)
     {
@@ -741,14 +741,14 @@ export class ClassFactory extends AutoSaveableObject
       // classNames to respective ids, so to get our prototypeRecord
       // we need to request it from this.hardcodedPrototypeRecords
       // the id we have just obtained.
-      return this.hardcodedPrototypeRecords.get(prototypeId);
+      return this.hardcodedEntityPrototypeRecords.get(prototypeId);
     }
 
     // If 'prototope' doesn't exist in this.hardcodedPrototypeIds,
     // it means that's its not a valid prototype class name, but
     // it still can be a valid prototype id - which we can determine
     // by searching it in  this.hardcodedPrototypeRecords.
-    return this.hardcodedPrototypeRecords.get(prototype);
+    return this.hardcodedEntityPrototypeRecords.get(prototype);
   }
 
   // Searches for 'prototype' in the ClassFactory.

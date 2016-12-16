@@ -171,7 +171,7 @@ export class IndirectValue
   }
 
   // -> Returns a Proxy object that traps access to 'className' property
-  //      on 'object' to return 'className' instead of original value. 
+  //      on 'object' to return 'className' param instead of original value. 
   private static createSaveableProxy(object: SaveableObject, className: string)
   {
     // This function will be passed to Proxy handler as it's 'get' trap.

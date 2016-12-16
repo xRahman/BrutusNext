@@ -35,7 +35,8 @@ export class DynamicClasses
     this.set(FlagNames);
     this.set(PrototypeRecord);
     this.set(NameLockRecord);
-    this.set(Connection);
+    /// Connection doesn't need to be here because it's never saved.
+    ///this.set(Connection);
     this.set(Account);
     this.set(Character);
     this.set(World);
