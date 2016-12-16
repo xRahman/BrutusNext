@@ -526,6 +526,9 @@ export class SaveableObject extends InstantiableClass
       jsonVariable,
       path
     );
+
+    if (result !== null)
+      return result;
     
     // If variable has neither of types we have just tried,
     // we load it as primitive type (variables of primitive
@@ -595,7 +598,7 @@ export class SaveableObject extends InstantiableClass
     // Note: isSaved static attribute is not tested for members of an array.
     // Either the whole array is saved, or it's not saved at all. Having
     // 'holes' in an array after loading (probably with <null> values) would
-    // certainly be confusing after all.
+    // certainly be confusing.
     for (let i = 0; i < array.length; i++)
     {
       let itemDescription = "an item of an array '" + arrayName + "'"
@@ -1078,14 +1081,12 @@ export class SaveableObject extends InstantiableClass
 
     for (let i = 0; i < jsonArray.length; i++)
     {
-      // 'item' needs to be set to null prior to calling loadVariable(),
-      // so an instance of the correct type will be created.
-      let item = null;
-
-      item = this.loadVariable
+      let item = this.loadVariable
       (
         "Array Item",
-        item,
+        // We need to pass 'null' as 'variable' so that an instance
+        // of the coredt type will be created (by createNewIfNull()).
+        null,
         jsonArray[i],
         path
       );
