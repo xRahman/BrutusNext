@@ -854,8 +854,8 @@ export class EntityManager
 
     if (prototypeId === undefined || prototypeId === null)
     {
-      ERROR("Missing className in file " + path + "."
-        + " Entity is not loaded");
+      ERROR("Missing or uninitialized 'prototypeId' property in file"
+        + " " + path + ". Entity is not loaded");
       return null;
     }
 
@@ -1005,7 +1005,7 @@ export class EntityManager
   {
     if (entity === null || entity === undefined)
     {
-      ERROR("Invalid parameter 'entity'");
+      ERROR("Invalid value of parameter 'entity'");
       return null;
     }
 
