@@ -633,7 +633,11 @@ export class ClassFactory extends AutoSaveableObject
     return Class.prototype['getId'] !== undefined;
   }
 
-  private createPrototypeObject(id: string, Class: any)
+  private setPrototypeObjectToPrototypeRecord
+  (
+    id: string,
+    prototypeObject: Object
+  )
   {
     let record = this.hardcodedEntityPrototypeRecords.get(id);
 
@@ -653,14 +657,35 @@ export class ClassFactory extends AutoSaveableObject
       ERROR("Prototype record for id '" + id + "'"
         + " already has a prototypeObject assigned");
     }
-    
+
+    record.prototypeObject = prototypeObject;
+  }
+
+  private createPrototypeObject(id: string, Class: any)
+  {
     /// IMHO tady nepotřebuju createInstance (tj. Object.create()
     /// a instancování properties), protože půjde o prototype
     /// object, který odstíní vlastní vytváření konkrétních intancí.
     /// - prototyp coby Object.create() potřebuju pouze u editovatelných
     ///   prototypů, a to právě proto, aby byly editovatelné. 
     ///record.prototypeObject = this.createInstance(new Class);
-    record.prototypeObject = new Class;
+    let prototypeObject = new Class;
+
+    if (prototypeObject.setId === undefined)
+    {
+      ERROR("Attempt to create a prototypeObject from Class"
+        + " " + Class.name + " which is not an Entity class");
+      return null;
+    }
+
+    // Name would otherwise be 'Unnamed Entity'. Something like
+    // 'Account prototype' is probably more informative.
+    prototypeObject.setName(Class.name + " prototype");
+
+    // Id is read from prototype object when a new instance is created
+    // to set it's prototypeId (so it can be based on correct prototype
+    // when loaded from file).
+    prototypeObject.setId(id);
   }
 
   // -> Returns created id.
@@ -670,9 +695,9 @@ export class ClassFactory extends AutoSaveableObject
 
     // Note that prototypeRecord.descendantIds will be
     // empty - that's ok, because if the class didn't
-    // already have prototypeRecord, its newly added to
+    // already have prototypeRecord, it's newly added to
     // the code so it can't have any descendant prototypes
-    // yet. 
+    // yet.
     let prototypeRecord = new PrototypeRecord();
 
     // Add newly created prototypeRecord to
@@ -722,7 +747,10 @@ export class ClassFactory extends AutoSaveableObject
       // class exists, because either it has been present in
       // ClassFactory save or we have just created it.
       //   So we can create a prototype object for the Class.
-      this.createPrototypeObject(id, Class);
+
+      let prototypeObject = this.createPrototypeObject(id, Class);
+
+      this.setPrototypeObjectToPrototypeRecord(id, prototypeObject);
     }
   }
 
