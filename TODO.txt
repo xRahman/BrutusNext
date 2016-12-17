@@ -16,6 +16,7 @@ TODO: Zprovoznit loadování RefereceRecordu
 
 ---------------
 
+TODO: Vyrábění nových prototypů
 TODO: Assignování idček při vytváření nového prototypu
   (ancestor do entity, descendants do předka).
   - tj. nějaké createPrototype()

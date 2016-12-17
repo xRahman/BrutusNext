@@ -233,7 +233,8 @@ export class EntityManager
     if (prototypeObject === undefined)
     {
       ERROR("Unable to create entity '" + name + "' based"
-        + " on prototype '" + prototypeId + "'");
+        + " on prototype '" + prototypeId + "': prototype"
+        + " object doesn't exist");
       return null;
     }
 
@@ -854,7 +855,7 @@ export class EntityManager
 
     if (prototypeId === undefined || prototypeId === null)
     {
-      ERROR("Missing or uninitialized 'prototypeId' property in file"
+      ERROR("Missing or uninitialized property 'prototypeId' in file"
         + " " + path + ". Entity is not loaded");
       return null;
     }
@@ -864,7 +865,7 @@ export class EntityManager
 
   // -> Returns prototype object matching prototypeId in 'jsonObject'
   //    or 'null' if the property isn't valid.
-  private getPrototypeForJsonObject(jsonObject: Object, path: string)
+  private getPrototypeFromJsonObject(jsonObject: Object, path: string)
   {
     let prototypeId = this.readPrototypeIdFromJsonObject(jsonObject, path);
 
@@ -897,7 +898,7 @@ export class EntityManager
   )
   : Entity
   {
-    let prototypeObject = this.getPrototypeForJsonObject(jsonObject, path);
+    let prototypeObject = this.getPrototypeFromJsonObject(jsonObject, path);
 
     if (prototypeObject === null)
       // Error is already reported by getPrototypeForJsonObject().
@@ -990,6 +991,7 @@ export class EntityManager
     }
 
     entity.setId(id);
+    entity.setPrototypeId(prototypeObject.getId());
 
     let proxy = this.addEntityAsProxy(entity);
 
