@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Allows classes to compile script and serve as prototypes.
+  Allows classes to compile scripts and serve as prototypes.
 */
 
 /*
@@ -11,7 +11,6 @@
     This causes the entity to be loaded as prototype when the
   server starts (because all descendant entities are recursively
   loaded at that time begening from the root prototype entity).
-
 */
 
 'use strict';
@@ -35,9 +34,15 @@ export class PrototypeEntity extends NamedEntity
 
   // Only the prototype Entity at the root of prototype 
   // tree should have prototypeId = null.
-  public prototypeId = null;
+  private prototypeId = null;
 
   public descendantIds = [];
+
+  public getPrototypeId() { return this.prototypeId; }
+  public setPrototypeId(prototypeId: string)
+  {
+    this.prototypeId = prototypeId;
+  }
 
   /*
   // Name of the class that will represent this prototype.
