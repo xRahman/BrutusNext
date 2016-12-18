@@ -3,7 +3,9 @@
     "configurations": [
         {
             "name": "Launch",
-            "type": "node",
+            // IMPORTANT: "node2" is an experimental node debugger.
+            // Default is: "type": "node"
+            "type": "node2",
             "request": "launch",
             "program": "${workspaceRoot}/src/BrutusNext.ts",
             "stopOnEntry": false,

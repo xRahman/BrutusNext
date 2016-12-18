@@ -1,3 +1,6 @@
+TODO: se jménem entity je to možná dost podobné jako s idčkem
+  - zdědit ho z prototypu asi není úplně dobrej nápad.
+
 Loadování referencí
 -------------------
 - Contents by se měl loadovat jinak než volné reference.
