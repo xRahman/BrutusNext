@@ -149,11 +149,28 @@ export class EntityProxyHandler
   //{
   //}
 
-  //// A trap for Object.getOwnPropertyDescriptor.
-  //public getOwnPropertyDescriptor(target)
-  //{
-  //  console.log("getOwnPropertyDescriptor(target)");
-  //}
+  // A trap for Object.getOwnPropertyDescriptor.
+  // (This is trapped in order to 'hasOwnProperty()' to work)
+  public getOwnPropertyDescriptor(target: any, property: any)
+  {
+    // Does the referenced entity exist?
+    if (this.isEntityValid() === false)
+    {
+      Syslog.log
+      (
+        "Attempt to call 'getOwnPropertyDescriptor()' function on"
+          + " an invalid entity\n"
+          + Syslog.getTrimmedStackTrace(Syslog.TrimType.PROXY_HANDLER),
+        Message.Type.INVALID_ACCESS,
+        AdminLevel.IMMORTAL
+      );
+
+      // Invalid entity doesn't have any properties (it's value is null),
+      return undefined;
+    }
+
+    return Object.getOwnPropertyDescriptor(this.entity, property);
+  }
 
   //// A trap for Object.defineProperty.
   //public defineProperty(target)
@@ -183,6 +200,33 @@ export class EntityProxyHandler
 
     return property in this.entity;
   }
+
+  /// Tohle zjevně nefunguje.
+  /*
+  // A trap for the 'hawOwnProperty()' function.
+  public hasOwn(target: any, property: any): boolean
+  {
+    // Does the referenced entity exist?
+    // (isEntityValid() updates this.entity if it's possible)
+    if (this.isEntityValid() === false)
+    {
+      Syslog.log
+      (
+        "Attempt to call 'hasOwnProperty()' function on an invalid entity\n"
+          + Syslog.getTrimmedStackTrace(Syslog.TrimType.PROXY_HANDLER),
+        Message.Type.INVALID_ACCESS,
+        AdminLevel.IMMORTAL
+      );
+
+      // Invalid entity doesn't have any properties (it's value is null),
+      // so 'hasOwnProperty()' will always return false in this case.
+      return false;
+    }
+
+    return this.entity.hasOwnProperty(property);
+  }
+  */
+
 
   // A trap for getting property values.
   public get(target: any, property: any)

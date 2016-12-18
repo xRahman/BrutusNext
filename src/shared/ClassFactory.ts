@@ -39,13 +39,6 @@ export class ClassFactory extends AutoSaveableObject
     - podle jména classy zjistit, jestli už má idčko a případně jaké.
   */
 
-  // Hashmap matching id assigned to a hardcoded entity class
-  // to it's prototypeObject instance and the list of ids of
-  // it's editable descentants.
-  //   Key:   id assigned to a hardcoded entity class.
-  //   Value: list of ids of descendants.
-  private hardcodedEntityPrototypeRecords = new Map<string, PrototypeRecord>();
-
   // Hashamp matching name of hardcoded entity classes (like 'Character')
   // to their assigned ids. This allows prototypes inherited from these
   // hardcoded classes to refer to them using an id instead of class name,
@@ -53,7 +46,14 @@ export class ClassFactory extends AutoSaveableObject
   // change the name in all save files that reference them.
   //   Key:   name od hardcoded entity class
   //   Value: assigned id.
-  private hardcodedEntityPrototypeIds = new Map<string, string>(); 
+  private hardcodedEntityPrototypeIds = new Map<string, string>();
+
+  // Hashmap matching id assigned to a hardcoded entity class
+  // to it's prototypeObject instance and the list of ids of
+  // it's editable descentants.
+  //   Key:   id assigned to a hardcoded entity class.
+  //   Value: list of ids of descendants.
+  private hardcodedEntityPrototypeRecords = new Map<string, PrototypeRecord>();
 
   // Only non-entity classes have their prototype object here.
   //   Key:   class name
@@ -673,8 +673,21 @@ export class ClassFactory extends AutoSaveableObject
 
     if (prototypeObject.setId === undefined)
     {
-      ERROR("Attempt to create a prototypeObject from Class"
+      ERROR("Attempt to create a prototypeObject of Class"
         + " " + Class.name + " which is not an Entity class");
+      return null;
+    }
+
+    // Id is read from prototype object when a new instance is created
+    // to set it's prototypeId (so it can be based on correct prototype
+    // when loaded from file).
+    prototypeObject.setId(id);
+
+    if (prototypeObject.setName === undefined)
+    {
+      ERROR("Attempt to create a prototypeObject of Class"
+        + " " + Class.name + " which is not a NamedEntity"
+        + " class");
       return null;
     }
 
@@ -682,14 +695,11 @@ export class ClassFactory extends AutoSaveableObject
     // 'Account prototype' is probably more informative.
     prototypeObject.setName(Class.name + " prototype");
 
-    // Id is read from prototype object when a new instance is created
-    // to set it's prototypeId (so it can be based on correct prototype
-    // when loaded from file).
-    prototypeObject.setId(id);
+    return prototypeObject;
   }
 
   // -> Returns created id.
-  private createPrototypeRecord(Class: any)
+  private createPrototypeRecord(className: string)
   {
     let id = this.idProvider.generateId();
 
@@ -706,7 +716,7 @@ export class ClassFactory extends AutoSaveableObject
 
     // And also add an entry mapping class name to
     // the id to this.hardcodedPrototypeIds hashmap.
-    this.hardcodedEntityPrototypeIds.set(Class.name, id);
+    this.hardcodedEntityPrototypeIds.set(className, id);
 
     return id;
   }
@@ -741,7 +751,7 @@ export class ClassFactory extends AutoSaveableObject
       let id = this.hardcodedEntityPrototypeIds.get(Class.name);
 
       if (id === undefined)
-        id = this.createPrototypeRecord(Class);
+        id = this.createPrototypeRecord(Class.name);
 
       // Now we know that prototypeRecord for the processed
       // class exists, because either it has been present in

@@ -16,6 +16,8 @@ import {Server} from '../../server/Server';
 
 export class Entity extends AutoSaveableObject
 {
+  public static get ID_PROPERTY() { return 'id'; }
+
   // ----------------- Private data ----------------------
 
   ///private id: EntityId = null;
@@ -81,13 +83,31 @@ export class Entity extends AutoSaveableObject
 
   // --------------- Public accessors -------------------
 
-  public getId() { return this.id; }
+  public getId()
+  {
+    // If we don't have own 'id' property, this.id would return
+    // id of our prototype object (thanks to inheritance), which
+    // is not our id (id has to be unique for each entity instance).
+    if (!this.hasOwnProperty(Entity.ID_PROPERTY) || this.id === null)
+    {
+      ERROR("Attempt to get 'id' of an entity which doesn't have"
+        + " an id set, yet");
+      return null;
+    }
+
+    return this.id;
+  }
+
   public setId(id: string)
   {
     // Id can only be set once.
-    if (this.id !== null)
+    //   We need to check if we have own property 'id'
+    // (not just the one inherited from our prototype),
+    // because if we don't, value of 'this.id' would be
+    // that of our prototype object, which is not null.
+    if (this.hasOwnProperty(Entity.ID_PROPERTY) && this.id !== null)
     {
-      ERROR("Attempt to set id of entity " + this.getErrorIdString
+      ERROR("Attempt to set id of entity " + this.getErrorIdString()
         + " that already has an id. Id is not set");
       return;
     }
