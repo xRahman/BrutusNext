@@ -54,7 +54,7 @@ export class World extends GameEntity
     Game.prototypeManager.createPrototype('SystemRealm', 'Realm');
     */
 
-    this.systemRealm = await Server.entityManager.createEntity
+    this.systemRealm = await Server.entityManager.createUniqueEntity
     (
       'System Realm',
       Realm,
@@ -72,7 +72,7 @@ export class World extends GameEntity
     Game.prototypeManager.createPrototype('SystemArea', 'Area');
     */
 
-    this.systemArea = await Server.entityManager.createEntity
+    this.systemArea = await Server.entityManager.createUniqueEntity
     (
       'System Area',
       Area,
