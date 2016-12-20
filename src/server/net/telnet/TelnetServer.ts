@@ -166,12 +166,17 @@ export class TelnetServer
     ///s.socket = s; // conform to the websocket object to make easier to handle
 
     let connection = this.createConnection(socket);
+
+    if (connection === null)
+      // Error is already reported by createConnection().
+      return;
     
     connection.startAuthenticating();
   }
 
   // ---------------- Private methods --------------------
 
+  // -> Returns 'null' if connection couldn't be created.
   private createConnection(socket)
   {
     let socketDescriptor = new TelnetSocketDescriptor(socket);
@@ -182,6 +187,9 @@ export class TelnetServer
       'Connection',
       Connection
     );
+
+    if (connection === null)
+      return null;
 
     connection.setSocketDescriptor(socketDescriptor);
     Server.connections.add(connection);

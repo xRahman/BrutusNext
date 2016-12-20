@@ -14,7 +14,7 @@ import {FileSystem} from '../../shared/fs/FileSystem';
 
 export class NamedEntity extends Entity
 {
-  private name = "Unnamed Entity";
+  private name = null;
 
   // In what cathegory is this name unique (accounts, characters, world...).
   // Value 'null' means that the name is not unique.
@@ -22,15 +22,58 @@ export class NamedEntity extends Entity
 
   // --------------- Public accessors -------------------
 
-  public getName() { return this.name; }
+  public getName()
+  {
+    if (this.name === null)
+    {
+      ERROR("Attempt to read the name of an entity before"
+        + " it has been inicialized");
+      return "Unnamed Entity";
+    }
+
+    return this.name;
+  }
+
+  // Sets a non-unique name to an entity. Only usable
+  // if entity doesn't have unique name!
+  // (It's because removing a name lock file for old
+  //  unique name is an async operation - if you need
+  //  to set a new name to an uniquely named entity,
+  //  you need to use 'await setName()' instead of
+  //  setNameSync().)
+  // -> Returns 'true' if name was successfuly set.
+  public setNameSync(name: string)
+  {
+    if (this.uniqueNameCathegory !== null)
+    {
+      ERROR("Attempt to synchronously set a name to entity"
+        + " " + this.getErrorIdString() +  " which has a"
+        + " unique name. You need to use 'await setName()'"
+        + " to set a new name to this entity instead of"
+        + " setNameSync(). Name is not set");
+      return false;
+    }
+
+    if (name === null || name === undefined || name === "")
+    {
+      ERROR("Attempt to set empty name to entity"
+        + " " + this.getErrorIdString() + ". Name"
+        + " is not set");
+      return false;
+    }
+
+    this.name = name;
+
+    return true;
+  }
 
   // -> Returns 'true' if name was successfuly set, 'false' otherwise.
-  public setName(name: string, cathegory: NamedEntity.NameCathegory)
+  public async setName(name: string, cathegory: NamedEntity.NameCathegory)
   {
     if (cathegory === null)
-      return this.setNonuniqueName(name);
+      return await this.setNonuniqueName(name);
 
-    return this.setUniqueName(name, cathegory);
+    return await this.setUniqueName(name, cathegory);
   }
 
   // ---------------- Public methods --------------------
@@ -139,7 +182,9 @@ export class NamedEntity extends Entity
   {
     if (newName === null || newName === undefined || newName === "")
     {
-      ERROR("Attempt to set empty name, name is not set");
+      ERROR("Attempt to set empty name to entity"
+        + " " + this.getErrorIdString() + ". Name"
+        + " is not set");
       return false;
     }
 

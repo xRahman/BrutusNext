@@ -103,7 +103,7 @@ export class AccountList extends NameSearchList
     }
     */
 
-    let account = await Server.entityManager.createEntity
+    let account = await Server.entityManager.createUniqueEntity
     (
       accountName,
       Account,
