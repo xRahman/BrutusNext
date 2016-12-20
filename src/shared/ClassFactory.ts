@@ -683,17 +683,17 @@ export class ClassFactory extends AutoSaveableObject
     // when loaded from file).
     prototypeObject.setId(id);
 
-    if (prototypeObject.setName === undefined)
+    // Not all entities have property 'name' - for example
+    // Connection is an Entity, but not NamedEntity.
+    if (prototypeObject.setNameSync !== undefined)
     {
-      ERROR("Attempt to create a prototypeObject of Class"
-        + " " + Class.name + " which is not a NamedEntity"
-        + " class");
-      return null;
+      // Name would otherwise be 'Unnamed Entity'. Something
+      // like 'Account prototype' is probably more informative.
+      // (Note that entity name of a prototype object is not unique.
+      //  When you refer to a prototype by it's name, you are
+      //  actually refering to it's className, not entity name.)
+      prototypeObject.setNameSync(Class.name + " prototype");
     }
-
-    // Name would otherwise be 'Unnamed Entity'. Something like
-    // 'Account prototype' is probably more informative.
-    prototypeObject.setName(Class.name + " prototype");
 
     return prototypeObject;
   }

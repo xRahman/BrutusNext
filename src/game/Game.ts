@@ -81,7 +81,7 @@ export class Game
     }
 
     // Create world 'BrutusNext World' based on prototype World.
-    this.world = await Server.entityManager.createEntity
+    this.world = await Server.entityManager.createUniqueEntity
     (
       'Brutus World',
       World,

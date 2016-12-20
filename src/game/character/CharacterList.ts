@@ -37,7 +37,7 @@ export class CharacterList extends AbbrevSearchList
     }
     */
 
-    let character = await Server.entityManager.createEntity
+    let character = await Server.entityManager.createUniqueEntity
     (
       name,
       Character,
