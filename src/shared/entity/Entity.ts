@@ -247,6 +247,7 @@ export class Entity extends AutoSaveableObject
 
   // --------------- Protected methods ------------------
 
+  /*
   // This method exists only to prevent accidental
   // delcaring of 'then' property. See error message
   // inside this method for more info.
@@ -255,9 +256,15 @@ export class Entity extends AutoSaveableObject
     FATAL_ERROR("Attempt to access 'then' property"
       + " of entity " + this.getErrorIdString() + "."
       + " Property 'then' is accessed by async functions"
-      + " when their returun value in order to check if"
-      + " return value is already a Promise or it needs"
-      + " to be promisified. It's an ugly hack, but it"
+      + " when they returun value in order to check if"
+      + " the value is already a Promise or it needs"
+      + " to be promisified. If you see this error, it"
+      + " can either mean that you have declared a method"
+      + " or class variable named 'then' somewhere - in"
+      + " that case just choose another name for it, or"
+      + " TODO"
+      + "It's an ugly hack, but it"
       + " forces us never to use property named 'then'");
   }
+  */
 }

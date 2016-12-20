@@ -282,7 +282,9 @@ export class TelnetSocketDescriptor extends SocketDescriptor
   protected onSocketClose()
   {
     this.socketClosed = true;
-    this.connection.onSocketClose();
+
+    if (this.connection !== null)
+      this.connection.onSocketClose();
   }
 
   // -------------- Protected methods -------------------

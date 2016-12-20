@@ -209,7 +209,42 @@ export class EntityManager
   : Entity;
   */
 
+  // Creates a new non-unique entity.
   public createEntity<T>
+  (
+    name: string,
+    // Either a prototype entity id, or a class (like Account).
+    typeCast: { new (...args: any[]): T },
+    // If 'prototypeId' is 'null', 'typeCast' will be used as prototype.
+    prototypeId: string = null
+  )
+  : T
+  {
+    let prototypeObject = this.getEntityPrototypeObject
+    (
+      name,
+      prototypeId,
+      typeCast.name
+    );
+
+    if (prototypeObject === null)
+      // Error is already reported by getEntityPrototypeObject().
+      return null;
+
+    let entity = this.createEntityFromPrototype
+    (
+      name,
+      prototypeObject
+    );
+
+    // Dynamic cast means runtime check that 'entity' really is inherited
+    // from the type we are casting to. IT also changes the type of return
+    // value to the type of 'typeCast' parameter. It means that typescript
+    // will allow you to access properties of that type on returned 'entity'. 
+    return entity.dynamicCast(typeCast);
+  }
+
+  public async createUniqueEntity<T>
   (
     name: string,
     // Either a prototype entity id, or a class (like Account).
@@ -219,26 +254,20 @@ export class EntityManager
     // If 'prototypeId' is 'null', 'typeCast' will be used as prototype.
     prototypeId: string = null
   )
-  : T
+  : Promise<T>
   {
-    // In order to create entity from harcoded class (like Account),
-    // 'prototypeId' parameter is omitted (or null). Class name of
-    // 'typeCast' parameter will be used instead of 'prototypeId' to
-    //  identify the prototype object.
-    if (prototypeId === null)
-      prototypeId = typeCast.name;
+    let prototypeObject = this.getEntityPrototypeObject
+    (
+      name,
+      prototypeId,
+      typeCast.name
+    );
 
-    let prototypeObject = Server.classFactory.getPrototypeObject(prototypeId);
-
-    if (prototypeObject === undefined)
-    {
-      ERROR("Unable to create entity '" + name + "' based"
-        + " on prototype '" + prototypeId + "': prototype"
-        + " object doesn't exist");
+    if (prototypeObject === null)
+      // Error is already reported by getEntityPrototypeObject().
       return null;
-    }
 
-    let entity = this.createEntityFromPrototype
+    let entity = await this.createUniqueEntityFromPrototype
     (
       name,
       cathegory,
@@ -959,16 +988,36 @@ export class EntityManager
   }
   */
 
-  // Creates a new entity based on 'prototypeObject', encapsulates
-  // the result in a javascript proxy object to trap access to invalid
-  // entity and adds the proxy to the manager.
-  // -> Returns the proxy that should be used to access the entity.
-  private createEntityFromPrototype
+    // Searches for prototype object matching 'prototpeId'
+  // (or 'className' if 'prototypeId' is null).
+  // -> Returns 'null' if prototype object wasn't found.
+  private getEntityPrototypeObject
   (
     name: string,
-    cathegory: NamedEntity.NameCathegory,
-    prototypeObject: Entity
+    className: string,
+    prototypeId: string
   )
+  {
+    // In order to create entity from harcoded class (like Account),
+    // 'prototypeId' parameter is omitted (or null). Class name will be
+    //  used instead of 'prototypeId' to identify the prototype object.
+    if (prototypeId === null)
+      prototypeId = className;
+
+    let prototypeObject = Server.classFactory.getPrototypeObject(prototypeId);
+
+    if (prototypeObject === undefined)
+    {
+      ERROR("Unable to create entity '" + name + "' based"
+        + " on prototype '" + prototypeId + "': prototype"
+        + " object doesn't exist");
+      return null;
+    }
+
+    return prototypeObject;
+  }
+
+  private createEntityProxyFromPrototype(prototypeObject: Entity)
   {
     // Generate an id for this new entity.
     let id = this.idProvider.generateId();
@@ -993,9 +1042,41 @@ export class EntityManager
     entity.setId(id);
     entity.setPrototypeId(prototypeObject.getId());
 
-    let proxy = this.addEntityAsProxy(entity);
+    // Create an entity proxy and add it to the manager.
+    return this.addEntityAsProxy(entity);
+  }
 
-    proxy.setName(name, cathegory);
+  // Creates a new entity based on 'prototypeObject', encapsulates
+  // the result in a javascript proxy object to trap access to invalid
+  // entity and adds the proxy to the manager.
+  // -> Returns the proxy that should be used to access the entity.
+  private createEntityFromPrototype
+  (
+    name: string,
+    prototypeObject: Entity
+  )
+  {
+    let proxy = this.createEntityProxyFromPrototype(prototypeObject);
+
+    proxy.setNameSync(name);
+
+    return proxy;
+  }
+
+  // Creates a new entity based on 'prototypeObject', encapsulates
+  // the result in a javascript proxy object to trap access to invalid
+  // entity and adds the proxy to the manager.
+  // -> Returns the proxy that should be used to access the entity.
+  private async createUniqueEntityFromPrototype
+  (
+    name: string,
+    cathegory: NamedEntity.NameCathegory,
+    prototypeObject: Entity
+  )
+  {
+    let proxy = this.createEntityProxyFromPrototype(prototypeObject);
+
+    await proxy.setName(name, cathegory);
 
     return proxy;
   }
