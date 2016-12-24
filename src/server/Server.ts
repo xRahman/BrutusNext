@@ -23,7 +23,7 @@ import {AdminList} from '../server/AdminList';
 import {AdminLevel} from '../server/AdminLevel';
 import {Connection} from '../server/connection/Connection';
 import {EntityList} from '../shared/entity/EntityList';
-import {ClassFactory} from '../shared/ClassFactory';
+import {PrototypeManager} from '../shared/prototype/PrototypeManager';
 import {AccountList} from '../server/account/AccountList';
 import {Message} from '../server/message/Message';
 import {Game} from '../game/Game';
@@ -56,9 +56,6 @@ export class Server
   private httpServer = new HttpServer(Server.DEFAULT_HTTP_PORT);
   private idProvider = new IdProvider(this.timeOfBoot);
 
-    // Allows creation of new classes in runtime.
-  private classFactory = new ClassFactory(this.idProvider);
-  
   // --------- idLists ---------
   // IdLists contain entity id's.
 
@@ -70,6 +67,15 @@ export class Server
 
   // Contains all entities (accounts, connections, all game entities).
   private entityManager = new EntityManager(this.idProvider);
+
+  // Stores prototype object that are not entities
+  // (all entities are stored in entityManager, including those
+  //  that serve as prototype objects for other entities).
+  // Allows creating of instances that have true prototype inheritance model
+  // (unlike instances created by 'new Class', which have
+  //  all initialized properties as their own properties
+  //  rather than inheriting them from prototype object).
+  private prototypeManager = new PrototypeManager(this.idProvider);
 
   // flagNamesManager is in Server instead of Game, because flags are needed
   // even outside of game (for example account flags).
@@ -117,9 +123,9 @@ export class Server
     return Server.getInstance().entityManager;
   }
 
-  public static get classFactory()
+  public static get prototypeManager()
   {
-    return Server.getInstance().classFactory;
+    return Server.getInstance().prototypeManager;
   }
 
   public static get DEFAULT_TELNET_PORT() { return 4443; }
@@ -252,11 +258,11 @@ export class Server
     // will be created by it if it doesn't exist.
     let createDefaultData = !FileSystem.existsSync('./data/');
 
-    await this.classFactory.initPrototypes(createDefaultData);
+    await this.prototypeManager.init(createDefaultData);
 
     // 'initPrototypes' may have added new records to the ClassFactory
     // so we need to save them.
-    await this.classFactory.save();
+    await this.prototypeManager.save();
 
     // If 'data' directory doesn't exist at all, create and save a new world.
     if (createDefaultData)

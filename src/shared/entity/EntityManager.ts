@@ -37,10 +37,11 @@ import {IdProvider} from '../../shared/entity/IdProvider';
 import {Entity} from '../../shared/entity/Entity';
 import {NameLockRecord} from '../../shared/entity/NameLockRecord';
 import {EntityRecord} from '../../shared/entity/EntityRecord';
-import {PrototypeEntity} from '../../shared/entity/PrototypeEntity';
+import {ScriptableEntity} from '../../shared/entity/ScriptableEntity';
 import {NamedEntity} from '../../shared/entity/NamedEntity';
 import {NameSearchList} from '../../shared/entity/NameSearchList';
 import {EntityProxyHandler} from '../../shared/entity/EntityProxyHandler';
+import {PrototypeManager} from '../../shared/prototype/PrototypeManager';
 import {SaveableObject} from '../../shared/fs/SaveableObject';
 import {Server} from '../../server/Server';
 
@@ -209,20 +210,18 @@ export class EntityManager
   : Entity;
   */
 
-  // Creates a new non-unique entity.
+  // Creates a new entity without setting a name to it
+  // (use this to create Connections and other entities
+  //  that are not inherited from NamedEntity).
   public createEntity<T>
   (
-    name: string,
-    // Either a prototype entity id, or a class (like Account).
     typeCast: { new (...args: any[]): T },
     // If 'prototypeId' is 'null', 'typeCast' will be used as prototype.
     prototypeId: string = null
   )
-  : T
   {
     let prototypeObject = this.getEntityPrototypeObject
     (
-      name,
       prototypeId,
       typeCast.name
     );
@@ -231,11 +230,44 @@ export class EntityManager
       // Error is already reported by getEntityPrototypeObject().
       return null;
 
-    let entity = this.createEntityFromPrototype
+    let entity = this.createEntityFromPrototype(prototypeObject);
+
+    // Dynamic cast means runtime check that 'entity' really is inherited
+    // from the type we are casting to. It also changes the type of return
+    // value to the type of 'typeCast' parameter. It means that typescript
+    // will allow you to access properties of that type on returned 'entity'. 
+    return entity.dynamicCast(typeCast);
+  }
+
+  // Creates a new entity with non-unique name.
+  public createNamedEntity<T>
+  (
+    name: string,
+    typeCast: { new (...args: any[]): T },
+    // If 'prototypeId' is 'null', 'typeCast' will be used as prototype.
+    prototypeId: string = null
+  )
+  : T
+  {
+    let prototypeObject = this.getEntityPrototypeObject
     (
-      name,
-      prototypeObject
+      prototypeId,
+      typeCast.name,
+      name
     );
+
+    if (prototypeObject === null)
+      // Error is already reported by getEntityPrototypeObject().
+      return null;
+
+    let entity = this.createEntityFromPrototype(prototypeObject);
+
+    // We can safely use setNameSync(), because we have just created
+    // a new entity so we can be sure that it doesn't unique name
+    // (it means that there definitely isn't any name lock file
+    //  asociated with it which would have to be deleted from disk,
+    //  which would be an asyncronous operation).
+    entity.setNameSync(name);
 
     // Dynamic cast means runtime check that 'entity' really is inherited
     // from the type we are casting to. IT also changes the type of return
@@ -244,6 +276,7 @@ export class EntityManager
     return entity.dynamicCast(typeCast);
   }
 
+  // Creates a new entity with unique name.
   public async createUniqueEntity<T>
   (
     name: string,
@@ -258,21 +291,21 @@ export class EntityManager
   {
     let prototypeObject = this.getEntityPrototypeObject
     (
-      name,
       prototypeId,
-      typeCast.name
+      typeCast.name,
+      name
     );
 
     if (prototypeObject === null)
       // Error is already reported by getEntityPrototypeObject().
       return null;
 
-    let entity = await this.createUniqueEntityFromPrototype
-    (
-      name,
-      cathegory,
-      prototypeObject
-    );
+    let entity = this.createEntityFromPrototype(prototypeObject);
+
+    // Unique name is represented by respective name lock file and
+    // creating such file is an async operation, so we need to use
+    // asynchronnous call. 
+    await entity.setName(name, cathegory);
 
     // Dynamic cast means runtime check that 'entity' really is inherited
     // from the type we are casting to. IT also changes the type of return
@@ -475,6 +508,83 @@ export class EntityManager
       return this.get(id, Entity);
 
     return this.createInvalidEntityReference(id);
+  }
+
+  /// TODO: Přesunout mezi private metody.
+  /// TODO: Comment.
+  private initPrototypeEnitity
+  (
+    entity: NamedEntity,
+    className: string
+  )
+  {
+    /*
+    if (entity.setNameSync === undefined)
+    {
+      ERROR("Attempt to create a prototype entity of class"
+        + " " + Class.name + " which is not inherited from"
+        + " NamedEntity. Prototype entity is not created");
+      return null;
+    }
+    */
+
+    // Something like 'Account prototype'.
+    let name = className + ' prototype';
+
+    // We can safely use setNameSync(), because we have just created
+    // a new entity so we can be sure that it doesn't unique name
+    // (it means that there definitely isn't any name lock file
+    //  asociated with it which would have to be deleted from disk,
+    //  which would be an asyncronous operation).
+    entity.setNameSync(name);
+
+    return entity;
+    /*
+    // Dynamic cast means runtime check that 'entity' really is inherited
+    // from the type we are casting to. IT also changes the type of return
+    // value to the type of 'typeCast' parameter. It means that typescript
+    // will allow you to access properties of that type on returned 'entity'. 
+    return entity.dynamicCast(Class);
+    */
+  }
+
+  // Creates a new entity based on prototype 'new Class'
+  // (this is used to create prototype entities for hardcoded
+  //  entity classes like Account).
+  // -> Returns 'null' if prototype entity couldn't be created.
+  public createPrototypeEntity
+  (
+    prototypeObject: NamedEntity,
+    className: string
+  )
+  {
+    let entity = this.createEntityFromPrototype(prototypeObject);
+
+    return this.initPrototypeEnitity(entity, className);
+  }
+
+  public composePrototypeEntity
+  (
+    prototypeObject: NamedEntity,
+    className: string,
+    id: string,
+    descendantIds: Array<string>
+  )
+  {
+    // First check if such entity already exists in EntityManager
+    // (get() returns 'undefined' if entity is not found).
+    TODO:
+    /*
+    // Prototype objects for hardcoded entities are just regular
+    // instances of respective classes (like 'new Account');
+    let prototypeObject = new Class;
+    */
+
+    let entity = this.composeEntityFromPrototype(prototypeObject, id);
+
+    entity.descendatIds = descendantIds;
+
+    return this.initPrototypeEnitity(entity, className);
   }
 
   /*
@@ -880,7 +990,7 @@ export class EntityManager
       return null;
     }
 
-    let prototypeId = jsonObject[PrototypeEntity.PROTOTYPE_ID_PROPERTY]; 
+    let prototypeId = jsonObject[ScriptableEntity.PROTOTYPE_ID_PROPERTY]; 
 
     if (prototypeId === undefined || prototypeId === null)
     {
@@ -892,6 +1002,7 @@ export class EntityManager
     return prototypeId;
   }
 
+  /*
   // -> Returns prototype object matching prototypeId in 'jsonObject'
   //    or 'null' if the property isn't valid.
   private getPrototypeFromJsonObject(jsonObject: Object, path: string)
@@ -902,7 +1013,8 @@ export class EntityManager
       // Error is already reported by readPrototypeIdFromJsonObject().
       return null;
 
-    let prototypeObject = Server.classFactory.getPrototypeObject(prototypeId);
+    let prototypeObject =
+      Server.prototypeManager.getPrototypeObject(prototypeId);
 
     if (prototypeObject === undefined)
     {
@@ -913,6 +1025,7 @@ export class EntityManager
 
     return prototypeObject;
   }
+  */
 
   // Creates an instance of an entity, loads it from 'jsonObject'
   // and sets 'entityId' to it. Doesn't create a proxy object.
@@ -927,14 +1040,24 @@ export class EntityManager
   )
   : Entity
   {
+    let prototypeId = this.readPrototypeIdFromJsonObject(jsonObject, path);
+
+    if (prototypeId === null)
+      // Error is already reported by readPrototypeIdFromJsonObject().
+      return null;
+    /*
     let prototypeObject = this.getPrototypeFromJsonObject(jsonObject, path);
 
     if (prototypeObject === null)
       // Error is already reported by getPrototypeForJsonObject().
       return null
+    */
 
+    let entity = Server.prototypeManager.createInstance(prototypeId);
+    /*
     // Now we can create an instance based on the prototype object.
     let entity = Server.classFactory.createInstance(prototypeObject);
+    */
 
     // And let it load itself from jsonObject.
     // ('path' is passed just to make error messages more informative)
@@ -993,9 +1116,9 @@ export class EntityManager
   // -> Returns 'null' if prototype object wasn't found.
   private getEntityPrototypeObject
   (
-    name: string,
     className: string,
-    prototypeId: string
+    prototypeId: string,
+    entityName: string = null
   )
   {
     // In order to create entity from harcoded class (like Account),
@@ -1004,19 +1127,29 @@ export class EntityManager
     if (prototypeId === null)
       prototypeId = className;
 
-    let prototypeObject = Server.classFactory.getPrototypeObject(prototypeId);
+    let prototypeObject =
+      Server.prototypeManager.getPrototypeObject(prototypeId);
 
     if (prototypeObject === undefined)
     {
-      ERROR("Unable to create entity '" + name + "' based"
-        + " on prototype '" + prototypeId + "': prototype"
-        + " object doesn't exist");
+      if (entityName !== null)
+      {
+        ERROR("Unable to create entity '" + entityName + "' based"
+          + " on prototype '" + prototypeId + "': prototype"
+          + " object doesn't exist");
+      }
+      else
+      {
+        ERROR("Unable to create entity based on prototype"
+        + " '" + prototypeId + "': prototype object doesn't exist");
+      }
       return null;
     }
 
     return prototypeObject;
   }
 
+  /*
   private createEntityProxyFromPrototype(prototypeObject: Entity)
   {
     // Generate an id for this new entity.
@@ -1045,24 +1178,51 @@ export class EntityManager
     // Create an entity proxy and add it to the manager.
     return this.addEntityAsProxy(entity);
   }
+  */
+
+  // Creates a new entity based on 'prototypeObject', sets 'id' to it,
+  // encapsulates the result in a javascript proxy object to trap access
+  // to invalid entity and adds the proxy to the manager.
+  // -> Returns the proxy that is used instead of the entity.
+  private composeEntityFromPrototype(prototypeObject: Entity, id: string)
+  {
+    // Note that entity is not really an instance in the sense of
+    // 'new Class', but rather an empty object with prototypeObject
+    // set as it's prototype using Object.create(). It's non-primitive
+    // properties are also instantiated like this. This way, any property
+    // not set to entity after it's creation is actually read from the
+    // prototypeObject, which means that if you edit a prototype,
+    // changes will propagate to all entities instantiated from it,
+    // which don't have that property overriden. 
+    let entity = Server.prototypeManager.createInstance(prototypeObject);
+
+    if (entity['setId'] === undefined)
+    {
+      ERROR("Attempt to create entity '" + name + "' from prototype which"
+        + " is not an instance of Entity class or it's descendants");
+      return null;
+    }
+
+    entity.setId(id);
+    entity.setPrototypeId(prototypeObject.getId());
+
+    // Create an entity proxy and add it to the manager.
+    return this.addEntityAsProxy(entity);
+  }
 
   // Creates a new entity based on 'prototypeObject', encapsulates
   // the result in a javascript proxy object to trap access to invalid
   // entity and adds the proxy to the manager.
-  // -> Returns the proxy that should be used to access the entity.
-  private createEntityFromPrototype
-  (
-    name: string,
-    prototypeObject: Entity
-  )
+  // -> Returns the proxy that is used instead of the entity.
+  private createEntityFromPrototype(prototypeObject: Entity)
   {
-    let proxy = this.createEntityProxyFromPrototype(prototypeObject);
+    // Generate an id for this new entity.
+    let id = this.idProvider.generateId();
 
-    proxy.setNameSync(name);
-
-    return proxy;
+    return this.composeEntityFromPrototype(prototypeObject, id);
   }
 
+  /*
   // Creates a new entity based on 'prototypeObject', encapsulates
   // the result in a javascript proxy object to trap access to invalid
   // entity and adds the proxy to the manager.
@@ -1074,12 +1234,13 @@ export class EntityManager
     prototypeObject: Entity
   )
   {
-    let proxy = this.createEntityProxyFromPrototype(prototypeObject);
+    let proxy = this.createEntityFromPrototype(prototypeObject);
 
     await proxy.setName(name, cathegory);
 
     return proxy;
   }
+  */
 
   // Creates an entity proxy handler for 'entity', than
   // adds the proxy to the manager.

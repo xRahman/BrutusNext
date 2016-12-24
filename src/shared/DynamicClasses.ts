@@ -10,7 +10,7 @@
 import {Server} from '../server/Server';
 import {Script} from '../shared/prototype/Script';
 import {FlagNames} from '../shared/flags/FlagNames';
-import {PrototypeRecord} from '../shared/PrototypeRecord';
+import {Prototype} from '../shared/prototype/Prototype';
 import {NameLockRecord} from '../shared/entity/NameLockRecord';
 import {Connection} from '../server/connection/Connection';
 import {Account} from '../server/account/Account';
@@ -31,9 +31,10 @@ export class DynamicClasses
   public static init()
   {
     // Classes need to be listed in order of inheritance (ancestors first).
+    /// - už asi ne
     this.set(Script);
     this.set(FlagNames);
-    this.set(PrototypeRecord);
+    this.set(Prototype);
     this.set(NameLockRecord);
     this.set(Connection);
     this.set(Account);
@@ -44,36 +45,6 @@ export class DynamicClasses
     this.set(Sector);
     this.set(Area);
     this.set(Room);
-
-    /*
-    DynamicClasses.set(Script);
-    DynamicClasses.set(FlagNames);
-    DynamicClasses.set(NameLockRecord);
-    DynamicClasses.set(Connection);
-    DynamicClasses.set(Account);
-    DynamicClasses.set(Character);
-    DynamicClasses.set(Area);
-    DynamicClasses.set(Dimension);
-    DynamicClasses.set(Realm);
-    DynamicClasses.set(Room);
-    DynamicClasses.set(Sector);
-    DynamicClasses.set(World);
-    */
-
-    /*
-    dynamicClasses.set('Script', Script);
-    dynamicClasses.set('FlagNames', FlagNames);
-    dynamicClasses.set('IdRecord', NameLockRecord);
-    dynamicClasses.set('Connection', Connection);
-    dynamicClasses.set('Account', Account);
-    dynamicClasses.set('Character', Character);
-    dynamicClasses.set('Area', Area);
-    dynamicClasses.set('Dimension', Dimension);
-    dynamicClasses.set('Realm', Realm);
-    dynamicClasses.set('Room', Room);
-    dynamicClasses.set('Sector', Sector);
-    dynamicClasses.set('World', World);
-    */
   }
 
   private static set(Class: any)
