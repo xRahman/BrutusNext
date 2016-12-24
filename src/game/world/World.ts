@@ -89,7 +89,7 @@ export class World extends GameEntity
     Game.prototypeManager.createPrototype('SystemRoom', 'Room');
     */
 
-    this.systemRoom = Server.entityManager.createEntity
+    this.systemRoom = Server.entityManager.createNamedEntity
     (
       'System Room',
       Room
@@ -106,7 +106,7 @@ export class World extends GameEntity
     Game.prototypeManager.createPrototype('TutorialRoom', 'Room');
     */
     
-    this.tutorialRoom = Server.entityManager.createEntity
+    this.tutorialRoom = Server.entityManager.createNamedEntity
     (
       'Tutorial Room',
       Room

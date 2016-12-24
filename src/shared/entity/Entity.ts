@@ -18,6 +18,11 @@ export class Entity extends AutoSaveableObject
 {
   public static get ID_PROPERTY() { return 'id'; }
 
+  public static get PROTOTYPE_ID_PROPERTY()
+  {
+    return "prototypeId";
+  }
+
   // ----------------- Private data ----------------------
 
   ///private id: EntityId = null;
@@ -25,6 +30,11 @@ export class Entity extends AutoSaveableObject
   // Property 'id' is not saved to file, because it is saved
   // as the name of the saved file (like 7-iu5by22s.json).
   private static id = { isSaved: false };
+
+  // Only the prototype Entity at the root of prototype 
+  // tree should have prototypeId = null.
+  private prototypeId = null;
+
 
   // ------------- Public static methods ----------------
 
@@ -113,6 +123,13 @@ export class Entity extends AutoSaveableObject
     }
 
     this.id = id;
+  }
+
+  public getPrototypeId() { return this.prototypeId; }
+
+  public setPrototypeId(prototypeId: string)
+  {
+    this.prototypeId = prototypeId;
   }
 
   // ---------------- Public methods --------------------
