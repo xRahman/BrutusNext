@@ -181,12 +181,7 @@ export class TelnetServer
   {
     let socketDescriptor = new TelnetSocketDescriptor(socket);
 
-    let connection = Server.entityManager.createEntity
-    (
-      // All connections are going to be named 'Connection'.
-      'Connection',
-      Connection
-    );
+    let connection = Server.entityManager.createEntity(Connection);
 
     if (connection === null)
       return null;

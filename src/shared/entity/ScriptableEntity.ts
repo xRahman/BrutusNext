@@ -25,24 +25,9 @@ import {NamedEntity} from '../../shared/entity/NamedEntity';
 ///import {Server} from '../../server/Server';
 ///import {GameEntity} from '../../game/GameEntity';
 
-export class PrototypeEntity extends NamedEntity
+export class ScriptableEntity extends NamedEntity
 {
-  public static get PROTOTYPE_ID_PROPERTY()
-  {
-    return "prototypeId";
-  }
 
-  // Only the prototype Entity at the root of prototype 
-  // tree should have prototypeId = null.
-  private prototypeId = null;
-
-  public descendantIds = [];
-
-  public getPrototypeId() { return this.prototypeId; }
-  public setPrototypeId(prototypeId: string)
-  {
-    this.prototypeId = prototypeId;
-  }
 
   /*
   // Name of the class that will represent this prototype.

@@ -1,10 +1,123 @@
+TODO: interface PrototypeRecord asi může zůstat privátní,
+  do EntityManageru můžu passnout jako parametry přímo jendotlivé
+  property.
+
+TODO: Parametry typeCast v EntityManageru přejmenovat na Class.
+
+Parallel async processing
+--------------------------
+let [foo, bar] = await Promise.all([getFoo(), getBar()]);
+(viz https://medium.com/@bluepnume/learn-about-promises-before-you-start-using-async-await-eb148164a9c8#.u96s09vfj)
+
+
+
+Jak na prototypy
+-----------------
+
+V rámci PrototypeManageru nejspíš potřebuju savovat pouze
+idčka hardcoded entit a jejich potomky.
+- non-entity classy není třeba savovat, jejich prototypeObjecty
+  se vytvoří dynamicky.
+- dynamické entity prototypy se loadnout rekurzivně podle idček
+  a případně adresáře podle dědění. Čili jejich záznamy v PrototypeManageru
+  lze taky vytvořit dynamicky (až na idčka potomků, leda by se
+  savovala do entity)
+
+V PrototypeManageru by byla hashmapa:
+{
+  // <jméno prototypu, prototypeObject>
+  // entity prototypy by tam měly prostě referenci na entitu
+  //  (aby nebylo potřeba přistupovat k tomu nadvakrát)
+  prototypeObjects = new Map<string, Object>
+}
+
+Alternativně:
+- všechny prototypové entity mohou mít record v PrototypeManageru
+  - pořadí záznamů musí být v pořadí dědičnosti (aby se předci vždycky
+    loadnuli dřív než potomci)
+    - tady by mohl být problém při změně předka, asi bych musel vždycky
+      vyndat záznam z hashmapy a znova ho tam vložit (protože když ho dám
+      na konec, tak mám jistotu, že předek je určitě dřív).
+      - na druhou stranu z něj může být zděděno něco dalšího, a to něco bych
+        takhle přeskočil.
+  - potom nebude třeba pamatovat si potomky, stačí si pamatovat
+    předka.
+  - všechny záznamy budou mít idčko - podle něj se loadne entita (pokud
+    to není hardcoded prototyp - vlastně možná i když je, protože
+    stejně musí být v EntityManageru, aby se na něj šlo dostat přes idčko).
+Tohle by znamenalo, že prostě loadnu všechny entity v seznamu (podle idček).
+
+------------------------
+Po zralé úvaze takhle:
+=======================
+
+
+
+
+Všechny entity prototypy budou mít vlastní entitu v EntityManageru,
+  včetně hardcoded entit.
+  => descendantIds může být přímo v entitě pro všechny entity prototypy.
+
+Pro hardcoded entity potřebuju savovat:
+  - idčko odpovídající entity
+  - descendantIds
+otázka je, jestli bude lepší prostě ty "dummy" entity savnout
+  (tím se savnou descendantIds), nebo si pamatovat id a descendantIds a dummy
+   entity z nich při loadu vyrobit.
+   - asi bude lepší savnout entity, protože pak nebudu muset psát novou metodu
+     do EntityManageru, která by uměla vyrobit entitu na základě poskytnutého
+     idčka (prostě tu entitu loadnu, což už EntityManager umí).
+   - zároveň se tím savnou descendantIds (to taky bude jediná věc, kterou
+     budou mít hardcoded entity prototypes v own properties.
+
+I když počkat, jak ty hardcoded entity prototypy loadnu, když neexistují
+prototypeObjecty?
+- hmm, nijak. Tzn. hardcoded prototype entity asi fakt musím
+  vyrábět vždycky ručně.
+TODO: Přidat do EntityManageru metodu na vytvoření entity s daným idčkem
+  a prototypeObjectem (prototype object bude prostě new Class - ať už
+  při loadu, nebo při inicializaci hardcoded entity prototypu, ktrej ještě
+  nemá přidělené idčko).
+
+Čili v PrototypeManageru potřebuju savovat seznam záznamů pro každou
+  hardcoded prototype entitu, kde bude idčko a descendantIds.
+  - pořád nevím, jestli stačí pole, nebo by to měla být mapa (indexovaná
+    nejspíš jménem prototypu)
+  - budu pak procházet dynamic classes, hledat v nich entity a kontrolovat,
+    jestli už mají záznam. Na druhou stranu to můžu kontrolovat v mapě
+    prototypeObjects, do které se vytvořené entity pod příslušnými
+    jmény nahází.
+  => Asi fakt stačí pole záznamů
+  {
+    prototypeName: string,
+    prototypeEntityId: string,
+    descendantIds: string
+  }
+TODO: PrototypeManager.staticEntityPrototypes;
+
+
+
+--------------------------------------------
+
+TODO: Zkontrolovat relog na account.
+
+TODO: Když při tvorbě characteru player pouze zmáčkne enter,
+  nemělo by to po něm chtít nové, mělo by ho to hodit zpět do
+  menu - protože se může stát, že v menu zmáčknu jedničku omylem
+  a bez tohohle bych se z toho neměla jak dostat.
+
+TODO: Uppercasovat hodnoty v NamedEntity.nameCathegory.
+
+TODO: PrototypeEntity možná přejmenovat na ScriptableEntity?
+[done]
+
 TODO: Connection není zděděná z PrototypeEntity (což je ostatně taky divný
 jméno), takže neprojdejde entity.setPrototypeId()
 v EntityManager.createEntityProxyFromPrototype
 - Co s tím? Asi prototypeId přesunout přímo do Entity, protože nedává smysl,
   aby ho neměla.
   - v PrototypeEntity by měly být věci kolem skriptů a tak.
-
+[done]
 
 
 Ok, nakonec to asi celkem dává smysl takhle:
