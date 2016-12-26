@@ -155,10 +155,12 @@ export class Entity extends AutoSaveableObject
     }
 
     this.id = id;
-    ///this['id'] = id;
 
     if (this.hasOwnProperty('id') === false)
-      console.log("Huh?!?");
+      FATAL_ERROR("Property 'id' has been set to prototype object"
+        + " rather than to the instance. This probably means that"
+        + " entity proxy has been used as prototype entity instead"
+        + " of nonproxified entity");
   }
 
   public getPrototypeId() { return this.prototypeId; }
