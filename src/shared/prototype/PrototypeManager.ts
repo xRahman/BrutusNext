@@ -85,24 +85,25 @@ export class PrototypeManager extends AutoSaveableObject
   // Hashmap matching prototype names to prototype objects.
   //   Key:   prototype class name
   //   Value: prototpype object or entity.
-  private prototypeObjects = new Map<string, Object>();
+  private prototypeObjects = new Map<string, NamedClass>();
   // Do not save property 'entityPrototypes'.
   private static prototypeObjects = { isSaved: false };
 
-
-  //   Key:   prototype class name
-  //   Value: record describing hardcoded entity prototype.
-  // In order to instantiate hardcoded entities (like Account),
+  // Hashmap storing information about hardcoded entity prototypes.
+  //   In order to instantiate hardcoded entity (like Account),
   // you need a prototype entity of such type which you will use
   // as a prototype object with Object.create(). These prototype
   // entities are stored in EntityManager like all other entities,
-  // but they can't be saved to disk directly, because there is no
-  // prototype entity available in order to instantiate them.
+  // but they can't be saved to disk directly, because they are
+  // root nodes of inheritance tree so there are no prototype entities
+  // to base them on.
   //   So instead of saving them to disk like other (dynamic)
-  // entities we recreate them every time the server starts - and
-  //  these are the parameters we need to do it.
-  private hardcodedEntityPrototypes =
-    new Map<string, PrototypeManager.PrototypeRecord>();
+  // entities we recreate them every time the server starts. To do it,
+  // we need to remember their ids and ids of their descendants - and
+  // that somewhere is right here in this hashmap.
+  //   Key:   prototype class name
+  //   Value: record describing hardcoded entity prototype.
+  private hardcodedEntityPrototypes = new Map<string, PrototypeRecord>();
 
   /*
   constructor(idProvider: IdProvider)
@@ -122,20 +123,9 @@ export class PrototypeManager extends AutoSaveableObject
   // scratch.
   public async init(createDefaultData: boolean)
   {
-    // Init needs to be done in four steps, because we need
-    // to create prototype objects for hardcoded nonentity
-    // classes (like Prototype) in order to be able to load
-    // PrototypeManager.json file, which contains ids of
-    // hardcoded entity classes (like Account).
-    //   Only after loading these ids we can init the newly
-    // added hardcoded entity class prototypes (those that
-    // don't have an id yet) and also load the dynamic entity
-    // prototypes (entity prototypes that are created by ingame
-    // editor rather than declared in code).
-
-    // First we create prototype objects for non-entity dynamic
-    // classes (ee get a list of hardcoded entity dynamic classes
-    // as side effect).
+    // First we create prototype objects for non-entity dynamic classes
+    // (we also get list of hardcoded entity dynamic classes
+    // as side effect of iterating DynamicClasses.constructors).
     let entityClasses = this.initNonEntityPrototypes();
 
     if (!createDefaultData)
@@ -145,14 +135,17 @@ export class PrototypeManager extends AutoSaveableObject
       await this.load();
     }
 
-    // Now create prototype objects of hardcoded entity classes.
+    // Now create prototype entities for hardcoded entity classes.
     await this.createHardcodedEntityPrototypes(entityClasses);
 
-    /// Rekurzivně, protože je třeba loadnout nejdřív předky, aby
-    /// šlo loadnout potomky.
-    /// - na druhou stranu musím nějak idčku přiřadit příslušný
-    ///   entityPrototypeRecord - což jde jen přes 
-    // Recursively load all prototype entities.
+    // Recursively load all prototype entities. Recursive loading
+    // (each prototype loads its descendants removes the need to
+    //  store prototypes in order of inheritance, which greatly
+    //  simplifies changing the ancestor of a prototype. This way
+    //  you don't have to reorder the list of prototype entities,
+    //  you just have to remove yourself from list of descendants
+    //  in you old ancestor and add yoruself as a descendant to
+    //  your new ancestor).
     this.loadDynamicEntityPrototypes();
   }
 
@@ -161,9 +154,9 @@ export class PrototypeManager extends AutoSaveableObject
   //  class name if prototype isn't an entity).
   // Non-primitive properties will also be recursively instantiated.
   // -> Returns 'null' if instance couldn't be created.
-  public createInstance(prototypeId: string)
+  public createInstance(prototypeObject: NamedClass)
   {
-    let prototypeObject = this.getPrototypeObject(prototypeId);
+    ///let prototypeObject = this.getPrototypeObject(prototypeId);
 
     if (!(prototypeObject === null || typeof prototypeObject === 'object'))
     {
@@ -189,6 +182,23 @@ export class PrototypeManager extends AutoSaveableObject
       instance,
       prototypeObject.className
     );
+  }
+
+  // Searches for prototype object matching given 'prototypName'.
+  // -> Returns 'undefined' if matching prototype object isn't found.
+  public getPrototypeObject(prototypeName: string)
+  {
+    // get() returns 'undefined' if 'prototypeId' isn't found.
+    let prototypeObject = this.prototypeObjects.get(prototypeName);
+
+    if (prototypeObject === undefined)
+    {
+      ERROR("Unable to find prototype in PrototypeManager"
+        + " matching prototypeId '" + prototypeName + "'");
+      return undefined;
+    }
+
+    return prototypeObject;
   }
 
   /// Changed to work with prototypeId rather than prototypeObject.
@@ -782,10 +792,11 @@ export class PrototypeManager extends AutoSaveableObject
   }
   */
 
+  // Creates a new prototype entity with new id based on 'prototypeObject'.
   // -> Returns 'null' if prototype entity coulnd't be created.
   private createPrototypeEntity
   (
-    prototypeObject: NamedEntity,
+    prototypeObject: Entity,
     className:string
   )
   {
@@ -806,22 +817,23 @@ export class PrototypeManager extends AutoSaveableObject
     //   So instead of saving them directly, we save just the information
     // required to recreate them on the next start of the server (most
     // importantly their id's).
-    let record: PrototypeManager.PrototypeRecord =
+    let record: PrototypeRecord =
     {
       id: entity.getId(),
-      descendantIds: entity.desendantIds
+      descendantIds: entity.getDescendantIds()
     };
 
-    this.hardcodedEntityPrototypes.set(Class.name, record);
+    this.hardcodedEntityPrototypes.set(className, record);
     
     return entity;
   }
 
+  // Composes an entity using id from 'record' parameter.
   private composePrototypeEntity
   (
-    prototypeObject: NamedEntity,
+    prototypeObject: Entity,
     className: string,
-    record: PrototypeManager.PrototypeRecord,
+    record: PrototypeRecord,
   )
   {
     let entity = Server.entityManager.composePrototypeEntity
@@ -832,28 +844,30 @@ export class PrototypeManager extends AutoSaveableObject
       record.descendantIds
     );
 
-    entity.descendantIds = record.descendantIds;
+    entity.setDescendantIds(record.descendantIds);
 
     return entity;
   }
 
-  private initPrototypeEntity<T extends NamedEntity>
+  // Generates a new entity with new id and adds a new record to
+  // this.hardcodedEntityPrototypes if 'record' is undefined,
+  // composes an entity using 'record.id' otherwise.
+  private initPrototypeEntity<T extends Entity>
   (
-    record: PrototypeManager.PrototypeRecord,
+    record: PrototypeRecord,
     Class: { new (...args: any[]): T }
   )
   {
     // Prototype object for hardcoded entity is just a regular
     // instance of respective class (like 'new Account');
     let prototypeObject = new Class;
-    let prototypeEntity = null;
 
     if (record === undefined)
     {
       // Create a new prototype entity with a new id and also
       // create a new prototype record for it and add it to
       // this.hardcodedEntityPrototypes hashmap.
-      prototypeEntity = this.createPrototypeEntity
+      return this.createPrototypeEntity
       (
         prototypeObject,
         Class.name
@@ -862,39 +876,47 @@ export class PrototypeManager extends AutoSaveableObject
     else
     {
       // Create prototype entity based on data in the record.
-      prototypeEntity = this.composePrototypeEntity
+      return this.composePrototypeEntity
       (
         prototypeObject,
         Class.name,
         record
       );
     }
-
-    return prototypeEntity;
   }
 
-  private async createHardcodedEntityPrototypes(entityClasses: Array<any>)
+  private async createHardcodedEntityPrototypes<T extends Entity>
+  (
+    // Array of class constructors.
+    entityClasses: Array<{ new (...args: any[]): T }>
+  )
   {
     let saveNeeded = false;
 
     // It is possible that not all of the hardcoded entity classes have
     // an id stored in PrototypeManager save. This can either happen when
     // the server is launched for the first time and there is no /data
-    // directory yet, or when someone has added some new entity classes
-    // to the code. Either way, we are going to automatically generate
-    // id's for those classes that lack them.
+    // directory yet, or when someone has added new entity classes to
+    // the code. Either way, we are going to automatically generate id's
+    // for those classes that lack them.
 
-    // Go through all dynamic entity classes specified in
-    // DynamicClasses.init().
+    // Go through all entity classes specified in DynamicClasses.init().
     for (let Class of entityClasses)
     {
-      // Check if our class already has an id assigned
-      // (get() returns 'undefined' if hashmap doesn't contain such entry).
+      // Check if our class already has an id assigned.
+      //  (We do this in advance to know if a new entity
+      //   will be generated so that we will have to save
+      //   PrototypeManager.)
+      //  (get() returns 'undefined' if hashmap doesn't
+      //   contain requested entry.)
       let record = this.hardcodedEntityPrototypes.get(Class.name);
 
       if (record === undefined)
         saveNeeded = true;
 
+      // Generate a new entity with new id and add a new record to
+      // this.hardcodedEntityPrototypes if 'record' is undefined,
+      // compose an entity using 'record.id' otherwise.
       let prototypeEntity = this.initPrototypeEntity(record, Class);
 
       if (prototypeEntity === null)
@@ -983,40 +1005,6 @@ export class PrototypeManager extends AutoSaveableObject
   }
   */
 
-  // Searches for prototype object matching given 'prototypeId'
-  // ('prototypeId' can either be an id of prototype entity or the
-  //  class name if prototype isn't an entity).
-  // -> Returns 'undefined' if matching prototype object isn't found.
-  private getPrototypeObject(prototypeId: string)
-  {
-    // get() returns 'undefined' if 'prototypeId' isn't found.
-    let prototype = this.prototypes.get(prototypeId);
-
-    if (prototype === undefined || prototype === null)
-    {
-      ERROR("Unable to find prototype in PrototypeManager"
-        + " matching prototypeId '" + prototypeId + "'");
-      return undefined;
-    }
-
-    return prototype.getPrototypeObject(prototypeId);
-
-    /*
-    // Reuested prototype object can either exist in ClassFactory,
-    // if it's a hardcoded class, or in EtityManager, if it's
-    // an editable prototype.
-
-    // Check if 'prototype' exists in ClassFactory.
-    let prototypeObject = this.searchPrototypeInClassFactory(prototype);
-
-    if (prototypeObject !== undefined)
-      return prototypeObject;
-
-    // Check if 'prototype' exists in EntityManager.
-    return Server.entityManager.get(prototype, Object);
-    */
-  }
-
   // Creates prototype objects for non entity classes.
   // -> Returns the list of entity classes contained
   //    in DynamicClasses.
@@ -1050,7 +1038,10 @@ export class PrototypeManager extends AutoSaveableObject
     return entityClasses;
   }
 
-  private initNonEntityPrototype<T>(Class: { new (...args: any[]): T })
+  private initNonEntityPrototype<T extends NamedClass>
+  (
+    Class: { new (...args: any[]): T }
+  )
   {
     // Non-entity prototype objects are just instances
     // of respective classes (created as 'new Class').
@@ -1058,15 +1049,30 @@ export class PrototypeManager extends AutoSaveableObject
 
     this.prototypeObjects.set(Class.name, prototypeObject);
   }
+
+  private loadDynamicEntityPrototypes()
+  {
+    /// TODO
+  }
 }
 
 // ------------------ Type declarations ----------------------
 
+interface PrototypeRecord
+{
+  // Id of a prototype entity.
+  id: string;
+  // List of ids of prototype entities inherited from this prototype.
+  descendantIds: Array<string>;
+}
+
+/*
 // Module is exported so you can use these types from outside this file.
 // It must be declared after the class because Typescript says so...
 export module PrototypeManager
 {
-  export interface PrototypeRecord
+
+  interface PrototypeRecord
   {
     // Id of a prototype entity.
     id: string;
@@ -1074,3 +1080,4 @@ export module PrototypeManager
     descendantIds: Array<string>;
   }
 }
+*/

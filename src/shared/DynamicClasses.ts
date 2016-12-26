@@ -10,7 +10,7 @@
 import {Server} from '../server/Server';
 import {Script} from '../shared/prototype/Script';
 import {FlagNames} from '../shared/flags/FlagNames';
-import {Prototype} from '../shared/prototype/Prototype';
+///import {Prototype} from '../shared/prototype/Prototype';
 import {NameLockRecord} from '../shared/entity/NameLockRecord';
 import {Connection} from '../server/connection/Connection';
 import {Account} from '../server/account/Account';
@@ -34,7 +34,7 @@ export class DynamicClasses
     /// - už asi ne
     this.set(Script);
     this.set(FlagNames);
-    this.set(Prototype);
+    ///this.set(Prototype);
     this.set(NameLockRecord);
     this.set(Connection);
     this.set(Account);

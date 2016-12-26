@@ -569,7 +569,7 @@ export class SaveableObject extends InstantiableClass
         // of that type.
 
         let prototypeObject =
-          Server.classFactory.getPrototypeObject(className);
+          Server.prototypeManager.getPrototypeObject(className);
 
         if (prototypeObject === undefined)
         {
@@ -582,7 +582,7 @@ export class SaveableObject extends InstantiableClass
         }
         else
         {
-          myProperty = Server.classFactory.createInstance(prototypeObject);
+          myProperty = Server.prototypeManager.createInstance(prototypeObject);
         }
       }
     }
