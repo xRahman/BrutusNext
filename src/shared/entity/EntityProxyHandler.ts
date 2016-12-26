@@ -128,11 +128,17 @@ export class EntityProxyHandler
   /// Note: It's possible that it will be necessary to implement some
   ///   of commented-out handlers in the future, so I'll let them be here.
 
-  //// A trap for Object.getPrototypeOf.
-  //public getPrototypeOf(target)
-  //{
-  //  console.log("getPrototypeOf(target)");
-  //}
+  // A trap for Object.getPrototypeOf.
+  // (This is triggered when instanceof operator is used on the proxy.)
+  public getPrototypeOf(target: any)
+  {
+    ///console.log("getPrototypeOf(target)");
+
+    if (this.isEntityValid() === false)
+      return {};
+    
+    return Object.getPrototypeOf(this.entity);
+  }
 
   //// A trap for Object.setPrototypeOf.
   //public setPrototypeOf(target)
@@ -198,7 +204,8 @@ export class EntityProxyHandler
       return false;
     }
 
-    return property in this.entity;
+    ///return property in this.entity;
+    return Reflect.has(this.entity, property);
   }
 
   /// Tohle zjevně nefunguje.
