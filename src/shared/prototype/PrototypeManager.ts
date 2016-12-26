@@ -28,7 +28,7 @@ export class PrototypeManager extends AutoSaveableObject
 
   private static get SAVE_FILE_NAME()
   {
-    return "ClassFactory.json";
+    return "PrototypeManager.json";
   }
 
   /*

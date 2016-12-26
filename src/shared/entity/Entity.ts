@@ -155,6 +155,10 @@ export class Entity extends AutoSaveableObject
     }
 
     this.id = id;
+    ///this['id'] = id;
+
+    if (this.hasOwnProperty('id') === false)
+      console.log("Huh?!?");
   }
 
   public getPrototypeId() { return this.prototypeId; }
