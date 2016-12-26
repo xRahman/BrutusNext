@@ -75,7 +75,7 @@ export class Server
   // (unlike instances created by 'new Class', which have
   //  all initialized properties as their own properties
   //  rather than inheriting them from prototype object).
-  private prototypeManager = new PrototypeManager(this.idProvider);
+  private prototypeManager = new PrototypeManager();
 
   // flagNamesManager is in Server instead of Game, because flags are needed
   // even outside of game (for example account flags).

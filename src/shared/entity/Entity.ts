@@ -31,10 +31,42 @@ export class Entity extends AutoSaveableObject
   // as the name of the saved file (like 7-iu5by22s.json).
   private static id = { isSaved: false };
 
-  // Only the prototype Entity at the root of prototype 
-  // tree should have prototypeId = null.
+  // Prototype entities have 'prototypeId' equal to null.
   private prototypeId = null;
 
+  // Ids of prototype entities that are inherited from this
+  // prototype entity.
+  // - Only prototype entities should have 'descendantIds' as their
+  //   own property. Entity instances should always inherit it from
+  //   their prototype entity and never modify it.
+  // - We use ids instead of prototype names to allow easy changing of
+  //   prototype names (you only have to change the name at one place
+  //   because descendants reference their ancestor by it's id which
+  //   doesn't change).
+  // - Descendants are remembered because we want to be able to load
+  //   protype entities recursively (starting with PrototypeManager,
+  //   which remembers info about hardcoded entity prototypes, which
+  //   know their descendatns, and so on). Remembering only an ancestor
+  //   wouldn't allow this.
+  private descendantIds = [];
+
+  /// Na vícenásobnou dědičnost se prozatím vykašlu - fightspecy a podobně
+  /// nejspíš vyřeším přes attachování vzorců chování (které budou zděděné
+  /// mezi sebou).
+  /*
+  // Ids of prototype entities this prototype entity is inherited
+  // from.
+  // - We use ids instead of prototype names to allow easy changing of
+  //   prototype names (same as with descendantIds).
+  // - TODO (proč je ancestorů víc a nějak to vymyslet s "mergnutým"
+  //   prototypem - i když ten je asi odkazovaný přes prototypeId)
+  public ancestorIds = [];
+  */
+  // Id of ancestor prototype entity.
+  // - Only prototype entities should have 'ancestorId' as their
+  //   own property. Entity instances should always inherit it from
+  //   their prototype entity and never modify it.
+  private ancestorId = null;
 
   // ------------- Public static methods ----------------
 
@@ -132,7 +164,35 @@ export class Entity extends AutoSaveableObject
     this.prototypeId = prototypeId;
   }
 
+  public getDescendantIds()
+  {
+    return this.descendantIds;
+  }
+
+  public setDescendantIds(descendantIds: Array<string>)
+  {
+    this.descendantIds = descendantIds;
+  }
+
+  public getAncestorId()
+  {
+    return this.ancestorId;
+  }
+
+  public setAncestorId(ancestorId: string)
+  {
+    this.ancestorId = ancestorId;
+  }
+
+
+
   // ---------------- Public methods --------------------
+
+  public isPrototype()
+  {
+    /// Prototype entities have their 'prototypeId' set to 'null.
+    return this.prototypeId === null;
+  }
 
   // Compares entity to give entity reference by string ids.
   // (You should never compare two references directly, because
