@@ -1,3 +1,5 @@
+TODO: V obou proxy handlerech použít Reflect všude, kde to půjde.
+
 TODO: interface PrototypeRecord asi může zůstat privátní,
   do EntityManageru můžu passnout jako parametry přímo jendotlivé
   property.
