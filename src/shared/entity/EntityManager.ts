@@ -210,7 +210,8 @@ export class EntityManager
   : Entity;
   */
 
-  private createEntityByPrototypeName<T extends Entity>
+  // -> Returns 'null' if entity instance couldn't be created.
+  private createEntityInstance<T extends Entity>
   (
     entityName: string,
     Class: { new (...args: any[]): T },
@@ -225,7 +226,11 @@ export class EntityManager
       // Error is already reported by getPrototypeEntity().
       return null;
 
-    return this.createEntityFromPrototype(prototypeEntity);
+    let entity = this.createEntityFromPrototype(prototypeEntity);
+
+    entity.setPrototypeId(prototypeEntity.getId());
+
+    return entity;
   }
 
   // Creates a new entity without setting a name to it
@@ -239,7 +244,7 @@ export class EntityManager
     prototypeId: string = null
   )
   {
-     let entity = this.createEntityByPrototypeName(null, Class, prototypeId);
+     let entity = this.createEntityInstance(null, Class, prototypeId);
 
     // Dynamic cast means runtime check that 'entity' really is inherited
     // from the type we are casting to. It also changes the type of return
@@ -259,7 +264,7 @@ export class EntityManager
   )
   : T
   {
-    let entity = this.createEntityByPrototypeName(name, Class, prototypeId);
+    let entity = this.createEntityInstance(name, Class, prototypeId);
 
     // We can safely use setNameSync(), because we have just created
     // a new entity so we can be sure that it doesn't unique name
@@ -288,7 +293,7 @@ export class EntityManager
   )
   : Promise<T>
   {
-    let entity = this.createEntityByPrototypeName(name, Class, prototypeId);
+    let entity = this.createEntityInstance(name, Class, prototypeId);
 
     // Unique name is represented by respective name lock file and
     // creating such file is an async operation, so we need to use
@@ -1135,7 +1140,7 @@ export class EntityManager
   // encapsulates the result in a javascript proxy object to trap access
   // to invalid entity and adds the proxy to the manager.
   // -> Returns the proxy that is used instead of the entity.
-  private composeEntityFromPrototype(prototypeObject: Entity, id: string)
+  private composeEntityFromPrototype(prototypeEntity: Entity, id: string)
   {
     // Note that entity is not really an instance in the sense of
     // 'new Class', but rather an empty object with prototypeObject
@@ -1145,7 +1150,7 @@ export class EntityManager
     // prototypeObject, which means that if you edit a prototype,
     // changes will propagate to all entities instantiated from it,
     // which don't have that property overriden. 
-    let entity = Server.prototypeManager.createInstance(prototypeObject);
+    let entity = Server.prototypeManager.createInstance(prototypeEntity);
 
     if (entity['setId'] === undefined)
     {
@@ -1155,7 +1160,6 @@ export class EntityManager
     }
 
     entity.setId(id);
-    entity.setPrototypeId(prototypeObject.getId());
 
     // Create an entity proxy and add it to the manager.
     return this.addEntityAsProxy(entity);
@@ -1165,12 +1169,12 @@ export class EntityManager
   // the result in a javascript proxy object to trap access to invalid
   // entity and adds the proxy to the manager.
   // -> Returns the proxy that is used instead of the entity.
-  private createEntityFromPrototype(prototypeObject: Entity)
+  private createEntityFromPrototype(prototypeEntity: Entity)
   {
     // Generate an id for this new entity.
     let id = this.idProvider.generateId();
 
-    return this.composeEntityFromPrototype(prototypeObject, id);
+    return this.composeEntityFromPrototype(prototypeEntity, id);
   }
 
   /*
@@ -1332,18 +1336,19 @@ export class EntityManager
   // -> Returns 'undefined' if prototype entity isn't found.
   private getPrototypeEntityByClassName(className: string): Entity
   {
-    let entity = Server.prototypeManager.getPrototypeObject(className);
+    let prototypeEntity =
+      Server.prototypeManager.getPrototypeObject(className);
 
     // Dynamic type check - we make sure that
     // entity is inherited from Entity class.
-    if (!(entity instanceof Entity))
+    if (!(prototypeEntity instanceof Entity))
     {
       ERROR("Requested prototype object '" + className + "'"
         + " is not an Entity");
       return undefined;
     }
 
-    return <Entity>entity;
+    return <Entity>prototypeEntity;
   }
 
   // Searches for prototype entity in EntityManager if 'prototypeId'
@@ -1359,23 +1364,42 @@ export class EntityManager
   )
   : Entity
   {
-    let entity = null;
+    let proxy = null;
 
     if (prototypeId !== null)
     {
       // If 'prototypeId' is provided, we will search for prototype
       // entity in EntityManager using this id.
-      entity = this.get(prototypeId, Entity);
+      proxy = this.get(prototypeId, Entity);
     }
     else
     {
       // Otherwise we will search for prototype entity in
       // PrototypeManager using class name.
-      entity = this.getPrototypeEntityByClassName(Class.name);
+      proxy = this.getPrototypeEntityByClassName(Class.name);
     }
 
-    if (entity === undefined)
+    if (proxy === undefined)
       this.reportMissingPrototypeEntity(entityName, Class.name, prototypeId);
+
+    // Using entity proxy as a prototype object wouldn't be a good idea.
+    //   First of all, it breaks inheritance - setting entity.property
+    // sets the property to the proxified prototype rather than to the
+    // instance (that might be fixed however).
+    //   Secondly, it would unnecessarily slow things down. The resulting
+    // entity instance will be proxified anyways so access to invalid entity
+    // will get trapped regardless on whether the prototype entity will be
+    // proxified. And prototype entities should never be deleted (and thus
+    // invalidated) anyways - at least not as long as there are any instances
+    // based on them left.
+    let entity = proxy['_internalEntity'];
+
+    if (entity === null || entity === undefined)
+    {
+      ERROR("Attempt to use invalid entity " + proxy.getErrorIdString()
+        + " as a prototype entity");
+      return null;
+    }
 
     return entity;
   }
