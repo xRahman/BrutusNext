@@ -885,6 +885,32 @@ export class PrototypeManager extends AutoSaveableObject
     }
   }
 
+  private getPrototypeRecord(className: string)
+  {
+    let record = this.hardcodedEntityPrototypes.get(className);
+
+    if (record !== undefined)
+    {
+      if (record.id === undefined || record.descendantIds === undefined)
+      {
+        FATAL_ERROR("Empty or invalid record of prototype"
+          + " '" + className + "' loaded from file"
+          + " " + PrototypeManager.SAVE_DIRECTORY
+          + PrototypeManager.SAVE_FILE_NAME + ". It"
+          + " means that id of respective prototype"
+          + " entity is lost, no prototypes inherited"
+          + " from " + className + " will load correctly"
+          + " and it won't be possible to create it's"
+          + " instances. The best fix is probably to"
+          + " return to the last commit that worked"
+          + " (including both /src and /data");
+        return undefined;
+      }
+    }
+
+    return record;
+  }
+
   private async createHardcodedEntityPrototypes<T extends Entity>
   (
     // Array of class constructors.
@@ -909,7 +935,7 @@ export class PrototypeManager extends AutoSaveableObject
       //   PrototypeManager.)
       //  (get() returns 'undefined' if hashmap doesn't
       //   contain requested entry.)
-      let record = this.hardcodedEntityPrototypes.get(Class.name);
+      let record = this.getPrototypeRecord(Class.name);
 
       if (record === undefined)
         saveNeeded = true;

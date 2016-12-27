@@ -220,7 +220,12 @@ export class EntityManager
   {
     // getPrototypeEntity() returns 'undefined' if prototype entity
     // cannot be found.
-    let prototypeEntity = this.getPrototypeEntity(null, Class, prototypeId);
+    let prototypeEntity = this.getPrototypeEntity
+    (
+      entityName,
+      Class.name,
+      prototypeId
+    );
 
     if (prototypeEntity === undefined)
       // Error is already reported by getPrototypeEntity().
@@ -930,7 +935,7 @@ export class EntityManager
   */
 
   // -> Returns prototype id read from 'jsonObject', 'null' if it's not there. 
-  private readPrototypeIdFromJsonObject
+  private getPrototypeIdFromJsonObject
   (
     jsonObject: Object,
     // 'path' is passed just to make error messages more informative.
@@ -954,6 +959,29 @@ export class EntityManager
     }
 
     return prototypeId;
+  }
+
+  // -> Returns entity name read from 'jsonObject', 'null' if it's not there. 
+  private getNameFromJsonObject
+  (
+    jsonObject: Object,
+    // 'path' is passed just to make error messages more informative.
+    path: string
+  )
+  {
+    if (jsonObject === null || jsonObject === undefined)
+    {
+      ERROR("Invalid json object loaded from file " + path);
+      return null;
+    }
+
+    let name = jsonObject[NamedEntity.NAME_PROPERTY]; 
+
+    if (name === undefined)
+      // This is not an error, some entities don't have a name.
+      return null;
+
+    return name;
   }
 
   /*
@@ -994,20 +1022,29 @@ export class EntityManager
   )
   : Entity
   {
-    let prototypeId = this.readPrototypeIdFromJsonObject(jsonObject, path);
+    let prototypeId = this.getPrototypeIdFromJsonObject(jsonObject, path);
 
     if (prototypeId === null)
       // Error is already reported by readPrototypeIdFromJsonObject().
       return null;
-    /*
-    let prototypeObject = this.getPrototypeFromJsonObject(jsonObject, path);
 
-    if (prototypeObject === null)
-      // Error is already reported by getPrototypeForJsonObject().
-      return null
-    */
+    // Entity name is not really needed but it makes error messages
+    // more informative. If saved entity doesn't have a name, 'null'
+    // will be returned.
+    let entityName = this.getNameFromJsonObject(jsonObject, path)
 
-    let entity = Server.prototypeManager.createInstance(prototypeId);
+    let prototypeEntity = this.getPrototypeEntity
+    (
+      entityName,
+      // Entities loaded from file must reference their prototype by
+      // 'prototypeId', never by prototype name. So we don't provide
+      // 'className' even though we could read it from JsonObject, because
+      // it could lead to incorrect behaviour.
+      null,
+      prototypeId
+    );
+
+    let entity = Server.prototypeManager.createInstance(prototypeEntity);
     /*
     // Now we can create an instance based on the prototype object.
     let entity = Server.classFactory.createInstance(prototypeObject);
@@ -1336,6 +1373,12 @@ export class EntityManager
   // -> Returns 'undefined' if prototype entity isn't found.
   private getPrototypeEntityByClassName(className: string): Entity
   {
+    if (className === null || className === undefined)
+    {
+      ERROR("Invalid 'className'");
+      return undefined;
+    }
+
     let prototypeEntity =
       Server.prototypeManager.getPrototypeObject(className);
 
@@ -1357,8 +1400,8 @@ export class EntityManager
   private getPrototypeEntity<T extends Entity>
   (
     entityName: string,
-    Class: { new (...args: any[]): T },
-    // If 'prototypeId' is 'null', 'Class.name'
+    className: string,
+    // If 'prototypeId' is 'null', 'className'
     // will be used to identify prototype entity.
     prototypeId: string = null
   )
@@ -1376,11 +1419,11 @@ export class EntityManager
     {
       // Otherwise we will search for prototype entity in
       // PrototypeManager using class name.
-      proxy = this.getPrototypeEntityByClassName(Class.name);
+      proxy = this.getPrototypeEntityByClassName(className);
     }
 
     if (proxy === undefined)
-      this.reportMissingPrototypeEntity(entityName, Class.name, prototypeId);
+      this.reportMissingPrototypeEntity(entityName, className, prototypeId);
 
     // Using entity proxy as a prototype object wouldn't be a good idea.
     //   First of all, it breaks inheritance - setting entity.property

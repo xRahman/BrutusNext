@@ -747,6 +747,13 @@ export class SaveableObject extends InstantiableClass
     // Now copy the data.
     for (let propertyName in jsonObject)
     {
+      /// Tohle je blbost.
+      /// - když loaduju hashmapu nebo pole, tak všechny
+      ///   prvky téměř určitě před loadem neexistujou,
+      ///   tzn. objekty do nich vnořené určitě nemají.
+      ///   žádné properties. Tohle pak vede k tomu, že
+      //    se do hashmapy loadnou prázdné objekty.
+      /*
       // Note:
       //   Only properties that exist on the object that is being loaded
       // are loaded from save. It means that you can remove properties
@@ -754,6 +761,7 @@ export class SaveableObject extends InstantiableClass
       // (no syslog message is generated)
       if (primitiveObject[propertyName] !== undefined)
       {
+      */
         // Note:
         //   We are cycling over properties in JSON object, not in
         // object that is being loaded. It means that properties
@@ -767,7 +775,9 @@ export class SaveableObject extends InstantiableClass
           jsonObject[propertyName],
           path
         );
+      /*
       }
+      */
     }
 
     return primitiveObject;
@@ -880,7 +890,7 @@ export class SaveableObject extends InstantiableClass
     if (!IndirectValue.isDate(jsonVariable))
       return null;
 
-    if (variable !== null && !this.isDate(variable))
+    if (variable !== null && variable !== undefined && !this.isDate(variable))
     {
       ERROR("Attempt to load Date property '" + variableName + "'"
         + " from file " + path + " to a non-Date property");
@@ -930,7 +940,7 @@ export class SaveableObject extends InstantiableClass
     if (!IndirectValue.isMap(jsonVariable))
       return null;
 
-    if (variable !== null && !this.isMap(variable))
+    if (variable !== null && variable !== undefined && !this.isMap(variable))
     {
       ERROR("Attempt to load Map property '" + variableName + "'"
         + " from file " + path + " to a non-Map property");
@@ -1032,27 +1042,25 @@ export class SaveableObject extends InstantiableClass
     variableName: string,
     variable: any,
     jsonVariable: any,
-    paht: string
+    path: string
   )
   {
     if (!Array.isArray(jsonVariable))
       return null;
 
-    if (variable !== null && !Array.isArray(variable))
+    if
+    (
+      variable !== null
+      && variable !== undefined
+      && !Array.isArray(variable)
+    )
     {
       ERROR("Attempt to load Array property '" + variableName + "'"
-        + " from file " + paht + " to a non-Array property");
+        + " from file " + path + " to a non-Array property");
       return null;
     }
 
-    if (variable !== null && !Array.isArray(variable))
-    {
-      ERROR("Attempt to load array property '" + variableName + "'"
-        + " from file " + paht + " to a non-array property");
-      return null
-    }
-
-    return this.loadArray(variableName, jsonVariable, paht)
+    return this.loadArray(variableName, jsonVariable, path)
   }
 
   // Loads a property of type Array from a JSON Array object.
@@ -1084,8 +1092,8 @@ export class SaveableObject extends InstantiableClass
       let item = this.loadVariable
       (
         "Array Item",
-        // We need to pass 'null' as 'variable' so that an instance
-        // of the coredt type will be created (by createNewIfNull()).
+        // We need to pass 'null' as 'variable' so an instance
+        // of corect type will be created (by createNewIfNull()).
         null,
         jsonArray[i],
         path
@@ -1109,7 +1117,12 @@ export class SaveableObject extends InstantiableClass
     if (typeof jsonVariable !== 'object')
       return null;
 
-    if (variable !== null && typeof variable !== 'object')
+    if
+    (
+      variable !== null
+      && variable !== undefined
+      && typeof variable !== 'object'
+    )
     {
       ERROR("Attempt to load Object property '" + variableName + "'"
         + " from file " + path + " to a non-Object property");

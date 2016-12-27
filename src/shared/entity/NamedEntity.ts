@@ -14,6 +14,11 @@ import {FileSystem} from '../../shared/fs/FileSystem';
 
 export class NamedEntity extends Entity
 {
+  public static get NAME_PROPERTY()
+  {
+    return "name";
+  }
+
   private name = null;
 
   // In what cathegory is this name unique (accounts, characters, world...).
