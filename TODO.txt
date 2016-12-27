@@ -1,3 +1,17 @@
+TODO:
+- vytvořit prototyp podle jména předka
+- vytvořit prototyp podle idčka předka
+  - v obou případech ho rovnou savnout.
+  NOTE: Prototypy nikdy nemají unikátní jméno.
+  - mají unikátní jméno prototypu, tj. className - to je zajištěno hashmapou
+    PrototypeManager.prototypeObjects.
+- savnout prototyp
+- přejmenovat prototyp
+- změnit, z čeho je prototyp zděděný
+- možná smazat prototyp
+- PrototypeManager.loadDynamicEntityPrototypes()
+
+
 TODO: V obou proxy handlerech použít Reflect všude, kde to půjde.
 
 TODO: interface PrototypeRecord asi může zůstat privátní,
