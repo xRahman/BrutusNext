@@ -1,3 +1,63 @@
+TODO: Tak zpátky na stromy:
+  Pokud chci jména prototypů v adresářové struktuře, tak musím:
+  - místo descendantIds držet descendantNames
+  Změna jména prototypu pak bude znamenat:
+  - změnit svoje className
+  - změnit záznam v decendantNames předka
+  - přejmenovat svůj save (fileName)
+  - přejmenovat adresář, do kterého se savují moji potomci
+To zní zasi relizovatelně.
+- pořád to znamená, že půjde reálně změnit jméno prototypu (instance
+  se budou na prototyp stále odkazovat idčkem nikoliv jménem).
+
+ÚVAHA: Potřebuju vůbec ancestor (nebo ancestorId)?
+- asi by stačilo prototypeId.
+  - musel bych nějak jinak poznávat, že jde o prototyp (než že je
+  prototypeId null).
+  - zase by se stejným mechanismem loadovaly všechny entity, ať už jsou
+    prototyp nebo ne.
+- mělo by to být id a ne reference, ať nemám paralelně dvě reference na
+  prototyp/předka. Když budu potřebovat referenci na předka, můžu jít
+  přes .constructor.prototype (tím teda dostanu tvrdou referenci místo
+  proxy, ale to by snad nemělo vadit).
+TODO: Zrušit ancestorId (a ancestor).
+[done]
+
+TODO: Zkontrolovat, že se non-primitive properties korektně savují
+  (jen jejich own properties).
+
+TODO: Při vytváření prototypu mu nastavit 'className'.
+[done]
+
+TODO: Udělat z descendantIds Set místo Array
+  - Set se asi neumí savovat/loadovat v SaveableObjectu.
+- změnit to i v PrototypeManageru.
+[done]
+
+TODO: Nedědit Sector ze zóny ani naopak
+  - pokud mají něco společného (třeba connection pointy), tak to něco
+    může být jedna classa. Jinak jsou to ale různé věci.
+[done]
+
+TODO: Delete prototypu.
+TODO: Když se vytváří/ruší istance entity, přidat na ni odkaz
+  do její prototypové entity (do weakmapy).
+    (ok tak do weakmapy ne, musí to bejt normální mapa.
+     - weakmapu nelze iterovat a nelze se ptát, jestli je prázdná)
+  - díky tomu bude možné checkovat, že od prototypu neexistují žádné
+    instance, a tudíž je možné ho smazat.
+  - a potenciálně půjde najednou změnit prototyp všem entitám instanciovaným
+    od nějakého prototypu.
+Tohle potřebuju i kvůli tomu, aby fungovaly věci jako getTotalCount().
+- tzn. musí to obsahovat i instance, které jsou jen savnuté na disku,
+  ale momentálně nejsou v paměti.
+
+TODO: Možná přetížit entity.save(), aby savnul ancestora a případně
+  PrototypeManager, pokud je to prototypová entita (ať user nemusí
+  myslet na to, co všechno má savnout).
+- ostatně stejně budu muset nějak pořešit save path pro prototypové entity,
+  tak to můžu udělat při jednom.
+
 TODO:
 - vytvořit prototyp podle jména předka
 - vytvořit prototyp podle idčka předka

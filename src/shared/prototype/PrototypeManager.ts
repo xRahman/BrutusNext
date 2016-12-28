@@ -9,7 +9,6 @@
 import {ERROR} from '../../shared/error/ERROR';
 import {FATAL_ERROR} from '../../shared/error/FATAL_ERROR';
 import {IdProvider} from '../../shared/entity/IdProvider';
-///import {Prototype} from '../../shared/prototype/Prototype';
 import {AutoSaveableObject} from '../../shared/fs/AutoSaveableObject';
 import {Entity} from '../../shared/entity/Entity';
 import {NamedEntity} from '../../shared/entity/NamedEntity';
@@ -141,6 +140,17 @@ export class PrototypeManager extends AutoSaveableObject
     return prototypeObject;
   }
 
+  public setAsPrototype(entity: Entity, ancestorEntity: Entity)
+  {
+    // Flag the entity as prototype entity.
+    entity.setAsPrototype();
+
+    ancestorEntity.addDescendant(entity);
+
+    // Add new prototype entity to PrototypeManager under it's 'className'.
+    this.prototypeObjects.set(entity.className, entity);
+  }
+
   // ---------------- Private methods -------------------
 
   // -> Returns 'null' if instance properties couldn't be instantiated.
@@ -207,7 +217,7 @@ export class PrototypeManager extends AutoSaveableObject
     let record: PrototypeRecord =
     {
       id: entity.getId(),
-      descendantIds: entity.getDescendantIds()
+      descendantNames: entity.getDescendantNames()
     };
 
     this.hardcodedEntityPrototypes.set(className, record);
@@ -228,10 +238,10 @@ export class PrototypeManager extends AutoSaveableObject
       prototypeObject,
       className,
       record.id,
-      record.descendantIds
+      record.descendantNames
     );
 
-    entity.setDescendantIds(record.descendantIds);
+    entity.setDescendantNames(record.descendantNames);
 
     return entity;
   }
@@ -278,7 +288,7 @@ export class PrototypeManager extends AutoSaveableObject
 
     if (record !== undefined)
     {
-      if (record.id === undefined || record.descendantIds === undefined)
+      if (record.id === undefined || record.descendantNames === undefined)
       {
         FATAL_ERROR("Empty or invalid record of prototype"
           + " '" + className + "' loaded from file"
@@ -405,5 +415,5 @@ interface PrototypeRecord
   // Id of a prototype entity.
   id: string;
   // List of ids of prototype entities inherited from this prototype.
-  descendantIds: Array<string>;
+  descendantNames: Set<string>;
 }

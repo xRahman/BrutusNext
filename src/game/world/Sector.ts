@@ -10,7 +10,7 @@
 
 import {Game} from '../../game/Game';
 import {GameEntity} from '../../game/GameEntity';
-import {Room} from '../../game/world/Room';
+///import {Room} from '../../game/world/Room';
 
 export class Sector extends GameEntity
 {

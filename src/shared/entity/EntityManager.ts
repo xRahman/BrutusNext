@@ -54,9 +54,7 @@ export class EntityManager
   //   Value: { entity proxy, list of entity proxy handlers }
   private entityRecords = new Map();
 
-  constructor(private idProvider: IdProvider)
-  {    
-  }
+  constructor(private idProvider: IdProvider) { }
 
   // ---------------- Public methods --------------------
 
@@ -104,15 +102,47 @@ export class EntityManager
     return this.addEntityAsProxy(entity);
   }
 
+  // -> Returns 'null' on failure.
   public createPrototypeEntity<T extends Entity>
   (
-    Class: { new (...args: any[]): T },
-    // If 'prototypeId' is 'null', 'Class.name'
-    // will be used to identify prototype entity.
-    prototypeId: string = null
+    entityName: string,
+    className: string,
+    ancestorNameOrId: string
   )
   {
-    TODO
+    // Check that prototype named 'className' doesn't exist yet.
+    if (!this.isPrototypeNameAvailable(className))
+      // Error is already reported by isPrototypeNameAvailable.
+      return;
+
+    let ancestorEntity = this.getAncestorEntity
+    (
+      entityName,
+      className,
+      ancestorNameOrId
+    );
+
+    if (ancestorEntity === null)
+      // Error is already reported by getAncestorEntity().
+      return null;
+
+    // Create a new entity based on prototype entity.
+    let entity = this.createEntityFromPrototype(ancestorEntity);
+
+    // This must be done before adding the new entity to PrototypeManager,
+    // because 'className' will be used as a key in prototypeObjects hashmap
+    // (prototype will be indentified by it's 'className', not 'entityName').
+    entity.className = className;
+
+    Server.prototypeManager.setAsPrototype(entity, ancestorEntity);
+
+    // Note:
+    //   We are not going to save the new prototype entity right now,
+    // user has to save it herself.
+    // (In order to correctly save the change, ancestor entity must be
+    //  saved as well (because it's descendantIds array has changed) and
+    //  if the ancestor entity is a hardcoded entity, PrototypeManager
+    //  needs to be saved as well).
   }
 
   // Creates a new entity without setting a name to it
@@ -316,7 +346,7 @@ export class EntityManager
     prototypeObject: Entity,
     className: string,
     id: string,
-    descendantIds: Array<string>
+    descendantIds: Set<string>
   )
   {
     let entity = this.composeEntityFromPrototype(prototypeObject, id);
@@ -711,10 +741,12 @@ export class EntityManager
   }
 
   // Searches for prototype entity in EntityManager if 'prototypeId'
-  // isn't null, or in PrototypeManager using 'Class.name' otherwise.
+  // isn't null, or in PrototypeManager using 'className' otherwise.
   // -> Returns 'undefined' if prototype entity isn't found.
-  private getPrototypeEntity<T extends Entity>
+  private getPrototypeEntity
   (
+    // 'entityName' is only used in error messages.
+    // Pass 'null' if you don't know the name.
     entityName: string,
     className: string,
     // If 'prototypeId' is 'null', 'className'
@@ -789,5 +821,52 @@ export class EntityManager
     entity.setPrototypeId(prototypeEntity.getId());
 
     return entity;
+  }
+
+    // -> Returns 'true' if prototype 'className' doesn't exist yet.
+  //    Returns 'false' and reports error if it already exists.
+  private isPrototypeNameAvailable(className: string): boolean
+  {
+    // Check if requested 'prototypeName' is available.
+    let test = Server.prototypeManager.getPrototypeObject(className);
+
+    if (test !== undefined)
+    {
+      ERROR("Unable to create new prototype '" + className + "'"
+        + " because it already exists");
+      return false;
+    }
+
+    return true;
+  }
+
+  // Searches for ancestor entity both in EntityManager and PrototypeManager.
+  // -> Returns 'null' if ancestor entity isn't found.
+  private getAncestorEntity
+  (
+    name: string,
+    className: string,
+    ancestorNameOrId: string
+  )
+  {
+    // Search for prototype entity both in EntityManager and PrototypeManager.
+    let ancestorEntity = this.getPrototypeEntity
+    (
+      name,
+      // This parameter will be used to search in PrototypeManager.
+      ancestorNameOrId,
+      // This parameter will be used to search in EntityManager.
+      ancestorNameOrId
+    );
+
+    if (ancestorEntity === undefined)
+    {
+      ERROR("Unable to create new prototype '" + className + "'"
+        + " because ancestor entity '" + ancestorNameOrId + "' doesn't"
+        + " exist");
+      return null;
+    }
+
+    return ancestorEntity;
   }
 }
