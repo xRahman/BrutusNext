@@ -43,6 +43,31 @@ export class IndirectValue
 {
   // ---------------- Public methods --------------------
 
+  // -> Returns a SaveableObject which saves Set to Json object
+  //      (using it's saveToJsonObject()) as a special object
+  //      with className 'Set' and property 'set' containing
+  //      an Array representation of set contents.  
+  public static createSetSaver(set: Set<any>)
+  {
+    if (set === null)
+    {
+      FATAL_ERROR("Null set");
+      return;
+    }
+
+    let saveableObject = new SaveableObject();
+
+    // Set is saved as it's Array representation to property 'set'.
+    saveableObject['map'] = IndirectValue.saveSetToArray(set);
+
+    // We can't override 'className' property, because it's an accessor
+    // (see NamedClass.className), so we use Proxy to trap acces to
+    // 'className' to return our desired value instead.
+    //   This is done so that our return value will save with 'className'
+    // 'Set' instead of 'SaveableObject'.
+    return IndirectValue.createSaveableProxy(saveableObject, 'Set');
+  }
+
   // -> Returns a SaveableObject which saves Map to Json object
   //      (using it's saveToJsonObject()) as a special object
   //      with className 'Map' and property 'map' containing
@@ -131,6 +156,19 @@ export class IndirectValue
     return false;
   }
 
+  public static isSet(jsonObject: Object): boolean
+  {
+    if (IndirectValue.objectValidityCheck(jsonObject) === false)
+      return false;
+
+    // Is there a 'className' property in JSON object
+    // with value 'Set'?
+    if (jsonObject[NamedClass.CLASS_NAME_PROPERTY] === 'Set')
+      return true;
+
+    return false;
+  }
+
   public static isMap(jsonObject: Object): boolean
   {
     if (IndirectValue.objectValidityCheck(jsonObject) === false)
@@ -158,6 +196,17 @@ export class IndirectValue
   }
 
   // ---------------- Private methods -------------------
+
+  // -> Returns an Array representation of Set object.
+  private static saveSetToArray(set: Set<any>): Array<any>
+  {
+    let result = [];
+
+    for (let entry of set.values())
+      result.push(entry);
+    
+    return result;
+  }
 
   // -> Returns an Array representation of Map object.
   private static saveMapToArray(map: Map<any, any>): Array<any>

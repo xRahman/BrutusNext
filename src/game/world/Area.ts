@@ -9,10 +9,10 @@
 
 'use strict';
 
-import {Game} from '../../game/Game';
-import {Sector} from '../../game/world/Sector';
+///import {Game} from '../../game/Game';
+import {GameEntity} from '../../game/GameEntity';
 
-export class Area extends Sector
+export class Area  extends GameEntity
 {
   constructor()
   {

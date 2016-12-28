@@ -23,6 +23,11 @@ export class Entity extends AutoSaveableObject
     return "prototypeId";
   }
 
+  public static get IS_PROTOTYPE_PROPERTY()
+  {
+    return "isEntityPrototype";
+  }
+
   // ----------------- Private data ----------------------
 
   ///private id: EntityId = null;
@@ -31,12 +36,13 @@ export class Entity extends AutoSaveableObject
   // as the name of the saved file (like 7-iu5by22s.json).
   private static id = { isSaved: false };
 
-  // Prototype entities have 'prototypeId' equal to null.
+  // Only hardcoded entity prototypes have 'prototypeId' equal to null.
+  // 'prototypeId' of dynamic entities refer to their ancestor.
   private prototypeId = null;
 
-  // Ids of prototype entities that are inherited from this
+  // Class names of prototype entities that are inherited from this
   // prototype entity.
-  // - Only prototype entities should have 'descendantIds' as their
+  // - Only prototype entities should have 'descendantNames' as their
   //   own property. Entity instances should always inherit it from
   //   their prototype entity and never modify it.
   // - We use ids instead of prototype names to allow easy changing of
@@ -48,7 +54,7 @@ export class Entity extends AutoSaveableObject
   //   which remembers info about hardcoded entity prototypes, which
   //   know their descendatns, and so on). Remembering only an ancestor
   //   wouldn't allow this.
-  private descendantIds = [];
+  private descendantNames = new Set<string>();
 
   /// Na vícenásobnou dědičnost se prozatím vykašlu - fightspecy a podobně
   /// nejspíš vyřeším přes attachování vzorců chování (které budou zděděné
@@ -57,48 +63,24 @@ export class Entity extends AutoSaveableObject
   // Ids of prototype entities this prototype entity is inherited
   // from.
   // - We use ids instead of prototype names to allow easy changing of
-  //   prototype names (same as with descendantIds).
+  //   prototype names (same as with descendantNames).
   // - TODO (proč je ancestorů víc a nějak to vymyslet s "mergnutým"
   //   prototypem - i když ten je asi odkazovaný přes prototypeId)
   public ancestorIds = [];
   */
-  // Id of ancestor prototype entity.
-  // - Only prototype entities should have 'ancestorId' as their
-  //   own property. Entity instances should always inherit it from
-  //   their prototype entity and never modify it.
-  private ancestorId = null;
+  /// Místo ancestora použiu 'prototypeId'
+  /*
+  // Ancestor prototype entity.
+  // - Only prototype entities should have 'ancestor' as their
+  //   own property. Entity instances should always inherit it
+  //   from their prototype entity and never modify it.
+  // - Only hardcoded entity prototypes should have null 'ancestor'.
+  private ancestor = null;
+  */
+
+  private isPrototypeEntity = false;
 
   // ------------- Public static methods ----------------
-
-  /// Obsolete.
-  /*
-  // -> Returns 'null' if loading fails.
-  public static async loadJsonOject(path: string)
-  {
-    // First we load data from file into generic (untyped)
-    // javascript Object.
-    result.jsonObject =
-      await SaveableObject.loadJsonObjectFromFile(result.path);
-
-    // Then we extract 'className' property from jsonObject
-    // that we have just loaded, so we know what class do we
-    //  need to create an instance of.
-    result.prototypeId =
-      result.jsonObject[PrototypeEntity.PROTOTYPE_ID_PROPERTY]; 
-
-    // Note: 'null' prototypeId is allowed, because the root prototype
-    // entity doesn't have any prototype.
-    if (result.prototypeId === undefined)
-    {
-      ERROR("Missing className in " + result.path + "."
-        + " Unable to load entity");
-      result.prototypeId = null
-      result.jsonObject = null;
-    }
-
-    return result;
-  }
-  */
 
   // Instances of entities are all saved to ./data/entities as <id>.json
   // (the method is static because in order to load an entity, save path
@@ -170,33 +152,96 @@ export class Entity extends AutoSaveableObject
     this.prototypeId = prototypeId;
   }
 
-  public getDescendantIds()
+  public getDescendantNames()
   {
-    return this.descendantIds;
+    return this.descendantNames;
   }
 
-  public setDescendantIds(descendantIds: Array<string>)
+  public setDescendantNames(descendantNames: Set<string>)
   {
-    this.descendantIds = descendantIds;
+    this.descendantNames = descendantNames;
   }
 
-  public getAncestorId()
+  public addDescendant(descendant: Entity)
   {
-    return this.ancestorId;
+    let descendantName = descendant.className;
+
+    if (!this.isPrototype())
+    {
+      ERROR("Attempt to add descendant " + descendant.getErrorIdString()
+        + " to entity " + this.getErrorIdString() + " which is not"
+        + " a prototype entity. Descendant is not added");
+      return;
+    }
+
+    // Check that descendantId is not yet present in the list.
+    if (this.descendantNames.has(descendantName))
+    {
+      ERROR("Failed to add descendant " + descendant.getErrorIdString()
+        + " to prototype " + this.getErrorIdString() + " because it is"
+        + " already listed as a descendant");
+      return;
+    }
+
+    this.descendantNames.add(descendantName);
   }
 
-  public setAncestorId(ancestorId: string)
+  /*
+  public getAncestor()
   {
-    this.ancestorId = ancestorId;
+    return this.ancestor;
   }
 
+  public setAncestor(ancestor: Entity)
+  {
+    // Only prototype entities can have an ancestor property set,
+    // entity instances must always inherit it from their prototype.
+    if (!this.isPrototype())
+    {
+      ERROR("Attempt to set ancestor to entity "
+        + this.getErrorIdString() + "which isn't"
+        + " a prototype entity. Ancestor is not set");
+      return;
+    }
 
+    /// TODO: Tohle asi nestačí - nastaví to sice odkaz na ancestora,
+    ///   ale nezmění to prototyp.
+    /// (Na druhou stranu asi se to už volá někde, kde se s tím setnutím
+    ///  prototypu nepočítá - respektive prototype se setuje při vytváření
+    ///  přes Object.create().)
+    this.ancestor = ancestor;
+  }
+  */
 
   // ---------------- Public methods --------------------
 
+  public setAsPrototype()
+  {
+    if (this.isPrototype())
+    {
+      ERROR("Attempt to set entity " + this.getErrorIdString()
+        + " as prototype when it already is a prototype");
+    }
+
+    this.isPrototypeEntity = true;
+  }
+
   public isPrototype()
   {
-    /// Prototype entities have their 'prototypeId' set to 'null.
+    // Entity is a prototype only if it has it's own (non-inherited)
+    // 'isPrototypeEntity' property set. If we omitted this check,
+    // all entities would report as prototypes because all entities
+    // have this property inherited from their prototypes.
+    if (!this.hasOwnProperty(Entity.IS_PROTOTYPE_PROPERTY))
+      return false;
+
+    return this.isPrototypeEntity;
+  }
+
+  public isHardcodedPrototypeEntity()
+  {
+    // Hardcoded prototype entities are the roots of respective
+    // prototype trees so they don't have 'prototypeId' themselves.
     return this.prototypeId === null;
   }
 
@@ -264,14 +309,65 @@ export class Entity extends AutoSaveableObject
     return false;
   }
 
+  protected getPrototypeSaveDirectory(): string
+  {
+    // Hardcoded prototype entities (like Account) are roots of
+    // respective prototype trees (and of respective directory
+    // structures).
+    if (this.isHardcodedPrototypeEntity())
+    {
+      ERROR("Attempt to get save directory of hardcoded"
+        + " prototype entity" + this.getErrorIdString() + "."
+        + " That's not supposed to happen because hardcoded"
+        + " prototype entities are not saved directly but"
+        + " rather generated from information contained in"
+        + " PrototypeManager.hardcodedEntityPrototypes hashmap");
+      return '/data/prototypes/';
+    }
+
+    // Prototype entities are saved to directory structure
+    // matching their inheritance.
+    let prototype = this.constructor.prototype;
+
+    // If we are for example 'Newbie Area' inherited from
+    // hardcoded prototype 'Area', we are going to be saved
+    // to './data/prototypes/Area' directory (so our full save
+    // name will be './data/prototypes/Area/Newbie Area.json').
+    if (prototype.isHardcodedPrototypeEntity())
+      return './data/prototypes/' + prototype.className + '/';
+
+    // If we are for example some prototype inherited from 'Newbie Area',
+    // we are going to be saved to './data/prototypes/Area/Newbie Area/'
+    // directory.
+    return prototype.getPrototypeSaveDirectory() + prototype.className + '/';
+  }
+
   // Overrides AutoSaveableObject.getSaveDirectory().
   protected getSaveDirectory(): string
   {
+    // Prototype entities are saved to directory structure
+    // matching their inheritance.
+    if (this.isPrototype())
+      return this.getPrototypeSaveDirectory();
+
+    /// TODO
+    // Instances of entities are saved to directory structure matching
+    // their location in other containers (so the world is the root,
+    // it contains realms, they contain areas, etc.).
+
+    /// Možná:
+    //   There are some exceptions - player characters are save to
+    // player accounts rather than to the rooms where they are present.
+
     return './data/entities/';
   }
 
   protected getSaveFileName(): string
   {
+    // Prototype entities are save to 'className.json' files.
+    if (this.isPrototype())
+      return this.className + '.json';
+    
     let idIsValid = this.getId() !== null
                  && this.getId() !== undefined
                  && this.getId() !== "";
@@ -287,8 +383,9 @@ export class Entity extends AutoSaveableObject
     return this.getId() + '.json';
   }
 
-  // Overrides AutoSaveableObject.save() to skip saving
-  // if entity has been deleted.
+  // Overrides AutoSaveableObject.save().
+  // - check if entity is valid.
+  // - handles correct saving of prototype entities.
   public async save()
   {
     if (this.isValid() === false)
@@ -296,6 +393,14 @@ export class Entity extends AutoSaveableObject
       ERROR("Attemp to save invalid entity " + this.getErrorIdString());
       return;
     }
+
+    TODO: Pořešit korektní savování prototypových entit.
+    /*
+      // (In order to correctly save the change, ancestor entity must be
+      //  saved as well (because it's descendantNames set has changed) and
+      //  if the ancestor entity is a hardcoded entity, PrototypeManager
+      //  needs to be saved as well).
+    */
 
     await this.saveToFile
     (
