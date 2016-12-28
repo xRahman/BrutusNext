@@ -482,6 +482,18 @@ export class SaveableObject extends InstantiableClass
     if (result !== null)
       return result;
 
+    // Attempt to load variable as Set object.
+    result = this.loadAsSet
+    (
+      variableName,
+      variable,
+      jsonVariable,
+      path
+    );
+
+    if (result !== null)
+      return result;
+
     // Attempt to load variable as Map object.
     result = this.loadAsMap
     (
@@ -826,8 +838,19 @@ export class SaveableObject extends InstantiableClass
     }
 
     // Dirty hack to check if object is of type 'Date'.
-    ///return Object.prototype.toString.call(variable) === '[object Date]';
     return variable.constructor.name === 'Date';
+  }
+
+  private isSet(variable: any): boolean
+  {
+    if (variable === null)
+    {
+      ERROR("Null varible");
+      return false;
+    }
+
+    // Dirty hack to check if object is of type 'Set'.
+    return variable.constructor.name === 'Set';
   }
 
   private isMap(variable: any): boolean
@@ -839,25 +862,8 @@ export class SaveableObject extends InstantiableClass
     }
 
     // Dirty hack to check if object is of type 'Map'.
-    ///return Object.prototype.toString.call(variable) === '[object Map]';
     return variable.constructor.name === 'Map';
   }
-
-  /*
-  private extractMapContents(map: Map<any, any>): Array<any>
-  {
-    let result = [];
-
-    // 'map.entries' is Iterable (whatever that means) so it needs to be
-    // iterated using for ( of ).
-    for (let entry of map.entries())
-    {
-      result.push(entry);
-    }
-    
-    return result;
-  }
-  */
 
   private validJsonObjectCheck
   (
@@ -928,6 +934,33 @@ export class SaveableObject extends InstantiableClass
     return new Date(date);
   }
 
+  // -> Returns 'null' if jsonVariable is not a Set or if loading failed.
+  private loadAsSet
+  (
+    variableName: string,
+    variable: any,
+    jsonVariable: any,
+    path: string
+  )
+  {
+    if (!IndirectValue.isSet(jsonVariable))
+      return null;
+
+    if (variable !== null && variable !== undefined && !this.isSet(variable))
+    {
+      ERROR("Attempt to load Set property '" + variableName + "'"
+        + " from file " + path + " to a non-Set property");
+      return null;
+    }
+
+    return this.loadSetFromJsonObject
+    (
+      variableName,
+      jsonVariable,
+      path
+    );
+  }
+
   // -> Returns 'null' if jsonVariable is not a Map or if loading failed.
   private loadAsMap
   (
@@ -955,6 +988,35 @@ export class SaveableObject extends InstantiableClass
     );
   }
 
+  private loadSetFromJsonObject
+  (
+    propertyName: string,
+    jsonObject: any,
+    path: string
+  )
+  : Set<any>
+  {
+    if (!this.validJsonObjectCheck(propertyName, jsonObject, path))
+      return null;
+
+    // Our set is stored as array in jsonObject.set property.
+    let setData = jsonObject.set;
+
+    if (setData === undefined || setData === null)
+    {
+      ERROR("Missing or invalid 'set' property when loading"
+        + " Set record '" + propertyName + "' from JSON file"
+        + " " + path);
+      return null;
+    }
+    
+    // We need to properly load items within 'setData' array,
+    // because they may be SaveableObjects or special records.
+    let setArray = this.loadArray(propertyName, setData, path);
+
+    return new Set(setArray);
+  }
+
   private loadMapFromJsonObject
   (
     propertyName: string,
@@ -966,18 +1028,20 @@ export class SaveableObject extends InstantiableClass
     if (!this.validJsonObjectCheck(propertyName, jsonObject, path))
       return null;
 
-    if (jsonObject.map === undefined || jsonObject.map === null)
+    // Our map is stored as array in jsonObject.set property.
+    let mapData = jsonObject.map;
+
+    if (mapData === undefined || mapData === null)
     {
       ERROR("Missing or invalid 'map' property when loading"
-        + " map record '" + propertyName + "' from JSON file"
+        + " Map record '" + propertyName + "' from JSON file"
         + " " + path);
       return null;
     }
 
-    // Our hashmap is stored as array in jsonObject.map property.
-    //   But first we need to properly load items within this array,
+    // We need to properly load items within 'mapData' array,
     // because they may be SaveableObjects or special records.
-    let mapArray = this.loadArray(propertyName, jsonObject.map, path);
+    let mapArray = this.loadArray(propertyName, mapData, path);
 
     return new Map(mapArray);
   }
