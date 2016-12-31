@@ -51,7 +51,7 @@ export class PrototypeManager extends AutoSaveableObject
   // that somewhere is right here in this hashmap.
   //   Key:   prototype class name
   //   Value: record describing hardcoded entity prototype.
-  private hardcodedEntityPrototypes = new Map<string, PrototypeRecord>();
+  private hardcodedPrototypes = new Map<string, HardcodedPrototype>();
 
   // ---------------- Public methods --------------------
 
@@ -95,8 +95,6 @@ export class PrototypeManager extends AutoSaveableObject
   // -> Returns 'null' if instance couldn't be created.
   public createInstance(prototypeObject: NamedClass)
   {
-    ///let prototypeObject = this.getPrototypeObject(prototypeId);
-
     if (!(prototypeObject === null || typeof prototypeObject === 'object'))
     {
       ERROR("Prototype object can only be 'null' or 'object'");
@@ -138,17 +136,6 @@ export class PrototypeManager extends AutoSaveableObject
     }
 
     return prototypeObject;
-  }
-
-  public setAsPrototype(entity: Entity, ancestorEntity: Entity)
-  {
-    // Flag the entity as prototype entity.
-    entity.setAsPrototype();
-
-    ancestorEntity.addDescendant(entity);
-
-    // Add new prototype entity to PrototypeManager under it's 'className'.
-    this.prototypeObjects.set(entity.className, entity);
   }
 
   // ---------------- Private methods -------------------
@@ -214,13 +201,13 @@ export class PrototypeManager extends AutoSaveableObject
     //   So instead of saving them directly, we save just the information
     // required to recreate them on the next start of the server (most
     // importantly their id's).
-    let record: PrototypeRecord =
+    let record: HardcodedPrototype =
     {
       id: entity.getId(),
-      descendantNames: entity.getDescendantNames()
+      instanceIds: entity.getInstanceIds()
     };
 
-    this.hardcodedEntityPrototypes.set(className, record);
+    this.hardcodedPrototypes.set(className, record);
     
     return entity;
   }
@@ -230,7 +217,7 @@ export class PrototypeManager extends AutoSaveableObject
   (
     prototypeObject: Entity,
     className: string,
-    record: PrototypeRecord,
+    record: HardcodedPrototype,
   )
   {
     let entity = Server.entityManager.composePrototypeEntity
@@ -238,10 +225,10 @@ export class PrototypeManager extends AutoSaveableObject
       prototypeObject,
       className,
       record.id,
-      record.descendantNames
+      record.instanceIds
     );
 
-    entity.setDescendantNames(record.descendantNames);
+    entity.setDescendantIds(record.instanceIds);
 
     return entity;
   }
@@ -251,7 +238,7 @@ export class PrototypeManager extends AutoSaveableObject
   // composes an entity using 'record.id' otherwise.
   private initPrototypeEntity<T extends Entity>
   (
-    record: PrototypeRecord,
+    record: HardcodedPrototype,
     Class: { new (...args: any[]): T }
   )
   {
@@ -284,11 +271,11 @@ export class PrototypeManager extends AutoSaveableObject
 
   private getPrototypeRecord(className: string)
   {
-    let record = this.hardcodedEntityPrototypes.get(className);
+    let record = this.hardcodedPrototypes.get(className);
 
     if (record !== undefined)
     {
-      if (record.id === undefined || record.descendantNames === undefined)
+      if (record.id === undefined || record.instanceIds === undefined)
       {
         FATAL_ERROR("Empty or invalid record of prototype"
           + " '" + className + "' loaded from file"
@@ -410,10 +397,10 @@ export class PrototypeManager extends AutoSaveableObject
 
 // ------------------ Type declarations ----------------------
 
-interface PrototypeRecord
+interface HardcodedPrototype
 {
   // Id of a prototype entity.
   id: string;
   // List of ids of prototype entities inherited from this prototype.
-  descendantNames: Set<string>;
+  instanceIds: Set<string>;
 }
