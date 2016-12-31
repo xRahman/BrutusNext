@@ -1,3 +1,278 @@
+
+/*
+TODO: Zajistit, že se bude loadovat ve správném pořadí
+  - vždycky musí být loadnutý prototyp dřív, než se z něj bude vyrábět
+    instance.
+To by mělo zajistit loadování po příslušných vNames hashmapách:
+- nejdřív se loadnou globální prototypy (PrototypeManager).
+- pak se loadne World, kterej nejdřív loadne entity ve svých vNames
+  - a to asi tak, že nejdřív loadne všechny tyhle entity a pak je projde
+    znova a zavolá jejich loadVNames().
+- pak se dá loadovat World.contents (tj. Realmy) a bude přeskakovat to,
+  co už je loadnuté
+  (je otázka, jestli vůbec bude existovat něco, co nemá vName (tedy co
+   není ve vNames něčeho jiného) - možná ani ne (možná dynamicky generované
+   instance).
+*/
+- Tohle je celý blbost. Pokud si budou entity pamatovat své instance
+  (instanceIds), tak to je v zásadě totéž co původní idea descendantIds,
+  a tudíž můžu vpohodě všechno loadnout rekurzivně.
+
+NOTE: Instance se od prototypu pozná tak, že má prázdné .instanceIds
+- asi bych to měl checkovat například když tomu někdo dává damage
+  (protože dávat damage prototypu znamená, že ji dostanou všechny
+  instance, které nemají aktuální hpčka jako own property - což by teda měly
+  mít všechny, ale co už)
+
+
+TODO:
+  Entity
+    .vName (symbName, symbolicName?)
+    .vLocation (symbLocation, symbolicLocation?)
+    .prototypeId (to už existuje)
+    .vNames (hasmapa, vName -> id)
+    .instanceIds
+
+TODO:
+  - Všechny entity, no matter what, savovat do ./data/entities
+    (Pro zatím to fungovat bude a je to by far nejjednodušší řešení)
+
+TODO:
+  - Zušit setAsPrototype
+
+TODO: Globální prototypy (Account, etc.) asi nechat v PrototypeManageru,
+  ale možná přejmenovat hasmapu (na globalPrototypes?).
+
+-------------------------------------
+
+Problém:
+- některé entity se nemají loadnout při startu mudu - třeba většina
+  accountů a player charů.
+  - jak to při rekurzivním loadování poznám? Musel bych tu entitu loadnout,
+    abych zjistil, že nemá žádné instance (tj. že ji nemám loadovat).
+Možné řešení:
+TODO:
+- neloadovat prototypy "preventivně", ale "on-demand". Tj. dám loadnout
+  wolrd a každá entita si zkontroluje, že v je paměti její prototyp a když
+  ne, tak si ho loadne (a až pak se loadne sama).
+
+-------------------------------------
+
+"z1"
+  - name: "Newbie Zone"
+  - ConnectionPoint 0 (The Entrance)
+  - TileSet 0
+    [
+      Tile 0 extends "RoomTile"
+        - "cp0" extends "ConnectionPoint"
+        - "r0" exends "z1.r0" (respektive idčko)
+          - exit do "z1.t0.r1" (respektive do idčka)
+        - "r1" exends "z1.r1" (respektive idčko)
+          - exit do "z1.t0.r0" (respektive do idčka)
+      Tile 1 extends "RoomTile"
+        - "cp0" extends "ConnectionPoint"
+        - "r0" exends "z1.r0" (respektive idčko)
+          - exit do "z1.t0.r1" (respektive do idčka)
+        - "r1" exends "z1.r1" (respektive idčko)
+          - exit do "z1.t0.r0" (respektive do idčka)
+    ]
+
+"r0" extends "Room"
+  - name: "The Entrance"
+  - popisek
+"r1" extends "Room"
+  - name: "A Small Room"
+  - popisek
+
+Problémy:
+- jména prototypů jsou globálně unikátní, takže když udělám prototyp
+  "The Entrance", tak už nikdy neudělám stejný.
+  - Navíc se bude extrémně blbě hledat, k čemu to vlastně patří. Tj. tenhle
+    prototyp by asi měl být zone specific.
+
+=> Čili obecně bych asi měl mít možnost říct, v čem je entita vložena
+   ve smyslu designace ("location" roomy je příslušná Tile, virtualLocation
+   je třeba zóna).
+=> Každá entita v sobě může mít vložené prototypy
+   (hashmapa "prototypes" indexovaná jménem prototypu (což může být třeba "0")
+   která bude obsahovat idčka (nebo rovnou reference prototypových entit,
+   které jsou adresované v rámci této entity).
+   - ať už to bude idčko nebo reference, tak asi můžu kašlat na descendantIds
+     a rekurzivní loadování - propojí se to až po loadu a když prototyp nebude
+     existovat, tak je to prostě chyba.
+  - otázka je, co s mobama, objektama a tak - asi se taky budou vkládat do
+    worldu/zóny/atd, ale tím se zamíchají mezi sebou (s roomama a tak), což
+    možná není úplně dobré.
+  - možná používat ty kódy v rámci "jména" prototypu? Tj. "r0" (room),
+    z0 (zone), (m0) mob, rlm0 (realm), t0 (tile), atd?
+
+- Propojení (třeba exity) bude vždycky odkazovat přes idčka.
+  Takže když napíšu "connect north r12", tak to v .prototypes najde "r12",
+  ale do exitu to napíše natvrdo idčko (vlastě to, které si vezme
+  z .prototypes).
+  - díky tomu nebude vadit, když někdo přejmenuje symbolické jméno
+    prototypu v .prototypes - existující vazby budou fungovat dál,
+    protože jsou přes idčka.
+
+
+To znamená, že prototypy nebudou mít "jméno", podle kterého by šly globálně
+identifikovat, tj. nebude se jako jméno používat "className".
+- budu mít třeba entitu se symbolickým jménem "r0" a jménem entity
+  "The Entrance".
+
+=> Zpět na stromy - můžu se asi vrátit k původní myšlence, že každá entita
+   může být prototypem pro jinou entitu (jen musím dávat bacha na mazání,
+   abych nesmazal prototyp jiné entitě).
+   - tj. každá entita by asi taky měla mít property "instances", kam
+     se budou dávat idčka jejích instancí a dokud to pole není prázdné,
+     tak entita nepůjde smazat.
+
+
+Zajímavá myšlenka: Při editování můžeš "vejít" do libovolné entity,
+  tj. můžeš stát v Tilese, Tilesetu, v mobovi, atd.
+
+
+------------------------------------------------
+
+TODO: 'Sector' přejmenovat na 'Tile'
+  - protože zóna se bude skládat z malých kousků - tilesů
+Tak možná nikoliv přejmenovat, ale vytvořit Tile paralelně k Sectoru.
+- Tile je konkrétní uspořádání několika místností
+- Sector je konkrétní napojení Sectorů nebo Tilesů nebo TileSetů
+  (s tím, že tam může být na výběr z několika různých tilesů se stejnými vstupy
+    a výstupy).
+
+TileSet
+- množina Tilesů s matchujícími vstupy a výstupy, z nichž se jeden
+  náhodně vybere.
+(Asi by měla existovat nějaká obecnější třída EntitySet, která bude umět
+ vybírat z množiny prvků podle nějakých kritérií (různé váhy u jednotlivých
+ variant, atp.))
+- TileSet by asi měla být entita (mít idčko), byť teda ne GameEntita.
+
+Když budu chtít dlaždice využít v různých zónách, tak je prostě zdědím
+z nějakého obecného prototypu, stejně jako bych to udělal s roomou.
+(Hmm, tohle má asi za důsledek to, že vnumy mohou mít i roomy vnořené
+ do obecného prototypu - což je ale asi ok).
+
+IDEA: Propojování room v rámci dlaždice může být prostě podle čísel (nebo jiných
+  jmen unikátních v rámci dlaždice). Tj. exit je do roomu "3" a je jasný, že
+  to znamená do roomu 3 v této dlaždici.
+  - je to ok, protože exity mezi dlaždicemi (a mezi zónami a tak) nevedou
+    přímo do roomu (alespoň teda ne v prototypu), ale na connection point
+    zóny nebo dlaždice.
+Instance budou samozřejmě mít propojení přímo na roomy - přes idčko.
+
+=> Z tohohle každopádně plyne, že prototype name nemůže být univerzálně
+  unikátní.
+  - instance mají prototypeId které unikátní je, takže to je ok.
+  - možná by měly existovat dva druhy prototypů - obecné (s unikátními jmény)
+    a "building blocks" v rámci zón bez unikátních jmen.
+Jak říkat tomu neunikátnímu jménu?
+- vnum asi ne, jednak to není unikátní, za druhé to nemusí být jen číslo
+  (můžu si roomu pojmenovat jak chci) a zatřetí by se to pletlo s circlovýma
+  vnumama.
+vname?
+- to zní dobře.
+- asi by jich prototyp mohl mít i víc (tj. standardně číslo a když mu chci
+  dát jméno, tak nemusím to číslo zrušit).
+Ono to asi celkově dává smysl. "Obecné" prototypy budou mít className,
+  "budovací" prototypy budou mít vname.
+== Tak asi nakonec bude lepší používat klasické vnumy s typem 'number',
+   přestože se budou trochu lišit od těch circlových (budou unikátní
+   jen v rámci zóny/Tilesy).
+   - pokud budu chtít paralelně používat vname, tak to prostě bude
+     separátní proměnná.
+
+Těm "obecným" prototypům bych asi neměl říkat "prototypy", ale "předci"
+  (ancestors) - nebo ancestor prototype
+
+Obecné prototypy asi budou mít 'vnum = null;'
+
+Instance (*Dynamický prototyp) (+Hardcoded prototyp)
+-----------------------------------------------------
+Brutus World* (+World)
+  - System Realm* (+Realm)
+    - System Area* (+Area)
+      - System Room (+Room)
+  - Northern Lands* (+Realm)
+    - The City of Midgaard* (+Area)
+      - Market Square (*Market Square) (+Room)
+        - a cityguard (*Cityguard) (*Humanoid) (+Character)
+        - a cityguard (*Cityguard) (*Humanoid) (+Character)
+        - a sign (*Sign) (+Object)
+
+
+Propojení roomů
+----------------
+Může být buď klasicky na úrovni prototypů (špatné řešení)
+- v zóně Valley of giants je 80 roomů 'Valley of giants', což je
+  80 různých room prototypů, které jsou ale všechny zděděny
+  z prototypu 'Valley of giants'.
+Tj. takhle:
+  (+Room) (*Valley of giants) (*Valley of giants0)
+                              (*Valley of giants1)
+                               ...
+                              (*Valley of giants79)
+  
+
+Nebo až na úrovni instancí (dobré řešení)
+- v zóně Valley of giants je jeden Sector, kterej určuje spojení mezi roomama.
+  - každá rooma je Template, ve kterém je jeden prototyp (*Valley of giants)
+  (tj. je to vlastně jakási mřížka blackboxů)
+Ten Sector je co, instance? prototyp?
+- asi instance Sectoru
+-- Tohle je blbost, protože Sektor musí obsahovat struktury s exitama - což
+   je přesně Room.
+     A co víc, dědičnost prototypů mi udělá přesně to, co potřebuju:
+     - prototyp roomu (*12312) zděděný z prototypu (*Valley of Giants) bude
+       mít v sobě savnuté právě jen ty exity, zbytek (jméno, popisek) si
+       vezme právě z prototypu (*Valley of Giants)
+-> Což mě přivádí k tomu, že budu potřebovat něco jako vnumy, protože dělat
+   prototypy s názvem (*Valley of giants79) zjevně není dobrej nápad.
+
+Sectory by asi mohly být zone-specific
+- nebo teda aspoň některé sectory, stejně jako některé prototypy roomů
+  jsou sector specific, zatímco jiné jsou globální.
+
+(virtuální jména a grupy teď nechám stranou, to jsou nadstavby).
+- v základu by asi zóny mohly mít klasická čísla, sectory zas mohou mít
+  čísla v rámci zóny (a nebude tím myšleno vnoření sektorů do sebe, tj.
+  sektor 1.2 /zóna 1, sektor 2/ může být vnořený do sektoru 1.1).
+- note that provázání je skrz idčka, nikoliv jména. Tzn. roomy můžu libovolně
+  přejmenovávat.
+Tohle pojmenovávání by mohlo být automatické (editor automaticky pojmenuje
+  roomu 13, když už tam je 12 jiných).
+== Což mě ovšem vede k otázce: Budou tahle číla sloužit coby className?
+   - to je asi blbost, className musí být unikátní.
+     A rozhodně v sobě nesmí mít tečky, takže 1.2.14 taky nebude ono.
+     Možná to nějak skládat, tj. a1s12r20 (area 1, sector 12, room 20).
+     - to teda zas není camel case... (A1_S12_R20)?
+
+Virtuální grupy
+(virtuální grupa může být prostě pole idček, to bude řešit ledacos).
+- nebude, protože skript musí pracovat nad instancema. A instancí může
+  být náhodný počet...
+  - v tom v zásadě pole idček může fungovat dobře, protože se prostě
+    naplní při instancování a skript pak bude pracovat s polem vnumů instancí,
+    ať už se jich vygeneruje, kolik chce.
+  - větší problém bude specifikovat konkrétní roomu
+
+RESULT: Vykašlat se na adresářovou strukturu savu, dělit to jen na prototypy
+  a instance. Vždycky to můžu dodatečně přesavnout do nové struktury.
+
+
+Templaty (sety)
+-----------------
+Cityguard může mít různé rasy, classy, equip a tak.
+  - jinými slovy, může to být jeden z několika různých prototypů
+
+Templaty lze vkládat do sebe
+- v domě žije otec, matka a dvě děti.
+  - otec může být cityguard, písař, whatever...
+
+---------------------
+
 TODO: Tak zpátky na stromy:
   Pokud chci jména prototypů v adresářové struktuře, tak musím:
   - místo descendantIds držet descendantNames
