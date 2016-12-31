@@ -4,6 +4,25 @@
   Room (a graph node that game world consists of).
 */
 
+/*
+  Pozn: Look description není na exitu, ale v roomě, do které se kouká.
+    Tj. je to "incomming" look description.
+  - Může být na jednotlivých směrech (třeba když koukám na místnost
+    ze severu (tj. z jiné roomy jižním exitem) a může být i na roomě jako
+    takové. Description na roomě je default, takže když daný směr nemá
+    specifický look desc, použije se look desc roomy.
+  
+  Pozn: Dveře budou fungovat obdobně - budou mít vlastní
+    jméno a description, ale obojí půjde to přetížit
+    z roomu.
+  - Důvod je, že se může stát, že z jedné strany budou dveře vypadat
+    jinak než z druhé (z jedné strany 'bookshelf', ze druhé 'secret door').
+  - Další důvod je napojování tilesů: Nebylo by jasné, komu exit "patří",
+    takže na rozhraní dvou tilesů nutně musí mít obě strany popisek
+    dveří. (A když dveře má jen jedna strana, tak to pořád půjde napojit,
+    prostě se z obou stran použije "defaultní" popisek a jméno).
+*/
+
 'use strict';
 
 import {GameEntity} from '../../game/GameEntity';
