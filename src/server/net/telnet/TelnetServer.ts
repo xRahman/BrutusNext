@@ -139,7 +139,7 @@ export class TelnetServer
 
   // This handler is registered directly by net.createServer()
   // (it processes a new connection request)
-  private onNewConnection(socket: net.Socket)
+  private async onNewConnection(socket: net.Socket)
   {
     Syslog.log
     (
@@ -165,7 +165,7 @@ export class TelnetServer
     /// zatim necham.
     ///s.socket = s; // conform to the websocket object to make easier to handle
 
-    let connection = this.createConnection(socket);
+    let connection = await this.createConnection(socket);
 
     if (connection === null)
       // Error is already reported by createConnection().
@@ -177,11 +177,11 @@ export class TelnetServer
   // ---------------- Private methods --------------------
 
   // -> Returns 'null' if connection couldn't be created.
-  private createConnection(socket)
+  private async createConnection(socket)
   {
     let socketDescriptor = new TelnetSocketDescriptor(socket);
 
-    let connection = Server.entityManager.createEntity(Connection);
+    let connection = await Server.entityManager.createEntity(Connection);
 
     if (connection === null)
       return null;
