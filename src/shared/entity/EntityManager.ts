@@ -102,6 +102,9 @@ export class EntityManager
     return this.addEntityAsProxy(entity);
   }
 
+  // Každá entita může sloužit jako prototyp, takže
+  // není důvod prototypové entity vyrábět nějak jinak.
+  /*
   // -> Returns 'null' on failure.
   public createPrototypeEntity<T extends Entity>
   (
@@ -134,7 +137,7 @@ export class EntityManager
     // (prototype will be indentified by it's 'className', not 'entityName').
     entity.className = className;
 
-    Server.prototypeManager.setAsPrototype(entity, ancestorEntity);
+    ///Server.prototypeManager.setAsPrototype(entity, ancestorEntity);
 
     // Note:
     //   We are not going to save the new prototype entity right now,
@@ -144,19 +147,21 @@ export class EntityManager
     //  if the ancestor entity is a hardcoded entity, PrototypeManager
     //  needs to be saved as well).
   }
+  */
 
   // Creates a new entity without setting a name to it
   // (use this to create Connections and other entities
   //  that are not inherited from NamedEntity).
-  public createEntity<T extends Entity>
+  public async createEntity<T extends Entity>
   (
     Class: { new (...args: any[]): T },
     // If 'prototypeId' is 'null', 'Class.name'
     // will be used to identify prototype entity.
     prototypeId: string = null
   )
+  : Promise<T>
   {
-     let entity = this.createEntityInstance(null, Class, prototypeId);
+     let entity = await this.createEntityInstance(null, Class, prototypeId);
 
     // Dynamic cast means runtime check that 'entity' really is inherited
     // from the type we are casting to. It also changes the type of return
@@ -166,7 +171,7 @@ export class EntityManager
   }
 
   // Creates a new entity with non-unique name.
-  public createNamedEntity<T extends Entity>
+  public async createNamedEntity<T extends Entity>
   (
     name: string,
     Class: { new (...args: any[]): T },
@@ -174,9 +179,9 @@ export class EntityManager
     // will be used to identify prototype entity.
     prototypeId: string = null
   )
-  : T
+  : Promise<T>
   {
-    let entity = this.createEntityInstance(name, Class, prototypeId);
+    let entity = await this.createEntityInstance(name, Class, prototypeId);
 
     // We can safely use setNameSync(), because we have just created
     // a new entity so we can be sure that it doesn't unique name
@@ -205,7 +210,7 @@ export class EntityManager
   )
   : Promise<T>
   {
-    let entity = this.createEntityInstance(name, Class, prototypeId);
+    let entity = await this.createEntityInstance(name, Class, prototypeId);
 
     // Unique name is represented by respective name lock file and
     // creating such file is an async operation, so we need to use
@@ -482,14 +487,14 @@ export class EntityManager
   // and sets 'entityId' to it. Doesn't create a proxy object.
   // Doesn't add the entity to the manager.
   // -> Returns loaded entity (not a proxy) or 'null' on load failure. 
-  private loadEntityFromJsonObject
+  private async loadEntityFromJsonObject
   (
     jsonObject: Object,
     id: string,
     // 'path' is passed just to make error messages more informative.
     path: string
   )
-  : Entity
+  : Promise<Entity>
   {
     let prototypeId = this.getPrototypeIdFromJsonObject(jsonObject, path);
 
@@ -502,7 +507,7 @@ export class EntityManager
     // will be returned.
     let entityName = this.getNameFromJsonObject(jsonObject, path)
 
-    let prototypeEntity = this.getPrototypeEntity
+    let prototypeEntity = await this.getPrototypeEntity
     (
       entityName,
       // Entities loaded from file must reference their prototype by
@@ -623,7 +628,7 @@ export class EntityManager
 
     // Read prototype id from 'jsonObject', create a new entity
     // based on that prototype and load it from jsonObject.
-    return this.loadEntityFromJsonObject(jsonObject, id, path);
+    return await this.loadEntityFromJsonObject(jsonObject, id, path);
   }
 
   // This auxiliary function handles parameter overloading.
@@ -740,10 +745,24 @@ export class EntityManager
     return <Entity>prototypeEntity;
   }
 
+  // -> Returns 'null' if such prototype entity doesn't exist.
+  private async getPrototypeEntityById(prototypeId: string)
+  {
+    // get() returns 'undefined' if id is not present in EntityManager.
+    let entity = this.get(prototypeId, Entity);
+
+    if (entity !== undefined)
+      return entity;
+
+    // If prototype entity isn't in the Manager, we will try to load
+    // it from the disk.
+    return await this.loadEntity(prototypeId);
+  }
+
   // Searches for prototype entity in EntityManager if 'prototypeId'
   // isn't null, or in PrototypeManager using 'className' otherwise.
   // -> Returns 'undefined' if prototype entity isn't found.
-  private getPrototypeEntity
+  private async getPrototypeEntity
   (
     // 'entityName' is only used in error messages.
     // Pass 'null' if you don't know the name.
@@ -753,15 +772,15 @@ export class EntityManager
     // will be used to identify prototype entity.
     prototypeId: string = null
   )
-  : Entity
+  : Promise<Entity>
   {
     let proxy = null;
 
     if (prototypeId !== null)
     {
       // If 'prototypeId' is provided, we will search for prototype
-      // entity in EntityManager using this id.
-      proxy = this.get(prototypeId, Entity);
+      // entity using this id.
+      proxy = await this.getPrototypeEntityById(prototypeId);      
     }
     else
     {
@@ -796,7 +815,7 @@ export class EntityManager
   }
 
   // -> Returns 'null' if entity instance couldn't be created.
-  private createEntityInstance<T extends Entity>
+  private async createEntityInstance<T extends Entity>
   (
     entityName: string,
     Class: { new (...args: any[]): T },
@@ -805,7 +824,7 @@ export class EntityManager
   {
     // getPrototypeEntity() returns 'undefined' if prototype entity
     // cannot be found.
-    let prototypeEntity = this.getPrototypeEntity
+    let prototypeEntity = await this.getPrototypeEntity
     (
       entityName,
       Class.name,
@@ -840,6 +859,8 @@ export class EntityManager
     return true;
   }
 
+  /// Deprecated.
+  /*
   // Searches for ancestor entity both in EntityManager and PrototypeManager.
   // -> Returns 'null' if ancestor entity isn't found.
   private getAncestorEntity
@@ -869,4 +890,5 @@ export class EntityManager
 
     return ancestorEntity;
   }
+  */
 }

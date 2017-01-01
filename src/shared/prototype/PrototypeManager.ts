@@ -32,7 +32,7 @@ export class PrototypeManager extends AutoSaveableObject
 
   // Hashmap matching prototype names to prototype objects.
   //   Key:   prototype class name
-  //   Value: prototpype object or entity.
+  //   Value: prototpype object or entity
   private prototypeObjects = new Map<string, NamedClass>();
   // Do not save property 'entityPrototypes'.
   private static prototypeObjects = { isSaved: false };
@@ -228,7 +228,7 @@ export class PrototypeManager extends AutoSaveableObject
       record.instanceIds
     );
 
-    entity.setDescendantIds(record.instanceIds);
+    entity.setInstanceIds(record.instanceIds);
 
     return entity;
   }
