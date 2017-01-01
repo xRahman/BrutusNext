@@ -1,3 +1,12 @@
+TODO: Přidávání do a odebírání z instanceIds 
+  (možná už to je, tak zkontrolovat)
+
+TODO: Při loadu entity z disku zkontrolovat, jestli existuje prototyp
+  a když ne, tak ho lodnout.
+[Asi done]
+
+TODO: Zrušit EntityManager.createPrototype
+[snad done]
 
 /*
 TODO: Zajistit, že se bude loadovat ve správném pořadí
@@ -27,15 +36,37 @@ NOTE: Instance se od prototypu pozná tak, že má prázdné .instanceIds
 
 TODO:
   Entity
-    .vName (symbName, symbolicName?)
-    .vLocation (symbLocation, symbolicLocation?)
+    .symName (vName, symbolicName?, symNum?)
+    .symLocation (vLocation, symbolicLocation?)
     .prototypeId (to už existuje)
-    .vNames (hasmapa, vName -> id)
-    .instanceIds
+    .symNames (vNames?) (hasmapa, vName -> id)
+    ///.instanceIds
+
+/*
+- asi by chtělo rozlišovat online instance a offline instance.
+  Jenže jak na to?
+  - problém je, že se asi nemůže savovat, které jsou offline a které
+    online, protože po loadu by to téměř učitě nesedělo - do offline
+    entity se nebudou updatovat změny v jejích instancích.
+    - To je vlastně blbost, prototyp nemůže být offline, když se dělá
+      změna v jeho instanci, je to přece prototype object.
+  - Jedna možnost je, prostě tu informaci nedržet a v případě dotazu
+    holt projít všechna instanceIds a zeptat se EntityManageru, jestli
+    jsou online. Je to teda dost drahá operace...
+  - Druhá možnost je, dát jim flagu a nesavovat ji, takže po loadu
+    bude nastavena na default (false) a s tím, jak se budou instance
+    registrovat (což buodou, protože do té doby neexistoval jejich
+    prototype object), se překlopí na 'online = true'.
+    - flaga mi ale zase nedá rychlý přístup k počtu online instancí,
+      musel bych projít seznam a spočítat to.
+ZÁVĚR: Zatím to k ničemu nepotřebuju, takže to teď nebudu dělat. Až to
+  potřebovat budu, tak budu mít lepší představu, co přesně to má umět.
+*/
 
 TODO:
   - Všechny entity, no matter what, savovat do ./data/entities
     (Pro zatím to fungovat bude a je to by far nejjednodušší řešení)
+  
 
 TODO:
   - Zušit setAsPrototype

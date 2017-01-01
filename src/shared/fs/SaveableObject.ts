@@ -657,11 +657,11 @@ export class SaveableObject extends InstantiableClass
     if (this.isSaveableObject(variable))
       return variable.saveToJsonObject();
 
-    if (this.isDate(variable))
+    if (this.isTypeDate(variable))
       //return this.saveDate(variable);
       return IndirectValue.createDateSaver(variable).saveToJsonObject();
 
-    if (this.isMap(variable))
+    if (this.isTypeMap(variable))
       return IndirectValue.createMapSaver(variable).saveToJsonObject();
 
     if (this.isPrimitiveObject(variable))
@@ -829,7 +829,9 @@ export class SaveableObject extends InstantiableClass
     return variable.constructor.name === 'Object';
   }
 
-  private isDate(variable: any): boolean
+  // Note: This method should not be named 'isSet', because it would
+  //   collide with 'isSet()' method of class Flags.
+  private isTypeDate(variable: any): boolean
   {
     if (variable === null)
     {
@@ -841,7 +843,7 @@ export class SaveableObject extends InstantiableClass
     return variable.constructor.name === 'Date';
   }
 
-  private isSet(variable: any): boolean
+  private isTypeSet(variable: any): boolean
   {
     if (variable === null)
     {
@@ -853,7 +855,7 @@ export class SaveableObject extends InstantiableClass
     return variable.constructor.name === 'Set';
   }
 
-  private isMap(variable: any): boolean
+  private isTypeMap(variable: any): boolean
   {
     if (variable === null)
     {
@@ -896,7 +898,7 @@ export class SaveableObject extends InstantiableClass
     if (!IndirectValue.isDate(jsonVariable))
       return null;
 
-    if (variable !== null && variable !== undefined && !this.isDate(variable))
+    if (variable !== null && variable !== undefined && !this.isTypeDate(variable))
     {
       ERROR("Attempt to load Date property '" + variableName + "'"
         + " from file " + path + " to a non-Date property");
@@ -946,7 +948,7 @@ export class SaveableObject extends InstantiableClass
     if (!IndirectValue.isSet(jsonVariable))
       return null;
 
-    if (variable !== null && variable !== undefined && !this.isSet(variable))
+    if (variable !== null && variable !== undefined && !this.isTypeSet(variable))
     {
       ERROR("Attempt to load Set property '" + variableName + "'"
         + " from file " + path + " to a non-Set property");
@@ -973,7 +975,7 @@ export class SaveableObject extends InstantiableClass
     if (!IndirectValue.isMap(jsonVariable))
       return null;
 
-    if (variable !== null && variable !== undefined && !this.isMap(variable))
+    if (variable !== null && variable !== undefined && !this.isTypeMap(variable))
     {
       ERROR("Attempt to load Map property '" + variableName + "'"
         + " from file " + path + " to a non-Map property");

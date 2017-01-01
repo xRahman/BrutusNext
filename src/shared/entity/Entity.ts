@@ -28,6 +28,11 @@ export class Entity extends AutoSaveableObject
     return "isEntityPrototype";
   }
 
+  public static get INSTANCE_IDS_PROPERTY()
+  {
+    return "instanceIds";
+  }
+
   // ----------------- Private data ----------------------
 
   ///private id: EntityId = null;
@@ -36,33 +41,33 @@ export class Entity extends AutoSaveableObject
   // as the name of the saved file (like 7-iu5by22s.json).
   private static id = { isSaved: false };
 
-  // Only hardcoded entity prototypes have 'prototypeId' equal to null.
-  // 'prototypeId' of dynamic entities refer to their ancestor.
-  private prototypeId = null;
+  // Id of entity which serves as prototype object to this entity.
+  //   This needs to be saved in orded to know what prototype object
+  // to use when creating this entity.
+  //   Only hardcoded entity prototypes have null 'prototypeId'.
+  private prototypeId: string = null;
 
-  // Set of ids of entities that user this entity as their prototype
-  // object - including entities saved on disk but not in memory at
-  // the moment.
+  // Symbolic name of this entity, which is relative to the
+  // 'symLocation' entity (in other words: entity 'symLocation'
+  // has a hasmap 'symNames' which maps 'symName' of this entity
+  // to the reference to this entity).
+  private symName: string = null;
+
+  // Reference to the entity which can translate our 'symName'
+  // to the reference to this entity.
+  private symLocation: Entity = null;
+
+  // Hasmap translating symbolic names of entities to respective
+  // references.
+  //   Key:   'symName'
+  //   Value: reference to entity identified by 'symName'
+  private symNames = new Map<string, Entity>();
+
+  // Set of ids of entities that use this entity as their prototype
+  // object - including entities saved on disk but not present in
+  // memory at the moment.
   private instanceIds = new Set<string>();
 
-  // 
-  /*
-  // Ids of prototype entities that are inherited from this
-  // prototype entity.
-  // - Only prototype entities should have 'descendantIds' as their
-  //   own property. Entity instances should always inherit it from
-  //   their prototype entity and never modify it.
-  // - We use ids instead of prototype names to allow easy changing of
-  //   prototype names (you only have to change the name at one place
-  //   because descendants reference their ancestor by it's id which
-  //   doesn't change).
-  // - Descendants are remembered because we want to be able to load
-  //   protype entities recursively (starting with PrototypeManager,
-  //   which remembers info about hardcoded entity prototypes, which
-  //   know their descendatns, and so on). Remembering only an ancestor
-  //   wouldn't allow this.
-  private descendantIds = new Set<string>();
-  */
 
   /// Na vícenásobnou dědičnost se prozatím vykašlu - fightspecy a podobně
   /// nejspíš vyřeším přes attachování vzorců chování (které budou zděděné
@@ -86,9 +91,35 @@ export class Entity extends AutoSaveableObject
   private ancestor = null;
   */
 
+  /*
   /// Nakonec asi nebudu explicitně rozlišovat. Každá entita může
   /// být prototypem.
   ///private isPrototypeEntity = false;
+  */
+
+  // ------------- Private static methods ---------------
+
+  // We need a static method because in order to load an entity
+  // save path needs to be constructed before entity exists.
+  private static getSaveDirectory(): string
+  {
+    return './data/entities/';
+  }
+
+  // We need a static method because in order to load an entity
+  // save path needs to be constructed before entity exists.
+  private static getSaveFileName(id: string)
+  {
+    if (id === null || id === undefined || id === "")
+    {
+      let errorSaveName = '_SAVE_PATH_CREATION_ERROR.json';
+
+      ERROR("Invalid entity id. Entity save name will be " + errorSaveName);
+      return errorSaveName;
+    }
+
+    return id + '.json';
+  }
 
   // ------------- Public static methods ----------------
 
@@ -97,15 +128,7 @@ export class Entity extends AutoSaveableObject
   //  needs to be constructed before entity exists).
   public static getSavePath(id: string)
   {
-    if (id === null || id === undefined || id === "")
-    {
-      let invalidPath = './data/entities/_SAVE_PATH_CREATION_ERROR.json';
-
-      ERROR("Invalid id, " + invalidPath + " will be used");
-      return invalidPath; 
-    }
-
-     return "./data/entities/" + id + ".json";
+     return Entity.getSaveDirectory() + Entity.getSaveFileName(id);
   }
 
   public static isValid(entity: Entity)
@@ -198,9 +221,15 @@ export class Entity extends AutoSaveableObject
 
   public isPrototype()
   {
+    // We have to make sure that we check our own property
+    // (because we surely have a nonempty 'instanceIds'
+    //  property inherited from our prototype).
+    if (!this.hasOwnProperty(Entity.INSTANCE_IDS_PROPERTY))
+      return false;
+
     // We are a prototype if there is at least one
     // entity that use us as it's prototype object.
-    return this.instanceIds.size != 0;
+    return this.instanceIds.size !== 0;
   }
 
   public isHardcodedPrototypeEntity()
@@ -274,6 +303,8 @@ export class Entity extends AutoSaveableObject
     return false;
   }
 
+  /// Deprecated.
+  /*
   protected getPrototypeSaveDirectory(): string
   {
     // Hardcoded prototype entities (like Account) are roots of
@@ -306,6 +337,7 @@ export class Entity extends AutoSaveableObject
     // directory.
     return prototype.getPrototypeSaveDirectory() + prototype.className + '/';
   }
+  */
 
   // Overrides AutoSaveableObject.getSaveDirectory().
   protected getSaveDirectory(): string
@@ -330,24 +362,15 @@ export class Entity extends AutoSaveableObject
     // player accounts rather than to the rooms where they are present.
     */
 
-    return './data/entities/';
+    ///return './data/entities/';
+
+    return Entity.getSaveDirectory();
   }
 
   protected getSaveFileName(): string
   {
-    let idIsValid = this.getId() !== null
-                 && this.getId() !== undefined
-                 && this.getId() !== "";
-
-    if (!idIsValid)
-    {
-      ERROR("Unable to compose save directory, because"
-        + " entity " + this.getErrorIdString() + " has"
-        + " an invalid id");
-      return null;
-    }
-
-    return this.getId() + '.json';
+    ///return this.getId() + '.json';
+    return Entity.getSaveFileName(this.getId());
   }
 
   // Overrides AutoSaveableObject.save().
