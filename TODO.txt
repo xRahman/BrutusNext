@@ -1,3 +1,5 @@
+TODO: Používat symbolickou konstantu FileSystem.JSON_EXTENSION.
+
 TODO: Přidávání do a odebírání z instanceIds 
   (možná už to je, tak zkontrolovat)
 
