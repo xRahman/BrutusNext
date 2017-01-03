@@ -12,7 +12,7 @@ import {AdminLevel} from '../../server/AdminLevel';
 import {Message} from '../../server/message/Message';
 
 // Built-in node.js modules.
-import * as fs from 'fs';  // Import namespace 'fs' from node.js
+import * as fs from 'fs';
 
 // 3rd party modules.
 let promisifiedFS = require('fs-promise');
@@ -26,8 +26,8 @@ export class FileSystem
 
   // ---------------- Public methods -------------------- 
 
-  // -> Returns null if file could not be read.
-  public static async readFile(path: string)
+  // -> Returns data read from file, 'null' if file could not be read.
+  public static async readFile(path: string): Promise<any>
   {
     if (!FileSystem.isPathRelative(path))
       return null;
@@ -36,11 +36,8 @@ export class FileSystem
 
     try
     {
-      // Asynchronous reading from the file.
-      // (the rest of the code will execute only after the reading is done)
       data = await promisifiedFS.readFile
       (
-        ///'"' + path + '"',
         path,
         FileSystem.FILE_ENCODING
       );
@@ -61,22 +58,14 @@ export class FileSystem
         AdminLevel.IMMORTAL
       );
 
-      /*
-      // Throw the exception so the mud will get terminated with error
-      // message.
-      // (Create a new Error object, because the one we have cought here
-      // doesn't contain stack trace.)
-      throw new Error;
-      */
-
       return null;
     }
 
     return data;
   }
 
-  // -> Returns null if file could not be read.
-  public static readFileSync(path: string)
+  // -> Returns data read from file, 'null' if file could not be read.
+  public static readFileSync(path: string): any
   {
     if (!FileSystem.isPathRelative(path))
       return null;
@@ -87,7 +76,6 @@ export class FileSystem
     {
       data = fs.readFileSync
       (
-        ///'"' + path + '"',
         path,
         FileSystem.FILE_ENCODING
       );
@@ -101,14 +89,6 @@ export class FileSystem
         AdminLevel.IMMORTAL
       );
 
-      /*
-      // Throw the exception so the mud will get terminated with error
-      // message.
-      // (Create a new Error object, because the one we have cought here
-      // doesn't contain stack trace.)
-      throw new Error;
-      */
-
       return null;
     }
 
@@ -116,19 +96,15 @@ export class FileSystem
   }
 
   // -> Returns 'true' if file was succesfully written.
-  //    Returns 'false' otherwise.
-  public static async writeFile(path: string, data: string)
+  public static async writeFile(path: string, data: string): Promise<boolean>
   {
     if (!FileSystem.isPathRelative(path))
       return false;
 
     try
     {
-      // Asynchronous saving to file.
-      // (the rest of the code will execute only after the saving is done)
       await promisifiedFS.writeFile
       (
-        ///'"' + path + '"',
         path,
         data,
         FileSystem.FILE_ENCODING
@@ -143,14 +119,6 @@ export class FileSystem
         AdminLevel.IMMORTAL
       );
 
-      /*
-      // Throw the exception so the mud will get terminated with error
-      // message.
-      // (create a new Error object, because the one we have cought here
-      // doesn't contain stack trace)
-      throw new Error;
-      */
-
       return false;
     }
 
@@ -158,15 +126,13 @@ export class FileSystem
   }
 
   // -> Returns 'true' if file was succesfully deleted.
-  //    Returns 'false' otherwise.
-  public static async deleteFile(path: string)
+  public static async deleteFile(path: string): Promise<boolean>
   {
     if (!FileSystem.isPathRelative(path))
       return false;
 
     try
     {
-      ///await promisifiedFS.unlink('"' + path + '"');
       await promisifiedFS.unlink(path);
     }
     catch (error)
@@ -184,34 +150,34 @@ export class FileSystem
     return true;
   }
 
-  public static async exists(path: string)
+  // -> Returns 'true' if file exists.
+  public static async exists(path: string): Promise<boolean>
   {
     if (!FileSystem.isPathRelative(path))
       return false;
 
-    ///return await promisifiedFS.exists('"' + path + '"');
     return await promisifiedFS.exists(path);
   }
 
-  public static existsSync(path: string)
+  // -> Returns 'true' if file exists.
+  public static existsSync(path: string): boolean
   {
     if (!FileSystem.isPathRelative(path))
       return false;
 
-    ///return fs.existsSync('"' + path + '"');
     return fs.existsSync(path);
   }
 
-  // -> Returns 'true' if directory existed or was succesfully created.
-  //    Returns 'false' otherwise. 
+  // -> Returns 'true' if directory was succesfully created or if it already
+  //    existed.
   public static async ensureDirectoryExists(directory: string)
+  : Promise<boolean>
   {
     if (!FileSystem.isPathRelative(directory))
       return false;
 
     try
     {
-      //await promisifiedFS.ensureDir('"' + directory + '"');
       await promisifiedFS.ensureDir(directory);
     }
     catch (error)
@@ -230,32 +196,33 @@ export class FileSystem
     return true;
   }
 
-  // Directory is empty if it doesn't exist or there no files in it.
-  // File is empty if it doesn't exist or it has zero size.
-  public static async isEmpty(path: string)
+  // -> Returns 'true' if file or directory is empty.
+  //    Directory is empty if it doesn't exist or there are no files in it.
+  //    File is empty if it doesn't exist or it has zero size.
+  public static async isEmpty(path: string): Promise<boolean>
   {
     if (!FileSystem.isPathRelative(path))
       return false;
 
-    ///return await promisifiedFS.isEmpty('"' + path + '"');
     return await promisifiedFS.isEmpty(path);
   }
 
-  // Directory is empty if it doesn't exist or there no files in it.
-  // File is empty if it doesn't exist or it has zero size.
-  public static isEmptySync(path: string)
+  // -> Returns 'true' if file or directory is empty.
+  //    Directory is empty if it doesn't exist or there no files in it.
+  //    File is empty if it doesn't exist or it has zero size.
+  public static isEmptySync(path: string): boolean
   {
     if (!FileSystem.isPathRelative(path))
       return false;
 
-    ///return extfs.isEmptySync('"' + path + '"');
     return extfs.isEmptySync(path);
   }
 
   // -> Returns array of file names in directory, including
-  //      subdirectories, excluding '.' and '..'.
-  // -> Returns 'null' on error.
+  //    subdirectories, excluding '.' and '..'.
+  //    Returns 'null' on error.
   public static async readDirectoryContents(path: string)
+  : Promise<Array<string>>
   {
     if (!FileSystem.isPathRelative(path))
       return null;
@@ -312,6 +279,7 @@ export class FileSystem
 
   // ---------------- Private methods ------------------- 
 
+  // -> Returns 'true' if 'path' begins with './'.
   private static isPathRelative(path: string): boolean
   {
     if (path.substr(0, 2) !== './')
@@ -324,9 +292,9 @@ export class FileSystem
     return true;
   }
 
-  // -> Returns 'FS.Stats' object describing specified file.
-  // -> Returns 'null' on error.
-  private static async statFile(path: string)
+  // -> Returns 'fs.Stats' object describing specified file.
+  //    Returns 'null' on error.
+  private static async statFile(path: string): Promise<fs.Stats>
   {
     if (!FileSystem.isPathRelative(path))
       return null;
