@@ -664,6 +664,9 @@ export class SaveableObject extends InstantiableClass
     if (this.isTypeMap(variable))
       return IndirectValue.createMapSaver(variable).saveToJsonObject();
 
+    if (this.isTypeSet(variable))
+      return IndirectValue.createSetSaver(variable).saveToJsonObject();
+
     if (this.isPrimitiveObject(variable))
       return this.savePrimitiveObject(variable);
 
