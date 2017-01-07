@@ -11,6 +11,7 @@ import {Entity} from '../../shared/entity/Entity';
 ///import {UniqueNames} from '../../shared/entity/UniqueNames';
 import {NameLockRecord} from '../../shared/entity/NameLockRecord';
 import {FileSystem} from '../../shared/fs/FileSystem';
+import {Server} from '../../server/Server';
 
 export class NamedEntity extends Entity
 {
@@ -90,7 +91,7 @@ export class NamedEntity extends Entity
   )
   {
     // Name lock file path is something like
-    // './data/names/accounts/Rahman.json'.
+    // './server/data/names/accounts/Rahman.json'.
     // It's existence means that account name
     // 'Rahman' is already used.
     let path = NamedEntity.getNameLockFilePath(name, cathegory);
@@ -104,7 +105,7 @@ export class NamedEntity extends Entity
     cathegory: NamedEntity.NameCathegory
   )
   {
-    // Path is something like './data/names/accounts/Rahman.json'.
+    // Path is something like './server/data/names/accounts/Rahman.json'.
     return NamedEntity.getNameLockDirectory(cathegory)
       + NamedEntity.getNameLockFileName(name);
   }
@@ -136,7 +137,7 @@ export class NamedEntity extends Entity
   {
     let nameLockRecord = new NameLockRecord();
 
-    // Name lock directory is something like './data/names/accounts/'.
+    // Name lock directory is something like './server/data/names/accounts/'.
     let directory = NamedEntity.getNameLockDirectory(cathegory);
 
     // Name lock file name is something like 'Rahman.json'.
@@ -159,8 +160,9 @@ export class NamedEntity extends Entity
 
   private static getNameLockDirectory(cathegory: NamedEntity.NameCathegory)
   {
-    // Name lock directory is something like './data/names/accounts/'.
-    return './data/names/' + NamedEntity.NameCathegory[cathegory] + '/';
+    // Name lock directory is something like './server/data/names/accounts/'.
+    return Server.DATA_DIRECTORY + 'names/'
+      + NamedEntity.NameCathegory[cathegory] + '/';
   }
 
   // -> Returns 'true' if file is successfuly deleted, 'false' otherwise. 
