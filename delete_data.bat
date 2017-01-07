@@ -1,1 +1,1 @@
-rmdir /Q /S data
+rmdir /Q /S "./server/data"
