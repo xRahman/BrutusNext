@@ -1,3 +1,52 @@
+TODO: Výhledově předělat strukturu zdrojáků serveru - /server/server není
+  moc dobrý. (a /server/server/Server.ts už vůbec ne ;-))
+
+
+--------------------------
+
+Struktura aplikace (úvahy)
+--------------------
+
+/src
+  client.ts
+  server.ts
+  /client
+  /server
+  /shared
+  /game
+Tohle asi může zůstat tak, jak to je?
+Nebo to raději oddělit víc, tj. takhle:
+(asi jo, bude to líp sedět se strukturou buildu)
+- otázka je, jestli se budou nějaké zdrojáky sdílet mezi
+  klientem a serverem (namedClass možná?). Pokud jo,
+  tak /shared by bylo na úrovni /client a /server
+  a některé věci z něj (třeba /entity) by spadly pod
+  /server.
+/src
+  /client
+    client.ts
+    clientSettings.ts
+  /server
+    server.ts
+    serverSettings.ts
+    /shared
+    /game
+  
+Build by ale rozdělený být měl, už proto, že adresář /build/client
+bude zpřístupněný web serverem a neměly by v něm tudíž být serverové
+javascriptové soubory.
+/build
+  /client
+  /server
+
+Další otázka je, jak do /build dostat html a podobné nesmysly...
+- asi začnu tím, že to dám rovnou tam, no (to ale zas bude znamenat,
+  že se to bude muset dávat do gitu).
+  (Rozhodně ale chci, abych nemusel překopírovávat zbuilděné zdrojáky
+   klienta - musí stačit je zkompilovat a dát ctrl+f5 v browseru).
+
+-----------------------------------------------------------------
+
 TODO: Používat symbolickou konstantu FileSystem.JSON_EXTENSION.
 
 TODO: Přidávání do a odebírání z instanceIds 

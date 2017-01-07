@@ -11,6 +11,7 @@ import {ERROR} from '../../shared/error/ERROR';
 import {AutoSaveableObject} from '../../shared/fs/AutoSaveableObject';
 import {Flags} from '../../shared/flags/Flags';
 import {FlagNames} from '../../shared/flags/FlagNames';
+import {Server} from '../../server/Server';
 
 export class FlagNamesManager extends AutoSaveableObject
 {
@@ -26,7 +27,7 @@ export class FlagNamesManager extends AutoSaveableObject
 
   private static get SAVE_DIRECTORY()
   {
-    return "./data/";
+    return Server.DATA_DIRECTORY;
   }
 
   private static get SAVE_FILE_NAME()
