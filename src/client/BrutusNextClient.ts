@@ -12,6 +12,8 @@
 
 'use strict';
 
+import $ = require("jquery");
+
 // Program entry point.
 // It's called main() to sound familiar to C programmers ;)
 function main()
