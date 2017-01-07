@@ -1,29 +1,141 @@
 /*
-// Automatic rebuild on file save.
-{
-    // See https://go.microsoft.com/fwlink/?LinkId=733558
-    // for the documentation about the tasks.json format
-    "version": "0.1.0",
-    "command": "tsc",
-    "isShellCommand": true,
-    "args": ["-w", "-p", "."],
-    "showOutput": "silent",
-    "isWatching": true,
-    "problemMatcher": "$tsc"
-}
+  Because we have two projects to build (/src/client/tsconfig.json and
+  /src/server/tsconfig.json), we need two tasks.
+  
+  In order to be able to run more than one build taks, you should
+  remap 'ctrl+shift+b' to offer what task to run instad of running
+  only one build task.
+  Add this to your keybindings.json (located somewhere like:
+  c:\Users\York\AppData\Roaming\Code\User\keybindings.json)
+  { "key": "ctrl+shift+b",  "command": "workbench.action.tasks.runTask" }
+
+  Also note that both task run in watch mode, so they recompile the code
+  and then continue to run, watch for file changes and recompile them.
+  incrementally.
 */
-//*
-// Varianta na rebuild all:
-// (pred tim je treba vypnout task bezici ve watch modu - napriklad
-// zavrenim a znovuspustenim VS code - a smazat adresar /build)
+
 {
-    // See https://go.microsoft.com/fwlink/?LinkId=733558
-    // for the documentation about the tasks.json format
-    "version": "0.1.0",
-    "command": "tsc",
-    "isShellCommand": true,
-    "args": ["-p", "."],
-    "showOutput": "silent",
-    "problemMatcher": "$tsc"
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "0.1.0",
+  "command": "node",
+  "isShellCommand": true,
+  "echoCommand": true, // Task runner will output what it is trying to do.
+  "suppressTaskName": true, // Do not add 'taskName' as parameter to 'tsc'.
+  "showOutput": "always",   // Output tsc messages.
+  "tasks":
+  [
+    {
+      // This task build server, then keeps running and watching
+      // for file changes to incrementally compile them.
+      "taskName": "Build server",
+      "args":
+      [
+        // We use locally installed typescript (in node_modules).
+        "./node_modules/typescript/lib/tsc.js",
+        // Watch for file changes.
+        "--watch",
+        "--project", "./src/server"
+      ],
+      "problemMatcher": "$tsc",
+      // Watch file changes ('--watch' must be passed to tsc for this to work).
+      "isWatching": true
+      // This trick could be used so you could map two task directly.
+      // We don't use this though, instead we remap 'ctrl+shift+b' to
+      // ask what task to run.
+      /*
+      // Run this task on "Ctrl+Shift+B".
+      "isBuildCommand": true,
+      // Do not run on "Ctrl+Shift+T".
+      "isTestCommand": false
+      */
+    },
+    {
+      // This task build client, then keeps running and watching
+      // for file changes to incrementally compile them.
+      "taskName": "Build clinet",
+      "args":
+      [
+        // We use locally installed typescript (in node_modules).
+        "./node_modules/typescript/lib/tsc.js",
+        // Watch for file changes.
+        "--watch",
+        "--project", "./src/client"
+      ],
+      "problemMatcher": "$tsc",
+      // Watch file changes ('--watch' must be passed to tsc for this to work).
+      "isWatching": true
+      // This trick could be used so you could map two task directly.
+      // We don't use this though, instead we remap 'ctrl+shift+b' to
+      // ask what task to run.
+      /*
+      // Do not Run on "Ctrl+Shift+B".
+      "isBuildCommand": false,
+      // Run this task on "Ctrl+Shift+T".
+      "isTestCommand": true
+      */
+    }
+  ]
 }
-//*/
+
+
+/// Variant with globaly installed 'tsc':
+// {
+//   // See https://go.microsoft.com/fwlink/?LinkId=733558
+//   // for the documentation about the tasks.json format
+//   "version": "0.1.0",
+//   "command": "tsc",
+//   "isShellCommand": true,
+//   "echoCommand": true, // Task runner will output what it is trying to do.
+//   "suppressTaskName": true, // Do not add 'taskName' as parameter to 'tsc'.
+//   "showOutput": "always",   // Output tsc messages.
+//   "tasks":
+//   [
+//     {
+//       // This task build server, then keeps running and watching
+//       // for file changes to incrementally compile them.
+//       "taskName": "Build server",
+//       "args":
+//       [
+//         // Watch for file changes.
+//         "--watch",
+//         "--project", "./src/server"
+//       ],
+//       "problemMatcher": "$tsc",
+//       // Watch file changes ('--watch' must be passed to tsc for this to work).
+//       "isWatching": true
+//       // This trick could be used so you could map two task directly.
+//       // We don't use this though, instead we remap 'ctrl+shift+b' to
+//       // ask what task to run.
+//       /*
+//       // Run this task on "Ctrl+Shift+B".
+//       "isBuildCommand": true,
+//       // Do not run on "Ctrl+Shift+T".
+//       "isTestCommand": false
+//       */
+//     },
+//     {
+//       // This task build client, then keeps running and watching
+//       // for file changes to incrementally compile them.
+//       "taskName": "Build clinet",
+//       "args":
+//       [
+//         // Watch for file changes.
+//         "--watch",
+//         "--project", "./src/client"
+//       ],
+//       "problemMatcher": "$tsc",
+//       // Watch file changes ('--watch' must be passed to tsc for this to work).
+//       "isWatching": true
+//       // This trick could be used so you could map two task directly.
+//       // We don't use this though, instead we remap 'ctrl+shift+b' to
+//       // ask what task to run.
+//       /*
+//       // Do not Run on "Ctrl+Shift+B".
+//       "isBuildCommand": false,
+//       // Run this task on "Ctrl+Shift+T".
+//       "isTestCommand": true
+//       */
+//     }
+//   ]
+// }

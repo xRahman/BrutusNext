@@ -103,7 +103,7 @@ export class Entity extends AutoSaveableObject
   // save path needs to be constructed before entity exists.
   private static getSaveDirectory(): string
   {
-    return './data/entities/';
+    return Server.DATA_DIRECTORY + 'entities/';
   }
 
   // We need a static method because in order to load an entity
@@ -123,9 +123,9 @@ export class Entity extends AutoSaveableObject
 
   // ------------- Public static methods ----------------
 
-  // Instances of entities are all saved to ./data/entities as <id>.json
-  // (the method is static because in order to load an entity, save path
-  //  needs to be constructed before entity exists).
+  // Instances of entities are all saved to ./server/data/entities as
+  // <id>.json (the method is static because in order to load an entity,
+  // save path needs to be constructed before entity exists).
   public static getSavePath(id: string)
   {
      return Entity.getSaveDirectory() + Entity.getSaveFileName(id);
@@ -318,7 +318,7 @@ export class Entity extends AutoSaveableObject
         + " prototype entities are not saved directly but"
         + " rather generated from information contained in"
         + " PrototypeManager.hardcodedEntityPrototypes hashmap");
-      return '/data/prototypes/';
+      return './server/data/prototypes/';
     }
 
     // Prototype entities are saved to directory structure
@@ -327,13 +327,13 @@ export class Entity extends AutoSaveableObject
 
     // If we are for example 'Newbie Area' inherited from
     // hardcoded prototype 'Area', we are going to be saved
-    // to './data/prototypes/Area' directory (so our full save
-    // name will be './data/prototypes/Area/Newbie Area.json').
+    // to './server/data/prototypes/Area' directory (so our full save
+    // name will be './server/data/prototypes/Area/Newbie Area.json').
     if (prototype.isHardcodedPrototypeEntity())
-      return './data/prototypes/' + prototype.className + '/';
+      return './server/data/prototypes/' + prototype.className + '/';
 
     // If we are for example some prototype inherited from 'Newbie Area',
-    // we are going to be saved to './data/prototypes/Area/Newbie Area/'
+    // we are going to be saved to './server/data/prototypes/Area/Newbie Area/'
     // directory.
     return prototype.getPrototypeSaveDirectory() + prototype.className + '/';
   }
@@ -343,7 +343,7 @@ export class Entity extends AutoSaveableObject
   protected getSaveDirectory(): string
   {
     /// Prozatím volím nejjednodušší řešení - všechny entity
-    /// se savují do /data/entities, ať už jsou to prototypy
+    /// se savují do /server/data/entities, ať už jsou to prototypy
     /// nebo ne (každá entita může být prototypem nějaké jiné,
     /// takže by to stejně nebylo moc užitečné rozlišit.).
     /*
@@ -362,7 +362,7 @@ export class Entity extends AutoSaveableObject
     // player accounts rather than to the rooms where they are present.
     */
 
-    ///return './data/entities/';
+    ///return './server/data/entities/';
 
     return Entity.getSaveDirectory();
   }

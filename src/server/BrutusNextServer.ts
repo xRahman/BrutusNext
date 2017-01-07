@@ -34,7 +34,7 @@ let parser = require('commander');
 // Include package.json file (located in BrutusNext directory)
 // (it contains version number and list of all required modules along with
 // their required version)
-let packageDotJson = require('../package.json');
+let packageDotJson = require('../../package.json');
 
 // This handler catches exceptions thrown from withing async (promisified)
 // functions. A new exception is thrown, which will crash the mud and print

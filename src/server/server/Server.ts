@@ -34,6 +34,11 @@ import {Account} from '../server/account/Account';
 
 export class Server
 {
+  public static get DATA_DIRECTORY()
+  {
+    return './server/data/';
+  }
+
   // -------------- Static class data -------------------
 
   protected static instance: Server;
@@ -239,7 +244,8 @@ export class Server
 
   // ---------------- Public methods --------------------
 
-  // Loads the game (or creates a new one if there is no ./data directory).
+  // Loads the game (or creates a new default one
+  // if there is no ./server/data directory).
   public async run(telnetPort: number)
   {
     if (this.game !== null)
@@ -253,10 +259,10 @@ export class Server
     /// TEST
     await test();
 
-    // We must check if './data/' directory exists before
-    // initPrototypes() is called, because './data/'
+    // We must check if './server/data/' directory exists before
+    // initPrototypes() is called, because './server/data/'
     // will be created by it if it doesn't exist.
-    let createDefaultData = !FileSystem.existsSync('./data/');
+    let createDefaultData = !FileSystem.existsSync(Server.DATA_DIRECTORY);
 
     await this.prototypeManager.init(createDefaultData);
 
