@@ -12,13 +12,18 @@
 
 'use strict';
 
-import $ = require("jquery");
+import Client = require('./Client');
 
 // Program entry point.
 // It's called main() to sound familiar to C programmers ;)
 function main()
 {
   console.log('BrutusNext client is running!');
+
+  // Create an instance of class Client.
+  //   It will handle the creation of all html elements inside
+  // our application, handle events, etc.
+  Client.create();
 }
 
 // Run the main() function.

@@ -2,12 +2,13 @@
   "compilerOptions":
   {
     "target": "es6",
-    "module": "commonjs",
+    "module": "amd",
     "charset": "UTF-8",
     "moduleResolution": "node",
     "newLine": "LF",
     "noEmitOnError": true,
     "outDir": "../../client/build",
+    //"outFile": "../../client/build/BrutusNextClient.js",
     "rootDir": ".",
     "sourceMap": true,
     "sourceRoot": "."

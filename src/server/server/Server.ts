@@ -6,9 +6,9 @@
   Server is a singleton, you can access the instance by Server.getInstance()
 
   Usage:
-    import {GameServer} from './server/GameServer';
-    GameServer.create(); // Creates an instance.
-    GameServer.getInstance().run(port);
+    import {Server} from './server/Server';
+    Server.create(); // Creates an instance.
+    Server.getInstance().run(port);
 */
 
 'use strict';
