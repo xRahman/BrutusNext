@@ -1,0 +1,13 @@
+﻿(source: https://github.com/johnpapa/lite-server)
+
+'lite-server' is used for client development. You can also use any other webserver
+you like, just set /BrutusNext/client as a root folder for web documents.
+
+
+Right now I'm installing it globally: 
+
+  npm install -g lite-server
+
+Then just run lite-server in BrutusNext/client, or run the batch file:
+
+  BrutusNext/client/run_development_webserver.bat

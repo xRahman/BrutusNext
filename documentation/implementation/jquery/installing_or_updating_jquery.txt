@@ -1,0 +1,13 @@
+﻿Install or update jquery using:
+
+  npm install jquery
+
+Then go to /BrutusNext/node_modules/jquery/dist and copy appropriate
+file to /BrutusNext/client/jquery.
+
+/*
+  Right now I'm using jquery.slim.js.
+
+  It would be nice to automate copying based on debug/release build
+  configuration, but it has low priority at the moment.
+*/

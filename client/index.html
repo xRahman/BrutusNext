@@ -13,12 +13,16 @@
 
   <body id="page" class="page app" style="background-color: black">
 
+    <!-- No idea what this is good for -->
+    <!--
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
     <meta name="apple-mobile-web-app-capable" content="yes">
+    -->
+    
 
     <!--
     <link rel="stylesheet" href="css/font-awesome.min.css" type="text/css" />
@@ -29,53 +33,10 @@
     -->
 
     <!--
-    <script type="text/javascript" src="./build/js/jquery.min.js"></script>
-    <script type="text/javascript" src="./build/js/jquery-noconflict.js"></script>
-    <script type="text/javascript" src="./build/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="./build/js/jquery-ui.js"></script>
-    <script type="text/javascript" src="./build/js/jquery.jcarousel.min.js"></script>
-    <script type="text/javascript" src="./build/js/jquery.nicescroll.js"></script>
-    <script type="text/javascript" src="./build/js/jquery.dateFormat-1.0.js"></script>
-    <script type="text/javascript" src="./build/js/FileSaver.js"></script>
-    <script type="text/javascript" src="./build/js/d3.v3.min.js"></script>
-    <script type="text/javascript" src="./build/js/jquery.animateSprite.min.js"></script>
-    <script type="text/javascript" src="./build/js/inflate.js"></script>
-    <script type="text/javascript" src="./build/js/zlib-inflate.js"></script>
+      Run javascript module loader and run script Main.js
+      when requirejs is ready.
     -->
-
-    <!--
-    <script>
-        var j = jQuery;
-    </script>
-    -->
-
-    <!-- app -->
-    <script type="text/javascript" src="./build/BrutusNextClient.js"></script>
-    <!--
-    <script type="text/javascript" src="./build/js/modules/Util.js"></script>
-    <script type="text/javascript" src="./build/js/modules/Config.js"></script>
-    <script type="text/javascript" src="./build/js/modules/Event.js"></script>
-    <script type="text/javascript" src="./build/js/modules/Window.js"></script>
-    <script type="text/javascript" src="./build/js/modules/Modal.js"></script>
-    <script type="text/javascript" src="./build/js/modules/ModalInput.js"></script>
-    <script type="text/javascript" src="./build/js/modules/MacroPane.js"></script>
-    <script type="text/javascript" src="./build/js/modules/TriggerHappy.js"></script>
-    <script type="text/javascript" src="./build/js/modules/ControlPanel.js"></script>
-    <script type="text/javascript" src="./build/js/modules/Socket.js"></script>
-    <script type="text/javascript" src="./build/js/modules/Colorize.js"></script>
-    <script type="text/javascript" src="./build/js/modules/ScrollView.js"></script>
-    <script type="text/javascript" src="./build/js/modules/ChatterBox.js"></script>
-    <script type="text/javascript" src="./build/js/modules/MXP.js"></script>
-    <script type="text/javascript" src="./build/js/modules/iFrame.js"></script>
-    <script type="text/javascript" src="./build/js/modules/LoginPrompt.js"></script>
-    <script type="text/javascript" src="./build/js/modules/JujuMapper.js"></script>
-    <script type="text/javascript" src="./build/js/modules/MistyBars.js"></script>
-    <script type="text/javascript" src="./build/js/modules/GroupTab.js"></script>
-    <script type="text/javascript" src="./build/js/modules/Toolbar.js"></script>
-    <script type="text/javascript" src="./build/js/modules/HavocMapper.js"></script>
-    <script type="text/javascript" src="./build/js/modules/HavocCore.js"></script>
-    <script type="text/javascript" src="./build/js/modules/Core.js"></script>
-    -->
+    <script src="./requirejs/require.js" data-main="Main.js"></script>
 
   </body>
 
