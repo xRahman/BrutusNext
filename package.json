@@ -1,13 +1,11 @@
 {
   "name": "BrutusNEXT",
   "version": "0.0.0",
-  "repository":
-  {
+  "repository": {
     "type": "git",
     "url": "git://brutusmud.net/rahman/brutusnext.git"
   },
-  "dependencies":
-  {
+  "dependencies": {
     "@types/jquery": "^2.0.39",
     "commander": "0.0.1",
     "fs-promise": "^0.5.0"
