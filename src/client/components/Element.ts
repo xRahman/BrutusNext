@@ -1,40 +1,19 @@
 /*
   Part of BrutusNEXT
 
-  Implements scrollable text window.
+  Implements ancestor of classes that create and manage html
+  elements in the document.
 */
 
 'use strict';
 
 import $ = require('jquery');
 
-class ScrollView
+class Element
 {
 
   constructor()
   {
-    /*
-    let css =
-    {
-			width: $(window).width() - 100,
-			height: $(window).width() - 100,
-			top: 100,
-			left: 100
-		}
-
-    let properties =
-    {
-      id: this.id,
-      css: css,
-      class: 'scroll-view nofade',
-      master: null,
-      closeable: true
-    }
-
-    /// Aha, tohle neni primo html element, Plamzi ma vlastni classu
-    /// Window...
-    this.window = new Window(properties);
-    */
   }
 
   // -------------- Static class data -------------------
@@ -43,10 +22,7 @@ class ScrollView
   //------------------ Private data ---------------------
 
   // 'id' parameter of html element.
-  private id = '#scroll-view';
-
-  // Html element corresponding to this component.
-  private window: Window = null;
+  private id = null;
 
   // --------------- Static accessors -------------------
 
@@ -63,9 +39,16 @@ class ScrollView
 
   // ---------------- Public methods --------------------
 
+  // Creates respective html element and inserts it to the
+  // document.
+  public createElement()
+  {
+    
+  }
+
 
   // ---------------- Event handlers --------------------
 
 }
 
-export = ScrollView;
+export = Window;

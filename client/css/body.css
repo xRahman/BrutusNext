@@ -1,0 +1,22 @@
+/* body { height: auto; width: 99%; font-size: 11px; background: #000000 url(../images/dark-metal.jpg) 50% 50% repeat; } */
+
+/*
+@import url("../font/stylesheet.css");
+@import url("http://fonts.googleapis.com/css?family=Open+Sans");
+*/
+
+body
+{
+	outline: 0 none !important;
+    margin: 0;
+    /* -- pokud budu mít fonty embedované, tak asi stačí jen jeden */
+    /* -- do <body> by se stejně nic nemělo psát, takže font je tu čistě
+          pro případ, že by sem někdo nějakej font přece jen setnul */
+	font-family: "Open Sans", "Lucida Console", "DejaVu Sans Mono", "DejaVu Sans", "Arial", "Helvetica", "sans-serif";
+    /* browser default (usually 16px) */
+	font-size: 100%;
+	min-height: 100%;
+	min-width: 100%;
+	position: absolute;
+    background-color: black;
+}
