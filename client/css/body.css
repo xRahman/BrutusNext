@@ -8,7 +8,10 @@
 body
 {
 	outline: 0 none !important;
+    /* This is defined to ensure the same behaviour in all browsers */
     margin: 0;
+    /* This is defined to ensure the same behaviour in all browsers */
+    padding: 0;
     /* -- pokud budu mít fonty embedované, tak asi stačí jen jeden */
     /* -- do <body> by se stejně nic nemělo psát, takže font je tu čistě
           pro případ, že by sem někdo nějakej font přece jen setnul */
