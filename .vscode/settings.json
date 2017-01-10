@@ -9,6 +9,7 @@
         "client/": true,
         "server/": true,
         "documentation/": true,
+        "resources/": true,
         ".gitattributes": true,
         ".gitignore": true
     },
