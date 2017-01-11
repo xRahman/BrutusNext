@@ -41,6 +41,14 @@
   font-weight: bold;
 }
 
+/* ----------- Generic settings ---------- */
+
+/* Include padding and border to the width and height of all elements */
+*
+{
+    box-sizing: border-box;
+}
+
 /* ----------- Application body ---------- */
 
 body
