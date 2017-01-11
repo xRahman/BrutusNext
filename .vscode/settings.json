@@ -23,6 +23,9 @@
     },
     "editor.rulers": [80],
     "editor.tabSize": 2,
-      // The default end of line character.
-    "files.eol": "\n"
+    // The default end of line character.
+    "files.eol": "\n",
+    // Bookmarks will stick to the code rather than line number.
+    // (Requires 'Bookmarks' extension.)
+    "bookmarks.useStickyBookmarks": true
 }
