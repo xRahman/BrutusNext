@@ -7,8 +7,8 @@
     "moduleResolution": "node",
     "newLine": "LF",
     "noEmitOnError": true,
-    "outDir": "../../client/build",
-    //"outFile": "../../client/build/BrutusNextClient.js",
+    "outDir": "../../client/js/build",
+    //"outFile": "../../client/js/build/BrutusNextClient.js",
     "rootDir": ".",
     "sourceMap": true,
     "sourceRoot": "."
