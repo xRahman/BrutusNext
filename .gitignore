@@ -2,4 +2,4 @@
 .vs
 .ntvs_analysis.dat
 server/build
-client/build
+client/js/build
