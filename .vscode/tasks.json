@@ -31,7 +31,7 @@
       "taskName": "Build server",
       "args":
       [
-        // We use locally installed typescript (in node_modules).
+        // Use locally installed typescript (in node_modules).
         "./node_modules/typescript/lib/tsc.js",
         // Watch for file changes.
         "--watch",

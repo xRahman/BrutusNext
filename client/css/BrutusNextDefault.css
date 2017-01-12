@@ -13,14 +13,14 @@
 {
   /* normal */
   font-family: CourierNew;
-  src: url(../fonts/CourierNew.ttf);
+  src: url(/fonts/CourierNew.ttf);
 }
 
 @font-face
 {
   /* bold */
   font-family: CourierNew;
-  src: url(../fonts/CourierNewBold.ttf);
+  src: url(/fonts/CourierNewBold.ttf);
   font-weight: bold;
 }
 
@@ -28,7 +28,7 @@
 {
   /* italic */
   font-family: CourierNew;
-  src: url(../fonts/CourierNewItalic.ttf);
+  src: url(/fonts/CourierNewItalic.ttf);
   font-style: italic;
 }
 
@@ -36,7 +36,7 @@
 {
   /* bold italic */
   font-family: CourierNew;
-  src: url(../fonts/CourierNewBoldItalic.ttf);
+  src: url(/fonts/CourierNewBoldItalic.ttf);
   font-style: italic;
   font-weight: bold;
 }
@@ -49,9 +49,9 @@
     box-sizing: border-box;
 }
 
-/* ----------- Application body ---------- */
+/* ----------- Application Body ---------- */
 
-body
+.AppBody
 {
   /* '!important' is used so that other style won't overrule this */
 	outline: 0 none !important;

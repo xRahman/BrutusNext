@@ -16,9 +16,9 @@ requirejs.config
 (
   {
     // Alias so that you can use 'import $ = require('jquery');'.
-    paths: { 'jquery': 'jquery/jquery.slim' }
+    paths: { 'jquery': '../js/jquery/jquery.slim' }
   }
 );
 
 // Launch the client.
-require(['./build/BrutusNextClient']);
+require(['../js/build/BrutusNextClient']);
