@@ -7,13 +7,13 @@
 
 'use strict';
 
-import Element = require('../components/Element');
+import Component = require('../components/Component');
 import Window = require('../components/Window');
 import ScrollView = require('../components/ScrollView');
 
 import $ = require('jquery');
 
-class AppBody extends Element
+class AppBody extends Component
 {
   public static get ID() { return 'app_body' };
 
@@ -23,7 +23,7 @@ class AppBody extends Element
   {
     super();
 
-    this.id = AppBody.ID;
+    this.setId(AppBody.ID);
   }
 
   //------------------ Private data ---------------------
@@ -53,7 +53,7 @@ class AppBody extends Element
 
     this.windows.push(scrollView);
 
-    this.appendHtmlElement(scrollView.createHtmlElement());
+    this.appendElement(scrollView.createElement());
 
   }
 

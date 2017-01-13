@@ -7,11 +7,10 @@
 
 'use strict';
 
-import $ = require('jquery');
+///import $ = require('jquery');
 
-class Element
+class Component
 {
-
   constructor()
   {
   }
@@ -22,7 +21,7 @@ class Element
   //------------------ Private data ---------------------
 
   // 'id' parameter of html element.
-  protected id = null;
+  private id = null;
 
   // --------------- Static accessors -------------------
 
@@ -36,6 +35,11 @@ class Element
   }
   */
   // ---------------- Static methods --------------------
+
+  // --------------- Public accessors -------------------
+
+  public getId() { return this.id; }
+  public setId(id: string) { this.id = id; }
 
   // ---------------- Public methods --------------------
 
@@ -52,11 +56,12 @@ class Element
 
   // --------------- Protected methods ------------------
 
-  protected appendHtmlElement(element: any)
+  protected appendElement(element: any)
   {
     // Select this element by it's id and add the element
     // as it's last child.
-    $('#' + this.id).append(element);
+    ///$('#' + this.id).append(element);
+    document.getElementById(this.id).appendChild(element);
   }
 
 
@@ -67,4 +72,4 @@ class Element
 
 }
 
-export = Element;
+export = Component;
