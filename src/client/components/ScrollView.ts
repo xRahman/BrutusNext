@@ -18,7 +18,7 @@ class ScrollView extends Window
   {
     super();
 
-    this.id = ScrollView.ID;
+    this.setId(ScrollView.ID);
 
     /*
     let css =
