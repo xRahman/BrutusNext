@@ -7,13 +7,15 @@
 'use strict';
 
 import AppBody = require('../components/AppBody');
-import Element = require('../components/Element');
+import Component = require('../components/Component');
 
 import $ = require('jquery');
 
-class Window extends Element
+class Window extends Component
 {
   public static get CSS_CLASS() { return 'Window'; }
+  public static get TITLE_BAR_CSS_CLASS() { return 'WindowTitleBar'; }
+  public static get CONTENT_CSS_CLASS() { return 'WindowContent'; }
 
   constructor()
   {
@@ -41,17 +43,29 @@ class Window extends Element
   */
   // ---------------- Static methods --------------------
 
+  // --------------- Public accessors -------------------
+
+  public getTitleBarId()
+  {
+    return this.getId() + '__title_bar';
+  }
+
+  public getContentId()
+  {
+    return this.getId() + '__content';
+  }
+
   // ---------------- Public methods --------------------
 
   // Creates respective html element in the document
   // (does not insert it in it's container element).
   // -> Returns newly created html element.
-  public createHtmlElement()
+  public createElement()
   {
-    let scrollViewElement = document.createElement("div");
+    let window = document.createElement('div');
 
-    scrollViewElement.id = this.id;
-    scrollViewElement.className = Window.CSS_CLASS;
+    window.id = this.getId();
+    window.className = Window.CSS_CLASS;
 
     /// budou chtit mit scrollbar.
     // Add css style properties that determine functionality of the
@@ -61,9 +75,20 @@ class Window extends Element
     /// Tohle by mozna melo byt az ve scrollview - nektera okna mozna
     // 'overflow: hidden' means that overflowing content will be clipped
     // (without scrollbar).
-    scrollViewElement.style.overflow = 'hidden';
+    window.style.overflow = 'hidden';
 
-    return scrollViewElement;
+    // Create html element 'title_bar'.
+    let titleBar = this.createTitleBarElement();
+    // Put it in the 'window' element.
+    window.appendChild(titleBar);
+
+    // Create html element 'content'.
+    let content = this.createContentElement();
+    // Put it in the 'window' element.
+    window.appendChild(content);
+
+
+    return window;
 
     /*
     $('#' + AppBody.ID)
@@ -79,6 +104,28 @@ class Window extends Element
 
 
   // ---------------- Private methods -------------------
+
+  // -> Returns create html element.
+  private createTitleBarElement()
+  {
+    let titleBar = document.createElement('div');
+
+    titleBar.id = this.getTitleBarId();
+    titleBar.className = Window.TITLE_BAR_CSS_CLASS;
+
+    return titleBar;
+  }
+
+  // -> Returns create html element.
+  private createContentElement()
+  {
+    let content = document.createElement('div');
+
+    content.id = this.getContentId();
+    content.className = Window.CONTENT_CSS_CLASS;
+
+    return content;
+  }
 
 
   // ---------------- Event handlers --------------------
