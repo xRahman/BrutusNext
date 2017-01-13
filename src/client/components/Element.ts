@@ -22,7 +22,7 @@ class Element
   //------------------ Private data ---------------------
 
   // 'id' parameter of html element.
-  private id = null;
+  protected id = null;
 
   // --------------- Static accessors -------------------
 
@@ -39,16 +39,32 @@ class Element
 
   // ---------------- Public methods --------------------
 
-  // Creates respective html element and inserts it to the
-  // document.
-  public createElement()
+  /// Nevim, jestli to budu potrebovat.
+  /*
+  // Creates respective html element in the document
+  // (does not insert it in it's container element).
+  // -> Returns newly created html element.
+  public createHtmlElement()
   {
     
   }
+  */
+
+  // --------------- Protected methods ------------------
+
+  protected appendHtmlElement(element: any)
+  {
+    // Select this element by it's id and add the element
+    // as it's last child.
+    $('#' + this.id).append(element);
+  }
+
+
+  // ---------------- Private methods -------------------
 
 
   // ---------------- Event handlers --------------------
 
 }
 
-export = Window;
+export = Element;
