@@ -12,6 +12,8 @@
 
 'use strict';
 
+import AppBody = require('./components/AppBody');
+
 import $ = require('jquery');
 
 class Client
@@ -25,6 +27,10 @@ class Client
 
   // --- singleton instances ---
   // (There is only one such instance per client.)
+
+  // Container for all other gui components
+  // (matches html element <body>).
+  private appBody = new AppBody();
 
   /// Example
   ///private telnetServer = new TelnetServer(Server.DEFAULT_TELNET_PORT);
@@ -86,7 +92,13 @@ class Client
   private onDocumentReady()
   {
     console.log('onDocumentReady() launched');
+
+    // Create a 'ScrollView' window.
+    this.appBody.createScrollView();
   }
+
+  // ---------------- Private methods -------------------
+
 }
 
 export = Client;

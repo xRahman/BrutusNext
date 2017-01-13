@@ -69,6 +69,17 @@
   background-color: black;
 }
 
+/* ---------------- Window --------------- */
+
+.Window
+{
+  outline: 0 none;
+  margin: 0;
+  padding: 5%;
+  border: 2px ridge dimgray;
+}
+
+
 /* TEST */
 p
 {

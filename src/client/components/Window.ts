@@ -6,12 +6,15 @@
 
 'use strict';
 
+import AppBody = require('../components/AppBody');
 import Element = require('../components/Element');
 
 import $ = require('jquery');
 
 class Window extends Element
 {
+  public static get CSS_CLASS() { return 'Window'; }
+
   constructor()
   {
     super();
@@ -40,12 +43,42 @@ class Window extends Element
 
   // ---------------- Public methods --------------------
 
-  // Creates respective html element and inserts it to the
-  // document.
-  public createElement()
+  // Creates respective html element in the document
+  // (does not insert it in it's container element).
+  // -> Returns newly created html element.
+  public createHtmlElement()
   {
+    let scrollViewElement = document.createElement("div");
 
+    scrollViewElement.id = this.id;
+    scrollViewElement.className = Window.CSS_CLASS;
+
+    /// budou chtit mit scrollbar.
+    // Add css style properties that determine functionality of the
+    // element (css properties only affecting visual should be placed
+    // in respective css stylesheet).
+
+    /// Tohle by mozna melo byt az ve scrollview - nektera okna mozna
+    // 'overflow: hidden' means that overflowing content will be clipped
+    // (without scrollbar).
+    scrollViewElement.style.overflow = 'hidden';
+
+    return scrollViewElement;
+
+    /*
+    $('#' + AppBody.ID)
+    		j('.app').prepend('\
+			<div id="'+ id.split('#')[1] +'" class="window '+ ( o['class'] || '' ) + '" >\
+				<div class="content"></div>\
+			</div>\
+		');
+    */
   }
+
+  // --------------- Protected methods ------------------
+
+
+  // ---------------- Private methods -------------------
 
 
   // ---------------- Event handlers --------------------
