@@ -12,10 +12,13 @@ import $ = require('jquery');
 
 class ScrollView extends Window
 {
+  public static get ID() { return 'scroll_view' };
 
   constructor()
   {
     super();
+
+    this.id = ScrollView.ID;
 
     /*
     let css =
@@ -46,8 +49,6 @@ class ScrollView extends Window
 
   //------------------ Private data ---------------------
 
-  // 'id' parameter of html element.
-  private id = '#scroll-view';
 
   // --------------- Static accessors -------------------
 
@@ -64,6 +65,9 @@ class ScrollView extends Window
 
   // ---------------- Public methods --------------------
 
+  // --------------- Protected methods ------------------
+
+  // ---------------- Private methods -------------------
 
   // ---------------- Event handlers --------------------
 
