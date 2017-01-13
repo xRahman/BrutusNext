@@ -46,6 +46,8 @@
 /* Include padding and border to the width and height of all elements */
 *
 {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
 
@@ -57,32 +59,73 @@
 	outline: 0 none !important;
   /* Margin is defined to ensure the same behaviour in all browsers */
   margin: 0;
-  /* Padding is defined to ensure the same behaviour in all browsers */
+  /* Padding: 0 is defined to ensure the same behaviour in all browsers */
   padding: 0;
+  /* This is to make sure that window borders are visible */
+  padding-right: 0.5px;
+  /* This is to make sure that window borders are visible */
+  padding-top: 1.1px;
   /* Fonts are saved on server so we don't need backups */
 	font-family: "CourierNew";
   /* browser default (usually 16px) */
 	font-size: 100%;
+  width: 100%;
+  height: 100%;
 	min-height: 100%;
 	min-width: 100%;
 	position: absolute;
+  display: flex;
   background-color: black;
+  background-image: url('/images/background.jpg');
 }
 
 /* ---------------- Window --------------- */
 
 .Window
 {
+  /*
+  position: relative;
+  top: 2px;
+  width: calc(100% - 0.5px);
+  */
+  width: 50%;
+  height: 100%;
   outline: 0 none;
-  margin: 0;
-  padding: 5%;
-  border: 2px ridge dimgray;
+  /*margin: 1px;*/
+  padding: 0;
+  /*border: 1px solid rgba(100,100,100,0.8);*/
+  border: 1px solid rgba(50,50,50,0.8);
+  background-color: rgba(0,0,0,0);
+  display: flex;
+  flex-direction: column;
 }
 
-
-/* TEST */
-p
+.WindowTitleBar
 {
-  color: green;
-  font-family: CourierNew;
+  width: 100%;
+  height: 18px;
+  /*border-top: 1 px solid dimgray;*/
+  /*border-bottom: 1px double rgba(100,100,100, 0.8);*/
+  outline: 0 none;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(rgba(50,50,50, 0.7), rgba(70,70,70, 0.7), rgba(70,70,70, 0.7), rgba(70,70,70, 0.7), rgba(0,0,0,0.7));
+  /*background-color: rgba(50,50,50, 0.9);*/
+  /*background-image: url('/images/titlebar.jpg');*/
+  /*background-color: rgb(50,50,50);*/
+}
+
+.WindowContent
+{
+  width: 100%;
+  height: 100%;
+  /*
+  border-left: 2px ridge dimgray;
+  border-right: 2px ridge dimgray;
+  border-bottom: 2px ridge dimgray;
+  */
+  outline: 0 none;
+  margin: 0;
+  padding: 2%;
+  background-color: black;
 }
