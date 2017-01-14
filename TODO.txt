@@ -1,3 +1,8 @@
+TODO: Výhledově asi předělat celý content-creation v creation na
+  bastlení html tagů (na rozdíl od document.create() je to synchronní
+  a navíc asi rychlejší, když se celé html vyrobí stringově a pak naráz
+  appendne).
+
 TODO: Výhledově předělat strukturu zdrojáků serveru - /server/server není
   moc dobrý. (a /server/server/Server.ts už vůbec ne ;-))
 

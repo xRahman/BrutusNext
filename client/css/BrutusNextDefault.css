@@ -61,14 +61,13 @@
   margin: 0;
   /* Padding: 0 is defined to ensure the same behaviour in all browsers */
   padding: 0;
-  /* This is to make sure that window borders are visible */
-  padding-right: 0.5px;
-  /* This is to make sure that window borders are visible */
-  padding-top: 1.1px;
-  /* Fonts are saved on server so we don't need backups */
+  padding-right: 0.5px;  /* to make sure that window borders are visible */
+  padding-top: 1.1px;    /* to make sure that window borders are visible */
+  padding-bottom: 0.5px; /* to make sure that window borders are visible */
+  /* Fonts are saved on server so we don't need alternatives */
 	font-family: "CourierNew";
-  /* browser default (usually 16px) */
-	font-size: 100%;
+	/* font-size: 100%;*/ /* Browser default (usually 16px) */
+  font-size: 16px; /* Base font size, all other sizes are relative to this */
   width: 100%;
   height: 100%;
 	min-height: 100%;
@@ -76,25 +75,28 @@
 	position: absolute;
   display: flex;
   background-color: black;
-  background-image: url('/images/background.jpg');
+  background-image: url(/images/background-clouds.jpg);
+  /* Following code makes the image always cover whole area */
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
 }
 
 /* ---------------- Window --------------- */
 
 .Window
 {
-  /*
-  position: relative;
-  top: 2px;
-  width: calc(100% - 0.5px);
-  */
   width: 50%;
-  height: 100%;
+  height: 20%;
   outline: 0 none;
   /*margin: 1px;*/
   padding: 0;
   /*border: 1px solid rgba(100,100,100,0.8);*/
-  border: 1px solid rgba(50,50,50,0.8);
+  border: 1px solid rgba(110,130,150,0.8);
   background-color: rgba(0,0,0,0);
   display: flex;
   flex-direction: column;
@@ -103,19 +105,53 @@
 .WindowTitleBar
 {
   width: 100%;
-  height: 18px;
+  /*height: 18px;*/ /* Height is computed automatically */
   /*border-top: 1 px solid dimgray;*/
   /*border-bottom: 1px double rgba(100,100,100, 0.8);*/
   outline: 0 none;
   margin: 0;
-  padding: 0;
-  background: linear-gradient(rgba(50,50,50, 0.7), rgba(70,70,70, 0.7), rgba(70,70,70, 0.7), rgba(70,70,70, 0.7), rgba(0,0,0,0.7));
+  /*padding: 2px;*/
+  /* background: linear-gradient(rgba(30,30,30, 0.6), rgba(70,70,70, 0.6), rgba(70,70,70, 0.6), rgba(70,70,70, 0.6), rgba(0,0,0,0.6));*/
+  background: linear-gradient(rgba(30,30,30, 0.8), rgba(50,50,50,0.8), rgba(50,50,50,0.8), rgba(50,50,50,0.8), rgba(0,0,0,0.8));
   /*background-color: rgba(50,50,50, 0.9);*/
   /*background-image: url('/images/titlebar.jpg');*/
   /*background-color: rgb(50,50,50);*/
+  display: table; /* To make the title text centered */
+}
+
+.WindowTitle
+{
+  color: rgb(210, 230, 250); /* text color */
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  /*border: 1px solid rgba(110,130,150,0.8);*/
+  text-overflow: ellipsis; /* Add '...' if text overflows */
+  display: table-cell;  /* To make the text horizonally centered */
+  vertical-align: middle;  /* To make the text horizonally centered */
+  font-size: 0.75em;
+  font-family: CourrierNew;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5);
 }
 
 .WindowContent
+{
+  width: 100%;
+  height: 100%;
+  outline: 0 none;
+  margin: 0;
+  padding: 0;
+}
+
+/* ---------------- ScrollView --------------- */
+
+.ScrollViewContent  /* Extends .WindowContent */
+{
+  display: flex;
+  flex-direction: column;
+}
+
+.ScrollViewOutput
 {
   width: 100%;
   height: 100%;
@@ -128,4 +164,22 @@
   margin: 0;
   padding: 2%;
   background-color: black;
+  overflow: auto;
+}
+
+/*
+  'scrollview_input' is a textarea (multiline input box).
+  'height' is set automatically to match height of 1 line of text.
+*/
+.ScrollViewInput
+{
+  width: 100%;
+  outline: 0 none;
+  margin: 0;
+  resize: none;
+  overflow: hidden; /* also hides the scrollbar */
+  color: rgb(0,225,0); /* text color */
+  font-family: CourrierNewBold;
+  background-color: rgba(50,50,50,0.8);
+  border: 1px solid rgba(110,130,150,0.8);
 }
