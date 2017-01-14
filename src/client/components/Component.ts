@@ -11,17 +11,21 @@
 
 class Component
 {
+  /*
   constructor()
   {
   }
+  */
 
   // -------------- Static class data -------------------
 
+  //----------------- Protected data --------------------
+
+  // 'id' parameter of html element.
+  protected id = null;
 
   //------------------ Private data ---------------------
 
-  // 'id' parameter of html element.
-  private id = null;
 
   // --------------- Static accessors -------------------
 
@@ -38,8 +42,10 @@ class Component
 
   // --------------- Public accessors -------------------
 
+  /*
   public getId() { return this.id; }
   public setId(id: string) { this.id = id; }
+  */
 
   // ---------------- Public methods --------------------
 
