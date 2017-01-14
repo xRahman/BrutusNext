@@ -15,16 +15,21 @@ import $ = require('jquery');
 
 class AppBody extends Component
 {
-  public static get ID() { return 'app_body' };
-
+  public scrollView: ScrollView
   private windows: Array<Window> = [];
 
+  /*
   constructor()
   {
     super();
-
-    this.setId(AppBody.ID);
   }
+  */
+
+  //----------------- Protected data --------------------
+
+  // 'id' parameter of html element
+  // (overrides Component.id).
+  protected id = 'appbody';
 
   //------------------ Private data ---------------------
 
@@ -51,10 +56,20 @@ class AppBody extends Component
   {
     let scrollView = new ScrollView();
 
-    this.windows.push(scrollView);
+    /// Tohle je docasne - scrollViewu muze byt vic.
+    this.scrollView = scrollView;
 
+    this.windows.push(scrollView);
     this.appendElement(scrollView.createElement());
 
+    /*
+    /// TEST
+    let message = '';
+    for (let i = 0; i < 100; i++)
+      message += 'line ' + i + '<br>';
+    scrollView.appendMessage(message);
+    /// /TEST
+    */
   }
 
   // ---------------- Private methods -------------------

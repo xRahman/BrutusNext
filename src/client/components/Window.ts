@@ -15,6 +15,7 @@ class Window extends Component
 {
   public static get CSS_CLASS() { return 'Window'; }
   public static get TITLE_BAR_CSS_CLASS() { return 'WindowTitleBar'; }
+  public static get TITLE_CSS_CLASS() { return 'WindowTitle'; }
   public static get CONTENT_CSS_CLASS() { return 'WindowContent'; }
 
   constructor()
@@ -25,7 +26,7 @@ class Window extends Component
   // -------------- Static class data -------------------
 
 
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   // 'id' parameter of html element.
   ///private id = '#scroll-view';
@@ -45,15 +46,9 @@ class Window extends Component
 
   // --------------- Public accessors -------------------
 
-  public getTitleBarId()
-  {
-    return this.getId() + '__title_bar';
-  }
-
-  public getContentId()
-  {
-    return this.getId() + '__content';
-  }
+  public getTitleBarId() { return this.id + '_titlebar'; }
+  public getTitleId() { return this.id + '_title'; }
+  public getContentId() { return this.id + '_content'; }
 
   // ---------------- Public methods --------------------
 
@@ -64,7 +59,7 @@ class Window extends Component
   {
     let window = document.createElement('div');
 
-    window.id = this.getId();
+    window.id = this.id;
     window.className = Window.CSS_CLASS;
 
     /// budou chtit mit scrollbar.
@@ -102,22 +97,43 @@ class Window extends Component
 
   // --------------- Protected methods ------------------
 
+  // Returns html containing window title.
+  protected getTitle()
+  {
+    return "New window";
+  }
 
-  // ---------------- Private methods -------------------
+  // --- Element-generating methods ---
 
-  // -> Returns create html element.
-  private createTitleBarElement()
+  // -> Returns created html element.
+  protected createTitleElement()
+  {
+    let title = document.createElement('title');
+    title.id = this.getTitleId();
+    title.className = Window.TITLE_CSS_CLASS;
+
+    title.innerHTML = this.getTitle();
+
+    return title;
+  }
+
+  // -> Returns created html element.
+  protected createTitleBarElement()
   {
     let titleBar = document.createElement('div');
-
     titleBar.id = this.getTitleBarId();
     titleBar.className = Window.TITLE_BAR_CSS_CLASS;
+
+    // Create html element 'title'.
+    let title = this.createTitleElement();
+    // Put it in the 'title_bar' element.
+    titleBar.appendChild(title);
 
     return titleBar;
   }
 
-  // -> Returns create html element.
-  private createContentElement()
+  // -> Returns created html element.
+  protected createContentElement()
   {
     let content = document.createElement('div');
 
@@ -127,6 +143,7 @@ class Window extends Component
     return content;
   }
 
+  // ---------------- Private methods -------------------
 
   // ---------------- Event handlers --------------------
 

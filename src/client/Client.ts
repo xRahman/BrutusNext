@@ -73,13 +73,23 @@ class Client
 
     Client.instance = new Client();
 
+    /// TEST
+    Client.getInstance().appBody.createScrollView();
+
     // Register event handler 'onDocumentReady'.
     $(document).ready
     (
-      // We do it using lambda function in order to correctly
-      // initialize 'this' for 'onDocumentReady()' function.
-      () => { Client.instance.onDocumentReady(); }      
+      // Use lambda function to correctly initialize
+      // 'this' for 'onDocumentReady()' function.
+      () => { Client.instance.onDocumentReady(); }
     );
+
+
+    /// TEST
+    let button = document.createElement('button');
+    button.id = "button";
+    $('#appbody').append(button);
+    /// /TEST
   }
 
   // ---------------- Public methods --------------------
@@ -93,12 +103,31 @@ class Client
   {
     console.log('onDocumentReady() launched');
 
+    /*
     // Create a 'ScrollView' window.
     this.appBody.createScrollView();
+    */
+    this.appBody.scrollView.scrollToBottom();
+
+    /// TEST
+    ///$('button').click(function() { alert('click');});
+    $('#button').click(() => { Client.instance.onButtonClick(); });
+    /// /TEST
   }
+
+  /// TEST
+  public onButtonClick()
+  {
+    console.log('onButtonClick()');
+    this.appBody.scrollView.appendMessage('Blah!<br>');
+  }
+  /// /TEST
 
   // ---------------- Private methods -------------------
 
 }
+
+
+
 
 export = Client;
