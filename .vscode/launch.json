@@ -5,7 +5,8 @@
             "name": "Launch BrutusNextServer",
             // IMPORTANT: "node2" is an experimental node debugger.
             // Default is: "type": "node"
-            "type": "node2",
+            //"type": "node2", // experimental, can debug Proxy Objects
+            "type": "node", // default
             "request": "launch",
             "program": "${workspaceRoot}/src/server/BrutusNextServer.ts",
             "stopOnEntry": false,
