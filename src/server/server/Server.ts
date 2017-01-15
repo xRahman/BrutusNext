@@ -29,6 +29,7 @@ import {Message} from '../server/message/Message';
 import {Game} from '../game/Game';
 import {GameEntity} from '../game/GameEntity';
 import {TelnetServer} from '../server/net/telnet/TelnetServer';
+import {WebSocketServer} from '../server/net/ws/WebSocketServer';
 import {HttpServer} from '../server/net/http/HttpServer';
 import {Account} from '../server/account/Account';
 
@@ -58,6 +59,7 @@ export class Server
 
   private game = null;
   private telnetServer = new TelnetServer(Server.DEFAULT_TELNET_PORT);
+  private webSocketServer = new WebSocketServer(Server.DEFAULT_WEBSOCKET_PORT);
   private httpServer = new HttpServer(Server.DEFAULT_HTTP_PORT);
   private idProvider = new IdProvider(this.timeOfBoot);
 
@@ -118,6 +120,11 @@ export class Server
     return Server.getInstance().telnetServer;
   }
 
+  public static get webSocketServer()
+  {
+    return Server.getInstance().webSocketServer;
+  }
+
   public static get flagNamesManager()
   {
     return Server.getInstance().flagNamesManager;
@@ -134,8 +141,8 @@ export class Server
   }
 
   public static get DEFAULT_TELNET_PORT() { return 4443; }
+  public static get DEFAULT_WEBSOCKET_PORT() { return 4442; }
   public static get DEFAULT_HTTP_PORT() { return 4445; }
-
 
   // ---------------- Static methods --------------------
 
@@ -292,11 +299,11 @@ export class Server
 
     this.startTelnetServer(telnetPort);
     this.startHttpServer();
+    this.startWebSocketServer();
   }
 
   // --------------- Protected methods ------------------
 
-  // Creates an instance of telnet server and starts it.
   protected startTelnetServer(telnetPort: number)
   {
     if (this.telnetServer.isOpen === true)
@@ -308,7 +315,6 @@ export class Server
     this.telnetServer.start();
   }
 
-  // Creates an instance of http server and starts it.
   protected startHttpServer()
   {
     if (this.httpServer.isOpen === true)
@@ -319,7 +325,19 @@ export class Server
 
     this.httpServer.start();
   }
+
+  protected startWebSocketServer()
+  {
+    if (this.webSocketServer.isOpen === true)
+    {
+      ERROR("Websocket server is already running");
+      return;
+    }
+
+    this.webSocketServer.start();
+  }
 }
+
 
 // -------------- TEST ----------------------
 
