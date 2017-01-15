@@ -84,12 +84,13 @@ class Client
       () => { Client.instance.onDocumentReady(); }
     );
 
-
+    /*
     /// TEST
     let button = document.createElement('button');
     button.id = "button";
     $('#appbody').append(button);
     /// /TEST
+    */
   }
 
   // ---------------- Public methods --------------------
@@ -103,31 +104,33 @@ class Client
   {
     console.log('onDocumentReady() launched');
 
-    /*
-    // Create a 'ScrollView' window.
-    this.appBody.createScrollView();
-    */
-    this.appBody.scrollView.scrollToBottom();
+    /// Tohle asi neni potreba, protoze na zacatku ve scrollView nic neni.
+    //this.appBody.scrollView.scrollToBottom();
 
+    /*
     /// TEST
     ///$('button').click(function() { alert('click');});
     $('#button').click(() => { Client.instance.onButtonClick(); });
     /// /TEST
+    */
   }
 
+  /*
   /// TEST
   public onButtonClick()
   {
     console.log('onButtonClick()');
-    this.appBody.scrollView.appendMessage('Blah!<br>');
+    this.appBody.scrollView.appendMessage('Blah' + i + '!<br>');
+    i++;
   }
   /// /TEST
+  */
 
   // ---------------- Private methods -------------------
 
 }
 
-
+///var i = 0;
 
 
 export = Client;
