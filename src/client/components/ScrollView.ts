@@ -59,18 +59,31 @@ class ScrollView extends Window
 
   public appendMessage(message: string)
   {
+    let output = $('#' + this.getOutputId());
+
+    // Size of the scrollable range (in pixels).
+    let range = output.prop('scrollHeight') - output.prop('clientHeight');
+
+    console.log('--------------------------------------');
+    console.log('range: ' + range);
+    console.log('output.scrollTop(): ' + output.scrollTop());
+
+    // 'true' if user has scrolled up manually
+    // (-1 to account for rounding errors. If use scolled up by
+    //  less than one pixel, we can safely scoll back down anyways).
+    let userScrolled = (output.scrollTop()) < (range - 1);
+
+    console.log('userScrolled: ' + userScrolled);
+
     let messageHtml = this.createMessageHtml(message);
 
-    // We have to user jquery and append element as html
-    // instead of using document.create(), element.append()
-    // is asynchronous so scroll area wound't be updated
-    // right after calling it. Using jquery.append(), on
-    // the other hand, is synchronous, so we can call
-    // scrollToBottom() right away.
-    /// leda ze by ne :\
-    $('#' + this.getOutputId()).append(messageHtml);
+    output.append(messageHtml);
 
-    this.scrollToBottom();
+    // If user scolls up manually, we don't want to scroll
+    // the output down to the bottom on each output, that
+    // would be very inconvinient.
+    if (!userScrolled)
+      this.scrollToBottom();
 
   }
 
@@ -174,8 +187,9 @@ class ScrollView extends Window
   // ---------------- Private methods -------------------
 
   /// TODO: Bud private, nebo presunout do public sekce.
-  public scrollToBottom()
+  private scrollToBottom()
   {
+
     ///$('#' + this.getOutputId()).scrollTop(10000);
     let output = document.getElementById(this.getOutputId());
 
