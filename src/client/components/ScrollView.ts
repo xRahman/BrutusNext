@@ -64,16 +64,20 @@ class ScrollView extends Window
     // Size of the scrollable range (in pixels).
     let range = output.prop('scrollHeight') - output.prop('clientHeight');
 
+    /// DEBUG
+    /*
     console.log('--------------------------------------');
     console.log('range: ' + range);
     console.log('output.scrollTop(): ' + output.scrollTop());
+    */
 
     // 'true' if user has scrolled up manually
     // (-1 to account for rounding errors. If use scolled up by
     //  less than one pixel, we can safely scoll back down anyways).
     let userScrolled = (output.scrollTop()) < (range - 1);
 
-    console.log('userScrolled: ' + userScrolled);
+    /// DEBUG
+    ///console.log('userScrolled: ' + userScrolled);
 
     let messageHtml = this.createMessageHtml(message);
 

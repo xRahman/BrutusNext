@@ -12,6 +12,7 @@
 
 'use strict';
 
+import WebSocketDescriptor = require('./net/WebSocketDescriptor');
 import AppBody = require('./components/AppBody');
 
 import $ = require('jquery');
@@ -24,6 +25,8 @@ class Client
   protected static instance: Client;
 
   //------------------ Private data ---------------------
+
+  private webSocketDescriptor = new WebSocketDescriptor();
 
   // --- singleton instances ---
   // (There is only one such instance per client.)
@@ -65,6 +68,9 @@ class Client
   // not already exist.
   public static create()
   {
+    if (!Client.webSocketsAvailable())
+      return;
+
     if (Client.instance !== undefined)
     {
       console.log("ERROR: Client already exists, not creating it");
@@ -104,6 +110,15 @@ class Client
   {
     console.log('onDocumentReady() launched');
 
+    this.webSocketDescriptor.connect();
+
+
+    /// TEST
+    $('#' + this.appBody.scrollView.getInputId()).keypress
+    (
+      (e) => { this.test(e); }
+    );
+
     /// Tohle asi neni potreba, protoze na zacatku ve scrollView nic neni.
     //this.appBody.scrollView.scrollToBottom();
 
@@ -113,6 +128,16 @@ class Client
     $('#button').click(() => { Client.instance.onButtonClick(); });
     /// /TEST
     */
+  }
+
+  /// TEST
+  private test(e)
+  {
+    if(e.which == 13)
+    {
+      //alert('You pressed enter!');
+      this.webSocketDescriptor.send('Test');
+    }
   }
 
   /*
@@ -127,6 +152,18 @@ class Client
   */
 
   // ---------------- Private methods -------------------
+
+  // Checks if browser supports web sockets.
+  private static webSocketsAvailable()
+  {
+    if (WebSocket === undefined)
+    {
+      alert("Sorry, you browser doesn't support websockets.");
+      return false;
+    }
+
+    return true;
+  }
 
 }
 
