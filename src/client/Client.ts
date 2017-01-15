@@ -23,10 +23,17 @@ class Client
   // -------------- Static class data -------------------
 
   protected static instance: Client;
+  
+  /// TODO: Socket descriptoru muze byt vic (imm muze chtit lognout
+  /// vic charu). Tezko rict, kde by mely byt - primo ve scrollView
+  /// asi ne, protoze connection ovlivnuje vic elementu nez jen
+  /// scrollview.
+  /// (scrollview by si kazdopadne melo drzet descriptor, do ktereho
+  ///  zapisuje)
+  public webSocketDescriptor = new WebSocketDescriptor();
 
   //------------------ Private data ---------------------
 
-  private webSocketDescriptor = new WebSocketDescriptor();
 
   // --- singleton instances ---
   // (There is only one such instance per client.)
@@ -110,14 +117,18 @@ class Client
   {
     console.log('onDocumentReady() launched');
 
+    /// TODO: Tohle by se melo predavat nejak elegantneji.
+    this.appBody.scrollView.webSocketDescriptor = this.webSocketDescriptor;
+
     this.webSocketDescriptor.connect();
 
-
+    /*
     /// TEST
     $('#' + this.appBody.scrollView.getInputId()).keypress
     (
       (e) => { this.test(e); }
     );
+    */
 
     /// Tohle asi neni potreba, protoze na zacatku ve scrollView nic neni.
     //this.appBody.scrollView.scrollToBottom();
@@ -130,6 +141,7 @@ class Client
     */
   }
 
+  /*
   /// TEST
   private test(e)
   {
@@ -139,6 +151,7 @@ class Client
       this.webSocketDescriptor.send('Test');
     }
   }
+  */
 
   /*
   /// TEST
