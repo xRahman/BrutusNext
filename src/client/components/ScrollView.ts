@@ -6,6 +6,7 @@
 
 'use strict';
 
+import Client = require('../Client');
 import Window = require('../components/Window');
 
 import $ = require('jquery');
@@ -24,6 +25,8 @@ class ScrollView extends Window
   */
 
   // -------------- Static class data -------------------
+
+  public webSocketDescriptor = null;
 
   //----------------- Protected data --------------------
 
@@ -146,6 +149,28 @@ class ScrollView extends Window
     /// Tohle by byl pocet znaku.
     //input.cols = 1;
 
+    input.addEventListener
+    (
+      'keypress',
+      (event) => { this.onInputKeyPress(event); }
+    );
+
+    /*
+    input.addEventListener
+    (
+      'keydown',
+      (event) => { this.onInputKeyDown(event); }
+    );
+    */
+
+    /*
+    input.addEventListener
+    (
+      'keyup',
+      (event) => { this.onInputKeyUp(event); }
+    );
+    */
+
     return input;
   }
 
@@ -209,6 +234,55 @@ class ScrollView extends Window
   }
 
   // ---------------- Event handlers --------------------
+
+  private sendCommand()
+  {
+    let input = $('#' + this.getInputId());
+
+    // Send the contents of 'textarea' to the connection.
+    this.webSocketDescriptor.send(input.val());
+    
+    // Empty the textarea.
+    input.val('');
+  }
+
+  private onInputKeyPress(event: KeyboardEvent)
+  {
+    // This changes default behaviour of textarea (a new line
+    // is added to the text on enter by default) to send the
+    // value to the socket instead.
+    if (event.keyCode === 13) // 'enter'
+    {
+        event.preventDefault(); // Do not add a new line on 'eneter.
+
+        console.log('submit');
+        this.sendCommand();
+        return;
+    } 
+  }
+
+  /*
+  private onInputKeyDown(event: KeyboardEvent)
+  {
+    if (event.keyCode === 13 && event.ctrlKey) {
+        console.log("enterKeyDown+ctrl");
+        $(this).val(function(i,val){
+            return val + "\n";
+        });
+    }
+  }
+  */
+
+  /*
+  private onInputKeyUp(event: KeyboardEvent)
+  {
+    if (event.keyCode === 17)
+    {
+        console.log("ctrlKeyUp");
+        ctrlKeyDown = false;   
+    }
+  }
+  */
 
 }
 
