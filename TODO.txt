@@ -1,3 +1,11 @@
+Pozn k 'input' textaree:
+- udělám to tak, že pouze zablokuju odřávkovávání a na enter se celý příkaz
+  odešle.
+- Vykaslu se tedy na ctrl+enter na interni odradkovani.
+To znamena, ze stale pujde pastnout viceradkovy text, ale nepujde vytvorit
+uvnitr text arey - to jsem ostatne snad jeste nikdy nepotreboval.
+[done]
+
 TODO:
 /*
   Error handling best practices
