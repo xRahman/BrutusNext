@@ -1,3 +1,5 @@
+TODO: vytvořit ScrollViewOutput (podobně jako input)
+
 TODO: Na error reporting v klientu pouzivat /error/ERROR.
 
 TODO: Vkládat text do outputu přes $.parseHTML().

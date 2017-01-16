@@ -29,6 +29,8 @@ class Client
       // 'this' for 'onDocumentReady()' function.
       () => { this.onDocumentReady(); }
     );
+
+    this.appBody.createScrollView();
   }
 
   // -------------- Static class data -------------------
@@ -78,7 +80,7 @@ class Client
     if (!Client.webSocketsAvailable())
       return;
 
-    if (Client.instance !== undefined)
+    if (Client.instance !== null)
     {
       ERROR("Client already exists, not creating it");
       return;
