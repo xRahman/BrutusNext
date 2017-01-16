@@ -15,7 +15,7 @@ import $ = require('jquery');
 
 class AppBody extends Component
 {
-  public scrollView: ScrollView
+  public scrollView = new ScrollView();
   private windows: Array<Window> = [];
 
   /*
@@ -30,6 +30,11 @@ class AppBody extends Component
   // 'id' parameter of html element
   // (overrides Component.id).
   protected id = 'appbody';
+
+  // --- Jquery elements ---
+
+  $body = null;
+  $scrollView = null;
 
   //------------------ Private data ---------------------
 
@@ -54,22 +59,14 @@ class AppBody extends Component
   // Creates a 'ScrollView' window and adds it to app_body.
   public createScrollView()
   {
-    let scrollView = new ScrollView();
-
     /// Tohle je docasne - scrollViewu muze byt vic.
-    this.scrollView = scrollView;
+    this.scrollView = new ScrollView();
+    this.windows.push(this.scrollView);
 
-    this.windows.push(scrollView);
-    this.appendElement(scrollView.createElement());
-
-    /*
-    /// TEST
-    let message = '';
-    for (let i = 0; i < 100; i++)
-      message += 'line ' + i + '<br>';
-    scrollView.appendMessage(message);
-    /// /TEST
-    */
+    // Create jquery element 'scrollview'.
+    this.$scrollView = this.scrollView.create();
+    // Put it in the 'body' element.
+    this.$body.append(this.$scrollView);
   }
 
   // ---------------- Private methods -------------------
