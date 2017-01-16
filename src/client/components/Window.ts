@@ -31,7 +31,6 @@ class Window extends Component
   // --- Jquery elements ---
 
   $window = null;
-  $titleBar = null;
   $title = null;
   $content = null;
 
@@ -55,16 +54,15 @@ class Window extends Component
     this.$title.html(title);
   }
 
-  // Creates respective DOM elements sub-tree.
   // -> Returns created jquery element.
   public create()
   {
     this.$window = this.createWindow();
 
     // Create jquery element 'title_bar'.
-    this.$titleBar = this.createTitleBar();
+    let $titleBar = this.createTitleBar();
     // Put it in the 'window' element.
-    this.$window.append(this.$titleBar);
+    this.$window.append($titleBar);
 
     // Create jquery element 'content'.
     this.$content = this.createContent();

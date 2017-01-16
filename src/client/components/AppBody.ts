@@ -15,15 +15,15 @@ import $ = require('jquery');
 
 class AppBody extends Component
 {
-  public scrollView = new ScrollView();
+  public scrollView = null;
   private windows: Array<Window> = [];
 
-  /*
   constructor()
   {
     super();
+
+    this.$body = $('#' + this.id);
   }
-  */
 
   //----------------- Protected data --------------------
 
