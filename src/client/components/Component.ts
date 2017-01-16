@@ -8,15 +8,10 @@
 'use strict';
 
 ///import $ = require('jquery');
+import ERROR = require('../error/ERROR');
 
 class Component
 {
-  /*
-  constructor()
-  {
-  }
-  */
-
   // -------------- Static class data -------------------
 
   //----------------- Protected data --------------------
@@ -26,53 +21,62 @@ class Component
 
   //------------------ Private data ---------------------
 
-
   // --------------- Static accessors -------------------
 
-  // These are shortcuts so you don't have to use Client.getInstance()
-
-  /// Example
-  /*
-  public static get game()
-  {
-    return Server.getInstance().game;
-  }
-  */
   // ---------------- Static methods --------------------
 
   // --------------- Public accessors -------------------
 
-  /*
-  public getId() { return this.id; }
-  public setId(id: string) { this.id = id; }
-  */
-
   // ---------------- Public methods --------------------
-
-  /// Nevim, jestli to budu potrebovat.
-  /*
-  // Creates respective html element in the document
-  // (does not insert it in it's container element).
-  // -> Returns newly created html element.
-  public createHtmlElement()
-  {
-    
-  }
-  */
 
   // --------------- Protected methods ------------------
 
-  protected appendElement(element: any)
+  // -> Returns created 'div' DOM element.
+  protected createDivElement(id: string, cssClass: string)
   {
-    // Select this element by it's id and add the element
-    // as it's last child.
-    ///$('#' + this.id).append(element);
-    document.getElementById(this.id).appendChild(element);
+    return this.createElement('div', id, cssClass);
   }
 
+  // -> Returns created DOM 'title' element.
+  protected createTitleElement(id: string, cssClass: string)
+  {
+    return this.createElement('title', id, cssClass);
+  }
+
+  /*
+  // Adds '$child' jquery element as the last child
+  // of '$parent' jquery element.
+  protected appendElement($parent: JQuery, $child: JQuery)
+  {
+    if ($parent === null || $parent === undefined)
+    {
+      ERROR("Attempt to append to an invalid parent."
+       + " Element is not added");
+       return;
+    }
+
+    if ($child === null || $child === undefined)
+    {
+      ERROR("Attempt to append to an invalid element."
+       + " Element is not added");
+    }
+
+    $parent.append($child);
+  }
+  */
 
   // ---------------- Private methods -------------------
 
+  // -> Returns created DOM element.
+  private createElement(tag: string, id: string, cssClass: string)
+  {
+    let element = document.createElement(tag);
+
+    element.id = id;
+    element.className = cssClass;
+
+    return element;
+  }
 
   // ---------------- Event handlers --------------------
 

@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Implements error logging. Use it a lot!
+  Implements server error logging. Use it a lot!
 
        --------------------------------------------------------
                EVERY ERROR() NEEDS TO BE FIXED ASAP!

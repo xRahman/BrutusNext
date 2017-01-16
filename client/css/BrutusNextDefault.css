@@ -76,6 +76,7 @@
   display: flex;
   background-color: black;
   background-image: url(/images/background-clouds.jpg);
+  
   /* Following code makes the image always cover whole area */
   background-repeat: no-repeat;
   background-attachment: fixed;
@@ -144,6 +145,12 @@
 }
 
 /* ---------------- ScrollView --------------- */
+
+.ScrollView /* Extends .Window */
+{
+  /* Clip overflowing content */
+  overflow: hidden;
+}
 
 .ScrollViewContent  /* Extends .WindowContent */
 {
