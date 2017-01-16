@@ -6,7 +6,7 @@
 
 'use strict';
 
-import Client = require('../Client');
+import ScrollViewInput = require('../components/ScrollViewInput');
 import Window = require('../components/Window');
 
 import $ = require('jquery');
@@ -33,6 +33,11 @@ class ScrollView extends Window
 
   //------------------ Private data ---------------------
 
+  private $output = null;
+  private $input = null;
+
+  private input = new ScrollViewInput();
+
   // --------------- Static accessors -------------------
 
   // ---------------- Static methods --------------------
@@ -44,16 +49,15 @@ class ScrollView extends Window
 
   // ---------------- Public methods --------------------
 
-  // Creates respective html element in the document
-  // (does not insert it into it's container element).
-  // (Overrides Window.createElement()).
   // -> Returns created jquery element.
   public create()
   {
     super.create();
 
     // ScrollView window uses css class .ScrollView along with .Window.
-    this.$element.addClass(ScrollView.CSS_CLASS);
+    this.$window.addClass(ScrollView.CSS_CLASS);
+
+    return this.$window;
   }
 
   public appendMessage(message: string)
@@ -63,20 +67,10 @@ class ScrollView extends Window
     // Size of the scrollable range (in pixels).
     let range = output.prop('scrollHeight') - output.prop('clientHeight');
 
-    /// DEBUG
-    /*
-    console.log('--------------------------------------');
-    console.log('range: ' + range);
-    console.log('output.scrollTop(): ' + output.scrollTop());
-    */
-
     // 'true' if user has scrolled up manually
     // (-1 to account for rounding errors. If use scolled up by
     //  less than one pixel, we can safely scoll back down anyways).
     let userScrolled = (output.scrollTop()) < (range - 1);
-
-    /// DEBUG
-    ///console.log('userScrolled: ' + userScrolled);
 
     let messageHtml = this.createMessageHtml(message);
 
@@ -107,33 +101,18 @@ class ScrollView extends Window
   // -> Returns created html element.
   protected createOutput()
   {
-    let output = document.createElement('div');
+    // Create a DOM element.
+    let output = this.createDivElement
+    (
+      this.getOutputId(),
+      ScrollView.OUTPUT_CSS_CLASS
+    );
 
-    output.id = this.getOutputId();
-    output.className = ScrollView.OUTPUT_CSS_CLASS;
-
-    /*
-    /// TEST
-    let  text, br;
-    for (let i = 0; i < 100; i++)
-    {
-      text = document.createElement('span');
-      text.textContent = 'line ' + i;
-      text.style.color = 'green';
-      text.style.fontFamily = 'CourrierNewBold';
-      text.style.padding = 0;
-      text.style.border = 0;
-      output.appendChild(text);
-
-      br = document.createElement('br');
-      output.appendChild(br);
-    }
-    /// /TEST
-    */
-
-    return output;
+    // Create a jquery element from the DOM element.
+    return $(output);
   }
 
+  /*
   // -> Returns created html element.
   protected createInput()
   {
@@ -153,47 +132,31 @@ class ScrollView extends Window
       'keypress',
       (event) => { this.onInputKeyPress(event); }
     );
-
-    /*
-    input.addEventListener
-    (
-      'keydown',
-      (event) => { this.onInputKeyDown(event); }
-    );
-    */
-
-    /*
-    input.addEventListener
-    (
-      'keyup',
-      (event) => { this.onInputKeyUp(event); }
-    );
-    */
-
     return input;
   }
+  */
 
   // Overrides Window.createContentElement().
   // -> Returns created html element.
   protected createContent()
   {
-    // Create html element 'content'.
-    let content = super.createContent();
+    let $content = super.createContent();
 
-    // Class names are divided by ' '.
-    content.className = content.className + ' ' + ScrollView.CONTENT_CSS_CLASS;
+    // ScrollView content uses css class .ScrollViewContent along with
+    // .WindowContent.
+    $content.addClass(ScrollView.CONTENT_CSS_CLASS);
 
-    // Create html element 'output'.
-    let output = this.createOutput();
+    // Create jquery element 'output'.
+    this.$output = this.createOutput();
     // Put it in the 'content' element.
-    content.appendChild(output);
+    $content.append(this.$output);
 
     // Create html element 'input'.
-    let input = this.createInput();
+    this.$input = this.input.create();
     // Put it in the 'content' element.
-    content.appendChild(input);
+    $content.append(this.$input);
 
-    return content;
+    return $content;
   }
 
   /// Zatim ciste experimentalne
@@ -206,10 +169,6 @@ class ScrollView extends Window
     + '</span>';
 
     return messageHtml;
-    /*
-    br = document.createElement('br');
-    output.appendChild(br);
-    */
   }
 
   // ---------------- Private methods -------------------
@@ -245,6 +204,7 @@ class ScrollView extends Window
     input.val('');
   }
 
+  /*
   private onInputKeyPress(event: KeyboardEvent)
   {
     // This changes default behaviour of textarea (a new line
@@ -259,6 +219,7 @@ class ScrollView extends Window
         return;
     } 
   }
+  */
 
   /*
   private onInputKeyDown(event: KeyboardEvent)

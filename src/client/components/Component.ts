@@ -34,13 +34,25 @@ class Component
   // -> Returns created 'div' DOM element.
   protected createDivElement(id: string, cssClass: string)
   {
-    return this.createElement('div', id, cssClass);
+    let element = document.createElement('div');
+
+    return this.initElement(element, id, cssClass);
   }
 
   // -> Returns created DOM 'title' element.
   protected createTitleElement(id: string, cssClass: string)
   {
-    return this.createElement('title', id, cssClass);
+    let element = document.createElement('title');
+
+    return this.initElement(element, id, cssClass);
+  }
+
+  // -> Returns created DOM 'textarea' element.
+  protected createTextAreaElement(id: string, cssClass: string)
+  {
+    let element = document.createElement('textarea');
+
+    return this.initElement(element, id, cssClass);
   }
 
   /*
@@ -68,10 +80,13 @@ class Component
   // ---------------- Private methods -------------------
 
   // -> Returns created DOM element.
-  private createElement(tag: string, id: string, cssClass: string)
+  private initElement<T extends HTMLElement>
+  (
+    element: T,
+    id: string,
+    cssClass: string
+  )
   {
-    let element = document.createElement(tag);
-
     element.id = id;
     element.className = cssClass;
 
