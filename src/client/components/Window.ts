@@ -26,22 +26,19 @@ class Window extends Component
   // -------------- Static class data -------------------
 
 
-  // ----------------- Private data ---------------------
+  //----------------- Protected data --------------------
 
-  // 'id' parameter of html element.
-  ///private id = '#scroll-view';
+  // --- Jquery elements ---
+
+  $window = null;
+  $titleBar = null;
+  $title = null;
+  $content = null;
+
+  // ----------------- Private data ---------------------
 
   // --------------- Static accessors -------------------
 
-  // These are shortcuts so you don't have to use Client.getInstance()
-
-  /// Example
-  /*
-  public static get game()
-  {
-    return Server.getInstance().game;
-  }
-  */
   // ---------------- Static methods --------------------
 
   // --------------- Public accessors -------------------
@@ -52,95 +49,99 @@ class Window extends Component
 
   // ---------------- Public methods --------------------
 
-  // Creates respective html element in the document
-  // (does not insert it in it's container element).
-  // -> Returns newly created html element.
-  public createElement()
+  // Sets html-formatted text to 'title' element.
+  public setTitle(title: string)
   {
-    let window = document.createElement('div');
+    this.$title.html(title);
+  }
 
-    window.id = this.id;
-    window.className = Window.CSS_CLASS;
+  // Creates respective DOM elements sub-tree.
+  // -> Returns created jquery element.
+  public create()
+  {
+    this.$window = this.createWindow();
 
-    /// budou chtit mit scrollbar.
-    // Add css style properties that determine functionality of the
-    // element (css properties only affecting visual should be placed
-    // in respective css stylesheet).
-
-    /// Tohle by mozna melo byt az ve scrollview - nektera okna mozna
-    // 'overflow: hidden' means that overflowing content will be clipped
-    // (without scrollbar).
-    window.style.overflow = 'hidden';
-
-    // Create html element 'title_bar'.
-    let titleBar = this.createTitleBarElement();
+    // Create jquery element 'title_bar'.
+    this.$titleBar = this.createTitleBar();
     // Put it in the 'window' element.
-    window.appendChild(titleBar);
+    this.$window.append(this.$titleBar);
 
-    // Create html element 'content'.
-    let content = this.createContentElement();
+    // Create jquery element 'content'.
+    this.$content = this.createContent();
     // Put it in the 'window' element.
-    window.appendChild(content);
+    this.$window.append(this.$content);
 
-
-    return window;
-
-    /*
-    $('#' + AppBody.ID)
-    		j('.app').prepend('\
-			<div id="'+ id.split('#')[1] +'" class="window '+ ( o['class'] || '' ) + '" >\
-				<div class="content"></div>\
-			</div>\
-		');
-    */
+    return this.$window;
   }
 
   // --------------- Protected methods ------------------
 
-  // Returns html containing window title.
-  protected getTitle()
+  // -> Returns created jquery element.
+  protected createWindow()
   {
-    return "New window";
+    // Create a DOM element.
+    let window = this.createDivElement
+    (
+      this.id,
+      Window.CSS_CLASS
+    );
+
+    // Create jquery element from the DOM element.
+    return $(window);
   }
 
-  // --- Element-generating methods ---
-
-  // -> Returns created html element.
-  protected createTitleElement()
+  // -> Returns created jquery element.
+  protected createTitle()
   {
-    let title = document.createElement('title');
-    title.id = this.getTitleId();
-    title.className = Window.TITLE_CSS_CLASS;
+    // Create a DOM element.
+    let title = this.createTitleElement
+    (
+      this.getTitleId(),
+      Window.TITLE_CSS_CLASS
+    );
 
-    title.innerHTML = this.getTitle();
+    // Create jquery element from the DOM element.
+    let $title = $(title);
 
-    return title;
+    // Set the default text to 'title' element.
+    $title.text('New window');
+
+    return $title;
+  }
+
+  // -> Returns created jquery element.
+  protected createTitleBar()
+  {
+    // Create a DOM element.
+    let titleBar = this.createDivElement
+    (
+      this.getTitleBarId(),
+      Window.TITLE_BAR_CSS_CLASS
+    );
+
+    // Create a jquery element from the DOM element.
+    let $titleBar = $(titleBar);
+
+    // Create jquery element 'title'.
+    this.$title = this.createTitle();
+    // Put it in the 'titleBar' element.
+    $titleBar.append(this.$title);
+
+    return $titleBar;
   }
 
   // -> Returns created html element.
-  protected createTitleBarElement()
+  protected createContent()
   {
-    let titleBar = document.createElement('div');
-    titleBar.id = this.getTitleBarId();
-    titleBar.className = Window.TITLE_BAR_CSS_CLASS;
+    // Create a DOM element.
+    let content = this.createDivElement
+    (
+      this.getContentId(),
+      Window.CONTENT_CSS_CLASS
+    );
 
-    // Create html element 'title'.
-    let title = this.createTitleElement();
-    // Put it in the 'title_bar' element.
-    titleBar.appendChild(title);
-
-    return titleBar;
-  }
-
-  // -> Returns created html element.
-  protected createContentElement()
-  {
-    let content = document.createElement('div');
-
-    content.id = this.getContentId();
-    content.className = Window.CONTENT_CSS_CLASS;
-
-    return content;
+    // Create a jquery element from the DOM element.
+    return $(content);
   }
 
   // ---------------- Private methods -------------------

@@ -12,6 +12,7 @@
 
 'use strict';
 
+import ERROR = require('./error/ERROR');
 import WebSocketDescriptor = require('./net/WebSocketDescriptor');
 import AppBody = require('./components/AppBody');
 
@@ -19,10 +20,22 @@ import $ = require('jquery');
 
 class Client
 {
+  constructor()
+  {
+    // Register event handler 'onDocumentReady'.
+    $(document).ready
+    (
+      // Use lambda function to correctly initialize
+      // 'this' for 'onDocumentReady()' function.
+      () => { this.onDocumentReady(); }
+    );
+  }
 
   // -------------- Static class data -------------------
 
-  protected static instance: Client;
+  protected static instance: Client = null;
+
+  //------------------ Public data ---------------------- 
   
   /// TODO: Socket descriptoru muze byt vic (imm muze chtit lognout
   /// vic charu). Tezko rict, kde by mely byt - primo ve scrollView
@@ -38,24 +51,11 @@ class Client
   // --- singleton instances ---
   // (There is only one such instance per client.)
 
-  // Container for all other gui components
-  // (matches html element <body>).
+  // Container for all other gui components (matches html element <body>).
   private appBody = new AppBody();
-
-  /// Example
-  ///private telnetServer = new TelnetServer(Server.DEFAULT_TELNET_PORT);
 
   // --------------- Static accessors -------------------
 
-  // These are shortcuts so you don't have to use Client.getInstance()
-
-  /// Example
-  /*
-  public static get game()
-  {
-    return Server.getInstance().game;
-  }
-  */
   // ---------------- Static methods --------------------
 
   public static instanceExists()
@@ -66,7 +66,7 @@ class Client
   public static getInstance()
   {
     if (Client.instance === null || Client.instance === undefined)
-      console.log("ERROR: Instance of client doesn't exist yet");
+      ERROR("Instance of client doesn't exist yet");
 
     return Client.instance;
   }
@@ -80,30 +80,11 @@ class Client
 
     if (Client.instance !== undefined)
     {
-      console.log("ERROR: Client already exists, not creating it");
+      ERROR("Client already exists, not creating it");
       return;
     }
 
     Client.instance = new Client();
-
-    /// TEST
-    Client.getInstance().appBody.createScrollView();
-
-    // Register event handler 'onDocumentReady'.
-    $(document).ready
-    (
-      // Use lambda function to correctly initialize
-      // 'this' for 'onDocumentReady()' function.
-      () => { Client.instance.onDocumentReady(); }
-    );
-
-    /*
-    /// TEST
-    let button = document.createElement('button');
-    button.id = "button";
-    $('#appbody').append(button);
-    /// /TEST
-    */
   }
 
   // ---------------- Public methods --------------------
@@ -122,53 +103,19 @@ class Client
 
     this.webSocketDescriptor.connect();
 
-    /*
-    /// TEST
-    $('#' + this.appBody.scrollView.getInputId()).keypress
-    (
-      (e) => { this.test(e); }
-    );
-    */
-
     /// Tohle asi neni potreba, protoze na zacatku ve scrollView nic neni.
     //this.appBody.scrollView.scrollToBottom();
-
-    /*
-    /// TEST
-    ///$('button').click(function() { alert('click');});
-    $('#button').click(() => { Client.instance.onButtonClick(); });
-    /// /TEST
-    */
   }
-
-  /*
-  /// TEST
-  private test(e)
-  {
-    if(e.which == 13)
-    {
-      //alert('You pressed enter!');
-      this.webSocketDescriptor.send('Test');
-    }
-  }
-  */
-
-  /*
-  /// TEST
-  public onButtonClick()
-  {
-    console.log('onButtonClick()');
-    this.appBody.scrollView.appendMessage('Blah' + i + '!<br>');
-    i++;
-  }
-  /// /TEST
-  */
 
   // ---------------- Private methods -------------------
 
   // Checks if browser supports web sockets.
   private static webSocketsAvailable()
   {
+    /// Note: MozWebSocket might still be available.
+    /// (this code won't compile in typescript though):
+    /// WebSocket = WebSocket || MozWebSocket;
+
     if (WebSocket === undefined)
     {
       alert("Sorry, you browser doesn't support websockets.");
@@ -177,10 +124,6 @@ class Client
 
     return true;
   }
-
 }
-
-///var i = 0;
-
 
 export = Client;

@@ -1,3 +1,9 @@
+TODO: Na error reporting v klientu pouzivat /error/ERROR.
+
+TODO: Vkládat text do outputu přes $.parseHTML().
+  - bacha, vytvoří to dom element, nikoliv jquery element.
+pozn.: $(htmlElement) vyrobí jqueryelement, není třeba ho hledat podle idčka.
+
 Pozn k 'input' textaree:
 - udělám to tak, že pouze zablokuju odřávkovávání a na enter se celý příkaz
   odešle.

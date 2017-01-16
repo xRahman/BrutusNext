@@ -13,16 +13,10 @@ import $ = require('jquery');
 
 class ScrollView extends Window
 {
+  public static get CSS_CLASS() { return 'ScrollView'; }
   public static get CONTENT_CSS_CLASS() { return 'ScrollViewContent'; }
   public static get OUTPUT_CSS_CLASS() { return 'ScrollViewOutput'; }
   public static get INPUT_CSS_CLASS() { return 'ScrollViewInput'; }
-
-  /*
-  constructor()
-  {
-    super();
-  }
-  */
 
   // -------------- Static class data -------------------
 
@@ -39,18 +33,8 @@ class ScrollView extends Window
 
   //------------------ Private data ---------------------
 
-
   // --------------- Static accessors -------------------
 
-  // These are shortcuts so you don't have to use Client.getInstance()
-
-  /// Example
-  /*
-  public static get game()
-  {
-    return Server.getInstance().game;
-  }
-  */
   // ---------------- Static methods --------------------
 
   // --------------- Public accessors -------------------
@@ -59,6 +43,18 @@ class ScrollView extends Window
   public getInputId() { return this.id + '_input'; }
 
   // ---------------- Public methods --------------------
+
+  // Creates respective html element in the document
+  // (does not insert it into it's container element).
+  // (Overrides Window.createElement()).
+  // -> Returns created jquery element.
+  public create()
+  {
+    super.create();
+
+    // ScrollView window uses css class .ScrollView along with .Window.
+    this.$element.addClass(ScrollView.CSS_CLASS);
+  }
 
   public appendMessage(message: string)
   {
@@ -96,17 +92,20 @@ class ScrollView extends Window
 
   // --------------- Protected methods ------------------
 
+  /// Tohle je blbost, na setovani titlu je setTitle().
+  /*
   // Returns html containing window title.
   protected getTitle()
   {
     /// TODO
     return "Rahman@BrutusNext";
   }
+  */
 
   // --- Element-generating methods ---
 
   // -> Returns created html element.
-  protected createOutputElement()
+  protected createOutput()
   {
     let output = document.createElement('div');
 
@@ -136,7 +135,7 @@ class ScrollView extends Window
   }
 
   // -> Returns created html element.
-  protected createInputElement()
+  protected createInput()
   {
     // 'textarea' is a html multi-line input box.
     let input = document.createElement('textarea');
@@ -176,21 +175,21 @@ class ScrollView extends Window
 
   // Overrides Window.createContentElement().
   // -> Returns created html element.
-  protected createContentElement()
+  protected createContent()
   {
     // Create html element 'content'.
-    let content = super.createContentElement();
+    let content = super.createContent();
 
     // Class names are divided by ' '.
     content.className = content.className + ' ' + ScrollView.CONTENT_CSS_CLASS;
 
     // Create html element 'output'.
-    let output = this.createOutputElement();
+    let output = this.createOutput();
     // Put it in the 'content' element.
     content.appendChild(output);
 
     // Create html element 'input'.
-    let input = this.createInputElement();
+    let input = this.createInput();
     // Put it in the 'content' element.
     content.appendChild(input);
 
