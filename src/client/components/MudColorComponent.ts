@@ -9,6 +9,27 @@
 
 import Component = require('../components/Component');
 
+const Colors =
+{
+  '&k': '#000',	   //black
+  '&K':	'#6E6E6E', //bright black
+  '&r':	'#bf1b00', //red
+  '&R':	'#ff193f', //bright red
+  '&g':	'#00ac00', //green
+  '&G':	'#a1e577', //bright green
+  '&y':	'#DAA520', //yellow		
+  '&Y':	'#f3df00', //bright yellow
+  '&b':	'#1f68d5', //blue
+  '&B':	'#3680ee', //bright blue
+  '&m':	'#a501a7', //magenta
+  '&M':	'#e100e4', //bright magenta
+  '&c':	'#01c8d4', //cyan
+  '&C':	'#5bedf6', //bright cyan
+  '&w':	'#dbdbdb', //off-white
+  '&W':	'#fff',	   //bright white
+  '39': '#dbdbdb', //default
+}
+
 abstract class MudColorComponent extends Component
 {
   // --------------- Protected methods ------------------
