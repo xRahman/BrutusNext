@@ -7,12 +7,18 @@
 'use strict';
 
 import Component = require('../components/Component');
+import ScrollView = require('../components/ScrollView');
 
 import $ = require('jquery');
 
 class ScrollViewInput extends Component
 {
   public static get CSS_CLASS() { return 'ScrollViewInput'; }
+
+  constructor(private scrollView: ScrollView)
+  {
+    super();
+  }
 
   // -------------- Static class data -------------------
 
@@ -49,8 +55,7 @@ class ScrollViewInput extends Component
     // Create jquery element from the DOM element.
     this.$input = $(input);
 
-    // Set focus to the input element.
-    this.$input.focus();
+    this.$input.attr({ 'autofocus': 'autofocus' });
 
     this.$input.keypress
     (
@@ -62,31 +67,13 @@ class ScrollViewInput extends Component
 
   // --------------- Protected methods ------------------
 
-  /// Zatim ciste experimentalne
-  // -> Returns html that creates the element.
-  protected createMessageHtml(message: string)
-  {
-    let messageHtml =
-      '<span style="color:green;font-family:CourrierNewBold;">'
-        + message;
-    + '</span>';
-
-    return messageHtml;
-  }
-
   // ---------------- Private methods -------------------
 
   // ---------------- Event handlers --------------------
 
   private sendCommand()
   {
-    /// TODO:
-    /*
-    let input = $('#' + this.getInputId());
-
-    // Send the contents of 'textarea' to the connection.
-    this.webSocketDescriptor.send(input.val());
-    */
+    this.scrollView.sendCommand(this.$input.val());
     
     // Empty the textarea.
     this.$input.val('');
@@ -94,9 +81,9 @@ class ScrollViewInput extends Component
 
   private onInputKeyPress(event: KeyboardEvent)
   {
-    // This changes default behaviour of textarea (a new line
-    // is added to the text on enter by default) to send the
-    // value to the socket instead.
+    // Changes default behaviour of textarea (a new line
+    // is added to the text on enter by default) to send
+    // the value to the server instead.
     if (event.keyCode === 13) // 'enter'
     {
         event.preventDefault(); // Do not add a new line on 'eneter.

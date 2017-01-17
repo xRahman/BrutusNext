@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Implements ancestor of classes that create and manage html
+  Implements abstract ancestor of classes that create and manage html
   elements in the document.
 */
 
@@ -10,7 +10,7 @@
 ///import $ = require('jquery');
 import ERROR = require('../error/ERROR');
 
-class Component
+abstract class Component
 {
   // -------------- Static class data -------------------
 
@@ -39,7 +39,7 @@ class Component
     return this.initElement(element, id, cssClass);
   }
 
-  // -> Returns created DOM 'title' element.
+  // -> Returns created 'title' DOM element.
   protected createTitleElement(id: string, cssClass: string)
   {
     let element = document.createElement('title');
@@ -47,35 +47,13 @@ class Component
     return this.initElement(element, id, cssClass);
   }
 
-  // -> Returns created DOM 'textarea' element.
+  // -> Returns created 'textarea' DOM element.
   protected createTextAreaElement(id: string, cssClass: string)
   {
     let element = document.createElement('textarea');
 
     return this.initElement(element, id, cssClass);
   }
-
-  /*
-  // Adds '$child' jquery element as the last child
-  // of '$parent' jquery element.
-  protected appendElement($parent: JQuery, $child: JQuery)
-  {
-    if ($parent === null || $parent === undefined)
-    {
-      ERROR("Attempt to append to an invalid parent."
-       + " Element is not added");
-       return;
-    }
-
-    if ($child === null || $child === undefined)
-    {
-      ERROR("Attempt to append to an invalid element."
-       + " Element is not added");
-    }
-
-    $parent.append($child);
-  }
-  */
 
   // ---------------- Private methods -------------------
 

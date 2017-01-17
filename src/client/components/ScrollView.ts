@@ -7,15 +7,21 @@
 'use strict';
 
 import ScrollViewInput = require('../components/ScrollViewInput');
+import ScrollViewOutput = require('../components/ScrollViewOutput');
 import Window = require('../components/Window');
 
 import $ = require('jquery');
 
 class ScrollView extends Window
 {
+  // If you send a command, it will be printed to output using this color.
+  public static get COMMAND_ECHO_COLOR() { return 'rgb(128,64,64)'; }
+  // If you send a command, it will be printed to output using this font.
+  public static get COMMAND_ECHO_FONT() { return 'CourrierNewBold'; }
+
   public static get CSS_CLASS() { return 'ScrollView'; }
   public static get CONTENT_CSS_CLASS() { return 'ScrollViewContent'; }
-  public static get OUTPUT_CSS_CLASS() { return 'ScrollViewOutput'; }
+  ///public static get OUTPUT_CSS_CLASS() { return 'ScrollViewOutput'; }
   public static get INPUT_CSS_CLASS() { return 'ScrollViewInput'; }
 
   // -------------- Static class data -------------------
@@ -33,10 +39,8 @@ class ScrollView extends Window
 
   //------------------ Private data ---------------------
 
-  private $output = null;
-  private $input = null;
-
-  private input = new ScrollViewInput();
+  private input = new ScrollViewInput(this);
+  private output = new ScrollViewOutput();
 
   // --------------- Static accessors -------------------
 
@@ -60,28 +64,14 @@ class ScrollView extends Window
     return this.$window;
   }
 
-  public appendMessage(message: string)
+  // Writes the command to the output and sends it to the connection.
+  public sendCommand(command: string)
   {
-    let output = $('#' + this.getOutputId());
+    // Local echo (append the command to the output element).
+    this.echoCommand(command);
 
-    // Size of the scrollable range (in pixels).
-    let range = output.prop('scrollHeight') - output.prop('clientHeight');
-
-    // 'true' if user has scrolled up manually
-    // (-1 to account for rounding errors. If use scolled up by
-    //  less than one pixel, we can safely scoll back down anyways).
-    let userScrolled = (output.scrollTop()) < (range - 1);
-
-    let messageHtml = this.createMessageHtml(message);
-
-    output.append(messageHtml);
-
-    // If user scolls up manually, we don't want to scroll
-    // the output down to the bottom on each output, that
-    // would be very inconvinient.
-    if (!userScrolled)
-      this.scrollToBottom();
-
+    // Send the command to the connection.
+    /// TODO:
   }
 
   // --------------- Protected methods ------------------
@@ -98,6 +88,7 @@ class ScrollView extends Window
 
   // --- Element-generating methods ---
 
+  /*
   // -> Returns created html element.
   protected createOutput()
   {
@@ -111,6 +102,7 @@ class ScrollView extends Window
     // Create a jquery element from the DOM element.
     return $(output);
   }
+  */
 
   /*
   // -> Returns created html element.
@@ -147,62 +139,39 @@ class ScrollView extends Window
     $content.addClass(ScrollView.CONTENT_CSS_CLASS);
 
     // Create jquery element 'output'.
-    this.$output = this.createOutput();
+    let $output = this.output.create();
     // Put it in the 'content' element.
-    $content.append(this.$output);
+    $content.append($output);
 
     // Create html element 'input'.
-    this.$input = this.input.create();
+    let $input = this.input.create();
     // Put it in the 'content' element.
-    $content.append(this.$input);
+    $content.append($input);
 
     return $content;
   }
 
-  /// Zatim ciste experimentalne
-  // -> Returns html that creates the element.
-  protected createMessageHtml(message: string)
-  {
-    let messageHtml =
-      '<span style="color:green;font-family:CourrierNewBold;">'
-        + message;
-    + '</span>';
-
-    return messageHtml;
-  }
-
   // ---------------- Private methods -------------------
 
-  /// TODO: Bud private, nebo presunout do public sekce.
-  private scrollToBottom()
+  private echoCommand(command: string)
   {
+    // Echoing empty command (just hitting enter) would add
+    // an empty line to the output, which wouldn't be very
+    // informative and it wouldn't look good.
+    if (command === "")
+      return;
 
-    ///$('#' + this.getOutputId()).scrollTop(10000);
-    let output = document.getElementById(this.getOutputId());
+    let html =
+      '<span style="color:' + ScrollView.COMMAND_ECHO_COLOR + ';' +
+        ' font-family:' +  + ScrollView.COMMAND_ECHO_FONT + ';">'
+        + command
+    + '</span><br />';
 
-    // Scroll to bottom.
-    output.scrollTop = output.scrollHeight;
-
-    /*
-    ///output.scrollTop = output.scrollHeight - output.clientHeight;
-    console.log('scrollHeight: ' + output.scrollHeight);
-    console.log('clientHeight: ' + output.clientHeight);
-    console.log('scrollTop: ' + output.scrollTop);
-    */
+    // Local echo (append the command to the output element).
+    this.output.appendHtml(html, { forceScroll: true });
   }
 
   // ---------------- Event handlers --------------------
-
-  private sendCommand()
-  {
-    let input = $('#' + this.getInputId());
-
-    // Send the contents of 'textarea' to the connection.
-    this.webSocketDescriptor.send(input.val());
-    
-    // Empty the textarea.
-    input.val('');
-  }
 
   /*
   private onInputKeyPress(event: KeyboardEvent)
