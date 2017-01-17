@@ -31,8 +31,10 @@ class ScrollViewOutput extends MudColorComponent
   // ---------------- Public methods --------------------
 
   // -> Returns created jquery element.
-  public create()
+  public create(id: string)
   {
+    this.id = id;
+
     // Create a DOM element.
     let output = this.createDivElement
     (
@@ -42,6 +44,39 @@ class ScrollViewOutput extends MudColorComponent
 
     // Create jquery element from the DOM element.
     this.$output = $(output);
+
+    /*
+      Nefunguje to, protoze div defaultne nemuze dostat focus,
+      takze se na nem nespoustej keyboard eventy.
+      - reseni je setnout tabindex = '0'
+        (0 znamena 'in natural tab order')
+        (-1 by znamenalo "focusable only by script, not by user",
+         to by taky mohlo pomoct).
+    */
+    this.$output.keydown
+    (
+      (event) => { this.onKeyDown(event); }
+    );
+
+    /*
+    /// Test
+    this.$output.keypress
+    (
+      (event) => { console.log('!'); event.preventDefault(); }
+    );
+
+    /// Test
+    this.$output.keydown
+    (
+      (event) => { console.log('!'); event.preventDefault(); }
+    );
+
+    /// Test
+    this.$output.keyup
+    (
+      (event) => { console.log('!'); event.preventDefault(); }
+    );
+    */
 
     return this.$output;
   }
@@ -90,6 +125,10 @@ class ScrollViewOutput extends MudColorComponent
 
   // ---------------- Event handlers --------------------
 
+  private onKeyDown(event: KeyboardEvent)
+  {
+    console.log('ScrollViewOutput.onKeyDown()');
+  }
 }
 
 export = ScrollViewOutput;

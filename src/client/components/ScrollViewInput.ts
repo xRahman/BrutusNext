@@ -39,8 +39,10 @@ class ScrollViewInput extends Component
   // ---------------- Public methods --------------------
 
   // -> Returns created jquery element.
-  public create()
+  public create(id: string)
   {
+    this.id = id;
+
     // Create a DOM element.
     let input = this.createTextAreaElement
     (
@@ -59,8 +61,43 @@ class ScrollViewInput extends Component
 
     this.$input.keypress
     (
-      (event) => { this.onInputKeyPress(event); }
+      (event) => { this.onKeyPress(event); }
     );
+
+    /*
+    /// Test
+    this.$input.keypress
+    (
+      (event) =>
+      {
+        console.log('event sent to output');
+        this.scrollView.output.$output.trigger(event);
+        event.stopPropagation();
+      }
+    );
+
+    // Test
+    this.$input.keydown
+    (
+      (event) =>
+      {
+        console.log('event sent to output');
+        this.scrollView.output.$output.trigger(event);
+        event.stopPropagation();
+      }
+    );
+
+    // Test
+    this.$input.keyup
+    (
+      (event) =>
+      {
+        console.log('event sent to output');
+        this.scrollView.output.$output.trigger(event);
+        event.stopPropagation();
+      }
+    );
+    */
 
     return this.$input;
   }
@@ -79,7 +116,7 @@ class ScrollViewInput extends Component
     this.$input.val('');
   }
 
-  private onInputKeyPress(event: KeyboardEvent)
+  private onKeyPress(event: KeyboardEvent)
   {
     // Changes default behaviour of textarea (a new line
     // is added to the text on enter by default) to send
