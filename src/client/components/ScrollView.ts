@@ -40,7 +40,8 @@ class ScrollView extends Window
   //------------------ Private data ---------------------
 
   private input = new ScrollViewInput(this);
-  private output = new ScrollViewOutput();
+  ///private output = new ScrollViewOutput();
+  public output = new ScrollViewOutput();
 
   // --------------- Static accessors -------------------
 
@@ -139,12 +140,12 @@ class ScrollView extends Window
     $content.addClass(ScrollView.CONTENT_CSS_CLASS);
 
     // Create jquery element 'output'.
-    let $output = this.output.create();
+    let $output = this.output.create(this.getOutputId());
     // Put it in the 'content' element.
     $content.append($output);
 
     // Create html element 'input'.
-    let $input = this.input.create();
+    let $input = this.input.create(this.getInputId());
     // Put it in the 'content' element.
     $content.append($input);
 

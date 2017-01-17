@@ -1,3 +1,29 @@
+TODO: scrollování outputu, když mám seleknutý input.
+  - idea byla odchytávat keyboard eventy na ScrollView místo na inputu.
+    To je trochu problém, protože div nemůže dostávat focus
+Možná je nejlepší se na to vykašlat, odchytávat všechny eventy na inputu
+a volat ruční scrolling na outputu¨
+-- i když sakra, jak to, že to můžu klávesnicí scrollovat?
+/*
+  Adding document level keypress handler does the trick!
+
+  var ar=new Array(33,34,35,36,37,38,39,40);
+
+  $(document).keydown(function(e) {
+      var key = e.which;
+        //console.log(key);
+        //if(key==35 || key == 36 || key == 37 || key == 39)
+        if($.inArray(key,ar) > -1) {
+            e.preventDefault();
+            return false;
+        }
+        return true;
+  });
+
+
+  // It handles PgUp(33), PgDn(34), End(35), Home(36), Left(37), Up(38), Right(39), Down(40)
+*/
+
 TODO: vytvořit ScrollViewOutput (podobně jako input)
 
 TODO: Na error reporting v klientu pouzivat /error/ERROR.
