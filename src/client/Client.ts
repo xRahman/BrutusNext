@@ -107,6 +107,28 @@ class Client
 
     /// Tohle asi neni potreba, protoze na zacatku ve scrollView nic neni.
     //this.appBody.scrollView.scrollToBottom();
+
+
+    /// TEST:
+    $(document).keydown
+    (
+      (event) =>
+      {
+        let key = event.which;
+
+        console.log('document.keydown ' + key);
+
+        // PgUp(33), PgDn(34), End(35), Home(36),
+        // Left(37), Up(38), Right(39), Down(40)
+        if(key >= 33 && key <= 40)
+        {
+          console.log('preventing default action');
+          event.preventDefault();
+          return false;
+        }
+        return true;
+      }
+    );
   }
 
   // ---------------- Private methods -------------------
