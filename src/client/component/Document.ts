@@ -67,8 +67,10 @@ class Document
       // Left(37), Up(38), Right(39), Down(40)
       if(key >= 33 && key <= 40)
       {
-        console.log('preventing default action');
+        // This prevents automatic scrolling.
         event.preventDefault();
+
+        this.client.activeScrollView.keyboardScroll(key);
         return false;
       }
       return true;

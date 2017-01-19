@@ -79,6 +79,43 @@ class ScrollView extends Window
     this.connection.send(command);
   }
 
+  public keyboardScroll(key: number)
+  {
+    // PgUp(33), PgDn(34), End(35), Home(36),
+    // Left(37), Up(38), Right(39), Down(40)
+
+    switch(key)
+    {
+      case 33:  // 'PgUp'
+        this.output.scrollOnePageUp();
+        break;
+        
+      case 34:  // 'PgDn'
+      this.output.scrollOnePageDown();
+        break;
+
+      case 35:  // 'End'
+        this.output.scrollToTop();
+        break;
+
+      case 36:  // 'Home'
+        this.output.scrollToBottom();
+        break;
+
+      //case 37:  // 'Left'
+      
+      case 38:  // 'Up'
+        this.output.scrollOneLineUp();
+        break;
+
+      //case 39:  // 'Right'
+
+      case 40:  // 'Down'
+        this.output.scrollOneLineDown();
+        break;
+    }
+  }
+
   // --------------- Protected methods ------------------
 
   /// Tohle je blbost, na setovani titlu je setTitle().

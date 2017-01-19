@@ -3,8 +3,6 @@ TODO: TelnetServer by neměl zapisovat do Server.connections.
   by měla být funkce Serveru měla by udělat:
     this.connections.add(telnetServer.createConnection()).
 
-TODO: WebSocket všude přejmenovat na Websocket.
-
 TODO: Websocket client by mohl umět vytvořit a otevřít connection.
   (A mohl by si taky pamatovat server port.)
 
