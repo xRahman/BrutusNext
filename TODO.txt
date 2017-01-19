@@ -1,3 +1,16 @@
+TODO: TelnetServer by neměl zapisovat do Server.connections.
+- mělo by to být tak, že createConnection() (možná createTelnetConnection())
+  by měla být funkce Serveru měla by udělat:
+    this.connections.add(telnetServer.createConnection()).
+
+TODO: WebSocket všude přejmenovat na Websocket.
+
+TODO: Websocket client by mohl umět vytvořit a otevřít connection.
+  (A mohl by si taky pamatovat server port.)
+
+K ÚVAZE: Proč je vlastně Connection zděděná z Entity?
+  Je to k něčemu dobré?
+
 TODO: scrollování outputu, když mám seleknutý input.
   - idea byla odchytávat keyboard eventy na ScrollView místo na inputu.
     To je trochu problém, protože div nemůže dostávat focus
