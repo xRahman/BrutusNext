@@ -102,6 +102,11 @@ class ScrollViewInput extends Component
     return this.$input;
   }
 
+  public focus()
+  {
+    this.$input.focus();
+  }
+
   // --------------- Protected methods ------------------
 
   // ---------------- Private methods -------------------

@@ -75,10 +75,18 @@ class ScrollView extends Window
     // Local echo (append the command to the output element).
     this.echoCommand(command);
 
+    this.output.scrollToBottom();
+
     // Send the command to the connection.
     this.connection.send(command);
   }
 
+  public triggerOutputEvent(event: JQueryKeyEventObject)
+  {
+    this.output.triggerKeyboardEvent(event);
+  }
+
+  /*
   public keyboardScroll(key: number)
   {
     // PgUp(33), PgDn(34), End(35), Home(36),
@@ -114,6 +122,13 @@ class ScrollView extends Window
         this.output.scrollOneLineDown();
         break;
     }
+  }
+  */
+
+  // Sets focus to the 'input' element.
+  public focusInput()
+  {
+    this.input.focus();
   }
 
   // --------------- Protected methods ------------------
@@ -164,10 +179,12 @@ class ScrollView extends Window
       return;
 
     let html =
-      '<span style="color:' + ScrollView.COMMAND_ECHO_COLOR + ';' +
-        ' font-family:' +  + ScrollView.COMMAND_ECHO_FONT + ';">'
-        + command
-    + '</span><br />';
+      '<div>'
+    +   '<span style="color:' + ScrollView.COMMAND_ECHO_COLOR + ';'
+    +    'font-family:' + ScrollView.COMMAND_ECHO_FONT + ';">'
+    +     command
+    +   '</span><br />';
+    + '</div>';
 
     // Local echo (append the command to the output element).
     this.output.appendHtml(html, { forceScroll: true });

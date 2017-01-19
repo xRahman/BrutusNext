@@ -45,14 +45,12 @@ class ScrollViewOutput extends MudColorComponent
     // Create jquery element from the DOM element.
     this.$output = $(output);
 
-    /*
-      Nefunguje to, protoze div defaultne nemuze dostat focus,
-      takze se na nem nespoustej keyboard eventy.
-      - reseni je setnout tabindex = '0'
-        (0 znamena 'in natural tab order')
-        (-1 by znamenalo "focusable only by script, not by user",
-         to by taky mohlo pomoct).
-    */
+    // In order to trigger keyboard event on <div> element,
+    // it must have focus. To give it a focus, it must have
+    // a 'tabindex' attribute set.
+    // ('tabindex: -1' means: focusable only by script, not by user)
+    this.$output.attr({ tabindex: -1 });
+
     this.$output.keydown
     (
       (event) => { this.onKeyDown(event); }
@@ -117,8 +115,24 @@ class ScrollViewOutput extends MudColorComponent
 
   // ---------------- Private methods -------------------
 
+  /*
   public scrollOneLineUp()
   {
+    /// This doesn't really work because the first
+    /// element may be multi-line div, so scroll step
+    /// would not always be the same.
+    //
+    // let firstChild = this.$output[0].firstChild;
+    //
+    // if (firstChild)
+    // {
+    //   let lineHeight = firstChild.clientHeight;
+    //
+    //   console.log('lineHeight: ' + lineHeight);
+    //
+    //   this.$output.scrollTop(this.$output.scrollTop() - lineHeight);
+    // }
+
     /// TODO:
   }
 
@@ -136,6 +150,7 @@ class ScrollViewOutput extends MudColorComponent
   {
     /// TODO:
   }
+  */
 
   public scrollToTop()
   {
@@ -147,12 +162,41 @@ class ScrollViewOutput extends MudColorComponent
     this.$output.scrollTop(this.$output.prop('scrollHeight'));
   }
 
+  public triggerKeyboardEvent(event: JQueryKeyEventObject)
+  {
+    // In order for <div> element to process keyboard events,
+    // it must have focus. To be able to give it a focus,
+    // it must have a 'tabindex' attribute set (that's done
+    // in ScrollViewOutput.create()).
+    this.$output.focus();
+
+    // Now we can trigger the keyboard event.
+    this.$output.trigger(event);
+  }
+
   // ---------------- Event handlers --------------------
 
   // Handles 'keydown' event.
+  // (Note that this will only trigger on <div> element
+  //  if it has a focus and it can only have a focus if
+  //  it has a 'tabidnex' attribute set.)
   private onKeyDown(event: KeyboardEvent)
   {
-    console.log('ScrollViewOutput.onKeyDown()');
+    let key = event.which;
+
+    // PgUp(33), PgDn(34).
+    if (key === 33 || key === 34)
+    {
+      // We are not preventing default handler because we
+      // want it to do the scrolling for us. We are, however,
+      // preventing propagation of the event to our parent
+      // element (and thus recursively up to the 'document'),
+      // because document is watching for this very type of
+      // event (so that output can be scrolled by PgUp and PgDown
+      // even if it doesn't have a focus) so letting this event
+      // propagate would lead to infinite recursion.
+      event.stopPropagation();
+    }
   }
 }
 

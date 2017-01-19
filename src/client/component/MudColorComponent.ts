@@ -40,9 +40,11 @@ abstract class MudColorComponent extends Component
     /// TODO: Korektni obarvovani message.
 
     let html =
-      '<span style="color:green;font-family:CourrierNewBold;">'
-        + mudText;
-    + '</span>';
+      '<div>'
+    +   '<span style="color:green;font-family:CourrierNewBold;">'
+    +      mudText
+    +   '</span>'
+    + '</div>';
 
     return html;
   }
