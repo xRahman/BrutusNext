@@ -34,7 +34,8 @@ export module Utils
     {
       // First remove all '\r' characters, then replace all '\n'
       // characters with '\r\n'.
-      data = data.replace(/\r/gi, "").replace(/\n/gi, TelnetSocketDescriptor.NEW_LINE);
+      data = data.replace(/\r/gi, "");
+      data = data.replace(/\n/gi, TelnetSocketDescriptor.NEW_LINE);
     }
 
     return data;
