@@ -170,6 +170,24 @@ class ScrollView extends Window
 
   // ---------------- Private methods -------------------
 
+  // Encloses each line in <span> tag followed by <br> tag.
+  private htmlizeLinesOfCommand(lines: Array<string>)
+  {
+    let html = '';
+
+    // Add each line as a separate <span> followed by <br>.
+    for (let line of lines)
+    {
+      html += '<span style="color:' + ScrollView.COMMAND_ECHO_COLOR + ';';
+      html +=  'font-family:' + ScrollView.COMMAND_ECHO_FONT + ';">';
+      html +=    line;
+      html += '</span><br />';
+    }
+
+    return html;
+  }
+
+  // Adds the 'command' string to the 'output' element.
   private echoCommand(command: string)
   {
     // Echoing empty command (just hitting enter) would add
@@ -178,13 +196,15 @@ class ScrollView extends Window
     if (command === "")
       return;
 
-    let html =
-      '<div>'
-    +   '<span style="color:' + ScrollView.COMMAND_ECHO_COLOR + ';'
-    +    'font-family:' + ScrollView.COMMAND_ECHO_FONT + ';">'
-    +     command
-    +   '</span><br />';
-    + '</div>';
+    // Because output element is not a text area, all lines would be
+    // merged into one. To prevent that, we need to parse the command
+    // and format the output using <br> tags.
+    let lines = command.split('\n');
+
+    // Whole command will be contained in a <div>
+    let html = '<div>'
+      +           this.htmlizeLinesOfCommand(lines);
+      +        '</div>';
 
     // Local echo (append the command to the output element).
     this.output.appendHtml(html, { forceScroll: true });
