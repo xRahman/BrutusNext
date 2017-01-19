@@ -1,3 +1,6 @@
+TODO: Když do inputu pastnu víceřádkový příkaz,
+  do outputu se musí poslat více řádek (tj. je to třeba naparsovat).
+
 TODO: TelnetServer by neměl zapisovat do Server.connections.
 - mělo by to být tak, že createConnection() (možná createTelnetConnection())
   by měla být funkce Serveru měla by udělat:
