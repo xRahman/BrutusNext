@@ -129,7 +129,7 @@
 
 .Window
 {
-  width: 50%;
+  width: 30%;
   height: 20%;
   outline: 0 none;
   /*margin: 1px;*/
@@ -216,8 +216,11 @@
   outline: 0 none;
   margin: 0;
   padding: 3px;
+  font-size: 100%;
   background-color: black;
-  overflow: auto;
+  overflow-x: hidden;   /* Do not use horizontal scrolling */
+  overflow-y: auto;     /* Automatically create vertical scrollbar */
+  word-wrap:break-word; /* Areak long words that wont fit */
 }
 
 /*
@@ -233,6 +236,7 @@
   overflow: hidden; /* also hides the scrollbar */
   color: rgb(0,225,0); /* text color */
   font-family: CourrierNewBold;
+  font-size: 100%;
   background-color: rgba(50,50,50,0.8);
   border: 1px solid rgba(110,130,150,0.8);
 }

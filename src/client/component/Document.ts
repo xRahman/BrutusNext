@@ -61,19 +61,39 @@ class Document
   {
     let key = event.which;
 
-      console.log('document.keydown ' + key);
+    // PgUp(33), PgDn(34).
+    if (key === 33 || key === 34)
+    {
+      // This allows output of currently active scrollview
+      // window to be scrolled by PgUp and PgDown even if
+      // it doesn't have a focus.
+      this.client.activeScrollView.triggerOutputEvent(event);
+    }
+    else
+    {
+      // All othe keys is redirected to input element
+      // of currently active scrollview window.
+      this.client.activeScrollView.focusInput();
+    }
 
-      // PgUp(33), PgDn(34), End(35), Home(36),
-      // Left(37), Up(38), Right(39), Down(40)
-      if(key >= 33 && key <= 40)
+    /*
+    // PgUp(33), PgDn(34), End(35), Home(36),
+    // Left(37), Up(38), Right(39), Down(40)
+    if(key >= 33 && key <= 40)
+    {
+      if (!this.client.activeScrollView.inputHasFocus())
       {
-        // This prevents automatic scrolling.
+        // Prevent default scrolling by keyboard
+        // (for all elements with scrollbar).
         event.preventDefault();
 
+        // Scroll the scrollview output manually.
         this.client.activeScrollView.keyboardScroll(key);
         return false;
       }
-      return true;
+    }
+    */
+    return true;
   }
 }
 
