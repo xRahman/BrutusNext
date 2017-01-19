@@ -1,35 +1,41 @@
 /*
   Part of BrutusNEXT
 
-  Implements component 'app_body' (matches html element <body>).
+  Implements component 'body' (matches html element <body>).
   All other gui components are inserted into it.
 */
 
 'use strict';
 
-import Component = require('../components/Component');
-import Window = require('../components/Window');
-import ScrollView = require('../components/ScrollView');
+import Component = require('../component/Component');
+import Window = require('../component/Window');
+import ScrollView = require('../component/ScrollView');
+import Client = require('../Client');
+import Connection = require('../connection/Connection');
 
 import $ = require('jquery');
 
-class AppBody extends Component
+class Body extends Component
 {
   public scrollView = null;
   private windows: Array<Window> = [];
 
-  constructor()
+  constructor(private client: Client)
   {
     super();
 
     this.$body = $('#' + this.id);
+
+    let connection = client.createConnection();
+
+    this.createScrollView(connection);
   }
 
   //----------------- Protected data --------------------
 
   // 'id' parameter of html element
   // (overrides Component.id).
-  protected id = 'appbody';
+  protected id = 'body';
 
   // --- Jquery elements ---
 
@@ -57,10 +63,10 @@ class AppBody extends Component
   // ---------------- Public methods --------------------
 
   // Creates a 'ScrollView' window and adds it to app_body.
-  public createScrollView()
+  public createScrollView(connection: Connection)
   {
     /// Tohle je docasne - scrollViewu muze byt vic.
-    this.scrollView = new ScrollView();
+    this.scrollView = new ScrollView(connection);
     this.windows.push(this.scrollView);
 
     // Create jquery element 'scrollview'.
@@ -76,4 +82,4 @@ class AppBody extends Component
 
 }
 
-export = AppBody;
+export = Body;

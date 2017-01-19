@@ -6,8 +6,8 @@
 
 'use strict';
 
-import Component = require('../components/Component');
-import ScrollView = require('../components/ScrollView');
+import Component = require('../component/Component');
+import ScrollView = require('../component/ScrollView');
 
 import $ = require('jquery');
 

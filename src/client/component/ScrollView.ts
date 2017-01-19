@@ -6,14 +6,20 @@
 
 'use strict';
 
-import ScrollViewInput = require('../components/ScrollViewInput');
-import ScrollViewOutput = require('../components/ScrollViewOutput');
-import Window = require('../components/Window');
+import ScrollViewInput = require('../component/ScrollViewInput');
+import ScrollViewOutput = require('../component/ScrollViewOutput');
+import Window = require('../component/Window');
+import Connection = require('../connection/Connection');
 
 import $ = require('jquery');
 
 class ScrollView extends Window
 {
+  constructor(private connection: Connection)
+  {
+    super();
+  }
+
   // If you send a command, it will be printed to output using this color.
   public static get COMMAND_ECHO_COLOR() { return 'rgb(128,64,64)'; }
   // If you send a command, it will be printed to output using this font.
@@ -25,8 +31,6 @@ class ScrollView extends Window
   public static get INPUT_CSS_CLASS() { return 'ScrollViewInput'; }
 
   // -------------- Static class data -------------------
-
-  public webSocketDescriptor = null;
 
   //----------------- Protected data --------------------
 
@@ -72,7 +76,7 @@ class ScrollView extends Window
     this.echoCommand(command);
 
     // Send the command to the connection.
-    /// TODO:
+    this.connection.send(command);
   }
 
   // --------------- Protected methods ------------------
@@ -88,46 +92,6 @@ class ScrollView extends Window
   */
 
   // --- Element-generating methods ---
-
-  /*
-  // -> Returns created html element.
-  protected createOutput()
-  {
-    // Create a DOM element.
-    let output = this.createDivElement
-    (
-      this.getOutputId(),
-      ScrollView.OUTPUT_CSS_CLASS
-    );
-
-    // Create a jquery element from the DOM element.
-    return $(output);
-  }
-  */
-
-  /*
-  // -> Returns created html element.
-  protected createInput()
-  {
-    // 'textarea' is a html multi-line input box.
-    let input = document.createElement('textarea');
-
-    input.id = this.getInputId();
-    input.className = ScrollView.INPUT_CSS_CLASS;
-
-    input.autofocus = true;
-    input.rows = 1;
-    /// Tohle by byl pocet znaku.
-    //input.cols = 1;
-
-    input.addEventListener
-    (
-      'keypress',
-      (event) => { this.onInputKeyPress(event); }
-    );
-    return input;
-  }
-  */
 
   // Overrides Window.createContentElement().
   // -> Returns created html element.
@@ -173,46 +137,6 @@ class ScrollView extends Window
   }
 
   // ---------------- Event handlers --------------------
-
-  /*
-  private onInputKeyPress(event: KeyboardEvent)
-  {
-    // This changes default behaviour of textarea (a new line
-    // is added to the text on enter by default) to send the
-    // value to the socket instead.
-    if (event.keyCode === 13) // 'enter'
-    {
-        event.preventDefault(); // Do not add a new line on 'eneter.
-
-        console.log('submit');
-        this.sendCommand();
-        return;
-    } 
-  }
-  */
-
-  /*
-  private onInputKeyDown(event: KeyboardEvent)
-  {
-    if (event.keyCode === 13 && event.ctrlKey) {
-        console.log("enterKeyDown+ctrl");
-        $(this).val(function(i,val){
-            return val + "\n";
-        });
-    }
-  }
-  */
-
-  /*
-  private onInputKeyUp(event: KeyboardEvent)
-  {
-    if (event.keyCode === 17)
-    {
-        console.log("ctrlKeyUp");
-        ctrlKeyDown = false;   
-    }
-  }
-  */
 
 }
 
