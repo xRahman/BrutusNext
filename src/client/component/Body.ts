@@ -17,7 +17,7 @@ import $ = require('jquery');
 
 class Body extends Component
 {
-  public scrollView = null;
+  ///public scrollView = null;
   private windows: Array<Window> = [];
 
   constructor(private client: Client)
@@ -40,7 +40,7 @@ class Body extends Component
   // --- Jquery elements ---
 
   $body = null;
-  $scrollView = null;
+  ///$scrollView = null;
 
   //------------------ Private data ---------------------
 
@@ -66,13 +66,15 @@ class Body extends Component
   public createScrollView(connection: Connection)
   {
     /// Tohle je docasne - scrollViewu muze byt vic.
-    this.scrollView = new ScrollView(connection);
-    this.windows.push(this.scrollView);
+    let scrollView = new ScrollView(connection);
+    this.windows.push(scrollView);
 
     // Create jquery element 'scrollview'.
-    this.$scrollView = this.scrollView.create();
+    let $scrollView = scrollView.create();
     // Put it in the 'body' element.
-    this.$body.append(this.$scrollView);
+    this.$body.append($scrollView);
+
+    this.client.activeScrollView = scrollView;
   }
 
   // ---------------- Private methods -------------------

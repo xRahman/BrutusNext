@@ -117,9 +117,33 @@ class ScrollViewOutput extends MudColorComponent
 
   // ---------------- Private methods -------------------
 
+  public scrollOneLineUp()
+  {
+    /// TODO:
+  }
+
+  public scrollOneLineDown()
+  {
+    /// TODO:
+  }
+
+  public scrollOnePageUp()
+  {
+    /// TODO:
+  }
+
+  public scrollOnePageDown()
+  {
+    /// TODO:
+  }
+
+  public scrollToTop()
+  {
+    this.$output.scrollTop(0);
+  }
+
   public scrollToBottom()
   {
-    // Scroll to bottom.
     this.$output.scrollTop(this.$output.prop('scrollHeight'));
   }
 
