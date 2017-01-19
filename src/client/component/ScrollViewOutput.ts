@@ -6,7 +6,7 @@
 
 'use strict';
 
-import MudColorComponent = require('../components/MudColorComponent');
+import MudColorComponent = require('../component/MudColorComponent');
 
 import $ = require('jquery');
 
@@ -125,6 +125,7 @@ class ScrollViewOutput extends MudColorComponent
 
   // ---------------- Event handlers --------------------
 
+  // Handles 'keydown' event.
   private onKeyDown(event: KeyboardEvent)
   {
     console.log('ScrollViewOutput.onKeyDown()');

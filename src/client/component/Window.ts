@@ -6,8 +6,8 @@
 
 'use strict';
 
-import AppBody = require('../components/AppBody');
-import Component = require('../components/Component');
+import AppBody = require('../component/Body');
+import Component = require('../component/Component');
 
 import $ = require('jquery');
 

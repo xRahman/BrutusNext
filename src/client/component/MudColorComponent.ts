@@ -7,7 +7,7 @@
 
 'use strict';
 
-import Component = require('../components/Component');
+import Component = require('../component/Component');
 
 const Colors =
 {

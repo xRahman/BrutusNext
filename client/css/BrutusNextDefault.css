@@ -89,9 +89,9 @@
 }
 */
 
-/* ----------- Application Body ---------- */
+/* ---------------- <body> --------------- */
 
-.AppBody
+.Body
 {
   /* '!important' is used so that other style won't overrule this */
 	outline: 0 none !important;
