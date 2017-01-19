@@ -30,6 +30,13 @@ class ScrollViewInput extends Component
 
   //------------------ Private data ---------------------
 
+  // Command history.
+  private commands =
+  {
+    active: 0,  // Which command is the user viewing/editing.
+    buffer: new Array<string>()
+  }
+
   // --------------- Static accessors -------------------
 
   // ---------------- Static methods --------------------
@@ -62,6 +69,11 @@ class ScrollViewInput extends Component
     this.$input.keypress
     (
       (event) => { this.onKeyPress(event); }
+    );
+
+    this.$input.keydown
+    (
+      (event) => { this.onKeyDown(event); }
     );
 
     /*
@@ -111,29 +123,70 @@ class ScrollViewInput extends Component
 
   // ---------------- Private methods -------------------
 
-  // ---------------- Event handlers --------------------
-
   private sendCommand()
   {
-    this.scrollView.sendCommand(this.$input.val());
+    let command = this.$input.val();
+
+    this.bufferCommand(command);
+    this.scrollView.sendCommand(command);
     
     // Empty the textarea.
     this.$input.val('');
   }
 
+  private bufferCommand(command: string)
+  {
+    this.commands.buffer.push(command);
+
+    // Let the active command index point beyond the last one
+    // (in other words, sending the command resets the pointer
+    //  so the next 'Up' key will recall the command that has
+    //  just been sent).
+    this.commands.active = this.commands.buffer.length;
+  }
+
+  private recallCommand(index: number)
+  {
+    if (index >= 0 && index < this.commands.buffer.length)
+    {
+      this.$input.val(this.commands.buffer[index]);
+      this.commands.active = index;
+    }
+  }
+
+
+  // ---------------- Event handlers --------------------
+
   private onKeyPress(event: KeyboardEvent)
   {
-    // Changes default behaviour of textarea (a new line
-    // is added to the text on enter by default) to send
-    // the value to the server instead.
-    if (event.keyCode === 13) // 'enter'
+    switch (event.keyCode)
     {
-        event.preventDefault(); // Do not add a new line on 'eneter.
-
-        console.log('submit');
+      // Changes default behaviour of textarea (a new line
+      // is added to the text on enter by default) to send
+      // the value to the server instead.
+      case 13:  // 'Enter'
+        event.preventDefault(); // Do not add a new line on 'enter'.
         this.sendCommand();
-        return;
-    } 
+        return false;
+    }
+
+    return true;  // Continue processing this event.
+  }
+
+  private onKeyDown(event: KeyboardEvent)
+  {
+    switch (event.keyCode)
+    {
+      case 38:  // 'Up'
+        this.recallCommand(this.commands.active - 1);
+        return false;
+
+      case 40:  // 'Down'
+        this.recallCommand(this.commands.active + 1);
+        return false;
+    }
+
+    return true;  // Continue processing this event.
   }
 
   /*
