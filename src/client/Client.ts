@@ -26,7 +26,9 @@ class Client
 
   protected static instance: Client = null;
 
-  //------------------ Public data ---------------------- 
+  //------------------ Public data ----------------------
+
+  public activeScrollView = null;
 
   //------------------ Private data ---------------------
 
