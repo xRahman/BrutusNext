@@ -227,16 +227,26 @@
   'scrollview_input' is a textarea (multiline input box).
   'height' is set automatically to match height of 1 line of text.
 */
-.ScrollViewInput
+.ScrollViewInputFrame
 {
   width: 100%;
   outline: 0 none;
   margin: 0;
+  /* padding: 3px; */
+  background-color: rgba(50,50,50,0.8);
+  border: 1px solid rgba(110,130,150,0.8);
+}
+
+/* */
+.ScrollViewInput
+{
+  width: 100%;
+  margin: 3px;
+  padding: 0;
   resize: none;
   overflow: hidden; /* also hides the scrollbar */
   color: rgb(0,225,0); /* text color */
   font-family: CourrierNewBold;
   font-size: 100%;
-  background-color: rgba(50,50,50,0.8);
-  border: 1px solid rgba(110,130,150,0.8);
+  background-color: rgba(0,0,0,0);
 }
