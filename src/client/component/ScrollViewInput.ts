@@ -23,11 +23,7 @@ class ScrollViewInput extends Component
 
   // -------------- Static class data -------------------
 
-  ///public webSocketDescriptor = null;
-
   //----------------- Protected data --------------------
-
-  protected $input = null;
 
   //------------------ Private data ---------------------
 
@@ -37,6 +33,10 @@ class ScrollViewInput extends Component
     active: 0,  // Which command is the user viewing/editing.
     buffer: new Array<string>()
   }
+
+  // --- Jquery elements ---
+
+  private $input = null;
 
   // --------------- Static accessors -------------------
 
@@ -54,21 +54,7 @@ class ScrollViewInput extends Component
   // -> Returns created jquery element.
   public create(id: string)
   {
-    // TODO: rozdelit to do podfunkci.
-
     this.id = id;
-
-    /*
-    // Create a DOM element.
-    let inputFrame = this.createDivElement
-    (
-      this.getInputFrameId(),
-      ScrollViewInput.FRAME_CSS_CLASS
-    );
-
-    // Create jquery element from the DOM element.
-    let $inputFrame = $(inputFrame);
-    */
 
     // Create a DOM element.
     let input = this.createTextAreaElement
@@ -96,47 +82,6 @@ class ScrollViewInput extends Component
       (event) => { this.onKeyDown(event); }
     );
 
-    /*
-    // Put 'input' in the 'inputFrame' element.
-    $inputFrame.append(this.$input);
-    */
-
-    /*
-    /// Test
-    this.$input.keypress
-    (
-      (event) =>
-      {
-        console.log('event sent to output');
-        this.scrollView.output.$output.trigger(event);
-        event.stopPropagation();
-      }
-    );
-
-    // Test
-    this.$input.keydown
-    (
-      (event) =>
-      {
-        console.log('event sent to output');
-        this.scrollView.output.$output.trigger(event);
-        event.stopPropagation();
-      }
-    );
-
-    // Test
-    this.$input.keyup
-    (
-      (event) =>
-      {
-        console.log('event sent to output');
-        this.scrollView.output.$output.trigger(event);
-        event.stopPropagation();
-      }
-    );
-    */
-
-    ///return $inputFrame;
     return this.$input;
   }
 
@@ -191,6 +136,41 @@ class ScrollViewInput extends Component
     this.commands.active = this.commands.buffer.length;
   }
 
+  // Auxiliary function to check if cursor is inside a textarea
+  // based on numeric parameters.
+  private isCursorInside
+  (
+    offset: number,
+    selectionStart: number,
+    selectionEnd: number,
+    end: number
+  )
+  {
+    // If the cursor (or the start of the selection) isn't at the
+    // start, we can't recall previous command.
+    if (offset < 0 && selectionStart > 0)
+      return true;
+
+    // If the cursor (or the end of the selection) isn't at the
+    // end, we can't recall previous command.
+    if (offset > 0 && selectionEnd < end)
+      return true;
+
+    // If the cursor isn't at the start or at the end, or the selection
+    // doesn't end at the end, we can't recall neither previous nor next
+    // command.
+    if (selectionEnd > 0 && selectionEnd < end)
+      return true;
+
+    // If the cursor isn't at the start or at the end, or the selection
+    // doesn't start at the start, we can't recall neither previous nor
+    // next command.
+    if (selectionStart > 0 && selectionStart < end)
+      return true;
+    
+    return false;
+  }
+
   // 'offset' represents direction
   // (-1 for recalling previous command, +1 for next command).
   // -> Returns 'true' if player is currently editing a multiline
@@ -210,26 +190,7 @@ class ScrollViewInput extends Component
       // Position at the end of the input text.
       let end = currentValue.length;
 
-      // If the cursor (or the start of the selection) isn't at the
-      // start, we can't recall previous command.
-      if (offset < 0 && selectionStart > 0)
-        return true;
-
-      // If the cursor (or the end of the selection) isn't at the
-      // end, we can't recall previous command.
-      if (offset > 0 && selectionEnd < end)
-        return true;
-
-      // If the cursor isn't at the start or at the end, or the selection
-      // doesn't end at the end, we can't recall neither previous nor next
-      // command.
-      if (selectionEnd > 0 && selectionEnd < end)
-        return true;
-
-      // If the cursor isn't at the start or at the end, or the selection
-      // doesn't start at the start, we can't recall neither previous nor
-      // next command.
-      if (selectionStart > 0 && selectionStart < end)
+      if (this.isCursorInside(offset, selectionStart, selectionEnd, end))
         return true;
     }
 
@@ -270,6 +231,33 @@ class ScrollViewInput extends Component
     }
   }
 
+  // Sets the string at position 'index' in commands buffer
+  // to the input element.
+  private setRecalledCommand(index: number, offset: number)
+  {
+    // When 'Down' is pressed, it is possible to "recall" even
+    // one command beyond the last - in other words to return
+    // to an empty command input.
+    let recalledCommand = "";
+
+    if (index < this.commands.buffer.length)
+      recalledCommand = this.commands.buffer[index];
+
+    this.$input.val(recalledCommand);
+    this.commands.active = index;
+
+    let isMultiline = recalledCommand.indexOf('\n') !== -1;
+
+    this.updateCursorPosition
+    (
+      offset,
+      isMultiline,
+      recalledCommand.length
+    );
+  }
+
+  // Recall command from commands buffer and sets it to the
+  // input element.
   private recallCommand(event: KeyboardEvent, offset: number)
   {
     if (this.isEditingMultilineCommand(offset))
@@ -279,29 +267,12 @@ class ScrollViewInput extends Component
 
     if (index >= 0 && index <= this.commands.buffer.length)
     {
-      let recalledCommand = "";
-
-      // When 'Down' is pressed, it is possible to "recall" even
-      // one command beyond the last - in other words to return
-      // to an empty line.
-      if (index < this.commands.buffer.length)
-        recalledCommand = this.commands.buffer[index];
-
       event.preventDefault();
 
-      this.$input.val(recalledCommand);
-      this.commands.active = index;
+      // Set recalled command to input textarea.
+      this.setRecalledCommand(index, offset);
 
-      let isMultiline = recalledCommand.indexOf('\n') !== -1;
-
-      this.updateCursorPosition
-      (
-        offset,
-        isMultiline,
-        recalledCommand.length
-      );
-
-      return false;
+      return false;  // Stop processing the event.
     }
 
     return true; // Continue processing the event.
@@ -320,7 +291,7 @@ class ScrollViewInput extends Component
       case 13:  // 'Enter'
         event.preventDefault(); // Do not add a new line on 'enter'.
         this.sendCommand();
-        return false;
+        return false;  // Stop processing the event.
     }
 
     return true;  // Continue processing the event.
@@ -339,30 +310,6 @@ class ScrollViewInput extends Component
 
     return true;  // Continue processing this event.
   }
-
-  /*
-  private onInputKeyDown(event: KeyboardEvent)
-  {
-    if (event.keyCode === 13 && event.ctrlKey) {
-        console.log("enterKeyDown+ctrl");
-        $(this).val(function(i,val){
-            return val + "\n";
-        });
-    }
-  }
-  */
-
-  /*
-  private onInputKeyUp(event: KeyboardEvent)
-  {
-    if (event.keyCode === 17)
-    {
-        console.log("ctrlKeyUp");
-        ctrlKeyDown = false;   
-    }
-  }
-  */
-
 }
 
 export = ScrollViewInput;

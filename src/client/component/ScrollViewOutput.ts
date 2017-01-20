@@ -18,9 +18,11 @@ class ScrollViewOutput extends MudColorComponent
 
   //----------------- Protected data --------------------
 
-  protected $output = null;
-
   //------------------ Private data ---------------------
+
+  // --- Jquery elements ---
+
+  private $output = null;
 
   // --------------- Static accessors -------------------
 
@@ -55,26 +57,6 @@ class ScrollViewOutput extends MudColorComponent
     (
       (event) => { this.onKeyDown(event); }
     );
-
-    /*
-    /// Test
-    this.$output.keypress
-    (
-      (event) => { console.log('!'); event.preventDefault(); }
-    );
-
-    /// Test
-    this.$output.keydown
-    (
-      (event) => { console.log('!'); event.preventDefault(); }
-    );
-
-    /// Test
-    this.$output.keyup
-    (
-      (event) => { console.log('!'); event.preventDefault(); }
-    );
-    */
 
     return this.$output;
   }
@@ -114,43 +96,6 @@ class ScrollViewOutput extends MudColorComponent
   // --------------- Protected methods ------------------
 
   // ---------------- Private methods -------------------
-
-  /*
-  public scrollOneLineUp()
-  {
-    /// This doesn't really work because the first
-    /// element may be multi-line div, so scroll step
-    /// would not always be the same.
-    //
-    // let firstChild = this.$output[0].firstChild;
-    //
-    // if (firstChild)
-    // {
-    //   let lineHeight = firstChild.clientHeight;
-    //
-    //   console.log('lineHeight: ' + lineHeight);
-    //
-    //   this.$output.scrollTop(this.$output.scrollTop() - lineHeight);
-    // }
-
-    /// TODO:
-  }
-
-  public scrollOneLineDown()
-  {
-    /// TODO:
-  }
-
-  public scrollOnePageUp()
-  {
-    /// TODO:
-  }
-
-  public scrollOnePageDown()
-  {
-    /// TODO:
-  }
-  */
 
   public scrollToTop()
   {
