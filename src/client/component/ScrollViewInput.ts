@@ -136,8 +136,7 @@ class ScrollViewInput extends Component
     this.commands.active = this.commands.buffer.length;
   }
 
-  // Auxiliary function to check if cursor is inside a textarea
-  // based on numeric parameters.
+  // Auxiliary function to check if cursor is inside a textarea.
   private isCursorInside
   (
     offset: number,
@@ -204,31 +203,42 @@ class ScrollViewInput extends Component
     endpos: number
   )
   {
-    let position = endpos;
+    let oldValue = this.$input.val();
+    let cursorPosition = endpos;
 
+    // 'offset < 0' mens that we are recalling previous command
+    // from the buffer (> 0 would mean the next one).
     if (isMultiline && offset < 0)
-      position = 0;
-      
-    this.$input.prop('selectionStart', position);
-    this.$input.prop('selectionEnd', position);
-
-    if (isMultiline && offset > 0)
     {
-      // Scroll the textarea to the bottom
-      // (We are exploiting the fact that browser scrolls textarea
-      //  to the end when it get's a focus - so we remove it's focus
-      //  and set it back again).
-      this.$input.blur().focus();
+      // When we are recalling previous command and it is a multiline
+      // command, we don't want to put cursor to the end, because then
+      // the user would have to go through all it's lines to get to it's
+      // previous command. So instead we set cursor to the start, so the
+      // the next 'Up' key recalls the next previous command immediately.
+      //   To do it we use a little trick:
+      //   - first we clear the textarea
+      //   - Then we let the browser scroll it to the end (which will actually
+      //     be the start, because it will be empty)
+      //   - Then we put the text back in
+      //   - And Finally we set the cursor position.
+      // Here we do just the first step:
+      this.$input.val('');
+      // And prepare the fourth:
+      cursorPosition = 0;
     }
-    else
-    {
-      // For some reason, setting scrollTop to textarea doesn't
-      // account for text padding, so we do it manually.
-      let paddingTop = this.$input.css('padding-top');
 
-      // Scroll the textarea to the top (less the padding).
-      this.$input.scrollTop(0 + paddingTop);
-    }
+    // Scroll the textarea to the bottom
+    // (we are exploiting the fact that browser scrolls textarea
+    //  to the end when it gets a focus - so we remove it's focus
+    //  and set it back again).
+    this.$input.blur().focus();
+
+    // Restore the original text.
+    this.$input.val(oldValue);
+
+    // Finaly set the cursor position.
+    this.$input.prop('selectionStart', cursorPosition);
+    this.$input.prop('selectionEnd', cursorPosition);
   }
 
   // Sets the string at position 'index' in commands buffer
