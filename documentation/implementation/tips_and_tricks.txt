@@ -1,0 +1,10 @@
+﻿Scrolling textarea html element
+--------------------------------
+
+Browser automatically scrolls textare to the end when it gets focus.
+So you can scroll it to the end by doing:
+  $textarea.blur().focus();
+
+To scroll it to a ceratain position in text (for example to a cerain line),
+you can set a partial text to it (ending with your last line), do the focus
+trick and set the whole text back.

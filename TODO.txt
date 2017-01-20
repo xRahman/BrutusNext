@@ -1,5 +1,23 @@
+TODO: Když recallnu poslední command a dám enter, tak se sice
+  nemá přidat do bufferu, ale má se posunout counter.
+[done]
+
+TODO: Šipkou dolů by se mělo jít vrátit až na prázdný řádek.
+[done]
+
+TODO: Prázný příkaz by se neměl přidávat do bufferu.
+[done]
+
+TODO: Zopakování posledního příkazu by ho v bufferu nemělo zduplikovat.
+[done]
+
+TODO: Poskakování textu při traverzování command bufferu...
+[snad]
+
+
 TODO: Když do inputu pastnu víceřádkový příkaz,
   do outputu se musí poslat více řádek (tj. je to třeba naparsovat).
+[done]
 
 TODO: TelnetServer by neměl zapisovat do Server.connections.
 - mělo by to být tak, že createConnection() (možná createTelnetConnection())
