@@ -58,6 +58,7 @@ class ScrollViewInput extends Component
 
     this.id = id;
 
+    /*
     // Create a DOM element.
     let inputFrame = this.createDivElement
     (
@@ -67,6 +68,7 @@ class ScrollViewInput extends Component
 
     // Create jquery element from the DOM element.
     let $inputFrame = $(inputFrame);
+    */
 
     // Create a DOM element.
     let input = this.createTextAreaElement
@@ -94,8 +96,10 @@ class ScrollViewInput extends Component
       (event) => { this.onKeyDown(event); }
     );
 
+    /*
     // Put 'input' in the 'inputFrame' element.
     $inputFrame.append(this.$input);
+    */
 
     /*
     /// Test
@@ -132,7 +136,8 @@ class ScrollViewInput extends Component
     );
     */
 
-    return $inputFrame;
+    ///return $inputFrame;
+    return this.$input;
   }
 
   public focus()
@@ -155,14 +160,34 @@ class ScrollViewInput extends Component
     this.$input.val('');
   }
 
+  private shouldBeBuffered(command: string)
+  {
+    // Do not buffer empty commands.
+    if (command === "")
+      return false;
+
+    let bufferLength = this.commands.buffer.length;
+    
+    // Do not add last command again
+    // ('bufferLength > 0' is tested so we don't index out of range of array).
+    if (bufferLength > 0 && command === this.commands.buffer[bufferLength - 1])
+      return false;
+
+    return true;
+  }
+
   private bufferCommand(command: string)
   {
-    this.commands.buffer.push(command);
+    if (this.shouldBeBuffered(command))
+      this.commands.buffer.push(command);
 
     // Let the active command index point beyond the last one
     // (in other words, sending the command resets the pointer
     //  so the next 'Up' key will recall the command that has
     //  just been sent).
+    // Note that this is done even if command is not added
+    // to buffer - every time a user sends a command, pointer
+    // is reset to the end of the buffer.
     this.commands.active = this.commands.buffer.length;
   }
 
@@ -228,13 +253,20 @@ class ScrollViewInput extends Component
 
     if (isMultiline && offset > 0)
     {
-      // Scroll the textarea to the bottom.
-      this.$input.scrollTop(this.$input.prop('scrollHeight') - 3);
+      // Scroll the textarea to the bottom
+      // (We are exploiting the fact that browser scrolls textarea
+      //  to the end when it get's a focus - so we remove it's focus
+      //  and set it back again).
+      this.$input.blur().focus();
     }
     else
     {
-      // Scroll the textarea to the top.
-      this.$input.scrollTop(0 + 3);
+      // For some reason, setting scrollTop to textarea doesn't
+      // account for text padding, so we do it manually.
+      let paddingTop = this.$input.css('padding-top');
+
+      // Scroll the textarea to the top (less the padding).
+      this.$input.scrollTop(0 + paddingTop);
     }
   }
 
@@ -244,10 +276,17 @@ class ScrollViewInput extends Component
       return true;  // Continue processing the event.
 
     let index = this.commands.active + offset;
-    let recalledCommand = this.commands.buffer[index];
 
-    if (index >= 0 && index < this.commands.buffer.length)
+    if (index >= 0 && index <= this.commands.buffer.length)
     {
+      let recalledCommand = "";
+
+      // When 'Down' is pressed, it is possible to "recall" even
+      // one command beyond the last - in other words to return
+      // to an empty line.
+      if (index < this.commands.buffer.length)
+        recalledCommand = this.commands.buffer[index];
+
       event.preventDefault();
 
       this.$input.val(recalledCommand);
