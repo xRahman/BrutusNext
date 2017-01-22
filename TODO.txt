@@ -1,3 +1,7 @@
+TODO: Přidat do obarvovacích fcí parametr 'baseColorOverride'
+  - a sjednotit kód na vyrábění barevného textu, ať to není na
+    dvou místech pokaždé jinak.
+
 TODO: Při dělení kusů message podle newlinů je třeba někam
   poznamenat, kde byl enter a kde ne - jinak se mi to rozsype
   na milión řádků.
