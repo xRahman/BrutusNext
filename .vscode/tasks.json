@@ -28,7 +28,7 @@
     {
       // This task build server, then keeps running and watching
       // for file changes to incrementally compile them.
-      "taskName": "Build server",
+      "taskName": "Build Server",
       "args":
       [
         // Use locally installed typescript (in node_modules).
@@ -53,7 +53,7 @@
     {
       // This task build client, then keeps running and watching
       // for file changes to incrementally compile them.
-      "taskName": "Build clinet",
+      "taskName": "Build Clinet",
       "args":
       [
         // We use locally installed typescript (in node_modules).
