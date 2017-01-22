@@ -1,3 +1,7 @@
+TODO: Při dělení kusů message podle newlinů je třeba někam
+  poznamenat, kde byl enter a kde ne - jinak se mi to rozsype
+  na milión řádků.
+
 TODO: Parsování barev trochu jinak:
 1) Nejdřív zaměnit /r/n za <br>
    (protože <br> může bejt klidně i uvnitř spanu)
