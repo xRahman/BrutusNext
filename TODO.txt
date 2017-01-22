@@ -1,3 +1,8 @@
+TODO: Parsování barev trochu jinak:
+1) Nejdřív zaměnit /r/n za <br>
+   (protože <br> může bejt klidně i uvnitř spanu)
+2) Pak to parsovat celé jako jednu řádku.
+
 TODO: Když recallnu poslední command a dám enter, tak se sice
   nemá přidat do bufferu, ale má se posunout counter.
 [done]
