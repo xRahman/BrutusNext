@@ -32,97 +32,399 @@ const Colors =
 
 abstract class MudColorComponent extends Component
 {
+  // Default base color that will be used if a message doesn't
+  // start with a color code.
+  public static get DEFAULT_COLOR() { return Colors['&w']; }
+
   // --------------- Protected methods ------------------
 
   // -> Returns html that creates the element.
-  protected htmlizeMudColors(mudText: string)
+  protected htmlizeMudColors(message: string)
   {
-    let html = '<div>' + this.parse(mudText) + '</div>';
+    // First split message to segements with same color code.
+    let colorSplit = this.splitByColors(message);
 
-    return html;
+    // Now split each sam-color segment to smaller parts divided
+    // by newlines.
+    let newlineAndColorSplit = this.splitByNewlines(colorSplit);
+
+    // And finaly generate a html based on resulting auxiliary data
+    // structure.
+    return this.composeMessageHtml(newlineAndColorSplit);
   }
 
   // ---------------- Private methods -------------------
 
-  // -> Returns 'undefined' if two characters on 'index'
+  // -> Returns 'null' if two characters on 'index'
   //    don't represent a color code, hexadecimal rgb code
   //    otherwise.
-  private parseColorCode(line: string, index: number)
+  private parseColorCode(message: string, index: number, baseColor: string)
   {
-    let colorCode = line.substr(index, 2);
+    let mudColorCode = message.substr(index, 2);
 
-    return Colors[colorCode];
+    // '&_' means 'color at the start of the message'.
+    if (mudColorCode === '&_')
+      return baseColor;
+
+    let htmlColor = Colors[mudColorCode];
+
+    if (htmlColor === undefined)
+      return null;
+
+    return htmlColor;
   }
 
-  private parseRestOfLine(color: string, restOfLine: string)
+  /*
+  private isColorCode(line: string, ampersandPos: number)
   {
-    // TODO: Find next color code.
-    let nextAmpersandPos = line.indexOf('&');
+    let color = this.parseColorCode(line, ampersandPos);
 
-    if (ampersandPos !== -1)
+    // Check there really is a color code at 'ampersandPos'.
+    if (color === undefined)
+      return null;
+
+    // If it is a color code, we have found what we were
+    // looking for, so let's return the results.
+    let result = 
     {
-      ...
+      position: ampersandPos,
+      color: color
+    };
+
+    return result;
+  }
+  */
+
+  /*
+  private findNextColorCode(line: string)
+  {
+    let ampersandPos = null;
+    let searchFrom = 0;
+
+    do
+    {
+      // Find next color code.
+      ampersandPos = line.indexOf('&', searchFrom);
+
+      // If there is an ampersand in the rest of the string.
+      if (ampersandPos !== -1)
+      {
+        let result = this.isColorCode(line, ampersandPos);
+
+        if (result !== null)
+          return result;
+
+        // If we found an ampersand but it's not part of a color
+        // code, repeat the search from the next character.
+        searchFrom = ampersandPos + 1;
+      }
+    }
+    // Thy cycle ends when there is no ampersand left
+    // in the line of text.
+    while (ampersandPos !== -1);
+
+    return null;
+  }
+  */
+
+  /*
+  private parseColorSegment(line: string)
+  {
+    let result =
+    {
+      sameColorSegment: null,
+      restOfLine: null,
+      nextColor: null
     }
 
+    /// TODO
+    // TODO: Find next color code.
+    let nextAmpersandPos = mudText.indexOf('&');
 
-    let html = '<span style="color:' + color + ';'
+    if (nextAmpersandPos !== -1)
+    {
+      let color = this.parseColorCode(mudText, nextAmpersandPos);
+
+      if (color !== undefined)
+      {
+        result.sameColorSegment = mudText.substring(0, nextAmpersandPos);
+        // To the rest of the string.
+        result.restOfLine = mudText.substr(nextAmpersandPos + 2);
+        result.nextColor = color;
+      }
+    }
+  }
+  */
+
+  /*
+  // 'baseColor' is what '&_' code will translate to,
+  // 'trailingColor' is the last color on a previous line
+  //  (or a baseColor if we are processing the first line
+  //   of the message).
+  private parseRestOfLine
+  (
+    baseColor: string,
+    trailingColor: string,
+    line: string
+  )
+  {
+    let segmentParseResult = this.parseColorSegment(line);
+
+    let html = '<span style="color:' + trailingColor + ';'
              +   'font-family:CourrierNewBold;">'
 
-             +     textUpToNextColorCode
+             +     segmentParseResult.sameColorSegment
 
              + '</span>';
 
-    html += this.parseRestOfLine(nextColor, newRestOfLine);
+    let restOfLineParseResult = this.parseRestOfLine
+    (
+      baseColor,
+      segmentParseResult.nextColor,
+      segmentParseResult.restOfLine
+    );
+
+    let result =
+    {
+      html: html + restOfLineParseResult.html,
+      trailingColor: restOfLineParseResult.trailingColor
+    };
+
+    return result;
+  }
+
+  private parseMessageLines(message: string, baseColor: string)
+  {
+    let lines = message.split('\r\n');
+    let html = '';
+    // 'baseColor' will also serve as 'trailingColor' for the first line.
+    let trailingColor = baseColor;
+
+    // Parse the message, line by line.
+    for(let line of lines)
+    {
+      let parseResult = this.parseRestOfLine(baseColor, trailingColor, line);
+
+      // Each line of mud message will be represented by series of
+      // <span> elements (one for each color change) followed
+      // by <br>.      
+      html += parseResult.html + '<br />';
+      trailingColor = parseResult.trailingColor;
+    }
 
     return html;
   }
 
-  private parseLine(line: string)
+  private parseMessage(message: string)
   {
-    // First check the very beginning of the line for a color code
-    let baseColor = this.parseColorCode(line, 0);
-    // If the line starts with color code, 'useful text' will start
-    // at this position.
-    let startPos = 2;
+    // First check the very beginning of the message for a color code.
+    // If the message doesn't start with a color code (which shouldn't
+    // happen), MudColorComponent.DEFAULT_COLOR will be used.
+    let baseColor = this.parseBaseColor(message);
 
-    // Default base color (if the string doesn't start with a color code).
-    if (baseColor === undefined)
+    if (baseColor !== null)
+      // Cut-off the leading color code.
+      message = message.substr(2);
+
+    return this.parseMessageLines(message, baseColor);
+  }
+  */
+
+  private parseBaseColor(message: string)
+  {
+    // Check the very beginning of the message for a color code.
+    // (parseColorCode() returns 'null' if there isn't a color code
+    //  at the specified index).
+    // (We pass empty string as the third parameter (baseColor),
+    // because message is not supposed to start with '&_' (it
+    // means 'the color at the start of the message'). If it
+    // does anyways, parseColorCode() will return our "" value).
+    let baseColor = this.parseColorCode(message, 0, "");
+    // Default color code length is 2 characters.
+    let codeLength = 2;
+
+    if (baseColor === null)
+      // If there hasn't been a color code at after all, it's length is zero.
+      codeLength = 0;
+
+    // If there isn't a color code at the start of the message
+    // of it there is a '&_', we will use default base color.
+    if (baseColor === null || baseColor === "")
     {
-      startPos = 0;
-      baseColor = Colors['&w'];
+      // Default base color (if the string doesn't start with a color code).
+      baseColor = MudColorComponent.DEFAULT_COLOR;
     }
 
-    // Recursively parse the rest of the line (returns html).
-    return this.parseRestOfLine(baseColor, line.substr(startPos));
-
-    /*
-    let ampersandPos = line.indexOf('&');
-
-    if (ampersandPos !== -1)
+    let result =
     {
-      let colorCode = line.substr(ampersandPos, 2);
-
-      let rgbColor = Colors[colorCode];
-
-      if (rgbColor !== undefined)
-      {
-
-      }
+      baseColor: baseColor,
+      codeLength: codeLength
     }
 
-    +   '<span style="color:green;font-family:CourrierNewBold;">'
-    +      mudText
-    +   '</span>'
-    */
+    return result;
   }
 
-  private parse(mudText: string)
+  private parseColorSegment(message: string, baseColor: string)
   {
-    let html = '';
-    let lines = mudText.split('\r\n');
+    let searchFrom = 0;
+    let ampersandPos = -1;
+    let nextColor = null;
 
-    for(let line of lines)
-      html += this.parseLine(line) + '<br />';
+    do
+    {
+      // Find next color ampersand.
+      ampersandPos = message.indexOf('&', searchFrom);
+
+      // (parseColorCode() returns 'null' if there isn't a color code
+      //  at the specified index).
+      nextColor = this.parseColorCode(message, ampersandPos, baseColor);
+
+      // If we found an ampersand but it's not part of a color
+      // code, we will repeat the search from the next character.
+      searchFrom = ampersandPos + 1;
+    }
+    // Repeat the cycle if we found an ampersand but it's not a color code.
+    while ((ampersandPos !== -1) && (nextColor === null));
+
+    let result =
+    {
+      // If we didn't find a color code, segment will cover whole message.
+      message: message,
+      nextColor: nextColor
+    };
+
+    // If we have found a color, segemnt will end one character before
+    // the ampersand position.
+    if (nextColor !== null)
+      result.message = message.substr(0, ampersandPos - 1);
+
+    return result;
+  }
+
+  private parseColorSegments(message: string, baseColor: string)
+  {
+    let result = [];
+    // The fist segment uses message base color.
+    let segmentColor = baseColor;
+    let parseResult = null;
+
+    do
+    {
+      parseResult = this.parseColorSegment(message, baseColor);
+
+      if (parseResult !== null)
+      {
+        let colorSegment =
+        {
+          color: segmentColor,
+          message: parseResult.message
+        }
+
+        result.push(colorSegment);
+
+        // Cut the parsed segment off the message.
+        message = message.substr(parseResult.message.length);
+
+        // Next message segment will use the color that we have
+        // parsed at the end of our segment.
+        segmentColor = parseResult.nextColor;
+      }
+    }
+    while (parseResult !== null);
+
+    return result;
+  }
+
+  private splitByColors(message: string)
+  {
+    // First check the very beginning of the message for a color code.
+    // If the message doesn't start with a color code (which shouldn't
+    // happen), MudColorComponent.DEFAULT_COLOR will be used.
+    let parseResult = this.parseBaseColor(message);
+
+    if (parseResult.codeLength !== 0)
+      // Cut-off the leading color code.
+      message = message.substr(parseResult.codeLength);
+
+    return this.parseColorSegments(message, parseResult.baseColor);
+  }
+
+  private splitSegmentByNewlines
+  (
+    segment: { color: string, message: string }
+  )
+  {
+    let result = [];
+
+    let split = segment.message.split('\r\n');
+
+    for (let messagePart of split)
+    {
+      let lineFragment =
+      {
+        color: segment.color,
+        message: messagePart
+      }
+
+      result.push(lineFragment);
+    }
+
+    return result;
+  }
+
+  private splitByNewlines
+  (
+    colorSplit: Array<{ color: string, message: string }>
+  )
+  {
+    let result = [];
+
+    for (let segment of colorSplit)
+      result.concat(this.splitSegmentByNewlines(segment));
+
+    return result;
+  }
+
+  private composeLineFragmentHtml
+  (
+    lineFragment: { color: string, message: string }
+  )
+  {
+    return '<span style="color:' + lineFragment.color + ';'
+      +                 'font-family:CourrierNewBold;">'
+      +       lineFragment.message
+      + '   </span>';
+  }
+
+  private composeInnerHtml
+  (
+    messageData: Array<{ color: string, message: string }>
+  )
+  {
+    let html = "";
+
+    for (let i = 0; i < messageData.length; i++)
+    {
+      html += this.composeLineFragmentHtml(messageData[i]);
+
+      // We don't have to add <br> tag after the last line
+      // fragment, because whole message is inside a <div>
+      // element, which is a block element so it will look
+      // like a new line anyways.
+      if (i < messageData.length - 1)
+        html += '<br />';
+    }
+  }
+
+  private composeMessageHtml
+  (
+    messageData: Array<{ color: string, message: string }>
+  )
+  {
+    // Each mud message is put into a <div> element.
+    let html = '<div>'
+      +           this.composeInnerHtml(messageData)
+      +        '</div>';
 
     return html;
   }

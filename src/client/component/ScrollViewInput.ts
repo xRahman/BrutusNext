@@ -227,10 +227,13 @@ class ScrollViewInput extends Component
       cursorPosition = 0;
     }
 
-    // Scroll the textarea to the bottom
-    // (we are exploiting the fact that browser scrolls textarea
+    // Scroll the textarea to the bottom.
+    // (We are exploiting the fact that browser scrolls textarea
     //  to the end when it gets a focus - so we remove it's focus
     //  and set it back again).
+    // (This is better than setting 'scrollTop' property, because
+    //  doing so changes vertical text position so the text 'jumps'
+    //  up and down when commands are retrieved from the buffer).
     this.$input.blur().focus();
 
     // Restore the original text.
@@ -241,7 +244,7 @@ class ScrollViewInput extends Component
     this.$input.prop('selectionEnd', cursorPosition);
   }
 
-  // Sets the string at position 'index' in commands buffer
+  // Sets the string from position 'index' in command buffer
   // to the input element.
   private setRecalledCommand(index: number, offset: number)
   {
@@ -266,7 +269,7 @@ class ScrollViewInput extends Component
     );
   }
 
-  // Recall command from commands buffer and sets it to the
+  // Recall command from command buffer and sets it to the
   // input element.
   private recallCommand(event: KeyboardEvent, offset: number)
   {
