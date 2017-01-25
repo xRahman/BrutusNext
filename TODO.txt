@@ -1,3 +1,5 @@
+TODO: Opravit nekonečný cyklus, když string začíná barvou.
+
 TODO: Přidat do obarvovacích fcí parametr 'baseColorOverride'
   - a sjednotit kód na vyrábění barevného textu, ať to není na
     dvou místech pokaždé jinak.

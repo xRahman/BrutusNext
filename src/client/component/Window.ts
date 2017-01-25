@@ -7,11 +7,11 @@
 'use strict';
 
 import AppBody = require('../component/Body');
-import Component = require('../component/Component');
+import MudColorComponent = require('../component/MudColorComponent');
 
 import $ = require('jquery');
 
-class Window extends Component
+class Window extends MudColorComponent
 {
   public static get CSS_CLASS() { return 'Window'; }
   public static get TITLE_BAR_CSS_CLASS() { return 'WindowTitleBar'; }
