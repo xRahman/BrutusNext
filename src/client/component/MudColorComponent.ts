@@ -26,8 +26,7 @@ const Colors =
   '&c':	'#01c8d4',  // cyan
   '&C':	'#5bedf6',  // bright cyan
   '&w':	'#dbdbdb',  // off-white
-  '&W':	'#fff',	    // bright white
-  ///'39': '#dbdbdb',  //default
+  '&W':	'#fff'	    // bright white
 }
 
 abstract class MudColorComponent extends Component
@@ -38,15 +37,20 @@ abstract class MudColorComponent extends Component
 
   // --------------- Protected methods ------------------
 
+  // If 'baseColor' is 'null', the color from the start of the message
+  // (or a default color) will be used (that's how common mud messages
+  //  are handled).
   // -> Returns html that creates the element.
-  protected htmlizeMudColors(message: string)
+  protected htmlizeMudColors(message: string, baseColor: string = null)
   {
     // First split message to segements with same color code.
-    let colorSplit = this.splitByColors(message);
+    let colorSplit = this.splitByColors(message, baseColor);
 
     // Now split each sam-color segment to smaller parts divided
     // by newlines.
     let newlineAndColorSplit = this.splitByNewlines(colorSplit);
+
+    console.log('newlineAndColorSplit.length: ' + newlineAndColorSplit.length);
 
     // And finaly generate a html based on resulting auxiliary data
     // structure.
@@ -230,6 +234,9 @@ abstract class MudColorComponent extends Component
   }
   */
 
+  // If 'baseColor' is 'null', the color from the start of the message
+  // (or a default color) will be used (that's how common mud messages
+  //  are handled).
   private parseBaseColor(message: string)
   {
     // Check the very beginning of the message for a color code.
@@ -240,6 +247,7 @@ abstract class MudColorComponent extends Component
     // means 'the color at the start of the message'). If it
     // does anyways, parseColorCode() will return our "" value).
     let baseColor = this.parseColorCode(message, 0, "");
+
     // Default color code length is 2 characters.
     let codeLength = 2;
 
@@ -272,7 +280,7 @@ abstract class MudColorComponent extends Component
 
     do
     {
-      // Find next color ampersand.
+      // Find next '&' character.
       ampersandPos = message.indexOf('&', searchFrom);
 
       // (parseColorCode() returns 'null' if there isn't a color code
@@ -312,33 +320,40 @@ abstract class MudColorComponent extends Component
     {
       parseResult = this.parseColorSegment(message, baseColor);
 
-      if (parseResult !== null)
+      console.log('parseResult.message: ' + parseResult.message);
+
+      let colorSegment =
       {
-        let colorSegment =
-        {
-          color: segmentColor,
-          message: parseResult.message
-        }
-
-        result.push(colorSegment);
-
-        // Cut the parsed segment off the message.
-        message = message.substr(parseResult.message.length);
-
-        // Next message segment will use the color that we have
-        // parsed at the end of our segment.
-        segmentColor = parseResult.nextColor;
+        color: segmentColor,
+        message: parseResult.message
       }
+      result.push(colorSegment);
+
+      // Cut the parsed segment off the message.
+      message = message.substr(parseResult.message.length);
+
+      // Next message segment will use the color that we have
+      // parsed at the end of our segment.
+      segmentColor = parseResult.nextColor;
     }
-    while (parseResult !== null);
+    while (message.length > 0);
 
     return result;
   }
 
-  private splitByColors(message: string)
+  // If 'baseColor' is 'null', the color from the start of the message
+  // (or a default color) will be used (that's how common mud messages
+  //  are handled).
+  private splitByColors(message: string, baseColor: string)
   {
-    // First check the very beginning of the message for a color code.
-    // If the message doesn't start with a color code (which shouldn't
+    console.log('splitByColors(), message: ' + message);
+
+    // If we have been provided by 'baseColor', let's just use it.
+    if (baseColor !== null)
+      return this.parseColorSegments(message, baseColor);
+
+    // Otherwise we have to read it from the begenning of the 'message'.
+    //   If the message doesn't start with a color code (which shouldn't
     // happen), MudColorComponent.DEFAULT_COLOR will be used.
     let parseResult = this.parseBaseColor(message);
 
@@ -366,8 +381,12 @@ abstract class MudColorComponent extends Component
         message: messagePart
       }
 
+      console.log('Pushing lineFragment, message: ' + lineFragment.message);
+
       result.push(lineFragment);
     }
+
+    console.log('result.length: ' + result.length);
 
     return result;
   }
@@ -379,8 +398,10 @@ abstract class MudColorComponent extends Component
   {
     let result = [];
 
+/// TODO: Concat kopiruje do noveho pole, asi by bylo lepsi si napsat
+/// vlastni mergovani.
     for (let segment of colorSplit)
-      result.concat(this.splitSegmentByNewlines(segment));
+      result = result.concat(this.splitSegmentByNewlines(segment));
 
     return result;
   }
@@ -393,7 +414,7 @@ abstract class MudColorComponent extends Component
     return '<span style="color:' + lineFragment.color + ';'
       +                 'font-family:CourrierNewBold;">'
       +       lineFragment.message
-      + '   </span>';
+      +    '</span>';
   }
 
   private composeInnerHtml
@@ -403,9 +424,16 @@ abstract class MudColorComponent extends Component
   {
     let html = "";
 
+    console.log('messageData.length: ' + messageData.length);
+
     for (let i = 0; i < messageData.length; i++)
     {
+      console.log('messageData[i].color: ' + messageData[i].color);
+      console.log('messageData[i].message: ' + messageData[i].message);
+
       html += this.composeLineFragmentHtml(messageData[i]);
+
+      console.log('inner html: ' + html);
 
       // We don't have to add <br> tag after the last line
       // fragment, because whole message is inside a <div>
@@ -414,6 +442,8 @@ abstract class MudColorComponent extends Component
       if (i < messageData.length - 1)
         html += '<br />';
     }
+
+    return html;
   }
 
   private composeMessageHtml
@@ -425,6 +455,8 @@ abstract class MudColorComponent extends Component
     let html = '<div>'
       +           this.composeInnerHtml(messageData)
       +        '</div>';
+
+    console.log('message html: ' + html);
 
     return html;
   }
