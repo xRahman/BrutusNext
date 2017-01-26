@@ -1,17 +1,29 @@
+TODO: Zpřehlednit kód na parsování barev.
+
+TODO: &&b by se mělo zobrazit jako neobarvené &b
+- ve web klientovi [done]
+- a taky přes telnet.
+Pozn: Pouze pokud následuje barevný kód.
+ (Díky tomu se nezprzní text jako: 'if (a && b)').
+
 TODO: Opravit nekonečný cyklus, když string začíná barvou.
+[done]
 
 TODO: Přidat do obarvovacích fcí parametr 'baseColorOverride'
   - a sjednotit kód na vyrábění barevného textu, ať to není na
     dvou místech pokaždé jinak.
+[done]
 
 TODO: Při dělení kusů message podle newlinů je třeba někam
   poznamenat, kde byl enter a kde ne - jinak se mi to rozsype
   na milión řádků.
+[done]
 
 TODO: Parsování barev trochu jinak:
 1) Nejdřív zaměnit /r/n za <br>
    (protože <br> může bejt klidně i uvnitř spanu)
 2) Pak to parsovat celé jako jednu řádku.
+[done]
 
 TODO: Když recallnu poslední command a dám enter, tak se sice
   nemá přidat do bufferu, ale má se posunout counter.
