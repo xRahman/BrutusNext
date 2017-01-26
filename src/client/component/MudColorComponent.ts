@@ -123,6 +123,14 @@ abstract class MudColorComponent extends Component
     let ampersandPos = -1;
     let prevAmpersandPos = -1;
     let nextColor = null;
+    let parsedCharacters = 0;
+
+    /// ARGH, nejde mi to :\
+    /// BIG TODO
+    /*
+      Možná by bylo lepší výsledný string postupně appendovat,
+      než ze zdroje za běhu vyřezávat ampersandy.
+    */
 
     do
     {
@@ -149,10 +157,13 @@ abstract class MudColorComponent extends Component
 
         console.log('message before cut: ' + message);
 
-        // Cut one of the ampersands from the message
+        // Remove one of the ampersands from the message
         // (so '&r' is printed instead of '&&r').
         message =
           message.substr(0, ampersandPos) + message.substr(ampersandPos + 1);
+
+        // Removed '&' counts as one parsed character.
+        parsedCharacters += 1;
 
         console.log('message after cut: ' + message);
 
@@ -172,7 +183,8 @@ abstract class MudColorComponent extends Component
     {
       // If we didn't find a color code, segment will cover whole message.
       message: message,
-      nextColor: nextColor
+      nextColor: nextColor,
+      parsedCharacters: parsedCharacters
     };
 
     // If we have found a color, segemnt will end before the ampersand
@@ -208,10 +220,8 @@ abstract class MudColorComponent extends Component
       if (colorSegment.message.length > 0)
         result.push(colorSegment);
 
-      // Cut off the parsed segment plus 2 characters
-      // (because we have also parsed the color code
-      //  of the next segment) of the message.
-      message = message.substr(parseResult.message.length + 2);
+      // Cut off the parsed segment.
+      message = message.substr(parseResult.parsedCharacters);
 
       // Next message segment will use the color that we have
       // parsed at the end of our segment.
@@ -287,10 +297,13 @@ abstract class MudColorComponent extends Component
   {
     let result = [];
 
-/// TODO: Concat kopiruje do noveho pole, asi by bylo lepsi si napsat
-/// vlastni mergovani.
     for (let segment of colorSplit)
-      result = result.concat(this.splitSegmentByNewlines(segment));
+    {
+      let lineSegments = this.splitSegmentByNewlines(segment);
+
+      for (let lineSegment of lineSegments)
+        result.push(lineSegment);
+    }
 
     return result;
   }

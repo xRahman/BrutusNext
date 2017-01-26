@@ -1,3 +1,5 @@
+TOFIX: 'Hello &&K&WWorld' se nezobrazí správně
+
 TODO: Zpřehlednit kód na parsování barev.
 
 TODO: &&b by se mělo zobrazit jako neobarvené &b
@@ -5,6 +7,10 @@ TODO: &&b by se mělo zobrazit jako neobarvené &b
 - a taky přes telnet.
 Pozn: Pouze pokud následuje barevný kód.
  (Díky tomu se nezprzní text jako: 'if (a && b)').
+
+TODO (lepší nápad):
+  Když se narazí na '&&b', tak se to zobrazí jako '&b' - ale nějakou
+  speciální barvou (asi jinou než local-echo color).
 
 TODO: Opravit nekonečný cyklus, když string začíná barvou.
 [done]
