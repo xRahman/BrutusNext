@@ -36,6 +36,8 @@ abstract class MudColorComponent extends Component
   // start with a color code.
   public static get DEFAULT_COLOR() { return Colors['&w']; }
 
+  public static get COLOR_CODE_COLOR() { return '008080'; }
+
   // --------------- Protected methods ------------------
 
   // If 'baseColor' is 'null', the color from the start of the message
@@ -50,8 +52,6 @@ abstract class MudColorComponent extends Component
     // Now split each sam-color segment to smaller parts divided
     // by newlines.
     let newlineAndColorSplit = this.splitByNewlines(colorSplit);
-
-    ///console.log('newlineAndColorSplit.length: ' + newlineAndColorSplit.length);
 
     // And finaly generate a html based on resulting auxiliary data
     // structure.
@@ -117,80 +117,143 @@ abstract class MudColorComponent extends Component
     return result;
   }
 
-  private parseColorSegment(message: string, baseColor: string)
+  private checkColorAtPos
+  (
+    result:
+    {
+      message: string,
+      nextColor: string,
+      parsedChars: number,
+      escapedColorCode: boolean
+    },
+    message: string,
+    ampersandPos: number,
+    baseColor: string
+  )
   {
-    let searchFrom = 0;
-    let ampersandPos = -1;
-    let prevAmpersandPos = -1;
-    let nextColor = null;
-    let parsedCharacters = 0;
-
-    /// ARGH, nejde mi to :\
-    /// BIG TODO
+    /// TEST
     /*
-      Možná by bylo lepší výsledný string postupně appendovat,
-      než ze zdroje za běhu vyřezávat ampersandy.
-    */
+    if (result.escapedColorCode === true)
+    {
+      result.message += 2;
+      result.nextColor = null;
+      result.parsedChars += 2;
+      result.escapedColorCode = false;
 
+      return result;
+    }
+    */   
+
+    let color = this.parseColorCode(message, ampersandPos, baseColor);
+
+    if (color !== null)
+    {
+      console.log('message: ' + message);
+      console.log('(from pos: ' + result.parsedChars + ' to pos: ' + ampersandPos);
+      result.message += message.substring(result.parsedChars, ampersandPos);
+      console.log('result.message: ' + result.message);
+      result.nextColor = color;
+      // +2 characters of color code.
+      result.parsedChars = ampersandPos + 2;
+    }
+
+    return result;
+  }
+
+  private checkColorAfterPos
+  (
+    result:
+    {
+      message: string,
+      nextColor: string,
+      parsedChars: number,
+      escapedColorCode: boolean
+    },
+    message: string,
+    ampersandPos: number,
+    baseColor: string
+  )
+  {
+    let color = this.parseColorCode(message, ampersandPos + 1, baseColor);
+
+    // '&' followed by color code forces the color code to be printed.
+    // ('&&r' will be printed as '&r').
+    if (color !== null)
+    {
+      // Escaped color codes are printed using special color.
+      result.nextColor = MudColorComponent.COLOR_CODE_COLOR;
+      // +1 to skip the first ampersand.
+      result.parsedChars = ampersandPos + 1;
+      // We also have to remember that we have found an escaped color code.
+      result.escapedColorCode = true;
+    }
+
+    ///result.nextColor = null;
+
+    return result;
+  }
+
+  private parseNextAmpersand
+  (
+    result:
+    {
+      message: string,
+      nextColor: string,
+      parsedChars: number,
+      escapedColorCode: boolean
+    },
+    message: string,
+    baseColor: string
+  )
+  {
+    // Find next '&' character (search from position 'result.parsedChars').
+    let ampersandPos = message.indexOf('&', result.parsedChars);
+
+    // If there is no ampersand in the rest of message,
+    // segment will extend to the end.
+    if (ampersandPos === -1)
+    {
+      result.message = message.substr(result.parsedChars);
+      result.nextColor = null;
+      result.parsedChars = message.length;
+      result.escapedColorCode = false;
+
+      return result;
+    }
+
+    // Check if there is a color code at 'ampersandPos'.
+    result = this.checkColorAtPos(result, message, ampersandPos, baseColor);
+
+    /// TEST:
+    return result;
+    /*
+    if (result.nextColor !== null)
+      return result;
+
+    // Check if there is a color code at 'ampersandPos + 1'.
+    return this.checkColorAfterPos(result, message, ampersandPos, baseColor);
+    */
+  }
+
+  private parseColorSegment
+  (
+    result:
+    {
+      message: string,
+      nextColor: string,
+      parsedChars: number,
+      escapedColorCode: boolean
+    },
+    message: string,
+    baseColor: string
+  )
+  {
     do
     {
-      prevAmpersandPos = ampersandPos;
-
-      // Find next '&' character.
-      ampersandPos = message.indexOf('&', searchFrom);
-      
-      // (parseColorCode() returns 'null' if there isn't a color code
-      //  at the specified index).
-      nextColor = this.parseColorCode(message, ampersandPos, baseColor);
-
-      // If the color is immediately preceded by another '&'
-      // (so we have something like '&&r'), color code will not be
-      // translated to html color but rather printed as '&r'.
-      let isPreampersanded =
-        prevAmpersandPos >= 0 && prevAmpersandPos === ampersandPos - 1;
-
-      // But only do that for actuall color codes (like '&&r')
-      // (expressions like 'if (a && b)' won't be changed).
-      if (nextColor !== null && isPreampersanded)
-      {
-        ampersandPos = prevAmpersandPos;
-
-        console.log('message before cut: ' + message);
-
-        // Remove one of the ampersands from the message
-        // (so '&r' is printed instead of '&&r').
-        message =
-          message.substr(0, ampersandPos) + message.substr(ampersandPos + 1);
-
-        // Removed '&' counts as one parsed character.
-        parsedCharacters += 1;
-
-        console.log('message after cut: ' + message);
-
-        // Pretend that we didn't see the color code.
-        nextColor = null;
-      }
-
-      // If we found an ampersand but it's not part of a color
-      // code, we will repeat the search from the next character.
-      searchFrom = ampersandPos + 1;
+      result = this.parseNextAmpersand(result, message, baseColor);
     }
-    // Repeat the cycle if we have found an ampersand but it's not
-    // a color code.
-    while ((ampersandPos !== -1) && (nextColor === null));
-
-    let result =
-    {
-      // If we didn't find a color code, segment will cover whole message.
-      message: message,
-      nextColor: nextColor,
-      parsedCharacters: parsedCharacters
-    };
-
-    // If we have found a color, segemnt will end before the ampersand
-    // position.
-    if (nextColor !== null)
-      result.message = message.substr(0, ampersandPos);
+    // Repeat if we didn't found a color and didn't parsed whole message yet.
+    while (result.nextColor === null && result.parsedChars < message.length);
 
     return result;
   }
@@ -200,13 +263,18 @@ abstract class MudColorComponent extends Component
     let result = [];
     // The fist segment uses message base color.
     let segmentColor = baseColor;
-    let parseResult = null;
+    let parseResult =
+    {
+      message: "",
+      nextColor: null,
+      parsedChars: 0,
+      escapedColorCode: false
+    };
 
     do
     {
-      parseResult = this.parseColorSegment(message, baseColor);
-
-      ///console.log('parseResult.message: ' + parseResult.message);
+      // Find next position in message where color changes.
+      parseResult = this.parseColorSegment(parseResult, message, baseColor);
 
       let colorSegment =
       {
@@ -220,14 +288,15 @@ abstract class MudColorComponent extends Component
       if (colorSegment.message.length > 0)
         result.push(colorSegment);
 
-      // Cut off the parsed segment.
-      message = message.substr(parseResult.parsedCharacters);
-
       // Next message segment will use the color that we have
       // parsed at the end of our segment.
-      segmentColor = parseResult.nextColor;
+      //   This is not done if the segment is an escaped color
+      // code, because such segments use a special color and
+      // we need to return to previous color.
+      if (parseResult.escapedColorCode === false)
+        segmentColor = parseResult.nextColor;
     }
-    while (message.length > 0);
+    while (parseResult.parsedChars < message.length);
 
     return result;
   }
@@ -237,7 +306,6 @@ abstract class MudColorComponent extends Component
   //  are handled).
   private splitByColors(message: string, baseColor: string)
   {
-    ///console.log('splitByColors(), message: ' + message);
 
     // If we have been provided by 'baseColor', let's just use it.
     if (baseColor !== null)
@@ -276,16 +344,8 @@ abstract class MudColorComponent extends Component
         newLine: (i < split.length - 1)
       }
 
-      /*
-      console.log('Pushing lineFragment, message: ' + lineFragment.message
-        + ' split length: ' + split.length + ' i: ' + i
-        + ' newLine:' + lineFragment.newLine);
-      */
-
       result.push(lineFragment);
     }
-
-    ///console.log('result.length: ' + result.length);
 
     return result;
   }
@@ -326,24 +386,15 @@ abstract class MudColorComponent extends Component
   {
     let html = "";
 
-    ///console.log('messageData.length: ' + messageData.length);
-
     for (let i = 0; i < messageData.length; i++)
     {
-      ///console.log('messageData[i].color: ' + messageData[i].color);
-      ///console.log('messageData[i].message: ' + messageData[i].message);
-
       // We don't have to create a <span> tags for empty segments
       // (but we still need to add <br> tag if such segment is
       //  followed by newLine).
       if (messageData[i].message !== "")
         html += this.composeLineFragmentHtml(messageData[i]);
 
-      ///console.log('inner html: ' + html);
-
       let isLast = (i === messageData.length - 1);
-
-      ///console.log('CRLF: ' + messageData[i].newLine);
 
       // Only add a newline after segments that are flagged so.
       //   We also don't have to add <br> tag after the last
@@ -366,8 +417,6 @@ abstract class MudColorComponent extends Component
     let html = '<div>'
       +           this.composeInnerHtml(messageData)
       +        '</div>';
-
-    ///console.log('message html: ' + html);
 
     return html;
   }
