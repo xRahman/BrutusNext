@@ -82,6 +82,11 @@ abstract class MudColorComponent extends Component
     }
   }
 
+  // Regularly, 'parser.activeColor' (which is obtained by parsing
+  // color codes from in the message) will be used with opening
+  // tag. If you provide a 'color' param, it will be used instead
+  // (without modifying parser.activeColor value, so the next opened
+  // <span> tag will use parser.activeColor again).
   private openSpanIfClosed
   (
     parser: { html: string, spanOpen: boolean, activeColor: string },
@@ -102,7 +107,8 @@ abstract class MudColorComponent extends Component
     }
   }
 
-  // Adds 'characters' string to resulting html.
+  // Adds 'characters' string to resulting html coloured with
+  // 'color' if you provide it or 'parser.activeColor' if you don't.
   private outputCharacters
   (
     parser: { html: string, spanOpen: boolean, activeColor: string },
@@ -132,7 +138,7 @@ abstract class MudColorComponent extends Component
       MudColorComponent.COLOR_CODE_COLOR
     );
 
-    // Skip parsing of the next two characters because
+    // Skip parsing of two extra characters because
     // we have just outputed them in advance.
     return 2;
   }
@@ -186,12 +192,14 @@ abstract class MudColorComponent extends Component
     {
       this.closeSpanIfOpen(parser);
 
-      // Update the active color. The <span> tag will
-      // be opened by parsing the next character.
+      // Update the active color.
+      // (We don't open next <span> tag here, it will be
+      // opened automatically by parsing the next character.
       parser.activeColor = color;
 
-      // Skip the next character
-      // (because it is a part of color code).
+      // Skip one extra character
+      // (because we have just parsed a color code which is
+      // two character long).
       return 1;
     }
 
