@@ -86,7 +86,7 @@ export class WebSocketServer
     Syslog.log
     (
       "Websocket server is up and listening to new connections",
-      Message.Type.TELNET_SERVER,
+      Message.Type.WEBSOCKET_SERVER,
       AdminLevel.IMMORTAL
     );
 
@@ -207,46 +207,35 @@ export class WebSocketServer
 
   private async onNewConnection(socket: WebSocket)
   {
-    socket.on
-    (
-      'message',
-      (data, flags) => { this.onReceivedMessage(data, flags); }
-    );
+    let ip = WebSocketDescriptor.parseRemoteAddress(socket);
+    let url = WebSocketDescriptor.parseRemoteUrl(socket);
 
+    if (!this.isServerOpen(socket, ip, url))
+      return;
 
     Syslog.log
     (
-      "Received a new connection request from"
-      + " " + '<ip>' /* + socket.remoteAddress*/,
-      Message.Type.TELNET_SERVER,
+      "Received a new websocket connection request from"
+      + " " + url + " (" + ip + ")",
+      Message.Type.WEBSOCKET_SERVER,
       AdminLevel.IMMORTAL
     );
 
-    // if (!this.isServerOpen(socket))
-    //   return;
-  }
+    let connection = await this.createConnection(socket, ip, url);
 
-  private async onReceivedMessage(data: any, flags: { binary: boolean })
-  {
-    if (flags.binary === true)
-    {
-      /// TODO:
-      /// error - ale asi ne ERROR(), protoze za to muze klient,
-      /// takze to nejde opravit v kodu serveru. Nejspis tudiz jen
-      /// syslog message.
+    if (connection === null)
+      // Error is already reported by createConnection().
       return;
-    }
 
-    console.log('(ws) received message: ' + data);
+    connection.startAuthenticating();
   }
 
   // ---------------- Private methods --------------------
 
-  /*
   // -> Returns 'null' if connection couldn't be created.
-  private async createConnection(socket)
+  private async createConnection(socket: WebSocket, ip: string, url: string)
   {
-    let socketDescriptor = new WebSocketDescriptor(socket);
+    let socketDescriptor = new WebSocketDescriptor(socket, ip, url);
 
     let connection = await Server.entityManager.createEntity(Connection);
 
@@ -259,26 +248,24 @@ export class WebSocketServer
     return connection;
   }
 
-  private isServerOpen(socket: net.Socket)
+  private isServerOpen(socket: WebSocket, ip: string, url: string)
   {
     if (this.isOpen === false)
     {
       Syslog.log
       (
-        "Denying connection request from" + socket.remoteAddress + ","
-        + " server is closed",
-        Message.Type.TELNET_SERVER,
+        "Denying websocket connection request from"
+        + " " + url + "(" + ip + "):"
+        + " Server is closed",
+        Message.Type.WEBSOCKET_SERVER,
         AdminLevel.IMMORTAL
       );
 
-      // Half-closes the socket by sending a FIN packet.
-      // It is possible the server will still send some data.
-      socket.end();
+      socket.close();
 
       return false;
     }
 
     return true;
   }
-  */
 }

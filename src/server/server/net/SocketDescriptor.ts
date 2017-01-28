@@ -17,19 +17,19 @@ import * as net from 'net';  // Import namespace 'net' from node.js
 
 export abstract class SocketDescriptor
 {
-  constructor(protected socket: net.Socket)
+  constructor(ip: string)
   {
-    if (this.socket.address === undefined)
-    {
-      ERROR("Missing address on socket");
-
-      this.ipAddress = null;
-    }
-
-    // Remember ip address because we need to know it even after ours socket
-    // closes.
-    this.ipAddress = this.socket.remoteAddress;
+    // Remember ip address because we need to know it
+    // even after ours socket closes.
+    this.ip = ip;
   }
+
+  // -------------- Static class data -------------------
+
+  // Newlines are normalized to this sequence both before
+  // sending (in Message.compose()) and after receiving
+  // (in TelnetSocketDescriptor.onSocketReceivedData()).
+  public static get NEW_LINE() { return '\r\n'; }
 
   // ----------------- Public data ----------------------
 
@@ -45,10 +45,10 @@ export abstract class SocketDescriptor
 
   public getIpAddress(): string
   {
-    if (this.ipAddress === null)
+    if (this.ip === null)
       ERROR("Ip address is not initialized on socket descriptor");
 
-    return this.ipAddress;
+    return this.ip;
   }
 
   /*
@@ -68,7 +68,7 @@ export abstract class SocketDescriptor
 
   // ---------------- Public methods --------------------
  
-  public abstract initSocket();
+  ///public abstract initSocket();
 
   // Sends a string to the user.
   public abstract send(data: string);
@@ -78,8 +78,32 @@ export abstract class SocketDescriptor
 
   //----------------- Protected data --------------------
 
-  protected ipAddress: string = null;
+  protected ip: string = null;
+
+  // Command lines waiting to be processed.
+  protected commandsBuffer = [];
 
   // -------------- Protected methods -------------------
 
+  protected async processInput(input: string)
+  {
+    // Split input by newlines.
+    let lines = input.split(SocketDescriptor.NEW_LINE);
+
+    // And push each line as a separate command to commandsBuffer[] to be
+    // processed (.push.apply() appends an array to another array).
+    this.commandsBuffer.push.apply(this.commandsBuffer, lines);
+
+    // Handle each line as a separate command.
+    for (let command of this.commandsBuffer)
+    {
+      // Trim the command (remove leading and trailing white
+      // spaces, including newlines) before processing.
+      await this.connection.processCommand(command.trim());
+    }
+
+    // All commands are processed, mark the buffer as empty.
+    // (if will also hopefully flag allocated data for freeing from memory)
+    this.commandsBuffer = [];
+  }
 }
