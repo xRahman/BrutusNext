@@ -27,15 +27,19 @@ export module Utils
     );
   }
 
-  // Make sure that all newlines are representedy by '\r\n'.
+  // Make sure that all newlines are representedy by '\n'.
   export function normalizeCRLF(data: string)
   {
     if (data && data.length > 0)
     {
+      // Remove all '\r' characters.
+      data = data.replace(/\r/gi, "");
+      /*
       // First remove all '\r' characters, then replace all '\n'
       // characters with '\r\n'.
       data = data.replace(/\r/gi, "");
       data = data.replace(/\n/gi, TelnetSocketDescriptor.NEW_LINE);
+      */
     }
 
     return data;

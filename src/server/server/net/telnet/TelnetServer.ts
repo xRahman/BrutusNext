@@ -141,16 +141,17 @@ export class TelnetServer
   // (it processes a new connection request)
   private async onNewConnection(socket: net.Socket)
   {
+    let ip = TelnetSocketDescriptor.parseRemoteAddress(socket);
+
+    if (!this.isServerOpen(socket, ip))
+      return;
+
     Syslog.log
     (
-      "Received a new connection request from"
-      + " " + socket.remoteAddress,
+      "Received a new telnet connection request from " + ip,
       Message.Type.TELNET_SERVER,
       AdminLevel.IMMORTAL
     );
-
-    if (!this.isServerOpen(socket))
-      return;
 
     /// Tady by se asi resil IP ban. Zatim si to tu necham
     /*
@@ -165,7 +166,7 @@ export class TelnetServer
     /// zatim necham.
     ///s.socket = s; // conform to the websocket object to make easier to handle
 
-    let connection = await this.createConnection(socket);
+    let connection = await this.createConnection(socket, ip);
 
     if (connection === null)
       // Error is already reported by createConnection().
@@ -177,9 +178,9 @@ export class TelnetServer
   // ---------------- Private methods --------------------
 
   // -> Returns 'null' if connection couldn't be created.
-  private async createConnection(socket)
+  private async createConnection(socket: net.Socket, ip: string)
   {
-    let socketDescriptor = new TelnetSocketDescriptor(socket);
+    let socketDescriptor = new TelnetSocketDescriptor(socket, ip);
 
     let connection = await Server.entityManager.createEntity(Connection);
 
@@ -192,14 +193,14 @@ export class TelnetServer
     return connection;
   }
 
-  private isServerOpen(socket: net.Socket)
+  private isServerOpen(socket: net.Socket, ip: string)
   {
     if (this.isOpen === false)
     {
       Syslog.log
       (
-        "Denying connection request from" + socket.remoteAddress + ","
-        + " server is closed",
+        "Denying telnet connection request from" + ip + ":"
+        + " Server is closed",
         Message.Type.TELNET_SERVER,
         AdminLevel.IMMORTAL
       );
