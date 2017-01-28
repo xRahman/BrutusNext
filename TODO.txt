@@ -1,56 +1,32 @@
-TOFIX: 'Hello &&K&WWorld' se nezobrazí správně
+NOTE: Korektní zavírání websocketu při zavření nebo reloadu stránky:
+  window.onbeforeunload = function() {
+      websocket.onclose = function () {}; // disable onclose handler first
+      websocket.close()
+  };
 
-TODO: Zpřehlednit kód na parsování barev.
+NOTE: url se dá číst z websocketu přes:
+  socket.upgradeReq.url
+  respektive: const location = url.parse(socket.upgradeReq.url, true);
+  // To první je prostě string, to druhé vytvoří 'url' object
 
-TODO: &&b by se mělo zobrazit jako neobarvené &b
-- ve web klientovi [done]
-- a taky přes telnet.
-Pozn: Pouze pokud následuje barevný kód.
- (Díky tomu se nezprzní text jako: 'if (a && b)').
+Co by měl mít socketDescriptor:
+.ipAddress
+.connection
+.closeSocket()
+.socketClosed
+.send(message)
 
-TODO (lepší nápad):
-  Když se narazí na '&&b', tak se to zobrazí jako '&b' - ale nějakou
-  speciální barvou (asi jinou než local-echo color).
+TODO: Do konstruktoru SocketDescriptoru předávávat ip address místo
+socketu.
 
-TODO: Opravit nekonečný cyklus, když string začíná barvou.
-[done]
+.initSocket()?
+- potřebuje to abstraktní SocketDescriptor? Asi ne
+TODO: přesunout do TelnetSocketDescriptoru
 
-TODO: Přidat do obarvovacích fcí parametr 'baseColorOverride'
-  - a sjednotit kód na vyrábění barevného textu, ať to není na
-    dvou místech pokaždé jinak.
-[done]
+-----
 
-TODO: Při dělení kusů message podle newlinů je třeba někam
-  poznamenat, kde byl enter a kde ne - jinak se mi to rozsype
-  na milión řádků.
-[done]
-
-TODO: Parsování barev trochu jinak:
-1) Nejdřív zaměnit /r/n za <br>
-   (protože <br> může bejt klidně i uvnitř spanu)
-2) Pak to parsovat celé jako jednu řádku.
-[done]
-
-TODO: Když recallnu poslední command a dám enter, tak se sice
-  nemá přidat do bufferu, ale má se posunout counter.
-[done]
-
-TODO: Šipkou dolů by se mělo jít vrátit až na prázdný řádek.
-[done]
-
-TODO: Prázný příkaz by se neměl přidávat do bufferu.
-[done]
-
-TODO: Zopakování posledního příkazu by ho v bufferu nemělo zduplikovat.
-[done]
-
-TODO: Poskakování textu při traverzování command bufferu...
-[snad]
-
-
-TODO: Když do inputu pastnu víceřádkový příkaz,
-  do outputu se musí poslat více řádek (tj. je to třeba naparsovat).
-[done]
+TODO: Výhledově předělat strukturu zdrojáků serveru - /server/server není
+  moc dobrý. (a /server/server/Server.ts už vůbec ne ;-))
 
 TODO: TelnetServer by neměl zapisovat do Server.connections.
 - mělo by to být tak, že createConnection() (možná createTelnetConnection())
@@ -62,48 +38,6 @@ TODO: Websocket client by mohl umět vytvořit a otevřít connection.
 
 K ÚVAZE: Proč je vlastně Connection zděděná z Entity?
   Je to k něčemu dobré?
-
-TODO: scrollování outputu, když mám seleknutý input.
-  - idea byla odchytávat keyboard eventy na ScrollView místo na inputu.
-    To je trochu problém, protože div nemůže dostávat focus
-Možná je nejlepší se na to vykašlat, odchytávat všechny eventy na inputu
-a volat ruční scrolling na outputu¨
--- i když sakra, jak to, že to můžu klávesnicí scrollovat?
-/*
-  Adding document level keypress handler does the trick!
-
-  var ar=new Array(33,34,35,36,37,38,39,40);
-
-  $(document).keydown(function(e) {
-      var key = e.which;
-        //console.log(key);
-        //if(key==35 || key == 36 || key == 37 || key == 39)
-        if($.inArray(key,ar) > -1) {
-            e.preventDefault();
-            return false;
-        }
-        return true;
-  });
-
-
-  // It handles PgUp(33), PgDn(34), End(35), Home(36), Left(37), Up(38), Right(39), Down(40)
-*/
-
-TODO: vytvořit ScrollViewOutput (podobně jako input)
-
-TODO: Na error reporting v klientu pouzivat /error/ERROR.
-
-TODO: Vkládat text do outputu přes $.parseHTML().
-  - bacha, vytvoří to dom element, nikoliv jquery element.
-pozn.: $(htmlElement) vyrobí jqueryelement, není třeba ho hledat podle idčka.
-
-Pozn k 'input' textaree:
-- udělám to tak, že pouze zablokuju odřávkovávání a na enter se celý příkaz
-  odešle.
-- Vykaslu se tedy na ctrl+enter na interni odradkovani.
-To znamena, ze stale pujde pastnout viceradkovy text, ale nepujde vytvorit
-uvnitr text arey - to jsem ostatne snad jeste nikdy nepotreboval.
-[done]
 
 TODO:
 /*
@@ -130,61 +64,11 @@ TODO:
 TODO: Auto reconnect:
 https://github.com/websockets/ws/wiki/Websocket-client-implementation-for-auto-reconnect
 
-TODO: Výhledově asi předělat celý content-creation v creation na
-  bastlení html tagů (na rozdíl od document.create() je to synchronní
-  a navíc asi rychlejší, když se celé html vyrobí stringově a pak naráz
-  appendne).
-- Tak nakonec asi ne. Smysl to dává tak, jak to je - do scrollView by se
-  měl text přidávat najednou, tj. insertem html. Zbytek se může dělat přes
-  DOM (je to hezčí kód a o rychlost tam zas tak nejde).
-[deprecated]
 
-TODO: Výhledově předělat strukturu zdrojáků serveru - /server/server není
-  moc dobrý. (a /server/server/Server.ts už vůbec ne ;-))
+---------
 
-
---------------------------
-
-Struktura aplikace (úvahy)
---------------------
-
-/src
-  client.ts
-  server.ts
-  /client
-  /server
-  /shared
-  /game
-Tohle asi může zůstat tak, jak to je?
-Nebo to raději oddělit víc, tj. takhle:
-(asi jo, bude to líp sedět se strukturou buildu)
-- otázka je, jestli se budou nějaké zdrojáky sdílet mezi
-  klientem a serverem (namedClass možná?). Pokud jo,
-  tak /shared by bylo na úrovni /client a /server
-  a některé věci z něj (třeba /entity) by spadly pod
-  /server.
-/src
-  /client
-    client.ts
-    clientSettings.ts
-  /server
-    server.ts
-    serverSettings.ts
-    /shared
-    /game
-  
-Build by ale rozdělený být měl, už proto, že adresář /build/client
-bude zpřístupněný web serverem a neměly by v něm tudíž být serverové
-javascriptové soubory.
-/build
-  /client
-  /server
-
-Další otázka je, jak do /build dostat html a podobné nesmysly...
-- asi začnu tím, že to dám rovnou tam, no (to ale zas bude znamenat,
-  že se to bude muset dávat do gitu).
-  (Rozhodně ale chci, abych nemusel překopírovávat zbuilděné zdrojáky
-   klienta - musí stačit je zkompilovat a dát ctrl+f5 v browseru).
+TODO: Telnet server by měl '&&r' naparsovat jako '&' - a nejlépe
+  to zobrazit speciální barvou (stejně jako web client).
 
 -----------------------------------------------------------------
 
@@ -1331,6 +1215,167 @@ TODO (stále)
 TODO: Zkontrolovat, že dobře loguje BAD PW attempt
 
 ------------------------------------------------------------------------------
+
+TODO: Zpřehlednit kód na parsování barev.
+- celé přepsáno
+[done]
+
+TODO: &&b by se mělo zobrazit jako neobarvené &b
+- ve web klientovi [done]
+Pozn: Pouze pokud následuje barevný kód.
+ (Díky tomu se nezprzní text jako: 'if (a && b)').
+ [done]
+
+TODO (lepší nápad):
+  Když se narazí na '&&b', tak se to zobrazí jako '&b' - ale nějakou
+  speciální barvou (asi jinou než local-echo color).
+[done]
+
+TODO: Opravit nekonečný cyklus, když string začíná barvou.
+[done]
+
+TODO: Přidat do obarvovacích fcí parametr 'baseColorOverride'
+  - a sjednotit kód na vyrábění barevného textu, ať to není na
+    dvou místech pokaždé jinak.
+[done]
+
+TODO: Při dělení kusů message podle newlinů je třeba někam
+  poznamenat, kde byl enter a kde ne - jinak se mi to rozsype
+  na milión řádků.
+[done]
+
+TODO: Parsování barev trochu jinak:
+1) Nejdřív zaměnit /r/n za <br>
+   (protože <br> může bejt klidně i uvnitř spanu)
+2) Pak to parsovat celé jako jednu řádku.
+[done]
+
+TODO: Když recallnu poslední command a dám enter, tak se sice
+  nemá přidat do bufferu, ale má se posunout counter.
+[done]
+
+TODO: Šipkou dolů by se mělo jít vrátit až na prázdný řádek.
+[done]
+
+TODO: Prázný příkaz by se neměl přidávat do bufferu.
+[done]
+
+TODO: Zopakování posledního příkazu by ho v bufferu nemělo zduplikovat.
+[done]
+
+TODO: Poskakování textu při traverzování command bufferu...
+[snad]
+
+
+TODO: Když do inputu pastnu víceřádkový příkaz,
+  do outputu se musí poslat více řádek (tj. je to třeba naparsovat).
+[done]
+
+TODO: scrollování outputu, když mám seleknutý input.
+  - idea byla odchytávat keyboard eventy na ScrollView místo na inputu.
+    To je trochu problém, protože div nemůže dostávat focus
+Možná je nejlepší se na to vykašlat, odchytávat všechny eventy na inputu
+a volat ruční scrolling na outputu¨
+-- i když sakra, jak to, že to můžu klávesnicí scrollovat?
+/*
+  Adding document level keypress handler does the trick!
+
+  var ar=new Array(33,34,35,36,37,38,39,40);
+
+  $(document).keydown(function(e) {
+      var key = e.which;
+        //console.log(key);
+        //if(key==35 || key == 36 || key == 37 || key == 39)
+        if($.inArray(key,ar) > -1) {
+            e.preventDefault();
+            return false;
+        }
+        return true;
+  });
+
+
+  // It handles PgUp(33), PgDn(34), End(35), Home(36), Left(37), Up(38), Right(39), Down(40)
+*/
+[done]
+
+TODO: vytvořit ScrollViewOutput (podobně jako input)
+[done]
+
+TODO: Na error reporting v klientu pouzivat /error/ERROR.
+[done]
+
+TODO: Vkládat text do outputu přes $.parseHTML().
+  - bacha, vytvoří to dom element, nikoliv jquery element.
+pozn.: $(htmlElement) vyrobí jqueryelement, není třeba ho hledat podle idčka.
+[done]
+
+Pozn k 'input' textaree:
+- udělám to tak, že pouze zablokuju odřávkovávání a na enter se celý příkaz
+  odešle.
+- Vykaslu se tedy na ctrl+enter na interni odradkovani.
+To znamena, ze stale pujde pastnout viceradkovy text, ale nepujde vytvorit
+uvnitr text arey - to jsem ostatne snad jeste nikdy nepotreboval.
+[done]
+
+
+TODO: Výhledově asi předělat celý content-creation v creation na
+  bastlení html tagů (na rozdíl od document.create() je to synchronní
+  a navíc asi rychlejší, když se celé html vyrobí stringově a pak naráz
+  appendne).
+- Tak nakonec asi ne. Smysl to dává tak, jak to je - do scrollView by se
+  měl text přidávat najednou, tj. insertem html. Zbytek se může dělat přes
+  DOM (je to hezčí kód a o rychlost tam zas tak nejde).
+[deprecated]
+
+--------------------------
+
+Struktura aplikace (úvahy)
+--------------------
+
+/src
+  client.ts
+  server.ts
+  /client
+  /server
+  /shared
+  /game
+Tohle asi může zůstat tak, jak to je?
+Nebo to raději oddělit víc, tj. takhle:
+(asi jo, bude to líp sedět se strukturou buildu)
+- otázka je, jestli se budou nějaké zdrojáky sdílet mezi
+  klientem a serverem (namedClass možná?). Pokud jo,
+  tak /shared by bylo na úrovni /client a /server
+  a některé věci z něj (třeba /entity) by spadly pod
+  /server.
+/src
+  /client
+    client.ts
+    clientSettings.ts
+  /server
+    server.ts
+    serverSettings.ts
+    /shared
+    /game
+[done]
+  
+Build by ale rozdělený být měl, už proto, že adresář /build/client
+bude zpřístupněný web serverem a neměly by v něm tudíž být serverové
+javascriptové soubory.
+/client
+  /js
+    /build
+/server
+  /build
+[done]
+
+Další otázka je, jak do /build dostat html a podobné nesmysly...
+- asi začnu tím, že to dám rovnou tam, no (to ale zas bude znamenat,
+  že se to bude muset dávat do gitu).
+  (Rozhodně ale chci, abych nemusel překopírovávat zbuilděné zdrojáky
+   klienta - musí stačit je zkompilovat a dát ctrl+f5 v browseru).
+[done]
+
+----------------------------------------------------------------------------
 
 TODO: Zvážit, jestli by stack tarce nešel získávat elegantněji než z error
   objectu, viz:

@@ -272,11 +272,11 @@ abstract class MudColorComponent extends Component
   {
     // Check the very beginning of the message for a color code.
     let code = message.substr(0, 2);
-    // If the string begins with '&_' (which means 'return to base color'),
+    // If the message begins with '&_' (which means 'return to base color'),
     // use DEFAULT_COLOR as base color.
     let baseColor = this.parseColorCode(code, MudColorComponent.DEFAULT_COLOR);
 
-    // If there isn't a color code at the start at the string,
+    // If there isn't a color code at the start at the message,
     // use DEFAULT_COLOR as base color.
     if (baseColor === null)
       return this.parseMudColors(message, MudColorComponent.DEFAULT_COLOR);

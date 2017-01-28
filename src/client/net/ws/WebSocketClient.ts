@@ -24,12 +24,15 @@ class WebSocketClient
   // Checks if browser supports web sockets.
   public static webSocketsAvailable()
   {
-    /// Note: MozWebSocket might still be available.
-    /// (this code won't compile in typescript though):
-    /// WebSocket = WebSocket || MozWebSocket;
-
     if (WebSocket === undefined)
     {
+      // Use 'MozWebSocket' if it's available.
+      if ('MozWebSocket' in window)
+      {
+        WebSocket = window['MozWebSocket'];
+        return true;
+      }
+
       alert("Sorry, you browser doesn't support websockets.");
       return false;
     }

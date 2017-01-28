@@ -98,21 +98,20 @@ const ANSI256 = ['#000', '#B00', '#0B0', '#BB0', '#00B', '#B0B', '#0BB',
 
 export class TelnetSocketDescriptor extends SocketDescriptor
 {
-  constructor(socket: net.Socket)
+  constructor(socket: net.Socket, ip: string)
   {
-    super(socket);
+    super(ip);
+
+    this.socket = socket;
 
     this.initSocket();
   }
 
   // -------------- Static class data -------------------
 
-  // Newlines are normalized to this sequence both before
-  // sending (in Message.compose()) and after receiving
-  // (in TelnetSocketDescriptor.onSocketReceivedData()).
-  static get NEW_LINE() { return '\r\n'; }
-
   //------------------ Private data ---------------------
+
+  private socket: net.Socket = null;
 
   private static events =
   {
@@ -124,10 +123,27 @@ export class TelnetSocketDescriptor extends SocketDescriptor
   // Buffer to accumulate incomplete parts of data stream.
   private inputBuffer = "";
 
-  // Command lines waiting to be processed.
-  private commandsBuffer = [];
-
   // ---------------- Public methods --------------------
+
+  // -> Returns remote ip adress read from 'socket'
+  //    or 'null' if it doesn't exist on it.
+  public static parseRemoteAddress(socket: net.Socket)
+  {
+    if (socket === null || socket === undefined)
+    {
+      ERROR('Attempt to read address from an invalid socket');
+      return null;
+    }
+
+    if (socket.address === undefined)
+    {
+      ERROR("Missing address on telnet socket");
+
+      return null;
+    }
+
+    return socket.remoteAddress;
+  }
 
   public static isColorCode(code: string): boolean
   {    
@@ -140,16 +156,6 @@ export class TelnetSocketDescriptor extends SocketDescriptor
   // Sends a string to the user.
   public send(data: string)
   {
-    /// Base color code (&_) is now replaced with it's respective
-    /// color code in Message.compose(), because we would loose
-    /// the knowledge of what was the base color if string starts
-    /// with other color than base color (or we would have to make it
-    /// start with two color codes, which wouldn't be nice).
-    /// // Replaces color codes notifying return to message base color with
-    /// // message base color code.
-    /// // (Message base color is determined by the leading color code of the message).
-    /// data = this.expandBaseColor(data);
-
     // Convert MUD color codes to ANSI color codes.
     // Note: this only works for telnet and classic MUD clients.
     data = this.ansify(data);
@@ -157,57 +163,11 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     this.socket.write(data);
   }
 
-  // Sets socket transfer mode, registers event handlers, etc.
-  public initSocket()
-  {
-    // Tell the socket to interpret data as raw binary stream.
-    // (it's necessary for unicode characters to transmit correctly)
-    this.socket.setEncoding('binary');
-
-    // Check that event handler for 'data' event is not already registered.
-    this.checkEventHandlerAbsence
-    (
-      TelnetSocketDescriptor.events.SOCKET_RECEIVED_DATA
-    );
-
-    // Register event handler for 'data' event.
-    this.socket.on
-    (
-      TelnetSocketDescriptor.events.SOCKET_RECEIVED_DATA,
-      (data) => { this.onSocketReceivedData(data); }
-    );
-
-    // Check that event handler for 'error' event is not already registered.
-    this.checkEventHandlerAbsence
-    (
-      TelnetSocketDescriptor.events.SOCKET_ERROR
-    );
-
-    // Register event handler for 'error' event.
-    this.socket.on
-    (
-      TelnetSocketDescriptor.events.SOCKET_ERROR,
-      (error) => { this.onSocketError(error); }
-    );
-
-    // Check that event handler for 'close' event is not already registered.
-    this.checkEventHandlerAbsence
-    (
-      TelnetSocketDescriptor.events.SOCKET_CLOSE
-    );
-
-    // Register event handler for 'close' event.
-    this.socket.on
-    (
-      TelnetSocketDescriptor.events.SOCKET_CLOSE,
-      () => { this.onSocketClose(); }
-    );
-  }
-
   // Closes the socket, ending the connection.
   public closeSocket()
   {
-    this.socket.end();
+    if (this.socket)
+      this.socket.end();
   }
 
   // ---------------- Event handlers --------------------
@@ -220,12 +180,12 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     data = this.inputBuffer + data;
     this.inputBuffer = "";
 
-    // Make sure that all newlines are representedy by '\r\n'.
+    // Make sure that all newlines are representedy by '\n'.
     data = Utils.normalizeCRLF(data);
 
     // Do not parse protocol data if user sent just an empty newline.
     // (This is often used by player to refresh prompt)
-    if (data !== TelnetSocketDescriptor.NEW_LINE)
+    if (data !== SocketDescriptor.NEW_LINE)
     {
       data = this.parseProtocolData(data);
 
@@ -451,7 +411,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     // newline (if there is any). There rest (or everything, if there is no
     // newline in input at all) needs to be buffered until the rest of the
     // data arrives.
-    let lastNewlineIndex = data.lastIndexOf(TelnetSocketDescriptor.NEW_LINE);
+    let lastNewlineIndex = data.lastIndexOf(SocketDescriptor.NEW_LINE);
 
     if (lastNewlineIndex === -1)
     {
@@ -487,28 +447,6 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     return data.substr(0, lastNewlineIndex);
   }
 
-  protected async processInput(input: string)
-  {
-    // Split input by newlines.
-    let lines = input.split(TelnetSocketDescriptor.NEW_LINE);
-
-    // And push each line as a separate command to commandsBuffer[] to be
-    // processed (.push.apply() appends an array to another array).
-    this.commandsBuffer.push.apply(this.commandsBuffer, lines);
-
-    // Handle each line as a separate command.
-    for (let command of this.commandsBuffer)
-    {
-      // Trim the command (remove leading and trailing white
-      // spaces, including newlines) before processing.
-      await this.connection.processCommand(command.trim());
-    }
-
-    // All commands are processed, mark the buffer as empty.
-    // (if will also hopefully flag allocated data for freeing from memory)
-    this.commandsBuffer = [];
-  }
-
   // Converts MUD color codes (e.g. "&gSomething &wcolorful&g)
   // to ANSI color codes.
   protected ansify(data: string): string
@@ -537,36 +475,58 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     return data;
   }
 
-  /// Base color code (&_) is now replaced with it's respective
-  /// color code in Message.
-  /*
-  // Replaces color codes notifying return to message base color with
-  // message base color code.
-  // (Message base color is determined by the leading color code of the message).
-  protected expandBaseColor(data: string): string
+  // --------------- Private methods --------------------
+
+  // Sets socket transfer mode, registers event handlers, etc.
+  private initSocket()
   {
-    // Extract 2 characters starting at index '0'. 
-    let baseColor = data.substr(0, 2);
-
-    if (TelnetSocketDescriptor.isColorCode(baseColor) === false)
+    if (this.socket === null || this.socket === undefined)
     {
-      ERROR("Message '" + data + "' doesn't start with color code"
-        + " so it is not possible to determine message base color."
-        + " Leading color code is supposed to be added in"
-        + " MessagePart.format()");
-      
-      // Use '&w' as base color.
-      baseColor = '&w';
-      data = baseColor + data;
-
-      data = baseColor + data;
+      ERROR('Attempt to init invalid socket');
+      return;
     }
-    
-    // '&_' stands for 'return to base color'.
-    let regExp = new RegExp('&_', 'g');
 
-    // Replace all '&_' sequences with baseColor.
-    return data.replace(regExp, baseColor);
+    // Tell the socket to interpret data as raw binary stream.
+    // (it's necessary for unicode characters to transmit correctly)
+    this.socket.setEncoding('binary');
+
+    // Check that event handler for 'data' event is not already registered.
+    this.checkEventHandlerAbsence
+    (
+      TelnetSocketDescriptor.events.SOCKET_RECEIVED_DATA
+    );
+
+    // Register event handler for 'data' event.
+    this.socket.on
+    (
+      TelnetSocketDescriptor.events.SOCKET_RECEIVED_DATA,
+      (data) => { this.onSocketReceivedData(data); }
+    );
+
+    // Check that event handler for 'error' event is not already registered.
+    this.checkEventHandlerAbsence
+    (
+      TelnetSocketDescriptor.events.SOCKET_ERROR
+    );
+
+    // Register event handler for 'error' event.
+    this.socket.on
+    (
+      TelnetSocketDescriptor.events.SOCKET_ERROR,
+      (error) => { this.onSocketError(error); }
+    );
+
+    // Check that event handler for 'close' event is not already registered.
+    this.checkEventHandlerAbsence
+    (
+      TelnetSocketDescriptor.events.SOCKET_CLOSE
+    );
+
+    // Register event handler for 'close' event.
+    this.socket.on
+    (
+      TelnetSocketDescriptor.events.SOCKET_CLOSE,
+      () => { this.onSocketClose(); }
+    );
   }
-  */
 }
