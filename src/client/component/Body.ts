@@ -28,6 +28,9 @@ class Body extends Component
 
     let connection = client.createConnection();
 
+    /// TEST
+    connection.connect();
+
     this.createScrollView(connection);
   }
 

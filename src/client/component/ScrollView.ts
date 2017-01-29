@@ -18,6 +18,8 @@ class ScrollView extends Window
   constructor(private connection: Connection)
   {
     super();
+
+    this.connection.scrollView = this;
   }
 
   // If you send a command, it will be printed to output using this color.
@@ -79,6 +81,11 @@ class ScrollView extends Window
 
     // Send the command to the connection.
     this.connection.send(command);
+  }
+  
+  public receiveData(data: string)
+  {
+    this.output.appendMessage(data);
   }
 
   public triggerOutputEvent(event: JQueryKeyEventObject)

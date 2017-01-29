@@ -210,7 +210,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
   {
     let player = "";
 
-    if (this.connection.account !== null)
+    if (this.connection && this.connection.account)
     {
       let accountName = this.connection.account.getName();
 

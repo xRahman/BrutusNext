@@ -42,13 +42,6 @@ class Document
   {
     console.log('onDocumentReady() launched');
 
-    /*
-    /// TODO: Tohle by se melo predavat nejak elegantneji.
-    this.client.body.scrollView.webSocketDescriptor = this.webSocketDescriptor;
-
-    this.webSocketDescriptor.connect();
-    */
-
     // Attach handler for 'keydown' event.
     $(document).keydown
     (

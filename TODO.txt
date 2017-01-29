@@ -1,3 +1,14 @@
+NOTE: Test, zda je uživatel online:
+  if (navigator.onLine)
+  {
+    alert("You are Online");
+  }
+  else
+  {
+    alert("You are Offline");
+  }
+(Tohle se asi bude hodit k automatickému reconnectu).
+
 NOTE: Korektní zavírání websocketu při zavření nebo reloadu stránky:
   window.onbeforeunload = function() {
       websocket.onclose = function () {}; // disable onclose handler first
