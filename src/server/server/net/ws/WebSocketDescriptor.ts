@@ -123,7 +123,21 @@ export class WebSocketDescriptor extends SocketDescriptor
     /// TODO: Zatím posílám přímo mud message, výhledově
     /// je to potřeba zabalit do JSONu.
 
-    this.socket.send(data);
+    try
+    {
+      this.socket.send(data);
+    }
+    catch (error)
+    {
+      Syslog.log
+      (
+        "Client ERROR: Failed to send data to the socket"
+        + " " + this.url + " (" + this.ip + "). Reason:"
+        + " " + error.message + ".  Data is not processed",
+        Message.Type.WEBSOCKET_SERVER,
+        AdminLevel.IMMORTAL
+      );
+    }
   }
 
   // Closes the socket, ending the connection.
@@ -160,6 +174,47 @@ export class WebSocketDescriptor extends SocketDescriptor
     await this.processInput(data);
   }
 
+  private onSocketOpen()
+  {
+    /// Asi neni treba nic reportit, uz je zalogovana new connection.
+    //console.log('Socket opened');
+  }
+
+  private onSocketError(event: Error)
+  {
+    Syslog.log
+    (
+      "Websocket ERROR: Error occured on socket"
+      + " " + this.url + " (" + this.ip + ")",
+      Message.Type.WEBSOCKET_SERVER,
+      AdminLevel.IMMORTAL
+    );
+  }
+
+  private onSocketClose
+  (
+    event:
+    {
+      wasClean: boolean,
+      code: number,
+      reason: string,
+      target: WebSocket
+    }
+  )
+  {
+    // Error code 1000 means that the connection was closed normally.
+    if (event.code != 1000)
+    {
+      Syslog.log
+      (
+        "Websocket ERROR: Socket " + this.url + " (" + this.ip + ")"
+        + " closed because of error: " + event.reason,
+        Message.Type.WEBSOCKET_SERVER,
+        AdminLevel.IMMORTAL
+      );
+    }
+  }
+
   // -------------- Protected methods -------------------
 
   // --------------- Private methods --------------------
@@ -178,5 +233,8 @@ export class WebSocketDescriptor extends SocketDescriptor
       'message',
       (data, flags) => { this.onSocketReceivedData(data, flags); }
     );
+    this.socket.onopen = (event) => { this.onSocketOpen(); };
+    this.socket.onerror = (event) => { this.onSocketError(event); };
+    this.socket.onclose = (event) => { this.onSocketClose(event); };
   }
 }
