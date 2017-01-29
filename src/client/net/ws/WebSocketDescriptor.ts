@@ -6,6 +6,9 @@
 
 'use strict';
 
+import ERROR = require('../../error/ERROR');
+import Connection = require('../../connection/Connection');
+
 class WebSocketDescriptor
 {
 
@@ -15,12 +18,28 @@ class WebSocketDescriptor
 
   private socket: WebSocket = null;
 
+  // ----------------- Public data ----------------------
+
+  public connection: Connection = null;
+
   // ---------------- Public methods --------------------
 
   // Sends a string to the user.
   public send(data: string)
   {
-    this.socket.send(data);
+    if (this.socket)
+    {
+      try
+      {
+        this.socket.send(data);
+      }
+      catch (error)
+      {
+         /// TODO
+        ERROR("Websocket ERROR: Failed to send data to the socket."
+          + " Reason: " + error.message);
+      }
+    }
   }
 
   public connect()
@@ -39,13 +58,11 @@ class WebSocketDescriptor
     this.initSocket();
   }
 
-  /*
   // Closes the socket, ending the connection.
   public closeSocket()
   {
-    this.socket.end();
+    this.socket.close();
   }
-  */
 
   // ---------------- Private methods -------------------
 
@@ -54,6 +71,7 @@ class WebSocketDescriptor
   {
     this.socket.onopen = (event) => { this.onSocketOpen(event); };
     this.socket.onmessage = (event) => { this.onReceivedMessage(event); };
+    this.socket.onerror = (event) => { this.onSocketError(event); };
     this.socket.onclose = (event) => { this.onSocketClose(event); };
   }
 
@@ -67,14 +85,46 @@ class WebSocketDescriptor
 
   private onReceivedMessage(event: MessageEvent)
   {
-    console.log('Received message: ' + event.data);
-    /// TODO:
+    ///console.log('Received message: ' + event.data);
+
+    this.connection.receive(event.data);
+  }
+
+  private onSocketError(event: ErrorEvent)
+  {
+    ERROR("Socket error occured: " + event.error
+      + " The connection will close");
   }
 
   private onSocketClose(event: CloseEvent)
   {
-    console.log('Socket closed');
-    /// TODO:
+    if (event.code === 1000)
+    {
+      console.log('Socket closed.');
+    }
+    else
+    {
+      console.log('Socket closed because of error: ' + event.reason);
+    }
+
+    /// TODO: (Info o closntí connection).
+
+
+    /// Auto reconnect:
+    /// (Vyhledove by to taky chtelo timer, aby to zkousel opakovane)
+    /*
+    // Error code 1000 means that the connection was closed normally.
+    if (event.code != 1000)
+    {
+      // Try to reconnect.
+		
+      // Test if user is online.
+      if (!navigator.onLine)
+      {
+         alert("You are offline. Please connect to the Internet and try again.");
+      }
+    }
+    */
   }
 
   // -------------- Protected methods -------------------

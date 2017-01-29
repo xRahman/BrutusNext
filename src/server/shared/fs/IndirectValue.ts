@@ -58,7 +58,7 @@ export class IndirectValue
     let saveableObject = new SaveableObject();
 
     // Set is saved as it's Array representation to property 'set'.
-    saveableObject['map'] = IndirectValue.saveSetToArray(set);
+    saveableObject['set'] = IndirectValue.saveSetToArray(set);
 
     // We can't override 'className' property, because it's an accessor
     // (see NamedClass.className), so we use Proxy to trap acces to
