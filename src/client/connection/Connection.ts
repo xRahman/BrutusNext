@@ -8,25 +8,20 @@
 
 import ERROR = require('../error/ERROR');
 import WebSocketDescriptor = require('../net/ws/WebSocketDescriptor');
-
+import ScrollView = require('../component/ScrollView');
 
 class Connection
 {
-  constructor (private socketDescriptor: WebSocketDescriptor) { }
+  constructor (private socketDescriptor: WebSocketDescriptor)
+  {
+    socketDescriptor.connection = this;
+  }
 
   // -------------- Static class data -------------------
 
-  //------------------ Public data ---------------------- 
-  
-  /*
-  /// TODO: Socket descriptoru muze byt vic (imm muze chtit lognout
-  /// vic charu). Tezko rict, kde by mely byt - primo ve scrollView
-  /// asi ne, protoze connection ovlivnuje vic elementu nez jen
-  /// scrollview.
-  /// (scrollview by si kazdopadne melo drzet descriptor, do ktereho
-  ///  zapisuje)
-  public webSocketDescriptor = new WebSocketDescriptor();
-  */
+  //------------------ Public data ----------------------
+
+  public scrollView: ScrollView = null;
 
   //------------------ Private data ---------------------
 
@@ -36,11 +31,22 @@ class Connection
 
   // ---------------- Public methods --------------------
 
+  public connect()
+  {
+    this.socketDescriptor.connect();
+  }
+
   // Sends 'data' to the connection.
   public send(data: string)
   {
-    /// TODO
+    this.socketDescriptor.send(data);
   }
+
+  public receive(data: string)
+  {
+    this.scrollView.receiveData(data);
+  }
+
 
   // ---------------- Event handlers --------------------
 

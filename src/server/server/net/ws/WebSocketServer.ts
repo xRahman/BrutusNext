@@ -80,7 +80,7 @@ export class WebSocketServer
       (socket) => { this.onNewConnection(socket); }
     );
 
-    // Ulike telnet server, websocket werver is (probably) up immediately,
+    // Unlike telnet server, websocket werver is (probably) up immediately,
     // so we don't have to register handler for 'listening' event
     // (in fact, there is no such event on websocket server).
     Syslog.log
@@ -89,6 +89,8 @@ export class WebSocketServer
       Message.Type.WEBSOCKET_SERVER,
       AdminLevel.IMMORTAL
     );
+
+    this.isOpen = true;
 
     /*
     // Create a new raw socket server. Parameter is handler which will be
