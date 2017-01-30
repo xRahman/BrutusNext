@@ -31,6 +31,7 @@ class Connection
 
   // ---------------- Public methods --------------------
 
+  // Attempts to open the websocket connection.
   public connect()
   {
     this.socketDescriptor.connect();
@@ -39,14 +40,26 @@ class Connection
   // Sends 'data' to the connection.
   public send(data: string)
   {
-    this.socketDescriptor.send(data);
+    // If the connection is closed, any user command
+    // (even an empty one) triggers reconnect attempt.
+    if (!this.socketDescriptor.isSocketOpen())
+      this.socketDescriptor.reConnect();
+    else
+      this.socketDescriptor.send(data);
   }
 
-  public receive(data: string)
+  // Receives 'message' from the connection
+  // (appends it to the output of respective scrollview window).
+  public receiveMudMessage(message: string)
   {
-    this.scrollView.receiveData(data);
+    this.scrollView.receiveData(message);
   }
 
+  // Outputs a client system message.
+  public clientMessage(message: string)
+  {
+    this.scrollView.clientMessage(message);
+  }
 
   // ---------------- Event handlers --------------------
 

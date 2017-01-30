@@ -1,5 +1,10 @@
+TODO: Pokud je connection down, tak by libovolny prikaz od klienta (i prazdny)
+mel vyvolat pokus o reconnect.
+[done]
+
 TODO: V klientu (a možná i na serveru) přidat flagu, zda je socket
   otevřený - a neposílat data, pokud není.
+[v clientu done]
 
 NOTE: Test, zda je uživatel online:
   if (navigator.onLine)
@@ -32,6 +37,7 @@ Co by měl mít socketDescriptor:
 
 TODO: Do konstruktoru SocketDescriptoru předávávat ip address místo
 socketu.
+[done]
 
 .initSocket()?
 - potřebuje to abstraktní SocketDescriptor? Asi ne
