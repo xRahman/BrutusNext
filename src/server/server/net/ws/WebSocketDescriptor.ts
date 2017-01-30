@@ -177,7 +177,7 @@ export class WebSocketDescriptor extends SocketDescriptor
   private onSocketOpen()
   {
     /// Asi neni treba nic reportit, uz je zalogovana new connection.
-    //console.log('Socket opened');
+    console.log('Socket opened');
   }
 
   private onSocketError(event: Error)
@@ -209,6 +209,16 @@ export class WebSocketDescriptor extends SocketDescriptor
       (
         "Websocket ERROR: Socket " + this.url + " (" + this.ip + ")"
         + " closed because of error: " + event.reason,
+        Message.Type.WEBSOCKET_SERVER,
+        AdminLevel.IMMORTAL
+      );
+    }
+    else
+    {
+      Syslog.log
+      (
+        "Websocket ERROR: Socket " + this.url + " (" + this.ip + ")"
+        + " closed normally",
         Message.Type.WEBSOCKET_SERVER,
         AdminLevel.IMMORTAL
       );
