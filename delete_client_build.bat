@@ -1,0 +1,1 @@
+rmdir /Q /S "./client/js/build"
