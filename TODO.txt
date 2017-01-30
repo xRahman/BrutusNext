@@ -1,3 +1,6 @@
+TODO: V klientu (a možná i na serveru) přidat flagu, zda je socket
+  otevřený - a neposílat data, pokud není.
+
 NOTE: Test, zda je uživatel online:
   if (navigator.onLine)
   {
