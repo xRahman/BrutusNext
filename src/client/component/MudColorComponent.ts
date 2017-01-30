@@ -43,7 +43,7 @@ abstract class MudColorComponent extends Component
   public static get COMMAND_ECHO_COLOR() { return 'rgb(128,64,64)'; }
   /*
   // If you send a command, it will be printed to output using this font.
-  public static get COMMAND_ECHO_FONT() { return 'CourrierNewBold'; }
+  public static get COMMAND_ECHO_FONT() { return 'CourierNew'; }
   */
 
   /// Not used yet.
@@ -116,7 +116,8 @@ abstract class MudColorComponent extends Component
     {
       parser.html += '<span style="'
                   +    'color:' + color + ';'
-                  +    'font-family:CourrierNewBold;'
+                  +    'font-family:CourierNew;'
+                  +    'font-weight:bold'
                   +  '">';
 
       parser.spanOpen = true;

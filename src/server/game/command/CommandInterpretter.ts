@@ -55,7 +55,7 @@ export abstract class CommandInterpretter extends ScriptableEntity
   {
     if (commandString === "")
     {
-      ERROR("Attempt to process empty command");
+      ///ERROR("Attempt to process empty command");
       return false;
     }
 
