@@ -103,7 +103,7 @@ abstract class MudColorComponent extends Component
                   +    'font-family:CourrierNewBold;'
                   +  '">';
 
-      parser.spanOpen = false;
+      parser.spanOpen = true;
     }
   }
 
@@ -130,6 +130,7 @@ abstract class MudColorComponent extends Component
   {
     this.closeSpanIfOpen(parser);
 
+    // This will also open a <span> tag.
     this.outputCharacters
     (
       parser,
@@ -137,6 +138,8 @@ abstract class MudColorComponent extends Component
       // Use special color to distiguish escaped color codes.
       MudColorComponent.COLOR_CODE_COLOR
     );
+
+    this.closeSpanIfOpen(parser);
 
     // Skip parsing of two extra characters because
     // we have just outputed them in advance.
