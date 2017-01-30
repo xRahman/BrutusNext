@@ -36,7 +36,23 @@ abstract class MudColorComponent extends Component
   // start with a color code.
   public static get DEFAULT_COLOR() { return Colors['&w']; }
 
+  // Color of escaped color codes (like '&&R').
   public static get COLOR_CODE_COLOR() { return 'rgb(78,78,0)'; }
+
+  // Color of user commands reprinted to scrollview output.
+  public static get COMMAND_ECHO_COLOR() { return 'rgb(128,64,64)'; }
+  /*
+  // If you send a command, it will be printed to output using this font.
+  public static get COMMAND_ECHO_FONT() { return 'CourrierNewBold'; }
+  */
+
+  /// Not used yet.
+  // Color of client messages (like 'Attempting to reconnect').
+  public static get CLIENT_MESSAGE_COLOR() { return 'rgb(0,128,255)'; }
+
+  /// Not used yet.
+  // Color of hypertext links in client messages.
+  public static get CLIENT_LINK_COLOR() { return 'rgb(0,191,255)'; }
 
   // --------------- Protected methods ------------------
 
