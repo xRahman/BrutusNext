@@ -8,6 +8,7 @@
 
 import ScrollViewInput = require('../component/ScrollViewInput');
 import ScrollViewOutput = require('../component/ScrollViewOutput');
+import MudColorComponent = require('../component/MudColorComponent');
 import Window = require('../component/Window');
 import Connection = require('../connection/Connection');
 
@@ -22,15 +23,8 @@ class ScrollView extends Window
     this.connection.scrollView = this;
   }
 
-  // If you send a command, it will be printed to output using this color.
-  public static get COMMAND_ECHO_COLOR() { return 'rgb(128,64,64)'; }
-  // If you send a command, it will be printed to output using this font.
-  public static get COMMAND_ECHO_FONT() { return 'CourrierNewBold'; }
-
   public static get CSS_CLASS() { return 'ScrollView'; }
   public static get CONTENT_CSS_CLASS() { return 'ScrollViewContent'; }
-  ///public static get OUTPUT_CSS_CLASS() { return 'ScrollViewOutput'; }
-  public static get INPUT_CSS_CLASS() { return 'ScrollViewInput'; }
 
   // -------------- Static class data -------------------
 
@@ -81,6 +75,22 @@ class ScrollView extends Window
 
     // Send the command to the connection.
     this.connection.send(command);
+  }
+
+  // Outputs a client system message.
+  public clientMessage(message: string)
+  {
+    if (!message)
+      return;    
+
+    let html = this.htmlizeMudColors
+    (
+      message,
+      MudColorComponent.CLIENT_MESSAGE_COLOR
+    );
+
+    // Append the message to the output element.
+    this.output.appendHtml(html, { forceScroll: true });
   }
   
   public receiveData(data: string)
@@ -216,7 +226,11 @@ class ScrollView extends Window
       +           this.htmlizeLinesOfCommand(lines);
       +        '</div>';
     */
-    let html = this.htmlizeMudColors(command, ScrollView.COMMAND_ECHO_COLOR);
+    let html = this.htmlizeMudColors
+    (
+      command,
+      MudColorComponent.COMMAND_ECHO_COLOR
+    );
 
     // Local echo (append the command to the output element).
     this.output.appendHtml(html, { forceScroll: true });
