@@ -1,3 +1,15 @@
+TODO: Mapper.
+
+---------------------------------------------------------------
+
+TODO: Při quitu se na serveru korektně nezavře connection
+  (další log-in to chápe jako reconnect).
+
+TODO: Prozkoumat, co se stane, když:
+- hráč zabije záložku v browseru
+- spadne server
+- přeruší se připojení k netu
+
 TODO: Pokud je connection down, tak by libovolny prikaz od klienta (i prazdny)
 mel vyvolat pokus o reconnect.
 [done]

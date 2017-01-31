@@ -1,0 +1,13 @@
+﻿Download from:
+https://d3js.org/
+
+
+Or use npm:
+https://www.npmjs.com/package/d3
+
+Install or update d3.js using:
+
+  npm install d3
+
+Then go to /BrutusNext/node_modules/jquery/dist and copy appropriate
+file to /BrutusNext/client/d3.
