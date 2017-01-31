@@ -9,7 +9,7 @@
 import ERROR = require('../error/ERROR');
 import WebSocketDescriptor = require('../net/ws/WebSocketDescriptor');
 import ScrollView = require('../component/ScrollView');
-import Mapper = require('../component/Mapper');
+import Map = require('../component/Map');
 
 class Connection
 {
@@ -23,7 +23,7 @@ class Connection
   //------------------ Public data ----------------------
 
   public scrollView: ScrollView = null;
-  public mapper: Mapper = null;
+  public map: Map = null;
 
   //------------------ Private data ---------------------
 
