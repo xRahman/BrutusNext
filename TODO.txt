@@ -1,6 +1,9 @@
 TODO: Mapper.
 
 ---------------------------------------------------------------
+TODO: Ctrl (a ostatní řídící klávesy) by neměl focusovat input
+  (bere to pak focus při vykopírovávání textu)
+
 
 TODO: Při quitu se na serveru korektně nezavře connection
   (další log-in to chápe jako reconnect).
