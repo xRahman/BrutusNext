@@ -13,13 +13,33 @@ import Connection = require('../connection/Connection');
 
 import $ = require('jquery');
 
-class Mapper extends Window
+let world =
+{
+  '3-imt2xk99':
+  {
+    'name': 'Tutorial Room',
+    'exits':
+    {
+      'north': '6-imt2xk99'
+    }
+  },
+  '6-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'south': '3-imt2xk99'
+    }
+  }
+};
+
+class Map extends Window
 {
   constructor(private connection: Connection)
   {
     super();
 
-    this.connection.mapper = this;
+    this.connection.map = this;
   }
 
   public static get CSS_CLASS() { return 'Mapper'; }
@@ -53,7 +73,7 @@ class Mapper extends Window
     super.create();
 
     // ScrollView window uses css class .ScrollView along with .Window.
-    this.$window.addClass(Mapper.CSS_CLASS);
+    this.$window.addClass(Map.CSS_CLASS);
 
     this.setTitle('Dragonhelm Mountains');
 
@@ -72,7 +92,7 @@ class Mapper extends Window
 
     // ScrollView content uses css class .ScrollViewContent along with
     // .WindowContent.
-    $content.addClass(Mapper.CONTENT_CSS_CLASS);
+    $content.addClass(Map.CONTENT_CSS_CLASS);
 
     /*
     // Create html element 'input'.
@@ -90,4 +110,4 @@ class Mapper extends Window
 
 }
 
-export = Mapper;
+export = Map;

@@ -71,7 +71,8 @@ class WebSocketDescriptor
     // (There is no point in error handling here, because
     //  opening a socket is asynchronnous. If an error occurs,
     //  'error' event is fired and onSocketError() is launched.)
-    this.socket = new WebSocket('ws://localhost:4442');
+    ///this.socket = new WebSocket('ws://localhost:4442');
+    this.socket = new WebSocket('ws://78.45.101.53:4442');
 
     if (this.socket)
       this.initSocket();

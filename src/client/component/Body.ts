@@ -10,7 +10,7 @@
 import Component = require('../component/Component');
 import Window = require('../component/Window');
 import ScrollView = require('../component/ScrollView');
-import Mapper = require('../component/Mapper');
+import Map = require('../component/Map');
 import Client = require('../Client');
 import Connection = require('../connection/Connection');
 
@@ -30,7 +30,7 @@ class Body extends Component
     let connection = client.createConnection();
 
     this.createScrollView(connection);
-    this.createMapper(connection);
+    this.createMap(connection);
 
     /// TEST
     connection.connect();
@@ -82,17 +82,17 @@ class Body extends Component
     this.client.activeScrollView = scrollView;
   }
 
-  // Creates a 'Mapper' window and adds it to app_body.
-  public createMapper(connection: Connection)
+  // Creates a 'Map' window and adds it to app_body.
+  public createMap(connection: Connection)
   {
     /// Tohle je docasne - scrollViewu muze byt vic.
-    let mapper = new Mapper(connection);
-    this.windows.push(mapper);
+    let map = new Map(connection);
+    this.windows.push(map);
 
     // Create jquery element 'scrollview'.
-    let $mapper = mapper.create();
+    let $map = map.create();
     // Put it in the 'body' element.
-    this.$body.append($mapper);
+    this.$body.append($map);
 
     //this.client.mapper = mapper;
   }
