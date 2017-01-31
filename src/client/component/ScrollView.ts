@@ -62,6 +62,8 @@ class ScrollView extends Window
     // ScrollView window uses css class .ScrollView along with .Window.
     this.$window.addClass(ScrollView.CSS_CLASS);
 
+    this.setTitle('Rahman@BrutusNext');
+
     return this.$window;
   }
 

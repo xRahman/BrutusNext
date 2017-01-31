@@ -10,6 +10,7 @@
 import Component = require('../component/Component');
 import Window = require('../component/Window');
 import ScrollView = require('../component/ScrollView');
+import Mapper = require('../component/Mapper');
 import Client = require('../Client');
 import Connection = require('../connection/Connection');
 
@@ -28,10 +29,11 @@ class Body extends Component
 
     let connection = client.createConnection();
 
+    this.createScrollView(connection);
+    this.createMapper(connection);
+
     /// TEST
     connection.connect();
-
-    this.createScrollView(connection);
   }
 
   //----------------- Protected data --------------------
@@ -78,6 +80,21 @@ class Body extends Component
     this.$body.append($scrollView);
 
     this.client.activeScrollView = scrollView;
+  }
+
+  // Creates a 'Mapper' window and adds it to app_body.
+  public createMapper(connection: Connection)
+  {
+    /// Tohle je docasne - scrollViewu muze byt vic.
+    let mapper = new Mapper(connection);
+    this.windows.push(mapper);
+
+    // Create jquery element 'scrollview'.
+    let $mapper = mapper.create();
+    // Put it in the 'body' element.
+    this.$body.append($mapper);
+
+    //this.client.mapper = mapper;
   }
 
   // ---------------- Private methods -------------------
