@@ -36,6 +36,8 @@ class Connection
   // Attempts to open the websocket connection.
   public connect()
   {
+    this.clientMessage('Opening websocket connection...');
+
     this.socketDescriptor.connect();
   }
 
