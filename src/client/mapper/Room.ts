@@ -4,6 +4,8 @@
   Holds map data for a single room.
 */
 
+///  Nakonec to asi nepoužiju, data budou v generickém objektu.
+
 'use strict';
 
 ///import Connection = require('../connection/Connection');
