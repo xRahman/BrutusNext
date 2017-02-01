@@ -1,9 +1,25 @@
 TODO: Mapper.
 
 ---------------------------------------------------------------
+TOFIX: Dokud nevytimeoutuje pokus o connect, tak by se neměl
+  pouštět reconnect (vede to k pokusu odstranit event listenery
+  z null variable).
+- Asi by to chtělo místo boolu 'open' mít tři stavy:
+  CONNECTING (to je default, protože nově vytvořený socket se snaží connectit)
+  OPEN
+  CLOSED
+- Tak ne, tyhle stavy už jsou uvnitř socketu (socket.readyState). Takže
+  je prostě využít, netřeba to trackovat ještě jednou.
+Hmm, tak možná stejně něco budu muset trackovat, protože takhle nepoznám,
+co se se socketem děje.
+- Tak ne, přece jsem se musel vrátit k falze.
+TODO: Ještě to chce zkontrolovat, jestli ten readyState necheckuju úplně
+  zbytečně.
+- a odstranit logovací hlášky.
+
 TODO: Ctrl (a ostatní řídící klávesy) by neměl focusovat input
   (bere to pak focus při vykopírovávání textu)
-
+[done]
 
 TODO: Při quitu se na serveru korektně nezavře connection
   (další log-in to chápe jako reconnect).
