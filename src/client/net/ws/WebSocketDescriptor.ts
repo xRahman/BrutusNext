@@ -18,11 +18,6 @@ class WebSocketDescriptor
 
   private socket: WebSocket = null;
 
-  // True if the socket is open.
-  // (This is not the same as socket === null, because opening
-  //  a socket takes some time.)
-  private open = false;
-
   // Here we remember event listeners so we can remove them
   // when tho socket closes.
   private listeners =
@@ -33,6 +28,20 @@ class WebSocketDescriptor
     onclose: null
   }
 
+  // We still need this even though WebSocket keeps it's status
+  // in .readyState property. The reason is that events don't know
+  // what caused them. If for example the websocket server is down
+  // and we try to connect to it, an 'error' and a 'close' events
+  // are fired after the timeout. In both cases, socket.readyState
+  // is set to WebSocket.CLOSED so we have no way to determine
+  // if the connection couldn't even be estableshed or if it was
+  // opened and then something caused a disconnect.
+  //   To solve this, we set 'this.open' to true only when 'open'
+  // event is fired. So when the 'error' or 'close' event comes
+  // and 'this.wasConnected' is still false, it means failure to
+  // connect, otherwise it means a disconnect.
+  private wasConnected = false;
+
   // ----------------- Public data ----------------------
 
   public connection: Connection = null;
@@ -41,14 +50,42 @@ class WebSocketDescriptor
 
   public isSocketOpen()
   {
-    return this.open;
+    if (this.socket === null)
+      return false;
+
+    return this.socket.readyState === WebSocket.OPEN;
+  }
+
+  public isSocketConnecting()
+  {
+    if (this.socket === null)
+      return false;
+
+    return this.socket.readyState === WebSocket.CONNECTING;
+  }
+
+  public isSocketClosing()
+  {
+    if (this.socket === null)
+      return false;
+
+    return this.socket.readyState === WebSocket.CLOSING;
+  }
+
+  public isSocketClosed()
+  {
+    // If we don't have a socket, it's considered closed.
+    if (this.socket === null)
+      return true;
+
+    return this.socket.readyState === WebSocket.CLOSED;
   }
 
   // Sends a string to the user.
   public send(data: string)
   {
-    // No point in sending data to the closed socket.
-    if (this.open === false)
+    // No point in sending data unless the socket is open.
+    if (!this.isSocketOpen())
       return;
 
     if (this.socket)
@@ -74,6 +111,8 @@ class WebSocketDescriptor
     ///this.socket = new WebSocket('ws://localhost:4442');
     this.socket = new WebSocket('ws://78.45.101.53:4442');
 
+    console.log('connect(). Status: ' + this.socket.readyState);
+
     if (this.socket)
       this.initSocket();
   }
@@ -81,12 +120,23 @@ class WebSocketDescriptor
   // Attempts to reconnect.
   public reConnect()
   {
-    if (this.open)
-    {
-      ERROR("Attempt to reconnect when the connection is open");
-      return;
-    }
+    console.log('reConnect(). Status: ' + this.socket.readyState);
 
+    if (this.isSocketOpen())
+      // There is no point in reconnecting an open socket.
+      return;
+
+    if (this.isSocketConnecting())
+      // There is no point if the socket is already trying to connect.
+      return;
+    
+    if (this.isSocketConnecting())
+      // If the socket is still closing, old event handlers are not yet
+      // detached so we shouldn't create a new socket yet.
+      /// TODO: Asi by to chtelo dát message playerovi a ideálně
+      /// pustit auto-reconnect, pokud ještě neběží.
+      return;
+    
     this.connection.clientMessage
     (
       'Attempting to reconnect...'
@@ -98,8 +148,6 @@ class WebSocketDescriptor
   // Closes the socket, ending the connection.
   public closeSocket()
   {
-    this.open = false;
-
     this.socket.close();
   }
 
@@ -149,13 +197,6 @@ class WebSocketDescriptor
 
   private reportAbnormalDisconnect()
   {
-    // If the socket hasn't even been opened, it means that
-    // connection couldn't be established. In such case we
-    // have already let the user know about it in onSocketError()
-    // handler.
-    if (this.open === false)
-      return;
-
     // Test if user is online.
     if (navigator.onLine)
     {
@@ -210,8 +251,12 @@ class WebSocketDescriptor
 
   private onSocketOpen(event: Event)
   {
-    this.open = true;
+    // 'open' event menas that connection has been succesfully
+    // established. We remember it so we can later determine
+    // if an error means failure to connect or a disconnect.
+    this.wasConnected = true;
 
+    console.log('onSocketOpen(). Status: ' + this.socket.readyState);
     console.log('Socket opened');
     /// TODO: (info, že se podařilo připojit).
     /// To je asi zbytecny, server posle uvodni 'obrazovku'
@@ -230,14 +275,21 @@ class WebSocketDescriptor
 
   private onSocketError(event: ErrorEvent)
   {
+    console.log('onSocketError(). Status: ' + this.socket.readyState);
+
+    /// Přesunul jsem to do 'onSocketClosed() handleru,
+    /// ať je report uživateli na jendom místě.
+    /*
+    /// Tohle taky možná nebude dobře.
     // If the 'error' event fires before 'open' event,
-    // it means that connection to the server couldn'to
+    // it means that connection to the server couldn't
     // be established.
-    if (this.open === false)
+    if (!this.isSocketConnecting())
     {
       this.reportConnectionFailure();
       return;
     }
+    */
 
     // If 'error' event fired when the connection was open,
     // it will disconnect the player. We just log it to the
@@ -256,7 +308,7 @@ class WebSocketDescriptor
 
   private onSocketClose(event: CloseEvent)
   {
-    this.open = false;
+    console.log('onSocketClose(). Status: ' + this.socket.readyState);
 
     // Remove event handlers from the socket.
     this.deinitSocket();
@@ -274,7 +326,13 @@ class WebSocketDescriptor
     }
     else
     {
-      this.reportAbnormalDisconnect();
+      if (this.wasConnected === false)
+        // If the connection hasn't even been open, we report
+        // the connecting failure.
+        this.reportConnectionFailure();
+      else
+        // Otherwise we report a disconnect.
+        this.reportAbnormalDisconnect();
 
       /// TODO: Auto reconnect:
       /// (Vyhledove by to taky chtelo timer, aby to zkousel opakovane).
