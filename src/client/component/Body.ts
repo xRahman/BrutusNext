@@ -7,25 +7,17 @@
 
 'use strict';
 
-///import Component = require('../component/Component');
 import {Component} from '../component/Component';
-///import Window = require('../component/Window');
 import {Window} from '../component/Window';
-///import ScrollView = require('../component/ScrollView');
 import {ScrollView} from '../component/ScrollView';
-///import Map = require('../component/Map');
 import {Map} from '../component/Map';
-///import Client = require('../Client');
 import {Client} from '../Client';
-///import Connection = require('../connection/Connection');
 import {Connection} from '../connection/Connection';
 
 import $ = require('jquery');
-///import * as $ from 'jquery';
 
 export class Body extends Component
 {
-  ///public scrollView = null;
   private windows: Array<Window> = [];
 
   constructor(private client: Client)
@@ -52,7 +44,6 @@ export class Body extends Component
   // --- Jquery elements ---
 
   $body = null;
-  ///$scrollView = null;
 
   //------------------ Private data ---------------------
 
@@ -61,15 +52,6 @@ export class Body extends Component
 
   // --------------- Static accessors -------------------
 
-  // These are shortcuts so you don't have to use Client.getInstance()
-
-  /// Example
-  /*
-  public static get game()
-  {
-    return Server.getInstance().game;
-  }
-  */
   // ---------------- Static methods --------------------
 
   // ---------------- Public methods --------------------
@@ -110,5 +92,3 @@ export class Body extends Component
   // ---------------- Event handlers --------------------
 
 }
-
-///export = Body;

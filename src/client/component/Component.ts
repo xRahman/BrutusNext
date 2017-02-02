@@ -7,7 +7,6 @@
 
 'use strict';
 
-///import ERROR = require('../error/ERROR');
 import {ERROR} from '../error/ERROR';
 
 export abstract class Component
@@ -16,7 +15,7 @@ export abstract class Component
 
   //----------------- Protected data --------------------
 
-  // 'id' parameter of html element.
+  // 'id' attribute of html element.
   protected id = null;
 
   //------------------ Private data ---------------------
@@ -74,6 +73,3 @@ export abstract class Component
   // ---------------- Event handlers --------------------
 
 }
-
-///export default Component;
-///export = Component;

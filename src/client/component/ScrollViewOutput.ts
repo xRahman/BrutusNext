@@ -6,11 +6,9 @@
 
 'use strict';
 
-///import MudColorComponent = require('../component/MudColorComponent');
 import {MudColorComponent} from '../component/MudColorComponent';
 
 import $ = require('jquery');
-///import * as $ from 'jquery';
 
 export class ScrollViewOutput extends MudColorComponent
 {
@@ -146,5 +144,3 @@ export class ScrollViewOutput extends MudColorComponent
     }
   }
 }
-
-///export = ScrollViewOutput;

@@ -2,8 +2,7 @@
   "compilerOptions":
   {
     "target": "es6",
-    "module": "amd",
-    //"module": "commonjs",
+    "module": "amd",  // 'amd' is used by require.js module loader.
     "charset": "UTF-8",
     "moduleResolution": "node",
     "newLine": "LF",

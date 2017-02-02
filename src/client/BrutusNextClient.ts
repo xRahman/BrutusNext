@@ -12,26 +12,6 @@
 
 'use strict';
 
-/*
-console.log('BrutusNextClient.js');
-
-let requirejs;
-
-requirejs.config
-(
-  {
-    paths:
-    {
-      // Alias so that you can use 'import $ = require('jquery');'.
-      'jquery': '../js/jquery/jquery.slim',
-      // Alias so that you can use 'import d3 = require('d3');'.
-      'd3': '../js/d3/d3.min',
-    }
-  }
-);
-*/
-
-///import Client = require('./Client');
 import {Client} from './Client';
 
 // Program entry point.

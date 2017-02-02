@@ -6,9 +6,7 @@
 
 'use strict';
 
-///import ERROR = require('../../error/ERROR');
 import {ERROR} from '../../error/ERROR';
-///import WebSocketDescriptor = require('./WebSocketDescriptor');
 import {WebSocketDescriptor} from './WebSocketDescriptor';
 
 export class WebSocketClient
@@ -54,5 +52,3 @@ export class WebSocketClient
   // ---------------- Private methods -------------------
 
 }
-
-///export = WebSocketClient;
