@@ -7,7 +7,6 @@
 
 'use strict';
 
-///import Component = require('../component/Component');
 import {Component} from '../component/Component';
 
 /// Color test: &kA&KB&rC&RD&gE&GF&yG&YH&bI&BJ&mK&ML&cM&CN&wO&WP
@@ -307,6 +306,3 @@ export abstract class MudColorComponent extends Component
     return this.parseMudColors(message.substr(2), baseColor);
   }
 }
-
-//export default MudColorComponent;
-//export = MudColorComponent;

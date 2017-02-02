@@ -6,9 +6,7 @@
 
 'use strict';
 
-///import ERROR = require('../../error/ERROR');
 import {ERROR} from '../../error/ERROR';
-///import Connection = require('../../connection/Connection');
 import {Connection} from '../../connection/Connection';
 
 export class WebSocketDescriptor
@@ -279,20 +277,6 @@ export class WebSocketDescriptor
   {
     console.log('onSocketError(). Status: ' + this.socket.readyState);
 
-    /// Přesunul jsem to do 'onSocketClosed() handleru,
-    /// ať je report uživateli na jendom místě.
-    /*
-    /// Tohle taky možná nebude dobře.
-    // If the 'error' event fires before 'open' event,
-    // it means that connection to the server couldn't
-    // be established.
-    if (!this.isSocketConnecting())
-    {
-      this.reportConnectionFailure();
-      return;
-    }
-    */
-
     // If 'error' event fired when the connection was open,
     // it will disconnect the player. We just log it to the
     // console for debugging purposes, user will be notified
@@ -344,5 +328,3 @@ export class WebSocketDescriptor
   // -------------- Protected methods -------------------
 
 }
-
-///export = WebSocketDescriptor;
