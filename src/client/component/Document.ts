@@ -7,11 +7,13 @@
 
 'use strict';
 
-import Client = require('../Client');
+///import Client = require('../Client');
+import {Client} from '../Client';
 
 import $ = require('jquery');
+///import * as $ from 'jquery';
 
-class Document
+export class Document
 {
   constructor(private client: Client)
   {
@@ -244,4 +246,4 @@ class Document
   }
 }
 
-export = Document;
+///export = Document;

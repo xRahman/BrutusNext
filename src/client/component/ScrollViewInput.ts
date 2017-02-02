@@ -6,12 +6,15 @@
 
 'use strict';
 
-import Component = require('../component/Component');
-import ScrollView = require('../component/ScrollView');
+///import Component = require('../component/Component');
+import {Component} from '../component/Component';
+///import ScrollView = require('../component/ScrollView');
+import {ScrollView} from '../component/ScrollView';
 
 import $ = require('jquery');
+///import * as $ from 'jquery';
 
-class ScrollViewInput extends Component
+export class ScrollViewInput extends Component
 {
   public static get CSS_CLASS() { return 'ScrollViewInput'; }
   public static get FRAME_CSS_CLASS() { return 'ScrollViewFrame'; }
@@ -325,4 +328,4 @@ class ScrollViewInput extends Component
   }
 }
 
-export = ScrollViewInput;
+///export = ScrollViewInput;

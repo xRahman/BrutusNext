@@ -1,0 +1,11 @@
+1. Update typescript in our /node_modules directory
+   (this one is actually used both for compiling the
+    code and for compiling the ingame scripts).
+
+  npm install typescript
+
+2. Update typescript globally
+   (This is not really necessary but it prevents vs code
+    from bitching about mismatched versions ;))
+
+  npm install -g typescript
