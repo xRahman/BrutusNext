@@ -11,7 +11,7 @@ import MudColorComponent = require('../component/MudColorComponent');
 
 import $ = require('jquery');
 
-class Window extends MudColorComponent
+export default class Window extends MudColorComponent
 {
   public static get CSS_CLASS() { return 'Window'; }
   public static get TITLE_BAR_CSS_CLASS() { return 'WindowTitleBar'; }
@@ -148,4 +148,4 @@ class Window extends MudColorComponent
 
 }
 
-export = Window;
+///export = Window;
