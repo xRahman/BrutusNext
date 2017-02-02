@@ -1,6 +1,11 @@
 TODO: Mapper.
 
 ---------------------------------------------------------------
+
+TODO: Ha, možná nebude potřeba requirejs!
+(viz import Window v Map.ts)
+
+---------------------------------------------------------------
 TOFIX: Dokud nevytimeoutuje pokus o connect, tak by se neměl
   pouštět reconnect (vede to k pokusu odstranit event listenery
   z null variable).

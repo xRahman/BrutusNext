@@ -15,8 +15,13 @@ var requirejs;
 requirejs.config
 (
   {
-    // Alias so that you can use 'import $ = require('jquery');'.
-    paths: { 'jquery': '../js/jquery/jquery.slim' }
+    paths:
+    {
+      // Alias so that you can use 'import $ = require('jquery');'.
+      'jquery': '../js/jquery/jquery.slim',
+      // Alias so that you can use 'import d3 = require('d3');'.
+      'd3': '../js/d3/d3.min',
+    }
   }
 );
 
