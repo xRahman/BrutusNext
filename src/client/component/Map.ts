@@ -6,15 +6,11 @@
 
 'use strict';
 
-///import Window = require('../component/Window');
 import {Window} from '../component/Window';
-///import Connection = require('../connection/Connection');
 import {Connection} from '../connection/Connection';
 
 import $ = require('jquery');
-///import * as $ from 'jquery';
-///import d3 = require('d3');
-import * as d3 from 'd3';
+import d3 = require('d3');
 
 let world =
 {
@@ -58,8 +54,6 @@ export class Map extends Window
 
   //------------------ Private data ---------------------
 
-  ///private input = new ScrollViewInput(this);
-
   // --- d3 elements ---
 
   private d3Map = null;
@@ -69,8 +63,6 @@ export class Map extends Window
   // ---------------- Static methods --------------------
 
   // --------------- Public accessors -------------------
-
-  ///public getInputId() { return this.id + '_input'; }
 
   // ---------------- Public methods --------------------
 
@@ -118,11 +110,9 @@ export class Map extends Window
   private createMap()
   {
     /// TODO:
-    ///this.d3Map = d3.select(o.container);
+    this.d3Map = d3.select('#' + this.getContentId());
   }
 
   // ---------------- Event handlers --------------------
 
 }
-
-///export = Map;

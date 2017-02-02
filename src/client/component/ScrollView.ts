@@ -6,19 +6,13 @@
 
 'use strict';
 
-///import ScrollViewInput = require('../component/ScrollViewInput');
 import {ScrollViewInput} from '../component/ScrollViewInput';
-///import ScrollViewOutput = require('../component/ScrollViewOutput');
 import {ScrollViewOutput} from '../component/ScrollViewOutput';
-///import MudColorComponent = require('../component/MudColorComponent');
 import {MudColorComponent} from '../component/MudColorComponent';
-///import Window = require('../component/Window');
 import {Window} from '../component/Window';
-///import Connection = require('../connection/Connection');
 import {Connection} from '../connection/Connection';
 
 import $ = require('jquery');
-///import * as $ from 'jquery';
 
 export class ScrollView extends Window
 {
@@ -46,7 +40,6 @@ export class ScrollView extends Window
   //------------------ Private data ---------------------
 
   private input = new ScrollViewInput(this);
-  ///private output = new ScrollViewOutput();
   public output = new ScrollViewOutput();
 
   // --------------- Static accessors -------------------
@@ -111,45 +104,6 @@ export class ScrollView extends Window
     this.output.triggerKeyboardEvent(event);
   }
 
-  /*
-  public keyboardScroll(key: number)
-  {
-    // PgUp(33), PgDn(34), End(35), Home(36),
-    // Left(37), Up(38), Right(39), Down(40)
-
-    switch(key)
-    {
-      case 33:  // 'PgUp'
-        this.output.scrollOnePageUp();
-        break;
-        
-      case 34:  // 'PgDn'
-      this.output.scrollOnePageDown();
-        break;
-
-      case 35:  // 'End'
-        this.output.scrollToTop();
-        break;
-
-      case 36:  // 'Home'
-        this.output.scrollToBottom();
-        break;
-
-      //case 37:  // 'Left'
-      
-      case 38:  // 'Up'
-        this.output.scrollOneLineUp();
-        break;
-
-      //case 39:  // 'Right'
-
-      case 40:  // 'Down'
-        this.output.scrollOneLineDown();
-        break;
-    }
-  }
-  */
-
   // Sets focus to the 'input' element.
   public focusInput()
   {
@@ -157,16 +111,6 @@ export class ScrollView extends Window
   }
 
   // --------------- Protected methods ------------------
-
-  /// Tohle je blbost, na setovani titlu je setTitle().
-  /*
-  // Returns html containing window title.
-  protected getTitle()
-  {
-    /// TODO
-    return "Rahman@BrutusNext";
-  }
-  */
 
   // --- Element-generating methods ---
 
@@ -195,25 +139,6 @@ export class ScrollView extends Window
 
   // ---------------- Private methods -------------------
 
-  /*
-  // Encloses each line in <span> tag followed by <br> tag.
-  private htmlizeLinesOfCommand(lines: Array<string>)
-  {
-    let html = '';
-
-    // Add each line as a separate <span> followed by <br>.
-    for (let line of lines)
-    {
-      html += '<span style="color:' + ScrollView.COMMAND_ECHO_COLOR + ';';
-      html +=  'font-family:' + ScrollView.COMMAND_ECHO_FONT + ';">';
-      html +=    line;
-      html += '</span><br />';
-    }
-
-    return html;
-  }
-  */
-
   // Adds the 'command' string to the 'output' element.
   private echoCommand(command: string)
   {
@@ -223,17 +148,6 @@ export class ScrollView extends Window
     if (command === "")
       return;
 
-    /*
-    // Because output element is not a text area, all lines would be
-    // merged into one. To prevent that, we need to parse the command
-    // and format the output using <br> tags.
-    let lines = command.split('\n');
-
-    // Whole command will be contained in a <div>
-    let html = '<div>'
-      +           this.htmlizeLinesOfCommand(lines);
-      +        '</div>';
-    */
     let html = this.htmlizeMudColors
     (
       command,
@@ -247,5 +161,3 @@ export class ScrollView extends Window
   // ---------------- Event handlers --------------------
 
 }
-
-///export = ScrollView;

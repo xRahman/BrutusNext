@@ -6,13 +6,9 @@
 
 'use strict';
 
-///import ERROR = require('../error/ERROR');
 import {ERROR} from '../error/ERROR';
-///import WebSocketDescriptor = require('../net/ws/WebSocketDescriptor');
 import {WebSocketDescriptor} from '../net/ws/WebSocketDescriptor';
-///import ScrollView = require('../component/ScrollView');
 import {ScrollView} from '../component/ScrollView';
-///import Map = require('../component/Map');
 import {Map} from '../component/Map';
 
 export class Connection
@@ -74,5 +70,3 @@ export class Connection
   // ---------------- Private methods -------------------
 
 }
-
-///export = Connection;

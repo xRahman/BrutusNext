@@ -8,8 +8,6 @@
 
 'use strict';
 
-///import Connection = require('../connection/Connection');
-
 export class Room
 {
   // -------------- Static class data -------------------
@@ -35,5 +33,3 @@ export class Room
   // ---------------- Event handlers --------------------
 
 }
-
-///export = Room;

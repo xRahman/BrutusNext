@@ -12,19 +12,11 @@
 
 'use strict';
 
-///import ERROR = require('./error/ERROR');
 import {ERROR} from './error/ERROR';
-///import Body = require('./component/Body');
 import {Body} from './component/Body';
-///import Document = require('./component/Document');
 import {Document} from './component/Document';
-///import Connection = require('./connection/Connection');
 import {Connection} from './connection/Connection';
-///import WebSocketClient = require('./net/ws/WebSocketClient');
 import {WebSocketClient} from './net/ws/WebSocketClient';
-
-///import $ = require('jquery');
-import * as $ from 'jquery';
 
 export class Client
 {
@@ -104,5 +96,3 @@ export class Client
   // ---------------- Private methods -------------------
 
 }
-
-///export = Client;
