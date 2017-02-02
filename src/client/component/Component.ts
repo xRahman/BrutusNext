@@ -7,10 +7,10 @@
 
 'use strict';
 
-///import $ = require('jquery');
-import ERROR = require('../error/ERROR');
+///import ERROR = require('../error/ERROR');
+import {ERROR} from '../error/ERROR';
 
-abstract class Component
+export abstract class Component
 {
   // -------------- Static class data -------------------
 
@@ -75,4 +75,5 @@ abstract class Component
 
 }
 
-export = Component;
+///export default Component;
+///export = Component;

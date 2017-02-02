@@ -7,9 +7,9 @@
 'use strict';
 
 // Sends error message and a stack trace to syslog.
-function ERROR(message: string)
+export function ERROR(message: string)
 {
   console.log('ERROR: ' + message);
 }
 
-export = ERROR;
+///export = ERROR;
