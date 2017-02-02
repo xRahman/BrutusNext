@@ -1,7 +1,26 @@
-﻿Download from:
+﻿Install d3:
+
+  npm install d3 --save
+
+Install typescript type definitions:
+
+  npm install @types/d3 --save-dev
+
+Then you can import d3 as follows:
+
+  import * as d3 from 'd3';
+
+
+/*
+Download from:
 https://d3js.org/
 
+And copy file d3.min.js to /client/js/d3
+*/
 
+/*
+// This creates A LOT of directories in /node_modules,
+// so better just download manually the one file we need.
 Or use npm:
 https://www.npmjs.com/package/d3
 
@@ -9,5 +28,6 @@ Install or update d3.js using:
 
   npm install d3
 
-Then go to /BrutusNext/node_modules/jquery/dist and copy appropriate
+Then go to /BrutusNext/node_modules/d3 and copy appropriate
 file to /BrutusNext/client/d3.
+*/

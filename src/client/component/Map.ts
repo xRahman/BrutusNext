@@ -8,10 +8,13 @@
 
 ///import ScrollViewOutput = require('../component/ScrollViewOutput');
 ///import MudColorComponent = require('../component/MudColorComponent');
-import Window = require('../component/Window');
+///import Window = require('../component/Window');
+import Window from '../component/Window';
 import Connection = require('../connection/Connection');
 
 import $ = require('jquery');
+///import d3 = require('d3');
+import * as d3 from 'd3';
 
 let world =
 {
@@ -51,11 +54,15 @@ class Map extends Window
 
   // 'id' parameter of html element
   // (overrides Component.id).
-  protected id = 'mapper';
+  protected id = 'mapwidnow';
 
   //------------------ Private data ---------------------
 
   ///private input = new ScrollViewInput(this);
+
+  // --- d3 elements ---
+
+  private d3Map = null;
 
   // --------------- Static accessors -------------------
 
@@ -76,6 +83,8 @@ class Map extends Window
     this.$window.addClass(Map.CSS_CLASS);
 
     this.setTitle('Dragonhelm Mountains');
+
+    this.createMap();
 
     return this.$window;
   }
@@ -105,6 +114,12 @@ class Map extends Window
   }
 
   // ---------------- Private methods -------------------
+
+  private createMap()
+  {
+    /// TODO:
+    ///this.d3Map = d3.select(o.container);
+  }
 
   // ---------------- Event handlers --------------------
 
