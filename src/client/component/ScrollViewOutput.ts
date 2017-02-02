@@ -6,11 +6,13 @@
 
 'use strict';
 
-import MudColorComponent = require('../component/MudColorComponent');
+///import MudColorComponent = require('../component/MudColorComponent');
+import {MudColorComponent} from '../component/MudColorComponent';
 
 import $ = require('jquery');
+///import * as $ from 'jquery';
 
-class ScrollViewOutput extends MudColorComponent
+export class ScrollViewOutput extends MudColorComponent
 {
   public static get CSS_CLASS() { return 'ScrollViewOutput'; }
 
@@ -145,4 +147,4 @@ class ScrollViewOutput extends MudColorComponent
   }
 }
 
-export = ScrollViewOutput;
+///export = ScrollViewOutput;

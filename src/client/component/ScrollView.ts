@@ -6,15 +6,21 @@
 
 'use strict';
 
-import ScrollViewInput = require('../component/ScrollViewInput');
-import ScrollViewOutput = require('../component/ScrollViewOutput');
-import MudColorComponent = require('../component/MudColorComponent');
-import Window = require('../component/Window');
-import Connection = require('../connection/Connection');
+///import ScrollViewInput = require('../component/ScrollViewInput');
+import {ScrollViewInput} from '../component/ScrollViewInput';
+///import ScrollViewOutput = require('../component/ScrollViewOutput');
+import {ScrollViewOutput} from '../component/ScrollViewOutput';
+///import MudColorComponent = require('../component/MudColorComponent');
+import {MudColorComponent} from '../component/MudColorComponent';
+///import Window = require('../component/Window');
+import {Window} from '../component/Window';
+///import Connection = require('../connection/Connection');
+import {Connection} from '../connection/Connection';
 
 import $ = require('jquery');
+///import * as $ from 'jquery';
 
-class ScrollView extends Window
+export class ScrollView extends Window
 {
   constructor(private connection: Connection)
   {
@@ -242,4 +248,4 @@ class ScrollView extends Window
 
 }
 
-export = ScrollView;
+///export = ScrollView;

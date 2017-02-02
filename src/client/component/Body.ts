@@ -7,16 +7,23 @@
 
 'use strict';
 
-import Component = require('../component/Component');
-import Window = require('../component/Window');
-import ScrollView = require('../component/ScrollView');
-import Map = require('../component/Map');
-import Client = require('../Client');
-import Connection = require('../connection/Connection');
+///import Component = require('../component/Component');
+import {Component} from '../component/Component';
+///import Window = require('../component/Window');
+import {Window} from '../component/Window';
+///import ScrollView = require('../component/ScrollView');
+import {ScrollView} from '../component/ScrollView';
+///import Map = require('../component/Map');
+import {Map} from '../component/Map';
+///import Client = require('../Client');
+import {Client} from '../Client';
+///import Connection = require('../connection/Connection');
+import {Connection} from '../connection/Connection';
 
 import $ = require('jquery');
+///import * as $ from 'jquery';
 
-class Body extends Component
+export class Body extends Component
 {
   ///public scrollView = null;
   private windows: Array<Window> = [];
@@ -104,4 +111,4 @@ class Body extends Component
 
 }
 
-export = Body;
+///export = Body;

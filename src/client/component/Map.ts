@@ -6,13 +6,13 @@
 
 'use strict';
 
-///import ScrollViewOutput = require('../component/ScrollViewOutput');
-///import MudColorComponent = require('../component/MudColorComponent');
 ///import Window = require('../component/Window');
-import Window from '../component/Window';
-import Connection = require('../connection/Connection');
+import {Window} from '../component/Window';
+///import Connection = require('../connection/Connection');
+import {Connection} from '../connection/Connection';
 
 import $ = require('jquery');
+///import * as $ from 'jquery';
 ///import d3 = require('d3');
 import * as d3 from 'd3';
 
@@ -36,7 +36,7 @@ let world =
   }
 };
 
-class Map extends Window
+export class Map extends Window
 {
   constructor(private connection: Connection)
   {
@@ -125,4 +125,4 @@ class Map extends Window
 
 }
 
-export = Map;
+///export = Map;

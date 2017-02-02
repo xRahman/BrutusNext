@@ -6,12 +6,13 @@
 
 'use strict';
 
-import AppBody = require('../component/Body');
-import MudColorComponent = require('../component/MudColorComponent');
+///import MudColorComponent = require('../component/MudColorComponent');
+import {MudColorComponent} from '../component/MudColorComponent';
 
 import $ = require('jquery');
+///import * as $ from 'jquery';
 
-export default class Window extends MudColorComponent
+export class Window extends MudColorComponent
 {
   public static get CSS_CLASS() { return 'Window'; }
   public static get TITLE_BAR_CSS_CLASS() { return 'WindowTitleBar'; }

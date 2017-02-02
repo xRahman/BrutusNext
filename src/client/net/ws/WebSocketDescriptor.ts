@@ -6,10 +6,12 @@
 
 'use strict';
 
-import ERROR = require('../../error/ERROR');
-import Connection = require('../../connection/Connection');
+///import ERROR = require('../../error/ERROR');
+import {ERROR} from '../../error/ERROR';
+///import Connection = require('../../connection/Connection');
+import {Connection} from '../../connection/Connection';
 
-class WebSocketDescriptor
+export class WebSocketDescriptor
 {
 
   // -------------- Static class data -------------------
@@ -343,4 +345,4 @@ class WebSocketDescriptor
 
 }
 
-export = WebSocketDescriptor;
+///export = WebSocketDescriptor;
