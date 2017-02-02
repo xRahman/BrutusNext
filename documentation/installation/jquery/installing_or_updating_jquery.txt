@@ -2,6 +2,10 @@
 
   npm install jquery
 
+Type definitions:
+
+  npm install @types/jquery --save-dev
+
 Then go to /BrutusNext/node_modules/jquery/dist and copy appropriate
 file to /BrutusNext/client/jquery.
 

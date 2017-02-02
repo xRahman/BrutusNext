@@ -6,10 +6,12 @@
 
 'use strict';
 
-import ERROR = require('../../error/ERROR');
-import WebSocketDescriptor = require('./WebSocketDescriptor');
+///import ERROR = require('../../error/ERROR');
+import {ERROR} from '../../error/ERROR';
+///import WebSocketDescriptor = require('./WebSocketDescriptor');
+import {WebSocketDescriptor} from './WebSocketDescriptor';
 
-class WebSocketClient
+export class WebSocketClient
 {
   // -------------- Static class data -------------------
 
@@ -53,4 +55,4 @@ class WebSocketClient
 
 }
 
-export = WebSocketClient;
+///export = WebSocketClient;

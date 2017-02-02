@@ -10,7 +10,7 @@
 
 ///import Connection = require('../connection/Connection');
 
-class Room
+export class Room
 {
   // -------------- Static class data -------------------
 
@@ -36,4 +36,4 @@ class Room
 
 }
 
-export = Room;
+///export = Room;

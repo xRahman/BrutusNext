@@ -25,5 +25,11 @@ requirejs.config
   }
 );
 
+console.log('Main.js');
+
 // Launch the client.
 require(['../js/build/BrutusNextClient']);
+/*
+let main = require(['./build/BrutusNextClient']);
+main();
+*/

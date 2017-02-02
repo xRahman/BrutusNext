@@ -7,7 +7,8 @@
 
 'use strict';
 
-import Component = require('../component/Component');
+///import Component = require('../component/Component');
+import {Component} from '../component/Component';
 
 /// Color test: &kA&KB&rC&RD&gE&GF&yG&YH&bI&BJ&mK&ML&cM&CN&wO&WP
 const Colors =
@@ -30,7 +31,7 @@ const Colors =
   '&W':	'rgb(255,255,255)'	// bright white
 }
 
-abstract class MudColorComponent extends Component
+export abstract class MudColorComponent extends Component
 {
   // Default base color that will be used if a message doesn't
   // start with a color code.
@@ -307,4 +308,5 @@ abstract class MudColorComponent extends Component
   }
 }
 
-export = MudColorComponent;
+//export default MudColorComponent;
+//export = MudColorComponent;

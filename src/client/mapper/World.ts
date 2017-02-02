@@ -10,7 +10,7 @@
 
 ///import Connection = require('../connection/Connection');
 
-class World
+export class World
 {
   // -------------- Static class data -------------------
 
@@ -34,4 +34,4 @@ class World
 
 }
 
-export = World;
+/// export = World;
