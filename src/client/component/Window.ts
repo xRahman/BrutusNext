@@ -6,11 +6,9 @@
 
 'use strict';
 
-///import MudColorComponent = require('../component/MudColorComponent');
 import {MudColorComponent} from '../component/MudColorComponent';
 
 import $ = require('jquery');
-///import * as $ from 'jquery';
 
 export class Window extends MudColorComponent
 {
@@ -148,5 +146,3 @@ export class Window extends MudColorComponent
   // ---------------- Event handlers --------------------
 
 }
-
-///export = Window;

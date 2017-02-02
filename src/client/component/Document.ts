@@ -7,11 +7,9 @@
 
 'use strict';
 
-///import Client = require('../Client');
 import {Client} from '../Client';
 
 import $ = require('jquery');
-///import * as $ from 'jquery';
 
 export class Document
 {
@@ -245,5 +243,3 @@ export class Document
     return true;
   }
 }
-
-///export = Document;

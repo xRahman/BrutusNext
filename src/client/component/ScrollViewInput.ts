@@ -6,13 +6,10 @@
 
 'use strict';
 
-///import Component = require('../component/Component');
 import {Component} from '../component/Component';
-///import ScrollView = require('../component/ScrollView');
 import {ScrollView} from '../component/ScrollView';
 
 import $ = require('jquery');
-///import * as $ from 'jquery';
 
 export class ScrollViewInput extends Component
 {
@@ -327,5 +324,3 @@ export class ScrollViewInput extends Component
     return true;  // Continue processing this event.
   }
 }
-
-///export = ScrollViewInput;

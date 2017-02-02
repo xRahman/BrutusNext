@@ -8,8 +8,6 @@
 
 'use strict';
 
-///import Connection = require('../connection/Connection');
-
 export class World
 {
   // -------------- Static class data -------------------
@@ -33,5 +31,3 @@ export class World
   // ---------------- Event handlers --------------------
 
 }
-
-/// export = World;

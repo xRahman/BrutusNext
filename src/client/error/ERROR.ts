@@ -11,5 +11,3 @@ export function ERROR(message: string)
 {
   console.log('ERROR: ' + message);
 }
-
-///export = ERROR;
