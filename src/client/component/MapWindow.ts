@@ -125,6 +125,14 @@ export class MapWindow extends Window
     return this.$window;
   }
 
+  // 
+  public updateMap()
+  {
+    this.updateRooms();
+    this.updateExits();
+  }
+
+
   // --------------- Protected methods ------------------
 
   // --- Element-generating methods ---
@@ -185,9 +193,15 @@ export class MapWindow extends Window
 		this.d3MapSvg.attr('height', height);   
     */
 
+    // Container for room svg elements.
     this.d3RoomsSvg = this.d3MapSvg.append('g');
+
     ///this.d3LinesSvg = this.d3MapSvg.append('g');
     ///this.d3TagsSvg = this.d3MapSvg.append('g');
+
+
+    /// TEST:
+    this.updateMap();
   }
 
   private initNewRoomElements(d3NewRooms)
@@ -195,13 +209,20 @@ export class MapWindow extends Window
     /// barEnter.style("width", function(d) { return d * 10 + "px"; });
 
     d3NewRooms.attr('class', MapWindow.SVG_ROOM_CSS_CLASS);
+    d3NewRooms.attr("cx", 30);
+    d3NewRooms.attr("cy", 30);
+    d3NewRooms.attr("r", 5);
+    d3NewRooms.attr("stroke", 'yellow');
+    d3NewRooms.attr("stroke-width", 1.5);
+    d3NewRooms.attr("fill", 'none');
   }
 
   private updateRooms()
   {
     // Use 'keys' array of 'this.rooms' hashmap as a guiding data
     // for d3 to build respective elements.
-    let data = this.rooms.keys;
+    ///let data = this.rooms.keys;
+    let data = [1, 2, 3];
 
     // We are going to manupulate elements inside a this.d3RoomsSvg
     // element that have a css class 'room'.
@@ -231,13 +252,6 @@ export class MapWindow extends Window
     // for d3 to build respective elements.
     let data = this.exits.keys;
     */
-  }
-
-  // 
-  private updateMap()
-  {
-    this.updateRooms();
-    this.updateExits();
   }
 
   // ---------------- Event handlers --------------------
