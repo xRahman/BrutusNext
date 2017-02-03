@@ -263,7 +263,9 @@
 }
 
 /* ------------ Map (svg element) ----------- */
+/* ------------------- Map ------------------ */
 
+/* Map root svg element */
 .SvgMap
 {
   margin: 0;
@@ -275,6 +277,7 @@
   /*background-color: beige;*/
 }
 
+/* svg <circle> representing a room */
 .SvgRoom
 {
   margin: 0;
