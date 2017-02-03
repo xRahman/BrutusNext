@@ -9,7 +9,7 @@
 import {ERROR} from '../error/ERROR';
 import {WebSocketDescriptor} from '../net/ws/WebSocketDescriptor';
 import {ScrollView} from '../component/ScrollView';
-import {Map} from '../component/Map';
+import {MapWindow} from '../component/MapWindow';
 
 export class Connection
 {
@@ -23,7 +23,7 @@ export class Connection
   //------------------ Public data ----------------------
 
   public scrollView: ScrollView = null;
-  public map: Map = null;
+  public mapWindow: MapWindow = null;
 
   //------------------ Private data ---------------------
 
