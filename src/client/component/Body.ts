@@ -10,7 +10,7 @@
 import {Component} from '../component/Component';
 import {Window} from '../component/Window';
 import {ScrollView} from '../component/ScrollView';
-import {Map} from '../component/Map';
+import {MapWindow} from '../component/MapWindow';
 import {Client} from '../Client';
 import {Connection} from '../connection/Connection';
 
@@ -29,7 +29,7 @@ export class Body extends Component
     let connection = client.createConnection();
 
     this.createScrollView(connection);
-    this.createMap(connection);
+    this.createMapWindow(connection);
 
     /// TEST
     connection.connect();
@@ -72,14 +72,13 @@ export class Body extends Component
   }
 
   // Creates a 'Map' window and adds it to app_body.
-  public createMap(connection: Connection)
+  public createMapWindow(connection: Connection)
   {
-    /// Tohle je docasne - scrollViewu muze byt vic.
-    let map = new Map(connection);
-    this.windows.push(map);
+    let mapWindow = new MapWindow(connection);
+    this.windows.push(mapWindow);
 
     // Create jquery element 'scrollview'.
-    let $map = map.create();
+    let $map = mapWindow.create();
     // Put it in the 'body' element.
     this.$body.append($map);
 
