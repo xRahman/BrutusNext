@@ -91,6 +91,18 @@ export class Client
     return connection;
   }
 
+  // Executes when html document is fully loaded.
+  public onDocumentReady()
+  {
+    this.body.onDocumentReady();
+  }
+
+  // Executes when html document is resized.
+  public onDocumentResize()
+  {
+    this.body.onDocumentResize();
+  }
+
   // ---------------- Event handlers --------------------
 
   // ---------------- Private methods -------------------

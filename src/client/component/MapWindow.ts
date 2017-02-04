@@ -9,6 +9,8 @@
 import {Window} from '../component/Window';
 import {Connection} from '../connection/Connection';
 
+import {ZoneGenerator} from '../mapper/ZoneGenerator';
+
 import $ = require('jquery');
 import d3 = require('d3');
 
@@ -48,14 +50,34 @@ import d3 = require('d3');
   OK, nechme zatim exity stranou. Zatim si budu hrat s kreslenim mistnosti.
 */
 
+// Projection angle.
+///let angle = Math.PI / 8;
+let angle = Math.PI / 8;
+///let angle = 3 * Math.PI / 16;
+
+// Shortening factor of virtual 'y' axis.
+let shorten = Math.cos(angle);
+//let shorten = 0.6;
+
+// Shortening factors projected to viewport cooordinates.
+let dx = Math.sin(angle) * shorten;
+let dy = Math.cos(angle) * shorten;
+
+/*
+let sin45 = Math.sin(Math.PI / 4);
+let cos45 = Math.cos(Math.PI / 4);
+*/
+
+/*
 let world =
 {
-  '3-imt2xk99':
+  // First row.
+  '100-imt2xk99':
   {
     'name': 'Tutorial Room',
     'exits':
     {
-      'north': '4-imt2xk99'
+      'east': '101-imt2xk99'
     },
     coords:
     {
@@ -64,21 +86,575 @@ let world =
       z: 0
     }
   },
-  '4-imt2xk99':
+  '101-imt2xk99':
   {
-    'name': 'System Room',
+    'name': 'Tutorial Room',
     'exits':
     {
-      'south': '3-imt2xk99'
+      'west': '100-imt2xk99',
+      'east': '102-imt2xk99'
     },
     coords:
     {
       x: 1,
       y: 0,
+      z: 0.1
+    }
+  },
+  '102-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'west': '101-imt2xk99',
+      'east': '103-imt2xk99'
+    },
+    coords:
+    {
+      x: 2,
+      y: 0,
+      z: 0.2
+    }
+  },
+  '103-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'west': '102-imt2xk99',
+      'east': '104-imt2xk99'
+    },
+    coords:
+    {
+      x: 3,
+      y: 0,
+      z: 0.3
+    }
+  },
+  '104-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'west': '103-imt2xk99',
+      'east': '105-imt2xk99'
+    },
+    coords:
+    {
+      x: 4,
+      y: 0,
+      z: 0.4
+    }
+  },
+  '105-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'west': '104-imt2xk99',
+      'east': '106-imt2xk99'
+    },
+    coords:
+    {
+      x: 5,
+      y: 0,
+      z: 0.5
+    }
+  },
+  '106-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'west': '105-imt2xk99',
+      'east': '107-imt2xk99'
+    },
+    coords:
+    {
+      x: 6,
+      y: 0,
+      z: 0.5
+    }
+  },
+  '107-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'west': '106-imt2xk99',
+      'east': '108-imt2xk99'
+    },
+    coords:
+    {
+      x: 7,
+      y: 0,
+      z: 0.4
+    }
+  },
+  '108-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'west': '107-imt2xk99',
+      'east': '108-imt2xk99'
+    },
+    coords:
+    {
+      x: 8,
+      y: 0,
+      z: 0.3
+    }
+  },
+  '109-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'west': '108-imt2xk99',
+      'east': '110-imt2xk99'
+    },
+    coords:
+    {
+      x: 9,
+      y: 0,
+      z: 0.2
+    }
+  },
+  '110-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'west': '109-imt2xk99',
+      'east': '111-imt2xk99'
+    },
+    coords:
+    {
+      x: 10,
+      y: 0,
+      z: 0.1
+    }
+  },
+  '111-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'west': '110-imt2xk99',
+      'east': '112-imt2xk99'
+    },
+    coords:
+    {
+      x: 11,
+      y: 0,
+      z: 0
+    }
+  },
+  '112-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'west': '111-imt2xk99'
+    },
+    coords:
+    {
+      x: 12,
+      y: 0,
+      z: 0
+    }
+  },
+  // Second row.
+  '200-imt2xk99':
+  {
+    'name': 'Tutorial Room',
+    'exits':
+    {
+      'east': '201-imt2xk99'
+    },
+    coords:
+    {
+      x: 0,
+      y: 1,
+      z: 0
+    }
+  },
+  '201-imt2xk99':
+  {
+    'name': 'Tutorial Room',
+    'exits':
+    {
+      'west': '200-imt2xk99',
+      'east': '202-imt2xk99'
+    },
+    coords:
+    {
+      x: 1,
+      y: 1,
+      z: 0.1
+    }
+  },
+  '202-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'west': '201-imt2xk99',
+      'east': '203-imt2xk99'
+    },
+    coords:
+    {
+      x: 2,
+      y: 1,
+      z: 0.2
+    }
+  },
+  '203-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'west': '202-imt2xk99',
+      'east': '204-imt2xk99'
+    },
+    coords:
+    {
+      x: 3,
+      y: 1,
+      z: 0.3
+    }
+  },
+  '204-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'west': '203-imt2xk99',
+      'east': '205-imt2xk99'
+    },
+    coords:
+    {
+      x: 4,
+      y: 1,
+      z: 0.3
+    }
+  },
+  '205-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'west': '204-imt2xk99',
+      'east': '206-imt2xk99'
+    },
+    coords:
+    {
+      x: 5,
+      y: 1,
+      z: 0.3
+    }
+  },
+  '206-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'west': '205-imt2xk99',
+      'east': '207-imt2xk99'
+    },
+    coords:
+    {
+      x: 6,
+      y: 1,
+      z: 0.2
+    }
+  },
+  '207-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'west': '206-imt2xk99',
+      'east': '208-imt2xk99'
+    },
+    coords:
+    {
+      x: 7,
+      y: 1,
+      z: 0.1
+    }
+  },
+  '208-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'west': '207-imt2xk99',
+      'east': '208-imt2xk99'
+    },
+    coords:
+    {
+      x: 8,
+      y: 1,
+      z: 0
+    }
+  },
+  '209-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'west': '208-imt2xk99',
+      'east': '210-imt2xk99'
+    },
+    coords:
+    {
+      x: 9,
+      y: 1,
+      z: 0
+    }
+  },
+  '210-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'west': '209-imt2xk99',
+      'east': '211-imt2xk99'
+    },
+    coords:
+    {
+      x: 10,
+      y: 1,
+      z: 0
+    }
+  },
+  '211-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'west': '210-imt2xk99',
+      'east': '212-imt2xk99'
+    },
+    coords:
+    {
+      x: 11,
+      y: 1,
+      z: 0
+    }
+  },
+  '212-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'west': '211-imt2xk99'
+    },
+    coords:
+    {
+      x: 12,
+      y: 1,
+      z: 0
+    }
+  },
+  // Third row.
+  '300-imt2xk99':
+  {
+    'name': 'Tutorial Room',
+    'exits':
+    {
+      'east': '301-imt2xk99'
+    },
+    coords:
+    {
+      x: 0,
+      y: 2,
+      z: 0
+    }
+  },
+  '301-imt2xk99':
+  {
+    'name': 'Tutorial Room',
+    'exits':
+    {
+      'west': '300-imt2xk99',
+      'east': '302-imt2xk99'
+    },
+    coords:
+    {
+      x: 1,
+      y: 2,
+      z: 0
+    }
+  },
+  '302-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'west': '301-imt2xk99',
+      'east': '303-imt2xk99'
+    },
+    coords:
+    {
+      x: 2,
+      y: 2,
+      z: 0
+    }
+  },
+  '303-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'west': '302-imt2xk99',
+      'east': '304-imt2xk99'
+    },
+    coords:
+    {
+      x: 3,
+      y: 2,
+      z: 0
+    }
+  },
+  '304-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'west': '303-imt2xk99',
+      'east': '305-imt2xk99'
+    },
+    coords:
+    {
+      x: 4,
+      y: 2,
+      z: 0
+    }
+  },
+  '305-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'west': '304-imt2xk99',
+      'east': '306-imt2xk99'
+    },
+    coords:
+    {
+      x: 5,
+      y: 2,
+      z: 0
+    }
+  },
+  '306-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'west': '305-imt2xk99',
+      'east': '307-imt2xk99'
+    },
+    coords:
+    {
+      x: 6,
+      y: 2,
+      z: 0
+    }
+  },
+  '307-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'west': '306-imt2xk99',
+      'east': '308-imt2xk99'
+    },
+    coords:
+    {
+      x: 7,
+      y: 2,
+      z: 0
+    }
+  },
+  '308-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'west': '307-imt2xk99',
+      'east': '308-imt2xk99'
+    },
+    coords:
+    {
+      x: 8,
+      y: 2,
+      z: 0
+    }
+  },
+  '309-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'west': '308-imt2xk99',
+      'east': '310-imt2xk99'
+    },
+    coords:
+    {
+      x: 9,
+      y: 2,
+      z: 0
+    }
+  },
+  '310-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'west': '309-imt2xk99',
+      'east': '311-imt2xk99'
+    },
+    coords:
+    {
+      x: 10,
+      y: 2,
+      z: 0
+    }
+  },
+  '311-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'west': '310-imt2xk99',
+      'east': '312-imt2xk99'
+    },
+    coords:
+    {
+      x: 11,
+      y: 2,
+      z: 0
+    }
+  },
+  '312-imt2xk99':
+  {
+    'name': 'System Room',
+    'exits':
+    {
+      'west': '311-imt2xk99'
+    },
+    coords:
+    {
+      x: 12,
+      y: 2,
       z: 0
     }
   }
 };
+*/
 
 export class MapWindow extends Window
 {
@@ -88,9 +664,20 @@ export class MapWindow extends Window
 
     this.connection.mapWindow = this;
 
+    let zg = new ZoneGenerator();
+
+    let world = zg.generateZone();
+
     /// TEST:
-    this.rooms.set('3-imt2xk99', world['3-imt2xk99']);
-    this.rooms.set('6-imt2xk99', world['6-imt2xk99']);
+    for (let property in world)
+    {
+      // Build room data.
+      this.rooms.set(property, world[property]);
+
+      // Add exits of this room to this.exits.
+      this.addRoomExits(property, world[property]);
+    }
+    ///console.log('Items in exits hashmap: ' + [...this.exits.values()].length);
 
     /*
     console.log('Items in hashmap: ' + [...this.rooms.values()].length);
@@ -114,6 +701,15 @@ export class MapWindow extends Window
   public static get SVG_MAP_CSS_CLASS() { return 'SvgMap'; }
   public static get SVG_ROOM_CSS_CLASS() { return 'SvgRoom'; }
 
+  // Distance between two rooms on X axis in pixels.
+  private static get ROOM_SPACING() { return 30; }
+
+  // Map is updated only after 'resize' event doesn't fire
+  // for this period (in miliseconds).
+  private static get RESIZE_UPDATE_DELAY() { return 10; }
+
+  private static get 
+
   // -------------- Static class data -------------------
 
   //----------------- Protected data --------------------
@@ -127,12 +723,29 @@ export class MapWindow extends Window
   private rooms = new Map();
   private exits = new Map();
 
+  // Coordinates of currently centered room
+  // (in mud world coords - distance between
+  //  adjacent rooms is 1).
+  private coords =
+  {
+    x: 0,
+    y: 0,
+    z: 0
+  }
+
   ///private roomData = null;
+
+  // ----- timers ------
+
+  // Prevents map updating until MapWindow.RESIZE_UPDATE_DELAY
+  // miliseconds after last 'window.resize' event.
+  private resizeTimeout = null;
 
   // --- d3 elements ---
 
   private d3MapSvg = null;
   private d3RoomsSvg = null;
+  private d3ExitsSvg = null;
 
   // --------------- Static accessors -------------------
 
@@ -150,18 +763,46 @@ export class MapWindow extends Window
     // ScrollView window uses css class .ScrollView along with .Window.
     this.$window.addClass(MapWindow.CSS_CLASS);
 
+    this.$window.resize
+    (
+      (event) => { this.onResize(event); }
+    );
+
     this.setTitle('Dragonhelm Mountains');
 
     return this.$window;
   }
 
-  // 
+  // Adds or removes svg elements in the map to match
+  // changes in respective data.
+  /// TODO: Specifikovat, co jsou 'respective data'.
   public updateMap()
   {
     this.updateRooms();
     this.updateExits();
   }
 
+  // Executes when html document is fully loaded.
+  // (Overrides Window.onDocumentReady()).
+  public onDocumentReady()
+  {
+    this.updateMap();
+  }
+
+  // Executes when html document is resized
+  // (Overrides Window.onDocumentResize()).
+  public onDocumentResize()
+  {
+    clearTimeout(this.resizeTimeout);
+
+    this.resizeTimeout = setTimeout
+    (
+      // 'updateMap()' will only be called MapWindow.RESIZE_UPDATE_DELAY
+      // miliseconds after the last 'window.resize' event fired.
+      () => { this.updateMap(); },
+      MapWindow.RESIZE_UPDATE_DELAY
+    );
+  }
 
   // --------------- Protected methods ------------------
 
@@ -191,6 +832,54 @@ export class MapWindow extends Window
 
   // ---------------- Private methods -------------------
 
+  // Adds exits of given room to 'this.exits' array.
+  private addRoomExits(roomId: string, room: any)
+  {
+    let exits = [];
+
+    exits.push(room.exits['north']);
+    exits.push(room.exits['east']);
+    exits.push(room.exits['south']);
+    exits.push(room.exits['west']);
+    exits.push(room.exits['up']);
+    exits.push(room.exits['down']);
+
+    // 'exit' is an id of destination room.
+    for (let exit of exits)
+    {
+      if (exit)
+      {
+        let exitId = roomId + ':' + exit;
+
+        this.exits.set(exitId, { from: roomId, to: exit });
+
+        /// Zatím kašlu na deduplikaci obousměrných exitů
+        /// (navíc to nebylo dobře, this.rooms.get(exit)
+        /// není idčko ale data roomy).
+        /*
+        let destRoomId = this.rooms.get(exit);
+
+        // If destination room exists.
+        if (destRoomId)
+        {
+          let exitId = null;
+
+          // Create the exitId by concatenating ids
+          // of connected rooms in alphabetical order.
+          if (roomId < destRoomId)
+            exitId = roomId + ':' + destRoomId;
+          else
+            exitId = destRoomId + ':' + roomId;
+
+          /// Do dat asi časem dám info o tom, co je to za exit
+          /// (jednosměrný, obousměrný, atd.).
+          this.exits.set(exitId, {});
+        }
+        */
+      }
+    }
+  }
+
   private createMap($ancestor: JQuery)
   {
     // Select ancestor element using d3 library.
@@ -208,11 +897,17 @@ export class MapWindow extends Window
     let height = d3WindowContent.attr('height');
     */
 
-    console.log('d3WindowContent: ' + d3WindowContent);
+    ///console.log('d3WindowContent: ' + d3WindowContent);
 
     // Append a svg element that will be used to draw map in.
     this.d3MapSvg = d3WindowContent.append('svg');
     this.d3MapSvg.attr('class', MapWindow.SVG_MAP_CSS_CLASS);
+
+    /*
+    this.d3MapSvg.attr('viewBox', '0 0 10000 10000');
+    this.d3MapSvg.attr('preserveAspectRatio', 'xMidYMid');
+    this.d3MapSvg.attr('meetOrSlice', 'slice');
+    */
 
     /// Mozna neni potreba, pokud funguje css.
     /*
@@ -222,42 +917,63 @@ export class MapWindow extends Window
 
     // Container for room svg elements.
     this.d3RoomsSvg = this.d3MapSvg.append('g');
-
-    ///this.d3LinesSvg = this.d3MapSvg.append('g');
+    // Container for exit svg elements.
+    this.d3ExitsSvg = this.d3MapSvg.append('g');
     ///this.d3TagsSvg = this.d3MapSvg.append('g');
-
-
-    /// TEST:
-    this.updateMap();
   }
 
-  private initNewRoomElements(d3NewRooms)
+  private initNewRoomElements(d3Rooms)
   {
-    /// barEnter.style("width", function(d) { return d * 10 + "px"; });
+    d3Rooms.attr('class', MapWindow.SVG_ROOM_CSS_CLASS);
+    d3Rooms.attr("cx", (d, i) => { return this.getRoomX(d, i); });
+    d3Rooms.attr("cy", (d, i) => { return this.getRoomY(d, i); });
+    d3Rooms.attr("rx", 5);
+    d3Rooms.attr("ry", 5 * shorten);
+    d3Rooms.attr("stroke", 'yellow');
+    d3Rooms.attr("stroke-width", 1.5);
+    d3Rooms.attr("fill", 'none');
+  }
 
-    d3NewRooms.attr('class', MapWindow.SVG_ROOM_CSS_CLASS);
-    d3NewRooms.attr("cx", 30);
-    d3NewRooms.attr("cy", 30);
-    d3NewRooms.attr("r", 5);
-    d3NewRooms.attr("stroke", 'yellow');
-    d3NewRooms.attr("stroke-width", 1.5);
-    d3NewRooms.attr("fill", 'none');
+  private initNewExitElements(d3NewExits)
+  {
+    d3NewExits.style('stroke', 'yellow');
+    d3NewExits.style('stroke-opacity', '0.5');
+
+     d3NewExits.attr('x1', (d) => { return this.getExitFromX(d); });
+     d3NewExits.attr('y1', (d) => { return this.getExitFromY(d); });
+     d3NewExits.attr('x2', (d) => { return this.getExitToX(d); });
+     d3NewExits.attr('y2', (d) => { return this.getExitToY(d); });
+
+    /*
+    // 'd' attribute dwars the line.
+    d3NewExits.attr('d', (d, i) => { return this.getExitDAttrib(d); });
+    */
+  }
+
+  private updateRoomElements(d3Rooms)
+  {
+    ///console.log('updateRoomElements()');
+    d3Rooms.attr("cx", (d, i) => { return this.getRoomX(d, i); });
+    d3Rooms.attr("cy", (d, i) => { return this.getRoomY(d, i); });
+  }
+
+  private updateExitElements(d3Exits)
+  {
+    /// TODO:
   }
 
   private updateRooms()
   {
-    // Use 'keys' array of 'this.rooms' hashmap as a guiding data
-    // for d3 to build respective elements.
-    ///let data = this.roomData;
-
-    // This piece of black magic obtains array of hashmap values
-    // (Map.values() returns an iterable object, elipsis operator
+    // Bind values of this.rooms hashmap directly to the respective
+    // svg elements.
+    // (This piece of black magic obtains array of hashmap values.
+    //  Map.values() returns an iterable object, elipsis operator
     //  converts it to an array).
     let data = [...this.rooms.values()];
 
-    // We are going to manupulate elements inside a this.d3RoomsSvg
-    // element that have a css class 'room'.
-    let d3RoomElements = this.d3RoomsSvg.selectAll('.room');
+    // We are going to manupulate all <circle> elements inside
+    // this.d3RoomsSvg.
+    let d3RoomElements = this.d3RoomsSvg.selectAll('ellipse');
 
     // Bind 'data' to the selection.
     // (so when the data changes, the next updateRooms() will create
@@ -265,26 +981,216 @@ export class MapWindow extends Window
     //  bound to removed values).
     let d3Rooms = d3RoomElements.data(data);
 
-    // Create a new <circle> elements for newly added rooms.
-    let d3NewRooms = d3Rooms.enter().append('circle');
+    // 'd3Rooms' now contain elements that already existed
+    // and need an update. Let's update them.
+    this.updateRoomElements(d3Rooms);
 
+    // Create a new <circle> elements for newly added rooms.
+    let d3NewRooms = d3Rooms.enter().append('ellipse');
     // Init attributes (position, color, etc.) of newly created
     // circles.
     this.initNewRoomElements(d3NewRooms);
 
-    // Remove <g> elements of deleted rooms.
+    // Remove <circle> elements for deleted rooms.
     d3Rooms.exit().remove();
   }
 
   private updateExits()
   {
-    /*
-    // Use 'keys' array of 'this.exits' hashmap as a guiding data
-    // for d3 to build respective elements.
-    let data = this.exits.keys;
-    */
+    // Bind values of this.exits hashmap directly to the respective
+    // svg elements.
+    // (This piece of black magic obtains array of hashmap values.
+    //  Map.values() returns an iterable object, elipsis operator
+    //  converts it to an array).
+    let data = [...this.exits.values()];
+
+    // We are going to manupulate all <path> elements inside
+    // this.d3ExitsSvg.
+    let d3ExitElements = this.d3ExitsSvg.selectAll('line');
+
+    // Bind 'data' to the selection.
+    // (so when the data changes, the next updateExits() will create
+    //  create a new svg elements for added values and remove svg elements
+    //  bound to removed values).
+    let d3Exits = d3ExitElements.data(data);
+
+    // 'd3Exits' now contain elements that already existed
+    // and need an update. Let's update them.
+    this.updateExitElements(d3Exits);
+
+    // Create a new <circle> elements for newly added rooms.
+    let d3NewExits = d3Exits.enter().append('line');
+    // Init attributes (position, color, etc.) of newly created
+    // path elements.
+    this.initNewExitElements(d3NewExits);
+
+    // Remove <path> elements for deleted exits.
+    d3Exits.exit().remove();
+  }
+
+  // ------- plotting methods --------
+
+  // -> Returns 'x' of origin of coordinate system within
+  //    the map drawing area.
+  private originX()
+  {
+    /// console.log('Map width: ' + this.$content.width());
+
+    // Obtaining dimensions of svg element is complicated as hell,
+    // so we 'cheat' a little bit and use the with of window content
+    // element instead.
+    return this.$content.width() / 2;
+  }
+
+  // -> Returns 'y' of origin of coordinate system within
+  //    the map drawing area.
+  private originY()
+  {
+    // Obtaining dimensions of svg element is complicated as hell,
+    // so we 'cheat' a little bit and use the with of window content
+    // element instead.
+    return this.$content.height() / 2;
+  }
+
+  private getRoomX(d: any, i: number)
+  {
+    // 'd.coords' contains relative room coordinates.
+    // (Room directly north of the room at [0, 0, 0] has
+    //  cooords [0, 1, 0]).
+    // 'x' and 'y' coords are always ordinary numbers
+    //  (so the rooms always 'stick' to [x, y] grid),
+    // 'z' coord can be a floating point number.
+    ///let mudX = d.coords.x;
+    let mudX = d.coords[0];
+    ///let mudY = d.coords.y;
+    let mudY = d.coords[1];
+
+    // Transformation to currently centered room.
+    let centeredMudX = mudX - this.coords.x;
+    let centeredMudY = mudY - this.coords.y;
+
+    let xPos = centeredMudX * MapWindow.ROOM_SPACING;
+    xPos += centeredMudY * MapWindow.ROOM_SPACING * dx;
+
+    ///if (i === 0)
+    ///  console.log('xPos before transform: ' + xPos);
+
+    // Transformation of origin from top left
+    // (which is an origin point in svg elements)
+    // to the middle of map area).
+    xPos += this.originX();
+
+    ///if (i === 0)
+    ///  console.log('xPos after transform: ' + xPos);
+
+    ///console.log('OriginX: ' + this.originX());
+
+    ///console.log('xPos: ' + xPos);
+
+    return xPos + "px";
+  }
+
+  private getRoomY(d: any, i: number)
+  {
+    ///let mudY = d.coords.y;
+    let mudY = d.coords[1];
+    ///let mudZ = d.coords.z;
+    let mudZ = d.coords[2];
+
+    // Transformation to currently centered room.
+    let centeredMudY = mudY - this.coords.y;
+    let centeredMudZ = mudZ - this.coords.z;
+
+    // Projection of mud 'Y' axis to viewport 'y' axis.
+    let yPos = centeredMudY * MapWindow.ROOM_SPACING * dy;
+
+    // Projection of mud 'Z' axis to viewport 'y' axis
+    // (Mud 'z' coordinate is projected 1:1).
+    yPos += centeredMudZ * MapWindow.ROOM_SPACING;
+
+    ///if (i === 0)
+    ///  console.log('yPos before transform: ' + yPos);
+
+    // Transformation of origin from top left
+    // (which is an origin point in svg elements)
+    //  to the middle of map area).
+    // (We are also inverting 'y' axis).
+    yPos = this.originY() - yPos;
+
+    ///if (i === 0)
+    ///{
+    ///  console.log('origin y: ' + this.originY());
+    ///  console.log('yPos after transform: ' + yPos);
+    ///}
+
+    ///console.log('OriginY: ' + this.originY());
+
+    return yPos + "px";
+  }
+
+  /*
+  private getExitDAttrib(d: any)
+  {
+    let fromX = this.getExitFromX(d);
+    let fromY = this.getExitFromY(d);
+    let toX = this.getExitToX(d);
+    let toY = this.getExitToY(d);
+
+    let line = d3.line();
+    line.x();
+
+    // This black magic creates of 'd' attribute like this:
+    // <path d="M150 0 L75 200" />
+    // ('M' means 'move to', 'L' means 'line to',
+    //  and absolute coordinates are used because
+    //  both 'M' and 'L' are capital letters).
+    return 'M' + fromX + ',' + fromY + 'L' + toX + ',' + toY;
+  }
+  */
+
+  private getExitFromX(d: any)
+  {
+    let fromRoomId = d.from;
+    ///let toRoomId = d.to;
+
+    let fromRoom = this.rooms.get(fromRoomId);
+
+    return this.getRoomX(fromRoom, 0);
+  }
+
+  private getExitFromY(d: any)
+  {
+    let fromRoomId = d.from;
+    ///let toRoomId = d.to;
+
+    let fromRoom = this.rooms.get(fromRoomId);
+
+    return this.getRoomY(fromRoom, 0);
+  }
+
+  private getExitToX(d: any)
+  {
+    let toRoomId = d.to;
+
+    let toRoom = this.rooms.get(toRoomId);
+
+    return this.getRoomX(toRoom, 0);
+  }
+
+  private getExitToY(d: any)
+  {
+    let toRoomId = d.to;
+
+    let toRoom = this.rooms.get(toRoomId);
+
+    return this.getRoomY(toRoom, 0);
   }
 
   // ---------------- Event handlers --------------------
 
+  private onResize(event: Event)
+  {
+    ///console.log('onResize()');
+    this.updateMap();
+  }
 }
