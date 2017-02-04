@@ -4,6 +4,11 @@ TODO: Mapper.
 
 TODO: Ha, možná nebude potřeba requirejs!
 (viz import Window v Map.ts)
+- tak asi bude, browsery neumej ES6 moduly :\
+
+TODO: Array.push() může jako parametr dostat array.
+- někde v MudColorComponent merguju pole po jednom prvku
+  (nebo už ne?).
 
 ---------------------------------------------------------------
 TOFIX: Dokud nevytimeoutuje pokus o connect, tak by se neměl
