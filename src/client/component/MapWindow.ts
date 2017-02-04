@@ -55,15 +55,27 @@ let world =
     'name': 'Tutorial Room',
     'exits':
     {
-      'north': '6-imt2xk99'
+      'north': '4-imt2xk99'
+    },
+    coords:
+    {
+      x: 0,
+      y: 0,
+      z: 0
     }
   },
-  '6-imt2xk99':
+  '4-imt2xk99':
   {
     'name': 'System Room',
     'exits':
     {
       'south': '3-imt2xk99'
+    },
+    coords:
+    {
+      x: 1,
+      y: 0,
+      z: 0
     }
   }
 };
@@ -79,6 +91,22 @@ export class MapWindow extends Window
     /// TEST:
     this.rooms.set('3-imt2xk99', world['3-imt2xk99']);
     this.rooms.set('6-imt2xk99', world['6-imt2xk99']);
+
+    /*
+    console.log('Items in hashmap: ' + [...this.rooms.values()].length);
+
+    this.roomData = new Array();
+
+    for (let room of this.rooms.values())
+    {
+      console.log('Adding room to roomData: ' + room);
+
+      this.roomData.push[room];
+      ///this.roomData.push('3');
+    }
+
+    console.log('roomData.length: ' + this.roomData.length);
+    */
   }
 
   public static get CSS_CLASS() { return 'MapWindow'; }
@@ -98,6 +126,8 @@ export class MapWindow extends Window
 
   private rooms = new Map();
   private exits = new Map();
+
+  ///private roomData = null;
 
   // --- d3 elements ---
 
@@ -163,8 +193,6 @@ export class MapWindow extends Window
 
   private createMap($ancestor: JQuery)
   {
-    console.log('createMap()');
-
     // Select ancestor element using d3 library.
     // (Doing [0] on a jquery element accesses the DOM element.
     //  We do it instead of selecting ancetor element by it's
@@ -172,9 +200,8 @@ export class MapWindow extends Window
     //  document at this time - so we need to use direct reference.)
     let d3WindowContent = d3.select($ancestor[0]);
 
-    console.log('#' + this.getContentId());
-
     /// Mozna neni potreba, pokud funguje css.
+    /// - jo, funguje
     /*
     // Read map dimensions from '#mapwindow_content' element.
     let width = d3WindowContent.attr('width');
@@ -221,8 +248,12 @@ export class MapWindow extends Window
   {
     // Use 'keys' array of 'this.rooms' hashmap as a guiding data
     // for d3 to build respective elements.
-    ///let data = this.rooms.keys;
-    let data = [1, 2, 3];
+    ///let data = this.roomData;
+
+    // This piece of black magic obtains array of hashmap values
+    // (Map.values() returns an iterable object, elipsis operator
+    //  converts it to an array).
+    let data = [...this.rooms.values()];
 
     // We are going to manupulate elements inside a this.d3RoomsSvg
     // element that have a css class 'room'.
