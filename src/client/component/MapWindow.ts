@@ -837,21 +837,42 @@ export class MapWindow extends Window
   {
     let exits = [];
 
-    exits.push(room.exits['north']);
-    exits.push(room.exits['east']);
-    exits.push(room.exits['south']);
-    exits.push(room.exits['west']);
-    exits.push(room.exits['up']);
-    exits.push(room.exits['down']);
+    if (room.exits['north'])
+      exits.push({ id: room.exits['north'], opacity: 0.2 });
+    if (room.exits['east'])
+      exits.push({ id: room.exits['east'], opacity: 0.2 });
+    if (room.exits['south'])
+      exits.push({ id: room.exits['south'], opacity: 0.2 });
+    if (room.exits['west'])
+      exits.push({ id: room.exits['west'], opacity: 0.2 });
+    if (room.exits['up'])
+      exits.push({ id: room.exits['up'], opacity: 0.2 });
+    if (room.exits['down'])
+      exits.push({ id: room.exits['down'], opacity: 0.2 });
+
+    /*
+    if (room.exits['northeast'])
+      exits.push({ id: room.exits['northeast'], opacity: 0.03 });
+    if (room.exits['northwest'])
+      exits.push({ id: room.exits['northwest'], opacity: 0.03 });
+    if (room.exits['southeast'])
+      exits.push({ id: room.exits['southeast'], opacity: 0.03 });
+    if (room.exits['southwest'])
+      exits.push({ id: room.exits['southwest'], opacity: 0.03 });
+    */
 
     // 'exit' is an id of destination room.
     for (let exit of exits)
     {
       if (exit)
       {
-        let exitId = roomId + ':' + exit;
+        let exitId = roomId + ':' + exit.id;
 
-        this.exits.set(exitId, { from: roomId, to: exit });
+        this.exits.set
+        (
+          exitId,
+          { from: roomId, to: exit.id, opacity: exit.opacity }
+        );
 
         /// Zatím kašlu na deduplikaci obousměrných exitů
         /// (navíc to nebylo dobře, this.rooms.get(exit)
@@ -915,34 +936,62 @@ export class MapWindow extends Window
 		this.d3MapSvg.attr('height', height);   
     */
 
-    // Container for room svg elements.
-    this.d3RoomsSvg = this.d3MapSvg.append('g');
+
+    // Note:
+    //   Order of creating of following elements is
+    // important!
+    //   Mouse events will prioritize the last inserted
+    // one, so 'this.d3RoomsSvg' must come last or the
+    // lines (representing exits) won't steal mouse transform
+    // the ellipses (representing rooms).
+
     // Container for exit svg elements.
     this.d3ExitsSvg = this.d3MapSvg.append('g');
+
+    // Container for room svg elements.
+    this.d3RoomsSvg = this.d3MapSvg.append('g');
+
     ///this.d3TagsSvg = this.d3MapSvg.append('g');
   }
 
   private initNewRoomElements(d3Rooms)
   {
     d3Rooms.attr('class', MapWindow.SVG_ROOM_CSS_CLASS);
-    d3Rooms.attr("cx", (d, i) => { return this.getRoomX(d, i); });
-    d3Rooms.attr("cy", (d, i) => { return this.getRoomY(d, i); });
-    d3Rooms.attr("rx", 5);
-    d3Rooms.attr("ry", 5 * shorten);
-    d3Rooms.attr("stroke", 'yellow');
-    d3Rooms.attr("stroke-width", 1.5);
-    d3Rooms.attr("fill", 'none');
+    d3Rooms.attr('cx', (d, i) => { return this.getRoomX(d, i); });
+    d3Rooms.attr('cy', (d, i) => { return this.getRoomY(d, i); });
+    d3Rooms.attr('rx', 5);
+    d3Rooms.attr('ry', 5 * shorten);
+    d3Rooms.attr('stroke', 'yellow');
+    d3Rooms.attr('stroke-width', 1.5);
+    ///d3Rooms.attr('fill', 'none');
+    // Note: 'fill' 'none' would mean that the center of the
+    // ellipse doesn't accept mouse events. We use 'transparent'
+    // so the whole ellipse is clickable/mouseoverable.
+    d3Rooms.attr('fill', 'transparent');
+
+    d3Rooms.on
+    (
+      'mouseover',
+      function(d) { d3.select(this).attr('stroke-width', 3); }
+    );
+
+    d3Rooms.on
+    (
+      'mouseout',
+      function(d) { d3.select(this).attr('stroke-width', 1.5); }
+    );
   }
 
-  private initNewExitElements(d3NewExits)
+  private initNewExitElements(d3Exits)
   {
-    d3NewExits.style('stroke', 'yellow');
-    d3NewExits.style('stroke-opacity', '0.5');
+    d3Exits.style('stroke', 'yellow');
+    ///d3NewExits.style('stroke-opacity', '0.5');
+    d3Exits.style('stroke-opacity',(d) => { return this.getExitOpacity(d); });
 
-     d3NewExits.attr('x1', (d) => { return this.getExitFromX(d); });
-     d3NewExits.attr('y1', (d) => { return this.getExitFromY(d); });
-     d3NewExits.attr('x2', (d) => { return this.getExitToX(d); });
-     d3NewExits.attr('y2', (d) => { return this.getExitToY(d); });
+    d3Exits.attr('x1', (d) => { return this.getExitFromX(d); });
+    d3Exits.attr('y1', (d) => { return this.getExitFromY(d); });
+    d3Exits.attr('x2', (d) => { return this.getExitToX(d); });
+    d3Exits.attr('y2', (d) => { return this.getExitToY(d); });
 
     /*
     // 'd' attribute dwars the line.
@@ -959,7 +1008,10 @@ export class MapWindow extends Window
 
   private updateExitElements(d3Exits)
   {
-    /// TODO:
+    d3Exits.attr('x1', (d) => { return this.getExitFromX(d); });
+    d3Exits.attr('y1', (d) => { return this.getExitFromY(d); });
+    d3Exits.attr('x2', (d) => { return this.getExitToX(d); });
+    d3Exits.attr('y2', (d) => { return this.getExitToY(d); });
   }
 
   private updateRooms()
@@ -1054,6 +1106,8 @@ export class MapWindow extends Window
 
   private getRoomX(d: any, i: number)
   {
+    ///console.log('d: ' + d);
+
     // 'd.coords' contains relative room coordinates.
     // (Room directly north of the room at [0, 0, 0] has
     //  cooords [0, 1, 0]).
@@ -1106,7 +1160,8 @@ export class MapWindow extends Window
 
     // Projection of mud 'Z' axis to viewport 'y' axis
     // (Mud 'z' coordinate is projected 1:1).
-    yPos += centeredMudZ * MapWindow.ROOM_SPACING;
+    //yPos += centeredMudZ * MapWindow.ROOM_SPACING;
+    yPos += centeredMudZ * MapWindow.ROOM_SPACING * 0.5;
 
     ///if (i === 0)
     ///  console.log('yPos before transform: ' + yPos);
@@ -1148,10 +1203,17 @@ export class MapWindow extends Window
   }
   */
 
+  private getExitOpacity(d: any)
+  {
+    return d.opacity;
+  }
+
   private getExitFromX(d: any)
   {
     let fromRoomId = d.from;
     ///let toRoomId = d.to;
+
+    ///console.log('d.from: ' + d.from + ' d.to: ' + d.to + ' d.opacity: ' + d.opacity);
 
     let fromRoom = this.rooms.get(fromRoomId);
 
