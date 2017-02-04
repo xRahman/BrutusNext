@@ -32,12 +32,12 @@ export class ZoneGenerator
   {
     let r =
     {
-      fromX: -3,
-      toX: 3,
-      fromY: -3,
-      toY: 3,
+      fromX: -5,
+      toX: 5,
+      fromY: -5,
+      toY: 5,
       fromZ: 0,
-      toZ: 1,
+      toZ: 0,
     }
     
     /*
@@ -101,6 +101,20 @@ export class ZoneGenerator
         let target = zoneGrid[x - 1][y][z];
 
         room.exits['west'] = target.id;
+
+        if (room.coords[1] > r.fromY)
+        {
+          let target = zoneGrid[x - 1][y - 1][z];
+
+          room.exits['southwest'] = target.id;
+        }
+
+        if (room.coords[1] < r.toY)
+        {
+          let target = zoneGrid[x - 1][y + 1][z];
+
+          room.exits['northwest'] = target.id;
+        }
       }
 
       if (room.coords[0] < r.toX)
@@ -108,6 +122,20 @@ export class ZoneGenerator
         let target = zoneGrid[x + 1][y][z];
 
         room.exits['east'] = target.id;
+
+        if (room.coords[1] > r.fromY)
+        {
+          let target = zoneGrid[x + 1][y - 1][z];
+
+          room.exits['southeast'] = target.id;
+        }
+
+        if (room.coords[1] < r.toY)
+        {
+          let target = zoneGrid[x + 1][y + 1][z];
+
+          room.exits['northeast'] = target.id;
+        }
       }
 
       if (room.coords[1] > r.fromY)
