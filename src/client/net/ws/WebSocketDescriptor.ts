@@ -111,7 +111,7 @@ export class WebSocketDescriptor
     ///this.socket = new WebSocket('ws://localhost:4442');
     this.socket = new WebSocket('ws://78.45.101.53:4442');
 
-    console.log('connect(). Status: ' + this.socket.readyState);
+    ///console.log('connect(). Status: ' + this.socket.readyState);
 
     if (this.socket)
       this.initSocket();
@@ -120,7 +120,7 @@ export class WebSocketDescriptor
   // Attempts to reconnect.
   public reConnect()
   {
-    console.log('reConnect(). Status: ' + this.socket.readyState);
+    ///console.log('reConnect(). Status: ' + this.socket.readyState);
 
     if (this.isSocketOpen())
       // There is no point in reconnecting an open socket.
@@ -256,7 +256,7 @@ export class WebSocketDescriptor
     // if an error means failure to connect or a disconnect.
     this.wasConnected = true;
 
-    console.log('onSocketOpen(). Status: ' + this.socket.readyState);
+    ///console.log('onSocketOpen(). Status: ' + this.socket.readyState);
     console.log('Socket opened');
     /// TODO: (info, že se podařilo připojit).
     /// To je asi zbytecny, server posle uvodni 'obrazovku'
@@ -275,7 +275,7 @@ export class WebSocketDescriptor
 
   private onSocketError(event: ErrorEvent)
   {
-    console.log('onSocketError(). Status: ' + this.socket.readyState);
+    ///console.log('onSocketError(). Status: ' + this.socket.readyState);
 
     // If 'error' event fired when the connection was open,
     // it will disconnect the player. We just log it to the
@@ -294,7 +294,7 @@ export class WebSocketDescriptor
 
   private onSocketClose(event: CloseEvent)
   {
-    console.log('onSocketClose(). Status: ' + this.socket.readyState);
+    ///console.log('onSocketClose(). Status: ' + this.socket.readyState);
 
     // Remove event handlers from the socket.
     this.deinitSocket();
