@@ -85,6 +85,20 @@ export class Body extends Component
     //this.client.mapper = mapper;
   }
 
+  // Executes when html document is fully loaded.
+  public onDocumentReady()
+  {
+    for (let window of this.windows)
+      window.onDocumentReady();
+  }
+
+  // Executes when html document is resized.
+  public onDocumentResize()
+  {
+    for (let window of this.windows)
+      window.onDocumentResize();
+  }
+
   // ---------------- Private methods -------------------
 
 

@@ -1,5 +1,7 @@
 TODO: Mapper.
 
+TODO: Zrušit parametry 'i'.
+
 ---------------------------------------------------------------
 
 TODO: Ha, možná nebude potřeba requirejs!

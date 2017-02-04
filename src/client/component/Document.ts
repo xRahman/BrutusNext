@@ -15,11 +15,21 @@ export class Document
 {
   constructor(private client: Client)
   {
-    // Attach handler for 'documentready' event.
+    // Attach handler for 'document.ready' event.
     $(document).ready
     (
       () => { this.onDocumentReady(); }
     );
+
+    // Attach handler for 'window.resize' event.
+    $(window).resize
+    (
+      'resize',
+      // We call the handler 'onDocumentResize' instead of
+      // 'onWindowResize' because we use windows inside our
+      // application.
+      () => { this.onDocumentResize(); }
+    )
   }
 
   //----------------- Protected data --------------------
@@ -54,6 +64,13 @@ export class Document
     (
       (event) => { this.onKeyDown(event); }
     );
+
+    this.client.onDocumentReady();
+  }
+
+  private onDocumentResize()
+  {
+    this.client.onDocumentResize();
   }
 
   // Handles 'keydown' event.
