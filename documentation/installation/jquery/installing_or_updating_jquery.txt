@@ -6,12 +6,12 @@ Type definitions:
 
   npm install @types/jquery --save-dev
 
-Then go to /BrutusNext/node_modules/jquery/dist and copy appropriate
-file to /BrutusNext/client/jquery.
+Then go to node_modules/jquery/dist and copy file
+jquery.min.js to client/js/jquery/jquery.min.js.
 
 /*
-  Right now I'm using jquery.slim.js.
+  Right now we are using jquery.slim.js.
 
-  It would be nice to automate copying based on debug/release build
-  configuration, but it has low priority at the moment.
+  It would be nice to automate copying based on debug/release
+  build configuration, but it has low priority at the moment.
 */
