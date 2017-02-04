@@ -71,6 +71,16 @@ export class Window extends MudColorComponent
     return this.$window;
   }
 
+  // Executes when html document is fully loaded.
+  public onDocumentReady()
+  {
+  }
+
+  // Executes when html document is resized.
+  public onDocumentResize()
+  {
+  }
+
   // --------------- Protected methods ------------------
 
   // -> Returns created jquery element.
