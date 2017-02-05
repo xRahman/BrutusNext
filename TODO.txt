@@ -29,7 +29,33 @@ s exitem.
 TODO: Zrušit parametry 'i'.
 [done]
 
+---------------------------------------------------------------
 
+TODO: Struktura src:
+
+/src
+  /client
+    /lib
+      Client.ts
+    ClientSettings.ts
+    BrutusMudClient.ts
+    tsconfig.json
+  /server
+    /game
+    /lib
+      Server.ts
+    ServerSettings.ts
+    BrutusMudServer.ts
+    tsconfig.json
+
+TODO: Předělat i strukturu buildu:
+
+/build
+  /client
+    /js
+  /server
+    /js
+    /data
 
 ---------------------------------------------------------------
 

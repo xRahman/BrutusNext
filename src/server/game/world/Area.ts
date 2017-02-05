@@ -10,7 +10,7 @@
 'use strict';
 
 ///import {Game} from '../../game/Game';
-import {GameEntity} from '../../game/GameEntity';
+import {GameEntity} from '../../../server/game/entity/GameEntity';
 
 export class Area  extends GameEntity
 {

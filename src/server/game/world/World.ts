@@ -7,15 +7,15 @@
 
 'use strict';
 
-import {EntityManager} from '../../shared/entity/EntityManager';
-import {SaveableObject} from '../../shared/fs/SaveableObject';
-import {NamedEntity} from '../../shared/entity/NamedEntity';
-import {Server} from '../../server/Server';
-import {Game} from '../../game/Game';
-import {GameEntity} from '../../game/GameEntity';
-import {Realm} from '../../game/world/Realm';
-import {Area} from '../../game/world/Area';
-import {Room} from '../../game/world/Room';
+import {EntityManager} from '../../../server/lib/entity/EntityManager';
+import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
+import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
+import {Server} from '../../../server/lib/Server';
+import {Game} from '../../../server/game/Game';
+import {GameEntity} from '../../../server/game/entity/GameEntity';
+import {Realm} from '../../../server/game/world/Realm';
+import {Area} from '../../../server/game/world/Area';
+import {Room} from '../../../server/game/world/Room';
 
 export class World extends GameEntity
 {

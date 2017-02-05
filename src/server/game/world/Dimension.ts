@@ -11,7 +11,7 @@
 
 'use strict';
 
-import {GameEntity} from '../../game/GameEntity';
+import {GameEntity} from '../../../server/game/entity/GameEntity';
 
 export class Dimension extends GameEntity
 {

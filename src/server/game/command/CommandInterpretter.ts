@@ -27,9 +27,10 @@
 
 'use strict';
 
-import {ERROR} from '../../shared/error/ERROR';
-import {ScriptableEntity} from '../../shared/entity/ScriptableEntity';
-import {CommandSearchList} from '../../game/command/CommandSearchList';
+import {ERROR} from '../../../server/lib/error/ERROR';
+import {ScriptableEntity} from '../../../server/lib/entity/ScriptableEntity';
+import {CommandSearchList} from
+  '../../../server/game/command/CommandSearchList';
 
 export abstract class CommandInterpretter extends ScriptableEntity
 {
