@@ -6,7 +6,8 @@
 
 'use strict';
 
-import {MudColorComponent} from '../component/MudColorComponent';
+import {MudColorComponent} from
+  '../../../client/gui/component/MudColorComponent';
 
 import $ = require('jquery');
 

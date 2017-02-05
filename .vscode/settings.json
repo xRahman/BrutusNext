@@ -4,10 +4,9 @@
     "files.exclude":
     {
         ".git/": true,
-        //"**/*.js": { "when": "$(basename).ts"},
         "node_modules/": true,
-        "client/": true,
-        "server/": true,
+        //"**/*.js": { "when": "$(basename).ts"},
+        "build/": true,
         "documentation/": true,
         "resources/": true,
         ".gitattributes": true,
@@ -18,8 +17,7 @@
         ".git/": true,
         "node_modules/": true,
         "documentation/": true,
-        "client/js/build/": true,
-        "server/build/": true
+        "build/": true
     },
     "editor.rulers": [80],
     "editor.tabSize": 2,

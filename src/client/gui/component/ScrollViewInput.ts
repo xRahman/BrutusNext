@@ -6,8 +6,8 @@
 
 'use strict';
 
-import {Component} from '../component/Component';
-import {ScrollView} from '../component/ScrollView';
+import {Component} from '../../../client/gui/component/Component';
+import {ScrollView} from '../../../client/gui/component/ScrollView';
 
 import $ = require('jquery');
 

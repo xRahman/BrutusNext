@@ -7,9 +7,11 @@
     "moduleResolution": "node",
     "newLine": "LF",
     "noEmitOnError": true,
-    "outDir": "../../client/js/build",
+    ///"outDir": "../../client/js/build",
+    "outDir": "../../build/client/js",
     //"outFile": "../../client/js/build/BrutusNextClient.js",
-    "rootDir": ".",
+    ///"rootDir": ".",
+    "rootDir": "../",
     "sourceMap": true,
     "sourceRoot": "."
     // 'compileOnSave' actually works in vs code if --watch parameter

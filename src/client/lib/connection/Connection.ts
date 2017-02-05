@@ -6,10 +6,11 @@
 
 'use strict';
 
-import {ERROR} from '../error/ERROR';
-import {WebSocketDescriptor} from '../net/ws/WebSocketDescriptor';
-import {ScrollView} from '../component/ScrollView';
-import {MapWindow} from '../component/MapWindow';
+import {ERROR} from '../../../client/lib/error/ERROR';
+import {WebSocketDescriptor} from
+  '../../../client/lib/net/ws/WebSocketDescriptor';
+import {ScrollView} from '../../../client/gui/component/ScrollView';
+import {MapWindow} from '../../../client/gui/component/MapWindow';
 
 export class Connection
 {
