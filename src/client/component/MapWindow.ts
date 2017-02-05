@@ -600,26 +600,6 @@ export class MapWindow extends Window
     return yPos + "px";
   }
 
-  /*
-  private getExitDAttrib(d: any)
-  {
-    let fromX = this.getExitFromX(d);
-    let fromY = this.getExitFromY(d);
-    let toX = this.getExitToX(d);
-    let toY = this.getExitToY(d);
-
-    let line = d3.line();
-    line.x();
-
-    // This black magic creates of 'd' attribute like this:
-    // <path d="M150 0 L75 200" />
-    // ('M' means 'move to', 'L' means 'line to',
-    //  and absolute coordinates are used because
-    //  both 'M' and 'L' are capital letters).
-    return 'M' + fromX + ',' + fromY + 'L' + toX + ',' + toY;
-  }
-  */
-
   private getExitOpacity(d: any)
   {
     return d.opacity;
@@ -696,6 +676,9 @@ export class MapWindow extends Window
     // Remember original state in data bound to element.
     this.roomDragData.origZ = d.coords.z,
     this.roomDragData.origMouseY = d3.mouse(element)[1];
+
+    // Disable text dragging and selection.
+    d3.event.preventDefault();
 
     // 'mousemove' and 'mouseup' events need to be
     // attached to 'window', not the SVG element.
