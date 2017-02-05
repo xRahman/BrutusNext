@@ -6,8 +6,8 @@
 
 'use strict';
 
-import {Window} from '../component/Window';
-import {Connection} from '../connection/Connection';
+import {Window} from '../../../client/gui/component/Window';
+import {Connection} from '../../../client/lib/connection/Connection';
 
 import {ZoneGenerator} from '../mapper/ZoneGenerator';
 

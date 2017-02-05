@@ -1,1 +1,2 @@
-rmdir /Q /S "./client/js/build"
+rmdir /Q /S "./build/client/js/client"
+rmdir /Q /S "./build/client/js/shared"

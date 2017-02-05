@@ -60,7 +60,7 @@ export abstract class AutoSaveableObject extends SaveableObject
         + " on class " + this.className);
 
       // If static variable SAVE_DIRECTORY is missing,, data will be saved
-      // to directory './server/data/_MISSING_SAVE_DIRECTORY_ERROR'.
+      // to directory './data/_MISSING_SAVE_DIRECTORY_ERROR'.
       return Server.DATA_DIRECTORY + "_MISSING_SAVE_DIRECTORY_ERROR";
     }
 

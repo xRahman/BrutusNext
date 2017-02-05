@@ -419,7 +419,7 @@ export class EntityManager
     cathegory: NamedEntity.NameCathegory
   )
   {
-    // File path is something like './server/data/names/accounts/Rahman.json'.
+    // File path is something like './data/names/accounts/Rahman.json'.
     let path = NamedEntity.getNameLockFilePath(name, cathegory);
 
     let idRecord = new NameLockRecord();

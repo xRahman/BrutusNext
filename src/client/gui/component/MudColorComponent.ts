@@ -7,7 +7,7 @@
 
 'use strict';
 
-import {Component} from '../component/Component';
+import {Component} from '../../../client/gui/component/Component';
 
 /// Color test: &kA&KB&rC&RD&gE&GF&yG&YH&bI&BJ&mK&ML&cM&CN&wO&WP
 const Colors =

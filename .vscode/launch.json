@@ -11,7 +11,7 @@
             "program": "${workspaceRoot}/src/server/BrutusNextServer.ts",
             "stopOnEntry": false,
             "args": [],
-            "cwd": "${workspaceRoot}",
+            "cwd": "${workspaceRoot}/build/server",
             "preLaunchTask": null,
             "runtimeExecutable": null,
             "runtimeArgs": [
@@ -24,7 +24,7 @@
             },
             "console": "externalTerminal",
             "sourceMaps": true,
-            "outFiles": [ "${workspaceRoot}/server/build/**/*.js" ]
+            "outFiles": [ "${workspaceRoot}/build/server/js/**/*.js" ]
         }
     ]
 }
