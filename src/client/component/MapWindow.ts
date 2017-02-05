@@ -52,609 +52,16 @@ import d3 = require('d3');
 
 // Projection angle.
 ///let angle = Math.PI / 8;
-let angle = Math.PI / 8;
+const angle = Math.PI / 8;
 ///let angle = 3 * Math.PI / 16;
 
 // Shortening factor of virtual 'y' axis.
-let shorten = Math.cos(angle);
+const shorten = Math.cos(angle);
 //let shorten = 0.6;
 
 // Shortening factors projected to viewport cooordinates.
-let dx = Math.sin(angle) * shorten;
-let dy = Math.cos(angle) * shorten;
-
-/*
-let sin45 = Math.sin(Math.PI / 4);
-let cos45 = Math.cos(Math.PI / 4);
-*/
-
-/*
-let world =
-{
-  // First row.
-  '100-imt2xk99':
-  {
-    'name': 'Tutorial Room',
-    'exits':
-    {
-      'east': '101-imt2xk99'
-    },
-    coords:
-    {
-      x: 0,
-      y: 0,
-      z: 0
-    }
-  },
-  '101-imt2xk99':
-  {
-    'name': 'Tutorial Room',
-    'exits':
-    {
-      'west': '100-imt2xk99',
-      'east': '102-imt2xk99'
-    },
-    coords:
-    {
-      x: 1,
-      y: 0,
-      z: 0.1
-    }
-  },
-  '102-imt2xk99':
-  {
-    'name': 'System Room',
-    'exits':
-    {
-      'west': '101-imt2xk99',
-      'east': '103-imt2xk99'
-    },
-    coords:
-    {
-      x: 2,
-      y: 0,
-      z: 0.2
-    }
-  },
-  '103-imt2xk99':
-  {
-    'name': 'System Room',
-    'exits':
-    {
-      'west': '102-imt2xk99',
-      'east': '104-imt2xk99'
-    },
-    coords:
-    {
-      x: 3,
-      y: 0,
-      z: 0.3
-    }
-  },
-  '104-imt2xk99':
-  {
-    'name': 'System Room',
-    'exits':
-    {
-      'west': '103-imt2xk99',
-      'east': '105-imt2xk99'
-    },
-    coords:
-    {
-      x: 4,
-      y: 0,
-      z: 0.4
-    }
-  },
-  '105-imt2xk99':
-  {
-    'name': 'System Room',
-    'exits':
-    {
-      'west': '104-imt2xk99',
-      'east': '106-imt2xk99'
-    },
-    coords:
-    {
-      x: 5,
-      y: 0,
-      z: 0.5
-    }
-  },
-  '106-imt2xk99':
-  {
-    'name': 'System Room',
-    'exits':
-    {
-      'west': '105-imt2xk99',
-      'east': '107-imt2xk99'
-    },
-    coords:
-    {
-      x: 6,
-      y: 0,
-      z: 0.5
-    }
-  },
-  '107-imt2xk99':
-  {
-    'name': 'System Room',
-    'exits':
-    {
-      'west': '106-imt2xk99',
-      'east': '108-imt2xk99'
-    },
-    coords:
-    {
-      x: 7,
-      y: 0,
-      z: 0.4
-    }
-  },
-  '108-imt2xk99':
-  {
-    'name': 'System Room',
-    'exits':
-    {
-      'west': '107-imt2xk99',
-      'east': '108-imt2xk99'
-    },
-    coords:
-    {
-      x: 8,
-      y: 0,
-      z: 0.3
-    }
-  },
-  '109-imt2xk99':
-  {
-    'name': 'System Room',
-    'exits':
-    {
-      'west': '108-imt2xk99',
-      'east': '110-imt2xk99'
-    },
-    coords:
-    {
-      x: 9,
-      y: 0,
-      z: 0.2
-    }
-  },
-  '110-imt2xk99':
-  {
-    'name': 'System Room',
-    'exits':
-    {
-      'west': '109-imt2xk99',
-      'east': '111-imt2xk99'
-    },
-    coords:
-    {
-      x: 10,
-      y: 0,
-      z: 0.1
-    }
-  },
-  '111-imt2xk99':
-  {
-    'name': 'System Room',
-    'exits':
-    {
-      'west': '110-imt2xk99',
-      'east': '112-imt2xk99'
-    },
-    coords:
-    {
-      x: 11,
-      y: 0,
-      z: 0
-    }
-  },
-  '112-imt2xk99':
-  {
-    'name': 'System Room',
-    'exits':
-    {
-      'west': '111-imt2xk99'
-    },
-    coords:
-    {
-      x: 12,
-      y: 0,
-      z: 0
-    }
-  },
-  // Second row.
-  '200-imt2xk99':
-  {
-    'name': 'Tutorial Room',
-    'exits':
-    {
-      'east': '201-imt2xk99'
-    },
-    coords:
-    {
-      x: 0,
-      y: 1,
-      z: 0
-    }
-  },
-  '201-imt2xk99':
-  {
-    'name': 'Tutorial Room',
-    'exits':
-    {
-      'west': '200-imt2xk99',
-      'east': '202-imt2xk99'
-    },
-    coords:
-    {
-      x: 1,
-      y: 1,
-      z: 0.1
-    }
-  },
-  '202-imt2xk99':
-  {
-    'name': 'System Room',
-    'exits':
-    {
-      'west': '201-imt2xk99',
-      'east': '203-imt2xk99'
-    },
-    coords:
-    {
-      x: 2,
-      y: 1,
-      z: 0.2
-    }
-  },
-  '203-imt2xk99':
-  {
-    'name': 'System Room',
-    'exits':
-    {
-      'west': '202-imt2xk99',
-      'east': '204-imt2xk99'
-    },
-    coords:
-    {
-      x: 3,
-      y: 1,
-      z: 0.3
-    }
-  },
-  '204-imt2xk99':
-  {
-    'name': 'System Room',
-    'exits':
-    {
-      'west': '203-imt2xk99',
-      'east': '205-imt2xk99'
-    },
-    coords:
-    {
-      x: 4,
-      y: 1,
-      z: 0.3
-    }
-  },
-  '205-imt2xk99':
-  {
-    'name': 'System Room',
-    'exits':
-    {
-      'west': '204-imt2xk99',
-      'east': '206-imt2xk99'
-    },
-    coords:
-    {
-      x: 5,
-      y: 1,
-      z: 0.3
-    }
-  },
-  '206-imt2xk99':
-  {
-    'name': 'System Room',
-    'exits':
-    {
-      'west': '205-imt2xk99',
-      'east': '207-imt2xk99'
-    },
-    coords:
-    {
-      x: 6,
-      y: 1,
-      z: 0.2
-    }
-  },
-  '207-imt2xk99':
-  {
-    'name': 'System Room',
-    'exits':
-    {
-      'west': '206-imt2xk99',
-      'east': '208-imt2xk99'
-    },
-    coords:
-    {
-      x: 7,
-      y: 1,
-      z: 0.1
-    }
-  },
-  '208-imt2xk99':
-  {
-    'name': 'System Room',
-    'exits':
-    {
-      'west': '207-imt2xk99',
-      'east': '208-imt2xk99'
-    },
-    coords:
-    {
-      x: 8,
-      y: 1,
-      z: 0
-    }
-  },
-  '209-imt2xk99':
-  {
-    'name': 'System Room',
-    'exits':
-    {
-      'west': '208-imt2xk99',
-      'east': '210-imt2xk99'
-    },
-    coords:
-    {
-      x: 9,
-      y: 1,
-      z: 0
-    }
-  },
-  '210-imt2xk99':
-  {
-    'name': 'System Room',
-    'exits':
-    {
-      'west': '209-imt2xk99',
-      'east': '211-imt2xk99'
-    },
-    coords:
-    {
-      x: 10,
-      y: 1,
-      z: 0
-    }
-  },
-  '211-imt2xk99':
-  {
-    'name': 'System Room',
-    'exits':
-    {
-      'west': '210-imt2xk99',
-      'east': '212-imt2xk99'
-    },
-    coords:
-    {
-      x: 11,
-      y: 1,
-      z: 0
-    }
-  },
-  '212-imt2xk99':
-  {
-    'name': 'System Room',
-    'exits':
-    {
-      'west': '211-imt2xk99'
-    },
-    coords:
-    {
-      x: 12,
-      y: 1,
-      z: 0
-    }
-  },
-  // Third row.
-  '300-imt2xk99':
-  {
-    'name': 'Tutorial Room',
-    'exits':
-    {
-      'east': '301-imt2xk99'
-    },
-    coords:
-    {
-      x: 0,
-      y: 2,
-      z: 0
-    }
-  },
-  '301-imt2xk99':
-  {
-    'name': 'Tutorial Room',
-    'exits':
-    {
-      'west': '300-imt2xk99',
-      'east': '302-imt2xk99'
-    },
-    coords:
-    {
-      x: 1,
-      y: 2,
-      z: 0
-    }
-  },
-  '302-imt2xk99':
-  {
-    'name': 'System Room',
-    'exits':
-    {
-      'west': '301-imt2xk99',
-      'east': '303-imt2xk99'
-    },
-    coords:
-    {
-      x: 2,
-      y: 2,
-      z: 0
-    }
-  },
-  '303-imt2xk99':
-  {
-    'name': 'System Room',
-    'exits':
-    {
-      'west': '302-imt2xk99',
-      'east': '304-imt2xk99'
-    },
-    coords:
-    {
-      x: 3,
-      y: 2,
-      z: 0
-    }
-  },
-  '304-imt2xk99':
-  {
-    'name': 'System Room',
-    'exits':
-    {
-      'west': '303-imt2xk99',
-      'east': '305-imt2xk99'
-    },
-    coords:
-    {
-      x: 4,
-      y: 2,
-      z: 0
-    }
-  },
-  '305-imt2xk99':
-  {
-    'name': 'System Room',
-    'exits':
-    {
-      'west': '304-imt2xk99',
-      'east': '306-imt2xk99'
-    },
-    coords:
-    {
-      x: 5,
-      y: 2,
-      z: 0
-    }
-  },
-  '306-imt2xk99':
-  {
-    'name': 'System Room',
-    'exits':
-    {
-      'west': '305-imt2xk99',
-      'east': '307-imt2xk99'
-    },
-    coords:
-    {
-      x: 6,
-      y: 2,
-      z: 0
-    }
-  },
-  '307-imt2xk99':
-  {
-    'name': 'System Room',
-    'exits':
-    {
-      'west': '306-imt2xk99',
-      'east': '308-imt2xk99'
-    },
-    coords:
-    {
-      x: 7,
-      y: 2,
-      z: 0
-    }
-  },
-  '308-imt2xk99':
-  {
-    'name': 'System Room',
-    'exits':
-    {
-      'west': '307-imt2xk99',
-      'east': '308-imt2xk99'
-    },
-    coords:
-    {
-      x: 8,
-      y: 2,
-      z: 0
-    }
-  },
-  '309-imt2xk99':
-  {
-    'name': 'System Room',
-    'exits':
-    {
-      'west': '308-imt2xk99',
-      'east': '310-imt2xk99'
-    },
-    coords:
-    {
-      x: 9,
-      y: 2,
-      z: 0
-    }
-  },
-  '310-imt2xk99':
-  {
-    'name': 'System Room',
-    'exits':
-    {
-      'west': '309-imt2xk99',
-      'east': '311-imt2xk99'
-    },
-    coords:
-    {
-      x: 10,
-      y: 2,
-      z: 0
-    }
-  },
-  '311-imt2xk99':
-  {
-    'name': 'System Room',
-    'exits':
-    {
-      'west': '310-imt2xk99',
-      'east': '312-imt2xk99'
-    },
-    coords:
-    {
-      x: 11,
-      y: 2,
-      z: 0
-    }
-  },
-  '312-imt2xk99':
-  {
-    'name': 'System Room',
-    'exits':
-    {
-      'west': '311-imt2xk99'
-    },
-    coords:
-    {
-      x: 12,
-      y: 2,
-      z: 0
-    }
-  }
-};
-*/
+const dx = Math.sin(angle) * shorten;
+const dy = Math.cos(angle) * shorten;
 
 export class MapWindow extends Window
 {
@@ -731,6 +138,14 @@ export class MapWindow extends Window
     x: 0,
     y: 0,
     z: 0
+  }
+
+  // Stores room 'z' position and mouse 'y' position
+  // when dragging of a room starts.
+  private roomDragData =
+  {
+    origZ: null,
+    origMouseY: null
   }
 
   ///private roomData = null;
@@ -957,8 +372,8 @@ export class MapWindow extends Window
   private initNewRoomElements(d3Rooms)
   {
     d3Rooms.attr('class', MapWindow.SVG_ROOM_CSS_CLASS);
-    d3Rooms.attr('cx', (d, i) => { return this.getRoomX(d, i); });
-    d3Rooms.attr('cy', (d, i) => { return this.getRoomY(d, i); });
+    d3Rooms.attr('cx', (d, i) => { return this.getRoomX(d); });
+    d3Rooms.attr('cy', (d, i) => { return this.getRoomY(d); });
     d3Rooms.attr('rx', 5);
     d3Rooms.attr('ry', 5 * shorten);
     d3Rooms.attr('stroke', 'yellow');
@@ -969,6 +384,8 @@ export class MapWindow extends Window
     // so the whole ellipse is clickable/mouseoverable.
     d3Rooms.attr('fill', 'transparent');
 
+    // ---- Enable highlight on mouseover.
+    /// TODO: Dělat to přes css class '.active'.
     d3Rooms.on
     (
       'mouseover',
@@ -980,6 +397,44 @@ export class MapWindow extends Window
       'mouseout',
       function(d) { d3.select(this).attr('stroke-width', 1.5); }
     );
+
+    // ---- Enable dragging ----
+    // To handle 'mousedown' event, we have to pass both
+    // javascript 'this' (which is the element on which
+    // the event fired) and typesctipt 'this' (which is
+    // the instance of MapWindow class). To do that, we
+    // must remember 'this' in a variable so we can pass
+    // it through closure.
+    let mapWindow = this;
+
+    d3Rooms.on
+    (
+      'mousedown',
+      function(d)
+      {
+        // 'this' is the room SVG element.
+        // 'mapWindow' is the local variable we remembered
+        // earlier. It is available thanks to closure.
+        mapWindow.onRoomMouseDown(d, this);
+      }
+    );
+
+    /*
+    var w = d3.select(window)
+      .on("mousemove", mousemove)
+      .on("mouseup", mouseup);
+
+    d3.event.preventDefault(); // disable text dragging
+
+    function mousemove() {
+      div.text(d3.mouse(div.node()));
+    }
+
+    function mouseup() {
+      div.classed("active", false);
+      w.on("mousemove", null).on("mouseup", null);
+    }
+    */
   }
 
   private initNewExitElements(d3Exits)
@@ -1002,8 +457,8 @@ export class MapWindow extends Window
   private updateRoomElements(d3Rooms)
   {
     ///console.log('updateRoomElements()');
-    d3Rooms.attr("cx", (d, i) => { return this.getRoomX(d, i); });
-    d3Rooms.attr("cy", (d, i) => { return this.getRoomY(d, i); });
+    d3Rooms.attr("cx", (d, i) => { return this.getRoomX(d); });
+    d3Rooms.attr("cy", (d, i) => { return this.getRoomY(d); });
   }
 
   private updateExitElements(d3Exits)
@@ -1104,7 +559,7 @@ export class MapWindow extends Window
     return this.$content.height() / 2;
   }
 
-  private getRoomX(d: any, i: number)
+  private getRoomX(d: any)
   {
     ///console.log('d: ' + d);
 
@@ -1114,10 +569,8 @@ export class MapWindow extends Window
     // 'x' and 'y' coords are always ordinary numbers
     //  (so the rooms always 'stick' to [x, y] grid),
     // 'z' coord can be a floating point number.
-    ///let mudX = d.coords.x;
-    let mudX = d.coords[0];
-    ///let mudY = d.coords.y;
-    let mudY = d.coords[1];
+    let mudX = d.coords.x;
+    let mudY = d.coords.y;
 
     // Transformation to currently centered room.
     let centeredMudX = mudX - this.coords.x;
@@ -1144,12 +597,10 @@ export class MapWindow extends Window
     return xPos + "px";
   }
 
-  private getRoomY(d: any, i: number)
+  private getRoomY(d: any)
   {
-    ///let mudY = d.coords.y;
-    let mudY = d.coords[1];
-    ///let mudZ = d.coords.z;
-    let mudZ = d.coords[2];
+    let mudY = d.coords.y;
+    let mudZ = d.coords.z;
 
     // Transformation to currently centered room.
     let centeredMudY = mudY - this.coords.y;
@@ -1217,7 +668,7 @@ export class MapWindow extends Window
 
     let fromRoom = this.rooms.get(fromRoomId);
 
-    return this.getRoomX(fromRoom, 0);
+    return this.getRoomX(fromRoom);
   }
 
   private getExitFromY(d: any)
@@ -1227,7 +678,7 @@ export class MapWindow extends Window
 
     let fromRoom = this.rooms.get(fromRoomId);
 
-    return this.getRoomY(fromRoom, 0);
+    return this.getRoomY(fromRoom);
   }
 
   private getExitToX(d: any)
@@ -1236,7 +687,7 @@ export class MapWindow extends Window
 
     let toRoom = this.rooms.get(toRoomId);
 
-    return this.getRoomX(toRoom, 0);
+    return this.getRoomX(toRoom);
   }
 
   private getExitToY(d: any)
@@ -1245,7 +696,7 @@ export class MapWindow extends Window
 
     let toRoom = this.rooms.get(toRoomId);
 
-    return this.getRoomY(toRoom, 0);
+    return this.getRoomY(toRoom);
   }
 
   // ---------------- Event handlers --------------------
@@ -1254,5 +705,51 @@ export class MapWindow extends Window
   {
     ///console.log('onResize()');
     this.updateMap();
+  }
+
+  private onMouseMove(d, element)
+  {
+    let mouseY = d3.mouse(element)[1];
+    let moveYDist = mouseY - this.roomDragData.origMouseY;
+
+    // Change the 'z' coordinate (in MUD coords) of the room
+    // (in data bound to the svg element).
+    // Rate of change is 1.0 of 'z' cooordinate per 100 pixels moved.
+    d.coords.z = this.roomDragData.origZ - moveYDist / 100;
+
+    // Reflect the change in data we have just made in the map.
+    // ('d' parameter is taken from the closure here).
+    d3.select(element).attr('cy', (d) => { return this.getRoomY(d); });
+    /// TODO: Update adjacend exit lines.
+  }
+
+  private onRoomMouseDown(d, element)
+  {
+    // Remember original state in data bound to element.
+    this.roomDragData.origZ = d.coords.z,
+    this.roomDragData.origMouseY = d3.mouse(element)[1];
+
+    // 'mousemove' and 'mouseup' events need to be
+    // attached to 'window', not the SVG element.
+    let wnd = d3.select(window);
+
+    wnd.on
+    (
+      'mousemove',
+      // 'd' and 'elements' parameters are taken from
+      // the closure.
+      () => { this.onMouseMove(d, element); }
+    );
+
+    wnd.on
+    (
+      'mouseup',
+      function()
+      {
+        // Detach 'mousemove' and 'mouseup' event handlers
+        // from 'window'.
+        wnd.on('mousemove', null).on('mouseup', null);
+      }
+    );
   }
 }
