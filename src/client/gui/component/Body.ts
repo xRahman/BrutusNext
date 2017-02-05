@@ -7,12 +7,12 @@
 
 'use strict';
 
-import {Component} from '../component/Component';
-import {Window} from '../component/Window';
-import {ScrollView} from '../component/ScrollView';
-import {MapWindow} from '../component/MapWindow';
-import {Client} from '../Client';
-import {Connection} from '../connection/Connection';
+import {Component} from '../../../client/gui/component/Component';
+import {Window} from '../../../client/gui/component/Window';
+import {ScrollView} from '../../../client/gui/component/ScrollView';
+import {MapWindow} from '../../../client/gui/component/MapWindow';
+import {Client} from '../../../client/lib/Client';
+import {Connection} from '../../../client/lib/connection/Connection';
 
 import $ = require('jquery');
 

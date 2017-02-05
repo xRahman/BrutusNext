@@ -7,10 +7,13 @@
     "moduleResolution": "node",
     "newLine": "LF",
     "noEmitOnError": true,
-    "outDir": "../../server/build",
-    "rootDir": ".",
+    "outDir": "../../build/server/js",
+    ///"outDir": "build/server/js",
+    ///"rootDir": "../",
+    "rootDir": "../",
     "sourceMap": true,
-    "sourceRoot": "."
+    "sourceRoot": "../"
+    ///"sourceRoot": "src"
     // 'compileOnSave' actually works in vs code if --watch parameter
     //  is passed to 'tsc', but the same functionality is turned on by
     // '"isWatching": true' in tasks.json. We do it there.
