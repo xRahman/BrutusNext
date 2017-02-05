@@ -1,27 +1,47 @@
 ﻿Intented project structure:
 - source files are located in /src
-- generated javascript files (and respective souce maps) are located in /build
+- generated javascript files (and respective souce maps) are located in
+  /build/client/js or /build/server/js
 
 What must be set:
 -----------------
 
-1) In tsconfig.json:
+1) In /src/server/tsconfig.json:
 
-  "outDir": "build",
+// Note: Directory path are relative to the location of tsconfig.json file.
 
-  "rootDir": "src",
+  "outDir": "../../build/server/js",
+  "rootDir": "../",
+  "sourceRoot": "../"
 
   "sourceMap": true,
-  // This is very important - it makes the compiler to add "sourceRoot" parameter
-  // to generated .map files so the path to original typescript file can be constructed.
-  // (parameters "sourceRoot" plus "sources" must together give the correct path)
-  "sourceRoot": "src"
+  // This is very important - it makes the compiler to add "sourceRoot"
+  // parameter to generated .map files so the path to original typescript
+  // file can be constructed.
+  // (Parameters "sourceRoot" plus "sources" must combine to give the correct
+  // path.)
 
 2) in /.vscode/launch.json:
 
   "sourceMaps": true,
   // The '/build/' part is important here.
-  "outFiles": [ "${workspaceRoot}/build/**/*.js" ]
+  "outFiles": [ "${workspaceRoot}/build/server/js/**/*.js" ]
 
-Note that source maps contain absolute paths - it means that they are only valid on
-the machine where they were generated.
+Note that source maps contain absolute paths - it means that they are only
+valid on the machine where they were generated.
+
+
+3) In /src/client/tsconfig.json:
+
+// Note: Directory path are relative to the location of tsconfig.json file.
+
+  "outDir": "../../build/client/js",
+  "rootDir": "../",
+  "sourceRoot": "../"
+
+  "sourceMap": true,
+  // This is very important - it makes the compiler to add "sourceRoot"
+  // parameter to generated .map files so the path to original typescript
+  // file can be constructed.
+  // (Parameters "sourceRoot" plus "sources" must combine to give the correct
+  // path.)
