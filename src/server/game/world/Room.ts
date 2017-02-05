@@ -25,7 +25,7 @@
 
 'use strict';
 
-import {GameEntity} from '../../game/GameEntity';
+import {GameEntity} from '../../../server/game/entity/GameEntity';
 import {Game} from '../../game/Game';
 import {RoomFlags} from '../../game/world/RoomFlags';
 import {Exits} from '../../game/world/Exits';
