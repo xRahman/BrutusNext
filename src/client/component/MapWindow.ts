@@ -14,44 +14,7 @@ import {ZoneGenerator} from '../mapper/ZoneGenerator';
 import $ = require('jquery');
 import d3 = require('d3');
 
-/// To je možná blbost....
-/// d3 pracuje vždycky s jednou classou svg elementů naráz,
-/// tj. všechny roomy, všechny exity, atd.
-/// Každá z nich se updatuje na základě příslušného pole.
-///
-/// Na druhou stranu mohl bych všechno bindovat na pole world[]
-/// a v něm vždycky zaindexovat.
-///
-/// To bude ok pro roomy, ale exity nejsou spojite pole...
-/// mohl bych je sice resit po roomech, ale problem je, ze kazdej
-/// exit nalezi dvema roomum, tj. bych kreslil kazdou caru dvakrat.
-
-/// Cili mozna bude nakonec fakt nejlepsi mit odelena pole rooms[], exits[]
-/// a nabindovat je primo na prislusnou serii svg elementu.
-
-/// Na druhou stranu nekde si musim drzet position data (kde room je v xyz)
-/// a taky musim umet ty exity a roomy v prislusnem poli najit...
-
-/// Asi by to slo udelat pres Map() - klicem by bylo id roomu.
-/// Hodnoty by se pak vytáhly přes .values (nebo možná spíš .keys,
-/// protože d3 potřebuje unikátní klíče k tomu, aby mohlo říct,
-/// které elementy přibyly a které ubyly).
-/// - asi furt dává smysl mapa, protože do value si můžu dát koordináty roomu.
-
-// Tak ne, je to spis asi blbost.
-/*
-/// => Exity by asi taky měly mít vlastní idčka (což asi dává smysl i na
-///    serveru).
-/// Smer ma byt vlastnost roomu, nebo vlastnost exitu?
-/// - asi spis roomu. 
-*/
-/*
-  Ovsem uplna blbost to neni - nejak musim exity identifikovat v mapperu.
-  OK, nechme zatim exity stranou. Zatim si budu hrat s kreslenim mistnosti.
-*/
-
-// Projection angle.
-///let angle = Math.PI / 8;
+// Projection angle (deviation from 'y' axis).
 const angle = Math.PI / 8;
 ///let angle = 3 * Math.PI / 16;
 
@@ -71,11 +34,10 @@ export class MapWindow extends Window
 
     this.connection.mapWindow = this;
 
+    /// TEST:
     let zg = new ZoneGenerator();
-
     let world = zg.generateZone();
 
-    /// TEST:
     for (let property in world)
     {
       // Build room data.
@@ -84,23 +46,6 @@ export class MapWindow extends Window
       // Add exits of this room to this.exits.
       this.addRoomExits(property, world[property]);
     }
-    ///console.log('Items in exits hashmap: ' + [...this.exits.values()].length);
-
-    /*
-    console.log('Items in hashmap: ' + [...this.rooms.values()].length);
-
-    this.roomData = new Array();
-
-    for (let room of this.rooms.values())
-    {
-      console.log('Adding room to roomData: ' + room);
-
-      this.roomData.push[room];
-      ///this.roomData.push('3');
-    }
-
-    console.log('roomData.length: ' + this.roomData.length);
-    */
   }
 
   public static get CSS_CLASS() { return 'MapWindow'; }
@@ -253,65 +198,52 @@ export class MapWindow extends Window
     let exits = [];
 
     if (room.exits['north'])
-      exits.push({ id: room.exits['north'], opacity: 0.2 });
+      exits.push({ id: room.exits['north'], opacity: 0.3 });
     if (room.exits['east'])
-      exits.push({ id: room.exits['east'], opacity: 0.2 });
+      exits.push({ id: room.exits['east'], opacity: 0.3 });
     if (room.exits['south'])
-      exits.push({ id: room.exits['south'], opacity: 0.2 });
+      exits.push({ id: room.exits['south'], opacity: 0.3 });
     if (room.exits['west'])
-      exits.push({ id: room.exits['west'], opacity: 0.2 });
+      exits.push({ id: room.exits['west'], opacity: 0.3 });
     if (room.exits['up'])
-      exits.push({ id: room.exits['up'], opacity: 0.2 });
+      exits.push({ id: room.exits['up'], opacity: 0.3 });
     if (room.exits['down'])
-      exits.push({ id: room.exits['down'], opacity: 0.2 });
+      exits.push({ id: room.exits['down'], opacity: 0.3 });
 
     /*
     if (room.exits['northeast'])
-      exits.push({ id: room.exits['northeast'], opacity: 0.03 });
+      exits.push({ id: room.exits['northeast'], opacity: 0.1 });
     if (room.exits['northwest'])
-      exits.push({ id: room.exits['northwest'], opacity: 0.03 });
+      exits.push({ id: room.exits['northwest'], opacity: 0.1 });
     if (room.exits['southeast'])
-      exits.push({ id: room.exits['southeast'], opacity: 0.03 });
+      exits.push({ id: room.exits['southeast'], opacity: 0.1 });
     if (room.exits['southwest'])
-      exits.push({ id: room.exits['southwest'], opacity: 0.03 });
+      exits.push({ id: room.exits['southwest'], opacity: 0.1 });
     */
 
-    // 'exit' is an id of destination room.
     for (let exit of exits)
     {
       if (exit)
       {
-        let exitId = roomId + ':' + exit.id;
+        let exitId = this.composeExitId(roomId, exit.id);
 
-        this.exits.set
-        (
-          exitId,
-          { from: roomId, to: exit.id, opacity: exit.opacity }
-        );
-
-        /// Zatím kašlu na deduplikaci obousměrných exitů
-        /// (navíc to nebylo dobře, this.rooms.get(exit)
-        /// není idčko ale data roomy).
-        /*
-        let destRoomId = this.rooms.get(exit);
-
-        // If destination room exists.
-        if (destRoomId)
+        if (this.exits.get(exitId) === undefined)
         {
-          let exitId = null;
-
-          // Create the exitId by concatenating ids
-          // of connected rooms in alphabetical order.
-          if (roomId < destRoomId)
-            exitId = roomId + ':' + destRoomId;
-          else
-            exitId = destRoomId + ':' + roomId;
-
-          /// Do dat asi časem dám info o tom, co je to za exit
-          /// (jednosměrný, obousměrný, atd.).
-          this.exits.set(exitId, {});
+          this.exits.set
+          (
+            exitId,
+            /// TODO: Casem sem pridat info o tom, co je to za exit
+            /// (jednosmerny, obousmerny, atd.).
+            /// TODO: opacita by se primo predavat nemela, ta by se mela
+            /// priradit az pri vykreslovani podle prislusne vlastnosti.
+            {
+              id: exitId,
+              from: roomId,
+              to: exit.id,
+              opacity: exit.opacity
+            }
+          );
         }
-        */
       }
     }
   }
@@ -386,6 +318,8 @@ export class MapWindow extends Window
 
     // ---- Enable highlight on mouseover.
     /// TODO: Dělat to přes css class '.active'.
+    /// (d3Rooms.classed('active', true);
+    /// (d3Rooms.classed('active', false);
     d3Rooms.on
     (
       'mouseover',
@@ -442,7 +376,8 @@ export class MapWindow extends Window
     d3Exits.style('stroke', 'yellow');
     ///d3NewExits.style('stroke-opacity', '0.5');
     d3Exits.style('stroke-opacity',(d) => { return this.getExitOpacity(d); });
-
+    // Exit id is also used as respective svg element id.
+    d3Exits.attr('id', function(d) { return d.id; });
     d3Exits.attr('x1', (d) => { return this.getExitFromX(d); });
     d3Exits.attr('y1', (d) => { return this.getExitFromY(d); });
     d3Exits.attr('x2', (d) => { return this.getExitToX(d); });
@@ -533,6 +468,37 @@ export class MapWindow extends Window
 
     // Remove <path> elements for deleted exits.
     d3Exits.exit().remove();
+  }
+
+  // Creates the exitId by concatenating ids
+  // of connected rooms in alphabetical order
+  // (this deduplicates bidirectional exits).
+  private composeExitId(fromId: string, toId: string)
+  {
+    // Note: Id must not begin with number because
+    // it's also used as an element id. So we prefix
+    // it with 'exit_'.
+    if (fromId < toId)
+      return 'exit_' + fromId + '_' + toId;
+    else
+      return 'exit_' + toId + '_' + fromId;
+  }
+
+  // Updates position of svg elements corresponding to exits
+  // leading from the room ('d' is data attached to that room).
+  /// TODO: Nějak pořešit taky incomming jednosměrné exity.
+  private updateRoomExits(d)
+  {
+    let roomId = d.id;
+
+    // 'exit' is an id of destination room.
+    for (let exit in d.exits)
+    {
+      let destId = d.exits[exit];
+      let exitId = this.composeExitId(roomId, destId);
+
+      this.updateExitElements(this.d3ExitsSvg.select('#' + exitId));
+    }
   }
 
   // ------- plotting methods --------
@@ -720,7 +686,9 @@ export class MapWindow extends Window
     // Reflect the change in data we have just made in the map.
     // ('d' parameter is taken from the closure here).
     d3.select(element).attr('cy', (d) => { return this.getRoomY(d); });
-    /// TODO: Update adjacend exit lines.
+
+    // Update adjacend exit lines.
+    this.updateRoomExits(d);
   }
 
   private onRoomMouseDown(d, element)
