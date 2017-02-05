@@ -9,8 +9,7 @@
 'use strict';
 
 import {Game} from '../../game/Game';
-import {GameEntity} from '../../game/GameEntity';
-///import {Room} from '../../game/world/Room';
+import {GameEntity} from '../../../server/game/entity/GameEntity';
 
 export class Sector extends GameEntity
 {
