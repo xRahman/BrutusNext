@@ -7,8 +7,8 @@
 
 'use strict';
 
-import {SaveableObject} from '../../shared/fs/SaveableObject';
-import {GameEntity} from '../../game/GameEntity';
+import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
+import {GameEntity} from '../../../server/game/entity/GameEntity';
 
 export class Exits extends SaveableObject
 {

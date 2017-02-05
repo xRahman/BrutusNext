@@ -6,7 +6,7 @@
 
 'use strict';
 
-import {Connection} from '../../server/connection/Connection';
+import {Connection} from '../../../server/lib/connection/Connection';
 
 export class StringEditor
 {

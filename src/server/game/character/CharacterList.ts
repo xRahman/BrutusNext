@@ -6,16 +6,16 @@
 
 'use strict';
 
-import {ERROR} from '../../shared/error/ERROR';
-import {FileSystem} from '../../shared/fs/FileSystem';
-import {NamedEntity} from '../../shared/entity/NamedEntity';
-import {Entity} from '../../shared/entity/Entity';
-import {EntityManager} from '../../shared/entity/EntityManager';
-import {AbbrevSearchList} from '../../game/AbbrevSearchList';
-import {Server} from '../../server/Server';
-import {Connection} from '../../server/connection/Connection';
-import {Game} from '../../game/Game';
-import {Character} from '../../game/character/Character';
+import {ERROR} from '../../../server/lib/error/ERROR';
+import {FileSystem} from '../../../server/lib/fs/FileSystem';
+import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
+import {Entity} from '../../../server/lib/entity/Entity';
+import {EntityManager} from '../../../server/lib/entity/EntityManager';
+import {AbbrevSearchList} from '../../../server/game/search/AbbrevSearchList';
+import {Server} from '../../../server/lib/Server';
+import {Connection} from '../../../server/lib/connection/Connection';
+import {Game} from '../../../server/game/Game';
+import {Character} from '../../../server/game/character/Character';
 
 export class CharacterList extends AbbrevSearchList
 {

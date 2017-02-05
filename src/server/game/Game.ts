@@ -6,28 +6,27 @@
 
 'use strict';
 
-import {ERROR} from '../shared/error/ERROR';
-import {EntityManager} from '../shared/entity/EntityManager';
-import {NamedEntity} from '../shared/entity/NamedEntity';
-import {NameSearchList} from '../shared/entity/NameSearchList';
-import {SaveableObject} from '../shared/fs/SaveableObject';
-///import {PrototypeManager} from '../shared/prototype/PrototypeManager';
-import {Message} from '../server/message/Message';
-import {Server} from '../server/Server';
-import {AdminLevel} from '../server/AdminLevel';
-import {GameEntity} from '../game/GameEntity';
-import {CharacterList} from '../game/character/CharacterList';
-import {World} from '../game/world/World';
-import {Room} from '../game/world/Room';
-import {RoomFlags} from '../game/world/RoomFlags';
-import {AbbrevSearchList} from '../game/AbbrevSearchList';
+import {ERROR} from '../../server/lib/error/ERROR';
+import {EntityManager} from '../../server/lib/entity/EntityManager';
+import {NamedEntity} from '../../server/lib/entity/NamedEntity';
+import {NameSearchList} from '../../server/lib/entity/NameSearchList';
+import {SaveableObject} from '../../server/lib/fs/SaveableObject';
+import {Message} from '../../server/lib/message/Message';
+import {Server} from '../../server/lib/Server';
+import {AdminLevel} from '../../server/lib/admin/AdminLevel';
+import {GameEntity} from '../../server/game/entity/GameEntity';
+import {CharacterList} from '../../server/game/character/CharacterList';
+import {World} from '../../server/game/world/World';
+import {Room} from '../../server/game/world/Room';
+import {RoomFlags} from '../../server/game/world/RoomFlags';
+import {AbbrevSearchList} from '../../server/game/search/AbbrevSearchList';
 
 /// Asi docasne:
 import {Area} from '../game/world/Area';
 import {Realm} from '../game/world/Realm';
 
 // TEST:
-import {Script} from '../shared/prototype/Script';
+import {Script} from '../../server/lib/prototype/Script';
 
 export class Game
 {

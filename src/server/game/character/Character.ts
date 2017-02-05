@@ -6,12 +6,12 @@
 
 'use strict';
 
-import {Account} from '../../server/account/Account';
-import {AdminLevel} from '../../server/AdminLevel';
-import {Game} from '../../game/Game';
-import {GameEntity} from '../../game/GameEntity';
-import {World} from '../../game/world/World';
-import {CharacterFlags} from '../../game/character/CharacterFlags';
+import {Account} from '../../../server/lib/account/Account';
+import {AdminLevel} from '../../../server/lib/admin/AdminLevel';
+import {Game} from '../../../server/game/Game';
+import {GameEntity} from '../../../server/game/entity/GameEntity';
+import {World} from '../../../server/game/world/World';
+import {CharacterFlags} from '../../../server/game/character/CharacterFlags';
 
 export class Character extends GameEntity
 {
