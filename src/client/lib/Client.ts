@@ -12,11 +12,11 @@
 
 'use strict';
 
-import {ERROR} from './error/ERROR';
-import {Body} from './component/Body';
-import {Document} from './component/Document';
-import {Connection} from './connection/Connection';
-import {WebSocketClient} from './net/ws/WebSocketClient';
+import {ERROR} from '../../client/lib/error/ERROR';
+import {Body} from '../../client/gui/component/Body';
+import {Document} from '../../client/gui/component/Document';
+import {Connection} from '../../client/lib/connection/Connection';
+import {WebSocketClient} from '../../client/lib/net/ws/WebSocketClient';
 
 export class Client
 {

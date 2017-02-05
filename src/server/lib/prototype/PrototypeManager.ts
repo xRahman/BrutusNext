@@ -287,7 +287,7 @@ export class PrototypeManager extends AutoSaveableObject
           + " and it won't be possible to create it's"
           + " instances. The best fix is probably to"
           + " return to the last commit that worked"
-          + " (including both /src and /server/data");
+          + " (including both /src and /data");
         return undefined;
       }
     }
@@ -305,7 +305,7 @@ export class PrototypeManager extends AutoSaveableObject
 
     // It is possible that not all of the hardcoded entity classes have an
     // id stored in PrototypeManager save. This can either happen when the
-    // server is launched for the first time and there is no /server/data
+    // server is launched for the first time and there is no /data
     // directory yet, or when someone has added new entity classes to
     // the code. Either way, we are going to automatically generate id's
     // for those classes that lack them.

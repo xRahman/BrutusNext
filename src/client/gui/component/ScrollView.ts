@@ -6,11 +6,13 @@
 
 'use strict';
 
-import {ScrollViewInput} from '../component/ScrollViewInput';
-import {ScrollViewOutput} from '../component/ScrollViewOutput';
-import {MudColorComponent} from '../component/MudColorComponent';
-import {Window} from '../component/Window';
-import {Connection} from '../connection/Connection';
+import {ScrollViewInput} from '../../../client/gui/component/ScrollViewInput';
+import {ScrollViewOutput} from
+  '../../../client/gui/component/ScrollViewOutput';
+import {MudColorComponent} from
+  '../../../client/gui/component/MudColorComponent';
+import {Window} from '../../../client/gui/component/Window';
+import {Connection} from '../../../client/lib/connection/Connection';
 
 import $ = require('jquery');
 
