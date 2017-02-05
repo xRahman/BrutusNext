@@ -1,6 +1,35 @@
 TODO: Mapper.
 
+TODO:
+- Při přidávání roomy rovnou přidat i všechny roomy, do kterých
+  z ní vedou exity (marknout je jako unexplored).
+- jednosměrné exity zapisovat do cílových room
+  (asi do objektu 'entrances');
+  - a to proto, aby jim ta rooma mohla updatnout grafiku, když se změní.
+Hmm. Aby mohl mapper vykreslit exit do neprozkoumané roomy, tak musí znát
+  její koordináty. Možnosti jsou:
+- zapisovat koorináty cílové roomy do exitu (to povede k duplikaci dat)
+- Flagovat nějak roomy, které jsou 'peeked in' but not 'explored' a posílat
+  je taky.
+A nebo cheap solution: Prostě exit do neprozkoumané roomy jen naznačit krátkou
+čárkou.
+- to asi použiju, je to teď nejjednodušší.
+Otázka ale je, jestli to řeší problém s tím, že mi vede one-way exit zejména
+zmapované roomy do roomy, kterou edituju: Neřeší.
+...
+Čili asi takhle:
+- Nezmapovaná rooma, do které vede exit ze zmapovené roomy,
+  se v mapperu vytvoří, ale bude mít prázdné koordináty.
+- Exit se vyrenderuje jako krátká čárka zhruba daným směrem (nevíme ještě kam).
+  (Hmm, to je asi blbý - když povede do kopce nebo s kopce, tak to bude poznat).
+...
+Hmm tak asi fakt nejjednodušší bude posílat cílové koordináty rovnou
+s exitem.
+
 TODO: Zrušit parametry 'i'.
+[done]
+
+
 
 ---------------------------------------------------------------
 
