@@ -281,9 +281,33 @@
   /*background-color: beige;*/
 }
 
-/* svg <circle> representing a room */
+/* Svg <circle> representing a room */
 .SvgRoom
 {
   margin: 0;
   padding: 0;
+  /* Note: stroke color is set programatically (it depends on terrain) */
+  stroke-width: 1.5;
+  /* Use 'transparent', not 'none' (so the whole area interacts with mouse) */
+  fill: transparent;
+}
+
+/* Room when mouseovered */
+.SvgRoom:hover
+{
+  margin: 0;
+  padding: 0;
+  /* Note: stroke color is set programatically (it depends on terrain) */
+  stroke-width: 3;
+  /* Use 'transparent', not 'none' (so the whole area interacts with mouse) */
+  fill: transparent;
+}
+
+/* Svg <line> representing an exit */
+.SvgExit
+{
+  margin: 0;
+  padding: 0;
+  /* Note: stroke color is set programatically (it depends on terrain) */
+  stroke-width: 1.0;
 }

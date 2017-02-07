@@ -13,10 +13,10 @@ import $ = require('jquery');
 
 export class Window extends MudColorComponent
 {
-  public static get CSS_CLASS() { return 'Window'; }
-  public static get TITLE_BAR_CSS_CLASS() { return 'WindowTitleBar'; }
-  public static get TITLE_CSS_CLASS() { return 'WindowTitle'; }
-  public static get CONTENT_CSS_CLASS() { return 'WindowContent'; }
+  protected static get CSS_CLASS() { return 'Window'; }
+  protected static get TITLE_BAR_CSS_CLASS() { return 'WindowTitleBar'; }
+  protected static get TITLE_CSS_CLASS() { return 'WindowTitle'; }
+  protected static get CONTENT_CSS_CLASS() { return 'WindowContent'; }
 
   constructor()
   {
