@@ -36,7 +36,7 @@ export class MapData
     if (!existingRoom || isUnexplored)
       this.rooms.set(room.id, room);
 
-    this.AddDestRooms(room);
+    this.addConnectedRooms(room);
 
     // Add exits of this room to this.exits.
     this.addRoomExits(room);
@@ -59,8 +59,8 @@ export class MapData
   // -> Returns array of MapData.RoomData objects.
   public getRoomsData()
   {
-    // (This piece of black magic obtains array of hashmap values.
-    //  Map.values() returns an iterable object, elipsis operator
+    // This piece of black magic obtains array of hashmap values
+    // (Map.values() returns an iterable object, elipsis operator
     //  converts it to an array).
     return [...this.rooms.values()];
   }
@@ -68,13 +68,14 @@ export class MapData
   // -> Returns array of MapData.ExitData objects.
   public getExitsData()
   {
-    // (This piece of black magic obtains array of hashmap values.
-    //  Map.values() returns an iterable object, elipsis operator
+    // This piece of black magic obtains array of hashmap values
+    // (Map.values() returns an iterable object, elipsis operator
     //  converts it to an array).
     return [...this.exits.values()];
   }
 
-  public getRoomById(id: string)
+  // -> Returns 'undefined' if requested room isn't present in MapData.
+  public getRoomDataById(id: string)
   {
     return this.rooms.get(id);
   }
@@ -84,28 +85,30 @@ export class MapData
   // ---------------- Private methods -------------------
 
   // Adds rooms reachable by exits from 'room' to 'this.rooms' hashmap.
-  private AddDestRooms(room: MapData.RoomData)
+  private addConnectedRooms(room: MapData.RoomData)
   {
     for (let exitName in room.exits)
     {
       let exit = room.exits[exitName];
+      let targetRoomId = exit.targetRoomId;
 
-      /// TODO
-
-      /*
+      // If target room isn't in 'this.rooms' hashmap yet,
+      // ad it as an unexplored room.
       if (!this.rooms.get(targetRoomId))
       {
-        /// Hmm, tohle asi nepůjde...
-        let unexploredRoom = new MapData.RoomData();
+        let targetRoom: MapData.RoomData =
+        {
+          id: targetRoomId,
+          name: 'Unexplored Room',
+          explored: false,
+          coords: exit.destCoords,
+          // Target room probably has some exits, but we
+          // don't know them yet.
+          exits: {}
+        };
 
-        unexploredRoom.id = targetRoomId;
-        unexploredRoom.explored = false;
-        unexploredRoom.coords exit.destCoords;
-      
-        this.rooms.set(targetRoomId, unexploredRoom);
+        this.rooms.set(targetRoomId, targetRoom);
       }
-      */
-
     }
   }
 
@@ -117,7 +120,7 @@ export class MapData
     // Go through all properties of roome.exits object.
     for (let exitName in room.exits)
     {
-      let destRoomId = room.exits[exitName].target;
+      let destRoomId = room.exits[exitName].targetRoomId;
       let exitId = this.composeExitId(roomId, destRoomId);
       let directionality = room.exits[exitName].directionality;
 
@@ -137,62 +140,6 @@ export class MapData
         );
       }
     }
-
-    /*
-    let exits = [];
-
-    if (room.exits['north'])
-      exits.push({ id: room.exits['north'], opacity: 0.3 });
-    if (room.exits['east'])
-      exits.push({ id: room.exits['east'], opacity: 0.3 });
-    if (room.exits['south'])
-      exits.push({ id: room.exits['south'], opacity: 0.3 });
-    if (room.exits['west'])
-      exits.push({ id: room.exits['west'], opacity: 0.3 });
-    if (room.exits['up'])
-      exits.push({ id: room.exits['up'], opacity: 0.3 });
-    if (room.exits['down'])
-      exits.push({ id: room.exits['down'], opacity: 0.3 });
-    */
-
-    /*
-    if (room.exits['northeast'])
-      exits.push({ id: room.exits['northeast'], opacity: 0.1 });
-    if (room.exits['northwest'])
-      exits.push({ id: room.exits['northwest'], opacity: 0.1 });
-    if (room.exits['southeast'])
-      exits.push({ id: room.exits['southeast'], opacity: 0.1 });
-    if (room.exits['southwest'])
-      exits.push({ id: room.exits['southwest'], opacity: 0.1 });
-    */
-
-    /*
-    for (let exit of exits)
-    {
-      if (exit)
-      {
-        let exitId = this.composeExitId(roomId, exit.id);
-
-        if (this.exits.get(exitId) === undefined)
-        {
-          this.exits.set
-          (
-            exitId,
-            /// TODO: Casem sem pridat info o tom, co je to za exit
-            /// (jednosmerny, obousmerny, atd.).
-            /// TODO: opacita by se primo predavat nemela, ta by se mela
-            /// priradit az pri vykreslovani podle prislusne vlastnosti.
-            {
-              id: exitId,
-              from: roomId,
-              to: exit.id,
-              opacity: exit.opacity
-            }
-          );
-        }
-      }
-    }
-    */
   }
 
   // ---------------- Event handlers --------------------
@@ -213,10 +160,12 @@ export module MapData
 
   // Variables of this type describe sever-side room exit
   // (which is always one-directional).
-  interface ExitDescription
+  export interface ExitDescription
   {
     // Id of target room.
-    target: string,
+    targetRoomId: string,
+    // ONE_WAY or TWO_WAY.
+    directionality: ExitDirectionality,
     // Mud coordinates of target room
     // (this is used to draw exit line to correct location
     //  when target room is not mapped yet).
@@ -225,8 +174,7 @@ export module MapData
       x: number,
       y: number,
       z: number
-    },
-    directionality: ExitDirectionality
+    }
   }
 
   export interface RoomData
@@ -256,7 +204,7 @@ export module MapData
   {
     // 'id' of an exit - this is composed in the client from destination
     // and source room ids (see MapData.addRoomExits() for details).
-    // (Rxit is not an entity and so doesn't have an id on the server).
+    // (Exit is not an entity and so doesn't have an id on the server).
     id: string,
     // 'entity id' of source room.
     from: string,

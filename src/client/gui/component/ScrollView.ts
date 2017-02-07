@@ -25,8 +25,8 @@ export class ScrollView extends Window
     this.connection.scrollView = this;
   }
 
-  public static get CSS_CLASS() { return 'ScrollView'; }
-  public static get CONTENT_CSS_CLASS() { return 'ScrollViewContent'; }
+  protected static get CSS_CLASS() { return 'ScrollView'; }
+  protected static get CONTENT_CSS_CLASS() { return 'ScrollViewContent'; }
 
   // -------------- Static class data -------------------
 
