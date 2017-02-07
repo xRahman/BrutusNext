@@ -27,7 +27,6 @@ export class Body extends Component
     this.$body = $('#' + this.id);
 
     let connection = client.createConnection();
-
     this.createScrollView(connection);
     this.createMapWindow(connection);
 

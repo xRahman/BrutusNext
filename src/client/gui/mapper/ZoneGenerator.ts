@@ -8,6 +8,8 @@
 
 'use strict';
 
+import {MapData} from '../../../client/gui/mapper/MapData';
+
 export class ZoneGenerator
 {
   // -------------- Static class data -------------------
@@ -39,21 +41,9 @@ export class ZoneGenerator
       fromZ: 0,
       toZ: 0,
     }
-    
-    /*
-    let r =
-    {
-      fromX: -5,
-      toX: 5,
-      fromY: -5,
-      toY: 5,
-      fromZ: 0,
-      toZ: 3,
-    }
 
-    */
-
-    let zone = [];
+    //let zone = [];
+    let zone = new Array<MapData.RoomData>();
     let zoneGrid = [];
 
     for (let i = 0, x = roomRange.fromX; x <= roomRange.toX; i++, x++)
@@ -71,6 +61,7 @@ export class ZoneGenerator
           {
             id: id,
             name: 'Room #' + id,
+            explored: true,
             coords:
             {
               x: x,
