@@ -82,6 +82,19 @@ export class ZoneGenerator
     return zone;
   }
 
+  private createExitDesc(targetRoom)
+  {
+    let exitDescription: MapData.ExitDescription =
+    {
+      targetRoomId: targetRoom.id,
+      // All generated exits are two-way.
+      directionality: MapData.ExitDirectionality.TWO_WAY,
+      destCoords: targetRoom.coords
+    };
+
+    return exitDescription;
+  }
+
   private generateExits(zone, zoneGrid, roomRange)
   {
     for (let room of zone)
@@ -94,72 +107,72 @@ export class ZoneGenerator
 
       if (room.coords.x > roomRange.fromX)
       {
-        let target = zoneGrid[x - 1][y][z];
+        let targetRoom = zoneGrid[x - 1][y][z];
 
-        room.exits['west'] = target.id;
+        room.exits['west'] = this.createExitDesc(targetRoom);
 
         if (room.coords.y > roomRange.fromY)
         {
           let target = zoneGrid[x - 1][y - 1][z];
 
-          room.exits['southwest'] = target.id;
+          room.exits['southwest'] = this.createExitDesc(targetRoom);
         }
 
         if (room.coords.y < roomRange.toY)
         {
           let target = zoneGrid[x - 1][y + 1][z];
 
-          room.exits['northwest'] = target.id;
+          room.exits['northwest'] = this.createExitDesc(targetRoom);
         }
       }
 
       if (room.coords.x < roomRange.toX)
       {
-        let target = zoneGrid[x + 1][y][z];
+        let targetRoom = zoneGrid[x + 1][y][z];
 
-        room.exits['east'] = target.id;
+        room.exits['east'] = this.createExitDesc(targetRoom);
 
         if (room.coords.y > roomRange.fromY)
         {
           let target = zoneGrid[x + 1][y - 1][z];
 
-          room.exits['southeast'] = target.id;
+          room.exits['southeast'] = this.createExitDesc(targetRoom);
         }
 
         if (room.coords.y < roomRange.toY)
         {
           let target = zoneGrid[x + 1][y + 1][z];
 
-          room.exits['northeast'] = target.id;
+          room.exits['northeast'] = this.createExitDesc(targetRoom);
         }
       }
 
       if (room.coords.y > roomRange.fromY)
       {
-        let target = zoneGrid[x][y - 1][z];
+        let targetRoom = zoneGrid[x][y - 1][z];
 
-        room.exits['south'] = target.id;
+        room.exits['south'] = this.createExitDesc(targetRoom);
       }
 
       if (room.coords.y < roomRange.toY)
       {
-        let target = zoneGrid[x][y + 1][z];
+        let targetRoom = zoneGrid[x][y + 1][z];
 
-        room.exits['north'] = target.id;
+        room.exits['north'] = this.createExitDesc(targetRoom);
       }
 
       if (room.coords.z > roomRange.fromZ)
       {
-        let target = zoneGrid[x][y][z - 1];
+        let targetRoom = zoneGrid[x][y][z - 1];
 
-        room.exits['down'] = target.id;
+        room.exits['down'] = this.createExitDesc(targetRoom);
       }
 
       if (room.coords.z < roomRange.toZ)
       {
-        let target = zoneGrid[x][y][z + 1];
+        let targetRoom = zoneGrid[x][y][z + 1];
 
-        room.exits['up'] = target.id;
+        room.exits['up'] = this.createExitDesc(targetRoom);
       }
     }
   }

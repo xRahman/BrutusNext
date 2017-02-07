@@ -16,16 +16,16 @@ import $ = require('jquery');
 import d3 = require('d3');
 
 // Projection angle (deviation from 'y' axis).
-const angle = Math.PI / 8;
+const ANGLE = Math.PI / 8;
 ///let angle = 3 * Math.PI / 16;
 
 // Shortening factor of virtual 'y' axis.
-const shorten = Math.cos(angle);
+const SHORTEN = Math.cos(ANGLE);
 //let shorten = 0.6;
 
 // Shortening factors projected to viewport cooordinates.
-const dx = Math.sin(angle) * shorten;
-const dy = Math.cos(angle) * shorten;
+const SHORTEN_X = Math.sin(ANGLE) * SHORTEN;
+const SHORTEN_Y = Math.cos(ANGLE) * SHORTEN;
 
 export class MapWindow extends Window
 {
@@ -39,16 +39,20 @@ export class MapWindow extends Window
     let zg = new ZoneGenerator();
     let world = zg.generateZone();
 
+    this.mapData.addRoom(world['50']);
+    /*
     for (let property in world)
     {
       this.mapData.addRoom(world[property]);
     }
+    */
   }
 
-  public static get CSS_CLASS() { return 'MapWindow'; }
-  public static get CONTENT_CSS_CLASS() { return 'MapWindowContent'; }
-  public static get SVG_MAP_CSS_CLASS() { return 'SvgMap'; }
-  public static get SVG_ROOM_CSS_CLASS() { return 'SvgRoom'; }
+  protected static get CSS_CLASS() { return 'MapWindow'; }
+  protected static get CONTENT_CSS_CLASS() { return 'MapWindowContent'; }
+  protected static get SVG_MAP_CSS_CLASS() { return 'SvgMap'; }
+  protected static get SVG_ROOM_CSS_CLASS() { return 'SvgRoom'; }
+  protected static get SVG_EXIT_CSS_CLASS()  { return 'SvgExit'; }
 
   // Distance between two rooms on X axis in pixels.
   private static get ROOM_SPACING() { return 30; }
@@ -221,13 +225,15 @@ export class MapWindow extends Window
     */
 
 
-    // Note:
-    //   Order of creating of following elements is
-    // important!
-    //   Mouse events will prioritize the last inserted
-    // one, so 'this.d3RoomsSvg' must come last or the
-    // lines (representing exits) won't steal mouse transform
-    // the ellipses (representing rooms).
+    /*
+      Note:
+        Order of creating of following elements is
+      important!
+        Mouse events will prioritize the last inserted
+      one, so 'this.d3RoomsSvg' must come last or the
+      lines (representing exits) won't steal mouse transform
+      the ellipses (representing rooms).
+    */
 
     // Container for exit svg elements.
     this.d3ExitsSvg = this.d3MapSvg.append('g');
@@ -244,29 +250,28 @@ export class MapWindow extends Window
     d3Rooms.attr('cx', (d, i) => { return this.getRoomXPos(d); });
     d3Rooms.attr('cy', (d, i) => { return this.getRoomYPos(d); });
     d3Rooms.attr('rx', 5);
-    d3Rooms.attr('ry', 5 * shorten);
+    d3Rooms.attr('ry', 5 * SHORTEN);
+    /// TODO: Barva by měla záviset na terénu.
     d3Rooms.attr('stroke', 'yellow');
-    d3Rooms.attr('stroke-width', 1.5);
-    ///d3Rooms.attr('fill', 'none');
-    // Note: 'fill' 'none' would mean that the center of the
-    // ellipse doesn't accept mouse events. We use 'transparent'
-    // so the whole ellipse is clickable/mouseoverable.
-    d3Rooms.attr('fill', 'transparent');
 
-    // ---- Enable highlight on mouseover.
-    /// TODO: Dělat to přes css class '.active'.
-    /// (d3Rooms.classed('active', true);
-    /// (d3Rooms.classed('active', false);
+    // ---- Hide unexplored rooms ----
+    d3Rooms.style
+    (
+      'visibility',
+      (d, i) => { return this.getRoomVisibility(d); }
+    );
+
+    // ---- Enable highlight on mouseover ----
     d3Rooms.on
     (
       'mouseover',
-      function(d) { d3.select(this).attr('stroke-width', 3); }
+      function(d) { d3.select(this).classed('hover', true); }
     );
 
     d3Rooms.on
     (
       'mouseout',
-      function(d) { d3.select(this).attr('stroke-width', 1.5); }
+      function(d) { d3.select(this).classed('hover', false); }
     );
 
     // ---- Enable dragging ----
@@ -289,29 +294,13 @@ export class MapWindow extends Window
         mapWindow.onRoomMouseDown(d, this);
       }
     );
-
-    /*
-    var w = d3.select(window)
-      .on("mousemove", mousemove)
-      .on("mouseup", mouseup);
-
-    d3.event.preventDefault(); // disable text dragging
-
-    function mousemove() {
-      div.text(d3.mouse(div.node()));
-    }
-
-    function mouseup() {
-      div.classed("active", false);
-      w.on("mousemove", null).on("mouseup", null);
-    }
-    */
   }
 
   private initNewExitElements(d3Exits)
   {
+    d3Exits.attr('class', MapWindow.SVG_EXIT_CSS_CLASS);
+    /// TODO: Barva by měla záviset na terénu.
     d3Exits.style('stroke', 'yellow');
-    ///d3Exits.style('stroke-opacity',(d) => { return this.getExitOpacity(d); });
     d3Exits.style('stroke-opacity', '0.3');
     // Exit id is also used as respective svg element id.
     d3Exits.attr('id', function(d) { return d.id; });
@@ -319,11 +308,6 @@ export class MapWindow extends Window
     d3Exits.attr('y1', (d) => { return this.getFromRoomYPos(d); });
     d3Exits.attr('x2', (d) => { return this.getToRoomXPos(d); });
     d3Exits.attr('y2', (d) => { return this.getToRoomYPos(d); });
-
-    /*
-    // 'd' attribute dwars the line.
-    d3NewExits.attr('d', (d, i) => { return this.getExitDAttrib(d); });
-    */
   }
 
   private updateRoomElements(d3Rooms)
@@ -331,6 +315,13 @@ export class MapWindow extends Window
     ///console.log('updateRoomElements()');
     d3Rooms.attr("cx", (d, i) => { return this.getRoomXPos(d); });
     d3Rooms.attr("cy", (d, i) => { return this.getRoomYPos(d); });
+
+    // Hide unexplored rooms, show explored ones.
+    d3Rooms.style
+    (
+      'visibility',
+      (d, i) => { return this.getRoomVisibility(d); }
+    );
   }
 
   private updateExitElements(d3Exits)
@@ -396,14 +387,14 @@ export class MapWindow extends Window
   // Updates position of svg elements corresponding to exits
   // leading from the room ('d' is data attached to that room).
   /// TODO: Nějak pořešit taky incomming jednosměrné exity.
-  private updateRoomExits(d)
+  private updateRoomExits(d: MapData.RoomData)
   {
     let roomId = d.id;
 
     // 'exit' is an id of destination room.
     for (let exit in d.exits)
     {
-      let destId = d.exits[exit];
+      let destId = d.exits[exit].targetRoomId;
       let exitId = this.mapData.composeExitId(roomId, destId);
 
       this.updateExitElements(this.d3ExitsSvg.select('#' + exitId));
@@ -434,6 +425,17 @@ export class MapWindow extends Window
     return this.$content.height() / 2;
   }
 
+  // -> Returns appropriate value of 'visibility' style
+  //    of room svg element.
+  private getRoomVisibility(d: MapData.RoomData)
+  {
+    if (d.explored === true)
+      return 'visible';
+
+    // Hide unexplored elements.
+    return 'hidden';
+  }
+
   private getRoomXPos(d: any)
   {
     ///console.log('d: ' + d);
@@ -452,7 +454,7 @@ export class MapWindow extends Window
     let centeredMudY = mudY - this.coords.y;
 
     let xPos = centeredMudX * MapWindow.ROOM_SPACING;
-    xPos += centeredMudY * MapWindow.ROOM_SPACING * dx;
+    xPos += centeredMudY * MapWindow.ROOM_SPACING * SHORTEN_X;
 
     ///if (i === 0)
     ///  console.log('xPos before transform: ' + xPos);
@@ -482,7 +484,7 @@ export class MapWindow extends Window
     let centeredMudZ = mudZ - this.coords.z;
 
     // Projection of mud 'Y' axis to viewport 'y' axis.
-    let yPos = centeredMudY * MapWindow.ROOM_SPACING * dy;
+    let yPos = centeredMudY * MapWindow.ROOM_SPACING * SHORTEN_Y;
 
     // Projection of mud 'Z' axis to viewport 'y' axis
     // (Mud 'z' coordinate is projected 1:1).
@@ -511,28 +513,28 @@ export class MapWindow extends Window
 
   private getFromRoomXPos(d: any)
   {
-    let fromRoom = this.mapData.getRoomById(d.from);
+    let fromRoom = this.mapData.getRoomDataById(d.from);
 
     return this.getRoomXPos(fromRoom);
   }
 
   private getFromRoomYPos(d: any)
   {
-    let fromRoom = this.mapData.getRoomById(d.from);
+    let fromRoom = this.mapData.getRoomDataById(d.from);
 
     return this.getRoomYPos(fromRoom);
   }
 
   private getToRoomXPos(d: any)
   {
-    let toRoom = this.mapData.getRoomById(d.to);
+    let toRoom = this.mapData.getRoomDataById(d.to);
 
     return this.getRoomXPos(toRoom);
   }
 
   private getToRoomYPos(d: any)
   {
-    let toRoom = this.mapData.getRoomById(d.to);
+    let toRoom = this.mapData.getRoomDataById(d.to);
 
     return this.getRoomYPos(toRoom);
   }
