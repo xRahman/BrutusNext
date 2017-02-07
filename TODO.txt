@@ -1,5 +1,9 @@
 TODO: Mapper.
 
+TODO: Jestli je exit ONE_WAY nebo TWO_WAY se musí posílat už
+  ze serveru. Mapper to nemá jak zjistit, dokud hráč nezmapuje
+  cílovou roomu.
+
 TODO:
 - Při přidávání roomy rovnou přidat i všechny roomy, do kterých
   z ní vedou exity (marknout je jako unexplored).
