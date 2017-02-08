@@ -189,6 +189,43 @@ export class MapWindow extends Window
 
   // ---------------- Private methods -------------------
 
+  private appendFilters(d3MapSvg)
+  {
+    // Filters go in <defs> element (which should be in a root <svg> element).
+    let defs = d3MapSvg.append('defs');
+
+    // create filter with id #drop-shadow
+    // height=130% so that the shadow is not clipped
+    let filter = defs.append("filter")
+        .attr("id", "drop-shadow")
+        .attr("height", "130%");
+
+    // SourceAlpha refers to opacity of graphic that this filter will be applied to
+    // convolve that with a Gaussian with standard deviation 3 and store result
+    // in blur
+    filter.append("feGaussianBlur")
+        .attr("in", "SourceAlpha")
+        .attr("stdDeviation", 5)
+        .attr("result", "blur");
+
+    // translate output of Gaussian blur to the right and downwards with 2px
+    // store result in offsetBlur
+    filter.append("feOffset")
+        .attr("in", "blur")
+        .attr("dx", 5)
+        .attr("dy", 5)
+        .attr("result", "offsetBlur");
+
+    // overlay original SourceGraphic over translated blurred opacity by using
+    // feMerge filter. Order of specifying inputs is important!
+    var feMerge = filter.append("feMerge");
+
+    feMerge.append("feMergeNode")
+        .attr("in", "offsetBlur")
+    feMerge.append("feMergeNode")
+        .attr("in", "SourceGraphic");
+  }
+
   private createMap($ancestor: JQuery)
   {
     // Select ancestor element using d3 library.
@@ -211,6 +248,8 @@ export class MapWindow extends Window
     // Append a svg element that will be used to draw map in.
     this.d3MapSvg = d3WindowContent.append('svg');
     this.d3MapSvg.attr('class', MapWindow.SVG_MAP_CSS_CLASS);
+
+    this.appendFilters(this.d3MapSvg);
 
     /*
     this.d3MapSvg.attr('viewBox', '0 0 10000 10000');
@@ -253,6 +292,10 @@ export class MapWindow extends Window
     d3Rooms.attr('ry', 5 * SHORTEN);
     /// TODO: Barva by měla záviset na terénu.
     d3Rooms.attr('stroke', 'yellow');
+
+    // Assign filter with id 'drop-shadow' (which we have created
+    // earlied using this.appendFilters() method).
+    d3Rooms.style("filter", "url(#drop-shadow)");
 
     // ---- Hide unexplored rooms ----
     d3Rooms.style
