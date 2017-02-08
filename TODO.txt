@@ -1,5 +1,11 @@
 TODO: Mapper.
 
+TODO: Drop-shadow u map elementů úplně nefunguje.
+  - buď to spravit, nebo zrušit a vyhodit.
+  http://bl.ocks.org/cpbotha/5200394
+- Tohle by bylo ještě hezčí:
+  https://www.w3.org/TR/SVG/filters.html#AnExample
+
 TODO: Jestli je exit ONE_WAY nebo TWO_WAY se musí posílat už
   ze serveru. Mapper to nemá jak zjistit, dokud hráč nezmapuje
   cílovou roomu.
