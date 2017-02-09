@@ -39,13 +39,13 @@ export class MapWindow extends Window
     let zg = new ZoneGenerator();
     let world = zg.generateZone();
 
-    this.mapData.addRoom(world['50']);
-    /*
+    ///this.mapData.addRoom(world['50']);
+    
     for (let property in world)
     {
       this.mapData.addRoom(world[property]);
     }
-    */
+    
   }
 
   protected static get CSS_CLASS() { return 'MapWindow'; }
@@ -189,32 +189,64 @@ export class MapWindow extends Window
 
   // ---------------- Private methods -------------------
 
+  /*
   private appendFilters(d3MapSvg)
   {
     // Filters go in <defs> element (which should be in a root <svg> element).
     let defs = d3MapSvg.append('defs');
 
-    // create filter with id #drop-shadow
-    // height=130% so that the shadow is not clipped
     let filter = defs.append("filter")
         .attr("id", "drop-shadow")
-        .attr("height", "130%");
+        .attr("filterUnits", "userSpaceOnUse")
+        .attr("x", "-10%")
+        .attr("y", "-10%")
+        .attr("width", "120%")
+        .attr("height", "120%");
 
     // SourceAlpha refers to opacity of graphic that this filter will be applied to
     // convolve that with a Gaussian with standard deviation 3 and store result
     // in blur
     filter.append("feGaussianBlur")
         .attr("in", "SourceAlpha")
-        .attr("stdDeviation", 5)
+        .attr("stdDeviation", 4)
         .attr("result", "blur");
 
     // translate output of Gaussian blur to the right and downwards with 2px
     // store result in offsetBlur
     filter.append("feOffset")
         .attr("in", "blur")
-        .attr("dx", 5)
-        .attr("dy", 5)
+        .attr("dx", 4)
+        .attr("dy", 4)
         .attr("result", "offsetBlur");
+
+    let specular = filter.append("feSpecularLighting")
+        .attr("in", "blur")
+        .attr("surfaceScale", 5)
+        .attr("specularConstant", .75)
+        .attr("specularExponent", 20)
+        .attr("lighting-color", "rgb(187,187,187)")
+        .attr("result", "specOut");
+
+    specular.append("fePointLight")
+        .attr("x", -5000)
+        .attr("y", -10000)
+        .attr("z", 20000);
+
+    filter.append("feComposite")
+        .attr("in", "specOut")
+        .attr("in2", "SourceAlpha")
+        .attr("operator", "in")
+        .attr("result", "specOut");
+
+    filter.append("feComposite")
+        .attr("in", "SourceGraphic")
+        .attr("in2", "specOut")
+        .attr("operator", "arithmetic")
+        .attr("k1", "0")
+        .attr("k2", "1")
+        .attr("k3", "1")
+        .attr("k4", "0")
+        .attr("result", "litPaint");
 
     // overlay original SourceGraphic over translated blurred opacity by using
     // feMerge filter. Order of specifying inputs is important!
@@ -223,8 +255,9 @@ export class MapWindow extends Window
     feMerge.append("feMergeNode")
         .attr("in", "offsetBlur")
     feMerge.append("feMergeNode")
-        .attr("in", "SourceGraphic");
+        .attr("in", "litPaint");
   }
+  */
 
   private createMap($ancestor: JQuery)
   {
@@ -249,7 +282,8 @@ export class MapWindow extends Window
     this.d3MapSvg = d3WindowContent.append('svg');
     this.d3MapSvg.attr('class', MapWindow.SVG_MAP_CSS_CLASS);
 
-    this.appendFilters(this.d3MapSvg);
+    ///this.d3MapSvg.attr('enable-background', 'new');
+    ///this.appendFilters(this.d3MapSvg);
 
     /*
     this.d3MapSvg.attr('viewBox', '0 0 10000 10000');
@@ -295,7 +329,7 @@ export class MapWindow extends Window
 
     // Assign filter with id 'drop-shadow' (which we have created
     // earlied using this.appendFilters() method).
-    d3Rooms.style("filter", "url(#drop-shadow)");
+    ///d3Rooms.style("filter", "url(#drop-shadow)");
 
     // ---- Hide unexplored rooms ----
     d3Rooms.style
