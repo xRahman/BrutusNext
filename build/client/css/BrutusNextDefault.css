@@ -99,9 +99,9 @@
   margin: 0;
   /* Padding: 0 is defined to ensure the same behaviour in all browsers */
   padding: 0;
-  padding-right: 0.5px;  /* to make sure that window borders are visible */
-  padding-top: 1.1px;    /* to make sure that window borders are visible */
-  padding-bottom: 0.5px; /* to make sure that window borders are visible */
+  /*padding-right: 0.5px;*/  /* to make sure that window borders are visible */
+  /*padding-top: 1.1px;*/    /* to make sure that window borders are visible */
+  /*padding-bottom: 0.5px;*/ /* to make sure that window borders are visible */
   /* Fonts are saved on server so we don't need alternatives */
 	font-family: "CourierNew";
 	/* font-size: 100%;*/ /* Browser default (usually 16px) */
