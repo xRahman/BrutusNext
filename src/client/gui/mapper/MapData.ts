@@ -117,9 +117,19 @@ export class MapData
   {
     let roomId = room.id;
 
-    // Go through all properties of roome.exits object.
+    // Go through all properties of room.exits object.
     for (let exitName in room.exits)
     {
+      if
+      (
+        exitName === 'northwest'
+        || exitName === 'northeast'
+        || exitName === 'southwest'
+        || exitName === 'southeast'
+      )
+      continue;
+      
+
       let destRoomId = room.exits[exitName].targetRoomId;
       let exitId = this.composeExitId(roomId, destRoomId);
       let directionality = room.exits[exitName].directionality;

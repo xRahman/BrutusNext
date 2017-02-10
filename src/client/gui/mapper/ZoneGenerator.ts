@@ -54,7 +54,6 @@ export class ZoneGenerator
         zoneGrid[i].push([]);
         for (let z = roomRange.fromZ; z <= roomRange.toZ; z++)
         {
-
           let id = this.generateId();
 
           let room =
@@ -113,14 +112,14 @@ export class ZoneGenerator
 
         if (room.coords.y > roomRange.fromY)
         {
-          let target = zoneGrid[x - 1][y - 1][z];
+          let targetRoom = zoneGrid[x - 1][y - 1][z];
 
           room.exits['southwest'] = this.createExitDesc(targetRoom);
         }
 
         if (room.coords.y < roomRange.toY)
         {
-          let target = zoneGrid[x - 1][y + 1][z];
+          let targetRoom = zoneGrid[x - 1][y + 1][z];
 
           room.exits['northwest'] = this.createExitDesc(targetRoom);
         }
@@ -134,14 +133,14 @@ export class ZoneGenerator
 
         if (room.coords.y > roomRange.fromY)
         {
-          let target = zoneGrid[x + 1][y - 1][z];
+          let targetRoom = zoneGrid[x + 1][y - 1][z];
 
           room.exits['southeast'] = this.createExitDesc(targetRoom);
         }
 
         if (room.coords.y < roomRange.toY)
         {
-          let target = zoneGrid[x + 1][y + 1][z];
+          let targetRoom = zoneGrid[x + 1][y + 1][z];
 
           room.exits['northeast'] = this.createExitDesc(targetRoom);
         }
