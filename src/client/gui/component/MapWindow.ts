@@ -56,6 +56,7 @@ export class MapWindow extends Window
 
   // Distance between two rooms on X axis in pixels.
   private static get ROOM_SPACING() { return 30; }
+  ///private static get ROOM_SPACING() { return 20; }
 
   // Map is updated only after 'resize' event doesn't fire
   // for this period (in miliseconds).
@@ -175,13 +176,6 @@ export class MapWindow extends Window
     // .WindowContent.
     $content.addClass(MapWindow.CONTENT_CSS_CLASS);
 
-    /*
-    // Create html element 'input'.
-    let $input = this.input.create(this.getInputId());
-    // Put it in the 'content' element.
-    $content.append($input);
-    */
-
     this.createMap($content);
 
     return $content;
@@ -268,34 +262,13 @@ export class MapWindow extends Window
     //  document at this time - so we need to use direct reference.)
     let d3WindowContent = d3.select($ancestor[0]);
 
-    /// Mozna neni potreba, pokud funguje css.
-    /// - jo, funguje
-    /*
-    // Read map dimensions from '#mapwindow_content' element.
-    let width = d3WindowContent.attr('width');
-    let height = d3WindowContent.attr('height');
-    */
-
-    ///console.log('d3WindowContent: ' + d3WindowContent);
-
     // Append a svg element that will be used to draw map in.
     this.d3MapSvg = d3WindowContent.append('svg');
     this.d3MapSvg.attr('class', MapWindow.SVG_MAP_CSS_CLASS);
 
+    /// svg filter test
     ///this.d3MapSvg.attr('enable-background', 'new');
     ///this.appendFilters(this.d3MapSvg);
-
-    /*
-    this.d3MapSvg.attr('viewBox', '0 0 10000 10000');
-    this.d3MapSvg.attr('preserveAspectRatio', 'xMidYMid');
-    this.d3MapSvg.attr('meetOrSlice', 'slice');
-    */
-
-    /// Mozna neni potreba, pokud funguje css.
-    /*
-    this.d3MapSvg.attr('width', width);
-		this.d3MapSvg.attr('height', height);   
-    */
 
 
     /*
@@ -314,7 +287,8 @@ export class MapWindow extends Window
     // Container for room svg elements.
     this.d3RoomsSvg = this.d3MapSvg.append('g');
 
-    ///this.d3TagsSvg = this.d3MapSvg.append('g');
+    // Text tags.
+    //this.d3TagsSvg = this.d3MapSvg.append('g');
   }
 
   private initNewRoomElements(d3Rooms)
@@ -378,7 +352,8 @@ export class MapWindow extends Window
     d3Exits.attr('class', MapWindow.SVG_EXIT_CSS_CLASS);
     /// TODO: Barva by měla záviset na terénu.
     d3Exits.style('stroke', 'yellow');
-    d3Exits.style('stroke-opacity', '0.3');
+    ///d3Exits.style('stroke-opacity', '0.3');
+    d3Exits.style('stroke-opacity', '1.0');
     // Exit id is also used as respective svg element id.
     d3Exits.attr('id', function(d) { return d.id; });
     d3Exits.attr('x1', (d) => { return this.getFromRoomXPos(d); });
