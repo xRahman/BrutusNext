@@ -1,5 +1,11 @@
 TODO: Mapper.
 
+TODO: Zrušit kosoúhlé promítání.
+
+TODO: Otestovat grafiku pro exity up, down a šikmo nahoru/dolů.
+  (pokud není vidět horní nebo dolní patro, tak by se šikmé exity
+   měly kreslit jen poloviční).
+
 TODO: Drop-shadow u map elementů úplně nefunguje.
   - buď to spravit, nebo zrušit a vyhodit.
   http://bl.ocks.org/cpbotha/5200394
@@ -38,6 +44,79 @@ s exitem.
 
 TODO: Zrušit parametry 'i'.
 [done]
+
+Jak na mapu
+------------------
+
+- Discworld MUD style
+  + exity šikmo vzhůru/dolů ('northwestup', etc).
+    (takový exit by měl mít šipečku uprostřed, nebo
+     se možná celý zužovat směrem nahoru - protáhlý trojúhelník).
+- Všechny roomy na pevných intových souřadnicích.
+- Exit jde vždycky na sousední roomu. Na vzdálenější to musí být
+  teleport.
+
+- exity do vodorovných směrů mohou být "přetížené" do směru šikmo
+  nahoru nebo dolů (takže dám 'north', a hodí mě to třeba na 'northup'
+  (samozřejmě jen na pevné zemi).
+
+- Roomy nad aktuálně zobrazovaným patrem se nezobrazují
+- Roomy pod ním se zobrazují, pokud není žádná "pevná"
+  rooma nad nima (tj. air nebo water), ale asi hodně transparentně,
+  aby se to nepletlo.
+
+- létání ve výšce asi bude stejně jako v ufech - prostě si přepnu
+  pohled do určitého patra a kurzor mi jezdí v něm).
+  (se shiftem nebo tak něčím by to mohlo "snapovat" na ground,
+   aby se dalo snadno "přistát" bez nutnosti šaškovat s patry).
+
+Implementace:
+- V klientovi budu určitě potřebovat grid
+- neexistující roomy mohou mít hodnotu 'null' nebo
+  'undefined'
+  (spíš 'null', ať se to neplete s děravým polem)
+- respektive 'null' přímo v poli asi ne, protože
+  u roomy potřebuju znát koordináty, i když neexistuje
+  (dokonce ji chci při editování i vykreslovat - sice,
+   neviditelnou (nebo skoro průhlednou) ale mouseover
+   ji zviditelní).
+Důvod: Chci mít možnost roomy editovat přímo v editoru.
+
+Exity nahoru a dolů
+- graficky svislá šipka vlevo (dolů) nebo vpravo (nahoru)
+  od roomy.
+  (a to proto, aby rooma samotná mohla mít ikonku)
+
+Transformace koordináty->pole
+(nemůžu mít v javascriptu náhodou záporný souřadnice?)
+- použiju hashmapy
+  (pole se zápornými souřadnicemi sice může existovat,
+   ale nefungují pak dobře Array metody).
+- respektive by to asi mohla být classa, aby se dalo
+  inteligentně indexovat metodama: grid.get(12, 13, 0).
+
+Vzduch:
+- exity (ani roomy) se nevykreslují. Letět se dá prostě
+  všude, kde není pevná překážka.
+- totéž pod vodou.
+
+Na serveru:
+- roomy mají koordináty v rámci zóny, zóna má transformační
+  koordináty (aby se dalo se zónou snadno hejbat).
+- svět by asi ideálně měl být rozdělený na kvádroidní sektory
+  (tj. zóna o rozměrech 133x217x9 nebude moci existovat, vždycky
+   to budou násobky rozměru kvádru).
+- zone connection pointy nedávají smysl, zóny na sebe navazují celou
+  plochou (a navazují prostě podle souřadnic).
+
+- exity musí mít taky terrain (stejně jako roomy).
+  (asi by si ho mohly defaultně brát z roomy s tím, že tam budou
+   nějaké priority - např. 'road' má vyšší prioritu než 'field').
+  - možná by to mohlo bejt podle toho, jaké roomy to spojuje.
+    Tj. exit mezi dvěma 'road' roomama bude taky road.
+
+TODO (výhledově): Seasonal popisky.
+  (jak rooma vypadá v různých obdobích (jaro/léto/podzim/zima).
 
 ---------------------------------------------------------------
 

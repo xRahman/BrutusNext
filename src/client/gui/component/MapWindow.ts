@@ -55,8 +55,8 @@ export class MapWindow extends Window
   protected static get SVG_EXIT_CSS_CLASS()  { return 'SvgExit'; }
 
   // Distance between two rooms on X axis in pixels.
-  private static get ROOM_SPACING() { return 30; }
-  ///private static get ROOM_SPACING() { return 20; }
+  ///private static get ROOM_SPACING() { return 30; }
+  private static get ROOM_SPACING() { return 20; }
 
   // Map is updated only after 'resize' event doesn't fire
   // for this period (in miliseconds).
@@ -253,6 +253,47 @@ export class MapWindow extends Window
   }
   */
 
+  private createMarkerDefs(d3Defs)
+  {
+    let MARKER_SIZE = 2;
+
+    let d3ExitArrowMarker = d3Defs.append('marker');
+
+    d3ExitArrowMarker.attr('id', 'exitArrowMarker');
+    d3ExitArrowMarker.attr('markerWidth', MARKER_SIZE);
+    d3ExitArrowMarker.attr('markerHeight', MARKER_SIZE);
+    // Reference point (origin point that will be transformed).
+    d3ExitArrowMarker.attr('refX', 1);
+    d3ExitArrowMarker.attr('refY', 1);
+    // Match the direction of line or path.
+    d3ExitArrowMarker.attr('orient', 'auto');
+    d3ExitArrowMarker.attr('markerUnits', 'strokeWidth');
+
+    let d3Triangle = d3ExitArrowMarker.append('path');
+    d3Triangle.style('fill', 'rgb(0,0,255)');
+
+    ///d3Triangle.attr('viewBox', '-5, -5, 10, 10');
+
+    /*
+    let drawCmd = 'M 0,0'
+                + 'm' + 0 + ',' + (-MARKER_SIZE / 2)
+                + 'L' + (MARKER_SIZE / 2) + ',' + (-MARKER_SIZE / 2)
+                + 'L' + (-MARKER_SIZE / 2) + ',' + (-MARKER_SIZE / 2);
+    */
+    //let drawCmd = 'M -5,-5 L 5,0 L -5,5 Z';
+    let drawCmd = 'M 0,0 L 2,1 L 0,2 Z';
+
+    d3Triangle.attr('d', drawCmd);
+  }
+
+  private createSvgDefs()
+  {
+    // Append a <defs> element to svg map element.
+    let defs = this.d3MapSvg.append('defs');
+
+    this.createMarkerDefs(defs);
+  }
+
   private createMap($ancestor: JQuery)
   {
     // Select ancestor element using d3 library.
@@ -266,10 +307,11 @@ export class MapWindow extends Window
     this.d3MapSvg = d3WindowContent.append('svg');
     this.d3MapSvg.attr('class', MapWindow.SVG_MAP_CSS_CLASS);
 
+    this.createSvgDefs();
+
     /// svg filter test
     ///this.d3MapSvg.attr('enable-background', 'new');
     ///this.appendFilters(this.d3MapSvg);
-
 
     /*
       Note:
@@ -291,35 +333,75 @@ export class MapWindow extends Window
     //this.d3TagsSvg = this.d3MapSvg.append('g');
   }
 
-  private initNewRoomElements(d3Rooms)
+  private getRoomTransform(d)
   {
-    d3Rooms.attr('class', MapWindow.SVG_ROOM_CSS_CLASS);
-    d3Rooms.attr('cx', (d, i) => { return this.getRoomXPos(d); });
-    d3Rooms.attr('cy', (d, i) => { return this.getRoomYPos(d); });
-    d3Rooms.attr('rx', 5);
-    d3Rooms.attr('ry', 5 * SHORTEN);
+    let x = this.getRoomXPos(d);
+    let y = this.getRoomYPos(d);
+
+    return 'translate(' + x + ',' + y + ')';
+  }
+
+  private createNewRoomElements(d3Enter)
+  {
+    let x = (d, i) => { return this.getRoomXPos(d); };
+    let y = (d, i) => { return this.getRoomYPos(d); };
+
+    let d3Room = d3Enter.append('g');
+    d3Room.attr('transform', (d, i) => { return this.getRoomTransform(d); });
+    ///d3Room.attr('cx', (d, i) => { return this.getRoomXPos(d) + 'px'; });
+    ///d3Room.attr('cy', (d, i) => { return this.getRoomYPos(d) + 'px'; });
+
+    let d3Circle = d3Room.append('circle');
+    d3Circle.attr('class', MapWindow.SVG_ROOM_CSS_CLASS);
+    d3Circle.attr('r', 5);
     /// TODO: Barva by měla záviset na terénu.
-    d3Rooms.attr('stroke', 'yellow');
+    d3Circle.attr('stroke', 'yellow');
 
     // Assign filter with id 'drop-shadow' (which we have created
     // earlied using this.appendFilters() method).
     ///d3Rooms.style("filter", "url(#drop-shadow)");
 
+    // ----------------- test -----------------------------
+
+    let d3Arrow = d3Room.append('line')
+    d3Arrow.style('stroke', 'green');
+    d3Arrow.style('stroke-width', 1.5);
+    ///d3Arrow.style('stroke-opacity', '1.0');
+    /*
+    line.attr('x1', (d, i) => { return (this.getRoomXPos(d) + 5) + 'px'; });
+    line.attr('y1', (d, i) => { return (this.getRoomYPos(d) - 3) + 'px'; });
+    line.attr('x2', (d, i) => { return (this.getRoomXPos(d) + 5) + 'px'; });
+    line.attr('y2', (d, i) => { return (this.getRoomYPos(d) + 3) + 'px'; });
+    */
+    /*
+    line.attr('x1', (d, i) => { return '5px'; });
+    line.attr('y1', (d, i) => { return '-3px'; });
+    line.attr('x2', (d, i) => { return '5px'; });
+    line.attr('y2', (d, i) => { return '3px'; });
+    */
+    d3Arrow.attr('x1', '6px');
+    d3Arrow.attr('y1', '5px');
+    d3Arrow.attr('x2', '6px');
+    d3Arrow.attr('y2', '-5px');
+    d3Arrow.attr('marker-end', 'url(#exitArrowMarker)');
+
+    // ----------------- /test ----------------------------
+
     // ---- Hide unexplored rooms ----
-    d3Rooms.style
+    d3Room.style
     (
       'visibility',
       (d, i) => { return this.getRoomVisibility(d); }
     );
 
     // ---- Enable highlight on mouseover ----
-    d3Rooms.on
+    d3Room.on
     (
       'mouseover',
       function(d) { d3.select(this).classed('hover', true); }
     );
 
-    d3Rooms.on
+    d3Room.on
     (
       'mouseout',
       function(d) { d3.select(this).classed('hover', false); }
@@ -334,7 +416,7 @@ export class MapWindow extends Window
     // it through closure.
     let mapWindow = this;
 
-    d3Rooms.on
+    d3Room.on
     (
       'mousedown',
       function(d)
@@ -356,17 +438,20 @@ export class MapWindow extends Window
     d3Exits.style('stroke-opacity', '1.0');
     // Exit id is also used as respective svg element id.
     d3Exits.attr('id', function(d) { return d.id; });
-    d3Exits.attr('x1', (d) => { return this.getFromRoomXPos(d); });
-    d3Exits.attr('y1', (d) => { return this.getFromRoomYPos(d); });
-    d3Exits.attr('x2', (d) => { return this.getToRoomXPos(d); });
-    d3Exits.attr('y2', (d) => { return this.getToRoomYPos(d); });
+    d3Exits.attr('x1', (d) => { return this.getFromRoomXPos(d) /* + 'px'; */ });
+    d3Exits.attr('y1', (d) => { return this.getFromRoomYPos(d) /* + 'px'; */ });
+    d3Exits.attr('x2', (d) => { return this.getToRoomXPos(d) /* + 'px'; */ });
+    d3Exits.attr('y2', (d) => { return this.getToRoomYPos(d) /* + 'px'; */ });
   }
 
   private updateRoomElements(d3Rooms)
   {
     ///console.log('updateRoomElements()');
-    d3Rooms.attr("cx", (d, i) => { return this.getRoomXPos(d); });
-    d3Rooms.attr("cy", (d, i) => { return this.getRoomYPos(d); });
+    d3Rooms.attr('transform', (d, i) => { return this.getRoomTransform(d); });
+    /*
+    d3Update.attr("cx", (d, i) => { return this.getRoomXPos(d) + 'pt'; });
+    d3Update.attr("cy", (d, i) => { return this.getRoomYPos(d) + 'pt'; });
+    */
 
     // Hide unexplored rooms, show explored ones.
     d3Rooms.style
@@ -378,17 +463,17 @@ export class MapWindow extends Window
 
   private updateExitElements(d3Exits)
   {
-    d3Exits.attr('x1', (d) => { return this.getFromRoomXPos(d); });
-    d3Exits.attr('y1', (d) => { return this.getFromRoomYPos(d); });
-    d3Exits.attr('x2', (d) => { return this.getToRoomXPos(d); });
-    d3Exits.attr('y2', (d) => { return this.getToRoomYPos(d); });
+    d3Exits.attr('x1', (d) => { return this.getFromRoomXPos(d) /* + 'px'; */ });
+    d3Exits.attr('y1', (d) => { return this.getFromRoomYPos(d) /* + 'px'; */ });
+    d3Exits.attr('x2', (d) => { return this.getToRoomXPos(d) /* + 'px'; */ });
+    d3Exits.attr('y2', (d) => { return this.getToRoomYPos(d) /* + 'px'; */ });
   }
 
   private updateRooms()
   {
-    // We are going to manupulate all <circle> elements inside
+    // We are going to manupulate all <g> elements inside
     // this.d3RoomsSvg.
-    let d3RoomElements = this.d3RoomsSvg.selectAll('ellipse');
+    let d3RoomElements = this.d3RoomsSvg.selectAll('g');
 
     // Bind values of this.rooms hashmap directly to the respective
     // svg elements (so when the data changes, the next updateRooms()
@@ -396,17 +481,13 @@ export class MapWindow extends Window
     // elements bound to removed values).
     let d3Rooms = d3RoomElements.data(this.mapData.getRoomsData());
 
-    // 'd3Rooms' now contain elements that already existed
-    // and need an update. Let's update them.
+    // Create new elements for newly added rooms.
+    this.createNewRoomElements(d3Rooms.enter());
+
+    // Update existing elements.
     this.updateRoomElements(d3Rooms);
 
-    // Create a new <circle> elements for newly added rooms.
-    let d3NewRooms = d3Rooms.enter().append('ellipse');
-    // Init attributes (position, color, etc.) of newly created
-    // circles.
-    this.initNewRoomElements(d3NewRooms);
-
-    // Remove <circle> elements for deleted rooms.
+    // Remove elements of deleted rooms.
     d3Rooms.exit().remove();
   }
 
@@ -499,68 +580,51 @@ export class MapWindow extends Window
     //  (so the rooms always 'stick' to [x, y] grid),
     // 'z' coord can be a floating point number.
     let mudX = d.coords.x;
-    let mudY = d.coords.y;
+    ///let mudY = d.coords.y;
 
     // Transformation to currently centered room.
     let centeredMudX = mudX - this.coords.x;
-    let centeredMudY = mudY - this.coords.y;
+    ///let centeredMudY = mudY - this.coords.y;
 
     let xPos = centeredMudX * MapWindow.ROOM_SPACING;
-    xPos += centeredMudY * MapWindow.ROOM_SPACING * SHORTEN_X;
-
-    ///if (i === 0)
-    ///  console.log('xPos before transform: ' + xPos);
+    ///xPos += centeredMudY * MapWindow.ROOM_SPACING * SHORTEN_X;
 
     // Transformation of origin from top left
     // (which is an origin point in svg elements)
     // to the middle of map area).
     xPos += this.originX();
 
-    ///if (i === 0)
-    ///  console.log('xPos after transform: ' + xPos);
-
-    ///console.log('OriginX: ' + this.originX());
-
-    ///console.log('xPos: ' + xPos);
-
-    return xPos + "px";
+    ///return xPos + "px";
+    return xPos;
   }
 
   private getRoomYPos(d: any)
   {
     let mudY = d.coords.y;
-    let mudZ = d.coords.z;
+    ///let mudZ = d.coords.z;
 
     // Transformation to currently centered room.
     let centeredMudY = mudY - this.coords.y;
-    let centeredMudZ = mudZ - this.coords.z;
+    ///let centeredMudZ = mudZ - this.coords.z;
 
     // Projection of mud 'Y' axis to viewport 'y' axis.
-    let yPos = centeredMudY * MapWindow.ROOM_SPACING * SHORTEN_Y;
+    ///let yPos = centeredMudY * MapWindow.ROOM_SPACING * SHORTEN_Y;
+    let yPos = centeredMudY * MapWindow.ROOM_SPACING;
 
+    /*
     // Projection of mud 'Z' axis to viewport 'y' axis
     // (Mud 'z' coordinate is projected 1:1).
     //yPos += centeredMudZ * MapWindow.ROOM_SPACING;
     yPos += centeredMudZ * MapWindow.ROOM_SPACING * 0.5;
-
-    ///if (i === 0)
-    ///  console.log('yPos before transform: ' + yPos);
+    */
 
     // Transformation of origin from top left
     // (which is an origin point in svg elements)
-    //  to the middle of map area).
-    // (We are also inverting 'y' axis).
+    //  to the middle of map area and invert 'y' axis.
     yPos = this.originY() - yPos;
 
-    ///if (i === 0)
-    ///{
-    ///  console.log('origin y: ' + this.originY());
-    ///  console.log('yPos after transform: ' + yPos);
-    ///}
-
-    ///console.log('OriginY: ' + this.originY());
-
-    return yPos + "px";
+    ///return yPos + "px";
+    return yPos;
   }
 
   private getFromRoomXPos(d: any)
