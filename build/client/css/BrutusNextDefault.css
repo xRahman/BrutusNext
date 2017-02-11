@@ -301,7 +301,8 @@
   /* Note: stroke color is set programatically (it depends on terrain) */
   stroke-width: 3;
   /* Use 'transparent', not 'none' (so the whole area interacts with mouse) */
-  fill: transparent;
+  /*fill: transparent;*/
+  fill: black;
 }
 
 /* Svg <line> representing an exit */
