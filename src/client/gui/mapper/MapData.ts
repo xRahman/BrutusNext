@@ -120,6 +120,7 @@ export class MapData
     // Go through all properties of room.exits object.
     for (let exitName in room.exits)
     {
+      /*
       if
       (
         exitName === 'northwest'
@@ -128,7 +129,7 @@ export class MapData
         || exitName === 'southeast'
       )
       continue;
-      
+      */
 
       let destRoomId = room.exits[exitName].targetRoomId;
       let exitId = this.composeExitId(roomId, destRoomId);
