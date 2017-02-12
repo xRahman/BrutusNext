@@ -8,7 +8,7 @@
 'use strict';
 
 import {Coords} from '../../../shared/type/Coords';
-import {ExitData} from '../../../shared/protocol/world/ExitData';
+import {ExitsData} from '../../../client/gui/mapper/ExitsData';
 
 export class RoomData
 {
@@ -25,5 +25,5 @@ export class RoomData
   // exits are added as 'explored = false'.
   public explored = false;
   public coords: Coords = null;
-  public exits = new ExitData();
+  public exits = new ExitsData();
 }
