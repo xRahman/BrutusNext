@@ -9,7 +9,7 @@
 import {ERROR} from '../../../client/lib/error/ERROR';
 import {Coords} from '../../../shared/type/Coords';
 import {Array3d} from '../../../shared/type/Array3d';
-import {RoomData} from '../../../shared/protocol/world/RoomData';
+import {RoomData} from '../../../client/gui/mapper/RoomData';
 import {RoomRenderData} from '../../../client/gui/mapper/RoomRenderData';
 
 export class MapData

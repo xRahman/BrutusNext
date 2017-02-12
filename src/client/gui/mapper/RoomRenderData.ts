@@ -6,7 +6,7 @@
 
 'use strict';
 
-import {RoomData} from '../../../shared/protocol/world/RoomData';
+import {RoomData} from '../../../client/gui/mapper/RoomData';
 
 export class RoomRenderData
 {
