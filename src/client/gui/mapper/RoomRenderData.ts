@@ -1,14 +1,14 @@
 /*
   Part of BrutusNEXT
 
-  Holds map data for a single room.
+  Data from which rooms are rendered.
 */
-
-///  Nakonec to asi nepoužiju, data budou v generickém objektu.
 
 'use strict';
 
-export class Room
+import {RoomData} from '../../../shared/protocol/world/RoomData';
+
+export class RoomRenderData
 {
   // -------------- Static class data -------------------
 
@@ -16,7 +16,7 @@ export class Room
 
   //------------------ Private data ---------------------
 
-  name: string;
+  public rooms = new Map<string, RoomData>();
 
   // --------------- Static accessors -------------------
 
@@ -25,6 +25,15 @@ export class Room
   // --------------- Public accessors -------------------
 
   // ---------------- Public methods --------------------
+
+  public set(room: RoomData)
+  {
+    if (!room.id)
+      return;
+
+    // Set room data to this.rooms hashmap under it's id.
+    this.rooms.set(room.id, room);
+  }
 
   // --------------- Protected methods ------------------
 
