@@ -1,6 +1,19 @@
 TODO: Mapper.
 
 TODO: Zrušit kosoúhlé promítání.
+[done]
+
+TODO: RoomData a ExitData by asi měly být client-side classy
+  a dědit (implementovat) z příslušných interfaců v /shared
+  (asi RoomInterface a ExitInterface).
+- I klient totiž do nich něco přidává (konkrétně klient-side idčko)
+  a server určitě bude taky.
+
+ÚVAHA:
+- Data budou držena v poli (respektive v "poli" implementovaném hashmapami).
+- ve visibleData budou odkazy do toho master (world) pole.
+Asi bude potřeba, aby si klient uměl od serveru vyžádat map data pro konkrétní
+roomy (pro ty, které se zrovna snaží zobrazit).
 
 TODO: Otestovat grafiku pro exity up, down a šikmo nahoru/dolů.
   (pokud není vidět horní nebo dolní patro, tak by se šikmé exity
@@ -114,6 +127,30 @@ Na serveru:
    nějaké priority - např. 'road' má vyšší prioritu než 'field').
   - možná by to mohlo bejt podle toho, jaké roomy to spojuje.
     Tj. exit mezi dvěma 'road' roomama bude taky road.
+
+U obyčejných exitů nemusím posílat targetRoomId - to potřebuju jen
+u teleportů.
+- díky tomu nebudu muset 'předrátovávat' exity, když zónu přesunu
+  někam jinam (prostě se budou indexovat jiné roomy);
+Co teda u exitů potřebuju?
+- jestli tam vůbec je (na to by se asi hodily flagy).
+- testli je přesměrovaný na šikmo nahoru/dolů (to se týká jen vodorovných).
+- terén (tj. barva na mapě). To se sice bude odvozovat z terénu místností,
+  ale měla by existovat možnost to přetížit.
+  (na terén zatím můžu kašlat).
+
+PS: Že je exit do nezmapované roomy jednosměrný asi client nepotřebuje
+vědět - dokonce by ani neměl, protože by si to mohl někdo debuggerem přečíst.
+- prostě se bude zobrazovat jako obousměrný.
+
+---------------------------------------------------------------
+
+TODO: Plné koordináty roomy budou mít 4 souřadnice:
+[x, y, z, instance_id].
+- Client tu poslední nepotřebuje.
+
+
+---------------------------------------------------------------
 
 TODO (výhledově): Seasonal popisky.
   (jak rooma vypadá v různých obdobích (jaro/léto/podzim/zima).
