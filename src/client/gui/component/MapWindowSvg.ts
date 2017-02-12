@@ -23,7 +23,6 @@ export class MapWindowSvg extends Component
   protected static get SVG_EXIT_CSS_CLASS()  { return 'SvgExit'; }
 
   // Distance between two rooms on X axis in pixels.
-  ///private static get ROOM_SPACING() { return 30; }
   private static get ROOM_SPACING() { return 20; }
   private static get ROOM_RADIUS() { return 5; }
 
@@ -31,7 +30,7 @@ export class MapWindowSvg extends Component
   {
     super();
 
-        /// TEST:
+    /// TEST:
     let zg = new ZoneGenerator();
     let world = zg.generateZone();
 
@@ -69,9 +68,6 @@ export class MapWindowSvg extends Component
     origMouseY: null
   }
 
-  ///private roomData = null;
-
-
   // --- d3 elements ---
 
   private d3MapSvg = null;
@@ -102,33 +98,16 @@ export class MapWindowSvg extends Component
     this.d3MapSvg = d3WindowContent.append('svg');
     this.d3MapSvg.attr('class', MapWindowSvg.SVG_MAP_CSS_CLASS);
 
-    /*
-    // Create a dom <svg> element.
-    let mapSvg = this.createSvgElement
-    (
-      this.id,
-      MapWindowSvg.SVG_MAP_CSS_CLASS
-    );
-
-    // Create a d3 selection from dom element.
-    this.d3MapSvg = d3.select(mapSvg);
-    */
-
     this.createDefs();
     this.createGs();
-
-    /*
-    // Create a jquery element from dom element.
-    return $(mapSvg);
-    */
   }
 
   // Adds, removes or repositions svg elements in the map
   // to match changes in bound data.
-  public update()
+  public render()
   {
-    this.updateRooms();
-    this.updateExits();
+    this.renderRooms();
+    this.renderExits();
   }
 
   // --------------- Protected methods ------------------
@@ -294,7 +273,7 @@ export class MapWindowSvg extends Component
     d3ExitMarker.attr('pointer-events', 'none');
   }
 
-  private createVerticalExitsMarkers(d3Room)
+  private createExitIcons(d3Room)
   {
     let xOffset = 3 * MapWindowSvg.ROOM_RADIUS / 8;
     let yOffset = MapWindowSvg.ROOM_RADIUS / 2;
@@ -322,25 +301,76 @@ export class MapWindowSvg extends Component
     this.createExitMarker(d3Room, exitDownPoints);
   }
 
-  private createNewRoomElements(d3Enter)
+  private createRoomIcon(d3Room)
   {
-    // Create container <g> element.
-    let d3Room = d3Enter.append('g');
-    d3Room.attr('transform', (d, i) => { return this.getRoomTransform(d); });
-
     let d3Circle = d3Room.append('circle');
     d3Circle.attr('class', MapWindowSvg.SVG_ROOM_CSS_CLASS);
     d3Circle.attr('r', MapWindowSvg.ROOM_RADIUS);
     /// TODO: Barva by měla záviset na terénu.
     d3Circle.attr('stroke', 'yellow');
+  }
+
+  private attachMouseoverHandlers(d3Room)
+  {
+    d3Room.on
+    (
+      'mouseover',
+      function(d) { d3.select(this).classed('hover', true); }
+    );
+
+    d3Room.on
+    (
+      'mouseout',
+      function(d) { d3.select(this).classed('hover', false); }
+    );
+  }
+
+  private attachMousedownHandlers(d3Room)
+  {
+    // To handle 'mousedown' event, we have to pass both
+    // javascript 'this' (which is the element on which
+    // the event fired) and typesctipt 'this' (which is
+    // the instance of MapWindow class). To do that, we
+    // must remember 'this' in a variable so we can pass
+    // it through closure.
+    let mapWindowSvg = this;
+
+    d3Room.on
+    (
+      'mousedown',
+      function(d)
+      {
+        // 'this' is the room SVG element.
+        // 'mapWindow' is the local variable we remembered
+        // earlier. It is available thanks to closure.
+        mapWindowSvg.onRoomMouseDown(d, this);
+      }
+    );
+  }
+
+  private attachRoomEventHandlers(d3Room)
+  {
+    // ---- Enable highlight on mouseover ----
+    this.attachMouseoverHandlers(d3Room);
+    
+    // ---- Enable dragging ----
+    this.attachMousedownHandlers(d3Room);
+  }
+
+  private createRoomElements(d3Enter)
+  {
+    // Create container <g> element.
+    let d3Room = d3Enter.append('g');
+    d3Room.attr('transform', (d, i) => { return this.getRoomTransform(d); });
+
+    this.createRoomIcon(d3Room);
+    this.createExitIcons(d3Room);
+
+    // ----------------- test -----------------------------
 
     // Assign filter with id 'drop-shadow' (which we have created
     // earlied using this.appendFilters() method).
     ///d3Rooms.style("filter", "url(#drop-shadow)");
-
-    // ----------------- test -----------------------------
-
-    this.createVerticalExitsMarkers(d3Room);
 
     /*
     let d3Arrow = d3Room.append('line')
@@ -364,42 +394,10 @@ export class MapWindowSvg extends Component
       (d, i) => { return this.getRoomVisibility(d); }
     );
 
-    // ---- Enable highlight on mouseover ----
-    d3Room.on
-    (
-      'mouseover',
-      function(d) { d3.select(this).classed('hover', true); }
-    );
-
-    d3Room.on
-    (
-      'mouseout',
-      function(d) { d3.select(this).classed('hover', false); }
-    );
-
-    // ---- Enable dragging ----
-    // To handle 'mousedown' event, we have to pass both
-    // javascript 'this' (which is the element on which
-    // the event fired) and typesctipt 'this' (which is
-    // the instance of MapWindow class). To do that, we
-    // must remember 'this' in a variable so we can pass
-    // it through closure.
-    let mapWindow = this;
-
-    d3Room.on
-    (
-      'mousedown',
-      function(d)
-      {
-        // 'this' is the room SVG element.
-        // 'mapWindow' is the local variable we remembered
-        // earlier. It is available thanks to closure.
-        mapWindow.onRoomMouseDown(d, this);
-      }
-    );
+    this.attachRoomEventHandlers(d3Room);
   }
 
-  private createNewExitElements(d3Enter)
+  private createExitElements(d3Enter)
   {
     let d3Exits = d3Enter.append('line');
     d3Exits.attr('class', MapWindowSvg.SVG_EXIT_CSS_CLASS);
@@ -440,7 +438,7 @@ export class MapWindowSvg extends Component
     d3Exits.attr('y2', (d) => { return this.getToRoomYPos(d) /* + 'px'; */ });
   }
 
-  private updateRooms()
+  private renderRooms()
   {
     // We are going to manupulate all <g> elements inside
     // this.d3RoomsSvg.
@@ -453,7 +451,7 @@ export class MapWindowSvg extends Component
     let d3Rooms = d3RoomElements.data(this.mapData.getRoomsData());
 
     // Create svg elements for newly added rooms.
-    this.createNewRoomElements(d3Rooms.enter());
+    this.createRoomElements(d3Rooms.enter());
 
     // Update existing elements.
     this.updateRoomElements(d3Rooms);
@@ -462,7 +460,7 @@ export class MapWindowSvg extends Component
     d3Rooms.exit().remove();
   }
 
-  private updateExits()
+  private renderExits()
   {
     // We are going to manupulate all <path> elements inside
     // this.d3ExitsSvg.
@@ -475,7 +473,7 @@ export class MapWindowSvg extends Component
     let d3Exits = d3ExitElements.data(this.mapData.getExitsData());
 
     // Create svg elements for newly added exits.
-    this.createNewExitElements(d3Exits.enter());
+    this.createExitElements(d3Exits.enter());
 
     // 'd3Exits' now contain elements that already existed
     // and need an update. Let's update them.
@@ -508,8 +506,6 @@ export class MapWindowSvg extends Component
   //    the map drawing area.
   private originX()
   {
-    /// console.log('Map width: ' + this.$content.width());
-
     // Obtaining dimensions of svg element is complicated as hell,
     // so we 'cheat' a little bit and use the with of mapwindow content
     // element instead.
@@ -539,8 +535,6 @@ export class MapWindowSvg extends Component
 
   private getRoomXPos(d: any)
   {
-    ///console.log('d: ' + d);
-
     // 'd.coords' contains relative room coordinates.
     // (Room directly north of the room at [0, 0, 0] has
     //  cooords [0, 1, 0]).
@@ -548,51 +542,32 @@ export class MapWindowSvg extends Component
     //  (so the rooms always 'stick' to [x, y] grid),
     // 'z' coord can be a floating point number.
     let mudX = d.coords.x;
-    ///let mudY = d.coords.y;
 
     // Transformation to currently centered room.
     let centeredMudX = mudX - this.coords.x;
-    ///let centeredMudY = mudY - this.coords.y;
 
     let xPos = centeredMudX * MapWindowSvg.ROOM_SPACING;
-    ///xPos += centeredMudY * MapWindow.ROOM_SPACING * SHORTEN_X;
 
     // Transformation of origin from top left
     // (which is an origin point in svg elements)
     // to the middle of map area).
-    xPos += this.originX();
-
-    ///return xPos + "px";
-    return xPos;
+    return xPos + this.originX();
   }
 
   private getRoomYPos(d: any)
   {
     let mudY = d.coords.y;
-    ///let mudZ = d.coords.z;
 
     // Transformation to currently centered room.
     let centeredMudY = mudY - this.coords.y;
-    ///let centeredMudZ = mudZ - this.coords.z;
 
     // Projection of mud 'Y' axis to viewport 'y' axis.
-    ///let yPos = centeredMudY * MapWindowSvg.ROOM_SPACING * SHORTEN_Y;
     let yPos = centeredMudY * MapWindowSvg.ROOM_SPACING;
-
-    /*
-    // Projection of mud 'Z' axis to viewport 'y' axis
-    // (Mud 'z' coordinate is projected 1:1).
-    //yPos += centeredMudZ * MapWindowSvg.ROOM_SPACING;
-    yPos += centeredMudZ * MapWindowSvg.ROOM_SPACING * 0.5;
-    */
 
     // Transformation of origin from top left
     // (which is an origin point in svg elements)
     //  to the middle of map area and invert 'y' axis.
-    yPos = this.originY() - yPos;
-
-    ///return yPos + "px";
-    return yPos;
+    return this.originY() - yPos;
   }
 
   private getFromRoomXPos(d: any)

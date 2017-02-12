@@ -134,7 +134,7 @@ export class MapWindow extends Window
   // changes in bound data.
   private updateMap()
   {
-    this.svgMap.update();
+    this.svgMap.render();
   }
 
   /*
