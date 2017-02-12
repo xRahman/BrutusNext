@@ -54,6 +54,13 @@ export abstract class Component
     return this.initElement(element, id, cssClass);
   }
 
+  protected createSvgElement(id: string, cssClass: string)
+  {
+    let element = document.createElement('svg');
+
+    return this.initElement(element, id, cssClass);
+  }
+
   // ---------------- Private methods -------------------
 
   // -> Returns created DOM element.

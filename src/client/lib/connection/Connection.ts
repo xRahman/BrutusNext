@@ -9,7 +9,7 @@
 import {ERROR} from '../../../client/lib/error/ERROR';
 import {WebSocketDescriptor} from
   '../../../client/lib/net/ws/WebSocketDescriptor';
-import {ScrollView} from '../../../client/gui/component/ScrollView';
+import {ScrollWindow} from '../../../client/gui/component/ScrollWindow';
 import {MapWindow} from '../../../client/gui/component/MapWindow';
 
 export class Connection
@@ -23,7 +23,7 @@ export class Connection
 
   //------------------ Public data ----------------------
 
-  public scrollView: ScrollView = null;
+  public scrollWindow: ScrollWindow = null;
   public mapWindow: MapWindow = null;
 
   //------------------ Private data ---------------------
@@ -54,16 +54,16 @@ export class Connection
   }
 
   // Receives 'message' from the connection
-  // (appends it to the output of respective scrollview window).
+  // (appends it to the output of respective scrollwindow).
   public receiveMudMessage(message: string)
   {
-    this.scrollView.receiveData(message);
+    this.scrollWindow.receiveData(message);
   }
 
   // Outputs a client system message.
   public clientMessage(message: string)
   {
-    this.scrollView.clientMessage(message);
+    this.scrollWindow.clientMessage(message);
   }
 
   // ---------------- Event handlers --------------------

@@ -39,7 +39,7 @@ export abstract class MudColorComponent extends Component
   // Color of escaped color codes (like '&&R').
   public static get COLOR_CODE_COLOR() { return 'rgb(78,78,0)'; }
 
-  // Color of user commands reprinted to scrollview output.
+  // Color of user commands reprinted to scrollwindow output.
   public static get COMMAND_ECHO_COLOR() { return 'rgb(128,64,64)'; }
   /*
   // If you send a command, it will be printed to output using this font.
