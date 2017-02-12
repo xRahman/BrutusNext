@@ -7,16 +7,16 @@
 'use strict';
 
 import {Component} from '../../../client/gui/component/Component';
-import {ScrollView} from '../../../client/gui/component/ScrollView';
+import {ScrollWindow} from '../../../client/gui/component/ScrollWindow';
 
 import $ = require('jquery');
 
-export class ScrollViewInput extends Component
+export class ScrollWindowInput extends Component
 {
-  public static get CSS_CLASS() { return 'ScrollViewInput'; }
-  public static get FRAME_CSS_CLASS() { return 'ScrollViewFrame'; }
+  public static get CSS_CLASS() { return 'ScrollWindowInput'; }
+  public static get FRAME_CSS_CLASS() { return 'ScrollWindowFrame'; }
 
-  constructor(private scrollView: ScrollView)
+  constructor(private scrollWindow: ScrollWindow)
   {
     super();
   }
@@ -60,7 +60,7 @@ export class ScrollViewInput extends Component
     let input = this.createTextAreaElement
     (
       this.id,
-      ScrollViewInput.CSS_CLASS
+      ScrollWindowInput.CSS_CLASS
     );
 
     // Input element accepts multi-line text (its a 'textarea') but only
@@ -99,7 +99,7 @@ export class ScrollViewInput extends Component
     let command = this.$input.val();
 
     this.bufferCommand(command);
-    this.scrollView.sendCommand(command);
+    this.scrollWindow.sendCommand(command);
     
     // Empty the textarea.
     this.$input.val('');

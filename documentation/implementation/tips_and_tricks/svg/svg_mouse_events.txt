@@ -1,0 +1,3 @@
+﻿How to disable mouse events, how to specify what exactly triggers them:
+
+https://www.w3.org/TR/SVG/interact.html#PointerEventsProperty

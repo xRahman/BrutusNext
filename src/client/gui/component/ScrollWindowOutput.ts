@@ -11,9 +11,9 @@ import {MudColorComponent} from
 
 import $ = require('jquery');
 
-export class ScrollViewOutput extends MudColorComponent
+export class ScrollWindowOutput extends MudColorComponent
 {
-  public static get CSS_CLASS() { return 'ScrollViewOutput'; }
+  public static get CSS_CLASS() { return 'ScrollWindowOutput'; }
 
   // -------------- Static class data -------------------
 
@@ -42,7 +42,7 @@ export class ScrollViewOutput extends MudColorComponent
     let output = this.createDivElement
     (
       this.id,
-      ScrollViewOutput.CSS_CLASS
+      ScrollWindowOutput.CSS_CLASS
     );
 
     // Create jquery element from the DOM element.
@@ -113,7 +113,7 @@ export class ScrollViewOutput extends MudColorComponent
     // In order for <div> element to process keyboard events,
     // it must have focus. To be able to give it a focus,
     // it must have a 'tabindex' attribute set (that's done
-    // in ScrollViewOutput.create()).
+    // in ScrollWindowOutput.create()).
     this.$output.focus();
 
     // Now we can trigger the keyboard event.
