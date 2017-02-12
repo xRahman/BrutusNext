@@ -193,9 +193,9 @@
   flex-direction: column;
 }
 
-/* ---------------- ScrollView --------------- */
+/* ---------------- ScrollWindow --------------- */
 
-.ScrollView /* Extends .Window */
+.ScrollWindow /* Extends .Window */
 {
   width: 60%;
   height: 80%;
@@ -203,7 +203,7 @@
   overflow: hidden;
 }
 
-.ScrollViewContent  /* Extends .WindowContent */
+.ScrollWindowContent  /* Extends .WindowContent */
 {
   outline: 0 none;
   margin: 0;
@@ -212,7 +212,7 @@
   /*flex-direction: column;*/
 }
 
-.ScrollViewOutput
+.ScrollWindowOutput
 {
   width: 100%;
   height: 100%;
@@ -232,10 +232,10 @@
 }
 
 /*
-  'scrollview_input' is a textarea (multiline input box).
+  'scrollwindow_input' is a textarea (multiline input box).
   'height' is set automatically to match height of 1 line of text.
 */
-.ScrollViewInput
+.ScrollWindowInput
 {
   width: 100%;
   margin: 0;

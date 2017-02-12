@@ -26,7 +26,7 @@ export class Client
 
   //------------------ Public data ----------------------
 
-  public activeScrollView = null;
+  public activeScrollWindow = null;
 
   //------------------ Private data ---------------------
 

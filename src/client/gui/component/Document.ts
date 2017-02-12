@@ -45,10 +45,10 @@ export class Document
   // ---------------- Private methods -------------------
 
   // Sets focus to the input element of currently active
-  // scrollview window.
+  // scrollwindow.
   private focusInput()
   {
-    this.client.activeScrollView.focusInput();
+    this.client.activeScrollWindow.focusInput();
   }
 
   // ---------------- Event handlers --------------------
@@ -184,7 +184,7 @@ export class Document
       // element while scrolling the output element).
       case 33:  // 'PgUp'
       case 34:  // 'PgDn'
-        this.client.activeScrollView.triggerOutputEvent(event);
+        this.client.activeScrollWindow.triggerOutputEvent(event);
         break;    
 
       // Following keys are redirected only when a specific key

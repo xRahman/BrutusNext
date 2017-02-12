@@ -6,9 +6,10 @@
 
 'use strict';
 
-import {ScrollViewInput} from '../../../client/gui/component/ScrollViewInput';
-import {ScrollViewOutput} from
-  '../../../client/gui/component/ScrollViewOutput';
+import {ScrollWindowInput} from
+  '../../../client/gui/component/ScrollWindowInput';
+import {ScrollWindowOutput} from
+  '../../../client/gui/component/ScrollWindowOutput';
 import {MudColorComponent} from
   '../../../client/gui/component/MudColorComponent';
 import {Window} from '../../../client/gui/component/Window';
@@ -16,17 +17,17 @@ import {Connection} from '../../../client/lib/connection/Connection';
 
 import $ = require('jquery');
 
-export class ScrollView extends Window
+export class ScrollWindow extends Window
 {
   constructor(private connection: Connection)
   {
     super();
 
-    this.connection.scrollView = this;
+    this.connection.scrollWindow = this;
   }
 
-  protected static get CSS_CLASS() { return 'ScrollView'; }
-  protected static get CONTENT_CSS_CLASS() { return 'ScrollViewContent'; }
+  protected static get CSS_CLASS() { return 'ScrollWindow'; }
+  protected static get CONTENT_CSS_CLASS() { return 'ScrollWindowContent'; }
 
   // -------------- Static class data -------------------
 
@@ -34,15 +35,15 @@ export class ScrollView extends Window
 
   // 'id' parameter of html element
   // (overrides Component.id).
-  /// TODO: Kdyz bych chtel mit vic scrollView oken (jako ze jo,
+  /// TODO: Kdyz bych chtel mit vic scrollWindows (jako ze jo,
   //    budu chtit logovat imma a mortala najednou), tak Tohle
   //  budu muset setovat zvenku (nebo nejak automaticky inkrementovat).
-  protected id = 'scrollview';
+  protected id = 'scrollwindow';
 
   //------------------ Private data ---------------------
 
-  private input = new ScrollViewInput(this);
-  public output = new ScrollViewOutput();
+  private input = new ScrollWindowInput(this);
+  public output = new ScrollWindowOutput();
 
   // --------------- Static accessors -------------------
 
@@ -60,9 +61,10 @@ export class ScrollView extends Window
   {
     super.create();
 
-    // ScrollView window uses css class .ScrollView along with .Window.
-    this.$window.addClass(ScrollView.CSS_CLASS);
+    // ScrollWindow uses css class .ScrollWindow along with .Window.
+    this.$window.addClass(ScrollWindow.CSS_CLASS);
 
+    /// TEST
     this.setTitle('Rahman@BrutusNext');
 
     return this.$window;
@@ -122,9 +124,9 @@ export class ScrollView extends Window
   {
     let $content = super.createContent();
 
-    // ScrollView content uses css class .ScrollViewContent along with
+    // ScrollWindow content uses css class .ScrollWindowContent along with
     // .WindowContent.
-    $content.addClass(ScrollView.CONTENT_CSS_CLASS);
+    $content.addClass(ScrollWindow.CONTENT_CSS_CLASS);
 
     // Create jquery element 'output'.
     let $output = this.output.create(this.getOutputId());
