@@ -6,6 +6,12 @@
 
 'use strict';
 
+import {ERROR} from '../../../client/lib/error/ERROR';
+import {Coords} from '../../../shared/type/Coords';
+import {Array3d} from '../../../shared/type/Array3d';
+import {RoomData} from '../../../shared/protocol/world/RoomData';
+import {RoomRenderData} from '../../../client/gui/mapper/RoomRenderData';
+
 export class MapData
 {
   // -------------- Static class data -------------------
@@ -14,7 +20,14 @@ export class MapData
 
   //------------------ Private data ---------------------
 
+  private world: Array3d<RoomData> = null;
+
+  private roomRenderData = new RoomRenderData();
+  ///private exitRenderData = new Map<string, MapData.RoomData>();
+
+  /* TO BE DEPRECATED */
   private rooms = new Map<string, MapData.RoomData>();
+  /* TO BE DEPRECATED */
   private exits = new Map<string, MapData.ExitData>();
 
   // --------------- Static accessors -------------------
@@ -25,6 +38,23 @@ export class MapData
 
   // ---------------- Public methods --------------------
 
+  public setRoom(room: RoomData)
+  {
+    // Compose a unique room id based on it's coordinates
+    // (something like '[5,12,37]').
+    let id = this.composeRoomId(room);
+
+    if (!id)
+      return;
+
+    // Set the new room to the grid.
+    this.world.set(room, room.coords);
+
+    // Update it in render data.
+    this.roomRenderData.set(room);
+  }
+
+  /* TO BE DEPRECATED */
   public addRoom(room: MapData.RoomData)
   {
     // Make sure that added 'room' will be flagged as 'explored'.
@@ -83,6 +113,22 @@ export class MapData
   // --------------- Protected methods ------------------
 
   // ---------------- Private methods -------------------
+
+  // Creates a unique room id from it's coordinates.
+  // -> Returns 'null' on error, string id on success.
+  private composeRoomId(room: RoomData)
+  {
+    if (!room.coords || !room.coords.x || !room.coords.y || !room.coords.z)
+    {
+      ERROR('Unable to compose room id: Missing or invalid room coordinates');
+      return null;
+    }
+
+    // Room id will be something like: '[5,12,37]'.
+    return '[' + room.coords.x + ','
+               + room.coords.y + ','
+               + room.coords.z + ']';
+  }
 
   // Adds rooms reachable by exits from 'room' to 'this.rooms' hashmap.
   private addConnectedRooms(room: MapData.RoomData)
@@ -149,6 +195,38 @@ export class MapData
             directionality: directionality
           }
         );
+      }
+    }
+  }
+
+  // ------- Test ------
+
+  private initWold()
+  {
+    let roomRange =
+    {
+      fromX: -5,
+      toX: 5,
+      fromY: -5,
+      toY: 5,
+      fromZ: 0,
+      toZ: 0,
+    };
+
+    for (let x = roomRange.fromX; x <= roomRange.toX; x++)
+    {
+      for (let y = roomRange.fromY; y <= roomRange.toY; y++)
+      {
+        for (let z = roomRange.fromZ; z <= roomRange.toZ; z++)
+        {
+          let roomData = new RoomData();
+
+          roomData.coords.x = x;
+          roomData.coords.y = y;
+          roomData.coords.z = z;
+
+          this.setRoom(roomData);
+        }
       }
     }
   }
