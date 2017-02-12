@@ -24,7 +24,7 @@ export class MapWindowSvg extends Component
 
   // Distance between two rooms on X axis in pixels.
   private static get ROOM_SPACING() { return 20; }
-  private static get ROOM_RADIUS() { return 5; }
+  private static get ROOM_RADIUS() { return 6; }
 
   constructor(private mapWindow: MapWindow)
   {
@@ -259,7 +259,7 @@ export class MapWindowSvg extends Component
     return 'translate(' + x + ',' + y + ')';
   }
 
-  private createExitMarker(d3Room, points: string)
+  private createExitIcon(d3Room, points: string)
   {
     let d3ExitMarker = d3Room.append('polygon');
 
@@ -297,8 +297,8 @@ export class MapWindowSvg extends Component
       + ' ' + -x2 + ',' + -y2
       + ' ' + -x3 + ',' + -y3;
 
-    this.createExitMarker(d3Room, exitUpPoints);
-    this.createExitMarker(d3Room, exitDownPoints);
+    this.createExitIcon(d3Room, exitUpPoints);
+    this.createExitIcon(d3Room, exitDownPoints);
   }
 
   private createRoomIcon(d3Room)
@@ -403,7 +403,6 @@ export class MapWindowSvg extends Component
     d3Exits.attr('class', MapWindowSvg.SVG_EXIT_CSS_CLASS);
     /// TODO: Barva by měla záviset na terénu.
     d3Exits.style('stroke', 'yellow');
-    ///d3Exits.style('stroke-opacity', '0.3');
     d3Exits.style('stroke-opacity', '1.0');
     // Exit id is also used as respective svg element id.
     d3Exits.attr('id', function(d) { return d.id; });
