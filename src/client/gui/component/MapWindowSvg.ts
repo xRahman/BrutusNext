@@ -13,7 +13,6 @@ import {MapData} from '../../../client/gui/mapper/MapData';
 
 import {ZoneGenerator} from '../mapper/ZoneGenerator';
 
-import $ = require('jquery');
 import d3 = require('d3');
 
 export class MapWindowSvg extends Component
@@ -31,15 +30,19 @@ export class MapWindowSvg extends Component
     super();
 
     /// TEST:
+    /* TO BE DEPRECATED */
     let zg = new ZoneGenerator();
     let world = zg.generateZone();
 
     ///this.mapData.addRoom(world['50']);
     
+    /* TO BE DEPRECATED */
     for (let property in world)
     {
       this.mapData.addRoom(world[property]);
     }
+
+
   }
 
   // -------------- Static class data -------------------
@@ -263,7 +266,7 @@ export class MapWindowSvg extends Component
   {
     let d3ExitMarker = d3Room.append('polygon');
 
-    d3ExitMarker.style('fill', 'white');
+    d3ExitMarker.style('fill', 'yellow');
     d3ExitMarker.style('stroke', 'black');
     d3ExitMarker.style('stroke-width', 0.8);
     d3ExitMarker.attr('points', points);
@@ -277,6 +280,13 @@ export class MapWindowSvg extends Component
   {
     let xOffset = 3 * MapWindowSvg.ROOM_RADIUS / 8;
     let yOffset = MapWindowSvg.ROOM_RADIUS / 2;
+    /// Alternativa uprostřed místnosti - asi by to chtělo
+    /// šipky trochu zmenšit, ale jinak to vypadá dobře
+    /// (Nevýhoda: Nebyla by vidět ikonka místnosti).
+    /*
+    let xOffset = -MapWindowSvg.ROOM_RADIUS / 2;
+    let yOffset = 0;
+    */
     // Bottom left vertex.
     let x1 = 0 + xOffset;
     let y1 = 0 + yOffset;

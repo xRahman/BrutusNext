@@ -1,20 +1,25 @@
 /*
   Part of BrutusNEXT
 
-  Holds map data for game world.
+  Class implementing [x, y, z] coordinates.
 */
-
-///  Nakonec to asi nepoužiju, data budou v generickém objektu.
 
 'use strict';
 
-export class World
+export class Coords
 {
+
   // -------------- Static class data -------------------
 
   //----------------- Protected data --------------------
 
   //------------------ Private data ---------------------
+
+  //------------------ Public data ---------------------- 
+
+  public x = null;
+  public y = null;
+  public z = null;
 
   // --------------- Static accessors -------------------
 
@@ -29,5 +34,4 @@ export class World
   // ---------------- Private methods -------------------
 
   // ---------------- Event handlers --------------------
-
 }
