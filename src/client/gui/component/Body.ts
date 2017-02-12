@@ -9,7 +9,7 @@
 
 import {Component} from '../../../client/gui/component/Component';
 import {Window} from '../../../client/gui/component/Window';
-import {ScrollView} from '../../../client/gui/component/ScrollView';
+import {ScrollWindow} from '../../../client/gui/component/ScrollWindow';
 import {MapWindow} from '../../../client/gui/component/MapWindow';
 import {Client} from '../../../client/lib/Client';
 import {Connection} from '../../../client/lib/connection/Connection';
@@ -27,7 +27,7 @@ export class Body extends Component
     this.$body = $('#' + this.id);
 
     let connection = client.createConnection();
-    this.createScrollView(connection);
+    this.createScrollWindow(connection);
     this.createMapWindow(connection);
 
     /// TEST
@@ -55,19 +55,19 @@ export class Body extends Component
 
   // ---------------- Public methods --------------------
 
-  // Creates a 'ScrollView' window and adds it to app_body.
-  public createScrollView(connection: Connection)
+  // Creates a 'ScrollWindow' and adds it to app_body.
+  public createScrollWindow(connection: Connection)
   {
-    /// Tohle je docasne - scrollViewu muze byt vic.
-    let scrollView = new ScrollView(connection);
-    this.windows.push(scrollView);
+    /// Tohle je docasne - scrollWindowu muze byt vic.
+    let scrollWindow = new ScrollWindow(connection);
+    this.windows.push(scrollWindow);
 
-    // Create jquery element 'scrollview'.
-    let $scrollView = scrollView.create();
+    // Create jquery element 'scrollwindow'.
+    let $scrollWindow = scrollWindow.create();
     // Put it in the 'body' element.
-    this.$body.append($scrollView);
+    this.$body.append($scrollWindow);
 
-    this.client.activeScrollView = scrollView;
+    this.client.activeScrollWindow = scrollWindow;
   }
 
   // Creates a 'Map' window and adds it to app_body.
@@ -76,10 +76,10 @@ export class Body extends Component
     let mapWindow = new MapWindow(connection);
     this.windows.push(mapWindow);
 
-    // Create jquery element 'scrollview'.
-    let $map = mapWindow.create();
+    // Create jquery element 'mapwindow'.
+    let $mapWindow = mapWindow.create();
     // Put it in the 'body' element.
-    this.$body.append($map);
+    this.$body.append($mapWindow);
 
     //this.client.mapper = mapper;
   }

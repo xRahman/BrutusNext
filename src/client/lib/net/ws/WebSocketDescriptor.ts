@@ -267,7 +267,7 @@ export class WebSocketDescriptor
     ///console.log('Received message: ' + event.data);
 
     /// TODO: Parsovani protokolu.
-    ///   Do scrollview by se nemel posilat primo event.data,
+    ///   Do scrollwindow by se nemel posilat primo event.data,
     //    ale pouze event.data['mudMessage']
 
     this.connection.receiveMudMessage(event.data);
