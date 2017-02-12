@@ -9,7 +9,7 @@
 'use strict';
 
 import {Coords} from '../../../shared/type/Coords';
-import {ExitInterface} from '../../../shared/protocol/world/ExitInterface';
+import {ExitsInterface} from '../../../shared/protocol/world/ExitsInterface';
 
 export interface RoomInterface
 {
@@ -19,5 +19,5 @@ export interface RoomInterface
   name: string,
   explored: boolean;
   coords: { x: number, y: number, z: number},
-  exits: ExitInterface
+  exits: ExitsInterface
 }
