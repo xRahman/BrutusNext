@@ -7,7 +7,7 @@
 'use strict';
 
 import {Window} from '../../../client/gui/component/Window';
-import {MapWindowSvg} from '../../../client/gui/component/MapWindowSvg';
+import {MapWindowSvgMap} from '../../../client/gui/component/MapWindowSvgMap';
 import {Connection} from '../../../client/lib/connection/Connection';
 
 import $ = require('jquery');
@@ -39,7 +39,7 @@ export class MapWindow extends Window
 
   //------------------ Private data ---------------------
 
-  private svgMap = new MapWindowSvg(this);
+  private svgMap = new MapWindowSvgMap(this);
 
   // ----- timers ------
 

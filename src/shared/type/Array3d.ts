@@ -47,52 +47,47 @@ export class Array3d<T>
   // -> Returns 'undefined' if item isn't in the array.
   public get(coords: Coords): T
   {
-    // Two-dimensional associative sub-map in 'y-z' plane.
-    let yzPlane = this.data.get(coords.x);
+    // Two-dimensional associative sub-map.
+    let yzArray = this.data.get(coords.x);
 
-    if (!yzPlane)
+    if (!yzArray)
       return undefined;
 
-    // One-dimensional associative sub-map in 'z' direction.
-    let zLine = yzPlane.get(coords.y);
+    // One-dimensional associative sub-map in.
+    let zArray = yzArray.get(coords.y);
 
-    if (!zLine)
+    if (!zArray)
       return undefined;
 
-    let item = zLine.get(coords.z);
-
-    if (!item)
-      return undefined;
-
-    return item;
+    return zArray.get(coords.z);
   }
 
   // Sets 'item' at position [x, y, z].
   public set(item: T, coords: Coords)
   {
     if (!this.data)
-      this.data = new Map<number, T>();
+      this.data = new Map<number, any>();
 
-    // Two-dimensional associative sub-map in 'y-z' plane.
-    let yzPlane = this.data.get(coords.x);
+    // Two-dimensional associative sub-map.
+    let yzArray = this.data.get(coords.x);
 
-    if (!yzPlane)
+    if (!yzArray)
     {
-      yzPlane = new Map<number, T>();
+      yzArray = new Map<number, any>();
 
-      this.data.set(coords.x, yzPlane);
+      this.data.set(coords.x, yzArray);
     }
 
-    // One-dimensional associative sub-map in 'z' direction.
-    let zLine = yzPlane.get(coords.y);
+    // One-dimensional associative sub-map.
+    let zArray = yzArray.get(coords.y);
 
-    if (!zLine)
+    if (!zArray)
     {
-      zLine = new Map<number, T>();
-      this.data.set(coords.y, zLine);
+      zArray = new Map<number, T>();
+      yzArray.set(coords.y, zArray);
     }
     
-    zLine.set(coords.z, item);
+    zArray.set(coords.z, item);
     
     // Update the min and max point so we know the dimensions
     // of this 3d array.

@@ -14,13 +14,19 @@ import {RoomRenderData} from '../../../client/gui/mapper/RoomRenderData';
 
 export class MapData
 {
+  constructor()
+  {
+    /// TEST:
+    this.initWold();
+  }
+
   // -------------- Static class data -------------------
 
   //----------------- Protected data --------------------
 
   //------------------ Private data ---------------------
 
-  private world: Array3d<RoomData> = null;
+  private roomGrid = new Array3d<RoomData>();
 
   private roomRenderData = new RoomRenderData();
   ///private exitRenderData = new Map<string, MapData.RoomData>();
@@ -45,10 +51,13 @@ export class MapData
     let id = this.composeRoomId(room);
 
     if (!id)
+      // Room is not set if id couldn't be created.
       return;
 
-    // Set the new room to the grid.
-    this.world.set(room, room.coords);
+    room.id = id;
+
+    // Set the room to the grid.
+    this.roomGrid.set(room, room.coords);
 
     // Update it in render data.
     this.roomRenderData.set(room);
@@ -92,7 +101,9 @@ export class MapData
     // This piece of black magic obtains array of hashmap values
     // (Map.values() returns an iterable object, elipsis operator
     //  converts it to an array).
-    return [...this.rooms.values()];
+    ///return [...this.rooms.values()];
+
+    return this.roomRenderData.getRenderArray();
   }
 
   // -> Returns array of MapData.ExitData objects.
@@ -118,7 +129,7 @@ export class MapData
   // -> Returns 'null' on error, string id on success.
   private composeRoomId(room: RoomData)
   {
-    if (!room.coords || !room.coords.x || !room.coords.y || !room.coords.z)
+    if (!room.coords)
     {
       ERROR('Unable to compose room id: Missing or invalid room coordinates');
       return null;
@@ -221,9 +232,7 @@ export class MapData
         {
           let roomData = new RoomData();
 
-          roomData.coords.x = x;
-          roomData.coords.y = y;
-          roomData.coords.z = z;
+          roomData.coords = new Coords(x, y, z);
 
           this.setRoom(roomData);
         }
