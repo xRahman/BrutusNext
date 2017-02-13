@@ -35,6 +35,14 @@ export class RoomRenderData
     this.rooms.set(room.id, room);
   }
 
+  public getRenderArray()
+  {
+    // This piece of black magic obtains array of hashmap values
+    // (Map.values() returns an iterable object, elipsis operator
+    //  converts it to an array).
+    return [...this.rooms.values()];
+  }  
+
   // --------------- Protected methods ------------------
 
   // ---------------- Private methods -------------------
