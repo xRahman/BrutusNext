@@ -2,6 +2,16 @@ TODO: Mapper.
 
 TODO: Na detekci zoomu v browseru možná půjde použít tohle:
 https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio
+/*
+  $(window).on
+  (
+    'zoom',
+    function()
+    {
+      console.log('zoom', window.devicePixelRatio);
+    }
+  );
+*/
 
 TODO: Zrušit kosoúhlé promítání.
 [done]
