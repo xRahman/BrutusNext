@@ -305,6 +305,32 @@
   fill: black;
 }
 
+/* Svg <circle> representing a nonexistent room */
+.SvgNonexistentRoom
+{
+  margin: 0;
+  padding: 0;
+  /* Note: stroke color is set programatically (it depends on terrain) */
+  stroke: rgb(0, 0, 0);
+  stroke-width: 1.5;
+  stroke-opacity: 0.8;
+  /* Use 'transparent', not 'none' (so the whole area interacts with mouse) */
+  fill: transparent;
+}
+
+/* Nonexistent room when mouseovered */
+.SvgNonexistentRoom:hover
+{
+  margin: 0;
+  padding: 0;
+  /* Note: stroke color is set programatically (it depends on terrain) */
+  stroke: rgb(0, 0, 0);
+  stroke-width: 3;
+  stroke-opacity: 0.8;
+  /* Use 'transparent', not 'none' (so the whole area interacts with mouse) */
+  fill: transparent;
+}
+
 /* Svg <line> representing an exit */
 .SvgExit
 {
