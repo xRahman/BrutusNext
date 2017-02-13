@@ -10,15 +10,21 @@
 import {Component} from '../../../client/gui/component/Component';
 import {MapWindow} from '../../../client/gui/component/MapWindow';
 import {MapData} from '../../../client/gui/mapper/MapData';
+import {RoomData} from '../../../client/gui/mapper/RoomData';
+import {Coords} from '../../../shared/type/Coords';
 
 import {ZoneGenerator} from '../mapper/ZoneGenerator';
 
 import d3 = require('d3');
 
-export class MapWindowSvg extends Component
+export class MapWindowSvgMap extends Component
 {
   protected static get SVG_MAP_CSS_CLASS() { return 'SvgMap'; }
   protected static get SVG_ROOM_CSS_CLASS() { return 'SvgRoom'; }
+  protected static get SVG_NONEXISTENT_ROOM_CSS_CLASS()
+  {
+    return 'SvgNonexistentRoom';
+  }
   protected static get SVG_EXIT_CSS_CLASS()  { return 'SvgExit'; }
 
   // Distance between two rooms on X axis in pixels.
@@ -51,17 +57,12 @@ export class MapWindowSvg extends Component
 
   //------------------ Private data ---------------------
 
+  private editMode = true;
+
   private mapData = new MapData();
 
-  // Coordinates of currently centered room
-  // (in mud world coords - distance between
-  //  adjacent rooms is 1).
-  private coords =
-  {
-    x: 0,
-    y: 0,
-    z: 0
-  }
+  // Coordinates of currently centered room.
+  private coords = new Coords();
 
   // Stores room 'z' position and mouse 'y' position
   // when dragging of a room starts.
@@ -76,6 +77,7 @@ export class MapWindowSvg extends Component
   private d3MapSvg = null;
   private d3RoomsSvg = null;
   private d3ExitsSvg = null;
+  private d3TagsSvg = null;
 
   // --------------- Static accessors -------------------
 
@@ -99,7 +101,7 @@ export class MapWindowSvg extends Component
 
     // Append a svg element that will be used to draw map in.
     this.d3MapSvg = d3WindowContent.append('svg');
-    this.d3MapSvg.attr('class', MapWindowSvg.SVG_MAP_CSS_CLASS);
+    this.d3MapSvg.attr('class', MapWindowSvgMap.SVG_MAP_CSS_CLASS);
 
     this.createDefs();
     this.createGs();
@@ -242,19 +244,23 @@ export class MapWindowSvg extends Component
       one, so 'this.d3RoomsSvg' must come last or the
       lines (representing exits) will steal mouse events
       from the rooms.
+        It also determines drawing order.
     */
-
-    // Text tags.
-    //this.d3TagsSvg = this.d3MapSvg.append('g');
 
     // Container for exit svg elements.
     this.d3ExitsSvg = this.d3MapSvg.append('g');
+    this.d3ExitsSvg.attr('id', 'exits');
 
     // Container for room svg elements.
     this.d3RoomsSvg = this.d3MapSvg.append('g');
+    this.d3RoomsSvg.attr('id', 'rooms');
+
+    // Text tags.
+    this.d3TagsSvg = this.d3MapSvg.append('g');
+    this.d3TagsSvg.attr('id', 'tags');
   }
 
-    private getRoomTransform(d)
+  private getRoomTransform(d)
   {
     let x = this.getRoomXPos(d);
     let y = this.getRoomYPos(d);
@@ -276,10 +282,10 @@ export class MapWindowSvg extends Component
     d3ExitMarker.attr('pointer-events', 'none');
   }
 
-  private createExitIcons(d3Room)
+  private createVerticalExitIcons(d3Room)
   {
-    let xOffset = 3 * MapWindowSvg.ROOM_RADIUS / 8;
-    let yOffset = MapWindowSvg.ROOM_RADIUS / 2;
+    let xOffset = 3 * MapWindowSvgMap.ROOM_RADIUS / 8;
+    let yOffset = MapWindowSvgMap.ROOM_RADIUS / 2;
     /// Alternativa uprostřed místnosti - asi by to chtělo
     /// šipky trochu zmenšit, ale jinak to vypadá dobře
     /// (Nevýhoda: Nebyla by vidět ikonka místnosti).
@@ -291,11 +297,11 @@ export class MapWindowSvg extends Component
     let x1 = 0 + xOffset;
     let y1 = 0 + yOffset;
     // Bottom right vertex.
-    let x2 = MapWindowSvg.ROOM_RADIUS + xOffset;
+    let x2 = MapWindowSvgMap.ROOM_RADIUS + xOffset;
     let y2 = 0 + yOffset;
     // Top vertex.
-    let x3 = MapWindowSvg.ROOM_RADIUS / 2 + xOffset;
-    let y3 = -3 * MapWindowSvg.ROOM_RADIUS / 2 + yOffset;
+    let x3 = MapWindowSvgMap.ROOM_RADIUS / 2 + xOffset;
+    let y3 = -3 * MapWindowSvgMap.ROOM_RADIUS / 2 + yOffset;
 
     let exitUpPoints =
               x1 + ',' + y1
@@ -311,11 +317,20 @@ export class MapWindowSvg extends Component
     this.createExitIcon(d3Room, exitDownPoints);
   }
 
+  private getRoomIconCssClass(d)
+  {
+    if (d.exists)
+      return MapWindowSvgMap.SVG_ROOM_CSS_CLASS;
+    else
+      return MapWindowSvgMap.SVG_NONEXISTENT_ROOM_CSS_CLASS;
+  }
+
   private createRoomIcon(d3Room)
   {
     let d3Circle = d3Room.append('circle');
-    d3Circle.attr('class', MapWindowSvg.SVG_ROOM_CSS_CLASS);
-    d3Circle.attr('r', MapWindowSvg.ROOM_RADIUS);
+
+    d3Circle.attr('class', (d, i) => { return this.getRoomIconCssClass(d); });
+    d3Circle.attr('r', MapWindowSvgMap.ROOM_RADIUS);
     /// TODO: Barva by měla záviset na terénu.
     d3Circle.attr('stroke', 'yellow');
   }
@@ -374,7 +389,7 @@ export class MapWindowSvg extends Component
     d3Room.attr('transform', (d, i) => { return this.getRoomTransform(d); });
 
     this.createRoomIcon(d3Room);
-    this.createExitIcons(d3Room);
+    this.createVerticalExitIcons(d3Room);
 
     // ----------------- test -----------------------------
 
@@ -397,7 +412,7 @@ export class MapWindowSvg extends Component
 
     // ----------------- /test ----------------------------
 
-    // ---- Hide unexplored rooms ----
+    // ---- Hide unexplored and nonexistent rooms if not in edit mode ----
     d3Room.style
     (
       'visibility',
@@ -410,7 +425,7 @@ export class MapWindowSvg extends Component
   private createExitElements(d3Enter)
   {
     let d3Exits = d3Enter.append('line');
-    d3Exits.attr('class', MapWindowSvg.SVG_EXIT_CSS_CLASS);
+    d3Exits.attr('class', MapWindowSvgMap.SVG_EXIT_CSS_CLASS);
     /// TODO: Barva by měla záviset na terénu.
     d3Exits.style('stroke', 'yellow');
     d3Exits.style('stroke-opacity', '1.0');
@@ -533,12 +548,17 @@ export class MapWindowSvg extends Component
 
   // -> Returns appropriate value of 'visibility' style
   //    of room svg element.
-  private getRoomVisibility(d: MapData.RoomData)
+  private getRoomVisibility(d: RoomData)
   {
-    if (d.explored === true)
+    // In edit mode, rooms are always visible
+    // (so they can be visible).
+    if (this.editMode === true)
       return 'visible';
 
-    // Hide unexplored elements.
+    if (d.explored === true && d.exists === true)
+      return 'visible';
+
+    // Hide unexplored and nonexistent rooms.
     return 'hidden';
   }
 
@@ -555,7 +575,7 @@ export class MapWindowSvg extends Component
     // Transformation to currently centered room.
     let centeredMudX = mudX - this.coords.x;
 
-    let xPos = centeredMudX * MapWindowSvg.ROOM_SPACING;
+    let xPos = centeredMudX * MapWindowSvgMap.ROOM_SPACING;
 
     // Transformation of origin from top left
     // (which is an origin point in svg elements)
@@ -571,7 +591,7 @@ export class MapWindowSvg extends Component
     let centeredMudY = mudY - this.coords.y;
 
     // Projection of mud 'Y' axis to viewport 'y' axis.
-    let yPos = centeredMudY * MapWindowSvg.ROOM_SPACING;
+    let yPos = centeredMudY * MapWindowSvgMap.ROOM_SPACING;
 
     // Transformation of origin from top left
     // (which is an origin point in svg elements)
