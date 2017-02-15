@@ -13,8 +13,17 @@ https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio
   );
 */
 
+IDEA: Změny souřadnic standardními exity by mohla umět počítat
+classa Coords (nebo Exit).
+- taky je otázka, jestli by exity neměly být spíš enum než stringy...
+
 TODO: Zrušit kosoúhlé promítání.
 [done]
+
+NOTE: Teleort by asi neměl mít destination danou souřadnicema...
+  I když možná raději jo, protože ty povedou vždycky do správné instance,
+  zatímco entityId cílového roomu by mohlo vést do jiné instance.
+
 
 TODO: RoomData a ExitData by asi měly být client-side classy
   a dědit (implementovat) z příslušných interfaců v /shared
