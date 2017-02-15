@@ -127,9 +127,24 @@ export class MapData
 
   // ---------------- Private methods -------------------
 
-  private getCoordsInExitDirection(room: RoomData, exit: ExitData)
+  /// TODO: Hodit to do Coords nebo do Exit (spíš Coords).
+  /// Možná nakonec RoomData
+  /// - protože Exit neví nic o koordinátech
+  /// - Coords vědí o svých koordinátech, ale nevědí, jestli exit
+  ///   náhodou není teleport.
+  /// - rooma se zas blbě dostane na exit, to už je lepší dát ho
+  ///   jako parametr...
+  /// Takže by to přece jen byla metoda Coords a dostávala by parametr 'exit',
+  /// kterého by se zeptala jestli je teleport (pak by vrátila teleportační
+  /// coords) a když ne, tak na jméno (a podle něj určila směr?)
+  private getCoordsInExitDirection
+  (
+    room: RoomData,
+    exitName: string,
+    exit: ExitData
+  )
   {
-    switch (exit.name)
+    switch (exitName)
     {
       case 'north':
       case 'northwest':
@@ -162,7 +177,7 @@ export class MapData
     }
   }
 
-  private initExitRenderData(room: RoomData, exit: ExitData)
+  private initExitRenderData(room: RoomData, exitName: string, exit: ExitData)
   {
     let exitRenderData = new ExitRenderInfo();
 
@@ -183,9 +198,9 @@ export class MapData
     /// protože jsou teď v gridu, takže jejich souřadnice znám.
 
     // Add room exits to exit render data.
-    for (let exit of room.exits.getExitData())
+    for (var [exitName, exit] of room.exits)
     {
-      let exitRenderData = this.initExitRenderData(room, exit);
+      let exitRenderData = this.initExitRenderData(room, exitName, exit);
 
       this.exitRenderData.add(exitRenderData);
     }
