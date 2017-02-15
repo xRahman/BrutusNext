@@ -7,8 +7,9 @@
 
 'use strict';
 
+import {ERROR} from '../../../client/lib/error/ERROR';
 import {Coords} from '../../../shared/type/Coords';
-import {ExitsData} from '../../../client/gui/mapper/ExitsData';
+import {ExitData} from '../../../client/gui/mapper/ExitData';
 
 export class RoomData
 {
@@ -25,5 +26,23 @@ export class RoomData
   // exits are added as 'explored = false'.
   public explored = false;
   public coords: Coords = null;
-  public exits = new ExitsData();
+  public exits = new ExitData();
+
+  // Creates a unique room id based on it's coordinates
+  // (something like '[5,12,37]').
+  // -> Returns 'false' on error.
+  public initId()
+  {
+    if (!this.coords)
+    {
+      ERROR('Unable to compose room id: Missing or invalid room coordinates');
+      return false;
+    }
+
+    // Room id will be something like: '[5,12,37]'.
+    this.id = '[' + this.coords.x + ','
+                  + this.coords.y + ','
+                  + this.coords.z + ']';
+    return true;
+  }
 }
