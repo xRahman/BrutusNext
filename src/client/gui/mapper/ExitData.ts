@@ -24,7 +24,7 @@ interface Exit
   ///  nehrabe mimo www root dir).
 }
 
-export class ExitsData
+export class ExitData
 {
   private exits = new Map<string, Exit>();
 
@@ -41,5 +41,10 @@ export class ExitsData
       return true;
 
     return false;
+  }
+
+  public getExitData()
+  {
+    return this.exits.values();
   }
 }

@@ -1,14 +1,18 @@
 /*
   Part of BrutusNEXT
 
-  Data from which rooms are rendered.
+  Data from which exits are rendered.
 */
 
 'use strict';
 
+
+import {Coords} from '../../../shared/type/Coords';
+import {ExitRenderInfo} from '../../../client/gui/mapper/ExitRenderInfo';
+import {ExitData} from '../../../client/gui/mapper/ExitData';
 import {RoomData} from '../../../client/gui/mapper/RoomData';
 
-export class RoomRenderData
+export class ExitRenderData
 {
   // -------------- Static class data -------------------
 
@@ -16,7 +20,7 @@ export class RoomRenderData
 
   //------------------ Private data ---------------------
 
-  public rooms = new Map<string, RoomData>();
+  public exits = new Map<string, ExitRenderInfo>();
 
   // --------------- Static accessors -------------------
 
@@ -26,13 +30,13 @@ export class RoomRenderData
 
   // ---------------- Public methods --------------------
 
-  public add(room: RoomData)
+  public add(exit: ExitRenderInfo)
   {
-    if (!room.id)
+    if (!exit.id)
       return;
 
-    // Set room data to this.rooms hashmap under it's id.
-    this.rooms.set(room.id, room);
+    // Set exit data to this.exit hashmap under it's id.
+    this.exits.set(exit.id, exit);
   }
 
   public getRenderArray()
@@ -40,7 +44,7 @@ export class RoomRenderData
     // This piece of black magic obtains array of hashmap values
     // (Map.values() returns an iterable object, elipsis operator
     //  converts it to an array).
-    return [...this.rooms.values()];
+    return [...this.exits.values()];
   }
 
   // --------------- Protected methods ------------------
