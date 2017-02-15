@@ -26,7 +26,7 @@ export class RoomData
   // exits are added as 'explored = false'.
   public explored = false;
   public coords: Coords = null;
-  public exits = new ExitData();
+  public exits = new Map<string, ExitData>();
 
   // Creates a unique room id based on it's coordinates
   // (something like '[5,12,37]').

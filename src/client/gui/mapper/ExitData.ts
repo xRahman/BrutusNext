@@ -11,9 +11,9 @@
 /// (respektive, mohl bych je dát přímo jako properties místo Mapy...)
 ///import {ExitsInterface} from '../../../shared/protocol/world/ExitsInterface';
 
-interface Exit
+export class ExitData
 {
-  /// Momentálně potřebuju vědět jen to, jestli exit do daného směru existu.
+  /// Momentálně potřebuju vědět jen to, jestli exit do daného směru existuje.
   /// - Časem by tu mohlo být přetížení vodorovných exitů šikmo nahoru/dolů.
   /// - A asi přetížení terénu.
 
@@ -24,9 +24,10 @@ interface Exit
   ///  nehrabe mimo www root dir).
 }
 
+/*
 export class ExitData
 {
-  private exits = new Map<string, Exit>();
+  public exits = new Map<string, Exit>();
 
   public set(exitName: string)
   {
@@ -42,9 +43,5 @@ export class ExitData
 
     return false;
   }
-
-  public getExitData()
-  {
-    return this.exits.values();
-  }
 }
+*/
