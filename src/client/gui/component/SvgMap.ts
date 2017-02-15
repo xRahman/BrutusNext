@@ -17,7 +17,7 @@ import {ZoneGenerator} from '../mapper/ZoneGenerator';
 
 import d3 = require('d3');
 
-export class MapWindowSvgMap extends Component
+export class SvgMap extends Component
 {
   protected static get SVG_MAP_CSS_CLASS() { return 'SvgMap'; }
   protected static get SVG_ROOM_CSS_CLASS() { return 'SvgRoom'; }
@@ -27,7 +27,7 @@ export class MapWindowSvgMap extends Component
   }
   protected static get SVG_EXIT_CSS_CLASS()  { return 'SvgExit'; }
 
-  // Distance between two rooms on X axis in pixels.
+  // Distance between two rooms on X axis.
   private static get ROOM_SPACING() { return 20; }
   private static get ROOM_RADIUS() { return 6; }
 
@@ -101,7 +101,7 @@ export class MapWindowSvgMap extends Component
 
     // Append a svg element that will be used to draw map in.
     this.d3MapSvg = d3WindowContent.append('svg');
-    this.d3MapSvg.attr('class', MapWindowSvgMap.SVG_MAP_CSS_CLASS);
+    this.d3MapSvg.attr('class', SvgMap.SVG_MAP_CSS_CLASS);
 
     this.createDefs();
     this.createGs();
@@ -284,8 +284,8 @@ export class MapWindowSvgMap extends Component
 
   private createVerticalExitIcons(d3Room)
   {
-    let xOffset = 3 * MapWindowSvgMap.ROOM_RADIUS / 8;
-    let yOffset = MapWindowSvgMap.ROOM_RADIUS / 2;
+    let xOffset = 3 * SvgMap.ROOM_RADIUS / 8;
+    let yOffset = SvgMap.ROOM_RADIUS / 2;
     /// Alternativa uprostřed místnosti - asi by to chtělo
     /// šipky trochu zmenšit, ale jinak to vypadá dobře
     /// (Nevýhoda: Nebyla by vidět ikonka místnosti).
@@ -297,11 +297,11 @@ export class MapWindowSvgMap extends Component
     let x1 = 0 + xOffset;
     let y1 = 0 + yOffset;
     // Bottom right vertex.
-    let x2 = MapWindowSvgMap.ROOM_RADIUS + xOffset;
+    let x2 = SvgMap.ROOM_RADIUS + xOffset;
     let y2 = 0 + yOffset;
     // Top vertex.
-    let x3 = MapWindowSvgMap.ROOM_RADIUS / 2 + xOffset;
-    let y3 = -3 * MapWindowSvgMap.ROOM_RADIUS / 2 + yOffset;
+    let x3 = SvgMap.ROOM_RADIUS / 2 + xOffset;
+    let y3 = -3 * SvgMap.ROOM_RADIUS / 2 + yOffset;
 
     let exitUpPoints =
               x1 + ',' + y1
@@ -320,9 +320,9 @@ export class MapWindowSvgMap extends Component
   private getRoomIconCssClass(d)
   {
     if (d.exists)
-      return MapWindowSvgMap.SVG_ROOM_CSS_CLASS;
+      return SvgMap.SVG_ROOM_CSS_CLASS;
     else
-      return MapWindowSvgMap.SVG_NONEXISTENT_ROOM_CSS_CLASS;
+      return SvgMap.SVG_NONEXISTENT_ROOM_CSS_CLASS;
   }
 
   private createRoomIcon(d3Room)
@@ -330,7 +330,7 @@ export class MapWindowSvgMap extends Component
     let d3Circle = d3Room.append('circle');
 
     d3Circle.attr('class', (d, i) => { return this.getRoomIconCssClass(d); });
-    d3Circle.attr('r', MapWindowSvgMap.ROOM_RADIUS);
+    d3Circle.attr('r', SvgMap.ROOM_RADIUS);
     /// TODO: Barva by měla záviset na terénu.
     d3Circle.attr('stroke', 'yellow');
   }
@@ -425,7 +425,7 @@ export class MapWindowSvgMap extends Component
   private createExitElements(d3Enter)
   {
     let d3Exits = d3Enter.append('line');
-    d3Exits.attr('class', MapWindowSvgMap.SVG_EXIT_CSS_CLASS);
+    d3Exits.attr('class', SvgMap.SVG_EXIT_CSS_CLASS);
     /// TODO: Barva by měla záviset na terénu.
     d3Exits.style('stroke', 'yellow');
     d3Exits.style('stroke-opacity', '1.0');
@@ -575,7 +575,7 @@ export class MapWindowSvgMap extends Component
     // Transformation to currently centered room.
     let centeredMudX = mudX - this.coords.x;
 
-    let xPos = centeredMudX * MapWindowSvgMap.ROOM_SPACING;
+    let xPos = centeredMudX * SvgMap.ROOM_SPACING;
 
     // Transformation of origin from top left
     // (which is an origin point in svg elements)
@@ -591,7 +591,7 @@ export class MapWindowSvgMap extends Component
     let centeredMudY = mudY - this.coords.y;
 
     // Projection of mud 'Y' axis to viewport 'y' axis.
-    let yPos = centeredMudY * MapWindowSvgMap.ROOM_SPACING;
+    let yPos = centeredMudY * SvgMap.ROOM_SPACING;
 
     // Transformation of origin from top left
     // (which is an origin point in svg elements)

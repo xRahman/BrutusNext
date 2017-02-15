@@ -6,11 +6,14 @@
 
 'use strict';
 
-import {ERROR} from '../../../client/lib/error/ERROR';
+///import {ERROR} from '../../../client/lib/error/ERROR';
 import {Coords} from '../../../shared/type/Coords';
 import {Array3d} from '../../../shared/type/Array3d';
 import {RoomData} from '../../../client/gui/mapper/RoomData';
 import {RoomRenderData} from '../../../client/gui/mapper/RoomRenderData';
+import {ExitData} from '../../../client/gui/mapper/ExitData';
+import {ExitRenderInfo} from '../../../client/gui/mapper/ExitRenderInfo';
+import {ExitRenderData} from '../../../client/gui/mapper/ExitRenderData';
 
 export class MapData
 {
@@ -29,7 +32,7 @@ export class MapData
   private roomGrid = new Array3d<RoomData>();
 
   private roomRenderData = new RoomRenderData();
-  ///private exitRenderData = new Map<string, MapData.RoomData>();
+  private exitRenderData = new ExitRenderData();
 
   /* TO BE DEPRECATED */
   private rooms = new Map<string, MapData.RoomData>();
@@ -46,21 +49,20 @@ export class MapData
 
   public setRoom(room: RoomData)
   {
-    // Compose a unique room id based on it's coordinates
+    // Create a unique room id based on it's coordinates
     // (something like '[5,12,37]').
-    let id = this.composeRoomId(room);
-
-    if (!id)
+    if (!room.initId())
       // Room is not set if id couldn't be created.
       return;
 
-    room.id = id;
+    // Make sure that added 'room' will be flagged as 'explored'.
+    room.explored = true;
 
     // Set the room to the grid.
     this.roomGrid.set(room, room.coords);
 
     // Update it in render data.
-    this.roomRenderData.set(room);
+    this.addToRenderData(room);
   }
 
   /* TO BE DEPRECATED */
@@ -125,22 +127,71 @@ export class MapData
 
   // ---------------- Private methods -------------------
 
-  // Creates a unique room id from it's coordinates.
-  // -> Returns 'null' on error, string id on success.
-  private composeRoomId(room: RoomData)
+  private getCoordsInExitDirection(room: RoomData, exit: ExitData)
   {
-    if (!room.coords)
+    switch (exit.name)
     {
-      ERROR('Unable to compose room id: Missing or invalid room coordinates');
-      return null;
+      case 'north':
+      case 'northwest':
+      case 'west':
+      case 'southwest':
+      case 'south':
+      case 'southeast':
+      case 'east':
+      case 'northeast':
+      case 'northup':
+      case 'northwestup':
+      case 'westup':
+      case 'southwestup':
+      case 'southup':
+      case 'southeastup':
+      case 'eastup':
+      case 'northeastup':
+      case 'northdown':
+      case 'northwestdown':
+      case 'westdown':
+      case 'southwestdown':
+      case 'southdown':
+      case 'southeastdown':
+      case 'eastdown':
+      case 'northeastdown':
+      case 'up':
+      case 'down':
+        /// TODO:
+        break;
     }
-
-    // Room id will be something like: '[5,12,37]'.
-    return '[' + room.coords.x + ','
-               + room.coords.y + ','
-               + room.coords.z + ']';
   }
 
+  private initExitRenderData(room: RoomData, exit: ExitData)
+  {
+    let exitRenderData = new ExitRenderInfo();
+
+    exitRenderData.from = room.coords;
+    exitRenderData.to = null; /// TODO
+    exitRenderData.id = null; /// TODO
+    exitRenderData.oneWay = false; /// TODO
+
+    return exitRenderData;
+  }
+
+  private addToRenderData(room: RoomData)
+  { 
+    // Add the room to room render data.
+    this.roomRenderData.add(room);
+
+    /// Pozn. Není třeba přidávat okolní roomy jako unexplored,
+    /// protože jsou teď v gridu, takže jejich souřadnice znám.
+
+    // Add room exits to exit render data.
+    for (let exit of room.exits.getExitData())
+    {
+      let exitRenderData = this.initExitRenderData(room, exit);
+
+      this.exitRenderData.add(exitRenderData);
+    }
+  }
+
+  /* TO BE DEPRECATED */
   // Adds rooms reachable by exits from 'room' to 'this.rooms' hashmap.
   private addConnectedRooms(room: MapData.RoomData)
   {
