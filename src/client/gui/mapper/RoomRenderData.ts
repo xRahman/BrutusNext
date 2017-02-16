@@ -16,7 +16,7 @@ export class RoomRenderData
 
   //------------------ Private data ---------------------
 
-  public rooms = new Map<string, RoomData>();
+  public data = new Map<string, RoomData>();
 
   // --------------- Static accessors -------------------
 
@@ -32,7 +32,7 @@ export class RoomRenderData
       return;
 
     // Set room data to this.rooms hashmap under it's id.
-    this.rooms.set(room.id, room);
+    this.data.set(room.id, room);
   }
 
   public getRenderArray()
@@ -40,7 +40,7 @@ export class RoomRenderData
     // This piece of black magic obtains array of hashmap values
     // (Map.values() returns an iterable object, elipsis operator
     //  converts it to an array).
-    return [...this.rooms.values()];
+    return [...this.data.values()];
   }
 
   // --------------- Protected methods ------------------
