@@ -20,7 +20,7 @@ export class ExitRenderData
 
   //------------------ Private data ---------------------
 
-  public exits = new Map<string, ExitRenderInfo>();
+  public data = new Map<string, ExitRenderInfo>();
 
   // --------------- Static accessors -------------------
 
@@ -36,7 +36,7 @@ export class ExitRenderData
       return;
 
     // Set exit data to this.exit hashmap under it's id.
-    this.exits.set(exit.id, exit);
+    this.data.set(exit.id, exit);
   }
 
   public getRenderArray()
@@ -44,7 +44,7 @@ export class ExitRenderData
     // This piece of black magic obtains array of hashmap values
     // (Map.values() returns an iterable object, elipsis operator
     //  converts it to an array).
-    return [...this.exits.values()];
+    return [...this.data.values()];
   }
 
   // --------------- Protected methods ------------------
