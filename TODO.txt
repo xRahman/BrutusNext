@@ -1,5 +1,13 @@
 TODO: Mapper.
 
+TODO: Server musí klientu dát vědět, kde jsou rozsahy zón - nesmí jít
+  editovat roomy mimo prostor vymezený založenými zónami.
+- client by se asi měl nejdřív serveru zeptat, jaké roomy už existují
+  a případné díry pak inicializovat roomou s .exists = false.
+Tohle znamená, že v edit módu bude jinak fungovat komunikace se serverem
+- klient se nebude ptát jen na zmapované roomy, ale na to, jestli roomy vůbec
+  existujou.
+
 TODO: V clientu mě nemusí zajímat, že jsou exity přesměrované (nw na nwu),
 o to se stará server. V RoomData je prostě exit na nwu a ten budu renderovat.
 - musím nějak rozlišovat 'ground' (solid) exity a 'floating' exity (in-water,
