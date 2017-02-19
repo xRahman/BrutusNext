@@ -1,7 +1,24 @@
 TODO: Mapper.
 
+TODO: V clientu mě nemusí zajímat, že jsou exity přesměrované (nw na nwu),
+o to se stará server. V RoomData je prostě exit na nwu a ten budu renderovat.
+- musím nějak rozlišovat 'ground' (solid) exity a 'floating' exity (in-water,
+  případně in-air). Ale asi ne nutně hned, zatím můžu předpokládat, že
+  všechny exity jsou solid.
+- v solid exitech platí, že v horizontálním směru může být vždy jen jeden
+  exit - tj. buď je jen na n, nebo jen na nu, nebo jen na nd.
+  (To bude podstatné při editování.)
+
 TODO: RoomRenderData a ExitRenderData asi buď zrušit,
 nebo aspoň sloučit do jedné classy (RenderData<T>).
+
+TODO: Rozlišovat Exit (info o tom, že z roomy vede exit do nějakého
+  směru nebo teleport někam jinam) a Connector (vlastnosti propojení
+  dvou room).
+  Exity by se měly odkazovat na příslušné Connectory.
+=> Na clientu se renderují ConnectorData, nikoliv ExitData
+
+TODO: Interně používat jednopísmenné zkratky exitů ('nwu' apod.)
 
 TODO: Na detekci zoomu v browseru možná půjde použít tohle:
 https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio
