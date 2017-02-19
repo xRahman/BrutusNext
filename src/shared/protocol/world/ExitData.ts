@@ -7,10 +7,6 @@
 
 'use strict';
 
-/// Hmm tak přímo z toho dědit nepůjde, v jsonu budou exity jinak
-/// (respektive, mohl bych je dát přímo jako properties místo Mapy...)
-///import {ExitsInterface} from '../../../shared/protocol/world/ExitsInterface';
-
 export class ExitData
 {
   /// Momentálně potřebuju vědět jen to, jestli exit do daného směru existuje.
@@ -23,25 +19,3 @@ export class ExitData
   ///    Nebo spíš že je server bude číst z dat v klientu, ať klient
   ///  nehrabe mimo www root dir).
 }
-
-/*
-export class ExitData
-{
-  public exits = new Map<string, Exit>();
-
-  public set(exitName: string)
-  {
-    let exit: Exit = {};
-
-    this.exits.set(exitName, exit);
-  }
-
-  public has(exitName: string)
-  {
-    if (this.exits.has(exitName))
-      return true;
-
-    return false;
-  }
-}
-*/

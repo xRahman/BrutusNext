@@ -6,13 +6,10 @@
 
 'use strict';
 
-///import {ERROR} from '../../../client/lib/error/ERROR';
+import {ERROR} from '../../../client/lib/error/ERROR';
 import {Coords} from '../../../shared/type/Coords';
 import {Array3d} from '../../../shared/type/Array3d';
-import {RoomData} from '../../../client/gui/mapper/RoomData';
 import {RoomRenderData} from '../../../client/gui/mapper/RoomRenderData';
-import {ExitData} from '../../../client/gui/mapper/ExitData';
-import {ExitRenderInfo} from '../../../client/gui/mapper/ExitRenderInfo';
 import {ExitRenderData} from '../../../client/gui/mapper/ExitRenderData';
 
 export class MapData
@@ -23,49 +20,42 @@ export class MapData
     this.initWold();
   }
 
-  // -------------- Static class data -------------------
-
-  //----------------- Protected data --------------------
-
   //------------------ Private data ---------------------
 
-  private roomGrid = new Array3d<RoomData>();
+  // All rooms are stored here, including those that are
+  // not in current rendering area.
+  private roomGrid = new Array3d<RoomRenderData>();
 
-  private roomRenderData = new RoomRenderData();
-  private exitRenderData = new ExitRenderData();
+  // Only rooms in current rendering area are present here.
+  private rooms = new Map<string, RoomRenderData>();
 
-  /* TO BE DEPRECATED */
-  private rooms = new Map<string, MapData.RoomData>();
-  /* TO BE DEPRECATED */
-  private exits = new Map<string, MapData.ExitData>();
-
-  // --------------- Static accessors -------------------
-
-  // ---------------- Static methods --------------------
-
-  // --------------- Public accessors -------------------
+  // Only exits in current rendering area are present here.
+  private exits = new Map<string, ExitRenderData>();
 
   // ---------------- Public methods --------------------
 
-  public setRoom(room: RoomData)
+  // Sets room data to 'this.roomGrid'. Also updates 'this.rooms'
+  // and 'this.exits' if room is in current rendering area.
+  public setRoom(room: RoomRenderData)
   {
     // Create a unique room id based on it's coordinates
     // (something like '[5,12,37]').
     if (!room.initId())
-      // Room is not set if id couldn't be created.
+      // Room will not be set if id couldn't be created.
       return;
 
-    // Make sure that added 'room' will be flagged as 'explored'.
+    // Make sure that 'room' will be flagged as 'explored'.
     room.explored = true;
 
     // Set the room to the grid.
     this.roomGrid.set(room, room.coords);
 
     // Update it in render data.
-    this.addToRenderData(room);
+    this.setToRenderData(room);
   }
 
   /* TO BE DEPRECATED */
+  /*
   public addRoom(room: MapData.RoomData)
   {
     // Make sure that added 'room' will be flagged as 'explored'.
@@ -82,7 +72,10 @@ export class MapData
     // Add exits of this room to this.exits.
     this.addRoomExits(room);
   }
+  */
 
+  /// DEPRECATED
+  /*
   // Creates exitId by concatenating ids of connected rooms in
   // alphabetical order (this deduplicates bidirectional exits).
   // -> Returns client-specific exit id.
@@ -96,20 +89,19 @@ export class MapData
     else
       return 'exit_' + toId + '_' + fromId;
   }
+  */
 
   // -> Returns array of MapData.RoomData objects.
-  public getRoomsData()
+  public getRoomsRenderData()
   {
     // This piece of black magic obtains array of hashmap values
     // (Map.values() returns an iterable object, elipsis operator
     //  converts it to an array).
-    ///return [...this.rooms.values()];
-
-    return this.roomRenderData.getRenderArray();
+    return [...this.rooms.values()];
   }
 
   // -> Returns array of MapData.ExitData objects.
-  public getExitsData()
+  public getExitsRenderData()
   {
     // This piece of black magic obtains array of hashmap values
     // (Map.values() returns an iterable object, elipsis operator
@@ -118,95 +110,65 @@ export class MapData
   }
 
   // -> Returns 'undefined' if requested room isn't present in MapData.
-  public getRoomDataById(id: string)
+  public getRoom(coords: Coords)
   {
-    return this.rooms.get(id);
+    return this.roomGrid.get(coords);
   }
-
-  // --------------- Protected methods ------------------
 
   // ---------------- Private methods -------------------
 
-  /// TODO: Hodit to do Coords nebo do Exit (spíš Coords).
-  /// Možná nakonec RoomData
-  /// - protože Exit neví nic o koordinátech
-  /// - Coords vědí o svých koordinátech, ale nevědí, jestli exit
-  ///   náhodou není teleport.
-  /// - rooma se zas blbě dostane na exit, to už je lepší dát ho
-  ///   jako parametr...
-  /// Takže by to přece jen byla metoda Coords a dostávala by parametr 'exit',
-  /// kterého by se zeptala jestli je teleport (pak by vrátila teleportační
-  /// coords) a když ne, tak na jméno (a podle něj určila směr?)
-  private getCoordsInExitDirection
-  (
-    room: RoomData,
-    exitName: string,
-    exit: ExitData
-  )
+  // -> Returns 'null' if exit id couldn't be composed.
+  private initExitRenderData(room: RoomRenderData, exitName: string)
   {
-    switch (exitName)
-    {
-      case 'north':
-      case 'northwest':
-      case 'west':
-      case 'southwest':
-      case 'south':
-      case 'southeast':
-      case 'east':
-      case 'northeast':
-      case 'northup':
-      case 'northwestup':
-      case 'westup':
-      case 'southwestup':
-      case 'southup':
-      case 'southeastup':
-      case 'eastup':
-      case 'northeastup':
-      case 'northdown':
-      case 'northwestdown':
-      case 'westdown':
-      case 'southwestdown':
-      case 'southdown':
-      case 'southeastdown':
-      case 'eastdown':
-      case 'northeastdown':
-      case 'up':
-      case 'down':
-        /// TODO:
-        break;
-    }
-  }
+    let exitRenderData = new ExitRenderData();
+    let targetCoords = room.getCoordsInDirection(exitName);
+    let targetRoom = this.roomGrid.get(targetCoords);
 
-  private initExitRenderData(room: RoomData, exitName: string, exit: ExitData)
-  {
-    let exitRenderData = new ExitRenderInfo();
-
-    exitRenderData.from = room.coords;
-    exitRenderData.to = null; /// TODO
-    exitRenderData.id = null; /// TODO
-    exitRenderData.oneWay = false; /// TODO
+    if (exitRenderData.init(room, targetRoom, exitName) === false)
+      return null;
 
     return exitRenderData;
   }
 
-  private addToRenderData(room: RoomData)
-  { 
-    // Add the room to room render data.
-    this.roomRenderData.add(room);
-
-    /// Pozn. Není třeba přidávat okolní roomy jako unexplored,
-    /// protože jsou teď v gridu, takže jejich souřadnice znám.
-
-    // Add room exits to exit render data.
-    for (var [exitName, exit] of room.exits)
+  // Adds room exits to exit render data.
+  private setRoomExitsToRenderData(room: RoomRenderData)
+  {
+    if (!room.getId())
     {
-      let exitRenderData = this.initExitRenderData(room, exitName, exit);
+      ERROR('Unable to add room exits to render data:'
+        + ' Missing or invalid room id');
+      return;
+    }
 
-      this.exitRenderData.add(exitRenderData);
+    for (let [exitName, exit] of room.exits)
+    {
+      let exitRenderData = this.initExitRenderData(room, exitName);
+
+      if (exitRenderData !== null)
+        this.exits.set(exitRenderData.getId(), exitRenderData);
+    }
+  }
+
+  private setToRenderData(room: RoomRenderData)
+  {
+    if (!room.getId())
+    {
+      ERROR('Unable to add room to render data: Missing or invalid room id');
+      return;
+    }
+
+    /// TODO: Check, jestli je room v aktualni rendering area.
+    if (true)
+    {
+      // Add the room to room render data.
+      this.rooms.set(room.getId(), room);
+
+      this.setRoomExitsToRenderData(room);
     }
   }
 
   /* TO BE DEPRECATED */
+  /*
   // Adds rooms reachable by exits from 'room' to 'this.rooms' hashmap.
   private addConnectedRooms(room: MapData.RoomData)
   {
@@ -234,8 +196,11 @@ export class MapData
       }
     }
   }
+  */
 
+  /// DEPRECATED
   // Adds exits of 'room' to 'this.exits' hashmap.
+  /*
   private addRoomExits(room: MapData.RoomData)
   {
     let roomId = room.id;
@@ -243,16 +208,14 @@ export class MapData
     // Go through all properties of room.exits object.
     for (let exitName in room.exits)
     {
-      /*
-      if
-      (
-        exitName === 'northwest'
-        || exitName === 'northeast'
-        || exitName === 'southwest'
-        || exitName === 'southeast'
-      )
-      continue;
-      */
+      // if
+      // (
+      //   exitName === 'northwest'
+      //   || exitName === 'northeast'
+      //   || exitName === 'southwest'
+      //   || exitName === 'southeast'
+      // )
+      // continue;
 
       let destRoomId = room.exits[exitName].targetRoomId;
       let exitId = this.composeExitId(roomId, destRoomId);
@@ -275,6 +238,7 @@ export class MapData
       }
     }
   }
+  */
 
   // ------- Test ------
 
@@ -296,20 +260,18 @@ export class MapData
       {
         for (let z = roomRange.fromZ; z <= roomRange.toZ; z++)
         {
-          let roomData = new RoomData();
+          let room = new RoomRenderData();
 
-          roomData.coords = new Coords(x, y, z);
+          room.coords = new Coords(x, y, z);
 
-          this.setRoom(roomData);
+          this.setRoom(room);
         }
       }
     }
   }
-
-  // ---------------- Event handlers --------------------
-
 }
 
+/*
 // ------------------ Type declarations ----------------------
 
 // Module is exported so you can use enum type from outside this file.
@@ -378,3 +340,4 @@ export module MapData
     directionality: ExitDirectionality
   }
 }
+*/
