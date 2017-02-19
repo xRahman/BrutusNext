@@ -68,7 +68,8 @@ export class SvgMap extends Component
   // when dragging of a room starts.
   private roomDragData =
   {
-    origZ: null,
+    origCoords: null,
+    origMouseX: null,
     origMouseY: null
   }
 
@@ -321,6 +322,7 @@ export class SvgMap extends Component
     this.createExitIcon(d3Room, exitDownPoints);
   }
 
+//.
   private getRoomIconCssClass(d: RoomRenderData)
   {
     if (d.exists)
@@ -329,6 +331,7 @@ export class SvgMap extends Component
       return SvgMap.SVG_NONEXISTENT_ROOM_CSS_CLASS;
   }
 
+//.
   private createRoomIcon(d3Room: d3Selection)
   {
     let d3Circle = d3Room.append('circle');
@@ -339,6 +342,7 @@ export class SvgMap extends Component
     d3Circle.attr('stroke', 'yellow');
   }
 
+//.
   private attachMouseoverHandlers(d3Room: d3Selection)
   {
     d3Room.on
@@ -354,6 +358,7 @@ export class SvgMap extends Component
     );
   }
 
+//.
   private attachMousedownHandlers(d3Room: d3Selection)
   {
     // To handle 'mousedown' event, we have to pass both
@@ -377,6 +382,7 @@ export class SvgMap extends Component
     );
   }
 
+//.
   private attachRoomEventHandlers(d3Room: d3Selection)
   {
     // ---- Enable highlight on mouseover ----
@@ -427,6 +433,7 @@ export class SvgMap extends Component
     this.attachRoomEventHandlers(d3Room);
   }
 
+//.
   private createExitElements(d3Enter: d3Selection)
   {
     let d3Exits = d3Enter.append('line');
@@ -436,10 +443,10 @@ export class SvgMap extends Component
     d3Exits.style('stroke-opacity', '1.0');
     // Exit id is also used as respective svg element id.
     d3Exits.attr('id', function(d) { return d.id; });
-    d3Exits.attr('x1', (d) => { return this.getFromXPos(d) /* + 'px'; */ });
-    d3Exits.attr('y1', (d) => { return this.getFromYPos(d) /* + 'px'; */ });
-    d3Exits.attr('x2', (d) => { return this.getToXPos(d) /* + 'px'; */ });
-    d3Exits.attr('y2', (d) => { return this.getToYPos(d) /* + 'px'; */ });
+    d3Exits.attr('x1', (d) => { return this.getFromXPos(d); });
+    d3Exits.attr('y1', (d) => { return this.getFromYPos(d); });
+    d3Exits.attr('x2', (d) => { return this.getToXPos(d); });
+    d3Exits.attr('y2', (d) => { return this.getToYPos(d); });
   }
 
 //.
@@ -456,12 +463,13 @@ export class SvgMap extends Component
     );
   }
 
+//.
   private updateExitElements(d3Exits: d3Selection)
   {
-    d3Exits.attr('x1', (d) => { return this.getFromXPos(d) /* + 'px'; */ });
-    d3Exits.attr('y1', (d) => { return this.getFromYPos(d) /* + 'px'; */ });
-    d3Exits.attr('x2', (d) => { return this.getToXPos(d) /* + 'px'; */ });
-    d3Exits.attr('y2', (d) => { return this.getToYPos(d) /* + 'px'; */ });
+    d3Exits.attr('x1', (d) => { return this.getFromXPos(d); });
+    d3Exits.attr('y1', (d) => { return this.getFromYPos(d); });
+    d3Exits.attr('x2', (d) => { return this.getToXPos(d); });
+    d3Exits.attr('y2', (d) => { return this.getToYPos(d); });
   }
 
 //.
@@ -511,12 +519,25 @@ export class SvgMap extends Component
     d3Exits.exit().remove();
   }
 
+  /*
   // Updates position of svg elements corresponding to exits
   // leading from the room ('d' is data attached to that room).
   /// TODO: Nějak pořešit taky incomming jednosměrné exity.
+  /// - Ty se pořešej samy - tím, že zkonstruuju idčka exitů
+  ///   do všech možných směrů a zaadresuju jimi do renderovací
+  ///   mapy, se dostanu i na jednosměrné exity.
   private updateRoomExits(d: RoomRenderData)
   {
     let roomId = d.getId();
+
+    /// TODO: Projít všechny možné směry, nejen ty, do kterých z roomy
+    /// vedou exity (protože potřebuju najít jednosměrné exity z okolních
+    /// room.
+
+    /// Respektive jinak - má tohle vůbec ještě smysl? Exity jsou na gridu,
+    /// takže měnit, kam se kreslej příslušné čáry, asi není proč.
+    /// - má smysl maximálně tak exity rušit/přidávat, případně dělat
+    ///   z jednosměrných obousměrné a naopak.
 
     // 'exit' is an id of destination room.
     for (let exit in d.exits)
@@ -527,9 +548,11 @@ export class SvgMap extends Component
       this.updateExitElements(this.d3Exits.select('#' + exitId));
     }
   }
+  */
 
   // ------- plotting methods --------
 
+//.
   // -> Returns 'x' of origin of coordinate system within
   //    the map drawing area.
   private originX()
@@ -540,6 +563,7 @@ export class SvgMap extends Component
     return this.mapWindow.getContentWidth() / 2;
   }
 
+//.
   // -> Returns 'y' of origin of coordinate system within
   //    the map drawing area.
   private originY()
@@ -550,6 +574,7 @@ export class SvgMap extends Component
     return this.mapWindow.getContentHeight() / 2;
   }
 
+//.
   // -> Returns appropriate value of 'visibility' style
   //    of room svg element.
   private getRoomVisibility(d: RoomRenderData)
@@ -632,15 +657,17 @@ export class SvgMap extends Component
 
   // ---------------- Event handlers --------------------
 
-  private onMouseMove(d, element)
+//.
+  private onMouseMove(d: RoomRenderData, element: HTMLElement)
   {
+    /*
     let mouseY = d3.mouse(element)[1];
     let moveYDist = mouseY - this.roomDragData.origMouseY;
 
     // Change the 'z' coordinate (in MUD coords) of the room
     // (in data bound to the svg element).
     // Rate of change is 1.0 of 'z' cooordinate per 100 pixels moved.
-    d.coords.z = this.roomDragData.origZ - moveYDist / 100;
+    d.coords.u = this.roomDragData.origCoords - moveYDist / 100;
 
     // Reflect the change in data we have just made in the map.
     // ('d' parameter is taken from the closure here).
@@ -648,12 +675,15 @@ export class SvgMap extends Component
 
     // Update adjacend exit lines.
     this.updateRoomExits(d);
+    */
   }
 
-  private onRoomMouseDown(d, element)
+//.
+  private onRoomMouseDown(d: RoomRenderData, element: HTMLElement)
   {
     // Remember original state in data bound to element.
-    this.roomDragData.origZ = d.coords.z,
+    this.roomDragData.origCoords = d.coords,
+    this.roomDragData.origMouseX = d3.mouse(element)[0];
     this.roomDragData.origMouseY = d3.mouse(element)[1];
 
     // Disable text dragging and selection.
