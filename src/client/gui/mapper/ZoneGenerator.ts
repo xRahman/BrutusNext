@@ -6,6 +6,7 @@
 
 ///  Nakonec to asi nepoužiju, data budou v generickém objektu.
 
+/*
 'use strict';
 
 import {MapData} from '../../../client/gui/mapper/MapData';
@@ -30,7 +31,7 @@ export class ZoneGenerator
 
   // ---------------- Public methods --------------------
 
-  public generateZone(/*width: number, length: number, height: number*/)
+  public generateZone()
   {
     let roomRange =
     {
@@ -43,7 +44,7 @@ export class ZoneGenerator
     }
 
     //let zone = [];
-    let zone = new Array<MapData.RoomData>();
+    let zone = new Array<RoomRenderData>();
     let zoneGrid = [];
 
     for (let i = 0, x = roomRange.fromX; x <= roomRange.toX; i++, x++)
@@ -192,3 +193,4 @@ export class ZoneGenerator
   // ---------------- Event handlers --------------------
 
 }
+*/
