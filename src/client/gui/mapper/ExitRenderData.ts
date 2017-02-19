@@ -6,51 +6,72 @@
 
 'use strict';
 
-
+import {ERROR} from '../../../client/lib/error/ERROR';
 import {Coords} from '../../../shared/type/Coords';
-import {ExitRenderInfo} from '../../../client/gui/mapper/ExitRenderInfo';
-import {ExitData} from '../../../client/gui/mapper/ExitData';
-import {RoomData} from '../../../client/gui/mapper/RoomData';
+import {RoomRenderData} from '../../../client/gui/mapper/RoomRenderData';
 
 export class ExitRenderData
 {
-  // -------------- Static class data -------------------
+  //------------------ Public data ---------------------- 
 
-  //----------------- Protected data --------------------
+  // Coords of connected rooms. Order only matters if
+  // this is a one-way exit.
+  public from = new Coords();
+  public to = new Coords();
 
   //------------------ Private data ---------------------
 
-  public data = new Map<string, ExitRenderInfo>();
+  // Client-side id created by concatenating of id's
+  // of connected rooms in alphabetical order.
+  // (It also serves as respective svg element id).
+  private id: string = null;
 
-  // --------------- Static accessors -------------------
-
-  // ---------------- Static methods --------------------
+  // If the exit leads to unexplored room, it is considered
+  // to be two-way until the room is explored (player doesn't
+  // know if she will be able to return back until then).
+  private oneWay = false;
 
   // --------------- Public accessors -------------------
 
+  public getId() { return this.id; }
+
   // ---------------- Public methods --------------------
 
-  public add(exit: ExitRenderInfo)
+  // -> Returns 'false' if id could not be composed.
+  public init
+  (
+    fromRoom: RoomRenderData,
+    toRoom: RoomRenderData,
+    exitName: string
+  )
   {
-    if (!exit.id)
-      return;
-
-    // Set exit data to this.exit hashmap under it's id.
-    this.data.set(exit.id, exit);
+    this.from = fromRoom.coords;
+    this.to = toRoom.coords;
+    this.oneWay = toRoom && !toRoom.hasExit(exitName);
+    return this.initId(fromRoom.getId(), toRoom.getId());
   }
-
-  public getRenderArray()
-  {
-    // This piece of black magic obtains array of hashmap values
-    // (Map.values() returns an iterable object, elipsis operator
-    //  converts it to an array).
-    return [...this.data.values()];
-  }
-
-  // --------------- Protected methods ------------------
 
   // ---------------- Private methods -------------------
 
-  // ---------------- Event handlers --------------------
+  // -> Returns 'false' if id could not be composed.
+  private initId(fromRoomId: string, toRoomId: string)
+  {
+    if (!fromRoomId || !toRoomId)
+    {
+      ERROR('Unable to compose exit client-side id.'
+        + ' Exit will not be rendered');
+      return false;
+    }
 
+    // Exit render id is created from respective room
+    // ids in alphabetical order (so it will be something
+    // like '[0,0,0][0,0,1]').
+    // (This deduplicates two-way exits.)
+    if (fromRoomId < toRoomId)
+      this.id = fromRoomId + toRoomId;
+    else
+      this.id = toRoomId + fromRoomId;
+
+    return true;
+  }
 }

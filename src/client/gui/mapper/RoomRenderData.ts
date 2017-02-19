@@ -6,47 +6,46 @@
 
 'use strict';
 
-import {RoomData} from '../../../client/gui/mapper/RoomData';
+import {ERROR} from '../../../client/lib/error/ERROR';
+import {RoomData} from '../../../shared/protocol/world/RoomData';
 
-export class RoomRenderData
+export class RoomRenderData extends RoomData
 {
-  // -------------- Static class data -------------------
+  //------------------ Public data ----------------------
 
-  //----------------- Protected data --------------------
+  // When a room is added to this.mapData, it is added
+  // as 'explored = true' and all rooms reachable by its
+  // exits are added as 'explored = false'.
+  public explored = false;
 
   //------------------ Private data ---------------------
 
-  public data = new Map<string, RoomData>();
-
-  // --------------- Static accessors -------------------
-
-  // ---------------- Static methods --------------------
+  // Client-side id, not entity id.
+  // (It is composed from room coordinates by MapData.composeRoomId()).
+  private id: string = null;
 
   // --------------- Public accessors -------------------
 
+  public getId() { return this.id; }
+
   // ---------------- Public methods --------------------
 
-  public add(room: RoomData)
+  // Creates a unique room id based on it's coordinates
+  // (something like '[5,12,37]').
+  // -> Returns 'false' on error.
+  public initId()
   {
-    if (!room.id)
-      return;
+    if (!this.coords)
+    {
+      ERROR('Unable to compose room id: Missing or invalid room coordinates');
+      return false;
+    }
 
-    // Set room data to this.rooms hashmap under it's id.
-    this.data.set(room.id, room);
+    // Room id will be something like: '[0,-12,37]'.
+    this.id = '[' + this.coords.s + ','
+                  + this.coords.e + ','
+                  + this.coords.u + ']';
+
+    return true;
   }
-
-  public getRenderArray()
-  {
-    // This piece of black magic obtains array of hashmap values
-    // (Map.values() returns an iterable object, elipsis operator
-    //  converts it to an array).
-    return [...this.data.values()];
-  }
-
-  // --------------- Protected methods ------------------
-
-  // ---------------- Private methods -------------------
-
-  // ---------------- Event handlers --------------------
-
 }

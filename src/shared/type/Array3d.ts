@@ -23,9 +23,9 @@ export class Array3d<T>
 
   private data = null;
 
-  // Point in array with smallest 'x, 'y' and 'z'
+  // Point in array with smallest 's, 'e' and 'u'
   private min = new Coords();
-  // Point in array with biggest 'x, 'y' and 'z'.
+  // Point in array with biggest 's, 'e' and 'u'.
   private max = new Coords();
 
   // --------------- Static accessors -------------------
@@ -34,60 +34,60 @@ export class Array3d<T>
 
   // --------------- Public accessors -------------------
 
-  // Size of the array on 'x' axis.
-  public get length() { return this.max.x - this.min.x; }
-  // Size of the array on 'y' axis.
-  public get width() { return this.max.y - this.min.y; }
-  // Size of the array on 'z' axis.
-  public get height() { return this.max.z - this.min.z; }
+  // Size of the array on 'n-s' axis.
+  public get length() { return this.max.s - this.min.s; }
+  // Size of the array on 'e-w' axis.
+  public get width() { return this.max.e - this.min.e; }
+  // Size of the array on 'u-d' axis.
+  public get height() { return this.max.u - this.min.u; }
 
   // ---------------- Public methods --------------------
 
-  // Reads from position [x, y, z].
+  // Reads from position [s, e, u].
   // -> Returns 'undefined' if item isn't in the array.
   public get(coords: Coords): T
   {
     // Two-dimensional associative sub-map.
-    let yzArray = this.data.get(coords.x);
+    let yzArray = this.data.get(coords.s);
 
     if (!yzArray)
       return undefined;
 
     // One-dimensional associative sub-map in.
-    let zArray = yzArray.get(coords.y);
+    let zArray = yzArray.get(coords.e);
 
     if (!zArray)
       return undefined;
 
-    return zArray.get(coords.z);
+    return zArray.get(coords.u);
   }
 
-  // Sets 'item' at position [x, y, z].
+  // Sets 'item' at position [s, e, u].
   public set(item: T, coords: Coords)
   {
     if (!this.data)
       this.data = new Map<number, any>();
 
     // Two-dimensional associative sub-map.
-    let yzArray = this.data.get(coords.x);
+    let yzArray = this.data.get(coords.s);
 
     if (!yzArray)
     {
       yzArray = new Map<number, any>();
 
-      this.data.set(coords.x, yzArray);
+      this.data.set(coords.s, yzArray);
     }
 
     // One-dimensional associative sub-map.
-    let zArray = yzArray.get(coords.y);
+    let zArray = yzArray.get(coords.e);
 
     if (!zArray)
     {
       zArray = new Map<number, T>();
-      yzArray.set(coords.y, zArray);
+      yzArray.set(coords.e, zArray);
     }
     
-    zArray.set(coords.z, item);
+    zArray.set(coords.u, item);
     
     // Update the min and max point so we know the dimensions
     // of this 3d array.
@@ -102,22 +102,22 @@ export class Array3d<T>
   // include point 'coords'.
   private updateSize(coords: Coords)
   {
-    if (this.min.x > coords.x)
-      this.min.x = coords.x;
+    if (this.min.s > coords.s)
+      this.min.s = coords.s;
 
-    if (this.min.y > coords.y)
-      this.min.y = coords.y;
+    if (this.min.e > coords.e)
+      this.min.e = coords.e;
 
-    if (this.min.z > coords.z)
-      this.min.z = coords.z;
+    if (this.min.u > coords.u)
+      this.min.u = coords.u;
 
-    if (this.max.x < coords.x)
-      this.max.x = coords.x;
+    if (this.max.s < coords.s)
+      this.max.s = coords.s;
 
-    if (this.max.y < coords.y)
-      this.max.y = coords.y;
+    if (this.max.e < coords.e)
+      this.max.e = coords.e;
 
-    if (this.max.z < coords.z)
-      this.max.z = coords.z;
+    if (this.max.u < coords.u)
+      this.max.u = coords.u;
   }
 }
