@@ -26,6 +26,10 @@ export class SvgMap extends Component
     return 'SvgNonexistentRoom';
   }
   protected static get SVG_EXIT_CSS_CLASS()  { return 'SvgExit'; }
+  protected static get SVG_VERTICAL_EXIT_CSS_CLASS()
+  {
+    return 'SvgVerticalExit';
+  }
 
   // Distance between two rooms on X axis.
   private static get ROOM_SPACING() { return 20; }
@@ -273,19 +277,47 @@ export class SvgMap extends Component
     return 'translate(' + x + ',' + y + ')';
   }
 
-//.
-  private createExitIcon(d3Room: d3Selection, points: string)
+  private getVerticalExitVisibility(d: RoomRenderData, direction: string)
   {
-    let d3ExitMarker = d3Room.append('polygon');
+    if (d.hasExit(direction))
+      return 'visible';
+    else
+      return 'hidden';
+  }
 
-    d3ExitMarker.style('fill', 'yellow');
-    d3ExitMarker.style('stroke', 'black');
-    d3ExitMarker.style('stroke-width', 0.8);
-    d3ExitMarker.attr('points', points);
+//.
+  private createExitIcon
+  (
+    d3Room: d3Selection,
+    points: string,
+    direction: string
+  )
+  {
+    let d3ExitIcon = d3Room.append('polygon');
+
+    d3ExitIcon.attr('class', SvgMap.SVG_VERTICAL_EXIT_CSS_CLASS);
+
+    /// TODO: Barva by měla záviset na terénu.
+    d3ExitIcon.style('fill', 'yellow');
+    /// (a barva borderu asi taky, aby to bylo vzájemně kontrastní)
+    d3ExitIcon.style('stroke', 'black');
+
+    /// This is determined by css class
+    ///d3ExitIcon.style('stroke-width', 0.8);
+
+    // Svg <polygon> geometry.
+    d3ExitIcon.attr('points', points);
 
     // Disable mouse interaction so the markers don't
     // prevent mouse-interacting with the room element.
-    d3ExitMarker.attr('pointer-events', 'none');
+    d3ExitIcon.attr('pointer-events', 'none');
+
+    // Hide exit icon if room doesn't have an exit in that direction.
+    d3ExitIcon.style
+    (
+      'visibility',
+      (d, i) => { return this.getVerticalExitVisibility(d, direction); }
+    );
   }
 
 //.
@@ -318,8 +350,8 @@ export class SvgMap extends Component
       + ' ' + -x2 + ',' + -y2
       + ' ' + -x3 + ',' + -y3;
 
-    this.createExitIcon(d3Room, exitUpPoints);
-    this.createExitIcon(d3Room, exitDownPoints);
+    this.createExitIcon(d3Room, exitUpPoints, 'u');
+    this.createExitIcon(d3Room, exitDownPoints, 'd');
   }
 
 //.
