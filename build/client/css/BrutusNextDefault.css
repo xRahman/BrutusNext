@@ -311,7 +311,7 @@
   margin: 0;
   padding: 0;
   /* Note: stroke color is set programatically (it depends on terrain) */
-  stroke: rgb(0, 0, 0);
+  stroke: rgb(80, 80, 80);
   stroke-width: 1.5;
   stroke-opacity: 0.8;
   /* Use 'transparent', not 'none' (so the whole area interacts with mouse) */
@@ -324,7 +324,7 @@
   margin: 0;
   padding: 0;
   /* Note: stroke color is set programatically (it depends on terrain) */
-  stroke: rgb(0, 0, 0);
+  stroke: rgb(100, 100, 100);
   stroke-width: 3;
   stroke-opacity: 0.8;
   /* Use 'transparent', not 'none' (so the whole area interacts with mouse) */
@@ -337,6 +337,15 @@
   margin: 0;
   padding: 0;
   /* Note: stroke color is set programatically (it depends on terrain) */
-  /*stroke-width: 1.0;*/
   stroke-width: 1.5;
+}
+
+/* Svg <polygon> representing exit up or down */
+.SvgVerticalExit
+{
+  margin: 0;
+  padding: 0;
+  /* Note: fill color is set programatically (it depends on terrain) */
+  /* Note: stroke color is set programatically (it depends on terrain) */
+  stroke-width: 0.8;
 }
