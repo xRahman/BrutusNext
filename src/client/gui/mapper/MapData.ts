@@ -9,6 +9,7 @@
 import {ERROR} from '../../../client/lib/error/ERROR';
 import {Coords} from '../../../shared/type/Coords';
 import {Array3d} from '../../../shared/type/Array3d';
+import {RoomData} from '../../../shared/protocol/world/RoomData';
 import {RoomRenderData} from '../../../client/gui/mapper/RoomRenderData';
 import {ExitRenderData} from '../../../client/gui/mapper/ExitRenderData';
 
@@ -113,6 +114,27 @@ export class MapData
   public getRoom(coords: Coords)
   {
     return this.roomGrid.get(coords);
+  }
+
+  public connect(from: Coords, to: Coords)
+  {
+    let toRoom = this.roomGrid.get(to);
+    let fromRoom = this.roomGrid.get(from);
+
+    if (!toRoom || !fromRoom)
+      return;
+
+    let direction = fromRoom.getDirection(to);
+
+    if (direction)
+    {
+      fromRoom.setExit(direction, toRoom);
+
+      let reverseDirection = RoomData.getReverseDirection(direction);
+
+      if (reverseDirection)
+        toRoom.setExit(reverseDirection, fromRoom);
+    }
   }
 
   // ---------------- Private methods -------------------

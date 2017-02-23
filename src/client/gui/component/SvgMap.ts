@@ -302,9 +302,6 @@ export class SvgMap extends Component
     /// (a barva borderu asi taky, aby to bylo vzájemně kontrastní)
     d3ExitIcon.style('stroke', 'black');
 
-    /// This is determined by css class
-    ///d3ExitIcon.style('stroke-width', 0.8);
-
     // Svg <polygon> geometry.
     d3ExitIcon.attr('points', points);
 
@@ -312,7 +309,7 @@ export class SvgMap extends Component
     // prevent mouse-interacting with the room element.
     d3ExitIcon.attr('pointer-events', 'none');
 
-    // Hide exit icon if room doesn't have an exit in that direction.
+    // Hide exit icon if the room doesn't have an exit in that direction.
     d3ExitIcon.style
     (
       'visibility',
@@ -375,7 +372,7 @@ export class SvgMap extends Component
   }
 
 //.
-  private attachMouseoverHandlers(d3Room: d3Selection)
+  private attachMouseOverHandlers(d3Room: d3Selection)
   {
     d3Room.on
     (
@@ -391,7 +388,7 @@ export class SvgMap extends Component
   }
 
 //.
-  private attachMousedownHandlers(d3Room: d3Selection)
+  private attachMouseDownHandlers(d3Room: d3Selection)
   {
     // To handle 'mousedown' event, we have to pass both
     // javascript 'this' (which is the element on which
@@ -414,14 +411,38 @@ export class SvgMap extends Component
     );
   }
 
+  private attachMouseUpHandlers(d3Room: d3Selection)
+  {
+    // To handle 'mouseup' event, we have to pass both
+    // javascript 'this' (which is the element on which
+    // the event fired) and typesctipt 'this' (which is
+    // the instance of MapWindow class). To do that, we
+    // must remember 'this' in a variable so we can pass
+    // it through closure.
+    let mapWindowSvg = this;
+
+    d3Room.on
+    (
+      'mouseup',
+      function(d)
+      {
+        // 'this' is the room SVG element.
+        // 'mapWindow' is the local variable we remembered
+        // earlier. It is available thanks to closure.
+        mapWindowSvg.onRoomMouseUp(d, this);
+      }
+    );
+  }
+
 //.
   private attachRoomEventHandlers(d3Room: d3Selection)
   {
     // ---- Enable highlight on mouseover ----
-    this.attachMouseoverHandlers(d3Room);
+    this.attachMouseOverHandlers(d3Room);
     
     // ---- Enable dragging ----
-    this.attachMousedownHandlers(d3Room);
+    this.attachMouseDownHandlers(d3Room);
+    this.attachMouseUpHandlers(d3Room);
   }
 
 //.
@@ -713,6 +734,12 @@ export class SvgMap extends Component
 //.
   private onRoomMouseDown(d: RoomRenderData, element: HTMLElement)
   {
+    console.log('onRoomMouseDown(): ' + d.getId());
+
+    // Remember coordinates of room where dragging started.
+    this.roomDragData.origCoords = d.coords;
+
+    /*
     // Remember original state in data bound to element.
     this.roomDragData.origCoords = d.coords,
     this.roomDragData.origMouseX = d3.mouse(element)[0];
@@ -743,5 +770,19 @@ export class SvgMap extends Component
         wnd.on('mousemove', null).on('mouseup', null);
       }
     );
+    */
+  }
+
+  private onRoomMouseUp(d: RoomRenderData, element: HTMLElement)
+  {
+    console.log('onRoomMouseUp(): ' + d.getId());
+
+    if (this.roomDragData.origCoords !== null)
+    {
+      this.mapData.connect(this.roomDragData.origCoords, d.coords);
+      this.renderExits();
+    }
+
+    this.roomDragData.origCoords = null;
   }
 }

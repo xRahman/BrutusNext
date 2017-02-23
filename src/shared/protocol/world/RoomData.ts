@@ -41,6 +41,37 @@ const EXITS =
   'd': { s: 0, e: 0, u: -1 }
 }
 
+// Maps exit names to opposite directions.
+const REVERSE_EXITS =
+{
+  'n': 's',
+  'nw': 'se',
+  'w': 'e',
+  'sw': 'ne',
+  's': 'n',
+  'se': 'nw',
+  'e': 'w',
+  'ne': 'sw',
+  'nu': 'sd',
+  'nwu': 'sed',
+  'wu': 'ed',
+  'swu': 'ned',
+  'su': 'nd',
+  'seu': 'nwd',
+  'eu': 'wd',
+  'neu': 'swd',
+  'u': 'd',
+  'nd': 'su',
+  'nwd': 'seu',
+  'wd': 'eu',
+  'swd': 'neu',
+  'sd': 'nu',
+  'sed': 'nwu',
+  'ed': 'wu',
+  'ned': 'swu',
+  'd': 'u'
+}
+
 export class RoomData
 {
   //------------------ Public data ----------------------
@@ -59,6 +90,13 @@ export class RoomData
   public exits = new Map<string, ExitData>();
 
   // ---------------- Public methods --------------------
+
+  // -> Returns 'undefined' if 'direction' isn't a name of an exit
+  //    to and adjacent room.
+  public static getReverseDirection(direction: string)
+  {
+    return REVERSE_EXITS[direction];
+  }
 
   public hasExit(exitName: string)
   {
@@ -81,10 +119,28 @@ export class RoomData
 
     let target = new Coords();
     
-    target.e += shift.e;
-    target.s += shift.s;
-    target.u += shift.u;
+    target.e = this.coords.e + shift.e;
+    target.s = this.coords.s + shift.s;
+    target.u = this.coords.u + shift.u;
 
     return target;
+  }
+
+  // -> Returns exit name leading to 'to' coordinates.
+  //    Returns 'null' if 'to' aren't coordinates of an adjacent room.
+  public getDirection(to: Coords)
+  {
+    for (let direction in EXITS)
+    {
+      if
+      (
+        this.coords.e + EXITS[direction].e === to.e
+        && this.coords.s + EXITS[direction].s === to.s
+        && this.coords.u + EXITS[direction].u === to.u
+      )
+        return direction;
+    }
+
+    return null;
   }
 }
