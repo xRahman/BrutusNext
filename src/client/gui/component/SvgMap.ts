@@ -378,6 +378,7 @@ export class SvgMap extends Component
     (
       'mouseover',
       function(d) { d3.select(this).classed('hover', true); }
+      ///function(d) { console.log('mouseover: ' + $(this).attr('id')); d3.select(this).classed('hover', true); }
     );
 
     d3Room.on
