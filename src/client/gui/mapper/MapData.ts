@@ -135,6 +135,9 @@ export class MapData
       if (reverseDirection)
         toRoom.setExit(reverseDirection, fromRoom);
     }
+
+    this.setToRenderData(fromRoom);
+    this.setToRenderData(toRoom);
   }
 
   // ---------------- Private methods -------------------
