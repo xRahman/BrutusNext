@@ -8,6 +8,7 @@
 
 import {ERROR} from '../../../client/lib/error/ERROR';
 import {RoomData} from '../../../shared/protocol/world/RoomData';
+import {ExitRenderData} from '../../../client/gui/mapper/ExitRenderData';
 
 export class RoomRenderData extends RoomData
 {
@@ -29,6 +30,22 @@ export class RoomRenderData extends RoomData
   public getId() { return this.id; }
 
   // ---------------- Public methods --------------------
+
+  public setExit(direction: string, toRoom: RoomRenderData)
+  {
+    if (!direction)
+    {
+      ERROR("Invalid 'direction'");
+      return;
+    }
+
+    let exitRenderData = new ExitRenderData();
+
+    if (!exitRenderData.init(this, toRoom, direction))
+      return;
+
+    this.exits.set(direction, exitRenderData);
+  }
 
   // Creates a unique room id based on it's coordinates
   // (something like '[5,12,37]').
