@@ -37,7 +37,8 @@ export class Server
 {
   public static get DATA_DIRECTORY()
   {
-    return './data/';
+    ///return './data/';
+    return './server/data/';
   }
 
   // -------------- Static class data -------------------
@@ -59,7 +60,7 @@ export class Server
 
   private game = null;
   private telnetServer = new TelnetServer(Server.DEFAULT_TELNET_PORT);
-  private webSocketServer = new WebSocketServer(Server.DEFAULT_WEBSOCKET_PORT);
+  private webSocketServer = new WebSocketServer(/*Server.DEFAULT_WEBSOCKET_PORT*/);
   private httpServer = new HttpServer(Server.DEFAULT_HTTP_PORT);
   private idProvider = new IdProvider(this.timeOfBoot);
 
@@ -141,8 +142,9 @@ export class Server
   }
 
   public static get DEFAULT_TELNET_PORT() { return 4443; }
-  public static get DEFAULT_WEBSOCKET_PORT() { return 4442; }
-  public static get DEFAULT_HTTP_PORT() { return 4445; }
+  ///public static get DEFAULT_WEBSOCKET_PORT() { return 4442; }
+  ///public static get DEFAULT_HTTP_PORT() { return 4445; }
+  public static get DEFAULT_HTTP_PORT() { return 80; }
 
   // ---------------- Static methods --------------------
 
@@ -334,7 +336,7 @@ export class Server
       return;
     }
 
-    this.webSocketServer.start();
+    this.webSocketServer.start(this.httpServer.httpServer);
   }
 }
 

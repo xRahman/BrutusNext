@@ -31,14 +31,39 @@
 
 'use strict';
 
+import {Syslog} from '../../../../server/lib/log/Syslog';
+import {AdminLevel} from '../../../../server/lib/admin/AdminLevel';
 import {FileSystem} from '../../../../server/lib/fs/FileSystem';
+import {Message} from '../../../../server/lib/message/Message';
 
 // Built-in node.js modules.
-import * as http from 'http';  // Import namespace 'http' from node.js
+import * as HTTP from 'http';  // Import namespace 'http' from node.js.
+import * as URL from 'url';  // Import namespace 'url' from node.js.
+import * as PATH from 'path';  // Import namespace 'path' from node.js.
+
+const MIME_TYPE =
+{
+  '.ico' : 'image/x-icon',
+  '.html': 'text/html',
+  '.js'  : 'text/javascript',
+  '.json': 'application/json',
+  '.css' : 'text/css',
+  '.png' : 'image/png',
+  '.jpg' : 'image/jpeg',
+  '.wav' : 'audio/wav',
+  '.mp3' : 'audio/mpeg',
+  '.svg' : 'image/svg+xml',
+  '.pdf' : 'application/pdf',
+  '.doc' : 'application/msword',
+  '.eot' : 'appliaction/vnd.ms-fontobject',
+  '.ttf' : 'aplication/font-sfnt'
+};
 
 export class HttpServer
 {
   constructor(protected port: number) { }
+
+  public static get WWW_ROOT() { return './client'; }
 
   // ----------------- Public data ----------------------
 
@@ -52,25 +77,82 @@ export class HttpServer
   // Starts the http server.
   public start()
   {
-    this.httpServer =
-      http.createServer
-      (
-        (request, response) => { this.onRequest(request, response); }
-      );
+    this.httpServer = HTTP.createServer
+    (
+      (request, response) => { this.onRequest(request, response); }
+    );
 
-    this.httpServer.listen(this.port, '127.0.0.1');
-
-    this.isOpen = true;
+    this.httpServer.listen
+    (
+      this.port,
+      () => { this.onStartListening(); }
+    );
   }
 
   //----------------- Protected data --------------------
 
-  protected httpServer;
+  public httpServer;
   
   // ---------------- Event handlers --------------------
 
+  // Runs when server is ready and listening.
+  private onStartListening()
+  {
+    Syslog.log
+    (
+      "Http server is up and listening",
+      Message.Type.HTTP_SERVER,
+      AdminLevel.IMMORTAL
+    );
+
+    this.isOpen = true;
+  }
+
+  // Handles http requests.
+  private async onRequest(request, response)
+  {
+    ///console.log('Http request: ' + request.url);
+
+    // Parse URL.
+    const parsedUrl = URL.parse(request.url);
+    // Extract URL path.
+    let path = HttpServer.WWW_ROOT + parsedUrl.pathname;
+
+    // If root directory is accessed, serve 'index.html'.
+    if (request.url === "/")
+      path += 'index.html';
+
+    // Attempt to read the file.
+    let data = await FileSystem.readFile
+    (
+      path,
+      {
+        binary: true,
+        // Do not report http request errors to the server log,
+        // it would spam if someone player with typing random urls.
+        reportErrors: false
+      }
+    );
+
+    if (data === null)
+    {
+      response.statusCode = 404;
+      response.end('File ' + path + ' not found!');
+      return;
+    }
+
+    // Based on the URL path, extract the file extention.
+    const ext = PATH.parse(path).ext;
+
+    // Set mime type to the response header.
+    response.setHeader('Content-type', MIME_TYPE[ext] || 'text/plain');
+    // Send 'data' as response.
+    response.end(data, FileSystem.BINARY_FILE_ENCODING);
+  }
+
+  /*
   // Handles 'listening' event of telnet server.
-  protected onRequest(request, response)
+  private onRequest(request, response)
   {
     if (!this.isOpen)
       return;
@@ -81,14 +163,12 @@ export class HttpServer
 
       response.writeHead(200, { 'Content-Type': 'text/html' });
 
-      /*
-      response.write('<!doctype html>\n<html lang="en">\n' +
-        '\n<meta charset="utf-8">\n<title>Test web page on node.js</title>\n' +
-        '<style type="text/css">* {font-family:arial, sans-serif;}</style>\n' +
-        '\n\n<h1>Euro 2012 teams</h1>\n' +
-        '<div id="content"><p>The teams in Group D for Euro 2012 are:</p><ul><li>England</li><li>France</li><li>Sweden</li><li>Ukraine</li></ul></div>' +
-        '\n\n');
-      */
+      // response.write('<!doctype html>\n<html lang="en">\n' +
+      //   '\n<meta charset="utf-8">\n<title>Test web page on node.js</title>\n' +
+      //   '<style type="text/css">* {font-family:arial, sans-serif;}</style>\n' +
+      //   '\n\n<h1>Euro 2012 teams</h1>\n' +
+      //   '<div id="content"><p>The teams in Group D for Euro 2012 are:</p><ul><li>England</li><li>France</li><li>Sweden</li><li>Ukraine</li></ul></div>' +
+      //   '\n\n');
 
       let webPage = FileSystem.readFileSync("./src/editor/editor.html");
       let editorScript = FileSystem.readFileSync
@@ -127,4 +207,5 @@ export class HttpServer
       response.end();
     };
   }
+  */
 }
