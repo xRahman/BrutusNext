@@ -443,6 +443,8 @@ export module Message
     SYSTEM_ERROR,
     // Messages from telnet server.
     TELNET_SERVER,
+    // Messages from http server.
+    HTTP_SERVER,
     // Messages from websocket server.
     WEBSOCKET_SERVER,
     // Sent when ingame script fails to compile (for example due to syntax errors).

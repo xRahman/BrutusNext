@@ -109,7 +109,9 @@ export class WebSocketDescriptor
     //  opening a socket is asynchronnous. If an error occurs,
     //  'error' event is fired and onSocketError() is launched.)
     ///this.socket = new WebSocket('ws://localhost:4442');
-    this.socket = new WebSocket('ws://78.45.101.53:4442');
+    //this.socket = new WebSocket('ws://78.45.101.53:4442');
+    //this.socket = new WebSocket('ws://127.0.0.1:80');
+    this.socket = new WebSocket('ws://94.112.151.208:80');
 
     ///console.log('connect(). Status: ' + this.socket.readyState);
 

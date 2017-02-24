@@ -38,6 +38,7 @@ export class MessageColors
     SYSTEM_INFO:           '&g',
     SYSTEM_ERROR:          '&g',
     TELNET_SERVER:         '&g',
+    HTTP_SERVER:           '&g',
     WEBSOCKET_SERVER:      '&g',
     SCRIPT_COMPILE_ERROR:  '&g',
     SCRIPT_RUNTIME_ERROR:  '&g',
