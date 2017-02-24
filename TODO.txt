@@ -1,5 +1,107 @@
 TODO: Mapper.
 
+TODO: RenderData objekty by měly mít společného předka
+{ id: string; }
+- respektive možná ne RenderData, ale obecně editable objecty.
+  (idčko by mělo být html id odpovídajícího selectable elementu).
+
+IDEA:
+Protokolové classy (např. RoomData) by asi měly být SaveableObjecty
+- při odesílání se savnou do JSONu, při přijímání se loadnou z JSONu.
+
+IDEA:
+Když dám statické properties editovatelných objektů do /shared,
+tak je nebudu muset posílat ručně.
+- na druhou stranu v /shared nechci mít celý server-side kód,
+  takže by tam musel být jen interface a ten asi nemůže mít statické
+  properties. Nebo předek (classa), což je ale taky problém, protože
+  nemám vícenásobnou dědičnost.
+Takže to asi bude muset fungovat následovně:
+- Serverová classa (třeba Character) je zděděná z EditableObject.
+- Má nějaké statické properties, které popisují její nestatické properties
+  (co se dá editovat, jaké to má rozsahy a tak).
+- EditableObject musí umět vygenerovat JSON s těmito statickými parametry
+  a poslat ho klientu (to by se mělo dělat při startu stránky - nebo možná
+  až když chce user něco editovat, ať se to nedrží zbytečně).
+- klient to buď musí zpsat do statických properties příslušné editovatelné
+  klientské classy, nebo z toho číst nějak nepřímo.
+Hmm, to možná znamená, že celá idea protokolových class je špatně...
+
+class EditableObject extends SaveableObject
+{
+}
+
+class Entity extends EditableObject
+{
+  public id: string;
+}
+
+class Room extends Entity
+{
+  public name: string;
+  private static name = { editable: true; maxLength: 20; };
+}
+
+// Tohle vytvoří metoda getFormatJson() zděděná z EditableObjectu.
+FORMAT JSON:
+{
+  className: 'Room',
+  properties:
+  {
+    name:
+    {
+      type: 'string',
+      maxLength: 20
+    }
+  }
+}
+
+// Tohle vytvoří metoda saveToJson() zděděná ze SaveableObjectu.
+DATA JSON:
+{
+  className: 'Room',
+  name: 'Market Square'
+}
+
+--------
+
+client class RoomData extends SaveableObject
+{
+  public name: string;
+}
+// Je to SaveableObject, takže se umí načíst z JSONu
+// - není ovšem zaručeno, že bude mít příslušné properties
+//   (kromě toho ne všechny properties Roomu budu chtít posílat
+//    klientovi - a taky asi jak kdy, v edit módu budu chtít
+//    posílat jiné properties než v play módu)
+
+- Chci asi pokud možno rovnou editovat RoomRenderData
+  Nebo nechci?
+  - chci mít undo buffer, tzn. změny musí být prováděny formou transakcí
+    (i kdyby transakce nebyla rozdílová, ale prostě "použij tyto hodnoty").
+  - a chci je nejdřív potvrzovat na serveru.
+    Tzn. v edit boxu něco přepíšu, na server se odešle požadavek,
+    vrátí se ano/ne.
+    - Buď musím s dalším editováním čekat, dokud mi nepřijde odpověď,
+    - Nebo to musí být reverznutelná transakce.
+Asi bude lepší vždycky čekat na potvrzení ze serveru a až pak upravit
+render data.
+
+Možná by se to dalo celé zjednodušit tak, že mezi editorem a render datama
+nebude žádná vazba.
+- Tj. když chci editovat třeba room, tak si řeknu servevu o jeho edit data
+  (dostanu šablonu + rozsahy + aktuální hodnoty, celé jako jeden JSON)
+  Na tohle nepotřebuju vlastní classy, budu to prostě editovat jako abstraktní
+  hodnoty.
+- Na konci odešlu změny na server. Ten je zpracuje a pokud uzná za vhodné, tak
+  mi pošla updatnutá data, za kterých si klient updatne své render data.
+
+Tohle by znamenalo, že rollback musí umět server - to možná není úplně šikovné.
+(i když možná ne, klient může při rollbacku prostě poslat serveru původní stav)
+- 
+
+--------
+
 TODO: Dát roomám (jejich svg elementům) DOM idčka.
 
 TODO: Server musí klientu dát vědět, kde jsou rozsahy zón - nesmí jít
