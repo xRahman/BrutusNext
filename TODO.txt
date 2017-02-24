@@ -1,9 +1,24 @@
 TODO: Mapper.
 
-TODO: RenderData objekty by měly mít společného předka
-{ id: string; }
-- respektive možná ne RenderData, ale obecně editable objecty.
-  (idčko by mělo být html id odpovídajícího selectable elementu).
+TODO: websockets over http server.
+
+Prozatímní plán:
+----------------
+Editor bude čistě abstraktní
+  (EditableObject bude strukturu vytvářet, Editor (v klientu) ji bude
+   opracovávat)
+- klient si bude držet rollback ve formě stavů editovatelných objektů
+  (tzn. budu potřebovat umět takovej objekt naklonovat)
+  Undu prostě pošle na server původní stav (nebude undo na serveru).
+- commit editu pošla data na server
+- server pošle update grafických dat dle svého uvážení
+
+Komunikační protocol zatím nechám, jak je
+- protocol definují classy ve shared/protocol
+- server vždycky udělá něco jako new RoomData() a properties nasetuje
+  ručně (nebo možná automaticky podle toho, co je označeno jako 'send = true')
+
+
 
 IDEA:
 Protokolové classy (např. RoomData) by asi měly být SaveableObjecty

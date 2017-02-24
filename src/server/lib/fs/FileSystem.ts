@@ -20,43 +20,58 @@ let extfs = require('extfs');
 
 export class FileSystem
 {
-  private static get FILE_ENCODING() { return 'utf8'; }
+  public static get TEXT_FILE_ENCODING() { return 'utf8'; }
+  public static get BINARY_FILE_ENCODING() { return 'binary'; }
 
   public static get JSON_EXTENSION() { return '.json'; }
 
   // ---------------- Public methods -------------------- 
 
   // -> Returns data read from file, 'null' if file could not be read.
-  public static async readFile(path: string): Promise<any>
+  public static async readFile
+  (
+    path: string,
+    param =
+    {
+      binary: false,
+      reportErrors: true
+    }
+  )
+  : Promise<any>
   {
     if (!FileSystem.isPathRelative(path))
       return null;
 
     let data = null;
+    let encoding = param.binary ?
+      FileSystem.BINARY_FILE_ENCODING : FileSystem.TEXT_FILE_ENCODING;
 
     try
     {
       data = await promisifiedFS.readFile
       (
         path,
-        FileSystem.FILE_ENCODING
+        encoding
       );
     }
     catch (error)
     {
-      let reason = error.code;
+      if (param.reportErrors)
+      {
+        let reason = error.code;
 
-      // Let's be more specific - we are trying to load file so ENOENT
-      // means that file doesn't exist.
-      if (error.code === 'ENOENT')
-        reason = "File doesn't exist"
+        // Let's be more specific - we are trying to load file so ENOENT
+        // means that file doesn't exist.
+        if (error.code === 'ENOENT')
+          reason = "File doesn't exist"
 
-      Syslog.log
-      (
-        "Unable to load file '" + path + "': " + reason,
-        Message.Type.SYSTEM_ERROR,
-        AdminLevel.IMMORTAL
-      );
+        Syslog.log
+        (
+          "Unable to load file '" + path + "': " + reason,
+          Message.Type.SYSTEM_ERROR,
+          AdminLevel.IMMORTAL
+        );
+      }
 
       return null;
     }
@@ -77,7 +92,7 @@ export class FileSystem
       data = fs.readFileSync
       (
         path,
-        FileSystem.FILE_ENCODING
+        FileSystem.TEXT_FILE_ENCODING
       );
     }
     catch (error)
@@ -107,7 +122,7 @@ export class FileSystem
       (
         path,
         data,
-        FileSystem.FILE_ENCODING
+        FileSystem.TEXT_FILE_ENCODING
       );
     }
     catch (error)
