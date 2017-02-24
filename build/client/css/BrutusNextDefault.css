@@ -315,7 +315,7 @@
   stroke-width: 1.5;
   stroke-opacity: 0.8;
   /* Use 'transparent', not 'none' (so the whole area interacts with mouse) */
-  fill: transparent;
+  fill: black;
 }
 
 /* Nonexistent room when mouseovered */
@@ -327,8 +327,28 @@
   stroke: rgb(100, 100, 100);
   stroke-width: 3;
   stroke-opacity: 0.8;
+}
+
+/* Nonexistent room when selected (= it is being edited) */
+.SvgSelectedNonexistentRoom
+{
+  margin: 0;
+  padding: 0;
+  /* Note: stroke color is set programatically (it depends on terrain) */
+  stroke: rgb(80, 80, 80);
+  stroke-width: 1.5;
+  stroke-opacity: 0.8;
   /* Use 'transparent', not 'none' (so the whole area interacts with mouse) */
-  fill: transparent;
+  fill: grey;
+}
+
+/* Svg <line> representing an exit when mouseovered */
+.SvgExit:hover
+{
+  margin: 0;
+  padding: 0;
+  /* Note: stroke color is set programatically (it depends on terrain) */
+  stroke-width: 3;
 }
 
 /* Svg <line> representing an exit */
@@ -337,7 +357,7 @@
   margin: 0;
   padding: 0;
   /* Note: stroke color is set programatically (it depends on terrain) */
-  stroke-width: 1.5;
+  stroke-width: 2;
 }
 
 /* Svg <polygon> representing exit up or down */
