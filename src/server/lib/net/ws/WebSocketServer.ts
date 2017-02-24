@@ -38,9 +38,12 @@ import * as WebSocket from 'ws';
 import * as net from 'net';  // Import namespace 'net' from node.js
 import * as events from 'events';  // Import namespace 'events' from node.js
 
+/// TEST
+import * as http from 'http';  // Import namespace 'http' from node.js
+
 export class WebSocketServer
 {
-  constructor(protected port: number) { }
+  constructor(/* protected port: number */) { }
 
   // ----------------- Public data ----------------------
 
@@ -60,19 +63,41 @@ export class WebSocketServer
 
   // ---------------- Public methods --------------------
 
-  public getPort() { return this.port; }
+  ///public getPort() { return this.port; }
 
   // Starts the websocket server.
-  public start()
+  public start(httpServer: http.Server)
   {
     Syslog.log
     (
-      "Starting websocket server at port " + this.port,
+      ///"Starting websocket server at port " + this.port,
+      "Starting websocket server",
       Message.Type.SYSTEM_INFO,
       AdminLevel.IMMORTAL
     );
 
-    this.webSocketServer = new WebSocket.Server({ port: 4442 });
+    /*
+    /// TEST
+    let httpServer = http.createServer
+    (
+      function(request, response)
+      {
+        // Not important for us. We're writing WebSocket server, not HTTP server
+      }
+    );
+
+    httpServer.listen
+    (
+      80,
+      function()
+      {
+        console.log((new Date()) + " Server is listening on port " + 80);
+      }
+    );
+    */
+
+    ///this.webSocketServer = new WebSocket.Server({ port: 4442 });
+    this.webSocketServer = new WebSocket.Server({ server: httpServer });
 
     this.webSocketServer.on
     (

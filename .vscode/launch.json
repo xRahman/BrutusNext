@@ -11,7 +11,8 @@
             "program": "${workspaceRoot}/src/server/BrutusNextServer.ts",
             "stopOnEntry": false,
             "args": [],
-            "cwd": "${workspaceRoot}/build/server",
+            ///"cwd": "${workspaceRoot}/build/server",
+            "cwd": "${workspaceRoot}/build",
             "preLaunchTask": null,
             "runtimeExecutable": null,
             "runtimeArgs": [
