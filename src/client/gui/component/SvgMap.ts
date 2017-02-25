@@ -14,6 +14,9 @@ import {MapData} from '../../../client/gui/mapper/MapData';
 import {ExitRenderData} from '../../../client/gui/mapper/ExitRenderData';
 import {RoomRenderData} from '../../../client/gui/mapper/RoomRenderData';
 
+/// TEST:
+import {Packet} from '../../../shared/protocol/Packet';
+
 import d3 = require('d3');
 type d3Selection = d3.Selection<any, any, HTMLElement, any>;
 
@@ -825,6 +828,12 @@ export class SvgMap extends Component
   {
     console.log('onRoomMouseUp(): ' + d.getId());
 
+    /// TEST:
+    if (d.exists === false)
+    {
+      this.createRoom(d);
+    }
+
     if (this.roomDragData.origCoords !== null)
     {
       this.mapData.connect(this.roomDragData.origCoords, d.coords);
@@ -832,5 +841,22 @@ export class SvgMap extends Component
     }
 
     this.roomDragData.origCoords = null;
+  }
+
+  /// ------------- TEST -------------------
+
+  private createRoom(d: RoomRenderData)
+  {
+    // Create a Packet informing server that the room should be created.
+    let packet = new Packet();
+
+    let data =
+    {
+      coords: d.coords
+    }
+
+    packet.add(Packet.DataType.EDITOR_CREATE_ROOM, data);
+    
+    this.mapWindow.send(packet);
   }
 }

@@ -7,7 +7,9 @@
 
 'use strict';
 
-export class ExitData
+///import {PacketData} from '../../../shared/protocol/PacketData';
+
+export interface ExitInterface
 {
   /// Momentálně potřebuju vědět jen to, jestli exit do daného směru existuje.
   /// - Časem by tu mohlo být přetížení vodorovných exitů šikmo nahoru/dolů.

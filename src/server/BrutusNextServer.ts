@@ -20,6 +20,7 @@
 
 import {Utils} from '../server/lib/utils/Utils';
 import {Server} from '../server/lib/Server';
+import {TelnetServer} from '../server/lib/net/telnet/TelnetServer';
 import {Syslog} from '../server/lib/log/Syslog';
 import {Message} from '../server/lib/message/Message';
 import {AdminLevel} from '../server/lib/admin/AdminLevel';
@@ -133,10 +134,12 @@ process.on
 // - Return object imported from 'commander' module.
 function parseCmdlineParams()
 {
-  parser.option(
-      "-p, --port [portNumber]",
-      "Port to listen to telnet [default: " + Server.DEFAULT_TELNET_PORT + "]",
-      Server.DEFAULT_TELNET_PORT);
+  parser.option
+  (
+    "-p, --port [portNumber]",
+    "Port to listen to telnet [default: " + TelnetServer.DEFAULT_PORT + "]",
+    TelnetServer.DEFAULT_PORT
+  );
 
   parser.parse(process.argv);
 
