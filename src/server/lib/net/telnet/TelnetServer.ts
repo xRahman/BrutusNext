@@ -38,14 +38,16 @@ import * as events from 'events';  // Import namespace 'events' from node.js
 
 export class TelnetServer
 {
-  constructor(protected port: number) { }
-
   // ----------------- Public data ----------------------
 
   // Do we accept new connections?
   public isOpen = false;
 
+  public static get DEFAULT_PORT() { return 4443; }
+
   //------------------ Private data ---------------------
+
+  private port = TelnetServer.DEFAULT_PORT;
 
   private telnetServer: net.Server;
 
@@ -60,8 +62,10 @@ export class TelnetServer
   public getPort() { return this.port; }
 
   // Starts the telnet server.
-  public start()
+  public start(port: number = TelnetServer.DEFAULT_PORT)
   {
+    this.port = port;
+
     // Create a new raw socket server. Parameter is handler which will be
     // called when there is a new connection request.
     // (Handler is called using lambda expression (() => {}) to ensure that
@@ -89,12 +93,12 @@ export class TelnetServer
 
     Syslog.log
     (
-      "Starting telnet server at port " + this.port,
+      "Starting telnet server at port " + port,
       Message.Type.SYSTEM_INFO,
       AdminLevel.IMMORTAL
     );
 
-    this.telnetServer.listen(this.port);
+    this.telnetServer.listen(port);
   }
 
   // ---------------- Event handlers --------------------

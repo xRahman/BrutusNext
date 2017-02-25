@@ -29,22 +29,19 @@ import {AdminLevel} from '../../../../server/lib/admin/AdminLevel';
 import {Message} from '../../../../server/lib/message/Message';
 import {Server} from '../../../../server/lib/Server';
 import {Connection} from '../../../../server/lib/connection/Connection';
+import {HttpServer} from '../../../../server/lib/net/http/HttpServer';
 import {WebSocketDescriptor} from
   '../../../../server/lib/net/ws/WebSocketDescriptor';
 
 import * as WebSocket from 'ws';
 
 // Built-in node.js modules.
-import * as net from 'net';  // Import namespace 'net' from node.js
-import * as events from 'events';  // Import namespace 'events' from node.js
-
-/// TEST
-import * as http from 'http';  // Import namespace 'http' from node.js
+import * as net from 'net';  // Import namespace 'net' from node.js.
+import * as events from 'events';  // Import namespace 'events' from node.js.
+import * as http from 'http';  // Import namespace 'http' from node.js.
 
 export class WebSocketServer
 {
-  constructor(/* protected port: number */) { }
-
   // ----------------- Public data ----------------------
 
   // Do we accept new connections?
@@ -54,49 +51,20 @@ export class WebSocketServer
 
   private webSocketServer: WebSocket.Server = null;
 
-  private static events =
-  {
-    NEW_CONNECTION: 'connection',
-    SERVER_STARTED_LISTENING: 'listening',
-    SERVER_ERROR: 'error'
-  }
-
   // ---------------- Public methods --------------------
 
-  ///public getPort() { return this.port; }
-
-  // Starts the websocket server.
+  // Starts the websocket server inside a http server.
   public start(httpServer: http.Server)
   {
     Syslog.log
     (
-      ///"Starting websocket server at port " + this.port,
       "Starting websocket server",
       Message.Type.SYSTEM_INFO,
       AdminLevel.IMMORTAL
     );
 
-    /*
-    /// TEST
-    let httpServer = http.createServer
-    (
-      function(request, response)
-      {
-        // Not important for us. We're writing WebSocket server, not HTTP server
-      }
-    );
-
-    httpServer.listen
-    (
-      80,
-      function()
-      {
-        console.log((new Date()) + " Server is listening on port " + 80);
-      }
-    );
-    */
-
-    ///this.webSocketServer = new WebSocket.Server({ port: 4442 });
+    // Websocket server runs inside a http server so the same port can be used
+    // (it is possible because WebSocket protocol is an extension of http).
     this.webSocketServer = new WebSocket.Server({ server: httpServer });
 
     this.webSocketServer.on
@@ -105,9 +73,12 @@ export class WebSocketServer
       (socket) => { this.onNewConnection(socket); }
     );
 
-    // Unlike telnet server, websocket werver is (probably) up immediately,
+    // Unlike telnet server, websocket server is up immediately,
     // so we don't have to register handler for 'listening' event
     // (in fact, there is no such event on websocket server).
+    //   But since the websocket server runs inside a http server,
+    // it must be started after onStartListening() is fired on http
+    // server.
     Syslog.log
     (
       "Websocket server is up and listening to new connections",
@@ -116,121 +87,9 @@ export class WebSocketServer
     );
 
     this.isOpen = true;
-
-    /*
-    // Create a new raw socket server. Parameter is handler which will be
-    // called when there is a new connection request.
-    // (Handler is called using lambda expression (() => {}) to ensure that
-    // corect 'this' will be passed to it. )
-    this.telnetServer = net.createServer
-    (
-      (socket) => { this.onNewConnection(socket); }
-    );
-
-    // Register handler for server errors (like attempt to run the server
-    // on an unavailable port).
-    this.telnetServer.on
-    (
-      TelnetServer.events.SERVER_ERROR,
-      (error) => { this.onServerError(error); }
-    );
-
-    // Register handler to open the server to the new connections when
-    // telnet server is ready (when 'listening' event is emited).
-    this.telnetServer.on
-    (
-      TelnetServer.events.SERVER_STARTED_LISTENING,
-      () => { this.onServerStartsListening(); }
-    );
-
-    Syslog.log
-    (
-      "Starting telnet server at port " + this.port,
-      Message.Type.SYSTEM_INFO,
-      AdminLevel.IMMORTAL
-    );
-
-    this.telnetServer.listen(this.port);
-    */
   }
-  
 
   // ---------------- Event handlers --------------------
-
-  /*
-  // Handles 'listening' event of telnet server.
-  private onServerStartsListening()
-  {
-    this.isOpen = true;
-
-    Syslog.log
-    (
-      "Telnet server is up and listening to new connections",
-      Message.Type.TELNET_SERVER,
-      AdminLevel.IMMORTAL
-    );
-  }
-
-  // Handles 'error' event of telnet server.
-  private onServerError(error)
-  {
-    switch (error.code)
-    {
-      case 'EADDRINUSE':
-        FATAL_ERROR("Cannot start telnet server on port"
-          + " " + this.port + ": Address is already in use.\n"
-          + " Do you have a MUD server already running?");
-        break;
-
-      case 'EACCES':
-        FATAL_ERROR("Cannot start telnet server on port"
-          + " " + this.port + ": Permission denied.\n"
-          + " Maybe you are trying to start it on a priviledged"
-          + " port without being root?");
-        break;
-
-      default:
-        FATAL_ERROR("Cannot start telnet server on port"
-          + " " + this.port + ": Unknown error");
-        break;
-    }
-  }
-
-  // This handler is registered directly by net.createServer()
-  // (it processes a new connection request)
-  private async onNewConnection(socket: net.Socket)
-  {
-    Syslog.log
-    (
-      "Received a new connection request from"
-      + " " + socket.remoteAddress,
-      Message.Type.TELNET_SERVER,
-      AdminLevel.IMMORTAL
-    );
-
-    if (!this.isServerOpen(socket))
-      return;
-
-    /// Tady by se asi resil IP ban. Zatim si to tu necham
-        // if (this.isBanned(s.remoteAddress, 'IP')) {
-        //   log('connection from ' + s.remoteAddress + ' rejected (banned).');
-        //   return;
-        // }
-
-    /// Nevim, k cemu je tohle dobre, ale mozna to bude potreba, aby se dalo
-    /// k obyc socketum pristupovat stejne jako k websocketum, tak si to tu
-    /// zatim necham.
-    ///s.socket = s; // conform to the websocket object to make easier to handle
-
-    let connection = await this.createConnection(socket);
-
-    if (connection === null)
-      // Error is already reported by createConnection().
-      return;
-    
-    connection.startAuthenticating();
-  }
-  */
 
   private async onNewConnection(socket: WebSocket)
   {

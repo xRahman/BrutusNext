@@ -4,42 +4,18 @@
   Implements http server.
 */
 
-/*
-  K vyzkouseni je to na adrese http://127.0.0.1:4445
-
-  Prozatim je tam natvrdo hozene editorove schema (v souboru schema.js),
-  slouzi to jen jako proof of concept.
-
-  Vyhledove by to chtelo nepouzivat http server, ale provozovat to pod
-  websocket serverem spolu s hernim klientem.
-
-  (Editor je client-side skript, ktery nedela nic jineho, nez ze z daneho
-  JSON schematu vygeneruje prislusny formular a umi vratit naeditovany objekt.
-  Posilani objektu zpet na server uz si musim zaridit sam, takze to klidne muze
-  bezet pres websockety.)
-*/
-
-/*
-  IDEA je, ze vsechny herni objekty (respektive jejich datova cast) budou
-  umet vygenerovat JSON schema pro editor. To ostatne neni az tak od veci,
-  protoze soucasti schematu jsou povolene rozsahy hodnot a takove veci.
-
-  Nasledne se kazdy objekt bude umet nainicializovat z toho, co vrati editor,
-  coz uz by ale objekty umet mely, protoze to je proste loadFromJSON() stejne
-  jako pri loadovani ze souboru.
-*/
-
 'use strict';
 
 import {Syslog} from '../../../../server/lib/log/Syslog';
 import {AdminLevel} from '../../../../server/lib/admin/AdminLevel';
 import {FileSystem} from '../../../../server/lib/fs/FileSystem';
 import {Message} from '../../../../server/lib/message/Message';
+import {WebSocketServer} from '../../../../server/lib/net/ws/WebSocketServer';
 
 // Built-in node.js modules.
-import * as HTTP from 'http';  // Import namespace 'http' from node.js.
-import * as URL from 'url';  // Import namespace 'url' from node.js.
-import * as PATH from 'path';  // Import namespace 'path' from node.js.
+import * as http from 'http';  // Import namespace 'http' from node.js.
+import * as url from 'url';  // Import namespace 'url' from node.js.
+import * as nodePath from 'path';  // Import namespace 'path' from node.js.
 
 const MIME_TYPE =
 {
@@ -61,7 +37,7 @@ const MIME_TYPE =
 
 export class HttpServer
 {
-  constructor(protected port: number) { }
+  constructor() { }
 
   public static get WWW_ROOT() { return './client'; }
 
@@ -72,26 +48,39 @@ export class HttpServer
 
   public getPort() { return this.port; }
 
+  public static get DEFAULT_PORT() { return 80; }
+
+  // --------------- Public accessors -------------------
+
+  public getServer() { return this.httpServer; }
+
   // ---------------- Public methods --------------------
 
   // Starts the http server.
-  public start()
+  public start(port: number = HttpServer.DEFAULT_PORT)
   {
-    this.httpServer = HTTP.createServer
+    this.port = port;
+    
+    this.httpServer = http.createServer
     (
       (request, response) => { this.onRequest(request, response); }
     );
 
     this.httpServer.listen
     (
-      this.port,
+      port,
       () => { this.onStartListening(); }
     );
   }
 
-  //----------------- Protected data --------------------
+  //------------------ Private data ---------------------
 
-  public httpServer;
+  private port = HttpServer.DEFAULT_PORT;
+
+  private httpServer: http.Server = null;
+
+  // WebSocketServer runs inside a http server.
+  private webSocketServer = new WebSocketServer();
   
   // ---------------- Event handlers --------------------
 
@@ -106,15 +95,16 @@ export class HttpServer
     );
 
     this.isOpen = true;
+
+    // Start a websocket server inside the http server.
+    this.webSocketServer.start(this.httpServer);
   }
 
   // Handles http requests.
   private async onRequest(request, response)
   {
-    ///console.log('Http request: ' + request.url);
-
     // Parse URL.
-    const parsedUrl = URL.parse(request.url);
+    const parsedUrl = url.parse(request.url);
     // Extract URL path.
     let path = HttpServer.WWW_ROOT + parsedUrl.pathname;
 
@@ -142,7 +132,7 @@ export class HttpServer
     }
 
     // Based on the URL path, extract the file extention.
-    const ext = PATH.parse(path).ext;
+    const ext = nodePath.parse(path).ext;
 
     // Set mime type to the response header.
     response.setHeader('Content-type', MIME_TYPE[ext] || 'text/plain');
