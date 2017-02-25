@@ -59,9 +59,10 @@ export class Server
   // (There is only one such instance per server.)
 
   private game = null;
-  private telnetServer = new TelnetServer(Server.DEFAULT_TELNET_PORT);
-  private webSocketServer = new WebSocketServer(/*Server.DEFAULT_WEBSOCKET_PORT*/);
-  private httpServer = new HttpServer(Server.DEFAULT_HTTP_PORT);
+  private telnetServer = new TelnetServer();
+  /// Http server also runs a websocket server inside it.
+  private httpServer = new HttpServer();
+
   private idProvider = new IdProvider(this.timeOfBoot);
 
   // --------- idLists ---------
@@ -71,8 +72,6 @@ export class Server
   private accounts = new AccountList();
 
   // -------- managers --------
-  // Unlike idLists, managers store actual instances, not just references.
-
   // Contains all entities (accounts, connections, all game entities).
   private entityManager = new EntityManager(this.idProvider);
 
@@ -121,11 +120,6 @@ export class Server
     return Server.getInstance().telnetServer;
   }
 
-  public static get webSocketServer()
-  {
-    return Server.getInstance().webSocketServer;
-  }
-
   public static get flagNamesManager()
   {
     return Server.getInstance().flagNamesManager;
@@ -140,11 +134,6 @@ export class Server
   {
     return Server.getInstance().prototypeManager;
   }
-
-  public static get DEFAULT_TELNET_PORT() { return 4443; }
-  ///public static get DEFAULT_WEBSOCKET_PORT() { return 4442; }
-  ///public static get DEFAULT_HTTP_PORT() { return 4445; }
-  public static get DEFAULT_HTTP_PORT() { return 80; }
 
   // ---------------- Static methods --------------------
 
@@ -300,8 +289,8 @@ export class Server
     }
 
     this.startTelnetServer(telnetPort);
+    /// Http server also starts a websocket server inside it.
     this.startHttpServer();
-    this.startWebSocketServer();
   }
 
   // --------------- Protected methods ------------------
@@ -326,17 +315,6 @@ export class Server
     }
 
     this.httpServer.start();
-  }
-
-  protected startWebSocketServer()
-  {
-    if (this.webSocketServer.isOpen === true)
-    {
-      ERROR("Websocket server is already running");
-      return;
-    }
-
-    this.webSocketServer.start(this.httpServer.httpServer);
   }
 }
 
