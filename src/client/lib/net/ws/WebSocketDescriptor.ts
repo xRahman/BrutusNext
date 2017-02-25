@@ -6,8 +6,9 @@
 
 'use strict';
 
-import {ERROR} from '../../error/ERROR';
-import {Connection} from '../../connection/Connection';
+import {Packet} from '../../../../shared/protocol/Packet';
+import {ERROR} from '../../../../client/lib/error/ERROR';
+import {Connection} from '../../../../client/lib/connection/Connection';
 
 export class WebSocketDescriptor
 {
@@ -268,11 +269,23 @@ export class WebSocketDescriptor
   {
     ///console.log('Received message: ' + event.data);
 
-    /// TODO: Parsovani protokolu.
-    ///   Do scrollwindow by se nemel posilat primo event.data,
-    //    ale pouze event.data['mudMessage']
+    let packet = JSON.parse(event.data);
 
-    this.connection.receiveMudMessage(event.data);
+    for (let part of packet.parts)
+    {
+      switch (part.type)
+      {
+        case Packet.DataType.MUD_MESSAGE:
+          this.connection.receiveMudMessage(part.data);
+          break;
+        
+        case Packet.DataType.EDITOR_INPUT:
+          break;
+
+        case Packet.DataType.EDITOR_OUTPUT:
+          break;
+      }
+    } 
   }
 
   private onSocketError(event: ErrorEvent)

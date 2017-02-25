@@ -443,7 +443,7 @@ export class Connection extends Entity
       return;
     }
 
-    this.socketDescriptor.send(message.compose());
+    this.socketDescriptor.sendMudMessage(message.compose());
   }
 
   // --------------- Private methods --------------------

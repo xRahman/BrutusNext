@@ -1,6 +1,45 @@
 TODO: Mapper.
 
+TODO: Parsování protokolu v klientu (WebsocketDescriptor.onReceiveMessage())
+ je třeba předělat - hrabu do dat naslepo (bez classy nebo interfacu), to
+ rozhodně není dobře.
+
+IDEA: Teoreticky by šlo do serverových class dát XxxData jako vložený
+  objekt. Sice to nebude moct bejt SaveableObject, ale může to bejt
+  zděděné ze SerializableObjectu, což umožní naučit SaveableObject
+  savovat properties těchto typů.
+- tohle má smysl dělat jen pokud by se tam a zpět posílal velkej kus
+  properties nějaké classy.
+
+
+TODO: Zrušit flagu Exists na RoomData
+- RoomData bude plain object (byť s interfacem) a RoomRenderData
+  bude na něj mít odkaz - tudíž ten odkaz může být null, když room
+  neexistuje.
+
+TODO: vymyslet, kam s metodama z RoomData.
+-- asi zavést abstraktní classu, ze které bude dědit RoomRenderData
+  (a nechat ji v /shared - možná /shared/game).
+
+IDEA: Možná pojmenovávat interfacy INěco. Pak by mohl být IRoom (nebo RoomInterface)
+
+K čemu vlastně potřebuju classu PacketData?
+- k ničemu?
+- aha, kvůli dědění. Což je ale možná zbytečný.
+
+IDEA: SaveableObject rozdělit na:
+SerializableObject
+- load/save to json
+SaveableObject extends SerializableObject
+- load/save to file
+
+
 TODO: websockets over http server.
+[done]
+
+TODO: Zabalit mud messages do protokolu.
+
+TODO: Založení roomy.
 
 Prozatímní plán:
 ----------------

@@ -12,6 +12,9 @@ import {WebSocketDescriptor} from
 import {ScrollWindow} from '../../../client/gui/component/ScrollWindow';
 import {MapWindow} from '../../../client/gui/component/MapWindow';
 
+/// TEST:
+import {Packet} from '../../../shared/protocol/Packet';
+
 export class Connection
 {
   constructor (private socketDescriptor: WebSocketDescriptor)
@@ -43,14 +46,29 @@ export class Connection
   }
 
   // Sends 'data' to the connection.
-  public send(data: string)
+  public sendCommand(data: string)
   {
+    /// TODO: Vytvoření packetu
+    let packet = new Packet();
+    packet.add(Packet.DataType.COMMAND, data);
+
     // If the connection is closed, any user command
     // (even an empty one) triggers reconnect attempt.
     if (!this.socketDescriptor.isSocketOpen())
       this.socketDescriptor.reConnect();
     else
       this.socketDescriptor.send(data);
+  }
+
+  // Sends 'data' to the connection.
+  public send(packet: Packet)
+  {
+    // If the connection is closed, any user command
+    // (even an empty one) triggers reconnect attempt.
+    if (!this.socketDescriptor.isSocketOpen())
+      this.socketDescriptor.reConnect();
+    else
+      this.socketDescriptor.send(packet.toJson());
   }
 
   // Receives 'message' from the connection
