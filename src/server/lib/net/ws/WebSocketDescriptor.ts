@@ -6,6 +6,8 @@
 
 'use strict';
 
+import {Packet} from '../../../../shared/protocol/Packet';
+///import {PacketData} from '../../../../shared/protocol/PacketData';
 import {ERROR} from '../../../../server/lib/error/ERROR';
 import {Utils} from '../../../../server/lib/utils/Utils';
 import {Syslog} from '../../../../server/lib/log/Syslog';
@@ -33,28 +35,12 @@ export class WebSocketDescriptor extends SocketDescriptor
 
   // -------------- Static class data -------------------
 
-  /*
-  // Newlines are normalized to this sequence both before
-  // sending (in Message.compose()) and after receiving
-  // (in TelnetSocketDescriptor.onSocketReceivedData()).
-  static get NEW_LINE() { return '\r\n'; }
-  */
-
   //------------------ Private data ---------------------
 
   // Remote address url.
   private url: string = null;
 
   private socket: WebSocket = null;
-
-  /*
-  private static events =
-  {
-    SOCKET_RECEIVED_DATA: 'data',
-    SOCKET_ERROR: 'error',
-    SOCKET_CLOSE: 'close'
-  }
-  */
 
   // ---------------- Public methods --------------------
 
@@ -114,15 +100,21 @@ export class WebSocketDescriptor extends SocketDescriptor
     return socket.upgradeReq.connection.remoteAddress;
   }
 
-  // Sends a string to the user.
-  public send(data: string)
+  // Sends a mud message to the user.
+  public sendMudMessage(message: string)
   {
-    /// TODO: Zatím posílám přímo mud message, výhledově
-    /// je to potřeba zabalit do JSONu.
+    let packet = new Packet();
+    packet.add(Packet.DataType.MUD_MESSAGE, message);
 
+    this.send(packet);
+  }
+
+  // Sends a string to the user.
+  public send(packet: Packet)
+  {
     try
     {
-      this.socket.send(data);
+      this.socket.send(packet.toJson());
     }
     catch (error)
     {

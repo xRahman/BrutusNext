@@ -8,7 +8,7 @@
 'use strict';
 
 import {Coords} from '../../../shared/type/Coords';
-import {ExitData} from '../../../shared/protocol/world/ExitData';
+import {ExitInterface} from '../../../shared/protocol/world/ExitData';
 
 // Maps exit names to respective offsets in grid.
 const EXITS =
@@ -87,7 +87,7 @@ export class RoomData
   public coords: Coords = null;
   
   // Hasmap indexed by shortened exit names ('n, 'sw', 'nwu', etc.).
-  public exits = new Map<string, ExitData>();
+  public exits = new Map<string, ExitInterface>();
 
   // ---------------- Public methods --------------------
 
@@ -100,10 +100,7 @@ export class RoomData
 
   public hasExit(exitName: string)
   {
-    if (this.exits.has(exitName))
-      return true;
-
-    return false;
+    return this.exits.has(exitName);
   }
 
   // -> Returns coordinates in specified 'direction'.

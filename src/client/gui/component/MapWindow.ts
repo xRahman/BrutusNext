@@ -10,6 +10,9 @@ import {Window} from '../../../client/gui/component/Window';
 import {SvgMap} from '../../../client/gui/component/SvgMap';
 import {Connection} from '../../../client/lib/connection/Connection';
 
+/// TEST:
+import {Packet} from '../../../shared/protocol/Packet';
+
 import $ = require('jquery');
 import d3 = require('d3');
 
@@ -106,6 +109,12 @@ export class MapWindow extends Window
   public getContentHeight()
   {
     return this.$content.height();
+  }
+
+  /// TEST
+  public send(packet: Packet)
+  {
+    this.connection.send(packet);
   }
 
   // --------------- Protected methods ------------------
