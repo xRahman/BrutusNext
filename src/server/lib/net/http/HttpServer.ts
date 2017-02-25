@@ -15,6 +15,7 @@ import {WebSocketServer} from '../../../../server/lib/net/ws/WebSocketServer';
 // Built-in node.js modules.
 import * as http from 'http';  // Import namespace 'http' from node.js.
 import * as url from 'url';  // Import namespace 'url' from node.js.
+// 'nodePath' to prevent conflicts with variable 'path'.
 import * as nodePath from 'path';  // Import namespace 'path' from node.js.
 
 const MIME_TYPE =

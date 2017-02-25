@@ -79,7 +79,7 @@ export class ScrollWindow extends Window
     this.output.scrollToBottom();
 
     // Send the command to the connection.
-    this.connection.send(command);
+    this.connection.sendCommand(command);
   }
 
   // Outputs a client system message.

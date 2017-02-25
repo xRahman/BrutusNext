@@ -154,7 +154,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
   }
 
   // Sends a string to the user.
-  public send(data: string)
+  public sendMudMessage(data: string)
   {
     // Convert MUD color codes to ANSI color codes.
     // Note: this only works for telnet and classic MUD clients.

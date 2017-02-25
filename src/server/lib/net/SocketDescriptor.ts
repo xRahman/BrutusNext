@@ -70,7 +70,7 @@ export abstract class SocketDescriptor
   ///public abstract initSocket();
 
   // Sends a string to the user.
-  public abstract send(data: string);
+  public abstract sendMudMessage(data: string);
 
   // Closes the socket, ending the connection.
   public abstract closeSocket();
