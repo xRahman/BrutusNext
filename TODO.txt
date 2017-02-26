@@ -1,5 +1,11 @@
 TODO: Mapper.
 
+TODO pro dnešek:
+- posílat commandy jako packety
+- parsovat commandy na serveru
+- parsovat EDITOR_CREATE_ROOM a opravdu založit roomu
+- poslat zpět klientovi MAP_INFO roomy
+
 TODO: Parsování protokolu v klientu (WebsocketDescriptor.onReceiveMessage())
  je třeba předělat - hrabu do dat naslepo (bez classy nebo interfacu), to
  rozhodně není dobře.
@@ -22,6 +28,7 @@ TODO: vymyslet, kam s metodama z RoomData.
   (a nechat ji v /shared - možná /shared/game).
 
 IDEA: Možná pojmenovávat interfacy INěco. Pak by mohl být IRoom (nebo RoomInterface)
+- asi spíš ne
 
 K čemu vlastně potřebuju classu PacketData?
 - k ničemu?

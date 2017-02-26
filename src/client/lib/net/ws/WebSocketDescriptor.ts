@@ -269,7 +269,9 @@ export class WebSocketDescriptor
   {
     ///console.log('Received message: ' + event.data);
 
-    let packet = JSON.parse(event.data);
+    let packet = new Packet();
+    // Copy all own enumerable properties from json data.
+    Object.assign(packet, JSON.parse(event.data));   
 
     for (let part of packet.parts)
     {
