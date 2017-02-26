@@ -67,6 +67,13 @@ export class HttpServer
       (request, response) => { this.onRequest(request, response); }
     );
 
+    Syslog.log
+    (
+      "Starting http server at port " + port,
+      Message.Type.SYSTEM_INFO,
+      AdminLevel.IMMORTAL
+    );
+
     this.httpServer.listen
     (
       port,
