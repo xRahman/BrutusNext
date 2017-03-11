@@ -9,5 +9,9 @@
   // Controls the font size.
   "editor.fontSize": 20,
 
-  "window.zoomLevel": -0.2
+  "window.zoomLevel": -0.2,
+  "workbench.colorTheme": "Visual Studio Light",
+
+  // Whether auto fetching is enabled.
+  "git.autofetch": false
 }
