@@ -34,11 +34,23 @@ const vm = require('vm');
 
 export class VirtualMachine
 {
+  // Template of sandbox object used for compiling mud scripts.
+  private static getScriptCompilationSandbox()
+  {
+    //   'result' will contain the function that will be created by compiling
+    //            the vm script.
+    //   'delay' is supposed to be a function. It will be set prior
+    //            to running the vm script.
+ /// TEST: console je tu docasne, ve finale ji skripty nebudou potrebovat
+ /// (a ani by ji nemeli vydet, console umoznuje savovat na disk a tak).
+    return { console: console, result: null /*, delay: null*/ };
+  }
+
   // Contextifying a sandbox takes a few miliseconds so we will
   // reuse a single contextifyied sandbox object for compilation
   // of all mud scripts.
   public static contextifiedScriptCompilationSandbox =
-    vm.createContext(VirtualMachine.scriptCompilationSandbox);
+    vm.createContext(VirtualMachine.getScriptCompilationSandbox());
 
   /*
   // Contextifying a sandbox takes a few miliseconds so we will
@@ -180,15 +192,5 @@ export class VirtualMachine
   }
   */
   
-  // Template of sandbox object used for compaling mud scripts.
-  private static get scriptCompilationSandbox()
-  {
-    //   'result' will contain the function that will be created by compiling
-    //            the vm script.
-    //   'delay' is supposed to be a function. It will be set prior
-    //            to running the vm script.
- /// TEST: console je tu docasne, ve finale ji skripty nebudou potrebovat
- /// (a ani by ji nemeli vydet, console umoznuje savovat na disk a tak).
-    return { console: console, result: null /*, delay: null*/ };
-  }
+
 }
