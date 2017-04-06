@@ -1,3 +1,200 @@
+
+IDEA: Názvy adresářů (/shared a tak) dát CamelCasem
+- umožní to víceslovné názvy bez podtržítek
+
+TODO: SaveableObject rozdělit na:
+- Serializable
+- Saveable
+
+TODO: Classu connection rozdělit (respektive z ní zdědit):
+  TelnetConnection a WebSocketConnection
+  - důvod: Různé vnitřní stavy.
+
+----------------------------------------------------------------------------
+
+Úvahy o architektuře aplikace:
+-------------------------------
+
+Při posílání mezi klientem a serverem potřebuju statické atributy
+jen při odesílání. Z toho plyne, že by šlo mít:
+
+- Ve /Shared pouze interface
+- Z něj zděděnou classu na serveru a classu na clientu
+  (každou zděděnou ze Serializable)
+- v classe na serveru by byly statické atributy pro odesílání dat na clienta
+- v classe na klientu by byly statické atributy pro odesílání dat na server
+
+Co v případě editoru? Tam bych to potřeboval na jednom místě...
+- teoreticky ne, pokud se v editoru bude s editovanými objekty pracovat
+  obecně (jako s Object, respektive teda Serializable) a posílat zpět
+  se bude všechno, co obsahují.
+
+Tohle by znamenalo:
+- serializační metoda by měla dostávat parametr:
+  'saved'
+  'sendToClient'
+  'sendToServer'
+  'all'
+  - s tím, že 'all' prostě serializuje všechno bez ohledu na statické atributy.
+    (Použije se to při odesílání zeditovaného objektu zpět na server.)
+
+-----------------
+
+Další úvahy:
+- protokolem se posílají entity
+- klient i server by měly mít vlastní EntityManager (tedy vlastní instanci).
+
+
+-------------------------
+
+Alternativně by šlo neposílat entity, ale pouze jejich datovou část.
+Tj.by bylo:
+
+Shared:
+
+class Shared/RoomData extends Serializable
+{
+  description: string;
+}
+
+Client:
+
+class Client/Room extends ClientEntity
+{
+  data: RoomData;
+}
+
+Server:
+
+class Server/Room extends GameEntity
+{
+  data: RoomData;
+
+  processCommand()
+  {
+    // zděděno z CommandInterpretteru.
+  }
+}
+
+----------------------------------------------------------------------------
+
+Úvahy o class specech:
+========================
+
+Species hierarchy:
+-------------------
+
+class Mob
+{
+  description = 'Generic mob';
+}
+
+class Orc extends Mob
+{
+  description = 'Humanoid with big fangs.';
+}
+
+// Tohle je problém - rozbočka ve stromu dědičnosti.
+class OrcShaman extends Orc
+{
+  ...
+}
+
+class GreyOrc extends Orc
+{
+  description = 'Grey-skinned humanoid with big fangs.';
+
+  fightSpec = unarmedHumanoidFightSpec;
+}
+
+class GreyOrcShaman
+{
+  // Respektive přes equipment slot - princip je stejný.
+  apparel = 'Dressed in shaggy robes.';
+
+  fightSpec = shaman;
+
+  builderSpell = 'Fell Bolt';
+  comboSpell = 'Fell Blast';
+}
+
+class GreyOrcSlayer
+{
+  apparel = 'Dressed in shaggy armour.';
+}
+
+
+Adventuring class hierarchy:
+---------------------------
+
+class Adventurer
+{
+  doAction() {}
+}
+
+class Sorcerer extends Adventurer
+{
+  doAction()
+  {
+    castSpell();
+  }
+
+  castSpell() {}
+}
+
+class OrcishSorcerer extends Sorcerer
+{
+  castSpell() // Overrides Sorcerer.castSpell();
+  {
+    cast('Fell Blast');
+  }
+}
+
+
+Co chci, aby fungovalo:
+-------------------------
+
+- Mob se převlékne do jiných hadrů (maskování by mělo zahrnovat i jméno a tak).
+
+- Mob si iluzí změní name a description (ale zůstanou mu bojové staty a tak).
+
+- Mob se shape-changne do jiného tvora
+  (získá tím úplně všechno od vzhledu po combat staty)
+- Mob přezbrojí nebo změní classu (playerský multiclass)
+
+- Mob se jinak chová v boji, jinak mimo boj, jinak ve speciálních situacích
+  (svatba, slavnost ve vesnici).
+
+
+Rozbor řešení:
+
+- Fight specy by měly pracovat na objektu, který má příslušné resources
+  (když castím za holy power, musím mít holy power).
+
+- Asi bych fakt měl mít jednotlivé pluginy (specy), tj. můžu vyměnit třeba
+  svůj combat spec (z OrcShaman na Crocodile, protože jsem se shapeshiftnul).
+
+- Pluginy by měly mít prioritu (možná různou v různých situacích).
+  (Když jsem v boji, combat plugin nahrazuje všechny ostatní. Když je slavnost,
+   přepnu se z 'ordinary life' na 'celebration');
+
+Jsou v zásadě dvě možnosti, jak k tomu přistoupit:
+1) předek (asi mob) bude mít hromadu funkcí s jednotlivými variantami, nejspíš
+  v obecné formě (tj. cast('combat spell 1') a co je 'combat spell 1' si mohou
+  potomci přetížit).
+  - v proměnné by pak měl nastavenou tu metodu, která se zrovna má používat
+  Nevýhoda: Veškerá funkcionalita by musela být hodně vysoko v hierarchii.
+  (Tudíž by se to asi nedalo rozumně skriptovat.)
+2) pluginy budou typescriptové classy
+  - pak bude ale třeba pořešit komunikaci mezi pluginem a entitou, která
+    ho používá.
+    - některé properties mohou mít pluginy v sobě (třeba holy power v combat
+      pluginu paladina), na jiné ale asi budou muset hrabat přes public
+      properties moba, který je vlastní.
+    - každý plugin je stavový automat (drží si v sobě interní stav).
+
+----------------------------------------------------------------------------
+
 TODO: Mapper.
 
 TODO pro dnešek:
