@@ -6,7 +6,7 @@
 
 'use strict';
 
-import {ERROR} from '../../../server/lib/error/ERROR';
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
 import {Script} from '../../../server/lib/prototype/Script';
 import {Server} from '../../../server/lib/Server';

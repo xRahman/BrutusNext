@@ -36,7 +36,7 @@
 
 'use strict';
 
-import {ERROR} from '../../../server/lib/error/ERROR';
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {AttributableClass} from '../../../server/lib/class/AttributableClass';
 
 export class InstantiableClass extends AttributableClass

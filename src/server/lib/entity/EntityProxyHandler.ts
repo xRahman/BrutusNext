@@ -28,8 +28,8 @@
 
 'use strict';
 
-import {ERROR} from '../../../server/lib/error/ERROR';
-import {FATAL_ERROR} from '../../../server/lib/error/FATAL_ERROR';
+import {ERROR} from '../../../shared/lib/error/ERROR';
+import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 import {Entity} from '../../../server/lib/entity/Entity';
 import {InvalidValueProxyHandler}
   from '../../../server/lib/entity/InvalidValueProxyHandler';

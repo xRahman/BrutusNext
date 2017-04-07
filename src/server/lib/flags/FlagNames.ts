@@ -12,7 +12,7 @@
 
 'use strict';
 
-import {ERROR} from '../../../server/lib/error/ERROR';
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Flags} from '../../../server/lib/flags/Flags';
 import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
 
