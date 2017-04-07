@@ -86,7 +86,7 @@ export class RoomData
   // Absolute coordinates (in the world).
   public coords: Coords = null;
   
-  // Hasmap indexed by shortened exit names ('n, 'sw', 'nwu', etc.).
+  // Hasmap indexed by shortened exit names ('n', 'sw', 'nwu', etc.).
   public exits = new Map<string, ExitInterface>();
 
   // ---------------- Public methods --------------------
