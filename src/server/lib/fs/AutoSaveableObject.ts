@@ -14,7 +14,7 @@
 
 'use strict';
 
-import {ERROR} from '../../../server/lib/error/ERROR';
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
 import {Server} from '../../../server/lib/Server';

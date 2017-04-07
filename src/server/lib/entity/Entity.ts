@@ -6,8 +6,8 @@
 
 'use strict';
 
-import {ERROR} from '../../../server/lib/error/ERROR';
-import {FATAL_ERROR} from '../../../server/lib/error/FATAL_ERROR';
+import {ERROR} from '../../../shared/lib/error/ERROR';
+import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
 import {AutoSaveableObject} from '../../../server/lib/fs/AutoSaveableObject';
 import {Server} from '../../../server/lib/Server';

@@ -6,7 +6,7 @@
 
 'use strict';
 
-import {ERROR} from '../../../server/lib/error/ERROR';
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
 import {Server} from '../../../server/lib/Server';
 import {NamedEntity} from '../../../server/lib/entity/NamedEntity';

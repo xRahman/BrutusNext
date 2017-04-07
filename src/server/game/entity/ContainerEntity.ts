@@ -15,7 +15,7 @@
 
 'use strict';
 
-import {ERROR} from '../../../server/lib/error/ERROR';
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Entity} from '../../../server/lib/entity/Entity';
 import {EntityList} from '../../../server/lib/entity/EntityList';
 import {Game} from '../../../server/game/Game';

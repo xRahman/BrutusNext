@@ -22,8 +22,8 @@
 
 'use strict';
 
-import {ERROR} from '../../../server/lib/error/ERROR';
-import {FATAL_ERROR} from '../../../server/lib/error/FATAL_ERROR';
+import {ERROR} from '../../../shared/lib/error/ERROR';
+import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 import {Entity} from '../../../server/lib/entity/Entity';
 import {EntityManager} from '../../../server/lib/entity/EntityManager';
 import {NamedClass} from '../../../server/lib/class/NamedClass';

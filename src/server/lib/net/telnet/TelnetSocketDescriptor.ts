@@ -6,7 +6,7 @@
 
 'use strict';
 
-import {ERROR} from '../../../../server/lib/error/ERROR';
+import {ERROR} from '../../../../shared/lib/error/ERROR';
 import {Utils} from '../../../../server/lib/utils/Utils';
 import {Syslog} from '../../../../server/lib/log/Syslog';
 import {Message} from '../../../../server/lib/message/Message';

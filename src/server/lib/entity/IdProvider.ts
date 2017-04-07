@@ -7,7 +7,7 @@
 
 'use strict';
 
-import {FATAL_ERROR} from '../../../server/lib/error/FATAL_ERROR';
+import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 
 export class IdProvider
 {

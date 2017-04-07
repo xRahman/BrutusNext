@@ -15,7 +15,7 @@
 
 'use strict';
 
-import {ERROR} from '../../../server/lib/error/ERROR';
+import {ERROR} from '../../../shared/lib/error/ERROR';
 
 // 3rd party modules.
 let FastPriorityQueue = require('fastpriorityqueue');

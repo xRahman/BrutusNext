@@ -1,3 +1,20 @@
+TODO: Zkusit pořešit:
+- /Shared/App, Server/ServerApp, Client/ClientApp
+  s tím, že Server a Client si při vytvoří příslušnou Applikaci
+  (a /Shared/App bude abstraktní class)
+- ERROR() zavolá konkrétní logování přes App.
+- CommandProcessor musí být externí class
+  (Je třeba pořešit registrování příkazů na konkrétní instance
+   - ideálně jen na serveru.)
+
+IDEA: Pojmenování:
+/server/Server.ts (místo BrutusNextServer.ts)
+/server/lib/ServerApp.ts (místo Server.ts, protože to bude zděděné
+  ze /shared/lib/App.ts).
+
+TODO: Array3d by se mohlo jmenovat spíš Grid3d nebo RoomGrid.
+
+----------------------------------------------------------------------------
 
 IDEA: Názvy adresářů (/shared a tak) dát CamelCasem
 - umožní to víceslovné názvy bez podtržítek

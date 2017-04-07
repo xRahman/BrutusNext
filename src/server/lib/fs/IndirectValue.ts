@@ -33,8 +33,8 @@
 
 'use strict';
 
-import {ERROR} from '../../../server/lib/error/ERROR';
-import {FATAL_ERROR} from '../../../server/lib/error/FATAL_ERROR';
+import {ERROR} from '../../../shared/lib/error/ERROR';
+import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 import {NamedClass} from '../../../server/lib/class/NamedClass';
 import {Entity} from '../../../server/lib/entity/Entity'; 
 import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
