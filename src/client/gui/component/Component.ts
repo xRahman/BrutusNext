@@ -7,7 +7,7 @@
 
 'use strict';
 
-import {ERROR} from '../../../client/lib/error/ERROR';
+import {ERROR} from '../../../shared/lib/error/ERROR';
 
 export abstract class Component
 {
