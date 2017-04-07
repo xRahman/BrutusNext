@@ -4,7 +4,7 @@
   Base color codes of messages.
 */
 
-import {ERROR} from '../../../server/lib/error/ERROR';
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Message} from '../../../server/lib/message/Message';
 
 export class MessageColors

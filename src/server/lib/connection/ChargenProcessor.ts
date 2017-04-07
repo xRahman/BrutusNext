@@ -7,7 +7,7 @@
 'use strict';
 
 import {Settings} from '../../../server/ServerSettings';
-import {ERROR} from '../../../server/lib/error/ERROR';
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../server/lib/utils/Utils';
 import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
 import {Message} from '../../../server/lib/message/Message';

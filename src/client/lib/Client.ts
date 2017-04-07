@@ -12,13 +12,15 @@
 
 'use strict';
 
-import {ERROR} from '../../client/lib/error/ERROR';
+import {ERROR} from '../../shared/lib/error/ERROR';
+import {FATAL_ERROR} from '../../shared/lib/error/FATAL_ERROR';
+import {App} from '../../shared/lib/App';
 import {Body} from '../../client/gui/component/Body';
 import {Document} from '../../client/gui/component/Document';
 import {Connection} from '../../client/lib/connection/Connection';
 import {WebSocketClient} from '../../client/lib/net/ws/WebSocketClient';
 
-export class Client
+export class Client extends App
 {
   // -------------- Static class data -------------------
 
@@ -49,17 +51,19 @@ export class Client
 
   // ---------------- Static methods --------------------
 
+  /*
   public static instanceExists()
   {
     return Client.instance !== null && Client.instance !== undefined;
   }
+  */
 
-  public static getInstance()
+  public static getInstance(): Client
   {
     if (Client.instance === null || Client.instance === undefined)
-      ERROR("Instance of client doesn't exist yet");
+      FATAL_ERROR("Instance of client doesn't exist yet");
 
-    return Client.instance;
+    return <Client>App.instance;
   }
 
   // Creates an instance of a client. Client is a singleton, so it must
@@ -80,6 +84,25 @@ export class Client
   }
 
   // ---------------- Public methods --------------------
+
+  // Reports error message and stack trace.
+  // (Don't call this method directly, use ERROR()
+  //  from /shared/lib/error/ERROR).
+  public reportError(message: string)
+  {
+    // Just log the message to the console for now.
+    console.log('ERROR: ' + message);
+  }
+
+  // Reports error message and stack trace and terminates the program.
+  // (Don't call this method directly, use FATAL_ERROR()
+  //  from /shared/lib/error/ERROR).
+  public reportFatalError(message: string)
+  {
+    // Just log the message to the console for now
+    // (terminating the client application is probably not necessary).
+    console.log('FATAL_ERROR: ' + message);
+  }
 
   public createConnection()
   {

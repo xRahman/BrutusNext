@@ -23,7 +23,7 @@
 
 'use strict';
 
-import {FATAL_ERROR} from '../../../../server/lib/error/FATAL_ERROR';
+import {FATAL_ERROR} from '../../../../shared/lib/error/FATAL_ERROR';
 import {Syslog} from '../../../../server/lib/log/Syslog';
 import {AdminLevel} from '../../../../server/lib/admin/AdminLevel';
 import {Message} from '../../../../server/lib/message/Message';

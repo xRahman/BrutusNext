@@ -8,7 +8,7 @@
 
 'use strict';
 
-import {ERROR} from '../../../server/lib/error/ERROR';
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {SavingQueue} from '../../../server/lib/fs/SavingQueue';
 
 export class SavingManager

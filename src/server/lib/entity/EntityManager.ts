@@ -32,7 +32,7 @@
 
 'use strict';
 
-import {ERROR} from '../../../server/lib/error/ERROR';
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {IdProvider} from '../../../server/lib/entity/IdProvider';
 import {Entity} from '../../../server/lib/entity/Entity';
 import {NameLockRecord} from '../../../server/lib/entity/NameLockRecord';
