@@ -6,7 +6,7 @@
 
 'use strict';
 
-import {ERROR} from '../../error/ERROR';
+import {ERROR} from '../../../../shared/lib/error/ERROR';
 import {WebSocketDescriptor} from './WebSocketDescriptor';
 
 export class WebSocketClient
