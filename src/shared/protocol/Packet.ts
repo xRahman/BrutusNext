@@ -14,7 +14,7 @@
     [
       // PacketPart
       {
-        type: 'MUD_MESSAGE'
+        type: 'MUD_MESSAGE',
         data:
         // PacketData
         {
