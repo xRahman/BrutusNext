@@ -27,7 +27,7 @@
 
 'use strict';
 
-import {ERROR} from '../../../server/lib/error/ERROR';
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {ScriptableEntity} from '../../../server/lib/entity/ScriptableEntity';
 import {CommandSearchList} from
   '../../../server/game/command/CommandSearchList';

@@ -7,7 +7,7 @@
 'use strict';
 
 import {Settings} from '../../../server/ServerSettings';
-import {ERROR} from '../../../server/lib/error/ERROR';
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../server/lib/utils/Utils';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
 import {AdminLevel} from '../../../server/lib/admin/AdminLevel';

@@ -5,7 +5,7 @@
 */
 
 /*
-  'Array' is associative - you can use negative indexes.
+  'Array3d' is associative - you can use negative indexes.
   It can have 'holes' (reading nonexistent item returns 'undefined').
 */
 
@@ -23,9 +23,9 @@ export class Array3d<T>
 
   private data = null;
 
-  // Point in array with smallest 's, 'e' and 'u'
+  // Point in array with smallest 's', 'e' and 'u'
   private min = new Coords();
-  // Point in array with biggest 's, 'e' and 'u'.
+  // Point in array with biggest 's', 'e' and 'u'.
   private max = new Coords();
 
   // --------------- Static accessors -------------------

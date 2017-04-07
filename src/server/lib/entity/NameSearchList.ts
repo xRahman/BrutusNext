@@ -7,7 +7,7 @@
 'use strict';
 
 import {Utils} from '../../../server/lib/utils/Utils';
-import {ERROR} from '../../../server/lib/error/ERROR';
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
 import {EntityList} from '../../../server/lib/entity/EntityList';
 import {Entity} from '../../../server/lib/entity/Entity';

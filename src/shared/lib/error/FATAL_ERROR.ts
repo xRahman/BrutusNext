@@ -50,15 +50,9 @@
 'use strict';
 
 // Import required classes.
-import {Syslog} from '../../../server/lib/log/Syslog';
-import {AdminLevel} from '../../../server/lib/admin/AdminLevel';
-import {Message} from '../../../server/lib/message/Message';
+import {App} from '../../../shared/lib/App';
 
-// Sends error message and a stack trace to syslog.
-export function ERROR(message: string)
+export function FATAL_ERROR(message: string)
 {
-  let errorMsg = message + "\n"
-    + Syslog.getTrimmedStackTrace(Syslog.TrimType.ERROR);
-
-  Syslog.log(errorMsg, Message.Type.RUNTIME_ERROR, AdminLevel.ELDER_GOD);
+  App.getInstance().reportFatalError(message);
 }

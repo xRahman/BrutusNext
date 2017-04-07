@@ -13,8 +13,9 @@
 
 'use strict';
 
-import {ERROR} from '../../server/lib/error/ERROR';
-import {FATAL_ERROR} from '../../server/lib/error/FATAL_ERROR';
+import {ERROR} from '../../shared/lib/error/ERROR';
+import {FATAL_ERROR} from '../../shared/lib/error/FATAL_ERROR';
+import {App} from '../../shared/lib/App';
 import {IdProvider} from '../../server/lib/entity/IdProvider';
 import {EntityManager} from '../../server/lib/entity/EntityManager';
 import {FileSystem} from '../../server/lib/fs/FileSystem';
@@ -25,6 +26,7 @@ import {Connection} from '../../server/lib/connection/Connection';
 import {EntityList} from '../../server/lib/entity/EntityList';
 import {PrototypeManager} from '../../server/lib/prototype/PrototypeManager';
 import {AccountList} from '../../server/lib/account/AccountList';
+import {Syslog} from '../../server/lib/log/Syslog';
 import {Message} from '../../server/lib/message/Message';
 import {Game} from '../../server/game/Game';
 import {GameEntity} from '../../server/game/entity/GameEntity';
@@ -33,7 +35,7 @@ import {WebSocketServer} from '../../server/lib/net/ws/WebSocketServer';
 import {HttpServer} from '../../server/lib/net/http/HttpServer';
 import {Account} from '../../server/lib/account/Account';
 
-export class Server
+export class Server extends App
 {
   public static get DATA_DIRECTORY()
   {
@@ -43,7 +45,7 @@ export class Server
 
   // -------------- Static class data -------------------
 
-  protected static instance: Server;
+  //protected static instance: Server;
 
   //------------------ Private data ---------------------
 
@@ -137,17 +139,19 @@ export class Server
 
   // ---------------- Static methods --------------------
 
+  /*
   public static instanceExists()
   {
-    return Server.instance !== null && Server.instance !== undefined;
+    return App.instance !== null && Server.instance !== undefined;
   }
+  */
 
-  public static getInstance()
+  public static getInstance(): Server
   {
     if (Server.instance === null || Server.instance === undefined)
       FATAL_ERROR("Instance of server doesn't exist yet");
 
-    return Server.instance;
+    return <Server>App.instance;
   }
 
   // If there are no admins yet, sets the highest possible admin rights
@@ -167,13 +171,13 @@ export class Server
   // not already exist.
   public static create()
   {
-    if (Server.instance !== undefined)
+    if (App.instance !== null)
     {
       ERROR("Server already exists, not creating it");
       return;
     }
 
-    Server.instance = new Server();
+    App.instance = new Server();
   }
 
   // Sends a message to all player connections
@@ -241,6 +245,39 @@ export class Server
   }
 
   // ---------------- Public methods --------------------
+
+  // Reports error message and stack trace.
+  // (Don't call this method directly, use ERROR()
+  //  from /shared/lib/error/ERROR).
+  public reportError(message: string)
+  {
+    let errorMsg = message + "\n"
+    + Syslog.getTrimmedStackTrace(Syslog.TrimType.ERROR);
+
+    Syslog.log(errorMsg, Message.Type.RUNTIME_ERROR, AdminLevel.ELDER_GOD);
+  }
+
+  // Reports error message and stack trace and terminates the program.
+  // (Don't call this method directly, use FATAL_ERROR()
+  //  from /shared/lib/error/ERROR).
+  public reportFatalError(message: string)
+  {
+    let errorMsg = message + "\n"
+    + Syslog.getTrimmedStackTrace(Syslog.TrimType.ERROR);
+
+    Syslog.log
+    (
+      errorMsg,
+      Message.Type.FATAL_RUNTIME_ERROR,
+      AdminLevel.IMMORTAL
+    );
+
+    // Because promises are eating exceptions, throwing an error won't stop
+    // the program if FATAL_ERROR() is called from within asynchronous method.
+    // So we rather print stack trace ourselves (using Syslog.log() above)
+    // and exit the program manually.
+    process.exit(1);
+  }
 
   // Loads the game (or creates a new default one
   // if there is no ./data directory).

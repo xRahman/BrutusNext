@@ -25,7 +25,7 @@
 
 'use strict';
 
-import {ERROR} from '../../../server/lib/error/ERROR';
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../server/lib/utils/Utils';
 import {EntityManager} from '../../../server/lib/entity/EntityManager';
 import {Syslog} from '../../../server/lib/log/Syslog';
