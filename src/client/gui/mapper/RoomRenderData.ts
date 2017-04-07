@@ -6,7 +6,7 @@
 
 'use strict';
 
-import {ERROR} from '../../../client/lib/error/ERROR';
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {RoomData} from '../../../shared/protocol/world/RoomData';
 import {ExitRenderData} from '../../../client/gui/mapper/ExitRenderData';
 

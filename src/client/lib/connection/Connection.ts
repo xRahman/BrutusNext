@@ -6,7 +6,7 @@
 
 'use strict';
 
-import {ERROR} from '../../../client/lib/error/ERROR';
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {WebSocketDescriptor} from
   '../../../client/lib/net/ws/WebSocketDescriptor';
 import {ScrollWindow} from '../../../client/gui/component/ScrollWindow';

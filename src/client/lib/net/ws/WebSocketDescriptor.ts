@@ -6,8 +6,8 @@
 
 'use strict';
 
+import {ERROR} from '../../../../shared/lib/error/ERROR';
 import {Packet} from '../../../../shared/protocol/Packet';
-import {ERROR} from '../../../../client/lib/error/ERROR';
 import {Connection} from '../../../../client/lib/connection/Connection';
 
 export class WebSocketDescriptor

@@ -6,7 +6,7 @@
 
 'use strict';
 
-import {ERROR} from '../../../client/lib/error/ERROR';
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Coords} from '../../../shared/type/Coords';
 import {Array3d} from '../../../shared/type/Array3d';
 import {RoomData} from '../../../shared/protocol/world/RoomData';
