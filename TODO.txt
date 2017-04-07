@@ -6,11 +6,17 @@ TODO: Zkusit pořešit:
 - CommandProcessor musí být externí class
   (Je třeba pořešit registrování příkazů na konkrétní instance
    - ideálně jen na serveru.)
+- Nějak se musí určovat, jaká classa se má vyrobit na druhé straně.
+  ClassName na serveru totiž bude jméno nějakého prototypu (třeba GreyOrc),
+  zatímco odpovídající ClassName na clientu bude nejspíš Mob
+  (A není to jen problém prototypů, na serveru může být z Moba něco zděděného
+   i v trvrdém kódu).
 
 IDEA: Pojmenování:
 /server/Server.ts (místo BrutusNextServer.ts)
 /server/lib/ServerApp.ts (místo Server.ts, protože to bude zděděné
   ze /shared/lib/App.ts).
+
 
 TODO: Array3d by se mohlo jmenovat spíš Grid3d nebo RoomGrid.
 
