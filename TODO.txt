@@ -1,3 +1,141 @@
+TODO: Na klientu se nevytváří App
+
+TODO: Přejmenovat Server na ServerApp a Client na ClientApp
+
+TODO: SaveableObject rozdělit na:
+- Serializable (přesunout do /shared)
+- Saveable (nechat v /server)
+
+TODO: Dynamické classy registrovat v modulech místo centrálně
+- Zrušit DynamicClasses.ts
+- Založit místo toho ClassFactory (bude asi v App)
+-- tohle musím vyzkoušet - funguje
+[progress]: ClassFactory funguje, je to statická classa
+  (protože se do ní zapisuje při launchi).
+TODO: Výhledově by ale neměla pole s konstruktory dávat ven,
+  měla by ho processit sama.
+  (Možná přesunout kód z PrototypeManageru do ClassFactory? Uvidíme..)
+TODO: Zrušit zmínku o DynamicClasses ze SaveableObjectu
+  (respektive ji přepsat na ClassFactory).
+
+
+TODO: Client i Server by měli mít každý svůj vlastní EntityManager.
+
+----------------------------------------------------------------------------
+
+TODO: loadPropertyFromJSONObject() a podobne funkce v Serializable přejmenovat
+  prostě na loadProperty()
+- po oddělení Saveable je jasné, kam se savuje
+
+TODO: Sjednotit výpis 'path' do error hlášek.
+[done]
+
+IDEA: IndirectValue přejmenovat na SaveHelper (nebo lépe SerializeHelper).
+
+IMPORTANT TODO: v Serializable.createNewIfNull() se nesmí objekt vytvářet podle
+  className, ale podle prototypeId.
+  (className slouží pouze pro kontrolu a aby byly JSON soubory čitelnější)
+Respektive asi pouze při loadu/savu na disk. Klient idčka nezná, takže
+tomu asi budou muset stačit className...
+(Možná to je ale tak, že prototypeIdčka se používají pouze pro entity.
+ Jen nevím, jestli mi to pomůže - entity se taky budou posílat na clienta)
+
+Tohle je vůbec dost fundamentální problém - abych mohl na klientovi
+recreatnout entitu, musím tam mít ancestor entity (celý chain).
+
+Šlo by to asi vyřešit tak, že bych při připojení poslal klientovi idčka
+hardcoded entity a ClassFactory na klientovi by si z nich vyrobila vlastní
+prototypy.
+  Nebo druhá možnost, pokaždé poslat celý chain (hardcoded prototype entita
+na klientovi ale bude jiná než na serveru...).
+ - ok, ale nemusím posílat to, co už na klientovi je.
+Tohle je lepší varianta, posílat to on-demand je robustnější.
+
+Problém: Tohle pořád neřeší hardcoded prototypy, leda že bych s nima
+posílal i className
+- tj. když klient nenajde objekt s příslušným idčkem, vyrobí nový podle
+  className (musí to být className na klientu).
+- tohle je asi ok, protože jména hardcoded class se za běhu klienta nebudou
+  měnit (kdyby došlo k dynamické změně, tak se prostě reloadne celý klient).
+
+====================================
+ŘEŠENÍ:
+- Objekty na serveru si budou pamatovat, jestli jsou už poslané na clienta.
+- Kdykoliv budu posílat jakýkoliv objekt na klienta, projdu celý prototype
+  chain a pošlu současně všechny předky, které nejsou ještě flagnuté 'onClient'
+- když na klienta dojde požadavek na vytvoření objektu, pro který ještě klient
+  nemá idčko, tak vyrobí prototype object podle className (musí to být jméno
+  classy na klientovi, ofc).
+====================================
+
+Související poznámka: Když se na serveru změní nějaký prototyp, na klienta
+stačí poslat jen ten jeden konkrétní prototyp.
+
+
+
+
+...(opět si připomínám, že PrototypeManager a ClassFactory by asi mělo být jedno
+ a to samé... Tj. přejmenovat PrototypeManager na ClassFactory)
+
+
+
+TODO: V Serializable.readProperty parametry sloučit do jednoho objektu,
+  takže pak půjde psát:
+
+  if (result = this.loadAsDate(param))
+    return result;
+
+----------------------------------------------------------------------------
+
+Poznámky ke konverzi na Serializable:
+
+- prototypový object se do JSONU ukládá jako 'prototypeId',
+  tedy přímo jako idčko entity (a tuším, že klidně i neentity,
+  všem potenciálně dynamickým classám se prostě přiřadí idčko).
+
+- je otázka, jestli na něco potřebuju className
+  - asi se to hodí pro lepší čitelnost souboru, když nic jiného...
+- u "indirect" class se navíc tuším podle virtuálního 'className'
+  pozná, jaký objekt se má vytvořit (třeba 'Set' nebo 'Map').
+
+
+----------------------------------------------------------------------------
+
+ÚVAHA (jména statických atributů):
+
+- saved
+- edited
+- sentToClient
+- sentToServer
+
+----------------------------------------------------------------------------
+
+IDEA (provázání protokolu a server classy):
+
+V /shared bude deklarace protokolu, např:
+class Room
+{
+  description: string = "";
+}
+
+v /server bude interface extendnuty z /shared/Room, ktery bude nasledne
+implementovat serverova classa:
+
+import {SharedRoom} from '/shared/Room';
+
+interface IRoom extends SharedRoom {}
+
+class Room extends GameEntity implements IRoom
+{
+  description: string = "";
+}
+
+K čemu je to dobré?
+- sice budu muset duplikovat kód, ale tenhle trik mi zkontroluje,
+  že /server/Room má stejné membery jako /shared/Room
+
+
+
 TODO: Zkusit pořešit:
 - /Shared/App, Server/ServerApp, Client/ClientApp
   s tím, že Server a Client si při vytvoří příslušnou Applikaci
@@ -215,6 +353,37 @@ Jsou v zásadě dvě možnosti, jak k tomu přistoupit:
       pluginu paladina), na jiné ale asi budou muset hrabat přes public
       properties moba, který je vlastní.
     - každý plugin je stavový automat (drží si v sobě interní stav).
+
+
+ZÁVĚR:
+- Nakonec použiju metodu vložených dat:
+
+Server entity   Client entity
+        \         /
+         \       /
+          \     /
+        Entity data
+
+- Někde se musí do JSON packetu zapsat jméno entity classy,
+  která se má vytvořit na klientu.
+  - buď při konstrukci packetu
+  - nebo to může bejt zadrátované někde uvnitř...
+    (třeba ve formě statické proměnné, která řekne, jaká classa
+     téhle classe odpovídá na druhé straně protocolu)
+
+- Všechny tři tyhle stromy (strom serverových entit, clientových entit
+  a datových částí) by měly mít stejnou adresářovou strukturu:
+  /client/game/...
+  /server/game/...
+  /shared/game/...
+
+  Tj. např:
+  /client/game/world/Room.ts
+  /server/game/world/Room.ts
+  /shared/game/world/RoomData.ts
+
+  (class na serveru a clientovi se bude jmenovat stejně, snad to nebude moc
+   mást. Konec konců, přejmenovat to jde vždycky...)
 
 ----------------------------------------------------------------------------
 

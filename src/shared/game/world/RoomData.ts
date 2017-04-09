@@ -8,37 +8,37 @@
 'use strict';
 
 import {Coords} from '../../../shared/type/Coords';
-import {ExitInterface} from '../../../shared/protocol/world/ExitData';
+import {ExitInterface} from '../../../shared/game/world/ExitData';
 
 // Maps exit names to respective offsets in grid.
 const EXITS =
 {
-  'n': { s: -1, e: 0, u: 0 },
-  'nw': { s: -1, e: -1, u: 0 },
-  'w': { s: 0, e: -1, u: 0 },
-  'sw': { s: 1, e: -1, u: 0 },
-  's': { s: 1, e: 0, u: 0 },
-  'se': { s: 1, e: 1, u: 0 },
-  'e': { s: 0, e: 1, u: 0 },
-  'ne': { s: -1, e: 1, u: 0 },
-  'nu': { s: -1, e: 0, u: 1 },
-  'nwu': { s: -1, e: -1, u: 1 },
-  'wu': { s: 0, e: -1, u: 1 },
-  'swu': { s: 1, e: -1, u: 1 },
-  'su': { s: 1, e: 0, u: 1 },
-  'seu': { s: 1, e: 1, u: 1 },
-  'eu': { s: 0, e: 1, u: 1 },
-  'neu': { s: -1, e: 1, u: 1 },
-  'u': { s: 0, e: 0, u: 1 },
-  'nd': { s: -1, e: 0, u: -1 },
+  'n':   { s: -1, e:  0, u:  0 },
+  'nw':  { s: -1, e: -1, u:  0 },
+  'w':   { s:  0, e: -1, u:  0 },
+  'sw':  { s:  1, e: -1, u:  0 },
+  's':   { s:  1, e:  0, u:  0 },
+  'se':  { s:  1, e:  1, u:  0 },
+  'e':   { s:  0, e:  1, u:  0 },
+  'ne':  { s: -1, e:  1, u:  0 },
+  'nu':  { s: -1, e:  0, u:  1 },
+  'nwu': { s: -1, e: -1, u:  1 },
+  'wu':  { s:  0, e: -1, u:  1 },
+  'swu': { s:  1, e: -1, u:  1 },
+  'su':  { s:  1, e:  0, u:  1 },
+  'seu': { s:  1, e:  1, u:  1 },
+  'eu':  { s:  0, e:  1, u:  1 },
+  'neu': { s: -1, e:  1, u:  1 },
+  'u':   { s:  0, e:  0, u:  1 },
+  'nd':  { s: -1, e:  0, u: -1 },
   'nwd': { s: -1, e: -1, u: -1 },
-  'wd': { s: 0, e: -1, u: -1 },
-  'swd': { s: 1, e: -1, u: -1 },
-  'sd': { s: 1, e: 0, u: -1 },
-  'sed': { s: 1, e: 1, u: -1 },
-  'ed': { s: 0, e: 1, u: -1 },
-  'ned': { s: -1, e: 1, u: -1 },
-  'd': { s: 0, e: 0, u: -1 }
+  'wd':  { s:  0, e: -1, u: -1 },
+  'swd': { s:  1, e: -1, u: -1 },
+  'sd':  { s:  1, e:  0, u: -1 },
+  'sed': { s:  1, e:  1, u: -1 },
+  'ed':  { s:  0, e:  1, u: -1 },
+  'ned': { s: -1, e:  1, u: -1 },
+  'd':   { s:  0, e:  0, u: -1 }
 }
 
 // Maps exit names to opposite directions.

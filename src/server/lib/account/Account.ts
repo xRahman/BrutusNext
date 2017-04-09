@@ -19,6 +19,7 @@ import {Server} from '../../../server/lib/Server';
 import {Game} from '../../game/Game';
 import {GameEntity} from '../../../server/game/entity/GameEntity';
 import {Character} from '../../../server/game/character/Character';
+import {ClassFactory} from '../../../shared/lib/ClassFactory';
 
 // Built-in node.js modules.
 import * as crypto from 'crypto';  // Import namespace 'crypto' from node.js
@@ -381,3 +382,5 @@ export class Account extends ScriptableEntity
     );
   }
 }
+
+ClassFactory.registerClass(Account);

@@ -10,6 +10,7 @@
 
 import {Game} from '../../game/Game';
 import {GameEntity} from '../../../server/game/entity/GameEntity';
+import {ClassFactory} from '../../../shared/lib/ClassFactory';
 
 export class Sector extends GameEntity
 {
@@ -57,3 +58,5 @@ export class Sector extends GameEntity
 
   // ---------------- Private methods -------------------
 }
+
+ClassFactory.registerClass(Sector);

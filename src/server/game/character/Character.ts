@@ -12,6 +12,7 @@ import {Game} from '../../../server/game/Game';
 import {GameEntity} from '../../../server/game/entity/GameEntity';
 import {World} from '../../../server/game/world/World';
 import {CharacterFlags} from '../../../server/game/character/CharacterFlags';
+import {ClassFactory} from '../../../shared/lib/ClassFactory';
 
 export class Character extends GameEntity
 {
@@ -122,3 +123,5 @@ export class Character extends GameEntity
   }
   */
 }
+
+ClassFactory.registerClass(Character);
