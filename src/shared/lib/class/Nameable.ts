@@ -1,12 +1,12 @@
 /*
   Part of BrutusNEXT
 
-  Class that let's you know it's class name.
+  Class that lets you know it's class name.
 */
 
 'use strict';
 
-export class NamedClass
+export class Nameable
 {
   public static get CLASS_NAME_PROPERTY() { return 'className'; }
 
@@ -40,10 +40,13 @@ export class NamedClass
   public get className()
   {
     // Return static variable 'className'.
-    return this.constructor[NamedClass.CLASS_NAME_PROPERTY];
+    return this.constructor[Nameable.CLASS_NAME_PROPERTY];
   }
 
-  // This is a hack allowing descendants of AttributableClass to search for
+  /// Deprecated
+  /*
+  // This is a hack allowing descendants of Attributable class to search for
   // static properties of their ancestors.
   protected getThis() { return null; }
+  */
 }

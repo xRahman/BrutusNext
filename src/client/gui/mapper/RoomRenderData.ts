@@ -7,7 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {RoomData} from '../../../shared/protocol/world/RoomData';
+import {RoomData} from '../../../shared/game/world/RoomData';
 import {ExitRenderData} from '../../../client/gui/mapper/ExitRenderData';
 
 export class RoomRenderData extends RoomData

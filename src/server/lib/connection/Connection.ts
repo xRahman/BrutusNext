@@ -21,6 +21,7 @@ import {ChargenProcessor} from
 import {Game} from '../../../server/game/Game';
 import {GameEntity} from '../../../server/game/entity/GameEntity';
 import {Character} from '../../../server/game/character/Character';
+import {ClassFactory} from '../../../shared/lib/ClassFactory';
 
 export class Connection extends Entity
 {
@@ -863,6 +864,8 @@ export class Connection extends Entity
     ///this.removeFromLists();
   }
 }
+
+ClassFactory.registerClass(Connection);
 
 // ------------------ Type declarations ----------------------
 

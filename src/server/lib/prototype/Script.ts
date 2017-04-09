@@ -12,9 +12,12 @@ import {AdminLevel} from '../../../server/lib/admin/AdminLevel';
 import {Syslog} from '../../../server/lib/log/Syslog';
 import {Message} from '../../../server/lib/message/Message';
 import {GameEntity} from '../../../server/game/entity/GameEntity';
+import {ClassFactory} from '../../../shared/lib/ClassFactory';
 
 // 3rd party modules.
 import * as ts from "typescript";
+
+ClassFactory.registerClass(Script);
 
 export class Script extends SaveableObject
 {
