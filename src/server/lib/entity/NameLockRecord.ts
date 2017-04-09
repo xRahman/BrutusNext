@@ -9,6 +9,7 @@
 'use strict';
 
 import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
+import {ClassFactory} from '../../../shared/lib/ClassFactory';
 
 export class NameLockRecord extends SaveableObject
 {
@@ -23,3 +24,5 @@ export class NameLockRecord extends SaveableObject
   private static cathegory = { isSaved: false };
   */
 }
+
+ClassFactory.registerClass(NameLockRecord);

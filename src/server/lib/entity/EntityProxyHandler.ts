@@ -44,6 +44,8 @@ const util = require('util');
 
 export class EntityProxyHandler
 {
+  public static get INTERNAL_ENTITY_PROPERTY() { return '_internalEntity'; }
+
   // Reference to an entity we are proxyfying.
   // If this is null, all access to entity properties will be logged
   // as invalid and 'invalid variable' will be returned if properties
@@ -313,7 +315,7 @@ export class EntityProxyHandler
     // so it can be accessed in subsequent function call (it's not named
     // 'entity' but rather '_internalEntity' to prevent using it by accident).
     // (see EntityProxyHandler.dynamicCast() for example of such function).
-    if (property === '_internalEntity')
+    if (property === EntityProxyHandler.INTERNAL_ENTITY_PROPERTY)
       return this.entity;
 
     // This is the same case as with '_internalEntity' trap above.
@@ -458,7 +460,7 @@ export class EntityProxyHandler
         // would be undefined (entity doesn't have property 'entity'
         // on it. So we need to get handler.entity by trapping
         // access to '_internalEntity' property);
-        let internalEntity = this['_internalEntity'];
+        let internalEntity = this[EntityProxyHandler.INTERNAL_ENTITY_PROPERTY];
 
         return util.inspect(internalEntity);
       }
@@ -574,7 +576,7 @@ export class EntityProxyHandler
     // Note: When this function is called, 'this' is not an
     // EntityProxyHandler, but the proxy. So '_internalEntity'
     // property access must be trapped in order for this to work.
-    let internalEntity = this['_internalEntity'];
+    let internalEntity = this[EntityProxyHandler.INTERNAL_ENTITY_PROPERTY];
 
     if (internalEntity === undefined)
     {

@@ -14,9 +14,10 @@ import {Entity} from '../../../server/lib/entity/Entity';
 import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
 import {EntityManager} from '../../../server/lib/entity/EntityManager';
 import {ScriptableEntity} from '../../../server/lib/entity/ScriptableEntity';
-import {DynamicClasses} from '../../../server/lib/class/DynamicClasses';
+///import {DynamicClasses} from '../../../server/lib/class/DynamicClasses';
 import {NamedClass} from '../../../server/lib/class/NamedClass';
 import {Server} from '../../../server/lib/Server';
+import {ClassFactory} from '../../../shared/lib/ClassFactory';
 
 export class PrototypeManager extends AutoSaveableObject
 {
@@ -64,7 +65,7 @@ export class PrototypeManager extends AutoSaveableObject
   {
     // First we create prototype objects for non-entity dynamic classes
     // (we also get list of hardcoded entity dynamic classes
-    // as side effect of iterating DynamicClasses.constructors).
+    // as side effect of iterating ClassFactory.constructors).
     let entityClasses = this.initNonEntityPrototypes();
 
     if (!createDefaultData)
@@ -78,12 +79,12 @@ export class PrototypeManager extends AutoSaveableObject
     await this.createHardcodedEntityPrototypes(entityClasses);
 
     // Recursively load all prototype entities. Recursive loading
-    // (each prototype loads its descendants removes the need to
+    // (each prototype loads its descendants) removes the need to
     //  store prototypes in order of inheritance, which greatly
     //  simplifies changing the ancestor of a prototype. This way
     //  you don't have to reorder the list of prototype entities,
     //  you just have to remove yourself from list of descendants
-    //  in you old ancestor and add yoruself as a descendant to
+    //  in you old ancestor and add yourself as a descendant to
     //  your new ancestor).
     this.loadDynamicEntityPrototypes();
   }
@@ -310,7 +311,7 @@ export class PrototypeManager extends AutoSaveableObject
     // the code. Either way, we are going to automatically generate id's
     // for those classes that lack them.
 
-    // Go through all entity classes specified in DynamicClasses.init().
+    // Go through all dynamic entity classes.
     for (let Class of entityClasses)
     {
       // Check if our class already has an id assigned.
@@ -345,17 +346,12 @@ export class PrototypeManager extends AutoSaveableObject
   }
 
   // Creates prototype objects for non entity classes.
-  // -> Returns the list of entity classes contained
-  //    in DynamicClasses.
+  // -> Returns the list of entity classes registerd in ClassFactory.
   private initNonEntityPrototypes()
   {
-    // Assign constructors of dynamic classes
-    // to DynamicClasses.constructors hashmap. 
-    DynamicClasses.init();
-
     let entityClasses = [];
 
-    for (let Class of DynamicClasses.constructors.values())
+    for (let Class of ClassFactory.constructors.values())
     {
       if (!this.isEntity(Class))
       {

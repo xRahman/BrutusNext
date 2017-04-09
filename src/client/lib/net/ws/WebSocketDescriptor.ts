@@ -112,7 +112,14 @@ export class WebSocketDescriptor
     ///this.socket = new WebSocket('ws://localhost:4442');
     //this.socket = new WebSocket('ws://78.45.101.53:4442');
     //this.socket = new WebSocket('ws://127.0.0.1:80');
-    this.socket = new WebSocket('ws://94.112.151.208:80');
+    //this.socket = new WebSocket('ws://94.112.151.208:80');
+    /// MARK: ipčko
+    /// TODO: Tohle by asi chtělo vyřešit nějak líp, minimálně
+    /// přes konfigurák (ideálně ale zjišťovat ipčko serveru
+    /// dynamicky. Server by ho třeba při startu mohl zapsat
+    /// do konfiguráku klienta, když to nepůjde udělat líp).
+    this.socket = new WebSocket('ws://62.24.73.157:80');
+    
 
     ///console.log('connect(). Status: ' + this.socket.readyState);
 
