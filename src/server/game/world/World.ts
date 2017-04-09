@@ -16,6 +16,7 @@ import {GameEntity} from '../../../server/game/entity/GameEntity';
 import {Realm} from '../../../server/game/world/Realm';
 import {Area} from '../../../server/game/world/Area';
 import {Room} from '../../../server/game/world/Room';
+import {ClassFactory} from '../../../shared/lib/ClassFactory';
 
 export class World extends GameEntity
 {
@@ -129,3 +130,5 @@ export class World extends GameEntity
 
   // ---------------- Private methods -------------------
 }
+
+ClassFactory.registerClass(World);

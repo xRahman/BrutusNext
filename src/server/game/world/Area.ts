@@ -11,6 +11,7 @@
 
 ///import {Game} from '../../game/Game';
 import {GameEntity} from '../../../server/game/entity/GameEntity';
+import {ClassFactory} from '../../../shared/lib/ClassFactory';
 
 export class Area  extends GameEntity
 {
@@ -41,3 +42,5 @@ export class Area  extends GameEntity
 
   // ---------------- Private methods -------------------
 }
+
+ClassFactory.registerClass(Area);

@@ -42,14 +42,14 @@ export class SaveableObject extends InstantiableClass
 {
   //----------------- Protected data --------------------
 
-  // Version will be checked for. Default behaviour is to trigger
-  // an ERROR when versions don't match. You can override it
-  // by overriding a checkVersion() method;
-  protected version = 0;
+  // // Version will be checked for. Default behaviour is to trigger
+  // // an ERROR when versions don't match. You can override it
+  // // by overriding a checkVersion() method;
+  // protected version = 0;
 
-  protected isProxy = false;
-  // (note: This property is not saved)
-  protected static isProxy = { isSaved: false };
+  // protected isProxy = false;
+  // // (note: This property is not saved)
+  // protected static isProxy = { isSaved: false };
 
   // ------------- Public static methods ----------------
 
@@ -77,26 +77,26 @@ export class SaveableObject extends InstantiableClass
 
   // ------------- Private static methods ---------------
 
-  // -> Returns 'null' if loading fails.
-  private static loadFromJsonString(jsonString: string, path: string)
-  {
-    let jsonObject = {};
+  // // -> Returns 'null' if loading fails.
+  // private static loadFromJsonString(jsonString: string, path: string)
+  // {
+  //   let jsonObject = {};
 
-    try
-    {
-      jsonObject = JSON.parse(jsonString);
-    }
-    catch (e)
-    {
-      // Here we need fatal error, because data might already
-      // be partialy loaded so we could end up with broken entity.
-      FATAL_ERROR("Syntax error in JSON string: "
-        + e.message + " in file " + path);
-      return null;
-    }
+  //   try
+  //   {
+  //     jsonObject = JSON.parse(jsonString);
+  //   }
+  //   catch (e)
+  //   {
+  //     // Here we need fatal error, because data might already
+  //     // be partialy loaded so we could end up with broken entity.
+  //     FATAL_ERROR("Syntax error in JSON string: "
+  //       + e.message + " in file " + path);
+  //     return null;
+  //   }
 
-    return jsonObject;
-  }
+  //   return jsonObject;
+  // }
 
   // ---------------- Public methods --------------------
 
@@ -165,100 +165,100 @@ export class SaveableObject extends InstantiableClass
     return await this.saveContentsToFile(directory + fileName);
   }
 
-  // -> Returns 'false' if loading fails.
-  public loadFromJsonObject(jsonObject: Object, path: string): boolean
-  {
-    if (!this.loadFromJsonObjectCheck(jsonObject, path))
-      return false;
+  // // -> Returns 'false' if loading fails.
+  // public loadFromJsonObject(jsonObject: Object, path: string): boolean
+  // {
+  //   if (!this.loadFromJsonObjectCheck(jsonObject, path))
+  //     return false;
 
-    // Now copy the data.
-    for (let propertyName in jsonObject)
-    {
-      // Property 'className' will not be assigned (it's read-only
-      // and static so it wouldn't make sense anyways), but we will
-      // check that we are loading ourselves into a class with matching
-      // className.
-      if (propertyName === NamedClass.CLASS_NAME_PROPERTY)
-      {
-        if (!this.loadClassNameCheck(jsonObject, propertyName, path))
-          return false;
-      }
-      else
-      {
-        // Note:
-        //   Only properties that exist on the class that is being loaded
-        // are loaded from save. It means that you can remove properties
-        // from existing classes without converting existing save files.
-        // (no syslog message is generated)
-        if (this[propertyName] !== undefined)
-          // Note:
-          //   We are cycling over properties in JSON object, not in
-          // SaveableObject that is being loaded. It means that properties
-          // that are not present in the save will not get overwritten.
-          // This allows adding new properties to existing classes without
-          // the need to convert all save files.
-          this.loadPropertyFromJsonObject(jsonObject, propertyName, path);
-      }
-    }
+  //   // Now copy the data.
+  //   for (let propertyName in jsonObject)
+  //   {
+  //     // Property 'className' will not be assigned (it's read-only
+  //     // and static so it wouldn't make sense anyways), but we will
+  //     // check that we are loading ourselves into a class with matching
+  //     // className.
+  //     if (propertyName === NamedClass.CLASS_NAME_PROPERTY)
+  //     {
+  //       if (!this.loadClassNameCheck(jsonObject, propertyName, path))
+  //         return false;
+  //     }
+  //     else
+  //     {
+  //       // Note:
+  //       //   Only properties that exist on the class that is being loaded
+  //       // are loaded from save. It means that you can remove properties
+  //       // from existing classes without converting existing save files.
+  //       // (no syslog message is generated)
+  //       if (this[propertyName] !== undefined)
+  //         // Note:
+  //         //   We are cycling over properties in JSON object, not in
+  //         // SaveableObject that is being loaded. It means that properties
+  //         // that are not present in the save will not get overwritten.
+  //         // This allows adding new properties to existing classes without
+  //         // the need to convert all save files.
+  //         this.loadPropertyFromJsonObject(jsonObject, propertyName, path);
+  //     }
+  //   }
 
-    return true;
-  }
+  //   return true;
+  // }
 
   // -------------- Protected methods -------------------
 
-  protected checkVersion(jsonObject: Object, path: string): boolean
-  {
-    if (!('version' in jsonObject))
-    {
-      ERROR("Missing 'version' property in JSON data"
-        + " in file " + path);
-      return false;
-    }
+  // protected checkVersion(jsonObject: Object, path: string): boolean
+  // {
+  //   if (!('version' in jsonObject))
+  //   {
+  //     ERROR("Missing 'version' property in JSON data"
+  //       + " in file " + path);
+  //     return false;
+  //   }
 
-    if (jsonObject['version'] !== this.version)
-    {
-      ERROR("Version of JSON data (" + jsonObject['version'] + ")"
-        + " in file " + path + " doesn't match required"
-        + " version (" + this.version + ")");
-      return false;
-    }
+  //   if (jsonObject['version'] !== this.version)
+  //   {
+  //     ERROR("Version of JSON data (" + jsonObject['version'] + ")"
+  //       + " in file " + path + " doesn't match required"
+  //       + " version (" + this.version + ")");
+  //     return false;
+  //   }
 
-    return true;
-  }
+  //   return true;
+  // }
 
-  // Override this method if you need to load property of nonstandard type.
-  // (see class Flags for example)
-  protected loadPropertyFromJsonObject
-  (
-    jsonObject: Object,
-    propertyName: string,
-    path: string
-  )
-  {
-    this[propertyName] = this.loadVariable
-    (
-      propertyName,
-      this[propertyName],
-      jsonObject[propertyName],
-      path
-    );
-  }
+  // // Override this method if you need to load property of nonstandard type.
+  // // (see class Flags for example)
+  // protected loadPropertyFromJsonObject
+  // (
+  //   jsonObject: Object,
+  //   propertyName: string,
+  //   path: string
+  // )
+  // {
+  //   this[propertyName] = this.loadVariable
+  //   (
+  //     propertyName,
+  //     this[propertyName],
+  //     jsonObject[propertyName],
+  //     path
+  //   );
+  // }
 
-  // Override this method if you need to save property of nonstandard type.
-  // (see class Flags for example)
-  protected savePropertyToJsonObject(jsonObject: Object, propertyName: string)
-  {
-    jsonObject[propertyName] =
-      this.saveVariable(this[propertyName], propertyName, this.className);
-  }
+  // // Override this method if you need to save property of nonstandard type.
+  // // (see class Flags for example)
+  // protected savePropertyToJsonObject(jsonObject: Object, propertyName: string)
+  // {
+  //   jsonObject[propertyName] =
+  //     this.saveVariable(this[propertyName], propertyName, this.className);
+  // }
 
   // --------------- Private methods --------------------
 
   // This is just a generic async function that will finish
-  // when 'promise' passed as it's parameter gets resolved.
-  // (it only makes sense if you also store 'resolve' callback
+  // when 'promise' parameter gets resolved.
+  // (This only makes sense if you also store 'resolve' callback
   //  of the promise so you can call it to finish this awaiter.
-  //  See SavingRecord.addRequest() for example how is it done)
+  //  See SavingRecord.addRequest() for example how is it done.)
   private saveAwaiter(promise: Promise<void>)
   {
     return promise;
@@ -302,305 +302,305 @@ export class SaveableObject extends InstantiableClass
     return success;
   }
 
-  private saveToJsonString(): string
-  {
-    let jsonString = JSON.stringify(this.saveToJsonObject());
+  // private saveToJsonString(): string
+  // {
+  //   let jsonString = JSON.stringify(this.saveToJsonObject());
 
-    jsonString = beautify
-    (
-      jsonString,
-      {
-        "indent_size": 2,
-        "indent_char": " ",
-        "eol": "\n",
-        "brace_style": "expand",
-        "keep_array_indentation": true,
-        "end_with_newline": false
-      }
-    );
+  //   jsonString = beautify
+  //   (
+  //     jsonString,
+  //     {
+  //       "indent_size": 2,
+  //       "indent_char": " ",
+  //       "eol": "\n",
+  //       "brace_style": "expand",
+  //       "keep_array_indentation": true,
+  //       "end_with_newline": false
+  //     }
+  //   );
 
-    return jsonString;
-  }
+  //   return jsonString;
+  // }
 
-  // -> Returns 'false' if check fails.
-  private loadFromJsonObjectCheck
-  (
-    jsonObject: Object,
-    path: string
-  )
-  : boolean
-  {
-    // 'path' is passed just so it can be printed to error messages.
-    if (!this.checkVersion(jsonObject, path))
-      return false;
+  // // -> Returns 'false' if check fails.
+  // private loadFromJsonObjectCheck
+  // (
+  //   jsonObject: Object,
+  //   path: string
+  // )
+  // : boolean
+  // {
+  //   // 'path' is passed just so it can be printed to error messages.
+  //   if (!this.checkVersion(jsonObject, path))
+  //     return false;
 
-    // 'className' must be the same as it's saved value.
-    if (!this.checkClassName(jsonObject, path))
-      return false;
+  //   // 'className' must be the same as it's saved value.
+  //   if (!this.checkClassName(jsonObject, path))
+  //     return false;
 
-    // Using 'in' operator on object with null value would cause crash.
-    if (jsonObject === null)
-    {
-      // Here we need fatal error, because data might already
-      // be partialy loaded so we could end up with broken entity.
-      ERROR("Invalid json object loaded from file " + path);
-      return false;
-    }
+  //   // Using 'in' operator on object with null value would cause crash.
+  //   if (jsonObject === null)
+  //   {
+  //     // Here we need fatal error, because data might already
+  //     // be partialy loaded so we could end up with broken entity.
+  //     ERROR("Invalid json object loaded from file " + path);
+  //     return false;
+  //   }
 
-    return true;
-  }
+  //   return true;
+  // }
 
-  // -> Returns 'false' if check fails.
-  private loadClassNameCheck
-  (
-    jsonObject: Object,
-    propertyName: string,
-    path: string
-  ): boolean
-  {
-    if (this.className === undefined)
-    {
-      ERROR("Loading object with saved"
-        + " '" + NamedClass.CLASS_NAME_PROPERTY + "'"
-        + " property into an instance that doesn't have"
-        + " a '" + NamedClass.CLASS_NAME_PROPERTY + "'"
-        + " property. This should never happen");
-      return false;
-    }
+  // // -> Returns 'false' if check fails.
+  // private loadClassNameCheck
+  // (
+  //   jsonObject: Object,
+  //   propertyName: string,
+  //   path: string
+  // ): boolean
+  // {
+  //   if (this.className === undefined)
+  //   {
+  //     ERROR("Loading object with saved"
+  //       + " '" + NamedClass.CLASS_NAME_PROPERTY + "'"
+  //       + " property into an instance that doesn't have"
+  //       + " a '" + NamedClass.CLASS_NAME_PROPERTY + "'"
+  //       + " property. This should never happen");
+  //     return false;
+  //   }
 
-    if (jsonObject[propertyName] !== this.className)
-    {
-      ERROR("Loading object with"
-        + " '" + NamedClass.CLASS_NAME_PROPERTY + "'"
-        + " property saved as '" + jsonObject[propertyName] + "'"
-        + " into an instance with '" + NamedClass.CLASS_NAME_PROPERTY + "'"
-        + " " + this.className + ". This should never happen, types must"
-        + " match");
-      return false;
-    }
+  //   if (jsonObject[propertyName] !== this.className)
+  //   {
+  //     ERROR("Loading object with"
+  //       + " '" + NamedClass.CLASS_NAME_PROPERTY + "'"
+  //       + " property saved as '" + jsonObject[propertyName] + "'"
+  //       + " into an instance with '" + NamedClass.CLASS_NAME_PROPERTY + "'"
+  //       + " " + this.className + ". This should never happen, types must"
+  //       + " match");
+  //     return false;
+  //   }
 
-    return true;
-  }
+  //   return true;
+  // }
 
-  private saveToJsonObject(): Object
-  {
-    let jsonObject: Object = {};
+  // private saveToJsonObject(): Object
+  // {
+  //   let jsonObject: Object = {};
 
-    // A little hack - save 'name' property first (out of order)
-    // to make saved JSON files more readable.
-    if ('name' in this)
-    {
-      jsonObject['name'] = this['name'];
-    }
+  //   // A little hack - save 'name' property first (out of order)
+  //   // to make saved JSON files more readable.
+  //   if ('name' in this)
+  //   {
+  //     jsonObject['name'] = this['name'];
+  //   }
 
-    // Anoter hack - save 'className' property.
-    // (We need to save 'className' maually, because it is an accessor,
-    // so it's not enumerable - which means that it won't get iterated
-    // over in following cycle that iterates properties.)
-    let className = this.className;
+  //   // Anoter hack - save 'className' property.
+  //   // (We need to save 'className' maually, because it is an accessor,
+  //   // so it's not enumerable - which means that it won't get iterated
+  //   // over in following cycle that iterates properties.)
+  //   let className = this.className;
 
-    if (className === undefined)
-    {
-      FATAL_ERROR("Attempt to save a SaveableObject that doesn't"
-        + " have a " + NamedClass.CLASS_NAME_PROPERTY + " property."
-        + " I'd like to know how did you manage to do it - SaveableObject"
-        + " is inherited from NamedClass which does have it");
-    }
+  //   if (className === undefined)
+  //   {
+  //     FATAL_ERROR("Attempt to save a SaveableObject that doesn't"
+  //       + " have a " + NamedClass.CLASS_NAME_PROPERTY + " property."
+  //       + " I'd like to know how did you manage to do it - SaveableObject"
+  //       + " is inherited from NamedClass which does have it");
+  //   }
 
-    jsonObject[NamedClass.CLASS_NAME_PROPERTY] = className;
+  //   jsonObject[NamedClass.CLASS_NAME_PROPERTY] = className;
 
-    // If 'this' is a proxy, 'for .. in' operator won't work on it,
-    // because 'handler.enumerate()' which used to trap it has been
-    // deprecated in ES7. So we have to use a hack - directly access
-    // internal entity of proxy by trapping access to '_internalEntity'
-    // property and use 'for .. in' operator on it.
-    let sourceObject = this;
+  //   // If 'this' is a proxy, 'for .. in' operator won't work on it,
+  //   // because 'handler.enumerate()' which used to trap it has been
+  //   // deprecated in ES7. So we have to use a hack - directly access
+  //   // internal entity of proxy by trapping access to '_internalEntity'
+  //   // property and use 'for .. in' operator on it.
+  //   let sourceObject = this;
 
-    if (this.isProxy === true)
-      sourceObject = this['_internalEntity'];
+  //   if (this.isProxy === true)
+  //     sourceObject = this['_internalEntity'];
 
-    // Cycle through all properties in source object.
-    for (let property in sourceObject)
-    {
-      // Skip 'name' property because it's already saved thanks to
-      // previous hack.
-      // (this.isSaved() checks static attribute property.isSaved)
-      // (className is passed only for more specific error messages)
-      if (property !== 'name' && sourceObject.isSaved(property, className))
-        sourceObject.savePropertyToJsonObject(jsonObject, property);
-    }
+  //   // Cycle through all properties in source object.
+  //   for (let property in sourceObject)
+  //   {
+  //     // Skip 'name' property because it's already saved thanks to
+  //     // previous hack.
+  //     // (this.isSaved() checks static attribute property.isSaved)
+  //     // (className is passed only for more specific error messages)
+  //     if (property !== 'name' && sourceObject.isSaved(property, className))
+  //       sourceObject.savePropertyToJsonObject(jsonObject, property);
+  //   }
 
-    return jsonObject;
-  }
+  //   return jsonObject;
+  // }
 
-  // -> Returns 'true' on success.
-  private checkClassName (jsonObject: Object, path: string): boolean
-  {
-    if (!(NamedClass.CLASS_NAME_PROPERTY in jsonObject))
-    {
-      ERROR("There is no '" + NamedClass.CLASS_NAME_PROPERTY + "'"
-        + " property in JSON data in file " + path);
-      return false;
-    }
+  // // -> Returns 'true' on success.
+  // private checkClassName (jsonObject: Object, path: string): boolean
+  // {
+  //   if (!(NamedClass.CLASS_NAME_PROPERTY in jsonObject))
+  //   {
+  //     ERROR("There is no '" + NamedClass.CLASS_NAME_PROPERTY + "'"
+  //       + " property in JSON data in file " + path);
+  //     return false;
+  //   }
 
-    if (jsonObject[NamedClass.CLASS_NAME_PROPERTY] !== this.className)
-    {
-      ERROR("Attempt to load JSON data of class"
-        + " (" + jsonObject[NamedClass.CLASS_NAME_PROPERTY] + ")"
-        + " in file " + path + " into instance of incompatible"
-        + " class (" + this.className + ")");
-      return false;
-    }
+  //   if (jsonObject[NamedClass.CLASS_NAME_PROPERTY] !== this.className)
+  //   {
+  //     ERROR("Attempt to load JSON data of class"
+  //       + " (" + jsonObject[NamedClass.CLASS_NAME_PROPERTY] + ")"
+  //       + " in file " + path + " into instance of incompatible"
+  //       + " class (" + this.className + ")");
+  //     return false;
+  //   }
 
-    return true;
-  }
+  //   return true;
+  // }
 
-  // Loads a single variable from corresponding JSON object.
-  private loadVariable
-  (
-    variableName: string,
-    variable: any,
-    jsonVariable: any,
-    path: string
-  )
-  : any
-  {
-    // First handle the case that property in JSON has null value. In that
-    // case our property will also be null, no matter what type it is.
-    if (jsonVariable === null)
-      return null;
+  // // Loads a single variable from corresponding JSON object.
+  // private loadVariable
+  // (
+  //   variableName: string,
+  //   variable: any,
+  //   jsonVariable: any,
+  //   path: string
+  // )
+  // : any
+  // {
+  //   // First handle the case that property in JSON has null value. In that
+  //   // case our property will also be null, no matter what type it is.
+  //   if (jsonVariable === null)
+  //     return null;
 
-    // Attempt to load variable as Date object.
-    let result: any = this.loadAsDate
-    (
-      variableName,
-      variable,
-      jsonVariable,
-      path
-    );
+  //   // Attempt to load variable as Date object.
+  //   let result: any = this.loadAsDate
+  //   (
+  //     variableName,
+  //     variable,
+  //     jsonVariable,
+  //     path
+  //   );
 
-    if (result !== null)
-      return result;
+  //   if (result !== null)
+  //     return result;
 
-    // Attempt to load variable as Set object.
-    result = this.loadAsSet
-    (
-      variableName,
-      variable,
-      jsonVariable,
-      path
-    );
+  //   // Attempt to load variable as Set object.
+  //   result = this.loadAsSet
+  //   (
+  //     variableName,
+  //     variable,
+  //     jsonVariable,
+  //     path
+  //   );
 
-    if (result !== null)
-      return result;
+  //   if (result !== null)
+  //     return result;
 
-    // Attempt to load variable as Map object.
-    result = this.loadAsMap
-    (
-      variableName,
-      variable,
-      jsonVariable,
-      path
-    );
+  //   // Attempt to load variable as Map object.
+  //   result = this.loadAsMap
+  //   (
+  //     variableName,
+  //     variable,
+  //     jsonVariable,
+  //     path
+  //   );
 
-    if (result !== null)
-      return result;
+  //   if (result !== null)
+  //     return result;
 
-    // Attempt to load variable as entity reference.
-    result = this.loadAsEntityReference
-    (
-      variableName,
-      variable,
-      jsonVariable,
-      path
-    );
+  //   // Attempt to load variable as entity reference.
+  //   result = this.loadAsEntityReference
+  //   (
+  //     variableName,
+  //     variable,
+  //     jsonVariable,
+  //     path
+  //   );
 
-    if (result !== null)
-      return result;
+  //   if (result !== null)
+  //     return result;
 
-    // Attempt to load variable as Array.
-    result = this.loadAsArray
-    (
-      variableName,
-      variable,
-      jsonVariable,
-      path
-    );
+  //   // Attempt to load variable as Array.
+  //   result = this.loadAsArray
+  //   (
+  //     variableName,
+  //     variable,
+  //     jsonVariable,
+  //     path
+  //   );
 
-    if (result !== null)
-      return result;
+  //   if (result !== null)
+  //     return result;
 
-    // Attempt to load variable as Object.
-    result = this.loadAsObject
-    (
-      variableName,
-      variable,
-      jsonVariable,
-      path
-    );
+  //   // Attempt to load variable as Object.
+  //   result = this.loadAsObject
+  //   (
+  //     variableName,
+  //     variable,
+  //     jsonVariable,
+  //     path
+  //   );
 
-    if (result !== null)
-      return result;
+  //   if (result !== null)
+  //     return result;
     
-    // If variable has neither of types we have just tried,
-    // we load it as primitive type (variables of primitive
-    // types are simply assigned).
-    return jsonVariable;
-  }
+  //   // If variable has neither of types we have just tried,
+  //   // we load it as primitive type (variables of primitive
+  //   // types are simply assigned).
+  //   return jsonVariable;
+  // }
 
-  // If myProperty is null, a new instance of correct type will be
-  // created and returned (type is read from jsonObject.className).
-  private createNewIfNull
-  (
-    propertyName: string,
-    myProperty: any,
-    jsonObject: Object,
-    path: string
-  )
-  {
-    if (myProperty === null)
-    {
-      // Read class name from JSON.
-      let className = jsonObject[NamedClass.CLASS_NAME_PROPERTY];
+  // // If myProperty is null, a new instance of correct type will be
+  // // created and returned (type is read from jsonObject.className).
+  // private createNewIfNull
+  // (
+  //   propertyName: string,
+  //   myProperty: any,
+  //   jsonObject: Object,
+  //   path: string
+  // )
+  // {
+  //   if (myProperty === null)
+  //   {
+  //     // Read class name from JSON.
+  //     let className = jsonObject[NamedClass.CLASS_NAME_PROPERTY];
 
-      if (className === undefined)
-      {
-        // If there isn't a 'className' property in jsonObject,
-        // property is a basic javascript object.
-        // Note:
-        //   This doesn't always have to be true and it will lead to
-        // errors if someone creates a new class not inherited
-        // from SaveableObject and puts it in saveable class - it will
-        // get loaded, but it won't have correct type (it will be just
-        // a basic javascript object).
-        myProperty = {};
-      }
-      else
-      {
-        // If there is a 'className' property in JSON, create a new instance
-        // of that type.
+  //     if (className === undefined)
+  //     {
+  //       // If there isn't a 'className' property in jsonObject,
+  //       // property is a basic javascript object.
+  //       // Note:
+  //       //   This doesn't always have to be true and it will lead to
+  //       // errors if someone creates a new class not inherited
+  //       // from SaveableObject and puts it in saveable class - it will
+  //       // get loaded, but it won't have correct type (it will be just
+  //       // a basic javascript object).
+  //       myProperty = {};
+  //     }
+  //     else
+  //     {
+  //       // If there is a 'className' property in JSON, create a new instance
+  //       // of that type.
 
-        let prototypeObject =
-          Server.prototypeManager.getPrototypeObject(className);
+  //       let prototypeObject =
+  //         Server.prototypeManager.getPrototypeObject(className);
 
-        if (prototypeObject === undefined)
-        {
-          ERROR("Property '" + propertyName + "' loaded from"
-            + " file '" + path + "' is of type '" + className + "'"
-            + " which doesn't exist in ClassFactory. It probably"
-            + " means that you forgot to add class '" + className + "'"
-            + " to DynamicClasses.ts");
-          myProperty = null;
-        }
-        else
-        {
-          myProperty = Server.prototypeManager.createInstance(prototypeObject);
-        }
-      }
-    }
+  //       if (prototypeObject === undefined)
+  //       {
+  //         ERROR("Property '" + propertyName + "' loaded from"
+  //           + " file '" + path + "' is of type '" + className + "'"
+  //           + " which doesn't exist in ClassFactory. It probably"
+  //           + " means that you forgot to add class '" + className + "'"
+  //           + " to DynamicClasses.ts");
+  //         myProperty = null;
+  //       }
+  //       else
+  //       {
+  //         myProperty = Server.prototypeManager.createInstance(prototypeObject);
+  //       }
+  //     }
+  //   }
 
-    return myProperty;
-  }
+  //   return myProperty;
+  // }
 
   // Saves a property of type Array to a corresponding JSON Array object.
   private saveArray(array: Array<any>, arrayName: string, className: string)
