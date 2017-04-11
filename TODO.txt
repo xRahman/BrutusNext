@@ -110,6 +110,41 @@ Poznámky ke konverzi na Serializable:
 
 ----------------------------------------------------------------------------
 
+ÚVAHA: Perith's notes
+- aneb jeden hráč sebere item podstatný ke questu (nebo prostě nějaký podstatný
+  hint v zóně).
+   Bez zone resetu nebo server rebootu (a tudíž duplikace itemů) mají ostatní
+  hráči smůlu.
+Řešení: Magie umožňující koukat do minulosti. Char s nahozeným past-sightem
+  uvidí "obrazy" itemů, které někdo sebral (ne všeho smetí, jen patřičně
+  oflagovaných itemů). Dalším kouzlem si bude schopen vytvořit "éterický"
+  duplikát.
+  - tj. stále bude docházet k duplikaci důležitých itemů, ale bude to fikčně
+    dávat smysl a půjde na první pohled poznat, že jde o duplikát (může se s
+    tím i hůř manipulovat - třeba to nemusí jít tradovat).
+
+ÚVAHA: Entity proxy
+- proxy nejspíš nehlídá přístup dovnitř Object (tedy nonprimitive) properties
+  entity (na druhou stranu pokud si na ně někdo nedrží přímou referenci, tak
+   se k nim dostane jen přes properties, které proxy hlídá)
+  - tohle by mohlo vadit, kdybych chtěl přes proxy updatovat timestamp při
+    každé změněentity
+
+ÚVAHA: Online editace roomy
+- Nejlepší řešení asi budou timestampy. Client bude mít u svých entit
+  timestamp, kdy si je vyžádal. Entity budou mít timestamp poslední změny.
+    Client nikdy nezobrazuje všechny roomy najednou, vždycky jen nějakej
+  výřez. Entity v tomhle výřezu by se asi měly updatovat hned, o update
+  mimo výřez si klient řekne ve chvíli, kdy tam user doscrolluje (v žádosti
+  stačí poslat idčka entity a jejich timestampy, což může být jeden packet
+  - server to porovná s poslední změnou a pošle update jen těch změněných)
+- Tohle asi není nutné řešit prioritně. Přinejhorším bude prostě klient
+  zobrazovat outdated info, no big deal (vadilo by to jen při konkurenční
+  editaci a i tam by to asi prošlo - prostě by si jen buildeři vzájemně
+  přepisovali změny).
+
+----------------------------------------------------------------------------
+
 IDEA (provázání protokolu a server classy):
 
 V /shared bude deklarace protokolu, např:
