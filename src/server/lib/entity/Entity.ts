@@ -14,57 +14,57 @@ import {Server} from '../../../server/lib/Server';
 
 export class Entity extends AutoSaveableObject
 {
-  public static get ID_PROPERTY() { return 'id'; }
+  // public static get ID_PROPERTY() { return 'id'; }
 
-  public static get PROTOTYPE_ID_PROPERTY()
-  {
-    return "prototypeId";
-  }
+  // public static get PROTOTYPE_ID_PROPERTY()
+  // {
+  //   return "prototypeId";
+  // }
 
-  public static get IS_PROTOTYPE_PROPERTY()
-  {
-    return "isEntityPrototype";
-  }
+  // public static get IS_PROTOTYPE_PROPERTY()
+  // {
+  //   return "isEntityPrototype";
+  // }
 
-  public static get INSTANCE_IDS_PROPERTY()
-  {
-    return "instanceIds";
-  }
+  // public static get INSTANCE_IDS_PROPERTY()
+  // {
+  //   return "instanceIds";
+  // }
 
   // ----------------- Private data ----------------------
 
-  ///private id: EntityId = null;
-  private id: string = null;
-  // Property 'id' is not saved to file, because it is saved
-  // as the name of the saved file (like 7-iu5by22s.json).
-  private static id = { isSaved: false };
+  // ///private id: EntityId = null;
+  // private id: string = null;
+  // // Property 'id' is not saved to file, because it is saved
+  // // as the name of the saved file (like 7-iu5by22s.json).
+  // private static id = { isSaved: false };
 
-  // Id of entity which serves as prototype object to this entity.
-  //   This needs to be saved in orded to know what prototype object
-  // to use when creating this entity.
-  //   Only hardcoded entity prototypes have null 'prototypeId'.
-  private prototypeId: string = null;
+  // // Id of entity which serves as prototype object to this entity.
+  // //   This needs to be saved in orded to know what prototype object
+  // // to use when creating this entity.
+  // //   Only hardcoded entity prototypes have null 'prototypeId'.
+  // private prototypeId: string = null;
 
-  // Symbolic name of this entity, which is relative to the
-  // 'symLocation' entity (in other words: entity 'symLocation'
-  // has a hasmap 'symNames' which maps 'symName' of this entity
-  // to the reference to this entity).
-  private symName: string = null;
+  // // Symbolic name of this entity, which is relative to the
+  // // 'symLocation' entity (in other words: entity 'symLocation'
+  // // has a hasmap 'symNames' which maps 'symName' of this entity
+  // // to the reference to this entity).
+  // private symName: string = null;
 
-  // Reference to the entity which can translate our 'symName'
-  // to the reference to this entity.
-  private symLocation: Entity = null;
+  // // Reference to the entity which can translate our 'symName'
+  // // to the reference to this entity.
+  // private symLocation: Entity = null;
 
-  // Hasmap translating symbolic names of entities to respective
-  // references.
-  //   Key:   'symName'
-  //   Value: reference to entity identified by 'symName'
-  private symNames = new Map<string, Entity>();
+  // // Hasmap translating symbolic names of entities to respective
+  // // references.
+  // //   Key:   'symName'
+  // //   Value: reference to entity identified by 'symName'
+  // private symNames = new Map<string, Entity>();
 
-  // Set of ids of entities that use this entity as their prototype
-  // object - including entities saved on disk but not present in
-  // memory at the moment.
-  private instanceIds = new Set<string>();
+  // // Set of ids of entities that use this entity as their prototype
+  // // object - including entities saved on disk but not present in
+  // // memory at the moment.
+  // private instanceIds = new Set<string>();
 
 
   /// Na vícenásobnou dědičnost se prozatím vykašlu - fightspecy a podobně
@@ -129,177 +129,177 @@ export class Entity extends AutoSaveableObject
      return Entity.getSaveDirectory() + Entity.getSaveFileName(id);
   }
 
-  public static isValid(entity: Entity)
-  {
-    return entity !== null
-        && entity !== undefined
-        && entity.isValid() === true;
-  }
+  // public static isValid(entity: Entity)
+  // {
+  //   return entity !== null
+  //       && entity !== undefined
+  //       && entity.isValid() === true;
+  // }
 
   // --------------- Public accessors -------------------
 
-  public getId()
-  {
-    // If we don't have own 'id' property, this.id would return
-    // id of our prototype object (thanks to inheritance), which
-    // is not our id (id has to be unique for each entity instance).
-    if (!this.hasOwnProperty(Entity.ID_PROPERTY) || this.id === null)
-    {
-      ERROR("Attempt to get 'id' of an entity which doesn't have"
-        + " an id set, yet");
-      return null;
-    }
+  // public getId()
+  // {
+  //   // If we don't have own 'id' property, this.id would return
+  //   // id of our prototype object (thanks to inheritance), which
+  //   // is not our id (id has to be unique for each entity instance).
+  //   if (!this.hasOwnProperty(Entity.ID_PROPERTY) || this.id === null)
+  //   {
+  //     ERROR("Attempt to get 'id' of an entity which doesn't have"
+  //       + " an id set, yet");
+  //     return null;
+  //   }
 
-    return this.id;
-  }
+  //   return this.id;
+  // }
 
-  public setId(id: string)
-  {
-    // Id can only be set once.
-    //   We need to check if we have own property 'id'
-    // (not just the one inherited from our prototype),
-    // because if we don't, value of 'this.id' would be
-    // that of our prototype object, which is not null.
-    if (this.hasOwnProperty(Entity.ID_PROPERTY) && this.id !== null)
-    {
-      ERROR("Attempt to set id of entity " + this.getErrorIdString()
-        + " that already has an id. Id is not set");
-      return;
-    }
+  // public setId(id: string)
+  // {
+  //   // Id can only be set once.
+  //   //   We need to check if we have own property 'id'
+  //   // (not just the one inherited from our prototype),
+  //   // because if we don't, value of 'this.id' would be
+  //   // that of our prototype object, which is not null.
+  //   if (this.hasOwnProperty(Entity.ID_PROPERTY) && this.id !== null)
+  //   {
+  //     ERROR("Attempt to set id of entity " + this.getErrorIdString()
+  //       + " that already has an id. Id is not set");
+  //     return;
+  //   }
 
-    this.id = id;
+  //   this.id = id;
 
-    if (this.hasOwnProperty('id') === false)
-      FATAL_ERROR("Property 'id' has been set to prototype object"
-        + " rather than to the instance. This probably means that"
-        + " entity proxy has been used as prototype entity instead"
-        + " of nonproxified entity");
-  }
+  //   if (this.hasOwnProperty('id') === false)
+  //     FATAL_ERROR("Property 'id' has been set to prototype object"
+  //       + " rather than to the instance. This probably means that"
+  //       + " entity proxy has been used as prototype entity instead"
+  //       + " of nonproxified entity");
+  // }
 
-  public getPrototypeId() { return this.prototypeId; }
+  // public getPrototypeId() { return this.prototypeId; }
 
-  public setPrototypeId(prototypeId: string)
-  {
-    this.prototypeId = prototypeId;
-  }
+  // public setPrototypeId(prototypeId: string)
+  // {
+  //   this.prototypeId = prototypeId;
+  // }
 
-  public getInstanceIds()
-  {
-    return this.instanceIds;
-  }
+  // public getInstanceIds()
+  // {
+  //   return this.instanceIds;
+  // }
 
-  public setInstanceIds(instanceIds: Set<string>)
-  {
-    this.instanceIds = instanceIds;
-  }
+  // public setInstanceIds(instanceIds: Set<string>)
+  // {
+  //   this.instanceIds = instanceIds;
+  // }
 
-  public addInstance(instance: Entity)
-  {
-    let instanceId = instance.getId();
+  // public addInstance(instance: Entity)
+  // {
+  //   let instanceId = instance.getId();
 
-    if (instance === null || instance === undefined)
-    {
-      ERROR("Invalid parameter 'instance'");
-      return;
-    }
+  //   if (instance === null || instance === undefined)
+  //   {
+  //     ERROR("Invalid parameter 'instance'");
+  //     return;
+  //   }
 
-    // Check that instanceId is not yet present in the list.
-    if (this.instanceIds.has(instanceId))
-    {
-      ERROR("Failed to add instance " + instance.getErrorIdString()
-        + " to prototype " + this.getErrorIdString() + " because it"
-        + " is already listed as an instance of this prototype");
-      return;
-    }
+  //   // Check that instanceId is not yet present in the list.
+  //   if (this.instanceIds.has(instanceId))
+  //   {
+  //     ERROR("Failed to add instance " + instance.getErrorIdString()
+  //       + " to prototype " + this.getErrorIdString() + " because it"
+  //       + " is already listed as an instance of this prototype");
+  //     return;
+  //   }
 
-    this.instanceIds.add(instanceId);
-  }
+  //   this.instanceIds.add(instanceId);
+  // }
 
   // ---------------- Public methods --------------------
 
-  public isPrototype()
-  {
-    // We have to make sure that we check our own property
-    // (because we surely have a nonempty 'instanceIds'
-    //  property inherited from our prototype).
-    if (!this.hasOwnProperty(Entity.INSTANCE_IDS_PROPERTY))
-      return false;
+  // public isPrototype()
+  // {
+  //   // We have to make sure that we check our own property
+  //   // (because we surely have a nonempty 'instanceIds'
+  //   //  property inherited from our prototype).
+  //   if (!this.hasOwnProperty(Entity.INSTANCE_IDS_PROPERTY))
+  //     return false;
 
-    // We are a prototype if there is at least one
-    // entity that use us as it's prototype object.
-    return this.instanceIds.size !== 0;
-  }
+  //   // We are a prototype if there is at least one
+  //   // entity that use us as it's prototype object.
+  //   return this.instanceIds.size !== 0;
+  // }
 
-  public isHardcodedPrototypeEntity()
-  {
-    // Hardcoded prototype entities are the roots of respective
-    // prototype trees so they don't have 'prototypeId' themselves.
-    return this.prototypeId === null;
-  }
+  // public isHardcodedPrototypeEntity()
+  // {
+  //   // Hardcoded prototype entities are the roots of respective
+  //   // prototype trees so they don't have 'prototypeId' themselves.
+  //   return this.prototypeId === null;
+  // }
 
-  // Compares entities by string ids.
-  // (You should never compare two references directly, because
-  //  there can be more than one reference for any single entity
-  //  because references to entity proxies are used. Always use
-  //  this method instead.) 
-  public equals(entity: Entity)
-  {
-    if (entity === null || entity.isValid() === false)
-    {
-      ERROR("Attempt to compare entity " + this.getErrorIdString()
-        + " to an invalid entity");
-      return false;
-    }
+  // // Compares entities by string ids.
+  // // (You should never compare two references directly, because
+  // //  there can be more than one reference for any single entity
+  // //  because references to entity proxies are used. Always use
+  // //  this method instead.) 
+  // public equals(entity: Entity)
+  // {
+  //   if (entity === null || entity.isValid() === false)
+  //   {
+  //     ERROR("Attempt to compare entity " + this.getErrorIdString()
+  //       + " to an invalid entity");
+  //     return false;
+  //   }
 
-    if (this.isValid() === false)
-    {
-      ERROR("Attempt to compare entity " + entity.getErrorIdString()
-        + " to invalid entity " + this.getErrorIdString());
-      return false;
-    }
+  //   if (this.isValid() === false)
+  //   {
+  //     ERROR("Attempt to compare entity " + entity.getErrorIdString()
+  //       + " to invalid entity " + this.getErrorIdString());
+  //     return false;
+  //   }
 
-    return this.getId() === entity.getId(); 
-  }
+  //   return this.getId() === entity.getId(); 
+  // }
 
-  // This function exists only for typescript to stop complaining
-  // that it doesn't exist. It should never be executed, however,
-  // because 'dynamicCast()' call should always be trapped by
-  // entity proxy (see EntityProxyHandler.get()).
-  public dynamicCast<T>(typeCast: { new (...args: any[]): T })
-  {
-    ERROR("Entity.dynamicCast() function should never be called."
-      + " You somehow managed to get your hands on direct reference"
-      + " to entity instead of a proxy. That must never happen");
+  // // This function exists only for typescript to stop complaining
+  // // that it doesn't exist. It should never be executed, however,
+  // // because 'dynamicCast()' call should always be trapped by
+  // // entity proxy (see EntityProxyHandler.get()).
+  // public dynamicCast<T>(typeCast: { new (...args: any[]): T })
+  // {
+  //   ERROR("Entity.dynamicCast() function should never be called."
+  //     + " You somehow managed to get your hands on direct reference"
+  //     + " to entity instead of a proxy. That must never happen");
 
-    return null;
-  }
+  //   return null;
+  // }
 
-  // This function exists only for typescript to stop complaining
-  // that it doesn't exist. It should never be executed, however,
-  // because 'dynamicTypeCheck()' call should always be trapped by
-  // entity proxy (see EntityProxyHandler.get()).
-  private dynamicTypeCheck<T>(type: { new (...args: any[]): T })
-  {
-    ERROR("Entity.dynamicTypeCheck() function should never be called."
-      + " You somehow managed to get your hands on direct reference"
-      + " to entity instead of a proxy. That must never happen");
+  // // This function exists only for typescript to stop complaining
+  // // that it doesn't exist. It should never be executed, however,
+  // // because 'dynamicTypeCheck()' call should always be trapped by
+  // // entity proxy (see EntityProxyHandler.get()).
+  // private dynamicTypeCheck<T>(type: { new (...args: any[]): T })
+  // {
+  //   ERROR("Entity.dynamicTypeCheck() function should never be called."
+  //     + " You somehow managed to get your hands on direct reference"
+  //     + " to entity instead of a proxy. That must never happen");
 
-    return false;
-  }
+  //   return false;
+  // }
 
-  // This function exists only for typescript to stop complaining
-  // that it doesn't exist. It should never be executed, however,
-  // because 'isValid()' call should always be trapped by
-  // entity proxy (see EntityProxyHandler.get()).
-  public isValid(): boolean
-  {
-    ERROR("Entity.isValid() function should never be called. You"
-      + " somehow managed to get your hands on direct reference to"
-      + " entity " + this.getErrorIdString() + " instead of a proxy."
-      + " That must never happen");
+  // // This function exists only for typescript to stop complaining
+  // // that it doesn't exist. It should never be executed, however,
+  // // because 'isValid()' call should always be trapped by
+  // // entity proxy (see EntityProxyHandler.get()).
+  // public isValid(): boolean
+  // {
+  //   ERROR("Entity.isValid() function should never be called. You"
+  //     + " somehow managed to get your hands on direct reference to"
+  //     + " entity " + this.getErrorIdString() + " instead of a proxy."
+  //     + " That must never happen");
 
-    return false;
-  }
+  //   return false;
+  // }
 
   /// Deprecated.
   /*
@@ -389,15 +389,15 @@ export class Entity extends AutoSaveableObject
     );
   }
 
-  // Returns something like 'Connection (id: d-imt2xk99)'
-  // (indended for use in error messages).
-  public getErrorIdString()
-  {
-    if (this.getId() === null)
-      return "{ className: " + this.className + ", id: null }";
+  // // Returns something like 'Connection (id: d-imt2xk99)'
+  // // (indended for use in error messages).
+  // public getErrorIdString()
+  // {
+  //   if (this.getId() === null)
+  //     return "{ className: " + this.className + ", id: null }";
 
-    return "{ className: " + this.className + ", id: " + this.getId() + " }";
-  }
+  //   return "{ className: " + this.className + ", id: " + this.getId() + " }";
+  // }
 
   /// Tohle možná nepoužiju - entity nejspíš budou do listů přidávat
   /// různé funkce podle aktuální potřeby... 
@@ -408,10 +408,10 @@ export class Entity extends AutoSaveableObject
   public addToLists() { }
   */
 
-  // Entity removes itself from EntityLists so it can no longer
-  // be searched by name, etc. This doesn't remove entity from EntityManager.
-  // (this method needs to be overriden by descendants)
-  public removeFromLists() {}
+  // // Entity removes itself from EntityLists so it can no longer
+  // // be searched by name, etc. This doesn't remove entity from EntityManager.
+  // // (this method needs to be overriden by descendants)
+  // public removeFromLists() {}
 
   // --------------- Protected methods ------------------
 

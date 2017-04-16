@@ -1,0 +1,9 @@
+﻿Úvahy o zabezpečení přístupu ze skriptů a tak...
+
+- private/public/protected nehraje roli, protože to se v typescriptu
+  kontroluje pouze v compile time.
+    Pokud má něco být skutečně private, je třeba použít javascriptové triky
+  (třeba to skrýt do closure constructoru).
+
+- všechny entity mají metodu deserialize(), která umožňuje zapsat do libovolné
+  property. To by mohl bejt docela problém.

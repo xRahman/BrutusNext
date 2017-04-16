@@ -39,7 +39,7 @@
       ],
       "problemMatcher": "$tsc",
       // Watch file changes ('--watch' must be passed to tsc for this to work).
-      "isWatching": true
+      "isBackground": true
       // This trick could be used so you could map two task directly.
       // We don't use this though, instead we remap 'ctrl+shift+b' to
       // ask what task to run.
@@ -64,7 +64,7 @@
       ],
       "problemMatcher": "$tsc",
       // Watch file changes ('--watch' must be passed to tsc for this to work).
-      "isWatching": true
+      "isBackground": true
       // This trick could be used so you could map two task directly.
       // We don't use this though, instead we remap 'ctrl+shift+b' to
       // ask what task to run.

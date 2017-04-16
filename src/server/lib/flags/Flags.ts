@@ -110,9 +110,12 @@ export abstract class Flags extends SaveableObject
 
   // -------------- Protected methods -------------------
 
-  // Overrides SaveableObject::loadPropertyFromJsonObject() to
+  /// FastBitSet se teď savuje stejně jako třeba Map.
+  /// Nechávám si to tu pro jistotu, kdyby to nefungovalo úplně dobře.
+  /*
+  // Overrides SaveableObject::loadProperty() to
   // be able to save bitvector as array of numbers.
-  protected loadPropertyFromJsonObject
+  protected loadProperty
   (
     jsonObject: Object,
     propertyName: string,
@@ -127,13 +130,17 @@ export abstract class Flags extends SaveableObject
     }
     else
     {
-      super.loadPropertyFromJsonObject(jsonObject, propertyName, path);
+      super.loadProperty(jsonObject, propertyName, path);
     }
   }
+  */
 
-  // Overrides SaveableObject::loadPropertyFromJsonObject() to
-  // be able load bitvector from array of numbers.
-  protected savePropertyToJsonObject(jsonObject: Object, propertyName: string)
+  /// FastBitSet se teď savuje stejně jako třeba Map.
+  /// Nechávám si to tu pro jistotu, kdyby to nefungovalo úplně dobře.
+  /*
+  // Overrides SaveableObject::saveProperty() to
+  // be able save bitvector from array of numbers.
+  protected saveProperty(jsonObject: Object, propertyName: string)
   {
     if (propertyName === 'flags')
     {
@@ -142,9 +149,10 @@ export abstract class Flags extends SaveableObject
     }
     else
     {
-      super.savePropertyToJsonObject(jsonObject, propertyName);
+      super.saveProperty(jsonObject, propertyName);
     }
   }
+  */
 
   // ---------------- Private methods --------------------
 
