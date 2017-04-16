@@ -14,89 +14,96 @@
   Note:
     Only properties that exist on the class that is being loaded are loaded
     from save. It means that you can remove properties from existing classes
-    without converting existing save files. 
+    without converting existing save files.
+      This does not apply to primitive Javascript Object properties (including
+    properties defined using a Typescript Interface) because we need to be able
+    to create properties in empty Javascript Objects when we are loading Array
+    items (which never exist prior to loading).
 
-    (See loadFromJsonObject() and loadPrimitiveObject() methods for details.) 
+    (See deserialize() and readPrimitiveObject() methods for details.) 
 */
 
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
+import {SharedUtils} from '../../../shared/lib/utils/SharedUtils';
 import {Attributes} from '../../../shared/lib/class/Attributes';
+import {JsonObject} from '../../../shared/lib/json/JsonObject';
+import {JsonSaver} from '../../../shared/lib/json/JsonSaver';
+//import {JsonLoader} from '../../../shared/lib/json/JsonLoader';
 ///import {Entity} from '../../../server/lib/entity/Entity';
 ///import {EntityManager} from '../../../server/lib/entity/EntityManager';
 import {Nameable} from '../../../shared/lib/class/Nameable';
 import {Instantiable} from '../../../shared/lib/class/Instantiable';
+import {Entity} from '../../../shared/lib/entity/Entity';
 import {EntityProxyHandler} from
   '../../../server/lib/entity/EntityProxyHandler';
 ///import {FileSystem} from '../../../server/lib/fs/FileSystem';
 ///import {SavingManager} from '../../../server/lib/fs/SavingManager';
-///import {IndirectValue} from '../../../server/lib/fs/IndirectValue';
 ///import {Server} from '../../../server/lib/Server';
-
-let beautify = require('js-beautify').js_beautify;
 
 /// DEBUG:
 ///let Util = require('util');
 
+// 3rd party modules.
+let FastBitSet = require('fastbitset');
+
 export class Serializable extends Instantiable
 {
-  public static get VERSION_PROPERTY() { return 'version'; }
+  public static get VERSION_PROPERTY()      { return 'version'; }
+
+  // These special property names are only written to serialized data.
+  // For example 'map' property holds an Array that represents serialized
+  // data of a Map object.
+  public static get BITVECTOR_PROPERTY()    { return 'bitvector'; }
+  public static get DATE_PROPERTY()         { return 'date'; }
+  public static get MAP_PROPERTY()          { return 'map'; }
+  public static get SET_PROPERTY()          { return 'set'; }
+
+  // These are 'dummy' class names. They are only written to JSON
+  // but they don't really exists in code (Date, Set and Map are
+  // build-in javascript classes, Bitvector translates to a FastBitArray
+  // class and Reference is not a class at all but a reference to
+  // an Entity.
+  private static get BITVECTOR_CLASS_NAME() { return 'Bitvector'; }
+  private static get DATE_CLASS_NAME()      { return 'Date'; }
+  private static get SET_CLASS_NAME()       { return 'Set'; }
+  private static get MAP_CLASS_NAME()       { return 'Map'; }
+  private static get REFERENCE_CLASS_NAME() { return 'Reference'; }
 
   //----------------- Protected data --------------------
 
   // Version will be checked for. Default behaviour is to trigger
   // an ERROR when versions don't match. You can change it by
-  // overriding a checkVersion() method;
+  // overriding a checkVersion() method.
+  //   It is also a good idea to override 'version' property in
+  // descendant classes and increment it when you change the properties.
   protected version = 0;
-
-  protected isProxy = false;
-    /// Není třeba, default pro 'saved' atribut bude 'false'
-    /// private static isProxy: Attributes = { saved: false };
 
   // ------------- Public static methods ----------------
 
   // ------------ Protected static methods --------------
 
-  /// K čemu je tohle potřeba?
-  ///   Zjevně se to volá v Saveable.loadJsonObjectFromFile() při loadování
-  ///  entit. Asi by to mělo být protected...
-  // -> Returns 'null' if loading fails.
-  protected static loadFromJsonString(jsonString: string, path: string)
-  {
-    let jsonObject = {};
-
-    try
-    {
-      jsonObject = JSON.parse(jsonString);
-    }
-    catch (e)
-    {
-      // Here we need fatal error, because data might already
-      // be partialy loaded so we could end up with broken entity.
-      FATAL_ERROR("Syntax error in JSON string: "
-        + e.message + " in file " + path);
-      return null;
-    }
-
-    return jsonObject;
-  }
-
   // ---------------- Public methods --------------------
 
-  /// Proč je tohle public?
-  /// - protože při loadování entit se nejdřív vytvoří JSON Object,
-  //    z něj se přečte 'prototypeId', podle něj se najde prototype
-  //    object, z něj se teprve může vytvořit instance a na té se
-  //    nakonec zavolá loadFromJsonObject().
-  // -> Returns 'false' if loading fails.
-  public loadFromJsonObject(jsonObject: Object, path: string): boolean
+  public serialize(mode: Serializable.Mode): string
   {
-    if (!this.loadFromJsonObjectCheck(jsonObject, path))
+    let jsonObject = this.saveToJsonObject(mode);
+
+    return JsonObject.stringify(jsonObject);
+  }
+
+//+
+  // Extracts data from plain javascript Object to this instance.
+  // -> Returns 'false' on failure.
+  public deserialize(jsonObject: Object, path: string = null): boolean
+  {
+    // Check version and input data validity.
+    if (!this.deserializeCheck(jsonObject, path))
       return false;
 
-    // Now copy the data.
+    // Copy all properties from 'jsonObject'.
     for (let propertyName in jsonObject)
     {
       if
@@ -113,12 +120,20 @@ export class Serializable extends Instantiable
         && this[propertyName] !== undefined
       )
       {
-        // We are cycling over properties in JSON object, not in
-        // Serializable that is being loaded. It means that properties
-        // that are not present in the save will not get overwritten
-        // with 'undefined'. This allows adding new properties to existing
-        // classes without the need to convert all save files.
-        this.loadProperty(jsonObject, propertyName, path);
+        let param: ReadParam =
+        {
+          propertyName: propertyName,
+          targetProperty: this[propertyName],
+          sourceProperty: jsonObject[propertyName],
+          path: path
+        }
+
+        // We are cycling over properties in JSON object, not in Serializable
+        // that is being loaded. It means that properties that are not present
+        // in the save will not get overwritten with 'undefined'. This allows
+        // adding new properties to existing classes without the need to
+        // convert all save files.
+        this[propertyName] = this.readProperty(param);
       }
     }
 
@@ -127,6 +142,7 @@ export class Serializable extends Instantiable
 
   // -------------- Protected methods -------------------
 
+//+
   protected checkVersion(jsonObject: Object, path: string = null): boolean
   {
     if (!(Serializable.VERSION_PROPERTY in jsonObject))
@@ -152,31 +168,17 @@ export class Serializable extends Instantiable
     return true;
   }
 
-  // Override this method if you need to load property of nonstandard type
-  // (see class Flags for example).
-  protected loadProperty
-  (
-    jsonObject: Object,
-    propertyName: string,
-    path: string = null
-  )
-  {
-    this[propertyName] = this.readProperty
-    (
-      propertyName,
-      this[propertyName],
-      jsonObject[propertyName],
-      path
-    );
-  }
 
+  /// Deprecated
+  /*
   // Override this method if you need to save property of nonstandard type
   // (see class Flags for example).
-  protected savePropertyToJsonObject(jsonObject: Object, propertyName: string)
+  protected saveProperty(jsonObject: Object, propertyName: string)
   {
     jsonObject[propertyName] =
-      this.saveVariable(this[propertyName], propertyName, this.className);
+      this.writeProperty(this[propertyName], propertyName, this.className);
   }
+  */
 
   // --------------- Private methods --------------------
 
@@ -191,101 +193,22 @@ export class Serializable extends Instantiable
   //   return promise;
   // }
 
+  ///////////////////////////////////////////////////////
+  ///////////////////// JsonSaver ///////////////////////
+  ///////////////////////////////////////////////////////
 
-  /// TODO: Možná createJsonString() ?
-  private saveToJsonString(): string
-  {
-    let jsonString = JSON.stringify(this.saveToJsonObject());
-
-    jsonString = beautify
-    (
-      jsonString,
-      {
-        "indent_size": 2,
-        "indent_char": " ",
-        "eol": "\n",
-        "brace_style": "expand",
-        "keep_array_indentation": true,
-        "end_with_newline": false
-      }
-    );
-
-    return jsonString;
-  }
-
-  // Checks that version and className match and that 'jsonObject' isn't null.
-  // -> Returns 'false' if check fails.
-  private loadFromJsonObjectCheck
-  (
-    jsonObject: Object,
-    path: string = null
-  )
-  : boolean
-  {
-    // Using 'in' operator on object with null value would cause crash.
-    if (jsonObject === null)
-    {
-      let pathString = this.composePathString(path);
-
-      // Here we need fatal error, because data might already
-      // be partialy loaded so we could end up with broken entity.
-      ERROR("Invalid JSON object" + pathString);
-      return false;
-    }
-
-    // 'path' is passed just so it can be printed to error messages.
-    if (!this.checkVersion(jsonObject, path))
-      return false;
-
-    // 'className' must be the same as it's saved value.
-    if (!this.checkClassName(jsonObject, path))
-      return false;
-
-    return true;
-  }
-
-  /// Removed because of duplicity.
-  // // Checks if 'className' property in 'jsonObject' matches 'className'
-  // // property of 'this' (that is the instance we are loading to).
-  // // -> Returns 'false' if check fails.
-  // private loadClassNameCheck(jsonObject: Object, path: string): boolean
-  // {
-  //   if (this.className === undefined)
-  //   {
-  //     ERROR("Loading object with saved"
-  //       + " '" + Nameable.CLASS_NAME_PROPERTY + "'"
-  //       + " property into an instance that doesn't have"
-  //       + " a '" + Nameable.CLASS_NAME_PROPERTY + "'"
-  //       + " property. This should never happen");
-  //     return false;
-  //   }
-
-  //   if (jsonObject[Nameable.CLASS_NAME_PROPERTY] !== this.className)
-  //   {
-  //     ERROR("Loading object with '" + Nameable.CLASS_NAME_PROPERTY + "'"
-  //       + " property '" + jsonObject[Nameable.CLASS_NAME_PROPERTY] + "' in"
-  //       + " JSON into an instance with '" + Nameable.CLASS_NAME_PROPERTY + "'"
-  //       + " '" + this.className + "'. This should't happen, types must match");
-  //     return false;
-  //   }
-
-  //   return true;
-  // }
-
-  // Creates a generic javascript Object and sets to it those properties
-  // from 'this' that are to be serialized. Data types that can't be directly
+  // Creates a generic Javascript Object and fills it with properties of
+  // 'this' that are to be serialized. Data types that can't be directly
   // serialized to JSON (like Set or Map) are converted to their serializable
-  // equivalents (Arrays or such).
-  private saveToJsonObject(): Object
+  // equivalents (Array, string, etc).
+  private saveToJsonObject(mode: Serializable.Mode): Object
   {
     let jsonObject: Object = {};
 
     // A little hack - save 'name' property first (out of order)
     // to make saved JSON files more readable.
     if ('name' in this)
-    {
       jsonObject['name'] = this['name'];
-    }
 
     // Anoter hack - save 'className' property.
     // (We need to save 'className' maually, because it is an accessor,
@@ -308,139 +231,48 @@ export class Serializable extends Instantiable
     // property and use 'for .. in' operator on it.
     let instance = this;
 
-    if (this.isProxy === true)
+    // Note: 'isProxy' is trapped by proxy handler to return 'true'.
+    //  If the instance isn't a proxy, value of 'isProxy' is 'undefined'.
+    if (this['isProxy'] === true)
       instance = this[EntityProxyHandler.INTERNAL_ENTITY_PROPERTY];
 
     // Cycle through all properties in source object.
-    for (let property in instance)
+    for (let propertyName in instance)
     {
-      // Skip 'name' property because it's already saved thanks to
-      // previous hack.
+      // Skip 'name' property because it's already saved by hack.
+      if (propertyName === 'name')
+        continue;
+
+TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
+      let writeParam: WriteParam =
+      {
+        // Data to be saved.
+        sourceProperty: any,
+        // String used for error messages.
+        // (It should describe the property as well as
+        //  possible - what's it's name, what it's in, etc.)
+        description: string,
+        // Name of the class we are just saving.
+        className: string,
+        // Serialization mode (SAVE_TO_FILE, SEND_TO_CLIENT, etc.).
+        mode: mode
+      }
+      
+      /// TODO: Handle multiple serialization modes
+      // (toFile, toClient, toServer, toEditor...)
+      /// Tak nakonec ne, přesunu to až do writeProperty(),
+      /// protože tady by se to netestovalo pro vnořené properties.
+
+      /*
       // (this.isSaved() checks static property attribute 'saved')
       // (className is passed only for more specific error messages)
-      if (property !== 'name' && instance.isSaved(property, this.className))
-        instance.savePropertyToJsonObject(jsonObject, property);
+      if (instance.isSaved(propertyName, this.className))
+        instance.saveProperty(jsonObject, propertyName);
+      */
+      instance.writeProperty();
     }
 
     return jsonObject;
-  }
-
-  // -> Returns 'true' on success.
-  private checkClassName(jsonObject: Object, path: string = null): boolean
-  {
-    let jsonClassName = jsonObject[Nameable.CLASS_NAME_PROPERTY];
-
-    if (jsonClassName === undefined)
-    {
-      let pathString = this.composePathString(path);
-
-      ERROR("There is no '" + Nameable.CLASS_NAME_PROPERTY + "'"
-        + " property in JSON data" + pathString);
-      return false;
-    }
-
-    if (jsonClassName !== this.className)
-    {
-      let pathString = this.composePathString(path);
-
-      ERROR("Attempt to load JSON data of class"
-        + " (" + jsonObject[Nameable.CLASS_NAME_PROPERTY] + ")"
-        + pathString + " into instance of incompatible"
-        + " class (" + this.className + ")");
-      return false;
-    }
-
-    return true;
-  }
-
-  // Reads a single property from corresponding JSON object.
-  // Converts from serializable format to original data type as needed
-  // (for example Set class is saved to JSON as an Array so it has to be
-  //  reconstructed here).
-  private readProperty
-  (
-    propertyName: string,
-    targetProperty: any,
-    jsonProperty: any,
-    path: string
-  )
-  : any
-  {
-    // First handle the case that property in JSON has null value. In that
-    // case target property will also be null, no matter what type it is.
-    if (jsonProperty === null)
-      return null;
-
-    // Attempt to load property as Date object.
-    let result: any = this.loadAsDate
-    (
-      propertyName,
-      targetProperty,
-      jsonProperty,
-      path
-    );
-    if (result !== null)
-      return result;
-
-    // Attempt to load property as Set object.
-    result = this.loadAsSet
-    (
-      propertyName,
-      targetProperty,
-      jsonProperty,
-      path
-    );
-    if (result !== null)
-      return result;
-
-    // Attempt to load property as Map object.
-    result = this.loadAsMap
-    (
-      propertyName,
-      targetProperty,
-      jsonProperty,
-      path
-    );
-    if (result !== null)
-      return result;
-
-    // Attempt to load property as entity reference.
-    result = this.loadAsEntityReference
-    (
-      propertyName,
-      targetProperty,
-      jsonProperty,
-      path
-    );
-    if (result !== null)
-      return result;
-
-    // Attempt to load property as Array.
-    result = this.loadAsArray
-    (
-      propertyName,
-      targetProperty,
-      jsonProperty,
-      path
-    );
-    if (result !== null)
-      return result;
-
-    // Attempt to load property as Object (including custom classes).
-    result = this.loadAsObject
-    (
-      propertyName,
-      targetProperty,
-      jsonProperty,
-      path
-    );
-    if (result !== null)
-      return result;
-    
-    // If propety has neither of types we have just tried,
-    // we load it as primitive type (primitive properties
-    // are simply assigned).
-    return jsonProperty;
   }
 
   // Saves a property of type Array to a corresponding JSON Array object.
@@ -456,7 +288,7 @@ export class Serializable extends Instantiable
     {
       let itemDescription = "an item of an array '" + arrayName + "'"
         + " at position " + i;
-      jsonArray.push(this.saveVariable(array[i], itemDescription, className));
+      jsonArray.push(this.writeProperty(array[i], itemDescription, className));
     }
 
     return jsonArray;
@@ -464,7 +296,7 @@ export class Serializable extends Instantiable
 
   // Saves a single variable to a corresponding JSON object.
   // -> Returns JSON Object representing 'variable'. 
-  private saveVariable
+  private writeProperty
   (
     // Data to be saved.
     variable: any,
@@ -479,8 +311,8 @@ export class Serializable extends Instantiable
     if (variable === null)
       return null;
 
-    // Variable is of primitive type (number or string).
-    if (this.isPrimitiveValue(variable))
+    // Variable is of primitive type (number, string, etc.).
+    if (SharedUtils.isPrimitiveType(variable))
       // Primitive values are just assigned.
       return variable;
 
@@ -492,7 +324,7 @@ export class Serializable extends Instantiable
     if (variable.isEntity === true)
       // Entities are saved to a separate files. Only a string
       // id of an entity is saved here.
-      return IndirectValue.createEntitySaver(variable).saveToJsonObject();
+      return JsonObject.createEntitySaver(variable).saveToJsonObject();
 
     // 'variable' is a saveableObject (but not an entity).
     if (this.isSaveableObject(variable))
@@ -500,13 +332,13 @@ export class Serializable extends Instantiable
 
     if (this.isTypeDate(variable))
       //return this.saveDate(variable);
-      return IndirectValue.createDateSaver(variable).saveToJsonObject();
+      return JsonObject.createDateSaver(variable).saveToJsonObject();
 
     if (this.isTypeMap(variable))
-      return IndirectValue.createMapSaver(variable).saveToJsonObject();
+      return JsonObject.createMapSaver(variable).saveToJsonObject();
 
     if (this.isTypeSet(variable))
-      return IndirectValue.createSetSaver(variable).saveToJsonObject();
+      return JsonObject.createSetSaver(variable).saveToJsonObject();
 
     if (this.isPrimitiveObject(variable))
       return this.savePrimitiveObject(variable);
@@ -583,67 +415,20 @@ export class Serializable extends Instantiable
     for (let property in sourceObject)
     {
       jsonObject[property] =
-        this.saveVariable(sourceObject[property], property, 'Object');
+        this.writeProperty(sourceObject[property], property, 'Object');
     }
 
     return jsonObject;
   }
 
-  // The purpose of manual loading of properties of primitive Objects
-  // is to determine if some of them are SaveableObjects so they need
-  // to be loaded using their loadFromJsonObject() method.
-  // (this check is done within this.loadVariable() call)
-  private loadPrimitiveObject
-  (
-    primitiveObject: any,
-    jsonObject: any,
-    path: string
-  )
-  {
-    // Now copy the data.
-    for (let propertyName in jsonObject)
-    {
-      /// Tohle je blbost.
-      /// - když loaduju hashmapu nebo pole, tak všechny
-      ///   prvky téměř určitě před loadem neexistujou,
-      ///   tzn. objekty do nich vnořené určitě nemají.
-      ///   žádné properties. Tohle pak vede k tomu, že
-      //    se do hashmapy loadnou prázdné objekty.
-      /*
-      // Note:
-      //   Only properties that exist on the object that is being loaded
-      // are loaded from save. It means that you can remove properties
-      // from existing objects without converting existing save files.
-      // (no syslog message is generated)
-      if (primitiveObject[propertyName] !== undefined)
-      {
-      */
-        // Note:
-        //   We are cycling over properties in JSON object, not in
-        // object that is being loaded. It means that properties
-        // that are not present in the save will not get overwritten.
-        // This allows adding new properties to existing classes without
-        // the need to convert all save files.
-        primitiveObject[propertyName] = this.readProperty
-        (
-          propertyName,
-          primitiveObject[propertyName],
-          jsonObject[propertyName],
-          path
-        );
-      /*
-      }
-      */
-    }
-
-    return primitiveObject;
-  }
-
+  /// Moved to SharedUtils.
+  /*
   // Variable is of primitive type (number or string).
   private isPrimitiveValue(variable: any): boolean
   {
     return typeof variable !== 'object';
   }
+  */
 
   /*
   private isEntity(variable: any): boolean
@@ -657,376 +442,706 @@ export class Serializable extends Instantiable
   }
   */
 
+  /// TODO: Tohle asi bude muset být public.
+  /// Jestli to vůbec k něčemu použiju.
+  /// PS: v metodě readObject() testuju 'deserialize' přímo...
   private isSaveableObject(variable: any): boolean
   {
     return ('saveToJsonObject' in variable);
   }
 
-  private isPrimitiveObject(variable: any): boolean
+  ///////////////////////////////////////////////////////
+  ///////////////////// JsonLoader //////////////////////
+  ///////////////////////////////////////////////////////
+
+  /// BIG TODO
+  // Reads property 'prototypeId' from 'jsonObject',
+  // handles possible errors.
+  private getPrototypeId(jsonObject: Object, path: string = null): string
   {
-    if (variable === null)
+    /// TODO
+    /// - Čtení 'prototypeId' z jsonObjectu
+
+    if (jsonObject === null || jsonObject === undefined)
     {
-      ERROR("Null varible");
-      return false;
+      let pathString = this.composePathString(path);
+
+      ERROR("Invalid json object" + pathString);
+      return null;
     }
 
-    return variable.constructor.name === 'Object';
-  }
+    /// Proč je PROTOTYPE_ID_PROPERTY proboha ve ScriptableEntity?
+    /// TODO: Dát to někam jinam.
+    let prototypeId = jsonObject[ScriptableEntity.PROTOTYPE_ID_PROPERTY]; 
 
-  // Note: This method should not be named 'isSet', because it would
-  //   collide with 'isSet()' method of class Flags.
-  private isTypeDate(variable: any): boolean
-  {
-    if (variable === null)
+    if (prototypeId === undefined || prototypeId === null)
     {
-      ERROR("Null varible");
-      return false;
+      ERROR("Missing or uninitialized property 'prototypeId' in file"
+        + " " + path + ". Entity is not loaded");
+      return null;
     }
 
-    // Dirty hack to check if object is of type 'Date'.
-    return variable.constructor.name === 'Date';
+    return prototypeId;
   }
 
-  private isTypeSet(variable: any): boolean
+//+
+  // Reads a single property from corresponding JSON object.
+  // Converts from serializable format to original data type as needed
+  // (for example Set class is saved to JSON as an Array so it has to be
+  //  reconstructed here).
+  private readProperty(param: ReadParam): any
   {
-    if (variable === null)
-    {
-      ERROR("Null varible");
-      return false;
-    }
+    let result: any;
 
-    // Dirty hack to check if object is of type 'Set'.
-    return variable.constructor.name === 'Set';
+    // First handle the case that property in JSON has null value. In that
+    // case target property will also be null, no matter what type it is.
+    if (param.targetProperty === null)
+      return null;
+
+    // Attempt to load property as FastBitSet object.
+    if (result = this.readAsBitvector(param))
+      return result;
+
+    // Attempt to load 'param.sourceProperty' as Date object.
+    if (result = this.readAsDate(param))
+      return result;
+
+    // Attempt to load 'param.sourceProperty' as Set object.
+    if (result = this.readAsSet(param))
+      return result;
+
+    // Attempt to load 'param.sourceProperty' as Map object.
+    if (result = this.readAsMap(param))
+      return result;
+
+    // Attempt to load 'param.sourceProperty' as a reference to an Entity.
+    if (result = this.readAsEntityReference(param))
+      return result;
+
+    // Attempt to load 'param.sourceProperty' as Array
+    if (result = this.readAsArray(param))
+      return result;
+
+    // Attempt to load 'param.sourceProperty' as an object
+    // (including custom classes).
+    //   Note that this would also mean Dates, Arrrays and all other
+    // nonprimitive types, so they must be handled before this.
+    if (result = this.readAsObject(param))
+      return result;
+    
+    // If propety has neither of types we have just tried,
+    // we load it as primitive type (primitive properties
+    // are simply assigned).
+    return param.sourceProperty;
   }
 
-  private isTypeMap(variable: any): boolean
-  {
-    if (variable === null)
-    {
-      ERROR("Null varible");
-      return false;
-    }
+  // ------------------------------------------------- //
+  //        Version and data checking methods          //
+  // ------------------------------------------------- //
 
-    // Dirty hack to check if object is of type 'Map'.
-    return variable.constructor.name === 'Map';
-  }
-
-  private validJsonObjectCheck
+//+
+  // Checks that version and className match and that 'jsonObject' isn't null.
+  // -> Returns 'false' if check fails.
+  private deserializeCheck
   (
-    propertyName: string,
-    jsonObject: any,
+    jsonObject: Object,
     path: string = null
   )
   : boolean
   {
+    // Using 'in' operator on object with null value would cause crash.
     if (jsonObject === null)
     {
       let pathString = this.composePathString(path);
 
-      ERROR("Null jsonObject when loading property"
-        + " '" + propertyName + "'" + pathString + "."
-        + " Property is not loaded");
+      // Here we need fatal error, because data might already
+      // be partialy loaded so we could end up with broken entity.
+      ERROR("Invalid JSON object" + pathString);
+      return false;
+    }
+
+    // 'path' is passed just so it can be printed to error messages.
+    if (!this.checkVersion(jsonObject, path))
+      return false;
+
+    // 'className' must be the same as it's saved value.
+    if (!this.checkClassName(jsonObject, path))
+      return false;
+
+    return true;
+  }
+
+//+
+  // Checks that 'jsonObject' contains property 'className'.
+  private checkClassName(jsonObject: Object, path: string = null): boolean
+  {
+    let jsonClassName = jsonObject[Nameable.CLASS_NAME_PROPERTY];
+
+    if (jsonClassName === undefined)
+    {
+      let pathString = this.composePathString(path);
+
+      ERROR("There is no '" + Nameable.CLASS_NAME_PROPERTY + "'"
+        + " property in JSON data" + pathString);
+      return false;
+    }
+
+    if (jsonClassName !== this.className)
+    {
+      let pathString = this.composePathString(path);
+
+      ERROR("Attempt to load JSON data of class"
+        + " (" + jsonObject[Nameable.CLASS_NAME_PROPERTY] + ")"
+        + pathString + " into instance of incompatible"
+        + " class (" + this.className + ")");
       return false;
     }
 
     return true;
   }
 
-  // -> Returns 'null' if jsonVariable is not a Date or if loading failed.
-  private loadAsDate
-  (
-    variableName: string,
-    variable: any,
-    jsonVariable: any,
-    path: string
-  )
+  // ------------------------------------------------- //
+  //   Following methods check serialized data and     //
+  //   deserialize it if it matches their data type    //
+  // ------------------------------------------------- //
+
+//+
+  // Attempts to convert 'param.sourceProperty' to FastBitSet object.
+  // -> Returns 'null' if 'param'.sourceVariable is not a bitvector
+  //    record or if loading failed.
+  private readAsBitvector(param: ReadParam)
   {
-    if (!IndirectValue.isDate(jsonVariable))
+    if (!this.isBitvectorRecord(param.sourceProperty))
       return null;
 
-    if (variable !== null && variable !== undefined && !this.isTypeDate(variable))
+    if (!SharedUtils.isBitvector(param.targetProperty))
     {
-      let pathString = this.composePathString(path);
+      let pathString = this.composePathString(param.path);
 
-      ERROR("Attempt to load Date property '" + variableName + "'"
+      ERROR("Attempt to load bitvector property '" + param.propertyName + "'"
+        + pathString + " to a non-bitvector property");
+      return null;
+    }
+
+    return this.readBitvector(param);
+  }
+
+//+
+  // Attempts to convert 'param.sourceProperty' to Date object.
+  // -> Returns 'null' if 'param'.sourceVariable is not a Date
+  //    record or if loading failed.
+  private readAsDate(param: ReadParam)
+  {
+    if (!this.isDateRecord(param.sourceProperty))
+      return null;
+
+    if (!SharedUtils.isDate(param.targetProperty))
+    {
+      let pathString = this.composePathString(param.path);
+
+      ERROR("Attempt to load Date property '" + param.propertyName + "'"
         + pathString + " to a non-Date property");
       return null;
     }
 
-    return this.loadDateFromJsonObject
-    (
-      variableName,
-      jsonVariable,
-      path
-    );
+    return this.readDate(param);
   }
 
-  private loadDateFromJsonObject
-  (
-    propertyName: string,
-    jsonObject: any,
-    path: string
-  )
-  : Date
+//+
+  // Attempts to convert 'param.sourceProperty' to Set object.
+  // -> Returns 'null' if 'param'.sourceVariable is not a Set
+  //    record or if loading failed.
+  private readAsSet(param: ReadParam)
   {
-    if (!this.validJsonObjectCheck(propertyName, jsonObject, path))
+    if (!this.isSetRecord(param.sourceProperty))
       return null;
 
-    let date = jsonObject.date;
-
-    if (date === undefined || date === null)
+    if (!SharedUtils.isSet(param.targetProperty))
     {
-      let pathString = this.composePathString(path);
+      let pathString = this.composePathString(param.path);
 
-      ERROR("Missing or invalid 'date' when loading date record"
-        + " '" + propertyName + "'" + pathString);
-      return null;
-    }
-
-    return new Date(date);
-  }
-
-  // -> Returns 'null' if jsonVariable is not a Set or if loading failed.
-  private loadAsSet
-  (
-    variableName: string,
-    variable: any,
-    jsonVariable: any,
-    path: string
-  )
-  {
-    if (!IndirectValue.isSet(jsonVariable))
-      return null;
-
-    if (variable !== null && variable !== undefined && !this.isTypeSet(variable))
-    {
-      let pathString = this.composePathString(path);
-
-      ERROR("Attempt to load Set property '" + variableName + "'"
+      ERROR("Attempt to load Set property '" + param.propertyName + "'"
         + pathString + " to a non-Set property");
       return null;
     }
 
-    return this.loadSetFromJsonObject
-    (
-      variableName,
-      jsonVariable,
-      path
-    );
+    return this.readSet(param);
   }
 
-  // -> Returns 'null' if jsonVariable is not a Map or if loading failed.
-  private loadAsMap
-  (
-    variableName: string,
-    variable: any,
-    jsonVariable: any,
-    path: string
-  )
+//+
+  // Attempts to convert 'param.sourceProperty' to Map object.
+  // -> Returns 'null' if 'param'.sourceVariable is not a Map
+  //    record or if loading failed.
+  private readAsMap(param: ReadParam)
   {
-    if (!IndirectValue.isMap(jsonVariable))
+    if (!this.isMapRecord(param.sourceProperty))
       return null;
 
-    if (variable !== null && variable !== undefined && !this.isTypeMap(variable))
+    if (!SharedUtils.isMap(param.targetProperty))
     {
-      let pathString = this.composePathString(path);
+      let pathString = this.composePathString(param.path);
 
-      ERROR("Attempt to load Map property '" + variableName + "'"
+      ERROR("Attempt to load Map property '" + param.propertyName + "'"
         + pathString + " to a non-Map property");
       return null;
     }
 
-    return this.loadMapFromJsonObject
-    (
-      variableName,
-      jsonVariable,
-      path
-    );
+    return this.readMap(param);
   }
 
-  private loadSetFromJsonObject
-  (
-    propertyName: string,
-    jsonObject: any,
-    path: string
-  )
-  : Set<any>
+//+
+  // Attempts to convert 'param.sourceProperty' to the reference
+  // to an Entity.
+  // -> Returns 'null' if 'param'.sourceVariable is not an entity
+  //    reference record or if loading failed.
+  private readAsEntityReference(param: ReadParam)
   {
-    if (!this.validJsonObjectCheck(propertyName, jsonObject, path))
+    if (!this.isReference(param.sourceProperty))
       return null;
 
-    // Our set is stored as array in jsonObject.set property.
-    let setData = jsonObject.set;
+    return this.readEntityReference(param);
+  }
 
-    if (setData === undefined || setData === null)
+//+
+  // Attempts to convert 'param.sourceProperty' to Array.
+  // -> Returns 'null' if 'param'.sourceVariable is not an
+  //    Array or if loading failed.
+  private readAsArray(param: ReadParam)
+  {
+    if (!Array.isArray(param.sourceProperty))
+      return null;
+
+    if (!Array.isArray(param.targetProperty))
     {
-      let pathString = this.composePathString(path);
+      let pathString = this.composePathString(param.path);
 
-      ERROR("Missing or invalid 'set' property when loading"
-        + " Set record '" + propertyName + "'" + pathString);
-      return null;
-    }
-
-    // We need to properly load items within 'setData' array,
-    // because they may be SaveableObjects or special records.
-    let setArray = this.loadArray(propertyName, setData, path);
-
-    return new Set(setArray);
-  }
-
-  private loadMapFromJsonObject
-  (
-    propertyName: string,
-    jsonObject: any,
-    path: string
-  )
-  : Map<any, any>
-  {
-    if (!this.validJsonObjectCheck(propertyName, jsonObject, path))
-      return null;
-
-    // Our map is stored as array in jsonObject.set property.
-    let mapData = jsonObject.map;
-
-    if (mapData === undefined || mapData === null)
-    {
-      let pathString = this.composePathString(path);
-
-      ERROR("Missing or invalid 'map' property when loading"
-        + " Map record '" + propertyName + "'" + pathString);
-      return null;
-    }
-
-    // We need to properly load items within 'mapData' array,
-    // because they may be SaveableObjects or special records.
-    let mapArray = this.loadArray(propertyName, mapData, path);
-
-    return new Map(mapArray);
-  }
-
-  // -> Returns 'null' if jsonVariable is not an entity reference
-  //    or if loading failed.
-  private loadAsEntityReference
-  (
-    variableName: string,
-    variable: any,
-    jsonVariable: any,
-    path: string
-  )
-  {
-    if (!IndirectValue.isReference(jsonVariable))
-      return null;
-
-    return this.loadReference
-    (
-      variableName,
-      jsonVariable,
-      path
-    );
-  }
-
-  // If 'id' loaded from JSON already exists in EntityManager,
-  // existing entity proxy will be returned. Otherwise an 'invalid'
-  // entity proxy will be created and returned.
-  // Note:
-  //   This method doesn't actualy load an entity. If you want
-  // to load an entity from file, call load() on what's returned
-  // by this method.
-  // -> Retuns an entity proxy object (possibly referencing an invalid entity).
-  public loadReference
-  (
-    propertyName: string,
-    jsonObject: any,
-    path: string
-  )
-  : Entity
-  {
-    if (!this.validJsonObjectCheck(propertyName, jsonObject, path))
-      return null;
-
-    let id = jsonObject.id;
-
-    if (id === undefined || id === null)
-    {
-      let pathString = this.composePathString(path);
-
-      ERROR("Missing or invalid 'id' property when loading"
-        + " entity reference '" + propertyName + "'" + pathString);
-    }
-
-    // Return an existing entity proxy if entity exists in
-    // entityManager, invalid entity proxy otherwise.
-    return Server.entityManager.createReference(id);
-  }
-
-  // -> Returns 'null' if jsonVariable is not an Array or if loading failed.
-  private loadAsArray
-  (
-    variableName: string,
-    variable: any,
-    jsonVariable: any,
-    path: string
-  )
-  {
-    if (!Array.isArray(jsonVariable))
-      return null;
-
-    if
-    (
-      variable !== null
-      && variable !== undefined
-      && !Array.isArray(variable)
-    )
-    {
-      let pathString = this.composePathString(path);
-
-      ERROR("Attempt to load Array property '" + variableName + "'"
+      ERROR("Attempt to load Array property '" + param.propertyName + "'"
         + pathString + " to a non-Array property");
       return null;
     }
 
-    return this.loadArray(variableName, jsonVariable, path)
+    return this.readArray(param);
   }
 
-  // Loads a property of type Array from a JSON Array object.
-  private loadArray
-  (
-    propertyName: string,
-    jsonArray: Array<any>,
-    path: string
-  )
+//+
+  // Attempts to convert 'param.sourceProperty' to a respective object.
+  // -> Returns 'null' if 'param'.sourceVariable is not an object
+  //    or if loading failed.
+  private readAsObject(param: ReadParam)
   {
-    if (jsonArray === null || jsonArray === undefined)
-    {
-      let pathString = this.composePathString(path);
+    if (SharedUtils.isPrimitiveType(param.sourceProperty))
+      return null;
 
-      ERROR("Attempt to loadArray from invalid jsonObject"
-        + " '" + propertyName + "'" + pathString);
+    if
+    (
+      param.targetProperty !== null
+      && param.targetProperty !== undefined
+      && SharedUtils.isPrimitiveType(param.targetProperty)
+    )
+    {
+      let pathString = this.composePathString(param.path);
+
+      ERROR("Attempt to load nonprimitive property"
+        + " '" + param.propertyName + "'" + pathString
+        + " to a primitive property");
+      return null;
+    }
+
+    return this.readObject(param);
+  }
+
+//+
+  private readObject(param: ReadParam)
+  {
+    // If our corresponding property is null, it wouldn't be able to
+    // load itself from JSON, because you can't call methods on null
+    // object. So we first need to assign a new instance of correct
+    // type to it - the type is saved in JSON as 'className' property.
+    let instance = this.createNewIfNull(param);
+
+    if (instance === null || instance === undefined)
+    {
+      let pathString = this.composePathString(param.path);
+
+      ERROR("Failed to instantiate property '" + param.propertyName + "'"
+        + pathString);
+      return null;
+    }
+
+    // Handle Serializable objects.
+    if ('deserialize' in instance)
+    {
+      // If we are loading into a Serializable object, do it using it's
+      // deserialize() method.
+      instance.deserialize(param.sourceProperty, param.path);
+
+      return instance;
+    }
+
+    if (!SharedUtils.isJavascriptObject(instance))
+    {
+      ERROR("Attempt to deserialize a nonprimitive property which"
+        + " is neither an instance of Serializable class nor a plain"
+        + " Javascript Object. This means that you have a class inherited"
+        + " from Serializable and you put a property in it which is"
+        + " neither inherited from Serializable nor a special type"
+        + " handler in Serializable.ts (like Set, Map, etc.). You either"
+        + " have to exnted this property from Serializable or add code"
+        + " to Serializable to handle it's serialization");
+      return null;
+    }
+
+    // Update load 'param' so it contains possibly newly created {}.
+    param.targetProperty = instance;
+
+    // We are loading a primitive Javascript Object.
+    return this.readPrimitiveObject(param);
+  }
+
+/// TODO
+  // -> Returns 'param.targetProperty' if it's not 'null'.
+  //    Creates and returns a new instance otherwise
+  //    (type is read from 'param.sourceProperty.className').
+  private createNewIfNull(param: ReadParam)
+  {
+    // If the target property exists, we will be loading into it.
+    let instance = param.targetProperty;
+
+    // If it doesn't we have to create a new instance (because 'null'
+    // has no properties so we can't call deserialize() on it).
+    if (instance === null)
+    {
+      // Read class name from JSON.
+      let className = param.sourceProperty[Nameable.CLASS_NAME_PROPERTY];
+
+      if (className === undefined)
+      {
+        // If there isn't a 'className' property in jsonObject,
+        // we will load into a plain Javascript Object.
+        instance = {};
+      }
+      else
+      {
+        /// BIG TODO:
+
+        // If there is a 'className' property in JSON, create a new instance
+        // of that type.
+        let prototypeObject =
+          App.prototypeManager.getPrototypeObject(className);
+
+        if (prototypeObject === undefined)
+        {
+          let pathString = this.composePathString(param.path);
+          
+          ERROR("Property '" + param.propertyName + "'" + pathString
+            + " is of type '" + className + "' which doesn't"
+            + " exist in ClassFactory. It probably means that"
+            + " you forgot to add class '" + className + "'"
+            + " to ClassFactory");
+          instance = null;
+        }
+        else
+        {
+          instance = App.prototypeManager.createInstance(prototypeObject);
+        }
+      }
+    }
+
+    return instance;
+  }
+
+//+
+  private readPrimitiveObject(param: ReadParam)
+  {
+    let instance = param.targetProperty;
+
+    // Copy the data from sourceProperty.
+    //   We are cycling over properties in JSON object, not in
+    // object that is being loaded. It means that properties
+    // that are not present in the save will not get overwritten.
+    // This allows adding new properties to existing classes without
+    // the need to convert all save files.
+    for (let propertyName in param.sourceProperty)
+    {
+      // Here we do not enforce that properties from JSON exist
+      // in target property, because that would prevent loading
+      // plain Javascript Objects to a 'null' value (properties
+      // with 'null' value are instantiated as {} before loading
+      // into them).
+      //   The same is true for loading Array items (the don't exist
+      // prior to loading) which applies to Map and Set objects as well
+      // (because they are serialized as Arrays).
+
+      // Setup a new read param.
+      let readParam: ReadParam =
+      {
+        propertyName: param.propertyName,
+        // We need to pass 'null' as 'sourceProperty' so an instance
+        // of corect type will be created (by createNewIfNull()).
+        targetProperty: null,
+        sourceProperty: param.sourceProperty[propertyName],
+        path: param.path
+      }
+
+      // Deserializing of each property may require special handling
+      // so we use readProperty() which will do it for us.
+      instance[propertyName] = this.readProperty(readParam);
+    }
+
+    return instance;
+  }
+
+  // ------------------------------------------------- //
+  //         Methods detecting 'fake' types            //
+  //             of serialized records                 //
+  // ------------------------------------------------- //
+
+//+
+  // Checks if 'param.sourceProperty' represents a saved FastBitSet object.
+  private isBitvectorRecord(jsonObject: Object): boolean
+  {
+    if (this.isObjectValid(jsonObject) === false)
+      return false;
+
+    // Is there a 'className' property in JSON object
+    // with value 'Bitvector'?
+    if (jsonObject[Nameable.CLASS_NAME_PROPERTY]
+        === Serializable.BITVECTOR_CLASS_NAME)
+      return true;
+
+    return false;
+  }
+
+//+
+  // Checks if 'param.sourceProperty' represents a saved Date object.
+  private isDateRecord(jsonObject: Object): boolean
+  {
+    if (this.isObjectValid(jsonObject) === false)
+      return false;
+
+    // Is there a 'className' property in JSON object
+    // with value 'Date'?
+    if (jsonObject[Nameable.CLASS_NAME_PROPERTY]
+        === Serializable.DATE_CLASS_NAME)
+      return true;
+
+    return false;
+  }
+
+//+
+  // Checks if 'param.sourceProperty' represents a saved Set object.
+  private isSetRecord(jsonObject: Object): boolean
+  {
+    if (this.isObjectValid(jsonObject) === false)
+      return false;
+
+    // Is there a 'className' property in JSON object
+    // with value 'Set'?
+    if (jsonObject[Nameable.CLASS_NAME_PROPERTY]
+        === Serializable.SET_CLASS_NAME)
+      return true;
+
+    return false;
+  }
+
+//+
+  // Checks if 'param.sourceProperty' represents a saved Map object.
+  private isMapRecord(jsonObject: Object): boolean
+  {
+    if (this.isObjectValid(jsonObject) === false)
+      return false;
+
+    // Is there a 'className' property in JSON object
+    // with value 'Map'?
+    if (jsonObject[Nameable.CLASS_NAME_PROPERTY]
+        === Serializable.MAP_CLASS_NAME)
+      return true;
+
+    return false;
+  }
+
+//+
+  // Checks if 'param.sourceProperty' represents a saved reference to
+  // an entity.
+  private isReference(jsonObject: Object): boolean
+  {
+    if (this.isObjectValid(jsonObject) === false)
+      return false;
+
+    // Is there a 'className' property in JSON object with value
+    // 'Reference'?
+    if (jsonObject[Nameable.CLASS_NAME_PROPERTY]
+        === Serializable.REFERENCE_CLASS_NAME)
+      return true;
+
+    return false;
+  }
+
+  // ------------------------------------------------- //
+  //      Methods converting serialized data into      //
+  //       original structures (Set, Map, etc.).       //
+  // ------------------------------------------------- //
+
+//+
+  // Converts 'param.sourceProperty' to a FastBitSet object.
+  private readBitvector(param: ReadParam)
+  {
+    let sourceRecord =
+      this.readSourceRecord(param, Serializable.BITVECTOR_PROPERTY);
+
+    if (sourceRecord === null)
+      return null;
+
+    return new FastBitSet(sourceRecord);
+  }
+
+//+
+  // Converts 'param.sourceProperty' to a Date object.
+  private readDate(param: ReadParam): Date
+  {
+    let sourceRecord =
+      this.readSourceRecord(param, Serializable.DATE_PROPERTY);
+
+    if (sourceRecord === null)
+      return null;
+
+    return new Date(sourceRecord);
+  }
+
+  // Converts 'param.sourceProperty' to a Set object.
+  private readSet(param: ReadParam): Set<any>
+  {
+    let sourceRecord = this.readSourceRecord(param, Serializable.SET_PROPERTY);
+
+    if (sourceRecord === null)
+      return null;
+
+    // In order to deserialize a Set object, we need to load all items
+    // in array which represents it in serialized form, because they
+    // may require special handling themselvs (for example if you put
+    // another Set into your Set).
+
+    // Setup a new read param.
+    let readParam: ReadParam =
+    {
+      propertyName: 'Serialized record: Set',
+      // We need to pass 'null' as 'sourceProperty' so an instance
+      // of corect type will be created (by createNewIfNull()).
+      targetProperty: null,
+      sourceProperty: sourceRecord,
+      path: param.path
+    }
+
+    // Load serialized array as if it were a regular array property
+    // (readArray() will handle correct loading for us).
+    let loadedArray = this.readArray(readParam);
+
+    // And let the constructor of class Set to convert it to Set object.
+    return new Set(loadedArray);
+  }
+
+//+
+  // Converts 'param.sourceProperty' to a Map object.
+  private readMap(param: ReadParam): Map<any, any>
+  {
+    let sourceRecord = this.readSourceRecord(param, Serializable.MAP_PROPERTY);
+
+    if (sourceRecord === null)
+      return null;
+
+    // In order to deserialize a Map object, we need to load all items
+    // in array which represents it in serialized form, because they
+    // may require special handling themselvs (for example if you put
+    // another Map into your Map).
+
+    // Setup a new read param.
+    let readParam: ReadParam =
+    {
+      propertyName: 'Serialized record: Map',
+      // We need to pass 'null' as 'sourceProperty' so an instance
+      // of corect type will be created (by createNewIfNull()).
+      targetProperty: null,
+      sourceProperty: sourceRecord,
+      path: param.path
+    }
+
+    // Load serialized array as if it were a regular array property
+    // (readArray() will handle correct loading for us).
+    let loadedArray = this.readArray(readParam);
+
+    // And let the constructor of class Map to convert it to Map object.
+    return new Map(loadedArray);
+  }
+
+//+
+  // Converts 'param.sourceProperty' to a reference to an Entity.
+  // If 'id' loaded from JSON already exists in EntityManager,
+  // existing entity proxy will be returned. Otherwise an 'invalid'
+  // entity proxy will be created and returned.
+  // -> Retuns an entity proxy object (possibly referencing an invalid entity).
+  private readEntityReference(param: ReadParam): Entity
+  {
+    if (!param.sourceProperty)
+      return null;
+    
+    let id = param.sourceProperty[Entity.ID_PROPERTY];
+
+    if (id === undefined || id === null)
+    {
+      let pathString = this.composePathString(param.path);
+
+      ERROR("Missing or invalid 'id' property when loading entity"
+        + " reference '" + param.propertyName + "'" + pathString);
+    }
+
+    // Return an existing entity proxy if entity exists in
+    // entityManager, invalid entity proxy otherwise.
+    return App.entityManager.createReference(id);
+  }
+
+//+
+  // Converts 'param.sourceProperty' to Array.
+  private readArray(param: ReadParam): Array<any>
+  {
+    // Note:
+    //   Array doesn't have a serialized record, because it's
+    // a directly serializable class. We don't have to have a
+    // special handling for deserializing of an Array, we need
+    // special handling for deserializing it's CONTENTS (because
+    // there may be Sets, Maps, custom classes or similar objects
+    // in the Array that need to be deserialized in a special way).
+    let sourceArray = param.sourceProperty;
+
+    if (sourceArray === null || sourceArray === undefined)
+    {
+      let pathString = this.composePathString(param.path);
+
+      ERROR("Attempt to loadArray from invalid JSON property"
+        + " '" + param.propertyName + "'" + pathString);
       return null;
     }
     
-    if (!Array.isArray(jsonArray))
+    if (!Array.isArray(sourceArray))
     {
-      let pathString = this.composePathString(path);
+      let pathString = this.composePathString(param.path);
 
-      ERROR("Attempt to loadArray from non-array jsonObject"
-        + " '" + propertyName + "'" + pathString);
+      ERROR("Attempt to read Array from non-Array json property"
+        + " '" + param.propertyName + "'" + pathString);
       return null;
     }
 
+    return this.readArrayContents(sourceArray, param.path);
+  }
+
+//+
+  // Deserializes contents of an Array property.
+  private readArrayContents(sourceArray: Array<any>, path: string)
+  {
     let newArray = [];
 
-    for (let i = 0; i < jsonArray.length; i++)
+    for (let i = 0; i < sourceArray.length; i++)
     {
-      let item = this.readProperty
-      (
-        "Array Item",
-        // We need to pass 'null' as 'variable' so an instance
-        // of corect type will be created (by createNewIfNull()).
-        null,
-        jsonArray[i],
-        path
-      );
+      let item = this.readArrayItem(sourceArray[i], i, path);
 
       newArray.push(item);
     }
@@ -1034,150 +1149,75 @@ export class Serializable extends Instantiable
     return newArray;
   }
 
-  // -> Returns 'null' if jsonVariable is not an Object or if loading failed.
-  private loadAsObject
-  (
-    variableName: string,
-    variable: any,
-    jsonVariable: any,
-    path: string
-  )
+//+
+  // Deserializes contents of a single Array item
+  // ('index' and 'path' are used only for error messages).
+  private readArrayItem(item: any, index: number, path: string)
   {
-    if (typeof jsonVariable !== 'object')
-      return null;
-
-    if
-    (
-      variable !== null
-      && variable !== undefined
-      && typeof variable !== 'object'
-    )
+    // Setup a new read param.
+    let readParam: ReadParam =
     {
-      let pathString = this.composePathString(path);
-
-      ERROR("Attempt to load Object property '" + variableName + "'"
-        + pathString + " to a non-Object property");
-      return null;
+      propertyName: 'Array item [' + index + ']',
+      // We need to pass 'null' as 'sourceProperty' so an instance
+      // of corect type will be created (by createNewIfNull()).
+      targetProperty: null,
+      sourceProperty: item,
+      path: path
     }
 
-    return this.loadObjectVariable
-    (
-      variableName,
-      variable,
-      jsonVariable,
-      path
-    );
+    // Let 'readProperty()' method load the contents of an array item.
+    return this.readProperty(readParam);
   }
 
-  private loadObjectVariable
-  (
-    propertyName: string,
-    myProperty: any,
-    jsonObject: any,
-    path: string
-  )
-  : any
+  // ------------------------------------------------- //
+  //                 Auxiliary methods                 //
+  // ------------------------------------------------- //
+
+//+
+  // -> Returns 'param.sourceProperty[recordName]' if it exists,
+  //   'null' otherwise.
+  private readSourceRecord(param: ReadParam, recordName: string)
   {
-    // If our corresponding property is null, it wouldn't be able to
-    // load itself from JSON, because you can't call methods on null
-    // object. So we first need to assign a new instance of correct
-    // type to it - the type is saved in JSON in 'className' property.
-    myProperty = this.createNewIfNull
-    (
-      propertyName,
-      myProperty,
-      jsonObject,
-      path
-    );
+    if (!param.sourceProperty)
+      return null;
+    
+    let sourceRecord = param.sourceProperty[recordName];
 
-    if (myProperty === null || myProperty === undefined)
+    if (sourceRecord === undefined || sourceRecord === null)
     {
-      let pathString = this.composePathString(path);
+      let pathString = this.composePathString(param.path);
 
-      ERROR("Failed to instantiate property '" + propertyName + "'"
+      ERROR("Missing or invalid '" + recordName + "' property when"
+        + " loading " + recordName + " record '" + param.propertyName + "'"
         + pathString);
       return null;
     }
 
-    // Now we are sure that myProperty isn't null (either it wasn't
-    // null or we have just assigned a new instance of correct type in
-    // it). So we can safely load it from corresponding JSON.
-
-    if ('loadFromJsonObject' in myProperty)
-    {
-      // If we are loading into a saveable object, do it using it's
-      // loadFromJsonObject() method.
-      myProperty.loadFromJsonObject(jsonObject, path);
-
-      return myProperty;
-    }
-
-    // We are loading object that is neither Date, Map nor SaveableObject.
-    return this.loadPrimitiveObject
-    (
-      myProperty,
-      jsonObject,
-      path
-    );
+    return sourceRecord;
   }
 
-  // If 'targetProperty' is 'null' (so we can't write to it's properties
-  // right away), a new instance of correct type will be created and returned
-  // (type is read from jsonObject.className).
-  // Note: This is only done for non-primitive properties.
-  private createNewIfNull
-  (
-    propertyName: string,
-    targetProperty: any,
-    jsonObject: Object,
-    path: string = null
-  )
+//+
+  // -> Returns 'false' if 'jsonObject' is 'null' or 'undefined
+  //    ('null' value is not considered an error, 'undefined' is).
+  private isObjectValid(jsonObject: Object): boolean
   {
-    if (targetProperty === null)
+    // Technically there can be a special record (entity reference,
+    // date record or map record) saved with 'null' value, but in
+    // that case we don't have to load it as special record, because
+    // it will be null anyways.
+    if (jsonObject === null)
+      return false;
+
+    if (jsonObject === undefined)
     {
-      // Read class name from JSON.
-      let className = jsonObject[Nameable.CLASS_NAME_PROPERTY];
-
-      if (className === undefined)
-      {
-        // If there isn't a 'className' property in jsonObject,
-        // property is a basic javascript object.
-        // Note:
-        //   This doesn't always have to be true and it will lead to
-        // errors if someone creates a new class not inherited
-        // from SaveableObject and puts it in saveable class - it will
-        // get loaded, but it won't have correct type (it will be just
-        // a basic javascript object).
-        targetProperty = {};
-      }
-      else
-      {
-        // If there is a 'className' property in JSON, create a new instance
-        // of that type.
-        let prototypeObject =
-          Server.prototypeManager.getPrototypeObject(className);
-
-        if (prototypeObject === undefined)
-        {
-          let pathString = this.composePathString(path);
-          
-          ERROR("Property '" + propertyName + "'" + pathString
-            + " is of type '" + className + "' which doesn't"
-            + " exist in ClassFactory. It probably means that"
-            + " you forgot to add class '" + className + "'"
-            + " to ClassFactory");
-          targetProperty = null;
-        }
-        else
-        {
-          targetProperty = Server.prototypeManager.createInstance(prototypeObject);
-        }
-      }
+      ERROR("Invalid jsonObject");
+      return false;
     }
 
-    return targetProperty;
+    return true;
   }
 
+//+
   // -> Returns string informing about file location or empty string
   //    if 'path' is not available.
   private composePathString(path: string)
@@ -1186,5 +1226,42 @@ export class Serializable extends Instantiable
       return "";
 
     return " in file " + path;
+  }
+}
+
+// ------------------ Type declarations ----------------------
+
+// Used as parameter of deserialization methods to save lots of code.
+interface ReadParam
+{
+  propertyName: string,
+  targetProperty: any,
+  sourceProperty: any,
+  path: string
+}
+
+// Used as parameter of serialization methods to save lots of code.
+interface WriteParam
+{
+  // Data to be saved.
+  sourceProperty: any,
+  // String used for error messages.
+  // (It should describe the property as well as
+  //  possible - what's it's name, what it's in, etc.)
+  description: string,
+  // Name of the class we are just saving.
+  className: string,
+  // Serialization mode (SAVE_TO_FILE, SEND_TO_CLIENT, etc.).
+  mode: Serializable.Mode
+}
+
+export module Serializable
+{
+  export enum Mode
+  {
+    SAVE_TO_FILE,
+    SEND_TO_CLIENT,
+    SENT_TO_SERVER,
+    SEND_TO_EDITOR
   }
 }

@@ -67,6 +67,8 @@ export class Server extends App
 
   private idProvider = new IdProvider(this.timeOfBoot);
 
+  private saver = new Saver();
+
   // --------- idLists ---------
   // IdLists contain entity id's.
 
@@ -331,6 +333,11 @@ export class Server extends App
   }
 
   // --------------- Protected methods ------------------
+
+  protected getSaver()
+  {
+    return this.saver;
+  }
 
   protected startTelnetServer(telnetPort: number)
   {

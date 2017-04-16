@@ -1,3 +1,170 @@
+TODO: Entity musí mít společného předka v /Shared
+(aby se na něj mohly odkazovat shared classy)
+
+TODO: ClassFactory by mohla být v /class
+
+TODO: Raději ještě jednou zvážit defaultní hodnoty statických atributů
+  - 'saved' jsem měl defaultně 'true', protože drtivá většina proměnných
+    se savuje. Je to tak i u ostatních atributů?
+    - 'edited = true' samo o sobě asi nemá smysl, potřebuju další editační
+      parametry. Na druhou stranu když se bude uvádět pouze 'edited = false',
+      tak u editovatelných proměnných nemusím tohle vůbec psát a rovnou
+      můžu uvést editační rozsahy a tak.
+- prozatím budu nadále předpokládat, že 'saved' má default 'true', zbytek
+  se uvidí.
+
+TODO: symbName (a podobně) asi zkrátit na sName, sLocation, apod.
+
+IDEA: Serverové entity pojmenovat ServerEntity (nebo SrvEntity?),
+  clientové ClientEntity (ClnEntity?)
+- asi by neměly existovat tři classy se jménem 'Entity' - nebo je to fuk?
+
+IDEA: Místo class Saveable udělat class Saver, která dostane
+  jako parametr, co má savnout.
+- Teoreticky může být pořád class Saveable, která udělá:
+  App.getSaver().save(this);
+  (App je různá na Serveru a na Clientovi, takže to vyvolá různý kód)
+
+TODO: Možná by bylo lepší udělat singletony (Client, Server) jako static classy
+  místo trapčení s getInstance().
+
+
+TODO: Přejmenvoat Server/Utils na Server/ServerUtils
+
+TODO: V JsonLoader ve fci readEntityReference() se volá
+  App.entityManager.createReference(id);
+- Dát do App entityManager.
+
+TODO: Fce JsonLoader.getPrototypeId() není dodělaná a nepoužívá se
+  (nevolá se při vytváření instancí entit).
+
+TODO: Opravit loadování Map, Setů a Arrayů
+  - nestačí udělat Mapu (nebo set) z Arraye v Jsonu, je třeba nejdřív
+  naloadovat prvky toho vnitřního arraye a až pak z něj udělat mapu.
+
+TODO: Ve Funkce typu 'isBitvector' používají stringové názvy dummy typů
+  - nahradit symbolickými konstantami
+
+TODO: Při deserializaci nonprimitive properties kontrolovat, že
+  - buď má sourceProperty metodu 'deserialize'
+  - nebo je to plain javascript Object
+  [done]
+- pokud je targetProperty 'null' a v JSONu neni className,
+  tak se vytvori plain javascript Object (tj. je mozna savnout
+  plain Object property a loadnout ji do 'null' value)
+- jinak se vytvori instance prislusneho typu.
+
+TODO: Když v JSONU není className, tak budu loadovat do {}
+  - zkontrolovat, že nebude vadit, že tam nejsou příslušné properties.
+
+ÚVAHA: Když nějaké existující property nastavím, že se nemá
+  savovat/posílat/whatever, tak se sice nebude savovat, ale při loadu se mi
+  přepíše - což možná nebudu chtít.
+- Aby se tomu dalo zabránit, tak by deserialize() muselo dostávat jako
+  parametr metodu, kterou se deserializuje (load ze savu, přijem dat
+  z editoru, atd.)
+  - zatím to dělat nebudu, ale možná to bude potřeba.
+
+--------------------------------------------------------------
+
+Jak se loaduje/deserializuje entita:
+-------------------------------------
+
+Při loadu z disku:
+1) loadne se JSON string
+  - Tohle udělá App (tj. Server nebo Client)
+    - otázka je jestli přímo, tj. App.loadFromFile(), nebo přes nějakej saver.
+    Na serveru:
+      await FileSystem.readFile(path)
+2) vyrobí se z něj JSON object
+   - 
+   Serializable.parseJsonString()
+3) Přečte se z něj prototypeId (nebo jiná identifikace prototype objectu)
+   -
+   readPrototypeId()
+4) Vyrobí se instance přes Object.create()
+   - to by měla dělat ClassFactory
+   ClassFactory.createInstance()
+   {
+     prototypeObject = ...
+     return Object.create(prototypeObject);
+   }
+5) Na instanci se zavolá instance.loadFromJSONString()
+
+Při deserializaci z packetu:
+1) receivne se JSON string
+2) vyrobí se z něj JSON object
+3) Přečte se z něj prototypeId (nebo jiná identifikace prototype objectu)
+4) Vyrobí se instance přes Object.create() - to by měla dělat ClassFactory
+5) Na instanci se zavolá instance.loadFromJSONString()
+
+Pozn: Save je jednoduchej, ten rovnou vyplivne JSON string
+
+Public interface by měl vypadat nějak takhle:
+-----------------------------------------------
+
+class JsonObject
+{
+  public static stringify(jsonObject: Object): string;
+  public static parse(string): Object;
+
+  public static getPrototypeId(): string;
+
+  + type conversion functions
+}
+
+class Serializable
+{
+  public deserialize(jsonObject: Object);
+  public serialize(): string;
+}
+
+class Saveable
+{
+  public save();
+  public load();
+}
+
+Pozn: Mít volně dostupnou metodu deserialize() znamená, že
+  půjde ze skriptu nastavit libovolné entitě úplně cokoliv
+  - a je vcelku jedno, jestli bude public nebo ne, to hraje
+    roli jen v compile time
+
+
+TODO: Flags savují bitvector jako Array čísel
+- přesunout to do JsonSaveru k ostatním podobným typům.
+
+--------------------------------------------------------------
+
+Zajímavá class-design idea:
+----------------------------
+
+Keybind bude dělat různé věci podle toho, jaké má zrovna char nasbírané
+special resourcy - když firové, bude dávat damage do fire, atd.
+
+Půjde to i kombinovat, takže třeba 2x fire + death udělá ohnivou dotku...
+
+=> Hráči nebudou vůbec omezeni žádným buildem. Můžou zahrát úplně cokoliv
+kombinací několika keybindů (pár různých builderů)
+
+- co budou dělat základní buildery (a tedy i následní skilly) by asi mohla
+  určovat wilednutá zbraň (a tu samozřejmě jde podle potřeby rearmnout).
+  - ohnivá rána mečem vyrobí fire resource a následně se z toho odpálí
+    ohnivá dotka na melee.
+  - ohnivý výstřel z luku vyrobí fire resouce a následně se z toho odpálí
+    incendiary arrow
+    ... atd.
+
+=> Můžeš v boji dělat úplně cokoliv podle potřeby a podle toho, co se naučíš
+  mačkat (hrát).
+
+Folsové:
+ - castnutí folsů sníží přímou damage charu podle počtu folsů a jejich síly.
+   Podle toho, kolik folsů si char castne, bude tudíž zrovna fols-oriented.
+   (A když mu pomřou, tak se mu automaticky vrátí direct power).
+
+--------------------------------------------------------------
+
 TODO: Na klientu se nevytváří App
 
 TODO: Přejmenovat Server na ServerApp a Client na ClientApp
