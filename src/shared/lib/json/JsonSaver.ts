@@ -1,24 +1,23 @@
 /*
   Part of BrutusNEXT
 
-  Auxiliary class that saves and loads properties that
-   cannot be direcly saved to JSON.
+  Auxiliary static class that serializes data types to JSON.
 */
 
 /*
-  Some data types, like Map or Date, can't be save to JSON file
-  direcly, they need to be converted to string or Array respectively.
+  Some data types, like Map or Date need to be converted to string or
+  Array before serializing to JSON.
     By doing so, however, we loose type information - string is
   a primitive value, not a Date object. We could read type information
   from an object we are saving into, bud it wouldn't work for properties
   with 'null' value, because if you assing 'null' into a property, you
   loose type information as well.
     So instead of saving string (or Array, etc.) directly, we instead
-  create and save a dummy SaveableObject with fake 'className' property
-  (because you can't declare another class Date or Map) and read type
-  information from it when loading JSON back to memory. 
+  create and save a dummy Serializable object with fake 'className'
+  property (because you can't declare another class Date or Map) and read
+  type information from it when deserializing back from JSON. 
 
-  Another special case is reference to an Entity (any object inherited
+  Another special case is a reference to an Entity (any object inherited
   from class Entity). Entity references are not saved directly like
   regular javascript Objects (by saving all its properties), because
   that would often lead to endless cycles that cannot be saved to JSON.
@@ -26,27 +25,35 @@
   reference when loading from JSON.
     That makes it the same case as with Dates and Maps, however, because
   'id' is a string and we wouldn't know that an entity reference needs to
-  be re-created. Instead, a dummy SaveableObject with className 'Reference'
-  is created and saved so we know that we need to recreate an entity
-  reference when loading it.
+  be re-created. Instead, a dummy Serializable object with 'className'
+  'Reference' is created and saved so we know that we need to recreate
+  an entity reference when loading it.
 */
 
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
-import {NamedClass} from '../../../server/lib/class/NamedClass';
-import {Entity} from '../../../server/lib/entity/Entity'; 
-import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
+import {Nameable} from '../../../shared/lib/class/Nameable';
+import {Serializable} from '../../../shared/lib/class/Serializable';
+import {Entity} from '../../../shared/lib/entity/Entity'; 
+///import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
 
-export class IndirectValue
+export class JsonSaver
 {
+  public static get Array_PROPERTY() { return 'array'; }
+  public static get BITVECTOR_PROPERTY() { return 'bitvector'; }
+  public static get DATE_PROPERTY() { return 'date'; }
+  public static get MAP_PROPERTY() { return 'map'; }
+  public static get SET_PROPERTY() { return 'set'; }
+
   // ---------------- Public methods --------------------
+
 
   // -> Returns a SaveableObject which saves Set to Json object
   //      (using it's saveToJsonObject()) as a special object
   //      with className 'Set' and property 'set' containing
-  //      an Array representation of set contents.  
+  //      an Array representation of Set contents.  
   public static createSetSaver(set: Set<any>)
   {
     if (set === null)
@@ -55,17 +62,17 @@ export class IndirectValue
       return;
     }
 
-    let saveableObject = new SaveableObject();
+    let saver = new Serializable();
 
     // Set is saved as it's Array representation to property 'set'.
-    saveableObject['set'] = IndirectValue.saveSetToArray(set);
+    saver['set'] = this.saveSetToArray(set);
 
     // We can't override 'className' property, because it's an accessor
     // (see NamedClass.className), so we use Proxy to trap acces to
     // 'className' to return our desired value instead.
     //   This is done so that our return value will save with 'className'
-    // 'Set' instead of 'SaveableObject'.
-    return IndirectValue.createSaveableProxy(saveableObject, 'Set');
+    // 'Set' instead of 'Serializable'.
+    return this.createSaveProxy(saver, 'Set');
   }
 
   // -> Returns a SaveableObject which saves Map to Json object
@@ -80,17 +87,42 @@ export class IndirectValue
       return;
     }
 
-    let saveableObject = new SaveableObject();
+    let saver = new Serializable();
 
     // Map is saved as it's Array representation to property 'map'.
-    saveableObject['map'] = IndirectValue.saveMapToArray(map);
+    saver['map'] = this.saveMapToArray(map);
 
     // We can't override 'className' property, because it's an accessor
     // (see NamedClass.className), so we use Proxy to trap acces to
     // 'className' to return our desired value instead.
     //   This is done so that our return value will save with 'className'
-    // 'Map' instead of 'SaveableObject'.
-    return IndirectValue.createSaveableProxy(saveableObject, 'Map');
+    // 'Map' instead of 'Serializable'.
+    return this.createSaveProxy(saver, 'Map');
+  }
+
+    // -> Returns a SaveableObject which saves FastBitSet to Json
+  //      object (using it's saveToJsonObject()) as a special object
+  //      with className 'Bitvector' and property 'bitvector' containing
+  //      a string represenation of FastBitSet object.
+  public static createBitvectorSaver(bitvector: Date)
+  {
+    if (bitvector === null)
+    {
+      FATAL_ERROR("Null bitvector");
+      return;
+    }
+
+    let saver = new Serializable();
+
+    // Date is saved as it's JSON string representation to property 'date'.
+    saver['bitvector'] = bitvector.toJSON();
+
+    // We can't override 'className' property, because it's an accessor
+    // (see NamedClass.className), so we use Proxy to trap acces to
+    // 'className' to return our desired value instead.
+    //   This is done so that our return value will save with 'className'
+    // 'Bitvector' instead of 'Serializable'.
+    return this.createSaveProxy(saver, 'Bitvector');
   }
 
   // -> Returns a SaveableObject which saves Date to Json object
@@ -105,17 +137,17 @@ export class IndirectValue
       return;
     }
 
-    let saveableObject = new SaveableObject();
+    let saver = new Serializable();
 
     // Date is saved as it's JSON string representation to property 'date'.
-    saveableObject['date'] = date.toJSON();
+    saver['date'] = date.toJSON();
 
     // We can't override 'className' property, because it's an accessor
     // (see NamedClass.className), so we use Proxy to trap acces to
     // 'className' to return our desired value instead.
     //   This is done so that our return value will save with 'className'
-    // 'Date' instead of 'SaveableObject'.
-    return IndirectValue.createSaveableProxy(saveableObject, 'Date');
+    // 'Date' instead of 'Serializable'.
+    return this.createSaveProxy(saver, 'Date');
   }
 
   // -> Returns a SaveableObject which saves Entity to Json object
@@ -130,27 +162,41 @@ export class IndirectValue
       return;
     }
 
-    let saveableObject = new SaveableObject();
+    let saver = new Serializable();
 
     // Entity is saved as it's string id to property 'id'.
-    saveableObject['id'] = entity.getId();
+    saver['id'] = entity.getId();
 
     // We can't override 'className' property, because it's an accessor
     // (see NamedClass.className), so we use Proxy to trap acces to
     // 'className' to return our desired value instead.
     //   This is done so that our return value will save with 'className'
-    // 'Reference' instead of 'SaveableObject'.
-    return IndirectValue.createSaveableProxy(saveableObject, 'Reference');
+    // 'Reference' instead of 'Serializable'.
+    return this.createSaveProxy(saver, 'Reference');
+  }
+
+  /*
+  public static isBitvector(jsonObject: Object): boolean
+  {
+    if (this.objectValidityCheck(jsonObject) === false)
+      return false;
+
+    // Is there a 'className' property in JSON object
+    // with value 'Bitvector'?
+    if (jsonObject[Nameable.CLASS_NAME_PROPERTY] === 'Bitvector')
+      return true;
+
+    return false;
   }
 
   public static isDate(jsonObject: Object): boolean
   {
-    if (IndirectValue.objectValidityCheck(jsonObject) === false)
+    if (this.objectValidityCheck(jsonObject) === false)
       return false;
 
     // Is there a 'className' property in JSON object
     // with value 'Date'?
-    if (jsonObject[NamedClass.CLASS_NAME_PROPERTY] === 'Date')
+    if (jsonObject[Nameable.CLASS_NAME_PROPERTY] === 'Date')
       return true;
 
     return false;
@@ -158,12 +204,12 @@ export class IndirectValue
 
   public static isSet(jsonObject: Object): boolean
   {
-    if (IndirectValue.objectValidityCheck(jsonObject) === false)
+    if (this.objectValidityCheck(jsonObject) === false)
       return false;
 
     // Is there a 'className' property in JSON object
     // with value 'Set'?
-    if (jsonObject[NamedClass.CLASS_NAME_PROPERTY] === 'Set')
+    if (jsonObject[Nameable.CLASS_NAME_PROPERTY] === 'Set')
       return true;
 
     return false;
@@ -171,12 +217,12 @@ export class IndirectValue
 
   public static isMap(jsonObject: Object): boolean
   {
-    if (IndirectValue.objectValidityCheck(jsonObject) === false)
+    if (this.objectValidityCheck(jsonObject) === false)
       return false;
 
     // Is there a 'className' property in JSON object
     // with value 'Map'?
-    if (jsonObject[NamedClass.CLASS_NAME_PROPERTY] === 'Map')
+    if (jsonObject[Nameable.CLASS_NAME_PROPERTY] === 'Map')
       return true;
 
     return false;
@@ -184,18 +230,34 @@ export class IndirectValue
 
   public static isReference(jsonObject: Object): boolean
   {
-    if (IndirectValue.objectValidityCheck(jsonObject) === false)
+    if (this.objectValidityCheck(jsonObject) === false)
       return false;
 
     // Is there a 'className' property in JSON object with value
     // 'Reference'?
-    if (jsonObject[NamedClass.CLASS_NAME_PROPERTY] === 'Reference')
+    if (jsonObject[Nameable.CLASS_NAME_PROPERTY] === 'Reference')
       return true;
 
     return false;
   }
+  */
 
   // ---------------- Private methods -------------------
+
+  // -> Returns an Array representation of Set object.
+  private static saveBitvectorToArray(bitvector: any): Array<any>
+  {
+    if (!('array' in bitvector))
+    {
+      ERROR('Attempt to save bitvector to array that is'
+        + ' not of type FastBitSet. Empty array is saved');
+      return [];
+    }
+
+    // FastBitSet already contains method to convert bitvector to Array,
+    // so we just call it.
+    return bitvector.array();
+  }
 
   // -> Returns an Array representation of Set object.
   private static saveSetToArray(set: Set<any>): Array<any>
@@ -221,13 +283,13 @@ export class IndirectValue
 
   // -> Returns a Proxy object that traps access to 'className' property
   //      on 'object' to return 'className' param instead of original value. 
-  private static createSaveableProxy(object: SaveableObject, className: string)
+  private static createSaveProxy(saver: Serializable, className: string)
   {
     // This function will be passed to Proxy handler as it's 'get' trap.
     let get = function(target: any, property: any)
     {
       // Here we are trapping access to 'className' property.
-      if (property === 'className')
+      if (property === Nameable.CLASS_NAME_PROPERTY)
         // Which will return our parameter 'className' instead
         // of target's 'className'.
         return className;
@@ -239,7 +301,7 @@ export class IndirectValue
     // Create a new Proxy what will trap acces to 'object' using object
     // passed as second parameter as proxy handler (it will trap access
     // to object's properties using our 'get' function).
-    return new Proxy(object, { get: get })
+    return new Proxy(saver, { get: get })
   }
 
   private static objectValidityCheck(jsonObject: Object): boolean
@@ -258,5 +320,16 @@ export class IndirectValue
     }
 
     return true;
+  }
+
+  // Auxiliary function used for error reporting.
+  // -> Returns string informing about file location or empty string
+  //    if 'path' is not available.
+  private static composePathString(path: string)
+  {
+    if (path === null)
+      return "";
+
+    return " in file " + path;
   }
 }

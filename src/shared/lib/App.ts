@@ -45,7 +45,7 @@ export abstract class App
   // and in client code, it's an instance of Client class.
   public static getInstance(): App
   {
-    if (this.instance !== null)
+    if (App.instanceExists())
       return this.instance;
 
     // We can't use ERROR() here because ERROR() is handled by App
@@ -63,10 +63,18 @@ export abstract class App
       + " Use ServerApp.create() or ClientApp.create() instead");
   }
 
+  public static getSaver()
+  {
+    return App.getInstance().getSaver();
+  }
+
   // ---------------- Public methods --------------------
 
   public abstract reportError(message: string);
   public abstract reportFatalError(message: string);
 
   // --------------- Protected methods ------------------
+
+  /// Ještě uvidím, jak to udělám
+  ///protected abstract getSaver();
 }
