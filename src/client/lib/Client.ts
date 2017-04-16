@@ -74,13 +74,13 @@ export class Client extends App
     if (!WebSocketClient.webSocketsAvailable())
       return;
 
-    if (Client.instance !== null)
+    if (App.instance !== null)
     {
       ERROR("Client already exists, not creating it");
       return;
     }
 
-    Client.instance = new Client();
+    App.instance = new Client();
   }
 
   // ---------------- Public methods --------------------

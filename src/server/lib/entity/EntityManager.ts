@@ -435,6 +435,7 @@ export class EntityManager
     return idRecord.id;
   }
 
+  /// TODO: Místo tohohle použít JsonObject.getPrototypeId()
   // -> Returns prototype id read from 'jsonObject', 'null' if it's not there. 
   private getPrototypeIdFromJsonObject
   (
@@ -443,6 +444,7 @@ export class EntityManager
     path: string
   )
   {
+    TODO
     if (jsonObject === null || jsonObject === undefined)
     {
       ERROR("Invalid json object loaded from file"
