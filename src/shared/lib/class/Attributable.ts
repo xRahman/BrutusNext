@@ -22,17 +22,31 @@
 
 'use strict';
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Nameable} from '../../../shared/lib/class/Nameable';
+import {Attributes} from '../../../shared/lib/class/Attributes';
 
 export class Attributable extends Nameable
 {
   // -> Returns object containing static attributes for a given class property,
   //    Returns 'undefined' if 'property' doesn't have static attributes.
-  protected getPropertyAttributes(property: string)
+  protected getPropertyAttributes(propertyName: string): Attributes
   {
     // This trick dynamically accesses static class property without
     // the need to use something like NamedClass.property;
     // (it's the same as if you could write (typeof(istance)).property).
-    return this.constructor[property];
+    let attributes = this.constructor[propertyName];
+
+    if (attributes === null)
+    {
+      ERROR("'null' static property atributes for property"
+        + " '" + propertyName + "'. Make sure that 'static"
+        + " " + propertyName + "' declared in class"
+        + " " + this.className + " (or in some of it's ancestors)"
+        + " is not null");
+      return undefined;
+    }
+
+    return attributes;
   }
 }

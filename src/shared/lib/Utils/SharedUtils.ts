@@ -43,7 +43,7 @@ export module SharedUtils
   // Detects only native javascript Objects - not classes.
   // -> Returns 'true' if 'variable' is of type 'Object',
   //    Returns 'false' otherwise.
-  export function isJavascriptObject(variable: any)
+  export function isPlainObject(variable: any)
   {
     if (variable === null || variable === undefined || !variable.constructor)
       return false;
