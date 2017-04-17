@@ -37,18 +37,29 @@ import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 import {Nameable} from '../../../shared/lib/class/Nameable';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {Entity} from '../../../shared/lib/entity/Entity'; 
-///import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
 
 export class JsonSaver
 {
-  public static get Array_PROPERTY() { return 'array'; }
-  public static get BITVECTOR_PROPERTY() { return 'bitvector'; }
-  public static get DATE_PROPERTY() { return 'date'; }
-  public static get MAP_PROPERTY() { return 'map'; }
-  public static get SET_PROPERTY() { return 'set'; }
+  // These are 'dummy' class names. They are only written to JSON
+  // but they don't really exists in code (Date, Set and Map are
+  // build-in javascript classes, Bitvector translates to a FastBitArray
+  // class and Reference is not a class at all but a reference to
+  // an Entity.
+  public static get BITVECTOR_CLASS_NAME() { return 'Bitvector'; }
+  public static get DATE_CLASS_NAME()      { return 'Date'; }
+  public static get SET_CLASS_NAME()       { return 'Set'; }
+  public static get MAP_CLASS_NAME()       { return 'Map'; }
+  public static get REFERENCE_CLASS_NAME() { return 'Reference'; }
+
+  // These special property names are only written to serialized data.
+  // For example 'map' property holds an Array that represents serialized
+  // data of a Map object.
+  public static get BITVECTOR_PROPERTY()    { return 'bitvector'; }
+  public static get DATE_PROPERTY()         { return 'date'; }
+  public static get MAP_PROPERTY()          { return 'map'; }
+  public static get SET_PROPERTY()          { return 'set'; }
 
   // ---------------- Public methods --------------------
-
 
   // -> Returns a SaveableObject which saves Set to Json object
   //      (using it's saveToJsonObject()) as a special object
@@ -65,14 +76,14 @@ export class JsonSaver
     let saver = new Serializable();
 
     // Set is saved as it's Array representation to property 'set'.
-    saver['set'] = this.saveSetToArray(set);
+    saver[JsonSaver.SET_PROPERTY] = this.saveSetToArray(set);
 
     // We can't override 'className' property, because it's an accessor
     // (see NamedClass.className), so we use Proxy to trap acces to
     // 'className' to return our desired value instead.
     //   This is done so that our return value will save with 'className'
     // 'Set' instead of 'Serializable'.
-    return this.createSaveProxy(saver, 'Set');
+    return this.createSaveProxy(saver, JsonSaver.SET_CLASS_NAME);
   }
 
   // -> Returns a SaveableObject which saves Map to Json object
@@ -90,17 +101,17 @@ export class JsonSaver
     let saver = new Serializable();
 
     // Map is saved as it's Array representation to property 'map'.
-    saver['map'] = this.saveMapToArray(map);
+    saver[JsonSaver.MAP_PROPERTY] = this.saveMapToArray(map);
 
     // We can't override 'className' property, because it's an accessor
     // (see NamedClass.className), so we use Proxy to trap acces to
     // 'className' to return our desired value instead.
     //   This is done so that our return value will save with 'className'
     // 'Map' instead of 'Serializable'.
-    return this.createSaveProxy(saver, 'Map');
+    return this.createSaveProxy(saver, JsonSaver.MAP_CLASS_NAME);
   }
 
-    // -> Returns a SaveableObject which saves FastBitSet to Json
+  // -> Returns a SaveableObject which saves FastBitSet to Json
   //      object (using it's saveToJsonObject()) as a special object
   //      with className 'Bitvector' and property 'bitvector' containing
   //      a string represenation of FastBitSet object.
@@ -115,14 +126,14 @@ export class JsonSaver
     let saver = new Serializable();
 
     // Date is saved as it's JSON string representation to property 'date'.
-    saver['bitvector'] = bitvector.toJSON();
+    saver[JsonSaver.BITVECTOR_PROPERTY] = bitvector.toJSON();
 
     // We can't override 'className' property, because it's an accessor
     // (see NamedClass.className), so we use Proxy to trap acces to
     // 'className' to return our desired value instead.
     //   This is done so that our return value will save with 'className'
     // 'Bitvector' instead of 'Serializable'.
-    return this.createSaveProxy(saver, 'Bitvector');
+    return this.createSaveProxy(saver, JsonSaver.BITVECTOR_CLASS_NAME);
   }
 
   // -> Returns a SaveableObject which saves Date to Json object
@@ -140,14 +151,14 @@ export class JsonSaver
     let saver = new Serializable();
 
     // Date is saved as it's JSON string representation to property 'date'.
-    saver['date'] = date.toJSON();
+    saver[JsonSaver.DATE_PROPERTY] = date.toJSON();
 
     // We can't override 'className' property, because it's an accessor
     // (see NamedClass.className), so we use Proxy to trap acces to
     // 'className' to return our desired value instead.
     //   This is done so that our return value will save with 'className'
     // 'Date' instead of 'Serializable'.
-    return this.createSaveProxy(saver, 'Date');
+    return this.createSaveProxy(saver, JsonSaver.DATE_CLASS_NAME);
   }
 
   // -> Returns a SaveableObject which saves Entity to Json object
@@ -165,82 +176,15 @@ export class JsonSaver
     let saver = new Serializable();
 
     // Entity is saved as it's string id to property 'id'.
-    saver['id'] = entity.getId();
+    saver[Entity.ID_PROPERTY] = entity.getId();
 
     // We can't override 'className' property, because it's an accessor
     // (see NamedClass.className), so we use Proxy to trap acces to
     // 'className' to return our desired value instead.
     //   This is done so that our return value will save with 'className'
     // 'Reference' instead of 'Serializable'.
-    return this.createSaveProxy(saver, 'Reference');
+    return this.createSaveProxy(saver, JsonSaver.REFERENCE_CLASS_NAME);
   }
-
-  /*
-  public static isBitvector(jsonObject: Object): boolean
-  {
-    if (this.objectValidityCheck(jsonObject) === false)
-      return false;
-
-    // Is there a 'className' property in JSON object
-    // with value 'Bitvector'?
-    if (jsonObject[Nameable.CLASS_NAME_PROPERTY] === 'Bitvector')
-      return true;
-
-    return false;
-  }
-
-  public static isDate(jsonObject: Object): boolean
-  {
-    if (this.objectValidityCheck(jsonObject) === false)
-      return false;
-
-    // Is there a 'className' property in JSON object
-    // with value 'Date'?
-    if (jsonObject[Nameable.CLASS_NAME_PROPERTY] === 'Date')
-      return true;
-
-    return false;
-  }
-
-  public static isSet(jsonObject: Object): boolean
-  {
-    if (this.objectValidityCheck(jsonObject) === false)
-      return false;
-
-    // Is there a 'className' property in JSON object
-    // with value 'Set'?
-    if (jsonObject[Nameable.CLASS_NAME_PROPERTY] === 'Set')
-      return true;
-
-    return false;
-  }
-
-  public static isMap(jsonObject: Object): boolean
-  {
-    if (this.objectValidityCheck(jsonObject) === false)
-      return false;
-
-    // Is there a 'className' property in JSON object
-    // with value 'Map'?
-    if (jsonObject[Nameable.CLASS_NAME_PROPERTY] === 'Map')
-      return true;
-
-    return false;
-  }
-
-  public static isReference(jsonObject: Object): boolean
-  {
-    if (this.objectValidityCheck(jsonObject) === false)
-      return false;
-
-    // Is there a 'className' property in JSON object with value
-    // 'Reference'?
-    if (jsonObject[Nameable.CLASS_NAME_PROPERTY] === 'Reference')
-      return true;
-
-    return false;
-  }
-  */
 
   // ---------------- Private methods -------------------
 
@@ -281,6 +225,7 @@ export class JsonSaver
     return result;
   }
 
+//+
   // -> Returns a Proxy object that traps access to 'className' property
   //      on 'object' to return 'className' param instead of original value. 
   private static createSaveProxy(saver: Serializable, className: string)
