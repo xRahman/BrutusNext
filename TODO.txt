@@ -1,3 +1,7 @@
+TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
+---------------------------------------------------------------
+
+
 TODO: Entity musí mít společného předka v /Shared
 (aby se na něj mohly odkazovat shared classy)
 
@@ -12,6 +16,8 @@ TODO: Raději ještě jednou zvážit defaultní hodnoty statických atributů
       můžu uvést editační rozsahy a tak.
 - prozatím budu nadále předpokládat, že 'saved' má default 'true', zbytek
   se uvidí.
+Závěr: Default musí být u všeho 'true', jinak se nebudou savovat plain
+  objecty.
 
 TODO: symbName (a podobně) asi zkrátit na sName, sLocation, apod.
 
@@ -64,6 +70,16 @@ TODO: Když v JSONU není className, tak budu loadovat do {}
   parametr metodu, kterou se deserializuje (load ze savu, přijem dat
   z editoru, atd.)
   - zatím to dělat nebudu, ale možná to bude potřeba.
+
+TODO: Kód na savování bitvectoru (číst ho umím, savovat asi ne).
+[done]
+
+TODO: Ještě jednou pořádně projít celý serializovací kód (včetně JsonSaveru).
+- a vyčistit zbytky ze Serializable
+
+TODO: EntityProxyHandler by měl být v /shared
+ (nebo miminálně EntityProxyHandler.INTERNAL_ENTITY_PROPERTY by měla
+  být dostupná pro shared classy (konkrétně Serializable))
 
 --------------------------------------------------------------
 

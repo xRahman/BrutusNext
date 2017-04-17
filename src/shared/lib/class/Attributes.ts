@@ -5,7 +5,8 @@
 */
 
 /*
-  Default value (listed in comment) is used when attribute is not present.
+  Default value (listed in comment) is used when attribute is not present
+  (see Serializable.isToBeSerialized() for details).
 */
 
 /// Všechno by asi mělo mít default: true, protože classy mohou obsahovat
