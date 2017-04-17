@@ -54,10 +54,10 @@ export class JsonSaver
   // These special property names are only written to serialized data.
   // For example 'map' property holds an Array that represents serialized
   // data of a Map object.
-  public static get BITVECTOR_PROPERTY()    { return 'bitvector'; }
-  public static get DATE_PROPERTY()         { return 'date'; }
-  public static get MAP_PROPERTY()          { return 'map'; }
-  public static get SET_PROPERTY()          { return 'set'; }
+  public static get BITVECTOR_PROPERTY()   { return 'bitvector'; }
+  public static get DATE_PROPERTY()        { return 'date'; }
+  public static get MAP_PROPERTY()         { return 'map'; }
+  public static get SET_PROPERTY()         { return 'set'; }
 
   // ---------------- Public methods --------------------
 
