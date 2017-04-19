@@ -1,6 +1,133 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+Serializace entity vs neentity
+- entita by měla serializovat jen own properties, a to včetně
+  podstruktur.
+- neentita serializuje všehny properties
+TODO: Každopádně je to asi třeba rozlišit.
+Jak?
+- nejspíš parametrem (protože to to potřeba propašovat i do podstruktur.
+- Entity by asi mohly mít přetíženou metodu serialize() a předávat jí
+  parametr onlyOwnProperties = true;
+  - ani to vlastně asi není třeba přetěžovat, protože:
+ZÁVĚR:
+Závisí to na existenci property 'prototype'
+- pokud existuje, serializují se jen own properties
+- když ne, serializuje se všechno.
+
+Deserializace entity vs neentity
+- V obou případech je třeba nejdřív vytvořit JsonObject a z něj přečíst,
+  jestli se má prototypovat.
+- vzato kolem a kolem to není ani nutně výsadní vlastnost entit, prototypovat
+  by mohlo jít cokoliv.
+Tudíž:
+- pokud je v Jsonu property 'prototype', použije se Object.create(prototype)
+- jinak se použije new (className)
+Na to asi není třeba nic přetěžovat...
+  (teda vlastně možná jo, ale při savování, respektive při vyrábění nové
+   entity - když bude savovat property 'prototype', tak se pak při
+   deserializaci automaticky zprototypuje)
+TODO: Prototypování neřeší Serializable, ale ten, kdo deserializaci iniciuje
+I když, wait, to přece může dělat deserialize()
+- z Json stringu vyrobí Json object
+- přečte z něj 'prototype' případně 'className'
+- řekne si classFactory o prototypový objekt
+- vytvoří instanci
+... aha, ne. Musím nedjřív mít instanci, abych na ní mohl zavolat
+  deserialize(). Tj. jedině, že by deserialize() byla statická metoda.
+  (ale to by asi mohla být - JSON.stringify() a JSON.parse() statické jsou).
+
+
+IDEA: Přejmenovat Instantiable na Prototypable
+- dát do ní PROTOTYPE_PROPERTY
+  (to udělám tak jako tak).
+(tak asi nepřejmenovávat, ono se tam nic neprototypuje. Pouze se instaciují
+ properties)
+ - nebo že by se tam přece jen prototypovalo? Ať je to pohromadě?
+   Tj. byla by tam nejspíš statická metoda:
+     public static createInstance(prototypeObject)
+
+Pozn: ClassFactory by měla mít instance prototypových objektů pro
+  všechny dynamické hardcoded classy.
+
+IDEA: 'className' u hardcoded class považovat za 'id'
+- tj. pro neentity by getId() vracelo 'className'
+- a pro entity by to vracelo 'id'
++ Dát hardoced prototypové instance do EntityManageru
+(To by znamenalo, že už classa Prototypable bude mít metodu getId())
+... Hmm, to asi nepůjde, protože od některých nenetitových class budu
+  chtít mít víc instancí (třeba když Connection nebude entita).
+  - pak bych jim asi musel ta idčka přidělovat (a otázka v tom případě je,
+    k čemu jim bude dobré).
+
+Každopádně dává smysl, aby classa, kterou lze prototypovat, měla:
+- public static PROTOTYPE_PROPERTY
+- protected prototype: string;
+- public static createInstance()
+- private instantiateProperties()
+
+
+Classa, kterou lze použít jako prototypeObject, by měla mít:
+- getId()
+A měla by se dávat do entityManageru pod tímhle idčkem
+  (tj. dává smysl, aby prototypové instance hardcoded class měly
+   'className' jako své id)
+
+Že classu lze prototypovat asi nutně neznamená, že je ji potřeba
+prototypovat. Tj. asi to může být jako doposud, že Prototypable
+je předkem Serializable (takže všechny Serializable lze v principu
+prototypovat), ale jako prototypeObjecty mohou sloužit jen entity.
+
+Závěr: prototypeObject je vždy typu Entity.
+
+Pak je ještě možnost udělat to tak, že Serializable nebude umět
+prototypovat a bude z něj zděděné Prototypable, které přetíží
+příslušné metody Serializable, aby prototypy dělaly.
+
+Otázka je: Mají to být dvě classy (Prototypable a Entity), nebo
+prostě jen Entity?
+- Entita by měla mít id.
+- Entita by měla mít prototyp.
+Asi ničemu neuškodí, když to rozdělím do dvou class - bude to aspoň
+sémanticky oddělené...
+(Každopádně je fakt, že nemá smysl mít metodu instantiateProperties()
+ v něčem, co se nebude prototypovat).
+... hmm, tak nakonec asi ne. Id by mělo být v Entitě....
+(a věci jako sName by asi mohly být až v nějakém potomkovi
+ - symbolicEntity?)
+ 
+
+Takže:
+
+TODO:
+Serializable
+ -> Entity
+    - ID_PROPERTY
+    - PROTOTYPE_PROPERTY
+    - id
+    - prototype
+    - public static createInstance()
+    - private instantiateProperties()
+
+TODO:
+EntityManager by měl mít metody:
+ - createEntity()               // Vyrobí entitu s generovaným id.
+ - createClassPrototypeEntity() // Vyrobi entitu kde id = className.
+
+TODO:
+Serializable by mělo mít
+  public serialize()
+  public static deserialize()
+
+TODO: Entita přetíží deserialize()
+(respektive něco, co se z něj volá, asi deserializeToJsonObject())
+- a to tak, že se bude z jsonObjectu číst 'prototype' a instance
+   se bude vyrábět přes Entity.createInstance()
+TODO: Entita přetíží serialize()
+- a to proto, aby se serializovaly jen own properties.
+
+---------------------------------------------------------------
 
 TODO: Entity musí mít společného předka v /Shared
 (aby se na něj mohly odkazovat shared classy)
