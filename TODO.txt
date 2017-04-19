@@ -129,6 +129,12 @@ TODO: Entita přetíží serialize()
 
 ---------------------------------------------------------------
 
+IMPORTANT: Dávat idčka hardcoded classám (coby prototypům) je blbost - stejně
+  nedávám idčka classám, které se instancují bez prototypování.
+- navíc když to chci přejmenovat v kódu, tak to můžu hromadně přejmenovat
+  i v save filech (prostě budu vyhledávat 'className: ""' a 'prototype: ""').
+
+
 TODO: Entity musí mít společného předka v /Shared
 (aby se na něj mohly odkazovat shared classy)
 
