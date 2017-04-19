@@ -36,7 +36,27 @@ import {Attributable} from '../../../shared/lib/class/Attributable';
 
 export class Instantiable extends Attributable
 {
+  /// Nad tímhle zrovna dumám...
+  /*
+  public static get PROTOTYPE_PROPERTY() { return 'prototype'; }
+  */
+
+  //------------------ Private data ---------------------
+
+  /// Nad tímhle zrovna dumám...
+  /*
+  // Value is 'className' (if the prototype is a hardcoded class)
+  // or 'id' (if the prototype is an entity).
+  private prototype: string = null;
+  */
+
+
   // ---------------- Public methods --------------------
+
+  public static createInstance(prototypeObject: Instantiable)
+  {
+
+  }
 
   public instantiateProperties()
   {
