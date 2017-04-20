@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Specifies structure of static class attributes.
+  Specifies structure of static property attributes.
 */
 
 /*
@@ -31,7 +31,7 @@
 
 'use strict';
 
-export interface Attributes
+export interface PropertyAttributes
 {
   // Property is saved to disk.
   //   Default: true

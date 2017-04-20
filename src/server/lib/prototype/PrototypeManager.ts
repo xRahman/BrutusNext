@@ -16,14 +16,14 @@ import {EntityManager} from '../../../server/lib/entity/EntityManager';
 import {ScriptableEntity} from '../../../server/lib/entity/ScriptableEntity';
 ///import {DynamicClasses} from '../../../server/lib/class/DynamicClasses';
 import {NamedClass} from '../../../server/lib/class/NamedClass';
-import {Server} from '../../../server/lib/Server';
+import {ServerApp} from '../../../server/lib/Server';
 import {ClassFactory} from '../../../shared/lib/ClassFactory';
 
 export class PrototypeManager extends AutoSaveableObject
 {
   private static get SAVE_DIRECTORY()
   {
-    return Server.DATA_DIRECTORY;
+    return ServerApp.DATA_DIRECTORY;
   }
 
   private static get SAVE_FILE_NAME()
@@ -185,7 +185,7 @@ export class PrototypeManager extends AutoSaveableObject
     className:string
   )
   {
-    let entity = Server.entityManager.createHardcodedPrototypeEntity
+    let entity = ServerApp.entityManager.createHardcodedPrototypeEntity
     (
       prototypeObject,
       className
@@ -221,7 +221,7 @@ export class PrototypeManager extends AutoSaveableObject
     record: HardcodedPrototype,
   )
   {
-    let entity = Server.entityManager.composePrototypeEntity
+    let entity = ServerApp.entityManager.composePrototypeEntity
     (
       prototypeObject,
       className,

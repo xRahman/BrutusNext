@@ -19,7 +19,7 @@
 'use strict';
 
 import {Utils} from '../server/lib/utils/Utils';
-import {Server} from '../server/lib/Server';
+import {ServerApp} from '../server/lib/Server';
 import {TelnetServer} from '../server/lib/net/telnet/TelnetServer';
 import {Syslog} from '../server/lib/log/Syslog';
 import {Message} from '../server/lib/message/Message';
@@ -162,10 +162,10 @@ async function main()
 
   // Create an instance of server.
   // (server is a singleton so we use static method to do it)
-  Server.create();
+  ServerApp.create();
   // Run the server at specified telnet port.
   // (Server.run() is async function)
-  await Server.getInstance().run(cmdlineParser.port);
+  await ServerApp.getInstance().run(cmdlineParser.port);
 }
 
 // Run the main() function.

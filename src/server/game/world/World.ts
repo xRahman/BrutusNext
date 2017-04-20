@@ -10,7 +10,7 @@
 import {EntityManager} from '../../../server/lib/entity/EntityManager';
 import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
 import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
-import {Server} from '../../../server/lib/Server';
+import {ServerApp} from '../../../server/lib/Server';
 import {Game} from '../../../server/game/Game';
 import {GameEntity} from '../../../server/game/entity/GameEntity';
 import {Realm} from '../../../server/game/world/Realm';
@@ -55,7 +55,7 @@ export class World extends GameEntity
     Game.prototypeManager.createPrototype('SystemRealm', 'Realm');
     */
 
-    this.systemRealm = await Server.entityManager.createUniqueEntity
+    this.systemRealm = await ServerApp.entityManager.createUniqueEntity
     (
       'System Realm',
       Realm,
@@ -73,7 +73,7 @@ export class World extends GameEntity
     Game.prototypeManager.createPrototype('SystemArea', 'Area');
     */
 
-    this.systemArea = await Server.entityManager.createUniqueEntity
+    this.systemArea = await ServerApp.entityManager.createUniqueEntity
     (
       'System Area',
       Area,
@@ -90,7 +90,7 @@ export class World extends GameEntity
     Game.prototypeManager.createPrototype('SystemRoom', 'Room');
     */
 
-    this.systemRoom = await Server.entityManager.createNamedEntity
+    this.systemRoom = await ServerApp.entityManager.createNamedEntity
     (
       'System Room',
       Room
@@ -107,7 +107,7 @@ export class World extends GameEntity
     Game.prototypeManager.createPrototype('TutorialRoom', 'Room');
     */
     
-    this.tutorialRoom = await Server.entityManager.createNamedEntity
+    this.tutorialRoom = await ServerApp.entityManager.createNamedEntity
     (
       'Tutorial Room',
       Room

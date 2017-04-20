@@ -10,7 +10,7 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Entity} from '../../../server/lib/entity/Entity';
 import {NameLockRecord} from '../../../server/lib/entity/NameLockRecord';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
-import {Server} from '../../../server/lib/Server';
+import {ServerApp} from '../../../server/lib/Server';
 
 export class NamedEntity extends Entity
 {
@@ -160,7 +160,7 @@ export class NamedEntity extends Entity
   private static getNameLockDirectory(cathegory: NamedEntity.NameCathegory)
   {
     // Name lock directory is something like './data/names/accounts/'.
-    return Server.DATA_DIRECTORY + 'names/'
+    return ServerApp.DATA_DIRECTORY + 'names/'
       + NamedEntity.NameCathegory[cathegory] + '/';
   }
 

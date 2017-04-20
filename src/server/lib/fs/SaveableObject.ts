@@ -31,7 +31,7 @@ import {InstantiableClass} from '../../../server/lib/class/InstantiableClass';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
 import {SavingManager} from '../../../server/lib/fs/SavingManager';
 import {IndirectValue} from '../../../server/lib/fs/IndirectValue';
-import {Server} from '../../../server/lib/Server';
+import {ServerApp} from '../../../server/lib/Server';
 
 let beautify = require('js-beautify').js_beautify;
 
@@ -1102,7 +1102,7 @@ export class SaveableObject extends InstantiableClass
 
     // Return an existing entity proxy if entity exists in
     // entityManager, invalid entity proxy otherwise.
-    return Server.entityManager.createReference(id);
+    return ServerApp.entityManager.createReference(id);
   }
 
   // -> Returns 'null' if jsonVariable is not an Array or if loading failed.

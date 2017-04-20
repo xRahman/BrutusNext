@@ -8,7 +8,7 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
-import {Server} from '../../../server/lib/Server';
+import {ServerApp} from '../../../server/lib/Server';
 import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
 import {NameSearchList} from '../../../server/lib/entity/NameSearchList';
 import {Entity} from '../../../server/lib/entity/Entity';
@@ -102,7 +102,7 @@ export class AccountList extends NameSearchList
     }
     */
 
-    let account = await Server.entityManager.createUniqueEntity
+    let account = await ServerApp.entityManager.createUniqueEntity
     (
       accountName,
       Account,
@@ -171,7 +171,7 @@ export class AccountList extends NameSearchList
     this.remove(account);
 
     // Remove entity reference EntityManager so the memory can be dealocated.
-    Server.entityManager.remove(account);
+    ServerApp.entityManager.remove(account);
   }
 
   // Sets account name as taken in the memory but doesn't create name lock

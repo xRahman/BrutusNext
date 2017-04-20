@@ -32,7 +32,7 @@ import {Syslog} from '../../../server/lib/log/Syslog';
 import {AdminLevel} from '../../../server/lib/admin/AdminLevel';
 import {Message} from '../../../server/lib/message/Message';
 import {Connection} from '../../../server/lib/connection/Connection';
-import {Server} from '../../../server/lib/Server';
+import {ServerApp} from '../../../server/lib/Server';
 import {Account} from '../../../server/lib/account/Account';
 
 export class AuthProcessor
@@ -115,7 +115,7 @@ export class AuthProcessor
     // receive password so we need to remember account name until then.
     this.accountName = accountName;
 
-    if (await Server.accounts.exists(accountName))
+    if (await ServerApp.accounts.exists(accountName))
     {
       // Existing user. Ask for password.
       this.sendAuthPrompt("Password:");
@@ -132,7 +132,7 @@ export class AuthProcessor
       // with the same name before our user enters her password.
       //   It's because the name lock file (which tells us that
       // a name is taken) is only created after we know the password.
-      Server.accounts.setSoftNameLock(accountName);
+      ServerApp.accounts.setSoftNameLock(accountName);
     }
   }
 
@@ -140,7 +140,7 @@ export class AuthProcessor
   private async loadAccount(): Promise<Account>
   {
     // loadAccount() returns null if account doesn't exist on the disk.
-    let account = await Server.accounts.loadAccount
+    let account = await ServerApp.accounts.loadAccount
     (
       this.accountName,
       this.connection
@@ -195,7 +195,7 @@ export class AuthProcessor
 
   private async createAccount(password: string): Promise<Account>
   {
-    let account = await Server.accounts.createAccount
+    let account = await ServerApp.accounts.createAccount
     (
       this.accountName,
       password,
@@ -204,7 +204,7 @@ export class AuthProcessor
 
     // 'createAccount()' has created a name lock file, so we can
     // free soft lock on 'this.accountName'.
-    Server.accounts.removeSoftNameLock(this.accountName);
+    ServerApp.accounts.removeSoftNameLock(this.accountName);
 
     this.connection.account = account;
 
@@ -367,7 +367,7 @@ export class AuthProcessor
     }
     else
     {
-      if (Server.accounts === null)
+      if (ServerApp.accounts === null)
       {
         ERROR("Invalid account manager");
         return;
@@ -386,7 +386,7 @@ export class AuthProcessor
 
     // Check if account is already loaded.
     // (getAccountByName() returns 'undefined' if account isn't in the manager) 
-    let account = Server.accounts.getAccountByName(this.accountName);
+    let account = ServerApp.accounts.getAccountByName(this.accountName);
 
     // If account doesn't exist in accountManager, we need to load it from
     // the disk.
@@ -513,7 +513,7 @@ export class AuthProcessor
     param: { sendLastLoginInfo: boolean }
   )
   {
-    let loginInfo = Server.getMotd() + "\n";
+    let loginInfo = ServerApp.getMotd() + "\n";
 
     // Last login info is only send for existing accounts,
     // it doesn't make sense for a freshly created account.

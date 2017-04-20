@@ -24,13 +24,14 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Nameable} from '../../../shared/lib/class/Nameable';
-import {Attributes} from '../../../shared/lib/class/Attributes';
+import {PropertyAttributes} from
+  '../../../shared/lib/class/PropertyAttributes';
 
 export class Attributable extends Nameable
 {
   // -> Returns object containing static attributes for a given class property,
   //    Returns 'undefined' if 'property' doesn't have static attributes.
-  protected getPropertyAttributes(propertyName: string): Attributes
+  protected getPropertyAttributes(propertyName: string): PropertyAttributes
   {
     // This trick dynamically accesses static class property without
     // the need to use something like NamedClass.property;

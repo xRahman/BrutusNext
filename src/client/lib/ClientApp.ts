@@ -20,11 +20,11 @@ import {Document} from '../../client/gui/component/Document';
 import {Connection} from '../../client/lib/connection/Connection';
 import {WebSocketClient} from '../../client/lib/net/ws/WebSocketClient';
 
-export class Client extends App
+export class ClientApp extends App
 {
   // -------------- Static class data -------------------
 
-  protected static instance: Client = null;
+  protected static instance: ClientApp = null;
 
   //------------------ Public data ----------------------
 
@@ -58,12 +58,12 @@ export class Client extends App
   }
   */
 
-  public static getInstance(): Client
+  public static getInstance(): ClientApp
   {
-    if (Client.instance === null || Client.instance === undefined)
+    if (ClientApp.instance === null || ClientApp.instance === undefined)
       FATAL_ERROR("Instance of client doesn't exist yet");
 
-    return <Client>App.instance;
+    return <ClientApp>App.instance;
   }
 
   // Creates an instance of a client. Client is a singleton, so it must
@@ -80,7 +80,7 @@ export class Client extends App
       return;
     }
 
-    App.instance = new Client();
+    App.instance = new ClientApp();
   }
 
   // ---------------- Public methods --------------------

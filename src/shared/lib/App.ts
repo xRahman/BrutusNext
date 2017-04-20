@@ -68,10 +68,18 @@ export abstract class App
     return App.getInstance().getSaver();
   }
 
+  public static getEntityManager()
+  {
+    return App.getInstance().getEntityManager();
+  }
+
   // ---------------- Public methods --------------------
 
   public abstract reportError(message: string);
   public abstract reportFatalError(message: string);
+
+  public abstract getEntityManager();
+  public abstract getSaver();
 
   // --------------- Protected methods ------------------
 

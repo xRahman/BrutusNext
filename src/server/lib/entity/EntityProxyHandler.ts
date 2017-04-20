@@ -33,7 +33,7 @@ import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 import {Entity} from '../../../server/lib/entity/Entity';
 import {InvalidValueProxyHandler}
   from '../../../server/lib/entity/InvalidValueProxyHandler';
-import {Server} from '../../../server/lib/Server';
+import {ServerApp} from '../../../server/lib/Server';
 import {AdminLevel} from '../../../server/lib/admin/AdminLevel';
 import {Syslog} from '../../../server/lib/log/Syslog';
 import {Message} from '../../../server/lib/message/Message';
@@ -61,6 +61,17 @@ export class EntityProxyHandler
   */
 
   // ---------------- Public methods --------------------
+
+  // Hack to extract entity from the proxy
+  // (it's necessary in order to use for..in operator on entity
+  //  or to create a instance using Object.create()).
+  public static deproxify(entity: any)
+  {
+    if (entity[EntityProxyHandler.INTERNAL_ENTITY_PROPERTY])
+      return entity[EntityProxyHandler.INTERNAL_ENTITY_PROPERTY];
+
+    return entity;
+  }
 
   public invalidate()
   {
@@ -142,20 +153,20 @@ export class EntityProxyHandler
     return Object.getPrototypeOf(this.entity);
   }
 
-  //// A trap for Object.setPrototypeOf.
-  //public setPrototypeOf(target)
-  //{
-  //}
+  // // A trap for Object.setPrototypeOf.
+  // public setPrototypeOf(target)
+  // {
+  // }
 
-  //// A trap for Object.isExtensible.
-  //public isExtensible(target)
-  //{
-  //}
+  // // A trap for Object.isExtensible.
+  // public isExtensible(target)
+  // {
+  // }
 
-  //// A trap for Object.preventExtensions.
-  //public preventExtensions(target)
-  //{
-  //}
+  // // A trap for Object.preventExtensions.
+  // public preventExtensions(target)
+  // {
+  // }
 
   // A trap for Object.getOwnPropertyDescriptor.
   // (This is trapped in order to 'hasOwnProperty()' to work)
@@ -180,10 +191,10 @@ export class EntityProxyHandler
     return Object.getOwnPropertyDescriptor(this.entity, property);
   }
 
-  //// A trap for Object.defineProperty.
-  //public defineProperty(target)
-  //{
-  //}
+  // // A trap for Object.defineProperty.
+  // public defineProperty(target)
+  // {
+  // }
 
   // A trap for the in operator.
   // (But not for: 'for .. in' operator - that's not possible to trap). 
@@ -253,11 +264,10 @@ export class EntityProxyHandler
     if (property === 'then')
       return undefined;
 
-    // 'isProxy' property can be used for debugging to test if reference
-    //  is a proxy.
-    //    Value of 'isProxy' will be 'undefined' if reference isn't a proxy).
+    // Function isProxy() can be used to test if reference is a proxy.
+    // (If it's not, Serializable.isProxy() is called, which returns 'false'.)
     if (property === 'isProxy')
-      return true;
+      return function() { return true; };
 
     ///console.log("get(): " + property);
 
@@ -411,33 +421,33 @@ export class EntityProxyHandler
     return true;
   }
 
-  //// A trap for the delete operator.
-  //public deleteProperty(target)
-  //{
-  //}
+  // // A trap for the delete operator.
+  // public deleteProperty(target)
+  // {
+  // }
 
-  //// A trap for Object.getOwnPropertyNames.
-  //public ownKeys(target)
-  //{
-  //  console.log(">> EntityProxyHandler.ownKeys() launched");
+  // // A trap for Object.getOwnPropertyNames.
+  // public ownKeys(target)
+  // {
+  //   console.log(">> EntityProxyHandler.ownKeys() launched");
   //
-  //  return Object.getOwnPropertyNames(this.entity);
-  //}
+  //   return Object.getOwnPropertyNames(this.entity);
+  // }
 
-  //// A trap for a function call.
-  //public apply(target, thisArg, argumentsList)
-  //{
-  //}
+  // // A trap for a function call.
+  // public apply(target, thisArg, argumentsList)
+  // {
+  // }
 
-  //// A trap for the new operator.
-  //public construct(target)
-  //{
-  //}
+  // // A trap for the new operator.
+  // public construct(target)
+  // {
+  // }
 
-  /// DO NOT USE THIS. It has been deprecated in ES7
-  //public enumerate(target: any): any
-  //{
-  //}
+  // DO NOT USE THIS. It has been deprecated in ES7
+  // public enumerate(target: any): any
+  // {
+  // }
 
   // --------------- Private methods -------------------
 
