@@ -53,11 +53,14 @@ export class Instantiable extends Attributable
 
   // ---------------- Public methods --------------------
 
+  /*
   public static createInstance(prototypeObject: Instantiable)
   {
 
   }
+  */
 
+  /*
   public instantiateProperties()
   {
     // In javascript, constructor of the class is the class,
@@ -119,4 +122,5 @@ export class Instantiable extends Attributable
     // still may be some changes deeper in the structure).
     this.instantiate(object[property], prototype[property]);
   }
+  */
 }

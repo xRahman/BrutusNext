@@ -15,7 +15,7 @@ import {Syslog} from '../../../server/lib/log/Syslog';
 import {Message} from '../../../server/lib/message/Message';
 import {ScriptableEntity} from '../../../server/lib/entity/ScriptableEntity';
 import {Connection} from '../../../server/lib/connection/Connection';
-import {Server} from '../../../server/lib/Server';
+import {ServerApp} from '../../../server/lib/Server';
 import {Game} from '../../game/Game';
 import {GameEntity} from '../../../server/game/entity/GameEntity';
 import {Character} from '../../../server/game/character/Character';
@@ -272,7 +272,7 @@ export class Account extends ScriptableEntity
       AdminLevel.IMMORTAL
     );
 
-    Server.accounts.dropAccount(this);
+    ServerApp.accounts.dropAccount(this);
   }
 
   /*

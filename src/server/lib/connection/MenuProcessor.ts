@@ -13,7 +13,7 @@ import {Utils} from '../../../server/lib/utils/Utils';
 import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
 import {Syslog} from '../../../server/lib/log/Syslog';
 import {Connection} from '../../../server/lib/connection/Connection';
-import {Server} from '../../../server/lib/Server';
+import {ServerApp} from '../../../server/lib/Server';
 import {Account} from '../../../server/lib/account/Account';
 import {Message} from '../../../server/lib/message/Message';
 import {Game} from '../../../server/game/Game';

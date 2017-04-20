@@ -12,7 +12,7 @@ import {NamedEntity} from '../../server/lib/entity/NamedEntity';
 import {NameSearchList} from '../../server/lib/entity/NameSearchList';
 import {SaveableObject} from '../../server/lib/fs/SaveableObject';
 import {Message} from '../../server/lib/message/Message';
-import {Server} from '../../server/lib/Server';
+import {ServerApp} from '../../server/lib/Server';
 import {AdminLevel} from '../../server/lib/admin/AdminLevel';
 import {GameEntity} from '../../server/game/entity/GameEntity';
 import {CharacterList} from '../../server/game/character/CharacterList';
@@ -32,32 +32,32 @@ export class Game
 {
   public static get characters()
   {
-    return Server.game.characters;
+    return ServerApp.game.characters;
   }
 
   public static get rooms()
   {
-    return Server.game.rooms;
+    return ServerApp.game.rooms;
   }
 
   public static get areas()
   {
-    return Server.game.areas;
+    return ServerApp.game.areas;
   }
 
   public static get realms()
   {
-    return Server.game.realms;
+    return ServerApp.game.realms;
   }
 
   public static get world()
   {
-    return Server.game.world;
+    return ServerApp.game.world;
   }
 
   public static get prototypeManager()
   {
-    return Server.game.prototypeManager;
+    return ServerApp.game.prototypeManager;
   }
 
   // ---------------- Public methods --------------------
@@ -80,7 +80,7 @@ export class Game
     }
 
     // Create world 'BrutusNext World' based on prototype World.
-    this.world = await Server.entityManager.createUniqueEntity
+    this.world = await ServerApp.entityManager.createUniqueEntity
     (
       'Brutus World',
       World,
@@ -128,7 +128,7 @@ export class Game
     // Load current state of world from file.
     await this.world.load();
     */
-    this.world = await Server.entityManager.loadNamedEntity
+    this.world = await ServerApp.entityManager.loadNamedEntity
     (
       'Brutus World',
       NamedEntity.NameCathegory.world

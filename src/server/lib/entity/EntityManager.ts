@@ -45,7 +45,7 @@ import {EntityProxyHandler} from
 import {PrototypeManager} from
   '../../../server/lib/prototype/PrototypeManager';
 import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
-import {Server} from '../../../server/lib/Server';
+import {ServerApp} from '../../../server/lib/Server';
 
 export class EntityManager
 {
@@ -522,7 +522,7 @@ export class EntityManager
       prototypeId
     );
 
-    let entity = Server.prototypeManager.createInstance(prototypeEntity);
+    let entity = ServerApp.prototypeManager.createInstance(prototypeEntity);
 
     // And let it load itself from jsonObject.
     // ('path' is passed just to make error messages more informative)
@@ -562,7 +562,7 @@ export class EntityManager
     // prototypeObject, which means that if you edit a prototype,
     // changes will propagate to all entities instantiated from it,
     // which don't have that property overriden. 
-    let entity = Server.prototypeManager.createInstance(prototypeEntity);
+    let entity = ServerApp.prototypeManager.createInstance(prototypeEntity);
 
     if (entity['setId'] === undefined)
     {
@@ -735,7 +735,7 @@ export class EntityManager
     }
 
     let prototypeEntity =
-      Server.prototypeManager.getPrototypeObject(className);
+      ServerApp.prototypeManager.getPrototypeObject(className);
 
     // Dynamic type check - we make sure that
     // entity is inherited from Entity class.
@@ -851,7 +851,7 @@ export class EntityManager
   private isPrototypeNameAvailable(className: string): boolean
   {
     // Check if requested 'prototypeName' is available.
-    let test = Server.prototypeManager.getPrototypeObject(className);
+    let test = ServerApp.prototypeManager.getPrototypeObject(className);
 
     if (test !== undefined)
     {

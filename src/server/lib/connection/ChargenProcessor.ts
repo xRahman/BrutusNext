@@ -12,7 +12,7 @@ import {Utils} from '../../../server/lib/utils/Utils';
 import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
 import {Message} from '../../../server/lib/message/Message';
 import {Connection} from '../../../server/lib/connection/Connection';
-import {Server} from '../../../server/lib/Server';
+import {ServerApp} from '../../../server/lib/Server';
 import {Game} from '../../../server/game/Game';
 import {Character} from '../../../server/game/character/Character';
 
@@ -212,7 +212,7 @@ export class ChargenProcessor
       return null;
 
     /// TODO: Tohle by se možná mohlo volat uvnitř account.createCharacter(). 
-    Server.onCharacterCreation(character);
+    ServerApp.onCharacterCreation(character);
 
     return character;
   }

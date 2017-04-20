@@ -7,13 +7,13 @@
 
 'use strict';
 
-import {Client} from '../../../client/lib/Client';
+import {ClientApp} from '../../../client/lib/Client';
 
 import $ = require('jquery');
 
 export class Document
 {
-  constructor(private client: Client)
+  constructor(private client: ClientApp)
   {
     // Attach handler for 'document.ready' event.
     $(document).ready

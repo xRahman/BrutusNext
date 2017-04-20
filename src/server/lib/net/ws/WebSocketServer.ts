@@ -27,7 +27,7 @@ import {FATAL_ERROR} from '../../../../shared/lib/error/FATAL_ERROR';
 import {Syslog} from '../../../../server/lib/log/Syslog';
 import {AdminLevel} from '../../../../server/lib/admin/AdminLevel';
 import {Message} from '../../../../server/lib/message/Message';
-import {Server} from '../../../../server/lib/Server';
+import {ServerApp} from '../../../../server/lib/Server';
 import {Connection} from '../../../../server/lib/connection/Connection';
 import {HttpServer} from '../../../../server/lib/net/http/HttpServer';
 import {WebSocketDescriptor} from
@@ -123,13 +123,13 @@ export class WebSocketServer
   {
     let socketDescriptor = new WebSocketDescriptor(socket, ip, url);
 
-    let connection = await Server.entityManager.createEntity(Connection);
+    let connection = await ServerApp.entityManager.createEntity(Connection);
 
     if (connection === null)
       return null;
 
     connection.setSocketDescriptor(socketDescriptor);
-    Server.connections.add(connection);
+    ServerApp.connections.add(connection);
 
     return connection;
   }
