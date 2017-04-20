@@ -9,7 +9,7 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
 import {Script} from '../../../server/lib/prototype/Script';
-import {Server} from '../../../server/lib/Server';
+import {ServerApp} from '../../../server/lib/Server';
 import {Message} from '../../../server/lib/message/Message';
 import {Connection} from '../../../server/lib/connection/Connection';
 import {Game} from '../../../server/game/Game';
@@ -365,7 +365,7 @@ export class GameEntity extends ContainerEntity
     this.connection.detachFromGameEntity();
 
     // Remove entity from memory and from all entity lists.
-    Server.entityManager.remove(this);
+    ServerApp.entityManager.remove(this);
   }
 
   // ---------------- Command handler processors ------------------

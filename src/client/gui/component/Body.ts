@@ -11,7 +11,7 @@ import {Component} from '../../../client/gui/component/Component';
 import {Window} from '../../../client/gui/component/Window';
 import {ScrollWindow} from '../../../client/gui/component/ScrollWindow';
 import {MapWindow} from '../../../client/gui/component/MapWindow';
-import {Client} from '../../../client/lib/Client';
+import {ClientApp} from '../../../client/lib/Client';
 import {Connection} from '../../../client/lib/connection/Connection';
 
 import $ = require('jquery');
@@ -20,7 +20,7 @@ export class Body extends Component
 {
   private windows: Array<Window> = [];
 
-  constructor(private client: Client)
+  constructor(private client: ClientApp)
   {
     super();
 

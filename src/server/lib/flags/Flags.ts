@@ -8,7 +8,7 @@
 
 import {FlagNames} from '../../../server/lib/flags/FlagNames';
 import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
-import {Server} from '../../../server/lib/Server';
+import {ServerApp} from '../../../server/lib/Server';
 
 // 3rd party modules.
 let FastBitSet = require('fastbitset');
@@ -34,7 +34,7 @@ export abstract class Flags extends SaveableObject
     let result = this.getFlagsData().updateFlag(flagName);
 
     if (result.saveNeeded)
-      Server.flagNamesManager.save();
+      ServerApp.flagNamesManager.save();
   }
 
   // Sets value of specified flag to true.
@@ -170,7 +170,7 @@ export abstract class Flags extends SaveableObject
       // here (so you don't have to manualy edit file where flag names are
       // saved).
       this.constructor['flagNames'] =
-        Server.flagNamesManager.getFlagNames(this);
+        ServerApp.flagNamesManager.getFlagNames(this);
     }
 
     return this.constructor['flagNames'];

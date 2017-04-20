@@ -9,7 +9,7 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Entity} from '../../../server/lib/entity/Entity';
 import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
-import {Server} from '../../../server/lib/Server';
+import {ServerApp} from '../../../server/lib/Server';
 
 export class EntityList extends SaveableObject
 {
@@ -127,7 +127,7 @@ export class EntityList extends SaveableObject
     if (this.remove(entity))
     {
       // Remove entity reference from id so the memory can be dealocated.
-      Server.entityManager.remove(entity);
+      ServerApp.entityManager.remove(entity);
     }
   }
 

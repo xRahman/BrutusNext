@@ -9,7 +9,7 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
-import {Server} from '../../../server/lib/Server';
+import {ServerApp} from '../../../server/lib/Server';
 import {Entity} from '../../../server/lib/entity/Entity';
 
 export class EntityPrototypeRecord extends SaveableObject
@@ -66,7 +66,7 @@ export class EntityPrototypeRecord extends SaveableObject
     // Prototype object of an entity prototype is an entity and
     // because all entities are stored in EntityManager, we need
     // to ask the manager for our prototype entity.
-    let prototypeEntity = Server.entityManager.get(prototypeId, Entity);
+    let prototypeEntity = ServerApp.entityManager.get(prototypeId, Entity);
 
     if (prototypeEntity === null || prototypeEntity === undefined)
     {

@@ -12,7 +12,7 @@ import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
 import {EntityList} from '../../../server/lib/entity/EntityList';
 import {Entity} from '../../../server/lib/entity/Entity';
 import {EntityManager} from '../../../server/lib/entity/EntityManager';
-import {Server} from '../../../server/lib/Server';
+import {ServerApp} from '../../../server/lib/Server';
 
 export class NameSearchList extends EntityList
 {
@@ -67,7 +67,7 @@ export class NameSearchList extends EntityList
     }
 
     // Second parameter of loadNamedEntity is used for dynamic type cast.
-    entity = await Server.entityManager.loadNamedEntity
+    entity = await ServerApp.entityManager.loadNamedEntity
     (
       name,
       cathegory

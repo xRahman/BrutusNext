@@ -11,7 +11,7 @@ import {Entity} from '../../../server/lib/entity/Entity';
 import {Syslog} from '../../../server/lib/log/Syslog';
 import {AdminLevel} from '../../../server/lib/admin/AdminLevel';
 import {Message} from '../../../server/lib/message/Message';
-import {Server} from '../../../server/lib/Server';
+import {ServerApp} from '../../../server/lib/Server';
 import {SocketDescriptor} from '../../../server/lib/net/SocketDescriptor';
 import {Account} from '../../../server/lib/account/Account';
 import {AuthProcessor} from '../../../server/lib/connection/AuthProcessor';
@@ -243,7 +243,7 @@ export class Connection extends Entity
   // is connecting from different computer without logging out first).
   public reconnectToAccount(account: Account)
   {
-    let accountManager = Server.accounts;
+    let accountManager = ServerApp.accounts;
     let oldStage = null;
     let oldConnection = this.getOldConnection(account);
     let oldIngameEntity = null;
@@ -400,7 +400,7 @@ export class Connection extends Entity
 
     // Delete this connection from memory.
     // (also removes it from Server.connections list)
-    Server.entityManager.remove(this);
+    ServerApp.entityManager.remove(this);
   }
 
   public isInGame()
@@ -732,7 +732,7 @@ export class Connection extends Entity
   // (overrides Entity.removeFromlists())
   public removeFromLists()
   {
-    Server.connections.remove(this);
+    ServerApp.connections.remove(this);
   }
 
   private logoutAccount(action: string)
@@ -808,7 +808,7 @@ export class Connection extends Entity
       let accountName = this.authProcessor.getAccountName();
 
       if (accountName !== null)
-        Server.accounts.removeSoftNameLock(accountName);
+        ServerApp.accounts.removeSoftNameLock(accountName);
     }
 
     ///this.removeFromLists();

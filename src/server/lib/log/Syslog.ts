@@ -16,7 +16,7 @@
 /// TODO: Az bude log file, tak napsat odchytavani vyjimek, aby se stack trace
 ///       zapisoval do log filu.
 
-import {Server} from '../../../server/lib/Server';
+import {ServerApp} from '../../../server/lib/Server';
 import {Message} from '../../../server/lib/message/Message';
 import {AdminLevel} from '../../../server/lib/admin/AdminLevel';
 
@@ -64,7 +64,7 @@ export class Syslog
 
     // We need to check if server instance exists, because syslog
     // messages can be sent even before a server instance is created.
-    if (Server.instanceExists())
+    if (ServerApp.instanceExists())
     {
       // Send log entry to all online characters that have appropriate
       // admin level. Syslog messages don't have sender ('sender'

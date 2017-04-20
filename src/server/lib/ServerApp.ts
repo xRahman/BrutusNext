@@ -35,7 +35,7 @@ import {WebSocketServer} from '../../server/lib/net/ws/WebSocketServer';
 import {HttpServer} from '../../server/lib/net/http/HttpServer';
 import {Account} from '../../server/lib/account/Account';
 
-export class Server extends App
+export class ServerApp extends App
 {
   public static get DATA_DIRECTORY()
   {
@@ -77,7 +77,7 @@ export class Server extends App
 
   // -------- managers --------
   // Contains all entities (accounts, connections, all game entities).
-  private entityManager = new EntityManager(this.idProvider);
+  private entityManager = new ServerEntityManager(this.idProvider);
 
   // Stores prototype object that are not entities
   // (all entities are stored in entityManager, including those
@@ -98,45 +98,45 @@ export class Server extends App
 
   public static get timeOfBoot()
   {
-    if (Server.getInstance().timeOfBoot === null)
+    if (ServerApp.getInstance().timeOfBoot === null)
       ERROR("Time of boot is not initialized yet");
 
-    return Server.getInstance().timeOfBoot;
+    return ServerApp.getInstance().timeOfBoot;
   }
 
   public static get game()
   {
-    return Server.getInstance().game;
+    return ServerApp.getInstance().game;
   }
 
   public static get accounts()
   {
-    return Server.getInstance().accounts;
+    return ServerApp.getInstance().accounts;
   }
 
   public static get connections()
   {
-    return Server.getInstance().connections;
+    return ServerApp.getInstance().connections;
   }
 
   public static get telnetServer()
   {
-    return Server.getInstance().telnetServer;
+    return ServerApp.getInstance().telnetServer;
   }
 
   public static get flagNamesManager()
   {
-    return Server.getInstance().flagNamesManager;
+    return ServerApp.getInstance().flagNamesManager;
   }
 
   public static get entityManager()
   {
-    return Server.getInstance().entityManager;
+    return ServerApp.getInstance().entityManager;
   }
 
   public static get prototypeManager()
   {
-    return Server.getInstance().prototypeManager;
+    return ServerApp.getInstance().prototypeManager;
   }
 
   // ---------------- Static methods --------------------
@@ -148,12 +148,12 @@ export class Server extends App
   }
   */
 
-  public static getInstance(): Server
+  public static getInstance(): ServerApp
   {
-    if (Server.instance === null || Server.instance === undefined)
+    if (ServerApp.instance === null || ServerApp.instance === undefined)
       FATAL_ERROR("Instance of server doesn't exist yet");
 
-    return <Server>App.instance;
+    return <ServerApp>App.instance;
   }
 
   // If there are no admins yet, sets the highest possible admin rights
@@ -161,12 +161,12 @@ export class Server extends App
   // the mud is 'freshly installed' gets maximum admin rights).
   public static onCharacterCreation(character: GameEntity)
   {
-    Server.getInstance().adminList.onCharacterCreation(character);
+    ServerApp.getInstance().adminList.onCharacterCreation(character);
   }
 
   public static getAdminLevel(entity: GameEntity)
   {
-    return Server.getInstance().adminList.getAdminLevel(entity);
+    return ServerApp.getInstance().adminList.getAdminLevel(entity);
   }
 
   // Creates an instance of a server. Server is a singleton, so it must
@@ -179,7 +179,7 @@ export class Server extends App
       return;
     }
 
-    App.instance = new Server();
+    App.instance = new ServerApp();
   }
 
   // Sends a message to all player connections
@@ -187,7 +187,7 @@ export class Server extends App
  
   public static sendToAllConnections(message: Message)
   {
-    let connections = Server.getInstance().connections.getEntities();
+    let connections = ServerApp.getInstance().connections.getEntities();
     let connection: Connection = null;
 
     for (connection of connections.values())
@@ -209,7 +209,7 @@ export class Server extends App
     visibility: AdminLevel
   )
   {
-    let connections = Server.getInstance().connections.getEntities();
+    let connections = ServerApp.getInstance().connections.getEntities();
     let connection: Connection = null;
 
     for (connection of connections.values())
@@ -228,7 +228,7 @@ export class Server extends App
 
       // Skip game entities that don't have sufficient admin level
       // to see this message.
-      if (Server.getAdminLevel(connection.ingameEntity) < visibility)
+      if (ServerApp.getAdminLevel(connection.ingameEntity) < visibility)
         break;
 
       message.sendToConnection(connection);
@@ -238,7 +238,7 @@ export class Server extends App
   // -> Returns null if no message of the day is set at the moment.
   public static getMotd(): string
   {
-    let motd = Server.getInstance().messageOfTheDay;
+    let motd = ServerApp.getInstance().messageOfTheDay;
 
     if (motd === null)
       return "There is no message of the day at this time.";
@@ -247,6 +247,11 @@ export class Server extends App
   }
 
   // ---------------- Public methods --------------------
+
+  public getEntityManager()
+  {
+    return this.entityManager;
+  }
 
   // Reports error message and stack trace.
   // (Don't call this method directly, use ERROR()
@@ -299,7 +304,7 @@ export class Server extends App
     // We must check if './data/' directory exists before
     // initPrototypes() is called, because './data/'
     // will be created by it if it doesn't exist.
-    let createDefaultData = !FileSystem.existsSync(Server.DATA_DIRECTORY);
+    let createDefaultData = !FileSystem.existsSync(ServerApp.DATA_DIRECTORY);
 
     await this.prototypeManager.init(createDefaultData);
 
