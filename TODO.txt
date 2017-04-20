@@ -106,9 +106,18 @@ Serializable
     - ID_PROPERTY
     - PROTOTYPE_PROPERTY
     - id
-    - prototype
-    - public static createInstance()
+    - prototypeId
+    - public static createInstance(prototype: Entity)
     - private instantiateProperties()
+
+OTÁZKA: Kde vyrábět instance entit?
+  - v Entity to má smysl kvůli tomu, že je třeba zavolat
+    instantiateProperties() a to musí mít přímo entita.
+    Zároveň by byly všechny Object.create() na jednom místě.
+  - Na druhou stranu entitu je třeba proxifikovat a přidat do
+    EntityManageru. Ale to by v zásadě asi šlo udělat z toho
+    Entity.createInstance(), ne?
+
 
 TODO:
 EntityManager by měl mít metody:
@@ -126,6 +135,48 @@ TODO: Entita přetíží deserialize()
    se bude vyrábět přes Entity.createInstance()
 TODO: Entita přetíží serialize()
 - a to proto, aby se serializovaly jen own properties.
+
+TODO: Entita má property instanceIds - zapisovat do ní při
+  vytvoření a deletu entity.
+  (asi jen na Serveru)
+Proč jsou to idčka a ne přímo reference?
+- v paměti by se to drželo jako reference na entity proxy, respektive
+  na invalid entity proxy (pokud to není loadnuté). To by ve výsledku
+  asi šetřilo paměť (idčka jsou delší).
+- na disku by se to savnulo jako normální reference na entitu. Což by
+  teda naopak zabralo místa trochu víc, ale místo na disku není limitující
+  faktor.
+- EntityProxyHandler v sobě idčko má, i když je entita nevalidní.
+Otázka je, jak bych v tom seznamu hledal, když by se chtěla třeba zrušit
+instance. 
+IMPORTANT TODO: Mazání z a zapisování do instanceIds se musí dělat jen
+  na serveru, nikoliv na Clientovi.
+
+TODO: Entita nesmí jít smazat, dokud nemá prázdné 'instanceIds'.
+
+
+
+ÚVAHA: Musí si EntityManager držet EntityRecord místo referencí na entity?
+- asi nemusí, stačí, když bude EntityProxyHandler odchytávat invalidate(),
+  aby šlo zrušit interní referenci.
+TODO: Odchytávat v EntityProxyHandleru invalidate()
+TODO: Dát do EntityManageru přímo seznam Entit místo EntityRecordů
+
+
+ÚVAHY k referencím na entity
+------------------------------
+- chci, aby šly porovnávat reference na entity
+  (je otázka, jestli to vůbec půjde - když mám starou, nevalidní referenci,
+   tak nebude rovná novější referenci. Porovnání půjde jedině po
+   updateReference())
+
+TODO: /server/EntityManager přejmenovat na /server/ServerentityManager
+
+IDEA: Proxyfikaci by možná mohla dělat rovnou Entity.createInstance().
+  (Protože proxyfikují se entity)
+  - díky tomu nebude muset existovat možnost přidat do EntityManageru
+    neproxyfikovanou entitu.
+- Tohle by ostatně mělo bejt i jediné místo, kde se entity proxifikují.
 
 ---------------------------------------------------------------
 

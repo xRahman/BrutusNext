@@ -17,7 +17,7 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
-import {Server} from '../../../server/lib/Server';
+import {ServerApp} from '../../../server/lib/Server';
 
 export abstract class AutoSaveableObject extends SaveableObject
 {
@@ -61,7 +61,7 @@ export abstract class AutoSaveableObject extends SaveableObject
 
       // If static variable SAVE_DIRECTORY is missing,, data will be saved
       // to directory './data/_MISSING_SAVE_DIRECTORY_ERROR'.
-      return Server.DATA_DIRECTORY + "_MISSING_SAVE_DIRECTORY_ERROR";
+      return ServerApp.DATA_DIRECTORY + "_MISSING_SAVE_DIRECTORY_ERROR";
     }
 
     return saveDirectory

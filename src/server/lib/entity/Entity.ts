@@ -10,7 +10,7 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
 import {AutoSaveableObject} from '../../../server/lib/fs/AutoSaveableObject';
-import {Server} from '../../../server/lib/Server';
+import {ServerApp} from '../../../server/lib/Server';
 
 export class Entity extends AutoSaveableObject
 {
@@ -101,7 +101,7 @@ export class Entity extends AutoSaveableObject
   // save path needs to be constructed before entity exists.
   private static getSaveDirectory(): string
   {
-    return Server.DATA_DIRECTORY + 'entities/';
+    return ServerApp.DATA_DIRECTORY + 'entities/';
   }
 
   // We need a static method because in order to load an entity

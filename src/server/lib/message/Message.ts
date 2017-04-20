@@ -9,7 +9,7 @@
 import {Settings} from '../../../server/ServerSettings';
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../server/lib/utils/Utils';
-import {Server} from '../../../server/lib/Server';
+import {ServerApp} from '../../../server/lib/Server';
 import {Connection} from '../../../server/lib/connection/Connection';
 import {MessageColors} from '../../../server/lib/message/MessageColors';
 import {TelnetSocketDescriptor}
@@ -222,7 +222,7 @@ export class Message
   {
     this.sender = sender;
 
-    Server.sendToAllIngameConnections(this, visibility);
+    ServerApp.sendToAllIngameConnections(this, visibility);
   }
 
   // Sends message even to players in menu, entering password, etc.
@@ -231,7 +231,7 @@ export class Message
   {
     this.sender = sender;
 
-    Server.sendToAllConnections(this);
+    ServerApp.sendToAllConnections(this);
   }
 
   /// Message.Type can now be used instead.

@@ -40,11 +40,12 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {SharedUtils} from '../../../shared/lib/utils/SharedUtils';
-import {Attributes} from '../../../shared/lib/class/Attributes';
+import {PropertyAttributes} from
+  '../../../shared/lib/class/PropertyAttributes';
 import {JsonObject} from '../../../shared/lib/json/JsonObject';
 import {JsonSaver} from '../../../shared/lib/json/JsonSaver';
 import {Nameable} from '../../../shared/lib/class/Nameable';
-import {Instantiable} from '../../../shared/lib/class/Instantiable';
+import {Attributable} from '../../../shared/lib/class/Attributable';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {EntityProxyHandler} from
   '../../../server/lib/entity/EntityProxyHandler';
@@ -55,7 +56,7 @@ import {EntityProxyHandler} from
 // 3rd party modules.
 let FastBitSet = require('fastbitset');
 
-export class Serializable extends Instantiable
+export class Serializable extends Attributable
 {
   public static get VERSION_PROPERTY() { return 'version'; }
 
@@ -126,6 +127,13 @@ export class Serializable extends Instantiable
     return true;
   }
 
+  public isProxy()
+  {
+    // If this entity is behind Proxy, EntityProxyHandler traps
+    // acces to isProxy() and returns 'true'.
+    return false;
+  }
+
   // -------------- Protected methods -------------------
 
 //+
@@ -187,7 +195,7 @@ export class Serializable extends Instantiable
 
     // Obtain unproxified instance of 'this'
     // (so 'for .. in' operator works on it).
-    let instance = this.deproxify();
+    let instance = EntityProxyHandler.deproxify(this);
     let jsonObject: Object = {};
 
     // A little hack - save 'name' property first (out of order)
@@ -264,6 +272,8 @@ export class Serializable extends Instantiable
     return true;
   }
 
+  /// Moved to EntityProxyHandler.
+  /*
 //+
   // -> Returns unproxified instance of 'this'
   //    (so you can use 'for .. in' operator on it).
@@ -275,13 +285,12 @@ export class Serializable extends Instantiable
     // internal entity of proxy by trapping access to '_internalEntity'
     // property and use 'for .. in' operator on it.
 
-    // Note: 'isProxy' is trapped by proxy handler to return 'true'.
-    //  If the instance isn't a proxy, value of 'isProxy' is 'undefined'.
-    if (this['isProxy'] === true)
+    if (this.isProxy())
       return this[EntityProxyHandler.INTERNAL_ENTITY_PROPERTY];
 
     return this;
   }
+  */
 
   // Writes a single property to a corresponding JSON object.
   // -> Returns JSON Object representing 'param.sourceProperty'. 
@@ -452,6 +461,7 @@ export class Serializable extends Instantiable
   ///////////////////// JsonLoader //////////////////////
   ///////////////////////////////////////////////////////
 
+  /*
   /// BIG TODO
   // Reads property 'prototypeId' from 'jsonObject',
   // handles possible errors.
@@ -481,6 +491,7 @@ export class Serializable extends Instantiable
 
     return prototypeId;
   }
+  */
 
 //+
   // Deserializes a single property from corresponding JSON object.

@@ -12,7 +12,7 @@ import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
 import {Entity} from '../../../server/lib/entity/Entity';
 import {EntityManager} from '../../../server/lib/entity/EntityManager';
 import {AbbrevSearchList} from '../../../server/game/search/AbbrevSearchList';
-import {Server} from '../../../server/lib/Server';
+import {ServerApp} from '../../../server/lib/Server';
 import {Connection} from '../../../server/lib/connection/Connection';
 import {Game} from '../../../server/game/Game';
 import {Character} from '../../../server/game/character/Character';
@@ -37,7 +37,7 @@ export class CharacterList extends AbbrevSearchList
     }
     */
 
-    let character = await Server.entityManager.createUniqueEntity
+    let character = await ServerApp.entityManager.createUniqueEntity
     (
       name,
       Character,

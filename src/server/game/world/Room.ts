@@ -25,7 +25,8 @@
 
 'use strict';
 
-import {Attributes} from '../../../shared/lib/class/Attributes';
+import {PropertyAttributes} from
+  '../../../shared/lib/class/PropertyAttributes';
 import {GameEntity} from '../../../server/game/entity/GameEntity';
 import {Game} from '../../game/Game';
 import {RoomFlags} from '../../game/world/RoomFlags';
@@ -39,7 +40,7 @@ export class Room extends GameEntity
 {
   /// TODO: 'description' by možná mohly mít všechny entity.
   public description = "Unfinished room.";
-    private static description: Attributes =
+    private static description: PropertyAttributes =
     {
       saved: true,
       edited: true

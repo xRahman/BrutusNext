@@ -12,7 +12,7 @@
 
 'use strict';
 
-import {Client} from '../client/lib/Client';
+import {ClientApp} from '../client/lib/Client';
 
 // Program entry point.
 // It's called main() to sound familiar to C programmers ;)
@@ -23,7 +23,7 @@ function main()
   // Create an instance of class Client.
   //   It will handle the creation of all html elements inside
   // our application, handle events, etc.
-  Client.create();
+  ClientApp.create();
 }
 
 // Run the main() function.
