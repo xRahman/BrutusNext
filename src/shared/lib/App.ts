@@ -7,12 +7,18 @@
 
 'use strict';
 
+import {AdminLevel} from '../../shared/lib/admin/AdminLevel';
+import {MessageType} from '../../shared/lib/message/MessageType';
+import {EntityManager} from '../../shared/lib/entity/EntityManager';
+
 export abstract class App
 {
 
   // -------------- Static class data -------------------
 
   protected static instance: App = null;
+
+  protected entityManager: EntityManager = null;
 
   //------------------ Private data ---------------------
 
@@ -43,7 +49,7 @@ export abstract class App
   // and Client.create() set App.instance. It means that in the server
   // code, App.getInstance() is actually an instance of Server class
   // and in client code, it's an instance of Client class.
-  public static getInstance(): App
+  protected static getInstance(): App
   {
     if (App.instanceExists())
       return this.instance;
@@ -65,21 +71,48 @@ export abstract class App
 
   public static getSaver()
   {
-    return App.getInstance().getSaver();
+    return App.getInstance().saver;
   }
 
   public static getEntityManager()
   {
-    return App.getInstance().getEntityManager();
+    return App.getInstance().entityManager;
+  }
+
+  public static reportError(message: string)
+  {
+    return App.getInstance().reportError(message);
+  }
+
+  public static reportFatalError(message: string)
+  {
+    return App.getInstance().reportFatalError(message);
+  }
+
+  public static syslog
+  (
+    text: string,
+    msgType: MessageType,
+    adminLevel: AdminLevel
+  )
+  {
+    return App.getInstance().syslog(text, msgType, adminLevel)
   }
 
   // ---------------- Public methods --------------------
 
-  public abstract reportError(message: string);
-  public abstract reportFatalError(message: string);
+  protected abstract reportError(message: string);
+  protected abstract reportFatalError(message: string);
 
-  public abstract getEntityManager();
-  public abstract getSaver();
+  protected abstract syslog
+  (
+    text: string,
+    msgType: MessageType,
+    adminLevel: AdminLevel
+  );
+
+  ///protected abstract getEntityManager();
+  ///protected abstract getSaver();
 
   // --------------- Protected methods ------------------
 

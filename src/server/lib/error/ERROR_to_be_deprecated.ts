@@ -50,7 +50,7 @@
 'use strict';
 
 // Import required classes.
-import {Syslog} from '../../../server/lib/log/Syslog';
+import {ServerSyslog} from '../../../server/lib/log/Syslog';
 import {AdminLevel} from '../../../server/lib/admin/AdminLevel';
 import {Message} from '../../../server/lib/message/Message';
 
@@ -58,7 +58,7 @@ import {Message} from '../../../server/lib/message/Message';
 export function ERROR(message: string)
 {
   let errorMsg = message + "\n"
-    + Syslog.getTrimmedStackTrace(Syslog.TrimType.ERROR);
+    + ServerSyslog.getTrimmedStackTrace(ServerSyslog.TrimType.ERROR);
 
-  Syslog.log(errorMsg, Message.Type.RUNTIME_ERROR, AdminLevel.ELDER_GOD);
+  ServerSyslog.log(errorMsg, Message.Type.RUNTIME_ERROR, AdminLevel.ELDER_GOD);
 }

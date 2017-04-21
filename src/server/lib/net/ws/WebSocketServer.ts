@@ -24,7 +24,7 @@
 'use strict';
 
 import {FATAL_ERROR} from '../../../../shared/lib/error/FATAL_ERROR';
-import {Syslog} from '../../../../server/lib/log/Syslog';
+import {ServerSyslog} from '../../../../server/lib/log/Syslog';
 import {AdminLevel} from '../../../../server/lib/admin/AdminLevel';
 import {Message} from '../../../../server/lib/message/Message';
 import {ServerApp} from '../../../../server/lib/Server';
@@ -56,7 +56,7 @@ export class WebSocketServer
   // Starts the websocket server inside a http server.
   public start(httpServer: http.Server)
   {
-    Syslog.log
+    ServerSyslog.log
     (
       "Starting websocket server",
       Message.Type.SYSTEM_INFO,
@@ -79,7 +79,7 @@ export class WebSocketServer
     //   But since the websocket server runs inside a http server,
     // it must be started after onStartListening() is fired on http
     // server.
-    Syslog.log
+    ServerSyslog.log
     (
       "Websocket server is up and listening to new connections",
       Message.Type.WEBSOCKET_SERVER,
@@ -99,7 +99,7 @@ export class WebSocketServer
     if (!this.isServerOpen(socket, ip, url))
       return;
 
-    Syslog.log
+    ServerSyslog.log
     (
       "Received a new websocket connection request from"
       + " " + url + " (" + ip + ")",
@@ -138,7 +138,7 @@ export class WebSocketServer
   {
     if (this.isOpen === false)
     {
-      Syslog.log
+      ServerSyslog.log
       (
         "Denying websocket connection request from"
         + " " + url + "(" + ip + "):"

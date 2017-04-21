@@ -25,7 +25,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {Syslog} from '../../../server/lib/log/Syslog';
+import {ServerSyslog} from '../../../server/lib/log/Syslog';
 import {AdminLevel} from '../../../server/lib/admin/AdminLevel';
 import {Message} from '../../../server/lib/message/Message';
 
@@ -110,7 +110,7 @@ export class VirtualMachine
     }
     catch (e)
     {
-      Syslog.log
+      ServerSyslog.log
       (
         "Compile error in script " + scriptName + ": " + e.message,
           ///+ getTrimmedStackTrace(),
@@ -166,7 +166,7 @@ export class VirtualMachine
       else
       {
       */
-      Syslog.log
+      ServerSyslog.log
       (
         "Failed to create function from mud script "
         + scriptName + ": " + e.message,

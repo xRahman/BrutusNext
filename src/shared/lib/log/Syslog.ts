@@ -5,7 +5,7 @@
 
   Usage example:
 
-    import {Syslog} from '../server/Syslog';
+    import {Syslog} from '../../../shared/lib/log/Syslog';
 
     Syslog.log("Loading mobile data...",
       Syslog.msgType.SYSTEM, Syslog.levels.CREATOR);
@@ -13,73 +13,24 @@
 
 'use strict';
 
-/// TODO: Az bude log file, tak napsat odchytavani vyjimek, aby se stack trace
-///       zapisoval do log filu.
-
-import {ServerApp} from '../../../server/lib/Server';
-import {Message} from '../../../server/lib/message/Message';
-import {AdminLevel} from '../../../server/lib/admin/AdminLevel';
-
-/*
-enum TrimType
-{
-  ERROR,
-  PROXY_HANDLER,
-  PROXY_HANDLER_PLUS_ONE
-}
-*/
+// Import required classes.
+import {App} from '../../../shared/lib/App';
+import {MessageType} from '../../../shared/lib/message/MessageType';
+import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 
 export class Syslog
 {
-  /*
-  // Make 'TrimType' enum a static member of this class.
-  public static TrimType = TrimType;
-  */
-
-  /// Přesunuto do Message.Type
-  /*
-  public static msgType =
-  {
-    RUNTIME_ERROR:           "RUNTIME ERROR",
-    FATAL_RUNTIME_ERROR:     "FATAL RUNTIME ERROR",
-    SYSTEM_INFO:             "SYSTEM INFO",
-    SYSTEM_ERROR:            "SYSTEM ERROR",
-    SCRIPT_COMPILE_ERROR:    "SCRIPT COMPILE ERROR",
-    SCRIPT_RUNTIME_ERROR:    "SCRIPT RUNTIME ERROR",
-    INVALID_ACCESS:          "INVALID ACCESS"
-  }
-  */
-
-  // Outputs message to log file. Also sends it to online immortals
-  // of required or greater level.
   public static log
   (
     text: string,
-    msgType: Message.Type,
+    msgType: MessageType,
     adminLevel: AdminLevel
   )
   {
-    let entry = "[" + Message.Type[msgType] + "] " + text;
-    let message = new Message(entry, msgType);
-
-    // We need to check if server instance exists, because syslog
-    // messages can be sent even before a server instance is created.
-    if (ServerApp.instanceExists())
-    {
-      // Send log entry to all online characters that have appropriate
-      // admin level. Syslog messages don't have sender ('sender'
-      // parameter is null).
-      message.sendToAllIngameConnections(adminLevel);
-    }
-    
-    // Output to stdout.
-    console.log(entry);
-
-    // Output to log file.
-    /// TODO
+    App.syslog(text, msgType, adminLevel);
   }
 
-  // Creates Error() object, reads stack trace from it.
+    // Creates Error() object, reads stack trace from it.
   // Returns string containing stack trace trimmed to start
   // with function where ERROR actually got triggered.
   public static getTrimmedStackTrace(trimType: Syslog.TrimType): string
@@ -119,9 +70,7 @@ export class Syslog
     }
 
     // Create a temporary error object to construct stack trace for us.
-    // (use type 'any' because TypeScript wouldn't allow to acecss .stack
-    // property otherwise)
-    let tmpErr: any = new Error();
+    let tmpErr = new Error();
 
     // Break stack trace string into an array of lines.
     let stackTraceLines = tmpErr.stack.split('\n');
@@ -133,6 +82,7 @@ export class Syslog
     return stackTrace;
   }
 }
+
 
 // ------------------ Type declarations ----------------------
 

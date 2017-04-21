@@ -11,7 +11,7 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../server/lib/utils/Utils';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
 import {AdminLevel} from '../../../server/lib/admin/AdminLevel';
-import {Syslog} from '../../../server/lib/log/Syslog';
+import {ServerSyslog} from '../../../server/lib/log/Syslog';
 import {Message} from '../../../server/lib/message/Message';
 import {ScriptableEntity} from '../../../server/lib/entity/ScriptableEntity';
 import {Connection} from '../../../server/lib/connection/Connection';
@@ -265,7 +265,7 @@ export class Account extends ScriptableEntity
       return;
     */
 
-    Syslog.log
+    ServerSyslog.log
     (
       accountName + " [" + ipAddress + "] " + action,
       Message.Type.SYSTEM_INFO,
@@ -373,7 +373,7 @@ export class Account extends ScriptableEntity
 
   private logCharacterCreation(accountName: string, characterName: string)
   {
-    Syslog.log
+    ServerSyslog.log
     (
       "Player " + this.getName() + " has created a new character: "
       + characterName,

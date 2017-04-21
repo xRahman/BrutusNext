@@ -48,7 +48,7 @@ import {Nameable} from '../../../shared/lib/class/Nameable';
 import {Attributable} from '../../../shared/lib/class/Attributable';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {EntityProxyHandler} from
-  '../../../server/lib/entity/EntityProxyHandler';
+  '../../../shared/lib/entity/EntityProxyHandler';
 
 /// DEBUG:
 ///let Util = require('util');
@@ -257,7 +257,7 @@ export class Serializable extends Attributable
       case Serializable.Mode.SEND_TO_CLIENT:
         return attributes.sentToClient !== false;
 
-      case Serializable.Mode.SENT_TO_SERVER:
+      case Serializable.Mode.SEND_TO_SERVER:
         return attributes.sentToServer !== false;
 
       case Serializable.Mode.SEND_TO_EDITOR:
@@ -271,26 +271,6 @@ export class Serializable extends Attributable
     // Once again, default value is 'true'.
     return true;
   }
-
-  /// Moved to EntityProxyHandler.
-  /*
-//+
-  // -> Returns unproxified instance of 'this'
-  //    (so you can use 'for .. in' operator on it).
-  private deproxify(): Serializable
-  {
-    // If 'this' is a proxy, 'for .. in' operator won't work on it,
-    // because 'handler.enumerate()' which used to trap it has been
-    // deprecated in ES7. So we have to use a hack - directly access
-    // internal entity of proxy by trapping access to '_internalEntity'
-    // property and use 'for .. in' operator on it.
-
-    if (this.isProxy())
-      return this[EntityProxyHandler.INTERNAL_ENTITY_PROPERTY];
-
-    return this;
-  }
-  */
 
   // Writes a single property to a corresponding JSON object.
   // -> Returns JSON Object representing 'param.sourceProperty'. 
@@ -478,9 +458,7 @@ export class Serializable extends Attributable
       return null;
     }
 
-    /// Proč je PROTOTYPE_ID_PROPERTY proboha ve ScriptableEntity?
-    /// TODO: Dát to někam jinam.
-    let prototypeId = jsonObject[ScriptableEntity.PROTOTYPE_ID_PROPERTY]; 
+    let prototypeId = jsonObject[Entity.PROTOTYPE_ID_PROPERTY]; 
 
     if (prototypeId === undefined || prototypeId === null)
     {
@@ -1276,7 +1254,7 @@ export module Serializable
   {
     SAVE_TO_FILE,
     SEND_TO_CLIENT,
-    SENT_TO_SERVER,
+    SEND_TO_SERVER,
     SEND_TO_EDITOR
   }
 }

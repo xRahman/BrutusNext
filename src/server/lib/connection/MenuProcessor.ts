@@ -11,7 +11,7 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 import {Utils} from '../../../server/lib/utils/Utils';
 import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
-import {Syslog} from '../../../server/lib/log/Syslog';
+import {ServerSyslog} from '../../../server/lib/log/Syslog';
 import {Connection} from '../../../server/lib/connection/Connection';
 import {ServerApp} from '../../../server/lib/Server';
 import {Account} from '../../../server/lib/account/Account';
@@ -334,7 +334,7 @@ export class MenuProcessor
   private announceCharacterLoadFailure(name: string)
   {
     // Let admins know what went wrong.
-    Syslog.log
+    ServerSyslog.log
     (
       "Failed to load character " + name,
       Message.Type.SYSTEM_ERROR,
