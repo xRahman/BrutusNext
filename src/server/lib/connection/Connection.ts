@@ -8,7 +8,7 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Entity} from '../../../server/lib/entity/Entity';
-import {Syslog} from '../../../server/lib/log/Syslog';
+import {ServerSyslog} from '../../../server/lib/log/Syslog';
 import {AdminLevel} from '../../../server/lib/admin/AdminLevel';
 import {Message} from '../../../server/lib/message/Message';
 import {ServerApp} from '../../../server/lib/Server';
@@ -227,7 +227,7 @@ export class Connection extends Entity
   // Handles situation when player connects to previously offline account .
   public connectToAccount(account: Account)
   {
-    Syslog.log
+    ServerSyslog.log
     (
       account.getName() + " [" + this.ipAddress + "] has logged in",
       Message.Type.SYSTEM_INFO,
@@ -276,7 +276,7 @@ export class Connection extends Entity
     account.connection = this;
     this.account = account;
 
-    Syslog.log
+    ServerSyslog.log
     (
       account.getName() + " [" + this.ipAddress + "] has reconnected."
       + " Closing the old connection",
@@ -778,7 +778,7 @@ export class Connection extends Entity
     if (accountName !== null)
       player = "Player " + accountName;
 
-    Syslog.log
+    ServerSyslog.log
     (
       player + " [" + this.ipAddress + "]"
       + " lost (or closed) connection" + state,

@@ -26,8 +26,8 @@ import {Connection} from '../../server/lib/connection/Connection';
 import {EntityList} from '../../server/lib/entity/EntityList';
 import {PrototypeManager} from '../../server/lib/prototype/PrototypeManager';
 import {AccountList} from '../../server/lib/account/AccountList';
-import {Syslog} from '../../server/lib/log/Syslog';
-import {Message} from '../../server/lib/message/Message';
+import {ServerSyslog} from '../../server/lib/log/ServerSyslog';
+import {MessageType} from '../../shared/lib/message/MessageType';
 import {Game} from '../../server/game/Game';
 import {GameEntity} from '../../server/game/entity/GameEntity';
 import {TelnetServer} from '../../server/lib/net/telnet/TelnetServer';
@@ -77,7 +77,7 @@ export class ServerApp extends App
 
   // -------- managers --------
   // Contains all entities (accounts, connections, all game entities).
-  private entityManager = new ServerEntityManager(this.idProvider);
+  protected entityManager = new ServerEntityManager(this.idProvider);
 
   // Stores prototype object that are not entities
   // (all entities are stored in entityManager, including those
@@ -248,10 +248,10 @@ export class ServerApp extends App
 
   // ---------------- Public methods --------------------
 
-  public getEntityManager()
-  {
-    return this.entityManager;
-  }
+  // public getEntityManager()
+  // {
+  //   return this.entityManager;
+  // }
 
   // Reports error message and stack trace.
   // (Don't call this method directly, use ERROR()
@@ -338,6 +338,16 @@ export class ServerApp extends App
   }
 
   // --------------- Protected methods ------------------
+
+  protected syslog
+  (
+    text: string,
+    msgType: MessageType,
+    adminLevel: AdminLevel
+  )
+  {
+    return Syslog.log(text, msgType, adminLevel)
+  }
 
   protected getSaver()
   {

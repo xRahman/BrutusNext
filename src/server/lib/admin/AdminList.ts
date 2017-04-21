@@ -42,7 +42,7 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {AdminLevel} from '../../../server/lib/admin/AdminLevel';
-import {Syslog} from '../../../server/lib/log/Syslog';
+import {ServerSyslog} from '../../../server/lib/log/Syslog';
 import {Message} from '../../../server/lib/message/Message';
 import {Game} from '../../../server/game/Game';
 import {GameEntity} from '../../../server/game/entity/GameEntity';
@@ -248,7 +248,7 @@ export class AdminList extends AutoSaveableObject
     );
 
     // Send info message to syslog.
-    Syslog.log
+    ServerSyslog.log
     (
       message,
       Message.Type.SYSTEM_INFO,

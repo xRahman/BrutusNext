@@ -452,7 +452,7 @@ export class EntityManager
       return null;
     }
 
-    let prototypeId = jsonObject[ScriptableEntity.PROTOTYPE_ID_PROPERTY]; 
+    let prototypeId = jsonObject[Entity.PROTOTYPE_ID_PROPERTY]; 
 
     if (prototypeId === undefined || prototypeId === null)
     {

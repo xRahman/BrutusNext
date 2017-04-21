@@ -7,7 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {Syslog} from '../../../server/lib/log/Syslog';
+import {ServerSyslog} from '../../../server/lib/log/Syslog';
 import {AdminLevel} from '../../../server/lib/admin/AdminLevel';
 import {Message} from '../../../server/lib/message/Message';
 
@@ -65,7 +65,7 @@ export class FileSystem
         if (error.code === 'ENOENT')
           reason = "File doesn't exist"
 
-        Syslog.log
+        ServerSyslog.log
         (
           "Unable to load file '" + path + "': " + reason,
           Message.Type.SYSTEM_ERROR,
@@ -97,7 +97,7 @@ export class FileSystem
     }
     catch (error)
     {
-      Syslog.log
+      ServerSyslog.log
       (
         "Unable to load file '" + path + "': " + error.code,
         Message.Type.SYSTEM_ERROR,
@@ -127,7 +127,7 @@ export class FileSystem
     }
     catch (error)
     {
-      Syslog.log
+      ServerSyslog.log
       (
         "Unable to save file '" + path + "': " + error.code,
         Message.Type.SYSTEM_ERROR,
@@ -152,7 +152,7 @@ export class FileSystem
     }
     catch (error)
     {
-      Syslog.log
+      ServerSyslog.log
       (
         "Unable to delete file '" + path + "': " + error.code,
         Message.Type.SYSTEM_ERROR,
@@ -197,7 +197,7 @@ export class FileSystem
     }
     catch (error)
     {
-      Syslog.log
+      ServerSyslog.log
       (
         "Unable to ensure existence of directory '" + directory + "':"
         + " " + error.code,
@@ -250,7 +250,7 @@ export class FileSystem
     }
     catch (error)
     {
-      Syslog.log
+      ServerSyslog.log
       (
         "Unable to read directory '" + path + "':"
         + " " + error.code,
@@ -322,7 +322,7 @@ export class FileSystem
     }
     catch (error)
     {
-      Syslog.log
+      ServerSyslog.log
       (
         "Unable to stat file '" + path + "':"
         + " " + error.code,

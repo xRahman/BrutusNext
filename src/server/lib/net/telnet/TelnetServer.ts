@@ -24,7 +24,7 @@
 'use strict';
 
 import {FATAL_ERROR} from '../../../../shared/lib/error/FATAL_ERROR';
-import {Syslog} from '../../../../server/lib/log/Syslog';
+import {ServerSyslog} from '../../../../server/lib/log/Syslog';
 import {AdminLevel} from '../../../../server/lib/admin/AdminLevel';
 import {Message} from '../../../../server/lib/message/Message';
 import {ServerApp} from '../../../../server/lib/Server';
@@ -91,7 +91,7 @@ export class TelnetServer
       () => { this.onServerStartsListening(); }
     );
 
-    Syslog.log
+    ServerSyslog.log
     (
       "Starting telnet server at port " + port,
       Message.Type.SYSTEM_INFO,
@@ -108,7 +108,7 @@ export class TelnetServer
   {
     this.isOpen = true;
 
-    Syslog.log
+    ServerSyslog.log
     (
       "Telnet server is up and listening to new connections",
       Message.Type.TELNET_SERVER,
@@ -150,7 +150,7 @@ export class TelnetServer
     if (!this.isServerOpen(socket, ip))
       return;
 
-    Syslog.log
+    ServerSyslog.log
     (
       "Received a new telnet connection request from " + ip,
       Message.Type.TELNET_SERVER,
@@ -201,7 +201,7 @@ export class TelnetServer
   {
     if (this.isOpen === false)
     {
-      Syslog.log
+      ServerSyslog.log
       (
         "Denying telnet connection request from" + ip + ":"
         + " Server is closed",

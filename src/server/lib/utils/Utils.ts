@@ -8,7 +8,7 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {AdminLevel} from '../../../server/lib/admin/AdminLevel';
-import {Syslog} from '../../../server/lib/log/Syslog';
+import {Syslog} from '../../../shared/lib/log/Syslog';
 import {Message} from '../../../server/lib/message/Message';
 import {TelnetSocketDescriptor} from
   '../../../server/lib/net/telnet/TelnetSocketDescriptor';
@@ -18,7 +18,7 @@ export module Utils
   // Reports exception to Syslog, not just to console.
   export function reportException(err: Error)
   {
-    Syslog.log
+    ServerSyslog.log
     (
       "Uncaught exception"
         + "\n"
