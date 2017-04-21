@@ -14,9 +14,9 @@
 
 'use strict';
 
-import {AdminLevel} from '../../../server/lib/admin/AdminLevel';
-import {Syslog} from '../../../server/lib/log/Syslog';
-import {Message} from '../../../server/lib/message/Message';
+import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
+import {Syslog} from '../../../shared/lib/log/Syslog';
+import {MessageType} from '../../../shared/lib/message/MessageType';
 
 // This handler of javascript Proxy object is used to emulate 'invalid value'
 // variable. Access to these variables is trapped and logged.
@@ -32,43 +32,43 @@ export class InvalidValueProxyHandler
   );
 
   // -------------------  Traps -------------------------
-  /// Note: It's possible that it will be necessary to implement some
-  ///   of commented-out handlers in the future, so I'll let them be here.
+  // Note: It's possible that it will be necessary to implement some
+  //   of commented-out handlers in the future, so I'll let them be here.
 
-  //// A trap for Object.getPrototypeOf.
-  //public getPrototypeOf(target)
-  //{
-  //}
+  // // A trap for Object.getPrototypeOf.
+  // public getPrototypeOf(target)
+  // {
+  // }
 
-  //// A trap for Object.setPrototypeOf.
-  //public setPrototypeOf(target)
-  //{
-  //}
+  // // A trap for Object.setPrototypeOf.
+  // public setPrototypeOf(target)
+  // {
+  // }
 
-  //// A trap for Object.isExtensible.
-  //public isExtensible(target)
-  //{
-  //}
+  // // A trap for Object.isExtensible.
+  // public isExtensible(target)
+  // {
+  // }
 
-  //// A trap for Object.preventExtensions.
-  //public preventExtensions(target)
-  //{
-  //}
+  // // A trap for Object.preventExtensions.
+  // public preventExtensions(target)
+  // {
+  // }
 
-  //// A trap for Object.getOwnPropertyDescriptor.
-  //public getOwnPropertyDescriptor(target)
-  //{
-  //}
+  // // A trap for Object.getOwnPropertyDescriptor.
+  // public getOwnPropertyDescriptor(target)
+  // {
+  // }
 
-  //// A trap for Object.defineProperty.
-  //public defineProperty(target)
-  //{
-  //}
+  // // A trap for Object.defineProperty.
+  // public defineProperty(target)
+  // {
+  // }
 
-  //// A trap for the in operator.
-  //public has(target)
-  //{
-  //}
+  // // A trap for the in operator.
+  // public has(target)
+  // {
+  // }
 
   // A trap for getting property values.
   public get(target: any, property: any): any
@@ -98,7 +98,7 @@ export class InvalidValueProxyHandler
     (
       "Attempt to read property '" + property + "' of an invalid variable\n"
         + Syslog.getTrimmedStackTrace(Syslog.TrimType.PROXY_HANDLER),
-      Message.Type.INVALID_ACCESS,
+      MessageType.INVALID_ACCESS,
       AdminLevel.IMMORTAL
     );
 
@@ -117,7 +117,7 @@ export class InvalidValueProxyHandler
       "Attempt to write to property '" + property + "'"
       + " of an invalid variable\n"
         + Syslog.getTrimmedStackTrace(Syslog.TrimType.PROXY_HANDLER),
-      Message.Type.INVALID_ACCESS,
+      MessageType.INVALID_ACCESS,
       AdminLevel.IMMORTAL
     );
 
@@ -131,15 +131,15 @@ export class InvalidValueProxyHandler
   }
 
 
-  //// A trap for the delete operator.
-  //public deleteProperty(target)
-  //{
-  //}
+  // // A trap for the delete operator.
+  // public deleteProperty(target)
+  // {
+  // }
 
-  //// A trap for Object.getOwnPropertyNames.
-  //public ownKeys(target)
-  //{
-  //}
+  // // A trap for Object.getOwnPropertyNames.
+  // public ownKeys(target)
+  // {
+  // }
 
   // A trap for a function call.
   public apply(target, thisArg, argumentsList)
@@ -169,8 +169,8 @@ export class InvalidValueProxyHandler
     return InvalidValueProxyHandler.invalidVariable;
   }
 
-  //// A trap for the new operator.
-  //public construct(target)
-  //{
-  //}
+  // // A trap for the new operator.
+  // public construct(target)
+  // {
+  // }
 }

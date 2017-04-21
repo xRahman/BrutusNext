@@ -7,8 +7,8 @@
 
 /*
   IMPORTANT:
-    Never use this yourself! Always request new entities from EntityManager.
-  They will be proxified for you automatically.
+    Never use this yourself! Always request new entity instances using
+  Entity.createInstance(). They will be proxified for you automatically.
 */
 
 /*
@@ -30,13 +30,12 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
-import {Entity} from '../../../server/lib/entity/Entity';
+import {Entity} from '../../../shared/lib/entity/Entity';
 import {InvalidValueProxyHandler}
-  from '../../../server/lib/entity/InvalidValueProxyHandler';
-import {ServerApp} from '../../../server/lib/Server';
-import {AdminLevel} from '../../../server/lib/admin/AdminLevel';
-import {Syslog} from '../../../server/lib/log/Syslog';
-import {Message} from '../../../server/lib/message/Message';
+  from '../../../shared/lib/entity/InvalidValueProxyHandler';
+import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
+import {Syslog} from '../../../shared/lib/log/Syslog';
+import {MessageType} from '../../../shared/lib/message/MessageType';
 
 // Module 'util' is included, because we have to trap util.inspect
 // call to preserve it's functionality.
@@ -54,11 +53,6 @@ export class EntityProxyHandler
 
   // Id of an entity we are proxyfying.
   public id: string = null;
-
-  /*
-  // Type (className) of an entity we are proxyfying.
-  public type: string = null;
-  */
 
   // ---------------- Public methods --------------------
 
@@ -85,32 +79,6 @@ export class EntityProxyHandler
     //   still no reason to invalidate internal id reference so better not
     //   do it.
   }
-
-  /*
-  public loadFromJsonObject
-  (
-    propertyName: string,
-    jsonObject: any,
-    path: string
-  )
-  {
-    this.id = jsonObject.id;
-    this.type = jsonObject.type;
-
-    ASSERT(this.id !== undefined && this.id !== null,
-      "Invalid 'id' when loading entity reference"
-      + " '" + propertyName + "' from JSON file "
-      + path);
-
-    ASSERT(this.type !== undefined && this.type !== null,
-      "Invalid 'type' when loading entity reference"
-      + " '" + propertyName + "' from JSON file "
-      + path);
-
-    // Set this.entity to null.
-    this.invalidate();
-  }
-  */
 
   // If this.entity is not null, it's 'id variable will be compared
   // to handler's 'id' variable.
@@ -180,7 +148,7 @@ export class EntityProxyHandler
         "Attempt to call 'getOwnPropertyDescriptor()' function on"
           + " an invalid entity\n"
           + Syslog.getTrimmedStackTrace(Syslog.TrimType.PROXY_HANDLER),
-        Message.Type.INVALID_ACCESS,
+        MessageType.INVALID_ACCESS,
         AdminLevel.IMMORTAL
       );
 
@@ -208,7 +176,7 @@ export class EntityProxyHandler
       (
         "Attempt to use 'in' operator on an invalid entity\n"
           + Syslog.getTrimmedStackTrace(Syslog.TrimType.PROXY_HANDLER),
-        Message.Type.INVALID_ACCESS,
+        MessageType.INVALID_ACCESS,
         AdminLevel.IMMORTAL
       );
 
@@ -304,16 +272,9 @@ export class EntityProxyHandler
       return true;
     }
 
-    /// Prozatím entity.load() úplně disabluju.
-    /*
-    // Trap calls of entity.load() method.
-    if (property === 'load')
-      return this.loadTrapHandler;
-    */
-
     // This is an awful hack I'd very much liked to not to use...
     // But it's necessary in orderd for function trapping to work.
-    //   The reason is, that when you trap a function call, like
+    //   The reason is that when you trap a function call, like
     // 'proxy.dynamicCast()', it gets split in two parts:
     // - first the property 'dynamicCast' is accessed
     // - then it is called
@@ -361,7 +322,7 @@ export class EntityProxyHandler
       (
         "Attempt to read property '" + property + "' of an invalid entity\n"
           + Syslog.getTrimmedStackTrace(Syslog.TrimType.PROXY_HANDLER),
-        Message.Type.INVALID_ACCESS,
+        MessageType.INVALID_ACCESS,
         AdminLevel.IMMORTAL
       );
 
@@ -402,7 +363,7 @@ export class EntityProxyHandler
         "Attempt to write to property '" + property + "'"
         + " of an invalid entity\n"
         + Syslog.getTrimmedStackTrace(Syslog.TrimType.PROXY_HANDLER),
-        Message.Type.INVALID_ACCESS,
+        MessageType.INVALID_ACCESS,
         AdminLevel.IMMORTAL
       );
 
@@ -453,7 +414,7 @@ export class EntityProxyHandler
 
   private readProperty(property: string)
   {
-    if (this.entity['isProxy'] === true)
+    if (this.entity.isProxy())
     {
       FATAL_ERROR("Internal entity reference is a proxy."
         + " It must be an unproxied reference");
@@ -479,7 +440,7 @@ export class EntityProxyHandler
     let value = this.entity[property];
 
     /// This is probably not such a good idea. It would prevent
-    /// checking if a property exist on an instance (because if
+    /// checking if a property exists on an instance (because if
     //  it didn't exist, reading it would be reported as error).
     /*
     // Are we accessing a valid property?
@@ -505,7 +466,7 @@ export class EntityProxyHandler
 
   private isEntityValid(): boolean
   {
-    if (this['isProxy'] === true)
+    if (this['isProxy'] !== undefined)
     {
       FATAL_ERROR("Validity check is run on entity proxy"
         + " rather than on entity proxy handler. Make sure"
@@ -627,41 +588,4 @@ export class EntityProxyHandler
 
     return proxyHandler.isEntityValid();
   }
-
-  /// Prozatím entity.load() úplně disabluju.
-  /*
-  // This method allows invalid entity proxy to load itself.
-  //   'entity.load()' call is trapped by 'get' handler and
-  //  handler.load() (this method) is called).
-  private async loadTrapHandler()
-  {
-    // Note: When this function is called, 'this' is not an
-    // EntityProxyHandler, but the proxy. So '_proxyHandler'
-    // property access must be trapped in order for this to work.
-    let proxyHandler = this['_proxyHandler'];
-    let id = proxyHandler.id; 
-
-    if (id === null || id === undefined)
-    {
-      ERROR("Missing or invalid id in entity proxy handler."
-        + " Entity is not loaded");
-      return;
-    }
-
-    // Note: We are intentionally passing the proxy as parameter
-    //   (by passing 'this'). It will be needed in order to add
-    //   a record to EntityManager without creating a new proxy
-    //   (that would also be possible, but it would create another
-    //   reference pointing to the same entity, so it's better to
-    //   reuse existing reference).
-    // However, typescript doesn't know that 'this' is not an
-    // EntityProxyHandler, so we have to typecast 'this' to <any>
-    // to bypass incorrect type check.
-    await Server.entityManager.loadExistingEntityProxy
-    (
-      proxyHandler,
-      <any>this
-    );
-  }
-  */
 }

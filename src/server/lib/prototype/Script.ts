@@ -9,7 +9,7 @@
 import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
 import {VirtualMachine} from '../../../server/lib/prototype/VirtualMachine';
 import {AdminLevel} from '../../../server/lib/admin/AdminLevel';
-import {Syslog} from '../../../server/lib/log/Syslog';
+import {ServerSyslog} from '../../../server/lib/log/Syslog';
 import {Message} from '../../../server/lib/message/Message';
 import {GameEntity} from '../../../server/game/entity/GameEntity';
 import {ClassFactory} from '../../../shared/lib/ClassFactory';
@@ -100,7 +100,7 @@ export class Script extends SaveableObject
 
       if (script.internalFunction === null)
       {
-        Syslog.log
+        ServerSyslog.log
         (
           "Internal script function of script " + script.getFullName()
           + " doesn't exist yet. Script must be compiled before"
@@ -329,7 +329,7 @@ export class Script extends SaveableObject
     }
     catch (e)
     {
-      Syslog.log
+      ServerSyslog.log
       (
         "Transpile error in script " + scriptName + ": " + e.message,
         Message.Type.SCRIPT_COMPILE_ERROR,
@@ -354,7 +354,7 @@ export class Script extends SaveableObject
     // the script will wait 1 milisecond.
     if (miliseconds === undefined)
     {
-      Syslog.log
+      ServerSyslog.log
       (
         "Missing 'miliseconds' parameter of 'await delay()' in script "
         + scriptName + ". Script will wait for 1 milisecond",

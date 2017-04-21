@@ -21,7 +21,7 @@
 import {Utils} from '../server/lib/utils/Utils';
 import {ServerApp} from '../server/lib/Server';
 import {TelnetServer} from '../server/lib/net/telnet/TelnetServer';
-import {Syslog} from '../server/lib/log/Syslog';
+import {ServerSyslog} from '../server/lib/log/Syslog';
 import {Message} from '../server/lib/message/Message';
 import {AdminLevel} from '../server/lib/admin/AdminLevel';
 
@@ -151,7 +151,7 @@ function parseCmdlineParams()
 async function main()
 {
   // Log our name and version.
-  Syslog.log
+  ServerSyslog.log
   (
     packageDotJson.name + " server v. " + packageDotJson.version,
     Message.Type.SYSTEM_INFO,

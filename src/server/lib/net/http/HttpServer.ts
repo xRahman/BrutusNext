@@ -6,7 +6,7 @@
 
 'use strict';
 
-import {Syslog} from '../../../../server/lib/log/Syslog';
+import {ServerSyslog} from '../../../../server/lib/log/Syslog';
 import {AdminLevel} from '../../../../server/lib/admin/AdminLevel';
 import {FileSystem} from '../../../../server/lib/fs/FileSystem';
 import {Message} from '../../../../server/lib/message/Message';
@@ -67,7 +67,7 @@ export class HttpServer
       (request, response) => { this.onRequest(request, response); }
     );
 
-    Syslog.log
+    ServerSyslog.log
     (
       "Starting http server at port " + port,
       Message.Type.SYSTEM_INFO,
@@ -95,7 +95,7 @@ export class HttpServer
   // Runs when server is ready and listening.
   private onStartListening()
   {
-    Syslog.log
+    ServerSyslog.log
     (
       "Http server is up and listening",
       Message.Type.HTTP_SERVER,

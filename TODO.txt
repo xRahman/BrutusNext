@@ -1,6 +1,11 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+TODO: V Entity a EntityManager přerovnat private a public metody.
+
+
+---------------------------------------------------------------
+
 Serializace entity vs neentity
 - entita by měla serializovat jen own properties, a to včetně
   podstruktur.

@@ -30,6 +30,8 @@ export class ClientApp extends App
 
   public activeScrollWindow = null;
 
+  protected entityManager = new ClientEntityManager();
+
   //------------------ Private data ---------------------
 
   // --- websocket communication ---

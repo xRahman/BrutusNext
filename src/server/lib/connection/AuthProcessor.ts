@@ -28,7 +28,7 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../server/lib/utils/Utils';
 import {EntityManager} from '../../../server/lib/entity/EntityManager';
-import {Syslog} from '../../../server/lib/log/Syslog';
+import {ServerSyslog} from '../../../server/lib/log/Syslog';
 import {AdminLevel} from '../../../server/lib/admin/AdminLevel';
 import {Message} from '../../../server/lib/message/Message';
 import {Connection} from '../../../server/lib/connection/Connection';
@@ -213,7 +213,7 @@ export class AuthProcessor
 
   private announceNewPlayer()
   {
-    Syslog.log
+    ServerSyslog.log
     (
       "New player: " + this.accountName
       + " [" + this.connection.ipAddress + "]",
@@ -440,7 +440,7 @@ export class AuthProcessor
       return;
     }
 
-    Syslog.log
+    ServerSyslog.log
     (
       "Bad PW: " + this.accountName
       + " [" + this.connection.ipAddress + "]",
@@ -458,7 +458,7 @@ export class AuthProcessor
   private announceAccountLoadFailure()
   {
     // Let admins know what went wrong.
-    Syslog.log
+    ServerSyslog.log
     (
       "Failed to load account " + this.accountName + "."
       + " Disconnecting player",
