@@ -17,4 +17,9 @@ export class ClassFactory
   {
     ClassFactory.constructors.set(Class.name, Class);
   }
+
+  public static registerPrototypeClass<T>(Class: { new (...args: any[]): T })
+  {
+    /// TODO
+  }
 }

@@ -12,28 +12,15 @@ import {Serializable} from '../../../shared/lib/class/Serializable';
 import {PropertyAttributes} from
   '../../../shared/lib/class/PropertyAttributes';
 import {EntityManager} from '../../../shared/lib/entity/EntityManager';
+import {EntityProxyHandler} from
+  '../../../shared/lib/entity/EntityProxyHandler';
+import {EntityRecord} from '../../../shared/lib/entity/EntityRecord';
 
 export class Entity extends Serializable
 {
-  public static get ID_PROPERTY() { return 'id'; }
-
-  public static get PROTOTYPE_ID_PROPERTY()
-  {
-    return "prototypeId";
-  }
-
-  /// Nevím, k čemu jsem tohle zamýšlel. Zatím se to zjevně nepoužívá.
-  /*
-  public static get IS_PROTOTYPE_PROPERTY()
-  {
-    return "isEntityPrototype";
-  }
-  */
-
-  public static get INSTANCE_IDS_PROPERTY()
-  {
-    return "instanceIds";
-  }
+  public static get ID_PROPERTY()            { return 'id'; }
+  public static get PROTOTYPE_ID_PROPERTY()  { return "prototypeId"; }
+  private static get INSTANCE_IDS_PROPERTY() { return "instanceIds"; }
 
   // ----------------- Private data ----------------------
 
@@ -95,6 +82,7 @@ export class Entity extends Serializable
   {
     return entity !== null
         && entity !== undefined
+        // This will be trapped by EntityProxyHandler.
         && entity.isValid() === true;
   }
 
@@ -104,8 +92,8 @@ export class Entity extends Serializable
   public static createInstance(prototype: Entity, id: string)
   {
     // There is no need to include Proxy objects to the prototype
-    // chain (it would even lead to errors), so we need to deproxify
-    // the prototype entity before we use it as a prototype object.
+    // chain (it would even lead to errors), so we are going to
+    // deproxify 'prototype' before we use it as a prototype object.
     let barePrototype = EntityProxyHandler.deproxify(prototype);
 
     // Object.create() will create a new object with 'prototype'
@@ -125,29 +113,74 @@ export class Entity extends Serializable
     // to manually instantiate all nonprimitive properties.
     instance.instantiateProperties(instance, prototype);
 
-    // Each entity instance is hidden behind a Proxy object,
-    // which reports access to invalid entity properties.
-    let entityProxy = this.createEntityProxy(instance);
+    // Set id to our new entity instance
+    // (this shouldn't fail because we have just created it, but
+    //  better be sure).
+    if (instance.setId(id) === false)
+      return null;
 
-    // Each entity instance needs to be registered in EntityManager.
-    //   If entity with this 'id' already exists in EntityManager,
-    // existing one will be used instead of the one we have just
-    // created. 'null' is returned in case of error.
-    let entity = EntityManager.register(entityProxy, id);
+    // Hide instance beind a Proxy object which will report
+    // access to properties of invalid entity. Also create
+    // an EntityRecord that will be added to EntityManager.
+    let entityRecord = this.createEntityRecord(instance);
+
+    // Add entity to EntityManager. If a record with this 'id'
+    // already exists there, the existing one will be used instead
+    // of the one we have just created.
+    //   In case of error entity will be 'null'.
+    let entity = EntityManager.add(entityRecord);
 
     if (entity === null)
       return null;
   
     // Now we are sure that entity has been sucessfuly registered
-    // in EntityManager so we can safely add it's id to prototype's
-    // instanceIds.
+    // in EntityManager so we can add it's id to prototype's instanceIds.
     prototype.addInstanceId(id);
 
-    // And also add the prototype id as the entity's prototypeId.
+    // And also add the prototype's id as the entity's prototypeId.
     entity.prototypeId = prototype.getId();
 
     return entity;
   }
+
+  // Hides 'entity' behind a Proxy object that will report
+  // access to an invalid entity.
+  // -> Returns entity record.
+  private static createEntityRecord(entity: Entity): EntityRecord
+  {
+    let handler = new EntityProxyHandler();
+
+    handler.id = entity.getId();
+    handler.entity = entity;
+
+    // Create a Javascript Proxy Object that will trap access
+    // of entity properties (using EntityProxyHandler we have
+    // just created) and report en error if an invalid (deleted)
+    // entity is accessed.
+    let entityProxy = new Proxy({}, handler);
+
+    return new EntityRecord(entityProxy, handler);
+  }
+
+  /*
+  // Hides 'entity' behind a Proxy object that will report
+  // access to an invalid entity.
+  // -> Returns entity proxy.
+  private static createEntityProxy(entity: Entity): Entity
+  {
+    if (entity === null || entity === undefined)
+    {
+      ERROR("Invalid parameter 'entity'");
+      return null;
+    }
+
+    // Create a Javascript Proxy Object that will trap access
+    // of entity properties (using EntityProxyHandler we have
+    // just created) and report en error if an invalid (deleted)
+    // entity is accessed.
+    return new Proxy({}, handler);
+  }
+  */
 
   // Ensures that all non-primitive properties of 'prototype'
   // are instantiated on 'object'. 
@@ -205,8 +238,8 @@ export class Entity extends Serializable
     // is not our id (id has to be unique for each entity instance).
     if (!this.hasOwnProperty(Entity.ID_PROPERTY) || this.id === null)
     {
-      ERROR("Attempt to get 'id' of an entity which doesn't have"
-        + " an id set, yet");
+      ERROR("Attempt to get 'id' of an entity which doesn't have an id."
+        + "This must never happen, each entity must have an id");
       return null;
     }
 
@@ -220,7 +253,7 @@ export class Entity extends Serializable
     //   We need to check if we have own property 'id'
     // (not just the one inherited from our prototype),
     // because if we don't, value of 'this.id' would be
-    // that of our prototype object, which is not null.
+    // that of our prototype.
     if (this.hasOwnProperty(Entity.ID_PROPERTY) && this.id !== null)
     {
       ERROR("Attempt to set id of entity " + this.getErrorIdString()
@@ -235,7 +268,7 @@ export class Entity extends Serializable
       FATAL_ERROR("Property 'id' has been set to prototype object"
         + " rather than to the instance. This probably means that"
         + " entity proxy has been used as prototype entity instead"
-        + " of nonproxified entity");
+        + " of unproxified entity");
         return false;
     }
 
@@ -408,7 +441,7 @@ export class Entity extends Serializable
   // This method exists only to prevent accidental
   // delcaring of 'then' property. See error message
   // inside this method for more info.
-  protected then()
+  private then()
   {
     FATAL_ERROR("Attempt to access 'then' property"
       + " of entity " + this.getErrorIdString() + "."

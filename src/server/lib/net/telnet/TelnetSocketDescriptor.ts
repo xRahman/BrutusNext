@@ -8,7 +8,7 @@
 
 import {ERROR} from '../../../../shared/lib/error/ERROR';
 import {Utils} from '../../../../server/lib/utils/Utils';
-import {Syslog} from '../../../../server/lib/log/Syslog';
+import {ServerSyslog} from '../../../../server/lib/log/Syslog';
 import {Message} from '../../../../server/lib/message/Message';
 import {Account} from '../../../../server/lib/account/Account';
 import {AdminLevel} from '../../../../server/lib/admin/AdminLevel';
@@ -227,7 +227,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     {
       // I don't really know what kind of errors can happen here.
       // For now let's just log the error and close the connection.
-      Syslog.log
+      ServerSyslog.log
       (
         player
         + " has encounterd a socket error, closing the connection. " + error,

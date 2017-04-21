@@ -8,7 +8,13 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {App} from '../../../shared/lib/App';
 import {Entity} from '../../../shared/lib/entity/Entity';
+import {EntityRecord} from '../../../shared/lib/entity/EntityRecord';
+/*
+import {EntityProxyHandler} from
+   '../../../shared/lib/entity/EntityProxyHandler';
+*/
 // import {IdProvider} from '../../../server/lib/entity/IdProvider';
 // import {NameLockRecord} from '../../../server/lib/entity/NameLockRecord';
 // import {EntityRecord} from '../../../server/lib/entity/EntityRecord';
@@ -26,9 +32,9 @@ export class EntityManager
 {
   //------------------ Private data ---------------------
 
-  // Key: entity id
-  // Value: entity proxy
-  private entityRecords = new Map<string, Entity>();
+  // Key:   entity id
+  // Value: record containing entity and its proxy handler
+  private entityRecords = new Map<string, EntityRecord>();
 
   /// Tohle by mělo být jen na serveru
   /// (EntityManager na clientu nepotřebuje IdProvider).
@@ -36,35 +42,73 @@ export class EntityManager
 
   // ---------------- Public methods --------------------
 
-  // Proxifies 'entity' and adds it to the manager under given 'id'.
+  // Adds 'entity' to the manager under given 'id'.
   // -> Returns 'null' on failure.
-  public static register(entity: Entity, id: string)
+  public static add(entityRecord: EntityRecord)
   {
-    return App.getEntityManager().register(entity, id);
+    return App.getEntityManager().add(entityRecord);
   }
 
-  // Proxifies 'entity' and adds it to the manager under given 'id'.
-  // -> Returns 'null' on failure.
-  public register(entity: Entity, id: string)
+  public static remove(entity: Entity)
   {
-    if (!entity.setId(id))
-      return null;
+    App.getEntityManager().remove(entity);
+  }
 
-    if (entity.isProxy())
+  // Adds 'entityRecord' to the manager.
+  // -> Returns 'null' on failure.
+  private add(entityRecord: EntityRecord)
+  {
+    let id = entityRecord.getEntity().getId();
+    let existingRecord = this.entityRecords.get(id);
+
+    if (existingRecord !== undefined)
     {
-      ERROR("Attempt to register entity which is already proxyfied."
-        + "Entity is not registered in EntityManager");
-      return null;
+      ERROR("Attempt to add entity "
+       + entityRecord.getEntity().getErrorStringId()
+       + " to EntityManager which already exists there."
+       + " Entity is not added, existing one will be used");
+      return existingRecord.getEntity();
     }
 
-    /// TODO
-    let entityProxy = this.createEntityProxy(entity);
+    // Add entity record to hashmap under entity's id.
+    this.entityRecords.set(id, entityRecord);
 
-    /// TODO
-    /// Tohle nemusí projít, pokud už entita s tímhle id existuje.
-    this.addEntityProxy(entityProxy, id);
+    return entityRecord.getEntity();
+  }
 
-    return entityProxy;
+  // Removes entity from manager but doesn't delete it from disk
+  // (this is used for example when player quits the game).
+  // Also removes entity from entity lists so it can no longer
+  // be searched for.
+  private remove(entity: Entity)
+  {
+    if (!Entity.isValid(entity))
+    {
+      ERROR("Attempt to remove invalid entity from EntityManager");
+      return;
+    }
+
+    // Remove entity from entity lists so it can no longer be searched for.
+    entity.removeFromLists();
+
+    // get() returns undefined if there is no such record in hashmap.
+    let entityRecord = this.entityRecords.get(entity.getId());
+
+    if (entityRecord === undefined)
+    {
+      ERROR("Attempt to remove entity " + entity.getErrorIdString()
+        + " from EntityManager which is not there");
+      return;
+    }
+
+    // Remove the record from hashmap.
+    this.entityRecords.delete(entity.getId());
+
+    // Invalidate internal 'entity' reference in proxy handler
+    // so the entity can be freed from memory by garbage collector.
+    // (any future access to entity's properties will be reported
+    //  by it's proxy handler as error).
+    entityRecord.invalidate();
   }
 
   // // Loads uniquely named entity from file
@@ -412,7 +456,7 @@ export class EntityManager
   //     return null;
   //   }
 
-  //   let prototypeId = jsonObject[ScriptableEntity.PROTOTYPE_ID_PROPERTY]; 
+  //   let prototypeId = jsonObject[Entity.PROTOTYPE_ID_PROPERTY]; 
 
   //   if (prototypeId === undefined || prototypeId === null)
   //   {

@@ -10,7 +10,7 @@ import {Packet} from '../../../../shared/protocol/Packet';
 ///import {PacketData} from '../../../../shared/protocol/PacketData';
 import {ERROR} from '../../../../shared/lib/error/ERROR';
 import {Utils} from '../../../../server/lib/utils/Utils';
-import {Syslog} from '../../../../server/lib/log/Syslog';
+import {ServerSyslog} from '../../../../server/lib/log/Syslog';
 import {Message} from '../../../../server/lib/message/Message';
 import {AdminLevel} from '../../../../server/lib/admin/AdminLevel';
 import {SocketDescriptor} from '../../../../server/lib/net/SocketDescriptor';
@@ -118,7 +118,7 @@ export class WebSocketDescriptor extends SocketDescriptor
     }
     catch (error)
     {
-      Syslog.log
+      ServerSyslog.log
       (
         "Client ERROR: Failed to send data to the socket"
         + " " + this.url + " (" + this.ip + "). Reason:"
@@ -145,7 +145,7 @@ export class WebSocketDescriptor extends SocketDescriptor
       // Data is supposed to be sent in text mode.
       //  This is a client error, we can't really do anything about it.
       // So we just log it.
-      Syslog.log
+      ServerSyslog.log
       (
         "Client ERROR: Received binary data from websocket connection"
         + " " + this.url + " (" + this.ip + "). Data is not processed",
@@ -171,7 +171,7 @@ export class WebSocketDescriptor extends SocketDescriptor
 
   private onSocketError(event: Error)
   {
-    Syslog.log
+    ServerSyslog.log
     (
       "Websocket ERROR: Error occured on socket"
       + " " + this.url + " (" + this.ip + ")",
@@ -194,7 +194,7 @@ export class WebSocketDescriptor extends SocketDescriptor
     // Error code 1000 means that the connection was closed normally.
     if (event.code != 1000)
     {
-      Syslog.log
+      ServerSyslog.log
       (
         "Websocket ERROR: Socket " + this.url + " (" + this.ip + ")"
         + " closed because of error: " + event.reason,
@@ -204,7 +204,7 @@ export class WebSocketDescriptor extends SocketDescriptor
     }
     else
     {
-      Syslog.log
+      ServerSyslog.log
       (
         "Websocket ERROR: Socket " + this.url + " (" + this.ip + ")"
         + " closed normally",
