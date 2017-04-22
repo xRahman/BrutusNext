@@ -40,7 +40,27 @@ export class EntityManager
   /// (EntityManager na clientu nepotřebuje IdProvider).
   ///constructor(private idProvider: IdProvider) { }
 
-  // ---------------- Public methods --------------------
+  // ------------- Public static methods ----------------
+
+  // -> Returns existing reference if entity already exists in EntityManager.
+  //    Returns invalid reference if entity with such id isn't there.
+  public static createReference(id: string): Entity
+  {
+    return App.getEntityManager().createReference(id);
+  }
+
+  // Checks if enity is in the manager.
+  public static has(id: string)
+  {
+    return App.getEntityManager().has(id);
+  }
+
+  // Requests an entity from the manager.
+  // -> Returns 'undefined' if entity isn't found.
+  public static get(id: string)
+  {
+    return App.getEntityManager().get(id);
+  }
 
   // Adds 'entity' to the manager under given 'id'.
   // -> Returns 'null' on failure.
@@ -49,9 +69,45 @@ export class EntityManager
     return App.getEntityManager().add(entityRecord);
   }
 
+  // Removes entity from manager but doesn't delete it from disk
+  // (this is used for example when player quits the game).
+  // Also removes entity from entity lists so it can no longer
+  // be searched for.
   public static remove(entity: Entity)
   {
     App.getEntityManager().remove(entity);
+  }
+
+  // ---------------- Public methods --------------------
+
+  // -> Returns existing reference if entity already exists in EntityManager.
+  //    Returns invalid reference if entity with such 'id' isn't there.
+  private createReference(id: string): Entity
+  {
+    let entity = this.get(id);
+    
+    if (entity)
+      return entity;
+
+    return Entity.createInvalidEntity(id);
+  }
+
+  // Checks if enity is in the manager.
+  private has(id: string)
+  {
+    return this.entityRecords.has(id);
+  }
+
+  // Requests an entity from the manager.
+  // -> Returns 'undefined' if entity isn't found.
+  public get(id: string)
+  {
+    let entityRecord = this.entityRecords.get(id)
+
+    if (!entityRecord)
+      return undefined;
+
+    return entityRecord.getEntity();
   }
 
   // Adds 'entityRecord' to the manager.
@@ -320,23 +376,6 @@ export class EntityManager
   //   return this.entityRecords.has(id);
   // }
 
-  // /// Tohohle se taky chci zbavit.
-  // /// - Tak nakonec ne. Je to potřeba, když se loaduje reference
-  // ///   ze souboru.
-  // /// - loadnout invalid referenci je ok. Není ok updatovat invalid
-  // ///   referenci, když v manageru už je jiná reference pro stejné id.
-  // ///
-  // // -> Returns existing reference if entity already exists in EntityManager.
-  // //    Returns invalid reference if entity with such id doen't exist yet.
-  // //      (you can then use entity.load() to load if from disk)
-  // public createReference(id: string): Entity
-  // {
-  //   if (this.has(id))
-  //     return this.get(id, Entity);
-
-  //   return this.createInvalidEntityReference(id);
-  // }
-
   // // Creates a new entity based on prototype 'new Class'
   // // (this is used to create prototype entities for hardcoded
   // //  entity classes like Account).
@@ -394,24 +433,6 @@ export class EntityManager
 
   //   // Add newly created entity record to hashmap under entity's string id.
   //   this.entityRecords.set(handler.id, entityRecord);
-  // }
-
-  // // Creates an entity proxy with null 'internalEntity'.
-  // // Doesn't add it to the manager - so if you want to use
-  // // this reference, you have to call .getCurrentReference()
-  // // first and .isValid() next to check if it became valid.
-  // private createInvalidEntityReference(id: string)
-  // {
-  //   let handler = new EntityProxyHandler();
-
-  //   handler.id = id;
-
-  //   // Set handler.entity to null.
-  //   handler.invalidate();
-
-  //   let proxy = new Proxy({}, handler);
-
-  //   return proxy;
   // }
 
   // // Loads entity id from file corresponding to unique entity

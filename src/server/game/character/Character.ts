@@ -124,4 +124,4 @@ export class Character extends GameEntity
   */
 }
 
-ClassFactory.registerClass(Character);
+ClassFactory.registerPrototypeClass(Character);
