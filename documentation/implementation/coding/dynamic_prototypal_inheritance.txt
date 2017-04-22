@@ -1,0 +1,101 @@
+Why prototypal inheritance?
+--------------------------------
+
+Imagine a builder create 100 rooms with the same description, let's say
+"A desert.". In CircleMUD, you would have copied this description in each
+of those 100 rooms. If there were a typo, you would have to fix it 100 times.
+
+To prevent this, you can create a common ancestor object for those 100 rooms,
+set a 'description' to it and 'inherit' those 100 roomcs from this prototype.
+
+When a 'description' property is accessed on any of 100 instances and it is
+not found on in, 'description' property of prototype object is used instead.
+
+
+This is exacly how prototypal inheritance in Javascript works. You would
+create a prototype like this:
+
+let prototype =
+{
+  description: "A desert."
+}
+
+And then create 100 empty objects: {} with our prototype as their prototype
+(this is done by Object.create(prototype)). If you want to change a description
+on any of those 100 instances, you can either remove the prototype from it's
+prototype chain (which would also remove all other inherited properties so
+you probably don't want to do it) or jus write the 'description' property to
+that instance.
+
+
+The difference between Object.create() and 'new Class' in Typescript
+----------------------------------------------------------------------
+
+Imagine you have a following class in Typescript:
+
+class Dummy
+{
+  public x = 0;
+}
+
+and you do 'new Dummy()'. What happens?
+
+An instance of Dummy is created and then '0' is assigned to it's 'x' property.
+This means that instances created by 'new Class' have all their initiated
+properties as their own properties rather than properties inherited from
+their prototype object. In other words, such instances are not really instances
+we need.
+
+To fix this, we first create a Typescript instance and then use Object.create()
+to make a real instance from it, like this:
+
+let prototype = new Dummy;
+let instance = Object.create(prototype);
+
+This creates an empty object {} with 'prototype' as it's prototype Object.
+Note that while it's not really an object created by constructor of class
+Dummy, we can work with it as if it was a instance of Dummy, because it
+has all of it's properties thanks to prototypal inheritance. So you can
+code in Typescript like usual even though instances are actually primitive
+Objects.
+
+
+Where Javascript prototypal inheritance fails
+----------------------------------------------
+
+The trouble arises when you put an object into your class, like this:
+
+class Dummy
+{
+  public obj = { x: 0 };
+}
+
+and create the instance using
+
+let instance = Objec.create(new Dummy);
+
+When you now do:
+
+instance.obj.x = 13;
+
+you actually write to the prototype object, not to the instance. Why is that?
+Because in Javascript, nonprimitive (object) properties are 'inherited' by
+reference rather then as a new Obect.
+
+
+How to fix that? Fortunatelly there is a way - by traversing all nonprimitive
+properties and using Object.create() on them with the same property on
+prototype object as the prototype.
+
+
+
+Entities
+---------
+The previous javascript solution works (almost) fine, but we want to be able
+to identify each of the prototype objects and each of the instances. So we
+need an unique id for each instance in the prototypal structure. This is
+done by inheriting all game objects from class Entity.
+
+- Each instance of any Entity is assigned a unique id at it's creation.
+- All entities are stored in EntityManager.
+- Any entity can be used as prototype object for other entities.

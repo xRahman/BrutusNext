@@ -40,6 +40,7 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {SharedUtils} from '../../../shared/lib/utils/SharedUtils';
+import {ClassFactory} from '../../../shared/lib/class/ClassFactory';
 import {PropertyAttributes} from
   '../../../shared/lib/class/PropertyAttributes';
 import {JsonObject} from '../../../shared/lib/json/JsonObject';
@@ -47,6 +48,7 @@ import {JsonSaver} from '../../../shared/lib/json/JsonSaver';
 import {Nameable} from '../../../shared/lib/class/Nameable';
 import {Attributable} from '../../../shared/lib/class/Attributable';
 import {Entity} from '../../../shared/lib/entity/Entity';
+import {EntityManager} from '../../../shared/lib/entity/EntityManager';
 import {EntityProxyHandler} from
   '../../../shared/lib/entity/EntityProxyHandler';
 
@@ -81,14 +83,107 @@ export class Serializable extends Attributable
     return JsonObject.stringify(jsonObject);
   }
 
-//+
+  // Creates a new instance and deserializes Json 'data' into it.
+  //   'id' is passed when deserializing after loading from file,
+  // because entity id is used as file name. Entities sent over
+  // client-server protocol have their 'id' as a regular property.
+  // -> Returns 'null' if deserialization fails.
+  public static deserialize
+  (
+    data: string,
+    id: string = null,
+    path: string = null
+  )
+  {
+    // Create Json object from Json string.
+    let jsonObject = JsonObject.parse(data);
+
+    if (jsonObject === null)
+      return null;
+
+    let instance = this.createSerializableInstance(jsonObject, id, path);
+
+    // Attempt to copy properties from jsonObject to instance
+    // (loadFromJsonObject() returns 'null' on failure).
+    return instance.loadFromJsonObject(jsonObject, path);
+  }
+
+  // -> Returns 'null' if instance cannot be created.
+  private static createSerializableInstance
+  (
+    jsonObject: Object,
+    id: string,
+    path: string)
+  {
+    if (!jsonObject)
+      return null;
+
+    // First we check if there is a 'prototypeId' property in json Object.
+    let prototypeId = jsonObject[Entity.PROTOTYPE_ID_PROPERTY];
+
+    // If 'id' parameter is 'null', it means that we are not loading from
+    // file but rather using a client-server communication protocol. In
+    // that case entity 'id' is not saved as file name (because no files
+    // are sent over the protocol) but rather as a regular 'id' property.
+    if (id === null)
+      id = jsonObject[Entity.ID_PROPERTY];
+
+    // If it is there, it means that we are deserializing an Entity
+    // so it must create an entity instance for it.
+    if (prototypeId)
+      return this.createEntityInstance(prototypeId, id, path);
+
+    // If there is no 'prototypeId' property in json Object, we will read
+    // 'className' property instead and create an instance of that class.
+    let className = jsonObject[Nameable.CLASS_NAME_PROPERTY];
+
+    if (!className)
+    {
+      let pathString = Serializable.composePathString(path);
+
+      ERROR("Missing '" + Nameable.CLASS_NAME_PROPERTY + "'"
+        + " property in JSON data" + pathString);
+      return null;
+    }
+
+    // Use ClassFactory to create an instance of 'className'
+    // ('null' is returned on error).
+    return ClassFactory.createInstance(className);
+  }
+
+  // Creates an instance of entity with provided 'id' and 'prototypeId'.
+  // -> Returns 'null' if instance cannot be created.
+  private static createEntityInstance
+  (
+    prototypeId: string,
+    id: string,
+    path: string
+  )
+  {
+    if (!id)
+    {
+      // There is no point in including 'path' parameter beause if
+      // 'id' isn't provided, we are probably deserializing a client-server
+      // protocol packet and those don't have a 'path' anyways.
+      ERROR("Missing or invalid 'id' when deserializing an entity");
+      return null;
+    }
+
+    let prototype = EntityManager.get(prototypeId);
+
+    if (!prototype)
+      return null;
+
+    return Entity.createInstance(prototype, id);
+  }
+
   // Extracts data from plain javascript Object to this instance.
-  // -> Returns 'false' on failure.
-  public deserialize(jsonObject: Object, path: string = null): boolean
+  // -> Returns 'null' on failure.
+  public loadFromJsonObject(jsonObject: Object, path: string = null)
   {
     // Check version and input data validity.
     if (!this.deserializeCheck(jsonObject, path))
-      return false;
+      return null;
 
     // Copy all properties from 'jsonObject'.
     for (let propertyName in jsonObject)
@@ -124,7 +219,7 @@ export class Serializable extends Attributable
       }
     }
 
-    return true;
+    return this;
   }
 
   public isProxy()
@@ -141,7 +236,7 @@ export class Serializable extends Attributable
   {
     if (!(Serializable.VERSION_PROPERTY in jsonObject))
     {
-      let pathString = this.composePathString(path);
+      let pathString = Serializable.composePathString(path);
 
       ERROR("Missing '" + Serializable.VERSION_PROPERTY + "' property"
         + " in JSON data" + pathString);
@@ -150,7 +245,7 @@ export class Serializable extends Attributable
 
     if (jsonObject[Serializable.VERSION_PROPERTY] !== this.version)
     {
-      let pathString = this.composePathString(path);
+      let pathString = Serializable.composePathString(path);
 
       ERROR("Version of JSON data"
         + " (" + jsonObject[Serializable.VERSION_PROPERTY] + ")"
@@ -441,36 +536,6 @@ export class Serializable extends Attributable
   ///////////////////// JsonLoader //////////////////////
   ///////////////////////////////////////////////////////
 
-  /*
-  /// BIG TODO
-  // Reads property 'prototypeId' from 'jsonObject',
-  // handles possible errors.
-  private getPrototypeId(jsonObject: Object, path: string = null): string
-  {
-    /// TODO
-    /// - Čtení 'prototypeId' z jsonObjectu
-
-    if (jsonObject === null || jsonObject === undefined)
-    {
-      let pathString = this.composePathString(path);
-
-      ERROR("Invalid json object" + pathString);
-      return null;
-    }
-
-    let prototypeId = jsonObject[Entity.PROTOTYPE_ID_PROPERTY]; 
-
-    if (prototypeId === undefined || prototypeId === null)
-    {
-      ERROR("Missing or uninitialized property 'prototypeId' in file"
-        + " " + path + ". Entity is not loaded");
-      return null;
-    }
-
-    return prototypeId;
-  }
-  */
-
 //+
   // Deserializes a single property from corresponding JSON object.
   // Converts from serializable format to original data type as needed
@@ -539,7 +604,7 @@ export class Serializable extends Attributable
     // Using 'in' operator on object with null value would cause crash.
     if (jsonObject === null)
     {
-      let pathString = this.composePathString(path);
+      let pathString = Serializable.composePathString(path);
 
       // Here we need fatal error, because data might already
       // be partialy loaded so we could end up with broken entity.
@@ -566,7 +631,7 @@ export class Serializable extends Attributable
 
     if (jsonClassName === undefined)
     {
-      let pathString = this.composePathString(path);
+      let pathString = Serializable.composePathString(path);
 
       ERROR("There is no '" + Nameable.CLASS_NAME_PROPERTY + "'"
         + " property in JSON data" + pathString);
@@ -575,7 +640,7 @@ export class Serializable extends Attributable
 
     if (jsonClassName !== this.className)
     {
-      let pathString = this.composePathString(path);
+      let pathString = Serializable.composePathString(path);
 
       ERROR("Attempt to load JSON data of class"
         + " (" + jsonObject[Nameable.CLASS_NAME_PROPERTY] + ")"
@@ -603,7 +668,7 @@ export class Serializable extends Attributable
 
     if (!SharedUtils.isBitvector(param.targetProperty))
     {
-      let pathString = this.composePathString(param.path);
+      let pathString = Serializable.composePathString(param.path);
 
       ERROR("Attempt to load bitvector property '" + param.propertyName + "'"
         + pathString + " to a non-bitvector property");
@@ -624,7 +689,7 @@ export class Serializable extends Attributable
 
     if (!SharedUtils.isDate(param.targetProperty))
     {
-      let pathString = this.composePathString(param.path);
+      let pathString = Serializable.composePathString(param.path);
 
       ERROR("Attempt to load Date property '" + param.propertyName + "'"
         + pathString + " to a non-Date property");
@@ -645,7 +710,7 @@ export class Serializable extends Attributable
 
     if (!SharedUtils.isSet(param.targetProperty))
     {
-      let pathString = this.composePathString(param.path);
+      let pathString = Serializable.composePathString(param.path);
 
       ERROR("Attempt to load Set property '" + param.propertyName + "'"
         + pathString + " to a non-Set property");
@@ -666,7 +731,7 @@ export class Serializable extends Attributable
 
     if (!SharedUtils.isMap(param.targetProperty))
     {
-      let pathString = this.composePathString(param.path);
+      let pathString = Serializable.composePathString(param.path);
 
       ERROR("Attempt to load Map property '" + param.propertyName + "'"
         + pathString + " to a non-Map property");
@@ -700,7 +765,7 @@ export class Serializable extends Attributable
 
     if (!Array.isArray(param.targetProperty))
     {
-      let pathString = this.composePathString(param.path);
+      let pathString = Serializable.composePathString(param.path);
 
       ERROR("Attempt to load Array property '" + param.propertyName + "'"
         + pathString + " to a non-Array property");
@@ -726,7 +791,7 @@ export class Serializable extends Attributable
       && SharedUtils.isPrimitiveType(param.targetProperty)
     )
     {
-      let pathString = this.composePathString(param.path);
+      let pathString = Serializable.composePathString(param.path);
 
       ERROR("Attempt to load nonprimitive property"
         + " '" + param.propertyName + "'" + pathString
@@ -748,7 +813,7 @@ export class Serializable extends Attributable
 
     if (instance === null || instance === undefined)
     {
-      let pathString = this.composePathString(param.path);
+      let pathString = Serializable.composePathString(param.path);
 
       ERROR("Failed to instantiate property '" + param.propertyName + "'"
         + pathString);
@@ -785,56 +850,39 @@ export class Serializable extends Attributable
     return this.deserializePlainObject(param);
   }
 
-/// TODO
   // -> Returns 'param.targetProperty' if it's not 'null'.
   //    Creates and returns a new instance otherwise
   //    (type is read from 'param.sourceProperty.className').
   private createNewIfNull(param: DeserializeParam)
   {
-    // If the target property exists, we will be loading into it.
     let instance = param.targetProperty;
 
-    // If it doesn't we have to create a new instance (because 'null'
-    // has no properties so we can't call deserialize() on it).
-    if (instance === null)
-    {
-      // Read class name from JSON.
-      let className = param.sourceProperty[Nameable.CLASS_NAME_PROPERTY];
+    // If the target property exists, we will be loading into it.
+    if (instance !== null)
+      return instance;
 
-      if (className === undefined)
-      {
-        // If there isn't a 'className' property in jsonObject,
-        // we will load into a plain Javascript Object.
-        instance = {};
-      }
-      else
-      {
-        /// BIG TODO:
+    // If target property doesn't exist, we have to create a new instance
+    // (because 'null' has no properties so we can't call deserialize() on it).
+    return this.createInstance(param);
+  }
 
-        // If there is a 'className' property in JSON, create a new instance
-        // of that type.
-        let prototypeObject =
-          App.prototypeManager.getPrototypeObject(className);
+  // Reads property 'className' from 'param.sourceProperty' and creates
+  // an instance of that class.
+  private createInstance(param: DeserializeParam)
+  {
+    // Read class name from JSON.
+    let className = param.sourceProperty[Nameable.CLASS_NAME_PROPERTY];
 
-        if (prototypeObject === undefined)
-        {
-          let pathString = this.composePathString(param.path);
-          
-          ERROR("Property '" + param.propertyName + "'" + pathString
-            + " is of type '" + className + "' which doesn't"
-            + " exist in ClassFactory. It probably means that"
-            + " you forgot to add class '" + className + "'"
-            + " to ClassFactory");
-          instance = null;
-        }
-        else
-        {
-          instance = App.prototypeManager.createInstance(prototypeObject);
-        }
-      }
-    }
+    // If there isn't a 'className' property in jsonObject,
+      // we will load into a plain Javascript Object.
+    if (className === undefined)
+      return {};
 
-    return instance;
+    // We don't have to check if 'param.sourceProperty' is an entity,
+    // because entities are always serialized as a reference, not directly.
+    // So if there is an instance of some Serializable class saved directly
+    // in Json, it can't be an entity class.
+    return ClassFactory.createInstance(className);
   }
 
 //+
@@ -1075,7 +1123,7 @@ export class Serializable extends Attributable
 
     if (id === undefined || id === null)
     {
-      let pathString = this.composePathString(param.path);
+      let pathString = Serializable.composePathString(param.path);
 
       ERROR("Missing or invalid 'id' property when loading entity"
         + " reference '" + param.propertyName + "'" + pathString);
@@ -1083,7 +1131,7 @@ export class Serializable extends Attributable
 
     // Return an existing entity proxy if entity exists in
     // entityManager, invalid entity proxy otherwise.
-    return App.entityManager.createReference(id);
+    return EntityManager.createReference(id);
   }
 
 //+
@@ -1101,7 +1149,7 @@ export class Serializable extends Attributable
 
     if (sourceArray === null || sourceArray === undefined)
     {
-      let pathString = this.composePathString(param.path);
+      let pathString = Serializable.composePathString(param.path);
 
       ERROR("Attempt to loadArray from invalid JSON property"
         + " '" + param.propertyName + "'" + pathString);
@@ -1110,7 +1158,7 @@ export class Serializable extends Attributable
     
     if (!Array.isArray(sourceArray))
     {
-      let pathString = this.composePathString(param.path);
+      let pathString = Serializable.composePathString(param.path);
 
       ERROR("Attempt to read Array from non-Array json property"
         + " '" + param.propertyName + "'" + pathString);
@@ -1178,7 +1226,7 @@ export class Serializable extends Attributable
 
     if (sourceRecord === undefined || sourceRecord === null)
     {
-      let pathString = this.composePathString(param.path);
+      let pathString = Serializable.composePathString(param.path);
 
       ERROR("Missing or invalid '" + recordName + "' property when"
         + " loading " + recordName + " record '" + param.propertyName + "'"
@@ -1213,7 +1261,7 @@ export class Serializable extends Attributable
 //+
   // -> Returns string informing about file location or empty string
   //    if 'path' is not available.
-  private composePathString(path: string)
+  private static composePathString(path: string)
   {
     if (path === null)
       return "";
