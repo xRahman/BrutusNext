@@ -514,6 +514,13 @@ Poznámky ke konverzi na Serializable:
   zobrazovat outdated info, no big deal (vadilo by to jen při konkurenční
   editaci a i tam by to asi prošlo - prostě by si jen buildeři vzájemně
   přepisovali změny).
+=========>
+Tak ne, kašlat na timestampy.
+- Na servetu se u každé connecion bude držet aktuální výřez mapy, na který
+  se klient kouká (tedy výřez, na který se klient naposledy ptal). To je
+  jen dvojice coords (dva rohy), takže zanedbatelná paměťová náročnost.
+- Při editaci roomu se změna pošle všem klientům, kteří ji mají v aktuálním
+  výřezu.
 
 ----------------------------------------------------------------------------
 

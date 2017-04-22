@@ -33,7 +33,9 @@ export class Entity extends Serializable
     {
       // Property 'id' is not saved to file, because it is saved
       // as the name of the saved file (like 7-iu5by22s.json).
-      saved: false
+      saved: false,
+      sentToClient: true,
+      sentToServer: true
     };
 
   // ------------------------------------------------- //
@@ -141,6 +143,24 @@ export class Entity extends Serializable
     entity.prototypeId = prototype.getId();
 
     return entity;
+  }
+
+  // Creates an invalid entity. Access to this entity's properties
+  // will be reported as error.
+  // (This is used when an entity that is being deserialized has
+  //  a reference to an entity that doesn't exist at the moment.)
+  public static createInvalidEntity(id: string)
+  {
+    let handler = new EntityProxyHandler();
+
+    handler.id = id;
+    // We are purposely creating an invalid reference so the internal
+    // entity reference shall be 'null'.
+    handler.entity = null;
+
+    // Create a Javascript Proxy Object that will report access
+    // of entity properties.
+    return new Proxy({}, handler);
   }
 
   // Hides 'entity' behind a Proxy object that will report

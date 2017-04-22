@@ -39,4 +39,4 @@ export class Dimension extends GameEntity
   // ---------------- Private methods -------------------
 }
 
-ClassFactory.registerClass(Dimension);
+ClassFactory.registerPrototypeClass(Dimension);
