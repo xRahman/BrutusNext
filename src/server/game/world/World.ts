@@ -131,4 +131,4 @@ export class World extends GameEntity
   // ---------------- Private methods -------------------
 }
 
-ClassFactory.registerClass(World);
+ClassFactory.registerPrototypeClass(World);

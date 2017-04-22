@@ -170,4 +170,4 @@ export class Room extends GameEntity
   // ---------------- Private methods -------------------
 }
 
-ClassFactory.registerClass(Room);
+ClassFactory.registerPrototypeClass(Room);

@@ -43,4 +43,4 @@ export class Area  extends GameEntity
   // ---------------- Private methods -------------------
 }
 
-ClassFactory.registerClass(Area);
+ClassFactory.registerPrototypeClass(Area);
