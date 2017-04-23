@@ -653,8 +653,8 @@ class Server/Room extends GameEntity
 
 ----------------------------------------------------------------------------
 
-Úvahy o class specech:
-========================
+DESIGN: Úvahy o class specech:
+===============================
 
 Species hierarchy:
 -------------------
@@ -798,6 +798,34 @@ Server entity   Client entity
 
   (class na serveru a clientovi se bude jmenovat stejně, snad to nebude moc
    mást. Konec konců, přejmenovat to jde vždycky...)
+
+
+Další úvahy o behaviour specech:
+---------------------------------
+- měly by to být entity, aby šly prototypově dědit a snadno editovat
+  (a měly by být skriptovatelné).
+- měly by obsahovat i data
+  - například fight spec 'orc shaman' by měl mít nasetované i spelly, které
+    ten shaman bude castit. Když ho pak přidělím orkovi, tak ten tím
+    rovnou dostane všechny potřebné ability.
+  - jake má mob skilly se zjisti sjednocenim skillu ze všech action speců,
+    které má přiřazené (aby to bylo stejně jako u playera, který může znát
+    úplně všechny skilly ale najednou používá jen část z nich).
+
+
+DESIGN: Úvahy Expech:
+======================
+
+Každá zóna bude mít pevně daný počet expů, které z ní lze získat
+  a k němu se bude gain asymptoticky blížit.
+- díky tomu nebude hrát roli, kdo nastaví víc expové moby, časem se to
+  vždycky srovná (a současně to mohou být globální expy).
+
+Implementace: Každý char bude mít exp counter pro každou zónu, ten se
+  vždycky prožene asymptotickou fcí a součet výsledků ze všech zón jsou
+  playerovy current xp (asi by bylo dobré počítat utracené xp v samostatném
+  counteru, neodečítat je přímo).
+
 
 ----------------------------------------------------------------------------
 
