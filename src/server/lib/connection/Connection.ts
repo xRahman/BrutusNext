@@ -8,10 +8,11 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Entity} from '../../../server/lib/entity/Entity';
-import {ServerSyslog} from '../../../server/lib/log/Syslog';
-import {AdminLevel} from '../../../server/lib/admin/AdminLevel';
+import {Syslog} from '../../../shared/lib/log/Syslog';
+import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Message} from '../../../server/lib/message/Message';
-import {ServerApp} from '../../../server/lib/Server';
+import {MessageType} from '../../../shared/lib/message/MessageType';
+import {ServerApp} from '../../../server/lib/ServerApp';
 import {SocketDescriptor} from '../../../server/lib/net/SocketDescriptor';
 import {Account} from '../../../server/lib/account/Account';
 import {AuthProcessor} from '../../../server/lib/connection/AuthProcessor';
@@ -21,7 +22,7 @@ import {ChargenProcessor} from
 import {Game} from '../../../server/game/Game';
 import {GameEntity} from '../../../server/game/entity/GameEntity';
 import {Character} from '../../../server/game/character/Character';
-import {ClassFactory} from '../../../shared/lib/ClassFactory';
+import {ClassFactory} from '../../../shared/lib/class/ClassFactory';
 
 export class Connection extends Entity
 {
@@ -227,10 +228,10 @@ export class Connection extends Entity
   // Handles situation when player connects to previously offline account .
   public connectToAccount(account: Account)
   {
-    ServerSyslog.log
+    Syslog.log
     (
       account.getName() + " [" + this.ipAddress + "] has logged in",
-      Message.Type.SYSTEM_INFO,
+      MessageType.SYSTEM_INFO,
       AdminLevel.IMMORTAL
     );
 
@@ -276,11 +277,11 @@ export class Connection extends Entity
     account.connection = this;
     this.account = account;
 
-    ServerSyslog.log
+    Syslog.log
     (
       account.getName() + " [" + this.ipAddress + "] has reconnected."
       + " Closing the old connection",
-      Message.Type.SYSTEM_INFO,
+      MessageType.SYSTEM_INFO,
       AdminLevel.IMMORTAL
     );
 
@@ -546,7 +547,7 @@ export class Connection extends Entity
   // Send connection-related message to this player connection.
   private sendConnectionInfo(text: string)
   {
-    Message.sendToConnection(text, Message.Type.CONNECTION_INFO, this);
+    Message.sendToConnection(text, MessageType.CONNECTION_INFO, this);
   }
 
   private announceReconnecting()
@@ -778,11 +779,11 @@ export class Connection extends Entity
     if (accountName !== null)
       player = "Player " + accountName;
 
-    ServerSyslog.log
+    Syslog.log
     (
       player + " [" + this.ipAddress + "]"
       + " lost (or closed) connection" + state,
-      Message.Type.SYSTEM_INFO,
+      MessageType.SYSTEM_INFO,
       AdminLevel.IMMORTAL
     );
   }
@@ -865,7 +866,8 @@ export class Connection extends Entity
   }
 }
 
-ClassFactory.registerClass(Connection);
+/// TODO: Connection by asi neměla být entita.
+ClassFactory.registerEntityClass(Connection);
 
 // ------------------ Type declarations ----------------------
 

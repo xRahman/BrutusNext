@@ -7,12 +7,12 @@
 'use strict';
 
 import {ERROR} from '../../../../shared/lib/error/ERROR';
-import {Utils} from '../../../../server/lib/utils/Utils';
-import {ServerSyslog} from '../../../../server/lib/log/Syslog';
-import {Message} from '../../../../server/lib/message/Message';
+import {SharedUtils} from '../../../../server/lib/utils/SharedUtils';
+import {Syslog} from '../../../../shared/lib/log/Syslog';
+import {MessageType} from '../../../../shared/lib/message/MessageType';
 import {Account} from '../../../../server/lib/account/Account';
-import {AdminLevel} from '../../../../server/lib/admin/AdminLevel';
-import {ServerApp} from '../../../../server/lib/Server';
+import {AdminLevel} from '../../../../shared/lib/admin/AdminLevel';
+import {ServerApp} from '../../../../server/lib/ServerApp';
 import {SocketDescriptor} from '../../../../server/lib/net/SocketDescriptor';
 import {Connection} from '../../../../server/lib/connection/Connection';
 
@@ -181,7 +181,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     this.inputBuffer = "";
 
     // Make sure that all newlines are representedy by '\n'.
-    data = Utils.normalizeCRLF(data);
+    data = SharedUtils.normalizeCRLF(data);
 
     // Do not parse protocol data if user sent just an empty newline.
     // (This is often used by player to refresh prompt)
@@ -227,11 +227,11 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     {
       // I don't really know what kind of errors can happen here.
       // For now let's just log the error and close the connection.
-      ServerSyslog.log
+      Syslog.log
       (
         player
         + " has encounterd a socket error, closing the connection. " + error,
-        Message.Type.SYSTEM_ERROR,
+        MessageType.SYSTEM_ERROR,
         AdminLevel.IMMORTAL
       );
     }
