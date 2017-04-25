@@ -8,7 +8,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {ServerApp} from '../../../server/lib/Server';
+import {ServerApp} from '../../../server/lib/ServerApp';
 import {Connection} from '../../../server/lib/connection/Connection';
 
 // Built-in node.js modules.

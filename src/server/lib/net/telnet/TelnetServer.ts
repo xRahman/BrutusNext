@@ -24,10 +24,10 @@
 'use strict';
 
 import {FATAL_ERROR} from '../../../../shared/lib/error/FATAL_ERROR';
-import {ServerSyslog} from '../../../../server/lib/log/Syslog';
-import {AdminLevel} from '../../../../server/lib/admin/AdminLevel';
-import {Message} from '../../../../server/lib/message/Message';
-import {ServerApp} from '../../../../server/lib/Server';
+import {Syslog} from '../../../../shared/lib/log/Syslog';
+import {AdminLevel} from '../../../../shared/lib/admin/AdminLevel';
+import {MessageType} from '../../../../shared/lib/message/MessageType';
+import {ServerApp} from '../../../../server/lib/ServerApp';
 import {Connection} from '../../../../server/lib/connection/Connection';
 import {TelnetSocketDescriptor} from
   '../../../../server/lib/net/telnet/TelnetSocketDescriptor';
@@ -91,10 +91,10 @@ export class TelnetServer
       () => { this.onServerStartsListening(); }
     );
 
-    ServerSyslog.log
+    Syslog.log
     (
       "Starting telnet server at port " + port,
-      Message.Type.SYSTEM_INFO,
+      MessageType.SYSTEM_INFO,
       AdminLevel.IMMORTAL
     );
 
@@ -108,10 +108,10 @@ export class TelnetServer
   {
     this.isOpen = true;
 
-    ServerSyslog.log
+    Syslog.log
     (
       "Telnet server is up and listening to new connections",
-      Message.Type.TELNET_SERVER,
+      MessageType.TELNET_SERVER,
       AdminLevel.IMMORTAL
     );
   }
@@ -150,10 +150,10 @@ export class TelnetServer
     if (!this.isServerOpen(socket, ip))
       return;
 
-    ServerSyslog.log
+    Syslog.log
     (
       "Received a new telnet connection request from " + ip,
-      Message.Type.TELNET_SERVER,
+      MessageType.TELNET_SERVER,
       AdminLevel.IMMORTAL
     );
 
@@ -201,11 +201,11 @@ export class TelnetServer
   {
     if (this.isOpen === false)
     {
-      ServerSyslog.log
+      Syslog.log
       (
         "Denying telnet connection request from" + ip + ":"
         + " Server is closed",
-        Message.Type.TELNET_SERVER,
+        MessageType.TELNET_SERVER,
         AdminLevel.IMMORTAL
       );
 

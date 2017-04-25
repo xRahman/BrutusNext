@@ -6,13 +6,13 @@
 
 'use strict';
 
-import {Utils} from '../../../server/lib/utils/Utils';
+///import {SharedUtils} from '../../../shared/lib/utils/SharedUtils';
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
 import {EntityList} from '../../../server/lib/entity/EntityList';
 import {Entity} from '../../../server/lib/entity/Entity';
 import {EntityManager} from '../../../server/lib/entity/EntityManager';
-import {ServerApp} from '../../../server/lib/Server';
+import {ServerApp} from '../../../server/lib/ServerApp';
 
 export class NameSearchList extends EntityList
 {

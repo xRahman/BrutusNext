@@ -1,9 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Implements web client.
-
-  Client is a singleton, you can access the instance by Client.getInstance()
+  Manages an instance of web client application.
 
   Usage:
     import {Client} from './Client';
@@ -60,13 +58,18 @@ export class ClientApp extends App
   }
   */
 
-  public static getInstance(): ClientApp
+  /// Tohle možná nebudu potřebovat - nikde se to nevolá.
+  /// (jediný smysl je ostatně jiný typ návratové hodnoty,
+  ///  stejná metoda existuje už v App)
+  /*
+  protected static getInstance(): ClientApp
   {
     if (ClientApp.instance === null || ClientApp.instance === undefined)
       FATAL_ERROR("Instance of client doesn't exist yet");
 
     return <ClientApp>App.instance;
   }
+  */
 
   // Creates an instance of a client. Client is a singleton, so it must
   // not already exist.

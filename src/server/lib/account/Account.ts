@@ -8,18 +8,18 @@
 
 import {Settings} from '../../../server/ServerSettings';
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {Utils} from '../../../server/lib/utils/Utils';
+import {SharedUtils} from '../../../shared/lib/utils/SharedUtils';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
-import {AdminLevel} from '../../../server/lib/admin/AdminLevel';
-import {ServerSyslog} from '../../../server/lib/log/Syslog';
-import {Message} from '../../../server/lib/message/Message';
+import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
+import {Syslog} from '../../../shared/lib/log/Syslog';
+import {MessageType} from '../../../shared/lib/message/MessageType';
 import {ScriptableEntity} from '../../../server/lib/entity/ScriptableEntity';
 import {Connection} from '../../../server/lib/connection/Connection';
-import {ServerApp} from '../../../server/lib/Server';
+import {ServerApp} from '../../../server/lib/ServerApp';
 import {Game} from '../../game/Game';
 import {GameEntity} from '../../../server/game/entity/GameEntity';
 import {Character} from '../../../server/game/character/Character';
-import {ClassFactory} from '../../../shared/lib/ClassFactory';
+import {ClassFactory} from '../../../shared/lib/class/ClassFactory';
 
 // Built-in node.js modules.
 import * as crypto from 'crypto';  // Import namespace 'crypto' from node.js
@@ -87,7 +87,7 @@ export class Account extends ScriptableEntity
   {
     for (let characterName of this.characterNames)
     {
-      if (Utils.isAbbrev(abbrev, characterName))
+      if (SharedUtils.isAbbrev(abbrev, characterName))
         return characterName;
     }
 
@@ -265,10 +265,10 @@ export class Account extends ScriptableEntity
       return;
     */
 
-    ServerSyslog.log
+    Syslog.log
     (
       accountName + " [" + ipAddress + "] " + action,
-      Message.Type.SYSTEM_INFO,
+      MessageType.SYSTEM_INFO,
       AdminLevel.IMMORTAL
     );
 
@@ -373,11 +373,11 @@ export class Account extends ScriptableEntity
 
   private logCharacterCreation(accountName: string, characterName: string)
   {
-    ServerSyslog.log
+    Syslog.log
     (
       "Player " + this.getName() + " has created a new character: "
       + characterName,
-      Message.Type.SYSTEM_INFO,
+      MessageType.SYSTEM_INFO,
       AdminLevel.IMMORTAL
     );
   }

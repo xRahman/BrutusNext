@@ -9,10 +9,10 @@
 import {Packet} from '../../../../shared/protocol/Packet';
 ///import {PacketData} from '../../../../shared/protocol/PacketData';
 import {ERROR} from '../../../../shared/lib/error/ERROR';
-import {Utils} from '../../../../server/lib/utils/Utils';
-import {ServerSyslog} from '../../../../server/lib/log/Syslog';
-import {Message} from '../../../../server/lib/message/Message';
-import {AdminLevel} from '../../../../server/lib/admin/AdminLevel';
+import {SharedUtils} from '../../../../shared/lib/utils/SharedUtils';
+import {Syslog} from '../../../../shared/lib/log/Syslog';
+import {MessageType} from '../../../../shared/lib/message/MessageType';
+import {AdminLevel} from '../../../../shared/lib/admin/AdminLevel';
 import {SocketDescriptor} from '../../../../server/lib/net/SocketDescriptor';
 
 import * as WebSocket from 'ws';
@@ -118,12 +118,12 @@ export class WebSocketDescriptor extends SocketDescriptor
     }
     catch (error)
     {
-      ServerSyslog.log
+      Syslog.log
       (
         "Client ERROR: Failed to send data to the socket"
         + " " + this.url + " (" + this.ip + "). Reason:"
         + " " + error.message + ".  Data is not processed",
-        Message.Type.WEBSOCKET_SERVER,
+        MessageType.WEBSOCKET_SERVER,
         AdminLevel.IMMORTAL
       );
     }
@@ -145,11 +145,11 @@ export class WebSocketDescriptor extends SocketDescriptor
       // Data is supposed to be sent in text mode.
       //  This is a client error, we can't really do anything about it.
       // So we just log it.
-      ServerSyslog.log
+      Syslog.log
       (
         "Client ERROR: Received binary data from websocket connection"
         + " " + this.url + " (" + this.ip + "). Data is not processed",
-        Message.Type.WEBSOCKET_SERVER,
+        MessageType.WEBSOCKET_SERVER,
         AdminLevel.IMMORTAL
       );
       return;
@@ -158,7 +158,7 @@ export class WebSocketDescriptor extends SocketDescriptor
     /// DEBUG:
     console.log('(ws) received message: ' + data);
 
-    data = Utils.normalizeCRLF(data);
+    data = SharedUtils.normalizeCRLF(data);
 
     await this.processInput(data);
   }
@@ -171,11 +171,11 @@ export class WebSocketDescriptor extends SocketDescriptor
 
   private onSocketError(event: Error)
   {
-    ServerSyslog.log
+    Syslog.log
     (
       "Websocket ERROR: Error occured on socket"
       + " " + this.url + " (" + this.ip + ")",
-      Message.Type.WEBSOCKET_SERVER,
+      MessageType.WEBSOCKET_SERVER,
       AdminLevel.IMMORTAL
     );
   }
@@ -194,21 +194,21 @@ export class WebSocketDescriptor extends SocketDescriptor
     // Error code 1000 means that the connection was closed normally.
     if (event.code != 1000)
     {
-      ServerSyslog.log
+      Syslog.log
       (
         "Websocket ERROR: Socket " + this.url + " (" + this.ip + ")"
         + " closed because of error: " + event.reason,
-        Message.Type.WEBSOCKET_SERVER,
+        MessageType.WEBSOCKET_SERVER,
         AdminLevel.IMMORTAL
       );
     }
     else
     {
-      ServerSyslog.log
+      Syslog.log
       (
         "Websocket ERROR: Socket " + this.url + " (" + this.ip + ")"
         + " closed normally",
-        Message.Type.WEBSOCKET_SERVER,
+        MessageType.WEBSOCKET_SERVER,
         AdminLevel.IMMORTAL
       );
     }

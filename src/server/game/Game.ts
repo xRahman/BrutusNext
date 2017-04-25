@@ -73,9 +73,7 @@ export class Game
 
     if (this.world !== null)
     {
-      ERROR("Attempt to create default world when there"
-        + " already is a world. There can only be one"
-        + " world per game. World is not created");
+      ERROR("World already exists");
       return;
     }
 

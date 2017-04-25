@@ -3,12 +3,12 @@
 
   Implements game server.
 
-  Server is a singleton, you can access the instance by Server.getInstance()
+  Manages an instance of server application.
 
   Usage:
     import {Server} from './server/Server';
     Server.create(); // Creates an instance.
-    Server.getInstance().run(port);
+    Server.run(port);
 */
 
 'use strict';
@@ -21,12 +21,13 @@ import {EntityManager} from '../../server/lib/entity/EntityManager';
 import {FileSystem} from '../../server/lib/fs/FileSystem';
 import {FlagNamesManager} from '../../server/lib/flags/FlagNamesManager';
 import {AdminList} from '../../server/lib/admin/AdminList';
-import {AdminLevel} from '../../server/lib/admin/AdminLevel';
+import {AdminLevel} from '../../shared/lib/admin/AdminLevel';
 import {Connection} from '../../server/lib/connection/Connection';
 import {EntityList} from '../../server/lib/entity/EntityList';
 import {PrototypeManager} from '../../server/lib/prototype/PrototypeManager';
 import {AccountList} from '../../server/lib/account/AccountList';
-import {ServerSyslog} from '../../server/lib/log/ServerSyslog';
+import {Syslog} from '../../shared/lib/log/Syslog';
+import {Message} from '../../server/lib/message/Message';
 import {MessageType} from '../../shared/lib/message/MessageType';
 import {Game} from '../../server/game/Game';
 import {GameEntity} from '../../server/game/entity/GameEntity';
@@ -94,8 +95,6 @@ export class ServerApp extends App
 
   // --------------- Static accessors -------------------
 
-  // These are shortcuts so you don't have to use Server.getInstance()
-
   public static get timeOfBoot()
   {
     if (ServerApp.getInstance().timeOfBoot === null)
@@ -141,14 +140,14 @@ export class ServerApp extends App
 
   // ---------------- Static methods --------------------
 
-  /*
-  public static instanceExists()
+  // Loads the game (or creates a new default one
+  // if there is no ./data directory).
+  public static async run(telnetPort: number)
   {
-    return App.instance !== null && Server.instance !== undefined;
+    ServerApp.getInstance().run(telnetPort);
   }
-  */
 
-  public static getInstance(): ServerApp
+  protected static getInstance(): ServerApp
   {
     if (ServerApp.instance === null || ServerApp.instance === undefined)
       FATAL_ERROR("Instance of server doesn't exist yet");
@@ -248,11 +247,6 @@ export class ServerApp extends App
 
   // ---------------- Public methods --------------------
 
-  // public getEntityManager()
-  // {
-  //   return this.entityManager;
-  // }
-
   // Reports error message and stack trace.
   // (Don't call this method directly, use ERROR()
   //  from /shared/lib/error/ERROR).
@@ -299,8 +293,14 @@ export class ServerApp extends App
     this.game = new Game();
 
     /// TEST
-    await test();
+    ///await test();
 
+    // Create a prototype entitity for each entity classe listed
+    // in ClassFactory so they can be used as prototype objects
+    // for other entities.
+    ClassFactory.createPrototypeEntities()
+
+    /*
     // We must check if './data/' directory exists before
     // initPrototypes() is called, because './data/'
     // will be created by it if it doesn't exist.
@@ -311,9 +311,10 @@ export class ServerApp extends App
     // 'initPrototypes' may have added new records to the ClassFactory
     // so we need to save them.
     await this.prototypeManager.save();
+    */
 
-    // If 'data' directory doesn't exist at all, create and save a new world.
-    if (createDefaultData)
+    // If /server/data/ directory doesn't exist, create and save a new world.
+    if (!FileSystem.existsSync(ServerApp.DATA_DIRECTORY))
     {
       // Mark flagNamesManager as ready without loading from file
       // (there is nowhere to load it from so we will just start
@@ -375,344 +376,4 @@ export class ServerApp extends App
 
     this.httpServer.start();
   }
-}
-
-
-// -------------- TEST ----------------------
-
-
-/*
-// This module allows using new ES6 Proxy API through old harmony API
-// (it allows us to call 'new Proxy(target, handler)').
-var Proxy = require(harmony-proxy');
-*/
-
-
-///import {EntityProxyHandler} from '../shared/entity/EntityProxyHandler';
-
-/*
-class PEntity
-{
-  public x = 3;
-
-  public getThis()
-  {
-    return this;
-  }
-}
-
-class PHandler
-{
-  public entity = null;
-
-  public get(target: any, property: any)
-  {
-    console.log("PHandler.get()");
-
-    return this.entity[property];
-  }
-}
-*/
-
-///import {NamedEntity} from '../shared/entity/NamedEntity';
-///import {SaveableObject} from '../shared/fs/SaveableObject';
-
-// -------------------- test async delaye ---------------------------
-
-/*
-async function delay(miliseconds: number)
-{
-  return new Promise<void>
-  (
-    resolve =>
-    {
-        setTimeout(resolve, miliseconds);
-    }
-  );
-}
-*/
-
-// ------ test on-demand ukončování čekající async funkce ------------
-
-/*
-function resolveAwaiter(promise: Promise<void>): Promise<void>
-{
-  console.log("Entering resolveTest()");
-
-  return promise;
-}
-
-async function resolveTest()
-{
-    let resolveCallback = null;
-
-  console.log("Creating Promise");
-
-  let promise = new Promise
-  (
-    (resolve, reject) =>
-    {
-      // Here we will just remember 'resolve' callback function.
-      resolveCallback = resolve;
-    }
-  );
-
-  console.log("Setting timeout");
-
-  setTimeout(resolveCallback, 2000);
-
-  console.log("Awaiting resolveTest()");
-
-  await resolveAwaiter(promise);
-
-  console.log("resolveTest() returned");
-}
-*/
-
-// ---------------------------------------------------------
-
-class PHandler
-{
-  public set(target: any, property: any, value: any, receiver: any)
-  {
-    console.log("PHandler.set()");
-
-    target[property] = value;
-  }
-}
-
-let Test = class TestClass
-{ 
-}
-
-// ---------------------------------------------------------
-
-import {InstantiableClass} from '../../server/lib/class/InstantiableClass';
-
-class X extends InstantiableClass
-{
-  public x = 11;
-}
-
-class Y extends InstantiableClass
-{
-  public y = 17;
-}
-
-// ---------------------------------------------------------
-
-/*
-class StaticPropertyTest
-{
-  public static x = 10;
-}
-*/
-
-async function test()
-{
-  /*
-  let o = Object.create(new StaticPropertyTest);
-
-  console.log(">>>>> " + o.constructor['x']);
-  */
-
-
-  ///console.log("Is x instance of X? " + (x instanceof X));
-
-  /*
-  Test.prototype['data'] = [1, 2];
-
-  let handler = new PHandler();
-
-  let proxy1 = new Proxy(new Test, <any>handler);
-  let proxy2 = new Proxy(new Test, <any>handler);
-
-  proxy1['data'].push(3);
-  */
-
-  /*
-  Test.prototype['data'] = [1, 2];
-  ///Test.prototype['data'] = "abc";
-
-  let test1 = new Test();
-  let test2 = new Test();
-
-  Object.freeze(test1['data']);
-
-  ///test1['data'] = "def";
-  test1['data'][1] = 5;
-  ///test1['data'].push(3);
-
-  console.log("Test1: " + test1['data']);
-  console.log("Test2: " + test2['data']);
-  */
-
-
-  ///await resolveTest();
-
-  /*
-  let account = EntityManager.createNamedEntity
-  (
-    "Test",
-    'Account',
-    Account
-  );
-
-  let tmp = account;
-
-  console.log("----------- Before comparison ------------");
-
-  if (account === tmp)
-    console.log("References are the same");
-
-  console.log("----------- After comparison ------------");
-  */
-
-  /*
-  let weakMap = new WeakMap();
-
-  weakMap.set(account, "blah");
-
-  account = null;
-
-  console.log(">>>>> TEST: " + weakMap.has(account));
-  console.log(">>>>> TEST: " + weakMap.has(tmp));
-  */
-
-  /*
-  let entityList = new Map();
-  let reference = {};
-  let id = { id: "id" };
-
-  entityList.set("id", id);
-
-  let weakMap = new WeakMap();
-  
-  weakMap.set(id, reference);
-
-  ///console.log(">>>>> TEST: " + weakMap.length);
-
-  reference = null;
-
-  await delay(2000);
-
-  console.log(">>>>> TEST: " + weakMap.get(id));
-  */
-
-
-  /*
-  let account = EntityManager.createNamedEntity
-  (
-    "Test",
-    'Account',
-    Account
-  );
-
-  //Server.entityManager.remove(account);
-
-  console.log("Property list:");
-
-  for (let property in account)
-  {
-    console.log("property: " + property);
-  }
-
-  let x = account['blah'];
-  account['blah'] = 13;
-
-  ///console.log("Before remove");
-
-  Server.entityManager.remove(account);
-
-  ///console.log("Account in EntityManager after remove: "
-  ///  + Server.entityManager.has(account.getId()));
-
-  account['blah']();
-  */
-
-  /*
-  // Create a new world prototype.
-  Game.prototypeManager.createPrototype('BrutusWorld', 'World');
-
-  let entity = SaveableObject.createInstance
-    ({ className: 'BrutusWorld', typeCast: NamedEntity });
-
-  if (entity instanceof NamedEntity)
-  {
-    console.log("Entity is an instance of NamedEntity");
-  }
-  else
-  {
-    console.log("No luck :\\");
-  }
-  */
-
-  /*
-  let entity = new PEntity();
-  let handler = new PHandler();
-  let proxy = new Proxy({}, handler);
-
-  handler.entity = entity;
-
-//  console.log("X: " + proxy.x);
-
-  console.log("Before getThis()");
-
-  let anotherRef = proxy.getThis();
-
-  console.log("After getThis()");
-
-  console.log("X: " + anotherRef.x);
-  */
-  
-
-
-  //let entity1 =
-  //{
-  //  x: 1,
-  //  fce: function() { console.log("fce entity1"); }
-  //};
-
-  //let entity2 =
-  //{
-  //  x: 2,
-  //  fce: function() { console.log("fce entity2"); }
-  //};
-
-  //let handler = new EntityProxyHandler();
-
-  //let proxy = new Proxy({}, handler);
-
-  ///*
-  //handler.entity = entity1;
-
-  //console.log("Proxy1.x = " + proxy.x);
-  //proxy.fce();
-  //*/
-
-  //handler.entity = null;
-
-  //proxy.fce();
-  //proxy.y = 13;
-  //let tmp = proxy.x;
-  //tmp = proxy.i;
-
-  /*
-  console.log("Proxy_null.x = " + proxy.x);
-  proxy.fce();
-
-  let tmp = proxy.x;
-  console.log("Tmp: " + tmp);
-  tmp();
-  tmp.z = 11;
-  let tmp2 = tmp;
-  console.log("Tmp2: " + tmp);
-
-  proxy.y = 13;
-
-  handler.entity = entity2;
-
-  console.log("Proxy2.x = " + proxy.x);
-  proxy.fce();
-  */
 }

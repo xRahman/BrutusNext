@@ -8,11 +8,11 @@
 
 import {Settings} from '../../../server/ServerSettings';
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {Utils} from '../../../server/lib/utils/Utils';
+import {SharedUtils} from '../../../shared/lib/utils/SharedUtils';
 import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
 import {Message} from '../../../server/lib/message/Message';
 import {Connection} from '../../../server/lib/connection/Connection';
-import {ServerApp} from '../../../server/lib/Server';
+import {ServerApp} from '../../../server/lib/ServerApp';
 import {Game} from '../../../server/game/Game';
 import {Character} from '../../../server/game/character/Character';
 
@@ -65,7 +65,7 @@ export class ChargenProcessor
       return;
 
     // Make the first letter uppercase and the rest lowercase.
-    name = Utils.upperCaseFirstCharacter(name);
+    name = SharedUtils.upperCaseFirstCharacter(name);
 
     if (!await this.isNameAvailable(name))
       // We don't advance the stage so the next user input will
