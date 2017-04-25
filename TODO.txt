@@ -1,6 +1,17 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+TODO: Zbavit se metody getInstance()
+(App.instance může být prostě property a přistupovat na ni budou statické
+ metody.)
+- getInstance() pořád potřebuju (hlásí error, když instance neexistuje),
+  ale je z ní protected metoda.
+[done]
+
+TODO: SeverUtils a SharedUtils asi přece jen dávají větší smysl, než mergnutý
+  namespace Utils (bude pak jasnější, k čemu se ta utility metoda vztahuje).
+[done]
+
 TODO: V Entity a EntityManager přerovnat private a public metody.
 
 
@@ -225,6 +236,7 @@ TODO: Možná by bylo lepší udělat singletony (Client, Server) jako static cl
 
 
 TODO: Přejmenvoat Server/Utils na Server/ServerUtils
+[done]
 
 TODO: V JsonLoader ve fci readEntityReference() se volá
   App.entityManager.createReference(id);

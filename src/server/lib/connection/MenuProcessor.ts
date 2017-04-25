@@ -9,17 +9,18 @@
 import {Settings} from '../../../server/ServerSettings';
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
-import {Utils} from '../../../server/lib/utils/Utils';
+import {SharedUtils} from '../../../shared/lib/utils/SharedUtils';
 import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
-import {ServerSyslog} from '../../../server/lib/log/Syslog';
+import {Syslog} from '../../../shared/lib/log/Syslog';
 import {Connection} from '../../../server/lib/connection/Connection';
-import {ServerApp} from '../../../server/lib/Server';
+import {ServerApp} from '../../../server/lib/ServerApp';
 import {Account} from '../../../server/lib/account/Account';
 import {Message} from '../../../server/lib/message/Message';
+import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Game} from '../../../server/game/Game';
 import {GameEntity} from '../../../server/game/entity/GameEntity';
 import {Character} from '../../../server/game/character/Character';
-import {AdminLevel} from '../../../server/lib/admin/AdminLevel';
+import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 
 export class MenuProcessor
 {
@@ -62,7 +63,7 @@ export class MenuProcessor
       // Menu coundn't be composed so there is nothing to send.
       return;
 
-    Message.sendToConnection(menu, Message.Type.GAME_MENU, this.connection);
+    Message.sendToConnection(menu, MessageType.GAME_MENU, this.connection);
   }
 
   public async processCommand(command: string)
@@ -99,7 +100,7 @@ export class MenuProcessor
     (
       "&wGoodbye.\n"
       + "Have a nice day...",
-      Message.Type.AUTH_INFO,
+      MessageType.AUTH_INFO,
       this.connection
     );
     
@@ -253,7 +254,7 @@ export class MenuProcessor
       return null;
 
     // Make the first letter uppercase and the rest lowercase.
-    name = Utils.upperCaseFirstCharacter(name); 
+    name = SharedUtils.upperCaseFirstCharacter(name); 
 
     // 'getCharacterNameByAbbrev()' returns null if 'choice'
     // isn't an abbreviation of any character names on account.
@@ -281,7 +282,7 @@ export class MenuProcessor
         + "Please enter a valid menu choice or a name of one of your"
         + " characters:",
         */
-        Message.Type.GAME_MENU,
+        MessageType.GAME_MENU,
         this.connection
       );
       return;
@@ -334,10 +335,10 @@ export class MenuProcessor
   private announceCharacterLoadFailure(name: string)
   {
     // Let admins know what went wrong.
-    ServerSyslog.log
+    Syslog.log
     (
       "Failed to load character " + name,
-      Message.Type.SYSTEM_ERROR,
+      MessageType.SYSTEM_ERROR,
       AdminLevel.IMMORTAL
     );
 
@@ -346,7 +347,7 @@ export class MenuProcessor
     (
       "Unable to load your character.\n"
         + Message.PLEASE_CONTACT_ADMINS,
-      Message.Type.CONNECTION_ERROR,
+      MessageType.CONNECTION_ERROR,
       this.connection
     );
   }

@@ -8,18 +8,19 @@
 
 import {Settings} from '../../../server/ServerSettings';
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {Utils} from '../../../server/lib/utils/Utils';
-import {ServerApp} from '../../../server/lib/Server';
+import {SharedUtils} from '../../../shared/lib/utils/SharedUtils';
+import {ServerApp} from '../../../server/lib/ServerApp';
 import {Connection} from '../../../server/lib/connection/Connection';
+import {MessageType} from '../../../shared/lib/message/MessageType';
 import {MessageColors} from '../../../server/lib/message/MessageColors';
 import {TelnetSocketDescriptor}
   from '../../../server/lib/net/telnet/TelnetSocketDescriptor';
-import {AdminLevel} from '../../../server/lib/admin/AdminLevel';
+import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {GameEntity} from '../../../server/game/entity/GameEntity';
 
 export class Message
 {
-  constructor(text: string, msgType: Message.Type)
+  constructor(text: string, msgType: MessageType)
   {
     this.type = msgType;
 
@@ -40,7 +41,7 @@ export class Message
 
   // 'sender' can be null (for example for syslog messages, global infos, etc.) 
   private sender: GameEntity = null;
-  private type: Message.Type = null;
+  private type: MessageType = null;
   private text: string = null;
 
   // --------------- Static accessors -------------------
@@ -53,7 +54,7 @@ export class Message
   public static sendToConnection
   (
     text: string,
-    msgType: Message.Type,
+    msgType: MessageType,
     connection: Connection
   )
   {
@@ -67,7 +68,7 @@ export class Message
   public static sendToGameEntity
   (
     text: string,
-    msgType: Message.Type,
+    msgType: MessageType,
     target: GameEntity,
     sender: GameEntity = null
   )
@@ -82,7 +83,7 @@ export class Message
   public static sendToSay
   (
     text: string,
-    msgType: Message.Type,
+    msgType: MessageType,
     sender: GameEntity
   )
   {
@@ -103,7 +104,7 @@ export class Message
   public static sendToShout
   (
     text: string,
-    msgType: Message.Type,
+    msgType: MessageType,
     sender: GameEntity
   )
   {
@@ -126,7 +127,7 @@ export class Message
   public static sendToAllIngameConnections
   (
     text: string,
-    msgType: Message.Type,
+    msgType: MessageType,
     visibility: AdminLevel,
     sender: GameEntity = null)
   {
@@ -141,7 +142,7 @@ export class Message
   public static sendToAllConnections
   (
     text: string,
-    msgType: Message.Type,
+    msgType: MessageType,
     sender: GameEntity
   )
   {
@@ -234,7 +235,7 @@ export class Message
     ServerApp.sendToAllConnections(this);
   }
 
-  /// Message.Type can now be used instead.
+  /// MessageType can now be used instead.
   /// (Or maybe not. It'll better leave this here.)
   /*
   public isCommunication(): boolean
@@ -247,15 +248,15 @@ export class Message
 
     switch (this.type)
     {
-      case Message.Type.TELL:
-      case Message.Type.GOSSIP:
-      case Message.Type.GOSSIPEMOTE:
-      case Message.Type.SAY:
-      case Message.Type.QUEST:
-      case Message.Type.WIZNET:
-      case Message.Type.SHOUT:
-      case Message.Type.EMOTE:
-      case Message.Type.INFO:
+      case MessageType.TELL:
+      case MessageType.GOSSIP:
+      case MessageType.GOSSIPEMOTE:
+      case MessageType.SAY:
+      case MessageType.QUEST:
+      case MessageType.WIZNET:
+      case MessageType.SHOUT:
+      case MessageType.EMOTE:
+      case MessageType.INFO:
         return true;
     }
 
@@ -269,16 +270,16 @@ export class Message
   {
     // Remove all white spaces (including tabs and newlines)
     // from the end of the string.
-    let data = Utils.trimRight(this.text);
+    let data = SharedUtils.trimRight(this.text);
 
-    // Add color code depending on Message.type to the beginning of the
+    // Add color code depending on MessageType to the beginning of the
     // string (only if there isn't already a color code there), replaces
     // all '&_' codes (meaning 'return to base color') with base color
     // color code.
     data = this.addBaseColor(data);
     
     // Make sure that all newlines are representedy by '\r\n'.
-    data = Utils.normalizeCRLF(data);
+    data = SharedUtils.normalizeCRLF(data);
 
     // Add ingame prompt if this type of message triggers it.
     if (this.triggersPrompt())
@@ -332,13 +333,13 @@ export class Message
   {
     switch (this.type)
     {
-      case Message.Type.AUTH_PROMPT:
-      case Message.Type.AUTH_INFO:
-      case Message.Type.LOGIN_INFO:
-      case Message.Type.CHARGEN_PROMPT:
-      case Message.Type.CONNECTION_INFO:
-      case Message.Type.CONNECTION_ERROR:
-      case Message.Type.GAME_MENU:
+      case MessageType.AUTH_PROMPT:
+      case MessageType.AUTH_INFO:
+      case MessageType.LOGIN_INFO:
+      case MessageType.CHARGEN_PROMPT:
+      case MessageType.CONNECTION_INFO:
+      case MessageType.CONNECTION_ERROR:
+      case MessageType.GAME_MENU:
         return false;
 
       default:
@@ -353,7 +354,7 @@ export class Message
   {
     // First we will remove all white space characters from
     // the end of the message, because they don't affect color.
-    let trimmedData = Utils.trimRight(data);
+    let trimmedData = SharedUtils.trimRight(data);
     let lastTwoCharacters = trimmedData.substr(data.length - 2, 2);
 
     // If data (after trimming whitspace characters) already
@@ -551,9 +552,9 @@ export module Message
       let enumName = 'Part.Type';
 
       // "Dereferenced" enmum value (it's string representation).
-      let stringValue = Message.Type[value];
+      let stringValue = MessageType[value];
 
-      return Utils.getEnumAttributes(attributes, enumName, stringValue);
+      return SharedUtils.getEnumAttributes(attributes, enumName, stringValue);
     }
   }
   */

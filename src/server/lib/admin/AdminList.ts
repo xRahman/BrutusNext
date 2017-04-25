@@ -41,9 +41,10 @@
 */
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {AdminLevel} from '../../../server/lib/admin/AdminLevel';
-import {ServerSyslog} from '../../../server/lib/log/Syslog';
+import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
+import {Syslog} from '../../../shared/lib/log/Syslog';
 import {Message} from '../../../server/lib/message/Message';
+import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Game} from '../../../server/game/Game';
 import {GameEntity} from '../../../server/game/entity/GameEntity';
 import {Character} from '../../../server/game/character/Character';
@@ -122,7 +123,7 @@ export class AdminList extends AutoSaveableObject
     {
       actor.receive(target.getName() + " already has"
         + " the highest possible admin level.",
-        Message.Type.COMMAND);
+        MessageType.COMMAND);
       return;
     }
 
@@ -130,7 +131,7 @@ export class AdminList extends AutoSaveableObject
     {
       actor.receive("You can't promote " + target.getName() +
         " to higher admin level than your own.",
-        Message.Type.COMMAND);
+        MessageType.COMMAND);
       return;
     }
 
@@ -153,7 +154,7 @@ export class AdminList extends AutoSaveableObject
     {
       actor.receive("You can only demote"
         + "  targets below your own admin level.",
-        Message.Type.COMMAND);
+        MessageType.COMMAND);
       return;
     }
 
@@ -161,7 +162,7 @@ export class AdminList extends AutoSaveableObject
     {
       actor.receive(target.getName() + " already has"
         + " the lowest possible admin level.",
-        Message.Type.COMMAND);
+        MessageType.COMMAND);
       return;
     }
 
@@ -243,15 +244,15 @@ export class AdminList extends AutoSaveableObject
     Message.sendToAllIngameConnections
     (
       message,
-      Message.Type.INFO,
+      MessageType.INFO,
       AdminLevel.MORTAL
     );
 
     // Send info message to syslog.
-    ServerSyslog.log
+    Syslog.log
     (
       message,
-      Message.Type.SYSTEM_INFO,
+      MessageType.SYSTEM_INFO,
       AdminLevel.IMMORTAL
     );
   }
