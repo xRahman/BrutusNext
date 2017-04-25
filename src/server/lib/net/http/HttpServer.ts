@@ -6,10 +6,10 @@
 
 'use strict';
 
-import {ServerSyslog} from '../../../../server/lib/log/Syslog';
-import {AdminLevel} from '../../../../server/lib/admin/AdminLevel';
+import {Syslog} from '../../../../shared/lib/log/Syslog';
+import {AdminLevel} from '../../../../shared/lib/admin/AdminLevel';
 import {FileSystem} from '../../../../server/lib/fs/FileSystem';
-import {Message} from '../../../../server/lib/message/Message';
+import {MessageType} from '../../../../shared/lib/message/MessageType';
 import {WebSocketServer} from '../../../../server/lib/net/ws/WebSocketServer';
 
 // Built-in node.js modules.
@@ -67,10 +67,10 @@ export class HttpServer
       (request, response) => { this.onRequest(request, response); }
     );
 
-    ServerSyslog.log
+    Syslog.log
     (
       "Starting http server at port " + port,
-      Message.Type.SYSTEM_INFO,
+      MessageType.SYSTEM_INFO,
       AdminLevel.IMMORTAL
     );
 
@@ -95,10 +95,10 @@ export class HttpServer
   // Runs when server is ready and listening.
   private onStartListening()
   {
-    ServerSyslog.log
+    Syslog.log
     (
       "Http server is up and listening",
-      Message.Type.HTTP_SERVER,
+      MessageType.HTTP_SERVER,
       AdminLevel.IMMORTAL
     );
 

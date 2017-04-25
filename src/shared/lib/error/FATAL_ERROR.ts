@@ -54,5 +54,5 @@ import {App} from '../../../shared/lib/App';
 
 export function FATAL_ERROR(message: string)
 {
-  App.getInstance().reportFatalError(message);
+  App.reportFatalError(message);
 }

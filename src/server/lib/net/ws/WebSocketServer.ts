@@ -24,10 +24,10 @@
 'use strict';
 
 import {FATAL_ERROR} from '../../../../shared/lib/error/FATAL_ERROR';
-import {ServerSyslog} from '../../../../server/lib/log/Syslog';
-import {AdminLevel} from '../../../../server/lib/admin/AdminLevel';
-import {Message} from '../../../../server/lib/message/Message';
-import {ServerApp} from '../../../../server/lib/Server';
+import {Syslog} from '../../../../shared/lib/log/Syslog';
+import {AdminLevel} from '../../../../shared/lib/admin/AdminLevel';
+import {MessageType} from '../../../../shared/lib/message/MessageType';
+import {ServerApp} from '../../../../server/lib/ServerApp';
 import {Connection} from '../../../../server/lib/connection/Connection';
 import {HttpServer} from '../../../../server/lib/net/http/HttpServer';
 import {WebSocketDescriptor} from
@@ -56,10 +56,10 @@ export class WebSocketServer
   // Starts the websocket server inside a http server.
   public start(httpServer: http.Server)
   {
-    ServerSyslog.log
+    Syslog.log
     (
       "Starting websocket server",
-      Message.Type.SYSTEM_INFO,
+      MessageType.SYSTEM_INFO,
       AdminLevel.IMMORTAL
     );
 
@@ -79,10 +79,10 @@ export class WebSocketServer
     //   But since the websocket server runs inside a http server,
     // it must be started after onStartListening() is fired on http
     // server.
-    ServerSyslog.log
+    Syslog.log
     (
       "Websocket server is up and listening to new connections",
-      Message.Type.WEBSOCKET_SERVER,
+      MessageType.WEBSOCKET_SERVER,
       AdminLevel.IMMORTAL
     );
 
@@ -99,11 +99,11 @@ export class WebSocketServer
     if (!this.isServerOpen(socket, ip, url))
       return;
 
-    ServerSyslog.log
+    Syslog.log
     (
       "Received a new websocket connection request from"
       + " " + url + " (" + ip + ")",
-      Message.Type.WEBSOCKET_SERVER,
+      MessageType.WEBSOCKET_SERVER,
       AdminLevel.IMMORTAL
     );
 
@@ -138,12 +138,12 @@ export class WebSocketServer
   {
     if (this.isOpen === false)
     {
-      ServerSyslog.log
+      Syslog.log
       (
         "Denying websocket connection request from"
         + " " + url + "(" + ip + "):"
         + " Server is closed",
-        Message.Type.WEBSOCKET_SERVER,
+        MessageType.WEBSOCKET_SERVER,
         AdminLevel.IMMORTAL
       );
 

@@ -18,7 +18,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {Utils} from '../../../server/lib/utils/Utils';
+import {SharedUtils} from '../../../shared/lib/utils/SharedUtils';
 import {NameSearchList} from '../../../server/lib/entity/NameSearchList';
 import {EntityList} from '../../../server/lib/entity/EntityList';
 import {GameEntity} from "../../../server/game/entity/GameEntity";
@@ -27,6 +27,8 @@ export class AbbrevSearchList extends NameSearchList
 {
   //----------------- Protected data --------------------
 
+  /// Converted to enum
+  /*
   private static searchCathegory =
   {
     ANYTHING: 0,
@@ -37,6 +39,7 @@ export class AbbrevSearchList extends NameSearchList
     GROUP: 5,     // Any character in character's group.
     OBJECT: 6
   }
+  */
 
   // This hashmap maps abbreviations to the list of entities
   // corresponding to that abbreviation.
@@ -61,7 +64,7 @@ export class AbbrevSearchList extends NameSearchList
     {
       // '0.john' means that we are looking for player character, which is
       // the same as '1.player.john, so we will transform it so.
-      cathegory = AbbrevSearchList.searchCathegory.PLAYER;
+      cathegory = AbbrevSearchList.SearchCathegory.PLAYER;
       parseResult.index = 1;
     }
 
@@ -127,13 +130,6 @@ export class AbbrevSearchList extends NameSearchList
       }
     }
   }
-
-  /// Moved to Utils.ts
-  // private isAbbrev(partialString: string, fullString: string): boolean
-  // {
-  //   return fullString.indexOf(partialString) !== -1;
-  // }
-  
 
   private addEntityToAbbreviation(abbrev: string, entity: GameEntity)
   {
@@ -226,11 +222,11 @@ export class AbbrevSearchList extends NameSearchList
   {
     switch (cathegory)
     {
-      case AbbrevSearchList.searchCathegory.ANYTHING:
+      case AbbrevSearchList.SearchCathegory.ANYTHING:
         // TODO:
         return true;
 
-      case AbbrevSearchList.searchCathegory.CHARMED:
+      case AbbrevSearchList.SearchCathegory.CHARMED:
         // TODO:
         //   something like:
         //   if (candidate.isCharmed())
@@ -238,23 +234,23 @@ export class AbbrevSearchList extends NameSearchList
         //   break;
         break;
 
-      case AbbrevSearchList.searchCathegory.FOLLOWER:
+      case AbbrevSearchList.SearchCathegory.FOLLOWER:
         // TODO:
         break;
 
-      case AbbrevSearchList.searchCathegory.GROUP:
+      case AbbrevSearchList.SearchCathegory.GROUP:
         // TODO:
         break;
 
-      case AbbrevSearchList.searchCathegory.MOB:
+      case AbbrevSearchList.SearchCathegory.MOB:
         // TODO:
         break;
 
-      case AbbrevSearchList.searchCathegory.OBJECT:
+      case AbbrevSearchList.SearchCathegory.OBJECT:
         // TODO:
         break;
 
-      case AbbrevSearchList.searchCathegory.PLAYER:
+      case AbbrevSearchList.SearchCathegory.PLAYER:
         // TODO:
         break;
 
@@ -439,28 +435,44 @@ export class AbbrevSearchList extends NameSearchList
 
   private parseSearchCathegory(cathegoryString: string): number
   {
-    let cathegory = AbbrevSearchList.searchCathegory.ANYTHING;
+    let cathegory = AbbrevSearchList.SearchCathegory.ANYTHING;
 
-    if (Utils.isAbbrev(cathegoryString, "mob"))
-      cathegory = AbbrevSearchList.searchCathegory.MOB;
+    if (SharedUtils.isAbbrev(cathegoryString, "mob"))
+      cathegory = AbbrevSearchList.SearchCathegory.MOB;
 
-    if (Utils.isAbbrev(cathegoryString, "player")
-      || Utils.isAbbrev(cathegoryString, "plr"))
-      cathegory = AbbrevSearchList.searchCathegory.PLAYER;
+    if (SharedUtils.isAbbrev(cathegoryString, "player")
+      || SharedUtils.isAbbrev(cathegoryString, "plr"))
+      cathegory = AbbrevSearchList.SearchCathegory.PLAYER;
 
-    if (Utils.isAbbrev(cathegoryString, "follower"))
-      cathegory = AbbrevSearchList.searchCathegory.FOLLOWER;
+    if (SharedUtils.isAbbrev(cathegoryString, "follower"))
+      cathegory = AbbrevSearchList.SearchCathegory.FOLLOWER;
 
-    if (Utils.isAbbrev(cathegoryString, "charmed"))
-      cathegory = AbbrevSearchList.searchCathegory.CHARMED;
+    if (SharedUtils.isAbbrev(cathegoryString, "charmed"))
+      cathegory = AbbrevSearchList.SearchCathegory.CHARMED;
 
-    if (Utils.isAbbrev(cathegoryString, "group")
-      || Utils.isAbbrev(cathegoryString, "grp"))
-      cathegory = AbbrevSearchList.searchCathegory.GROUP;
+    if (SharedUtils.isAbbrev(cathegoryString, "group")
+      || SharedUtils.isAbbrev(cathegoryString, "grp"))
+      cathegory = AbbrevSearchList.SearchCathegory.GROUP;
 
-    if (Utils.isAbbrev(cathegoryString, "object"))
-      cathegory = AbbrevSearchList.searchCathegory.OBJECT;
+    if (SharedUtils.isAbbrev(cathegoryString, "object"))
+      cathegory = AbbrevSearchList.SearchCathegory.OBJECT;
 
     return cathegory;
+  }
+}
+
+// ------------------ Type declarations ----------------------
+
+export module AbbrevSearchList
+{
+  export enum SearchCathegory
+  {
+    ANYTHING,
+    MOB,
+    PLAYER,
+    FOLLOWER,  // Character's own follower.
+    CHARMED,   // Any charmed character.
+    GROUP,     // Any character in character's group.
+    OBJECT
   }
 }

@@ -7,9 +7,9 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {ServerSyslog} from '../../../server/lib/log/Syslog';
-import {AdminLevel} from '../../../server/lib/admin/AdminLevel';
-import {Message} from '../../../server/lib/message/Message';
+import {Syslog} from '../../../shared/lib/log/Syslog';
+import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
+import {MessageType} from '../../../shared/lib/message/MessageType';
 
 // Built-in node.js modules.
 import * as fs from 'fs';
@@ -65,10 +65,10 @@ export class FileSystem
         if (error.code === 'ENOENT')
           reason = "File doesn't exist"
 
-        ServerSyslog.log
+        Syslog.log
         (
           "Unable to load file '" + path + "': " + reason,
-          Message.Type.SYSTEM_ERROR,
+          MessageType.SYSTEM_ERROR,
           AdminLevel.IMMORTAL
         );
       }
@@ -97,10 +97,10 @@ export class FileSystem
     }
     catch (error)
     {
-      ServerSyslog.log
+      Syslog.log
       (
         "Unable to load file '" + path + "': " + error.code,
-        Message.Type.SYSTEM_ERROR,
+        MessageType.SYSTEM_ERROR,
         AdminLevel.IMMORTAL
       );
 
@@ -127,10 +127,10 @@ export class FileSystem
     }
     catch (error)
     {
-      ServerSyslog.log
+      Syslog.log
       (
         "Unable to save file '" + path + "': " + error.code,
-        Message.Type.SYSTEM_ERROR,
+        MessageType.SYSTEM_ERROR,
         AdminLevel.IMMORTAL
       );
 
@@ -152,10 +152,10 @@ export class FileSystem
     }
     catch (error)
     {
-      ServerSyslog.log
+      Syslog.log
       (
         "Unable to delete file '" + path + "': " + error.code,
-        Message.Type.SYSTEM_ERROR,
+        MessageType.SYSTEM_ERROR,
         AdminLevel.IMMORTAL
       );
 
@@ -197,11 +197,11 @@ export class FileSystem
     }
     catch (error)
     {
-      ServerSyslog.log
+      Syslog.log
       (
         "Unable to ensure existence of directory '" + directory + "':"
         + " " + error.code,
-        Message.Type.SYSTEM_ERROR,
+        MessageType.SYSTEM_ERROR,
         AdminLevel.IMMORTAL
       );
 
@@ -250,11 +250,11 @@ export class FileSystem
     }
     catch (error)
     {
-      ServerSyslog.log
+      Syslog.log
       (
         "Unable to read directory '" + path + "':"
         + " " + error.code,
-        Message.Type.SYSTEM_ERROR,
+        MessageType.SYSTEM_ERROR,
         AdminLevel.IMMORTAL
       );
 
@@ -322,11 +322,11 @@ export class FileSystem
     }
     catch (error)
     {
-      ServerSyslog.log
+      Syslog.log
       (
         "Unable to stat file '" + path + "':"
         + " " + error.code,
-        Message.Type.SYSTEM_ERROR,
+        MessageType.SYSTEM_ERROR,
         AdminLevel.IMMORTAL
       );
 

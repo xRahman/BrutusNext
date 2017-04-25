@@ -26,13 +26,14 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {Utils} from '../../../server/lib/utils/Utils';
+import {SharedUtils} from '../../../shared/lib/utils/SharedUtils';
 import {EntityManager} from '../../../server/lib/entity/EntityManager';
-import {ServerSyslog} from '../../../server/lib/log/Syslog';
-import {AdminLevel} from '../../../server/lib/admin/AdminLevel';
+import {Syslog} from '../../../shared/lib/log/Syslog';
+import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Message} from '../../../server/lib/message/Message';
+import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Connection} from '../../../server/lib/connection/Connection';
-import {ServerApp} from '../../../server/lib/Server';
+import {ServerApp} from '../../../server/lib/ServerApp';
 import {Account} from '../../../server/lib/account/Account';
 
 export class AuthProcessor
@@ -109,7 +110,7 @@ export class AuthProcessor
       return;
 
     // Make the first letter uppercase and the rest lowercase.
-    accountName = Utils.upperCaseFirstCharacter(accountName);
+    accountName = SharedUtils.upperCaseFirstCharacter(accountName);
 
     // We are not going to attempt to log in to this account until we
     // receive password so we need to remember account name until then.
@@ -213,11 +214,11 @@ export class AuthProcessor
 
   private announceNewPlayer()
   {
-    ServerSyslog.log
+    Syslog.log
     (
       "New player: " + this.accountName
       + " [" + this.connection.ipAddress + "]",
-      Message.Type.SYSTEM_INFO,
+      MessageType.SYSTEM_INFO,
       AdminLevel.IMMORTAL
     );
   }
@@ -440,11 +441,11 @@ export class AuthProcessor
       return;
     }
 
-    ServerSyslog.log
+    Syslog.log
     (
       "Bad PW: " + this.accountName
       + " [" + this.connection.ipAddress + "]",
-      Message.Type.SYSTEM_INFO,
+      MessageType.SYSTEM_INFO,
       AdminLevel.IMMORTAL
     );
  
@@ -458,11 +459,11 @@ export class AuthProcessor
   private announceAccountLoadFailure()
   {
     // Let admins know what went wrong.
-    ServerSyslog.log
+    Syslog.log
     (
       "Failed to load account " + this.accountName + "."
       + " Disconnecting player",
-      Message.Type.SYSTEM_ERROR,
+      MessageType.SYSTEM_ERROR,
       AdminLevel.IMMORTAL
     );
 
@@ -471,7 +472,7 @@ export class AuthProcessor
     (
       "Unable to load your account.\n"
         + Message.PLEASE_CONTACT_ADMINS,
-      Message.Type.CONNECTION_ERROR,
+      MessageType.CONNECTION_ERROR,
       this.connection
     );
   }
@@ -525,7 +526,7 @@ export class AuthProcessor
     Message.sendToConnection
     (
       loginInfo,
-      Message.Type.LOGIN_INFO,
+      MessageType.LOGIN_INFO,
       this.connection
     );
 
@@ -539,7 +540,7 @@ export class AuthProcessor
     Message.sendToConnection
     (
       text,
-      Message.Type.AUTH_PROMPT,
+      MessageType.AUTH_PROMPT,
       this.connection
     );
   }
