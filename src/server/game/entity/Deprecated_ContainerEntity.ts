@@ -19,7 +19,7 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Entity} from '../../../server/lib/entity/Entity';
 import {EntityList} from '../../../server/lib/entity/EntityList';
 import {Game} from '../../../server/game/Game';
-import {GameEntity} from '../../../server/game/entity/GameEntity';
+import {ServerGameEntity} from '../../../server/game/entity/GameEntity';
 import {CommandInterpretter} from
   '../../../server/game/command/CommandInterpretter';
 
@@ -69,7 +69,7 @@ export abstract class ContainerEntity extends CommandInterpretter
   // --------------- Protected methods ------------------
 
   // Adds entity to contents of this entity.
-  protected insertEntity(entity: GameEntity)
+  protected insertEntity(entity: ServerGameEntity)
   {
     if (entity === null || entity === undefined)
     {
@@ -94,7 +94,7 @@ export abstract class ContainerEntity extends CommandInterpretter
   }
 
   // Removes entity from contents of this entity.
-  public removeEntity(entity: GameEntity)
+  public removeEntity(entity: ServerGameEntity)
   {
     this.contents.remove(entity);
   }

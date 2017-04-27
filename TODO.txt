@@ -1,6 +1,48 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+Entity class hierarchy
+=======================
+
+shared/Nameable
+-> shared/Attributable
+  -> shared/Serializable
+    -> shared/Saveable
+      -> shared/Entity
+        -> shared/ContainerEntity
+          -> shared/SharedGameEntity
+             (tohle možná nebude potřeba)
+            -> server/ServerGameEntity
+            -> client/ServerGameEntity
+
+Na klientu a na severu budu muset mít paralelně stejnou strukturu
+herních entity (World, Area, Room, etc.).
+- v tomhle případě budou mít stejná jména (/server/World, /client/World),
+  protože className se používá jako idčko prototypu při deserializaci.
+
+- nemělo by jít o duplikaci kódu, protože sdílená data a funčknost budou
+  v EntityData. Tj. na clientu bude jen něco jako:
+
+  class World
+  {
+    data: WorldData;
+  }
+
+
+Entity data class hierarchy
+----------------------------
+
+shared/Serializable
+-> shared/EntityData
+  -> shared/RoomData
+
+---------------------------------------------------------------
+
+TERMINOLOGIE:
+- remove() odstraňuje z daného seznamu
+- release() odstraňuje z daného seznamu a z EntityManageru (tedy i z paměti)
+- delete() odstraňuje ze seznamu, z EntityManageru a maže i z disku.
+
 TODO: Zbavit se metody getInstance()
 (App.instance může být prostě property a přistupovat na ni budou statické
  metody.)
@@ -14,6 +56,14 @@ TODO: SeverUtils a SharedUtils asi přece jen dávají větší smysl, než merg
 
 TODO: V Entity a EntityManager přerovnat private a public metody.
 
+
+TODO:
+- ContainerEntity.setLocation() by měla automaticky vyndat entitu z původní
+  lokace
+[done]
+- přidělat protected trigger metodu, která se zavolá při změně lokace.
+[na to zatím kašlu. Udělám to, až to budu na něco potřebovat]
+  
 
 ---------------------------------------------------------------
 

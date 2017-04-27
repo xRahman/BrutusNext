@@ -20,7 +20,7 @@ import {MenuProcessor} from '../../../server/lib/connection/MenuProcessor';
 import {ChargenProcessor} from
   '../../../server/lib/connection/ChargenProcessor';
 import {Game} from '../../../server/game/Game';
-import {GameEntity} from '../../../server/game/entity/GameEntity';
+import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
 import {Character} from '../../../server/game/character/Character';
 import {ClassFactory} from '../../../shared/lib/class/ClassFactory';
 
@@ -29,7 +29,7 @@ export class Connection extends Entity
   // ----------------- Public data ----------------------
 
   public account: Account = null;
-  public ingameEntity: GameEntity = null;
+  public ingameEntity: ServerGameEntity = null;
 
   //------------------ Private data ---------------------
 
@@ -99,7 +99,7 @@ export class Connection extends Entity
   }
 
   // Connection will be attached to 'entity' prior to entering the game.
-  public async enterGame(entity: GameEntity)
+  public async enterGame(entity: ServerGameEntity)
   {
     let validStage = this.stage === Connection.Stage.IN_MENU
                   || this.stage === Connection.Stage.IN_GAME
@@ -133,7 +133,7 @@ export class Connection extends Entity
   }
 
   // Connection will be attached to 'entity' prior to entering the game.
-  public reconnectToCharacter(entity: GameEntity)
+  public reconnectToCharacter(entity: ServerGameEntity)
   {
     if (!Entity.isValid(entity))
     {
@@ -418,7 +418,7 @@ export class Connection extends Entity
     return true;
   }
 
-  public attachToGameEntity(gameEntity: GameEntity)
+  public attachToGameEntity(gameEntity: ServerGameEntity)
   {
     this.ingameEntity = gameEntity;
     gameEntity.connection = this;

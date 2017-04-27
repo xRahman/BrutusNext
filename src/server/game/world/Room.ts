@@ -27,7 +27,7 @@
 
 import {PropertyAttributes} from
   '../../../shared/lib/class/PropertyAttributes';
-import {GameEntity} from '../../../server/game/entity/GameEntity';
+import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
 import {Game} from '../../game/Game';
 import {RoomFlags} from '../../game/world/RoomFlags';
 import {Exits} from '../../game/world/Exits';
@@ -36,7 +36,7 @@ import {ClassFactory} from '../../../shared/lib/ClassFactory';
 /// TEST:
 import {RoomData} from '../../../shared/game/world/RoomData';
 
-export class Room extends GameEntity
+export class Room extends ServerGameEntity
 {
   /// TODO: 'description' by možná mohly mít všechny entity.
   public description = "Unfinished room.";

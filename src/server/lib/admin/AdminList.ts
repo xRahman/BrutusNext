@@ -46,7 +46,7 @@ import {Syslog} from '../../../shared/lib/log/Syslog';
 import {Message} from '../../../server/lib/message/Message';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Game} from '../../../server/game/Game';
-import {GameEntity} from '../../../server/game/entity/GameEntity';
+import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
 import {Character} from '../../../server/game/character/Character';
 import {AutoSaveableObject} from '../../../server/lib/fs/AutoSaveableObject';
 
@@ -59,14 +59,14 @@ export class AdminList extends AutoSaveableObject
 
   // ---------------- Public methods --------------------
 
-  public onCharacterEnteringGame(character: GameEntity)
+  public onCharacterEnteringGame(character: ServerGameEntity)
   {
     /// TODO
     /// Pokud je character immortal, ak mu setnout referenci
     // na Server.admins, aby přes ni mohl promotovat, demotovat a tak.
   }
 
-  public onCharacterCreation(character: GameEntity)
+  public onCharacterCreation(character: ServerGameEntity)
   {
     // If there is no other character with admin rights when
     // a new character is created, make this new character
@@ -80,7 +80,7 @@ export class AdminList extends AutoSaveableObject
     // na Server.admins, aby přes ni mohl promotovat, demotovat a tak.
   }
 
-  public getAdminLevel(entity: GameEntity): AdminLevel
+  public getAdminLevel(entity: ServerGameEntity): AdminLevel
   {
     if (entity === null || entity === undefined)
     {
@@ -111,7 +111,7 @@ export class AdminList extends AutoSaveableObject
   }
 
   // Promote target one adminLevel hiher if possible.
-  public promote(actor: GameEntity, target: GameEntity)
+  public promote(actor: ServerGameEntity, target: ServerGameEntity)
   {
     if (!this.actionSanityCheck(actor, target, "promote"))
       return;
@@ -142,7 +142,7 @@ export class AdminList extends AutoSaveableObject
   }
 
   // Demote target one adminLevel lower if possible.
-  public demote(actor: GameEntity, target: GameEntity)
+  public demote(actor: ServerGameEntity, target: ServerGameEntity)
   {
     if (!this.actionSanityCheck(actor, target, "demote"))
       return;
@@ -179,7 +179,7 @@ export class AdminList extends AutoSaveableObject
 
   // Sets specified admin level to a character. Doesn't check
   // if actor is allowed to do such promotion.
-  private setAdminLevel(target: GameEntity, level: AdminLevel)
+  private setAdminLevel(target: ServerGameEntity, level: AdminLevel)
   {
     if (target === null || target === undefined)
     {
@@ -200,8 +200,8 @@ export class AdminList extends AutoSaveableObject
 
   public actionSanityCheck
   (
-    actor: GameEntity,
-    target: GameEntity,
+    actor: ServerGameEntity,
+    target: ServerGameEntity,
     action: string
   )
   : boolean
@@ -231,8 +231,8 @@ export class AdminList extends AutoSaveableObject
 
   private announceAction
   (
-    actor: GameEntity,
-    target: GameEntity,
+    actor: ServerGameEntity,
+    target: ServerGameEntity,
     action: string,
     level: AdminLevel
   )
