@@ -17,20 +17,21 @@ import {ERROR} from '../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../shared/lib/error/FATAL_ERROR';
 import {App} from '../../shared/lib/App';
 import {IdProvider} from '../../server/lib/entity/IdProvider';
-import {EntityManager} from '../../server/lib/entity/EntityManager';
+import {ServerEntityManager} from '../../server/lib/entity/EntityManager';
 import {FileSystem} from '../../server/lib/fs/FileSystem';
 import {FlagNamesManager} from '../../server/lib/flags/FlagNamesManager';
 import {AdminList} from '../../server/lib/admin/AdminList';
 import {AdminLevel} from '../../shared/lib/admin/AdminLevel';
 import {Connection} from '../../server/lib/connection/Connection';
-import {EntityList} from '../../server/lib/entity/EntityList';
+import {EntityList} from '../../shared/lib/entity/EntityList';
 import {PrototypeManager} from '../../server/lib/prototype/PrototypeManager';
 import {AccountList} from '../../server/lib/account/AccountList';
 import {Syslog} from '../../shared/lib/log/Syslog';
+import {ServerSyslog} from '../../server/lib/log/ServerSyslog';
 import {Message} from '../../server/lib/message/Message';
 import {MessageType} from '../../shared/lib/message/MessageType';
 import {Game} from '../../server/game/Game';
-import {GameEntity} from '../../server/game/entity/GameEntity';
+import {ServerGameEntity} from '../../server/game/entity/ServerGameEntity';
 import {TelnetServer} from '../../server/lib/net/telnet/TelnetServer';
 import {WebSocketServer} from '../../server/lib/net/ws/WebSocketServer';
 import {HttpServer} from '../../server/lib/net/http/HttpServer';
@@ -68,7 +69,7 @@ export class ServerApp extends App
 
   private idProvider = new IdProvider(this.timeOfBoot);
 
-  private saver = new Saver();
+  ///private saver = new Saver();
 
   // --------- idLists ---------
   // IdLists contain entity id's.
@@ -158,12 +159,12 @@ export class ServerApp extends App
   // If there are no admins yet, sets the highest possible admin rights
   // to the character (in other words, the first character created when
   // the mud is 'freshly installed' gets maximum admin rights).
-  public static onCharacterCreation(character: GameEntity)
+  public static onCharacterCreation(character: ServerGameEntity)
   {
     ServerApp.getInstance().adminList.onCharacterCreation(character);
   }
 
-  public static getAdminLevel(entity: GameEntity)
+  public static getAdminLevel(entity: ServerGameEntity)
   {
     return ServerApp.getInstance().adminList.getAdminLevel(entity);
   }
@@ -255,7 +256,7 @@ export class ServerApp extends App
     let errorMsg = message + "\n"
     + Syslog.getTrimmedStackTrace(Syslog.TrimType.ERROR);
 
-    Syslog.log(errorMsg, Message.Type.RUNTIME_ERROR, AdminLevel.ELDER_GOD);
+    Syslog.log(errorMsg, MessageType.RUNTIME_ERROR, AdminLevel.ELDER_GOD);
   }
 
   // Reports error message and stack trace and terminates the program.
@@ -269,7 +270,7 @@ export class ServerApp extends App
     Syslog.log
     (
       errorMsg,
-      Message.Type.FATAL_RUNTIME_ERROR,
+      MessageType.FATAL_RUNTIME_ERROR,
       AdminLevel.IMMORTAL
     );
 
@@ -347,7 +348,7 @@ export class ServerApp extends App
     adminLevel: AdminLevel
   )
   {
-    return Syslog.log(text, msgType, adminLevel)
+    return ServerSyslog.log(text, msgType, adminLevel);
   }
 
   protected getSaver()

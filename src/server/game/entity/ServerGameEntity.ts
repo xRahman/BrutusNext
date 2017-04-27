@@ -9,14 +9,15 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
 import {Script} from '../../../server/lib/prototype/Script';
-import {ServerApp} from '../../../server/lib/Server';
+import {ServerApp} from '../../../server/lib/ServerApp';
 import {Message} from '../../../server/lib/message/Message';
 import {Connection} from '../../../server/lib/connection/Connection';
 import {Game} from '../../../server/game/Game';
-import {ContainerEntity} from '../../../server/game/entity/ContainerEntity';
-import {EntityList} from '../../../server/lib/entity/EntityList'
+import {ContainerEntity} from '../../../shared/lib/entity/ContainerEntity';
+import {SharedGameEntity} from '../../../shared/game/entity/SharedGameEntity';
+//import {EntityList} from '../../../shared/lib/entity/EntityList'
 
-export class GameEntity extends ContainerEntity
+export class ServerGameEntity extends SharedGameEntity
 {
   /*
   /// TEST
@@ -80,8 +81,9 @@ export class GameEntity extends ContainerEntity
   }
   */
 
-  public setLocation(location: ContainerEntity) { this.location = location; }
-  public getLocation() { return this.location; }
+  /// Moved to /shared/lib/entity/ContainerEntity
+  ///public setLocation(location: ContainerEntity) { this.location = location; }
+  ///public getLocation() { return this.location; }
 
   // -------------- Protected accessors -----------------
 
@@ -157,7 +159,7 @@ export class GameEntity extends ContainerEntity
     msgType: Message.Type,
     // 'sender' can be null if there is no appropriate sending entity
     // (for example when player is receiving output from using a command).
-    sender: GameEntity = null
+    sender: ServerGameEntity = null
   )
   {
     let message = new Message(text, msgType);
@@ -275,7 +277,7 @@ export class GameEntity extends ContainerEntity
   }
   */
 
-  public addOfflineMessage(sender: GameEntity, message: Message)
+  public addOfflineMessage(sender: ServerGameEntity, message: Message)
   {
     /// TODO
     /// (Přidávání offline zpráv do fronty, výpis offline zpráv
@@ -318,10 +320,11 @@ export class GameEntity extends ContainerEntity
 
   // -------------- Protected class data ---------------
 
+  /// Moved to /shared/lib/entity/ContainerEntity
   // Entity this entity is contained in.
   // (Rooms are contained in Areas, characters may be in rooms or object,
   // objects may be in room or object, etc.)
-  protected location = null;
+  ///protected location = null;
 
   // ---------------- Command handlers ------------------
 

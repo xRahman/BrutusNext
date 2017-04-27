@@ -5,10 +5,12 @@
 
   Usage example:
 
-    import {Syslog} from '../../../shared/lib/log/Syslog';
+    import {MessageType} from '../shared/lib/log/MessageType';
+    import {AdminLevels} from '../shared/lib/admin/AdminLevels';
+    import {Syslog} from '../shared/lib/log/Syslog';
 
     Syslog.log("Loading mobile data...",
-      Syslog.msgType.SYSTEM, Syslog.levels.CREATOR);
+      MessageType.SYSTEM, AdminLevels.CREATOR);
 */
 
 'use strict';
