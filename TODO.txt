@@ -38,6 +38,11 @@ shared/Serializable
 
 ---------------------------------------------------------------
 
+TODO: Zavást entity classu Config, kam půjdou uložit věci
+  jako motd
+  (bude to normální entity classa, defaultní hodnoty classy budou prostě
+   defaultní hodnoty těch nastavení).
+
 TERMINOLOGIE:
 - remove() odstraňuje z daného seznamu
 - release() odstraňuje z daného seznamu a z EntityManageru (tedy i z paměti)
