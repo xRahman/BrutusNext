@@ -9,6 +9,7 @@
 
 import {AdminLevel} from '../../shared/lib/admin/AdminLevel';
 import {MessageType} from '../../shared/lib/message/MessageType';
+import {Saveable} from '../../shared/lib/class/Saveable';
 import {EntityManager} from '../../shared/lib/entity/EntityManager';
 
 export abstract class App
@@ -69,9 +70,14 @@ export abstract class App
       + " Use ServerApp.create() or ClientApp.create() instead");
   }
 
-  public static getSaver()
+  public static save(object: Saveable)
   {
-    return App.getInstance().saver;
+    return App.getInstance().save(object);
+  }
+
+  public static load(object: Saveable)
+  {
+    return App.getInstance().load(object);
   }
 
   public static getEntityManager()
@@ -101,6 +107,8 @@ export abstract class App
 
   // ---------------- Public methods --------------------
 
+  // --------------- Protected methods ------------------
+
   protected abstract reportError(message: string);
   protected abstract reportFatalError(message: string);
 
@@ -111,11 +119,6 @@ export abstract class App
     adminLevel: AdminLevel
   );
 
-  ///protected abstract getEntityManager();
-  ///protected abstract getSaver();
-
-  // --------------- Protected methods ------------------
-
-  /// Ještě uvidím, jak to udělám
-  ///protected abstract getSaver();
+  protected abstract save(object: Saveable);
+  protected abstract load(object: Saveable);
 }

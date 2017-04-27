@@ -8,10 +8,10 @@
 
 import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
 import {VirtualMachine} from '../../../server/lib/prototype/VirtualMachine';
-import {AdminLevel} from '../../../server/lib/admin/AdminLevel';
+import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {ServerSyslog} from '../../../server/lib/log/Syslog';
 import {Message} from '../../../server/lib/message/Message';
-import {GameEntity} from '../../../server/game/entity/GameEntity';
+import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
 import {ClassFactory} from '../../../shared/lib/ClassFactory';
 
 // 3rd party modules.
@@ -117,7 +117,7 @@ export class Script extends SaveableObject
       let _closureDelay = async function
       (
         miliseconds: number,
-        entity: GameEntity
+        entity: ServerGameEntity
       )
       {
         // Variable script is from the closure (it's a local variable
@@ -283,7 +283,7 @@ export class Script extends SaveableObject
     script: Script,
     resolve,
     reject,
-    entity: GameEntity,
+    entity: ServerGameEntity,
     compiledFunction: Function
   )
   {
@@ -345,7 +345,7 @@ export class Script extends SaveableObject
   private async internalDelay
   (
     miliseconds: number,
-    entity: GameEntity,
+    entity: ServerGameEntity,
     compiledFunction: Function,
     scriptName: string
   )

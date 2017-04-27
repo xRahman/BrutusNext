@@ -16,7 +16,7 @@ import {MessageColors} from '../../../server/lib/message/MessageColors';
 import {TelnetSocketDescriptor}
   from '../../../server/lib/net/telnet/TelnetSocketDescriptor';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
-import {GameEntity} from '../../../server/game/entity/GameEntity';
+import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
 
 export class Message
 {
@@ -40,7 +40,7 @@ export class Message
   //------------------ Private data ---------------------
 
   // 'sender' can be null (for example for syslog messages, global infos, etc.) 
-  private sender: GameEntity = null;
+  private sender: ServerGameEntity = null;
   private type: MessageType = null;
   private text: string = null;
 
@@ -69,8 +69,8 @@ export class Message
   (
     text: string,
     msgType: MessageType,
-    target: GameEntity,
-    sender: GameEntity = null
+    target: ServerGameEntity,
+    sender: ServerGameEntity = null
   )
   {
     let message = new Message(text, msgType);
@@ -84,7 +84,7 @@ export class Message
   (
     text: string,
     msgType: MessageType,
-    sender: GameEntity
+    sender: ServerGameEntity
   )
   {
     // Sender must be valid so we can find her location.
@@ -105,7 +105,7 @@ export class Message
   (
     text: string,
     msgType: MessageType,
-    sender: GameEntity
+    sender: ServerGameEntity
   )
   {
     // Sender must be valid so we can find her location.
@@ -129,7 +129,7 @@ export class Message
     text: string,
     msgType: MessageType,
     visibility: AdminLevel,
-    sender: GameEntity = null)
+    sender: ServerGameEntity = null)
   {
     let message = new Message(text, msgType);
 
@@ -143,7 +143,7 @@ export class Message
   (
     text: string,
     msgType: MessageType,
-    sender: GameEntity
+    sender: ServerGameEntity
   )
   {
     let message = new Message(text, msgType);
@@ -164,7 +164,7 @@ export class Message
     connection.sendMessage(this);
   }
 
-  public sendToGameEntity(target: GameEntity, sender: GameEntity = null)
+  public sendToGameEntity(target: ServerGameEntity, sender: ServerGameEntity = null)
   {
     if (target === null || !target.isValid())
     {
@@ -185,7 +185,7 @@ export class Message
     }
   }
 
-  public sendToSay(sender: GameEntity = null)
+  public sendToSay(sender: ServerGameEntity = null)
   {
     // Sender must be valid so we can find her location.
     if (sender === null || sender.isValid() === false)
@@ -199,7 +199,7 @@ export class Message
     // TODO
   }
 
-  public sendToShout(sender: GameEntity = null)
+  public sendToShout(sender: ServerGameEntity = null)
   {
     // Sender must be valid so we can find her location.
     if (sender === null || sender.isValid() === false)
@@ -219,7 +219,7 @@ export class Message
   // Sends message to all player connections that have a valid ingame entity.
   // 'visibility' limits recipients to certain admin level or higher.
   // (Used to send gossips, global infos, syslog, etc.).
-  public sendToAllIngameConnections(visibility: AdminLevel, sender: GameEntity = null)
+  public sendToAllIngameConnections(visibility: AdminLevel, sender: ServerGameEntity = null)
   {
     this.sender = sender;
 
@@ -228,7 +228,7 @@ export class Message
 
   // Sends message even to players in menu, entering password, etc.
   // (Used for messages like shutdown countdown.)
-  public sendToAllConnections(sender: GameEntity = null)
+  public sendToAllConnections(sender: ServerGameEntity = null)
   {
     this.sender = sender;
 

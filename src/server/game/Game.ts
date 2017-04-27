@@ -14,7 +14,7 @@ import {SaveableObject} from '../../server/lib/fs/SaveableObject';
 import {Message} from '../../server/lib/message/Message';
 import {ServerApp} from '../../server/lib/Server';
 import {AdminLevel} from '../../server/lib/admin/AdminLevel';
-import {GameEntity} from '../../server/game/entity/GameEntity';
+import {ServerGameEntity} from '../../server/game/entity/ServerGameEntity';
 import {CharacterList} from '../../server/game/character/CharacterList';
 import {World} from '../../server/game/world/World';
 import {Room} from '../../server/game/world/Room';

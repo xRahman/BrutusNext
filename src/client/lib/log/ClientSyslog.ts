@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Implements server-side logger.
+  Implements client-side logger.
 
   Do not use it directly, use /shared/lib/log/Syslog instead.
 */
@@ -13,10 +13,9 @@
 
 import {App} from '../../../shared/lib/App';
 import {MessageType} from '../../../shared/lib/message/MessageType';
-import {Message} from '../../../server/lib/message/Message';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 
-export class ServerSyslog
+export class ClientSyslog
 {
   // Outputs message to log file. Also sends it to online immortals
   // of required or greater level.
@@ -29,18 +28,21 @@ export class ServerSyslog
   {
     let entry = "[" + MessageType[msgType] + "] " + text;
 
-    // We need to check if instance of ServerApp exists, because syslog
-    // messages can be sent even before it is is created.
-    if (App.instanceExists())
-    {
-      let message = new Message(entry, msgType);
-
-      // Send log entry to all online characters that have appropriate
-      // admin level. Syslog messages don't have sender ('sender'
-      // parameter is null).
-      message.sendToAllIngameConnections(adminLevel);
-    }
-
+    /// Tohle na clientu asi moc nemá smysl...
+    /// (teoreticky by šlo poslat na server packet s chybovou hláškou,
+    ///  ale dostávat všehcny hlášky ze všech clientů by asi bylo moc spamu...)
+    // // We need to check if instance of ServerApp exists, because syslog
+    // // messages can be sent even before it is is created.
+    // if (App.instanceExists())
+    // {
+    //   let message = new Message(entry, msgType);
+    //
+    //   // Send log entry to all online characters that have appropriate
+    //   // admin level. Syslog messages don't have sender ('sender'
+    //   // parameter is null).
+    //   message.sendToAllIngameConnections(adminLevel);
+    // }
+    
     // Output to stdout.
     console.log(entry);
 

@@ -17,7 +17,7 @@ import {ScriptableEntity} from '../../../server/lib/entity/ScriptableEntity';
 import {Connection} from '../../../server/lib/connection/Connection';
 import {ServerApp} from '../../../server/lib/ServerApp';
 import {Game} from '../../game/Game';
-import {GameEntity} from '../../../server/game/entity/GameEntity';
+import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
 import {Character} from '../../../server/game/character/Character';
 import {ClassFactory} from '../../../shared/lib/class/ClassFactory';
 

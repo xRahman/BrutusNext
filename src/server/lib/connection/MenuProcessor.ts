@@ -18,7 +18,7 @@ import {Account} from '../../../server/lib/account/Account';
 import {Message} from '../../../server/lib/message/Message';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Game} from '../../../server/game/Game';
-import {GameEntity} from '../../../server/game/entity/GameEntity';
+import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
 import {Character} from '../../../server/game/character/Character';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 

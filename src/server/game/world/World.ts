@@ -12,13 +12,13 @@ import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
 import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
 import {ServerApp} from '../../../server/lib/Server';
 import {Game} from '../../../server/game/Game';
-import {GameEntity} from '../../../server/game/entity/GameEntity';
+import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
 import {Realm} from '../../../server/game/world/Realm';
 import {Area} from '../../../server/game/world/Area';
 import {Room} from '../../../server/game/world/Room';
 import {ClassFactory} from '../../../shared/lib/ClassFactory';
 
-export class World extends GameEntity
+export class World extends ServerGameEntity
 {
   // --------------- Public accessors -------------------
 
