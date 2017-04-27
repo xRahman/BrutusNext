@@ -238,6 +238,8 @@ export class ServerApp extends App
   // -> Returns null if no message of the day is set at the moment.
   public static getMotd(): string
   {
+    /// TODO: motd by se mělo savovat na disk - tj. ideálně by to
+    /// měla být property nejaké entity (třeba config).
     let motd = ServerApp.getInstance().messageOfTheDay;
 
     if (motd === null)
