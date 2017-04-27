@@ -12,6 +12,10 @@
 
 import {ERROR} from '../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../shared/lib/error/FATAL_ERROR';
+import {AdminLevel} from '../../shared/lib/admin/AdminLevel';
+import {MessageType} from '../../shared/lib/message/MessageType';
+import {Saveable} from '../../shared/lib/class/Saveable';
+import {ClientSyslog} from '../../client/lib/log/ClientSyslog';
 import {App} from '../../shared/lib/App';
 import {Body} from '../../client/gui/component/Body';
 import {Document} from '../../client/gui/component/Document';
@@ -131,7 +135,31 @@ export class ClientApp extends App
     this.body.onDocumentResize();
   }
 
-  // ---------------- Event handlers --------------------
+  // --------------- Protected methods ------------------
+
+  protected syslog
+  (
+    text: string,
+    msgType: MessageType,
+    adminLevel: AdminLevel
+  )
+  {
+    return ClientSyslog.log(text, msgType, adminLevel);
+  }
+
+  protected save(object: Saveable)
+  {
+    // (it is possible that HTML5 Local Storage will be
+    //  used in the future, however).
+    ERROR("Client doesn't have a save/load capability yet");
+  }
+
+  protected load(object: Saveable)
+  {
+    // (it is possible that HTML5 Local Storage will be
+    //  used in the future, however).
+    ERROR("Client doesn't have a save/load capability yet");
+  }
 
   // ---------------- Private methods -------------------
 

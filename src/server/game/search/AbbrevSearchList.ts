@@ -21,7 +21,7 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {SharedUtils} from '../../../shared/lib/utils/SharedUtils';
 import {NameSearchList} from '../../../server/lib/entity/NameSearchList';
 import {EntityList} from '../../../server/lib/entity/EntityList';
-import {GameEntity} from "../../../server/game/entity/GameEntity";
+import {ServerGameEntity} from "../../../server/game/entity/ServerGameEntity";
 
 export class AbbrevSearchList extends NameSearchList
 {
@@ -54,7 +54,7 @@ export class AbbrevSearchList extends NameSearchList
 
   // Returns null if no such entity exists.
   // (search string should be something like "3.mob.orc_chief")
-  public search(searchString: string): GameEntity
+  public search(searchString: string): ServerGameEntity
   {
     let parseResult = this.parseSearchString(searchString);
     let cathegory = this.parseSearchCathegory(parseResult.cathegory);
@@ -72,7 +72,7 @@ export class AbbrevSearchList extends NameSearchList
   }
 
   // -> Returns true if adding succeeded.
-  public add(entity: GameEntity): boolean
+  public add(entity: ServerGameEntity): boolean
   {
     if (super.add(entity) === false)
       return false;
@@ -86,7 +86,7 @@ export class AbbrevSearchList extends NameSearchList
   // Removes entity id from this list, but doesn't delete the entity from
   // EntityManager.
   // -> Returns true if deletion succeeded.
-  public remove(entity: GameEntity): boolean
+  public remove(entity: ServerGameEntity): boolean
   {
     // Remove all aliases of this entity from abbrevSearchList.
     this.removeFromAbbrevList(entity);
@@ -96,7 +96,7 @@ export class AbbrevSearchList extends NameSearchList
 
   // ---------------- Private methods --------------------
 
-  private removeFromAbbrevList(entity: GameEntity)
+  private removeFromAbbrevList(entity: ServerGameEntity)
   {
     // Remove all entity aliases.
     for (let i = 0; i < entity.aliases.length; i++)
@@ -113,7 +113,7 @@ export class AbbrevSearchList extends NameSearchList
 
   // If more similar names are added, they will be accessible by dot notation
   // (like 2.orc).
-  private addToAbbrevList(entity: GameEntity)
+  private addToAbbrevList(entity: ServerGameEntity)
   {
     // Add all entity aliases.
     for (let i = 0; i < entity.aliases.length; i++)
@@ -131,7 +131,7 @@ export class AbbrevSearchList extends NameSearchList
     }
   }
 
-  private addEntityToAbbreviation(abbrev: string, entity: GameEntity)
+  private addEntityToAbbreviation(abbrev: string, entity: ServerGameEntity)
   {
     let lowerCaseAbbrev = abbrev.toLocaleLowerCase();
 
@@ -153,7 +153,7 @@ export class AbbrevSearchList extends NameSearchList
     entityList.add(entity);
   }
 
-  private removeEntityFromAbbreviation(abbrev: string, entity: GameEntity)
+  private removeEntityFromAbbreviation(abbrev: string, entity: ServerGameEntity)
   {
     let lowerCaseAbbrev = abbrev.toLocaleLowerCase();
 
@@ -184,9 +184,9 @@ export class AbbrevSearchList extends NameSearchList
 
   // -> Returns array of GameEntities that are present in each entityList
   //    stored in entityLists parameter.
-  private mergeResults(entityLists: Array<EntityList>): Array<GameEntity>
+  private mergeResults(entityLists: Array<EntityList>): Array<ServerGameEntity>
   {
-    let result: Array<GameEntity> = [];
+    let result: Array<ServerGameEntity> = [];
 
     if (entityLists.length === 0)
       return result;
@@ -218,7 +218,7 @@ export class AbbrevSearchList extends NameSearchList
     return result;
   }
 
-  private validateResult(candidate: GameEntity, cathegory: number)
+  private validateResult(candidate: ServerGameEntity, cathegory: number)
   {
     switch (cathegory)
     {
@@ -268,11 +268,11 @@ export class AbbrevSearchList extends NameSearchList
   // -> returns entity number 'searchIndex' that satisfies the search.
   private filterResults
   (
-    candidates: Array<GameEntity>,
+    candidates: Array<ServerGameEntity>,
     searchIndex: number,
     cathegory: number
   )
-  : GameEntity
+  : ServerGameEntity
   {
     // This test it not necessary, it just saves going through the list
     // of candidates it there is less of them then requested index.
@@ -301,7 +301,7 @@ export class AbbrevSearchList extends NameSearchList
     searchIndex: number,
     cathegory: number
   )
-  : GameEntity
+  : ServerGameEntity
   {
 
     // Nothing can possibly match an empty, null or undefined searchName.
