@@ -297,7 +297,7 @@ export class SaveableObject extends InstantiableClass
     // Remove the lock.
     // (it will also trigger calling of resolve callback
     //  of whoever might be waiting after us)
-    SavingManager.reportFinishedSaving(path);
+    SavingManager.finishSaving(path);
 
     return success;
   }

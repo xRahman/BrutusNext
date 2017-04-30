@@ -9,7 +9,7 @@
 
 import {AdminLevel} from '../../shared/lib/admin/AdminLevel';
 import {MessageType} from '../../shared/lib/message/MessageType';
-import {Saveable} from '../../shared/lib/class/Saveable';
+import {Entity} from '../../shared/lib/entity/Entity';
 import {EntityManager} from '../../shared/lib/entity/EntityManager';
 
 export abstract class App
@@ -70,14 +70,14 @@ export abstract class App
       + " Use ServerApp.create() or ClientApp.create() instead");
   }
 
-  public static save(object: Saveable)
+  public static async saveEntity(entity: Entity)
   {
-    return App.getInstance().save(object);
+    return await App.getInstance().saveEntity(entity);
   }
 
-  public static load(object: Saveable)
+  public static async loadEntity(entity: Entity)
   {
-    return App.getInstance().load(object);
+    return await App.getInstance().loadEntity(entity);
   }
 
   public static getEntityManager()
@@ -119,6 +119,6 @@ export abstract class App
     adminLevel: AdminLevel
   );
 
-  protected abstract save(object: Saveable);
-  protected abstract load(object: Saveable);
+  protected abstract async saveEntity(entity: Entity);
+  protected abstract async loadEntity(entity: Entity);
 }

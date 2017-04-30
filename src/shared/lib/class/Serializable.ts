@@ -113,7 +113,8 @@ export class Serializable extends Attributable
   (
     jsonObject: Object,
     id: string,
-    path: string)
+    path: string
+  )
   {
     if (!jsonObject)
       return null;

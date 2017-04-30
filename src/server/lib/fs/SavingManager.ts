@@ -45,7 +45,7 @@ export class SavingManager
     return savingRecord.addRequest();
   }
 
-  public static reportFinishedSaving(path: string)
+  public static finishSaving(path: string)
   {
     let savingRecord: SavingQueue =
       SavingManager.savingProcesses.get(path);
