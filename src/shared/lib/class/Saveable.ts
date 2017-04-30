@@ -4,6 +4,7 @@
   Enables saving and loading.
 */
 
+/*
 'use strict';
 
 ///import {ERROR} from '../../../shared/lib/error/ERROR';
@@ -25,15 +26,24 @@ export class Saveable extends Serializable
 
   public async save()
   {
-    App.save(this);
+    await App.saveObject(this);
   }
 
   public async load()
   {
-    App.load(this);
+    await App.loadObject(this);
   }
 
   // -------------- Protected methods -------------------
 
+  protected getSaveLocation()
+  {
+  }
+
+  protected getSaveName()
+  {
+  }
+
   // --------------- Private methods --------------------
 }
+*/

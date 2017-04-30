@@ -8,6 +8,7 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
+import {App} from '../../../shared/lib/App';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {PropertyAttributes} from
   '../../../shared/lib/class/PropertyAttributes';
@@ -351,6 +352,19 @@ export class Entity extends Serializable
   */
 
   // ---------------- Public methods --------------------
+
+  public async save()
+  {
+    await App.saveEntity(this);
+  }
+
+  public async load()
+  {
+    /// TODO: Tohle je asi blbost. Loadováním entita vznikne - volat
+    /// load na existující entitě nedává smysl (je třeba ji zahodit
+    /// a vytvořit znovu, jinak se to blbě mergne).
+    await App.loadEntity(this);
+  }
 
   public isPrototype()
   {
