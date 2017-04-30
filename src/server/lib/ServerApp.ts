@@ -17,14 +17,21 @@ import {ERROR} from '../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../shared/lib/error/FATAL_ERROR';
 import {App} from '../../shared/lib/App';
 import {IdProvider} from '../../server/lib/entity/IdProvider';
-import {ServerEntityManager} from '../../server/lib/entity/EntityManager';
+///import {Saveable} from '../../shared/lib/class/Saveable';
+///import {Serializable} from '../../shared/lib/class/Serializable';
+import {ClassFactory} from '../../shared/lib/class/ClassFactory';
+import {ServerEntityManager} from
+  '../../server/lib/entity/ServerEntityManager';
+import {ServerEntitySaver} from
+  '../../server/lib/fs/ServerEntitySaver';
 import {FileSystem} from '../../server/lib/fs/FileSystem';
 import {FlagNamesManager} from '../../server/lib/flags/FlagNamesManager';
 import {AdminList} from '../../server/lib/admin/AdminList';
 import {AdminLevel} from '../../shared/lib/admin/AdminLevel';
 import {Connection} from '../../server/lib/connection/Connection';
+import {Entity} from '../../shared/lib/entity/Entity';
 import {EntityList} from '../../shared/lib/entity/EntityList';
-import {PrototypeManager} from '../../server/lib/prototype/PrototypeManager';
+///import {PrototypeManager} from '../../server/lib/prototype/PrototypeManager';
 import {AccountList} from '../../server/lib/account/AccountList';
 import {Syslog} from '../../shared/lib/log/Syslog';
 import {ServerSyslog} from '../../server/lib/log/ServerSyslog';
@@ -81,6 +88,7 @@ export class ServerApp extends App
   // Contains all entities (accounts, connections, all game entities).
   protected entityManager = new ServerEntityManager(this.idProvider);
 
+  /*
   // Stores prototype object that are not entities
   // (all entities are stored in entityManager, including those
   //  that serve as prototype objects for other entities).
@@ -89,6 +97,7 @@ export class ServerApp extends App
   //  all initialized properties as their own properties
   //  rather than inheriting them from prototype object).
   private prototypeManager = new PrototypeManager();
+  */
 
   // flagNamesManager is in Server instead of Game, because flags are needed
   // even outside of game (for example account flags).
@@ -134,10 +143,12 @@ export class ServerApp extends App
     return ServerApp.getInstance().entityManager;
   }
 
+  /*
   public static get prototypeManager()
   {
     return ServerApp.getInstance().prototypeManager;
   }
+  */
 
   // ---------------- Static methods --------------------
 
@@ -343,6 +354,16 @@ export class ServerApp extends App
 
   // --------------- Protected methods ------------------
 
+  protected async saveEntity(entity: Entity)
+  {
+    await ServerEntitySaver.saveEntity(entity);
+  }
+
+  protected async loadEntity(entity: Entity)
+  {
+    return await ServerEntitySaver.loadEntity(entity);
+  }
+
   protected syslog
   (
     text: string,
@@ -353,10 +374,12 @@ export class ServerApp extends App
     return ServerSyslog.log(text, msgType, adminLevel);
   }
 
+  /*
   protected getSaver()
   {
     return this.saver;
   }
+  */
 
   protected startTelnetServer(telnetPort: number)
   {

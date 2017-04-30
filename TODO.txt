@@ -1,6 +1,81 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+Závěr z úvah o instancování zón (a entit s unikátním jménem), struktuře
+savů, atd:
+- na obojí se teď vykašlu. Není to potřeba k tomu, abych vytvořil funkční
+  (a hlavně hratelný) prototyp.
+- Entity.load() musí být abstraktní.
+
+Hmm, co s uložením globálních prototypů?
+- pokud se chci vyhnout one-demand loadování prototypů (jako že chci,
+  zas mi to teď trochu zjendoduší práci), tak musím všechny prototypy
+  držet v paměti (a všechny je loadnout při startu hry).
+  - zpět k prototypeManageru?
+    Nebo si je bude držet sám World?
+
+- stejně ten seznam prototypů někde mít musím, aby v nich šlo rozumně
+  vyhledávat.
+
+World (coby kontejner pro prototypy) by měl výhodu v tom, že bych
+fakt loadovat jedinou entitu.
+- ostatně kdyby ty prototypové entity měl ve svých contents, tak bych
+  ani nemusel psát žádný kód navíc (teda možná jo, pořád by záleželo na
+  pořadí dědění).
+
+
+Ještě jsem měl nápad, že bych na loadování z disku udělal metodu paralelní
+k Serializable.deserialize(). Ta by řešila on-demand loadování prototypů.
+  Tím bych zároveň odstranil nutnost cpát do deserialize() idčko a path
+  jako nepovinné parametry.
+- ta by asi měla být v Entity - hmm, možná přímo Entity.load()?
+
+IDEA: Rekurzivní loadování prototypů
+- musím si někde pamatovat kořeny prototypových stromů
+  (tzn. musel bych savovat hardcoced prototypové entity z ClassFactory).
+- musím umět rozlišit mezi prototypem a instancí, a to už na úrovni
+  prototype.instanceIds.
+  (tzn. by to nebylo instanceIds, ale instances a byla by to struktura
+  obsahující idčko instance a bool: isPrototype)
+  - a nebo jinak, udělat z toho dvě struktury:
+    .descendants
+    .instances
+    - descendants by se loadovali rekurzivně (a vypisovali při sekeci
+      prototypu)
+
+Měly by mít prototypy location?
+- Pokud má někdy být prototypem celá zóna, tak asi budou muset.
+  Ale to je asi ok, při loadnutí instance se location pochopitelně změní.
+
+Něco musí umět loadnout/savnout hardoced entity prototypy
+(btw když už je budu savovat, proč se nevrátit k tomu, že mají stejné idčko
+ jako všechny ostatní entity?)
+
+Co je jasný:
+- určitě nedávat prototypy do world.contents
+- musí ale existovat entita, která bude umět savnout kořenové prototypy
+  (a možná by mohla umět rekurzivně savnout všechny...)
+- nemusím ručně vyrábět prototyp Worldu, protože World je hardcoded entita,
+  tudíž se pro něj prototypová entita vyrobí automaticky
+- musím rozlišovat mezi vyráběním prototypu a instance.
+  Tzn.:
+    Entity.createInstance()
+    Entity.createPrototype()
+
+Tak asi přece jen návrat k PrototypeManageru?
+  (zděděného z Entity)
+   - asi ale ne z Container entity, protože prototypy potřebují umět mít
+     locationId
+   (I když tady se bavíme o hardcoded prototype entitách, ty klidně můžou
+    mít jako svou location PrototypeManager)
+
+
+TODO
+Entita by měla mít referenci na prototyp, ne jen prototypeId
+ (bude se přes ni často na prototyp sahat).
+
+---------------------------------------------------------------
+
 Entity class hierarchy
 =======================
 
@@ -37,6 +112,168 @@ shared/Serializable
   -> shared/RoomData
 
 ---------------------------------------------------------------
+
+Save/load
+----------
+
+IMPORTANT: Savovat a loadovat se budou jen entity!
+(tj. žádný SaveableObject, který nemusí být entitou)
+
+=> Nepotřebuju vůbec Saveable, protože savovat se bude
+   externí metodou.
+=> Nepotřebuju metody na SaveFileName a SaveDirectory,
+   protože to zkonstruuju z idčka (entity.getId())
+   a případně z prototype chainu.
+
+Co kontejnery?
+- ty pořeší stávající návrh, tj. metoda save() a load() uvntiř entity.
+
+TODO:
+- zrušit Saveable
+- přesunout save() a load() do Entity
+- konstruovat saveLocation() z prototypové entity
+  (protože ta musí při loadu existovat, takže z ní vždycky můžu lokaci přečíst)
+  - jen hardcoded hierarchii
+    (jak tohle udělat? Jak poznám, co je hardcoded prototyp?
+     - zeptám se ClassFactory?)
+- při vytváření saveLocation() nebude třeba se ptát ClassFactory, protože
+  jen hardcoded classy budou mít className.
+
+Výhledově:
+- savovat instance někam jinam (asi pod zónu).
+  IDEA: adresář by se mohl jmenovat jménem zóny
+        - a pod ním by byla stejná struktura jako v /prototypes,
+          tj. /Room, /Character, etc.
+    (ta struktura by se vytvářela automaticky, což je fajn)
+
+Pořád nevím, jak při loadu zjistit, jakou entitu loaduju (a tedy odkud ji
+mám loadnout).
+- v containeru může být všehochuť, takže bych si musel u každé reference
+  pamatovat, co je zač.
+- stejně tak u prototypů (nestačilo by prototypeId, musel bych vědět i typ).
+To by znamenalo, že bych měl className rozlezlé všude možně po savech...
+A taky že by se blbě měnil typ třeba z Moba na Object, protože pak by se to
+jednak muselo savnout jinam a za druhé by to bylo špatně ve všech savnutých
+referencích...
+=> Kašlat na strukturu, savovat všechny entity do jednoho adresáře.
+
+TODO:
+Při loadu entity podle idčka:
+- otestovat, jestli to id je v EntityManageru. Pokud ano, hodit error.
+- bude asi potřeba rekurzivně loadovat prototypy.
+- zjevně nebudu potřebovat číst save location z entity
+  (páč to bude pro všechny entity stejné)
+
+-----------------------
+Celé jinak:
+
+- zóny bych měl umět instancovat.
+- asi má smysl uvažovat o loadování/savování po celých zónách.
+
+Tzn. když zóna bude vědět, co jsou mobové, co jsou objekty, atd.,
+může si to savnout do příslušných podadresářů.
+
+- pak je ještě možnost brát to podle toho, co je do čeho vnořené.
+  Tj. rooma si savne/loadne svůj obsah (a zóna vlastně taky).
+  - a může si ho loadnout/savnout do příslušného podadresáře.
+
+Čili bych měl adresářovou strukturu podle vložení...
+
+Ideálně by to mělo být tak, že adresář je jedna ContainerEntita,
+tz. nemělo by to být:
+  id.json (file)
+  ID.JSON (dir)
+    ...
+
+Ale
+  ID.JSON (dir)
+    id.json(main entita)
+    ... (adresáře vložených entit)
+
+ZÁVĚR
+Ok, tohle by šlo (tedy za předpokladu, že se budou savovat celé containery,
+ což ale asi budou).
+- co s prototypama?
+
+
+Universe structure
+---------------------
+
+Universe (neinstancuje se)
+- globalPrototypes
+    (tohle by byly asi jen seznamy a byly by tu v podstatě jen kvůli savování)
+  - globalWorldPrototypes
+  - globalRealmPrototypes
+  - globalAreaPrototypes
+  - globalCharacterPrototypes
+  - globalRoomPrototypes
+  - globalObjectPrototypes
+- instances
+  - worldInstance (má nějakej globalWorldPrototype)
+    - realmInstance (má nějakej globalRealmPrototype)
+      - zoneInstance
+        - roomInstance
+           - objectInstance
+           - objectInstance
+           - mobInstance
+             - objectInstance (bágl v inventory)
+               - objecInstance (item v báglu v inventory)
+
+Jak bude probíhat editování nové zóny:
+---------------------------------------
+
+1) create area 'New Area'
+  - zeptá se to na prototyp (nebo se dosadí rovnou Area? Asi jo.)
+  -> vyrobí se nová entita a přidá se do globalAreaPrototypes
+2) create room 'First Room'
+  - zeptá se to na prototyp
+- v tenhle moment by se asi zóna mohla automaticky instanciovat, instance
+  se přidá do Universe.instances
+
+
+Výběr prototypu (v editoru) by měl bejt kontextovej
+ - jednak by to měl bejt strom (aby se šlo doklikat)
+ - a mělo by to filtrovat výběr podle substringu
+- kromě toho by to mělo být samo o sobě kontextové, tj. když vyrábím novou
+  roomu, mělo by mi to vyfiltrovat jen prototypy room.
+Stejnou komponentou se bude vybírat prototyp k editaci.
+
+
+Úvahy k instancování zón...
+- mělo by být možné dát goto do prototypu roomy?
+  - určitě ano (proč ne).
+  - neměl by se tam ale dostat mortal
+    (ale to můžu ošetřit dodatečně, tím se teď nemusím trápit)
+
+Co se stane, když dám 'load object <prototyp>'?
+- musí se samozřejmě vytvořit nová instance. Tohle je tak nějak self-evident.
+(není to self-evident v případě zóny, nebo obecně libovolného containeru,
+ ale v principu by to mělo fungovat stejně, jen rekurzivně)
+- loadnutý objekt se musí do něčeho dát (do inventáře imma, který ho loadnul).
+  - u zóny je to stejné, jen se samozřejmě nemůže dát immovi do inventáře
+    (i když, proč ne?)
+
+
+---------------------------------------------------------------
+
+Úvahy o className, jménech prototypů, atd.
+-------------------------------------------
+
+- jako jméno prototypu by mohlo sloužit jméno entity
+  - otázka je, co kdyz je prototypem hardcoded entity
+    Řešení: Při vyrábění hardcoded prototype entit v ClassFactory
+      jim setovat className do name.
+
+TODO: Zrušit z Nameable šaškování s className prototypů
+  (možná zrušit celé Nameable).
+
+---------------------------------------------------------------
+
+TODO: Rozlousknout pojmenování EntityManageru
+(pokud jich bude víc, tak by se asi měly jmenovat SharedEntityManager,
+ ServerEntityManager, ClientEntityManager).
+
+IDEA: App, ServerApp a ClientApp dát do /lib/app
 
 TODO: Zavást entity classu Config, kam půjdou uložit věci
   jako motd
