@@ -7,19 +7,13 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {Entity} from '../../../server/lib/entity/Entity';
+import {SharedGameEntity} from '../../../shared/game/entity/SharedGameEntity';
 import {NameLockRecord} from '../../../server/lib/entity/NameLockRecord';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
 import {ServerApp} from '../../../server/lib/Server';
 
-export class NamedEntity extends Entity
+export class UniqueEntity extends SharedGameEntity
 {
-  public static get NAME_PROPERTY()
-  {
-    return "name";
-  }
-
-  private name = null;
 
   // In what cathegory is this name unique (accounts, characters, world...).
   // Value 'null' means that the name is not unique.
@@ -109,6 +103,7 @@ export class NamedEntity extends Entity
       + NamedEntity.getNameLockFileName(name);
   }
 
+  /// TODO: Asi by stačilo isUnique().
   public isNameUnique() { return this.uniqueNameCathegory !== null; }
 
   // Returns something like "Character 'Zuzka' (id: d-imt2xk99)"
