@@ -1,6 +1,59 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+Prototypy: Jak te teda nakonec bude (snad):
+-------------------------------------------
+
+ClassFactory.createRootEntities() vytvoří kořeny prototypových stromů
+s id = className.
+  Tohle se stane na serveru i na klientu.
+  (Tyhle entity nebudou uvedené v prototypeManageru, tudíž se z nich nebude
+   dědit. Dědit se bude až z entit vytvořených v následujícím kroku.)
+  (Tyhle entity se taky nebudou nikdy savovat).
+Ke zvážení: Možná by se nemusely ani vytváře přes Object.create(), stačilo
+  by new Class. (Určitě ano - TODO [done]).
+
+Server pak zavolá prototypeManager.initPrototypes(), který ke každé této
+  entitě vyrobí instanci s nově vygenerovaným idčkem a name = className.
+  (Protože jako jméno prototypu slouží jméno entity.)
+Tzn. když si někdo z PrototypeManageru vyžádá prototype 'Room', tak nedostane
+  root entitu s idčkem 'Room', ale prototyp jménem 'Room' s náhodně
+  vygenerovaným idčkem.
+- tyhle entity budou mít ve svém .descendantPrototypes seznam zděděných
+  prototypů, přes které to pak půjde rekurzivně loadnout.
+
+Při posílání entity ze serveru na klient se pošlou všechny prototypy
+v chainu až na 'root entitu' - tu má client vlastní (vyrobil si ji při
+startu stejně jako server) a idčko má 'className', takže stejné jako server
+(tj. není třeba posílat na client idčka root entit).
+
+---------------------------------------------------------------
+
+TODO:
+V ServerApp.run() volá ClassFactory.createRootEntities();
+- což je správně, to zůstane (vyrobí se tím entity s className coby idčkem)
+- tohle udělá client i server, takže kořeny prototypových stromů není třeba
+  posílat (klient má stejné classy jako server).
+Pak se na serveru zavolá PrototypeManager.initPrototypes();
+- což rekurzivně loadne ostatní prototypové entity podle descendantPrototypes.
+(Hmm, to by znamenalo, že PrototypeManager nemůže být v /shared, což je asi
+ chyba - v klientovi budu potřebovat umět vybírat prototypy)
+Takže udělat SharedPrototypeManager, ClientPrototypeManager
+  a ServerPrototypeManager?
+
+Argh...
+- hardcoded prototype entity s random idčky mají problém v tom, že pak ta
+  idčka nezná klient (zatímco když použiju className, tak je klient zná taky,
+  páč má ty samé classy).
+Ok, takže asi zpět k původnímu konceptu:
+- ClassFactory vytvoří hardcoded prototype entity s className coby idčky.
+- Server si pak vyrobí (nebo loadne) root prototypy založené na těchle
+  entitách.
+  - root prototypy budou mít unique name (cathegory: prototype), ičko
+    a budou se ve svých descendantPrototypes odkazovat na ostatní prototypy.
+
+---------------------------------------------------------------
+
 Závěr z úvah o instancování zón (a entit s unikátním jménem), struktuře
 savů, atd:
 - na obojí se teď vykašlu. Není to potřeba k tomu, abych vytvořil funkční
@@ -76,19 +129,37 @@ Entita by měla mít referenci na prototyp, ne jen prototypeId
 
 ---------------------------------------------------------------
 
+NamedEntity a client/server architektura
+-----------------------------------------
+
+Client v zásadě potřebuje znát jen property 'name'
+- nepotřebuje ani unique kategorii, protože ta má význam pouze při setování
+  jména.
+- nepotřebuje jméno setovat, to se dělá vždycky na serveru.
+
+Name property by asi mohly mít všechny entity - pak bych mohl celou classu
+přesunout do server-side kódu.
+
+- enum NameCathegory asi bude muset být v Entity, aby mohla mít metodu
+    setName(name: string, cathegory: NameCathegory)
+  - bez toho asi nepůjde přetížit v UniqueEntity.
+
+---------------------------------------------------------------
+
 Entity class hierarchy
 =======================
 
 shared/Nameable
 -> shared/Attributable
   -> shared/Serializable
-    -> shared/Saveable
-      -> shared/Entity
+ /*   -> shared/Saveable  */ (Deprecated, Entity is the only saveable object)
+    -> shared/Entity
         -> shared/ContainerEntity
           -> shared/SharedGameEntity
              (tohle možná nebude potřeba)
-            -> server/ServerGameEntity
-            -> client/ServerGameEntity
+              -> server/UniqueEntity   (TODO: Add this)
+                -> server/ServerGameEntity
+            -> client/ClientGameEntity
 
 Na klientu a na severu budu muset mít paralelně stejnou strukturu
 herních entity (World, Area, Room, etc.).
@@ -305,7 +376,36 @@ TODO:
 [done]
 - přidělat protected trigger metodu, která se zavolá při změně lokace.
 [na to zatím kašlu. Udělám to, až to budu na něco potřebovat]
-  
+
+---------------------------------------------------------------
+
+Úvahy o prototypech ještě jednou
+---------------------------------
+
+- Potřebuju savovat hardcoded prototype entity, protože ty v sobě budou mít
+  seznam z nich zděděných prototypů (bez toho bych neuměl prototypy rekurzivně
+  loadnout).
+- Teoreticky můžu dál nechat ClassFactory vyrábět kořenové entity s idčkem
+  rovným className - ty se nebudou savovat - a na jejich základě pro každou
+  hardcoded classu vyrobit jednu instanci, která se savovat bude. Z ní by
+  pak měly být zděděné další prototypové entity.
+  - to je blbost, budu mít zbytečně v každém prototype chainu o krok navíc
+To znamená, že musím umět speciálně loadnout/savnout root prototype entity.
+
+
+- Možná přece jen k něčemu bude, když u hardcoded prototype entit použiju
+  className jako id - nebudu si ta idčka muset pamatovat, budu moct příslušné
+  entity loadnout "naslepo" (jejich idčka znám).
+- Pak je tu ještě možnost udělat z nich unique entity. Potom budou mít
+  nameLockFile, který půjde přečíst čistě se znalostí className a z něj se
+  přečte idčko (čili opět nebude potřeba idčka savovat separátně)
+  - tohle je asi nejlepší řešení.
+
+- Prototypové entity by se při loadu nebo vytvoření měly vkládat do
+  prototypeManageru (aby šly vyhledávat podle jména).
+  - čili prototypeManager bude vlastně searchList prototypových entit.
+
+(PrototypeManager nemusí být entita, nebude se savovat ani loadovat).
 
 ---------------------------------------------------------------
 

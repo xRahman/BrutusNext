@@ -35,7 +35,7 @@ export class ClassFactory
       return null;
     }
 
-    if (classInfo.isPrototypeClass === true)
+    if (classInfo.isEntityClass === true)
     {
       ERROR("Attempt to create an instance of class"
         + " '" + className + "' that is registered as"
@@ -65,7 +65,7 @@ export class ClassFactory
     let classInfo: ClassInfo =
     {
       Class: Class,
-      isPrototypeClass: false
+      isEntityClass: false
     }
     
     this.addClassInfo(classInfo);
@@ -83,26 +83,35 @@ export class ClassFactory
     let classInfo: ClassInfo =
     {
       Class: Class,
-      isPrototypeClass: true
+      isEntityClass: true
     }
     
     this.addClassInfo(classInfo);
   }
 
-  // Creates a prototype entitity for each prototype class listed
-  // in ClassFactory.classInfo and adds it to the EntityManager so
-  // it can be used as prototype for othe entities.
-  // (These prototype entities use class name as their entity id,
-  //  for example 'Room'.)
-  public static createPrototypeEntities()
+  // Creates an entitity for each entity class listed in
+  // ClassFactory.classInfo and adds it to the EntityManager
+  // so it can be used as prototype object for othe entities
+  // (these prototype entities use class name as their id,
+  //  for example 'Room').
+  public static createRootEntities()
   {
-    for (let [id, classInfo] of this.classInfo)
+    let hardcodedEntityClasses = [];
+
+    for (let [className, classInfo] of this.classInfo)
     {
-      if (classInfo.isPrototypeClass)
+      if (classInfo.isEntityClass)
       {
-        this.createPrototypeEntity(id, classInfo.Class);
+        // As a side effect, we also fill the 'hardcodedEntityClasses'
+        // array so the PrototypeManager will know what prototypes it's
+        // supposed to work with.
+        hardcodedEntityClasses.push(className);
+
+        Entity.createRootEntity(className, classInfo.Class);
       }
     }
+
+    return hardcodedEntityClasses;
   }
 
   // ------------- Private static methods ---------------
@@ -117,21 +126,25 @@ export class ClassFactory
       return;
     }
 
+    // Class.name is the name of the constructor of the class,
+    // which is the class name.
     this.classInfo.set(classInfo.Class.name, classInfo);
   }
 
-  // Creates an entity based with 'new Class' as it's prototype
-  // and adds it to EntityManager (so it can be used as prototype
+  /// Moved to Entity.
+  /*
+  // Creates an entity with 'new Class' as it's prototype and
+  // adds it to EntityManager (so it can be used as prototype
   // of other entities).
-  private static createPrototypeEntity<T extends Entity>
+  private static createRootEntity<T extends Entity>
   (
-    id: string,
+    className: string,
     Class: { new (...args: any[]): T }
   )
   {
-    if (EntityManager.has(id))
+    if (EntityManager.has(className))
     {
-      ERROR("Attempt to add prototype entity for class " + id
+      ERROR("Attempt to add prototype entity for class " + className
         + " to EntityManager when it's already there");
       return;
     }
@@ -142,12 +155,13 @@ export class ClassFactory
     // to EntityManager under 'id' (which is the class name).
     // (We don't need to remember the entity we have just
     //  created, it will be accessed from EntityManager)
-    Entity.createInstance(prototypeObject, id);
+    Entity.createInstance(prototypeObject, className);
   }
+  */
 }
 
 interface ClassInfo
 {
   Class: new <T>(...args: any[]) => T,
-  isPrototypeClass: boolean
+  isEntityClass: boolean
 }
