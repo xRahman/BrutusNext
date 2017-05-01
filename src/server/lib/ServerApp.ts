@@ -306,26 +306,35 @@ export class ServerApp extends App
 
     this.game = new Game();
 
-    /// TEST
-    ///await test();
-
-    // Create a prototype entitity for each entity classe listed
-    // in ClassFactory so they can be used as prototype objects
-    // for other entities.
-    ClassFactory.createPrototypeEntities()
 
     /*
     // We must check if './data/' directory exists before
     // initPrototypes() is called, because './data/'
     // will be created by it if it doesn't exist.
-    let createDefaultData = !FileSystem.existsSync(ServerApp.DATA_DIRECTORY);
+    let dataExists = !FileSystem.existsSync(ServerApp.DATA_DIRECTORY);
 
-    await this.prototypeManager.init(createDefaultData);
+    await this.prototypeManager.init(dataExists);
 
     // 'initPrototypes' may have added new records to the ClassFactory
     // so we need to save them.
     await this.prototypeManager.save();
     */
+
+
+    /// TEST
+    ///await test();
+
+    // Create an entitity for each entity classe listed in
+    // ClassFactory so they can be used as prototype objects
+    // for other entities.
+    let hardcodedEntityClasses = ClassFactory.createRootEntities();
+
+    /// TODO: Deklarovat this.prototypeManager = new ServerPrototypeManager();
+    // Create root prototype entities if they don't exist yet or load
+    // them from disk. Then recursively load all prototype entities
+    // inherited from them.
+    await this.prototypeManager.initPrototypes(hardcodedEntityClasses);
+
 
     // If /server/data/ directory doesn't exist, create and save a new world.
     if (!FileSystem.existsSync(ServerApp.DATA_DIRECTORY))

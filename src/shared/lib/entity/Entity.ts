@@ -19,11 +19,15 @@ import {EntityRecord} from '../../../shared/lib/entity/EntityRecord';
 
 export class Entity extends Serializable
 {
+  public static get NAME_PROPERTY()          { return "name"; }
   public static get ID_PROPERTY()            { return 'id'; }
   public static get PROTOTYPE_ID_PROPERTY()  { return "prototypeId"; }
   private static get INSTANCE_IDS_PROPERTY() { return "instanceIds"; }
 
   // ----------------- Private data ----------------------
+
+  // Entity name.
+  private name = null;
 
   // ------------------------------------------------- //
   //                   Unique entity id                //
@@ -87,6 +91,38 @@ export class Entity extends Serializable
         && entity !== undefined
         // This will be trapped by EntityProxyHandler.
         && entity.isValid() === true;
+  }
+
+  public static createRootEntity<T extends Entity>
+  (
+    className: string,
+    Class: { new (...args: any[]): T }
+  )
+  {
+    // 'className' will be used as an id.
+    if (EntityManager.has(className))
+    {
+      ERROR("Attempt to add prototype entity for class " + className
+        + " to EntityManager when it's already there");
+      return;
+    }
+
+    let instance = new Class();
+
+    // Set 'className' as 'id'.
+    if (instance.setId(className) === false)
+      return null;
+
+    // Hide instance beind a Proxy object which will report
+    // access to properties of invalid entity. Also create
+    // an EntityRecord that will be added to EntityManager.
+    let entityRecord = this.createEntityRecord(instance);
+
+    // Add entity to EntityManager
+    // (In case of error entity will be 'null').
+    //   Note that in case of root entity, there is no point in
+    // setting it's prototype - root entities don't have any.
+    return EntityManager.add(entityRecord);
   }
 
   // Creates an instance of Entity with given 'prototype' and 'id'.
@@ -251,6 +287,10 @@ export class Entity extends Serializable
   }
 
   // --------------- Public accessors -------------------
+
+  public getName() { return this.name; }
+  // This method is overriden on the server in class UniqueEntity.
+  public setName(name: string) { this.name = name; }
 
   public getId()
   {
