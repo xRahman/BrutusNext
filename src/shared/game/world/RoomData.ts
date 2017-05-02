@@ -103,6 +103,7 @@ export class RoomData
     return this.exits.has(exitName);
   }
 
+/// Tohle by mohla umět class Coords.
   // -> Returns coordinates in specified 'direction'.
   //    Returns 'null' if 'direction' isn't a name of
   //      an exit leading to an adjacent room.
