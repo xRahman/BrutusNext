@@ -117,6 +117,9 @@ export class RoomData
 
     let target = new Coords();
     
+    /// Tohle by mohlo umět coords.
+    /// (Nejlíp asi jako Coords.add(this.coords, shift), tj.
+    ///  static metoda, která sečte dva argumenty typu coords).
     target.e = this.coords.e + shift.e;
     target.s = this.coords.s + shift.s;
     target.u = this.coords.u + shift.u;
