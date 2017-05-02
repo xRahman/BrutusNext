@@ -29,6 +29,10 @@ export class Entity extends Serializable
   // Entity name.
   private name = null;
 
+  // In what cathegory is the name unique (accounts, characters, world...).
+  // 'null' means that name is not unique.
+  private nameCathegory: Entity.NameCathegory = null;
+
   // ------------------------------------------------- //
   //                   Unique entity id                //
   // ------------------------------------------------- //
@@ -290,7 +294,11 @@ export class Entity extends Serializable
 
   public getName() { return this.name; }
   // This method is overriden on the server in class UniqueEntity.
-  public setName(name: string) { this.name = name; }
+  public setName(name: string)
+  {
+    EntityManager.
+    this.name = name;
+  }
 
   public getId()
   {
@@ -531,4 +539,27 @@ export class Entity extends Serializable
       + " forces us never to use property named 'then'");
   }
   */
+}
+
+// ------------------ Type declarations ----------------------
+
+// Module is exported so you can use enum type from outside this file.
+// It must be declared after the class because Typescript says so...
+export module Entity
+{
+  // Names of unique-named entities are unique only within each cathegory,
+  // so you can have for example account Rahman and character Rahman.
+  // Lowercased names of cathegories also serve as names of directories
+  // in ./data where name lock files are located. So there will be
+  // file './data/names/account/Rahman.json'
+  // and './data/names/character/Rahman.json'.
+  export enum NameCathegory
+  {
+    ACCOUNT,
+    CHARACTER,
+    PROTOTYPE,
+    // Various world locations.
+    // (Rooms, Realms, Areas, the name of the world itself, etc.)
+    WORLD
+  }
 }

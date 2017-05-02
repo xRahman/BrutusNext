@@ -7,3 +7,10 @@
 
 - všechny entity mají metodu deserialize(), která umožňuje zapsat do libovolné
   property. To by mohl bejt docela problém.
+
+
+Client-server communication
+
+- Data can be sent from the client back to the server
+  - we should make sure that entity deserialization won't
+    allow javascript code insertion and similar hacks.
