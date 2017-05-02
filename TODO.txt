@@ -1,6 +1,17 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+IDEA: Shared classy nenazývat SharedClass ale prostě jen Class
+
+TODO: Ještě přece jen zvážit, jestli je nutné mít dvě paralelní
+  struktury stromu entit.
+- Možná by to šlo naopak udělat tak, že např. Room by byl společný
+  základ (tzn. jedna classa, jen v /shared) a na serveru by na sobě
+  měl navěšený modul s přidanou funkcionalitou (třeba commandProcessor).
+  - otázka teda je, kdo by ho tam při vytváření instance pověsil...
+
+---------------------------------------------------------------
+
 Prototypy: Jak te teda nakonec bude (snad):
 -------------------------------------------
 
@@ -143,6 +154,18 @@ přesunout do server-side kódu.
 - enum NameCathegory asi bude muset být v Entity, aby mohla mít metodu
     setName(name: string, cathegory: NameCathegory)
   - bez toho asi nepůjde přetížit v UniqueEntity.
+
+
+Řešení:
+
+static isNameTaken() může být v EntityManageru
+- client řekne, že se na tohle nemáš ptát, server checkne
+  nameLockFile.
+
+Entity.setName() se zeptá EntityManageru, jestli je možné jméno setnout.
+
+if (EntityManager.requestUniqueName())
+  ...
 
 ---------------------------------------------------------------
 

@@ -103,7 +103,7 @@ export class UniqueEntity extends SharedGameEntity
       + NamedEntity.getNameLockFileName(name);
   }
 
-  /// TODO: Asi by stačilo isUnique().
+  /// TODO: Přesunout do Entity
   public isNameUnique() { return this.uniqueNameCathegory !== null; }
 
   // Returns something like "Character 'Zuzka' (id: d-imt2xk99)"
