@@ -12,6 +12,57 @@ TODO: Ještě přece jen zvážit, jestli je nutné mít dvě paralelní
 
 ---------------------------------------------------------------
 
+shared GameEntity
+{
+  shared name
+}
+-> shared Room extends GameEntity
+   {
+     client exists;
+     shared description;
+     shared exits;
+     shared affects;
+   }
+-> shared Mob extends GameEntity
+   {
+     // Tohle jsou reference na entitu (class Spec), na clientu
+     // mohou být prostě invalid.
+     // (Na druhou stranu asi by se hodilo vědět, jaký spec ten mob má
+     //  .. i když asi jen v editoru a ten by měl umět editovat i specy.)
+     combatSpec: Entity
+     workingSpec: Entity
+     holidaySpec: Entity
+   }
+
+
+shared Affects
+{
+  shared affectList;
+  server addAffect(); // Musí to být nutně server-only?
+}
+
+shared Spec
+{
+  /// Tohle fakt client nepotřebuje.
+  /// Na druhou stranu potřebuje umět ty specy editovat
+  /// (i když, pokud se vykašlu na skripty obecně, tak vlastně proč?
+  ///  prostě by se editovaly ve visualku).
+  server onEnterCombat();
+  server onLeaveCombat();
+  server onNearbyCombat();
+}
+-> shared CombatSpec extends Spec
+   {
+     resource: number;
+   }
+
+   server SorcererCombat extends CombatSpec
+   {
+     server resourceName = 'Arcane Power';
+   }
+
+---------------------------------------------------------------
+
 Prototypy: Jak te teda nakonec bude (snad):
 -------------------------------------------
 
