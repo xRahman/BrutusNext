@@ -4,7 +4,7 @@ TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 IDEA: Shared classy nenazývat SharedClass ale prostě jen Class
 
 TODO: Ještě přece jen zvážit, jestli je nutné mít dvě paralelní
-  struktury stromu entit.
+  struktury stromu entit (nakonec je to asi fakt nejlepší řešení).
 - Možná by to šlo naopak udělat tak, že např. Room by byl společný
   základ (tzn. jedna classa, jen v /shared) a na serveru by na sobě
   měl navěšený modul s přidanou funkcionalitou (třeba commandProcessor).
