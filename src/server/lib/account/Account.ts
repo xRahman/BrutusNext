@@ -8,7 +8,7 @@
 
 import {Settings} from '../../../server/ServerSettings';
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {SharedUtils} from '../../../shared/lib/utils/SharedUtils';
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Syslog} from '../../../shared/lib/log/Syslog';
@@ -87,7 +87,7 @@ export class Account extends ScriptableEntity
   {
     for (let characterName of this.characterNames)
     {
-      if (SharedUtils.isAbbrev(abbrev, characterName))
+      if (Utils.isAbbrev(abbrev, characterName))
         return characterName;
     }
 

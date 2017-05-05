@@ -8,7 +8,7 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 
-export module SharedUtils
+export module Utils
 {
   // -> Returns 'true' if 'variable' is of type 'FastBitSet',
   //    Returns 'false' otherwise.
@@ -125,7 +125,7 @@ export module SharedUtils
   {
     // First convert input to float
     // (meaning that result can contain decimals).
-    let result = SharedUtils.atof(input);
+    let result = Utils.atof(input);
 
     // Check that result doesn't have any decimal part. 
     if (result % 1 !== 0)

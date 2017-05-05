@@ -39,7 +39,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {SharedUtils} from '../../../shared/lib/utils/SharedUtils';
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {ClassFactory} from '../../../shared/lib/class/ClassFactory';
 import {PropertyAttributes} from
   '../../../shared/lib/class/PropertyAttributes';
@@ -378,7 +378,7 @@ export class Serializable extends Attributable
     if (property === null)
       return null;
 
-    if (SharedUtils.isPrimitiveType(property))
+    if (Utils.isPrimitiveType(property))
       // Primitive values (number, string, etc.) are just assigned.
       return property;
 
@@ -396,19 +396,19 @@ export class Serializable extends Attributable
     if (this.isSerializable(property))
       return property.saveToJsonObject(mode);
 
-    if (SharedUtils.isDate(property))
+    if (Utils.isDate(property))
       return JsonSaver.createDateSaver(property).saveToJsonObject(mode);
 
-    if (SharedUtils.isMap(property))
+    if (Utils.isMap(property))
       return JsonSaver.createMapSaver(property).saveToJsonObject(mode);
 
-    if (SharedUtils.isBitvector(property))
+    if (Utils.isBitvector(property))
       return JsonSaver.createBitvectorSaver(property).saveToJsonObject(mode);
 
-    if (SharedUtils.isSet(property))
+    if (Utils.isSet(property))
       return JsonSaver.createSetSaver(property).saveToJsonObject(mode);
 
-    if (SharedUtils.isPlainObject(property))
+    if (Utils.isPlainObject(property))
       return this.serializePlainObject(property);
 
     ERROR("Property '" + param.description + "' in class"
@@ -667,7 +667,7 @@ export class Serializable extends Attributable
     if (!this.isBitvectorRecord(param.sourceProperty))
       return null;
 
-    if (!SharedUtils.isBitvector(param.targetProperty))
+    if (!Utils.isBitvector(param.targetProperty))
     {
       let pathString = Serializable.composePathString(param.path);
 
@@ -688,7 +688,7 @@ export class Serializable extends Attributable
     if (!this.isDateRecord(param.sourceProperty))
       return null;
 
-    if (!SharedUtils.isDate(param.targetProperty))
+    if (!Utils.isDate(param.targetProperty))
     {
       let pathString = Serializable.composePathString(param.path);
 
@@ -709,7 +709,7 @@ export class Serializable extends Attributable
     if (!this.isSetRecord(param.sourceProperty))
       return null;
 
-    if (!SharedUtils.isSet(param.targetProperty))
+    if (!Utils.isSet(param.targetProperty))
     {
       let pathString = Serializable.composePathString(param.path);
 
@@ -730,7 +730,7 @@ export class Serializable extends Attributable
     if (!this.isMapRecord(param.sourceProperty))
       return null;
 
-    if (!SharedUtils.isMap(param.targetProperty))
+    if (!Utils.isMap(param.targetProperty))
     {
       let pathString = Serializable.composePathString(param.path);
 
@@ -782,14 +782,14 @@ export class Serializable extends Attributable
   //    or if loading failed.
   private deserializeAsObject(param: DeserializeParam)
   {
-    if (SharedUtils.isPrimitiveType(param.sourceProperty))
+    if (Utils.isPrimitiveType(param.sourceProperty))
       return null;
 
     if
     (
       param.targetProperty !== null
       && param.targetProperty !== undefined
-      && SharedUtils.isPrimitiveType(param.targetProperty)
+      && Utils.isPrimitiveType(param.targetProperty)
     )
     {
       let pathString = Serializable.composePathString(param.path);
@@ -831,7 +831,7 @@ export class Serializable extends Attributable
       return instance;
     }
 
-    if (!SharedUtils.isPlainObject(instance))
+    if (!Utils.isPlainObject(instance))
     {
       ERROR("Attempt to deserialize a nonprimitive property which"
         + " is neither an instance of Serializable class nor a plain"

@@ -26,7 +26,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {SharedUtils} from '../../../shared/lib/utils/SharedUtils';
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {EntityManager} from '../../../server/lib/entity/EntityManager';
 import {Syslog} from '../../../shared/lib/log/Syslog';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
@@ -110,7 +110,7 @@ export class AuthProcessor
       return;
 
     // Make the first letter uppercase and the rest lowercase.
-    accountName = SharedUtils.upperCaseFirstCharacter(accountName);
+    accountName = Utils.upperCaseFirstCharacter(accountName);
 
     // We are not going to attempt to log in to this account until we
     // receive password so we need to remember account name until then.
