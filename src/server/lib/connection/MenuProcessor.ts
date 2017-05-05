@@ -9,7 +9,7 @@
 import {Settings} from '../../../server/ServerSettings';
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
-import {SharedUtils} from '../../../shared/lib/utils/SharedUtils';
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
 import {Syslog} from '../../../shared/lib/log/Syslog';
 import {Connection} from '../../../server/lib/connection/Connection';
@@ -254,7 +254,7 @@ export class MenuProcessor
       return null;
 
     // Make the first letter uppercase and the rest lowercase.
-    name = SharedUtils.upperCaseFirstCharacter(name); 
+    name = Utils.upperCaseFirstCharacter(name); 
 
     // 'getCharacterNameByAbbrev()' returns null if 'choice'
     // isn't an abbreviation of any character names on account.

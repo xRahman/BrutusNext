@@ -8,7 +8,7 @@
 
 import {Settings} from '../../../server/ServerSettings';
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {SharedUtils} from '../../../shared/lib/utils/SharedUtils';
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
 import {Message} from '../../../server/lib/message/Message';
 import {Connection} from '../../../server/lib/connection/Connection';
@@ -65,7 +65,7 @@ export class ChargenProcessor
       return;
 
     // Make the first letter uppercase and the rest lowercase.
-    name = SharedUtils.upperCaseFirstCharacter(name);
+    name = Utils.upperCaseFirstCharacter(name);
 
     if (!await this.isNameAvailable(name))
       // We don't advance the stage so the next user input will

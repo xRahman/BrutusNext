@@ -9,7 +9,7 @@
 
 ///import {PacketData} from '../../../shared/protocol/PacketData';
 
-export interface ExitInterface
+export class ExitData
 {
   /// Momentálně potřebuju vědět jen to, jestli exit do daného směru existuje.
   /// - Časem by tu mohlo být přetížení vodorovných exitů šikmo nahoru/dolů.

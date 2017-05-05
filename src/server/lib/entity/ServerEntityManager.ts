@@ -5,17 +5,37 @@
   unique string ids.
 */
 
+/*
+  All instances of entities (accounts, connections, characters, rooms, etc.)
+  need to be held only in in Server.entityManager. Entities are not referenced
+  directly but through their Proxy object (see EntityProxyHandler.ts) so if
+  you access deleted entity, an error message will be logged.
+*/
+
+/*
+  Note:
+    There is no public 'add()' method. If you want to add an existing entity
+  to EntityManager, use:
+
+    let entity = EntityManager.createReference(id);
+
+  Then you can do:
+
+    if (!entity.isValid())
+      entity.load();
+
+  to load it from the disk. Entity record is only added to EntityManager
+  after entity is loaded. Until then, you will have a invalid entity
+  reference (any access to properties of this reference will be logged
+  as error).
+*/
+
 'use strict';
 
-import {ERROR} from '../../../shared/lib/error/ERROR';
-import {App} from '../../../shared/lib/App';
-import {Entity} from '../../../shared/lib/entity/Entity';
-import {EntityRecord} from '../../../shared/lib/entity/EntityRecord';
-/*
-import {EntityProxyHandler} from
-   '../../../shared/lib/entity/EntityProxyHandler';
-*/
+import {EntityManager} from '../../../shared/lib/entity/EntityManager';
+// import {ERROR} from '../../../shared/lib/error/ERROR';
 // import {IdProvider} from '../../../server/lib/entity/IdProvider';
+// import {Entity} from '../../../server/lib/entity/Entity';
 // import {NameLockRecord} from '../../../server/lib/entity/NameLockRecord';
 // import {EntityRecord} from '../../../server/lib/entity/EntityRecord';
 // import {ScriptableEntity} from '../../../server/lib/entity/ScriptableEntity';
@@ -26,147 +46,20 @@ import {EntityProxyHandler} from
 // import {PrototypeManager} from
 //   '../../../server/lib/prototype/PrototypeManager';
 // import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
-// import {Server} from '../../../server/lib/Server';
+// import {ServerApp} from '../../../server/lib/Server';
 
-export class EntityManager
+export class ServerEntityManager extends EntityManager
 {
-  //------------------ Private data ---------------------
+  // //------------------ Private data ---------------------
 
-  // Key:   entity id
-  // Value: record containing entity and its proxy handler
-  private entityRecords = new Map<string, EntityRecord>();
+  // // Hashmap<[ string, EntityRecord ]>
+  // //   Key: string id
+  // //   Value: { entity proxy, list of entity proxy handlers }
+  // private entityRecords = new Map();
 
-  /// Tohle by mělo být jen na serveru
-  /// (EntityManager na clientu nepotřebuje IdProvider).
-  ///constructor(private idProvider: IdProvider) { }
+  // constructor(private idProvider: IdProvider) { }
 
-  // ------------- Public static methods ----------------
-
-  // -> Returns existing reference if entity already exists in EntityManager.
-  //    Returns invalid reference if entity with such id isn't there.
-  public static createReference(id: string): Entity
-  {
-    return App.getEntityManager().createReference(id);
-  }
-
-  // -> Returns 'true' if enity is in the manager.
-  public static has(id: string)
-  {
-    return App.getEntityManager().has(id);
-  }
-
-  // Requests an entity from the manager.
-  // -> Returns 'undefined' if entity isn't found.
-  public static get(id: string)
-  {
-    return App.getEntityManager().get(id);
-  }
-
-  // Adds 'entity' to the manager under given 'id'.
-  // -> Returns 'null' on failure.
-  public static add(entityRecord: EntityRecord)
-  {
-    return App.getEntityManager().add(entityRecord);
-  }
-
-  // Removes entity from manager but doesn't delete it from disk
-  // (this is used for example when player quits the game).
-  // Also removes entity from entity lists so it can no longer
-  // be searched for.
-  public static remove(entity: Entity)
-  {
-    App.getEntityManager().release(entity);
-  }
-
-  // ---------------- Public methods --------------------
-
-  // -> Returns existing reference if entity already exists in EntityManager.
-  //    Returns invalid reference if entity with such 'id' isn't there.
-  private createReference(id: string): Entity
-  {
-    let entity = this.get(id);
-    
-    if (entity)
-      return entity;
-
-    return Entity.createInvalidEntity(id);
-  }
-
-  // -> Returns 'true' if enity is in the manager.
-  private has(id: string)
-  {
-    return this.entityRecords.has(id);
-  }
-
-  // Requests an entity from the manager.
-  // -> Returns 'undefined' if entity isn't found.
-  public get(id: string)
-  {
-    let entityRecord = this.entityRecords.get(id)
-
-    if (!entityRecord)
-      return undefined;
-
-    return entityRecord.getEntity();
-  }
-
-  // Adds 'entityRecord' to the manager.
-  // -> Returns 'null' on failure.
-  private add(entityRecord: EntityRecord)
-  {
-    let id = entityRecord.getEntity().getId();
-    let existingRecord = this.entityRecords.get(id);
-
-    if (existingRecord !== undefined)
-    {
-      ERROR("Attempt to add entity "
-       + entityRecord.getEntity().getErrorStringId()
-       + " to EntityManager which already exists there."
-       + " Entity is not added, existing one will be used");
-      return existingRecord.getEntity();
-    }
-
-    // Add entity record to hashmap under entity's id.
-    this.entityRecords.set(id, entityRecord);
-
-    return entityRecord.getEntity();
-  }
-
-  // Removes entity from the manager and from memory but
-  // doesn't delete it from disk (this is used for example
-  // when player quits the game).
-  //   Also removes entity from entity lists so it can no
-  // longer be searched for.
-  private release(entity: Entity)
-  {
-    if (!Entity.isValid(entity))
-    {
-      ERROR("Attempt to remove invalid entity from EntityManager");
-      return;
-    }
-
-    // Remove entity from entity lists so it can no longer be searched for.
-    entity.removeFromLists();
-
-    // get() returns undefined if there is no such record in hashmap.
-    let entityRecord = this.entityRecords.get(entity.getId());
-
-    if (entityRecord === undefined)
-    {
-      ERROR("Attempt to remove entity " + entity.getErrorIdString()
-        + " from EntityManager which is not there");
-      return;
-    }
-
-    // Remove the record from hashmap.
-    this.entityRecords.delete(entity.getId());
-
-    // Invalidate internal 'entity' reference in proxy handler
-    // so the entity can be freed from memory by garbage collector.
-    // (any future access to entity's properties will be reported
-    //  by it's proxy handler as error).
-    entityRecord.invalidate();
-  }
+  // // ---------------- Public methods --------------------
 
   // // Loads uniquely named entity from file
   // // (it must not exist in EntityManager). 
@@ -211,6 +104,53 @@ export class EntityManager
   //   // Create a proxy object for 'entity' and add it to the manager.
   //   return this.addEntityAsProxy(entity);
   // }
+
+  // // Každá entita může sloužit jako prototyp, takže
+  // // není důvod prototypové entity vyrábět nějak jinak.
+  // /*
+  // // -> Returns 'null' on failure.
+  // public createPrototypeEntity<T extends Entity>
+  // (
+  //   entityName: string,
+  //   className: string,
+  //   ancestorNameOrId: string
+  // )
+  // {
+  //   // Check that prototype named 'className' doesn't exist yet.
+  //   if (!this.isPrototypeNameAvailable(className))
+  //     // Error is already reported by isPrototypeNameAvailable.
+  //     return;
+
+  //   let ancestorEntity = this.getAncestorEntity
+  //   (
+  //     entityName,
+  //     className,
+  //     ancestorNameOrId
+  //   );
+
+  //   if (ancestorEntity === null)
+  //     // Error is already reported by getAncestorEntity().
+  //     return null;
+
+  //   // Create a new entity based on prototype entity.
+  //   let entity = this.createEntityFromPrototype(ancestorEntity);
+
+  //   // This must be done before adding the new entity to PrototypeManager,
+  //   // because 'className' will be used as a key in prototypeObjects hashmap
+  //   // (prototype will be indentified by it's 'className', not 'entityName').
+  //   entity.className = className;
+
+  //   ///Server.prototypeManager.setAsPrototype(entity, ancestorEntity);
+
+  //   // Note:
+  //   //   We are not going to save the new prototype entity right now,
+  //   // user has to save it herself.
+  //   // (In order to correctly save the change, ancestor entity must be
+  //   //  saved as well (because it's descendantIds array has changed) and
+  //   //  if the ancestor entity is a hardcoded entity, PrototypeManager
+  //   //  needs to be saved as well).
+  // }
+  // */
 
   // // Creates a new entity without setting a name to it
   // // (use this to create Connections and other entities
@@ -377,6 +317,23 @@ export class EntityManager
   //   return this.entityRecords.has(id);
   // }
 
+  // /// Tohohle se taky chci zbavit.
+  // /// - Tak nakonec ne. Je to potřeba, když se loaduje reference
+  // ///   ze souboru.
+  // /// - loadnout invalid referenci je ok. Není ok updatovat invalid
+  // ///   referenci, když v manageru už je jiná reference pro stejné id.
+  // ///
+  // // -> Returns existing reference if entity already exists in EntityManager.
+  // //    Returns invalid reference if entity with such id doen't exist yet.
+  // //      (you can then use entity.load() to load if from disk)
+  // public createReference(id: string): Entity
+  // {
+  //   if (this.has(id))
+  //     return this.get(id, Entity);
+
+  //   return this.createInvalidEntityReference(id);
+  // }
+
   // // Creates a new entity based on prototype 'new Class'
   // // (this is used to create prototype entities for hardcoded
   // //  entity classes like Account).
@@ -407,7 +364,7 @@ export class EntityManager
   //   return this.initPrototypeEnitityName(entity, className);
   // }
 
-  // --------------- Private methods -------------------
+  // // --------------- Private methods -------------------
 
   // // Adds entity proxy to the manager.
   // private addProxy(proxy: Entity, handler: EntityProxyHandler)
@@ -434,6 +391,24 @@ export class EntityManager
 
   //   // Add newly created entity record to hashmap under entity's string id.
   //   this.entityRecords.set(handler.id, entityRecord);
+  // }
+
+  // // Creates an entity proxy with null 'internalEntity'.
+  // // Doesn't add it to the manager - so if you want to use
+  // // this reference, you have to call .getCurrentReference()
+  // // first and .isValid() next to check if it became valid.
+  // private createInvalidEntityReference(id: string)
+  // {
+  //   let handler = new EntityProxyHandler();
+
+  //   handler.id = id;
+
+  //   // Set handler.entity to null.
+  //   handler.invalidate();
+
+  //   let proxy = new Proxy({}, handler);
+
+  //   return proxy;
   // }
 
   // // Loads entity id from file corresponding to unique entity
@@ -548,7 +523,7 @@ export class EntityManager
   //     prototypeId
   //   );
 
-  //   let entity = Server.prototypeManager.createInstance(prototypeEntity);
+  //   let entity = ServerApp.prototypeManager.createInstance(prototypeEntity);
 
   //   // And let it load itself from jsonObject.
   //   // ('path' is passed just to make error messages more informative)
@@ -588,7 +563,7 @@ export class EntityManager
   //   // prototypeObject, which means that if you edit a prototype,
   //   // changes will propagate to all entities instantiated from it,
   //   // which don't have that property overriden. 
-  //   let entity = Server.prototypeManager.createInstance(prototypeEntity);
+  //   let entity = ServerApp.prototypeManager.createInstance(prototypeEntity);
 
   //   if (entity['setId'] === undefined)
   //   {
@@ -761,7 +736,7 @@ export class EntityManager
   //   }
 
   //   let prototypeEntity =
-  //     Server.prototypeManager.getPrototypeObject(className);
+  //     ServerApp.prototypeManager.getPrototypeObject(className);
 
   //   // Dynamic type check - we make sure that
   //   // entity is inherited from Entity class.
@@ -877,7 +852,7 @@ export class EntityManager
   // private isPrototypeNameAvailable(className: string): boolean
   // {
   //   // Check if requested 'prototypeName' is available.
-  //   let test = Server.prototypeManager.getPrototypeObject(className);
+  //   let test = ServerApp.prototypeManager.getPrototypeObject(className);
 
   //   if (test !== undefined)
   //   {
@@ -888,4 +863,37 @@ export class EntityManager
 
   //   return true;
   // }
+
+  // /// Deprecated.
+  // /*
+  // // Searches for ancestor entity both in EntityManager and PrototypeManager.
+  // // -> Returns 'null' if ancestor entity isn't found.
+  // private getAncestorEntity
+  // (
+  //   name: string,
+  //   className: string,
+  //   ancestorNameOrId: string
+  // )
+  // {
+  //   // Search for prototype entity both in EntityManager and PrototypeManager.
+  //   let ancestorEntity = this.getPrototypeEntity
+  //   (
+  //     name,
+  //     // This parameter will be used to search in PrototypeManager.
+  //     ancestorNameOrId,
+  //     // This parameter will be used to search in EntityManager.
+  //     ancestorNameOrId
+  //   );
+
+  //   if (ancestorEntity === undefined)
+  //   {
+  //     ERROR("Unable to create new prototype '" + className + "'"
+  //       + " because ancestor entity '" + ancestorNameOrId + "' doesn't"
+  //       + " exist");
+  //     return null;
+  //   }
+
+  //   return ancestorEntity;
+  // }
+  // */
 }
