@@ -18,7 +18,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {SharedUtils} from '../../../shared/lib/utils/SharedUtils';
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {NameSearchList} from '../../../server/lib/entity/NameSearchList';
 import {EntityList} from '../../../server/lib/entity/EntityList';
 import {ServerGameEntity} from "../../../server/game/entity/ServerGameEntity";
@@ -437,24 +437,24 @@ export class AbbrevSearchList extends NameSearchList
   {
     let cathegory = AbbrevSearchList.SearchCathegory.ANYTHING;
 
-    if (SharedUtils.isAbbrev(cathegoryString, "mob"))
+    if (Utils.isAbbrev(cathegoryString, "mob"))
       cathegory = AbbrevSearchList.SearchCathegory.MOB;
 
-    if (SharedUtils.isAbbrev(cathegoryString, "player")
-      || SharedUtils.isAbbrev(cathegoryString, "plr"))
+    if (Utils.isAbbrev(cathegoryString, "player")
+      || Utils.isAbbrev(cathegoryString, "plr"))
       cathegory = AbbrevSearchList.SearchCathegory.PLAYER;
 
-    if (SharedUtils.isAbbrev(cathegoryString, "follower"))
+    if (Utils.isAbbrev(cathegoryString, "follower"))
       cathegory = AbbrevSearchList.SearchCathegory.FOLLOWER;
 
-    if (SharedUtils.isAbbrev(cathegoryString, "charmed"))
+    if (Utils.isAbbrev(cathegoryString, "charmed"))
       cathegory = AbbrevSearchList.SearchCathegory.CHARMED;
 
-    if (SharedUtils.isAbbrev(cathegoryString, "group")
-      || SharedUtils.isAbbrev(cathegoryString, "grp"))
+    if (Utils.isAbbrev(cathegoryString, "group")
+      || Utils.isAbbrev(cathegoryString, "grp"))
       cathegory = AbbrevSearchList.SearchCathegory.GROUP;
 
-    if (SharedUtils.isAbbrev(cathegoryString, "object"))
+    if (Utils.isAbbrev(cathegoryString, "object"))
       cathegory = AbbrevSearchList.SearchCathegory.OBJECT;
 
     return cathegory;

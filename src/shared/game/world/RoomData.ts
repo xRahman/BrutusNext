@@ -8,68 +8,99 @@
 'use strict';
 
 import {Coords} from '../../../shared/type/Coords';
-import {ExitInterface} from '../../../shared/game/world/ExitData';
+import {ExitData} from '../../../shared/game/world/ExitData';
 
 // Maps exit names to respective offsets in grid.
-const EXITS =
+const EXIT_SHIFTS =
 {
-  'n':   { s: -1, e:  0, u:  0 },
-  'nw':  { s: -1, e: -1, u:  0 },
-  'w':   { s:  0, e: -1, u:  0 },
-  'sw':  { s:  1, e: -1, u:  0 },
-  's':   { s:  1, e:  0, u:  0 },
-  'se':  { s:  1, e:  1, u:  0 },
-  'e':   { s:  0, e:  1, u:  0 },
-  'ne':  { s: -1, e:  1, u:  0 },
-  'nu':  { s: -1, e:  0, u:  1 },
-  'nwu': { s: -1, e: -1, u:  1 },
-  'wu':  { s:  0, e: -1, u:  1 },
-  'swu': { s:  1, e: -1, u:  1 },
-  'su':  { s:  1, e:  0, u:  1 },
-  'seu': { s:  1, e:  1, u:  1 },
-  'eu':  { s:  0, e:  1, u:  1 },
-  'neu': { s: -1, e:  1, u:  1 },
-  'u':   { s:  0, e:  0, u:  1 },
-  'nd':  { s: -1, e:  0, u: -1 },
-  'nwd': { s: -1, e: -1, u: -1 },
-  'wd':  { s:  0, e: -1, u: -1 },
-  'swd': { s:  1, e: -1, u: -1 },
-  'sd':  { s:  1, e:  0, u: -1 },
-  'sed': { s:  1, e:  1, u: -1 },
-  'ed':  { s:  0, e:  1, u: -1 },
-  'ned': { s: -1, e:  1, u: -1 },
-  'd':   { s:  0, e:  0, u: -1 }
+  'n':   new Coords(-1,  0,  0),
+  'nw':  new Coords(-1, -1,  0),
+  'w':   new Coords( 0, -1,  0),
+  'sw':  new Coords( 1, -1,  0),
+  's':   new Coords( 1,  0,  0),
+  'se':  new Coords( 1,  1,  0),
+  'e':   new Coords( 0,  1,  0),
+  'ne':  new Coords(-1,  1,  0),
+  'nu':  new Coords(-1,  0,  1),
+  'nwu': new Coords(-1, -1,  1),
+  'wu':  new Coords( 0, -1,  1),
+  'swu': new Coords( 1, -1,  1),
+  'su':  new Coords( 1,  0,  1),
+  'seu': new Coords( 1,  1,  1),
+  'eu':  new Coords( 0,  1,  1),
+  'neu': new Coords(-1,  1,  1),
+  'u':   new Coords( 0,  0,  1),
+  'nd':  new Coords(-1,  0, -1),
+  'nwd': new Coords(-1, -1, -1),
+  'wd':  new Coords( 0, -1, -1),
+  'swd': new Coords( 1, -1, -1),
+  'sd':  new Coords( 1,  0, -1),
+  'sed': new Coords( 1,  1, -1),
+  'ed':  new Coords( 0,  1, -1),
+  'ned': new Coords(-1,  1, -1),
+  'd':   new Coords( 0,  0, -1)
 }
 
+// // Maps exit names to respective offsets in grid.
+// const EXITS =
+// {
+//   'n':   { s: -1, e:  0, u:  0 },
+//   'nw':  { s: -1, e: -1, u:  0 },
+//   'w':   { s:  0, e: -1, u:  0 },
+//   'sw':  { s:  1, e: -1, u:  0 },
+//   's':   { s:  1, e:  0, u:  0 },
+//   'se':  { s:  1, e:  1, u:  0 },
+//   'e':   { s:  0, e:  1, u:  0 },
+//   'ne':  { s: -1, e:  1, u:  0 },
+//   'nu':  { s: -1, e:  0, u:  1 },
+//   'nwu': { s: -1, e: -1, u:  1 },
+//   'wu':  { s:  0, e: -1, u:  1 },
+//   'swu': { s:  1, e: -1, u:  1 },
+//   'su':  { s:  1, e:  0, u:  1 },
+//   'seu': { s:  1, e:  1, u:  1 },
+//   'eu':  { s:  0, e:  1, u:  1 },
+//   'neu': { s: -1, e:  1, u:  1 },
+//   'u':   { s:  0, e:  0, u:  1 },
+//   'nd':  { s: -1, e:  0, u: -1 },
+//   'nwd': { s: -1, e: -1, u: -1 },
+//   'wd':  { s:  0, e: -1, u: -1 },
+//   'swd': { s:  1, e: -1, u: -1 },
+//   'sd':  { s:  1, e:  0, u: -1 },
+//   'sed': { s:  1, e:  1, u: -1 },
+//   'ed':  { s:  0, e:  1, u: -1 },
+//   'ned': { s: -1, e:  1, u: -1 },
+//   'd':   { s:  0, e:  0, u: -1 }
+// }
+
 // Maps exit names to opposite directions.
-const REVERSE_EXITS =
+const REVERSE_DIRS =
 {
-  'n'  : 's',
-  'nw' : 'se',
-  'w'  : 'e',
-  'sw' : 'ne',
-  's'  : 'n',
-  'se' : 'nw',
-  'e'  : 'w',
-  'ne' : 'sw',
-  'nu' : 'sd',
+  'n':   's',
+  'nw':  'se',
+  'w':   'e',
+  'sw':  'ne',
+  's':   'n',
+  'se':  'nw',
+  'e':   'w',
+  'ne':  'sw',
+  'nu':  'sd',
   'nwu': 'sed',
-  'wu' : 'ed',
+  'wu':  'ed',
   'swu': 'ned',
-  'su' : 'nd',
+  'su':  'nd',
   'seu': 'nwd',
-  'eu' : 'wd',
+  'eu':  'wd',
   'neu': 'swd',
-  'u'  : 'd',
-  'nd' : 'su',
+  'u':   'd',
+  'nd':  'su',
   'nwd': 'seu',
-  'wd' : 'eu',
+  'wd':  'eu',
   'swd': 'neu',
-  'sd' : 'nu',
+  'sd':  'nu',
   'sed': 'nwu',
-  'ed' : 'wu',
+  'ed':  'wu',
   'ned': 'swu',
-  'd'  : 'u'
+  'd':   'u'
 }
 
 export class RoomData
@@ -87,7 +118,7 @@ export class RoomData
   public coords: Coords = null;
   
   // Hasmap indexed by shortened exit names ('n', 'sw', 'nwu', etc.).
-  public exits = new Map<string, ExitInterface>();
+  public exits = new Map<string, ExitData>();
 
   // ---------------- Public methods --------------------
 
@@ -95,7 +126,7 @@ export class RoomData
   //    to and adjacent room.
   public static getReverseDirection(direction: string)
   {
-    return REVERSE_EXITS[direction];
+    return REVERSE_DIRS[direction];
   }
 
   public hasExit(exitName: string)
@@ -109,36 +140,25 @@ export class RoomData
   //      an exit leading to an adjacent room.
   public getCoordsInDirection(direction: string)
   {
-    let shift = EXITS[direction];
+    let shift = EXIT_SHIFTS[direction];
 
     // 'direction' isn't any of the exit names leading to adjacent rooms.
     if (!shift)
       return null;
 
-    let target = new Coords();
-    
-    /// Tohle by mohlo umět coords.
-    /// (Nejlíp asi jako Coords.add(this.coords, shift), tj.
-    ///  static metoda, která sečte dva argumenty typu coords).
-    target.e = this.coords.e + shift.e;
-    target.s = this.coords.s + shift.s;
-    target.u = this.coords.u + shift.u;
+    return Coords.sum(this.coords, shift);
 
-    return target;
   }
 
   // -> Returns exit name leading to 'to' coordinates.
   //    Returns 'null' if 'to' aren't coordinates of an adjacent room.
   public getDirection(to: Coords)
   {
-    for (let direction in EXITS)
+    for (let direction in EXIT_SHIFTS)
     {
-      if
-      (
-        this.coords.e + EXITS[direction].e === to.e
-        && this.coords.s + EXITS[direction].s === to.s
-        && this.coords.u + EXITS[direction].u === to.u
-      )
+      let coordsInDirection = Coords.sum(this.coords, EXIT_SHIFTS[direction]);
+
+      if (Coords.equals(coordsInDirection, to))
         return direction;
     }
 

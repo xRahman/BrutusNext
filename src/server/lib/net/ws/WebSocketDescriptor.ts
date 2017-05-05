@@ -9,7 +9,7 @@
 import {Packet} from '../../../../shared/protocol/Packet';
 ///import {PacketData} from '../../../../shared/protocol/PacketData';
 import {ERROR} from '../../../../shared/lib/error/ERROR';
-import {SharedUtils} from '../../../../shared/lib/utils/SharedUtils';
+import {Utils} from '../../../../shared/lib/utils/Utils';
 import {Syslog} from '../../../../shared/lib/log/Syslog';
 import {MessageType} from '../../../../shared/lib/message/MessageType';
 import {AdminLevel} from '../../../../shared/lib/admin/AdminLevel';
@@ -158,7 +158,7 @@ export class WebSocketDescriptor extends SocketDescriptor
     /// DEBUG:
     console.log('(ws) received message: ' + data);
 
-    data = SharedUtils.normalizeCRLF(data);
+    data = Utils.normalizeCRLF(data);
 
     await this.processInput(data);
   }
