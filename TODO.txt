@@ -10,6 +10,9 @@ TODO: Ještě přece jen zvážit, jestli je nutné mít dvě paralelní
   měl navěšený modul s přidanou funkcionalitou (třeba commandProcessor).
   - otázka teda je, kdo by ho tam při vytváření instance pověsil...
 
+
+TODO: věci ze /shared/type možná hodit do /shared/utils
+
 ---------------------------------------------------------------
 
 shared GameEntity
@@ -872,6 +875,10 @@ TODO: Zrušit zmínku o DynamicClasses ze SaveableObjectu
 TODO: Client i Server by měli mít každý svůj vlastní EntityManager.
 
 ----------------------------------------------------------------------------
+
+TODO: MessageType by šlo přece jen vrátit do Modulu Message
+- Může nejspíš současně existovat class Message (v server/Message.ts)
+  a modul Message (v shared/Message.ts)
 
 TODO: loadPropertyFromJSONObject() a podobne funkce v Serializable přejmenovat
   prostě na loadProperty()

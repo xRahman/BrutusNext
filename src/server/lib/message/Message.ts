@@ -8,7 +8,7 @@
 
 import {Settings} from '../../../server/ServerSettings';
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {SharedUtils} from '../../../shared/lib/utils/SharedUtils';
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {ServerApp} from '../../../server/lib/ServerApp';
 import {Connection} from '../../../server/lib/connection/Connection';
 import {MessageType} from '../../../shared/lib/message/MessageType';
@@ -270,7 +270,7 @@ export class Message
   {
     // Remove all white spaces (including tabs and newlines)
     // from the end of the string.
-    let data = SharedUtils.trimRight(this.text);
+    let data = Utils.trimRight(this.text);
 
     // Add color code depending on MessageType to the beginning of the
     // string (only if there isn't already a color code there), replaces
@@ -279,7 +279,7 @@ export class Message
     data = this.addBaseColor(data);
     
     // Make sure that all newlines are representedy by '\r\n'.
-    data = SharedUtils.normalizeCRLF(data);
+    data = Utils.normalizeCRLF(data);
 
     // Add ingame prompt if this type of message triggers it.
     if (this.triggersPrompt())
@@ -354,7 +354,7 @@ export class Message
   {
     // First we will remove all white space characters from
     // the end of the message, because they don't affect color.
-    let trimmedData = SharedUtils.trimRight(data);
+    let trimmedData = Utils.trimRight(data);
     let lastTwoCharacters = trimmedData.substr(data.length - 2, 2);
 
     // If data (after trimming whitspace characters) already
@@ -554,7 +554,7 @@ export module Message
       // "Dereferenced" enmum value (it's string representation).
       let stringValue = MessageType[value];
 
-      return SharedUtils.getEnumAttributes(attributes, enumName, stringValue);
+      return Utils.getEnumAttributes(attributes, enumName, stringValue);
     }
   }
   */
