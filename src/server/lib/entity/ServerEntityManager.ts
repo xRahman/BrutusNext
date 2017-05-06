@@ -32,7 +32,11 @@
 
 'use strict';
 
+import {Entity} from '../../../shared/lib/entity/Entity';
 import {EntityManager} from '../../../shared/lib/entity/EntityManager';
+import {ServerApp} from '../../../server/lib/ServerApp';
+import {FileManager} from '../../../server/lib/fs/FileManager';
+import {FileSystem} from '../../../server/lib/fs/FileSystem';
 // import {ERROR} from '../../../shared/lib/error/ERROR';
 // import {IdProvider} from '../../../server/lib/entity/IdProvider';
 // import {Entity} from '../../../server/lib/entity/Entity';
@@ -46,10 +50,56 @@ import {EntityManager} from '../../../shared/lib/entity/EntityManager';
 // import {PrototypeManager} from
 //   '../../../server/lib/prototype/PrototypeManager';
 // import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
-// import {ServerApp} from '../../../server/lib/Server';
 
 export class ServerEntityManager extends EntityManager
 {
+  // ------------- Public static methods ----------------
+
+  public static async isNameTaken
+  (
+    name: string,
+    cathegory: Entity.NameCathegory
+  )
+  {
+    return FileManager.doesNameLockFileExist(name, cathegory);
+  }
+
+  // ------------- Private static methods ---------------
+
+  // --------------- Protected methods ------------------
+
+  // Overrides EntityManager.requestEntityName().
+  // Checks if requested name is available, creates a name lock file
+  // if it is.
+  // -> Returns 'false' if name change isn't allowed.
+  protected async requestEntityName
+  (
+    id: string,
+    name: string,
+    cathegory: Entity.NameCathegory
+  )
+  {
+    // Renaming to a non-unique name is always allowed.
+    if (cathegory === null)
+      return true;
+
+    if (ServerEntityManager.isNameTaken(name, cathegory))
+      return false;
+
+    return FileManager.saveNameLockFile(id, name, cathegory);
+  }
+
+  protected async releaseEntityName
+  (
+    name: string,
+    cathegory: Entity.NameCathegory
+  )
+  {
+    FileManager.deleteNameLockFile(name, cathegory);
+  }
+
+  // ---------------- Private methods -------------------
+
   // //------------------ Private data ---------------------
 
   // // Hashmap<[ string, EntityRecord ]>

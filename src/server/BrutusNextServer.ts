@@ -136,11 +136,7 @@ async function main()
 
   let cmdlineParser = parseCmdlineParams();
 
-  // Create an instance of server.
-  // (server is a singleton so we use static method to do it)
-  ServerApp.create();
-  // Run the server at specified telnet port.
-  // (Server.run() is async function)
+  // Create an instance of ServerApp and run in at specified telnet port.
   await ServerApp.run(cmdlineParser.port);
 }
 

@@ -6,9 +6,8 @@
   Manages an instance of server application.
 
   Usage:
-    import {Server} from './server/Server';
-    Server.create(); // Creates an instance.
-    Server.run(port);
+    import {ServerApp} from './server/lib/ServerApp';
+    ServerApp.run(port);
 */
 
 'use strict';
@@ -17,14 +16,10 @@ import {ERROR} from '../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../shared/lib/error/FATAL_ERROR';
 import {App} from '../../shared/lib/App';
 import {IdProvider} from '../../server/lib/entity/IdProvider';
-///import {Saveable} from '../../shared/lib/class/Saveable';
-///import {Serializable} from '../../shared/lib/class/Serializable';
 import {ClassFactory} from '../../shared/lib/class/ClassFactory';
 import {ServerEntityManager} from
   '../../server/lib/entity/ServerEntityManager';
-import {ServerEntitySaver} from
-  '../../server/lib/fs/ServerEntitySaver';
-import {FileSystem} from '../../server/lib/fs/FileSystem';
+import {FileManager} from '../../server/lib/fs/FileManager';
 import {FlagNamesManager} from '../../server/lib/flags/FlagNamesManager';
 import {AdminList} from '../../server/lib/admin/AdminList';
 import {AdminLevel} from '../../shared/lib/admin/AdminLevel';
@@ -46,12 +41,6 @@ import {Account} from '../../server/lib/account/Account';
 
 export class ServerApp extends App
 {
-  public static get DATA_DIRECTORY()
-  {
-    ///return './data/';
-    return './server/data/';
-  }
-
   // -------------- Static class data -------------------
 
   //protected static instance: Server;
@@ -69,14 +58,14 @@ export class ServerApp extends App
   // --- singleton instances ---
   // (There is only one such instance per server.)
 
-  private game = null;
+  private game = new Game();
+
   private telnetServer = new TelnetServer();
+
   /// Http server also runs a websocket server inside it.
   private httpServer = new HttpServer();
 
   private idProvider = new IdProvider(this.timeOfBoot);
-
-  ///private saver = new Saver();
 
   // --------- idLists ---------
   // IdLists contain entity id's.
@@ -156,6 +145,16 @@ export class ServerApp extends App
   // if there is no ./data directory).
   public static async run(telnetPort: number)
   {
+    if (this.instanceExists())
+    {
+      ERROR("Instance of ServerApp already exists."
+        + "ServerApp.run() can only be called once");
+      return;
+    }
+
+    // Create an instance of ServerApp.
+    this.createInstance();
+
     ServerApp.getInstance().run(telnetPort);
   }
 
@@ -178,19 +177,6 @@ export class ServerApp extends App
   public static getAdminLevel(entity: ServerGameEntity)
   {
     return ServerApp.getInstance().adminList.getAdminLevel(entity);
-  }
-
-  // Creates an instance of a server. Server is a singleton, so it must
-  // not already exist.
-  public static create()
-  {
-    if (App.instance !== null)
-    {
-      ERROR("Server already exists, not creating it");
-      return;
-    }
-
-    App.instance = new ServerApp();
   }
 
   // Sends a message to all player connections
@@ -259,6 +245,20 @@ export class ServerApp extends App
     return "&gMessage of the day:\n&_" + motd;
   }
 
+  // Overrides App.createInstance().
+  // Creates an instance of a server. Server is a singleton, so it must
+  // not already exist.
+  protected static createInstance()
+  {
+    if (App.instance !== null)
+    {
+      ERROR("Server already exists, not creating it");
+      return;
+    }
+
+    App.instance = new ServerApp();
+  }
+
   // ---------------- Public methods --------------------
 
   // Reports error message and stack trace.
@@ -296,22 +296,14 @@ export class ServerApp extends App
 
   // Loads the game (or creates a new default one
   // if there is no ./data directory).
-  public async run(telnetPort: number)
+  private async run(telnetPort: number)
   {
-    if (this.game !== null)
-    {
-      ERROR("Game already exists. Server.run() can only be done once");
-      return;
-    }
-
-    this.game = new Game();
-
 
     /*
     // We must check if './data/' directory exists before
     // initPrototypes() is called, because './data/'
     // will be created by it if it doesn't exist.
-    let dataExists = !FileSystem.existsSync(ServerApp.DATA_DIRECTORY);
+    let dataExists = await FileManager.dataDirectoryExists();
 
     await this.prototypeManager.init(dataExists);
 
@@ -320,24 +312,21 @@ export class ServerApp extends App
     await this.prototypeManager.save();
     */
 
-
-    /// TEST
-    ///await test();
-
-    // Create an entitity for each entity classe listed in
+    // Create an entitity for each entity class registered in
     // ClassFactory so they can be used as prototype objects
     // for other entities.
-    let hardcodedEntityClasses = ClassFactory.createRootEntities();
+    //   As a side effect, we get a list of names of entity
+    // classes registered in ClassFactory.
+    let entityClasses = ClassFactory.createRootEntities();
 
     /// TODO: Deklarovat this.prototypeManager = new ServerPrototypeManager();
     // Create root prototype entities if they don't exist yet or load
     // them from disk. Then recursively load all prototype entities
     // inherited from them.
-    await this.prototypeManager.initPrototypes(hardcodedEntityClasses);
-
+    await this.prototypeManager.initPrototypes(entityClasses);
 
     // If /server/data/ directory doesn't exist, create and save a new world.
-    if (!FileSystem.existsSync(ServerApp.DATA_DIRECTORY))
+    if (!await FileManager.existsDataDirectory())
     {
       // Mark flagNamesManager as ready without loading from file
       // (there is nowhere to load it from so we will just start
@@ -365,12 +354,12 @@ export class ServerApp extends App
 
   protected async saveEntity(entity: Entity)
   {
-    await ServerEntitySaver.saveEntity(entity);
+    await FileManager.saveEntity(entity);
   }
 
   protected async loadEntity(entity: Entity)
   {
-    return await ServerEntitySaver.loadEntity(entity);
+    return await FileManager.loadEntity(entity);
   }
 
   protected syslog
