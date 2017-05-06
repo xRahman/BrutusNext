@@ -13,7 +13,7 @@ import {EntityProxyHandler} from
 
 export class EntityRecord
 {
-  private entity = null;
+  private entity: Entity = null;
   private proxyHandler = null;
 
   constructor

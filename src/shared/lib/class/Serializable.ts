@@ -119,9 +119,6 @@ export class Serializable extends Attributable
     if (!jsonObject)
       return null;
 
-    // First we check if there is a 'prototypeId' property in json Object.
-    let prototypeId = jsonObject[Entity.PROTOTYPE_ID_PROPERTY];
-
     // If 'id' parameter is 'null', it means that we are not loading from
     // file but rather using a client-server communication protocol. In
     // that case entity 'id' is not saved as file name (because no files
@@ -129,10 +126,13 @@ export class Serializable extends Attributable
     if (id === null)
       id = jsonObject[Entity.ID_PROPERTY];
 
+      // First we check if there is a 'prototype' property in json Object.
+    let prototypeReference = jsonObject[Entity.PROTOTYPE_PROPERTY];
+
     // If it is there, it means that we are deserializing an Entity
     // so it must create an entity instance for it.
-    if (prototypeId)
-      return this.createEntityInstance(prototypeId, id, path);
+    if (prototypeReference)
+      return this.createEntityInstance(prototypeReference, id, path);
 
     // If there is no 'prototypeId' property in json Object, we will read
     // 'className' property instead and create an instance of that class.
@@ -149,14 +149,44 @@ export class Serializable extends Attributable
 
     // Use ClassFactory to create an instance of 'className'
     // ('null' is returned on error).
-    return ClassFactory.createInstance(className);
+    return ClassFactory.createNew(className);
+  }
+
+  private static readPrototypeId
+  (
+    prototypeReference: Object,
+    id: string,
+    path: string
+  )
+  {
+    if (prototypeReference === null || prototypeReference === undefined)
+    {
+      let pathString = Serializable.composePathString(path);
+
+      ERROR("Invalid prototype reference when deserializing entity"
+        + " " + id + pathString);
+      return null;
+    }
+
+    let prototypeId = prototypeReference[Entity.ID_PROPERTY];
+
+    if (prototypeId === null || prototypeId === undefined)
+    {
+      let pathString = Serializable.composePathString(path);
+
+      ERROR("Invalid prototype id when deserializing entity"
+        + " " + id + pathString);
+      return null
+    }
+
+    return prototypeId;
   }
 
   // Creates an instance of entity with provided 'id' and 'prototypeId'.
   // -> Returns 'null' if instance cannot be created.
   private static createEntityInstance
   (
-    prototypeId: string,
+    prototypeReference: Object,
     id: string,
     path: string
   )
@@ -170,12 +200,22 @@ export class Serializable extends Attributable
       return null;
     }
 
+    let prototypeId = this.readPrototypeId(prototypeReference, id, path);
+
+    if (prototypeId === null)
+      return null;
+
+    return EntityManager.createInstance(prototypeId, id)
+
+    // Moved to EntityManager.createInstance().
+    /*
     let prototype = EntityManager.get(prototypeId);
 
     if (!prototype)
       return null;
 
     return Entity.createInstance(prototype, id);
+    */
   }
 
   // Extracts data from plain javascript Object to this instance.
@@ -883,7 +923,7 @@ export class Serializable extends Attributable
     // because entities are always serialized as a reference, not directly.
     // So if there is an instance of some Serializable class saved directly
     // in Json, it can't be an entity class.
-    return ClassFactory.createInstance(className);
+    return ClassFactory.createNew(className);
   }
 
 //+

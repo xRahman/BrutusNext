@@ -6,6 +6,7 @@
 
 'use strict';
 
+/*
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {SharedGameEntity} from '../../../shared/game/entity/SharedGameEntity';
 import {NameLockRecord} from '../../../server/lib/entity/NameLockRecord';
@@ -278,3 +279,4 @@ export module NamedEntity
     world
   }
 }
+*/
