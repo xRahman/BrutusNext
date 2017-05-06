@@ -8,26 +8,89 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {JsonObject} from '../../../shared/lib/json/JsonObject';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
 import {SavingManager} from '../../../server/lib/fs/SavingManager';
 
-export class ServerEntitySaver
+export class FileManager
 {
+  public static get DATA_DIRECTORY()
+  {
+    ///return './data/';
+    return './server/data/';
+  }
+
   // ------------- Public static methods ----------------
+
+  public static async doesDataDirectoryExist()
+  {
+    return await FileSystem.exists(this.DATA_DIRECTORY)
+  }
+
+  public static async doesNameLockFileExist
+  (
+    name: string,
+    cathegory: Entity.NameCathegory
+  )
+  {
+    // Name lock file path is something like
+    // './data/names/accounts/Rahman.json'.
+    // It's existence means that account name
+    // 'Rahman' is already used.
+    let path = this.getNameLockFilePath(name, cathegory);
+
+    return await FileSystem.exists(path);
+  }
+
+  // -> Returns 'true' on success.
+  public static async saveNameLockFile
+  (
+    id: string,
+    name: string,
+    cathegory: Entity.NameCathegory
+  )
+  {
+    // Name lock file will contain serialized object with a single
+    // 'id' property.
+    let jsonString = JsonObject.stringify({ id: id });
+
+    // Name lock directory is something like './data/names/accounts/'.
+    let directory = FileManager.getNameLockDirectory(cathegory);
+
+    // Directory might not yet exist, so we better make sure it does.
+    if (await FileSystem.ensureDirectoryExists(directory) === false)
+      return false;
+
+    // Name lock file name is something like 'Rahman.json'.
+    let fileName = FileManager.getNameLockFileName(name);
+    
+    return await this.saveToFile(jsonString, directory + fileName);
+  }
+
+  public static async deleteNameLockFile
+  (
+    name: string,
+    cathegory: Entity.NameCathegory
+  )
+  {
+    await FileSystem.deleteFile(this.getNameLockFilePath(name, cathegory));
+  }
 
   // -> Returns 'true' on success.
   public static async saveEntity(entity: Entity)
   {
-    let fileName = entity.getSaveFileName();
-    let directory = entity.getSaveDirectory();
+    let fileName = this.getEntityFileName(entity.getId());
+    let directory = this.getEntityDirectory();
 
+    /*
     if (!this.isFileNameValid(entity, directory))
       return false;
     
     if (!this.isDirectoryValid(entity, directory))
       return false;
+    */
 
     directory = this.enforceTrailingSlash(directory);
 
@@ -36,21 +99,23 @@ export class ServerEntitySaver
     // Directory might not yet exist, so we better make sure it does.
     if (await FileSystem.ensureDirectoryExists(directory) === false)
       return false;
-    
+
     await this.saveToFile(jsonString, directory + fileName);
   }
 
   // -> Returns 'true' on success.
   public static async loadEntity(id: string)
   {
-    let fileName = entity.getSaveFileName();
-    let directory = entity.getSaveDirectory();
+    let fileName = this.getEntityFileName(id);
+    let directory = this.getEntityDirectory();
 
+    /*
     if (!this.isFileNameValid(entity, directory))
       return false;
     
     if (!this.isDirectoryValid(entity, directory))
       return false;
+    */
 
     directory = this.enforceTrailingSlash(directory);
 
@@ -64,6 +129,40 @@ export class ServerEntitySaver
   // ------------ Protected static methods --------------
 
   // ------------- Private static methods ---------------
+
+  private static getEntityFileName(id: string)
+  {
+    return id + '.json';
+  }
+
+  private static getEntityDirectory()
+  {
+    return this.DATA_DIRECTORY + 'entities/';
+  }
+
+  private static getNameLockFilePath
+  (
+    name: string,
+    cathegory: Entity.NameCathegory
+  )
+  {
+    // Path is something like './data/names/accounts/Rahman.json'.
+    return this.getNameLockDirectory(cathegory)
+      + this.getNameLockFileName(name);
+  }
+
+  private static getNameLockFileName(name: string)
+  {
+    // Name lock file name is something like 'Rahman.json'.
+    return name + '.json';
+  }
+
+  private static getNameLockDirectory(cathegory: Entity.NameCathegory)
+  {
+    // Name lock directory is something like './data/names/accounts/'
+    return this.DATA_DIRECTORY + 'names/'
+      + Entity.NameCathegory[cathegory].toLowerCase() + '/';
+  }
 
   // This is just a generic async function that will finish
   // when 'promise' parameter gets resolved.
@@ -88,6 +187,9 @@ export class ServerEntitySaver
     return directory;
   }
 
+  /// Tohle teď není potřeba, cesty se vyrábí přímo ve FileManageru
+  /// a jsou vždycky stejné: /data/entities/id.json.
+  /*
   private static isFileNameValid(entity: Entity, fileName: string)
   {
     if (fileName !== undefined
@@ -101,7 +203,11 @@ export class ServerEntitySaver
 
     return false;
   }
+  */
   
+  /// Tohle teď není potřeba, cesty se vyrábí přímo ve FileManageru
+  /// a jsou vždycky stejné: /data/entities/id.json.
+  /*
   private static isDirectoryValid(entity: Entity, directory: string)
   {
     if (directory !== undefined
@@ -115,6 +221,7 @@ export class ServerEntitySaver
 
     return false;
   }
+  */
 
   // -> Returns 'true' on success.
   private static async saveToFile(data: string, path: string)
@@ -149,17 +256,5 @@ export class ServerEntitySaver
     SavingManager.finishSaving(path);
 
     return success;
-  }
-
-  private static async loadEntityFromFile
-  (
-    entity: Entity,
-    directory: string,
-    fileName: string
-  )
-  {
-    directory = this.enforceTrailingSlash(directory);
-
-    TODO
   }
 }
