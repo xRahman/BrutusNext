@@ -6,6 +6,7 @@
 */
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Serializable} from '../../../shared/lib/class/Serializable';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {EntityManager} from '../../../shared/lib/entity/EntityManager';
 
@@ -18,13 +19,45 @@ export class ClassFactory
 
   // ------------- Public static methods ----------------
 
+  // Creates an instance of Entity with given 'prototype' object
+  // (any object could be used as 'prototype', but we only use
+  //  prototype inheritance for entities so we restrict the type
+  //  of 'prototype' to Entity).
+  // -> Returns 'null' on error.
+  public static createPrototypeInstance(prototype: Entity)
+  {
+    if (prototype === null || prototype === undefined)
+    {
+      ERROR("Attempt to create a prototype instance based on an"
+        + " invalid prototype object. Instance is not created");
+      return null;
+    }
+
+    // Object.create() will create a new object with 'prototype'
+    // as it's prototype object. This will ensure that all 'own'
+    // properties of 'prorotype' (those initialized in constructor
+    // or in class body of prototype) become 'inherited' properties
+    // on the new instance (so that changing the value on prototype
+    // will change the value for all instances that don't have that
+    // property overriden).
+    let instance = Object.create(prototype);
+
+    // Prototype inheritance in Javascript handles nonprimitive
+    // properties as direct references to such properties in
+    // prototype object. That means that writing to a property
+    // inside a nonprimitive property changes the value on the
+    // prototype, not on the instance. To prevent this, we need
+    // to manually instantiate all nonprimitive properties.
+    this.instantiateProperties(instance, prototype);
+  }
+
   // Creates an instance of class 'className'. This can only be
   // used on classes registered by  ClassFactory.registerClass().
   // (classes registered by ClassFactory.registerPrototypeClass()
   //  are entity prototype classes and need to be instantiated by
   //  Entity.createInstance() instead.
   // -> Returns 'null' on error.
-  public static createInstance(className: string)
+  public static createNew(className: string): Serializable
   {
     let classInfo = this.classInfo.get(className);
 
@@ -48,7 +81,7 @@ export class ClassFactory
         + " instead of ClassFactory.registerClass()?");
         + " Another possible reason is that you are"
         + " deserializing an Entity class but there"
-        + " is no '" + Entity.PROTOTYPE_ID_PROPERTY + "'"
+        + " is no '" + Entity.PROTOTYPE_PROPERTY + "'"
         + " in JSON data"
       return null;
     }
@@ -60,7 +93,10 @@ export class ClassFactory
 
   // Registers constructor of a class so it can be dynamically instantiated
   // later.
-  public static registerClass<T>(Class: { new (...args: any[]): T })
+  public static registerClass<T extends Serializable>
+  (
+    Class: { new (...args: any[]): T }
+  )
   {
     let classInfo: ClassInfo =
     {
@@ -94,9 +130,10 @@ export class ClassFactory
   // so it can be used as prototype object for othe entities
   // (these prototype entities use class name as their id,
   //  for example 'Room').
+  // -> Returns array of names of entity classes registered in ClassFactory.
   public static createRootEntities()
   {
-    let hardcodedEntityClasses = [];
+    let entityClasses = [];
 
     for (let [className, classInfo] of this.classInfo)
     {
@@ -105,16 +142,75 @@ export class ClassFactory
         // As a side effect, we also fill the 'hardcodedEntityClasses'
         // array so the PrototypeManager will know what prototypes it's
         // supposed to work with.
-        hardcodedEntityClasses.push(className);
+        entityClasses.push(className);
 
-        Entity.createRootEntity(className, classInfo.Class);
+        EntityManager.createRootEntity(className, classInfo.Class);
       }
     }
 
-    return hardcodedEntityClasses;
+    return entityClasses;
   }
 
   // ------------- Private static methods ---------------
+
+  // Ensures that all non-primitive properties of 'prototype'
+  // are instantiated on 'object'.
+  // -> Returns 'object' with instantiated properties.
+  private static instantiateProperties(object: any, prototype: any)
+  {
+    if (object === null || object === undefined)
+      return null;
+
+    for (let propertyName in object)
+      this.instantiateProperty(object, prototype, propertyName);
+
+    return object;
+  }
+
+  // Ensures that if 'property' of 'object' is non-primitive,
+  // it is recursively instantiated as an empty Object inherited
+  // from the respective 'property' on 'prototype' object.
+  private static instantiateProperty
+  (
+    object: any,
+    prototype: any,
+    propertyName: string
+  )
+  {
+    if (prototype === undefined || prototype === null)
+    {
+      ERROR("Invalid prototype object");
+      return;
+    }
+
+    // There is no point of instantating properties that don't exist
+    // on prototype object or have 'null' value on it.
+    if (prototype[propertyName] === undefined
+        || prototype[propertyName] === null)
+      return;
+
+    // Primitive properties (numbers, strings, etc) don't have to
+    // be instantiated because Javascript prototype inheritance
+    // handles them correctly.
+    if (typeof object[propertyName] !== 'object')
+      return;
+
+    // This check allows re-instantiating of properties of existing
+    // instance when prototype is changed. Properties that already
+    // are instantiated (they are 'own' properties of object) are
+    // not overwritten.
+    if (!object.hasOwnProperty(propertyName))
+      // Object.create() will create a new {}, which will have
+      // prototype[propertyName] as it's prototype object.
+      object[propertyName] = Object.create(prototype[propertyName]);
+
+    // Property we have just instantiated may have it's own
+    // non-primitive properties that also need to be instantiated.
+    //   Note that recursive call is done even for properties that
+    // have already been instantiated on 'object', because there
+    // still may be some changes deeper in the structure).
+    this.instantiateProperties(object[propertyName], prototype[propertyName]);
+  }
 
   // Adds 'classInfo' to ClassFactory.classInfo hashmap.
   private static addClassInfo(classInfo: ClassInfo)
@@ -162,6 +258,6 @@ export class ClassFactory
 
 interface ClassInfo
 {
-  Class: new <T>(...args: any[]) => T,
+  Class: new <T extends Serializable>(...args: any[]) => T,
   isEntityClass: boolean
 }

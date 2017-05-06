@@ -14,9 +14,12 @@ import {ERROR} from '../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../shared/lib/error/FATAL_ERROR';
 import {AdminLevel} from '../../shared/lib/admin/AdminLevel';
 import {MessageType} from '../../shared/lib/message/MessageType';
-import {Saveable} from '../../shared/lib/class/Saveable';
+///import {Saveable} from '../../shared/lib/class/Saveable';
 import {ClientSyslog} from '../../client/lib/log/ClientSyslog';
 import {App} from '../../shared/lib/App';
+import {Entity} from '../../shared/lib/entity/Entity';
+import {ClientEntityManager} from
+  '../../client/lib/entity/ClientEntityManager';
 import {Body} from '../../client/gui/component/Body';
 import {Document} from '../../client/gui/component/Document';
 import {Connection} from '../../client/lib/connection/Connection';
@@ -31,6 +34,8 @@ export class ClientApp extends App
   //------------------ Public data ----------------------
 
   public activeScrollWindow = null;
+
+  //----------------- Protected data --------------------
 
   protected entityManager = new ClientEntityManager();
 
@@ -55,29 +60,10 @@ export class ClientApp extends App
 
   // ---------------- Static methods --------------------
 
-  /*
-  public static instanceExists()
-  {
-    return Client.instance !== null && Client.instance !== undefined;
-  }
-  */
-
-  /// Tohle možná nebudu potřebovat - nikde se to nevolá.
-  /// (jediný smysl je ostatně jiný typ návratové hodnoty,
-  ///  stejná metoda existuje už v App)
-  /*
-  protected static getInstance(): ClientApp
-  {
-    if (ClientApp.instance === null || ClientApp.instance === undefined)
-      FATAL_ERROR("Instance of client doesn't exist yet");
-
-    return <ClientApp>App.instance;
-  }
-  */
-
+  // Overrides App.createInstance().
   // Creates an instance of a client. Client is a singleton, so it must
   // not already exist.
-  public static create()
+  protected static createInstance()
   {
     // Reports the problem to the user if websockets aren't available.
     if (!WebSocketClient.webSocketsAvailable())
@@ -147,14 +133,14 @@ export class ClientApp extends App
     return ClientSyslog.log(text, msgType, adminLevel);
   }
 
-  protected save(object: Saveable)
+  protected saveEntity(entity: Entity)
   {
     // (it is possible that HTML5 Local Storage will be
     //  used in the future, however).
     ERROR("Client doesn't have a save/load capability yet");
   }
 
-  protected load(object: Saveable)
+  protected loadEntity(entity: Entity)
   {
     // (it is possible that HTML5 Local Storage will be
     //  used in the future, however).

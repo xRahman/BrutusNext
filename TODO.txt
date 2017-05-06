@@ -1,6 +1,19 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+
+
+---------------------------------------------------------------
+
+Ještě jednou k vyrábění instancí:
+----------------------------------
+
+Object.create() a instantiateProperties() by asi měla dělat ClassFactory,
+protože takhle vyrobeným instancím se v javascriptu říká factory classes.
+- asi to půjde, protože instantiateProperties() se volá nad obecným objectem.
+
+---------------------------------------------------------------
+
 IDEA: Shared classy nenazývat SharedClass ale prostě jen Class
 
 TODO: Ještě přece jen zvážit, jestli je nutné mít dvě paralelní

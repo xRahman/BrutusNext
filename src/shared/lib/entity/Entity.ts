@@ -13,15 +13,12 @@ import {Serializable} from '../../../shared/lib/class/Serializable';
 import {PropertyAttributes} from
   '../../../shared/lib/class/PropertyAttributes';
 import {EntityManager} from '../../../shared/lib/entity/EntityManager';
-import {EntityProxyHandler} from
-  '../../../shared/lib/entity/EntityProxyHandler';
-import {EntityRecord} from '../../../shared/lib/entity/EntityRecord';
 
 export class Entity extends Serializable
 {
   public static get NAME_PROPERTY()          { return "name"; }
   public static get ID_PROPERTY()            { return 'id'; }
-  public static get PROTOTYPE_ID_PROPERTY()  { return "prototypeId"; }
+  public static get PROTOTYPE_PROPERTY()  { return "prototype"; }
   private static get INSTANCE_IDS_PROPERTY() { return "instanceIds"; }
 
   // ----------------- Private data ----------------------
@@ -51,19 +48,26 @@ export class Entity extends Serializable
   //                 Prototype linking                 //
   // ------------------------------------------------- //
 
-  // Id of entity which serves as prototype object to this entity.
-  //   This needs to be saved in orded to know what prototype object
-  // to use when creating this entity.
-  //   Hardcoded class prototype entities have null 'prototypeId'.
-  private prototypeId: string = null;
+  // Reference to an entity which serves as prototype object to this
+  // entity. Only root prototype entities (created in ClassFactory)
+  // have 'null' value of 'prototype'.
+  private prototype: Entity = null;
 
   // Set of ids of entities that use this entity as their prototype
-  // object - including entities saved on disk but not present in
+  // object and they are not prototypes themselves.
+  //   Including entities saved on disk but not present in
   // memory at the moment.
   // (We must use ids instead of references because when an instance
-  //  entity is deleted, we need to find it in 'instanceIds' to
+  //  of an entity is deleted, we need to find it in 'instanceIds' to
   //  remove it from there.)
   private instanceIds = new Set<string>();
+
+  // Set of ids of entities that use this entity as their prototype
+  // object and are prototypes themselves.
+  // (We must use ids instead of references because when an instance
+  //  of an entity is deleted, we need to find it in 'instanceIds' to
+  //  remove it from there.)
+  private descendantIds = new Set<string>();
 
   // ------------------------------------------------- //
   //               Symbolic entity naming              //
@@ -97,38 +101,8 @@ export class Entity extends Serializable
         && entity.isValid() === true;
   }
 
-  public static createRootEntity<T extends Entity>
-  (
-    className: string,
-    Class: { new (...args: any[]): T }
-  )
-  {
-    // 'className' will be used as an id.
-    if (EntityManager.has(className))
-    {
-      ERROR("Attempt to add prototype entity for class " + className
-        + " to EntityManager when it's already there");
-      return;
-    }
-
-    let instance = new Class();
-
-    // Set 'className' as 'id'.
-    if (instance.setId(className) === false)
-      return null;
-
-    // Hide instance beind a Proxy object which will report
-    // access to properties of invalid entity. Also create
-    // an EntityRecord that will be added to EntityManager.
-    let entityRecord = this.createEntityRecord(instance);
-
-    // Add entity to EntityManager
-    // (In case of error entity will be 'null').
-    //   Note that in case of root entity, there is no point in
-    // setting it's prototype - root entities don't have any.
-    return EntityManager.add(entityRecord);
-  }
-
+  /// Moved to EntityManager.createEntityIstance().
+  /*
   // Creates an instance of Entity with given 'prototype' and 'id'.
   // Instance is then proxified and registered in EntityManager.
   // -> Returns 'null' in case of error.
@@ -139,22 +113,24 @@ export class Entity extends Serializable
     // deproxify 'prototype' before we use it as a prototype object.
     let barePrototype = EntityProxyHandler.deproxify(prototype);
 
-    // Object.create() will create a new object with 'prototype'
-    // as it's prototype object. This will ensure that all 'own'
-    // properties of 'prorotype' (those initialized in constructor
-    // or in class body of prototype) become 'inherited' properties
-    // on the new instance (so that changing the value on prototype
-    // will change the value for all instances that don't have that
-    // property overriden).
-    let instance = Object.create(barePrototype);
+    let instance = ClassFactory.createInstanceFromPrototype(barePrototype);
+/// Moved to ClassFactory.createEntityInstance().
+    // // Object.create() will create a new object with 'prototype'
+    // // as it's prototype object. This will ensure that all 'own'
+    // // properties of 'prorotype' (those initialized in constructor
+    // // or in class body of prototype) become 'inherited' properties
+    // // on the new instance (so that changing the value on prototype
+    // // will change the value for all instances that don't have that
+    // // property overriden).
+    // let instance = Object.create(barePrototype);
 
-    // Prototype inheritance in Javascript handles nonprimitive
-    // properties as direct references to such properties in
-    // prototype object. That means that writing to a property
-    // inside a nonprimitive property changes the value on the
-    // prototype, not on the instance. To prevent this, we need
-    // to manually instantiate all nonprimitive properties.
-    instance.instantiateProperties(instance, prototype);
+    // // Prototype inheritance in Javascript handles nonprimitive
+    // // properties as direct references to such properties in
+    // // prototype object. That means that writing to a property
+    // // inside a nonprimitive property changes the value on the
+    // // prototype, not on the instance. To prevent this, we need
+    // // to manually instantiate all nonprimitive properties.
+    // instance.instantiateProperties(instance, prototype);
 
     // Set id to our new entity instance
     // (this shouldn't fail because we have just created it, but
@@ -185,120 +161,32 @@ export class Entity extends Serializable
 
     return entity;
   }
-
-  // Creates an invalid entity. Access to this entity's properties
-  // will be reported as error.
-  // (This is used when an entity that is being deserialized has
-  //  a reference to an entity that doesn't exist at the moment.)
-  public static createInvalidEntity(id: string)
-  {
-    let handler = new EntityProxyHandler();
-
-    handler.id = id;
-    // We are purposely creating an invalid reference so the internal
-    // entity reference shall be 'null'.
-    handler.entity = null;
-
-    // Create a Javascript Proxy Object that will report access
-    // of entity properties.
-    return new Proxy({}, handler);
-  }
-
-  // Hides 'entity' behind a Proxy object that will report
-  // access to an invalid entity.
-  // -> Returns entity record.
-  private static createEntityRecord(entity: Entity): EntityRecord
-  {
-    let handler = new EntityProxyHandler();
-
-    handler.id = entity.getId();
-    handler.entity = entity;
-
-    // Create a Javascript Proxy Object that will trap access
-    // of entity properties (using EntityProxyHandler we have
-    // just created) and report en error if an invalid (deleted)
-    // entity is accessed.
-    let entityProxy = new Proxy({}, handler);
-
-    return new EntityRecord(entityProxy, handler);
-  }
-
-  /*
-  // Hides 'entity' behind a Proxy object that will report
-  // access to an invalid entity.
-  // -> Returns entity proxy.
-  private static createEntityProxy(entity: Entity): Entity
-  {
-    if (entity === null || entity === undefined)
-    {
-      ERROR("Invalid parameter 'entity'");
-      return null;
-    }
-
-    // Create a Javascript Proxy Object that will trap access
-    // of entity properties (using EntityProxyHandler we have
-    // just created) and report en error if an invalid (deleted)
-    // entity is accessed.
-    return new Proxy({}, handler);
-  }
   */
-
-  // Ensures that all non-primitive properties of 'prototype'
-  // are instantiated on 'object'. 
-  private instantiateProperties(object: any, prototype: any)
-  {
-    for (let property in object)
-      this.instantiateProperty(object, prototype, property); 
-  }
-
-  // Ensures that if 'property' of 'object' is non-primitive,
-  // it is recursively instantiated as an empty Object inherited
-  // from the respective 'property' on 'prototype' object.
-  private instantiateProperty(object: any, prototype: any, property: string)
-  {
-    if (prototype === undefined || prototype === null)
-    {
-      ERROR("Invalid prototype object");
-      return;
-    }
-
-    // There is no point of instantating properties that don't have any
-    // real value.
-    if (prototype[property] === undefined || prototype[property] === null)
-      return;
-
-    // Primitive properties (numbers, strings, etc) don't have to
-    // be instantiated because Javascript prototype inheritance
-    // handles them correctly.
-    if (typeof object[property] !== 'object')
-      return;
-
-    // This check allows re-instantiating of properties of existing
-    // instance when prototype is changed. Properties that already
-    // are instantiated (they are 'own' properties of object) are
-    // not overwritten.
-    if (!object.hasOwnProperty(property))
-      // Object.create() will create a new {}, which will have
-      // 'prototypeProperty' as it's prototype.
-      object[property] = Object.create(prototype[property]);
-
-    // Property we have just instantiated may have it's own
-    // non-primitive properties that also need to be instantiated.
-    //   Note that recursive call is done even for properties that
-    // have already been instantiated on 'object', because there
-    // still may be some changes deeper in the structure).
-    this.instantiateProperties(object[property], prototype[property]);
-  }
 
   // --------------- Public accessors -------------------
 
   public getName() { return this.name; }
   // This method is overriden on the server in class UniqueEntity.
-  public setName(name: string)
+  public async setName(name: string, cathegory: Entity.NameCathegory = null)
   {
-    EntityManager.
+    let oldName = this.name;
+    let oldCathegory = this.nameCathegory;
+
+    // Check if requested name is available.
+    // (This will always be false on client because entity name change
+    //  is disabled there.)
+    if (!await EntityManager.requestEntityName(this.getId(), name, cathegory))
+      return false;
+
+    // Make the old name available again.
+    if (oldName && oldCathegory)
+      await EntityManager.releaseEntityName(oldName, oldCathegory)
+
     this.name = name;
+
   }
+
+  public getNameCathegory() { return this.nameCathegory; }
 
   public getId()
   {
@@ -344,13 +232,49 @@ export class Entity extends Serializable
     return true;
   }
 
-  public getPrototypeId() { return this.prototypeId; }
+  public getPrototype() { return this.prototype; }
 
-  /// Tohle by nemělo být public - prototypeId by se mělo
-  /// automaticky setnout při instanciaci entity.
-  public setPrototypeId(prototypeId: string)
+  // Sets a 'prototype' entity as prototype object to 'this'
+  // entity. If 'isPrototype' is 'true', this entity's id
+  // will be added to the prototype's 'descendatIds', otherwise
+  // it will be added to it's 'instanceIds'.
+  // (The difference is, that all prototype entities listed in
+  //  their prototype's 'descendantIds' are pre-loaded at the
+  //  start of the appliaction. Entities listed in their prototype's
+  //   'instanceIds' may not have descendants or instances themselves
+  //  and are not loaded automatically.)
+  public setPrototype(prototype: Entity, isPrototype: boolean)
   {
-    this.prototypeId = prototypeId;
+    if (!Entity.isValid(prototype))
+    {
+      ERROR("Attempt to set an invalid prototype to entity"
+        + " " + this.getErrorIdString());
+      return;
+    }
+
+    if (this.prototype !== null)
+    {
+      if (this.prototype.isValid())
+      {
+        // Remove 'this.id' from the old prototype's
+        // 'instanceIds' or 'descendantIds' depending
+        // on where it is present.
+        this.prototype.removeChildId(this.getId());
+      }
+      else
+      {
+        ERROR("Attempt to set prototype to entity"
+          + " " + this.getErrorIdString() + " which"
+          + " doesn't have a valid prototype");
+      }
+    }
+
+    if (isPrototype)
+      prototype.addInstanceId(this.getId());
+    else
+      prototype.addDescendantId(this.getId());
+
+    this.prototype = prototype;
   }
 
   public getInstanceIds()
@@ -358,46 +282,57 @@ export class Entity extends Serializable
     return this.instanceIds;
   }
 
+  /// Z nějakých důvodů jsem tuším setoval komplet
+  /// celá instanceIds - třeba to už není potřeba.
+  /*
   public setInstanceIds(instanceIds: Set<string>)
   {
     this.instanceIds = instanceIds;
   }
+  */
 
-  private addInstanceId(instanceId: string)
+  // -> Returns 'true' if 'id' has been succesfuly deleted from
+  //    either this.instanceIds or this.descendantIds.
+  private removeChildId(id: string)
   {
-    // Check that instanceId is not yet present in the list.
-    if (this.instanceIds.has(instanceId))
+    if (this.instanceIds.delete(id))
+      return true;
+
+    if (this.descendantIds.delete(id))
+      return true;
+
+    ERROR("Attempt to delete child id '" + id + "' from"
+      + " prototype " + this.getErrorIdString + " but that"
+      + " id is not present neither in instanceIds nor in"
+      + " desendantIds of this prototype");
+    return false;
+  }
+
+  private addInstanceId(id: string)
+  {
+    // Check that id is not yet present in the list.
+    if (this.instanceIds.has(id))
     {
-      ERROR("Attempt to add instanceId " + instanceId + " to prototype"
+      ERROR("Attempt to add instance id " + id + " to prototype"
         + " " + this.getErrorIdString() + " which is already there");
       return;
     }
 
-    this.instanceIds.add(instanceId);
+    this.instanceIds.add(id);
   }
-  /*
-  public addInstance(instance: Entity)
+
+  private addDescendantId(id: string)
   {
-    let instanceId = instance.getId();
-
-    if (instance === null || instance === undefined)
-    {
-      ERROR("Invalid parameter 'instance'");
-      return;
-    }
-
     // Check that instanceId is not yet present in the list.
-    if (this.instanceIds.has(instanceId))
+    if (this.descendantIds.has(id))
     {
-      ERROR("Failed to add instance " + instance.getErrorIdString()
-        + " to prototype " + this.getErrorIdString() + " because it"
-        + " is already listed as an instance of this prototype");
+      ERROR("Attempt to add descendant id " + id + " to prototype"
+        + " " + this.getErrorIdString() + " which is already there");
       return;
     }
 
-    this.instanceIds.add(instanceId);
+    this.descendantIds.add(id);
   }
-  */
 
   // ---------------- Public methods --------------------
 
@@ -427,12 +362,15 @@ export class Entity extends Serializable
     return this.instanceIds.size !== 0;
   }
 
+  /// Nikde se nevolá, nejspíš nebude potřeba
+  /*
   public isHardcodedPrototypeEntity()
   {
     // Hardcoded prototype entities are the roots of respective
     // prototype trees so they don't have 'prototypeId' themselves.
     return this.prototypeId === null;
   }
+  */
 
   /// Je tohle stále pravda? Mám pocit, že automatické sebeoživování
   /// starých referencí jsem zavrhnul.
@@ -507,14 +445,18 @@ export class Entity extends Serializable
   public getErrorIdString()
   {
     if (this.getId() === null)
-      return "{ className: " + this.className + ", id: null }";
+    {
+      return "{ className: " + this.className + ","
+           + " name: " + this.name + ", id: null }";
+    }
 
-    return "{ className: " + this.className + ", id: " + this.getId() + " }";
+    return "{ className: " + this.className + ", name: " + this.name + ","
+      + " id: " + this.getId() + " }";
   }
 
   // Entity removes itself from EntityLists so it can no longer
-  // be searched by name, etc. This doesn't remove entity from EntityManager.
-  // (this method needs to be overriden by descendants)
+  // be searched by name, etc. This doesn't remove entity from EntityManager
+  // (this method needs to be overriden by descendants).
   public removeFromLists() {}
 
   // --------------- Protected methods ------------------

@@ -60,9 +60,10 @@ export abstract class App
     throw new Error("Instance of App doesn't exist yet");
   }
 
-  // This needs to be overriden
-  // (static methods cannot be abstract in typescript).
-  public static create()
+  // This needs to be overriden.
+  // (This method sould be abstract but static methods
+  //  cannot be abstract in typescript so it's not).
+  protected static createInstance()
   {
     // We can't use ERROR() here because ERROR() is handled by App
     // which doesn't exist here.
