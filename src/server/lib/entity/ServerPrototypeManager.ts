@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {PrototypeManager} from '../../../shared/lib/entity/PrototypeManager';
 import {EntityManager} from '../../../shared/lib/entity/EntityManager';
 import {FileManager} from '../../../server/lib/fs/FileManager';
@@ -20,7 +21,7 @@ export class ServerPrototypeManager extends PrototypeManager
   public async initPrototypes(entityClasses: Array<string>)
   {
     await this.initRootPrototypes(entityClasses);
-    await this.loadDescendantPrototypes();
+    await this.loadDescendantPrototypes(entityClasses);
   }
 
   // Creates root prototype entities if they don't exist yet or
@@ -79,10 +80,38 @@ export class ServerPrototypeManager extends PrototypeManager
   }
 
   // Recursively loads all prototype entities inherited from root
-  // prototypes.
-  private async loadDescendantPrototypes()
+  // entity prototypes.
+  private async loadDescendantPrototypes(entityClasses: Array<string>)
   {
-    /// TODO: Recursively load descendantPrototypes of all
-    /// root prototypes.
+    // We iterate 'entityClasses' array instead of this.prototypes,
+    // because more items will be added to this.protototypes
+    // while recursively loading their descendants.
+    for (let className of entityClasses)
+    {
+      let prototype = this.prototypes.get(className);
+
+      await this.loadDescendants(prototype);
+    }
+  }
+
+  // Recursively loads descendant prototypes of 'prototype' entity.
+  private async loadDescendants(prototype: Entity)
+  {
+    for (let descendantId of prototype.getDescendantIds())
+    {
+      let descendant = await Entity.loadById(descendantId);
+
+      if (descendant === null)
+      {
+        ERROR("Failed to load prototype entity '" + descendantId + "'");
+        continue;
+      }
+
+      // Add the desendant to this.prototypes hashmap.
+      this.prototypes.set(descendant.className, descendant);
+
+      // Recursively load decendant's descendants.
+      await this.loadDescendants(descendant);
+    }
   }
 }
