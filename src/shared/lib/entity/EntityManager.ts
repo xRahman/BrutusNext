@@ -14,22 +14,6 @@ import {Entity} from '../../../shared/lib/entity/Entity';
 import {EntityRecord} from '../../../shared/lib/entity/EntityRecord';
 import {EntityProxyHandler} from
   '../../../shared/lib/entity/EntityProxyHandler';
-/*
-import {EntityProxyHandler} from
-   '../../../shared/lib/entity/EntityProxyHandler';
-*/
-// import {IdProvider} from '../../../server/lib/entity/IdProvider';
-// import {NameLockRecord} from '../../../server/lib/entity/NameLockRecord';
-// import {EntityRecord} from '../../../server/lib/entity/EntityRecord';
-// import {ScriptableEntity} from '../../../server/lib/entity/ScriptableEntity';
-// import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
-// import {NameSearchList} from '../../../server/lib/entity/NameSearchList';
-// import {EntityProxyHandler} from
-//   '../../../server/lib/entity/EntityProxyHandler';
-// import {PrototypeManager} from
-//   '../../../server/lib/prototype/PrototypeManager';
-// import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
-// import {Server} from '../../../server/lib/Server';
 
 export abstract class EntityManager
 {
@@ -39,10 +23,6 @@ export abstract class EntityManager
   // Value: record containing entity and its proxy handler
   private entityRecords = new Map<string, EntityRecord>();
 
-  /// Tohle by mělo být jen na serveru
-  /// (EntityManager na clientu nepotřebuje IdProvider).
-  ///constructor(private idProvider: IdProvider) { }
-
   // ------------- Public static methods ----------------
 
   public static createRootEntity<T extends Entity>
@@ -51,23 +31,27 @@ export abstract class EntityManager
     Class: { new (...args: any[]): T }
   )
   {
-    return App.getEntityManager().createRootEntity(className, Class);
+    App.getEntityManager().createRootEntity(className, Class);
   }
 
+  // Creates a new instance entity (which can't be used as a prototype).
+  // Assigns 'id' param is it's id or generates a new id if 'id' is 'null'.
   // -> Returns 'null' if entity instance couldn't be created.
-  public static createInstance(prototypeId: string, id: string): Entity
+  public static createInstance(prototypeId: string, id: string = null): Entity
   {
-    return App.getEntityManager().createInstance(prototypeId, id, false);
+    return App.getEntityManager().createEntity(prototypeId, id, false);
   }
 
+  // Creates a new prototype entity (which cen be used as a prototype).
+  // Assigns 'id' param is it's id or generates a new id if 'id' is 'null'.
   // -> Returns 'null' if entity instance couldn't be created.
-  public static createPrototype(prototypeId: string, id: string): Entity
+  public static createPrototype(prototypeId: string, id: string = null): Entity
   {
-    return App.getEntityManager().createInstance(prototypeId, id, true);
+    return App.getEntityManager().createEntity(prototypeId, id, true);
   }
 
   // -> Returns existing reference if entity already exists in EntityManager.
-  //    Returns invalid reference if entity with such id isn't there.
+  //    Returns invalid reference if entity with such 'id' isn't there.
   public static createReference(id: string): Entity
   {
     return App.getEntityManager().createReference(id);
@@ -124,6 +108,27 @@ export abstract class EntityManager
     return await App.getEntityManager().releaseEntityName(name, cathegory);
   }
 
+  public static async saveEntity(entity: Entity)
+  {
+    return await App.getEntityManager().saveEntity(entity);
+  }
+
+  public static async loadEntityById(id: string)
+  : Promise<Entity>
+  {
+    return await App.getEntityManager().loadEntityById(id);
+  }
+
+  public static async loadEntityByName
+  (
+    name: string,
+    cathegory: Entity.NameCathegory
+  )
+  : Promise<Entity>
+  {
+    return await App.getEntityManager().loadEntityByName(name, cathegory);
+  }
+
   // ---------------- Public methods --------------------
 
   // --------------- Protected methods ------------------
@@ -136,6 +141,16 @@ export abstract class EntityManager
   );
 
   protected abstract async releaseEntityName
+  (
+    name: string,
+    cathegory: Entity.NameCathegory
+  );
+
+  protected abstract generateId(): string;
+
+  protected abstract async saveEntity(entity: Entity);
+  protected abstract async loadEntityById(id: string);
+  protected abstract async loadEntityByName
   (
     name: string,
     cathegory: Entity.NameCathegory
@@ -157,26 +172,43 @@ export abstract class EntityManager
       return;
     }
 
+    // Unlike all other entities, which are created using Object.create(),
+    // root entities are created as 'new Class'
+    // (We don't need Object.create() because root entities are only used
+    //  as prototype objects for root prototypes).
     let instance = new Class();
 
-    // Set 'className' as 'id'.
+    // Set 'className' as 'id'
+    // (root entities use 'className' as their entity id in order for this
+    //  id to be the same both od the client and on the server. This way
+    //  when a prototype chain is recreated after an entity is serialized,
+    //  sent to client and deserialized back, client knows what a root
+    //  prototype object of that chain is).
     if (instance.setId(className) === false)
-      return null;
+      return;
 
-    // Hide instance beind a Proxy object which will report
-    // access to properties of invalid entity. Also create
-    // an EntityRecord that will be added to EntityManager.
-    let entityRecord = this.createEntityRecord(instance);
+    let handler = this.createProxyHandler(instance);
 
-    // Add entity to EntityManager
-    // (In case of error entity will be 'null').
+    // Hide bare entity behind a Proxy object which will report
+    // access to it's properties if it becomes invalid.
+    // (We don't really need proxies for root entities because they
+    //  are only used as prototype objects, but doing it we can handle
+    //  them using the same code as for any other entities.)
+    let proxy = this.createEntityProxy(handler);
+
+    // Create an new EntityRecord that will be added to EntityManager.
+    let entityRecord = new EntityRecord(proxy, handler);
+
+    // Add root entity to EntityManager
     //   Note that in case of root entity, there is no point in
     // setting it's prototype - root entities don't have any.
-    return this.add(entityRecord);
+    this.add(entityRecord);
   }
 
+  // Creates an entity. Assigns 'id' param as it's id or generates
+  // a new id if 'id' is 'null'.
   // -> Returns 'null' if entity instance couldn't be created.
-  private createInstance
+  private createEntity
   (
     prototypeId: string,
     id: string,
@@ -184,6 +216,7 @@ export abstract class EntityManager
   )
   : Entity
   {
+    // Find an EntityRecord of the prototype entity.
     let prototypeRecord = this.entityRecords.get(id)
 
     if (!prototypeRecord)
@@ -195,7 +228,7 @@ export abstract class EntityManager
       return null;
     }
 
-    return this.createInstanceFromPrototypeRecord
+    return this.createEntityFromPrototypeRecord
     (
       prototypeRecord,
       id,
@@ -204,7 +237,7 @@ export abstract class EntityManager
   }
 
   // -> Returns 'null' if entity instance couldn't be created.
-  private createInstanceFromPrototypeRecord
+  private createEntityFromPrototypeRecord
   (
     prototypeRecord: EntityRecord,
     id: string,
@@ -215,7 +248,13 @@ export abstract class EntityManager
     let prototype = prototypeRecord.getEntity();
 
     // Create new bare (unproxified) entity based on the prototype.
-    let bareEntity = ClassFactory.createPrototypeInstance(prototype);
+    let bareEntity = ClassFactory.createEntityFromPrototype(prototype);
+
+    if (id === null)
+      id = this.generateId();
+
+    if (id === null)
+      return null;
 
     // Set id to our new bare entity
     // (this shouldn't fail because we have just created it, but
@@ -223,12 +262,28 @@ export abstract class EntityManager
     if (bareEntity.setId(id) === false)
       return null;
 
-    // Hide bare entity behind a Proxy object which will report
-    // access to properties of invalid entity. Also create
-    // an new EntityRecord that will be added to EntityManager.
-    let entityRecord = this.createEntityRecord(bareEntity);
+    return this.registerEntity(prototype, bareEntity, isPrototype);
+  }
 
-    // Add entity to EntityManager. If a record with this 'id'
+  // Registers entity 
+  // -> Returns 'null' if entity couldn't be registered.
+  private registerEntity
+  (
+    prototype: Entity,
+    bareEntity: Entity,
+    isPrototype: boolean
+  )
+  {
+    let handler = this.createProxyHandler(bareEntity);
+
+    // Hide bare entity behind a Proxy object which will report
+    // access to it's properties if it becomes invalid.
+    let proxy = this.createEntityProxy(handler);
+
+    // Create an new EntityRecord that will be added to EntityManager.
+    let entityRecord = new EntityRecord(proxy, handler);
+
+    // Add entity record to EntityManager. If a record with this 'id'
     // already exists there, the existing one will be used instead
     // of the one we have just created.
     //   In case of error entity will be 'null'.
@@ -238,29 +293,33 @@ export abstract class EntityManager
       return null;
   
     // Now we are sure that entity has been sucessfuly registered
-    // in EntityManager so we can set it's reference to prototype.
+    // in EntityManager so we can set the reference to it's prototype
+    // entity to it and register it in the prototype entity as a
+    // descendant prototype or an instance (depending on value of
+    // 'isPrototype).
     entity.setPrototype(prototype, isPrototype);
 
     return entity;
   }
 
-  // Hides 'entity' behind a Proxy object that will report
-  // access to an invalid entity.
-  // -> Returns entity record.
-  private createEntityRecord(bareEntity: Entity): EntityRecord
+  // Creates a Javascript Proxy Object that will trap access
+  // of entity properties (using EntityProxyHandler we have
+  // just created) and report en error if it becomes invalid.
+  // -> Returns entity proxy.
+  private createEntityProxy(handler: EntityProxyHandler)
+  {
+    return new Proxy({}, handler);
+  }
+
+  // -> Returns EntityProxyHandler for 'bareEntity'.
+  private createProxyHandler(bareEntity: Entity)
   {
     let handler = new EntityProxyHandler();
 
     handler.id = bareEntity.getId();
     handler.entity = bareEntity;
 
-    // Create a Javascript Proxy Object that will trap access
-    // of entity properties (using EntityProxyHandler we have
-    // just created) and report en error if an invalid (deleted)
-    // entity is accessed.
-    let entityProxy = new Proxy({}, handler);
-
-    return new EntityRecord(entityProxy, handler);
+    return handler;
   }
 
   // -> Returns existing reference if entity already exists in EntityManager.
