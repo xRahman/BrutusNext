@@ -37,8 +37,8 @@ import {EntityManager} from '../../../shared/lib/entity/EntityManager';
 import {ServerApp} from '../../../server/lib/ServerApp';
 import {FileManager} from '../../../server/lib/fs/FileManager';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
+import {IdProvider} from '../../../server/lib/entity/IdProvider';
 // import {ERROR} from '../../../shared/lib/error/ERROR';
-// import {IdProvider} from '../../../server/lib/entity/IdProvider';
 // import {Entity} from '../../../server/lib/entity/Entity';
 // import {NameLockRecord} from '../../../server/lib/entity/NameLockRecord';
 // import {EntityRecord} from '../../../server/lib/entity/EntityRecord';
@@ -53,6 +53,15 @@ import {FileSystem} from '../../../server/lib/fs/FileSystem';
 
 export class ServerEntityManager extends EntityManager
 {
+  constructor (timeOfBoot: Date)
+  {
+    super();
+
+    this.idProvider = new IdProvider(timeOfBoot);
+  }
+
+  private idProvider: IdProvider = null;
+
   // ------------- Public static methods ----------------
 
   public static async isNameTaken
@@ -68,9 +77,16 @@ export class ServerEntityManager extends EntityManager
 
   // --------------- Protected methods ------------------
 
+  // Overrides EntityManager.generateId().
+  //  Greates a unique entity string id.
+  protected generateId(): string
+  {
+    return this.idProvider.generateId();
+  }
+
   // Overrides EntityManager.requestEntityName().
-  // Checks if requested name is available, creates a name lock file
-  // if it is.
+  //   Checks if requested name is available, creates
+  // a name lock file if it is.
   // -> Returns 'false' if name change isn't allowed.
   protected async requestEntityName
   (
@@ -96,6 +112,28 @@ export class ServerEntityManager extends EntityManager
   )
   {
     FileManager.deleteNameLockFile(name, cathegory);
+  }
+
+  // Overrides EntityManager.saveEntity().
+  protected async saveEntity(entity: Entity)
+  {
+    await FileManager.saveEntity(entity);
+  }
+
+  // Overrides EntityManager.loadEntityById().
+  protected async loadEntityById(id: string)
+  {
+    return await FileManager.loadEntityById(id);
+  }
+
+  // Overrides EntityManager.loadEntityByName().
+  protected async loadEntityByName
+  (
+    name: string,
+    cathegory: Entity.NameCathegory
+  )
+  {
+    return await FileManager.loadEntityByName(name, cathegory);
   }
 
   // ---------------- Private methods -------------------
