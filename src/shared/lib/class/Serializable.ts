@@ -103,7 +103,7 @@ export class Serializable extends Attributable
 
     let instance = this.createSerializableInstance(jsonObject, id, path);
 
-    // Attempt to copy properties from jsonObject to instance
+    // Copy properties from jsonObject to the instance
     // (loadFromJsonObject() returns 'null' on failure).
     return instance.loadFromJsonObject(jsonObject, path);
   }

@@ -24,7 +24,7 @@ export class ClassFactory
   //  prototype inheritance for entities so we restrict the type
   //  of 'prototype' to Entity).
   // -> Returns 'null' on error.
-  public static createPrototypeInstance(prototype: Entity)
+  public static createEntityFromPrototype(prototype: Entity)
   {
     if (prototype === null || prototype === undefined)
     {
@@ -226,35 +226,9 @@ export class ClassFactory
     // which is the class name.
     this.classInfo.set(classInfo.Class.name, classInfo);
   }
-
-  /// Moved to Entity.
-  /*
-  // Creates an entity with 'new Class' as it's prototype and
-  // adds it to EntityManager (so it can be used as prototype
-  // of other entities).
-  private static createRootEntity<T extends Entity>
-  (
-    className: string,
-    Class: { new (...args: any[]): T }
-  )
-  {
-    if (EntityManager.has(className))
-    {
-      ERROR("Attempt to add prototype entity for class " + className
-        + " to EntityManager when it's already there");
-      return;
-    }
-
-    let prototypeObject = new Class();
-
-    // Create an entity based on 'prototypeObject' and add
-    // to EntityManager under 'id' (which is the class name).
-    // (We don't need to remember the entity we have just
-    //  created, it will be accessed from EntityManager)
-    Entity.createInstance(prototypeObject, className);
-  }
-  */
 }
+
+// ------------------ Type declarations ----------------------
 
 interface ClassInfo
 {

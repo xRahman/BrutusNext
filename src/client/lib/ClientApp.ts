@@ -20,6 +20,8 @@ import {App} from '../../shared/lib/App';
 import {Entity} from '../../shared/lib/entity/Entity';
 import {ClientEntityManager} from
   '../../client/lib/entity/ClientEntityManager';
+import {ClientPrototypeManager} from
+  '../../client/lib/entity/ClientPrototypeManager';
 import {Body} from '../../client/gui/component/Body';
 import {Document} from '../../client/gui/component/Document';
 import {Connection} from '../../client/lib/connection/Connection';
@@ -29,15 +31,17 @@ export class ClientApp extends App
 {
   // -------------- Static class data -------------------
 
-  protected static instance: ClientApp = null;
-
   //------------------ Public data ----------------------
 
   public activeScrollWindow = null;
 
   //----------------- Protected data --------------------
 
+  // Contains all entities (accounts, characters, rooms, etc.).
   protected entityManager = new ClientEntityManager();
+
+  // Contains prototype entities.
+  protected prototypeManager = new ClientPrototypeManager();
 
   //------------------ Private data ---------------------
 
@@ -58,17 +62,33 @@ export class ClientApp extends App
 
   // --------------- Static accessors -------------------
 
-  // ---------------- Static methods --------------------
+  // ------------- Public static methods ---------------- 
+
+  // Creates and runs an instance of ClientApp.
+  // (It will handle the creation of all html elements
+  //  inside our application, handle events, etc.)
+  public static async run()
+  {
+    if (this.instanceExists())
+    {
+      ERROR("Instance of ClientApp already exists."
+        + "ClientApp.run() can only be called once");
+      return;
+    }
+
+    // Create an instance of ClientApp.
+    this.createInstance();
+
+    await ClientApp.getInstance().run();
+  }
+
+  // ------------ Protected static methods -------------- 
 
   // Overrides App.createInstance().
   // Creates an instance of a client. Client is a singleton, so it must
   // not already exist.
   protected static createInstance()
   {
-    // Reports the problem to the user if websockets aren't available.
-    if (!WebSocketClient.webSocketsAvailable())
-      return;
-
     if (App.instance !== null)
     {
       ERROR("Client already exists, not creating it");
@@ -78,26 +98,15 @@ export class ClientApp extends App
     App.instance = new ClientApp();
   }
 
+  protected static getInstance(): ClientApp
+  {
+    if (ClientApp.instance === null || ClientApp.instance === undefined)
+      FATAL_ERROR("Instance of client doesn't exist yet");
+
+    return <ClientApp>App.instance;
+  }
+
   // ---------------- Public methods --------------------
-
-  // Reports error message and stack trace.
-  // (Don't call this method directly, use ERROR()
-  //  from /shared/lib/error/ERROR).
-  public reportError(message: string)
-  {
-    // Just log the message to the console for now.
-    console.log('ERROR: ' + message);
-  }
-
-  // Reports error message and stack trace and terminates the program.
-  // (Don't call this method directly, use FATAL_ERROR()
-  //  from /shared/lib/error/ERROR).
-  public reportFatalError(message: string)
-  {
-    // Just log the message to the console for now
-    // (terminating the client application is probably not necessary).
-    console.log('FATAL_ERROR: ' + message);
-  }
 
   public createConnection()
   {
@@ -123,6 +132,28 @@ export class ClientApp extends App
 
   // --------------- Protected methods ------------------
 
+  // Overrides App.reportError().
+  //   Reports error message and stack trace.
+  // (Don't call this method directly, use ERROR()
+  //  from /shared/lib/error/ERROR).
+  protected reportError(message: string)
+  {
+    // Just log the message to the console for now.
+    console.log('ERROR: ' + message);
+  }
+
+  // Overrides App.reportFatalError().
+  //   Reports error message and stack trace and terminates the program.
+  // (Don't call this method directly, use FATAL_ERROR()
+  //  from /shared/lib/error/ERROR).
+  protected reportFatalError(message: string)
+  {
+    // Just log the message to the console for now
+    // (terminating the client application is probably not necessary).
+    console.log('FATAL_ERROR: ' + message);
+  }
+
+  // Overrides App.syslog().
   protected syslog
   (
     text: string,
@@ -132,21 +163,13 @@ export class ClientApp extends App
   {
     return ClientSyslog.log(text, msgType, adminLevel);
   }
-
-  protected saveEntity(entity: Entity)
-  {
-    // (it is possible that HTML5 Local Storage will be
-    //  used in the future, however).
-    ERROR("Client doesn't have a save/load capability yet");
-  }
-
-  protected loadEntity(entity: Entity)
-  {
-    // (it is possible that HTML5 Local Storage will be
-    //  used in the future, however).
-    ERROR("Client doesn't have a save/load capability yet");
-  }
-
+  
   // ---------------- Private methods -------------------
 
+  private async run()
+  {
+    // Reports the problem to the user if websockets aren't available.
+    if (!WebSocketClient.webSocketsAvailable())
+      return;
+  }
 }

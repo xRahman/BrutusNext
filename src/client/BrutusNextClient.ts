@@ -12,18 +12,18 @@
 
 'use strict';
 
-import {ClientApp} from '../client/lib/Client';
+import {ClientApp} from '../client/lib/ClientApp';
 
 // Program entry point.
 // It's called main() to sound familiar to C programmers ;)
-function main()
+async function main()
 {
   console.log('BrutusNext client is running!');
 
-  // Create an instance of class Client.
-  //   It will handle the creation of all html elements inside
-  // our application, handle events, etc.
-  ClientApp.create();
+  // Create and run an instance of ClientApp.
+  // (It will handle the creation of all html elements
+  //  inside our application, handle events, etc.)
+  ClientApp.run();
 }
 
 // Run the main() function.

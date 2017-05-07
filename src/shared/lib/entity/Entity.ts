@@ -338,15 +338,21 @@ export class Entity extends Serializable
 
   public async save()
   {
-    await App.saveEntity(this);
+    await EntityManager.saveEntity(this);
   }
 
-  public async load()
+  public static async loadById(id: string)
   {
-    /// TODO: Tohle je asi blbost. Loadováním entita vznikne - volat
-    /// load na existující entitě nedává smysl (je třeba ji zahodit
-    /// a vytvořit znovu, jinak se to blbě mergne).
-    await App.loadEntity(this);
+    return await EntityManager.loadEntityById(id);
+  }
+
+  public static async loadByName
+  (
+    name: string,
+    cathegory: Entity.NameCathegory
+  )
+  {
+    return await EntityManager.loadEntityByName(name, cathegory);
   }
 
   public isPrototype()
