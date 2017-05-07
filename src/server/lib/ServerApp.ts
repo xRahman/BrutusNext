@@ -15,7 +15,7 @@
 import {ERROR} from '../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../shared/lib/error/FATAL_ERROR';
 import {App} from '../../shared/lib/App';
-import {IdProvider} from '../../server/lib/entity/IdProvider';
+///import {IdProvider} from '../../server/lib/entity/IdProvider';
 import {ClassFactory} from '../../shared/lib/class/ClassFactory';
 import {ServerEntityManager} from
   '../../server/lib/entity/ServerEntityManager';
@@ -26,7 +26,8 @@ import {AdminLevel} from '../../shared/lib/admin/AdminLevel';
 import {Connection} from '../../server/lib/connection/Connection';
 import {Entity} from '../../shared/lib/entity/Entity';
 import {EntityList} from '../../shared/lib/entity/EntityList';
-///import {PrototypeManager} from '../../server/lib/prototype/PrototypeManager';
+import {ServerPrototypeManager} from
+  '../../server/lib/entity/ServerPrototypeManager';
 import {AccountList} from '../../server/lib/account/AccountList';
 import {Syslog} from '../../shared/lib/log/Syslog';
 import {ServerSyslog} from '../../server/lib/log/ServerSyslog';
@@ -42,8 +43,6 @@ import {Account} from '../../server/lib/account/Account';
 export class ServerApp extends App
 {
   // -------------- Static class data -------------------
-
-  //protected static instance: Server;
 
   //------------------ Private data ---------------------
 
@@ -65,8 +64,6 @@ export class ServerApp extends App
   /// Http server also runs a websocket server inside it.
   private httpServer = new HttpServer();
 
-  private idProvider = new IdProvider(this.timeOfBoot);
-
   // --------- idLists ---------
   // IdLists contain entity id's.
 
@@ -74,19 +71,11 @@ export class ServerApp extends App
   private accounts = new AccountList();
 
   // -------- managers --------
-  // Contains all entities (accounts, connections, all game entities).
-  protected entityManager = new ServerEntityManager(this.idProvider);
+  // Contains all entities (accounts, characters, rooms, etc.).
+  protected entityManager = new ServerEntityManager(this.timeOfBoot);
 
-  /*
-  // Stores prototype object that are not entities
-  // (all entities are stored in entityManager, including those
-  //  that serve as prototype objects for other entities).
-  // Allows creating of instances that have true prototype inheritance model
-  // (unlike instances created by 'new Class', which have
-  //  all initialized properties as their own properties
-  //  rather than inheriting them from prototype object).
-  private prototypeManager = new PrototypeManager();
-  */
+  // Contains prototype entities.
+  protected prototypeManager = new ServerPrototypeManager();
 
   // flagNamesManager is in Server instead of Game, because flags are needed
   // even outside of game (for example account flags).
@@ -155,7 +144,7 @@ export class ServerApp extends App
     // Create an instance of ServerApp.
     this.createInstance();
 
-    ServerApp.getInstance().run(telnetPort);
+    await ServerApp.getInstance().run(telnetPort);
   }
 
   protected static getInstance(): ServerApp
@@ -261,10 +250,13 @@ export class ServerApp extends App
 
   // ---------------- Public methods --------------------
 
+  // --------------- Protected methods ------------------
+
+  // Overrides App.reportError().
   // Reports error message and stack trace.
   // (Don't call this method directly, use ERROR()
   //  from /shared/lib/error/ERROR).
-  public reportError(message: string)
+  protected reportError(message: string)
   {
     let errorMsg = message + "\n"
     + Syslog.getTrimmedStackTrace(Syslog.TrimType.ERROR);
@@ -272,6 +264,7 @@ export class ServerApp extends App
     Syslog.log(errorMsg, MessageType.RUNTIME_ERROR, AdminLevel.ELDER_GOD);
   }
 
+  // Overrides App.reportFatalError().
   // Reports error message and stack trace and terminates the program.
   // (Don't call this method directly, use FATAL_ERROR()
   //  from /shared/lib/error/ERROR).
@@ -294,74 +287,7 @@ export class ServerApp extends App
     process.exit(1);
   }
 
-  // Loads the game (or creates a new default one
-  // if there is no ./data directory).
-  private async run(telnetPort: number)
-  {
-
-    /*
-    // We must check if './data/' directory exists before
-    // initPrototypes() is called, because './data/'
-    // will be created by it if it doesn't exist.
-    let dataExists = await FileManager.dataDirectoryExists();
-
-    await this.prototypeManager.init(dataExists);
-
-    // 'initPrototypes' may have added new records to the ClassFactory
-    // so we need to save them.
-    await this.prototypeManager.save();
-    */
-
-    // Create an entitity for each entity class registered in
-    // ClassFactory so they can be used as prototype objects
-    // for other entities.
-    //   As a side effect, we get a list of names of entity
-    // classes registered in ClassFactory.
-    let entityClasses = ClassFactory.createRootEntities();
-
-    /// TODO: Deklarovat this.prototypeManager = new ServerPrototypeManager();
-    // Create root prototype entities if they don't exist yet or load
-    // them from disk. Then recursively load all prototype entities
-    // inherited from them.
-    await this.prototypeManager.initPrototypes(entityClasses);
-
-    // If /server/data/ directory doesn't exist, create and save a new world.
-    if (!await FileManager.existsDataDirectory())
-    {
-      // Mark flagNamesManager as ready without loading from file
-      // (there is nowhere to load it from so we will just start
-      //  with empty instance).
-      this.flagNamesManager.ready = true;
-      await this.flagNamesManager.save();
-
-      await this.game.createDefaultWorld();
-    }
-    else
-    {
-      await this.flagNamesManager.load();
-      this.flagNamesManager.ready = true;
-
-      // Load the game.
-      await this.game.load();
-    }
-
-    this.startTelnetServer(telnetPort);
-    /// Http server also starts a websocket server inside it.
-    this.startHttpServer();
-  }
-
-  // --------------- Protected methods ------------------
-
-  protected async saveEntity(entity: Entity)
-  {
-    await FileManager.saveEntity(entity);
-  }
-
-  protected async loadEntity(entity: Entity)
-  {
-    return await FileManager.loadEntity(entity);
-  }
-
+  // Overrides App.syslog().
   protected syslog
   (
     text: string,
@@ -372,14 +298,41 @@ export class ServerApp extends App
     return ServerSyslog.log(text, msgType, adminLevel);
   }
 
-  /*
-  protected getSaver()
-  {
-    return this.saver;
-  }
-  */
+  // --------------- Private methods --------------------
 
-  protected startTelnetServer(telnetPort: number)
+  // Loads the game (or creates a new default one
+  // if there is no ./data directory).
+  private async run(telnetPort: number)
+  {
+    // Create an entity for each entity class registered in
+    // ClassFactory so they can be used as prototype objects
+    // for other entities.
+    //   As a side effect, we get a list of names of entity
+    // classes registered in ClassFactory.
+    let entityClasses = ClassFactory.createRootEntities();
+
+    // We must check if './data/' directory exists before
+    // initPrototypes() is called, because it will be created
+    // there it doesn't exist.
+    let dataExists = await FileManager.doesDataDirectoryExist();
+
+    // Create root prototype entities if they don't exist yet or load
+    // them from disk. Then recursively load all prototype entities
+    // inherited from them.
+    await this.prototypeManager.initPrototypes(entityClasses);
+
+    // If /server/data/ directory didn't exist, create and save a new world.
+    if (!dataExists)
+      await this.createDefaultData();
+    else
+      await this.loadData();
+
+    this.startTelnetServer(telnetPort);
+    /// Http server also starts a websocket server inside it.
+    this.startHttpServer();
+  }
+
+  private startTelnetServer(telnetPort: number)
   {
     if (this.telnetServer.isOpen === true)
     {
@@ -390,7 +343,7 @@ export class ServerApp extends App
     this.telnetServer.start();
   }
 
-  protected startHttpServer()
+  private startHttpServer()
   {
     if (this.httpServer.isOpen === true)
     {
@@ -399,5 +352,25 @@ export class ServerApp extends App
     }
 
     this.httpServer.start();
+  }
+
+  private async createDefaultData()
+  {
+    // Mark flagNamesManager as ready without loading from file
+    // (there is nowhere to load it from so we will just start
+    //  with empty instance).
+    this.flagNamesManager.ready = true;
+    await this.flagNamesManager.save();
+
+    await this.game.createDefaultWorld();
+  }
+
+  private async loadData()
+  {
+    await this.flagNamesManager.load();
+    this.flagNamesManager.ready = true;
+
+    // Load the game.
+    await this.game.load();
   }
 }

@@ -14,50 +14,68 @@ import {Entity} from '../../../shared/lib/entity/Entity';
 export class ServerPrototypeManager extends PrototypeManager
 {
   // Overrides PrototypeManager.initPrototypes().
-  //   Creates root prototype entities if they don't exist yet or
-  // loads them from disk. Then recursively loads all prototype entities
-  // inherited from them.
+  //   Creates root prototype entities if they don't exist on
+  // the disk or loads them if they do. Then recursively loads
+  // all prototype entities inherited from them.
   public async initPrototypes(entityClasses: Array<string>)
   {
-    await this.initPrototypes(entityClasses);
-
+    await this.initRootPrototypes(entityClasses);
     await this.loadDescendantPrototypes();
   }
 
   // Creates root prototype entities if they don't exist yet or
   // loads them from disk.
-  private initRootPrototypes(entityClasses: Array<string>)
+  private async initRootPrototypes(entityClasses: Array<string>)
   {
-    let prototypeEntity = null;
-
     for (let className of entityClasses)
     {
-      // Check if entity 'className' exists (check if such
-      /// nameLockFile exists).
-      let saveExists = FileManager.doesNameLockFileExist
-      (
-        className,
-        Entity.NameCathegory.PROTOTYPE
-      );
-
-      if (saveExists)
-      {
-        /// TODO: Load it from file if save does exist.
-      }
-      else
-      {
-        // Create new entity based on root entity 'className'
-        // if save doesn't exist.
-        /// TODO: Rozlisit vytvareni nove entity (generovani idcka)
-        ///  a vytvareni instance existujici entity (pouziti existujiciho
-        ///  idcka). Mozna by to vyresil default parametr id = null.
-        EntityManager.createPrototype(className, )
-      }
-
+      let prototypeEntity = await this.initPrototypeEntity(className);
 
       // Add the prototype entity to this.prototypes hashmap.
       this.prototypes.set(className, prototypeEntity);
     }
+  }
+
+  // Loads prototype entity 'className' form the disk if it's save
+  // exits, creates a new prototype entity otherwise.
+  private async initPrototypeEntity(className: string)
+  {
+    // We are going to save one reading from the disk by
+    // surpressing error reporting for file read operation
+    // so we can use the result to test if file exist.
+    let id = await FileManager.readIdFromNameLockFile
+    (
+      className,
+      Entity.NameCathegory.PROTOTYPE,
+      false  // Do not report errors (like when file doesn't exist).
+    );
+
+    // If name lock file exists, we use the id
+    // loaded from it to load prototype entity
+    // from disk.
+    if (id !== null)
+      return await Entity.loadById(id);
+
+    // Otherwise we create a new entity based on
+    // root entity with id 'className'.
+    return await this.createPrototypeEntity(className)
+  }
+
+  // Creates a new prototype entity based on root entity with id 'className'.
+  // Sets 'className' as it's unique name in 'PROTOTYPE' cathegory.
+  private async createPrototypeEntity(className: string)
+  {
+    let prototypeEntity = EntityManager.createPrototype(className);
+
+    // Note: setName() is an async operation because
+    //   it creates a name lock file.
+    await prototypeEntity.setName
+    (
+      className,
+      Entity.NameCathegory.PROTOTYPE
+    );
+
+    return prototypeEntity;
   }
 
   // Recursively loads all prototype entities inherited from root

@@ -69,6 +69,36 @@ export class FileManager
     return await this.saveToFile(jsonString, directory + fileName);
   }
 
+  // -> Returns 'null' if name lock file doesn't exist or if it doesn't
+  //    contain an 'id' property.
+  public static async readIdFromNameLockFile
+  (
+    name: string,
+    cathegory: Entity.NameCathegory,
+    reportErrors: boolean = true
+  )
+  {
+    let path = this.getNameLockFilePath(name, cathegory);
+    let jsonString = await FileSystem.readFile
+    (
+      path,
+      {
+        binary: false,
+        reportErrors: reportErrors
+      }
+    );
+
+    if (jsonString === null)
+      return null;
+
+    let jsonObject = JsonObject.parse(jsonString, path);
+
+    if (!jsonObject[Entity.ID_PROPERTY])
+      return null;
+
+    return jsonObject[Entity.ID_PROPERTY];
+  }
+
   public static async deleteNameLockFile
   (
     name: string,
@@ -81,16 +111,11 @@ export class FileManager
   // -> Returns 'true' on success.
   public static async saveEntity(entity: Entity)
   {
+    // Note: Name lock file is saved when the name is set
+    // to the entity so we don't have to save it here.
+
     let fileName = this.getEntityFileName(entity.getId());
     let directory = this.getEntityDirectory();
-
-    /*
-    if (!this.isFileNameValid(entity, directory))
-      return false;
-    
-    if (!this.isDirectoryValid(entity, directory))
-      return false;
-    */
 
     directory = this.enforceTrailingSlash(directory);
 
@@ -104,18 +129,10 @@ export class FileManager
   }
 
   // -> Returns 'true' on success.
-  public static async loadEntity(id: string)
+  public static async loadEntityById(id: string)
   {
     let fileName = this.getEntityFileName(id);
     let directory = this.getEntityDirectory();
-
-    /*
-    if (!this.isFileNameValid(entity, directory))
-      return false;
-    
-    if (!this.isDirectoryValid(entity, directory))
-      return false;
-    */
 
     directory = this.enforceTrailingSlash(directory);
 
@@ -123,7 +140,22 @@ export class FileManager
     let jsonString = await FileSystem.readFile(path);
 
     // Create a new entity instance and deserialize Json 'data' into it.
-    return Entity.deserialize(jsonString, id, path);
+    return Serializable.deserialize(jsonString, id, path);
+  }
+  
+  // -> Returns 'null' on failure.
+  public static async loadEntityByName
+  (
+    name: string,
+    cathegory: Entity.NameCathegory
+  )
+  {
+    let id = await this.readIdFromNameLockFile(name, cathegory);
+
+    if (!id)
+      return null;
+
+    return await this.loadEntityById(id);
   }
 
   // ------------ Protected static methods --------------

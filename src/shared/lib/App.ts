@@ -11,6 +11,7 @@ import {AdminLevel} from '../../shared/lib/admin/AdminLevel';
 import {MessageType} from '../../shared/lib/message/MessageType';
 import {Entity} from '../../shared/lib/entity/Entity';
 import {EntityManager} from '../../shared/lib/entity/EntityManager';
+import {PrototypeManager} from '../../shared/lib/entity/PrototypeManager';
 
 export abstract class App
 {
@@ -19,24 +20,17 @@ export abstract class App
 
   protected static instance: App = null;
 
+  //----------------- Protected data -------------------- 
+
+  // Contains all entities (accounts, characters, rooms, etc.).
   protected entityManager: EntityManager = null;
+
+  // Contains prototype entities.
+  protected prototypeManager: PrototypeManager = null;
 
   //------------------ Private data ---------------------
 
-  /*
-  // Contains all entities (accounts, connections, all game entities).
-  private entityManager = new EntityManager(this.idProvider);
-  */
-
   // --------------- Static accessors -------------------
-
-  // These are shortcuts so you don't have to use Server.getInstance()
-  /*
-  public static get entityManager()
-  {
-    return App.getInstance().entityManager;
-  }
-  */
 
   // ---------------- Static methods --------------------
 
@@ -69,16 +63,6 @@ export abstract class App
     // which doesn't exist here.
     throw new Error("Attempt to create() an instance of an abstract class App."
       + " Use ServerApp.create() or ClientApp.create() instead");
-  }
-
-  public static async saveEntity(entity: Entity)
-  {
-    return await App.getInstance().saveEntity(entity);
-  }
-
-  public static async loadEntity(entity: Entity)
-  {
-    return await App.getInstance().loadEntity(entity);
   }
 
   public static getEntityManager()
@@ -119,7 +103,4 @@ export abstract class App
     msgType: MessageType,
     adminLevel: AdminLevel
   );
-
-  protected abstract async saveEntity(entity: Entity);
-  protected abstract async loadEntity(entity: Entity);
 }
