@@ -1,0 +1,21 @@
+﻿-------------------------------------------------------------------------
+
+Kategorie skillů podle efektu
+------------------------------
+- efekt každého skillu spadá do jedné z několika málo kategorií.
+- použití jiného skillu ze stejné kategorie přepíše předchozí efekt
+  z této kategorie
+  - sem se počítá i generování speciálních resourců, takže když mám
+    nějakou arcane power a použiju skill ze stejné generující rage,
+    tak o tu arcane power přijdu.
+      Když by ten rage generating skill byl z jiné kategorie, tak
+    mi arcane power zůstane a budu k ní mít i tu rage.
+  - týká se to samozřejmě i buffů, debuffů, folsů, atd.
+Díky tomu by mělo mít smysl mít na liště jen tolik skillů, kolik je
+různých kategorií.
+
+- do nějaké kategorie by mohl spadat i portál a podobně, takže když
+  budu chtít mít aktivní portál, tak nemůžu hodit třeba dark sanctuary...
+
+
+-------------------------------------------------------------------------
