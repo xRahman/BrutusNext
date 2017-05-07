@@ -1,6 +1,10 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+TODO: PrototypeManager by asi měl být search list,
+  aby se v něm dalo vyhledávat podle abbreviationů.
+  (to ale nemusím nutně řešit hned).
+
 ---------------------------------------------------------------
 
 Ještě jednou k vyrábění instancí:

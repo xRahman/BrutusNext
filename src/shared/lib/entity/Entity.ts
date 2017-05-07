@@ -282,6 +282,11 @@ export class Entity extends Serializable
     return this.instanceIds;
   }
 
+  public getDescendantIds()
+  {
+    return this.descendantIds;
+  }
+
   /// Z nějakých důvodů jsem tuším setoval komplet
   /// celá instanceIds - třeba to už není potřeba.
   /*
