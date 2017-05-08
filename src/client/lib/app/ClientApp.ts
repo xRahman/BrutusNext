@@ -10,22 +10,22 @@
 
 'use strict';
 
-import {ERROR} from '../../shared/lib/error/ERROR';
-import {FATAL_ERROR} from '../../shared/lib/error/FATAL_ERROR';
-import {AdminLevel} from '../../shared/lib/admin/AdminLevel';
-import {MessageType} from '../../shared/lib/message/MessageType';
-///import {Saveable} from '../../shared/lib/class/Saveable';
-import {ClientSyslog} from '../../client/lib/log/ClientSyslog';
-import {App} from '../../shared/lib/App';
-import {Entity} from '../../shared/lib/entity/Entity';
+import {ERROR} from '../../../shared/lib/error/ERROR';
+import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
+import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
+import {MessageType} from '../../../shared/lib/message/MessageType';
+///import {Saveable} from '../..../shared/lib/class/Saveable';
+import {ClientSyslog} from '../../../client/lib/log/ClientSyslog';
+import {App} from '../../../shared/lib/app/App';
+import {Entity} from '../../../shared/lib/entity/Entity';
 import {ClientEntityManager} from
-  '../../client/lib/entity/ClientEntityManager';
+  '../../../client/lib/entity/ClientEntityManager';
 import {ClientPrototypeManager} from
-  '../../client/lib/entity/ClientPrototypeManager';
-import {Body} from '../../client/gui/component/Body';
-import {Document} from '../../client/gui/component/Document';
-import {Connection} from '../../client/lib/connection/Connection';
-import {WebSocketClient} from '../../client/lib/net/ws/WebSocketClient';
+  '../../../client/lib/entity/ClientPrototypeManager';
+import {Body} from '../../../client/gui/component/Body';
+import {Document} from '../../../client/gui/component/Document';
+import {Connection} from '../../../client/lib/connection/Connection';
+import {WebSocketClient} from '../../../client/lib/net/ws/WebSocketClient';
 
 export class ClientApp extends App
 {

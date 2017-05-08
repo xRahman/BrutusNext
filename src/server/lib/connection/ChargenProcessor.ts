@@ -12,7 +12,7 @@ import {Utils} from '../../../shared/lib/utils/Utils';
 import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
 import {Message} from '../../../server/lib/message/Message';
 import {Connection} from '../../../server/lib/connection/Connection';
-import {ServerApp} from '../../../server/lib/ServerApp';
+import {ServerApp} from '../../../server/lib/app/ServerApp';
 import {Game} from '../../../server/game/Game';
 import {Character} from '../../../server/game/character/Character';
 

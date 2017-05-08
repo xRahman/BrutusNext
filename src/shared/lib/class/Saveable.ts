@@ -9,7 +9,7 @@
 
 ///import {ERROR} from '../../../shared/lib/error/ERROR';
 ///import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
-import {App} from '../../../shared/lib/App';
+import {App} from '../../../shared/lib/app/App';
 import {PropertyAttributes} from
   '../../../shared/lib/class/PropertyAttributes';
 import {Serializable} from '../../../shared/lib/class/Serializable';

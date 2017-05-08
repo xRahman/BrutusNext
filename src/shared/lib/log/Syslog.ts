@@ -16,7 +16,7 @@
 'use strict';
 
 // Import required classes.
-import {App} from '../../../shared/lib/App';
+import {App} from '../../../shared/lib/app/App';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 

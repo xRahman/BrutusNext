@@ -8,7 +8,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {App} from '../../../shared/lib/App';
+import {App} from '../../../shared/lib/app/App';
 import {ClassFactory} from '../../../shared/lib/class/ClassFactory';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {EntityRecord} from '../../../shared/lib/entity/EntityRecord';

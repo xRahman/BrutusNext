@@ -6,39 +6,39 @@
   Manages an instance of server application.
 
   Usage:
-    import {ServerApp} from './server/lib/ServerApp';
+    import {ServerApp} from './server/lib/app/ServerApp';
     ServerApp.run(port);
 */
 
 'use strict';
 
-import {ERROR} from '../../shared/lib/error/ERROR';
-import {FATAL_ERROR} from '../../shared/lib/error/FATAL_ERROR';
-import {App} from '../../shared/lib/App';
-///import {IdProvider} from '../../server/lib/entity/IdProvider';
-import {ClassFactory} from '../../shared/lib/class/ClassFactory';
+import {ERROR} from '../../../shared/lib/error/ERROR';
+import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
+import {App} from '../../../shared/lib/app/App';
+///import {IdProvider} from '../../../server/lib/entity/IdProvider';
+import {ClassFactory} from '../../../shared/lib/class/ClassFactory';
 import {ServerEntityManager} from
-  '../../server/lib/entity/ServerEntityManager';
-import {FileManager} from '../../server/lib/fs/FileManager';
-import {FlagNamesManager} from '../../server/lib/flags/FlagNamesManager';
-import {AdminList} from '../../server/lib/admin/AdminList';
-import {AdminLevel} from '../../shared/lib/admin/AdminLevel';
-import {Connection} from '../../server/lib/connection/Connection';
-import {Entity} from '../../shared/lib/entity/Entity';
-import {EntityList} from '../../shared/lib/entity/EntityList';
+  '../../../server/lib/entity/ServerEntityManager';
+import {FileManager} from '../../../server/lib/fs/FileManager';
+import {FlagNamesManager} from '../../../server/lib/flags/FlagNamesManager';
+import {AdminList} from '../../../server/lib/admin/AdminList';
+import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
+import {Connection} from '../../../server/lib/connection/Connection';
+import {Entity} from '../../../shared/lib/entity/Entity';
+import {EntityList} from '../../../shared/lib/entity/EntityList';
 import {ServerPrototypeManager} from
-  '../../server/lib/entity/ServerPrototypeManager';
-import {AccountList} from '../../server/lib/account/AccountList';
-import {Syslog} from '../../shared/lib/log/Syslog';
-import {ServerSyslog} from '../../server/lib/log/ServerSyslog';
-import {Message} from '../../server/lib/message/Message';
-import {MessageType} from '../../shared/lib/message/MessageType';
-import {Game} from '../../server/game/Game';
-import {ServerGameEntity} from '../../server/game/entity/ServerGameEntity';
-import {TelnetServer} from '../../server/lib/net/telnet/TelnetServer';
-import {WebSocketServer} from '../../server/lib/net/ws/WebSocketServer';
-import {HttpServer} from '../../server/lib/net/http/HttpServer';
-import {Account} from '../../server/lib/account/Account';
+  '../../../server/lib/entity/ServerPrototypeManager';
+import {AccountList} from '../../../server/lib/account/AccountList';
+import {Syslog} from '../../../shared/lib/log/Syslog';
+import {ServerSyslog} from '../../../server/lib/log/ServerSyslog';
+import {Message} from '../../../server/lib/message/Message';
+import {MessageType} from '../../../shared/lib/message/MessageType';
+import {Game} from '../../../server/game/Game';
+import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
+import {TelnetServer} from '../../../server/lib/net/telnet/TelnetServer';
+import {WebSocketServer} from '../../../server/lib/net/ws/WebSocketServer';
+import {HttpServer} from '../../../server/lib/net/http/HttpServer';
+import {Account} from '../../../server/lib/account/Account';
 
 export class ServerApp extends App
 {
