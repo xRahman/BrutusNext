@@ -34,7 +34,7 @@
 
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {EntityManager} from '../../../shared/lib/entity/EntityManager';
-import {ServerApp} from '../../../server/lib/ServerApp';
+import {ServerApp} from '../../../server/lib/app/ServerApp';
 import {FileManager} from '../../../server/lib/fs/FileManager';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
 import {IdProvider} from '../../../server/lib/entity/IdProvider';

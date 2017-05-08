@@ -11,7 +11,7 @@
 /// TODO: Az bude log file, tak napsat odchytavani vyjimek, aby se stack trace
 ///       zapisoval do log filu.
 
-import {App} from '../../../shared/lib/App';
+import {App} from '../../../shared/lib/app/App';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Message} from '../../../server/lib/message/Message';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';

@@ -12,7 +12,7 @@
 
 'use strict';
 
-import {ClientApp} from '../client/lib/ClientApp';
+import {ClientApp} from '../client/lib/app/ClientApp';
 
 // Program entry point.
 // It's called main() to sound familiar to C programmers ;)

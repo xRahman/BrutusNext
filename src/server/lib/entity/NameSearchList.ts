@@ -10,9 +10,9 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
 import {EntityList} from '../../../server/lib/entity/EntityList';
-import {Entity} from '../../../server/lib/entity/Entity';
+import {Entity} from '../../../shared/lib/entity/Entity';
 import {EntityManager} from '../../../server/lib/entity/EntityManager';
-import {ServerApp} from '../../../server/lib/ServerApp';
+import {ServerApp} from '../../../server/lib/app/ServerApp';
 
 export class NameSearchList extends EntityList
 {
