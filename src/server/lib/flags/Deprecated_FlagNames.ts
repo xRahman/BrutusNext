@@ -10,6 +10,7 @@
   Flags::addFlag(flagName).
 */
 
+/*
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
@@ -160,3 +161,4 @@ export class FlagNames extends SaveableObject
 }
 
 ClassFactory.registerClass(FlagNames);
+*/

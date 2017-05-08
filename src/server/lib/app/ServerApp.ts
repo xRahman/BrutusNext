@@ -20,7 +20,7 @@ import {ClassFactory} from '../../../shared/lib/class/ClassFactory';
 import {ServerEntityManager} from
   '../../../server/lib/entity/ServerEntityManager';
 import {FileManager} from '../../../server/lib/fs/FileManager';
-import {FlagNamesManager} from '../../../server/lib/flags/FlagNamesManager';
+///import {FlagNamesManager} from '../../../server/lib/flags/FlagNamesManager';
 import {AdminList} from '../../../server/lib/admin/AdminList';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Connection} from '../../../server/lib/connection/Connection';
@@ -77,9 +77,10 @@ export class ServerApp extends App
   // Contains prototype entities.
   protected prototypeManager = new ServerPrototypeManager();
 
-  // flagNamesManager is in Server instead of Game, because flags are needed
-  // even outside of game (for example account flags).
-  private flagNamesManager = new FlagNamesManager();
+  /// Deprecated
+  // // flagNamesManager is in Server instead of Game, because flags are needed
+  // // even outside of game (for example account flags).
+  // private flagNamesManager = new FlagNamesManager();
 
   // --------------- Static accessors -------------------
 
@@ -111,10 +112,11 @@ export class ServerApp extends App
     return ServerApp.getInstance().telnetServer;
   }
 
-  public static get flagNamesManager()
-  {
-    return ServerApp.getInstance().flagNamesManager;
-  }
+  /// Deprecated
+  // public static get flagNamesManager()
+  // {
+  //   return ServerApp.getInstance().flagNamesManager;
+  // }
 
   public static get entityManager()
   {
@@ -356,19 +358,25 @@ export class ServerApp extends App
 
   private async createDefaultData()
   {
+    /// Deprecated.
+    /*
     // Mark flagNamesManager as ready without loading from file
     // (there is nowhere to load it from so we will just start
     //  with empty instance).
     this.flagNamesManager.ready = true;
     await this.flagNamesManager.save();
+    */
 
     await this.game.createDefaultWorld();
   }
 
   private async loadData()
   {
+    /// Deprecated.
+    /*
     await this.flagNamesManager.load();
     this.flagNamesManager.ready = true;
+    */
 
     // Load the game.
     await this.game.load();

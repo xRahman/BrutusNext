@@ -5,6 +5,7 @@
   of Flags objects.
 */
 
+/*
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
@@ -40,7 +41,7 @@ export class FlagNamesManager extends AutoSaveableObject
   // Returns FlagNames object containing list of flag names that
   // can be set to flags object passed as parameter.
   //   Requested FlagNames object is created if it doesn't exist
-  // and it's list of flag names is updated to contain all flag
+  // and its list of flag names is updated to contain all flag
   // names defined as static variables within parameter 'flags'.
   public getFlagNames(flags: Flags): FlagNames
   {
@@ -102,3 +103,4 @@ export class FlagNamesManager extends AutoSaveableObject
     return flagNames;
   }
 }
+*/
