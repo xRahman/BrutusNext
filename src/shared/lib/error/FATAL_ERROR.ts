@@ -50,7 +50,7 @@
 'use strict';
 
 // Import required classes.
-import {App} from '../../../shared/lib/App';
+import {App} from '../../../shared/lib/app/App';
 
 export function FATAL_ERROR(message: string)
 {

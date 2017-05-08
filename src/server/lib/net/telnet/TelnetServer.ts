@@ -27,7 +27,7 @@ import {FATAL_ERROR} from '../../../../shared/lib/error/FATAL_ERROR';
 import {Syslog} from '../../../../shared/lib/log/Syslog';
 import {AdminLevel} from '../../../../shared/lib/admin/AdminLevel';
 import {MessageType} from '../../../../shared/lib/message/MessageType';
-import {ServerApp} from '../../../../server/lib/ServerApp';
+import {ServerApp} from '../../../../server/lib/app/ServerApp';
 import {Connection} from '../../../../server/lib/connection/Connection';
 import {TelnetSocketDescriptor} from
   '../../../../server/lib/net/telnet/TelnetSocketDescriptor';

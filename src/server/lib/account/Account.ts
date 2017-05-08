@@ -15,7 +15,7 @@ import {Syslog} from '../../../shared/lib/log/Syslog';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {ScriptableEntity} from '../../../server/lib/entity/ScriptableEntity';
 import {Connection} from '../../../server/lib/connection/Connection';
-import {ServerApp} from '../../../server/lib/ServerApp';
+import {ServerApp} from '../../../server/lib/app/ServerApp';
 import {Game} from '../../game/Game';
 import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
 import {Character} from '../../../server/game/character/Character';

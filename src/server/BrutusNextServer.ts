@@ -19,7 +19,7 @@
 'use strict';
 
 import {ServerUtils} from '../server/lib/utils/ServerUtils';
-import {ServerApp} from '../server/lib/ServerApp';
+import {ServerApp} from '../server/lib/app/ServerApp';
 import {TelnetServer} from '../server/lib/net/telnet/TelnetServer';
 import {Syslog} from '../shared/lib/log/Syslog';
 import {MessageType} from '../shared/lib/message/MessageType';
