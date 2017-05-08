@@ -7,6 +7,7 @@
 
 'use strict';
 
+import {Flags} from '../../../shared/lib/utils/Flags';
 import {Coords} from '../../../shared/type/Coords';
 import {ExitData} from '../../../shared/game/world/ExitData';
 
@@ -107,6 +108,16 @@ export class RoomData
 {
   //------------------ Public data ----------------------
 
+  /// ----------------- Test flagu. -----------------------
+  public flags = new Flags<RoomData.Flags>();
+  // private testFlagu()
+  // {
+  //   this.flags.set(RoomData.Flags.ROOM_PEACEFUL);
+  //   /// Neprojde, hura! :\
+  //   this.flags.isSet(this.flags);
+  // }
+  ///------------------------------------------------------
+
   // 'true' if the room exists on the server
   // (nonexisting room placeholders are displayed in edit mode).
   public exists = false;
@@ -163,5 +174,17 @@ export class RoomData
     }
 
     return null;
+  }
+}
+
+// ------------------ Type declarations ----------------------
+
+// Module is exported so you can use enum type from outside this file.
+// It must be declared after the class because Typescript says so...
+export module RoomData
+{
+  export enum Flags
+  {
+    ROOM_PEACEFUL
   }
 }
