@@ -4,6 +4,7 @@
   Abstract ancestor for bitvectors.
 */
 
+/*
 'use strict';
 
 import {FlagNames} from '../../../server/lib/flags/FlagNames';
@@ -112,47 +113,43 @@ export abstract class Flags extends SaveableObject
 
   /// FastBitSet se teď savuje stejně jako třeba Map.
   /// Nechávám si to tu pro jistotu, kdyby to nefungovalo úplně dobře.
-  /*
-  // Overrides SaveableObject::loadProperty() to
-  // be able to save bitvector as array of numbers.
-  protected loadProperty
-  (
-    jsonObject: Object,
-    propertyName: string,
-    path: string
-  )
-  {
-    if (propertyName === 'flags')
-    {
-      // Flags are saved as array of numbers. Bitvector is recreated
-      // by passing this array to constructor.
-      this[propertyName] = new FastBitSet(jsonObject[propertyName]);
-    }
-    else
-    {
-      super.loadProperty(jsonObject, propertyName, path);
-    }
-  }
-  */
+  // // Overrides SaveableObject::loadProperty() to
+  // // be able to save bitvector as array of numbers.
+  // protected loadProperty
+  // (
+  //   jsonObject: Object,
+  //   propertyName: string,
+  //   path: string
+  // )
+  // {
+  //   if (propertyName === 'flags')
+  //   {
+  //     // Flags are saved as array of numbers. Bitvector is recreated
+  //     // by passing this array to constructor.
+  //     this[propertyName] = new FastBitSet(jsonObject[propertyName]);
+  //   }
+  //   else
+  //   {
+  //     super.loadProperty(jsonObject, propertyName, path);
+  //   }
+  // }
 
   /// FastBitSet se teď savuje stejně jako třeba Map.
   /// Nechávám si to tu pro jistotu, kdyby to nefungovalo úplně dobře.
-  /*
-  // Overrides SaveableObject::saveProperty() to
-  // be able save bitvector from array of numbers.
-  protected saveProperty(jsonObject: Object, propertyName: string)
-  {
-    if (propertyName === 'flags')
-    {
-      // Save bitvector as array of numbers.
-      jsonObject[propertyName] = this.flags.array();
-    }
-    else
-    {
-      super.saveProperty(jsonObject, propertyName);
-    }
-  }
-  */
+  // // Overrides SaveableObject::saveProperty() to
+  // // be able save bitvector from array of numbers.
+  // protected saveProperty(jsonObject: Object, propertyName: string)
+  // {
+  //   if (propertyName === 'flags')
+  //   {
+  //     // Save bitvector as array of numbers.
+  //     jsonObject[propertyName] = this.flags.array();
+  //   }
+  //   else
+  //   {
+  //     super.saveProperty(jsonObject, propertyName);
+  //   }
+  // }
 
   // ---------------- Private methods --------------------
 
@@ -176,3 +173,4 @@ export abstract class Flags extends SaveableObject
     return this.constructor['flagNames'];
   }
 }
+*/
