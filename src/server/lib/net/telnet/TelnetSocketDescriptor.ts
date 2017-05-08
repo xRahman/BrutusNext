@@ -12,7 +12,7 @@ import {Syslog} from '../../../../shared/lib/log/Syslog';
 import {MessageType} from '../../../../shared/lib/message/MessageType';
 import {Account} from '../../../../server/lib/account/Account';
 import {AdminLevel} from '../../../../shared/lib/admin/AdminLevel';
-import {ServerApp} from '../../../../server/lib/ServerApp';
+import {ServerApp} from '../../../../server/lib/app/ServerApp';
 import {SocketDescriptor} from '../../../../server/lib/net/SocketDescriptor';
 import {Connection} from '../../../../server/lib/connection/Connection';
 

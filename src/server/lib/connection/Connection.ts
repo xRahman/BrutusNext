@@ -7,12 +7,12 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {Entity} from '../../../server/lib/entity/Entity';
+import {Entity} from '../../../shared/lib/entity/Entity';
 import {Syslog} from '../../../shared/lib/log/Syslog';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Message} from '../../../server/lib/message/Message';
 import {MessageType} from '../../../shared/lib/message/MessageType';
-import {ServerApp} from '../../../server/lib/ServerApp';
+import {ServerApp} from '../../../server/lib/app/ServerApp';
 import {SocketDescriptor} from '../../../server/lib/net/SocketDescriptor';
 import {Account} from '../../../server/lib/account/Account';
 import {AuthProcessor} from '../../../server/lib/connection/AuthProcessor';

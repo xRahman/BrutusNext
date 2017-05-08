@@ -7,15 +7,14 @@
 
 'use strict';
 
-import {AdminLevel} from '../../shared/lib/admin/AdminLevel';
-import {MessageType} from '../../shared/lib/message/MessageType';
-import {Entity} from '../../shared/lib/entity/Entity';
-import {EntityManager} from '../../shared/lib/entity/EntityManager';
-import {PrototypeManager} from '../../shared/lib/entity/PrototypeManager';
+import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
+import {MessageType} from '../../../shared/lib/message/MessageType';
+import {Entity} from '../../../shared/lib/entity/Entity';
+import {EntityManager} from '../../../shared/lib/entity/EntityManager';
+import {PrototypeManager} from '../../../shared/lib/entity/PrototypeManager';
 
 export abstract class App
 {
-
   // -------------- Static class data -------------------
 
   protected static instance: App = null;
