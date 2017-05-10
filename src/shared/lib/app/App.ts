@@ -38,11 +38,10 @@ export abstract class App
     return App.instance !== null && App.instance !== undefined;
   }
 
-  // This is not an abstract method, App.getInstance() is valid call.
-  // It returns Server or Client respectively, because Server.create()
-  // and Client.create() set App.instance. It means that in the server
-  // code, App.getInstance() is actually an instance of Server class
-  // and in client code, it's an instance of Client class.
+  // It returns ServerApp or ClientApp respectively, because ServerApp
+  // and ClientApp instances are set to App.instance. It means that in
+  // the server code, App.getInstance() is actually an instance of ServerApp
+  //  class and in client code, it's an instance of ClientApp class.
   protected static getInstance(): App
   {
     if (App.instanceExists())
