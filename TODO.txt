@@ -1219,7 +1219,7 @@ class Sorcerer extends Adventurer
 
 class OrcishSorcerer extends Sorcerer
 {
-  castSpell() // Overrides Sorcerer.castSpell();
+  castSpell() // ~ Overrides Sorcerer.castSpell();
   {
     cast('Fell Blast');
   }

@@ -118,7 +118,7 @@ export class ScrollWindow extends Window
 
   // --- Element-generating methods ---
 
-  // Overrides Window.createContentElement().
+  // ~ Overrides Window.createContentElement().
   // -> Returns created html element.
   protected createContent()
   {

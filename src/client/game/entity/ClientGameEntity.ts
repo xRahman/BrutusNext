@@ -26,7 +26,7 @@ export class ClientGameEntity extends SharedGameEntity
 
   // -------------- Protected methods -------------------
 
-  // Overrides ContainerEntity.insertEntity() to prevent
+  // ~ Overrides ContainerEntity.insertEntity() to prevent
   // changing 'location' of client-side entities.
   protected insertEntity(entity: ContainerEntity)
   {

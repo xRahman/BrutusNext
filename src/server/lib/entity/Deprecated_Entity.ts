@@ -337,7 +337,7 @@ export class Entity extends AutoSaveableObject
   }
   */
 
-  // Overrides AutoSaveableObject.getSaveDirectory().
+  // ~ Overrides AutoSaveableObject.getSaveDirectory().
   protected getSaveDirectory(): string
   {
     /// Prozatím volím nejjednodušší řešení - všechny entity
@@ -371,7 +371,7 @@ export class Entity extends AutoSaveableObject
     return Entity.getSaveFileName(this.getId());
   }
 
-  // Overrides AutoSaveableObject.save().
+  // ~ Overrides AutoSaveableObject.save().
   // - check if entity is valid.
   // - handles correct saving of prototype entities.
   public async save()

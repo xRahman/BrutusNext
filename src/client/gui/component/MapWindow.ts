@@ -79,15 +79,15 @@ export class MapWindow extends Window
     return this.$window;
   }
 
+  // ~ Overrides Window.onDocumentReady().
   // Executes when html document is fully loaded.
-  // (Overrides Window.onDocumentReady()).
   public onDocumentReady()
   {
     this.updateMap();
   }
 
+  // ~ Overrides Window.onDocumentResize().
   // Executes when html document is resized
-  // (Overrides Window.onDocumentResize()).
   public onDocumentResize()
   {
     clearTimeout(this.resizeTimeout);
@@ -121,7 +121,7 @@ export class MapWindow extends Window
 
   // --- Element-generating methods ---
 
-  // Overrides Window.createContentElement().
+  // ~ Overrides Window.createContentElement().
   // -> Returns created html element.
   protected createContent()
   {

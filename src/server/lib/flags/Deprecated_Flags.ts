@@ -113,7 +113,7 @@ export abstract class Flags extends SaveableObject
 
   /// FastBitSet se teď savuje stejně jako třeba Map.
   /// Nechávám si to tu pro jistotu, kdyby to nefungovalo úplně dobře.
-  // // Overrides SaveableObject::loadProperty() to
+  // // ~ Overrides SaveableObject::loadProperty() to
   // // be able to save bitvector as array of numbers.
   // protected loadProperty
   // (
@@ -136,7 +136,7 @@ export abstract class Flags extends SaveableObject
 
   /// FastBitSet se teď savuje stejně jako třeba Map.
   /// Nechávám si to tu pro jistotu, kdyby to nefungovalo úplně dobře.
-  // // Overrides SaveableObject::saveProperty() to
+  // // ~ Overrides SaveableObject::saveProperty() to
   // // be able save bitvector from array of numbers.
   // protected saveProperty(jsonObject: Object, propertyName: string)
   // {
