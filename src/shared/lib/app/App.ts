@@ -6,21 +6,6 @@
 
 'use strict';
 
-/*
-declare namespace App
-{
-    export function doSomething();
-}
-
-
-namespace App
-{
-    App.doSomething = function() { console.log('App.doSomething()'); }
-}
-
-App.doSomething();
-*/
-
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {EntityManager} from '../../../shared/lib/entity/EntityManager';
