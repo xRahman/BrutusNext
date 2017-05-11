@@ -14,7 +14,7 @@ import {Entity} from '../../../shared/lib/entity/Entity';
 
 export class ServerPrototypeManager extends PrototypeManager
 {
-  // Overrides PrototypeManager.initPrototypes().
+  // ~ Overrides PrototypeManager.initPrototypes().
   //   Creates root prototype entities if they don't exist on
   // the disk or loads them if they do. Then recursively loads
   // all prototype entities inherited from them.

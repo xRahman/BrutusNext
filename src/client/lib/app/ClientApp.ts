@@ -84,7 +84,7 @@ export class ClientApp extends App
 
   // ------------ Protected static methods -------------- 
 
-  // Overrides App.createInstance().
+  // ~ Overrides App.createInstance().
   // Creates an instance of a client. Client is a singleton, so it must
   // not already exist.
   protected static createInstance()
@@ -132,8 +132,8 @@ export class ClientApp extends App
 
   // --------------- Protected methods ------------------
 
-  // Overrides App.reportError().
-  //   Reports error message and stack trace.
+  // ~ Overrides App.reportError().
+  // Reports error message and stack trace.
   // (Don't call this method directly, use ERROR()
   //  from /shared/lib/error/ERROR).
   protected reportError(message: string)
@@ -142,8 +142,8 @@ export class ClientApp extends App
     console.log('ERROR: ' + message);
   }
 
-  // Overrides App.reportFatalError().
-  //   Reports error message and stack trace and terminates the program.
+  // ~ Overrides App.reportFatalError().
+  // Reports error message and stack trace and terminates the program.
   // (Don't call this method directly, use FATAL_ERROR()
   //  from /shared/lib/error/ERROR).
   protected reportFatalError(message: string)
@@ -153,7 +153,7 @@ export class ClientApp extends App
     console.log('FATAL_ERROR: ' + message);
   }
 
-  // Overrides App.syslog().
+  // ~ Overrides App.syslog().
   protected syslog
   (
     text: string,
