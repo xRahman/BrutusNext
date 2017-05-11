@@ -45,7 +45,7 @@ export abstract class ContainerEntity extends Entity
 
   // ---------------- Public methods --------------------
 
-  // Overrides AutoSaveableObject.save()
+  // ~ Overrides AutoSaveableObject.save()
   // When saving an entity, all referenced entities are saved as well.
   // (This way when you save world, everything in it will get saved)
   public async save()

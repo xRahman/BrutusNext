@@ -125,27 +125,28 @@ export class ClassFactory
     this.addClassInfo(classInfo);
   }
 
-  // Creates an entitity for each entity class listed in
-  // ClassFactory.classInfo and adds it to the EntityManager
-  // so it can be used as prototype object for othe entities
-  // (these prototype entities use class name as their id,
-  //  for example 'Room').
-  // -> Returns array of names of entity classes registered in ClassFactory.
+  // Creates an entitity for each entity class registered in
+  // ClassFactory and adds it to the EntityManager so it can
+  // be used as prototype object for othe entities
+  // (prototype entities use class name as their id).
   public static createRootEntities()
+  {
+    for (let [className, classInfo] of this.classInfo)
+    {
+      if (classInfo.isEntityClass)
+        EntityManager.createRootEntity(className, classInfo.Class);
+    }
+  }
+
+  // -> Returns array of names of entity classes registered in ClassFactory.
+  public static getListOfEntityClasses()
   {
     let entityClasses = [];
 
     for (let [className, classInfo] of this.classInfo)
     {
       if (classInfo.isEntityClass)
-      {
-        // As a side effect, we also fill the 'hardcodedEntityClasses'
-        // array so the PrototypeManager will know what prototypes it's
-        // supposed to work with.
         entityClasses.push(className);
-
-        EntityManager.createRootEntity(className, classInfo.Class);
-      }
     }
 
     return entityClasses;

@@ -71,10 +71,12 @@ export class ServerApp extends App
   private accounts = new AccountList();
 
   // -------- managers --------
+  // ~ Overrides App.entityManager.
   // Contains all entities (accounts, characters, rooms, etc.).
   protected entityManager = new ServerEntityManager(this.timeOfBoot);
 
-  // Contains prototype entities.
+  // ~ Overrides App.prototypeManager.
+  // Manages prototype entities.
   protected prototypeManager = new ServerPrototypeManager();
 
   /// Deprecated
@@ -118,19 +120,7 @@ export class ServerApp extends App
   //   return ServerApp.getInstance().flagNamesManager;
   // }
 
-  public static get entityManager()
-  {
-    return ServerApp.getInstance().entityManager;
-  }
-
-  /*
-  public static get prototypeManager()
-  {
-    return ServerApp.getInstance().prototypeManager;
-  }
-  */
-
-  // ---------------- Static methods --------------------
+  // ------------- Public static methods ---------------- 
 
   // Loads the game (or creates a new default one
   // if there is no ./data directory).
@@ -143,18 +133,11 @@ export class ServerApp extends App
       return;
     }
 
-    // Create an instance of ServerApp.
+    // Create the singleton instance of ServerApp.
     this.createInstance();
 
+    // Run server application.
     await ServerApp.getInstance().run(telnetPort);
-  }
-
-  protected static getInstance(): ServerApp
-  {
-    if (ServerApp.instance === null || ServerApp.instance === undefined)
-      FATAL_ERROR("Instance of server doesn't exist yet");
-
-    return <ServerApp>App.instance;
   }
 
   // If there are no admins yet, sets the highest possible admin rights
@@ -236,9 +219,10 @@ export class ServerApp extends App
     return "&gMessage of the day:\n&_" + motd;
   }
 
-  // ~ Overrides App.createInstance().
-  // Creates an instance of a server. Server is a singleton, so it must
-  // not already exist.
+  // ------------ Protected static methods --------------
+
+  // Creates an instance of a server. Server is a singleton,
+  // so it must not already exist.
   protected static createInstance()
   {
     if (App.instance !== null)
@@ -248,6 +232,17 @@ export class ServerApp extends App
     }
 
     App.instance = new ServerApp();
+  }
+
+  // -> Returns the ServerApp singleton instance.
+  protected static getInstance(): ServerApp
+  {
+    if (ServerApp.instance === null || ServerApp.instance === undefined)
+      FATAL_ERROR("Instance of server doesn't exist yet");
+
+    // We can safely typecast here, because ServerApp.createInstance()
+    // assigns an instance of ServerApp to App.instance.
+    return <ServerApp>App.instance;
   }
 
   // ---------------- Public methods --------------------
@@ -302,18 +297,15 @@ export class ServerApp extends App
 
   // --------------- Private methods --------------------
 
-  // Loads the game (or creates a new default one
-  // if there is no ./data directory).
+  // Loads or reates the data and starts the server application.
   private async run(telnetPort: number)
   {
     // Create an entity for each entity class registered in
     // ClassFactory so they can be used as prototype objects
     // for other entities.
-    //   As a side effect, we get a list of names of entity
-    // classes registered in ClassFactory.
-    let entityClasses = ClassFactory.createRootEntities();
+    ClassFactory.createRootEntities();
 
-    // We must check if './data/' directory exists before
+    // We need to check if './data/' directory exists before
     // initPrototypes() is called, because it will be created
     // there it doesn't exist.
     let dataExists = await FileManager.doesDataDirectoryExist();
@@ -321,7 +313,7 @@ export class ServerApp extends App
     // Create root prototype entities if they don't exist yet or load
     // them from disk. Then recursively load all prototype entities
     // inherited from them.
-    await this.prototypeManager.initPrototypes(entityClasses);
+    await this.prototypeManager.initPrototypes();
 
     // If /server/data/ directory didn't exist, create and save a new world.
     if (!dataExists)
@@ -330,7 +322,8 @@ export class ServerApp extends App
       await this.loadData();
 
     this.startTelnetServer(telnetPort);
-    /// Http server also starts a websocket server inside it.
+    
+    // Http server also starts a websocket server inside it.
     this.startHttpServer();
   }
 

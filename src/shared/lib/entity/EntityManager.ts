@@ -89,6 +89,7 @@ export abstract class EntityManager
     App.getEntityManager().release(entity);
   }
 
+  // -> Returns 'false' if name change isn't allowed.
   public static async requestEntityName
   (
     id: string,
@@ -113,8 +114,7 @@ export abstract class EntityManager
     return await App.getEntityManager().saveEntity(entity);
   }
 
-  public static async loadEntityById(id: string)
-  : Promise<Entity>
+  public static async loadEntityById(id: string): Promise<Entity>
   {
     return await App.getEntityManager().loadEntityById(id);
   }
@@ -133,6 +133,7 @@ export abstract class EntityManager
 
   // --------------- Protected methods ------------------
   
+  // -> Returns 'false' if name change isn't allowed.
   protected abstract async requestEntityName
   (
     id: string,
@@ -192,8 +193,8 @@ export abstract class EntityManager
     // Hide bare entity behind a Proxy object which will report
     // access to it's properties if it becomes invalid.
     // (We don't really need proxies for root entities because they
-    //  are only used as prototype objects, but doing it we can handle
-    //  them using the same code as for any other entities.)
+    //  are only used as prototype objects, but by doing it we can
+    //  handle them using the same code as any other entities.)
     let proxy = this.createEntityProxy(handler);
 
     // Create an new EntityRecord that will be added to EntityManager.
