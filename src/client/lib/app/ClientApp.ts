@@ -37,10 +37,12 @@ export class ClientApp extends App
 
   //----------------- Protected data --------------------
 
+  // ~ Overrides App.entityManager.
   // Contains all entities (accounts, characters, rooms, etc.).
   protected entityManager = new ClientEntityManager();
 
-  // Contains prototype entities.
+  // ~ Overrides App.prototypeManager.
+  // Manages prototype entities.
   protected prototypeManager = new ClientPrototypeManager();
 
   //------------------ Private data ---------------------
@@ -65,8 +67,6 @@ export class ClientApp extends App
   // ------------- Public static methods ---------------- 
 
   // Creates and runs an instance of ClientApp.
-  // (It will handle the creation of all html elements
-  //  inside our application, handle events, etc.)
   public static async run()
   {
     if (this.instanceExists())
@@ -76,17 +76,17 @@ export class ClientApp extends App
       return;
     }
 
-    // Create an instance of ClientApp.
+    // Create the singleton instance of ClientApp.
     this.createInstance();
 
+    // Run client application.
     await ClientApp.getInstance().run();
   }
 
   // ------------ Protected static methods -------------- 
 
-  // ~ Overrides App.createInstance().
-  // Creates an instance of a client. Client is a singleton, so it must
-  // not already exist.
+  // Creates an instance of a client. Client is a singleton,
+  // so it must not already exist.
   protected static createInstance()
   {
     if (App.instance !== null)
@@ -98,11 +98,14 @@ export class ClientApp extends App
     App.instance = new ClientApp();
   }
 
+  // -> Returns the ClientApp singleton instance.
   protected static getInstance(): ClientApp
   {
     if (ClientApp.instance === null || ClientApp.instance === undefined)
       FATAL_ERROR("Instance of client doesn't exist yet");
 
+    // We can safely typecast here, because ClientApp.createInstance()
+    // assigns an instance of ClientApp to App.instance.
     return <ClientApp>App.instance;
   }
 
@@ -166,6 +169,7 @@ export class ClientApp extends App
   
   // ---------------- Private methods -------------------
 
+  // Starts the client application.
   private async run()
   {
     // Reports the problem to the user if websockets aren't available.

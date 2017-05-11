@@ -7,6 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {ClassFactory} from '../../../shared/lib/class/ClassFactory';
 import {PrototypeManager} from '../../../shared/lib/entity/PrototypeManager';
 import {EntityManager} from '../../../shared/lib/entity/EntityManager';
 import {FileManager} from '../../../server/lib/fs/FileManager';
@@ -14,15 +15,21 @@ import {Entity} from '../../../shared/lib/entity/Entity';
 
 export class ServerPrototypeManager extends PrototypeManager
 {
+  // ---------------- Public methods --------------------
+
   // ~ Overrides PrototypeManager.initPrototypes().
-  //   Creates root prototype entities if they don't exist on
+  // Creates root prototype entities if they don't exist on
   // the disk or loads them if they do. Then recursively loads
   // all prototype entities inherited from them.
-  public async initPrototypes(entityClasses: Array<string>)
+  public async initPrototypes()
   {
+    let entityClasses = ClassFactory.getListOfEntityClasses();
+
     await this.initRootPrototypes(entityClasses);
     await this.loadDescendantPrototypes(entityClasses);
   }
+
+  // --------------- Private methods -------------------- 
 
   // Creates root prototype entities if they don't exist yet or
   // loads them from disk.
@@ -32,6 +39,9 @@ export class ServerPrototypeManager extends PrototypeManager
     {
       let prototypeEntity = await this.initPrototypeEntity(className);
 
+      if (!prototypeEntity)
+        continue;
+
       // Add the prototype entity to this.prototypes hashmap.
       this.prototypes.set(className, prototypeEntity);
     }
@@ -39,6 +49,7 @@ export class ServerPrototypeManager extends PrototypeManager
 
   // Loads prototype entity 'className' form the disk if it's save
   // exits, creates a new prototype entity otherwise.
+  // -> Returns 'null' on error.
   private async initPrototypeEntity(className: string)
   {
     // We are going to save one reading from the disk by
@@ -64,17 +75,48 @@ export class ServerPrototypeManager extends PrototypeManager
 
   // Creates a new prototype entity based on root entity with id 'className'.
   // Sets 'className' as it's unique name in 'PROTOTYPE' cathegory.
+  // -> Returns 'null' on error.
   private async createPrototypeEntity(className: string)
   {
+    /*
+    // This will create name lock file if name is available.
+    let isNameAvailable = EntityManager.requestEntityName
+    (
+      className,
+      className,
+      Entity.NameCathegory.PROTOTYPE
+    );
+
+    if (!isNameAvailable)
+    {
+      ERROR("Failed to create prototype entity because"
+        + " name '" + className + "' isn't available.");
+      return null;
+    }
+    */
+
     let prototypeEntity = EntityManager.createPrototype(className);
+
+    prototypeEntity.name ...
+    /// Argh, 'name' je private, takže to nejde jdnoduše setnout dodatečně...
 
     // Note: setName() is an async operation because
     //   it creates a name lock file.
-    await prototypeEntity.setName
+    let result = await prototypeEntity.setName
     (
       className,
       Entity.NameCathegory.PROTOTYPE
     );
+
+    if (!result)
+    {
+TODO
+      /// TODO: Asi by bylo lepší nejdřív requestnout jméno a až když
+      ///   je available, tak vyrobit entitu.
+      // If name coundn't be set to entity, 
+      EntityManager.remove(prototypeEntity);
+      return null;
+    }
 
     return prototypeEntity;
   }
