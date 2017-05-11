@@ -1,15 +1,13 @@
 /*
   Part of BrutusNEXT
 
-  Abstract ancestor for Client and Server.
-  Allows using App.getInstance() from shared code.
+  Abstract ancestor for ClientApp and ServerApp.
 */
 
 'use strict';
 
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {MessageType} from '../../../shared/lib/message/MessageType';
-import {Entity} from '../../../shared/lib/entity/Entity';
 import {EntityManager} from '../../../shared/lib/entity/EntityManager';
 import {PrototypeManager} from '../../../shared/lib/entity/PrototypeManager';
 
@@ -24,60 +22,44 @@ export abstract class App
   // Contains all entities (accounts, characters, rooms, etc.).
   protected entityManager: EntityManager = null;
 
-  // Contains prototype entities.
+  // Manages prototype entities.
   protected prototypeManager: PrototypeManager = null;
 
-  //------------------ Private data ---------------------
-
   // --------------- Static accessors -------------------
-
-  // ---------------- Static methods --------------------
-
-  public static instanceExists()
-  {
-    return App.instance !== null && App.instance !== undefined;
-  }
-
-  // It returns ServerApp or ClientApp respectively, because ServerApp
-  // and ClientApp instances are set to App.instance. It means that in
-  // the server code, App.getInstance() is actually an instance of ServerApp
-  //  class and in client code, it's an instance of ClientApp class.
-  protected static getInstance(): App
-  {
-    if (App.instanceExists())
-      return this.instance;
-
-    // We can't use ERROR() here because ERROR() is handled by App
-    // which doesn't exist here.
-    throw new Error("Instance of App doesn't exist yet");
-  }
-
-  // This needs to be overriden.
-  // (This method sould be abstract but static methods
-  //  cannot be abstract in typescript so it's not).
-  protected static createInstance()
-  {
-    // We can't use ERROR() here because ERROR() is handled by App
-    // which doesn't exist here.
-    throw new Error("Attempt to create() an instance of an abstract class App."
-      + " Use ServerApp.create() or ClientApp.create() instead");
-  }
 
   public static getEntityManager()
   {
     return App.getInstance().entityManager;
   }
 
+  public static getPrototypeManager()
+  {
+    return App.getInstance().prototypeManager;
+  }
+
+  // ------------- Public static methods ---------------- 
+
+  public static instanceExists()
+  {
+    return App.instance !== null && App.instance !== undefined;
+  }
+
+  // Reports runtime error.
+  // (Don't call this directly, use ERROR() instead.)
   public static reportError(message: string)
   {
     return App.getInstance().reportError(message);
   }
 
+  // Reports fatal runtime error.
+  // (Don't call this directly, use FATAL_ERROR() instead.)
   public static reportFatalError(message: string)
   {
     return App.getInstance().reportFatalError(message);
   }
 
+  // Sends message to syslog.
+  // (Don't call this directly, use Syslog.log() instead.)
   public static syslog
   (
     text: string,
@@ -85,19 +67,37 @@ export abstract class App
     adminLevel: AdminLevel
   )
   {
-    return App.getInstance().syslog(text, msgType, adminLevel)
+    return App.getInstance().syslog(text, msgType, adminLevel);
   }
 
-  // ---------------- Public methods --------------------
+  // ------------ Protected static methods --------------
+
+  // -> Returns ServerApp or ClientApp. In the server code,
+  //    App.getInstance() is actually an instance of ServerApp
+  //    and in client code, it's an instance of ClientApp class.
+  protected static getInstance(): App
+  {
+    if (!App.instanceExists())
+    {
+      // We can't use ERROR() here because ERROR() is handled by App
+      // which doesn't exist here.
+      throw new Error("Instance of App doesn't exist yet");
+    }
+
+    return this.instance;
+  }
 
   // --------------- Protected methods ------------------
 
+  // Reports runtime error.
   protected abstract reportError(message: string);
+  // Reports fatal runtime error.
   protected abstract reportFatalError(message: string);
 
+  // Sends message to syslog.
   protected abstract syslog
   (
-    text: string,
+    message: string,
     msgType: MessageType,
     adminLevel: AdminLevel
   );

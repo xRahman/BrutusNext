@@ -5,17 +5,20 @@
 
   Usage example:
 
-    import {MessageType} from '../shared/lib/log/MessageType';
+    import {MessageType} from '../shared/lib/message/MessageType';
     import {AdminLevels} from '../shared/lib/admin/AdminLevels';
     import {Syslog} from '../shared/lib/log/Syslog';
 
-    Syslog.log("Loading mobile data...",
-      MessageType.SYSTEM, AdminLevels.CREATOR);
+    Syslog.log
+    (
+      "Loading mobile data...",
+      MessageType.SYSTEM,
+      AdminLevels.CREATOR
+    );
 */
 
 'use strict';
 
-// Import required classes.
 import {App} from '../../../shared/lib/app/App';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
@@ -32,9 +35,9 @@ export class Syslog
     App.syslog(text, msgType, adminLevel);
   }
 
-    // Creates Error() object, reads stack trace from it.
-  // Returns string containing stack trace trimmed to start
-  // with function where ERROR actually got triggered.
+  // Reads stack trace from Error() object.
+  // -> Returns string containing stack trace with first few lines
+  //    trimmed accoding to 'trimType' parameter.
   public static getTrimmedStackTrace(trimType: Syslog.TrimType): string
   {
     let trimValue = 0;
@@ -68,7 +71,6 @@ export class Syslog
         //   represent internal call of proxy handler.
         trimValue = 5;
         break;
-
     }
 
     // Create a temporary error object to construct stack trace for us.
@@ -76,20 +78,18 @@ export class Syslog
 
     // Break stack trace string into an array of lines.
     let stackTraceLines = tmpErr.stack.split('\n');
+    
     // Remove number of lines equal to 'trimValue', starting at index 0.
     stackTraceLines.splice(0, trimValue);
-    // Join the array back into a single string
-    let stackTrace = stackTraceLines.join('\n');
 
-    return stackTrace;
+    // Join the array back to a single string.
+    return stackTraceLines.join('\n');
   }
 }
 
 
 // ------------------ Type declarations ----------------------
 
-// Module is exported so you can use enum type from outside this file.
-// It must be declared after the class because Typescript says so...
 export module Syslog
 {
   export enum TrimType
