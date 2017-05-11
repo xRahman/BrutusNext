@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Implements server error logging. Use it a lot!
+  Implements runtime error reporting. Use it a lot!
 
        --------------------------------------------------------
                EVERY ERROR() NEEDS TO BE FIXED ASAP!
@@ -13,29 +13,31 @@
   ERROR() just prints error message, FATAL_ERROR() also terminates the program.
 
   Use FATAL_ERROR() either if there is no realistic way to recover from the
-  error or if "recovery" could lead to corruption of persistant game data
+  error or if recovery could lead to corruption of persistant game data
   (player file etc.).
 
-  Usage examples:
+  ERROR() usage example:
 
-    import {ERROR} from '../shared/ERROR';
+    import {ERROR} from '../shared/lib/error/ERROR';
 
     if (character === null)
     {
       ERROR("Invalid character");
     }
 
-    import {FATAL_ERROR} from '../shared/FATAL_ERROR';
+  FATAL_ERROR() usage example:
+
+    import {FATAL_ERROR} from '../shared/lib/error/FATAL_ERROR';
 
     FATAL_ERROR("Corrupted player data");
 
-  Try to write messages that explain what the condition was (because it won't
-  show in error output) and also what are the possible causes of this error
-  (at the time of writing of ERROR(), you know quite well what could go
-   wrong. 5 years later, you will pay gold for any such hint, trust me).
+  Try to write error messages that explain what are the possible causes
+  and available solutions.
+  (At the time of writing of ERROR(), you know quite well what could go
+   wrong. 5 years later, you will pay gold for any such hint, trust me.)
 
-  Don't include name of the function where error occured. That will be added
-  automatically.
+  Don't include name of the function where error occured. It will be added
+  automatically to the stack trace.
 */
 
 /*
@@ -49,7 +51,6 @@
 
 'use strict';
 
-// Import required classes.
 import {App} from '../../../shared/lib/app/App';
 
 export function FATAL_ERROR(message: string)

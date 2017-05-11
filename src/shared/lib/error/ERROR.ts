@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Implements error logging. Use it a lot!
+  Implements runtime error reporting. Use it a lot!
 
        --------------------------------------------------------
                EVERY ERROR() NEEDS TO BE FIXED ASAP!
@@ -31,8 +31,8 @@
 
     FATAL_ERROR("Corrupted player data");
 
-  Try to write messages that explains what the condition was (because
-  it won't show in error output) and also what are the possible causes.
+  Try to write error messages that explain what are the possible causes
+  and available solutions.
   (At the time of writing of ERROR(), you know quite well what could go
    wrong. 5 years later, you will pay gold for any such hint, trust me.)
 
@@ -51,7 +51,6 @@
 
 'use strict';
 
-// Import required classes.
 import {App} from '../../../shared/lib/app/App';
 
 export function ERROR(message: string)

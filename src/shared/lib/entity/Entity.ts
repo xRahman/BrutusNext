@@ -166,7 +166,8 @@ export class Entity extends Serializable
   // --------------- Public accessors -------------------
 
   public getName() { return this.name; }
-  // This method is overriden on the server in class UniqueEntity.
+
+  // -> Returns 'false' if name isn't available.
   public async setName(name: string, cathegory: Entity.NameCathegory = null)
   {
     let oldName = this.name;
@@ -184,6 +185,7 @@ export class Entity extends Serializable
 
     this.name = name;
 
+    return true;
   }
 
   public getNameCathegory() { return this.nameCathegory; }

@@ -16,6 +16,8 @@ export class ClientEntityManager extends EntityManager
   // --------------- Protected methods ------------------
 
   // ~ Overrides EntityManager.requestEntityName().
+  // -> Returns 'false' if name change isn't allowed
+  //    (that means always on the client).
   protected async requestEntityName
   (
     id: string,

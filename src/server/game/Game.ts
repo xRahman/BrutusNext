@@ -8,12 +8,12 @@
 
 import {ERROR} from '../../shared/lib/error/ERROR';
 import {EntityManager} from '../../server/lib/entity/EntityManager';
-import {NamedEntity} from '../../server/lib/entity/NamedEntity';
+///import {NamedEntity} from '../../server/lib/entity/NamedEntity';
 import {NameSearchList} from '../../server/lib/entity/NameSearchList';
-import {SaveableObject} from '../../server/lib/fs/SaveableObject';
+///import {SaveableObject} from '../../server/lib/fs/SaveableObject';
 import {Message} from '../../server/lib/message/Message';
-import {ServerApp} from '../../server/lib/Server';
-import {AdminLevel} from '../../server/lib/admin/AdminLevel';
+import {ServerApp} from '../../server/lib/app/ServerApp';
+import {AdminLevel} from '../../shared/lib/admin/AdminLevel';
 import {ServerGameEntity} from '../../server/game/entity/ServerGameEntity';
 import {CharacterList} from '../../server/game/character/CharacterList';
 import {World} from '../../server/game/world/World';
@@ -26,7 +26,7 @@ import {Area} from '../game/world/Area';
 import {Realm} from '../game/world/Realm';
 
 // TEST:
-import {Script} from '../../server/lib/prototype/Script';
+///import {Script} from '../../server/lib/prototype/Script';
 
 export class Game
 {
@@ -57,7 +57,7 @@ export class Game
 
   public static get prototypeManager()
   {
-    return ServerApp.game.prototypeManager;
+    return ServerApp.getPrototypeManager();
   }
 
   // ---------------- Public methods --------------------
@@ -77,6 +77,13 @@ export class Game
       return;
     }
 
+    /// TODO
+    this.world = EntityManager.createUniqueEntity
+    (
+
+    )
+
+    /*
     // Create world 'BrutusNext World' based on prototype World.
     this.world = await ServerApp.entityManager.createUniqueEntity
     (
@@ -84,6 +91,7 @@ export class Game
       World,
       NamedEntity.NameCathegory.world
     );
+    */
 
     if (this.world === null)
     {
