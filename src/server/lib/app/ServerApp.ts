@@ -236,7 +236,7 @@ export class ServerApp extends App
     return "&gMessage of the day:\n&_" + motd;
   }
 
-  // Overrides App.createInstance().
+  // ~ Overrides App.createInstance().
   // Creates an instance of a server. Server is a singleton, so it must
   // not already exist.
   protected static createInstance()
@@ -254,7 +254,7 @@ export class ServerApp extends App
 
   // --------------- Protected methods ------------------
 
-  // Overrides App.reportError().
+  // ~ Overrides App.reportError().
   // Reports error message and stack trace.
   // (Don't call this method directly, use ERROR()
   //  from /shared/lib/error/ERROR).
@@ -266,11 +266,11 @@ export class ServerApp extends App
     Syslog.log(errorMsg, MessageType.RUNTIME_ERROR, AdminLevel.ELDER_GOD);
   }
 
-  // Overrides App.reportFatalError().
+  // ~ Overrides App.reportFatalError().
   // Reports error message and stack trace and terminates the program.
   // (Don't call this method directly, use FATAL_ERROR()
   //  from /shared/lib/error/ERROR).
-  public reportFatalError(message: string)
+  protected reportFatalError(message: string)
   {
     let errorMsg = message + "\n"
     + Syslog.getTrimmedStackTrace(Syslog.TrimType.ERROR);
@@ -289,7 +289,7 @@ export class ServerApp extends App
     process.exit(1);
   }
 
-  // Overrides App.syslog().
+  // ~ Overrides App.syslog().
   protected syslog
   (
     text: string,

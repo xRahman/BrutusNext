@@ -15,7 +15,7 @@ export class ClientEntityManager extends EntityManager
 {
   // --------------- Protected methods ------------------
 
-  // Overrides EntityManager.requestEntityName().
+  // ~ Overrides EntityManager.requestEntityName().
   protected async requestEntityName
   (
     id: string,
@@ -47,7 +47,7 @@ export class ClientEntityManager extends EntityManager
     return null;
   }
 
-  // Overrides EntityManager.saveEntity().
+  // ~ Overrides EntityManager.saveEntity().
   protected async saveEntity(entity: Entity)
   {
     // (It is possible that HTML5 Local Storage will be
@@ -57,7 +57,7 @@ export class ClientEntityManager extends EntityManager
       + " doesn't have save/load capability");
   }
 
-  // Overrides EntityManager.loadEntityById().
+  // ~ Overrides EntityManager.loadEntityById().
   protected async loadEntityById(id: string)
   {
     // (It is possible that HTML5 Local Storage will be
@@ -67,7 +67,7 @@ export class ClientEntityManager extends EntityManager
       + " doesn't have save/load capability");
   }
 
-  // Overrides EntityManager.loadEntityByName().
+  // ~ Overrides EntityManager.loadEntityByName().
   protected async loadEntityByName
   (
     name: string,

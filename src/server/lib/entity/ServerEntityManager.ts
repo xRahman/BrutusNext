@@ -77,15 +77,15 @@ export class ServerEntityManager extends EntityManager
 
   // --------------- Protected methods ------------------
 
-  // Overrides EntityManager.generateId().
-  //  Greates a unique entity string id.
+  // ~ Overrides EntityManager.generateId().
+  // Creates a unique entity string id.
   protected generateId(): string
   {
     return this.idProvider.generateId();
   }
 
-  // Overrides EntityManager.requestEntityName().
-  //   Checks if requested name is available, creates
+  // ~ Overrides EntityManager.requestEntityName().
+  // Checks if requested name is available, creates
   // a name lock file if it is.
   // -> Returns 'false' if name change isn't allowed.
   protected async requestEntityName
@@ -114,19 +114,19 @@ export class ServerEntityManager extends EntityManager
     FileManager.deleteNameLockFile(name, cathegory);
   }
 
-  // Overrides EntityManager.saveEntity().
+  // ~ Overrides EntityManager.saveEntity().
   protected async saveEntity(entity: Entity)
   {
     await FileManager.saveEntity(entity);
   }
 
-  // Overrides EntityManager.loadEntityById().
+  // ~ Overrides EntityManager.loadEntityById().
   protected async loadEntityById(id: string)
   {
     return await FileManager.loadEntityById(id);
   }
 
-  // Overrides EntityManager.loadEntityByName().
+  // ~ Overrides EntityManager.loadEntityByName().
   protected async loadEntityByName
   (
     name: string,
