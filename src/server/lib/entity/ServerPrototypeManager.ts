@@ -37,7 +37,7 @@ export class ServerPrototypeManager extends PrototypeManager
   {
     for (let className of entityClasses)
     {
-      let prototypeEntity = await this.initPrototypeEntity(className);
+      let prototypeEntity = await this.initRootPrototypeEntity(className);
 
       if (!prototypeEntity)
         continue;
@@ -50,7 +50,7 @@ export class ServerPrototypeManager extends PrototypeManager
   // Loads prototype entity 'className' form the disk if it's save
   // exits, creates a new prototype entity otherwise.
   // -> Returns 'null' on error.
-  private async initPrototypeEntity(className: string)
+  private async initRootPrototypeEntity(className: string)
   {
     // We are going to save one reading from the disk by
     // surpressing error reporting for file read operation
@@ -66,39 +66,22 @@ export class ServerPrototypeManager extends PrototypeManager
     // loaded from it to load prototype entity
     // from disk.
     if (id !== null)
-      return await Entity.loadById(id);
+      return await EntityManager.loadEntityById(id);
 
     // Otherwise we create a new entity based on
     // root entity with id 'className'.
-    return await this.createPrototypeEntity(className)
+    return await this.createRootPrototypeEntity(className)
   }
 
   // Creates a new prototype entity based on root entity with id 'className'.
   // Sets 'className' as it's unique name in 'PROTOTYPE' cathegory.
   // -> Returns 'null' on error.
-  private async createPrototypeEntity(className: string)
+  private async createRootPrototypeEntity(className: string)
   {
-    /*
-    // This will create name lock file if name is available.
-    let isNameAvailable = EntityManager.requestEntityName
-    (
-      className,
-      className,
-      Entity.NameCathegory.PROTOTYPE
-    );
-
-    if (!isNameAvailable)
-    {
-      ERROR("Failed to create prototype entity because"
-        + " name '" + className + "' isn't available.");
-      return null;
-    }
-    */
-
-    let prototypeEntity = EntityManager.createPrototype(className);
-
-    prototypeEntity.name ...
-    /// Argh, 'name' je private, takže to nejde jdnoduše setnout dodatečně...
+    // We use 'className' as 'prototypeId', because our prototype
+    // object will be a root entity which uses 'className' as it's
+    // id.
+    let prototypeEntity = EntityManager.createPrototypeEntity(className);
 
     // Note: setName() is an async operation because
     //   it creates a name lock file.
@@ -110,11 +93,11 @@ export class ServerPrototypeManager extends PrototypeManager
 
     if (!result)
     {
-TODO
-      /// TODO: Asi by bylo lepší nejdřív requestnout jméno a až když
-      ///   je available, tak vyrobit entitu.
-      // If name coundn't be set to entity, 
-      EntityManager.remove(prototypeEntity);
+      ERROR("Failed to set name to the new root prototype"
+        + " entity " + prototypeEntity.getErrorIdString());
+      // If name coundn't be set to entity, release it from
+      // EntityManager (and thus from the memory).
+      EntityManager.release(prototypeEntity);
       return null;
     }
 
@@ -141,7 +124,7 @@ TODO
   {
     for (let descendantId of prototype.getDescendantIds())
     {
-      let descendant = await Entity.loadById(descendantId);
+      let descendant = await EntityManager.loadEntityById(descendantId);
 
       if (descendant === null)
       {
