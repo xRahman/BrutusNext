@@ -1,9 +1,175 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+TODO: Name lock fily by se měly savovat lowercasovaně
+(protože na linuxu jsou soubory case sensitive).
+=> Nepůjde mít současně Excalibur a excalibur
+   - to je asi dobře.
+
+
+Zpátky na stromy (nebo taky ne)
+--------------------------------
+- když bych loadoval prototype entity on-demand (tj. při loadování jiné
+  entity), tak bych se asi zbavil všech problémů s rozlišováním prototypových
+  a neprototypových entit.
+
+- Problém by byl s přiřazováním prototypů - mohla by nastat situace,
+  že by některé prototypy nebyly loandnuté v paměti.
+- současně by taky byl problém rozlišit, které entity mají jít
+  přiřadit jako prototypy (v principu sice jakákoliv entita může
+  sloužit jako prototype, ale vylistovat v seznamu prototyů všech
+  150 instancí pixie soldierů by bylo extrémně matoucí).
+
+- asi by to šlo vyřešit nějakou externí informací, třeba zrovna
+  přítomností v PrototypeManageru. To by ale znamenalo, že se tahle
+  externí informace musí savovat (tj. savovat PrototypeManager).
+
+  - když bych savoval PrototypeManager, tak bych ani nepotřeboval
+    on-demand loadování prototypů (stačilo by loadnout to, co je
+    uvedeno v prototypeManageru).
+  - asi by dávalo smysl držet tam spíš jména prototypů než idčka,
+    protože idčko můžu loadnout z name lock filu.
+BTW prototypovou entitu poznám podle nameCathegory...
+  - další věc je, že pokud bude seznam prototypů v prototypeManageru,
+    tak to nemusí být entity s unikátním jménem (páč manager zajistí
+    unikátnost jmen prototypů).
+  - manager by taky mohlo řešit on-demand loadování prototypů (i když,
+    pokud by držel jen jména prototypů, tak asi ani ne).
+
+- hmm, ještě je tu jeden související problém - hardcoded dědičnost.
+  V zásadě bych asi chtěl umět rozdělit prototypy podle toho, jestli
+  jsou zděděné z Characteru nebo Roomu - a na to bych potřeboval znát
+  interní strukturu dědičnosti hardcoded entit, kterou nepřečtu
+  z property 'prototype'...
+  - měl bych ji ale být schopen přečíst z javascriptového prototype chainu
+
+Pozn: Možná není až tak dobrý nápad nazývat property 'prototype'.
+  (i když to je asi ok, javascriptová 'prototype' je property constructoru,
+   jinak řečeno static property).
+ - i tak by to ale asi bylo lepší nezvat 'prototypeEntity'.
+TODO: Přejmenovat property 'prototype' na 'prototypeEntity'.
+
+Když budu v prototypeManageru držet reference, jak se to pak bude loadovat?
+- standardně se při loadu reference na neexistující entitu vyrobí invalid
+  reference.
+  - tj. buď by to muselo mít výjimku, nebo bych pak posléze ty invalid
+    reference prošel a ručně naloadoval (to by znamenalo spoustu zbytečných
+    dotazů na EntityManager, jeslti náhodou takovou entitu nemá a vyrábění
+    zbytečných invalid referencí, které se následně přepíšou validními
+    referencemi při loadu, ale co už...).
+
+- pořád bych asi měl vytvářet root prototype entity (aby se do nich
+  dalo savnout, co mají za instance. Což chci dělat, proto, abych
+  mohl ve hře vypsat, co je z entity zděděno).
+
+- jo, tak přece jen asi musím rozlišovat nameCathegory u prototypů,
+  protože když budu přes PrototypeManager zjišťovat, zda je entita
+  prototypem, tak musím nějak odflitrovat neunikátní enetity, které
+  se shodou okolností mohou jmenovat stejně jako prototyp.
+
+Prolézání celého prototype chainu:
+  - rekurzivně přes 'prototypeEntity', dokud se nedostanu na root entitu.
+  - pak rekurzivně přes constructor.prototype (nebo možná
+    Object.getPrototypeOf()) dokud se nedostanu na GameEntity.
+- tuhle hierarchii by asi stálo za to rekonstruovat v PrototypeManageru,
+  abych mohl jednoduše vypisovat subtree a tak.
+  - ale nejspíš tak, že se všechny entity classy budou registrovat, tj.
+    včetně GameEntity a tak, byť některé z nich jako abstraktní.
+    Při téhle registraci (nebo možná dodatečně) se vyrobí abstract ancestor
+    tree v PrototypeManageru.
+  - dynamic prototype tree nemusím rekonstruovat, páč ten si drží entity
+    v sobě (v 'instanceIds' a 'prototypeEntity').
+  (tohle teda asi nemusím dělat hned)
+
+Nevýhoda řešení přes PrototypeManager je, že se pak manager bude muset
+savovat při každé změně...
+
+-----
+Závěry:
+- Jména prototypů musím nutně všechna držet v paměti, protože s nimi
+  potřebuju pracovat (vybírat z nich při přiřazování prototypu novým
+  entitám).
+  => Můžu zrušit nameCathegory PROTOTYPE
+     (ono by bylo vůbec divné, kdyby se z nameCathegory poznávalo, jestli
+      je entita prototypem)
+   - PrototypeManager bude zajišťovat unikátnost jmen prototypů.
+  => PrototypeManager si bude pmatovat jména prototypů.
+   - měl by mít zároveň i reference na prototypové entity
+     (protože při přidělování prototypu entitě je třeba znát
+      referenci - 'prototypeEntity' je refrence).
+
+
+Ještě pár úvah k původní variantě, tj. rekurzivní loadování prototypů
+podle informace uložené u entit:
+---------------------------------------
+
+Problém je při loadování prototypů.
+- initRootPrototypeEntity()
+  - přečte se idčko z name lock filu
+  - zavolá se EntityManager.loadEntityById(id)
+    - zavolá Serializable.deserialize(id)
+    (při loadu se vytvoří instance entity, nikoliv prototype entity).
+Hmm, ono je to celé divné
+- při loadu mi přece může bejt jedno, jako co tu instanci vytvářím, protože
+  do descendantIds ani do isntanceIds prototypu nic zapisovat nebudu, to už
+  tam zapsané je.
+
+Kdy a jak se vytváří nové/existující entity:
+- při loadu/deserializaci
+  - podle id, nebo podle unique name (jen na serveru).
+  - do prototypu se nic nezapisuje, už to tam je.
+- createNewPrototype (ten je vždycky unique)
+- createNewInstance
+- createNewUniqueInstance
+
+TODO: Musím si promyslet, jak je to s unikátností jmen prototypů.
+- teoreticky by nemusely být absolutně unikátní, protože mají stromovou
+  strukturu. Na druhou stranu pak by nešlo přiřadit prototyp podle jména
+  bez toho, abych tu strukturu vypsal....
+- pokud chci mít všechny prototypy v abbrevSearchListu, tak asi nemusí být
+  unikátní (mohou se vyhledávat přes 3.desert ...)
+- každopádně ale asi nevadí, že mají prototypy jména v samostatné kategorii.
+
+IDEA: Udělat z nameCathegory prostě Cathegory.
+- tj. by nebylo divné, že se podle toho poznává, jeslti je entita
+  prototyp
+- a taky by dávalo větší smysl, že když chci z instance udělat prototyp
+  nebo naopak z prototypu instanci, tak musím změnit Cathegory.
+Na druhou stranu...
+
+Určitě dávají smysl kategorie
+- prototyp
+- account
+- unique character
+
+Těžko říct, jestli nutně potřebuju World (zóny budou mít unikátní jména
+  díky prototypům)
+
+---------------------------------------------------------------
+
+ÚVAHA (o potřebě savování className)
+- className je jméno podslední hardcoded classy v chainu
+  (dále za ním jsou už jen dynamické prototypy). Je to tedy
+  typ, podle kterého by se měl řídit TypeScript.
+- při loadu entity bych tedy asi měl z ClassFactory vytáhnout Class
+  podle loadnutého className a použít ji jako typ návratové hodnoty
+  - je to vůbec možné? Ten typ zjistím až v runtimu...
+
 TODO: PrototypeManager by asi měl být search list,
   aby se v něm dalo vyhledávat podle abbreviationů.
   (to ale nemusím nutně řešit hned).
+
+ÚVAHA (vyrábění unikátních entit):
+- nejde nejdřív zkusit vyrobit name lock file a až pak si říct
+  o nové idčko, protože idčko se zapisuje do name lock file, tj.
+  musím ho znát před tím, než zavolám setName.
+- teoreticky bych ale nemusel vyrábět entitu, mohlo by stačit
+  vygenerovat si idčko (pak si říct o name lock file a až když
+  to projde, tak vyrobit entitu s tímhle idčkem).
+
+PROBLÉM: Při loadování prototypů se volá standardní
+  Serializable.deserialize(), kteréžto vyrobí instanceEntity, nikoliv
+  prototypeEntity.
 
 ---------------------------------------------------------------
 

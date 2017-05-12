@@ -129,7 +129,7 @@ export class EntityList extends Saveable
     if (this.remove(entity))
     {
       // Remove entity reference from id so the memory can be dealocated.
-      EntityManager.remove(entity);
+      EntityManager.release(entity);
     }
   }
 

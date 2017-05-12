@@ -34,18 +34,28 @@ export abstract class EntityManager
     App.getEntityManager().createRootEntity(className, Class);
   }
 
-  // Creates a new instance entity (which can't be used as a prototype).
+  // Creates a new instance entity (can't be used as a prototype).
   // Assigns 'id' param is it's id or generates a new id if 'id' is 'null'.
   // -> Returns 'null' if entity instance couldn't be created.
-  public static createInstance(prototypeId: string, id: string = null): Entity
+  public static createInstanceEntity
+  (
+    prototypeId: string,
+    id: string = null
+  )
+  : Entity
   {
     return App.getEntityManager().createEntity(prototypeId, id, false);
   }
 
-  // Creates a new prototype entity (which cen be used as a prototype).
+  // Creates a new prototype entity (can be used as a prototype).
   // Assigns 'id' param is it's id or generates a new id if 'id' is 'null'.
   // -> Returns 'null' if entity instance couldn't be created.
-  public static createPrototype(prototypeId: string, id: string = null): Entity
+  public static createPrototypeEntity
+  (
+    prototypeId: string,
+    id: string = null
+  )
+  : Entity
   {
     return App.getEntityManager().createEntity(prototypeId, id, true);
   }
@@ -84,11 +94,12 @@ export abstract class EntityManager
   // (this is used for example when player quits the game).
   // Also removes entity from entity lists so it can no longer
   // be searched for.
-  public static remove(entity: Entity)
+  public static release(entity: Entity)
   {
     App.getEntityManager().release(entity);
   }
 
+  // Attempts to create a name lock file.
   // -> Returns 'false' if name change isn't allowed.
   public static async requestEntityName
   (

@@ -73,6 +73,17 @@ export class ServerEntityManager extends EntityManager
     return FileManager.doesNameLockFileExist(name, cathegory);
   }
 
+TODO
+  public static async createUniqueInstanceEntity<T>
+  (
+    name: string,
+    cathegory: Entity.NameCathegory,
+    Class: { new (...args: any[]): T },
+  ): Promise<T>
+  {
+    TODO
+  }
+
   // ------------- Private static methods ---------------
 
   // --------------- Protected methods ------------------
