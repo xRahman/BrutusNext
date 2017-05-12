@@ -40,14 +40,17 @@ export class Entity extends Serializable
       // Property 'id' is not saved to file, because it is saved
       // as the name of the saved file (like 7-iu5by22s.json).
       saved: false,
-      sentToClient: true,
-      sentToServer: true
+      edited: false
+      /// 'true' is implicit so we don't need to list this.
+      ///sentToClient: true,
+      ///sentToServer: true
     };
 
   // ------------------------------------------------- //
   //                 Prototype linking                 //
   // ------------------------------------------------- //
 
+/// TODO: Přejmenovat na 'prototypeEntity'.
   // Reference to an entity which serves as prototype object to this
   // entity. Only root prototype entities (created in ClassFactory)
   // have 'null' value of 'prototype'.
@@ -88,8 +91,6 @@ export class Entity extends Serializable
   //   Key:   'sName'
   //   Value: reference to entity identified by 'sName'
   private sNames = new Map<string, Entity>();
-
-  // ------------- Private static methods ---------------
 
   // ------------- Public static methods ----------------
 
@@ -348,11 +349,16 @@ export class Entity extends Serializable
     await EntityManager.saveEntity(this);
   }
 
+  /// Tohle je zbytečné, může se rovnou volat EntityManager.loadEntityById().
+  /*
   public static async loadById(id: string)
   {
     return await EntityManager.loadEntityById(id);
   }
+  */
 
+  /// Tohle je zbytečné, může se rovnou volat EntityManager.loadEntityByName().
+  /*
   public static async loadByName
   (
     name: string,
@@ -361,6 +367,7 @@ export class Entity extends Serializable
   {
     return await EntityManager.loadEntityByName(name, cathegory);
   }
+  */
 
   public isPrototype()
   {

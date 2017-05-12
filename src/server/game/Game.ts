@@ -7,7 +7,9 @@
 'use strict';
 
 import {ERROR} from '../../shared/lib/error/ERROR';
-import {EntityManager} from '../../server/lib/entity/EntityManager';
+import {Entity} from '../../shared/lib/entity/Entity';
+import {ServerEntityManager} from
+  '../../server/lib/entity/ServerEntityManager';
 ///import {NamedEntity} from '../../server/lib/entity/NamedEntity';
 import {NameSearchList} from '../../server/lib/entity/NameSearchList';
 ///import {SaveableObject} from '../../server/lib/fs/SaveableObject';
@@ -78,10 +80,13 @@ export class Game
     }
 
     /// TODO
-    this.world = EntityManager.createUniqueEntity
+    this.world = ServerEntityManager.createUniqueEntityInstance
     (
-
-    )
+      'Brutus World',
+      // Use root prototype entity 'World' as a prototype object.
+      World.name,
+      Entity.NameCathegory.WORLD
+    );
 
     /*
     // Create world 'BrutusNext World' based on prototype World.
