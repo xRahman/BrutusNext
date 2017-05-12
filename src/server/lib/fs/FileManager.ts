@@ -139,7 +139,7 @@ export class FileManager
     let path = directory + fileName;
     let jsonString = await FileSystem.readFile(path);
 
-    // Create a new entity instance and deserialize Json 'data' into it.
+    // Create a new entity instance and deserialize JSON 'data' into it.
     return Serializable.deserialize(jsonString, id, path);
   }
   

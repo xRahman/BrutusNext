@@ -124,9 +124,13 @@ export class Serializable extends Attributable
     // that case entity 'id' is not saved as file name (because no files
     // are sent over the protocol) but rather as a regular 'id' property.
     if (id === null)
+    {
       id = jsonObject[Entity.ID_PROPERTY];
 
-      // First we check if there is a 'prototype' property in json Object.
+      TODO: check, že id je validní - bez toho nelze vyrobit entitu.
+    }
+
+    // First we check if there is a 'prototype' property in json Object.
     let prototypeReference = jsonObject[Entity.PROTOTYPE_PROPERTY];
 
     // If it is there, it means that we are deserializing an Entity
@@ -205,7 +209,7 @@ export class Serializable extends Attributable
     if (prototypeId === null)
       return null;
 
-    return EntityManager.createInstance(prototypeId, id)
+    return EntityManager.createInstanceEntity(prototypeId, id)
 
     // Moved to EntityManager.createInstance().
     /*
