@@ -77,16 +77,16 @@ export class Game
     }
 
     // Get prototype named 'World' from PrototypeManager
-    // (we us the name of the class World so it will work
-    //  even if someone renames the class).
+    // (we us the name of the class so it will work
+    //  even if someone renames it).
     let prototype = PrototypeManager.get(World.name);
 
     this.world = await EntityManager.createNewInstanceEntity
     (
       prototype,
       Game.DEFAULT_WORLD_NAME,
-      Entity.NameCathegory.WORLD,
-      World // Dynamic typecast.
+      World, // Dynamic typecast.
+      Entity.NameCathegory.WORLD
     );
 
     if (this.world === null)
@@ -95,7 +95,7 @@ export class Game
       return;
     }
 
-    // Create system realm.
+    // Create system realm (and it's contents).
     await this.world.createSystemRealm();
 
     // Save the world we have just created.

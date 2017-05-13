@@ -7,16 +7,17 @@
 
 'use strict';
 
-import {EntityManager} from '../../../server/lib/entity/EntityManager';
-import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
-import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
-import {ServerApp} from '../../../server/lib/Server';
+import {EntityManager} from '../../../shared/lib/entity/EntityManager';
+import {PrototypeManager} from '../../../shared/lib/entity/PrototypeManager';
+///import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
+///import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
+///import {ServerApp} from '../../../server/lib/Server';
 import {Game} from '../../../server/game/Game';
 import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
 import {Realm} from '../../../server/game/world/Realm';
 import {Area} from '../../../server/game/world/Area';
 import {Room} from '../../../server/game/world/Room';
-import {ClassFactory} from '../../../shared/lib/ClassFactory';
+import {ClassFactory} from '../../../shared/lib/class/ClassFactory';
 
 export class World extends ServerGameEntity
 {
@@ -50,16 +51,16 @@ export class World extends ServerGameEntity
 
   public async createSystemRealm()
   {
-    /*
-    // Create a new realm prototype.
-    Game.prototypeManager.createPrototype('SystemRealm', 'Realm');
-    */
+    // Get prototype named 'Realm' from PrototypeManager
+    // (we us the name of the class so it will work
+    //  even if someone renames it).
+    let prototype = PrototypeManager.get(World.name);
 
-    this.systemRealm = await ServerApp.entityManager.createUniqueEntity
+    this.systemRealm = await EntityManager.createNewInstanceEntity
     (
+      prototype,
       'System Realm',
-      Realm,
-      NamedEntity.NameCathegory.world
+      World // Dynamic typecast.
     );
 
     // Even though we keep direct reference to systemRealm, we stil
@@ -73,6 +74,7 @@ export class World extends ServerGameEntity
     Game.prototypeManager.createPrototype('SystemArea', 'Area');
     */
 
+TODO
     this.systemArea = await ServerApp.entityManager.createUniqueEntity
     (
       'System Area',
