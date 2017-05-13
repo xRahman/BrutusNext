@@ -77,9 +77,9 @@ export abstract class EntityManager
   (
     prototype: Entity,
     name: string,
+    typeCast: { new (...args: any[]): T },
     // 'null' value of cathegory means that entity won't have unique name.
-    cathegory: Entity.NameCathegory = null,
-    typeCast: { new (...args: any[]): T }
+    cathegory: Entity.NameCathegory = null
   )
   : Promise<T>
   {
@@ -205,8 +205,11 @@ export abstract class EntityManager
   )
   : Promise<T>
   {
-    let entity =
-      await App.getEntityManager().loadEntityByName(name, cathegory);
+    let entity = await App.getEntityManager().loadEntityByName
+    (
+      name,
+      cathegory
+    );
 
     // Dynamically check that entity is an
     // instance of type T and typecast to it.
@@ -457,8 +460,7 @@ export abstract class EntityManager
   }
 
   // Adds 'entityRecord' to the manager.
-  // -> Returns added entity,
-  //    'null' on failure.
+  // -> Returns added entity or 'null' on failure.
   private add(entityRecord: EntityRecord)
   {
     let id = entityRecord.getEntity().getId();
