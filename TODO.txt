@@ -1,6 +1,13 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+TODO: Asi by bylo lepší vyrábět nové entity nikoliv z prototypeId
+  ale z prototypeName - abych nemusel ručně hledat v PrototypeManageru.
+(podhazovat prototypeId má smysl při deserializaci, páč v JSONu je idčko).
+
+
+---------------------------------------------------------------
+
 Kdy a jak se vytváří nové/existující entity:
 1) při loadu/deserializaci
   - podle id, nebo podle unique name (jen na serveru).
