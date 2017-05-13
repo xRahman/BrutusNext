@@ -19,12 +19,12 @@ export class ClassFactory
 
   // ------------- Public static methods ----------------
 
-  // Creates an instance of Entity with given 'prototype' object
-  // (any object could be used as 'prototype', but we only use
-  //  prototype inheritance for entities so we restrict the type
-  //  of 'prototype' to Entity).
+  // Creates a new object with 'prototype' as it's prototype object.
+  // (Any object could be used as 'prototype' in principle, but we
+  //  only use prototype inheritance for entities so we restrict the
+  //  type of 'prototype' to Entity.).
   // -> Returns 'null' on error.
-  public static createEntityFromPrototype(prototype: Entity)
+  public static createObjectFromPrototype(prototype: Entity)
   {
     if (prototype === null || prototype === undefined)
     {
@@ -81,7 +81,7 @@ export class ClassFactory
         + " instead of ClassFactory.registerClass()?");
         + " Another possible reason is that you are"
         + " deserializing an Entity class but there"
-        + " is no '" + Entity.PROTOTYPE_PROPERTY + "'"
+        + " is no '" + Entity.PROTOTYPE_ENTITY_PROPERTY + "'"
         + " in JSON data"
       return null;
     }

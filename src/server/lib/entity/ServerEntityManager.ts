@@ -38,6 +38,8 @@ import {ServerApp} from '../../../server/lib/app/ServerApp';
 import {FileManager} from '../../../server/lib/fs/FileManager';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
 import {IdProvider} from '../../../server/lib/entity/IdProvider';
+import {EntityProxyHandler} from
+   '../../../shared/lib/entity/EntityProxyHandler';
 // import {ERROR} from '../../../shared/lib/error/ERROR';
 // import {Entity} from '../../../server/lib/entity/Entity';
 // import {NameLockRecord} from '../../../server/lib/entity/NameLockRecord';
@@ -45,8 +47,6 @@ import {IdProvider} from '../../../server/lib/entity/IdProvider';
 // import {ScriptableEntity} from '../../../server/lib/entity/ScriptableEntity';
 // import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
 // import {NameSearchList} from '../../../server/lib/entity/NameSearchList';
-// import {EntityProxyHandler} from
-//   '../../../server/lib/entity/EntityProxyHandler';
 // import {PrototypeManager} from
 //   '../../../server/lib/prototype/PrototypeManager';
 // import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
@@ -71,17 +71,6 @@ export class ServerEntityManager extends EntityManager
   )
   {
     return FileManager.doesNameLockFileExist(name, cathegory);
-  }
-
-TODO
-  public static async createUniqueInstanceEntity<T>
-  (
-    name: string,
-    cathegory: Entity.NameCathegory,
-    Class: { new (...args: any[]): T },
-  ): Promise<T>
-  {
-    TODO
   }
 
   // ------------- Private static methods ---------------
@@ -132,7 +121,7 @@ TODO
   }
 
   // ~ Overrides EntityManager.loadEntityById().
-  protected async loadEntityById(id: string)
+  protected async loadEntityById(id: string): Promise<Entity>
   {
     return await FileManager.loadEntityById(id);
   }
@@ -145,6 +134,63 @@ TODO
   )
   {
     return await FileManager.loadEntityByName(name, cathegory);
+  }
+
+  // ~ Overrides EntityManager.createNewEntity().
+  // Creates a new instance entity (can't be used as prototype).
+  // A new id is generated for it.
+  // -> Returns 'null' on failure.
+  protected async createNewEntity
+  (
+    prototype: Entity,
+    name: string,
+    cathegory: Entity.NameCathegory,
+    isPrototype: boolean
+  )
+  {
+    // Generate a new id.
+    let id = this.generateId();
+
+    if (cathegory !== null)
+    {
+      // Attempt to create a name lock file.
+      let isNameAvailable = await EntityManager.requestEntityName
+      (
+        id,
+        name,
+        cathegory
+      );
+
+      // If 'name' isn't available, we have just wasted an id.
+      // (It's unavoidable because id is written to the name lock
+      //  file so we need to generate it prior to writing to it.
+      //    We could first test if the name lock file exists of
+      //  course, but it would add a disk read operation even when
+      //  the name is available, which is by far the most common
+      //  scenario.)
+      if (!isNameAvailable)
+        return null;
+    }
+
+    // We use bare (unproxified) entity as a prototype object.
+    let barePrototype = EntityProxyHandler.deproxify(prototype);
+
+    // Create, proxify and register a new entity.
+    let entity = this.createEntityFromPrototype(barePrototype, id);
+
+    // Set a prototype entity.
+    // (Even though prototype object is already set using
+    //  Object.create() when creating a new object, we still
+    //  need to setup our internal link to the prototype entity
+    //  and set our entity's id to the prototype entity's list
+    //  of descendants.)
+    entity.setPrototypeEntity(prototype, isPrototype);
+
+    // Set name and cathegory to our entity without creating
+    // a name lock file (because we have already created it).
+    await entity.setName(name, cathegory, false);
+
+    return entity;
   }
 
   // ---------------- Private methods -------------------

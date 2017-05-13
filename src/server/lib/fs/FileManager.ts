@@ -185,8 +185,11 @@ export class FileManager
 
   private static getNameLockFileName(name: string)
   {
-    // Name lock file name is something like 'Rahman.json'.
-    return name + '.json';
+    // Name lock file name is something like 'rahman.json'.
+    // (It is lovercased to prevent different behaviour on
+    //  different file systems - Windows FS is case insensitive
+    //  while Unix/Linux use case sensitive paths).
+    return name.toLowerCase() + '.json';
   }
 
   private static getNameLockDirectory(cathegory: Entity.NameCathegory)

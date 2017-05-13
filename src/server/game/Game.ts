@@ -8,8 +8,8 @@
 
 import {ERROR} from '../../shared/lib/error/ERROR';
 import {Entity} from '../../shared/lib/entity/Entity';
-import {ServerEntityManager} from
-  '../../server/lib/entity/ServerEntityManager';
+import {EntityManager} from '../../shared/lib/entity/EntityManager';
+import {PrototypeManager} from '../../shared/lib/entity/PrototypeManager';
 ///import {NamedEntity} from '../../server/lib/entity/NamedEntity';
 import {NameSearchList} from '../../server/lib/entity/NameSearchList';
 ///import {SaveableObject} from '../../server/lib/fs/SaveableObject';
@@ -32,6 +32,8 @@ import {Realm} from '../game/world/Realm';
 
 export class Game
 {
+  public static get DEFAULT_WORLD_NAME() { return 'BrutusNext World'; }
+
   public static get characters()
   {
     return ServerApp.game.characters;
@@ -68,35 +70,24 @@ export class Game
   // (this method sould only be used if you don't have 'data' directory yet)
   public async createDefaultWorld()
   {
-    /*
-    // Create a new world prototype.
-    this.prototypeManager.createPrototype('BrutusWorld', 'World');
-    */
-
     if (this.world !== null)
     {
       ERROR("World already exists");
       return;
     }
 
-    /// TODO
-    this.world = ServerEntityManager.createUniqueEntityInstance
-    (
-      'Brutus World',
-      // Use root prototype entity 'World' as a prototype object.
-      World.name,
-      Entity.NameCathegory.WORLD
-    );
+    // Get prototype named 'World' from PrototypeManager
+    // (we us the name of the class World so it will work
+    //  even if someone renames the class).
+    let prototype = PrototypeManager.get(World.name);
 
-    /*
-    // Create world 'BrutusNext World' based on prototype World.
-    this.world = await ServerApp.entityManager.createUniqueEntity
+    this.world = await EntityManager.createNewInstanceEntity
     (
-      'Brutus World',
-      World,
-      NamedEntity.NameCathegory.world
+      prototype,
+      Game.DEFAULT_WORLD_NAME,
+      Entity.NameCathegory.WORLD,
+      World // Dynamic typecast.
     );
-    */
 
     if (this.world === null)
     {
@@ -107,11 +98,6 @@ export class Game
     // Create system realm.
     await this.world.createSystemRealm();
 
-    /*
-    // Save all prototypes we have just created.
-    this.prototypeManager.save();
-    */
-
     // Save the world we have just created.
     await this.world.save();
   }
@@ -119,30 +105,12 @@ export class Game
   // Loads initial state of the game from disk.
   public async load()
   {
-    ///await this.prototypeManager.load();
-   
-    /*
-    // Create javascript classes from prototype data (all game entities will
-    // be instantiated from these dynamically created prototype classes).
-    this.prototypeManager.createClasses();
-    */
-
-    /*
-    // 'entityManager.createReference()' will return invalid entity reference,
-    // because entity 'world' is not in entityManager yet. This invalid
-    // entity reference can, however, be used to load an entity from disk,
-    // which is exactly what we need to do.
-    //   Second parameter is a prototype class
-    // (class that will be instantiated).
-    this.world = Server.entityManager.createReference(null, World);
-
     // Load current state of world from file.
-    await this.world.load();
-    */
-    this.world = await ServerApp.entityManager.loadNamedEntity
+    this.world = await EntityManager.loadEntityByName
     (
-      'Brutus World',
-      NamedEntity.NameCathegory.world
+      Game.DEFAULT_WORLD_NAME,
+      Entity.NameCathegory.WORLD,
+      World // Dynamic typecast.
     );
   }
 
@@ -165,18 +133,10 @@ export class Game
   // List of ids of all realms in game.
   protected realms = new AbbrevSearchList();
 
-  // -------- managers --------
-  // Unlike idLists, managers store actual instances, not just entity ids.
-
-  /*
-  // Dynamically creates classes from which game entities are inherited.
-  protected prototypeManager = new PrototypeManager();
-  */
-
   // --- Direct references ---
 
   // There is only one world in the game (at the moment).
-  protected world = null;
+  protected world: World = null;
 
   // --------------- Protected methods ------------------
 
