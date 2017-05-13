@@ -1,11 +1,79 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+Kdy a jak se vytváří nové/existující entity:
+1) při loadu/deserializaci
+  - podle id, nebo podle unique name (jen na serveru).
+  - do prototypu se nic nezapisuje, už to tam je.
+EntityManager.createInstance()
+
+2)
+- createNewPrototype (ten je vždycky unique)
+- createNewInstance
+- createNewUniqueInstance
+
+/*
+Bordel s terminologií:
+instance znamená
+- instanci classy (tj. i prototypová entita je instance)
+- instanci prototypu
+  - tomu bych mohl říkat descendant (na druhou stranu
+    v descendantIds držím descendant prototypy.
+
+Mohl bych tomu říkat:
+  .descendantPrototypeIds
+  .descendantInstanceIds
+
+// Mám idčko
+EntityManager.createEntityById()
+// Generuju nové idčko
+EntityManager.createNewEntity()
+
+- Aha tak ne, já jsem to sloučil a idčko je prostě nepovinný parametr.
+  Makes sense.
+
+- co jsem ale nesloučil je vytvoření prototypeEntity vs instanceEntity.
+  Což je asi chyba, to dělá problémy.
+*/
+
+Jak to bude:
+-------------
+
+Podstatné je, jestli vyrábím novou nebo existující entitu.
+
+EntityManager.createExistingEntity(prototypeId: string, id: string);
+- tady je id povinné (protože vyrábím existující entitu) a nemusím
+  řešit, jestli vyrábím prototyp nebo instanci (protože je to už
+  v prototypu zapsané).
+[done]
+
+EntityManager.createNewInstanceEntity(prototypeId: string,
+                                      name: string,
+                                      cathegory: Entity.NameCathegory = null);
+EntityManager.createNewPrototypeEntity(prototypeId: string,
+                                      name: string,
+                                      cathegory: Entity.NameCathegory = null);
+- tady idčko nepředávám, bude se vyrábět nové.
+- rozlišuju, jestli vyrábím instanceEntity nebo prototypeEntity.
+-- rozlišuju setování unikátního a neunikátního jména
+   (díky tomu můžu nejdřív vyrobit idčko, pak zkusit, jestli je jméno volné
+    a když ne, tak stačí zahodit jen idčko, netřeba zahazovat celou entitu).
+TODO: Použít tohle i při vytváření root prototype entit.
+[done]
+
+TODO: Oassertovat, že se instanceEntity nepoužívají jako prototyp.
+[done]
+
+---------------------------------------------------------------
+
+
 TODO: Name lock fily by se měly savovat lowercasovaně
 (protože na linuxu jsou soubory case sensitive).
 => Nepůjde mít současně Excalibur a excalibur
    - to je asi dobře.
+[done]
 
+---------------------------------------------------------------
 
 Zpátky na stromy (nebo taky ne)
 --------------------------------
@@ -114,14 +182,6 @@ Hmm, ono je to celé divné
   do descendantIds ani do isntanceIds prototypu nic zapisovat nebudu, to už
   tam zapsané je.
 
-Kdy a jak se vytváří nové/existující entity:
-- při loadu/deserializaci
-  - podle id, nebo podle unique name (jen na serveru).
-  - do prototypu se nic nezapisuje, už to tam je.
-- createNewPrototype (ten je vždycky unique)
-- createNewInstance
-- createNewUniqueInstance
-
 TODO: Musím si promyslet, jak je to s unikátností jmen prototypů.
 - teoreticky by nemusely být absolutně unikátní, protože mají stromovou
   strukturu. Na druhou stranu pak by nešlo přiřadit prototyp podle jména
@@ -141,9 +201,9 @@ Určitě dávají smysl kategorie
 - prototyp
 - account
 - unique character
-
 Těžko říct, jestli nutně potřebuju World (zóny budou mít unikátní jména
   díky prototypům)
+  - spíš ne
 
 ---------------------------------------------------------------
 

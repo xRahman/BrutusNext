@@ -23,11 +23,12 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {Nameable} from '../../../shared/lib/class/Nameable';
+///import {Nameable} from '../../../shared/lib/class/Nameable';
 import {PropertyAttributes} from
   '../../../shared/lib/class/PropertyAttributes';
 
-export class Attributable extends Nameable
+///export class Attributable extends Nameable
+export class Attributable
 {
   // -> Returns object containing static attributes for a given class property,
   //    Returns 'undefined' if 'property' doesn't have static attributes.
@@ -40,10 +41,11 @@ export class Attributable extends Nameable
 
     if (attributes === null)
     {
+      // 'this.constructor.name' is the name of the class.
       ERROR("'null' static property atributes for property"
         + " '" + propertyName + "'. Make sure that 'static"
         + " " + propertyName + "' declared in class"
-        + " " + this.className + " (or in some of it's ancestors)"
+        + " " + this.constructor.name + " (or in some of it's ancestors)"
         + " is not null");
       return undefined;
     }
