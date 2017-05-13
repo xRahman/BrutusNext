@@ -16,10 +16,10 @@ import {EntityManager} from '../../../shared/lib/entity/EntityManager';
 
 export class Entity extends Serializable
 {
-  public static get NAME_PROPERTY()          { return "name"; }
-  public static get ID_PROPERTY()            { return 'id'; }
-  public static get PROTOTYPE_PROPERTY()  { return "prototype"; }
-  private static get INSTANCE_IDS_PROPERTY() { return "instanceIds"; }
+  public static get NAME_PROPERTY()             { return "name"; }
+  public static get ID_PROPERTY()               { return 'id'; }
+  public static get PROTOTYPE_ENTITY_PROPERTY() { return "prototypeEntity"; }
+  private static get INSTANCE_IDS_PROPERTY()    { return "instanceIds"; }
 
   // ----------------- Private data ----------------------
 
@@ -28,6 +28,8 @@ export class Entity extends Serializable
 
   // In what cathegory is the name unique (accounts, characters, world...).
   // 'null' means that name is not unique.
+  // (Note that name lock file names are lowercased so 'Rahman' also
+  //  counts as 'rahman', 'rAhman', etc.).
   private nameCathegory: Entity.NameCathegory = null;
 
   // ------------------------------------------------- //
@@ -50,11 +52,10 @@ export class Entity extends Serializable
   //                 Prototype linking                 //
   // ------------------------------------------------- //
 
-/// TODO: Přejmenovat na 'prototypeEntity'.
-  // Reference to an entity which serves as prototype object to this
+  // Reference to entity which serves as prototype object to this
   // entity. Only root prototype entities (created in ClassFactory)
-  // have 'null' value of 'prototype'.
-  private prototype: Entity = null;
+  // have 'null' value of 'prototypeEntity'.
+  private prototypeEntity: Entity = null;
 
   // Set of ids of entities that use this entity as their prototype
   // object and they are not prototypes themselves.
@@ -169,16 +170,26 @@ export class Entity extends Serializable
   public getName() { return this.name; }
 
   // -> Returns 'false' if name isn't available.
-  public async setName(name: string, cathegory: Entity.NameCathegory = null)
+  public async setName
+  (
+    name: string,
+    cathegory: Entity.NameCathegory = null,
+    // This should only be 'false' if you have created
+    // a name lock file prior to calling setName().
+    createNameLockFile = true
+  )
   {
     let oldName = this.name;
     let oldCathegory = this.nameCathegory;
 
-    // Check if requested name is available.
-    // (This will always be false on client because entity name change
-    //  is disabled there.)
-    if (!await EntityManager.requestEntityName(this.getId(), name, cathegory))
-      return false;
+    if (createNameLockFile)
+    {
+      // Check if requested name is available.
+      // (This will always be false on client because entity name change
+      //  is disabled there.)
+      if (!await EntityManager.requestEntityName(this.getId(), name, cathegory))
+        return false;
+    }
 
     // Make the old name available again.
     if (oldName && oldCathegory)
@@ -235,7 +246,7 @@ export class Entity extends Serializable
     return true;
   }
 
-  public getPrototype() { return this.prototype; }
+  public getPrototypeEntity() { return this.prototypeEntity; }
 
   // Sets a 'prototype' entity as prototype object to 'this'
   // entity. If 'isPrototype' is 'true', this entity's id
@@ -246,23 +257,23 @@ export class Entity extends Serializable
   //  start of the appliaction. Entities listed in their prototype's
   //   'instanceIds' may not have descendants or instances themselves
   //  and are not loaded automatically.)
-  public setPrototype(prototype: Entity, isPrototype: boolean)
+  public setPrototypeEntity(prototypeEntity: Entity, isPrototype: boolean)
   {
-    if (!Entity.isValid(prototype))
+    if (!Entity.isValid(prototypeEntity))
     {
       ERROR("Attempt to set an invalid prototype to entity"
         + " " + this.getErrorIdString());
       return;
     }
 
-    if (this.prototype !== null)
+    if (this.prototypeEntity !== null)
     {
-      if (this.prototype.isValid())
+      if (this.prototypeEntity.isValid())
       {
         // Remove 'this.id' from the old prototype's
         // 'instanceIds' or 'descendantIds' depending
         // on where it is present.
-        this.prototype.removeChildId(this.getId());
+        this.prototypeEntity.removeChildId(this.getId());
       }
       else
       {
@@ -273,11 +284,11 @@ export class Entity extends Serializable
     }
 
     if (isPrototype)
-      prototype.addInstanceId(this.getId());
+      prototypeEntity.addInstanceId(this.getId());
     else
-      prototype.addDescendantId(this.getId());
+      prototypeEntity.addDescendantId(this.getId());
 
-    this.prototype = prototype;
+    this.prototypeEntity = prototypeEntity;
   }
 
   public getInstanceIds()
@@ -298,6 +309,8 @@ export class Entity extends Serializable
     this.instanceIds = instanceIds;
   }
   */
+
+  // ---------------- Public methods --------------------
 
   // -> Returns 'true' if 'id' has been succesfuly deleted from
   //    either this.instanceIds or this.descendantIds.
@@ -342,7 +355,35 @@ export class Entity extends Serializable
     this.descendantIds.add(id);
   }
 
-  // ---------------- Public methods --------------------
+  public hasDescendant(entity: Entity)
+  {
+    return this.descendantIds.has(entity.getId());
+  }
+
+  public isPrototypeEntity()
+  {
+    // Testing 'nameCathegory' is not a very robust way to
+    // check if the entity is a prototype entity, but it's
+    // fast so we do it first.
+    if (this.nameCathegory === Entity.NameCathegory.PROTOTYPE)
+    {
+      // This assertion is here just to discover potential errors.
+      if (!this.prototypeEntity.hasDescendant(this))
+      {
+        ERROR("Entity " + this.getErrorIdString() + " has"
+          + " nameCathegory 'PROTOTYPE' but it's not listed"
+          + " in it's prototypeEntity's 'descendantIds'."
+          + " This probably means that someone set the"
+          + " name cathegory to 'PROTOTYPE' but didn't move"
+          + " it's id from prototypeEntity's 'instanceIds'"
+          + " to prototypeEntity's 'descendantIds'");
+      }
+
+      return true;
+    }
+
+    return false;
+  }
 
   public async save()
   {
@@ -466,12 +507,12 @@ export class Entity extends Serializable
   {
     if (this.getId() === null)
     {
-      return "{ className: " + this.className + ","
+      return "{ className: " + this.constructor.name + ","
            + " name: " + this.name + ", id: null }";
     }
 
-    return "{ className: " + this.className + ", name: " + this.name + ","
-      + " id: " + this.getId() + " }";
+    return "{ className: " + this.constructor.name + ", name:"
+      + " " + this.name + ", id: " + this.getId() + " }";
   }
 
   // Entity removes itself from EntityLists so it can no longer
@@ -520,8 +561,8 @@ export module Entity
     ACCOUNT,
     CHARACTER,
     PROTOTYPE,
-    // Various world locations.
-    // (Rooms, Realms, Areas, the name of the world itself, etc.)
+    // Unique world locations (Rooms, Realms, Areas, the name
+    // of the world itself, etc.)
     WORLD
   }
 }

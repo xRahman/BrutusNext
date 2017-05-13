@@ -23,7 +23,6 @@
   the way), we report this event to syslog and return another Proxy object,
   which serves as 'invalid value' variable (it traps all access to this
   variable and reports it as invalid).
-
 */
 
 'use strict';

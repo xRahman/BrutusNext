@@ -70,39 +70,60 @@ export class ServerPrototypeManager extends PrototypeManager
 
     // Otherwise we create a new entity based on
     // root entity with id 'className'.
-    return await this.createRootPrototypeEntity(className)
-  }
-
-  // Creates a new prototype entity based on root entity with id 'className'.
-  // Sets 'className' as it's unique name in 'PROTOTYPE' cathegory.
-  // -> Returns 'null' on error.
-  private async createRootPrototypeEntity(className: string)
-  {
-    // We use 'className' as 'prototypeId', because our prototype
-    // object will be a root entity which uses 'className' as it's
-    // id.
-    let prototypeEntity = EntityManager.createPrototypeEntity(className);
-
-    // Note: setName() is an async operation because
-    //   it creates a name lock file.
-    let result = await prototypeEntity.setName
+    return await EntityManager.createNewPrototypeEntity
     (
+      // Root prototype entity uses root entity as it's prototype
+      // object and root entities use 'className' as their id.
       className,
-      Entity.NameCathegory.PROTOTYPE
+      // 'className' will also be the name of this prototype.
+      className
     );
 
-    if (!result)
-    {
-      ERROR("Failed to set name to the new root prototype"
-        + " entity " + prototypeEntity.getErrorIdString());
-      // If name coundn't be set to entity, release it from
-      // EntityManager (and thus from the memory).
-      EntityManager.release(prototypeEntity);
-      return null;
-    }
-
-    return prototypeEntity;
+    /// To be deleted.
+    ///return await this.createRootPrototypeEntity(className)
   }
+
+  /// To be deleted.
+  // // Creates a new prototype entity based on root entity with id 'className'.
+  // // Sets 'className' as it's unique name in 'PROTOTYPE' cathegory.
+  // // -> Returns 'null' on error.
+  // private async createRootPrototypeEntity(className: string)
+  // {
+  //   // We use 'className' as 'prototypeId', because our prototype
+  //   // object will be a root entity which uses 'className' as it's
+  //   // id.
+  //   return await EntityManager.createNewPrototypeEntity
+  //   (
+  //     // Root prototype entity uses root entity as it's prototype
+  //     // object and root entities use 'className' as their ids.
+  //     className,
+  //     // 'className' will also be the name of this prototype.
+  //     className
+  //   );
+
+  //   /// Tohle teď dělá přímo EntityManager.createNewPrototypeEntity()
+  //   /*
+  //   // Note: setName() is an async operation because
+  //   //   it creates a name lock file.
+  //   let result = await prototypeEntity.setName
+  //   (
+  //     className,
+  //     Entity.NameCathegory.PROTOTYPE
+  //   );
+
+  //   if (!result)
+  //   {
+  //     ERROR("Failed to set name to the new root prototype"
+  //       + " entity " + prototypeEntity.getErrorIdString());
+  //     // If name coundn't be set to entity, release it from
+  //     // EntityManager (and thus from the memory).
+  //     EntityManager.release(prototypeEntity);
+  //     return null;
+  //   }
+
+  //   return prototypeEntity;
+  //   */
+  // }
 
   // Recursively loads all prototype entities inherited from root
   // entity prototypes.

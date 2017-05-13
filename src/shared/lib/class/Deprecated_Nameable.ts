@@ -4,6 +4,13 @@
   Class that lets you know it's class name.
 */
 
+/// Deprecated.
+/// 'constructor.name' will be used as 'className'.
+/// Dynamically created entities don't change the class name
+/// (they have the name of the last hardcoded class in their
+///  prototype class), Entity.name is used instead as a name
+///  of the prototype.
+/*
 'use strict';
 
 export class Nameable
@@ -43,10 +50,9 @@ export class Nameable
     return this.constructor[Nameable.CLASS_NAME_PROPERTY];
   }
 
-  /// Deprecated
-  /*
-  // This is a hack allowing descendants of Attributable class to search for
-  // static properties of their ancestors.
-  protected getThis() { return null; }
-  */
+  // /// Deprecated
+  // // This is a hack allowing descendants of Attributable class to search for
+  // // static properties of their ancestors.
+  // protected getThis() { return null; }
 }
+*/
