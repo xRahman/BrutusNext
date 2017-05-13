@@ -60,13 +60,15 @@ export class ClientEntityManager extends EntityManager
   }
 
   // ~ Overrides EntityManager.loadEntityById().
-  protected async loadEntityById(id: string)
+  protected async loadEntityById(id: string): Promise<Entity>
   {
     // (It is possible that HTML5 Local Storage will be
     //  used in the future, however.)
     ERROR("Attempt to load entity with id '" + id + "'"
       + " on the client. That's not possible, client"
       + " doesn't have save/load capability");
+
+    return null;
   }
 
   // ~ Overrides EntityManager.loadEntityByName().
@@ -75,12 +77,32 @@ export class ClientEntityManager extends EntityManager
     name: string,
     cathegory: Entity.NameCathegory
   )
+  : Promise<Entity>
   {
     // (It is possible that HTML5 Local Storage will be
     //  used in the future, however.)
     ERROR("Attempt to load entity '" + name + "'"
       + " on the client. That's not possible, client"
       + " doesn't have save/load capability");
+
+    return null;
   }
 
+  // ~ Overrides EntityManager.createNewEntity().
+  // -> Returns 'null'.
+  protected async createNewEntity
+  (
+    prototype: Entity,
+    name: string,
+    cathegory: Entity.NameCathegory,
+    isPrototype: boolean
+  )
+  : Promise<Entity>
+  {
+    ERROR("Attempt to create new entity '" + name + "'"
+      + " on the client. That's not possible, new entities"
+      + " can only be created on the server");
+
+    return null;
+  }
 }

@@ -34,30 +34,96 @@ export abstract class EntityManager
     App.getEntityManager().createRootEntity(className, Class);
   }
 
-  // Creates a new instance entity (can't be used as a prototype).
-  // Assigns 'id' param is it's id or generates a new id if 'id' is 'null'.
-  // -> Returns 'null' if entity instance couldn't be created.
-  public static createInstanceEntity
+  // Creates entity using an existing 'id'.
+  // -> Returns 'null' if entity couldn't be created.
+  public static createExistingEntity
   (
     prototypeId: string,
-    id: string = null
+    id: string
   )
   : Entity
   {
-    return App.getEntityManager().createEntity(prototypeId, id, false);
+    return App.getEntityManager().createExistingEntity(prototypeId, id);
+  }
+  /// Dynamic typecasting asi není potřeba u createExistingEntity(),
+  /// protože se volá jen v Serializable.createEntityInstance() při
+  /// deserializaci. Kdyby to přestalo platit, v commentu je typecastová
+  /// verze.
+  /*
+  // Creates entity using an existing 'id'.
+  // -> Returns 'null' if entity couldn't be created.
+  public static createExistingEntity<T extends Entity>
+  (
+    prototypeId: string,
+    id: string,
+    typeCast: { new (...args: any[]): T }
+  )
+  : T
+  {
+    let entity = App.getEntityManager().createExistingEntity(prototypeId, id);
+
+    // Dynamically check that entity is an
+    // instance of type T and typecast to it.
+    return entity.dynamicCast(typeCast);
+  }
+  */
+
+  // Creates a new instance entity (can't be used as prototype).
+  // A new id is generated for it.
+  //   If you are requesting a unique name and you are not sure that
+  // it's free, you should test it in advance.
+  // -> Returns 'null' on failure.
+  public static async createNewInstanceEntity<T extends Entity>
+  (
+    prototype: Entity,
+    name: string,
+    // 'null' value of cathegory means that entity won't have unique name.
+    cathegory: Entity.NameCathegory = null,
+    typeCast: { new (...args: any[]): T }
+  )
+  : Promise<T>
+  {
+    let entity = await App.getEntityManager().createNewEntity
+    (
+      prototype,
+      name,
+      cathegory,
+      // 'isPrototype'
+      false
+    );
+
+    // Dynamically check that entity is an
+    // instance of type T and typecast to it.
+    return entity.dynamicCast(typeCast);
   }
 
-  // Creates a new prototype entity (can be used as a prototype).
-  // Assigns 'id' param is it's id or generates a new id if 'id' is 'null'.
-  // -> Returns 'null' if entity instance couldn't be created.
-  public static createPrototypeEntity
+  // Creates a new instance entity (can be used as prototype).
+  // A new id is generated for it.
+  //   If you are requesting a unique name and you are not sure that
+  // it's free, you should test it in advance.
+  // -> Returns 'null' on failure.
+  public static async createNewPrototypeEntity<T extends Entity>
   (
-    prototypeId: string,
-    id: string = null
+    prototype: Entity,
+    name: string,
+    typeCast: { new (...args: any[]): T }
   )
-  : Entity
+  : Promise<T>
   {
-    return App.getEntityManager().createEntity(prototypeId, id, true);
+    let entity = await App.getEntityManager().createNewEntity
+    (
+      prototype,
+      name,
+      // All names prototype entities are unique
+      // within cathegory 'prototypes'.
+      Entity.NameCathegory.PROTOTYPE,
+      // 'isPrototype'
+      true
+    );
+
+    // Dynamically check that entity is an
+    // instance of type T and typecast to it.
+    return entity.dynamicCast(typeCast);
   }
 
   // -> Returns existing reference if entity already exists in EntityManager.
@@ -79,16 +145,6 @@ export abstract class EntityManager
   {
     return App.getEntityManager().get(id);
   }
-
-  /// Není potřeba, entity se přidávají zevnitř manageru.
-  /*
-  // Adds 'entity' to the manager under given 'id'.
-  // -> Returns 'null' on failure.
-  public static add(entityRecord: EntityRecord)
-  {
-    return App.getEntityManager().add(entityRecord);
-  }
-  */
 
   // Removes entity from manager but doesn't delete it from disk
   // (this is used for example when player quits the game).
@@ -125,19 +181,36 @@ export abstract class EntityManager
     return await App.getEntityManager().saveEntity(entity);
   }
 
-  public static async loadEntityById(id: string): Promise<Entity>
+  // -> Returns 'null' on failure.
+  public static async loadEntityById<T extends Entity>
+  (
+    id: string,
+    typeCast: { new (...args: any[]): T }
+  )
+  : Promise<T>
   {
-    return await App.getEntityManager().loadEntityById(id);
+    let entity = await App.getEntityManager().loadEntityById(id);
+
+    // Dynamically check that entity is an
+    // instance of type T and typecast to it.
+    return entity.dynamicCast(typeCast);
   }
 
-  public static async loadEntityByName
+  // -> Returns 'null' on failure.
+  public static async loadEntityByName<T extends Entity>
   (
     name: string,
-    cathegory: Entity.NameCathegory
+    cathegory: Entity.NameCathegory,
+    typeCast: { new (...args: any[]): T }
   )
-  : Promise<Entity>
+  : Promise<T>
   {
-    return await App.getEntityManager().loadEntityByName(name, cathegory);
+    let entity =
+      await App.getEntityManager().loadEntityByName(name, cathegory);
+
+    // Dynamically check that entity is an
+    // instance of type T and typecast to it.
+    return entity.dynamicCast(typeCast);
   }
 
   // ---------------- Public methods --------------------
@@ -161,12 +234,76 @@ export abstract class EntityManager
   protected abstract generateId(): string;
 
   protected abstract async saveEntity(entity: Entity);
-  protected abstract async loadEntityById(id: string);
+  protected abstract async loadEntityById(id: string): Promise<Entity>;
   protected abstract async loadEntityByName
   (
     name: string,
     cathegory: Entity.NameCathegory
-  );
+  )
+  : Promise<Entity>;
+
+  protected abstract async createNewEntity
+  (
+    prototype: Entity,
+    name: string,
+    cathegory: Entity.NameCathegory,
+    isPrototype: boolean
+  )
+  : Promise<Entity>;
+
+  protected findPrototypeRecord(prototypeId: string)
+  {
+    let prototypeRecord = this.entityRecords.get(prototypeId);
+
+    if (!prototypeRecord)
+    {
+      ERROR("Attempt to create an entity based on prototype"
+        + " id '" + prototypeId + " which doesn't exist in"
+        + " EntityManager. Entity instance is not created");
+      return null;
+    }
+
+    return prototypeRecord;
+  }
+
+  // -> Returns 'null' if entity instance couldn't be created.
+  protected createEntityFromPrototype
+  (
+    prototype: Entity,
+    id: string
+  )
+  {
+    if (!id)
+    {
+      ERROR("Attempt to create an entity with using an invalid id");
+      return null;
+    }
+
+    if (!prototype)
+    {
+      ERROR("Attempt to create an entity using an invalid"
+        + " prototype entity");
+      return null;
+    }
+
+    if (!prototype.isPrototypeEntity())
+    {
+      ERROR("Attempt to create an entity which is not"
+        + " a prototype entity as the prototype entity");
+      return null;
+    }
+
+    // Create new bare (unproxified) entity based on the prototype.
+    let bareEntity = ClassFactory.createObjectFromPrototype(prototype);
+
+    // Set id to our new bare entity
+    // (this shouldn't fail because we have just created it, but
+    //  better be sure).
+    if (bareEntity.setId(id) === false)
+      return null;
+
+    return this.proxifyAndRegisterEntity(prototype, bareEntity);
+  }
 
   // ---------------- Private methods -------------------
 
@@ -184,7 +321,7 @@ export abstract class EntityManager
       return;
     }
 
-    // Unlike all other entities, which are created using Object.create(),
+    // Unlike all other entities which are created using Object.create(),
     // root entities are created as 'new Class'
     // (We don't need Object.create() because root entities are only used
     //  as prototype objects for root prototypes).
@@ -217,74 +354,23 @@ export abstract class EntityManager
     this.add(entityRecord);
   }
 
-  // Creates an entity. Assigns 'id' param as it's id or generates
-  // a new id if 'id' is 'null'.
-  // -> Returns 'null' if entity instance couldn't be created.
-  private createEntity
-  (
-    prototypeId: string,
-    id: string,
-    isPrototype: boolean
-  )
-  : Entity
+  // Creates entity with specified 'id', proxifies it and registers
+  // in in the manager.
+  // -> Returns 'null' if entity couldn't be created.
+  private createExistingEntity(prototypeId: string, id: string): Entity
   {
     // Find an EntityRecord of the prototype entity.
-    let prototypeRecord = this.entityRecords.get(id)
+    let prototypeRecord = this.findPrototypeRecord(prototypeId);
 
-    if (!prototypeRecord)
-    {
-      ERROR("Attempt to create an entity instance based on"
-        + " prototype id '" + prototypeId + " which doesn't"
-        + " exist in EntityManager. Entity instance is not"
-        + " created");
-      return null;
-    }
-
-    return this.createEntityFromPrototypeRecord
-    (
-      prototypeRecord,
-      id,
-      isPrototype
-    );
-  }
-
-  // -> Returns 'null' if entity instance couldn't be created.
-  private createEntityFromPrototypeRecord
-  (
-    prototypeRecord: EntityRecord,
-    id: string,
-    isPrototype: boolean
-  )
-  {
     // We use bare (unproxified) entity as a prototype object.
     let prototype = prototypeRecord.getEntity();
 
-    // Create new bare (unproxified) entity based on the prototype.
-    let bareEntity = ClassFactory.createEntityFromPrototype(prototype);
-
-    if (id === null)
-      id = this.generateId();
-
-    if (id === null)
-      return null;
-
-    // Set id to our new bare entity
-    // (this shouldn't fail because we have just created it, but
-    //  better be sure).
-    if (bareEntity.setId(id) === false)
-      return null;
-
-    return this.registerEntity(prototype, bareEntity, isPrototype);
+    return this.createEntityFromPrototype(prototype, id);
   }
 
-  // Registers entity 
-  // -> Returns 'null' if entity couldn't be registered.
-  private registerEntity
-  (
-    prototype: Entity,
-    bareEntity: Entity,
-    isPrototype: boolean
-  )
+  // -> Returns registered and proxified entity,
+  //   'null' if entity couldn't be registered or proxified.
+  private proxifyAndRegisterEntity(prototype: Entity, bareEntity: Entity)
   {
     let handler = this.createProxyHandler(bareEntity);
 
@@ -299,19 +385,7 @@ export abstract class EntityManager
     // already exists there, the existing one will be used instead
     // of the one we have just created.
     //   In case of error entity will be 'null'.
-    let entity = this.add(entityRecord);
-
-    if (entity === null)
-      return null;
-  
-    // Now we are sure that entity has been sucessfuly registered
-    // in EntityManager so we can set the reference to it's prototype
-    // entity to it and register it in the prototype entity as a
-    // descendant prototype or an instance (depending on value of
-    // 'isPrototype).
-    entity.setPrototype(prototype, isPrototype);
-
-    return entity;
+    return this.add(entityRecord);
   }
 
   // Creates a Javascript Proxy Object that will trap access
@@ -383,7 +457,8 @@ export abstract class EntityManager
   }
 
   // Adds 'entityRecord' to the manager.
-  // -> Returns 'null' on failure.
+  // -> Returns added entity,
+  //    'null' on failure.
   private add(entityRecord: EntityRecord)
   {
     let id = entityRecord.getEntity().getId();

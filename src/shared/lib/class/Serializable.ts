@@ -45,7 +45,7 @@ import {PropertyAttributes} from
   '../../../shared/lib/class/PropertyAttributes';
 import {JsonObject} from '../../../shared/lib/json/JsonObject';
 import {JsonSaver} from '../../../shared/lib/json/JsonSaver';
-import {Nameable} from '../../../shared/lib/class/Nameable';
+///import {Nameable} from '../../../shared/lib/class/Nameable';
 import {Attributable} from '../../../shared/lib/class/Attributable';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {EntityManager} from '../../../shared/lib/entity/EntityManager';
@@ -61,6 +61,7 @@ let FastBitSet = require('fastbitset');
 export class Serializable extends Attributable
 {
   public static get VERSION_PROPERTY() { return 'version'; }
+  public static get CLASS_NAME_PROPERTY() { return 'className'; }
 
   //----------------- Protected data --------------------
 
@@ -87,6 +88,8 @@ export class Serializable extends Attributable
   //   'id' is passed when deserializing after loading from file,
   // because entity id is used as file name. Entities sent over
   // client-server protocol have their 'id' as a regular property.
+  // (Note: Return type is Entity because only entities can be
+  //  serialized and deserialized as whole objects.)
   // -> Returns 'null' if deserialization fails.
   public static deserialize
   (
@@ -94,6 +97,7 @@ export class Serializable extends Attributable
     id: string = null,
     path: string = null
   )
+  : Entity
   {
     // Create Json object from Json string.
     let jsonObject = JsonObject.parse(data);
@@ -101,13 +105,14 @@ export class Serializable extends Attributable
     if (jsonObject === null)
       return null;
 
-    let instance = this.createSerializableInstance(jsonObject, id, path);
+    let entity = this.createEntityInstance(jsonObject, id, path);
 
     // Copy properties from jsonObject to the instance
     // (loadFromJsonObject() returns 'null' on failure).
-    return instance.loadFromJsonObject(jsonObject, path);
+    return entity.loadFromJsonObject(jsonObject, path);
   }
 
+  /*
   // -> Returns 'null' if instance cannot be created.
   private static createSerializableInstance
   (
@@ -127,11 +132,16 @@ export class Serializable extends Attributable
     {
       id = jsonObject[Entity.ID_PROPERTY];
 
-      TODO: check, že id je validní - bez toho nelze vyrobit entitu.
+      if (!id)
+      {
+        ERROR("Missing or invalid id in JSON when deserializing"
+          + " an entity. Entity is not created");
+        return null;
+      }
     }
 
     // First we check if there is a 'prototype' property in json Object.
-    let prototypeReference = jsonObject[Entity.PROTOTYPE_PROPERTY];
+    let prototypeReference = jsonObject[Entity.PROTOTYPE_ENTITY_PROPERTY];
 
     // If it is there, it means that we are deserializing an Entity
     // so it must create an entity instance for it.
@@ -140,13 +150,13 @@ export class Serializable extends Attributable
 
     // If there is no 'prototypeId' property in json Object, we will read
     // 'className' property instead and create an instance of that class.
-    let className = jsonObject[Nameable.CLASS_NAME_PROPERTY];
+    let className = jsonObject[Serializable.CLASS_NAME_PROPERTY];
 
     if (!className)
     {
       let pathString = Serializable.composePathString(path);
 
-      ERROR("Missing '" + Nameable.CLASS_NAME_PROPERTY + "'"
+      ERROR("Missing '" + Serializable.CLASS_NAME_PROPERTY + "'"
         + " property in JSON data" + pathString);
       return null;
     }
@@ -155,6 +165,7 @@ export class Serializable extends Attributable
     // ('null' is returned on error).
     return ClassFactory.createNew(className);
   }
+  */
 
   private static readPrototypeId
   (
@@ -190,36 +201,57 @@ export class Serializable extends Attributable
   // -> Returns 'null' if instance cannot be created.
   private static createEntityInstance
   (
-    prototypeReference: Object,
+    jsonObject: Object,
     id: string,
     path: string
   )
   {
-    if (!id)
-    {
-      // There is no point in including 'path' parameter beause if
-      // 'id' isn't provided, we are probably deserializing a client-server
-      // protocol packet and those don't have a 'path' anyways.
-      ERROR("Missing or invalid 'id' when deserializing an entity");
+    if (!jsonObject)
       return null;
+
+    // If 'id' parameter is 'null', it means that we are not loading from
+    // file but rather using a client-server communication protocol. In
+    // that case entity 'id' is not saved as file name (because no files
+    // are sent over the protocol) but rather as a regular 'id' property.
+    if (id === null)
+    {
+      id = jsonObject[Entity.ID_PROPERTY];
+
+      if (!id)
+      {
+        ERROR("Missing or invalid id in JSON when deserializing"
+          + " an entity. Entity is not created");
+        return null;
+      }
+    }
+
+    // First we check if there is a 'prototype' property in json Object.
+    let prototypeReference = jsonObject[Entity.PROTOTYPE_ENTITY_PROPERTY];
+
+    // If it is there, it means that we are deserializing an Entity
+    // so it must create an entity instance for it.
+    if (!prototypeReference)
+    {
+      ERROR("Missing or invalid 'prototypeReference' in JSON"
+          + " when deserializing an entity (id '" + id + "')."
+          + " Entity is not created");
+        return null;
     }
 
     let prototypeId = this.readPrototypeId(prototypeReference, id, path);
 
-    if (prototypeId === null)
+    if (!prototypeId)
+    {
+      ERROR("Missing or invalid prototype 'id' in"
+       + " " + Entity.PROTOTYPE_ENTITY_PROPERTY
+       + " reference record in JSON when deserializing"
+       + " an entity (id '" + id + "')."
+       + " Entity is not created");
       return null;
+    }
 
-    return EntityManager.createInstanceEntity(prototypeId, id)
-
-    // Moved to EntityManager.createInstance().
-    /*
-    let prototype = EntityManager.get(prototypeId);
-
-    if (!prototype)
-      return null;
-
-    return Entity.createInstance(prototype, id);
-    */
+    // Create an entity using an existing 'id' and add it to EntityManager.
+    return EntityManager.createExistingEntity(prototypeId, id);
   }
 
   // Extracts data from plain javascript Object to this instance.
@@ -235,11 +267,9 @@ export class Serializable extends Attributable
     {
       if
       (
-        // Property 'className' isn't assigned (it's read-only
-        // and static so it wouldn't make sense anyways. And we
-        // have also already checked that it's the same in 'this'
-        // as in JSON object).
-        propertyName !== Nameable.CLASS_NAME_PROPERTY
+        // Property 'className' isn't assigned (it represents the
+        // name of the javascript class which cannot be changed).
+        propertyName !== Serializable.CLASS_NAME_PROPERTY
         // Only properties that exist on the class that is being loaded
         // are loaded from save. It means that you can remove properties
         // from existing classes without converting existing save files
@@ -329,10 +359,6 @@ export class Serializable extends Attributable
   // -> Returns 'undefined' if serialization fails.
   private saveToJsonObject(mode: Serializable.Mode): Object
   {
-    // Check if 'this' has a 'className'.
-    if (!this.serializeCheck())
-      return undefined;
-
     // Obtain unproxified instance of 'this'
     // (so 'for .. in' operator works on it).
     let instance = EntityProxyHandler.deproxify(this);
@@ -343,11 +369,11 @@ export class Serializable extends Attributable
     if ('name' in this)
       jsonObject['name'] = this['name'];
 
-    // Anoter hack - save 'className' property.
-    // (We need to save 'className' maually, because it is an accessor,
-    //  so it's not enumerable - which means that it won't get iterated
-    //  over in following cycle that iterates properties.)
-    jsonObject[Nameable.CLASS_NAME_PROPERTY] = this.className;
+    // Anoter hack - save 'className'.
+    // (There is no 'className' property on Serializable objects,
+    //  it is used to save the name of the javascript class - which
+    //  is the 'name' property of the class constructor.)
+    jsonObject[Serializable.CLASS_NAME_PROPERTY] = this.constructor.name;
 
     // Cycle through all properties in source object.
     for (let propertyName in instance)
@@ -466,26 +492,6 @@ export class Serializable extends Attributable
       + " If you want a new type to be saved, you need to add this"
       + " functionality to Serializable.ts. Property is not saved");
     return null;
-  }
-
-  // ------------------------------------------------- //
-  //                Data checking methods              //
-  // ------------------------------------------------- //
-
-//+
-  private serializeCheck(): boolean
-  {
-    if (this.className === undefined)
-    {
-      ERROR("Attempt to save a Serializable oject that doesn't have"
-        + " a " + Nameable.CLASS_NAME_PROPERTY + " property. I'd like"
-        + " to know how did you manage to do it - Serializable is"
-        + " inherited from Nameable which does have it. Object is"
-        + " not serialized");
-      return false;
-    }
-
-    return true;
   }
 
   // ------------------------------------------------- //
@@ -672,25 +678,25 @@ export class Serializable extends Attributable
   // Checks that 'jsonObject' contains property 'className'.
   private checkClassName(jsonObject: Object, path: string = null): boolean
   {
-    let jsonClassName = jsonObject[Nameable.CLASS_NAME_PROPERTY];
+    let jsonClassName = jsonObject[Serializable.CLASS_NAME_PROPERTY];
 
     if (jsonClassName === undefined)
     {
       let pathString = Serializable.composePathString(path);
 
-      ERROR("There is no '" + Nameable.CLASS_NAME_PROPERTY + "'"
+      ERROR("There is no '" + Serializable.CLASS_NAME_PROPERTY + "'"
         + " property in JSON data" + pathString);
       return false;
     }
 
-    if (jsonClassName !== this.className)
+    if (jsonClassName !== this.constructor.name)
     {
       let pathString = Serializable.composePathString(path);
 
       ERROR("Attempt to load JSON data of class"
-        + " (" + jsonObject[Nameable.CLASS_NAME_PROPERTY] + ")"
-        + pathString + " into instance of incompatible"
-        + " class (" + this.className + ")");
+        + " (" + jsonObject[Serializable.CLASS_NAME_PROPERTY] + ")"
+        + pathString + " into instance of different"
+        + " class (" + this.constructor.name + ")");
       return false;
     }
 
@@ -908,15 +914,15 @@ export class Serializable extends Attributable
 
     // If target property doesn't exist, we have to create a new instance
     // (because 'null' has no properties so we can't call deserialize() on it).
-    return this.createInstance(param);
+    return this.createNew(param);
   }
 
   // Reads property 'className' from 'param.sourceProperty' and creates
   // an instance of that class.
-  private createInstance(param: DeserializeParam)
+  private createNew(param: DeserializeParam)
   {
     // Read class name from JSON.
-    let className = param.sourceProperty[Nameable.CLASS_NAME_PROPERTY];
+    let className = param.sourceProperty[Serializable.CLASS_NAME_PROPERTY];
 
     // If there isn't a 'className' property in jsonObject,
       // we will load into a plain Javascript Object.
@@ -985,7 +991,7 @@ export class Serializable extends Attributable
 
     // Is there a 'className' property in JSON object
     // with value 'Bitvector'?
-    if (jsonObject[Nameable.CLASS_NAME_PROPERTY]
+    if (jsonObject[Serializable.CLASS_NAME_PROPERTY]
         === JsonSaver.BITVECTOR_CLASS_NAME)
       return true;
 
@@ -1001,7 +1007,7 @@ export class Serializable extends Attributable
 
     // Is there a 'className' property in JSON object
     // with value 'Date'?
-    if (jsonObject[Nameable.CLASS_NAME_PROPERTY]
+    if (jsonObject[Serializable.CLASS_NAME_PROPERTY]
         === JsonSaver.DATE_CLASS_NAME)
       return true;
 
@@ -1017,7 +1023,7 @@ export class Serializable extends Attributable
 
     // Is there a 'className' property in JSON object
     // with value 'Set'?
-    if (jsonObject[Nameable.CLASS_NAME_PROPERTY]
+    if (jsonObject[Serializable.CLASS_NAME_PROPERTY]
         === JsonSaver.SET_CLASS_NAME)
       return true;
 
@@ -1033,7 +1039,7 @@ export class Serializable extends Attributable
 
     // Is there a 'className' property in JSON object
     // with value 'Map'?
-    if (jsonObject[Nameable.CLASS_NAME_PROPERTY]
+    if (jsonObject[Serializable.CLASS_NAME_PROPERTY]
         === JsonSaver.MAP_CLASS_NAME)
       return true;
 
@@ -1050,7 +1056,7 @@ export class Serializable extends Attributable
 
     // Is there a 'className' property in JSON object with value
     // 'Reference'?
-    if (jsonObject[Nameable.CLASS_NAME_PROPERTY]
+    if (jsonObject[Serializable.CLASS_NAME_PROPERTY]
         === JsonSaver.REFERENCE_CLASS_NAME)
       return true;
 
