@@ -1,6 +1,27 @@
 ﻿-------------------------------------------------------------------------
 
-Boss spawne addy, kteri ze zacatku nedelaji moc velkou damage, ale postupne si ji zvedaji.
-Po dobu, kdy jsou addi up, dostava boss zvysenou damage - tim vetsi, cim dyl a cim vic je jich up.
+Boss spawne addy, kteri ze zacatku nedelaji moc velkou damage, ale postupne
+si ji zvedaji. Po dobu, kdy jsou addi up, dostava boss zvysenou damage - tim
+vetsi, cim dyl a cim vic je jich up.
+
+-------------------------------------------------------------------------
+
+Obecná úvaha o bossích a raidech
+---------------------------------
+
+- Drtivá většina hry by se měla odehrávat mimo raidy. Raid by měl být událost
+jednou za čas. A měla by za ni být odpovídající odměna.
+
+Jak na to: 
+- nedělat bossy s malou šancí na loot, na které je třeba chodit opakovaně.
+- většinu času by měl hráč strávit přípravou - samozřejmě nikoliv grinděním
+  consumables, ale např:
+  - přístupové questy
+    - tohle může být i příběhové. Boss standardně na světě není, až když se
+      něco stane, tak přijde, nebo se objeví.
+  - vyrábění zbraně, která bude na bosse účinkovat
+  - všeobecně získáváním tier poweru
+  - přípravou rituálu, který bosse vysumonuje
+
 
 -------------------------------------------------------------------------
