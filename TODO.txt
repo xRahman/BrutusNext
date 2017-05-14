@@ -6,6 +6,23 @@ EntityManager se může jmenovat prostě Entities
 PrototypeManager se může jmenovat prostě Prototypes
      
 
+Řešení jmen prototypů:
+
+class Entity
+{
+  // Root prototypes use class name as prototypeName.
+  // Dynamically created prototypes override this value
+  // with a new name.
+  public prototypeName = this.constructor.name;
+}
+Problém je při deserializaci:
+- prototypeName se musí savovat, protože jinak by si prototypy
+  nepamatovaly své jméno. Tzn. když změním jméno classy v kódu
+  a pak loadnu prototypovou entitu, tak se mi prototypeName přepíše
+  tím, co přečtu ze souboru.
+- navíc je problém s tím, že prototypy mají name lock file
+  v /data/names/prototypes, který při přejmenování classy v kódu
+  zůstane name lock file viset (odkazuje se na něj právě jen to jméno).
 
 
 IMPORTANT:
