@@ -1,10 +1,58 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+TODO:
+EntityManager se může jmenovat prostě Entities
+PrototypeManager se může jmenovat prostě Prototypes
+     
+
+
+
+IMPORTANT:
+Používat na jméno prototypu entity.name a NameCathegory.PROTOTYPE je
+asi chyba:
+- Jméno entity dědí potomci a instance, takže když budu chtít mít 30
+  instancí 'Sandy Road', tak do prototypu setnu name 'Sandy Road'
+  a jsem done.
+  - Mít jména prototypových entit uníktní ale znamená, že když bych
+    chtěl jinde roomu s názvem 'Sandy Road', tak bych musel prototyp
+    pojmenovat jinak a jméno setnout do všech insatncí.
+=> Jméno prototypu by nemělo být v entity.name.
+   - Může být v PrototypeManageru, ale pak bych musel PrototypeManager
+     savovat, což nechci.
+   - když ho dám do entity.prototypeName, tak by asi měla fungovat
+     i dědičnost, tj. entita si ve své .prototypeName může přímo přečíst
+     jméno svého prototypu.
+Asi bych chtěl, aby se hardcoded prototypy jmenovaly stejně jako classa
+- ideálně by se v tom případě jméno mělo číst přímo z Class.name.
+Jak na to?
+  Entity.type: EntityType
+  {
+    HARDCODED_PROTOTYPE,
+    DYNAMIC_PROTOTYPE,
+    INSTANCE
+  }  
+- když je typ HARDCODED_PROTOTYPE, tak se jméno prototypu čte z Class.name
+- když je typ DYNAMIC_PROTOTYPE, ta se jméno prototypu čte
+  z entity.prototypeName
+Hmm...
+Jména prototypů se klindě mohou dál savovat do /data/names, ale nemělo
+  by se to řídit NameCathegorií.
+Hmm, možná jsem neměl mazat Nameable :-)
+
+
+
+TODO: V loadEntityById() checkovat, že jméno uvnitř entity odpovídá
+  jménu name lock filu.
+
+TODO: Ošetřit změnu jména z a do kategorie PROTOTYPE
+  - nestačí změnit jméno a přesavovat name lock file, je tak třeba
+    z entity udělat prototyp/instanci.
+
 TODO: Asi by bylo lepší vyrábět nové entity nikoliv z prototypeId
   ale z prototypeName - abych nemusel ručně hledat v PrototypeManageru.
 (podhazovat prototypeId má smysl při deserializaci, páč v JSONu je idčko).
-
+[done]
 
 ---------------------------------------------------------------
 
