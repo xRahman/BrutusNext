@@ -30,7 +30,7 @@ export class PrototypeManager
     //  entities are sent along with other entities.)
   }
 
-  // -> Returns 'null' if prototype with requested 'prototypeName' isn't found.
+  // -> Returns 'null' if reqeusted prototype isn't found.
   private get(prototypeName: string)
   {
     let prototype = this.prototypes.get(prototypeName);
