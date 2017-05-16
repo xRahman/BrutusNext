@@ -151,7 +151,7 @@ export class ServerEntityManager extends EntityManager
     // Generate a new id.
     let id = this.generateId();
 
-    if (cathegory !== null)
+    if (name !== null && cathegory !== null)
     {
       // Attempt to create a name lock file.
       let isNameAvailable = await EntityManager.requestEntityName
@@ -186,9 +186,12 @@ export class ServerEntityManager extends EntityManager
     //  of descendants.)
     entity.setPrototypeEntity(prototype, isPrototype);
 
-    // Set name and cathegory to our entity without creating
-    // a name lock file (because we have already created it).
-    await entity.setName(name, cathegory, false);
+    if (name !== null)
+    {
+      // Set name and cathegory to our entity without creating
+      // a name lock file (because we have already created it).
+      await entity.setName(name, cathegory, false);
+    }
 
     return entity;
   }

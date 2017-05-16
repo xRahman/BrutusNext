@@ -1,7 +1,28 @@
 /*
   Part of BrutusNEXT
 
-  Extends Serializable with the ability to remember it's string id.
+  Entity is an Object that:
+  - has a unique id
+  - can be serialized and deserialized
+  - can be inherited from another entity using
+    true prototypal inheritance
+
+  True prototypal inheritance means that an instance
+  is created using Object.create() so it is just an
+  empty {} with no own properties and that all it's
+  nonprimitive properties are also instantiated using
+  Obect.create() against the matching property on the
+  prototype entity.
+    This way all properties inicialized on prototype
+  entity by it's constructor or direct inicialization
+  in class body in typescript class will actually be
+  set to prototype object, not the instance. Properties
+  set to the instance will also never modify the prototype
+  (unlinke in javascript prototypal inheritance where
+  nonprimitive properties of the instance are references
+  to the matching properties on the prototype so writing
+  to them actually modify the prototype object instead of
+  creating own propety on the instance).
 */
 
 'use strict';
@@ -31,6 +52,21 @@ export class Entity extends Serializable
   // (Note that name lock file names are lowercased so 'Rahman' also
   //  counts as 'rahman', 'rAhman', etc.).
   private nameCathegory: Entity.NameCathegory = null;
+
+  // Root prototypes (prototype entities for hardcoded
+  // classes like Account or Character) use their class
+  // name as their 'prototypeName'.
+  //   Dynamically created prototypes override this value
+  // with their own prototype name.
+  //   Instance entities inherit this property from their
+  // prototype entity so you can use it to quickly check
+  // what prototype is the instance entity based on.
+  //   All prototypeNames have to be unique. This is enforced
+  // by creating a name lock file in /data/names/prototypes
+  // for each prototype entity. It is not a NameCathegory
+  // however, a prototype entity can have both unique 'name'
+  // and a 'prototypeName' (which is also unique).
+  public prototypeName = null;
 
   // ------------------------------------------------- //
   //                   Unique entity id                //
