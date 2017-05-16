@@ -1,15 +1,15 @@
 /*
   Part of BrutusNEXT
 
-  Implements container to store instances of entities identified by
-  unique string ids.
+  Stores instances of entities (see class Entity).
 */
 
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {App} from '../../../shared/lib/app/App';
-import {ClassFactory} from '../../../shared/lib/class/ClassFactory';
+import {Serializable} from '../../../shared/lib/class/Serializable';
+import {Classes} from '../../../shared/lib/class/ClassFactory';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {EntityRecord} from '../../../shared/lib/entity/EntityRecord';
 import {EntityProxyHandler} from
@@ -19,12 +19,21 @@ export abstract class EntityManager
 {
   //------------------ Private data ---------------------
 
+  // List of all entities that are loaded in memory.
   // Key:   entity id
   // Value: record containing entity and its proxy handler
   private entityRecords = new Map<string, EntityRecord>();
 
+  // List of instances of hardcoded entity classes that are
+  // used as prototype objects for root prototype entities.
+  // Key:   class name
+  // Value: instance of the class that is used as prototype object
+  private rootObjects = new Map<string, Entity>();
+
   // ------------- Public static methods ----------------
 
+  /// To be deleted.
+  /*
   public static createRootEntity<T extends Entity>
   (
     className: string,
@@ -33,6 +42,7 @@ export abstract class EntityManager
   {
     App.getEntityManager().createRootEntity(className, Class);
   }
+  */
 
   // Creates entity using an existing 'id'.
   // -> Returns 'null' if entity couldn't be created.
@@ -104,12 +114,22 @@ export abstract class EntityManager
   // -> Returns 'null' on failure.
   public static async createNewPrototypeEntity<T extends Entity>
   (
-    prototype: Entity,
-    name: string,
-    typeCast: { new (...args: any[]): T }
+    prototypeId: string,
+    prototypeName: string,
+    typeCast: { new (...args: any[]): T },
+    name: string = null,
+    nameCathegory: Entity.NameCathegory = null
   )
   : Promise<T>
   {
+    let entity = await App.getEntityManager().createNewPrototypeEntity
+    (
+      prototypeId,
+      prototypeName,
+      name,
+      nameCathegory
+    );
+    /*
     let entity = await App.getEntityManager().createNewEntity
     (
       prototype,
@@ -120,6 +140,7 @@ export abstract class EntityManager
       // 'isPrototype'
       true
     );
+    */
 
     // Dynamically check that entity is an
     // instance of type T and typecast to it.
@@ -218,6 +239,16 @@ export abstract class EntityManager
 
   // ---------------- Public methods --------------------
 
+  // Creates instances of hardcoded classes that are used
+  // as prototype objects for root prototypes.
+  public createRootObjects()
+  {
+    let entityClassNames = Classes.entities.keys();
+    
+    for (let className of entityClassNames)
+      this.createRootObject(className);
+  }
+
   // --------------- Protected methods ------------------
   
   // -> Returns 'false' if name change isn't allowed.
@@ -297,7 +328,7 @@ export abstract class EntityManager
     }
 
     // Create new bare (unproxified) entity based on the prototype.
-    let bareEntity = ClassFactory.createObjectFromPrototype(prototype);
+    let bareEntity = this.instantiate(prototype);
 
     // Set id to our new bare entity
     // (this shouldn't fail because we have just created it, but
@@ -310,6 +341,111 @@ export abstract class EntityManager
 
   // ---------------- Private methods -------------------
 
+  // Creates a new bare entity with 'prototype' as it's prototype object.
+  // -> Returns 'null' on error.
+  private instantiate(prototype: Entity)
+  {
+    if (prototype === null || prototype === undefined)
+    {
+      ERROR("Attempt to create a prototype instance based on an"
+        + " invalid prototype object. Instance is not created");
+      return null;
+    }
+
+    // Object.create() will create a new object with 'prototype'
+    // as it's prototype object. This will ensure that all 'own'
+    // properties of 'prorotype' (those initialized in constructor
+    // or in class body of prototype) become 'inherited' properties
+    // on the new instance (so that changing the value on prototype
+    // will change the value for all instances that don't have that
+    // property overriden).
+    let bareEntity: Entity = Object.create(prototype);
+
+    // Prototype inheritance in Javascript handles nonprimitive
+    // properties as direct references to such properties in
+    // prototype object. That means that writing to a property
+    // inside a nonprimitive property changes the value on the
+    // prototype, not on the instance. To prevent this, we need
+    // to manually instantiate all nonprimitive properties.
+    this.instantiateProperties(bareEntity, prototype);
+
+    return bareEntity;
+  }
+
+  // Ensures that all non-primitive properties of 'prototype'
+  // are instantiated on 'object'.
+  // -> Returns 'object' with instantiated properties.
+  private instantiateProperties(object: Object, prototype: Object)
+  {
+    if (object === null || object === undefined)
+      return null;
+
+    for (let propertyName in object)
+      this.instantiateProperty(object, prototype, propertyName);
+
+    return object;
+  }
+
+  // Ensures that if 'property' of 'object' is non-primitive,
+  // it is recursively instantiated as an empty Object inherited
+  // from the respective 'property' on 'prototype' object.
+  private instantiateProperty
+  (
+    object: Object,
+    prototype: Object,
+    propertyName: string
+  )
+  {
+    if (prototype === undefined || prototype === null)
+    {
+      ERROR("Invalid prototype object");
+      return;
+    }
+
+    // There is no point of instantating properties that don't exist
+    // on prototype object or have 'null' value on it.
+    if (prototype[propertyName] === undefined
+        || prototype[propertyName] === null)
+      return;
+
+    // Primitive properties (numbers, strings, etc) don't have to
+    // be instantiated because Javascript prototype inheritance
+    // handles them correctly.
+    if (typeof object[propertyName] !== 'object')
+      return;
+
+    // This check allows re-instantiating of properties of existing
+    // instance when prototype is changed. Properties that already
+    // are instantiated (they are 'own' properties of object) are
+    // not overwritten.
+    if (!object.hasOwnProperty(propertyName))
+      // Object.create() will create a new {}, which will have
+      // prototype[propertyName] as it's prototype object.
+      object[propertyName] = Object.create(prototype[propertyName]);
+
+    // Property we have just instantiated may have it's own
+    // non-primitive properties that also need to be instantiated.
+    //   Note that recursive call is done even for properties that
+    // have already been instantiated on 'object', because there
+    // still may be some changes deeper in the structure).
+    this.instantiateProperties(object[propertyName], prototype[propertyName]);
+  }
+
+  private createRootObject(className: string)
+  {
+    let Class = Classes.entities.get(className);
+
+    if (!Class)
+    {
+      ERROR("Unable to create root prototype object because"
+        + " class '" + className + "' isn't registered"
+        + " in Classes");
+      return;
+    }
+
+    this.rootObjects.set(className, new Class);
+  }
+  /*
   private createRootEntity<T extends Entity>
   (
     className: string,
@@ -332,7 +468,7 @@ export abstract class EntityManager
 
     // Set 'className' as 'id'
     // (root entities use 'className' as their entity id in order for this
-    //  id to be the same both od the client and on the server. This way
+    //  id to be the same both on the client and on the server. This way
     //  when a prototype chain is recreated after an entity is serialized,
     //  sent to client and deserialized back, client knows what a root
     //  prototype object of that chain is).
@@ -355,6 +491,42 @@ export abstract class EntityManager
     //   Note that in case of root entity, there is no point in
     // setting it's prototype - root entities don't have any.
     this.add(entityRecord);
+  }
+  */
+
+  // -> Returns 'null' on error.
+  private async createNewPrototypeEntity
+  (
+    prototypeId: string,
+    prototypeName: string,
+    name: string,
+    cathegory: Entity.NameCathegory
+  )
+  {
+    // First check if 'prototypeId' is a name of a hardcoded class
+    // (this.rootObjects is a hashamp indexed by class name).
+    let prototype = this.rootObjects.get(prototypeId);
+
+    if (!prototype)
+      // If it's not a class name, it has to be an entity id.
+      prototype = this.get(prototypeId);
+
+    if (!prototype)
+    {
+      ERROR("Unable to create prototype entity because"
+        + " prototypeId '" + prototypeId + "' is neither"
+        + " a name of an existing class nor an id of an"
+        + " existing entity");
+      return null;
+    }
+
+    return this.createNewEntity
+    (
+      prototype,
+      name,
+      cathegory,
+      true
+    );
   }
 
   // Creates entity with specified 'id', proxifies it and registers

@@ -23,7 +23,7 @@ export class ServerPrototypeManager extends PrototypeManager
   // all prototype entities inherited from them.
   public async initPrototypes()
   {
-    let entityClasses = ClassFactory.getListOfEntityClasses();
+    let entityClasses = ClassFactory.getNamesOfEntityClasses();
 
     await this.initRootPrototypes(entityClasses);
     await this.loadDescendantPrototypes(entityClasses);
@@ -39,11 +39,9 @@ export class ServerPrototypeManager extends PrototypeManager
     {
       let prototypeEntity = await this.initRootPrototypeEntity(className);
 
-      if (!prototypeEntity)
-        continue;
-
-      // Add the prototype entity to this.prototypes hashmap.
-      this.prototypes.set(className, prototypeEntity);
+      if (prototypeEntity)
+        // Add the prototype entity to this.prototypes hashmap.
+        this.prototypes.set(className, prototypeEntity);
     }
   }
 
@@ -59,14 +57,13 @@ export class ServerPrototypeManager extends PrototypeManager
     (
       className,
       Entity.NameCathegory.PROTOTYPE,
-      false  // Do not report errors (like when file doesn't exist).
+      false  // Do not log that file doesn't exist.
     );
 
-    // If name lock file exists, we use the id
-    // loaded from it to load prototype entity
-    // from disk.
+    // If name lock file exists, we use the id loaded
+    // from it to load prototype entity from disk.
     if (id !== null)
-      return await EntityManager.loadEntityById(id);
+      return await EntityManager.loadEntityById(id, Entity);
 
     // Otherwise we create a new entity based on
     // root entity with id 'className'.
@@ -76,7 +73,8 @@ export class ServerPrototypeManager extends PrototypeManager
       // object and root entities use 'className' as their id.
       className,
       // 'className' will also be the name of this prototype.
-      className
+      className,
+      Entity  // Type cast.
     );
 
     /// To be deleted.
