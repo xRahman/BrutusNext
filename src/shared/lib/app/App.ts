@@ -74,7 +74,7 @@ export abstract class App
 
   // -> Returns ServerApp or ClientApp. In the server code,
   //    App.getInstance() is actually an instance of ServerApp
-  //    and in client code, it's an instance of ClientApp class.
+  //    and in client code, it's an instance of ClientApp.
   protected static getInstance(): App
   {
     if (!App.instanceExists())
@@ -94,7 +94,6 @@ export abstract class App
   // Reports fatal runtime error.
   protected abstract reportFatalError(message: string);
 
-  // Sends message to syslog.
   protected abstract syslog
   (
     message: string,

@@ -39,8 +39,9 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
-import {ClassFactory} from '../../../shared/lib/class/ClassFactory';
+import {Classes} from '../../../shared/lib/class/ClassFactory';
 import {PropertyAttributes} from
   '../../../shared/lib/class/PropertyAttributes';
 import {JsonObject} from '../../../shared/lib/json/JsonObject';
@@ -925,15 +926,30 @@ export class Serializable extends Attributable
     let className = param.sourceProperty[Serializable.CLASS_NAME_PROPERTY];
 
     // If there isn't a 'className' property in jsonObject,
-      // we will load into a plain Javascript Object.
+    // we will load into a plain Object.
     if (className === undefined)
       return {};
 
-    // We don't have to check if 'param.sourceProperty' is an entity,
-    // because entities are always serialized as a reference, not directly.
-    // So if there is an instance of some Serializable class saved directly
+    // Otherwise we create an instance of such class.
+    //   We don't have to check if 'className' is an Entity class,
+    // because entities are always serialized as a reference. So if
+    // there is an instance of some Serializable class saved directly
     // in Json, it can't be an entity class.
-    return ClassFactory.createNew(className);
+
+    let Class = Classes.serializables.get(className);
+
+    if (!Class)
+    {
+      let pathString = Serializable.composePathString(param.path);
+
+      // We can't safely recover from this error, it could corrupt the
+      // data.
+      FATAL_ERROR("Unable to create instance of class '" + className + "'"
+        + " when deserializing property '" + param.propertyName + "'"
+        + pathString + " because no such class is registered in Classes");
+    }
+
+    return new Class;
   }
 
 //+

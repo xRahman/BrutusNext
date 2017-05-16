@@ -285,14 +285,16 @@ export class ServerApp extends App
   }
 
   // ~ Overrides App.syslog().
+  // Logs the message and sends it to all online
+  // admins with sufficient 'adminLevel'.
   protected syslog
   (
-    text: string,
+    message: string,
     msgType: MessageType,
     adminLevel: AdminLevel
   )
   {
-    return ServerSyslog.log(text, msgType, adminLevel);
+    return ServerSyslog.log(message, msgType, adminLevel);
   }
 
   // --------------- Private methods --------------------
@@ -300,10 +302,22 @@ export class ServerApp extends App
   // Loads or reates the data and starts the server application.
   private async run(telnetPort: number)
   {
+    /*
     // Create an entity for each entity class registered in
     // ClassFactory so they can be used as prototype objects
     // for other entities.
     ClassFactory.createRootEntities();
+    */
+
+    TODO:
+    /// entityClassNames používá jak entityManager.createRootObjects()
+    /// tak prototypeManager.initPrototypes(), takže by to asi měl být
+    /// parametr, aby se to negenerovalo zbytečně dvakrát.
+
+    // Create an instance of each entity class registered in
+    // ClassFactory so they can be used as prototype objects
+    // for root prototype entities.
+    this.entityManager.createRootObjects();
 
     // We need to check if './data/' directory exists before
     // initPrototypes() is called, because it will be created

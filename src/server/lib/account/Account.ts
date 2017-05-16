@@ -383,4 +383,4 @@ export class Account extends ScriptableEntity
   }
 }
 
-ClassFactory.registerClass(Account);
+ClassFactory.registerSerializableClass(Account);

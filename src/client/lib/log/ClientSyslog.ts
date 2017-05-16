@@ -17,13 +17,13 @@ export class ClientSyslog
   // Outputs log message to log file.
   public static log
   (
-    text: string,
+    message: string,
     msgType: MessageType,
     adminLevel: AdminLevel
   )
   {
-    let entry = "[" + MessageType[msgType] + "] " + text;
-    
+    let entry = "[" + MessageType[msgType] + "] " + message;
+
     // Output to debug console.
     console.log(entry);
   }
