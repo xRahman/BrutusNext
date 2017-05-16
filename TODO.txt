@@ -1,9 +1,18 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+TODO: Asi bude nakonec nejlepší držet v Class factory zvlášť Entity
+a neentity classy (zjednoduší to typování, atd).
+
+TODO: Root objecty neměly být entity, aby si je někdo omylem
+  nevyžádal z EntityManageru a nepoužil je.
+- měly by se accessovat pouze při hledání prototype objectu pro
+  novou entitu.
+
 TODO:
 EntityManager se může jmenovat prostě Entities
 PrototypeManager se může jmenovat prostě Prototypes
+ClassFactory se může jmenovat prostě Classes (nebo DynamicClasses).
      
 
 Řešení jmen prototypů:

@@ -159,12 +159,12 @@ export class ClientApp extends App
   // ~ Overrides App.syslog().
   protected syslog
   (
-    text: string,
+    message: string,
     msgType: MessageType,
     adminLevel: AdminLevel
   )
   {
-    return ClientSyslog.log(text, msgType, adminLevel);
+    return ClientSyslog.log(message, msgType, adminLevel);
   }
   
   // ---------------- Private methods -------------------
