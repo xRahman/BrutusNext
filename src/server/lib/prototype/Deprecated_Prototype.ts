@@ -30,7 +30,7 @@
 ///import {AutoSaveableObject} from '../../shared/fs/AutoSaveableObject';
 ///import {VirtualMachine} from '../../shared/vm/VirtualMachine';
 ///import {Script} from '../../shared/prototype/Script';
-///import {PrototypeManager} from '../../shared/prototype/PrototypeManager';
+///import {Prototypes} from '../../shared/prototype/Prototypes';
 ///import {Server} from '../../server/Server';
 ///import {GameEntity} from '../../game/GameEntity';
 ///
@@ -187,6 +187,6 @@
 ///
 ///    let subdirectory = PrototypeClass.getPrototypeSaveDirectory();
 ///
-///    return PrototypeManager.SAVE_DIRECTORY + subdirectory;
+///    return Prototypes.SAVE_DIRECTORY + subdirectory;
 ///  }
 ///}

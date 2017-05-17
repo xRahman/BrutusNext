@@ -26,7 +26,7 @@ import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Connection} from '../../../server/lib/connection/Connection';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {EntityList} from '../../../shared/lib/entity/EntityList';
-import {ServerPrototypeManager} from
+import {ServerPrototypes} from
   '../../../server/lib/entity/ServerPrototypeManager';
 import {AccountList} from '../../../server/lib/account/AccountList';
 import {Syslog} from '../../../shared/lib/log/Syslog';
@@ -77,7 +77,7 @@ export class ServerApp extends App
 
   // ~ Overrides App.prototypeManager.
   // Manages prototype entities.
-  protected prototypeManager = new ServerPrototypeManager();
+  protected prototypeManager = new ServerPrototypes();
 
   /// Deprecated
   // // flagNamesManager is in Server instead of Game, because flags are needed

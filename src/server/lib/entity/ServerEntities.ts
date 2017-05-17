@@ -247,7 +247,7 @@ export class ServerEntities extends Entities
   //   // Create a new entity based on prototype entity.
   //   let entity = this.createEntityFromPrototype(ancestorEntity);
 
-  //   // This must be done before adding the new entity to PrototypeManager,
+  //   // This must be done before adding the new entity to Prototypes,
   //   // because 'className' will be used as a key in prototypeObjects hashmap
   //   // (prototype will be indentified by it's 'className', not 'entityName').
   //   entity.className = className;
@@ -259,7 +259,7 @@ export class ServerEntities extends Entities
   //   // user has to save it herself.
   //   // (In order to correctly save the change, ancestor entity must be
   //   //  saved as well (because it's descendantIds array has changed) and
-  //   //  if the ancestor entity is a hardcoded entity, PrototypeManager
+  //   //  if the ancestor entity is a hardcoded entity, Prototypes
   //   //  needs to be saved as well).
   // }
   // */
@@ -836,7 +836,7 @@ export class ServerEntities extends Entities
   //   }
   // }
 
-  // // Searches for prototype entity in PrototypeManager using
+  // // Searches for prototype entity in Prototypes using
   // // prototype class name.
   // // -> Returns 'undefined' if prototype entity isn't found.
   // private getPrototypeEntityByClassName(className: string): Entity
@@ -877,7 +877,7 @@ export class ServerEntities extends Entities
   // }
 
   // // Searches for prototype entity in Entities if 'prototypeId'
-  // // isn't null, or in PrototypeManager using 'className' otherwise.
+  // // isn't null, or in Prototypes using 'className' otherwise.
   // // -> Returns 'undefined' if prototype entity isn't found.
   // private async getPrototypeEntity
   // (
@@ -902,7 +902,7 @@ export class ServerEntities extends Entities
   //   else
   //   {
   //     // Otherwise we will search for prototype entity in
-  //     // PrototypeManager using class name.
+  //     // Prototypes using class name.
   //     proxy = this.getPrototypeEntityByClassName(className);
   //   }
 
@@ -978,7 +978,7 @@ export class ServerEntities extends Entities
 
   // /// Deprecated.
   // /*
-  // // Searches for ancestor entity both in Entities and PrototypeManager.
+  // // Searches for ancestor entity both in Entities and Prototypes.
   // // -> Returns 'null' if ancestor entity isn't found.
   // private getAncestorEntity
   // (
@@ -987,11 +987,11 @@ export class ServerEntities extends Entities
   //   ancestorNameOrId: string
   // )
   // {
-  //   // Search for prototype entity both in Entities and PrototypeManager.
+  //   // Search for prototype entity both in Entities and Prototypes.
   //   let ancestorEntity = this.getPrototypeEntity
   //   (
   //     name,
-  //     // This parameter will be used to search in PrototypeManager.
+  //     // This parameter will be used to search in Prototypes.
   //     ancestorNameOrId,
   //     // This parameter will be used to search in Entities.
   //     ancestorNameOrId

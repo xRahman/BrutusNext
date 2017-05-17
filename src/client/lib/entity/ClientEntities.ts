@@ -43,9 +43,8 @@ export class ClientEntities extends Entities
 
   protected generateId(): string
   {
-    ERROR("Attempt to generate an id on the client."
-      + " That's not possible, only server entity"
-      + " manager can generate ids");
+    ERROR("Attempt to generate an id on the client. That's"
+      + " not possible, only server can generate ids");
     return null;
   }
 
