@@ -9,7 +9,7 @@
 import {App} from '../../../shared/lib/app/App';
 import {Entity} from '../../../shared/lib/entity/Entity';
 
-export class Prototypes
+export abstract class Prototypes
 {
   /// TODO: Asi by spíš Prototypes měly být name search list.
   // Key:   prototype name (which is the entity name)
@@ -22,13 +22,7 @@ export class Prototypes
     return App.getPrototypes().get(prototypeName);
   }
 
-/// TODO: Tohle by spíš mělo být abstract.
-  public async init(entityClasses: Array<string>)
-  {
-    // Nothing by default.
-    // (There is nothing to be done on the client, all prototype
-    //  entities are sent along with other entities.)
-  }
+  public abstract async init(entityClasses: Array<string>);
 
   // -> Returns 'null' if reqeusted prototype isn't found.
   private get(prototypeName: string)
