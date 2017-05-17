@@ -141,7 +141,7 @@ export class ScriptableEntity extends NamedEntity
 
     let subdirectory = PrototypeClass.getPrototypeSaveDirectory();
 
-    return PrototypeManager.SAVE_DIRECTORY + subdirectory;
+    return Prototypes.SAVE_DIRECTORY + subdirectory;
   }
   */
 }

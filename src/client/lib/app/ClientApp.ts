@@ -18,10 +18,8 @@ import {MessageType} from '../../../shared/lib/message/MessageType';
 import {ClientSyslog} from '../../../client/lib/log/ClientSyslog';
 import {App} from '../../../shared/lib/app/App';
 import {Entity} from '../../../shared/lib/entity/Entity';
-import {ClientEntityManager} from
-  '../../../client/lib/entity/ClientEntityManager';
-import {ClientPrototypeManager} from
-  '../../../client/lib/entity/ClientPrototypeManager';
+import {ClientEntities} from '../../../client/lib/entity/ClientEntities';
+import {ClientPrototypes} from '../../../client/lib/entity/ClientPrototypes';
 import {Body} from '../../../client/gui/component/Body';
 import {Document} from '../../../client/gui/component/Document';
 import {Connection} from '../../../client/lib/connection/Connection';
@@ -39,11 +37,11 @@ export class ClientApp extends App
 
   // ~ Overrides App.entityManager.
   // Contains all entities (accounts, characters, rooms, etc.).
-  protected entityManager = new ClientEntityManager();
+  protected entities = new ClientEntities();
 
   // ~ Overrides App.prototypeManager.
   // Manages prototype entities.
-  protected prototypeManager = new ClientPrototypeManager();
+  protected prototypes = new ClientPrototypes();
 
   //------------------ Private data ---------------------
 

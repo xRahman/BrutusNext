@@ -315,7 +315,7 @@ export class Entity extends AutoSaveableObject
         + " That's not supposed to happen because hardcoded"
         + " prototype entities are not saved directly but"
         + " rather generated from information contained in"
-        + " PrototypeManager.hardcodedEntityPrototypes hashmap");
+        + " Prototypes.hardcodedEntityPrototypes hashmap");
       return './data/prototypes/';
     }
 

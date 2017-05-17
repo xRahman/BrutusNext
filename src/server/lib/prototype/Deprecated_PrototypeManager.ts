@@ -21,7 +21,7 @@ import {NamedClass} from '../../../server/lib/class/NamedClass';
 import {ServerApp} from '../../../server/lib/Server';
 import {Classes} from '../../../shared/lib/Classes';
 
-export class PrototypeManager extends AutoSaveableObject
+export class Prototypes extends AutoSaveableObject
 {
   private static get SAVE_DIRECTORY()
   {
@@ -30,7 +30,7 @@ export class PrototypeManager extends AutoSaveableObject
 
   private static get SAVE_FILE_NAME()
   {
-    return "PrototypeManager.json";
+    return "Prototypes.json";
   }
 
   // Hashmap matching prototype names to prototype objects.
@@ -72,7 +72,7 @@ export class PrototypeManager extends AutoSaveableObject
 
     if (!createDefaultData)
     {
-      // Load PrototypeManager from the file
+      // Load Prototypes from the file
       // (this.hardcodedEntityPrototypes array will be loaded).
       await this.load();
     }
@@ -133,7 +133,7 @@ export class PrototypeManager extends AutoSaveableObject
 
     if (prototypeObject === undefined)
     {
-      ERROR("Unable to find prototype in PrototypeManager"
+      ERROR("Unable to find prototype in Prototypes"
         + " matching prototypeId '" + prototypeName + "'");
       return undefined;
     }
@@ -282,8 +282,8 @@ export class PrototypeManager extends AutoSaveableObject
       {
         FATAL_ERROR("Empty or invalid record of prototype"
           + " '" + className + "' loaded from file"
-          + " " + PrototypeManager.SAVE_DIRECTORY
-          + PrototypeManager.SAVE_FILE_NAME + ". It"
+          + " " + Prototypes.SAVE_DIRECTORY
+          + Prototypes.SAVE_FILE_NAME + ". It"
           + " means that id of respective prototype"
           + " entity is lost, no prototypes inherited"
           + " from " + className + " will load correctly"
@@ -307,7 +307,7 @@ export class PrototypeManager extends AutoSaveableObject
     let saveNeeded = false;
 
     // It is possible that not all of the hardcoded entity classes have an
-    // id stored in PrototypeManager save. This can either happen when the
+    // id stored in Prototypes save. This can either happen when the
     // server is launched for the first time and there is no /data
     // directory yet, or when someone has added new entity classes to
     // the code. Either way, we are going to automatically generate id's
@@ -319,7 +319,7 @@ export class PrototypeManager extends AutoSaveableObject
       // Check if our class already has an id assigned.
       //  (We do this in advance to know if a new entity
       //   will be generated so that we will have to save
-      //   PrototypeManager.)
+      //   Prototypes.)
       //  (get() returns 'undefined' if hashmap doesn't
       //   contain requested entry.)
       let record = this.getPrototypeRecord(Class.name);
@@ -342,7 +342,7 @@ export class PrototypeManager extends AutoSaveableObject
     }
 
     // If we created some new prototype entities, we need to
-    // save PrototypeManager so we don't loose their ids.
+    // save Prototypes so we don't loose their ids.
     if (saveNeeded)
       await this.save();
   }
@@ -359,7 +359,7 @@ export class PrototypeManager extends AutoSaveableObject
       {
         // We can create a prototype objects for non-entity classes
         // right away, because it's the first step (required in order
-        // to be able to load PrototypeManager.json).
+        // to be able to load Prototypes.json).
         this.initNonEntityPrototype(Class);
       }
       else
