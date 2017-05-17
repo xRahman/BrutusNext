@@ -22,8 +22,8 @@ export class Prototypes
     return App.getPrototypes().get(prototypeName);
   }
 
-  // Initializes root prototype entities.
-  public async initPrototypes(entityClasses: Array<string>)
+/// TODO: Tohle by spíš mělo být abstract.
+  public async init(entityClasses: Array<string>)
   {
     // Nothing by default.
     // (There is nothing to be done on the client, all prototype

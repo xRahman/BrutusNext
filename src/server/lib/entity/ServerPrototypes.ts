@@ -17,11 +17,11 @@ export class ServerPrototypes extends Prototypes
 {
   // ---------------- Public methods --------------------
 
-  // ~ Overrides Prototypes.initPrototypes().
+  // ~ Overrides Prototypes.init().
   // Creates root prototype entities if they don't exist on
   // the disk or loads them if they do. Then recursively loads
   // all prototype entities inherited from them.
-  public async initPrototypes()
+  public async init()
   {
     let entityClasses = Classes.getNamesOfEntityClasses();
 

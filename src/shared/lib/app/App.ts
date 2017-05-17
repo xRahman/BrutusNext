@@ -19,15 +19,12 @@ export abstract class App
 
   //----------------- Protected data -------------------- 
 
-  // Contains all entities (accounts, characters, rooms, etc.).
   protected entities: Entities = null;
-
-  // Manages prototype entities.
   protected prototypes: Prototypes = null;
 
   // --------------- Static accessors -------------------
 
-  public static getEntityManager()
+  public static getEntities()
   {
     return App.getInstance().entities;
   }
