@@ -23,19 +23,17 @@ export class ServerPrototypes extends Prototypes
   // all prototype entities inherited from them.
   public async init()
   {
-    let entityClasses = Classes.getNamesOfEntityClasses();
-
-    await this.initRootPrototypes(entityClasses);
-    await this.loadDescendantPrototypes(entityClasses);
+    await this.initRootPrototypes();
+    await this.loadDescendantPrototypes();
   }
 
   // --------------- Private methods -------------------- 
 
   // Creates root prototype entities if they don't exist yet or
   // loads them from disk.
-  private async initRootPrototypes(entityClasses: Array<string>)
+  private async initRootPrototypes()
   {
-    for (let className of entityClasses)
+    for (let className of Classes.entities.keys())
     {
       let prototypeEntity = await this.initRootPrototypeEntity(className);
 
@@ -125,12 +123,12 @@ export class ServerPrototypes extends Prototypes
 
   // Recursively loads all prototype entities inherited from root
   // entity prototypes.
-  private async loadDescendantPrototypes(entityClasses: Array<string>)
+  private async loadDescendantPrototypes()
   {
     // We iterate 'entityClasses' array instead of this.prototypes,
     // because more items will be added to this.protototypes
     // while recursively loading their descendants.
-    for (let className of entityClasses)
+    for (let className of Classes.entities.keys())
     {
       let prototype = this.prototypes.get(className);
 
