@@ -8,7 +8,7 @@
 
 import {ERROR} from '../../shared/lib/error/ERROR';
 import {Entity} from '../../shared/lib/entity/Entity';
-import {EntityManager} from '../../shared/lib/entity/EntityManager';
+import {Entities} from '../../shared/lib/entity/Entities';
 import {PrototypeManager} from '../../shared/lib/entity/PrototypeManager';
 ///import {NamedEntity} from '../../server/lib/entity/NamedEntity';
 import {NameSearchList} from '../../server/lib/entity/NameSearchList';
@@ -81,7 +81,7 @@ export class Game
     //  even if someone renames it).
     let prototype = PrototypeManager.get(World.name);
 
-    this.world = await EntityManager.createNewInstanceEntity
+    this.world = await Entities.createNewInstanceEntity
     (
       prototype,
       Game.DEFAULT_WORLD_NAME,
@@ -106,7 +106,7 @@ export class Game
   public async load()
   {
     // Load current state of world from file.
-    this.world = await EntityManager.loadEntityByName
+    this.world = await Entities.loadEntityByName
     (
       Game.DEFAULT_WORLD_NAME,
       Entity.NameCathegory.WORLD,

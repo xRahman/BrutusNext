@@ -7,9 +7,9 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {ClassFactory} from '../../../shared/lib/class/ClassFactory';
+import {Classes} from '../../../shared/lib/class/Classes';
 import {PrototypeManager} from '../../../shared/lib/entity/PrototypeManager';
-import {EntityManager} from '../../../shared/lib/entity/EntityManager';
+import {Entities} from '../../../shared/lib/entity/Entities';
 import {FileManager} from '../../../server/lib/fs/FileManager';
 import {Entity} from '../../../shared/lib/entity/Entity';
 
@@ -23,7 +23,7 @@ export class ServerPrototypeManager extends PrototypeManager
   // all prototype entities inherited from them.
   public async initPrototypes()
   {
-    let entityClasses = ClassFactory.getNamesOfEntityClasses();
+    let entityClasses = Classes.getNamesOfEntityClasses();
 
     await this.initRootPrototypes(entityClasses);
     await this.loadDescendantPrototypes(entityClasses);
@@ -63,11 +63,11 @@ export class ServerPrototypeManager extends PrototypeManager
     // If name lock file exists, we use the id loaded
     // from it to load prototype entity from disk.
     if (id !== null)
-      return await EntityManager.loadEntityById(id, Entity);
+      return await Entities.loadEntityById(id, Entity);
 
     // Otherwise we create a new entity based on
     // root entity with id 'className'.
-    return await EntityManager.createNewPrototypeEntity
+    return await Entities.createNewPrototypeEntity
     (
       // Root prototype entity uses root entity as it's prototype
       // object and root entities use 'className' as their id.
@@ -90,7 +90,7 @@ export class ServerPrototypeManager extends PrototypeManager
   //   // We use 'className' as 'prototypeId', because our prototype
   //   // object will be a root entity which uses 'className' as it's
   //   // id.
-  //   return await EntityManager.createNewPrototypeEntity
+  //   return await Entities.createNewPrototypeEntity
   //   (
   //     // Root prototype entity uses root entity as it's prototype
   //     // object and root entities use 'className' as their ids.
@@ -99,7 +99,7 @@ export class ServerPrototypeManager extends PrototypeManager
   //     className
   //   );
 
-  //   /// Tohle teď dělá přímo EntityManager.createNewPrototypeEntity()
+  //   /// Tohle teď dělá přímo Entities.createNewPrototypeEntity()
   //   /*
   //   // Note: setName() is an async operation because
   //   //   it creates a name lock file.
@@ -114,8 +114,8 @@ export class ServerPrototypeManager extends PrototypeManager
   //     ERROR("Failed to set name to the new root prototype"
   //       + " entity " + prototypeEntity.getErrorIdString());
   //     // If name coundn't be set to entity, release it from
-  //     // EntityManager (and thus from the memory).
-  //     EntityManager.release(prototypeEntity);
+  //     // Entities (and thus from the memory).
+  //     Entities.release(prototypeEntity);
   //     return null;
   //   }
 
@@ -143,7 +143,7 @@ export class ServerPrototypeManager extends PrototypeManager
   {
     for (let descendantId of prototype.getDescendantIds())
     {
-      let descendant = await EntityManager.loadEntityById(descendantId);
+      let descendant = await Entities.loadEntityById(descendantId);
 
       if (descendant === null)
       {

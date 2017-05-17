@@ -8,7 +8,7 @@
 
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {MessageType} from '../../../shared/lib/message/MessageType';
-import {EntityManager} from '../../../shared/lib/entity/EntityManager';
+import {Entities} from '../../../shared/lib/entity/Entities';
 import {PrototypeManager} from '../../../shared/lib/entity/PrototypeManager';
 
 export abstract class App
@@ -20,7 +20,7 @@ export abstract class App
   //----------------- Protected data -------------------- 
 
   // Contains all entities (accounts, characters, rooms, etc.).
-  protected entityManager: EntityManager = null;
+  protected entityManager: Entities = null;
 
   // Manages prototype entities.
   protected prototypeManager: PrototypeManager = null;

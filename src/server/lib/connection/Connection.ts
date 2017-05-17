@@ -22,7 +22,7 @@ import {ChargenProcessor} from
 import {Game} from '../../../server/game/Game';
 import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
 import {Character} from '../../../server/game/character/Character';
-import {ClassFactory} from '../../../shared/lib/class/ClassFactory';
+import {Classes} from '../../../shared/lib/class/Classes';
 
 export class Connection extends Entity
 {
@@ -720,7 +720,7 @@ export class Connection extends Entity
 
   /*
   // Entity adds itself to approptiate EntityLists so it can be
-  // searched by name, etc. This doesn't add entity to EntityManager.
+  // searched by name, etc. This doesn't add entity to Entities.
   // (overrides Entity.addToLists())
   public addToLists()
   {
@@ -729,7 +729,7 @@ export class Connection extends Entity
   */
 
   // Entity removes itself from EntityLists so it can no longer
-  // be searched by name, etc. This doesn't remove entity from EntityManager.
+  // be searched by name, etc. This doesn't remove entity from Entities.
   // (overrides Entity.removeFromlists())
   public removeFromLists()
   {
@@ -867,7 +867,7 @@ export class Connection extends Entity
 }
 
 /// TODO: Connection by asi neměla být entita.
-ClassFactory.registerEntityClass(Connection);
+Classes.registerEntityClass(Connection);
 
 // ------------------ Type declarations ----------------------
 

@@ -33,7 +33,7 @@ import {App} from '../../../shared/lib/app/App';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {PropertyAttributes} from
   '../../../shared/lib/class/PropertyAttributes';
-import {EntityManager} from '../../../shared/lib/entity/EntityManager';
+import {Entities} from '../../../shared/lib/entity/Entities';
 
 export class Entity extends Serializable
 {
@@ -89,7 +89,7 @@ export class Entity extends Serializable
   // ------------------------------------------------- //
 
   // Reference to entity which serves as prototype object to this
-  // entity. Only root prototype entities (created in ClassFactory)
+  // entity. Only root prototype entities (created in Classes)
   // have 'null' value of 'prototypeEntity'.
   private prototypeEntity: Entity = null;
 
@@ -139,10 +139,10 @@ export class Entity extends Serializable
         && entity.isValid() === true;
   }
 
-  /// Moved to EntityManager.createEntityIstance().
+  /// Moved to Entities.createEntityIstance().
   /*
   // Creates an instance of Entity with given 'prototype' and 'id'.
-  // Instance is then proxified and registered in EntityManager.
+  // Instance is then proxified and registered in Entities.
   // -> Returns 'null' in case of error.
   public static createInstance(prototype: Entity, id: string)
   {
@@ -151,8 +151,8 @@ export class Entity extends Serializable
     // deproxify 'prototype' before we use it as a prototype object.
     let barePrototype = EntityProxyHandler.deproxify(prototype);
 
-    let instance = ClassFactory.createInstanceFromPrototype(barePrototype);
-/// Moved to ClassFactory.createEntityInstance().
+    let instance = Classes.createInstanceFromPrototype(barePrototype);
+/// Moved to Classes.createEntityInstance().
     // // Object.create() will create a new object with 'prototype'
     // // as it's prototype object. This will ensure that all 'own'
     // // properties of 'prorotype' (those initialized in constructor
@@ -178,20 +178,20 @@ export class Entity extends Serializable
 
     // Hide instance beind a Proxy object which will report
     // access to properties of invalid entity. Also create
-    // an EntityRecord that will be added to EntityManager.
+    // an EntityRecord that will be added to Entities.
     let entityRecord = this.createEntityRecord(instance);
 
-    // Add entity to EntityManager. If a record with this 'id'
+    // Add entity to Entities. If a record with this 'id'
     // already exists there, the existing one will be used instead
     // of the one we have just created.
     //   In case of error entity will be 'null'.
-    let entity = EntityManager.add(entityRecord);
+    let entity = Entities.add(entityRecord);
 
     if (entity === null)
       return null;
   
     // Now we are sure that entity has been sucessfuly registered
-    // in EntityManager so we can add it's id to prototype's instanceIds.
+    // in Entities so we can add it's id to prototype's instanceIds.
     prototype.addInstanceId(id);
 
     // And also add the prototype's id as the entity's prototypeId.
@@ -223,13 +223,13 @@ export class Entity extends Serializable
       // Check if requested name is available.
       // (This will always be false on client because entity name change
       //  is disabled there.)
-      if (!await EntityManager.requestEntityName(this.getId(), name, cathegory))
+      if (!await Entities.requestEntityName(this.getId(), name, cathegory))
         return false;
     }
 
     // Make the old name available again.
     if (oldName && oldCathegory)
-      await EntityManager.releaseEntityName(oldName, oldCathegory)
+      await Entities.releaseEntityName(oldName, oldCathegory)
 
     this.name = name;
 
@@ -423,18 +423,18 @@ export class Entity extends Serializable
 
   public async save()
   {
-    await EntityManager.saveEntity(this);
+    await Entities.saveEntity(this);
   }
 
-  /// Tohle je zbytečné, může se rovnou volat EntityManager.loadEntityById().
+  /// Tohle je zbytečné, může se rovnou volat Entities.loadEntityById().
   /*
   public static async loadById(id: string)
   {
-    return await EntityManager.loadEntityById(id);
+    return await Entities.loadEntityById(id);
   }
   */
 
-  /// Tohle je zbytečné, může se rovnou volat EntityManager.loadEntityByName().
+  /// Tohle je zbytečné, může se rovnou volat Entities.loadEntityByName().
   /*
   public static async loadByName
   (
@@ -442,7 +442,7 @@ export class Entity extends Serializable
     cathegory: Entity.NameCathegory
   )
   {
-    return await EntityManager.loadEntityByName(name, cathegory);
+    return await Entities.loadEntityByName(name, cathegory);
   }
   */
 
@@ -552,7 +552,7 @@ export class Entity extends Serializable
   }
 
   // Entity removes itself from EntityLists so it can no longer
-  // be searched by name, etc. This doesn't remove entity from EntityManager
+  // be searched by name, etc. This doesn't remove entity from Entities
   // (this method needs to be overriden by descendants).
   public removeFromLists() {}
 
