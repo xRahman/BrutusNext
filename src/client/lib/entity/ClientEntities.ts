@@ -9,13 +9,13 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Entity} from '../../../shared/lib/entity/Entity';
-import {EntityManager} from '../../../shared/lib/entity/EntityManager';
+import {Entities} from '../../../shared/lib/entity/Entities';
 
-export class ClientEntityManager extends EntityManager
+export class ClientEntities extends Entities
 {
   // --------------- Protected methods ------------------
 
-  // ~ Overrides EntityManager.requestEntityName().
+  // ~ Overrides Entities.requestEntityName().
   // -> Returns 'false' if name change isn't allowed
   //    (that means always on the client).
   protected async requestEntityName
@@ -49,7 +49,7 @@ export class ClientEntityManager extends EntityManager
     return null;
   }
 
-  // ~ Overrides EntityManager.saveEntity().
+  // ~ Overrides Entities.saveEntity().
   protected async saveEntity(entity: Entity)
   {
     // (It is possible that HTML5 Local Storage will be
@@ -59,7 +59,7 @@ export class ClientEntityManager extends EntityManager
       + " doesn't have save/load capability");
   }
 
-  // ~ Overrides EntityManager.loadEntityById().
+  // ~ Overrides Entities.loadEntityById().
   protected async loadEntityById(id: string): Promise<Entity>
   {
     // (It is possible that HTML5 Local Storage will be
@@ -71,7 +71,7 @@ export class ClientEntityManager extends EntityManager
     return null;
   }
 
-  // ~ Overrides EntityManager.loadEntityByName().
+  // ~ Overrides Entities.loadEntityByName().
   protected async loadEntityByName
   (
     name: string,
@@ -88,7 +88,7 @@ export class ClientEntityManager extends EntityManager
     return null;
   }
 
-  // ~ Overrides EntityManager.createNewEntity().
+  // ~ Overrides Entities.createNewEntity().
   // -> Returns 'null'.
   protected async createNewEntity
   (

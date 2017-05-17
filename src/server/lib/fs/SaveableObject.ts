@@ -24,10 +24,10 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
-import {Entity} from '../../../server/lib/entity/Entity';
-import {EntityManager} from '../../../server/lib/entity/EntityManager';
-import {NamedClass} from '../../../server/lib/class/NamedClass';
-import {InstantiableClass} from '../../../server/lib/class/InstantiableClass';
+import {Entity} from '../../../shared/lib/entity/Entity';
+import {Entities} from '../../../shared/lib/entity/Entities';
+///import {NamedClass} from '../../../server/lib/class/NamedClass';
+///import {InstantiableClass} from '../../../server/lib/class/InstantiableClass';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
 import {SavingManager} from '../../../server/lib/fs/SavingManager';
 import {IndirectValue} from '../../../server/lib/fs/IndirectValue';
@@ -587,7 +587,7 @@ export class SaveableObject extends InstantiableClass
   //       {
   //         ERROR("Property '" + propertyName + "' loaded from"
   //           + " file '" + path + "' is of type '" + className + "'"
-  //           + " which doesn't exist in ClassFactory. It probably"
+  //           + " which doesn't exist in Classes. It probably"
   //           + " means that you forgot to add class '" + className + "'"
   //           + " to DynamicClasses.ts");
   //         myProperty = null;
@@ -1072,7 +1072,7 @@ export class SaveableObject extends InstantiableClass
     );
   }
 
-  // If 'id' loaded from JSON already exists in EntityManager,
+  // If 'id' loaded from JSON already exists in Entities,
   // existing entity proxy will be returned. Otherwise an 'invalid'
   // entity proxy will be created and returned.
   // Note:

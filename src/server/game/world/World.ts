@@ -7,7 +7,7 @@
 
 'use strict';
 
-import {EntityManager} from '../../../shared/lib/entity/EntityManager';
+import {Entities} from '../../../shared/lib/entity/Entities';
 import {PrototypeManager} from '../../../shared/lib/entity/PrototypeManager';
 ///import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
 ///import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
@@ -17,7 +17,7 @@ import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
 import {Realm} from '../../../server/game/world/Realm';
 import {Area} from '../../../server/game/world/Area';
 import {Room} from '../../../server/game/world/Room';
-import {ClassFactory} from '../../../shared/lib/class/ClassFactory';
+import {Classes} from '../../../shared/lib/class/Classes';
 
 export class World extends ServerGameEntity
 {
@@ -56,7 +56,7 @@ export class World extends ServerGameEntity
     //  even if someone renames it).
     let prototype = PrototypeManager.get(World.name);
 
-    this.systemRealm = await EntityManager.createNewInstanceEntity
+    this.systemRealm = await Entities.createNewInstanceEntity
     (
       prototype,
       'System Realm',
@@ -133,4 +133,4 @@ TODO
   // ---------------- Private methods -------------------
 }
 
-ClassFactory.registerPrototypeClass(World);
+Classes.registerPrototypeClass(World);

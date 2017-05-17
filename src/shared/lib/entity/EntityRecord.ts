@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Implements record of a single entity proxy reference used by EntityManager.
+  Information about entity stored in Entities.
 */
 
 'use strict';
@@ -31,9 +31,9 @@ export class EntityRecord
   public getEntity()
   {
     if (this.entity === null)
-      ERROR("'null' entity reference in entity record in EntityManager"
+      ERROR("'null' entity reference in entity record in Entities"
         + " You are probably accessing entity record after it has been"
-        + " removed from EntityManager and invalidated");
+        + " removed from Entities and invalidated");
 
     return this.entity;
   }
@@ -49,7 +49,7 @@ export class EntityRecord
 
     // Setting our internal variables to null is probably not
     // needed, because whole record will get removed from
-    // EntityManager right after invalidate() is called, but
+    // Entities right after invalidate() is called, but
     // better be sure.
     // (On the other hand by doing this will will get an error
     //  message when someone tries to access these variables so

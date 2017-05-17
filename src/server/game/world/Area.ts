@@ -11,7 +11,7 @@
 
 ///import {Game} from '../../game/Game';
 import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
-import {ClassFactory} from '../../../shared/lib/ClassFactory';
+import {Classes} from '../../../shared/lib/class/Classes';
 
 export class Area  extends ServerGameEntity
 {
@@ -43,4 +43,4 @@ export class Area  extends ServerGameEntity
   // ---------------- Private methods -------------------
 }
 
-ClassFactory.registerPrototypeClass(Area);
+Classes.registerPrototypeClass(Area);

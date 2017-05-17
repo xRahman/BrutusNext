@@ -8,9 +8,9 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
-import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
-import {Entity} from '../../../server/lib/entity/Entity';
-import {EntityManager} from '../../../server/lib/entity/EntityManager';
+///import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
+import {Entity} from '../../../shared/lib/entity/Entity';
+import {Entities} from '../../../shared/lib/entity/Entities';
 import {AbbrevSearchList} from '../../../server/game/search/AbbrevSearchList';
 import {ServerApp} from '../../../server/lib/Server';
 import {Connection} from '../../../server/lib/connection/Connection';
@@ -55,7 +55,7 @@ export class CharacterList extends AbbrevSearchList
     character.name = name;
     */
     
-    /// Tohle už dělá EntityManager.createNamedEntity().
+    /// Tohle už dělá Entities.createNamedEntity().
     ///character.isNameUnique = true;
 
     character.atachConnection(connection);
@@ -99,7 +99,7 @@ export class CharacterList extends AbbrevSearchList
     }
 
     // Second parameter of loadNamedEntity is used for dynamic type cast.
-    character = await EntityManager.loadNamedEntity
+    character = await Entities.loadNamedEntity
     (
       name,
       NamedEntity.NameCathegory.characters,

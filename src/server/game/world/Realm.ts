@@ -10,7 +10,7 @@ import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
 import {Game} from '../../game/Game';
 import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
 import {Area} from '../../game/world/Area';
-import {ClassFactory} from '../../../shared/lib/ClassFactory';
+import {Classes} from '../../../shared/lib/Classes';
 
 export class Realm extends ServerGameEntity
 {
@@ -59,4 +59,4 @@ export class Realm extends ServerGameEntity
   // ---------------- Private methods -------------------
 }
 
-ClassFactory.registerPrototypeClass(Realm);
+Classes.registerPrototypeClass(Realm);

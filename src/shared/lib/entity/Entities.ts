@@ -9,20 +9,20 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {App} from '../../../shared/lib/app/App';
 import {Serializable} from '../../../shared/lib/class/Serializable';
-import {Classes} from '../../../shared/lib/class/ClassFactory';
+import {Classes} from '../../../shared/lib/class/Classes';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {EntityRecord} from '../../../shared/lib/entity/EntityRecord';
 import {EntityProxyHandler} from
   '../../../shared/lib/entity/EntityProxyHandler';
 
-export abstract class EntityManager
+export abstract class Entities
 {
   //------------------ Private data ---------------------
 
   // List of all entities that are loaded in memory.
   // Key:   entity id
   // Value: record containing entity and its proxy handler
-  private entityRecords = new Map<string, EntityRecord>();
+  private records = new Map<string, EntityRecord>();
 
   // List of instances of hardcoded entity classes that are
   // used as prototype objects for root prototype entities.
@@ -31,18 +31,6 @@ export abstract class EntityManager
   private rootObjects = new Map<string, Entity>();
 
   // ------------- Public static methods ----------------
-
-  /// To be deleted.
-  /*
-  public static createRootEntity<T extends Entity>
-  (
-    className: string,
-    Class: { new (...args: any[]): T }
-  )
-  {
-    App.getEntityManager().createRootEntity(className, Class);
-  }
-  */
 
   // Creates entity using an existing 'id'.
   // -> Returns 'null' if entity couldn't be created.
@@ -55,28 +43,6 @@ export abstract class EntityManager
   {
     return App.getEntityManager().createExistingEntity(prototypeId, id);
   }
-  /// Dynamic typecasting asi není potřeba u createExistingEntity(),
-  /// protože se volá jen v Serializable.createEntityInstance() při
-  /// deserializaci. Kdyby to přestalo platit, v commentu je typecastová
-  /// verze.
-  /*
-  // Creates entity using an existing 'id'.
-  // -> Returns 'null' if entity couldn't be created.
-  public static createExistingEntity<T extends Entity>
-  (
-    prototypeId: string,
-    id: string,
-    typeCast: { new (...args: any[]): T }
-  )
-  : T
-  {
-    let entity = App.getEntityManager().createExistingEntity(prototypeId, id);
-
-    // Dynamically check that entity is an
-    // instance of type T and typecast to it.
-    return entity.dynamicCast(typeCast);
-  }
-  */
 
   // Creates a new instance entity (can't be used as prototype).
   // A new id is generated for it.
@@ -129,25 +95,13 @@ export abstract class EntityManager
       name,
       nameCathegory
     );
-    /*
-    let entity = await App.getEntityManager().createNewEntity
-    (
-      prototype,
-      name,
-      // All names prototype entities are unique
-      // within cathegory 'prototypes'.
-      Entity.NameCathegory.PROTOTYPE,
-      // 'isPrototype'
-      true
-    );
-    */
 
     // Dynamically check that entity is an
     // instance of type T and typecast to it.
     return entity.dynamicCast(typeCast);
   }
 
-  // -> Returns existing reference if entity already exists in EntityManager.
+  // -> Returns existing reference if entity already exists in Entities.
   //    Returns invalid reference if entity with such 'id' isn't there.
   public static createReference(id: string): Entity
   {
@@ -287,13 +241,13 @@ export abstract class EntityManager
 
   protected findPrototypeRecord(prototypeId: string)
   {
-    let prototypeRecord = this.entityRecords.get(prototypeId);
+    let prototypeRecord = this.records.get(prototypeId);
 
     if (!prototypeRecord)
     {
       ERROR("Attempt to create an entity based on prototype"
         + " id '" + prototypeId + " which doesn't exist in"
-        + " EntityManager. Entity instance is not created");
+        + " Entities. Entity instance is not created");
       return null;
     }
 
@@ -445,54 +399,6 @@ export abstract class EntityManager
 
     this.rootObjects.set(className, new Class);
   }
-  /*
-  private createRootEntity<T extends Entity>
-  (
-    className: string,
-    Class: { new (...args: any[]): T }
-  )
-  {
-    // 'className' will be used as an entity id.
-    if (this.has(className))
-    {
-      ERROR("Attempt to add root prototype entity for class " + className
-        + " to EntityManager which is already there");
-      return;
-    }
-
-    // Unlike all other entities which are created using Object.create(),
-    // root entities are created as 'new Class'
-    // (We don't need Object.create() because root entities are only used
-    //  as prototype objects for root prototypes).
-    let instance = new Class();
-
-    // Set 'className' as 'id'
-    // (root entities use 'className' as their entity id in order for this
-    //  id to be the same both on the client and on the server. This way
-    //  when a prototype chain is recreated after an entity is serialized,
-    //  sent to client and deserialized back, client knows what a root
-    //  prototype object of that chain is).
-    if (instance.setId(className) === false)
-      return;
-
-    let handler = this.createProxyHandler(instance);
-
-    // Hide bare entity behind a Proxy object which will report
-    // access to it's properties if it becomes invalid.
-    // (We don't really need proxies for root entities because they
-    //  are only used as prototype objects, but by doing it we can
-    //  handle them using the same code as any other entities.)
-    let proxy = this.createEntityProxy(handler);
-
-    // Create an new EntityRecord that will be added to EntityManager.
-    let entityRecord = new EntityRecord(proxy, handler);
-
-    // Add root entity to EntityManager
-    //   Note that in case of root entity, there is no point in
-    // setting it's prototype - root entities don't have any.
-    this.add(entityRecord);
-  }
-  */
 
   // -> Returns 'null' on error.
   private async createNewPrototypeEntity
@@ -553,10 +459,10 @@ export abstract class EntityManager
     // access to it's properties if it becomes invalid.
     let proxy = this.createEntityProxy(handler);
 
-    // Create an new EntityRecord that will be added to EntityManager.
+    // Create an new EntityRecord that will be added to Entities.
     let entityRecord = new EntityRecord(proxy, handler);
 
-    // Add entity record to EntityManager. If a record with this 'id'
+    // Add entity record to Entities. If a record with this 'id'
     // already exists there, the existing one will be used instead
     // of the one we have just created.
     //   In case of error entity will be 'null'.
@@ -583,7 +489,7 @@ export abstract class EntityManager
     return handler;
   }
 
-  // -> Returns existing reference if entity already exists in EntityManager.
+  // -> Returns existing reference if entity already exists in Entities.
   //    Returns invalid reference if entity with such 'id' isn't there.
   private createReference(id: string): Entity
   {
@@ -616,14 +522,14 @@ export abstract class EntityManager
   // -> Returns 'true' if enity is in the manager.
   private has(id: string)
   {
-    return this.entityRecords.has(id);
+    return this.records.has(id);
   }
 
   // Requests an entity from the manager.
   // -> Returns 'undefined' if entity isn't found.
   private get(id: string)
   {
-    let entityRecord = this.entityRecords.get(id)
+    let entityRecord = this.records.get(id)
 
     if (!entityRecord)
       return undefined;
@@ -636,19 +542,19 @@ export abstract class EntityManager
   private add(entityRecord: EntityRecord)
   {
     let id = entityRecord.getEntity().getId();
-    let existingRecord = this.entityRecords.get(id);
+    let existingRecord = this.records.get(id);
 
     if (existingRecord !== undefined)
     {
       ERROR("Attempt to add entity "
        + entityRecord.getEntity().getErrorIdString()
-       + " to EntityManager which already exists there."
+       + " to Entities which already exists there."
        + " Entity is not added, existing one will be used");
       return existingRecord.getEntity();
     }
 
     // Add entity record to hashmap under entity's id.
-    this.entityRecords.set(id, entityRecord);
+    this.records.set(id, entityRecord);
 
     return entityRecord.getEntity();
   }
@@ -662,7 +568,7 @@ export abstract class EntityManager
   {
     if (!Entity.isValid(entity))
     {
-      ERROR("Attempt to remove invalid entity from EntityManager");
+      ERROR("Attempt to remove invalid entity from Entities");
       return;
     }
 
@@ -670,17 +576,17 @@ export abstract class EntityManager
     entity.removeFromLists();
 
     // get() returns undefined if there is no such record in hashmap.
-    let entityRecord = this.entityRecords.get(entity.getId());
+    let entityRecord = this.records.get(entity.getId());
 
     if (entityRecord === undefined)
     {
       ERROR("Attempt to remove entity " + entity.getErrorIdString()
-        + " from EntityManager which is not there");
+        + " from Entities which is not there");
       return;
     }
 
     // Remove the record from hashmap.
-    this.entityRecords.delete(entity.getId());
+    this.records.delete(entity.getId());
 
     // Invalidate internal 'entity' reference in proxy handler
     // so the entity can be freed from memory by garbage collector.
@@ -688,9 +594,97 @@ export abstract class EntityManager
     //  by it's proxy handler as error).
     entityRecord.invalidate();
   }
+}
 
-  // // Loads uniquely named entity from file
-  // // (it must not exist in EntityManager). 
+
+
+/// To be deleted.
+/*
+export abstract class Entities
+{
+  // ------------- Public static methods ----------------
+
+  public static createRootEntity<T extends Entity>
+  (
+    className: string,
+    Class: { new (...args: any[]): T }
+  )
+  {
+    App.getEntityManager().createRootEntity(className, Class);
+  }
+
+  /// Dynamic typecasting asi není potřeba u createExistingEntity(),
+  /// protože se volá jen v Serializable.createEntityInstance() při
+  /// deserializaci. Kdyby to přestalo platit, v commentu je typecastová
+  /// verze.
+  // Creates entity using an existing 'id'.
+  // -> Returns 'null' if entity couldn't be created.
+  public static createExistingEntity<T extends Entity>
+  (
+    prototypeId: string,
+    id: string,
+    typeCast: { new (...args: any[]): T }
+  )
+  : T
+  {
+    let entity = App.getEntityManager().createExistingEntity(prototypeId, id);
+
+    // Dynamically check that entity is an
+    // instance of type T and typecast to it.
+    return entity.dynamicCast(typeCast);
+  }
+
+  // ---------------- Private methods -------------------
+
+  private createRootEntity<T extends Entity>
+  (
+    className: string,
+    Class: { new (...args: any[]): T }
+  )
+  {
+    // 'className' will be used as an entity id.
+    if (this.has(className))
+    {
+      ERROR("Attempt to add root prototype entity for class " + className
+        + " to Entities which is already there");
+      return;
+    }
+
+    // Unlike all other entities which are created using Object.create(),
+    // root entities are created as 'new Class'
+    // (We don't need Object.create() because root entities are only used
+    //  as prototype objects for root prototypes).
+    let instance = new Class();
+
+    // Set 'className' as 'id'
+    // (root entities use 'className' as their entity id in order for this
+    //  id to be the same both on the client and on the server. This way
+    //  when a prototype chain is recreated after an entity is serialized,
+    //  sent to client and deserialized back, client knows what a root
+    //  prototype object of that chain is).
+    if (instance.setId(className) === false)
+      return;
+
+    let handler = this.createProxyHandler(instance);
+
+    // Hide bare entity behind a Proxy object which will report
+    // access to it's properties if it becomes invalid.
+    // (We don't really need proxies for root entities because they
+    //  are only used as prototype objects, but by doing it we can
+    //  handle them using the same code as any other entities.)
+    let proxy = this.createEntityProxy(handler);
+
+    // Create an new EntityRecord that will be added to Entities.
+    let entityRecord = new EntityRecord(proxy, handler);
+
+    // Add root entity to Entities
+    //   Note that in case of root entity, there is no point in
+    // setting it's prototype - root entities don't have any.
+    this.add(entityRecord);
+  }
+
+    // // Loads uniquely named entity from file
+  // // (it must not exist in Entities). 
   // // -> Returns reference to the loaded entity.
   // public async loadNamedEntity
   // (
@@ -715,7 +709,7 @@ export abstract class EntityManager
   // // -> Returns 'null' if loading fails.
   // public async loadEntity(id: string)
   // {
-  //   // First check if such entity already exists in EntityManager
+  //   // First check if such entity already exists in Entities
   //   // (get() returns 'undefined' if entity is not found).
   //   let entity = this.get(id, Entity);
 
@@ -817,7 +811,7 @@ export abstract class EntityManager
   //   if (entity === null || entity === undefined)
   //   {
   //     ERROR("Attempt to remove 'null' or 'undefined'"
-  //       + " entity from EntityManager");
+  //       + " entity from Entities");
   //     return;
   //   }
 
@@ -830,7 +824,7 @@ export abstract class EntityManager
   //   if (entityRecord === undefined)
   //   {
   //     ERROR("Attempt to remove entity " + entity.getErrorIdString()
-  //       + " from EntityManager which is not present in the manager");
+  //       + " from Entities which is not present in the manager");
   //     return;
   //   }
 
@@ -839,15 +833,15 @@ export abstract class EntityManager
   //   if (this.entityRecords.delete(entity.getId()) === false)
   //   {
   //     ERROR("Failed to delete record '" + entity.getId() + "' from"
-  //       + " EntityManager");
+  //       + " Entities");
   //   }
 
   //   // IMPORTANT: This must be done after deleting a record from
-  //   // EntityManager, because entity is actualy a proxy and accessing
+  //   // Entities, because entity is actualy a proxy and accessing
   //   // 'getId' property on it would lead to updateReference() call,
   //   // which would fail, because entity reference in proxyhandler would
   //   // already by null but entityRecord would still be present in
-  //   // EntityManager.
+  //   // Entities.
 
   //   // Set all proxy handlers of this entity to null (so anyone who
   //   // still has a reference to entity proxy will know that entity is
@@ -856,7 +850,7 @@ export abstract class EntityManager
   // }
 
   // // -> Returns entity proxy matching given id.
-  // //    Returns 'undefined' if entity doesn't exist in EntityManager.
+  // //    Returns 'undefined' if entity doesn't exist in Entities.
   // public get<T>
   // (
   //   id: string,
@@ -892,7 +886,7 @@ export abstract class EntityManager
   //   return entityProxy.dynamicCast(typeCast);
   // }
 
-  // // Check if entity exists in EntityManager.
+  // // Check if entity exists in Entities.
   // public has(id: string): boolean
   // {
   //   return this.entityRecords.has(id);
@@ -937,7 +931,7 @@ export abstract class EntityManager
 
   //   if (entity === null)
   //   {
-  //     ERROR("Attempt to add <null> entity to EntityManager. That is not"
+  //     ERROR("Attempt to add <null> entity to Entities. That is not"
   //       + " allowed. There may only be existing entity instances in the"
   //       + " manager. Record is not added");
   //     return;
@@ -948,7 +942,7 @@ export abstract class EntityManager
   //   if (this.entityRecords.get(handler.id))
   //   {
   //     ERROR("Attempt to add entity " + proxy.getErrorIdString()
-  //       + " to EntityManager which is already present in it."
+  //       + " to Entities which is already present in it."
   //       + " entity is not added");
   //     return;
   //   }
@@ -1088,10 +1082,10 @@ export abstract class EntityManager
   // {
   //   ERROR("It is not possible to load entity"
   //     + " " + entity.getErrorIdString() + " because it"
-  //     + " is already loaded in EntityManager. All unsaved"
+  //     + " is already loaded in Entities. All unsaved"
   //     + " changes would be lost. If you really need to lose"
   //     + " unsaved changes on this entity, remove() it from"
-  //     + " EntityManager and then call EntityManager.loadEntity()."
+  //     + " Entities and then call Entities.loadEntity()."
   //     + " Entity is not loaded");
   // }
 
@@ -1299,7 +1293,7 @@ export abstract class EntityManager
   // // -> Returns 'null' if such prototype entity doesn't exist.
   // private async getPrototypeEntityById(prototypeId: string)
   // {
-  //   // get() returns 'undefined' if id is not present in EntityManager.
+  //   // get() returns 'undefined' if id is not present in Entities.
   //   let entity = this.get(prototypeId, Entity);
 
   //   if (entity !== undefined)
@@ -1310,7 +1304,7 @@ export abstract class EntityManager
   //   return await this.loadEntity(prototypeId);
   // }
 
-  // // Searches for prototype entity in EntityManager if 'prototypeId'
+  // // Searches for prototype entity in Entities if 'prototypeId'
   // // isn't null, or in PrototypeManager using 'className' otherwise.
   // // -> Returns 'undefined' if prototype entity isn't found.
   // private async getPrototypeEntity
@@ -1410,3 +1404,4 @@ export abstract class EntityManager
   //   return true;
   // }
 }
+*/

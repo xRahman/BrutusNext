@@ -16,9 +16,9 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 import {App} from '../../../shared/lib/app/App';
 ///import {IdProvider} from '../../../server/lib/entity/IdProvider';
-import {ClassFactory} from '../../../shared/lib/class/ClassFactory';
-import {ServerEntityManager} from
-  '../../../server/lib/entity/ServerEntityManager';
+import {Classes} from '../../../shared/lib/class/Classes';
+import {ServerEntities} from
+  '../../../server/lib/entity/ServerEntities';
 import {FileManager} from '../../../server/lib/fs/FileManager';
 ///import {FlagNamesManager} from '../../../server/lib/flags/FlagNamesManager';
 import {AdminList} from '../../../server/lib/admin/AdminList';
@@ -73,7 +73,7 @@ export class ServerApp extends App
   // -------- managers --------
   // ~ Overrides App.entityManager.
   // Contains all entities (accounts, characters, rooms, etc.).
-  protected entityManager = new ServerEntityManager(this.timeOfBoot);
+  protected entityManager = new ServerEntities(this.timeOfBoot);
 
   // ~ Overrides App.prototypeManager.
   // Manages prototype entities.
@@ -304,9 +304,9 @@ export class ServerApp extends App
   {
     /*
     // Create an entity for each entity class registered in
-    // ClassFactory so they can be used as prototype objects
+    // Classes so they can be used as prototype objects
     // for other entities.
-    ClassFactory.createRootEntities();
+    Classes.createRootEntities();
     */
 
     TODO:
@@ -315,7 +315,7 @@ export class ServerApp extends App
     /// parametr, aby se to negenerovalo zbytečně dvakrát.
 
     // Create an instance of each entity class registered in
-    // ClassFactory so they can be used as prototype objects
+    // Classes so they can be used as prototype objects
     // for root prototype entities.
     this.entityManager.createRootObjects();
 

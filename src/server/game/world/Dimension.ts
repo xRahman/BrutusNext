@@ -12,7 +12,7 @@
 'use strict';
 
 import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
-import {ClassFactory} from '../../../shared/lib/ClassFactory';
+import {Classes} from '../../../shared/lib/class/Classes';
 
 export class Dimension extends ServerGameEntity
 {
@@ -39,4 +39,4 @@ export class Dimension extends ServerGameEntity
   // ---------------- Private methods -------------------
 }
 
-ClassFactory.registerPrototypeClass(Dimension);
+Classes.registerPrototypeClass(Dimension);
