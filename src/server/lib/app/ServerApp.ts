@@ -26,8 +26,7 @@ import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Connection} from '../../../server/lib/connection/Connection';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {EntityList} from '../../../shared/lib/entity/EntityList';
-import {ServerPrototypes} from
-  '../../../server/lib/entity/ServerPrototypeManager';
+import {ServerPrototypes} from '../../../server/lib/entity/ServerPrototypes';
 import {AccountList} from '../../../server/lib/account/AccountList';
 import {Syslog} from '../../../shared/lib/log/Syslog';
 import {ServerSyslog} from '../../../server/lib/log/ServerSyslog';
@@ -325,7 +324,7 @@ export class ServerApp extends App
     // Create root prototype entities if they don't exist yet or load
     // them from disk. Then recursively load all prototype entities
     // inherited from them.
-    await this.prototypes.initPrototypes();
+    await this.prototypes.init();
 
     // If /server/data/ directory didn't exist, create and save a new world.
     if (!dataExists)

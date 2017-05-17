@@ -10,7 +10,8 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {App} from '../../../shared/lib/app/App';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {Classes} from '../../../shared/lib/class/Classes';
-import {Entity} from '../../../shared/lib/entity/Entity';
+//import {Entity} from '../../../shared/lib/entity/Entity';
+import {Entity} from '../../../shared/lib';
 import {EntityRecord} from '../../../shared/lib/entity/EntityRecord';
 import {EntityProxyHandler} from
   '../../../shared/lib/entity/EntityProxyHandler';
@@ -195,11 +196,9 @@ export abstract class Entities
   // Creates instances of hardcoded classes that are used
   // as prototype objects for root prototypes.
   public createRootObjects()
-  {
-    let entityClassNames = Classes.entities.keys();
-    
-    for (let className of entityClassNames)
-      this.createRootObject(className);
+  {  
+    for (let [className, Class] of Classes.entities)
+      this.rootObjects.set(className, new Class);
   }
 
   // --------------- Protected methods ------------------
@@ -382,21 +381,6 @@ export abstract class Entities
     // have already been instantiated on 'object', because there
     // still may be some changes deeper in the structure).
     this.instantiateProperties(object[propertyName], prototype[propertyName]);
-  }
-
-  private createRootObject(className: string)
-  {
-    let Class = Classes.entities.get(className);
-
-    if (!Class)
-    {
-      ERROR("Unable to create root prototype object because"
-        + " class '" + className + "' isn't registered"
-        + " in Classes");
-      return;
-    }
-
-    this.rootObjects.set(className, new Class);
   }
 
   // -> Returns 'null' on error.
