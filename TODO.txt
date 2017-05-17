@@ -13,7 +13,7 @@ TODO:
 EntityManager se může jmenovat prostě Entities
 PrototypeManager se může jmenovat prostě Prototypes
 ClassFactory se může jmenovat prostě Classes (nebo DynamicClasses).
-     
+- co FileManager?
 
 Řešení jmen prototypů:
 

@@ -17,7 +17,7 @@ export class EntityPrototypeRecord extends SaveableObject
   public prototypeId = null;
 
   // The javascript object on which instances are based using
-  // Object.create(). See PrototypeManager.createInstance().
+  // Object.create(). See Prototypes.createInstance().
   // Note: This property can't be named 'prototype' because
   // 'static prototype' property would refer to the javascript
   // prototype property so we wouldn't be able to set this property
@@ -36,7 +36,7 @@ export class EntityPrototypeRecord extends SaveableObject
   //   because descendants reference their ancestor by it's id which
   //   doesn't change).
   // - Descendants are remembered because we want to be able to load
-  //   protype entities recursively (starting with PrototypeManager,
+  //   protype entities recursively (starting with Prototypes,
   //   which holds hardcoded prototypes, which know their descendatns,
   //   and so on). Remembering only descendants wouldn't allow this.
   public descendantIds = [];
@@ -65,14 +65,14 @@ export class EntityPrototypeRecord extends SaveableObject
 
     // Prototype object of an entity prototype is an entity and
     // because all entities are stored in Entities, we need
-    // to ask the manager for our prototype entity.
+    // to ask it for our prototype entity.
     let prototypeEntity = ServerApp.entityManager.get(prototypeId, Entity);
 
     if (prototypeEntity === null || prototypeEntity === undefined)
     {
       ERROR("Failed to find prototype object because"
         + " entity with id '" + prototypeId + "' doesn't"
-        + " exist in PrototypeManager. If this id is not"
+        + " exist in Prototypes. If this id is not"
         + " an etity id but a class name, it means that"
         + " prototypeObject in respective Prototype record"
         + " is not properly initialized");
@@ -82,7 +82,7 @@ export class EntityPrototypeRecord extends SaveableObject
     if (prototypeEntity.getId() !== prototypeId)
     {
       ERROR("Id of entity " + prototypeEntity.getErrorIdString
-        + " provided by Entity manager differs from the requested"
+        + " provided by Entities differs from the requested"
         + " id (" + prototypeId + ")");
       return undefined;
     }

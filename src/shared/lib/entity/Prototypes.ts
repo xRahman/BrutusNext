@@ -9,9 +9,9 @@
 import {App} from '../../../shared/lib/app/App';
 import {Entity} from '../../../shared/lib/entity/Entity';
 
-export class PrototypeManager
+export class Prototypes
 {
-  /// TODO: Asi by spíš celý PrototypeManager měl být name search list.
+  /// TODO: Asi by spíš Prototypes měly být name search list.
   // Key:   prototype name (which is the entity name)
   // Value: prototype entity
   protected prototypes = new Map<string, Entity>();
@@ -19,7 +19,7 @@ export class PrototypeManager
   // -> Returns 'null' if prototype with requested 'prototypeName' isn't found.
   public static get(prototypeName: string)
   {
-    return App.getPrototypeManager().get(prototypeName);
+    return App.getPrototypes().get(prototypeName);
   }
 
   // Initializes root prototype entities.

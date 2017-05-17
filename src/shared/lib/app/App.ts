@@ -9,7 +9,7 @@
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Entities} from '../../../shared/lib/entity/Entities';
-import {PrototypeManager} from '../../../shared/lib/entity/PrototypeManager';
+import {Prototypes} from '../../../shared/lib/entity/Prototypes';
 
 export abstract class App
 {
@@ -20,21 +20,21 @@ export abstract class App
   //----------------- Protected data -------------------- 
 
   // Contains all entities (accounts, characters, rooms, etc.).
-  protected entityManager: Entities = null;
+  protected entities: Entities = null;
 
   // Manages prototype entities.
-  protected prototypeManager: PrototypeManager = null;
+  protected prototypes: Prototypes = null;
 
   // --------------- Static accessors -------------------
 
   public static getEntityManager()
   {
-    return App.getInstance().entityManager;
+    return App.getInstance().entities;
   }
 
-  public static getPrototypeManager()
+  public static getPrototypes()
   {
-    return App.getInstance().prototypeManager;
+    return App.getInstance().prototypes;
   }
 
   // ------------- Public static methods ---------------- 

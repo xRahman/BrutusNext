@@ -370,7 +370,7 @@ export class AuthProcessor
     {
       if (ServerApp.accounts === null)
       {
-        ERROR("Invalid account manager");
+        ERROR("Invalid ServerApp.accounts");
         return;
       }
 
@@ -385,8 +385,9 @@ export class AuthProcessor
   {
     let reconnecting = true;
 
-    // Check if account is already loaded.
-    // (getAccountByName() returns 'undefined' if account isn't in the manager) 
+    // Check if account is already loaded
+    // (getAccountByName() returns 'undefined' if account isn't in
+    //  ServerApp.accounts).
     let account = ServerApp.accounts.getAccountByName(this.accountName);
 
     // If account doesn't exist in accountManager, we need to load it from
