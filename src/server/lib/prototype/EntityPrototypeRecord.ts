@@ -9,8 +9,8 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
-import {ServerApp} from '../../../server/lib/Server';
-import {Entity} from '../../../server/lib/entity/Entity';
+import {ServerApp} from '../../../server/lib/app/ServerApp';
+import {Entity} from '../../../shared/lib/entity/Entity';
 
 export class EntityPrototypeRecord extends SaveableObject
 {
