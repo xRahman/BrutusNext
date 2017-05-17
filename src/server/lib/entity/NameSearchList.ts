@@ -8,10 +8,10 @@
 
 ///import {SharedUtils} from '../../../shared/lib/utils/SharedUtils';
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
+///import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
 import {EntityList} from '../../../server/lib/entity/EntityList';
 import {Entity} from '../../../shared/lib/entity/Entity';
-import {EntityManager} from '../../../server/lib/entity/EntityManager';
+import {Entities} from '../../../shared/lib/entity/Entities';
 import {ServerApp} from '../../../server/lib/app/ServerApp';
 
 export class NameSearchList extends EntityList
@@ -55,7 +55,7 @@ export class NameSearchList extends EntityList
           + " which already exists but is not valid. This"
           + " can happen for example if you forget to update"
           + " removeFromLists() method, so when entity is"
-          + " removed from EntityManager (and thus becomes"
+          + " removed from Entities (and thus becomes"
           + " invalid), it is not removed from entity list."
           + " entity is not loaded");
         return null;

@@ -19,7 +19,7 @@ import {ServerApp} from '../../../server/lib/app/ServerApp';
 import {Game} from '../../game/Game';
 import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
 import {Character} from '../../../server/game/character/Character';
-import {ClassFactory} from '../../../shared/lib/class/ClassFactory';
+import {Classes} from '../../../shared/lib/class/Classes';
 
 // Built-in node.js modules.
 import * as crypto from 'crypto';  // Import namespace 'crypto' from node.js
@@ -383,4 +383,4 @@ export class Account extends ScriptableEntity
   }
 }
 
-ClassFactory.registerSerializableClass(Account);
+Classes.registerSerializableClass(Account);

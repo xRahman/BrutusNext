@@ -1,57 +1,21 @@
 /*
   Part of BrutusNEXT
 
-  Implements container to store instances of entities identified by
-  unique string ids.
-*/
-
-/*
-  All instances of entities (accounts, connections, characters, rooms, etc.)
-  need to be held only in in Server.entityManager. Entities are not referenced
-  directly but through their Proxy object (see EntityProxyHandler.ts) so if
-  you access deleted entity, an error message will be logged.
-*/
-
-/*
-  Note:
-    There is no public 'add()' method. If you want to add an existing entity
-  to EntityManager, use:
-
-    let entity = EntityManager.createReference(id);
-
-  Then you can do:
-
-    if (!entity.isValid())
-      entity.load();
-
-  to load it from the disk. Entity record is only added to EntityManager
-  after entity is loaded. Until then, you will have a invalid entity
-  reference (any access to properties of this reference will be logged
-  as error).
+  Stores instances of entities (see class Entity).
 */
 
 'use strict';
 
 import {Entity} from '../../../shared/lib/entity/Entity';
-import {EntityManager} from '../../../shared/lib/entity/EntityManager';
+import {Entities} from '../../../shared/lib/entity/Entities';
 import {ServerApp} from '../../../server/lib/app/ServerApp';
 import {FileManager} from '../../../server/lib/fs/FileManager';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
 import {IdProvider} from '../../../server/lib/entity/IdProvider';
 import {EntityProxyHandler} from
    '../../../shared/lib/entity/EntityProxyHandler';
-// import {ERROR} from '../../../shared/lib/error/ERROR';
-// import {Entity} from '../../../server/lib/entity/Entity';
-// import {NameLockRecord} from '../../../server/lib/entity/NameLockRecord';
-// import {EntityRecord} from '../../../server/lib/entity/EntityRecord';
-// import {ScriptableEntity} from '../../../server/lib/entity/ScriptableEntity';
-// import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
-// import {NameSearchList} from '../../../server/lib/entity/NameSearchList';
-// import {PrototypeManager} from
-//   '../../../server/lib/prototype/PrototypeManager';
-// import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
 
-export class ServerEntityManager extends EntityManager
+export class ServerEntities extends Entities
 {
   constructor (timeOfBoot: Date)
   {
@@ -77,14 +41,14 @@ export class ServerEntityManager extends EntityManager
 
   // --------------- Protected methods ------------------
 
-  // ~ Overrides EntityManager.generateId().
+  // ~ Overrides Entities.generateId().
   // Creates a unique entity string id.
   protected generateId(): string
   {
     return this.idProvider.generateId();
   }
 
-  // ~ Overrides EntityManager.requestEntityName().
+  // ~ Overrides Entities.requestEntityName().
   // Checks if requested name is available, creates
   // a name lock file if it is.
   // -> Returns 'false' if name change isn't allowed.
@@ -99,7 +63,7 @@ export class ServerEntityManager extends EntityManager
     if (cathegory === null)
       return true;
 
-    if (ServerEntityManager.isNameTaken(name, cathegory))
+    if (ServerEntities.isNameTaken(name, cathegory))
       return false;
 
     return FileManager.saveNameLockFile(id, name, cathegory);
@@ -114,19 +78,19 @@ export class ServerEntityManager extends EntityManager
     FileManager.deleteNameLockFile(name, cathegory);
   }
 
-  // ~ Overrides EntityManager.saveEntity().
+  // ~ Overrides Entities.saveEntity().
   protected async saveEntity(entity: Entity)
   {
     await FileManager.saveEntity(entity);
   }
 
-  // ~ Overrides EntityManager.loadEntityById().
+  // ~ Overrides Entities.loadEntityById().
   protected async loadEntityById(id: string): Promise<Entity>
   {
     return await FileManager.loadEntityById(id);
   }
 
-  // ~ Overrides EntityManager.loadEntityByName().
+  // ~ Overrides Entities.loadEntityByName().
   protected async loadEntityByName
   (
     name: string,
@@ -136,7 +100,7 @@ export class ServerEntityManager extends EntityManager
     return await FileManager.loadEntityByName(name, cathegory);
   }
 
-  // ~ Overrides EntityManager.createNewEntity().
+  // ~ Overrides Entities.createNewEntity().
   // Creates a new instance entity (can't be used as prototype).
   // A new id is generated for it.
   // -> Returns 'null' on failure.
@@ -154,7 +118,7 @@ export class ServerEntityManager extends EntityManager
     if (name !== null && cathegory !== null)
     {
       // Attempt to create a name lock file.
-      let isNameAvailable = await EntityManager.requestEntityName
+      let isNameAvailable = await Entities.requestEntityName
       (
         id,
         name,
@@ -210,7 +174,7 @@ export class ServerEntityManager extends EntityManager
   // // ---------------- Public methods --------------------
 
   // // Loads uniquely named entity from file
-  // // (it must not exist in EntityManager). 
+  // // (it must not exist in Entities). 
   // // -> Returns reference to the loaded entity.
   // public async loadNamedEntity
   // (
@@ -235,7 +199,7 @@ export class ServerEntityManager extends EntityManager
   // // -> Returns 'null' if loading fails.
   // public async loadEntity(id: string)
   // {
-  //   // First check if such entity already exists in EntityManager
+  //   // First check if such entity already exists in Entities
   //   // (get() returns 'undefined' if entity is not found).
   //   let entity = this.get(id, Entity);
 
@@ -384,7 +348,7 @@ export class ServerEntityManager extends EntityManager
   //   if (entity === null || entity === undefined)
   //   {
   //     ERROR("Attempt to remove 'null' or 'undefined'"
-  //       + " entity from EntityManager");
+  //       + " entity from Entities");
   //     return;
   //   }
 
@@ -397,7 +361,7 @@ export class ServerEntityManager extends EntityManager
   //   if (entityRecord === undefined)
   //   {
   //     ERROR("Attempt to remove entity " + entity.getErrorIdString()
-  //       + " from EntityManager which is not present in the manager");
+  //       + " from Entities which is not present in the manager");
   //     return;
   //   }
 
@@ -406,15 +370,15 @@ export class ServerEntityManager extends EntityManager
   //   if (this.entityRecords.delete(entity.getId()) === false)
   //   {
   //     ERROR("Failed to delete record '" + entity.getId() + "' from"
-  //       + " EntityManager");
+  //       + " Entities");
   //   }
 
   //   // IMPORTANT: This must be done after deleting a record from
-  //   // EntityManager, because entity is actualy a proxy and accessing
+  //   // Entities, because entity is actualy a proxy and accessing
   //   // 'getId' property on it would lead to updateReference() call,
   //   // which would fail, because entity reference in proxyhandler would
   //   // already by null but entityRecord would still be present in
-  //   // EntityManager.
+  //   // Entities.
 
   //   // Set all proxy handlers of this entity to null (so anyone who
   //   // still has a reference to entity proxy will know that entity is
@@ -423,7 +387,7 @@ export class ServerEntityManager extends EntityManager
   // }
 
   // // -> Returns entity proxy matching given id.
-  // //    Returns 'undefined' if entity doesn't exist in EntityManager.
+  // //    Returns 'undefined' if entity doesn't exist in Entities.
   // public get<T>
   // (
   //   id: string,
@@ -459,7 +423,7 @@ export class ServerEntityManager extends EntityManager
   //   return entityProxy.dynamicCast(typeCast);
   // }
 
-  // // Check if entity exists in EntityManager.
+  // // Check if entity exists in Entities.
   // public has(id: string): boolean
   // {
   //   return this.entityRecords.has(id);
@@ -471,7 +435,7 @@ export class ServerEntityManager extends EntityManager
   // /// - loadnout invalid referenci je ok. Není ok updatovat invalid
   // ///   referenci, když v manageru už je jiná reference pro stejné id.
   // ///
-  // // -> Returns existing reference if entity already exists in EntityManager.
+  // // -> Returns existing reference if entity already exists in Entities.
   // //    Returns invalid reference if entity with such id doen't exist yet.
   // //      (you can then use entity.load() to load if from disk)
   // public createReference(id: string): Entity
@@ -521,7 +485,7 @@ export class ServerEntityManager extends EntityManager
 
   //   if (entity === null)
   //   {
-  //     ERROR("Attempt to add <null> entity to EntityManager. That is not"
+  //     ERROR("Attempt to add <null> entity to Entities. That is not"
   //       + " allowed. There may only be existing entity instances in the"
   //       + " manager. Record is not added");
   //     return;
@@ -532,7 +496,7 @@ export class ServerEntityManager extends EntityManager
   //   if (this.entityRecords.get(handler.id))
   //   {
   //     ERROR("Attempt to add entity " + proxy.getErrorIdString()
-  //       + " to EntityManager which is already present in it."
+  //       + " to Entities which is already present in it."
   //       + " entity is not added");
   //     return;
   //   }
@@ -690,10 +654,10 @@ export class ServerEntityManager extends EntityManager
   // {
   //   ERROR("It is not possible to load entity"
   //     + " " + entity.getErrorIdString() + " because it"
-  //     + " is already loaded in EntityManager. All unsaved"
+  //     + " is already loaded in Entities. All unsaved"
   //     + " changes would be lost. If you really need to lose"
   //     + " unsaved changes on this entity, remove() it from"
-  //     + " EntityManager and then call EntityManager.loadEntity()."
+  //     + " Entities and then call Entities.loadEntity()."
   //     + " Entity is not loaded");
   // }
 
@@ -901,7 +865,7 @@ export class ServerEntityManager extends EntityManager
   // // -> Returns 'null' if such prototype entity doesn't exist.
   // private async getPrototypeEntityById(prototypeId: string)
   // {
-  //   // get() returns 'undefined' if id is not present in EntityManager.
+  //   // get() returns 'undefined' if id is not present in Entities.
   //   let entity = this.get(prototypeId, Entity);
 
   //   if (entity !== undefined)
@@ -912,7 +876,7 @@ export class ServerEntityManager extends EntityManager
   //   return await this.loadEntity(prototypeId);
   // }
 
-  // // Searches for prototype entity in EntityManager if 'prototypeId'
+  // // Searches for prototype entity in Entities if 'prototypeId'
   // // isn't null, or in PrototypeManager using 'className' otherwise.
   // // -> Returns 'undefined' if prototype entity isn't found.
   // private async getPrototypeEntity
@@ -1014,7 +978,7 @@ export class ServerEntityManager extends EntityManager
 
   // /// Deprecated.
   // /*
-  // // Searches for ancestor entity both in EntityManager and PrototypeManager.
+  // // Searches for ancestor entity both in Entities and PrototypeManager.
   // // -> Returns 'null' if ancestor entity isn't found.
   // private getAncestorEntity
   // (
@@ -1023,13 +987,13 @@ export class ServerEntityManager extends EntityManager
   //   ancestorNameOrId: string
   // )
   // {
-  //   // Search for prototype entity both in EntityManager and PrototypeManager.
+  //   // Search for prototype entity both in Entities and PrototypeManager.
   //   let ancestorEntity = this.getPrototypeEntity
   //   (
   //     name,
   //     // This parameter will be used to search in PrototypeManager.
   //     ancestorNameOrId,
-  //     // This parameter will be used to search in EntityManager.
+  //     // This parameter will be used to search in Entities.
   //     ancestorNameOrId
   //   );
 

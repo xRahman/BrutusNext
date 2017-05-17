@@ -31,7 +31,7 @@ import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
 import {Game} from '../../game/Game';
 import {RoomFlags} from '../../game/world/RoomFlags';
 import {Exits} from '../../game/world/Exits';
-import {ClassFactory} from '../../../shared/lib/ClassFactory';
+import {Classes} from '../../../shared/lib/Classes';
 
 /// TEST:
 import {RoomData} from '../../../shared/game/world/RoomData';
@@ -98,7 +98,7 @@ export class Room extends ServerGameEntity
   /// různé funkce podle aktuální potřeby... 
   /*
   // Entity adds itself to approptiate EntityLists so it can be
-  // searched by name, etc. This doesn't add entity to EntityManager.
+  // searched by name, etc. This doesn't add entity to Entities.
   // (overrides Entity.addToLists())
   public addToLists()
   {
@@ -109,7 +109,7 @@ export class Room extends ServerGameEntity
 
   /*
   // Entity removes itself from EntityLists so it can no longer
-  // be searched by name, etc. This doesn't remove entity from EntityManager.
+  // be searched by name, etc. This doesn't remove entity from Entities.
   // (overrides Entity.removeFromLists())
   public removeFromLists()
   {
@@ -170,4 +170,4 @@ export class Room extends ServerGameEntity
   // ---------------- Private methods -------------------
 }
 
-ClassFactory.registerPrototypeClass(Room);
+Classes.registerPrototypeClass(Room);

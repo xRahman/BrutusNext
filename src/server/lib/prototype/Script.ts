@@ -9,15 +9,13 @@
 import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
 import {VirtualMachine} from '../../../server/lib/prototype/VirtualMachine';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
-import {ServerSyslog} from '../../../server/lib/log/Syslog';
-import {Message} from '../../../server/lib/message/Message';
+import {Syslog} from '../../../shared/lib/log/Syslog';
+import {MessageType} from '../../../shared/lib/message/MessageType';
 import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
-import {ClassFactory} from '../../../shared/lib/ClassFactory';
+import {Classes} from '../../../shared/lib/class/Classes';
 
 // 3rd party modules.
 import * as ts from "typescript";
-
-ClassFactory.registerClass(Script);
 
 export class Script extends SaveableObject
 {
@@ -100,12 +98,12 @@ export class Script extends SaveableObject
 
       if (script.internalFunction === null)
       {
-        ServerSyslog.log
+        Syslog.log
         (
           "Internal script function of script " + script.getFullName()
           + " doesn't exist yet. Script must be compiled before"
           + " it can be used",
-          Message.Type.SCRIPT_RUNTIME_ERROR,
+          MessageType.SCRIPT_RUNTIME_ERROR,
           AdminLevel.IMMORTAL
         );
 
@@ -329,10 +327,10 @@ export class Script extends SaveableObject
     }
     catch (e)
     {
-      ServerSyslog.log
+      Syslog.log
       (
         "Transpile error in script " + scriptName + ": " + e.message,
-        Message.Type.SCRIPT_COMPILE_ERROR,
+        MessageType.SCRIPT_COMPILE_ERROR,
         AdminLevel.IMMORTAL
       );
 
@@ -354,11 +352,11 @@ export class Script extends SaveableObject
     // the script will wait 1 milisecond.
     if (miliseconds === undefined)
     {
-      ServerSyslog.log
+      Syslog.log
       (
         "Missing 'miliseconds' parameter of 'await delay()' in script "
         + scriptName + ". Script will wait for 1 milisecond",
-        Message.Type.SCRIPT_RUNTIME_ERROR,
+        MessageType.SCRIPT_RUNTIME_ERROR,
         AdminLevel.IMMORTAL
       );
 
@@ -388,3 +386,5 @@ export class Script extends SaveableObject
     );
   }
 }
+
+Classes.registerSerializableClass(Script);

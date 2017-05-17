@@ -103,7 +103,7 @@ export class EntityList extends SaveableObject
   }
 
   // Removes entity id from this list, but doesn't delete entity from
-  // EntityManager.
+  // Entities.
   // -> Returns true if deletion succeeded.
   public remove(entity: Entity): boolean
   {

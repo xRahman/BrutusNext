@@ -16,7 +16,7 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Flags} from '../../../server/lib/flags/Flags';
 import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
-import {ClassFactory} from '../../../shared/lib/ClassFactory';
+import {Classes} from '../../../shared/lib/Classes';
 
 export class FlagNames extends SaveableObject
 {
@@ -160,5 +160,5 @@ export class FlagNames extends SaveableObject
   }
 }
 
-ClassFactory.registerClass(FlagNames);
+Classes.registerSerializableClass(FlagNames);
 */

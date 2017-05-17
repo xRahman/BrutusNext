@@ -14,12 +14,12 @@ import {IdProvider} from '../../../server/lib/entity/IdProvider';
 import {AutoSaveableObject} from '../../../server/lib/fs/AutoSaveableObject';
 import {Entity} from '../../../server/lib/entity/Entity';
 import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
-import {EntityManager} from '../../../server/lib/entity/EntityManager';
+import {Entities} from '../../../shared/lib/entity/Entities';
 import {ScriptableEntity} from '../../../server/lib/entity/ScriptableEntity';
 ///import {DynamicClasses} from '../../../server/lib/class/DynamicClasses';
 import {NamedClass} from '../../../server/lib/class/NamedClass';
 import {ServerApp} from '../../../server/lib/Server';
-import {ClassFactory} from '../../../shared/lib/ClassFactory';
+import {Classes} from '../../../shared/lib/Classes';
 
 export class PrototypeManager extends AutoSaveableObject
 {
@@ -44,7 +44,7 @@ export class PrototypeManager extends AutoSaveableObject
   //   In order to instantiate hardcoded entity (like Account),
   // you need a prototype entity of such type which you will use
   // as a prototype object with Object.create(). These prototype
-  // entities are stored in EntityManager like all other entities,
+  // entities are stored in Entities like all other entities,
   // but they can't be saved to disk directly, because they are
   // root nodes of inheritance tree so there are no prototype entities
   // to base them on.
@@ -67,7 +67,7 @@ export class PrototypeManager extends AutoSaveableObject
   {
     // First we create prototype objects for non-entity dynamic classes
     // (we also get list of hardcoded entity dynamic classes
-    // as side effect of iterating ClassFactory.constructors).
+    // as side effect of iterating Classes.constructors).
     let entityClasses = this.initNonEntityPrototypes();
 
     if (!createDefaultData)
@@ -348,12 +348,12 @@ export class PrototypeManager extends AutoSaveableObject
   }
 
   // Creates prototype objects for non entity classes.
-  // -> Returns the list of entity classes registerd in ClassFactory.
+  // -> Returns the list of entity classes registerd in Classes.
   private initNonEntityPrototypes()
   {
     let entityClasses = [];
 
-    for (let Class of ClassFactory.constructors.values())
+    for (let Class of Classes.constructors.values())
     {
       if (!this.isEntity(Class))
       {

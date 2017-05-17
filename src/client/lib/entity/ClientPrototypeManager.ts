@@ -18,7 +18,7 @@ export class ClientPrototypeManager extends PrototypeManager
   {
     TODO
     /// Tady toho asi moc nebude - klient při startu vytváří
-    /// jen root prototype entity (a to navíc delá ClassFactory),
+    /// jen root prototype entity (a to navíc delají Classes),
     /// zbytek dostává spolu s instancemi entit.
 
     /// Možná by tu mohla být inicializace root prototype entit

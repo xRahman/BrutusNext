@@ -403,13 +403,13 @@ export class Entity extends AutoSaveableObject
   /// různé funkce podle aktuální potřeby... 
   /*
   // Entity adds itself to approptiate EntityLists so it can be
-  // searched by name, etc. This doesn't add entity to EntityManager.
+  // searched by name, etc. This doesn't add entity to Entities.
   // (this method needs to be overriden by descendants)
   public addToLists() { }
   */
 
   // // Entity removes itself from EntityLists so it can no longer
-  // // be searched by name, etc. This doesn't remove entity from EntityManager.
+  // // be searched by name, etc. This doesn't remove entity from Entities.
   // // (this method needs to be overriden by descendants)
   // public removeFromLists() {}
 

@@ -84,7 +84,7 @@ export class AbbrevSearchList extends NameSearchList
   }
 
   // Removes entity id from this list, but doesn't delete the entity from
-  // EntityManager.
+  // Entities.
   // -> Returns true if deletion succeeded.
   public remove(entity: ServerGameEntity): boolean
   {
