@@ -41,7 +41,7 @@ export abstract class Entities
   )
   : Entity
   {
-    return App.getEntityManager().createExistingEntity(prototypeId, id);
+    return App.getEntities().createExistingEntity(prototypeId, id);
   }
 
   // Creates a new instance entity (can't be used as prototype).
@@ -59,7 +59,7 @@ export abstract class Entities
   )
   : Promise<T>
   {
-    let entity = await App.getEntityManager().createNewEntity
+    let entity = await App.getEntities().createNewEntity
     (
       prototype,
       name,
@@ -88,7 +88,7 @@ export abstract class Entities
   )
   : Promise<T>
   {
-    let entity = await App.getEntityManager().createNewPrototypeEntity
+    let entity = await App.getEntities().createNewPrototypeEntity
     (
       prototypeId,
       prototypeName,
@@ -105,19 +105,19 @@ export abstract class Entities
   //    Returns invalid reference if entity with such 'id' isn't there.
   public static createReference(id: string): Entity
   {
-    return App.getEntityManager().createReference(id);
+    return App.getEntities().createReference(id);
   }
 
   // -> Returns 'true' if enity is available.
   public static has(id: string)
   {
-    return App.getEntityManager().has(id);
+    return App.getEntities().has(id);
   }
 
   // -> Returns 'undefined' if entity isn't found.
   public static get(id: string)
   {
-    return App.getEntityManager().get(id);
+    return App.getEntities().get(id);
   }
 
   // Removes entity from memory but doesn't delete it from disk
@@ -126,7 +126,7 @@ export abstract class Entities
   // be searched for.
   public static release(entity: Entity)
   {
-    App.getEntityManager().release(entity);
+    App.getEntities().release(entity);
   }
 
   // Attempts to create a name lock file.
@@ -138,7 +138,7 @@ export abstract class Entities
     cathegory: Entity.NameCathegory
   )
   {
-    return await App.getEntityManager().requestEntityName(id, name, cathegory);
+    return await App.getEntities().requestEntityName(id, name, cathegory);
   }
 
   public static async releaseEntityName
@@ -147,12 +147,12 @@ export abstract class Entities
     cathegory: Entity.NameCathegory
   )
   {
-    return await App.getEntityManager().releaseEntityName(name, cathegory);
+    return await App.getEntities().releaseEntityName(name, cathegory);
   }
 
   public static async saveEntity(entity: Entity)
   {
-    return await App.getEntityManager().saveEntity(entity);
+    return await App.getEntities().saveEntity(entity);
   }
 
   // -> Returns 'null' on failure.
@@ -163,7 +163,7 @@ export abstract class Entities
   )
   : Promise<T>
   {
-    let entity = await App.getEntityManager().loadEntityById(id);
+    let entity = await App.getEntities().loadEntityById(id);
 
     // Dynamically check that entity is an
     // instance of type T and typecast to it.
@@ -179,7 +179,7 @@ export abstract class Entities
   )
   : Promise<T>
   {
-    let entity = await App.getEntityManager().loadEntityByName
+    let entity = await App.getEntities().loadEntityByName
     (
       name,
       cathegory

@@ -71,13 +71,11 @@ export class ServerApp extends App
   private accounts = new AccountList();
 
   // -------- managers --------
-  // ~ Overrides App.entityManager.
-  // Contains all entities (accounts, characters, rooms, etc.).
-  protected entityManager = new ServerEntities(this.timeOfBoot);
+  // ~ Overrides App.entities.
+  protected entities = new ServerEntities(this.timeOfBoot);
 
-  // ~ Overrides App.prototypeManager.
-  // Manages prototype entities.
-  protected prototypeManager = new ServerPrototypes();
+  // ~ Overrides App.prototypes.
+  protected prototypes = new ServerPrototypes();
 
   /// Deprecated
   // // flagNamesManager is in Server instead of Game, because flags are needed
@@ -310,14 +308,14 @@ export class ServerApp extends App
     */
 
     TODO:
-    /// entityClassNames používá jak entityManager.createRootObjects()
-    /// tak prototypeManager.initPrototypes(), takže by to asi měl být
+    /// entityClassNames používá jak entities.createRootObjects()
+    /// tak prototypes.initPrototypes(), takže by to asi měl být
     /// parametr, aby se to negenerovalo zbytečně dvakrát.
 
     // Create an instance of each entity class registered in
     // Classes so they can be used as prototype objects
     // for root prototype entities.
-    this.entityManager.createRootObjects();
+    this.entities.createRootObjects();
 
     // We need to check if './data/' directory exists before
     // initPrototypes() is called, because it will be created
@@ -327,7 +325,7 @@ export class ServerApp extends App
     // Create root prototype entities if they don't exist yet or load
     // them from disk. Then recursively load all prototype entities
     // inherited from them.
-    await this.prototypeManager.initPrototypes();
+    await this.prototypes.initPrototypes();
 
     // If /server/data/ directory didn't exist, create and save a new world.
     if (!dataExists)
