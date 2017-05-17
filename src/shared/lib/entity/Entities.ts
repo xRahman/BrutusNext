@@ -108,22 +108,21 @@ export abstract class Entities
     return App.getEntityManager().createReference(id);
   }
 
-  // -> Returns 'true' if enity is in the manager.
+  // -> Returns 'true' if enity is available.
   public static has(id: string)
   {
     return App.getEntityManager().has(id);
   }
 
-  // Requests an entity from the manager.
   // -> Returns 'undefined' if entity isn't found.
   public static get(id: string)
   {
     return App.getEntityManager().get(id);
   }
 
-  // Removes entity from manager but doesn't delete it from disk
+  // Removes entity from memory but doesn't delete it from disk
   // (this is used for example when player quits the game).
-  // Also removes entity from entity lists so it can no longer
+  // Also removes it from entity lists so it can no longer
   // be searched for.
   public static release(entity: Entity)
   {
@@ -435,8 +434,7 @@ export abstract class Entities
     );
   }
 
-  // Creates entity with specified 'id', proxifies it and registers
-  // in in the manager.
+  // Creates and proxifies entity with specified 'id'.
   // -> Returns 'null' if entity couldn't be created.
   private createExistingEntity(prototypeId: string, id: string): Entity
   {
@@ -519,13 +517,12 @@ export abstract class Entities
     return new Proxy({}, handler);
   }
 
-  // -> Returns 'true' if enity is in the manager.
+  // -> Returns 'true' if enity is available.
   private has(id: string)
   {
     return this.records.has(id);
   }
 
-  // Requests an entity from the manager.
   // -> Returns 'undefined' if entity isn't found.
   private get(id: string)
   {
@@ -537,7 +534,6 @@ export abstract class Entities
     return entityRecord.getEntity();
   }
 
-  // Adds 'entityRecord' to the manager.
   // -> Returns added entity or 'null' on failure.
   private add(entityRecord: EntityRecord)
   {
@@ -559,9 +555,8 @@ export abstract class Entities
     return entityRecord.getEntity();
   }
 
-  // Removes entity from the manager and from memory but
-  // doesn't delete it from disk (this is used for example
-  // when player quits the game).
+  // Removes entity from memory but doesn't delete it from disk
+  // (this is used for example when player quits the game).
   //   Also removes entity from entity lists so it can no
   // longer be searched for.
   private release(entity: Entity)
@@ -1264,7 +1259,7 @@ export abstract class Entities
   //   }
   // }
 
-  // // Searches for prototype entity in PrototypeManager using
+  // // Searches for prototype entity in Prototypes using
   // // prototype class name.
   // // -> Returns 'undefined' if prototype entity isn't found.
   // private getPrototypeEntityByClassName(className: string): Entity
@@ -1305,7 +1300,7 @@ export abstract class Entities
   // }
 
   // // Searches for prototype entity in Entities if 'prototypeId'
-  // // isn't null, or in PrototypeManager using 'className' otherwise.
+  // // isn't null, or in Prototypes using 'className' otherwise.
   // // -> Returns 'undefined' if prototype entity isn't found.
   // private async getPrototypeEntity
   // (
@@ -1330,7 +1325,7 @@ export abstract class Entities
   //   else
   //   {
   //     // Otherwise we will search for prototype entity in
-  //     // PrototypeManager using class name.
+  //     // Prototypes using class name.
   //     proxy = this.getPrototypeEntityByClassName(className);
   //   }
 

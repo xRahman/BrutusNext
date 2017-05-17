@@ -8,16 +8,16 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Classes} from '../../../shared/lib/class/Classes';
-import {PrototypeManager} from '../../../shared/lib/entity/PrototypeManager';
+import {Prototypes} from '../../../shared/lib/entity/Prototypes';
 import {Entities} from '../../../shared/lib/entity/Entities';
 import {FileManager} from '../../../server/lib/fs/FileManager';
 import {Entity} from '../../../shared/lib/entity/Entity';
 
-export class ServerPrototypeManager extends PrototypeManager
+export class ServerPrototypes extends Prototypes
 {
   // ---------------- Public methods --------------------
 
-  // ~ Overrides PrototypeManager.initPrototypes().
+  // ~ Overrides Prototypes.initPrototypes().
   // Creates root prototype entities if they don't exist on
   // the disk or loads them if they do. Then recursively loads
   // all prototype entities inherited from them.

@@ -6,9 +6,9 @@
 
 'use strict';
 
-import {PrototypeManager} from '../../../shared/lib/entity/PrototypeManager';
+import {Prototypes} from '../../../shared/lib/entity/Prototypes';
 
-export class ClientPrototypeManager extends PrototypeManager
+export class ClientPrototypes extends Prototypes
 {
   /*
   // Creates root prototype entities if they don't exist yet or loads

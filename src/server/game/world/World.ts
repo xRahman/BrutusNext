@@ -8,7 +8,7 @@
 'use strict';
 
 import {Entities} from '../../../shared/lib/entity/Entities';
-import {PrototypeManager} from '../../../shared/lib/entity/PrototypeManager';
+import {Prototypes} from '../../../shared/lib/entity/Prototypes';
 ///import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
 ///import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
 ///import {ServerApp} from '../../../server/lib/Server';
@@ -51,10 +51,10 @@ export class World extends ServerGameEntity
 
   public async createSystemRealm()
   {
-    // Get prototype named 'Realm' from PrototypeManager
+    // Get prototype named 'Realm' from Prototypes
     // (we us the name of the class so it will work
     //  even if someone renames it).
-    let prototype = PrototypeManager.get(World.name);
+    let prototype = Prototypes.get(World.name);
 
     this.systemRealm = await Entities.createNewInstanceEntity
     (

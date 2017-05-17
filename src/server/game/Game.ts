@@ -9,7 +9,7 @@
 import {ERROR} from '../../shared/lib/error/ERROR';
 import {Entity} from '../../shared/lib/entity/Entity';
 import {Entities} from '../../shared/lib/entity/Entities';
-import {PrototypeManager} from '../../shared/lib/entity/PrototypeManager';
+import {Prototypes} from '../../shared/lib/entity/Prototypes';
 ///import {NamedEntity} from '../../server/lib/entity/NamedEntity';
 import {NameSearchList} from '../../server/lib/entity/NameSearchList';
 ///import {SaveableObject} from '../../server/lib/fs/SaveableObject';
@@ -61,7 +61,7 @@ export class Game
 
   public static get prototypeManager()
   {
-    return ServerApp.getPrototypeManager();
+    return ServerApp.getPrototypes();
   }
 
   // ---------------- Public methods --------------------
@@ -76,10 +76,10 @@ export class Game
       return;
     }
 
-    // Get prototype named 'World' from PrototypeManager
+    // Get prototype named 'World' from Prototypes
     // (we us the name of the class so it will work
     //  even if someone renames it).
-    let prototype = PrototypeManager.get(World.name);
+    let prototype = Prototypes.get(World.name);
 
     this.world = await Entities.createNewInstanceEntity
     (
