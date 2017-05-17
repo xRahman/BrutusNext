@@ -9,10 +9,10 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 ///import {FileSystem} from '../../../server/lib/fs/FileSystem';
 import {ServerApp} from '../../../server/lib/Server';
-import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
+///import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
 import {NameSearchList} from '../../../server/lib/entity/NameSearchList';
-import {Entity} from '../../../server/lib/entity/Entity';
-import {EntityManager} from '../../../server/lib/entity/EntityManager';
+import {Entity} from '../../../shared/lib/entity/Entity';
+import {Entities} from '../../../shared/lib/entity/Entities';
 import {Account} from '../../../server/lib/account/Account';
 import {Connection} from '../../../server/lib/connection/Connection';
 
@@ -54,7 +54,7 @@ export class AccountList extends NameSearchList
     }
 
     // Second parameter of loadNamedEntity is used for dynamic type cast.
-    account = await EntityManager.loadNamedEntity
+    account = await Entities.loadNamedEntity
     (
       name,
       NamedEntity.NameCathegory.accounts,
@@ -170,7 +170,7 @@ export class AccountList extends NameSearchList
     // Remove id from thist.
     this.remove(account);
 
-    // Remove entity reference EntityManager so the memory can be dealocated.
+    // Remove entity reference Entities so the memory can be dealocated.
     ServerApp.entityManager.remove(account);
   }
 

@@ -41,7 +41,7 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
-import {Classes} from '../../../shared/lib/class/ClassFactory';
+import {Classes} from '../../../shared/lib/class/Classes';
 import {PropertyAttributes} from
   '../../../shared/lib/class/PropertyAttributes';
 import {JsonObject} from '../../../shared/lib/json/JsonObject';
@@ -49,7 +49,7 @@ import {JsonSaver} from '../../../shared/lib/json/JsonSaver';
 ///import {Nameable} from '../../../shared/lib/class/Nameable';
 import {Attributable} from '../../../shared/lib/class/Attributable';
 import {Entity} from '../../../shared/lib/entity/Entity';
-import {EntityManager} from '../../../shared/lib/entity/EntityManager';
+import {Entities} from '../../../shared/lib/entity/Entities';
 import {EntityProxyHandler} from
   '../../../shared/lib/entity/EntityProxyHandler';
 
@@ -162,9 +162,9 @@ export class Serializable extends Attributable
       return null;
     }
 
-    // Use ClassFactory to create an instance of 'className'
+    // Use Classes to create an instance of 'className'
     // ('null' is returned on error).
-    return ClassFactory.createNew(className);
+    return Classes.createNew(className);
   }
   */
 
@@ -251,8 +251,8 @@ export class Serializable extends Attributable
       return null;
     }
 
-    // Create an entity using an existing 'id' and add it to EntityManager.
-    return EntityManager.createExistingEntity(prototypeId, id);
+    // Create an entity using an existing 'id' and add it to Entities.
+    return Entities.createExistingEntity(prototypeId, id);
   }
 
   // Extracts data from plain javascript Object to this instance.
@@ -1177,7 +1177,7 @@ export class Serializable extends Attributable
 
 //+
   // Converts 'param.sourceProperty' to a reference to an Entity.
-  // If 'id' loaded from JSON already exists in EntityManager,
+  // If 'id' loaded from JSON already exists in Entities,
   // existing entity proxy will be returned. Otherwise an 'invalid'
   // entity proxy will be created and returned.
   // -> Retuns an entity proxy object (possibly referencing an invalid entity).
@@ -1198,7 +1198,7 @@ export class Serializable extends Attributable
 
     // Return an existing entity proxy if entity exists in
     // entityManager, invalid entity proxy otherwise.
-    return EntityManager.createReference(id);
+    return Entities.createReference(id);
   }
 
 //+

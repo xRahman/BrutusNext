@@ -10,7 +10,7 @@
 
 /*
 import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
-import {ClassFactory} from '../../../shared/lib/ClassFactory';
+import {Classes} from '../../../shared/lib/Classes';
 
 export class NameLockRecord extends SaveableObject
 {
@@ -24,5 +24,5 @@ export class NameLockRecord extends SaveableObject
   // private static cathegory = { isSaved: false };
 }
 
-ClassFactory.registerClass(NameLockRecord);
+Classes.registerSerializableClass(NameLockRecord);
 */

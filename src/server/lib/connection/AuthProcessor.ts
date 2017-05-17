@@ -27,7 +27,7 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
-import {EntityManager} from '../../../server/lib/entity/EntityManager';
+import {Entities} from '../../../shared/lib/entity/Entities';
 import {Syslog} from '../../../shared/lib/log/Syslog';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Message} from '../../../server/lib/message/Message';

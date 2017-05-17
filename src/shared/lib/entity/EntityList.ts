@@ -8,8 +8,8 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Entity} from '../../../shared/lib/entity/Entity';
-import {Saveable} from '../../../shared/lib/class/Saveable';
-import {EntityManager} from '../../../shared/lib/entity/EntityManager';
+///import {Saveable} from '../../../shared/lib/class/Saveable';
+import {Entities} from '../../../shared/lib/entity/Entities';
 
 export class EntityList extends Saveable
 {
@@ -103,7 +103,7 @@ export class EntityList extends Saveable
   }
 
   // Removes entity id from this list, but doesn't delete entity from
-  // EntityManager.
+  // Entities.
   // -> Returns 'true' on success.
   public remove(entity: Entity): boolean
   {
@@ -121,7 +121,7 @@ export class EntityList extends Saveable
   }
 
   // Removes entity from this list and releases it from memory
-  // by removing it from EntityManager (but doesn't delete it from
+  // by removing it from Entities (but doesn't delete it from
   // disk).
   public release(entity: Entity)
   {
@@ -129,7 +129,7 @@ export class EntityList extends Saveable
     if (this.remove(entity))
     {
       // Remove entity reference from id so the memory can be dealocated.
-      EntityManager.release(entity);
+      Entities.release(entity);
     }
   }
 

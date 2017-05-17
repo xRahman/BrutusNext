@@ -12,7 +12,7 @@ import {Game} from '../../../server/game/Game';
 import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
 import {World} from '../../../server/game/world/World';
 import {CharacterFlags} from '../../../server/game/character/CharacterFlags';
-import {ClassFactory} from '../../../shared/lib/ClassFactory';
+import {Classes} from '../../../shared/lib/class/Classes';
 
 export class Character extends ServerGameEntity
 {
@@ -96,7 +96,7 @@ export class Character extends ServerGameEntity
   }
 
   // Entity removes itself from EntityLists so it can no longer
-  // be searched by name, etc. This doesn't remove entity from EntityManager.
+  // be searched by name, etc. This doesn't remove entity from Entities.
   // (overrides Entity.removeFromLists())
   public removeFromLists()
   {
@@ -124,4 +124,4 @@ export class Character extends ServerGameEntity
   */
 }
 
-ClassFactory.registerPrototypeClass(Character);
+Classes.registerPrototypeClass(Character);

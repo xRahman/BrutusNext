@@ -64,7 +64,7 @@ export class EntityPrototypeRecord extends SaveableObject
       return this.prototypeObject;
 
     // Prototype object of an entity prototype is an entity and
-    // because all entities are stored in EntityManager, we need
+    // because all entities are stored in Entities, we need
     // to ask the manager for our prototype entity.
     let prototypeEntity = ServerApp.entityManager.get(prototypeId, Entity);
 
