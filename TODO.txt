@@ -1,6 +1,17 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+TODO: Funkce z FileManageru na loadování/savování entit přesunout
+  do ServerEntities.
+
+TODO: Funkci z FileManager na loadování/savování name lock filů
+  přesunout někam jinam (Možná nová classa Names?)
+
+TODO: deserialize() a createEntityInstance() vyhodit ze Serializable
+ - přesunout to do Entity, možná to jinak pojmenovat.
+
+-----------------------------
+
 TODO: Asi bude nakonec nejlepší držet v Class factory zvlášť Entity
 a neentity classy (zjednoduší to typování, atd).
 

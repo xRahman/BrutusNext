@@ -10,11 +10,16 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Classes} from '../../../shared/lib/class/Classes';
 import {Prototypes} from '../../../shared/lib/entity/Prototypes';
 import {Entities} from '../../../shared/lib/entity/Entities';
-import {FileManager} from '../../../server/lib/fs/FileManager';
+///import {FileManager} from '../../../server/lib/fs/FileManager';
+import {NameLock} from '../../../server/lib/entity/NameLock';
 import {Entity} from '../../../shared/lib/entity/Entity';
 
 export class ServerPrototypes extends Prototypes
 {
+  // Name of the directory in 'data/names' where prototype
+  // name lock files are saved.
+  private static get PROTOTYPE_NAMES_DIRECTORY() { return 'prototypes'; }
+
   // ---------------- Public methods --------------------
 
   // ~ Overrides Prototypes.init().
@@ -35,7 +40,7 @@ export class ServerPrototypes extends Prototypes
   {
     for (let className of Classes.entities.keys())
     {
-      let prototypeEntity = await this.initRootPrototypeEntity(className);
+      let prototypeEntity = await this.initRootPrototype(className);
 
       if (prototypeEntity)
         // Add the prototype entity to this.prototypes hashmap.
@@ -46,25 +51,19 @@ export class ServerPrototypes extends Prototypes
   // Loads prototype entity 'className' form the disk if it's save
   // exits, creates a new prototype entity otherwise.
   // -> Returns 'null' on error.
-  private async initRootPrototypeEntity(className: string)
+  private async initRootPrototype(className: string)
   {
-    // We are going to save one reading from the disk by
-    // surpressing error reporting for file read operation
-    // so we can use the result to test if file exist.
-    let id = await FileManager.readIdFromNameLockFile
+    // We will use result to test if file exist.
+    let id = await NameLock.readId
     (
       className,
-      Entity.NameCathegory.PROTOTYPE,
-      false  // Do not log that file doesn't exist.
+      ServerPrototypes.PROTOTYPE_NAMES_DIRECTORY,
+      false  // Do not log errors.
     );
 
-    // If name lock file exists, we use the id loaded
-    // from it to load prototype entity from disk.
     if (id !== null)
       return await Entities.loadEntityById(id, Entity);
 
-    // Otherwise we create a new entity based on
-    // root entity with id 'className'.
     return await Entities.createNewPrototypeEntity
     (
       // Root prototype entity uses root entity as it's prototype
@@ -141,7 +140,7 @@ export class ServerPrototypes extends Prototypes
   {
     for (let descendantId of prototype.getDescendantIds())
     {
-      let descendant = await Entities.loadEntityById(descendantId);
+      let descendant = await Entities.loadEntityById(descendantId, Entity);
 
       if (descendant === null)
       {

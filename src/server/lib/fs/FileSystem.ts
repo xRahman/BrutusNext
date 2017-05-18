@@ -8,6 +8,7 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Syslog} from '../../../shared/lib/log/Syslog';
+import {SavingQueue} from '../../../server/lib/fs/SavingQueue';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 
@@ -25,7 +26,24 @@ export class FileSystem
 
   public static get JSON_EXTENSION() { return '.json'; }
 
-  // ---------------- Public methods -------------------- 
+  public static get DATA_DIRECTORY()
+  {
+    return './server/data/';
+  }
+
+  //------------------ Private data ---------------------
+
+  // Hashmap<[ string, SavingRecord ]>
+  //   Key: full save path
+  //   Value: SavingQueue
+  private static savingQueues = new Map<string, SavingQueue>();
+
+  // ---------------- Public methods --------------------
+
+  public static async dataExists()
+  {
+    return await this.exists(this.DATA_DIRECTORY)
+  }
 
   // -> Returns data read from file, 'null' if file could not be read.
   public static async readFile
@@ -113,31 +131,28 @@ export class FileSystem
   // -> Returns 'true' if file was succesfully written.
   public static async writeFile(path: string, data: string): Promise<boolean>
   {
-    if (!FileSystem.isPathRelative(path))
-      return false;
+    // Following code is addresing feature of node.js file saving
+    // functions, which says that we must not attempt saving the same
+    // file until any previous saving finishes (otherwise it is not
+    // guaranteed that file will be saved correctly).
+    //   To ensure this, we use register all saving that is being done
+    // to each file and buffer saving requests if necessary.
+    let promise = this.requestSaving(path);
 
-    try
-    {
-      await promisifiedFS.writeFile
-      (
-        path,
-        data,
-        FileSystem.TEXT_FILE_ENCODING
-      );
-    }
-    catch (error)
-    {
-      Syslog.log
-      (
-        "Unable to save file '" + path + "': " + error.code,
-        MessageType.SYSTEM_ERROR,
-        AdminLevel.IMMORTAL
-      );
+    // If requestSaving() returned 'null', it means that file 'path'
+    // is not being saved right now so we can start saving right away.
+    // Otherwise we have to wait untill previous saving finishes.
+    if (promise !== null)
+      await this.saveAwaiter(promise);
 
-      return false;
-    }
+    // Now it's our turn so we can save ourselves.
+    let success = await FileSystem.writeFile(path, data);
 
-    return true;
+    // Remove the lock and resolve saveAwaiter()
+    // of whoever is waiting after us.
+    this.finishSaving(path);
+
+    return success;
   }
 
   // -> Returns 'true' if file was succesfully deleted.
@@ -334,5 +349,99 @@ export class FileSystem
     }
 
     return fileStats;
+  }
+
+  // This is just a generic async function that will finish
+  // when 'promise' parameter gets resolved.
+  // (This only makes sense if you also store 'resolve' callback
+  //  of the promise so you can call it to finish this awaiter.
+  //  See SavingQueue.addRequest() for example how is it done.)
+  private static saveAwaiter(promise: Promise<{}>)
+  {
+    return promise;
+  }
+
+  // -> Returns 'true' if file was succesfully written.
+  private static async write(path: string, data: string): Promise<boolean>
+  {
+    if (!FileSystem.isPathRelative(path))
+      return false;
+
+    try
+    {
+      await promisifiedFS.writeFile
+      (
+        path,
+        data,
+        FileSystem.TEXT_FILE_ENCODING
+      );
+    }
+    catch (error)
+    {
+      Syslog.log
+      (
+        "Unable to save file '" + path + "': " + error.code,
+        MessageType.SYSTEM_ERROR,
+        AdminLevel.IMMORTAL
+      );
+
+      return false;
+    }
+
+    return true;
+  }
+
+  // -> Returns Promise if file is being saved right now so
+  //      the caller needs to wait (using the returned Promise).
+  //    Returns null if this file isn't beeing saved right now
+  //      so it is possible to start saving right away.
+  private static requestSaving(path: string): Promise<{}>
+  {
+    let queue = this.savingQueues.get(path);
+
+    if (queue === undefined)
+    {
+      // Nobody is saving to the path yet.
+      queue = new SavingQueue();
+
+      // Note: We don't push a resolve callback for the first
+      // request, because it will be processed right away.
+      this.savingQueues.set(path, queue);
+
+      return null;
+    }
+    
+    // Someone is already saving to the path.
+    return queue.addRequest();
+  }
+
+  private static finishSaving(path: string)
+  {
+    let queue = this.savingQueues.get(path);
+
+    if (queue === undefined)
+    {
+      ERROR("Attempt to report finished saving of file"
+        + " " + path + " which is not registered as"
+        + " being saved");
+      // We can't really do much if we don't have a saving record.
+      return;
+    }
+
+    // Retrieve the first item from the queue.
+    let resolveCallback = queue.pollRequest();
+
+    if (!resolveCallback)
+    {
+      // If there is nothing left in the queue for this 'path',
+      // we can delete it.
+      this.savingQueues.delete(path);
+      return;
+    }
+
+    // By calling the resolve callback we finish savingAwaiter()
+    // of whoever called us. That should lead to the next saving
+    // to proceed.
+    resolveCallback();
   }
 }
