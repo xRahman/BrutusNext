@@ -20,6 +20,7 @@
     (See loadFromJsonObject() and loadPrimitiveObject() methods for details.) 
 */
 
+/*
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
@@ -768,15 +769,13 @@ export class SaveableObject extends InstantiableClass
       ///   tzn. objekty do nich vnořené určitě nemají.
       ///   žádné properties. Tohle pak vede k tomu, že
       //    se do hashmapy loadnou prázdné objekty.
-      /*
-      // Note:
-      //   Only properties that exist on the object that is being loaded
-      // are loaded from save. It means that you can remove properties
-      // from existing objects without converting existing save files.
-      // (no syslog message is generated)
-      if (primitiveObject[propertyName] !== undefined)
-      {
-      */
+      // // Note:
+      // //   Only properties that exist on the object that is being loaded
+      // // are loaded from save. It means that you can remove properties
+      // // from existing objects without converting existing save files.
+      // // (no syslog message is generated)
+      // if (primitiveObject[propertyName] !== undefined)
+      // {
         // Note:
         //   We are cycling over properties in JSON object, not in
         // object that is being loaded. It means that properties
@@ -790,9 +789,7 @@ export class SaveableObject extends InstantiableClass
           jsonObject[propertyName],
           path
         );
-      /*
-      }
-      */
+      //}
     }
 
     return primitiveObject;
@@ -804,17 +801,15 @@ export class SaveableObject extends InstantiableClass
     return typeof variable !== 'object';
   }
 
-  /*
-  private isEntity(variable: any): boolean
-  {
-    // Note:
-    //   Access to 'isEntity' property is trapped by proxy.
-    // (see EntityProxyHandler.get()). If variable doesn't
-    // have 'isEntity' property, the value is 'undefined'
-    // which, compared to 'true', will return 'false.
-    return variable.isEntity === true;
-  }
-  */
+  // private isEntity(variable: any): boolean
+  // {
+  //   // Note:
+  //   //   Access to 'isEntity' property is trapped by proxy.
+  //   // (see EntityProxyHandler.get()). If variable doesn't
+  //   // have 'isEntity' property, the value is 'undefined'
+  //   // which, compared to 'true', will return 'false.
+  //   return variable.isEntity === true;
+  // }
 
   private isSaveableObject(variable: any): boolean
   {
@@ -1257,3 +1252,4 @@ export class SaveableObject extends InstantiableClass
     );
   }
 }
+*/
