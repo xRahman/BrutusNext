@@ -15,10 +15,10 @@ export class ClientEntities extends Entities
 {
   // --------------- Protected methods ------------------
 
-  // ~ Overrides Entities.requestEntityName().
+  // ~ Overrides Entities.requestName().
   // -> Returns 'false' if name change isn't allowed
   //    (that means always on the client).
-  protected async requestEntityName
+  protected async requestName
   (
     id: string,
     name: string,
@@ -31,7 +31,8 @@ export class ClientEntities extends Entities
     return false;
   }
 
-  protected async releaseEntityName
+  // ~ Overrides Entities.releaseName().
+  protected async releaseName
   (
     name: string,
     cathegory: Entity.NameCathegory
@@ -99,6 +100,23 @@ export class ClientEntities extends Entities
   : Promise<Entity>
   {
     ERROR("Attempt to create new entity '" + name + "'"
+      + " on the client. That's not possible, new entities"
+      + " can only be created on the server");
+
+    return null;
+  }
+
+  // ~ Overrides Entities.createPrototype().
+  // -> Returns 'null'.
+  protected async createPrototype
+  (
+    prototypeId: string,
+    prototypeName: string,
+    name: string
+  )
+  : Promise<Entity>
+  {
+    ERROR("Attempt to create prototype entity '" + prototypeName + "'"
       + " on the client. That's not possible, new entities"
       + " can only be created on the server");
 

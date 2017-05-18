@@ -12,6 +12,7 @@ import {JsonObject} from '../../../shared/lib/json/JsonObject';
 ///import {Serializable} from '../../../shared/lib/class/Serializable';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
+import {ServerApp} from '../../../server/lib/app/ServerApp';
 
 export class NameLock
 {
@@ -127,6 +128,6 @@ export class NameLock
     if (directory.length > 1 && directory.substr(-1) !== '/')
       directory = directory + '/';
 
-    return FileSystem.DATA_DIRECTORY + 'names' + directory.toLowerCase();
+    return ServerApp.DATA_DIRECTORY + 'names' + directory.toLowerCase();
   }
 }

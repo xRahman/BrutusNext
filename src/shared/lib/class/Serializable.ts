@@ -85,6 +85,8 @@ export class Serializable extends Attributable
     return JsonObject.stringify(jsonObject);
   }
 
+  /// Moved to ServerEntities.loadEntityById().
+  /*
   // Creates a new instance and deserializes Json 'data' into it.
   //   'id' is passed when deserializing after loading from file,
   // because entity id is used as file name. Entities sent over
@@ -112,7 +114,9 @@ export class Serializable extends Attributable
     // (loadFromJsonObject() returns 'null' on failure).
     return entity.loadFromJsonObject(jsonObject, path);
   }
+  */
 
+  /// To be deleted.
   /*
   // -> Returns 'null' if instance cannot be created.
   private static createSerializableInstance
@@ -168,6 +172,8 @@ export class Serializable extends Attributable
   }
   */
 
+  /// Moved to ServerEntities.loadEntityById().
+  /*
   private static readPrototypeId
   (
     prototypeReference: Object,
@@ -197,7 +203,10 @@ export class Serializable extends Attributable
 
     return prototypeId;
   }
+  */
 
+  /// Moved to ServerEntities.
+  /*
   // Creates an instance of entity from information stored in 'jsonObject'.
   // -> Returns 'null' if instance cannot be created.
   private static createEntityInstance
@@ -254,6 +263,7 @@ export class Serializable extends Attributable
     // Create an entity using an existing 'id' and add it to Entities.
     return Entities.createExistingEntity(prototypeId, id);
   }
+  */
 
   // Extracts data from plain javascript Object to this instance.
   // -> Returns 'null' on failure.
@@ -1198,7 +1208,7 @@ export class Serializable extends Attributable
 
     // Return an existing entity proxy if entity exists in
     // entityManager, invalid entity proxy otherwise.
-    return Entities.createReference(id);
+    return Entities.getReference(id);
   }
 
 //+

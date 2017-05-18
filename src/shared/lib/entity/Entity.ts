@@ -51,8 +51,17 @@ export class Entity extends Serializable
   // 'null' means that name is not unique.
   // (Note that name lock file names are lowercased so 'Rahman' also
   //  counts as 'rahman', 'rAhman', etc.).
+  // (Also note that only instances can have unique names. Entity name
+  //  of a prototype entity is inherited by it's instances and descendant
+  //  prototypes so it woudn't really be unique even if we set a name
+  //  cathegory to it.)
   private nameCathegory: Entity.NameCathegory = null;
 
+  // All prototypeNames have to be unique. This is enforced
+  // by creating a name lock file in /data/names/prototypes
+  // for each prototype entity. This is not a NameCathegory
+  // however, a prototype entity can have both unique 'name'
+  // and a 'prototypeName' (which is also unique).
   // Root prototypes (prototype entities for hardcoded
   // classes like Account or Character) use their class
   // name as their 'prototypeName'.
@@ -61,11 +70,6 @@ export class Entity extends Serializable
   //   Instance entities inherit this property from their
   // prototype entity so you can use it to quickly check
   // what prototype is the instance entity based on.
-  //   All prototypeNames have to be unique. This is enforced
-  // by creating a name lock file in /data/names/prototypes
-  // for each prototype entity. It is not a NameCathegory
-  // however, a prototype entity can have both unique 'name'
-  // and a 'prototypeName' (which is also unique).
   public prototypeName = null;
 
   // ------------------------------------------------- //
@@ -223,13 +227,13 @@ export class Entity extends Serializable
       // Check if requested name is available.
       // (This will always be false on client because entity name change
       //  is disabled there.)
-      if (!await Entities.requestEntityName(this.getId(), name, cathegory))
+      if (!await Entities.requestName(this.getId(), name, cathegory))
         return false;
     }
 
     // Make the old name available again.
     if (oldName && oldCathegory)
-      await Entities.releaseEntityName(oldName, oldCathegory)
+      await Entities.releaseName(oldName, oldCathegory)
 
     this.name = name;
 
