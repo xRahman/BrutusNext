@@ -6,10 +6,13 @@
 
 'use strict';
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Serializable} from '../../../shared/lib/class/Serializable';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {Entities} from '../../../shared/lib/entity/Entities';
 import {ServerApp} from '../../../server/lib/app/ServerApp';
-import {FileManager} from '../../../server/lib/fs/FileManager';
+///import {FileManager} from '../../../server/lib/fs/FileManager';
+import {NameLock} from '../../../server/lib/entity/NameLock';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
 import {IdProvider} from '../../../server/lib/entity/IdProvider';
 import {EntityProxyHandler} from
@@ -34,7 +37,11 @@ export class ServerEntities extends Entities
     cathegory: Entity.NameCathegory
   )
   {
-    return FileManager.doesNameLockFileExist(name, cathegory);
+    return NameLock.exists
+    (
+      name,
+      Entity.NameCathegory[cathegory]
+    );
   }
 
   // ------------- Private static methods ---------------
@@ -66,7 +73,12 @@ export class ServerEntities extends Entities
     if (ServerEntities.isNameTaken(name, cathegory))
       return false;
 
-    return FileManager.saveNameLockFile(id, name, cathegory);
+    return NameLock.save
+    (
+      id,
+      name,
+      Entity.NameCathegory[cathegory]
+    );
   }
 
   protected async releaseEntityName
@@ -75,19 +87,46 @@ export class ServerEntities extends Entities
     cathegory: Entity.NameCathegory
   )
   {
-    FileManager.deleteNameLockFile(name, cathegory);
+    NameLock.delete
+    (
+      name,
+      Entity.NameCathegory[cathegory]
+    );
   }
 
   // ~ Overrides Entities.saveEntity().
   protected async saveEntity(entity: Entity)
   {
-    await FileManager.saveEntity(entity);
+    // Note: Name lock file is saved when the name is set
+    // to the entity so we don't have to save it here.
+
+    let fileName = this.getEntityFileName(entity.getId());
+    let directory = this.getEntityDirectory();
+
+    directory = this.enforceTrailingSlash(directory);
+
+    let jsonString = entity.serialize(Serializable.Mode.SAVE_TO_FILE);
+
+    // Directory might not yet exist, so we better make sure it does.
+    if (await FileSystem.ensureDirectoryExists(directory) === false)
+      return false;
+
+    await FileSystem.writeFile(jsonString, directory + fileName);
   }
 
   // ~ Overrides Entities.loadEntityById().
   protected async loadEntityById(id: string): Promise<Entity>
   {
-    return await FileManager.loadEntityById(id);
+    let fileName = this.getEntityFileName(id);
+    let directory = this.getEntityDirectory();
+
+    directory = this.enforceTrailingSlash(directory);
+
+    let path = directory + fileName;
+    let jsonString = await FileSystem.readFile(path);
+
+    // Create a new entity instance and deserialize JSON 'data' into it.
+    return Serializable.deserialize(jsonString, id, path);
   }
 
   // ~ Overrides Entities.loadEntityByName().
@@ -97,7 +136,12 @@ export class ServerEntities extends Entities
     cathegory: Entity.NameCathegory
   )
   {
-    return await FileManager.loadEntityByName(name, cathegory);
+    let id = await NameLock.readId(name, Entity.NameCathegory[cathegory]);
+
+    if (!id)
+      return null;
+
+    return await this.loadEntityById(id);
   }
 
   // ~ Overrides Entities.createNewEntity().
@@ -162,6 +206,34 @@ export class ServerEntities extends Entities
 
   // ---------------- Private methods -------------------
 
+  private getEntityFileName(id: string)
+  {
+    return id + '.json';
+  }
+
+  private getEntityDirectory()
+  {
+    return FileSystem.DATA_DIRECTORY + 'entities/';
+  }
+
+  // Makes sure that 'directory' string ends with '/'.
+  private enforceTrailingSlash(directory: string): string
+  {
+    if (directory.substr(directory.length - 1) !== '/')
+    {
+      ERROR("Directory path '" + directory + "' doesn't end with '/'."
+        + "The '/' is added automatically, but it should be fixed anyways");
+      return directory + '/';
+    }
+
+    return directory;
+  }
+}
+
+
+/// To be deleted.
+/*
+{
   // //------------------ Private data ---------------------
 
   // // Hashmap<[ string, EntityRecord ]>
@@ -219,7 +291,6 @@ export class ServerEntities extends Entities
 
   // // Každá entita může sloužit jako prototyp, takže
   // // není důvod prototypové entity vyrábět nějak jinak.
-  // /*
   // // -> Returns 'null' on failure.
   // public createPrototypeEntity<T extends Entity>
   // (
@@ -262,7 +333,7 @@ export class ServerEntities extends Entities
   //   //  if the ancestor entity is a hardcoded entity, Prototypes
   //   //  needs to be saved as well).
   // }
-  // */
+  //
 
   // // Creates a new entity without setting a name to it
   // // (use this to create Connections and other entities
@@ -977,7 +1048,6 @@ export class ServerEntities extends Entities
   // }
 
   // /// Deprecated.
-  // /*
   // // Searches for ancestor entity both in Entities and Prototypes.
   // // -> Returns 'null' if ancestor entity isn't found.
   // private getAncestorEntity
@@ -1007,5 +1077,6 @@ export class ServerEntities extends Entities
 
   //   return ancestorEntity;
   // }
-  // */
+  //
 }
+*/

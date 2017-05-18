@@ -7,7 +7,7 @@
 /*
   Note:
     It would make sense to 'deduplicate' saving requests (beside the one
-    currencly beeing processed), because it doesn't make much sense to
+    currently beeing processed), because it doesn't make much sense to
     resave the same file multiple times. But I'm not going to implement
     it right now, because it wouldn't be trivial and it will probably be
     extremely rare scenario anyways.
@@ -64,24 +64,17 @@ export class SavingQueue
   }
 
   // Retrieves one item from the start of the queue.
-  // Note:
-  //   You should call hasMoreRequest() to ensure that there
-  //   is something to pop before calling popRequest().
-  // -> Returns null if there no item to pop from the queue.
+  // -> Returns 'undefined' if there nothing in the queue.
   public pollRequest()
   {
     if (!this.hasMoreRequests())
-    {
-      ERROR("Attempt to pop request from SavingRecord"
-        + " which contains no more requests");
-      return null;
-    }
+      return undefined;
 
     // Removes one item from the srat of the queue.
     return this.requests.poll();
   }
 
-  public hasMoreRequests(): boolean
+  private hasMoreRequests(): boolean
   {
     if (this.requests === null)
       return false;
