@@ -19,7 +19,8 @@ import {App} from '../../../shared/lib/app/App';
 import {Classes} from '../../../shared/lib/class/Classes';
 import {ServerEntities} from
   '../../../server/lib/entity/ServerEntities';
-import {FileManager} from '../../../server/lib/fs/FileManager';
+///import {FileManager} from '../../../server/lib/fs/FileManager';
+import {FileSystem} from '../../../server/lib/fs/FileSystem';
 ///import {FlagNamesManager} from '../../../server/lib/flags/FlagNamesManager';
 import {AdminList} from '../../../server/lib/admin/AdminList';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
@@ -299,18 +300,6 @@ export class ServerApp extends App
   // Loads or reates the data and starts the server application.
   private async run(telnetPort: number)
   {
-    /*
-    // Create an entity for each entity class registered in
-    // Classes so they can be used as prototype objects
-    // for other entities.
-    Classes.createRootEntities();
-    */
-
-    TODO:
-    /// entityClassNames používá jak entities.createRootObjects()
-    /// tak prototypes.initPrototypes(), takže by to asi měl být
-    /// parametr, aby se to negenerovalo zbytečně dvakrát.
-
     // Create an instance of each entity class registered in
     // Classes so they can be used as prototype objects
     // for root prototype entities.
@@ -319,7 +308,7 @@ export class ServerApp extends App
     // We need to check if './data/' directory exists before
     // initPrototypes() is called, because it will be created
     // there it doesn't exist.
-    let dataExists = await FileManager.doesDataDirectoryExist();
+    let dataExists = await FileSystem.dataExists();
 
     // Create root prototype entities if they don't exist yet or load
     // them from disk. Then recursively load all prototype entities

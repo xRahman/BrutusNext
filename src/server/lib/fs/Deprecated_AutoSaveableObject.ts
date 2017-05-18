@@ -14,6 +14,7 @@
 
 'use strict';
 
+/*
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
@@ -108,3 +109,4 @@ export abstract class AutoSaveableObject extends SaveableObject
     return this.getSaveDirectory() + this.getSaveFileName();
   }
 }
+*/

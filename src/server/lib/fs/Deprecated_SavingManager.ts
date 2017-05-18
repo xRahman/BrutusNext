@@ -6,6 +6,7 @@
   not being saved correctly).
 */
 
+/*
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
@@ -17,8 +18,8 @@ export class SavingManager
 
   // Hashmap<[ string, SavingRecord ]>
   //   Key: full save path
-  //   Value: SavingRecord
-  private static savingProcesses = new Map();
+  //   Value: SavingQueue
+  private static savingQueues = new Map<string, SavingQueue>();
 
   // ---------------- Static methods --------------------
 
@@ -26,31 +27,31 @@ export class SavingManager
   //      the caller needs to wait (using the returned Promise).
   //    Returns null if this file isn't beeing saved right now
   //      so it is possible to start saving right away.
-  public static requestSaving(path: string): Promise<void>
+  public static requestSaving(path: string): Promise<{}>
   {
-    let savingRecord = SavingManager.savingProcesses.get(path);
+    let queue = SavingManager.savingQueues.get(path);
 
-    if (savingRecord === undefined)
+    if (queue === undefined)
     {
       // Nobody is saving to the path yet.
-      savingRecord = new SavingQueue();
+      queue = new SavingQueue();
 
       // Note: We don't push a resolve callback for the first
       // request, because it will be processed right away.
-      this.savingProcesses.set(path, savingRecord);
+      this.savingQueues.set(path, queue);
+
       return null;
     }
     
     // Someone is already saving to the path.
-    return savingRecord.addRequest();
+    return queue.addRequest();
   }
 
   public static finishSaving(path: string)
   {
-    let savingRecord: SavingQueue =
-      SavingManager.savingProcesses.get(path);
+    let queue = SavingManager.savingQueues.get(path);
 
-    if (savingRecord === undefined)
+    if (queue === undefined)
     {
       ERROR("Attempt to report finished saving of file"
         + " " + path + " which is not registered as"
@@ -59,11 +60,11 @@ export class SavingManager
       return;
     }
 
-    if (savingRecord.hasMoreRequests() === false)
+    if (!queue.hasMoreRequests())
     {
       // By deleting the savingRecord from hashmap, we mark
       // 'path' as not being saved right now.
-      if (!SavingManager.savingProcesses.delete(path))
+      if (!SavingManager.savingQueues.delete(path))
       {
         ERROR("Failed to remove savingRecord for file"
           + " " + path + " from SavingRegister");
@@ -72,10 +73,10 @@ export class SavingManager
       return;
     }
 
-    // There are more saving requets in the queue for path.
+    // There are more requests in the queue for path.
 
     // Retrieve the first item from the queue.
-    let resolveCallback = savingRecord.pollRequest();
+    let resolveCallback = queue.pollRequest();
 
     if (resolveCallback === null || resolveCallback === undefined)
     {
@@ -97,3 +98,4 @@ export class SavingManager
     resolveCallback();
   }
 }
+*/

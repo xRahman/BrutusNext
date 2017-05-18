@@ -198,7 +198,7 @@ export class Serializable extends Attributable
     return prototypeId;
   }
 
-  // Creates an instance of entity with provided 'id' and 'prototypeId'.
+  // Creates an instance of entity from information stored in 'jsonObject'.
   // -> Returns 'null' if instance cannot be created.
   private static createEntityInstance
   (
