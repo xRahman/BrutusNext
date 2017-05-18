@@ -26,11 +26,6 @@ export class FileSystem
 
   public static get JSON_EXTENSION() { return '.json'; }
 
-  public static get DATA_DIRECTORY()
-  {
-    return './server/data/';
-  }
-
   //------------------ Private data ---------------------
 
   // Hashmap<[ string, SavingRecord ]>
@@ -39,11 +34,6 @@ export class FileSystem
   private static savingQueues = new Map<string, SavingQueue>();
 
   // ---------------- Public methods --------------------
-
-  public static async dataExists()
-  {
-    return await this.exists(this.DATA_DIRECTORY)
-  }
 
   // -> Returns data read from file, 'null' if file could not be read.
   public static async readFile

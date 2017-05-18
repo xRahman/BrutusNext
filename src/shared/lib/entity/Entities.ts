@@ -25,14 +25,19 @@ export abstract class Entities
   // Value: record containing entity and its proxy handler
   private records = new Map<string, EntityRecord>();
 
+  //----------------- Protected data -------------------- 
+
   // List of instances of hardcoded entity classes that are
   // used as prototype objects for root prototype entities.
   // Key:   class name
   // Value: instance of the class that is used as prototype object
-  private rootObjects = new Map<string, Entity>();
+  protected rootObjects = new Map<string, Entity>();
 
   // ------------- Public static methods ----------------
 
+  /// Možná nebude potřeba - volá se z createEntityInstance()
+  /// v ServerEntities, takže nemusí mít static verzi.
+  /*
   // Creates entity using an existing 'id'.
   // -> Returns 'null' if entity couldn't be created.
   public static createExistingEntity
@@ -44,13 +49,11 @@ export abstract class Entities
   {
     return App.getEntities().createExistingEntity(prototypeId, id);
   }
+  */
 
-  // Creates a new instance entity (can't be used as prototype).
-  // A new id is generated for it.
-  //   If you are requesting a unique name and you are not sure that
-  // it's free, you should test it in advance.
+  // Creates a new instance entity with a new id (can't be used as prototype).
   // -> Returns 'null' on failure.
-  public static async createNewInstanceEntity<T extends Entity>
+  public static async createInstance<T extends Entity>
   (
     prototype: Entity,
     name: string,
@@ -65,8 +68,7 @@ export abstract class Entities
       prototype,
       name,
       cathegory,
-      // 'isPrototype'
-      false
+      false   // 'isPrototype'
     );
 
     // Dynamically check that entity is an
@@ -74,27 +76,26 @@ export abstract class Entities
     return entity.dynamicCast(typeCast);
   }
 
-  // Creates a new instance entity (can be used as prototype).
-  // A new id is generated for it.
-  //   If you are requesting a unique name and you are not sure that
-  // it's free, you should test it in advance.
+  // Creates a new prototype entity with a new id.
   // -> Returns 'null' on failure.
-  public static async createNewPrototypeEntity<T extends Entity>
+  public static async createPrototype<T extends Entity>
   (
-    prototypeId: string,
+    ancestorId: string,
     prototypeName: string,
     typeCast: { new (...args: any[]): T },
-    name: string = null,
-    nameCathegory: Entity.NameCathegory = null
+    // Prototype entities can have a name, but it can't
+    // be unique, because it will be inherited by instances
+    // and descendant prototypes (so it wouldn't stay unique
+    // even if we set a name cathegory it it).
+    name: string = null
   )
   : Promise<T>
   {
-    let entity = await App.getEntities().createNewPrototypeEntity
+    let entity = await App.getEntities().createPrototype
     (
-      prototypeId,
+      ancestorId,
       prototypeName,
-      name,
-      nameCathegory
+      name
     );
 
     // Dynamically check that entity is an
@@ -104,9 +105,9 @@ export abstract class Entities
 
   // -> Returns existing reference if entity already exists in Entities.
   //    Returns invalid reference if entity with such 'id' isn't there.
-  public static createReference(id: string): Entity
+  public static getReference(id: string): Entity
   {
-    return App.getEntities().createReference(id);
+    return App.getEntities().getReference(id);
   }
 
   // -> Returns 'true' if enity is available.
@@ -132,23 +133,23 @@ export abstract class Entities
 
   // Attempts to create a name lock file.
   // -> Returns 'false' if name change isn't allowed.
-  public static async requestEntityName
+  public static async requestName
   (
     id: string,
     name: string,
     cathegory: Entity.NameCathegory
   )
   {
-    return await App.getEntities().requestEntityName(id, name, cathegory);
+    return await App.getEntities().requestName(id, name, cathegory);
   }
 
-  public static async releaseEntityName
+  public static async releaseName
   (
     name: string,
     cathegory: Entity.NameCathegory
   )
   {
-    return await App.getEntities().releaseEntityName(name, cathegory);
+    return await App.getEntities().releaseName(name, cathegory);
   }
 
   public static async saveEntity(entity: Entity)
@@ -204,14 +205,14 @@ export abstract class Entities
   // --------------- Protected methods ------------------
   
   // -> Returns 'false' if name change isn't allowed.
-  protected abstract async requestEntityName
+  protected abstract async requestName
   (
     id: string,
     name: string,
     cathegory: Entity.NameCathegory
   );
 
-  protected abstract async releaseEntityName
+  protected abstract async releaseName
   (
     name: string,
     cathegory: Entity.NameCathegory
@@ -237,7 +238,47 @@ export abstract class Entities
   )
   : Promise<Entity>;
 
-  protected findPrototypeRecord(prototypeId: string)
+  // -> Returns 'null' if entity instance couldn't be created.
+  protected createEntityFromPrototype
+  (
+    prototype: Entity,
+    id: string
+  )
+  {
+    if (!id)
+    {
+      ERROR("Attempt to create an entity using an invalid id."
+        + " Entity is not created");
+      return null;
+    }
+
+    if (!prototype)
+    {
+      ERROR("Attempt to create an entity using an invalid"
+        + " prototype entity. Entity is not created");
+      return null;
+    }
+
+    if (!prototype.isPrototypeEntity())
+    {
+      ERROR("Attempt to use an entity which is not"
+        + " a prototype entity as the prototype entity."
+        + " Entity is not created");
+      return null;
+    }
+
+    // Create new bare (unproxified) entity based on the prototype.
+    let bareEntity = this.instantiate(prototype);
+
+    if (bareEntity.setId(id) === false)
+      return null;
+
+    return this.proxifyAndRegisterEntity(prototype, bareEntity);
+  }
+
+  // Creates and proxifies entity with specified 'id'.
+  // -> Returns 'null' if entity couldn't be created.
+  protected createExistingEntity(prototypeId: string, id: string): Entity
   {
     let prototypeRecord = this.records.get(prototypeId);
 
@@ -249,46 +290,92 @@ export abstract class Entities
       return null;
     }
 
-    return prototypeRecord;
+    // We use bare (unproxified) entity as a prototype object.
+    let prototype = prototypeRecord.getEntity();
+
+    return this.createEntityFromPrototype(prototype, id);
   }
 
-  // -> Returns 'null' if entity instance couldn't be created.
-  protected createEntityFromPrototype
+  // -> Returns 'null' on error.
+  protected abstract async createPrototype
   (
-    prototype: Entity,
-    id: string
+    prototypeId: string,
+    prototypeName: string,
+    name: string
   )
+  : Promise<Entity>;
+
+    // -> Returns 'true' if enity is available.
+  protected has(id: string)
   {
-    if (!id)
+    return this.records.has(id);
+  }
+
+  // -> Returns 'undefined' if entity isn't found.
+  protected get(id: string)
+  {
+    let entityRecord = this.records.get(id)
+
+    if (!entityRecord)
+      return undefined;
+
+    return entityRecord.getEntity();
+  }
+
+  // -> Returns added entity or 'null' on failure.
+  protected add(entityRecord: EntityRecord)
+  {
+    let id = entityRecord.getEntity().getId();
+    let existingRecord = this.records.get(id);
+
+    if (existingRecord !== undefined)
     {
-      ERROR("Attempt to create an entity with using an invalid id");
-      return null;
+      ERROR("Attempt to add entity "
+       + entityRecord.getEntity().getErrorIdString()
+       + " to Entities which already exists there."
+       + " Entity is not added, existing one will be used");
+      return existingRecord.getEntity();
     }
 
-    if (!prototype)
+    // Add entity record to hashmap under entity's id.
+    this.records.set(id, entityRecord);
+
+    return entityRecord.getEntity();
+  }
+
+  // Removes entity from memory but doesn't delete it from disk
+  // (this is used for example when player quits the game).
+  //   Also removes entity from entity lists so it can no
+  // longer be searched for.
+  protected release(entity: Entity)
+  {
+    if (!Entity.isValid(entity))
     {
-      ERROR("Attempt to create an entity using an invalid"
-        + " prototype entity");
-      return null;
+      ERROR("Attempt to remove invalid entity from Entities");
+      return;
     }
 
-    if (!prototype.isPrototypeEntity())
+    // Remove entity from entity lists so it can no longer be searched for.
+    entity.removeFromLists();
+
+    // get() returns undefined if there is no such record in hashmap.
+    let entityRecord = this.records.get(entity.getId());
+
+    if (entityRecord === undefined)
     {
-      ERROR("Attempt to create an entity which is not"
-        + " a prototype entity as the prototype entity");
-      return null;
+      ERROR("Attempt to remove entity " + entity.getErrorIdString()
+        + " from Entities which is not there");
+      return;
     }
 
-    // Create new bare (unproxified) entity based on the prototype.
-    let bareEntity = this.instantiate(prototype);
+    // Remove the record from hashmap.
+    this.records.delete(entity.getId());
 
-    // Set id to our new bare entity
-    // (this shouldn't fail because we have just created it, but
-    //  better be sure).
-    if (bareEntity.setId(id) === false)
-      return null;
-
-    return this.proxifyAndRegisterEntity(prototype, bareEntity);
+    // Invalidate internal 'entity' reference in proxy handler
+    // so the entity can be freed from memory by garbage collector.
+    // (any future access to entity's properties will be reported
+    //  by it's proxy handler as error).
+    entityRecord.invalidate();
   }
 
   // ---------------- Private methods -------------------
@@ -383,54 +470,6 @@ export abstract class Entities
     this.instantiateProperties(object[propertyName], prototype[propertyName]);
   }
 
-  // -> Returns 'null' on error.
-  private async createNewPrototypeEntity
-  (
-    prototypeId: string,
-    prototypeName: string,
-    name: string,
-    cathegory: Entity.NameCathegory
-  )
-  {
-    // First check if 'prototypeId' is a name of a hardcoded class
-    // (this.rootObjects is a hashamp indexed by class name).
-    let prototype = this.rootObjects.get(prototypeId);
-
-    if (!prototype)
-      // If it's not a class name, it has to be an entity id.
-      prototype = this.get(prototypeId);
-
-    if (!prototype)
-    {
-      ERROR("Unable to create prototype entity because"
-        + " prototypeId '" + prototypeId + "' is neither"
-        + " a name of an existing class nor an id of an"
-        + " existing entity");
-      return null;
-    }
-
-    return this.createNewEntity
-    (
-      prototype,
-      name,
-      cathegory,
-      true
-    );
-  }
-
-  // Creates and proxifies entity with specified 'id'.
-  // -> Returns 'null' if entity couldn't be created.
-  private createExistingEntity(prototypeId: string, id: string): Entity
-  {
-    // Find an EntityRecord of the prototype entity.
-    let prototypeRecord = this.findPrototypeRecord(prototypeId);
-
-    // We use bare (unproxified) entity as a prototype object.
-    let prototype = prototypeRecord.getEntity();
-
-    return this.createEntityFromPrototype(prototype, id);
-  }
-
   // -> Returns registered and proxified entity,
   //   'null' if entity couldn't be registered or proxified.
   private proxifyAndRegisterEntity(prototype: Entity, bareEntity: Entity)
@@ -438,15 +477,15 @@ export abstract class Entities
     let handler = this.createProxyHandler(bareEntity);
 
     // Hide bare entity behind a Proxy object which will report
-    // access to it's properties if it becomes invalid.
+    // access to the entity's properties if it becomes invalid.
     let proxy = this.createEntityProxy(handler);
 
     // Create an new EntityRecord that will be added to Entities.
     let entityRecord = new EntityRecord(proxy, handler);
 
     // Add entity record to Entities. If a record with this 'id'
-    // already exists there, the existing one will be used instead
-    // of the one we have just created.
+    // already exists, the existing one will be used instead of
+    // the one we have just created.
     //   In case of error entity will be 'null'.
     return this.add(entityRecord);
   }
@@ -473,7 +512,7 @@ export abstract class Entities
 
   // -> Returns existing reference if entity already exists in Entities.
   //    Returns invalid reference if entity with such 'id' isn't there.
-  private createReference(id: string): Entity
+  private getReference(id: string): Entity
   {
     let entity = this.get(id);
     
@@ -499,79 +538,6 @@ export abstract class Entities
     // Create a Javascript Proxy Object that will report access
     // of entity properties.
     return new Proxy({}, handler);
-  }
-
-  // -> Returns 'true' if enity is available.
-  private has(id: string)
-  {
-    return this.records.has(id);
-  }
-
-  // -> Returns 'undefined' if entity isn't found.
-  private get(id: string)
-  {
-    let entityRecord = this.records.get(id)
-
-    if (!entityRecord)
-      return undefined;
-
-    return entityRecord.getEntity();
-  }
-
-  // -> Returns added entity or 'null' on failure.
-  private add(entityRecord: EntityRecord)
-  {
-    let id = entityRecord.getEntity().getId();
-    let existingRecord = this.records.get(id);
-
-    if (existingRecord !== undefined)
-    {
-      ERROR("Attempt to add entity "
-       + entityRecord.getEntity().getErrorIdString()
-       + " to Entities which already exists there."
-       + " Entity is not added, existing one will be used");
-      return existingRecord.getEntity();
-    }
-
-    // Add entity record to hashmap under entity's id.
-    this.records.set(id, entityRecord);
-
-    return entityRecord.getEntity();
-  }
-
-  // Removes entity from memory but doesn't delete it from disk
-  // (this is used for example when player quits the game).
-  //   Also removes entity from entity lists so it can no
-  // longer be searched for.
-  private release(entity: Entity)
-  {
-    if (!Entity.isValid(entity))
-    {
-      ERROR("Attempt to remove invalid entity from Entities");
-      return;
-    }
-
-    // Remove entity from entity lists so it can no longer be searched for.
-    entity.removeFromLists();
-
-    // get() returns undefined if there is no such record in hashmap.
-    let entityRecord = this.records.get(entity.getId());
-
-    if (entityRecord === undefined)
-    {
-      ERROR("Attempt to remove entity " + entity.getErrorIdString()
-        + " from Entities which is not there");
-      return;
-    }
-
-    // Remove the record from hashmap.
-    this.records.delete(entity.getId());
-
-    // Invalidate internal 'entity' reference in proxy handler
-    // so the entity can be freed from memory by garbage collector.
-    // (any future access to entity's properties will be reported
-    //  by it's proxy handler as error).
-    entityRecord.invalidate();
   }
 }
 

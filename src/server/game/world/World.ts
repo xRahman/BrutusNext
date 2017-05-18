@@ -56,7 +56,7 @@ export class World extends ServerGameEntity
     //  even if someone renames it).
     let prototype = Prototypes.get(World.name);
 
-    this.systemRealm = await Entities.createNewInstanceEntity
+    this.systemRealm = await Entities.createInstance
     (
       prototype,
       'System Realm',
