@@ -81,7 +81,7 @@ export class Game
     //  even if someone renames it).
     let prototype = Prototypes.get(World.name);
 
-    this.world = await Entities.createNewInstanceEntity
+    this.world = await Entities.createInstance
     (
       prototype,
       Game.DEFAULT_WORLD_NAME,

@@ -1,14 +1,26 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+TODO - promyslet:
+Může mít prototyp unikátní jméno entity?
+- zdědí ho všechny instance a potomci, takže nemůže.
+[done]
+TODO: v setName() kontrolovat, že nesetuju unikátní jméno prototypové entitě.
+
+TODO: V Entities oddělit protected abstract metody od obyč protected metod.
+
 TODO: Funkce z FileManageru na loadování/savování entit přesunout
   do ServerEntities.
+[done]
 
 TODO: Funkci z FileManager na loadování/savování name lock filů
   přesunout někam jinam (Možná nová classa Names?)
+  - tak NameLock
+[done]
 
 TODO: deserialize() a createEntityInstance() vyhodit ze Serializable
- - přesunout to do Entity, možná to jinak pojmenovat.
+ - přesunout to do ServerEntities, možná to jinak pojmenovat.
+[done]
 
 -----------------------------
 
