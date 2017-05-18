@@ -19,7 +19,6 @@ import {App} from '../../../shared/lib/app/App';
 import {Classes} from '../../../shared/lib/class/Classes';
 import {ServerEntities} from
   '../../../server/lib/entity/ServerEntities';
-///import {FileManager} from '../../../server/lib/fs/FileManager';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
 ///import {FlagNamesManager} from '../../../server/lib/flags/FlagNamesManager';
 import {AdminList} from '../../../server/lib/admin/AdminList';
@@ -42,7 +41,10 @@ import {Account} from '../../../server/lib/account/Account';
 
 export class ServerApp extends App
 {
-  // -------------- Static class data -------------------
+  public static get DATA_DIRECTORY()
+  {
+    return './server/data/';
+  }
 
   //------------------ Private data ---------------------
 
@@ -308,7 +310,7 @@ export class ServerApp extends App
     // We need to check if './data/' directory exists before
     // initPrototypes() is called, because it will be created
     // there it doesn't exist.
-    let dataExists = await FileSystem.dataExists();
+    let dataExists = await FileSystem.exists(ServerApp.DATA_DIRECTORY);
 
     // Create root prototype entities if they don't exist yet or load
     // them from disk. Then recursively load all prototype entities
