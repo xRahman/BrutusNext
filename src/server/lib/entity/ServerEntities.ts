@@ -11,6 +11,7 @@ import {JsonObject} from '../../../shared/lib/json/JsonObject';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {Entities} from '../../../shared/lib/entity/Entities';
+import {Prototypes} from '../../../shared/lib/entity/Prototypes';
 import {ServerApp} from '../../../server/lib/app/ServerApp';
 import {NameLock} from '../../../server/lib/entity/NameLock';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
@@ -20,6 +21,8 @@ import {EntityProxyHandler} from
 
 export class ServerEntities extends Entities
 {
+  public static get DIRECTORY() { return 'entities/'; }
+
   constructor (timeOfBoot: Date)
   {
     super();
@@ -30,6 +33,103 @@ export class ServerEntities extends Entities
   private idProvider: IdProvider = null;
 
   // ------------- Public static methods ----------------
+
+  // Creates a new instance entity with a new id (can't be used as prototype).
+  // -> Returns 'null' on failure.
+  public static async createInstance<T extends Entity>
+  (
+    typeCast: { new (...args: any[]): T },
+    prototypeName: string,
+    name: string,
+    // 'null' means that entity won't have unique name.
+    cathegory: Entity.NameCathegory = null
+  )
+  : Promise<T>
+  {
+    let prototype = Prototypes.get(prototypeName);
+
+    if (!prototype)
+    {
+      ERROR("Unable to create instance entity because prototype"
+        + " '" + prototypeName + "' doesn't exist");
+      return null;
+    }
+
+    let entity = await ServerApp.getEntities().createNewEntity
+    (
+      prototype,
+      name,
+      cathegory,
+      false   // 'isPrototype'
+    );
+
+    // Dynamically check that entity is an
+    // instance of type T and typecast to it.
+    return entity.dynamicCast(typeCast);
+  }
+
+  // Creates a new prototype entity with a new id.
+  // -> Returns 'null' on failure.
+  public static async createPrototype<T extends Entity>
+  (
+    typeCast: { new (...args: any[]): T },
+    // Name of the ancestor prototype entity.
+    ancestorName: string,
+    // Name of the new prototype.
+    prototypeName: string,
+    // Prototype entities can have a name, but it can't
+    // be unique because it will be inherited by instances
+    // and descendant prototypes.
+    name: string = null
+  )
+  : Promise<T>
+  {
+    let ancestor = Prototypes.get(ancestorName);
+
+    if (!ancestor)
+    {
+      ERROR("Unable to create prototype entity because ancestor"
+        + "  prototype '" + ancestorName + "' doesn't exist");
+      return null;
+    }
+
+    let entity = await ServerApp.getEntities().createNewEntity
+    (
+      ancestor,
+      name,
+      null,   // 'nameCathegory' - entity name of prototype can't be unique.
+      true    // 'isPrototype'
+    );
+
+    // Dynamically check that entity is an
+    // instance of type T and typecast to it.
+    return entity.dynamicCast(typeCast);
+  }
+
+    // Creates a new prototype entity with a new id.
+  // -> Returns 'null' on failure.
+  public static async createRootPrototype(className: string): Promise<Entity>
+  {
+    let prototype = ServerApp.getEntities().getRootPrototypeObject(className);
+
+    if (!prototype)
+    {
+      ERROR("Unable to create root prototype entity because root"
+        + " prototype object '" + className + "' doesn't exist");
+      return null;
+    }
+
+    return await ServerApp.getEntities().createNewEntity
+    (
+      prototype,
+      // 'name' (root prototype entities don't have an entity name).
+      null,
+      // 'nameCathegory' - entity name of prototype can't be unique.
+      null,
+      // 'isPrototype'
+      true
+    );
+  }
 
   public static async isNameTaken
   (
@@ -48,14 +148,17 @@ export class ServerEntities extends Entities
 
   // --------------- Protected methods ------------------
 
+  /// Deprecated.
+  /*
   // ~ Overrides Entities.generateId().
   // Creates a unique entity string id.
   protected generateId(): string
   {
     return this.idProvider.generateId();
   }
+  */
 
-  // ~ Overrides Entities.requestEntityName().
+  // ~ Overrides Entities.requestName().
   // Checks if requested name is available, creates
   // a name lock file if it is.
   // -> Returns 'false' if name change isn't allowed.
@@ -115,28 +218,24 @@ export class ServerEntities extends Entities
   }
 
   // ~ Overrides Entities.loadEntityById().
+  // -> Returns 'null' on failure.
   protected async loadEntityById(id: string): Promise<Entity>
   {
     let path = this.getEntityPath(id);
 
     let jsonString = await FileSystem.readFile(path);
 
-    // Create Json object from Json string.
     let jsonObject = JsonObject.parse(jsonString);
 
     if (jsonObject === null)
       return null;
 
-    let entity = this.createEntityInstance(jsonObject, id, path);
+    let entity = this.createEntityFromJsonObject(jsonObject, id, path);
 
-    // Copy properties from jsonObject to the instance
-    // (loadFromJsonObject() returns 'null' on failure).
-    return entity.loadFromJsonObject(jsonObject, path);
+    if (!entity)
+      return null;
 
-    /*
-    // Create a new entity instance and deserialize JSON 'data' into it.
-    return Serializable.deserialize(jsonString, id, path);
-    */
+    return entity.deserialize(jsonObject, path);
   }
 
   // ~ Overrides Entities.loadEntityByName().
@@ -154,34 +253,24 @@ export class ServerEntities extends Entities
     return await this.loadEntityById(id);
   }
 
+  /// Deprecated.
+  /*
   // ~ Overrides Entities.createPrototype().
   // Creates a new prototype entity with a new id.
   // -> Returns 'null' on error.
   protected async createPrototype
   (
-    prototypeId: string,
+    ancestor: Entity,
     prototypeName: string,
     name: string
   )
   {
-    // First check if 'prototypeId' is a name of a hardcoded class
-    // (this.rootObjects is a hashamp indexed by class name).
-    let prototype = this.rootObjects.get(prototypeId);
+    let prototype = this.getPrototypeObject(ancestorId);
 
     if (!prototype)
-      // If it's not a class name, it has to be an entity id.
-      prototype = this.get(prototypeId);
-
-    if (!prototype)
-    {
-      ERROR("Unable to create prototype entity because"
-        + " prototypeId '" + prototypeId + "' is neither"
-        + " a name of an existing class nor an id of an"
-        + " existing entity");
       return null;
-    }
 
-    return this.createNewEntity
+    return await this.createNewEntity
     (
       prototype,
       name,
@@ -189,11 +278,129 @@ export class ServerEntities extends Entities
       true    // 'isPrototype'
     );
   }
+  */
+
+  // ---------------- Private methods -------------------
+
+  private getEntityFileName(id: string)
+  {
+    return id + '.json';
+  }
+
+  private getEntityDirectory()
+  {
+    return ServerApp.DATA_DIRECTORY + ServerEntities.DIRECTORY;
+  }
+
+  private getEntityPath(id: string)
+  {
+    let directory = this.getEntityDirectory();
+
+    directory = this.enforceTrailingSlash(directory);
+
+    return directory + this.getEntityFileName(id);
+  }
+
+  // Makes sure that 'directory' string ends with '/'.
+  private enforceTrailingSlash(directory: string): string
+  {
+    if (directory.substr(directory.length - 1) !== '/')
+    {
+      ERROR("Directory path '" + directory + "' doesn't end with '/'."
+        + "The '/' is added automatically, but it should be fixed anyways");
+      return directory + '/';
+    }
+
+    return directory;
+  }
+
+  // -> Returns 'null' if instance cannot be created.
+  private createEntityFromJsonObject
+  (
+    jsonObject: Object,
+    id: string,
+    path: string
+  )
+  {
+    if (!jsonObject)
+      return null;
+
+/// TODO
+/// Tohle má smysl pouze pokud se createEntityFromJsonObject() bude
+/// volat taky při deserializaci z protokolu (což se zatím neděje).
+    // If 'id' parameter is 'null', it means that we are not loading from
+    // file but rather using a client-server communication protocol. In
+    // that case entity 'id' is not saved as file name (because no files
+    // are sent over the protocol) but rather as a regular 'id' property.
+    if (id === null)
+    {
+      id = jsonObject[Entity.ID_PROPERTY];
+
+      if (!id)
+      {
+        ERROR("Missing or invalid id in JSON when deserializing"
+          + " an entity. Entity is not created");
+        return null;
+      }
+    }
+
+    // Check if there is a 'prototypeEntity' property in json Object.
+    let prototypeReference = jsonObject[Entity.PROTOTYPE_ENTITY_PROPERTY];
+
+    if (!prototypeReference)
+    {
+      ERROR("Missing or invalid 'prototypeReference' in JSON"
+          + " when deserializing an entity (id '" + id + "')"
+          + " from file " + path + ". Entity is not created");
+        return null;
+    }
+
+    // Read 'id' from entity reference record.
+    let prototypeId = this.readPrototypeId(prototypeReference, id, path);
+
+    if (!prototypeId)
+    {
+      ERROR("Missing or invalid prototype 'id' in"
+       + " " + Entity.PROTOTYPE_ENTITY_PROPERTY
+       + " reference record in JSON when deserializing"
+       + " an entity (id '" + id + "')."
+       + " Entity is not created");
+      return null;
+    }
+
+    return this.createExistingEntity(prototypeId, id);
+  }
+
+  private readPrototypeId
+  (
+    prototypeReference: Object,
+    id: string,
+    path: string
+  )
+  {
+    if (prototypeReference === null || prototypeReference === undefined)
+    {
+      ERROR("Invalid prototype reference when deserializing entity"
+        + " " + id + " from file " + path);
+      return null;
+    }
+
+    let prototypeId = prototypeReference[Entity.ID_PROPERTY];
+
+    if (prototypeId === null || prototypeId === undefined)
+    {
+      ERROR("Invalid prototype id when deserializing entity"
+        + " " + id + " from file " + path);
+      return null
+    }
+
+    return prototypeId;
+  }
 
   // ~ Overrides Entities.createNewEntity().
   // Creates an entity with a new id.
   // -> Returns 'null' on failure.
-  protected async createNewEntity
+  private async createNewEntity
   (
     prototype: Entity,
     name: string,
@@ -202,12 +409,12 @@ export class ServerEntities extends Entities
   )
   {
     // Generate a new id.
-    let id = this.generateId();
+    let id = this.idProvider.generateId();
 
     if (name !== null && cathegory !== null)
     {
       // Attempt to create a name lock file.
-      let isNameAvailable = await Entities.requestName
+      let isNameAvailable = await this.requestName
       (
         id,
         name,
@@ -216,7 +423,7 @@ export class ServerEntities extends Entities
 
       // If 'name' isn't available, we have just wasted an id.
       // (It's unavoidable because id is written to the name lock
-      //  file so we need to generate it prior to writing to it.
+      //  file so we need to generate id prior to writing the file.
       //    We could first test if the name lock file exists of
       //  course, but it would add a disk read operation even when
       //  the name is available, which is by far the most common
@@ -247,123 +454,6 @@ export class ServerEntities extends Entities
     }
 
     return entity;
-  }
-
-  // ---------------- Private methods -------------------
-
-  private getEntityFileName(id: string)
-  {
-    return id + '.json';
-  }
-
-  private getEntityDirectory()
-  {
-    return ServerApp.DATA_DIRECTORY + 'entities/';
-  }
-
-  private getEntityPath(id: string)
-  {
-    let directory = this.getEntityDirectory();
-
-    directory = this.enforceTrailingSlash(directory);
-
-    return directory + this.getEntityFileName(id);
-  }
-
-  // Makes sure that 'directory' string ends with '/'.
-  private enforceTrailingSlash(directory: string): string
-  {
-    if (directory.substr(directory.length - 1) !== '/')
-    {
-      ERROR("Directory path '" + directory + "' doesn't end with '/'."
-        + "The '/' is added automatically, but it should be fixed anyways");
-      return directory + '/';
-    }
-
-    return directory;
-  }
-
-  // Creates an instance of entity from information stored in 'jsonObject'.
-  // -> Returns 'null' if instance cannot be created.
-  private createEntityInstance
-  (
-    jsonObject: Object,
-    id: string,
-    path: string
-  )
-  {
-    if (!jsonObject)
-      return null;
-
-    // If 'id' parameter is 'null', it means that we are not loading from
-    // file but rather using a client-server communication protocol. In
-    // that case entity 'id' is not saved as file name (because no files
-    // are sent over the protocol) but rather as a regular 'id' property.
-    if (id === null)
-    {
-      id = jsonObject[Entity.ID_PROPERTY];
-
-      if (!id)
-      {
-        ERROR("Missing or invalid id in JSON when deserializing"
-          + " an entity. Entity is not created");
-        return null;
-      }
-    }
-
-    // First we check if there is a 'prototype' property in json Object.
-    let prototypeReference = jsonObject[Entity.PROTOTYPE_ENTITY_PROPERTY];
-
-    // If it is there, it means that we are deserializing an Entity
-    // so it must create an entity instance for it.
-    if (!prototypeReference)
-    {
-      ERROR("Missing or invalid 'prototypeReference' in JSON"
-          + " when deserializing an entity (id '" + id + "')"
-          + " from file " + path + ". Entity is not created");
-        return null;
-    }
-
-    let prototypeId = this.readPrototypeId(prototypeReference, id, path);
-
-    if (!prototypeId)
-    {
-      ERROR("Missing or invalid prototype 'id' in"
-       + " " + Entity.PROTOTYPE_ENTITY_PROPERTY
-       + " reference record in JSON when deserializing"
-       + " an entity (id '" + id + "')."
-       + " Entity is not created");
-      return null;
-    }
-
-    // Create an entity using an existing 'id' and add it to Entities.
-    return this.createExistingEntity(prototypeId, id);
-  }
-
-  private readPrototypeId
-  (
-    prototypeReference: Object,
-    id: string,
-    path: string
-  )
-  {
-    if (prototypeReference === null || prototypeReference === undefined)
-    {
-      ERROR("Invalid prototype reference when deserializing entity"
-        + " " + id + " from file " + path);
-      return null;
-    }
-
-    let prototypeId = prototypeReference[Entity.ID_PROPERTY];
-
-    if (prototypeId === null || prototypeId === undefined)
-    {
-      ERROR("Invalid prototype id when deserializing entity"
-        + " " + id + " from file " + path);
-      return null
-    }
-
-    return prototypeId;
   }
 }
 

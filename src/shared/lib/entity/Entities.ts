@@ -10,6 +10,7 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {App} from '../../../shared/lib/app/App';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {Classes} from '../../../shared/lib/class/Classes';
+import {Prototypes} from '../../../shared/lib/entity/Prototypes';
 //import {Entity} from '../../../shared/lib/entity/Entity';
 import {Entity} from '../../../shared/lib';
 import {EntityRecord} from '../../../shared/lib/entity/EntityRecord';
@@ -34,74 +35,6 @@ export abstract class Entities
   protected rootObjects = new Map<string, Entity>();
 
   // ------------- Public static methods ----------------
-
-  /// Možná nebude potřeba - volá se z createEntityInstance()
-  /// v ServerEntities, takže nemusí mít static verzi.
-  /*
-  // Creates entity using an existing 'id'.
-  // -> Returns 'null' if entity couldn't be created.
-  public static createExistingEntity
-  (
-    prototypeId: string,
-    id: string
-  )
-  : Entity
-  {
-    return App.getEntities().createExistingEntity(prototypeId, id);
-  }
-  */
-
-  // Creates a new instance entity with a new id (can't be used as prototype).
-  // -> Returns 'null' on failure.
-  public static async createInstance<T extends Entity>
-  (
-    prototype: Entity,
-    name: string,
-    typeCast: { new (...args: any[]): T },
-    // 'null' value of cathegory means that entity won't have unique name.
-    cathegory: Entity.NameCathegory = null
-  )
-  : Promise<T>
-  {
-    let entity = await App.getEntities().createNewEntity
-    (
-      prototype,
-      name,
-      cathegory,
-      false   // 'isPrototype'
-    );
-
-    // Dynamically check that entity is an
-    // instance of type T and typecast to it.
-    return entity.dynamicCast(typeCast);
-  }
-
-  // Creates a new prototype entity with a new id.
-  // -> Returns 'null' on failure.
-  public static async createPrototype<T extends Entity>
-  (
-    ancestorId: string,
-    prototypeName: string,
-    typeCast: { new (...args: any[]): T },
-    // Prototype entities can have a name, but it can't
-    // be unique, because it will be inherited by instances
-    // and descendant prototypes (so it wouldn't stay unique
-    // even if we set a name cathegory it it).
-    name: string = null
-  )
-  : Promise<T>
-  {
-    let entity = await App.getEntities().createPrototype
-    (
-      ancestorId,
-      prototypeName,
-      name
-    );
-
-    // Dynamically check that entity is an
-    // instance of type T and typecast to it.
-    return entity.dynamicCast(typeCast);
-  }
 
   // -> Returns existing reference if entity already exists in Entities.
   //    Returns invalid reference if entity with such 'id' isn't there.
@@ -218,7 +151,10 @@ export abstract class Entities
     cathegory: Entity.NameCathegory
   );
 
+  /// Tohle teď umí jen ServerEntities.
+  /*
   protected abstract generateId(): string;
+  */
 
   protected abstract async saveEntity(entity: Entity);
   protected abstract async loadEntityById(id: string): Promise<Entity>;
@@ -229,6 +165,8 @@ export abstract class Entities
   )
   : Promise<Entity>;
 
+  /// Tohle teď umí jen ServerEntities.
+  /*
   protected abstract async createNewEntity
   (
     prototype: Entity,
@@ -237,6 +175,7 @@ export abstract class Entities
     isPrototype: boolean
   )
   : Promise<Entity>;
+  */
 
   // -> Returns 'null' if entity instance couldn't be created.
   protected createEntityFromPrototype
@@ -276,26 +215,49 @@ export abstract class Entities
     return this.proxifyAndRegisterEntity(prototype, bareEntity);
   }
 
+  // -> Returns 'null' if prototype object isn't found.
+  protected getPrototypeObject(prototypeId: string)
+  {
+    // First check if 'prototypeId' is a name of a hardcoded class.
+    let prototype = this.getRootPrototypeObject(prototypeId);
+
+    if (prototype)
+      return prototype;
+
+    // If it's not a class name, it has to be an entity id.
+    let prototypeRecord = this.records.get(prototypeId);
+
+    if (prototypeRecord)
+      // We use bare (unproxified) entity as a prototype object.
+      prototype = prototypeRecord.getEntity();
+
+    if (!prototype)
+    {
+      ERROR("Unable to create prototype entity because"
+        + " prototypeId '" + prototypeId + "' is neither"
+        + " an id of an existing prototype entity nor a"
+        + " name of hardcoded entity class which doesn't"
+        + " have a prototype entity yet");
+      return null;
+    }
+
+    return prototype;
+  }
+
   // Creates and proxifies entity with specified 'id'.
   // -> Returns 'null' if entity couldn't be created.
   protected createExistingEntity(prototypeId: string, id: string): Entity
   {
-    let prototypeRecord = this.records.get(prototypeId);
+    let prototype = this.getPrototypeObject(prototypeId);
 
-    if (!prototypeRecord)
-    {
-      ERROR("Attempt to create an entity based on prototype"
-        + " id '" + prototypeId + " which doesn't exist in"
-        + " Entities. Entity instance is not created");
+    if (!prototype)
       return null;
-    }
-
-    // We use bare (unproxified) entity as a prototype object.
-    let prototype = prototypeRecord.getEntity();
 
     return this.createEntityFromPrototype(prototype, id);
   }
 
+  /// Tohle teď umí jen ServerEntities.
+  /*
   // -> Returns 'null' on error.
   protected abstract async createPrototype
   (
@@ -304,8 +266,9 @@ export abstract class Entities
     name: string
   )
   : Promise<Entity>;
+  */
 
-    // -> Returns 'true' if enity is available.
+  // -> Returns 'true' if enity is available.
   protected has(id: string)
   {
     return this.records.has(id);
@@ -358,10 +321,9 @@ export abstract class Entities
     // Remove entity from entity lists so it can no longer be searched for.
     entity.removeFromLists();
 
-    // get() returns undefined if there is no such record in hashmap.
     let entityRecord = this.records.get(entity.getId());
 
-    if (entityRecord === undefined)
+    if (!entityRecord)
     {
       ERROR("Attempt to remove entity " + entity.getErrorIdString()
         + " from Entities which is not there");
@@ -376,6 +338,28 @@ export abstract class Entities
     // (any future access to entity's properties will be reported
     //  by it's proxy handler as error).
     entityRecord.invalidate();
+  }
+
+    // -> Returns 'null' if 'prototypeId doesn't identify a root
+  //    prototype object or if such root prototye entity already
+  //    exists.
+  protected getRootPrototypeObject(className: string)
+  {
+    // Check if 'prototypeId' is a className of hardcoded entity class.
+    let prototype = this.rootObjects.get(className);
+
+    if (!prototype)
+      return null
+
+    if (Prototypes.get(className))
+    {
+      ERROR("Attempt to create root prototype entity which"
+        + " already exists. Entities with 'className' as"
+        + " prototypeId can only be created once");
+      return null;
+    }
+
+    return prototype;
   }
 
   // ---------------- Private methods -------------------
