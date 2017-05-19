@@ -43,4 +43,4 @@ export class Area  extends ServerGameEntity
   // ---------------- Private methods -------------------
 }
 
-Classes.registerPrototypeClass(Area);
+Classes.registerEntityClass(Area);

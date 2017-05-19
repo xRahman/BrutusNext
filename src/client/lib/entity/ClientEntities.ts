@@ -42,12 +42,15 @@ export class ClientEntities extends Entities
       + " That's not allowed on the client");
   }
 
+  /*
+  // ~ Overrides Entities.generateId().
   protected generateId(): string
   {
     ERROR("Attempt to generate an id on the client. That's"
       + " not possible, only server can generate ids");
     return null;
   }
+  */
 
   // ~ Overrides Entities.saveEntity().
   protected async saveEntity(entity: Entity)
@@ -88,6 +91,8 @@ export class ClientEntities extends Entities
     return null;
   }
 
+  /// Tohle teď umí jen ServerEntities.
+  /*
   // ~ Overrides Entities.createNewEntity().
   // -> Returns 'null'.
   protected async createNewEntity
@@ -105,7 +110,10 @@ export class ClientEntities extends Entities
 
     return null;
   }
+  */
 
+  /// Tohle teď umí jen ServerEntities.
+  /*
   // ~ Overrides Entities.createPrototype().
   // -> Returns 'null'.
   protected async createPrototype
@@ -122,4 +130,5 @@ export class ClientEntities extends Entities
 
     return null;
   }
+  */
 }

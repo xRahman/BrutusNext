@@ -9,7 +9,7 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Classes} from '../../../shared/lib/class/Classes';
 import {Prototypes} from '../../../shared/lib/entity/Prototypes';
-import {Entities} from '../../../shared/lib/entity/Entities';
+import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
 import {NameLock} from '../../../server/lib/entity/NameLock';
 import {Entity} from '../../../shared/lib/entity/Entity';
 
@@ -61,17 +61,9 @@ export class ServerPrototypes extends Prototypes
     );
 
     if (id !== null)
-      return await Entities.loadEntityById(id, Entity);
+      return await ServerEntities.loadEntityById(id, Entity);
 
-    return await Entities.createPrototype
-    (
-      // Root prototypes use root objects as their prototype,
-      // which is identified by 'className'.
-      className,
-      // 'className' will also be the name of this prototype.
-      className,
-      Entity  // Type cast.
-    );
+    return await ServerEntities.createRootPrototype(className);
   }
 
   // Recursively loads all prototype entities inherited from root
@@ -94,7 +86,11 @@ export class ServerPrototypes extends Prototypes
   {
     for (let descendantId of prototype.getDescendantIds())
     {
-      let descendant = await Entities.loadEntityById(descendantId, Entity);
+      let descendant = await ServerEntities.loadEntityById
+      (
+        descendantId,
+        Entity
+      );
 
       if (descendant === null)
       {
@@ -103,7 +99,7 @@ export class ServerPrototypes extends Prototypes
       }
 
       // Add the desendant to this.prototypes hashmap.
-      this.prototypes.set(descendant.className, descendant);
+      this.prototypes.set(descendant.prototypeName, descendant);
 
       // Recursively load decendant's descendants.
       await this.loadDescendants(descendant);

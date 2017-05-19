@@ -59,4 +59,4 @@ export class Realm extends ServerGameEntity
   // ---------------- Private methods -------------------
 }
 
-Classes.registerPrototypeClass(Realm);
+Classes.registerEntityClass(Realm);

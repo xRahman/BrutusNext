@@ -39,4 +39,4 @@ export class Dimension extends ServerGameEntity
   // ---------------- Private methods -------------------
 }
 
-Classes.registerPrototypeClass(Dimension);
+Classes.registerEntityClass(Dimension);

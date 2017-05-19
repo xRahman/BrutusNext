@@ -7,8 +7,9 @@
 
 'use strict';
 
-import {Entities} from '../../../shared/lib/entity/Entities';
+import {Entity} from '../../../shared/lib/entity/Entity';
 import {Prototypes} from '../../../shared/lib/entity/Prototypes';
+import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
 ///import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
 ///import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
 ///import {ServerApp} from '../../../server/lib/Server';
@@ -56,11 +57,12 @@ export class World extends ServerGameEntity
     //  even if someone renames it).
     let prototype = Prototypes.get(World.name);
 
-    this.systemRealm = await Entities.createInstance
+    this.systemRealm = await ServerEntities.createInstance
     (
-      prototype,
+      Realm,      // Typecast.
+      Realm.name, // Prototype name.
       'System Realm',
-      World // Dynamic typecast.
+      Entity.NameCathegory.WORLD
     );
 
     // Even though we keep direct reference to systemRealm, we stil
@@ -69,17 +71,12 @@ export class World extends ServerGameEntity
 
     // --- System Area ---
 
-    /*
-    // Create a new area prototype.
-    Game.prototypeManager.createPrototype('SystemArea', 'Area');
-    */
-
-TODO
-    this.systemArea = await ServerApp.entityManager.createUniqueEntity
+    this.systemArea = await ServerEntities.createInstance
     (
+      Area,      // Typecast.
+      Area.name, // Prototype name.
       'System Area',
-      Area,
-      NamedEntity.NameCathegory.world
+      Entity.NameCathegory.WORLD
     );
 
     // Add System Area to contents of System Realm.
@@ -87,34 +84,26 @@ TODO
 
     // --- System Room ---
 
-    /*
-    // Create a new room prototype.
-    Game.prototypeManager.createPrototype('SystemRoom', 'Room');
-    */
-
-    this.systemRoom = await ServerApp.entityManager.createNamedEntity
+    this.systemRoom = await ServerEntities.createInstance
     (
+      Room,      // Typecast.
+      Room.name, // Prototype name.
       'System Room',
-      Room
+      Entity.NameCathegory.WORLD
     );
-    ///this.systemRoom.setName("System Room");
 
     // Add System Room to contents of System Area.
     this.systemArea.insertEntity(this.systemRoom);
 
     // --- Tutorial Room ---
 
-    /*
-    // Create a new room prototype.
-    Game.prototypeManager.createPrototype('TutorialRoom', 'Room');
-    */
-    
-    this.tutorialRoom = await ServerApp.entityManager.createNamedEntity
+    this.tutorialRoom = await ServerEntities.createInstance
     (
+      Room,      // Typecast.
+      Room.name, // Prototype name.
       'Tutorial Room',
-      Room
+      Entity.NameCathegory.WORLD
     );
-    ///this.tutorialRoom.setName("Tutorial Room");
 
     // Add Tutorial Room to contents of System Area.
     this.systemArea.insertEntity(this.tutorialRoom);
@@ -133,4 +122,4 @@ TODO
   // ---------------- Private methods -------------------
 }
 
-Classes.registerPrototypeClass(World);
+Classes.registerEntityClass(World);

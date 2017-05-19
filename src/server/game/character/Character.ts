@@ -124,4 +124,4 @@ export class Character extends ServerGameEntity
   */
 }
 
-Classes.registerPrototypeClass(Character);
+Classes.registerEntityClass(Character);
