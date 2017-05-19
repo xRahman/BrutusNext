@@ -86,6 +86,16 @@ export class ServerApp extends App
 
   // --------------- Static accessors -------------------
 
+  public static getEntities()
+  {
+    return this.getInstance().entities;
+  }
+
+  public static getPrototypes()
+  {
+    return this.getInstance().prototypes;
+  }
+
   public static get timeOfBoot()
   {
     if (ServerApp.getInstance().timeOfBoot === null)

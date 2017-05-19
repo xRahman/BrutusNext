@@ -170,4 +170,4 @@ export class Room extends ServerGameEntity
   // ---------------- Private methods -------------------
 }
 
-Classes.registerPrototypeClass(Room);
+Classes.registerEntityClass(Room);

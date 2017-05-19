@@ -59,4 +59,4 @@ export class Sector extends ServerGameEntity
   // ---------------- Private methods -------------------
 }
 
-Classes.registerPrototypeClass(Sector);
+Classes.registerEntityClass(Sector);

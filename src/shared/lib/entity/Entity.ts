@@ -306,21 +306,14 @@ export class Entity extends Serializable
       return;
     }
 
-    if (this.prototypeEntity !== null)
+    // When a new entity is created, it's 'prototytypeEntity'
+    // is null so there is no need to update it.
+    if (this.prototypeEntity)
     {
-      if (this.prototypeEntity.isValid())
-      {
-        // Remove 'this.id' from the old prototype's
-        // 'instanceIds' or 'descendantIds' depending
-        // on where it is present.
-        this.prototypeEntity.removeChildId(this.getId());
-      }
-      else
-      {
-        ERROR("Attempt to set prototype to entity"
-          + " " + this.getErrorIdString() + " which"
-          + " doesn't have a valid prototype");
-      }
+      // Remove 'this.id' from the old prototype's
+      // 'instanceIds' or 'descendantIds' depending
+      // on where it is present.
+      this.prototypeEntity.removeChildId(this.getId());
     }
 
     if (isPrototype)
@@ -402,27 +395,13 @@ export class Entity extends Serializable
 
   public isPrototypeEntity()
   {
-    // Testing 'nameCathegory' is not a very robust way to
-    // check if the entity is a prototype entity, but it's
-    // fast so we do it first.
-    if (this.nameCathegory === Entity.NameCathegory.PROTOTYPE)
+    if (!this.prototypeEntity)
     {
-      // This assertion is here just to discover potential errors.
-      if (!this.prototypeEntity.hasDescendant(this))
-      {
-        ERROR("Entity " + this.getErrorIdString() + " has"
-          + " nameCathegory 'PROTOTYPE' but it's not listed"
-          + " in it's prototypeEntity's 'descendantIds'."
-          + " This probably means that someone set the"
-          + " name cathegory to 'PROTOTYPE' but didn't move"
-          + " it's id from prototypeEntity's 'instanceIds'"
-          + " to prototypeEntity's 'descendantIds'");
-      }
-
-      return true;
+      ERROR("Invalid 'prototypeEntity' in " + this.getErrorIdString());
+      return false;
     }
 
-    return false;
+    return this.prototypeEntity.hasDescendant(this);
   }
 
   public async save()

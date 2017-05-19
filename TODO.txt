@@ -1,6 +1,33 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+Kdy se volá Entities.createInstance()?
+  // Tady by se mi hodilo předávat jméno prototypu, abych ho nemusel
+  // pokaždé hledat v Prototypes.
+- při zakládání nových instancí
+
+Kdy se volá Entities.createPrototype?
+  // Tady musím předávat idčko předka, protože předkem je root object,
+  // a to se zjistí tak, že hodnotou 'ancestorId' je className.
+- ServerPrototypes.initRootPrototype()
+  // Tady by se asi taky hodilo předávat jméno předka...
+- Při zakládání nového prototypu
+
+=> Možná by nakonec bylo nejlepší mít 2 metody na vyrábění prototypu
+   v Entities:
+   // Je dobrý nápad vyrábět prototypy (a ostatně i instance) ze shared kódu?
+   Entities.createPrototype(ancetorName: string)
+   // Tohle určitě může být jen v ServerEntities, root prototypy
+   // se vyrábí na jediném místě.
+   ServerEntities.createRootPrototype(className: string)
+
+TODO:
+- createInstance() a createPrototype() přesunout do ServerEntities.
+  Obojí bude mít jako parametr jméno prototypu (respektive předka).
+- přidělat createRootPrototype()
+- requestName() taky hodit jen do ServerEntitites.
+
+
 TODO - promyslet:
 Může mít prototyp unikátní jméno entity?
 - zdědí ho všechny instance a potomci, takže nemůže.
