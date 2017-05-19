@@ -8,7 +8,7 @@
 
 import {ERROR} from '../../shared/lib/error/ERROR';
 import {Entity} from '../../shared/lib/entity/Entity';
-import {Entities} from '../../shared/lib/entity/Entities';
+import {ServerEntities} from '../../server/lib/entity/ServerEntities';
 import {Prototypes} from '../../shared/lib/entity/Prototypes';
 ///import {NamedEntity} from '../../server/lib/entity/NamedEntity';
 import {NameSearchList} from '../../server/lib/entity/NameSearchList';
@@ -75,17 +75,12 @@ export class Game
       ERROR("World already exists");
       return;
     }
-
-    // Get prototype named 'World' from Prototypes
-    // (we us the name of the class so it will work
-    //  even if someone renames it).
-    let prototype = Prototypes.get(World.name);
-
-    this.world = await Entities.createInstance
+    
+    this.world = await ServerEntities.createInstance
     (
-      prototype,
+      World,      // Typecast.
+      World.name, // Prototype name.
       Game.DEFAULT_WORLD_NAME,
-      World, // Dynamic typecast.
       Entity.NameCathegory.WORLD
     );
 
@@ -106,7 +101,7 @@ export class Game
   public async load()
   {
     // Load current state of world from file.
-    this.world = await Entities.loadEntityByName
+    this.world = await ServerEntities.loadEntityByName
     (
       Game.DEFAULT_WORLD_NAME,
       Entity.NameCathegory.WORLD,
