@@ -25,7 +25,9 @@ TODO:
 - createInstance() a createPrototype() přesunout do ServerEntities.
   Obojí bude mít jako parametr jméno prototypu (respektive předka).
 - přidělat createRootPrototype()
-- requestName() taky hodit jen do ServerEntitites.
+[done]
+requestName() taky hodit jen do ServerEntitites.
+- tak ne, používá se to v Entity.setName(), takže to musí být v /shared
 
 
 TODO - promyslet:
