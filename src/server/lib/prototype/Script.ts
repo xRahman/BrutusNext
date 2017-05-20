@@ -46,8 +46,7 @@ export class Script extends SaveableObject
     super();
 
     /*
-      The following code uses quite a bit of dark magic so let me explain what
-      it does.
+      The following code uses quite a bit of dark magic so let me explain.
 
       General idea is to allow instances of game entities (like 'evilMob')
       to be assigned a function, which is created by compiling the script.

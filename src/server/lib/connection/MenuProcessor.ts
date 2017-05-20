@@ -10,7 +10,7 @@ import {Settings} from '../../../server/ServerSettings';
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
-import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
+///import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
 import {Syslog} from '../../../shared/lib/log/Syslog';
 import {Connection} from '../../../server/lib/connection/Connection';
 import {ServerApp} from '../../../server/lib/app/ServerApp';

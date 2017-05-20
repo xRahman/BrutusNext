@@ -9,6 +9,7 @@
         "build/": true,
         "documentation/": true,
         "resources/": true,
+        "deprecated/": true,
         ".gitattributes": true,
         ".gitignore": true,
         "**/*.bat": true
@@ -18,14 +19,12 @@
         ".git/": true,
         "node_modules/": true,
         "documentation/": true,
+        "deprecated/": true,
         "build/": true,
         "**/*.bat": true
     },
     "editor.rulers": [80],
     "editor.tabSize": 2,
     // The default end of line character.
-    "files.eol": "\n",
-    // Bookmarks will stick to the code rather than line number.
-    // (Requires 'Bookmarks' extension.)
-    "bookmarks.useStickyBookmarks": true
+    "files.eol": "\n"
 }
