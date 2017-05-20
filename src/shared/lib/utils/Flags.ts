@@ -11,7 +11,7 @@ let FastBitSet = require('fastbitset');
 
 // T needs to be enum (there is no way to enforce it at the moment
 // in typescript).
-//   See RoomData.flags and RoomData.Flags for example.
+//   See RoomData.Flags for example.
 export class Flags<T>
 {
 
