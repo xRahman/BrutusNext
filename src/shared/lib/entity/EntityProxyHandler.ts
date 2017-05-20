@@ -260,6 +260,12 @@ export class EntityProxyHandler
       return this.isEntityValidTrapHandler;
     }
 
+    // Trap calls of entity.getId() method.
+    if (property === 'getId')
+    {
+      return this.getIdTrapHandler;
+    }
+
     // Trap calls of entity.isEtity() method.
     if (property === 'isEntity')
     {
@@ -489,6 +495,14 @@ export class EntityProxyHandler
     return true;
   }
 
+  private getId(): string
+  {
+    if (this.entity === null)
+      return this.id;
+
+    return this.entity.getId();
+  }
+
   /// Prozatím nepůjde "oživit" mrtvou referenci.
   /*
   // Requests current reference to entity from Server.entityManager
@@ -586,5 +600,12 @@ export class EntityProxyHandler
     let proxyHandler = this['_proxyHandler'];
 
     return proxyHandler.isEntityValid();
+  }
+
+  private getIdTrapHandler(): string
+  {
+    let proxyHandler = this['_proxyHandler']; 
+
+    return proxyHandler.getId();
   }
 }

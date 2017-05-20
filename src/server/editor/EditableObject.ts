@@ -7,9 +7,9 @@
 
 'use strict';
 
-import {AttributableClass} from '../../server/lib/class/AttributableClass';
+import {Attributable} from '../../shared/lib/class/Attributable';
 
-export class EditableObject extends AttributableClass
+export class EditableObject extends Attributable
 {
 
   //----------------- Protected data --------------------

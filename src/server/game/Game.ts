@@ -11,7 +11,7 @@ import {Entity} from '../../shared/lib/entity/Entity';
 import {ServerEntities} from '../../server/lib/entity/ServerEntities';
 import {Prototypes} from '../../shared/lib/entity/Prototypes';
 ///import {NamedEntity} from '../../server/lib/entity/NamedEntity';
-import {NameSearchList} from '../../server/lib/entity/NameSearchList';
+import {NameList} from '../../server/lib/entity/NameSearchList';
 ///import {SaveableObject} from '../../server/lib/fs/SaveableObject';
 import {Message} from '../../server/lib/message/Message';
 import {ServerApp} from '../../server/lib/app/ServerApp';

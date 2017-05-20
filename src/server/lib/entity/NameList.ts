@@ -9,21 +9,26 @@
 ///import {SharedUtils} from '../../../shared/lib/utils/SharedUtils';
 import {ERROR} from '../../../shared/lib/error/ERROR';
 ///import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
-import {EntityList} from '../../../server/lib/entity/EntityList';
+///import {EntityList} from '../../../server/lib/entity/EntityList';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {Entities} from '../../../shared/lib/entity/Entities';
 import {ServerApp} from '../../../server/lib/app/ServerApp';
 
-export class NameSearchList extends EntityList
+export class NameList
 {
+  constructor
+  (
+    // NameLists only accepts entites with this name cathegory.
+    private cathegory: Entity.NameCathegory
+  )
+  {
+  }
+
   //------------------ Private data ---------------------
 
-  // Hashmap<[ string, Entity ]>
-  //   Key: string id
-  //   Value: entity reference
-  private uniqueNames = new Map();
-  // Do not save or load property 'uniqueNames'.
-  private static uniqueNames = { isSaved: false };
+  //   Key: entity name
+  //   Value: entity
+  private names = new Map<string, Entity>();
 
   // --------------- Public accessors -------------------
 
@@ -101,7 +106,7 @@ export class NameSearchList extends EntityList
 
     // If entity has unique name, add it's id to the hashmap of unique names.
     if (entity.isNameUnique())
-      this.uniqueNames.set(entity.getName(), entity);
+      this.names.set(entity.getName(), entity);
 
     return true;
   }
@@ -110,7 +115,7 @@ export class NameSearchList extends EntityList
   // -> Returns undefined if entity isn't loaded or doesn't exist.
   public getEntityByName(name: string)
   {
-    return this.uniqueNames.get(name);
+    return this.names.get(name);
   }
 
   // Removes entity id from this list, but doesn't delete it from
@@ -122,7 +127,7 @@ export class NameSearchList extends EntityList
       if (entity.getName !== undefined)
       {
         // Remove record from hashmap storing ids of uniquely named entities.
-        this.uniqueNames.delete(entity.getName());
+        this.names.delete(entity.getName());
       }
       else
       {
@@ -136,7 +141,7 @@ export class NameSearchList extends EntityList
 
   public hasUniqueEntity(name: string): boolean
   {
-    return this.uniqueNames.has(name);
+    return this.names.has(name);
   }
 
   // -------------- Private methods -------------------

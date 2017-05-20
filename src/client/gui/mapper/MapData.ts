@@ -7,8 +7,8 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {Coords} from '../../../shared/type/Coords';
-import {Array3d} from '../../../shared/type/Array3d';
+import {Coords} from '../../../shared/lib/utils/Coords';
+import {Grid} from '../../../shared/lib/utils/Grid';
 import {RoomData} from '../../../shared/game/world/RoomData';
 import {RoomRenderData} from '../../../client/gui/mapper/RoomRenderData';
 import {ExitRenderData} from '../../../client/gui/mapper/ExitRenderData';
@@ -25,7 +25,7 @@ export class MapData
 
   // All rooms are stored here, including those that are
   // not in current rendering area.
-  private roomGrid = new Array3d<RoomRenderData>();
+  private roomGrid = new Grid<RoomRenderData>();
 
   // Only rooms in current rendering area are present here.
   private rooms = new Map<string, RoomRenderData>();
