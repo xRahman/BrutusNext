@@ -19,7 +19,7 @@ export class EntityList extends Saveable
   //   Key: string id
   //   Value: entity reference
   // (entries are stored in order of insertion)
-  private entities = new Map();
+  private entities = new Map<string, Entity>();
 
   //// Hashmap<[ string, EntityId ]>
   ////   Key: stringId
@@ -110,7 +110,7 @@ export class EntityList extends Saveable
     if (this.entities.has(entity.getId()) === false)
     {
       ERROR("Attempt to remove id '" + entity.getId() + "'"
-        + " from '" + this.className + "' that is not present"
+        + " from '" + this.getClassName() + "' that is not present"
         + " in it");
       return false;
     }

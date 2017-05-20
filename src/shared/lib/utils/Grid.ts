@@ -9,11 +9,13 @@
   It can have 'holes' (reading nonexistent item returns 'undefined').
 */
 
+/// TODO: Sjednotit jména koordinátů (nepoužívat xyz, pouze seu).
+
 'use strict';
 
-import {Coords} from '../../shared/type/Coords';
+import {Coords} from '../../../shared/lib/utils/Coords';
 
-export class Array3d<T>
+export class Grid<T>
 {
   // -------------- Static class data -------------------
 
@@ -47,19 +49,19 @@ export class Array3d<T>
   // -> Returns 'undefined' if item isn't in the array.
   public get(coords: Coords): T
   {
-    // Two-dimensional associative sub-map.
-    let yzArray = this.data.get(coords.s);
+    // Two-dimensional associative sub-map (in 'east-up' direction).
+    let euArray = this.data.get(coords.s);
 
-    if (!yzArray)
+    if (!euArray)
       return undefined;
 
-    // One-dimensional associative sub-map in.
-    let zArray = yzArray.get(coords.e);
+    // One-dimensional associative sub-map (in 'up' direction).
+    let uArray = euArray.get(coords.e);
 
-    if (!zArray)
+    if (!uArray)
       return undefined;
 
-    return zArray.get(coords.u);
+    return uArray.get(coords.u);
   }
 
   // Sets 'item' at position [s, e, u].
@@ -68,26 +70,26 @@ export class Array3d<T>
     if (!this.data)
       this.data = new Map<number, any>();
 
-    // Two-dimensional associative sub-map.
-    let yzArray = this.data.get(coords.s);
+    // Two-dimensional associative sub-map (in 'east-up' direction).
+    let euArray = this.data.get(coords.s);
 
-    if (!yzArray)
+    if (!euArray)
     {
-      yzArray = new Map<number, any>();
+      euArray = new Map<number, any>();
 
-      this.data.set(coords.s, yzArray);
+      this.data.set(coords.s, euArray);
     }
 
-    // One-dimensional associative sub-map.
-    let zArray = yzArray.get(coords.e);
+    // One-dimensional associative sub-map (in 'up' direction).
+    let uArray = euArray.get(coords.e);
 
-    if (!zArray)
+    if (!uArray)
     {
-      zArray = new Map<number, T>();
-      yzArray.set(coords.e, zArray);
+      uArray = new Map<number, T>();
+      euArray.set(coords.e, uArray);
     }
     
-    zArray.set(coords.u, item);
+    uArray.set(coords.u, item);
     
     // Update the min and max point so we know the dimensions
     // of this 3d array.

@@ -1,6 +1,57 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+TODO: Zprovoznit save/load ContainerEntity.
+- možná by se ContainerEntity mohla jmenovat prostě Container.
+
+Chci, aby po loadu byly správně nastavené reference v .contents
+- Řešení: Loadnout nejdřív contents, pak až container
+ (To bych ale musel hacknout, protože na loadnutí vložených entit potřebuju
+  znát jejich idčka - a ta jsou uložena v container.contents)
+- Druhá možnost: Umožnit loadnout entitu z invalid reference (tak jsme to měl
+  původně).
+
+
+TODO: zavést metodu getClassName()
+[done]
+
+Jak je to s různými listy?
+-------------------------
+
+EntityList
+  (Map<id, Entity>)
+- NameSearchList
+    (Map<name, Entity>)
+    (Tady mají smysl jen unikátní entity)
+  - AbbrevSearchList
+    - CharacterList
+
+- jediný NameSearchList je zatím AccountList
+
+contents v EntityContaineru by asi rovnou mohlo být AbbrevSearchList
+(Což je problém, protože k čemu mít tuhle funkcionalitu na clientu?)
+
+TODO: Přejmenovat AbbrevSearchList na AbbrevList.
+TODO: Přejmenovat NameSearchList na NameList.
+
+AbbrevSearchList by asi nemusel být NameSearchList
+(a ostatně asi ani EntityList, jsou to nesouvisející věci).
+- asi by ale mohl existovat EntityAbbrevList, což bude EntityList
+  s vnořeným AbbrevListem
+
+NameSearchList by měl mít proměnnou cathegory, podle které bude
+enforcovat kategorii vložených jmen.
+
+TODO: Když je entita v NameListu, tak je ji potřeba při přejmenování
+reinsertnout.
+
+TODO: Když je entita v AbbrevListu, tak je ji potřeba při změně aliasů
+reinsertnout.
+
+TODO: AccountList přejmenovat na Accounts, CharacterList na Characters.
+
+---------------------------------------------------------------
+
 Kdy se volá Entities.createInstance()?
   // Tady by se mi hodilo předávat jméno prototypu, abych ho nemusel
   // pokaždé hledat v Prototypes.

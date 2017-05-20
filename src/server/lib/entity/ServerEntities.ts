@@ -215,6 +215,8 @@ export class ServerEntities extends Entities
       return false;
 
     await FileSystem.writeFile(jsonString, directory + fileName);
+
+    await entity.postSave();
   }
 
   // ~ Overrides Entities.loadEntityById().
@@ -235,7 +237,14 @@ export class ServerEntities extends Entities
     if (!entity)
       return null;
 
-    return entity.deserialize(jsonObject, path);
+    entity.deserialize(jsonObject, path);
+
+    if (!entity)
+      return null;
+
+    await entity.postLoad();
+
+    return entity;
   }
 
   // ~ Overrides Entities.loadEntityByName().

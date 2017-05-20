@@ -10,13 +10,13 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 ///import {FileSystem} from '../../../server/lib/fs/FileSystem';
 import {ServerApp} from '../../../server/lib/Server';
 ///import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
-import {NameSearchList} from '../../../server/lib/entity/NameSearchList';
+import {NameList} from '../../../server/lib/entity/NameSearchList';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {Entities} from '../../../shared/lib/entity/Entities';
 import {Account} from '../../../server/lib/account/Account';
 import {Connection} from '../../../server/lib/connection/Connection';
 
-export class AccountList extends NameSearchList
+export class AccountList extends NameList
 {
   //------------------ Private data ---------------------
 
