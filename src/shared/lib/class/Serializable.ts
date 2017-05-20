@@ -384,7 +384,7 @@ export class Serializable extends Attributable
     // (There is no 'className' property on Serializable objects,
     //  it is used to save the name of the javascript class - which
     //  is the 'name' property of the class constructor.)
-    jsonObject[Serializable.CLASS_NAME_PROPERTY] = this.constructor.name;
+    jsonObject[Serializable.CLASS_NAME_PROPERTY] = this.getClassName();
 
     // Cycle through all properties in source object.
     for (let propertyName in instance)
@@ -700,14 +700,14 @@ export class Serializable extends Attributable
       return false;
     }
 
-    if (jsonClassName !== this.constructor.name)
+    if (jsonClassName !== this.getClassName())
     {
       let pathString = Serializable.composePathString(path);
 
       ERROR("Attempt to load JSON data of class"
         + " (" + jsonObject[Serializable.CLASS_NAME_PROPERTY] + ")"
         + pathString + " into instance of different"
-        + " class (" + this.constructor.name + ")");
+        + " class (" + this.getClassName() + ")");
       return false;
     }
 

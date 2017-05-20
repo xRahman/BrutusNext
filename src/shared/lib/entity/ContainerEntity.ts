@@ -45,15 +45,11 @@ export abstract class ContainerEntity extends Entity
 
   // ---------------- Public methods --------------------
 
-  // ~ Overrides AutoSaveableObject.save()
-  // When saving an entity, all referenced entities are saved as well.
-  // (This way when you save world, everything in it will get saved)
-  public async save()
+  // ~ Overrides Entity.postSave()
+  // When saving a a container entity, all contained
+  //  entities are saved as well.
+  public async postSave()
   {
-    /// Tady by spravne melo byt super.save(), ale diky bugu v aktualni
-    /// verzi v8 enginu nejde pouzit super uvnitr chainu asyc funkci.
-    await this.saveToFile(this.getSaveDirectory(), this.getSaveFileName());
-
     ///await this.contents.save(this.getErrorIdString());
     await this.contents.save();
   }
@@ -61,14 +57,8 @@ export abstract class ContainerEntity extends Entity
   // When loading an entity, all referenced entities are loaded as well.
   // This is to prevent situation when you e. g. load a conainer but
   // it's contents is not available in the world.
-  public async load()
+  public async postLoad()
   {
-    /// Tady by spravne melo byt super.load(), ale diky bugu v aktualni
-    /// verzi v8 enginu nejde pouzit super uvnitr chainu asyc funkci.
-    // This needs to be done before loading contained entities, because we
-    // need to read their id's first.
-    await this.loadFromFile(this.getFullSavePath());
-
     await this.contents.load(this.getErrorIdString());
   }
 

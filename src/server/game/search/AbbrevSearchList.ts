@@ -19,11 +19,11 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
-import {NameSearchList} from '../../../server/lib/entity/NameSearchList';
+import {NameList} from '../../../server/lib/entity/NameSearchList';
 import {EntityList} from '../../../server/lib/entity/EntityList';
 import {ServerGameEntity} from "../../../server/game/entity/ServerGameEntity";
 
-export class AbbrevSearchList extends NameSearchList
+export class AbbrevSearchList extends NameList
 {
   //----------------- Protected data --------------------
 
@@ -46,9 +46,9 @@ export class AbbrevSearchList extends NameSearchList
   // Hashmap<[ string, EntityList ]>
   //   Key: abbreviation (like "warrio").
   //   Value: list of entity references that "listen" to this abbrev.
-  private abbrevList = new Map();
-  // Do not save and load property 'abbrevList'.
-  private static abbrevList = { isSaved: false };
+  private abbrevData = new Map<string, EntityList>();
+  // Do not save and load property 'abbrevData'.
+  private static abbrevData = { isSaved: false };
 
   // ---------------- Public methods --------------------
 
@@ -136,7 +136,7 @@ export class AbbrevSearchList extends NameSearchList
     let lowerCaseAbbrev = abbrev.toLocaleLowerCase();
 
     // get() Returns 'undefined' if item is not in hashmap.
-    let entityList = this.abbrevList.get(lowerCaseAbbrev);
+    let entityList = this.abbrevData.get(lowerCaseAbbrev);
 
     // If record with such key wasn't found in this.abbrevList, 
     // a new EntityList will be created.
@@ -145,7 +145,7 @@ export class AbbrevSearchList extends NameSearchList
       entityList = new EntityList();
 
       // Insert the new entityList to hashmap under key 'lowercaseAbbrev'.
-      this.abbrevList.set(lowerCaseAbbrev, entityList);
+      this.abbrevData.set(lowerCaseAbbrev, entityList);
     }
 
     // Now we are sure that entityList exists in hashamp, so we can insert
@@ -158,7 +158,7 @@ export class AbbrevSearchList extends NameSearchList
     let lowerCaseAbbrev = abbrev.toLocaleLowerCase();
 
     // get() Returns 'undefined' if item is not in hashmap.
-    let entityList: EntityList = this.abbrevList.get(lowerCaseAbbrev);
+    let entityList: EntityList = this.abbrevData.get(lowerCaseAbbrev);
 
     // If record with such key wasn't found in this.abbrevList, 
     // a new EntityList will be created.
@@ -179,7 +179,7 @@ export class AbbrevSearchList extends NameSearchList
     // If we have removed the last entity from entityList, we also
     // need to delete whole record from this.abbrevList hashmap.
     if (entityList.size == 0)
-      this.abbrevList.delete(lowerCaseAbbrev);
+      this.abbrevData.delete(lowerCaseAbbrev);
   }
 
   // -> Returns array of GameEntities that are present in each entityList
@@ -348,7 +348,7 @@ export class AbbrevSearchList extends NameSearchList
       // Request entityList corresponding to 'abbrev' from
       // this.abbrevList hashmap.
       // (get() returns undefined if 'abbrev' isn't in hashmap)
-      let entityList = this.abbrevList.get(abbrev);
+      let entityList = this.abbrevData.get(abbrev);
 
       // If any of requested abbreviations isn't found,
       // whole search is a miss.

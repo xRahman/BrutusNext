@@ -6,7 +6,7 @@
 
 'use strict';
 
-import {ERROR} from '../../shared/lib/error/ERROR';
+import {ERROR} from '../../../shared/lib/error/ERROR';
 
 export class Coords
 {

@@ -12,6 +12,7 @@ import {Entity} from '../../../shared/lib/entity/Entity';
 export abstract class Prototypes
 {
   /// TODO: Asi by spíš Prototypes měly být name search list.
+  /// (a mít v sobě vnořený abbrevsearchlist)
   // Key:   prototype name (which is the entity name)
   // Value: prototype entity
   protected prototypes = new Map<string, Entity>();
