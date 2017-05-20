@@ -113,7 +113,7 @@ export class NameSearchList extends EntityList
     return this.uniqueNames.get(name);
   }
 
-  // Removes entity id from this list, but doesn't delete entity from
+  // Removes entity id from this list, but doesn't delete it from
   // memory.
   public remove(entity: NamedEntity): boolean
   {
