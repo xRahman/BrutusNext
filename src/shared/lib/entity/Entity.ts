@@ -404,10 +404,14 @@ export class Entity extends Serializable
     return this.prototypeEntity.hasDescendant(this);
   }
 
-  public async save()
+  // Called after an entity is saved to file.
+  public async postSave()
   {
     await Entities.saveEntity(this);
   }
+
+  // Called after an entity is loaded from file.
+  public async postLoad() {}
 
   /// Tohle je zbytečné, může se rovnou volat Entities.loadEntityById().
   /*
@@ -526,11 +530,11 @@ export class Entity extends Serializable
   {
     if (this.getId() === null)
     {
-      return "{ className: " + this.constructor.name + ","
+      return "{ className: " + this.getClassName() + ","
            + " name: " + this.name + ", id: null }";
     }
 
-    return "{ className: " + this.constructor.name + ", name:"
+    return "{ className: " + this.getClassName() + ", name:"
       + " " + this.name + ", id: " + this.getId() + " }";
   }
 

@@ -10,9 +10,10 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
 ///import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
 import {Entity} from '../../../shared/lib/entity/Entity';
-import {Entities} from '../../../shared/lib/entity/Entities';
+///import {Entities} from '../../../shared/lib/entity/Entities';
+import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
 import {AbbrevSearchList} from '../../../server/game/search/AbbrevSearchList';
-import {ServerApp} from '../../../server/lib/Server';
+///import {ServerApp} from '../../../server/lib/app/ServerApp';
 import {Connection} from '../../../server/lib/connection/Connection';
 import {Game} from '../../../server/game/Game';
 import {Character} from '../../../server/game/character/Character';
@@ -28,20 +29,12 @@ export class CharacterList extends AbbrevSearchList
   )
   : Promise<Character>
   {
-    /*
-    if (await this.exists(name))
-    {
-      ERROR("Attempt to create character '" + name + "'"
-        + " that already exists. Character is not created");
-      return null;
-    }
-    */
-
-    let character = await ServerApp.entityManager.createUniqueEntity
+    let character = await ServerEntities.createInstance
     (
-      name,
       Character,
-      NamedEntity.NameCathegory.characters,
+      Character.name,
+      name,
+      Entity.NameCathegory.CHARACTER
     );
 
     // Check if character has been created succesfully.
@@ -49,27 +42,12 @@ export class CharacterList extends AbbrevSearchList
     if (character === null)
       return null;
 
-    /*
-    let character = new Character();
-
-    character.name = name;
-    */
-    
-    /// Tohle už dělá Entities.createNamedEntity().
-    ///character.isNameUnique = true;
-
     character.atachConnection(connection);
-
-    /*
-    let id = Server.idProvider.createId(character);
-    */
-
+    
     this.add(character);
 
     // Save the character to the disk.
-    // (We don't need to wait for save to finish so we don't need
-    //  async/await here).
-    character.save();
+    await ServerEntities.saveEntity(character);
 
     return character;
   }

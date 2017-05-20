@@ -30,6 +30,9 @@ import {PropertyAttributes} from
 ///export class Attributable extends Nameable
 export class Attributable
 {
+  // In Javascript, 'name' of the constructor is the class name.
+  public getClassName() { return this.constructor.name; }
+
   // -> Returns object containing static attributes for a given class property,
   //    Returns 'undefined' if 'property' doesn't have static attributes.
   protected getPropertyAttributes(propertyName: string): PropertyAttributes
