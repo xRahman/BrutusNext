@@ -40,6 +40,30 @@ export class Area  extends ServerGameEntity
 
   // --------------- Protected methods ------------------
 
+  // ~ Overrides Entity.addToNameLists().
+  protected addToNameLists()
+  {
+    /// TODO
+  }
+
+  // ~ Overrides Entity.addToAbbrevLists().
+  protected addToAbbrevLists()
+  {
+    /// TODO
+  }
+
+  // ~ Overrides Entity.removeFromNameLists().
+  protected removeFromNameLists()
+  {
+    /// TODO
+  }
+
+  // ~ Overrides Entity.removeFromAbbrevLists().
+  protected removeFromAbbrevLists()
+  {
+    /// TODO
+  }
+
   // ---------------- Private methods -------------------
 }
 

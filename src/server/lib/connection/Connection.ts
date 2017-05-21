@@ -15,6 +15,7 @@ import {MessageType} from '../../../shared/lib/message/MessageType';
 import {ServerApp} from '../../../server/lib/app/ServerApp';
 import {SocketDescriptor} from '../../../server/lib/net/SocketDescriptor';
 import {Account} from '../../../server/lib/account/Account';
+import {Accounts} from '../../../server/lib/account/Accounts';
 import {AuthProcessor} from '../../../server/lib/connection/AuthProcessor';
 import {MenuProcessor} from '../../../server/lib/connection/MenuProcessor';
 import {ChargenProcessor} from
@@ -23,8 +24,9 @@ import {Game} from '../../../server/game/Game';
 import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
 import {Character} from '../../../server/game/character/Character';
 import {Classes} from '../../../shared/lib/class/Classes';
+import {Connections} from '../../../server/lib/connection/Connections';
 
-export class Connection extends Entity
+export class Connection
 {
   // ----------------- Public data ----------------------
 
@@ -244,9 +246,8 @@ export class Connection extends Entity
   // is connecting from different computer without logging out first).
   public reconnectToAccount(account: Account)
   {
-    let accountManager = ServerApp.accounts;
     let oldStage = null;
-    let oldConnection = this.getOldConnection(account);
+    let oldConnection = account.connection;
     let oldIngameEntity = null;
 
     // If old connection is still alive, we need to send a message
@@ -261,7 +262,7 @@ export class Connection extends Entity
       // don't need to announce that his connection has been usurped
       // and we shouldn't close the connection.
       // (I'm not sure if it's even possible, but better be sure)
-      if (oldConnection.getId() !== this.getId())
+      if (oldConnection !== this)
       {
         oldConnection.announceConnectionBeingUsurped();
         // Set null to oldConnection.accountId to prevent account being
@@ -399,9 +400,8 @@ export class Connection extends Entity
         break;
     }
 
-    // Delete this connection from memory.
-    // (also removes it from Server.connections list)
-    ServerApp.entityManager.remove(this);
+    // Release this connection from memory.
+    Connections.release(this);
   }
 
   public isInGame()
@@ -553,16 +553,6 @@ export class Connection extends Entity
   private announceReconnecting()
   {
     this.sendConnectionInfo("You have reconnected to your character.");
-  }
-
-  private getOldConnection(account: Account): Connection
-  {
-    if (account.connection !== null)
-    {
-      return account.connection;
-    }
-
-    return null;
   }
 
   private announceConnectionBeingUsurped()
@@ -718,16 +708,7 @@ export class Connection extends Entity
   }
   */
 
-  /*
-  // Entity adds itself to approptiate EntityLists so it can be
-  // searched by name, etc. This doesn't add entity to Entities.
-  // (overrides Entity.addToLists())
-  public addToLists()
-  {
-    Server.connections.add(this);
-  }
-  */
-
+/*
   // Entity removes itself from EntityLists so it can no longer
   // be searched by name, etc. This doesn't remove entity from Entities.
   // (overrides Entity.removeFromlists())
@@ -735,6 +716,7 @@ export class Connection extends Entity
   {
     ServerApp.connections.remove(this);
   }
+*/
 
   private logoutAccount(action: string)
   {
@@ -809,7 +791,7 @@ export class Connection extends Entity
       let accountName = this.authProcessor.getAccountName();
 
       if (accountName !== null)
-        ServerApp.accounts.removeSoftNameLock(accountName);
+        Accounts.removeSoftNameLock(accountName);
     }
 
     ///this.removeFromLists();

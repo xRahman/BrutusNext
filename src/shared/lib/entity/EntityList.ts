@@ -8,25 +8,13 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Entity} from '../../../shared/lib/entity/Entity';
-///import {Saveable} from '../../../shared/lib/class/Saveable';
 import {Entities} from '../../../shared/lib/entity/Entities';
 
-export class EntityList extends Saveable
+export class EntityList<T extends Entity>
 {
   //------------------ Private data ---------------------
 
-  // Hashmap<[ string, Entity ]>
-  //   Key: string id
-  //   Value: entity reference
-  // (entries are stored in order of insertion)
-  private entities = new Map<string, Entity>();
-
-  //// Hashmap<[ string, EntityId ]>
-  ////   Key: stringId
-  ////   Value: EntityId
-  //private uniqueNames = new Map();
-  //// Do not save or load property 'uniqueNames'.
-  //private static uniqueNames = { isSaved: false };
+  private entities = new Set<T>();
 
   // --------------- Public accessors -------------------
 
@@ -38,84 +26,73 @@ export class EntityList extends Saveable
   // ---------------- Public methods --------------------
 
   // -> Returns true if adding succeeded.
-  public add(entity: Entity): boolean
+  public add(entity: T): boolean
   {
-    let id = entity.getId();
-
-    if (id === null)
-    {
-      ERROR("Attempt to add entity " + entity.getErrorIdString()
-        + " which has 'null' id. Entity is not added");
-      return false;
-    }
-
-    if (this.entities.has(id))
+    if (this.entities.has(entity))
     {
       ERROR("Attempt to add entity '" + entity.getErrorIdString() + "'"
         + " which is already in the list. Entity is not added");
       return false;
     }
 
-    // Add id to hashmap under it's string id.
-    this.entities.set(id, entity);
+    this.entities.add(entity);
 
     return true;
   }
 
-  // Loads all entities of which there are ids in this list.
+  // Attempts to load all ivalid entities in the list
+  // (this can change the order of entities - invalid
+  //  ones are removed and reinserted).
   public async load(containerIdString: string)
   {
     // Iterate over all values in this.entities hashmap.
-    for (let entity of this.entities.values())
+    for (let entity of this.entities)
     {
-      if (entity.isValid())
-        // If entity is already loaded, we must not do it again
-        // (because we would overwrite more recent data with older version).
-        break;
+      if (!entity.isValid())
+      {
+        // Remove the invalid reference from the set.
+        this.entities.delete(entity);
 
-      /// Reference na entitu (tedy proxy handler) nebude trackovat,
-      /// ze je entita smazana. Bude to proste invalid reference
-      /// a po pripadnem loadnuti z disku to stale bude invalid reference.
-      //
-      //if (!ASSERT(entity.isDeleted() === false,
-      //    "Entity container " + containerIdString + " contains"
-      //    + " deleted entity with id " + id.getStringId() + ". Entity"
-      //    + " must be removed from its container before it is deleted"))
-      //  // There is no point in loading a deleted entity.
-      //  break;
-      
-      await entity.load();
+        // Load the entity from disk.
+/// TODO: Tohle se mi vůbec nelíbí - typová kontrola na baterky ;\
+/// (Asi by šlo do konstruktoru EntityListu dát jako parametr Class, vůči
+///  které se pak bude provádět dynamicTypeCheck)
+        entity = <T>await Entities.loadEntityById
+        (
+          entity.getId(),
+          Entity
+        );
+        
+        // Add the new (valid) reference back to the set.
+        this.entities.add(entity);
+      }
     }
   }
 
-  // Saves all entities of which there are ids in this list.
+  // Saves all valid entities in the list.
   public async save()
   {
     // Iterate over all value in this.entityIds hashmap.
-    for (let entity of this.entities.values())
+    for (let entity of this.entities)
     {
-      if (entity.isValid() === false)
-        // There is no point in saving an entity that is not loaded in memory.
-        break;
-
-      await entity.save();
+      if (entity.isValid())
+        await Entities.save(entity);
     }
   }
 
   // Removes entity id from this list, but doesn't delete entity from
   // Entities.
   // -> Returns 'true' on success.
-  public remove(entity: Entity): boolean
+  public remove(entity: T): boolean
   {
-    if (this.entities.has(entity.getId()) === false)
+    if (!this.entities.has(entity))
     {
       ERROR("Attempt to remove id '" + entity.getId() + "'"
-        + " from '" + this.getClassName() + "' that is not present"
-        + " in it");
+        + " from EntityList that is not present in it");
       return false;
     }
 
-    this.entities.delete(entity.getId());
+    this.entities.delete(entity);
 
     return true;
   }
@@ -123,7 +100,7 @@ export class EntityList extends Saveable
   // Removes entity from this list and releases it from memory
   // by removing it from Entities (but doesn't delete it from
   // disk).
-  public release(entity: Entity)
+  public release(entity: T)
   {
     // Remove entity from the list.
     if (this.remove(entity))
@@ -134,18 +111,10 @@ export class EntityList extends Saveable
   }
 
   // -> Returns true if entity is in the list.
-  public has(entity: Entity): boolean
+  public has(entity: T): boolean
   {
-    return this.entities.has(entity.getId());
+    return this.entities.has(entity);
   }
-
-  /*
-  // -> Returns undefined if entity is not in the list
-  public get(id: string): Entity
-  {
-    return this.entities.get(id);
-  }
-  */
 
   // -------------- Private methods -------------------
 }

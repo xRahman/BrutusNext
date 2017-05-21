@@ -1,12 +1,6 @@
 ﻿-------------------------------------------------------------------------
 
-Boss spawne addy, kteri ze zacatku nedelaji moc velkou damage, ale postupne
-si ji zvedaji. Po dobu, kdy jsou addi up, dostava boss zvysenou damage - tim
-vetsi, cim dyl a cim vic je jich up.
-
--------------------------------------------------------------------------
-
-Obecná úvaha o bossích a raidech
+Obecn0 úvaha o bossích a raidech
 ---------------------------------
 
 - Drtivá většina hry by se měla odehrávat mimo raidy. Raid by měl být událost
@@ -23,5 +17,27 @@ Jak na to:
   - všeobecně získáváním tier poweru
   - přípravou rituálu, který bosse vysumonuje
 
+
+Na raid bosse by nemělo být potřeba mít nabraný quest
+- Což samozřejmě neznamená, že nemají existovat acccess questy - to určitě mají
+- Znamená to, že když už se hráč k bossovi může dostat, kill by se mu měl
+  započítat
+  - Třeba tak, že z něj lootne potřebný item, atd.
+(Tohle vlastně platí v PoE pro všechny questy - ne všude se hráč dostane,
+ ale když už se tam dostane, quest se mu splní i bez nabrání).
+ - Questmaster by s tím měl počítat a říct něco ve stylu:
+   "Slyšel jsem, že si zabil BigBadBosse. Shodou okolností jsme na něj
+    nedávno vypsal odměnu, tady ji máš."
+
+
+-------------------------------------------------------------------------
+
+Mechaniky:
+-----------
+
+
+Boss spawne addy, kteri ze zacatku nedelaji moc velkou damage, ale postupne
+si ji zvedaji. Po dobu, kdy jsou addi up, dostava boss zvysenou damage - tim
+vetsi, cim dyl a cim vic je jich up.
 
 -------------------------------------------------------------------------

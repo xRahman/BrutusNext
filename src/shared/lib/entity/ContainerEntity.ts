@@ -19,7 +19,7 @@ import {Entity} from '../../../shared/lib/entity/Entity';
 import {EntityList} from '../../../shared/lib/entity/EntityList';
 
 
-export abstract class ContainerEntity extends Entity
+export class ContainerEntity extends Entity
 {
   //------------------ Public data ----------------------
 
