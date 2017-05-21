@@ -111,6 +111,30 @@ export class World extends ServerGameEntity
 
   // --------------- Protected methods ------------------
 
+  // ~ Overrides Entity.addToNameLists().
+  protected addToNameLists()
+  {
+    /// TODO
+  }
+
+  // ~ Overrides Entity.addToAbbrevLists().
+  protected addToAbbrevLists()
+  {
+    /// TODO
+  }
+
+  // ~ Overrides Entity.removeFromNameLists().
+  protected removeFromNameLists()
+  {
+    /// TODO
+  }
+
+  // ~ Overrides Entity.removeFromAbbrevLists().
+  protected removeFromAbbrevLists()
+  {
+    /// TODO
+  }
+
   /*
   // What file is the world saved to.
   protected getSaveFileName(): string

@@ -7,15 +7,14 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
 import {Script} from '../../../server/lib/prototype/Script';
 import {ServerApp} from '../../../server/lib/app/ServerApp';
 import {Message} from '../../../server/lib/message/Message';
+import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Connection} from '../../../server/lib/connection/Connection';
 import {Game} from '../../../server/game/Game';
 import {ContainerEntity} from '../../../shared/lib/entity/ContainerEntity';
 import {SharedGameEntity} from '../../../shared/game/entity/SharedGameEntity';
-//import {EntityList} from '../../../shared/lib/entity/EntityList'
 
 export class ServerGameEntity extends SharedGameEntity
 {
@@ -156,7 +155,7 @@ export class ServerGameEntity extends SharedGameEntity
     // color that will be automatically aded to the start of the message.
     //   Use '\n' to mark newlines (it will be automatically converted to '\r\n').
     text: string,
-    msgType: Message.Type,
+    msgType: MessageType,
     // 'sender' can be null if there is no appropriate sending entity
     // (for example when player is receiving output from using a command).
     sender: ServerGameEntity = null
@@ -166,52 +165,6 @@ export class ServerGameEntity extends SharedGameEntity
 
     message.sendToGameEntity(this, sender);
   }
-
-  /// sendMessage() je intuitivnější název, navíc stačí jedna metoda
-  /// (nenapadá mě případ, kdy by bylo potřeba sendToSelf() a když by
-  /// se přece nějakej našel, stačí dát receiving entitu do parametru
-  /// 'sender').
-  /*
-  // Make this entity to send a message to itself.
-  // ('text' is automatically colored according to given 'msgType').
-  public sendToSelf(text: string, messageType: Message.Type)
-  {
-    this.receiveMessage(this, text, messageType);
-  }
-  */
-
-  /*
-  // Dynamically creates a new instance of requested class (param.prototype)
-  // and inserts it to specified idList (param.idList).
-  public createEntity<T>
-  (
-    param:
-    {
-      name: string,
-      prototype: string,
-      idList: EntityList
-    }
-  )
-  : EntityId
-  {
-    // Dynamic creation of a new instance.
-    let entity = SaveableObject.createInstance
-    (
-      {
-        className: param.prototype,
-        typeCast: GameEntity
-      }
-    );
-
-    entity.name = param.name;
-
-    let id = Server.idProvider.createId(entity);
-
-    param.idList.add(entity);
-
-    return id;
-  }
-  */
 
   public generatePrompt(): string
   {

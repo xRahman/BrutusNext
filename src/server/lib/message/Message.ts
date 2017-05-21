@@ -11,6 +11,7 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {ServerApp} from '../../../server/lib/app/ServerApp';
 import {Connection} from '../../../server/lib/connection/Connection';
+import {Connections} from '../../../server/lib/connection/Connections';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {MessageColors} from '../../../server/lib/message/MessageColors';
 import {TelnetSocketDescriptor}
@@ -155,7 +156,7 @@ export class Message
 
   public sendToConnection(connection: Connection)
   {
-    if (connection === null || connection.isValid() === false)
+    if (!connection)
     {
       ERROR("Invalid target connection. Message is not sent");
       return;
@@ -219,11 +220,16 @@ export class Message
   // Sends message to all player connections that have a valid ingame entity.
   // 'visibility' limits recipients to certain admin level or higher.
   // (Used to send gossips, global infos, syslog, etc.).
-  public sendToAllIngameConnections(visibility: AdminLevel, sender: ServerGameEntity = null)
+  public sendToAllIngameConnections
+  (
+    visibility: AdminLevel,
+    sender: ServerGameEntity = null
+  )
   {
     this.sender = sender;
 
-    ServerApp.sendToAllIngameConnections(this, visibility);
+    ///ServerApp.sendToAllIngameConnections(this, visibility);
+    Connections.send(this, visibility);
   }
 
   // Sends message even to players in menu, entering password, etc.
@@ -232,7 +238,7 @@ export class Message
   {
     this.sender = sender;
 
-    ServerApp.sendToAllConnections(this);
+    Connections.send(this);
   }
 
   /// MessageType can now be used instead.

@@ -94,29 +94,6 @@ export class Room extends ServerGameEntity
 
   // ---------------- Public methods --------------------
 
-  /// Tohle možná nepoužiju - entity nejspíš budou do listů přidávat
-  /// různé funkce podle aktuální potřeby... 
-  /*
-  // Entity adds itself to approptiate EntityLists so it can be
-  // searched by name, etc. This doesn't add entity to Entities.
-  // (overrides Entity.addToLists())
-  public addToLists()
-  {
-    /// TODO
-    ///Game.rooms.addEntityUnderExistingId(this);
-  }
-  */
-
-  /*
-  // Entity removes itself from EntityLists so it can no longer
-  // be searched by name, etc. This doesn't remove entity from Entities.
-  // (overrides Entity.removeFromLists())
-  public removeFromLists()
-  {
-    /// TODO
-  }
-  */
-
   // Creates a formatted string describing room contents.
   protected printContents(): string
   {
@@ -157,6 +134,30 @@ export class Room extends ServerGameEntity
   protected exits = new Exits();
 
   // --------------- Protected methods ------------------
+
+  // ~ Overrides Entity.addToNameLists().
+  protected addToNameLists()
+  {
+    /// TODO
+  }
+
+  // ~ Overrides Entity.addToAbbrevLists().
+  protected addToAbbrevLists()
+  {
+    /// TODO
+  }
+
+  // ~ Overrides Entity.removeFromNameLists().
+  protected removeFromNameLists()
+  {
+    /// TODO
+  }
+
+  // ~ Overrides Entity.removeFromAbbrevLists().
+  protected removeFromAbbrevLists()
+  {
+    /// TODO
+  }
 
   /*
   // This is called when a new prototype is created.

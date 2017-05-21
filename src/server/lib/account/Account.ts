@@ -13,18 +13,21 @@ import {Utils} from '../../../shared/lib/utils/Utils';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Syslog} from '../../../shared/lib/log/Syslog';
 import {MessageType} from '../../../shared/lib/message/MessageType';
-import {ScriptableEntity} from '../../../server/lib/entity/ScriptableEntity';
+import {Entity} from '../../../shared/lib/entity/Entity';
+import {Entities} from '../../../shared/lib/entity/Entities';
+///import {ScriptableEntity} from '../../../server/lib/entity/ScriptableEntity';
 import {Connection} from '../../../server/lib/connection/Connection';
 import {ServerApp} from '../../../server/lib/app/ServerApp';
 import {Game} from '../../game/Game';
-import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
+///import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
 import {Character} from '../../../server/game/character/Character';
 import {Classes} from '../../../shared/lib/class/Classes';
+import {Accounts} from '../../../server/lib/account/Accounts';
 
 // Built-in node.js modules.
 import * as crypto from 'crypto';  // Import namespace 'crypto' from node.js
 
-export class Account extends ScriptableEntity
+export class Account extends Entity
 {
   public connection: Connection = null;
   // Do not save and load property 'connection'.
@@ -185,7 +188,7 @@ export class Account extends ScriptableEntity
     if (!this.characterCreatedSuccessfuly(character, name))
       return null;
 
-    this.addCharacter(name);
+    await this.addCharacter(name);
     this.logCharacterCreation(this.getName(), name);
 
     return character;
@@ -272,7 +275,9 @@ export class Account extends ScriptableEntity
       AdminLevel.IMMORTAL
     );
 
-    ServerApp.accounts.dropAccount(this);
+    // Release 'this' from memory
+    // (this will also remove it from all lists).
+    Entities.release(this);
   }
 
   /*
@@ -294,6 +299,30 @@ export class Account extends ScriptableEntity
   protected lastLoginDate = new Date(0);
 
   // --------------- Protected methods ------------------
+
+  // ~ Overrides Entity.addToNameLists().
+  protected addToNameLists()
+  {
+    Accounts.add(this);
+  }
+
+  // ~ Overrides Entity.addToAbbrevLists().
+  protected addToAbbrevLists()
+  {
+    /// TODO
+  }
+
+  // ~ Overrides Entity.removeFromNameLists().
+  protected removeFromNameLists()
+  {
+    Accounts.remove(this);
+  }
+
+  // ~ Overrides Entity.removeFromAbbrevLists().
+  protected removeFromAbbrevLists()
+  {
+    /// TODO
+  }
 
   protected md5hash(input: string)
   {
@@ -338,7 +367,7 @@ export class Account extends ScriptableEntity
   }
   */
 
-  private addCharacter(characterName: string)
+  private async addCharacter(characterName: string)
   {
     if (characterName === "")
     {
@@ -361,8 +390,7 @@ export class Account extends ScriptableEntity
 
     this.characterNames.push(characterName);
 
-    // This doesn't need to be synchronous.
-    this.save();
+    await Entities.save(this);
   }
 
   private reportCharacterAlreadyExists(characterName: string)
