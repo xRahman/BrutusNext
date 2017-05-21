@@ -19,13 +19,14 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
-import {NameList} from '../../../server/lib/entity/NameSearchList';
-import {EntityList} from '../../../server/lib/entity/EntityList';
+///import {NameList} from '../../../shared/lib/entity/NameList';
+import {Entity} from '../../../shared/lib/entity/Entity';
+import {EntityList} from '../../../shared/lib/entity/EntityList';
 import {ServerGameEntity} from "../../../server/game/entity/ServerGameEntity";
 
-export class AbbrevSearchList extends NameList
+export class AbbrevList<T extends ServerGameEntity>
 {
-  //----------------- Protected data --------------------
+  //------------------ Private data ---------------------
 
   /// Converted to enum
   /*
@@ -46,7 +47,7 @@ export class AbbrevSearchList extends NameList
   // Hashmap<[ string, EntityList ]>
   //   Key: abbreviation (like "warrio").
   //   Value: list of entity references that "listen" to this abbrev.
-  private abbrevData = new Map<string, EntityList>();
+  private abbrevData = new Map<string, EntityList<T>>();
   // Do not save and load property 'abbrevData'.
   private static abbrevData = { isSaved: false };
 
@@ -64,7 +65,7 @@ export class AbbrevSearchList extends NameList
     {
       // '0.john' means that we are looking for player character, which is
       // the same as '1.player.john, so we will transform it so.
-      cathegory = AbbrevSearchList.SearchCathegory.PLAYER;
+      cathegory = AbbrevList.SearchCathegory.PLAYER;
       parseResult.index = 1;
     }
 
@@ -72,10 +73,12 @@ export class AbbrevSearchList extends NameList
   }
 
   // -> Returns true if adding succeeded.
-  public add(entity: ServerGameEntity): boolean
+  public add(entity: T): boolean
   {
+    /*
     if (super.add(entity) === false)
       return false;
+    */
 
     // Add all aliases of this entity to abbrevSearchList.
     this.addToAbbrevList(entity);
@@ -86,17 +89,19 @@ export class AbbrevSearchList extends NameList
   // Removes entity id from this list, but doesn't delete the entity from
   // Entities.
   // -> Returns true if deletion succeeded.
-  public remove(entity: ServerGameEntity): boolean
+  public remove(entity: T): boolean
   {
     // Remove all aliases of this entity from abbrevSearchList.
     this.removeFromAbbrevList(entity);
 
+    /*
     return super.remove(entity);
+    */
   }
 
   // ---------------- Private methods --------------------
 
-  private removeFromAbbrevList(entity: ServerGameEntity)
+  private removeFromAbbrevList(entity: T)
   {
     // Remove all entity aliases.
     for (let i = 0; i < entity.aliases.length; i++)
@@ -113,7 +118,7 @@ export class AbbrevSearchList extends NameList
 
   // If more similar names are added, they will be accessible by dot notation
   // (like 2.orc).
-  private addToAbbrevList(entity: ServerGameEntity)
+  private addToAbbrevList(entity: T)
   {
     // Add all entity aliases.
     for (let i = 0; i < entity.aliases.length; i++)
@@ -131,7 +136,7 @@ export class AbbrevSearchList extends NameList
     }
   }
 
-  private addEntityToAbbreviation(abbrev: string, entity: ServerGameEntity)
+  private addEntityToAbbreviation(abbrev: string, entity: T)
   {
     let lowerCaseAbbrev = abbrev.toLocaleLowerCase();
 
@@ -142,7 +147,7 @@ export class AbbrevSearchList extends NameList
     // a new EntityList will be created.
     if (entityList === undefined)
     {
-      entityList = new EntityList();
+      entityList = new EntityList<T>();
 
       // Insert the new entityList to hashmap under key 'lowercaseAbbrev'.
       this.abbrevData.set(lowerCaseAbbrev, entityList);
@@ -153,12 +158,12 @@ export class AbbrevSearchList extends NameList
     entityList.add(entity);
   }
 
-  private removeEntityFromAbbreviation(abbrev: string, entity: ServerGameEntity)
+  private removeEntityFromAbbreviation(abbrev: string, entity: T)
   {
     let lowerCaseAbbrev = abbrev.toLocaleLowerCase();
 
     // get() Returns 'undefined' if item is not in hashmap.
-    let entityList: EntityList = this.abbrevData.get(lowerCaseAbbrev);
+    let entityList: EntityList<T> = this.abbrevData.get(lowerCaseAbbrev);
 
     // If record with such key wasn't found in this.abbrevList, 
     // a new EntityList will be created.
@@ -184,7 +189,8 @@ export class AbbrevSearchList extends NameList
 
   // -> Returns array of GameEntities that are present in each entityList
   //    stored in entityLists parameter.
-  private mergeResults(entityLists: Array<EntityList>): Array<ServerGameEntity>
+  private mergeResults(entityLists: Array<EntityList<T>>)
+  : Array<ServerGameEntity>
   {
     let result: Array<ServerGameEntity> = [];
 
@@ -222,11 +228,11 @@ export class AbbrevSearchList extends NameList
   {
     switch (cathegory)
     {
-      case AbbrevSearchList.SearchCathegory.ANYTHING:
+      case AbbrevList.SearchCathegory.ANYTHING:
         // TODO:
         return true;
 
-      case AbbrevSearchList.SearchCathegory.CHARMED:
+      case AbbrevList.SearchCathegory.CHARMED:
         // TODO:
         //   something like:
         //   if (candidate.isCharmed())
@@ -234,23 +240,23 @@ export class AbbrevSearchList extends NameList
         //   break;
         break;
 
-      case AbbrevSearchList.SearchCathegory.FOLLOWER:
+      case AbbrevList.SearchCathegory.FOLLOWER:
         // TODO:
         break;
 
-      case AbbrevSearchList.SearchCathegory.GROUP:
+      case AbbrevList.SearchCathegory.GROUP:
         // TODO:
         break;
 
-      case AbbrevSearchList.SearchCathegory.MOB:
+      case AbbrevList.SearchCathegory.MOB:
         // TODO:
         break;
 
-      case AbbrevSearchList.SearchCathegory.OBJECT:
+      case AbbrevList.SearchCathegory.OBJECT:
         // TODO:
         break;
 
-      case AbbrevSearchList.SearchCathegory.PLAYER:
+      case AbbrevList.SearchCathegory.PLAYER:
         // TODO:
         break;
 
@@ -332,7 +338,7 @@ export class AbbrevSearchList extends NameList
   // 'searchName' is something like 'orc_chieftain'
   // -> Returns array containing an entityList for each abbreviation
   //    in searchName. Returns null if any of abbreviations is not found.
-  private gatherEntityLists(searchName: string): Array<EntityList>
+  private gatherEntityLists(searchName: string): Array<EntityList<T>>
   {
     // Split searchName into parts separated by underscores.
     // (If searchName is something like 'ug_gra_orc',
@@ -341,7 +347,7 @@ export class AbbrevSearchList extends NameList
 
     // This array will store a list of entities that listen to each of
     // abbreviations contained in abbrevArray.
-    let entityLists: Array<EntityList> = [];
+    let entityLists: Array<EntityList<T>> = [];
 
     for (let abbrev of abbrevArray)
     {
@@ -435,27 +441,27 @@ export class AbbrevSearchList extends NameList
 
   private parseSearchCathegory(cathegoryString: string): number
   {
-    let cathegory = AbbrevSearchList.SearchCathegory.ANYTHING;
+    let cathegory = AbbrevList.SearchCathegory.ANYTHING;
 
     if (Utils.isAbbrev(cathegoryString, "mob"))
-      cathegory = AbbrevSearchList.SearchCathegory.MOB;
+      cathegory = AbbrevList.SearchCathegory.MOB;
 
     if (Utils.isAbbrev(cathegoryString, "player")
       || Utils.isAbbrev(cathegoryString, "plr"))
-      cathegory = AbbrevSearchList.SearchCathegory.PLAYER;
+      cathegory = AbbrevList.SearchCathegory.PLAYER;
 
     if (Utils.isAbbrev(cathegoryString, "follower"))
-      cathegory = AbbrevSearchList.SearchCathegory.FOLLOWER;
+      cathegory = AbbrevList.SearchCathegory.FOLLOWER;
 
     if (Utils.isAbbrev(cathegoryString, "charmed"))
-      cathegory = AbbrevSearchList.SearchCathegory.CHARMED;
+      cathegory = AbbrevList.SearchCathegory.CHARMED;
 
     if (Utils.isAbbrev(cathegoryString, "group")
       || Utils.isAbbrev(cathegoryString, "grp"))
-      cathegory = AbbrevSearchList.SearchCathegory.GROUP;
+      cathegory = AbbrevList.SearchCathegory.GROUP;
 
     if (Utils.isAbbrev(cathegoryString, "object"))
-      cathegory = AbbrevSearchList.SearchCathegory.OBJECT;
+      cathegory = AbbrevList.SearchCathegory.OBJECT;
 
     return cathegory;
   }
@@ -463,7 +469,7 @@ export class AbbrevSearchList extends NameList
 
 // ------------------ Type declarations ----------------------
 
-export module AbbrevSearchList
+export module AbbrevList
 {
   export enum SearchCathegory
   {

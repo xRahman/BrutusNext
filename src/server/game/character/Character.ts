@@ -95,17 +95,34 @@ export class Character extends ServerGameEntity
     // }
   }
 
-  // Entity removes itself from EntityLists so it can no longer
-  // be searched by name, etc. This doesn't remove entity from Entities.
-  // (overrides Entity.removeFromLists())
-  public removeFromLists()
-  {
-    Game.characters.remove(this);
-  }
-
   //----------------- Protected data --------------------
 
   // --------------- Protected methods ------------------
+
+  // ~ Overrides Entity.addToNameLists().
+  protected addToNameLists()
+  {
+    /// TODO
+  }
+
+  // ~ Overrides Entity.addToAbbrevLists().
+  protected addToAbbrevLists()
+  {
+    /// TODO
+  }
+
+  // ~ Overrides Entity.removeFromNameLists().
+  protected removeFromNameLists()
+  {
+    /// TODO
+    Game.characters.remove(this);
+  }
+
+  // ~ Overrides Entity.removeFromAbbrevLists().
+  protected removeFromAbbrevLists()
+  {
+    /// TODO
+  }
 
   // ---------------- Command handlers ------------------
 

@@ -85,7 +85,7 @@ export abstract class Entities
     return await App.getEntities().releaseName(name, cathegory);
   }
 
-  public static async saveEntity(entity: Entity)
+  public static async save(entity: Entity)
   {
     return await App.getEntities().saveEntity(entity);
   }
@@ -108,9 +108,9 @@ export abstract class Entities
   // -> Returns 'null' on failure.
   public static async loadEntityByName<T extends Entity>
   (
+    typeCast: { new (...args: any[]): T },
     name: string,
-    cathegory: Entity.NameCathegory,
-    typeCast: { new (...args: any[]): T }
+    cathegory: Entity.NameCathegory
   )
   : Promise<T>
   {

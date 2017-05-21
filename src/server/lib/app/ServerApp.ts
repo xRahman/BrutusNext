@@ -24,10 +24,11 @@ import {FileSystem} from '../../../server/lib/fs/FileSystem';
 import {AdminList} from '../../../server/lib/admin/AdminList';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Connection} from '../../../server/lib/connection/Connection';
+import {Connections} from '../../../server/lib/connection/Connections';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {EntityList} from '../../../shared/lib/entity/EntityList';
 import {ServerPrototypes} from '../../../server/lib/entity/ServerPrototypes';
-import {AccountList} from '../../../server/lib/account/AccountList';
+import {Accounts} from '../../../server/lib/account/Accounts';
 import {Syslog} from '../../../shared/lib/log/Syslog';
 import {ServerSyslog} from '../../../server/lib/log/ServerSyslog';
 import {Message} from '../../../server/lib/message/Message';
@@ -69,8 +70,8 @@ export class ServerApp extends App
   // --------- idLists ---------
   // IdLists contain entity id's.
 
-  private connections = new EntityList();
-  private accounts = new AccountList();
+  private connections = new Connections();
+  private accounts = new Accounts();
 
   // -------- managers --------
   // ~ Overrides App.entities.
@@ -96,7 +97,7 @@ export class ServerApp extends App
     return this.getInstance().prototypes;
   }
 
-  public static get timeOfBoot()
+  public static getTimeOfBoot()
   {
     if (ServerApp.getInstance().timeOfBoot === null)
       ERROR("Time of boot is not initialized yet");
@@ -104,22 +105,22 @@ export class ServerApp extends App
     return ServerApp.getInstance().timeOfBoot;
   }
 
-  public static get game()
+  public static getGame()
   {
     return ServerApp.getInstance().game;
   }
 
-  public static get accounts()
+  public static getAccounts()
   {
     return ServerApp.getInstance().accounts;
   }
 
-  public static get connections()
+  public static getConnections()
   {
     return ServerApp.getInstance().connections;
   }
 
-  public static get telnetServer()
+  public static getTelnetServer()
   {
     return ServerApp.getInstance().telnetServer;
   }
@@ -130,7 +131,7 @@ export class ServerApp extends App
   //   return ServerApp.getInstance().flagNamesManager;
   // }
 
-  // ------------- Public static methods ---------------- 
+  // ------------- Public static methods ----------------
 
   // Loads the game (or creates a new default one
   // if there is no ./data directory).
@@ -161,59 +162,6 @@ export class ServerApp extends App
   public static getAdminLevel(entity: ServerGameEntity)
   {
     return ServerApp.getInstance().adminList.getAdminLevel(entity);
-  }
-
-  // Sends a message to all player connections
-  // (used by Message.sendToAllConnections()).
- 
-  public static sendToAllConnections(message: Message)
-  {
-    let connections = ServerApp.getInstance().connections.getEntities();
-    let connection: Connection = null;
-
-    for (connection of connections.values())
-    {
-      // Skip invalid connections.
-      if (connection === null || !connection.isValid())
-        break;
-
-      message.sendToConnection(connection);
-    }
-  }
-
-  // Sends a message to all player connections that have an ingame
-  // entity attached and have required (or higher) AdminLevel
-  // (used by Message.sendToAllIngameConnections()).
-  public static sendToAllIngameConnections
-  (
-    message: Message,
-    visibility: AdminLevel
-  )
-  {
-    let connections = ServerApp.getInstance().connections.getEntities();
-    let connection: Connection = null;
-
-    for (connection of connections.values())
-    {
-      // Skip invalid connections.
-      if (connection === null || !connection.isValid())
-        break;
-
-      // Skip connections that don't have an ingame entity attached.
-      if (connection.ingameEntity === null)
-        break;
-
-      // Skip connections with invalid ingame entity.
-      if (connection.ingameEntity.isValid() === false)
-        break;
-
-      // Skip game entities that don't have sufficient admin level
-      // to see this message.
-      if (ServerApp.getAdminLevel(connection.ingameEntity) < visibility)
-        break;
-
-      message.sendToConnection(connection);
-    }
   }
 
   // -> Returns null if no message of the day is set at the moment.

@@ -142,7 +142,7 @@ export class MenuProcessor
   
   private async loadCharacter(name: string): Promise<Character>
   {
-    // loadAccount() returns null if account doesn't exist on the disk.
+    // loadCharacter() returns null if character doesn't exist on the disk.
     let character = await Game.characters.loadCharacter(name);
 
     if (character === null || !character.isValid())

@@ -11,17 +11,17 @@ import {Entity} from '../../shared/lib/entity/Entity';
 import {ServerEntities} from '../../server/lib/entity/ServerEntities';
 import {Prototypes} from '../../shared/lib/entity/Prototypes';
 ///import {NamedEntity} from '../../server/lib/entity/NamedEntity';
-import {NameList} from '../../server/lib/entity/NameSearchList';
+import {NameList} from '../../shared/lib/entity/NameList';
 ///import {SaveableObject} from '../../server/lib/fs/SaveableObject';
 import {Message} from '../../server/lib/message/Message';
 import {ServerApp} from '../../server/lib/app/ServerApp';
 import {AdminLevel} from '../../shared/lib/admin/AdminLevel';
 import {ServerGameEntity} from '../../server/game/entity/ServerGameEntity';
-import {CharacterList} from '../../server/game/character/CharacterList';
+import {Characters} from '../../server/game/character/CharacterList';
 import {World} from '../../server/game/world/World';
 import {Room} from '../../server/game/world/Room';
-import {RoomFlags} from '../../server/game/world/RoomFlags';
-import {AbbrevSearchList} from '../../server/game/search/AbbrevSearchList';
+///import {RoomFlags} from '../../server/game/world/RoomFlags';
+import {AbbrevList} from '../../server/game/search/AbbrevList';
 
 /// Asi docasne:
 import {Area} from '../game/world/Area';
@@ -117,16 +117,16 @@ export class Game
 
   // List of ids of all characters in game.
   // (Also handles creating of new characters).
-  protected characters = new CharacterList();
+  protected characters = new Characters();
 
   // List of ids of all rooms in game.
-  protected rooms = new AbbrevSearchList();
+  protected rooms = new AbbrevList();
 
   // List of ids of all areas in game.
-  protected areas = new AbbrevSearchList();
+  protected areas = new AbbrevList();
 
   // List of ids of all realms in game.
-  protected realms = new AbbrevSearchList();
+  protected realms = new AbbrevList();
 
   // --- Direct references ---
 

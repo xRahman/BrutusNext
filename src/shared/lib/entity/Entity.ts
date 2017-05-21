@@ -219,6 +219,10 @@ export class Entity extends Serializable
     createNameLockFile = true
   )
   {
+/// TODO: Před setnutím jména je třeba vyhodit entitu z NameListů
+/// přes this.removeFromNameLists() a pokud je to prototyp, tak taky
+/// z Prototypes. Po setnutí ji tam zase přidat.
+
     let oldName = this.name;
     let oldCathegory = this.nameCathegory;
 
@@ -407,7 +411,7 @@ export class Entity extends Serializable
   // Called after an entity is saved to file.
   public async postSave()
   {
-    await Entities.saveEntity(this);
+    await Entities.save(this);
   }
 
   // Called after an entity is loaded from file.
@@ -538,12 +542,31 @@ export class Entity extends Serializable
       + " " + this.name + ", id: " + this.getId() + " }";
   }
 
-  // Entity removes itself from EntityLists so it can no longer
-  // be searched by name, etc. This doesn't remove entity from Entities
+  // Entity adds itself to all relevant lists (except to Entities)
+  // so it can be searched for by name, abbreviations, etc.
   // (this method needs to be overriden by descendants).
-  public removeFromLists() {}
+  public addToLists()
+  {
+    this.addToNameLists();
+    this.addToAbbrevLists();
+  }
+
+  // Entity removes itself from all lists (except from Entities)
+  // so it can no longer be searched for by name, abbreviations, etc.
+  // (this method needs to be overriden by descendants).
+  public removeFromLists()
+  {
+    this.removeFromNameLists();
+    this.removeFromAbbrevLists();
+  }
 
   // --------------- Protected methods ------------------
+
+  protected addToNameLists() {}
+  protected addToAbbrevLists() {}
+
+  protected removeFromNameLists() {}
+  protected removeFromAbbrevLists() {}
 
   /*
   // This method exists only to prevent accidental

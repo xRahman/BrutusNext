@@ -54,6 +54,30 @@ export class Realm extends ServerGameEntity
 
   //----------------- Protected data --------------------
 
+  // ~ Overrides Entity.addToNameLists().
+  protected addToNameLists()
+  {
+    /// TODO
+  }
+
+  // ~ Overrides Entity.addToAbbrevLists().
+  protected addToAbbrevLists()
+  {
+    /// TODO
+  }
+
+  // ~ Overrides Entity.removeFromNameLists().
+  protected removeFromNameLists()
+  {
+    /// TODO
+  }
+
+  // ~ Overrides Entity.removeFromAbbrevLists().
+  protected removeFromAbbrevLists()
+  {
+    /// TODO
+  }
+
   // --------------- Protected methods ------------------
 
   // ---------------- Private methods -------------------
