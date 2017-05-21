@@ -12,14 +12,23 @@ import {FileSystem} from '../../../server/lib/fs/FileSystem';
 import {Entity} from '../../../shared/lib/entity/Entity';
 ///import {Entities} from '../../../shared/lib/entity/Entities';
 import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
-import {AbbrevSearchList} from '../../../server/game/search/AbbrevSearchList';
+import {AbbrevList} from '../../../server/game/search/AbbrevList';
 ///import {ServerApp} from '../../../server/lib/app/ServerApp';
 import {Connection} from '../../../server/lib/connection/Connection';
 import {Game} from '../../../server/game/Game';
 import {Character} from '../../../server/game/character/Character';
+import {NameList} from '../../../shared/lib/entity/NameList';
 
-export class CharacterList extends AbbrevSearchList
+export class Characters
 {
+  //------------------ Private data ---------------------
+
+  // List of characters with unique names that are loaded in the memory.
+  private names = new NameList<Character>(Entity.NameCathegory.CHARACTER);
+
+  // Abbrevs of all online characters including those without unique names.
+  private abbrevs = new AbbrevList();
+
   // ---------------- Public methods --------------------
 
   public async createUniqueCharacter
@@ -47,7 +56,7 @@ export class CharacterList extends AbbrevSearchList
     this.add(character);
 
     // Save the character to the disk.
-    await ServerEntities.saveEntity(character);
+    await ServerEntities.save(character);
 
     return character;
   }
@@ -63,53 +72,6 @@ export class CharacterList extends AbbrevSearchList
     );
 
     return character;
-
-    /*
-    // First check if character is already loaded. 
-    let character = this.getCharacterByName(name);
-
-    // If it is already loaded, there is no point in loading it again.
-    if (character !== undefined)
-    {
-      ERROR("Attempt to load character '" + character + "'"
-        + " which already exists. Returning existing character");
-      return character;
-    }
-
-    // Second parameter of loadNamedEntity is used for dynamic type cast.
-    character = await Entities.loadNamedEntity
-    (
-      name,
-      NamedEntity.NameCathegory.characters,
-      Character
-    );
-
-    if (!Entity.isValid(character))
-    {
-      ERROR("Failed to load character " + name);
-      return null;
-    }
-
-    if (name !== character.getName())
-    {
-      /// Přejmenovat entitu s unikátním jménem není tak jednoduché,
-      /// šaškuje se při tom s name lock filama. Asi bude nejjednodušší
-      /// prostě to jen nareportovat jako error
-      ///
-      ///ERROR("Character name saved in file (" + character.getName() + ")"
-      ///  + " doesn't match character file name (" + name + ")."
-      ///  + " Renaming character to match file name");
-      ///
-      ///character.name = name;
-
-      ERROR("Character name saved in file (" + character.getName() + ")"
-        + " doesn't match character file name (" + name + ")"
-        + " Character is not loaded");
-        return null;
-    }
-
-    this.add(character);
-    */
   }
 
   // -> Returns undefined if character isn't loaded or doesn't exist.

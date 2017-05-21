@@ -1,6 +1,24 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+TODO: Connection nemůže být Entity
+- protože se vyrábí i na clientu (respektive mohla by být na serveru zděděná
+  z Entity a na Clientu ne, ale je to asi divné).
+[done]
+
+Ad loadování contents:
+- nejlepší by asi bylo do referencí rovnou loadovat patřičné entity.
+  (Ale vytvořit při loadu invalid reference a pak je v postLoadu
+   reloadnout je asi taky ok.)
+   [done]
+
+Characters
+- měly by mít NameList (online unikátní jména)
+- měly by mít AbbrevList (vyhledávání ve všech charach)
+Potřebuju na něco seznam všech charů bez čehokoliv dalšího?
+
+---------------------------------------------------------------
+
 TODO: Zprovoznit save/load ContainerEntity.
 - možná by se ContainerEntity mohla jmenovat prostě Container.
 

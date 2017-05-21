@@ -27,7 +27,9 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
+import {Entity} from '../../../shared/lib/entity/Entity';
 import {Entities} from '../../../shared/lib/entity/Entities';
+import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
 import {Syslog} from '../../../shared/lib/log/Syslog';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Message} from '../../../server/lib/message/Message';
@@ -35,6 +37,7 @@ import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Connection} from '../../../server/lib/connection/Connection';
 import {ServerApp} from '../../../server/lib/app/ServerApp';
 import {Account} from '../../../server/lib/account/Account';
+import {Accounts} from '../../../server/lib/account/Accounts';
 
 export class AuthProcessor
 {
@@ -116,7 +119,7 @@ export class AuthProcessor
     // receive password so we need to remember account name until then.
     this.accountName = accountName;
 
-    if (await ServerApp.accounts.exists(accountName))
+    if (await Accounts.isTaken(accountName))
     {
       // Existing user. Ask for password.
       this.sendAuthPrompt("Password:");
@@ -133,21 +136,23 @@ export class AuthProcessor
       // with the same name before our user enters her password.
       //   It's because the name lock file (which tells us that
       // a name is taken) is only created after we know the password.
-      ServerApp.accounts.setSoftNameLock(accountName);
+      Accounts.setSoftNameLock(accountName);
     }
   }
 
+  /// Tohle by asi mělo být spíš v Accounts
+  /// (uvidíme, až budu dělat autentifikaci v clientu).
   // -> Returns 'null' if account doesn't exist or can't be loaded.
   private async loadAccount(): Promise<Account>
   {
-    // loadAccount() returns null if account doesn't exist on the disk.
-    let account = await ServerApp.accounts.loadAccount
+    let account = await Entities.loadEntityByName
     (
-      this.accountName,
-      this.connection
+      Account, // Typecast.
+      name,
+      Entity.NameCathegory.ACCOUNT
     );
 
-    if (account === null || !account.isValid())
+    if (!Entity.isValid(account))
     {
       this.announceAccountLoadFailure();
 
@@ -159,6 +164,9 @@ export class AuthProcessor
 
       return null;
     }
+
+    account.connection = this.connection;
+    account.addToLists();
 
     return account;
   }
@@ -194,20 +202,40 @@ export class AuthProcessor
     this.stage = AuthProcessor.Stage.MOTD;
   }
 
+  /// Tohle by asi mělo být spíš v Accounts
+  /// (uvidíme, až budu dělat autentifikaci v clientu).
   private async createAccount(password: string): Promise<Account>
   {
-    let account = await ServerApp.accounts.createAccount
+    if (!Entity.isValid(this.connection))
+    {
+      ERROR("Invalid connection");
+      return null;
+    }
+
+    let account = await ServerEntities.createInstance
     (
-      this.accountName,
-      password,
-      this.connection
+      Account,
+      Account.name,
+      name,
+      Entity.NameCathegory.ACCOUNT
     );
 
-    // 'createAccount()' has created a name lock file, so we can
-    // free soft lock on 'this.accountName'.
-    ServerApp.accounts.removeSoftNameLock(this.accountName);
+    if (!Entity.isValid(account))
+    {
+      ERROR("Failed to create account '" + name + "'");
+      return null;
+    }
 
+    account.setPasswordHash(password);
+    account.connection = this.connection;
     this.connection.account = account;
+    account.addToLists();
+
+    // 'ServerEntities.createInstance()' has created
+    // a name lock file, so we can remove soft name lock.
+    Accounts.removeSoftNameLock(this.accountName);
+
+    await ServerEntities.save(account);
 
     return account;
   }
@@ -363,19 +391,9 @@ export class AuthProcessor
     }
     
     if (reconnecting)
-    {
       this.connection.reconnectToAccount(account);
-    }
     else
-    {
-      if (ServerApp.accounts === null)
-      {
-        ERROR("Invalid ServerApp.accounts");
-        return;
-      }
-
       this.connection.connectToAccount(account);
-    }
   }
 
   // Finds user account or loads it from disk, checks if password match,
@@ -384,11 +402,7 @@ export class AuthProcessor
   private async authenticate(password: string): Promise<Account>
   {
     let reconnecting = true;
-
-    // Check if account is already loaded
-    // (getAccountByName() returns 'undefined' if account isn't in
-    //  ServerApp.accounts).
-    let account = ServerApp.accounts.getAccountByName(this.accountName);
+    let account = Accounts.get(this.accountName);
 
     // If account doesn't exist in accountManager, we need to load it from
     // the disk.
