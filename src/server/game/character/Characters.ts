@@ -13,7 +13,6 @@ import {Entity} from '../../../shared/lib/entity/Entity';
 ///import {Entities} from '../../../shared/lib/entity/Entities';
 import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
 import {AbbrevList} from '../../../server/game/search/AbbrevList';
-///import {ServerApp} from '../../../server/lib/app/ServerApp';
 import {Connection} from '../../../server/lib/connection/Connection';
 import {Game} from '../../../server/game/Game';
 import {Character} from '../../../server/game/character/Character';
@@ -29,8 +28,47 @@ export class Characters
   // Abbrevs of all online characters including those without unique names.
   private abbrevs = new AbbrevList();
 
+  // ------------- Public static methods ---------------- 
+
+  // -> Returns 'true' on success.
+  public static add(character: Character)
+  {
+    return Game.getCharacters().names.add(character);
+  }
+
+  // -> Returns 'undefined' if entity 'name' isn't in the list.
+  public static get(name: string)
+  {
+    return Game.getCharacters().names.get(name);
+  }
+
+  // Removes character from Characters, but not from memory.
+  // -> Returns 'true' on success.
+  public static remove(character: Character)
+  {
+    return Game.getCharacters().names.remove(character);
+  }
+
+  public static async isTaken(name: string)
+  {
+    let characters = Game.getCharacters();
+
+    // First check if account is already online so we can save ourselves
+    // reading from disk.
+    if (characters.names.has(name))
+      return true;
+
+    return await ServerEntities.isNameTaken
+    (
+      name,
+      Entity.NameCathegory.CHARACTER
+    );
+  }
+
   // ---------------- Public methods --------------------
 
+  /// Merged with Account.createCharacter().
+  /*
   public async createUniqueCharacter
   (
     name: string,
@@ -60,7 +98,10 @@ export class Characters
 
     return character;
   }
+  */
 
+  /// Merged with MenuProcessor.loadCharacter().
+  /*
   // -> Returns character loaded from disk.
   //    Returns null if character 'name' doesn't exist or couldn't be loaded.
   public async loadCharacter(name: string)
@@ -73,31 +114,7 @@ export class Characters
 
     return character;
   }
-
-  // -> Returns undefined if character isn't loaded or doesn't exist.
-  public getCharacterByName(name: string): Character
-  {
-    return this.getEntityByName(name);
-  }
-
-  public async exists(name: string)
-  {
-    // First check if character is already online so we can
-    // save reading from disk.
-    if (this.hasUniqueEntity(name))
-    {
-      /// DEBUG:
-      console.log("this.hasUniqueEntity returned true");
-
-      return true;
-    }
-
-    return await NamedEntity.isNameTaken
-    (
-      name,
-      NamedEntity.NameCathegory.characters
-    );
-  }
+  */
 
   //----------------- Protected data --------------------
  

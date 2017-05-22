@@ -10,6 +10,8 @@ import {Settings} from '../../../server/ServerSettings';
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
+import {Entity} from '../../../shared/lib/entity/Entity';
+import {Entities} from '../../../shared/lib/entity/Entities';
 ///import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
 import {Syslog} from '../../../shared/lib/log/Syslog';
 import {Connection} from '../../../server/lib/connection/Connection';
@@ -20,6 +22,7 @@ import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Game} from '../../../server/game/Game';
 import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
 import {Character} from '../../../server/game/character/Character';
+import {Characters} from '../../../server/game/character/Characters';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 
 export class MenuProcessor
@@ -90,7 +93,7 @@ export class MenuProcessor
 
   private quitGame()
   {
-    if (this.connection === null || this.connection.isValid() === false)
+    if (!this.connection)
     {
       ERROR("Invalid connection, unable to quit game");
       return;
@@ -110,21 +113,18 @@ export class MenuProcessor
 
   private async enterGame(characterName: string)
   {
-    if (this.connection === null || this.connection.isValid() === false)
+    if (!this.connection)
     {
       ERROR("Invalid connection, unable to enter game");
       return;
     }
 
-    let characterList = Game.characters;
-
-    // Check if character is already online.
-    let character = characterList.getCharacterByName(characterName);
-
     this.connection.leaveMenu();
 
+    let character = Characters.get(characterName);
+
     // If the character is online, reconnect to it.
-    if (character && character.isValid())
+    if (Entity.isValid(character))
     {
       this.connection.reconnectToCharacter(character);
       return;
@@ -140,12 +140,17 @@ export class MenuProcessor
     this.connection.enterGame(character);
   }
   
+/// TODO: Možná by tohle mělo být v Characters.
   private async loadCharacter(name: string): Promise<Character>
   {
-    // loadCharacter() returns null if character doesn't exist on the disk.
-    let character = await Game.characters.loadCharacter(name);
+    let character = await Entities.loadEntityByName
+    (
+      Character, // Typecast.
+      name,
+      Entity.NameCathegory.CHARACTER
+    );
 
-    if (character === null || !character.isValid())
+    if (!Entity.isValid(character))
     {
       this.announceCharacterLoadFailure(name);
 
@@ -157,76 +162,13 @@ export class MenuProcessor
       return null;
     }
 
-    return character;
-    /*
-    /// DEBUG:
-    console.log("loadCharacter()");
+    character.addToLists();
 
-    if (this.connection === null || this.connection.isValid() === false)
-    {
-      ERROR("Invalid connection, unable to load character");
-      return;
-    }
-
-    let characterList = Game.characters;
-
-    let character = new Character();
-
-    /// TODO: Tohle možná udělat nechci - bude to nejspíš chtít vytvořit
-    /// name lock file, což nepůjde, protože už existuje.
-    character.setUniqueName
-    (
-      characterName,
-      NamedEntity.NameCathegory.characters
-    );
-
-    // Character name is passed to check against character name saved
-    // in file (they must by the same).
-    await this.loadCharacterFromFile(character, characterName);
-
-    // Add newly loaded character to characterManager (under it's original id).
-    characterList.addPlayerCharacterUnderExistingId(character);
+/// TODO: Asi by nebylo od věci updatnout referenci na character v Accountu.
+/// (Až tam budou reference místo jmen characterů).
 
     return character;
-    */
   }
-
-  /*
-  private async loadCharacterFromFile
-  (
-    character: Character,
-    characterFileName: string
-  )
-  {
-    // Asynchronous reading from the file.
-    // (The rest of the code will execute only after the reading is done.)
-    await character.load();
-
-    if (character.getId() === null)
-    {
-      FATAL_ERROR("Invalid id in saved file of character:"
-        + " " + character.getName());
-    }
-
-    if (characterFileName !== character.getName())
-    {
-      ERROR("Character name saved in file (" + character.getName() + ")"
-        + " doesn't match character file name (" + characterFileName + ")");
-
-      /// Přejmenovat character není tak jednoduchý - characterName jednoduchý
-      /// unikátní, tzn. je třeba zkontrolovat unikátnost.
-      /// TODO:
-      /// - Navíc to možná bude celé jinak, používají se teď nameLockFily.
-      ///
-      ///ERROR("Character name saved in file (" + character.getName() + ")"
-      ///  + " doesn't match character file name (" + characterFileName + ")."
-      ///  + " Renaming character to match file name");
-      ///
-      ///character.name = characterFileName;
-      
-    }
-  }
-  */
 
   // Checks if 'name' matches (is an abbreviation of) any character names
   // on the account.
@@ -293,7 +235,7 @@ export class MenuProcessor
 
   private async enterChargen()
   {
-    if (this.connection === null || this.connection.isValid() === false)
+    if (!this.connection)
     {
       ERROR("Invalid connection");
       return false;
@@ -305,7 +247,7 @@ export class MenuProcessor
 
   private composeMenu(): string
   {
-    if (this.connection === null || this.connection.isValid() === false)
+    if (!this.connection === null)
     {
       ERROR("Invalid connection, game menu is not sent");
       return null;

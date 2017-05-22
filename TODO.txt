@@ -1,6 +1,37 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+---------------------------------------------------------------
+
+BIG TODO: Vyzkoušet, co se stane, když chyba typu dereference 'null'
+  vyhodí výjimku
+  (Mělo by se to odchytit a zalogovat, ale otázka je, jeslti to crashne
+   program nebo ne).
+
+---------------------------------------------------------------
+
+TODO:
+AuthProcessor přejmenovat na Authentication
+ChargenProcessor přejmenovat na Chargen
+atd.
+
+TODO: V CommandListu nahradit hasmapu classou Map.
+
+TODO: Ve static classách typu Game, Characters, Entities a podobně by
+  asi mohl být celý kód ve static metodách (nemusí se ze static metody
+  volat nonstatic metoda stejného jména).
+- neplatí to pro App, protože tam potřebuju polymorfismus.
+
+TODO: AdminList přejmenovat na Admins.
+TODO: Property v Admins hodit do closure v constructoru, ať jsou
+  opravdu private (otázka teda je, jak pak půjdou savovat...)
+
+TODO: V Accountu by místo seznamu jmen charů měl být EntityList.
+
+TODO: Ještě přece jen zvážit zavedení ServerEntity a ClientEntity (zděděno
+  nejspíš z ContainerEntity). Pak by šlo většinu metod z Entities přesunout
+  čistě do server-side kódu.
+
 TODO: Connection nemůže být Entity
 - protože se vyrábí i na clientu (respektive mohla by být na serveru zděděná
   z Entity a na Clientu ne, ale je to asi divné).

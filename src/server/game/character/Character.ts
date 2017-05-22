@@ -7,19 +7,19 @@
 'use strict';
 
 import {Account} from '../../../server/lib/account/Account';
-import {AdminLevel} from '../../../server/lib/admin/AdminLevel';
+import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Game} from '../../../server/game/Game';
 import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
 import {World} from '../../../server/game/world/World';
-import {CharacterFlags} from '../../../server/game/character/CharacterFlags';
+import {Characters} from '../../../server/game/character/Characters';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 export class Character extends ServerGameEntity
 {
-  public characterFlags = new CharacterFlags();
-
   protected timeOfCreation = new Date();
 
+/// TODO: Tohle by asi nemělo být tady - admin levely jsou externě
+/// v Admins.
   private adminLevel = AdminLevel.MORTAL;
 
   constructor()
@@ -50,18 +50,18 @@ export class Character extends ServerGameEntity
   // Sets birthroom (initial location), CHAR_IMMORTALITY flag.
   public init(account: Account)
   {
-    let world = Game.world;
+    let world = Game.getWorld();
 
     if (this.getAdminLevel() > AdminLevel.MORTAL)
-    {
+    { 
       // Immortals enter game in System Room.
-      this.setLocation(world.systemRoomId);
-      this.characterFlags.set(CharacterFlags.GOD_PROTECTION);
+      world.systemRoom.insert(this);
+      ///this.characterFlags.set(CharacterFlags.GOD_PROTECTION);
     }
     else
     {
       // Mortals enter game in Tutorial Room.
-      this.setLocation(world.tutorialRoom);
+      world.tutorialRoom.insert(this);
     }
   }
 
@@ -102,6 +102,7 @@ export class Character extends ServerGameEntity
   // ~ Overrides Entity.addToNameLists().
   protected addToNameLists()
   {
+    Characters.add(this);
     /// TODO
   }
 
@@ -114,8 +115,8 @@ export class Character extends ServerGameEntity
   // ~ Overrides Entity.removeFromNameLists().
   protected removeFromNameLists()
   {
+    Characters.remove(this);
     /// TODO
-    Game.characters.remove(this);
   }
 
   // ~ Overrides Entity.removeFromAbbrevLists().

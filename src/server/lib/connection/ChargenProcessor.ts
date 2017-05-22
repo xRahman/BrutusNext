@@ -9,12 +9,14 @@
 import {Settings} from '../../../server/ServerSettings';
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
-import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
+import {Entity} from '../../../shared/lib/entity/Entity';
 import {Message} from '../../../server/lib/message/Message';
+import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Connection} from '../../../server/lib/connection/Connection';
 import {ServerApp} from '../../../server/lib/app/ServerApp';
 import {Game} from '../../../server/game/Game';
 import {Character} from '../../../server/game/character/Character';
+import {Characters} from '../../../server/game/character/Characters';
 
 export class ChargenProcessor
 {
@@ -67,13 +69,10 @@ export class ChargenProcessor
     // Make the first letter uppercase and the rest lowercase.
     name = Utils.upperCaseFirstCharacter(name);
 
-    if (!await this.isNameAvailable(name))
+    if (await this.isUnavailable(name))
       // We don't advance the stage so the next user input will
       // trigger a processCharacterName() again.
       return;
-
-    /// DEBUG:
-    console.log("After isNameAvailable() check");
 
     let character = await this.createCharacter(name);
 
@@ -94,7 +93,7 @@ export class ChargenProcessor
     Message.sendToConnection
     (
       text,
-      Message.Type.CHARGEN_PROMPT,
+      MessageType.CHARGEN_PROMPT,
       this.connection
     );
   }
@@ -165,18 +164,14 @@ export class ChargenProcessor
     return true;
   }
 
-  private async isNameAvailable(name: string): Promise<boolean>
+  private async isUnavailable(name: string): Promise<boolean>
   {
     /// TODO: Časem asi nějaké přísnější testy - například nepovolit jméno,
     ///   když existuje jeho hodně blízký prefix.
 
-    let available = !await NamedEntity.isNameTaken
-    (
-      name,
-      NamedEntity.NameCathegory.characters
-    );
+    let taken = await Characters.isTaken(name);
 
-    if (!available)
+    if (taken)
     {
       this.sendChargenPrompt
       (
@@ -186,13 +181,13 @@ export class ChargenProcessor
       );
     }
 
-    return available;
+    return taken;
   }
 
   // -> Returns 'null' if characred couldn't be created.
   private async createCharacter(name: string): Promise<Character>
   {
-    if (this.connection === null || this.connection.isValid() === false)
+    if (!this.connection)
     {
       ERROR("Invalid connection, character is not created");
       return null;
@@ -200,7 +195,7 @@ export class ChargenProcessor
 
     let account = this.connection.account;
 
-    if (account === null || account.isValid() === false)
+    if (!Entity.isValid(account))
     {
       ERROR("Invalid account, character is not created");
       return null;
@@ -219,7 +214,7 @@ export class ChargenProcessor
 
   private enterGame(character: Character)
   {
-    if (this.connection === null || this.connection.isValid() === false)
+    if (!this.connection)
     {
       ERROR("Invalid connection, unable to enter game");
       return;
@@ -232,13 +227,13 @@ export class ChargenProcessor
   protected announceCharacterCreationFailure(name: string)
   {
     // Notify the player what went wrong.
-    if (this.connection !== null && this.connection.isValid())
+    if (!this.connection)
     {
       Message.sendToConnection
       (
         "Something is wrong, character '" + name + "' already exists."
           + Message.PLEASE_CONTACT_ADMINS,
-        Message.Type.CONNECTION_ERROR,
+        MessageType.CONNECTION_ERROR,
         this.connection
       );
     }

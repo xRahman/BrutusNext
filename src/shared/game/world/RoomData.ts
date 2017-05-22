@@ -8,7 +8,7 @@
 'use strict';
 
 import {Flags} from '../../../shared/lib/utils/Flags';
-import {Coords} from '../../../shared/type/Coords';
+import {Coords} from '../../../shared/lib/utils/Coords';
 import {ExitData} from '../../../shared/game/world/ExitData';
 
 // Maps exit names to respective offsets in grid.

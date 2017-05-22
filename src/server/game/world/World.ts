@@ -30,11 +30,11 @@ export class World extends ServerGameEntity
 
   //------------------ Public data ----------------------
 
-  public systemRealm = null;
-  public systemArea = null;
-  public systemRoom = null;
+  public systemRealm: Realm = null;
+  public systemArea: Area = null;
+  public systemRoom: Room = null;
   // The room newly created player characters spawn to.
-  public tutorialRoom = null;
+  public tutorialRoom: Room = null;
 
   //----------------- Protected data --------------------
 
@@ -67,7 +67,7 @@ export class World extends ServerGameEntity
 
     // Even though we keep direct reference to systemRealm, we stil
     // need to add it to our contents so it's correctly saved, etc.
-    this.insertEntity(this.systemRealm);
+    this.insert(this.systemRealm);
 
     // --- System Area ---
 
@@ -80,7 +80,7 @@ export class World extends ServerGameEntity
     );
 
     // Add System Area to contents of System Realm.
-    this.systemRealm.insertEntity(this.systemArea);
+    this.systemRealm.insert(this.systemArea);
 
     // --- System Room ---
 
@@ -93,7 +93,7 @@ export class World extends ServerGameEntity
     );
 
     // Add System Room to contents of System Area.
-    this.systemArea.insertEntity(this.systemRoom);
+    this.systemArea.insert(this.systemRoom);
 
     // --- Tutorial Room ---
 
@@ -106,7 +106,7 @@ export class World extends ServerGameEntity
     );
 
     // Add Tutorial Room to contents of System Area.
-    this.systemArea.insertEntity(this.tutorialRoom);
+    this.systemArea.insert(this.tutorialRoom);
   }
 
   // --------------- Protected methods ------------------

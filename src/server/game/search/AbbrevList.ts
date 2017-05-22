@@ -88,8 +88,7 @@ export class AbbrevList<T extends ServerGameEntity>
 
   // Removes entity id from this list, but doesn't delete the entity from
   // Entities.
-  // -> Returns true if deletion succeeded.
-  public remove(entity: T): boolean
+  public remove(entity: T)
   {
     // Remove all aliases of this entity from abbrevSearchList.
     this.removeFromAbbrevList(entity);

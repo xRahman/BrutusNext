@@ -17,7 +17,7 @@ import {Message} from '../../server/lib/message/Message';
 import {ServerApp} from '../../server/lib/app/ServerApp';
 import {AdminLevel} from '../../shared/lib/admin/AdminLevel';
 import {ServerGameEntity} from '../../server/game/entity/ServerGameEntity';
-import {Characters} from '../../server/game/character/CharacterList';
+import {Characters} from '../../server/game/character/Characters';
 import {World} from '../../server/game/world/World';
 import {Room} from '../../server/game/world/Room';
 ///import {RoomFlags} from '../../server/game/world/RoomFlags';
@@ -34,35 +34,38 @@ export class Game
 {
   public static get DEFAULT_WORLD_NAME() { return 'BrutusNext World'; }
 
-  public static get characters()
+  public static getCharacters()
   {
-    return ServerApp.game.characters;
+    return ServerApp.getGame().characters;
   }
 
-  public static get rooms()
+  public static getRooms()
   {
-    return ServerApp.game.rooms;
+    return ServerApp.getGame().rooms;
   }
 
-  public static get areas()
+  public static getAreas()
   {
-    return ServerApp.game.areas;
+    return ServerApp.getGame().areas;
   }
 
-  public static get realms()
+  public static getRealms()
   {
-    return ServerApp.game.realms;
+    return ServerApp.getGame().realms;
   }
 
-  public static get world()
+  public static getWorld()
   {
-    return ServerApp.game.world;
+    return ServerApp.getGame().world;
   }
 
-  public static get prototypeManager()
+  /// Tohle je blbost, jde použít rovnou Prototypes.
+  /*
+  public static get prototypes()
   {
     return ServerApp.getPrototypes();
   }
+  */
 
   // ---------------- Public methods --------------------
 
@@ -94,7 +97,7 @@ export class Game
     await this.world.createSystemRealm();
 
     // Save the world we have just created.
-    await this.world.save();
+    await ServerEntities.save(this.world);
   }
 
   // Loads initial state of the game from disk.
@@ -103,9 +106,9 @@ export class Game
     // Load current state of world from file.
     this.world = await ServerEntities.loadEntityByName
     (
+      World, // Dynamic typecast.
       Game.DEFAULT_WORLD_NAME,
-      Entity.NameCathegory.WORLD,
-      World // Dynamic typecast.
+      Entity.NameCathegory.WORLD
     );
   }
 
