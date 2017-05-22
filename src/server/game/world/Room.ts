@@ -29,9 +29,9 @@ import {PropertyAttributes} from
   '../../../shared/lib/class/PropertyAttributes';
 import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
 import {Game} from '../../game/Game';
-import {RoomFlags} from '../../game/world/RoomFlags';
+///import {RoomFlags} from '../../game/world/RoomFlags';
 import {Exits} from '../../game/world/Exits';
-import {Classes} from '../../../shared/lib/Classes';
+import {Classes} from '../../../shared/lib/class/Classes';
 
 /// TEST:
 import {RoomData} from '../../../shared/game/world/RoomData';
@@ -49,7 +49,7 @@ export class Room extends ServerGameEntity
   /// TODO: 'extraDescriptions' by možná mohly mít všechny entity.
   public extraDescriptions = [];
 
-  public roomFlags = new RoomFlags();
+  ///public roomFlags = new RoomFlags();
 
   constructor()
   {

@@ -173,7 +173,7 @@ export class AuthProcessor
 
   private async checkPassword(password: string)
   {
-    if (this.connection === null || this.connection.isValid() === false)
+    if (!this.connection)
     {
       ERROR("Invalid connection in AuthProcessor when trying"
         + " to check password of account " + this.accountName);
@@ -206,7 +206,7 @@ export class AuthProcessor
   /// (uvidíme, až budu dělat autentifikaci v clientu).
   private async createAccount(password: string): Promise<Account>
   {
-    if (!Entity.isValid(this.connection))
+    if (!this.connection)
     {
       ERROR("Invalid connection");
       return null;
@@ -384,7 +384,7 @@ export class AuthProcessor
 
   private connectToAccount(account: Account, reconnecting: boolean)
   {
-    if (this.connection === null || this.connection.isValid() === false)
+    if (!this.connection)
     {
       ERROR("Invalid connection on account " + this.accountName);
       return;
@@ -450,7 +450,7 @@ export class AuthProcessor
 
   private announceWrongPassword()
   {
-    if (this.connection === null || this.connection.isValid() === false)
+    if (!this.connection)
     {
       ERROR("Invalid connection on account " + this.accountName);
       return;
@@ -503,7 +503,7 @@ export class AuthProcessor
     ///      "&wThere was #" + Server.getNumberOfPlayers()
     ///      + " players since &W3. 4. 2016";
 
-    if (this.connection === null || this.connection.isValid() === false)
+    if (!this.connection)
     {
       ERROR("Invalid connection on account " + this.accountName);
       return "<Error while retrieving last login info>";

@@ -30,17 +30,18 @@ export class ContainerEntity extends Entity
   //  sectors contain rooms, etc.)
   protected contents = new EntityList();
 
-  //------------------ Private data ---------------------
-
   // ContainerEntity this entity is contained in.
   // (Rooms are contained in Areas, characters may be in rooms or object,
   //  objects may be in room or object, etc.)
-  private location: ContainerEntity = null;
+  protected location: ContainerEntity = null;
+
+  //------------------ Private data ---------------------
+
 
   // --------------- Public accessors -------------------
 
   // Note: There is no 'setLocation()'. Localtion is automatically
-  //   set when insertEntity() is called.
+  //   set when insert() is called.
   public getLocation() { return this.location; }
 
   // ---------------- Public methods --------------------
@@ -66,7 +67,7 @@ export class ContainerEntity extends Entity
 
   // Inserts 'entity' to contents of this entity.
   // Also removes it from it's previous location.
-  protected insertEntity(entity: ContainerEntity)
+  public insert(entity: ContainerEntity)
   {
     if (entity === null || entity === undefined)
     {
@@ -87,11 +88,11 @@ export class ContainerEntity extends Entity
 
     let oldLocation = entity.location;
 
-    // Remove entity from previous location
+    // Remove entity from previous location.
     if (oldLocation !== null)
       oldLocation.removeEntity(entity);
 
-    // Add it to the new one
+    // Add it to the new one.
     this.contents.add(entity);
     entity.location = this;
   }
@@ -100,8 +101,8 @@ export class ContainerEntity extends Entity
 
   // Removes entity from contents of this entity
   // (removeEntity() is private because entities should never
-  //  be located at "nowhere". Use insertEntity() to move
-  //  the entity to the new location - it will ensure that
+  //  be located at "nowhere". Use insert() to move the
+  //  entity to the new location - it will ensure that
   //  entity is always located somewhere).
   private removeEntity(entity: ContainerEntity)
   {

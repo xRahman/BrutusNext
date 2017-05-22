@@ -6,11 +6,10 @@
 
 'use strict';
 
-import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
 import {Game} from '../../game/Game';
 import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
 import {Area} from '../../game/world/Area';
-import {Classes} from '../../../shared/lib/Classes';
+import {Classes} from '../../../shared/lib/class/Classes';
 
 export class Realm extends ServerGameEntity
 {

@@ -5,7 +5,7 @@
 */
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {Message} from '../../../server/lib/message/Message';
+import {MessageType} from '../../../shared/lib/message/MessageType';
 
 export class MessageColors
 {
@@ -72,14 +72,14 @@ export class MessageColors
 
   // Accesses MessageColors.colors table, prints error if there is no
   // such record.
-  public static getBaseColor(msgType: Message.Type): string
+  public static getBaseColor(msgType: MessageType): string
   {
-    let baseColor = MessageColors.baseColors[Message.Type[msgType]];
+    let baseColor = MessageColors.baseColors[MessageType[msgType]];
 
     if (baseColor === undefined)
     {
       ERROR("Missing base color for Message.Type"
-        + " '" + Message.Type[msgType] + "'" );
+        + " '" + MessageType[msgType] + "'" );
       // Default base color is '&w'.
       return '&w';
     }

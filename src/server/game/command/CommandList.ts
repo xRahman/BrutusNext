@@ -6,7 +6,7 @@
 
 'use strict';
 
-export class CommandSearchList
+export class CommandList
 {
   // ---------------- Public methods --------------------
 
@@ -20,12 +20,9 @@ export class CommandSearchList
     return this.abbrevs[abbrev];
   }
 
-  public isAbbrevRegistered(abbrev: string): boolean
+  public isRegistered(abbrev: string): boolean
   {
-    if (this.abbrevs[abbrev] === undefined)
-      return false;
-    else
-      return true;
+    return this.abbrevs[abbrev] !== undefined;
   }
 
   // This is used by CommandInterpretter. Each abbreviation corresponds
@@ -36,11 +33,11 @@ export class CommandSearchList
     for (let i = 0; i < command.length; i++)
     {
       // Substring from 0 to (i + 1), because without +1 it would start
-      // with empty string and end with a string 1 character shorten than
-      // lenght.
+      // with empty string and end with a string 1 character shorter than
+      // length.
       let abbrev = command.substring(0, i + 1);
 
-      if (!this.isAbbrevRegistered(abbrev))
+      if (!this.isRegistered(abbrev))
         this.abbrevs[abbrev] = handler;
     }
   }
