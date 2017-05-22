@@ -25,9 +25,10 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {ServerSyslog} from '../../../server/lib/log/Syslog';
-import {AdminLevel} from '../../../server/lib/admin/AdminLevel';
-import {Message} from '../../../server/lib/message/Message';
+import {Syslog} from '../../../shared/lib/log/Syslog';
+import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
+//import {Message} from '../../../server/lib/message/Message';
+import {MessageType} from '../../../shared/lib/message/MessageType';
 
 // Built-in node.js modules.
 const vm = require('vm');
@@ -110,11 +111,11 @@ export class VirtualMachine
     }
     catch (e)
     {
-      ServerSyslog.log
+      Syslog.log
       (
         "Compile error in script " + scriptName + ": " + e.message,
           ///+ getTrimmedStackTrace(),
-        Message.Type.SCRIPT_COMPILE_ERROR,
+        MessageType.SCRIPT_COMPILE_ERROR,
         AdminLevel.IMMORTAL
       );
 
@@ -166,11 +167,11 @@ export class VirtualMachine
       else
       {
       */
-      ServerSyslog.log
+      Syslog.log
       (
         "Failed to create function from mud script "
         + scriptName + ": " + e.message,
-        Message.Type.SCRIPT_COMPILE_ERROR,
+        MessageType.SCRIPT_COMPILE_ERROR,
         AdminLevel.IMMORTAL
       );
       /*

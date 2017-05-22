@@ -34,7 +34,6 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
-import {Nameable} from '../../../shared/lib/class/Nameable';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {Entity} from '../../../shared/lib/entity/Entity'; 
 
@@ -234,7 +233,7 @@ export class JsonSaver
     let get = function(target: any, property: any)
     {
       // Here we are trapping access to 'className' property.
-      if (property === Nameable.CLASS_NAME_PROPERTY)
+      if (property === Serializable.CLASS_NAME_PROPERTY)
         // Which will return our parameter 'className' instead
         // of target's 'className'.
         return className;

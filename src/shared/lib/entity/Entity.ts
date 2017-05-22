@@ -216,7 +216,7 @@ export class Entity extends Serializable
     cathegory: Entity.NameCathegory = null,
     // This should only be 'false' if you have created
     // a name lock file prior to calling setName().
-    createNameLockFile = true
+    createNameLock = true
   )
   {
 /// TODO: Před setnutím jména je třeba vyhodit entitu z NameListů
@@ -226,7 +226,7 @@ export class Entity extends Serializable
     let oldName = this.name;
     let oldCathegory = this.nameCathegory;
 
-    if (createNameLockFile)
+    if (createNameLock)
     {
       // Check if requested name is available.
       // (This will always be false on client because entity name change
@@ -409,33 +409,10 @@ export class Entity extends Serializable
   }
 
   // Called after an entity is saved to file.
-  public async postSave()
-  {
-    await Entities.save(this);
-  }
+  public async postSave() {}
 
   // Called after an entity is loaded from file.
   public async postLoad() {}
-
-  /// Tohle je zbytečné, může se rovnou volat Entities.loadEntityById().
-  /*
-  public static async loadById(id: string)
-  {
-    return await Entities.loadEntityById(id);
-  }
-  */
-
-  /// Tohle je zbytečné, může se rovnou volat Entities.loadEntityByName().
-  /*
-  public static async loadByName
-  (
-    name: string,
-    cathegory: Entity.NameCathegory
-  )
-  {
-    return await Entities.loadEntityByName(name, cathegory);
-  }
-  */
 
   public isPrototype()
   {
@@ -449,44 +426,6 @@ export class Entity extends Serializable
     // entity that use us as it's prototype object.
     return this.instanceIds.size !== 0;
   }
-
-  /// Nikde se nevolá, nejspíš nebude potřeba
-  /*
-  public isHardcodedPrototypeEntity()
-  {
-    // Hardcoded prototype entities are the roots of respective
-    // prototype trees so they don't have 'prototypeId' themselves.
-    return this.prototypeId === null;
-  }
-  */
-
-  /// Je tohle stále pravda? Mám pocit, že automatické sebeoživování
-  /// starých referencí jsem zavrhnul.
-  /*
-  // Compares entities by string ids.
-  // (You should never compare two references directly, because
-  //  there can be more than one reference for any single entity
-  //  because references to entity proxies are used. Always use
-  //  this method instead.) 
-  public equals(entity: Entity)
-  {
-    if (entity === null || entity.isValid() === false)
-    {
-      ERROR("Attempt to compare entity " + this.getErrorIdString()
-        + " to an invalid entity");
-      return false;
-    }
-
-    if (this.isValid() === false)
-    {
-      ERROR("Attempt to compare entity " + entity.getErrorIdString()
-        + " to invalid entity " + this.getErrorIdString());
-      return false;
-    }
-
-    return this.getId() === entity.getId(); 
-  }
-  */
 
   // This function exists only for typescript to stop complaining
   // that it doesn't exist. It should never be executed, however,
@@ -532,14 +471,13 @@ export class Entity extends Serializable
   // (indended for use in error messages).
   public getErrorIdString()
   {
-    if (this.getId() === null)
-    {
-      return "{ className: " + this.getClassName() + ","
-           + " name: " + this.name + ", id: null }";
-    }
+    let id = this.getId();
 
-    return "{ className: " + this.getClassName() + ", name:"
-      + " " + this.name + ", id: " + this.getId() + " }";
+    if (id === null)
+      id = "null";
+
+    return "{ className: " + this.getClassName() + ","
+      + " name: " + this.name + ", id: " + id + " }";
   }
 
   // Entity adds itself to all relevant lists (except to Entities)

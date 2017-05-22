@@ -28,11 +28,15 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {ScriptableEntity} from '../../../server/lib/entity/ScriptableEntity';
-import {CommandSearchList} from
-  '../../../server/game/command/CommandSearchList';
+///import {ScriptableEntity} from '../../../server/lib/entity/ScriptableEntity';
+import {CommandList} from
+  '../../../server/game/command/CommandList';
 
-export abstract class CommandInterpretter extends ScriptableEntity
+/// Zatím řeším jen to, aby to šlo přeložit. Výhledově asi CommandInterpretter
+/// zůstane standalone, ale bude potřeba vyšešit matchování handleru
+/// (pokud to bude jako do teď, tj. prostě se na entitě najde a pustí
+///  metoda příslušného jména, tak by to mělo být celkem easy).
+export abstract class CommandInterpretter /* extends ScriptableEntity*/
 {
   // ---------------- Static methods -------------------- 
 
@@ -73,7 +77,7 @@ export abstract class CommandInterpretter extends ScriptableEntity
   
   // Container holding abbreviations of all known commands and names of their
   // respective handlers.
-  protected static commandSearchList = new CommandSearchList(); 
+  protected static commandSearchList = new CommandList(); 
 
   // --------------- Protected methods ------------------
 

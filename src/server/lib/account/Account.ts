@@ -15,6 +15,7 @@ import {Syslog} from '../../../shared/lib/log/Syslog';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {Entities} from '../../../shared/lib/entity/Entities';
+import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
 ///import {ScriptableEntity} from '../../../server/lib/entity/ScriptableEntity';
 import {Connection} from '../../../server/lib/connection/Connection';
 import {ServerApp} from '../../../server/lib/app/ServerApp';
@@ -160,62 +161,30 @@ export class Account extends Entity
 
   public async createCharacter(name: string): Promise<Character>
   {
-    let characterList = Game.characters;
-
-    if (characterList === null)
-    {
-      ERROR("Invalid character list");
-      return;
-    }
-
-    /*
-    if (await characterList.exists(name))
-    {
-      // Handle error messages.
-      this.reportCharacterAlreadyExists(name);
-
-      return null;
-    }
-    */
-
-    let character = await characterList.createUniqueCharacter
+    let character = await ServerEntities.createInstance
     (
+      Character,
+      Character.name,
       name,
-      this.connection
+      Entity.NameCathegory.CHARACTER
     );
 
-    // (Also handles error messages)
-    if (!this.characterCreatedSuccessfuly(character, name))
+    if (!Entity.isValid(character))
+    {
+      ERROR("Failed to create character '" + name + "'");
       return null;
+    }
+
+    character.atachConnection(this.connection);
+    character.addToLists();
 
     await this.addCharacter(name);
     this.logCharacterCreation(this.getName(), name);
 
+    // Save the character to the disk.
+    await ServerEntities.save(character);
+
     return character;
-  }
-
-  private characterCreatedSuccessfuly
-  (
-    character: Character,
-    characterName: string
-  )
-  : boolean
-  {
-    if (character === null)
-    {
-      ERROR("Failed to create new character (" + characterName + ")");
-
-      /// This should be send from top-level command handler in
-      /// chargen processor, not here. 
-      /*
-      this.sendAuthError("An error occured while creating"
-        + " your character. Please contact admins.");
-      */
-
-      return false;
-    }
-
-    return true;
   }
 
   public getNumberOfCharacters(): number

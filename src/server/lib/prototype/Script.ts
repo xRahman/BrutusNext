@@ -6,7 +6,7 @@
 
 'use strict';
 
-import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
+import {Serializable} from '../../../shared/lib/class/Serializable';
 import {VirtualMachine} from '../../../server/lib/prototype/VirtualMachine';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Syslog} from '../../../shared/lib/log/Syslog';
@@ -17,7 +17,7 @@ import {Classes} from '../../../shared/lib/class/Classes';
 // 3rd party modules.
 import * as ts from "typescript";
 
-export class Script extends SaveableObject
+export class Script extends Serializable
 {
   // Name of function that will be created on prototype.
   // (This needs to be the same as the name of the function inside the script.)
