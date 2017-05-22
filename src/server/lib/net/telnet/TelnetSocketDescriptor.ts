@@ -7,7 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../../../shared/lib/error/ERROR';
-import {SharedUtils} from '../../../../server/lib/utils/SharedUtils';
+import {Utils} from '../../../../shared/lib/utils/Utils';
 import {Syslog} from '../../../../shared/lib/log/Syslog';
 import {MessageType} from '../../../../shared/lib/message/MessageType';
 import {Account} from '../../../../server/lib/account/Account';
@@ -181,7 +181,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     this.inputBuffer = "";
 
     // Make sure that all newlines are representedy by '\n'.
-    data = SharedUtils.normalizeCRLF(data);
+    data = Utils.normalizeCRLF(data);
 
     // Do not parse protocol data if user sent just an empty newline.
     // (This is often used by player to refresh prompt)

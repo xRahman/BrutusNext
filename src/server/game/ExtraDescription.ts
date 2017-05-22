@@ -7,9 +7,9 @@
 
 'use strict';
 
-import {SaveableObject} from '../../server/lib/fs/SaveableObject';
+import {Serializable} from '../../shared/lib/class/Serializable';
 
-export class ExtraDescription extends SaveableObject
+export class ExtraDescription extends Serializable
 {
   constructor()
   {

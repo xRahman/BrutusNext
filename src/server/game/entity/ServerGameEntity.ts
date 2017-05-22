@@ -9,6 +9,7 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Script} from '../../../server/lib/prototype/Script';
 import {ServerApp} from '../../../server/lib/app/ServerApp';
+import {Entities} from '../../../shared/lib/entity/Entities';
 import {Message} from '../../../server/lib/message/Message';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Connection} from '../../../server/lib/connection/Connection';
@@ -254,7 +255,7 @@ export class ServerGameEntity extends SharedGameEntity
   // Send message to the connected player that command is not recognized.
   protected unknownCommand()
   {
-    this.receive("Huh?!?", Message.Type.COMMAND);
+    this.receive("Huh?!?", MessageType.COMMAND);
   }
 
   // Creates a formatted string describing entity contents.
@@ -298,7 +299,7 @@ export class ServerGameEntity extends SharedGameEntity
     this.receive
     (
       "You have to type quit--no less, to quit!",
-      Message.Type.COMMAND
+      MessageType.COMMAND
     );
   }
 
@@ -308,20 +309,15 @@ export class ServerGameEntity extends SharedGameEntity
       // This is not an error - most game entities don't have
       // a player connection attached. 
       return;
-    
-    if (!this.connection.isValid())
-    {
-      ERROR("Invalid connection on entity " + this.getErrorIdString());
-      return;
-    }
 
-    this.receive("Goodbye, friend.. Come back soon!", Message.Type.COMMAND);
+    this.receive("Goodbye, friend.. Come back soon!", MessageType.COMMAND);
     this.announcePlayerLeavingGame();
     this.connection.enterMenu();
     this.connection.detachFromGameEntity();
 
     // Remove entity from memory and from all entity lists.
-    ServerApp.entityManager.remove(this);
+    Entities.release(this);
+    ///ServerApp.entityManager.remove(this);
   }
 
   // ---------------- Command handler processors ------------------
@@ -396,9 +392,11 @@ export class ServerGameEntity extends SharedGameEntity
 
     /* --- TEST --- */
 
+    /*
     let output = this.location.printContents();
 
     if (output !== "")
       this.receive(output, Message.Type.COMMAND);
+    */
   }
 }

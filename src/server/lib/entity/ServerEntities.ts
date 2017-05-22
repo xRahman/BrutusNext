@@ -148,16 +148,6 @@ export class ServerEntities extends Entities
 
   // --------------- Protected methods ------------------
 
-  /// Deprecated.
-  /*
-  // ~ Overrides Entities.generateId().
-  // Creates a unique entity string id.
-  protected generateId(): string
-  {
-    return this.idProvider.generateId();
-  }
-  */
-
   // ~ Overrides Entities.requestName().
   // Checks if requested name is available, creates
   // a name lock file if it is.
@@ -261,33 +251,6 @@ export class ServerEntities extends Entities
 
     return await this.loadEntityById(id);
   }
-
-  /// Deprecated.
-  /*
-  // ~ Overrides Entities.createPrototype().
-  // Creates a new prototype entity with a new id.
-  // -> Returns 'null' on error.
-  protected async createPrototype
-  (
-    ancestor: Entity,
-    prototypeName: string,
-    name: string
-  )
-  {
-    let prototype = this.getPrototypeObject(ancestorId);
-
-    if (!prototype)
-      return null;
-
-    return await this.createNewEntity
-    (
-      prototype,
-      name,
-      null,   // 'nameCathegory' - entity name of prototype can't be unique.
-      true    // 'isPrototype'
-    );
-  }
-  */
 
   // ---------------- Private methods -------------------
 
