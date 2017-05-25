@@ -8,7 +8,7 @@
 'use strict';
 
 import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
-import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
+import {GameEntity} from '../../../server/game/GameEntity';
 
 export class Exits extends SaveableObject
 {
@@ -32,12 +32,12 @@ export class Exits extends SaveableObject
   }
 
   // -> returns undefined if exit doesn't exist.
-  public getExit(exitName: string): ServerGameEntity
+  public getExit(exitName: string): GameEntity
   {
     return this.exits.get(exitName);
   }
 
-  public addExit(exitName: string, exit: ServerGameEntity)
+  public addExit(exitName: string, exit: GameEntity)
   {
     this.exits.set(exitName, exit);
   }

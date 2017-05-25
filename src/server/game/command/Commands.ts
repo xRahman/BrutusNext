@@ -36,7 +36,7 @@ import {CommandList} from
 /// zůstane standalone, ale bude potřeba vyšešit matchování handleru
 /// (pokud to bude jako do teď, tj. prostě se na entitě najde a pustí
 ///  metoda příslušného jména, tak by to mělo být celkem easy).
-export abstract class CommandInterpretter /* extends ScriptableEntity*/
+export abstract class Commands /* extends ScriptableEntity*/
 {
   // ---------------- Static methods -------------------- 
 
@@ -50,7 +50,7 @@ export abstract class CommandInterpretter /* extends ScriptableEntity*/
     }
 
     console.log("Registering command '" + command + "'");
-    CommandInterpretter.commandSearchList.addCommand(command, handler);
+    Commands.commandSearchList.addCommand(command, handler);
   }
 
   // ---------------- Public methods --------------------
@@ -126,7 +126,7 @@ export abstract class CommandInterpretter /* extends ScriptableEntity*/
   {
     let commandAbbrev = this.parseCommand(commandString);
 
-    let commandHandler = CommandInterpretter.commandSearchList
+    let commandHandler = Commands.commandSearchList
       .getHandlerByAbbrev(commandAbbrev);
 
     // getHandlerByAbbrev() returns "" if no command is registered for
@@ -160,7 +160,7 @@ export abstract class CommandInterpretter /* extends ScriptableEntity*/
 // trigger instead).
 //   Generally said it's good practice to add new commands after the existing
 // ones with the same prefix.
-CommandInterpretter.registerCommand('look', 'doLook');
-CommandInterpretter.registerCommand('qui', 'doQui');
-CommandInterpretter.registerCommand('quit', 'doQuit');
-CommandInterpretter.registerCommand('sit', 'doSit');
+Commands.registerCommand('look', 'doLook');
+Commands.registerCommand('qui', 'doQui');
+Commands.registerCommand('quit', 'doQuit');
+Commands.registerCommand('sit', 'doSit');

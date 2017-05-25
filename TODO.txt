@@ -25,15 +25,24 @@ TODO: Ještě přece jen zvážit zavedení ServerEntity a ClientEntity (zdědě
 ---------------------------------------------------------------
 
 TODO: XXXSocketDescriptor Přejmenovat na XXXSocket
+- tohle bude složitější, metody tam mají parametr socket typu buď
+  net.socket (pro telnet) nebo WebSocket (pro websockety). Tzn.
+  stávající typ WebSocket (z modulu 'ws') bude třeba přejmenovat
+  (asi na ws), a ten parametr změnit buď na 'ws', nebo raději
+  předávat celou classu Socket (to dává asi i větší smysl).
+  - respektive TelnetSocket či WebSocket podle typu.
 
 TODO:
 AuthProcessor přejmenovat na Authentication
 ChargenProcessor přejmenovat na Chargen
 atd.
+[done]
 
 TODO: CommandInterpretter přejmenovat na Commands
+[done]
 
 TODO: V CommandListu nahradit hasmapu classou Map.
+- a možná ho mergnout s Commands...
 
 TODO: Ve static classách typu Game, Characters, Entities a podobně by
   asi mohl být celý kód ve static metodách (nemusí se ze static metody
@@ -41,6 +50,7 @@ TODO: Ve static classách typu Game, Characters, Entities a podobně by
 - neplatí to pro App, protože tam potřebuju polymorfismus.
 
 TODO: AdminList přejmenovat na Admins.
+[done]
 TODO: Property v Admins hodit do closure v constructoru, ať jsou
   opravdu private (otázka teda je, jak pak půjdou savovat...)
 
@@ -96,7 +106,9 @@ contents v EntityContaineru by asi rovnou mohlo být AbbrevSearchList
 (Což je problém, protože k čemu mít tuhle funkcionalitu na clientu?)
 
 TODO: Přejmenovat AbbrevSearchList na AbbrevList.
+- možná dokonce rovnou na Abbrevs.
 TODO: Přejmenovat NameSearchList na NameList.
+- možná dokonce rovnou na Names.
 
 AbbrevSearchList by asi nemusel být NameSearchList
 (a ostatně asi ani EntityList, jsou to nesouvisející věci).
@@ -113,6 +125,7 @@ TODO: Když je entita v AbbrevListu, tak je ji potřeba při změně aliasů
 reinsertnout.
 
 TODO: AccountList přejmenovat na Accounts, CharacterList na Characters.
+[done]
 
 ---------------------------------------------------------------
 
@@ -1144,8 +1157,6 @@ TODO: Dát do EntityManageru přímo seznam Entit místo EntityRecordů
    tak nebude rovná novější referenci. Porovnání půjde jedině po
    updateReference())
 
-TODO: /server/EntityManager přejmenovat na /server/ServerentityManager
-
 IDEA: Proxyfikaci by možná mohla dělat rovnou Entity.createInstance().
   (Protože proxyfikují se entity)
   - díky tomu nebude muset existovat možnost přidat do EntityManageru
@@ -1343,6 +1354,7 @@ Folsové:
 TODO: Na klientu se nevytváří App
 
 TODO: Přejmenovat Server na ServerApp a Client na ClientApp
+[done]
 
 TODO: SaveableObject rozdělit na:
 - Serializable (přesunout do /shared)

@@ -50,7 +50,7 @@ import {GameEntity} from '../../../server/game/GameEntity';
 import {Character} from '../../../server/game/character/Character';
 import {AutoSaveableObject} from '../../../server/lib/fs/AutoSaveableObject';
 
-export class AdminList extends AutoSaveableObject
+export class Admins extends AutoSaveableObject
 {
   // Hashmap<[ string, AdminLevel ]>
   //   Key: entity id

@@ -18,7 +18,7 @@ import {Game} from '../../../server/game/Game';
 import {Character} from '../../../server/game/character/Character';
 import {Characters} from '../../../server/game/character/Characters';
 
-export class ChargenProcessor
+export class Chargen
 {
   public static get MAX_CHARACTER_NAME_LENGTH() { return 12; }
   public static get MIN_CHARACTER_NAME_LENGTH() { return 2; }
@@ -27,7 +27,7 @@ export class ChargenProcessor
 
   //------------------ Private data ---------------------
 
-  private stage: ChargenProcessor.Stage = null;
+  private stage: Chargen.Stage = null;
 
   // ---------------- Public methods --------------------
 
@@ -40,7 +40,7 @@ export class ChargenProcessor
           + " supposed to process any commands yet");
         break;
 
-      case ChargenProcessor.Stage.GET_CHARACTER_NAME:
+      case Chargen.Stage.GET_CHARACTER_NAME:
         await this.newCharacterName(command);
         break;
 
@@ -54,7 +54,7 @@ export class ChargenProcessor
   {
     this.sendChargenPrompt("By what name shall your character be known?");
 
-    this.stage = ChargenProcessor.Stage.GET_CHARACTER_NAME;
+    this.stage = Chargen.Stage.GET_CHARACTER_NAME;
   }
 
   // --------------- Private methods --------------------
@@ -134,12 +134,12 @@ export class ChargenProcessor
       return false;
     }
 
-    if (name.length > ChargenProcessor.MAX_CHARACTER_NAME_LENGTH)
+    if (name.length > Chargen.MAX_CHARACTER_NAME_LENGTH)
     {
       this.sendChargenPrompt
       (
         "Please pick a name up to"
-        + " " + ChargenProcessor.MAX_CHARACTER_NAME_LENGTH
+        + " " + Chargen.MAX_CHARACTER_NAME_LENGTH
         + " characters long.\n"
         + "Enter a valid character name:"
       );
@@ -147,12 +147,12 @@ export class ChargenProcessor
       return false;
     }
 
-    if (name.length < ChargenProcessor.MIN_CHARACTER_NAME_LENGTH)
+    if (name.length < Chargen.MIN_CHARACTER_NAME_LENGTH)
     {
       this.sendChargenPrompt
       (
         "Could you please pick a name that is at least"
-        + " " + ChargenProcessor.MIN_CHARACTER_NAME_LENGTH
+        + " " + Chargen.MIN_CHARACTER_NAME_LENGTH
         + " characters long?"
         + "\n"
         + "Enter a valid character name: "
@@ -244,7 +244,7 @@ export class ChargenProcessor
 
 // Module is exported so you can use enum type from outside this file.
 // It must be declared after the class because Typescript says so...
-export module ChargenProcessor
+export module Chargen
 {
   export enum Stage
   {
