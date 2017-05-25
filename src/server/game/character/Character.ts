@@ -9,12 +9,12 @@
 import {Account} from '../../../server/lib/account/Account';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Game} from '../../../server/game/Game';
-import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
+import {GameEntity} from '../../../server/game/GameEntity';
 import {World} from '../../../server/game/world/World';
 import {Characters} from '../../../server/game/character/Characters';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class Character extends ServerGameEntity
+export class Character extends GameEntity
 {
   protected timeOfCreation = new Date();
 

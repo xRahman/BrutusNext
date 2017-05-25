@@ -10,12 +10,28 @@ BIG TODO: Vyzkoušet, co se stane, když chyba typu dereference 'null'
 
 ---------------------------------------------------------------
 
+TODO: Ještě přece jen zvážit zavedení ServerEntity a ClientEntity (zděděno
+  nejspíš z ContainerEntity). Pak by šlo většinu metod z Entities přesunout
+  čistě do server-side kódu.
+
+- Má být Account zděděný z ContainerEntity?
+  - nemá. Sice by lákalo dát do account.contents charactery, ale to není
+    dobrý nápad, protože chary mají vlastní location. Tzn. musí to být
+    extra informace.
+- Potřebuju ContainerEntity na Klientu?
+  - asi ne. A kdybych někdy náhodou potřeboval, tak holt prohodím
+    dědičnost a bude z ní zděděné i něco, co container být nemusí.
+
+---------------------------------------------------------------
+
 TODO: XXXSocketDescriptor Přejmenovat na XXXSocket
 
 TODO:
 AuthProcessor přejmenovat na Authentication
 ChargenProcessor přejmenovat na Chargen
 atd.
+
+TODO: CommandInterpretter přejmenovat na Commands
 
 TODO: V CommandListu nahradit hasmapu classou Map.
 
@@ -30,9 +46,6 @@ TODO: Property v Admins hodit do closure v constructoru, ať jsou
 
 TODO: V Accountu by místo seznamu jmen charů měl být EntityList.
 
-TODO: Ještě přece jen zvážit zavedení ServerEntity a ClientEntity (zděděno
-  nejspíš z ContainerEntity). Pak by šlo většinu metod z Entities přesunout
-  čistě do server-side kódu.
 
 TODO: Connection nemůže být Entity
 - protože se vyrábí i na clientu (respektive mohla by být na serveru zděděná
@@ -4624,10 +4637,6 @@ TODO: Všechny xxxList přesmenovat na xxxs (characterList na characters).
 TODO: EntityContainer přejmenovat na EntityManager
       (bude z toho jasnější že je jen jeden)
 TODO: Container přejmenovat na ContainerEntity
-TODO: CommandInterpretter přejmenovat na CommandInterprettingEntity?
-      nebo CommandEntity? CommandProcessingEntity? - to zní nejlíp.
-      - hmm, to možná ne, to zní divně...
-      [necham CommandInterpretter]
 [done]
 
 Obecně se držet schématu:
