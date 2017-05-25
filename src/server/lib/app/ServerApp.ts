@@ -21,7 +21,7 @@ import {ServerEntities} from
   '../../../server/lib/entity/ServerEntities';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
 ///import {FlagNamesManager} from '../../../server/lib/flags/FlagNamesManager';
-import {AdminList} from '../../../server/lib/admin/AdminList';
+import {Admins} from '../../../server/lib/admin/Admins';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Connection} from '../../../server/lib/connection/Connection';
 import {Connections} from '../../../server/lib/connection/Connections';
@@ -53,7 +53,7 @@ export class ServerApp extends App
   private messageOfTheDay = null;
 
   // Keeps track of who has which admin rights.
-  private adminList = new AdminList();
+  private admins = new Admins();
 
   private timeOfBoot = new Date();
 
@@ -156,12 +156,12 @@ export class ServerApp extends App
   // the mud is 'freshly installed' gets maximum admin rights).
   public static onCharacterCreation(character: GameEntity)
   {
-    ServerApp.getInstance().adminList.onCharacterCreation(character);
+    ServerApp.getInstance().admins.onCharacterCreation(character);
   }
 
   public static getAdminLevel(entity: GameEntity)
   {
-    return ServerApp.getInstance().adminList.getAdminLevel(entity);
+    return ServerApp.getInstance().admins.getAdminLevel(entity);
   }
 
   // -> Returns null if no message of the day is set at the moment.

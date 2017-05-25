@@ -13,13 +13,12 @@ import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Message} from '../../../server/lib/message/Message';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {ServerApp} from '../../../server/lib/app/ServerApp';
-import {SocketDescriptor} from '../../../server/lib/net/SocketDescriptor';
+import {Socket} from '../../../server/lib/net/Socket';
 import {Account} from '../../../server/lib/account/Account';
 import {Accounts} from '../../../server/lib/account/Accounts';
-import {AuthProcessor} from '../../../server/lib/connection/AuthProcessor';
-import {MenuProcessor} from '../../../server/lib/connection/MenuProcessor';
-import {ChargenProcessor} from
-  '../../../server/lib/connection/ChargenProcessor';
+import {Authentication} from '../../../server/lib/connection/Authentication';
+import {Menu} from '../../../server/lib/connection/Menu';
+import {Chargen} from '../../../server/lib/connection/Chargen';
 import {Game} from '../../../server/game/Game';
 import {GameEntity} from '../../../server/game/GameEntity';
 import {Character} from '../../../server/game/character/Character';
@@ -36,10 +35,10 @@ export class Connection
   //------------------ Private data ---------------------
 
   private stage: Connection.Stage = null;
-  private socketDescriptor: SocketDescriptor = null;
-  private authProcessor: AuthProcessor = null;
-  private menuProcessor: MenuProcessor = null;
-  private chargenProcessor: ChargenProcessor = null;
+  private socket: Socket = null;
+  private authentication: Authentication = null;
+  private menu: Menu = null;
+  private chargen: Chargen = null;
 
   // -------- Public stage transition methods -----------
 
@@ -48,56 +47,56 @@ export class Connection
     if (this.stage !== null)
       ERROR("Starting authenticating from wrong stage");
 
-    if (this.authProcessor !== null)
+    if (this.authentication !== null)
       ERROR("AuthProcessor already exists");
 
-    this.authProcessor = new AuthProcessor(this);
-    this.authProcessor.startAuthenticating();
+    this.authentication = new Authentication(this);
+    this.authentication.startAuthenticating();
     this.stage = Connection.Stage.AUTHENTICATION;
   }
 
   public finishAuthenticating()
   {
-    if (this.authProcessor === null)
+    if (this.authentication === null)
       ERROR("Authenticating is already finished (or it didn't even start)");
 
-    this.authProcessor = null;
+    this.authentication = null;
   }
 
   public enterMenu()
   {
-    if (this.menuProcessor !== null)
+    if (this.menu !== null)
       ERROR("MenuProcessor already exists");
 
-    this.menuProcessor = new MenuProcessor(this);
-    this.menuProcessor.sendMenu();
+    this.menu = new Menu(this);
+    this.menu.sendMenu();
     this.stage = Connection.Stage.IN_MENU;
   }
 
   public leaveMenu()
   {
-    if (this.menuProcessor === null)
+    if (this.menu === null)
       ERROR("MenuProcessor is already dealocated");
 
-    this.menuProcessor = null;
+    this.menu = null;
   }
 
   public enterChargen()
   {
-    if (this.chargenProcessor !== null)
+    if (this.chargen !== null)
       ERROR("ChargenProcessor already exists");
 
-    this.chargenProcessor = new ChargenProcessor(this);
-    this.chargenProcessor.start();
+    this.chargen = new Chargen(this);
+    this.chargen.start();
     this.stage = Connection.Stage.IN_CHARGEN;
   }
 
   public leaveChargen()
   {
-    if (this.chargenProcessor === null)
+    if (this.chargen === null)
       ERROR("Chargen processor is already dealocated");
 
-    this.chargenProcessor = null;
+    this.chargen = null;
   }
 
   // Connection will be attached to 'entity' prior to entering the game.
@@ -163,9 +162,9 @@ export class Connection
 
   // ---------------- Public methods --------------------
 
-  public get ipAddress() { return this.socketDescriptor.getIpAddress(); }
+  public get ipAddress() { return this.socket.getIpAddress(); }
 
-  public setSocketDescriptor(socketDescriptor: SocketDescriptor)
+  public setSocketDescriptor(socketDescriptor: Socket)
   {
     if (socketDescriptor === null || socketDescriptor === undefined)
     {
@@ -174,7 +173,7 @@ export class Connection
     } 
 
     socketDescriptor.connection = this;
-    this.socketDescriptor = socketDescriptor;
+    this.socket = socketDescriptor;
   }
 
   /*
@@ -349,7 +348,7 @@ export class Connection
 
     // Closes the socket, which will trigger 'close' event on it, which
     // will be handled by calling onSocketClose() on this connection.
-    this.socketDescriptor.closeSocket();
+    this.socket.closeSocket();
   }
 
   // Handles 'close' event triggered on socket.
@@ -358,7 +357,7 @@ export class Connection
   // by calling this method).
   public onSocketClose()
   {
-    if (this.socketDescriptor.socketClosed === false)
+    if (this.socket.socketClosed === false)
     {
       ERROR("Attempt to call Connection.onSocketClose() before respective"
         + " socket has been closed. Don't call Connection.onSocketClose()"
@@ -445,7 +444,7 @@ export class Connection
       return;
     }
 
-    this.socketDescriptor.sendMudMessage(message.compose());
+    this.socket.sendMudMessage(message.compose());
   }
 
   // --------------- Private methods --------------------
@@ -477,14 +476,14 @@ export class Connection
 
   private async processAuthCommand(command: string)
   {
-    if (this.authProcessor === null)
+    if (this.authentication === null)
     {
       ERROR("AuthProcessor is not inicialized, command will not be processed"
         + " on account " + this.account.getErrorIdString());
       return;
     }
 
-    await this.authProcessor.processCommand(command);
+    await this.authentication.processCommand(command);
   }
 
   private processMenuCommand(command: string)
@@ -496,7 +495,7 @@ export class Connection
       return;
     }
 
-    if (this.menuProcessor === null)
+    if (this.menu === null)
     {
       ERROR("MenuProcessor is not inicialized"
         + " on account " + this.account.getErrorIdString() + "."
@@ -504,7 +503,7 @@ export class Connection
       return;
     }
 
-    this.menuProcessor.processCommand(command);
+    this.menu.processCommand(command);
   }
 
   private async processChargenCommand(command: string)
@@ -516,7 +515,7 @@ export class Connection
       return;
     }
 
-    if (this.chargenProcessor === null)
+    if (this.chargen === null)
     {
       ERROR("Chargen processor is not inicialized"
         + " on account " + this.account.getErrorIdString() + "."
@@ -524,7 +523,7 @@ export class Connection
       return;
     }
 
-    await this.chargenProcessor.processCommand(command);
+    await this.chargen.processCommand(command);
   }
 
   private processIngameCommand(command: string)
@@ -724,14 +723,14 @@ export class Connection
     {
       let player = "Unknown player";
 
-      if (this.authProcessor === null)
+      if (this.authentication === null)
       {
         ERROR("AuthProcessor is not inicialized, player won't get logged out");
         return;
       }
 
-      if (this.authProcessor.getAccountName())
-        player = "Player " + this.authProcessor.getAccountName();
+      if (this.authentication.getAccountName())
+        player = "Player " + this.authentication.getAccountName();
 
       ERROR("Attempt to logout player " + player + " who is not"
         + " logged-in to an account");
@@ -747,9 +746,9 @@ export class Connection
     let player = "Unknown player";
     let accountName = null;
 
-    if (this.authProcessor !== null)
+    if (this.authentication !== null)
     {
-      accountName = this.authProcessor.getAccountName()
+      accountName = this.authentication.getAccountName()
       ERROR("AuthProcessor not inicialized, lost connection will not be announced");
       return;
     }
@@ -786,9 +785,9 @@ export class Connection
     // If the connection is closed while player is authenticating,
     // we also need to remove soft lock on accountName so it is
     // freed to be used.
-    if (this.authProcessor !== null)
+    if (this.authentication !== null)
     {
-      let accountName = this.authProcessor.getAccountName();
+      let accountName = this.authentication.getAccountName();
 
       if (accountName !== null)
         Accounts.removeSoftNameLock(accountName);
