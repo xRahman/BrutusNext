@@ -39,7 +39,7 @@ import {ServerApp} from '../../../server/lib/app/ServerApp';
 import {Account} from '../../../server/lib/account/Account';
 import {Accounts} from '../../../server/lib/account/Accounts';
 
-export class AuthProcessor
+export class Authentication
 {
   public static get MAX_ACCOUNT_NAME_LENGTH() { return 12; }
   public static get MIN_ACCOUNT_NAME_LENGTH() { return 2; }
@@ -48,7 +48,7 @@ export class AuthProcessor
 
   //------------------ Private data ---------------------
 
-  private stage: AuthProcessor.Stage = null;
+  private stage: Authentication.Stage = null;
   private accountName = "";
 
   // ---------------- Public methods --------------------
@@ -64,19 +64,19 @@ export class AuthProcessor
           + " supposed to process any commands yet");
         break;
 
-      case AuthProcessor.Stage.LOGIN:
+      case Authentication.Stage.LOGIN:
         await this.loginAttempt(command);
         break;
 
-      case AuthProcessor.Stage.PASSWORD:
+      case Authentication.Stage.PASSWORD:
         await this.checkPassword(command);
         break;
 
-      case AuthProcessor.Stage.NEW_PASSWORD:
+      case Authentication.Stage.NEW_PASSWORD:
         await this.newPassword(command);
         break;
 
-      case AuthProcessor.Stage.MOTD:
+      case Authentication.Stage.MOTD:
         // Any command (including just pressing enter)
         // will carry us on to the next stage.
         this.acceptMotd();
@@ -100,7 +100,7 @@ export class AuthProcessor
       + "&wBy what account name do you want to be recognized?"
     );
 
-    this.stage = AuthProcessor.Stage.LOGIN;
+    this.stage = Authentication.Stage.LOGIN;
   }
 
   // --------------- Private methods --------------------
@@ -123,14 +123,14 @@ export class AuthProcessor
     {
       // Existing user. Ask for password.
       this.sendAuthPrompt("Password:");
-      this.stage = AuthProcessor.Stage.PASSWORD;
+      this.stage = Authentication.Stage.PASSWORD;
     }
     else
     {
       // New user. Ask for a new password.
       this.sendAuthPrompt("Creating a new user account...\n"
         + "Please enter a password for your account:");
-      this.stage = AuthProcessor.Stage.NEW_PASSWORD;
+      this.stage = Authentication.Stage.NEW_PASSWORD;
 
       // We also need to prevent other players to create account
       // with the same name before our user enters her password.
@@ -199,7 +199,7 @@ export class AuthProcessor
     this.sendLoginInfo(account, { sendLastLoginInfo: true });
 
     // Stage MOTD will wait for any command to proceed to the menu. 
-    this.stage = AuthProcessor.Stage.MOTD;
+    this.stage = Authentication.Stage.MOTD;
   }
 
   /// Tohle by asi mělo být spíš v Accounts
@@ -276,7 +276,7 @@ export class AuthProcessor
     this.sendLoginInfo(account, { sendLastLoginInfo: false });
 
     // Stage MOTD will wait for any command to proceed to the menu. 
-    this.stage = AuthProcessor.Stage.MOTD;
+    this.stage = Authentication.Stage.MOTD;
   }
 
   private acceptMotd()
@@ -317,11 +317,11 @@ export class AuthProcessor
       return false;
     }
 
-    if (name.length > AuthProcessor.MAX_ACCOUNT_NAME_LENGTH)
+    if (name.length > Authentication.MAX_ACCOUNT_NAME_LENGTH)
     {
       this.sendAuthPrompt
       (
-        "Please pick something up to " + AuthProcessor.MAX_ACCOUNT_NAME_LENGTH
+        "Please pick something up to " + Authentication.MAX_ACCOUNT_NAME_LENGTH
         + " characters.\n"
         + "Enter a valid account name:"
       );
@@ -329,12 +329,12 @@ export class AuthProcessor
       return false;
     }
 
-    if (name.length < AuthProcessor.MIN_ACCOUNT_NAME_LENGTH)
+    if (name.length < Authentication.MIN_ACCOUNT_NAME_LENGTH)
     {
       this.sendAuthPrompt
       (
         "Could you please pick a name that is at least"
-        + " " + AuthProcessor.MIN_ACCOUNT_NAME_LENGTH
+        + " " + Authentication.MIN_ACCOUNT_NAME_LENGTH
         + " characters long?\n"
         + "Enter a valid account name: "
       );
@@ -565,7 +565,7 @@ export class AuthProcessor
 
 // Module is exported so you can use enum type from outside this file.
 // It must be declared after the class because Typescript says so...
-export module AuthProcessor
+export module Authentication
 {
   export enum Stage
   {
