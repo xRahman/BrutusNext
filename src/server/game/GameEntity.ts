@@ -6,18 +6,17 @@
 
 'use strict';
 
-import {ERROR} from '../../../shared/lib/error/ERROR';
-import {Script} from '../../../server/lib/prototype/Script';
-import {ServerApp} from '../../../server/lib/app/ServerApp';
-import {Entities} from '../../../shared/lib/entity/Entities';
-import {Message} from '../../../server/lib/message/Message';
-import {MessageType} from '../../../shared/lib/message/MessageType';
-import {Connection} from '../../../server/lib/connection/Connection';
-import {Game} from '../../../server/game/Game';
-import {ContainerEntity} from '../../../shared/lib/entity/ContainerEntity';
-import {SharedGameEntity} from '../../../shared/game/entity/SharedGameEntity';
+import {ERROR} from '../../shared/lib/error/ERROR';
+import {Script} from '../../server/lib/prototype/Script';
+import {ServerApp} from '../../server/lib/app/ServerApp';
+import {Entities} from '../../shared/lib/entity/Entities';
+import {Message} from '../../server/lib/message/Message';
+import {MessageType} from '../../shared/lib/message/MessageType';
+import {Connection} from '../../server/lib/connection/Connection';
+import {Game} from '../../server/game/Game';
+import {ContainerEntity} from '../../server/lib/entity/ContainerEntity';
 
-export class ServerGameEntity extends SharedGameEntity
+export class GameEntity extends ContainerEntity
 {
   /*
   /// TEST
@@ -90,6 +89,12 @@ export class ServerGameEntity extends SharedGameEntity
 
   // ---------------- Public methods --------------------
 
+  public processCommand(command: string)
+  {
+    /// TODO
+    /// nejspíš: CommandInterpretter.processCommand(command);
+  }
+
     // -> Returns 'null' if directory cannot be composed.
   public static getPrototypeSaveDirectory()
   {
@@ -159,7 +164,7 @@ export class ServerGameEntity extends SharedGameEntity
     msgType: MessageType,
     // 'sender' can be null if there is no appropriate sending entity
     // (for example when player is receiving output from using a command).
-    sender: ServerGameEntity = null
+    sender: GameEntity = null
   )
   {
     let message = new Message(text, msgType);
@@ -231,7 +236,7 @@ export class ServerGameEntity extends SharedGameEntity
   }
   */
 
-  public addOfflineMessage(sender: ServerGameEntity, message: Message)
+  public addOfflineMessage(sender: GameEntity, message: Message)
   {
     /// TODO
     /// (Přidávání offline zpráv do fronty, výpis offline zpráv

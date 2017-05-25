@@ -11,7 +11,7 @@ import {VirtualMachine} from '../../../server/lib/prototype/VirtualMachine';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Syslog} from '../../../shared/lib/log/Syslog';
 import {MessageType} from '../../../shared/lib/message/MessageType';
-import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
+import {GameEntity} from '../../../server/game/GameEntity';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 // 3rd party modules.
@@ -114,7 +114,7 @@ export class Script extends Serializable
       let _closureDelay = async function
       (
         miliseconds: number,
-        entity: ServerGameEntity
+        entity: GameEntity
       )
       {
         // Variable script is from the closure (it's a local variable
@@ -280,7 +280,7 @@ export class Script extends Serializable
     script: Script,
     resolve,
     reject,
-    entity: ServerGameEntity,
+    entity: GameEntity,
     compiledFunction: Function
   )
   {
@@ -342,7 +342,7 @@ export class Script extends Serializable
   private async internalDelay
   (
     miliseconds: number,
-    entity: ServerGameEntity,
+    entity: GameEntity,
     compiledFunction: Function,
     scriptName: string
   )

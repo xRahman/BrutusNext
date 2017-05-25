@@ -22,9 +22,9 @@ import {Utils} from '../../../shared/lib/utils/Utils';
 ///import {NameList} from '../../../shared/lib/entity/NameList';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {EntityList} from '../../../shared/lib/entity/EntityList';
-import {ServerGameEntity} from "../../../server/game/entity/ServerGameEntity";
+import {GameEntity} from "../../../server/game/GameEntity";
 
-export class AbbrevList<T extends ServerGameEntity>
+export class AbbrevList<T extends GameEntity>
 {
   //------------------ Private data ---------------------
 
@@ -55,7 +55,7 @@ export class AbbrevList<T extends ServerGameEntity>
 
   // Returns null if no such entity exists.
   // (search string should be something like "3.mob.orc_chief")
-  public search(searchString: string): ServerGameEntity
+  public search(searchString: string): GameEntity
   {
     let parseResult = this.parseSearchString(searchString);
     let cathegory = this.parseSearchCathegory(parseResult.cathegory);
@@ -189,9 +189,9 @@ export class AbbrevList<T extends ServerGameEntity>
   // -> Returns array of GameEntities that are present in each entityList
   //    stored in entityLists parameter.
   private mergeResults(entityLists: Array<EntityList<T>>)
-  : Array<ServerGameEntity>
+  : Array<GameEntity>
   {
-    let result: Array<ServerGameEntity> = [];
+    let result: Array<GameEntity> = [];
 
     if (entityLists.length === 0)
       return result;
@@ -223,7 +223,7 @@ export class AbbrevList<T extends ServerGameEntity>
     return result;
   }
 
-  private validateResult(candidate: ServerGameEntity, cathegory: number)
+  private validateResult(candidate: GameEntity, cathegory: number)
   {
     switch (cathegory)
     {
@@ -273,11 +273,11 @@ export class AbbrevList<T extends ServerGameEntity>
   // -> returns entity number 'searchIndex' that satisfies the search.
   private filterResults
   (
-    candidates: Array<ServerGameEntity>,
+    candidates: Array<GameEntity>,
     searchIndex: number,
     cathegory: number
   )
-  : ServerGameEntity
+  : GameEntity
   {
     // This test it not necessary, it just saves going through the list
     // of candidates it there is less of them then requested index.
@@ -306,7 +306,7 @@ export class AbbrevList<T extends ServerGameEntity>
     searchIndex: number,
     cathegory: number
   )
-  : ServerGameEntity
+  : GameEntity
   {
 
     // Nothing can possibly match an empty, null or undefined searchName.

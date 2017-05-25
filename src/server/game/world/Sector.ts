@@ -9,10 +9,10 @@
 'use strict';
 
 import {Game} from '../../game/Game';
-import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
+import {GameEntity} from '../../../server/game/GameEntity';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class Sector extends ServerGameEntity
+export class Sector extends GameEntity
 {
   constructor()
   {

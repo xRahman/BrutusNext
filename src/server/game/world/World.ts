@@ -14,13 +14,13 @@ import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
 ///import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
 ///import {ServerApp} from '../../../server/lib/Server';
 import {Game} from '../../../server/game/Game';
-import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
+import {GameEntity} from '../../../server/game/GameEntity';
 import {Realm} from '../../../server/game/world/Realm';
 import {Area} from '../../../server/game/world/Area';
 import {Room} from '../../../server/game/world/Room';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class World extends ServerGameEntity
+export class World extends GameEntity
 {
   // --------------- Public accessors -------------------
 

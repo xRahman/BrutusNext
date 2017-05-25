@@ -7,6 +7,7 @@
 
 'use strict';
 
+/*
 ///import {ERROR} from '../../../shared/lib/error/ERROR';
 ///import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 import {PropertyAttributes} from
@@ -27,3 +28,4 @@ export class SharedGameEntity extends ContainerEntity
 
   // --------------- Private methods --------------------
 }
+*/
