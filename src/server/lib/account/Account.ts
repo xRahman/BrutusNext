@@ -15,6 +15,7 @@ import {Syslog} from '../../../shared/lib/log/Syslog';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {Entities} from '../../../shared/lib/entity/Entities';
+import {ServerEntity} from '../../../server/lib/entity/ServerEntity';
 import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
 ///import {ScriptableEntity} from '../../../server/lib/entity/ScriptableEntity';
 import {Connection} from '../../../server/lib/connection/Connection';
@@ -28,7 +29,7 @@ import {Accounts} from '../../../server/lib/account/Accounts';
 // Built-in node.js modules.
 import * as crypto from 'crypto';  // Import namespace 'crypto' from node.js
 
-export class Account extends Entity
+export class Account extends ServerEntity
 {
   public connection: Connection = null;
   // Do not save and load property 'connection'.

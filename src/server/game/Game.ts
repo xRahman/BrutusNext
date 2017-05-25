@@ -16,7 +16,6 @@ import {NameList} from '../../shared/lib/entity/NameList';
 import {Message} from '../../server/lib/message/Message';
 import {ServerApp} from '../../server/lib/app/ServerApp';
 import {AdminLevel} from '../../shared/lib/admin/AdminLevel';
-import {ServerGameEntity} from '../../server/game/entity/ServerGameEntity';
 import {Characters} from '../../server/game/character/Characters';
 import {World} from '../../server/game/world/World';
 import {Room} from '../../server/game/world/Room';

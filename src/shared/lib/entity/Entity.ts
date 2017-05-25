@@ -35,6 +35,11 @@ import {PropertyAttributes} from
   '../../../shared/lib/class/PropertyAttributes';
 import {Entities} from '../../../shared/lib/entity/Entities';
 
+// Note: Entity can't be abstract class, because variable 'Entity'
+//   is used to dynamically typecast entities and that wouldn't be
+//   possible if Entity class was abstract, because constructor
+//   of abstract class is not of compatible type with constructor
+//   of nonabstract class (see Entities.loadEntityById() for example).
 export class Entity extends Serializable
 {
   public static get NAME_PROPERTY()             { return "name"; }
