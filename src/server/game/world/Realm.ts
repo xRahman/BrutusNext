@@ -7,11 +7,11 @@
 'use strict';
 
 import {Game} from '../../game/Game';
-import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
+import {GameEntity} from '../../../server/game/GameEntity';
 import {Area} from '../../game/world/Area';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class Realm extends ServerGameEntity
+export class Realm extends GameEntity
 {
   constructor()
   {

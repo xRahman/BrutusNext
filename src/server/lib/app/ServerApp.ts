@@ -34,7 +34,7 @@ import {ServerSyslog} from '../../../server/lib/log/ServerSyslog';
 import {Message} from '../../../server/lib/message/Message';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Game} from '../../../server/game/Game';
-import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
+import {GameEntity} from '../../../server/game/GameEntity';
 import {TelnetServer} from '../../../server/lib/net/telnet/TelnetServer';
 import {WebSocketServer} from '../../../server/lib/net/ws/WebSocketServer';
 import {HttpServer} from '../../../server/lib/net/http/HttpServer';
@@ -154,12 +154,12 @@ export class ServerApp extends App
   // If there are no admins yet, sets the highest possible admin rights
   // to the character (in other words, the first character created when
   // the mud is 'freshly installed' gets maximum admin rights).
-  public static onCharacterCreation(character: ServerGameEntity)
+  public static onCharacterCreation(character: GameEntity)
   {
     ServerApp.getInstance().adminList.onCharacterCreation(character);
   }
 
-  public static getAdminLevel(entity: ServerGameEntity)
+  public static getAdminLevel(entity: GameEntity)
   {
     return ServerApp.getInstance().adminList.getAdminLevel(entity);
   }

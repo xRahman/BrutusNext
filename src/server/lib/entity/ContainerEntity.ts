@@ -15,11 +15,10 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {Entity} from '../../../shared/lib/entity/Entity';
+import {ServerEntity} from '../../../server/lib/entity/ServerEntity';
 import {EntityList} from '../../../shared/lib/entity/EntityList';
 
-
-export class ContainerEntity extends Entity
+export class ContainerEntity extends ServerEntity
 {
   //------------------ Public data ----------------------
 
