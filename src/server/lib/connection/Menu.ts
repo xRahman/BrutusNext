@@ -24,7 +24,7 @@ import {Character} from '../../../server/game/character/Character';
 import {Characters} from '../../../server/game/character/Characters';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 
-export class MenuProcessor
+export class Menu
 {
   // In this special case it's ok to hold direct reference to
   // Connection, because our instance of MenuProcessor
@@ -56,7 +56,7 @@ export class MenuProcessor
 
   public sendMenu()
   {
-    let menu = MenuProcessor.WELCOME
+    let menu = Menu.WELCOME
       + "\n"
       + "\n"
       + this.composeMenu();
@@ -252,7 +252,7 @@ export class MenuProcessor
       return null;
     }
 
-    let menu = MenuProcessor.GAME_MENU;
+    let menu = Menu.GAME_MENU;
     let account = this.connection.account;
 
     if (account === null || account.isValid() === false)
@@ -268,7 +268,7 @@ export class MenuProcessor
         + ' ' + characterName + '.';
     }
 
-    menu += MenuProcessor.MAKE_CHOICE;
+    menu += Menu.MAKE_CHOICE;
 
     return menu;
   }
