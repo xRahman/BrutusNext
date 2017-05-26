@@ -42,6 +42,7 @@ import {Entities} from '../../../shared/lib/entity/Entities';
 //   of nonabstract class (see Entities.loadEntityById() for example).
 export class Entity extends Serializable
 {
+  public static get ID_PROPERTY()         { return 'id'; }
   public static get NAME_PROPERTY()             { return "name"; }
   public static get PROTOTYPE_ENTITY_PROPERTY() { return "prototypeEntity"; }
   private static get INSTANCE_IDS_PROPERTY()    { return "instanceIds"; }

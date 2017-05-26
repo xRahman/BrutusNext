@@ -48,7 +48,7 @@ import {JsonObject} from '../../../shared/lib/json/JsonObject';
 import {JsonSaver} from '../../../shared/lib/json/JsonSaver';
 ///import {Nameable} from '../../../shared/lib/class/Nameable';
 import {Attributable} from '../../../shared/lib/class/Attributable';
-///import {Entity} from '../../../shared/lib/entity/Entity';
+import {Entity} from '../../../shared/lib/entity/Entity';
 import {Entities} from '../../../shared/lib/entity/Entities';
 import {EntityProxyHandler} from
   '../../../shared/lib/entity/EntityProxyHandler';
@@ -61,7 +61,6 @@ let FastBitSet = require('fastbitset');
 
 export class Serializable extends Attributable
 {
-  public static get ID_PROPERTY()         { return 'id'; }
   public static get VERSION_PROPERTY()    { return 'version'; }
   public static get CLASS_NAME_PROPERTY() { return 'className'; }
 
@@ -1197,7 +1196,7 @@ export class Serializable extends Attributable
     if (!param.sourceProperty)
       return null;
     
-    let id = param.sourceProperty[Serializable.ID_PROPERTY];
+    let id = param.sourceProperty[Entity.ID_PROPERTY];
 
     if (id === undefined || id === null)
     {
