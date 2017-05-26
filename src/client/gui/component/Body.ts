@@ -11,7 +11,7 @@ import {Component} from '../../../client/gui/component/Component';
 import {Window} from '../../../client/gui/component/Window';
 import {ScrollWindow} from '../../../client/gui/component/ScrollWindow';
 import {MapWindow} from '../../../client/gui/component/MapWindow';
-import {ClientApp} from '../../../client/lib/Client';
+import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Connection} from '../../../client/lib/connection/Connection';
 
 import $ = require('jquery');
