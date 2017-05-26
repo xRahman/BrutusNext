@@ -29,7 +29,7 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
-import {App} from '../../../shared/lib/app/App';
+///import {App} from '../../../shared/lib/app/App';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {PropertyAttributes} from
   '../../../shared/lib/class/PropertyAttributes';
@@ -75,7 +75,7 @@ export class Entity extends Serializable
   //   Instance entities inherit this property from their
   // prototype entity so you can use it to quickly check
   // what prototype is the instance entity based on.
-  public prototypeName = null;
+  public prototypeName: string = null;
 
   // ------------------------------------------------- //
   //                   Unique entity id                //

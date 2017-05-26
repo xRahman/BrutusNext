@@ -41,16 +41,16 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
-import {Classes} from '../../../shared/lib/class/Classes';
+/**/import {Classes} from '../../../shared/lib/class/Classes';
 import {PropertyAttributes} from
   '../../../shared/lib/class/PropertyAttributes';
 import {JsonObject} from '../../../shared/lib/json/JsonObject';
-import {JsonSaver} from '../../../shared/lib/json/JsonSaver';
+/**/import {JsonSaver} from '../../../shared/lib/json/JsonSaver';
 ///import {Nameable} from '../../../shared/lib/class/Nameable';
 import {Attributable} from '../../../shared/lib/class/Attributable';
-import {Entity} from '../../../shared/lib/entity/Entity';
-import {Entities} from '../../../shared/lib/entity/Entities';
-import {EntityProxyHandler} from
+/**/import {Entity} from '../../../shared/lib/entity/Entity';
+/**/import {Entities} from '../../../shared/lib/entity/Entities';
+/**/import {EntityProxyHandler} from
   '../../../shared/lib/entity/EntityProxyHandler';
 
 /// DEBUG:
@@ -84,186 +84,6 @@ export class Serializable extends Attributable
 
     return JsonObject.stringify(jsonObject);
   }
-
-  /// Moved to ServerEntities.loadEntityById().
-  /*
-  // Creates a new instance and deserializes Json 'data' into it.
-  //   'id' is passed when deserializing after loading from file,
-  // because entity id is used as file name. Entities sent over
-  // client-server protocol have their 'id' as a regular property.
-  // (Note: Return type is Entity because only entities can be
-  //  serialized and deserialized as whole objects.)
-  // -> Returns 'null' if deserialization fails.
-  public static deserialize
-  (
-    data: string,
-    id: string = null,
-    path: string = null
-  )
-  : Entity
-  {
-    // Create Json object from Json string.
-    let jsonObject = JsonObject.parse(data);
-
-    if (jsonObject === null)
-      return null;
-
-    let entity = this.createEntityInstance(jsonObject, id, path);
-
-    // Copy properties from jsonObject to the instance
-    // (loadFromJsonObject() returns 'null' on failure).
-    return entity.loadFromJsonObject(jsonObject, path);
-  }
-  */
-
-  /// To be deleted.
-  /*
-  // -> Returns 'null' if instance cannot be created.
-  private static createSerializableInstance
-  (
-    jsonObject: Object,
-    id: string,
-    path: string
-  )
-  {
-    if (!jsonObject)
-      return null;
-
-    // If 'id' parameter is 'null', it means that we are not loading from
-    // file but rather using a client-server communication protocol. In
-    // that case entity 'id' is not saved as file name (because no files
-    // are sent over the protocol) but rather as a regular 'id' property.
-    if (id === null)
-    {
-      id = jsonObject[Entity.ID_PROPERTY];
-
-      if (!id)
-      {
-        ERROR("Missing or invalid id in JSON when deserializing"
-          + " an entity. Entity is not created");
-        return null;
-      }
-    }
-
-    // First we check if there is a 'prototype' property in json Object.
-    let prototypeReference = jsonObject[Entity.PROTOTYPE_ENTITY_PROPERTY];
-
-    // If it is there, it means that we are deserializing an Entity
-    // so it must create an entity instance for it.
-    if (prototypeReference)
-      return this.createEntityInstance(prototypeReference, id, path);
-
-    // If there is no 'prototypeId' property in json Object, we will read
-    // 'className' property instead and create an instance of that class.
-    let className = jsonObject[Serializable.CLASS_NAME_PROPERTY];
-
-    if (!className)
-    {
-      let pathString = Serializable.composePathString(path);
-
-      ERROR("Missing '" + Serializable.CLASS_NAME_PROPERTY + "'"
-        + " property in JSON data" + pathString);
-      return null;
-    }
-
-    // Use Classes to create an instance of 'className'
-    // ('null' is returned on error).
-    return Classes.createNew(className);
-  }
-  */
-
-  /// Moved to ServerEntities.loadEntityById().
-  /*
-  private static readPrototypeId
-  (
-    prototypeReference: Object,
-    id: string,
-    path: string
-  )
-  {
-    if (prototypeReference === null || prototypeReference === undefined)
-    {
-      let pathString = Serializable.composePathString(path);
-
-      ERROR("Invalid prototype reference when deserializing entity"
-        + " " + id + pathString);
-      return null;
-    }
-
-    let prototypeId = prototypeReference[Entity.ID_PROPERTY];
-
-    if (prototypeId === null || prototypeId === undefined)
-    {
-      let pathString = Serializable.composePathString(path);
-
-      ERROR("Invalid prototype id when deserializing entity"
-        + " " + id + pathString);
-      return null
-    }
-
-    return prototypeId;
-  }
-  */
-
-  /// Moved to ServerEntities.
-  /*
-  // Creates an instance of entity from information stored in 'jsonObject'.
-  // -> Returns 'null' if instance cannot be created.
-  private static createEntityInstance
-  (
-    jsonObject: Object,
-    id: string,
-    path: string
-  )
-  {
-    if (!jsonObject)
-      return null;
-
-    // If 'id' parameter is 'null', it means that we are not loading from
-    // file but rather using a client-server communication protocol. In
-    // that case entity 'id' is not saved as file name (because no files
-    // are sent over the protocol) but rather as a regular 'id' property.
-    if (id === null)
-    {
-      id = jsonObject[Entity.ID_PROPERTY];
-
-      if (!id)
-      {
-        ERROR("Missing or invalid id in JSON when deserializing"
-          + " an entity. Entity is not created");
-        return null;
-      }
-    }
-
-    // First we check if there is a 'prototype' property in json Object.
-    let prototypeReference = jsonObject[Entity.PROTOTYPE_ENTITY_PROPERTY];
-
-    // If it is there, it means that we are deserializing an Entity
-    // so it must create an entity instance for it.
-    if (!prototypeReference)
-    {
-      ERROR("Missing or invalid 'prototypeReference' in JSON"
-          + " when deserializing an entity (id '" + id + "')."
-          + " Entity is not created");
-        return null;
-    }
-
-    let prototypeId = this.readPrototypeId(prototypeReference, id, path);
-
-    if (!prototypeId)
-    {
-      ERROR("Missing or invalid prototype 'id' in"
-       + " " + Entity.PROTOTYPE_ENTITY_PROPERTY
-       + " reference record in JSON when deserializing"
-       + " an entity (id '" + id + "')."
-       + " Entity is not created");
-      return null;
-    }
-
-    // Create an entity using an existing 'id' and add it to Entities.
-    return Entities.createExistingEntity(prototypeId, id);
-  }
-  */
 
   // Extracts data from plain javascript Object to this instance.
   // -> Returns 'null' on failure.
@@ -372,7 +192,9 @@ export class Serializable extends Attributable
   {
     // Obtain unproxified instance of 'this'
     // (so 'for .. in' operator works on it).
-    let instance = EntityProxyHandler.deproxify(this);
+////////    let instance = EntityProxyHandler.deproxify(this);
+let instance = this;
+
     let jsonObject: Object = {};
 
     // A little hack - save 'name' property first (out of order)
@@ -401,11 +223,12 @@ export class Serializable extends Attributable
       {
         sourceProperty: instance[propertyName],
         description: propertyName,
-        className: instance.className,
+        className: instance.getClassName(),
         mode: mode
       }
       
-      jsonObject[propertyName] = instance.serializeProperty(serializeParam);
+      jsonObject[<string>propertyName] =
+        instance.serializeProperty(serializeParam);
     }
 
     return jsonObject;
@@ -1193,6 +1016,7 @@ export class Serializable extends Attributable
   // -> Retuns an entity proxy object (possibly referencing an invalid entity).
   private readEntityReference(param: DeserializeParam)
   {
+    /*////////////////////
     if (!param.sourceProperty)
       return null;
     
@@ -1209,6 +1033,8 @@ export class Serializable extends Attributable
     // Return an existing entity proxy if entity exists in
     // entityManager, invalid entity proxy otherwise.
     return Entities.getReference(id);
+    */
+    return null;
   }
 
 //+
