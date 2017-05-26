@@ -29,6 +29,7 @@ import {AdminLevel} from '../../../../shared/lib/admin/AdminLevel';
 import {MessageType} from '../../../../shared/lib/message/MessageType';
 import {ServerApp} from '../../../../server/lib/app/ServerApp';
 import {Connection} from '../../../../server/lib/connection/Connection';
+import {Connections} from '../../../../server/lib/connection/Connections';
 import {HttpServer} from '../../../../server/lib/net/http/HttpServer';
 import {WebSocketDescriptor} from
   '../../../../server/lib/net/ws/WebSocketDescriptor';
@@ -122,14 +123,10 @@ export class WebSocketServer
   private async createConnection(socket: WebSocket, ip: string, url: string)
   {
     let socketDescriptor = new WebSocketDescriptor(socket, ip, url);
-
-    let connection = await ServerApp.entityManager.createEntity(Connection);
-
-    if (connection === null)
-      return null;
+    let connection = new Connection();
 
     connection.setSocketDescriptor(socketDescriptor);
-    ServerApp.connections.add(connection);
+    Connections.add(connection);
 
     return connection;
   }

@@ -5,6 +5,9 @@
   (usually rooms again).
 */
 
+/// Probably to be deprecated or moved to /shared.
+
+/*
 'use strict';
 
 import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
@@ -47,3 +50,4 @@ export class Exits extends SaveableObject
   //   Value: GameEntity this exit leads to.
   private exits = new Map();
 }
+*/

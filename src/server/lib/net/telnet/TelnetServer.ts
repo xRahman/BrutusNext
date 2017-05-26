@@ -29,6 +29,7 @@ import {AdminLevel} from '../../../../shared/lib/admin/AdminLevel';
 import {MessageType} from '../../../../shared/lib/message/MessageType';
 import {ServerApp} from '../../../../server/lib/app/ServerApp';
 import {Connection} from '../../../../server/lib/connection/Connection';
+import {Connections} from '../../../../server/lib/connection/Connections';
 import {TelnetSocketDescriptor} from
   '../../../../server/lib/net/telnet/TelnetSocketDescriptor';
 
@@ -185,14 +186,13 @@ export class TelnetServer
   private async createConnection(socket: net.Socket, ip: string)
   {
     let socketDescriptor = new TelnetSocketDescriptor(socket, ip);
-
-    let connection = await ServerApp.entityManager.createEntity(Connection);
+    let connection = new Connection();
 
     if (connection === null)
       return null;
 
     connection.setSocketDescriptor(socketDescriptor);
-    ServerApp.connections.add(connection);
+    Connections.add(connection);
 
     return connection;
   }

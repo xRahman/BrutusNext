@@ -43,7 +43,6 @@ import {Entities} from '../../../shared/lib/entity/Entities';
 export class Entity extends Serializable
 {
   public static get NAME_PROPERTY()             { return "name"; }
-  public static get ID_PROPERTY()               { return 'id'; }
   public static get PROTOTYPE_ENTITY_PROPERTY() { return "prototypeEntity"; }
   private static get INSTANCE_IDS_PROPERTY()    { return "instanceIds"; }
 

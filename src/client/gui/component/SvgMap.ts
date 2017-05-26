@@ -7,7 +7,7 @@
 
 'use strict';
 
-import {Coords} from '../../../shared/type/Coords';
+import {Coords} from '../../../shared/lib/utils/Coords';
 import {Component} from '../../../client/gui/component/Component';
 import {MapWindow} from '../../../client/gui/component/MapWindow';
 import {MapData} from '../../../client/gui/mapper/MapData';
