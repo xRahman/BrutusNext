@@ -3,6 +3,12 @@ TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 
 ---------------------------------------------------------------
 
+TODO: Admins by měla být Entity class a měla by se savovat.
+
+TODO: Přesunout server-side kód z Entity do ServerEntity.
+
+---------------------------------------------------------------
+
 BIG TODO: Vyzkoušet, co se stane, když chyba typu dereference 'null'
   vyhodí výjimku
   (Mělo by se to odchytit a zalogovat, ale otázka je, jeslti to crashne
@@ -13,6 +19,7 @@ BIG TODO: Vyzkoušet, co se stane, když chyba typu dereference 'null'
 TODO: Ještě přece jen zvážit zavedení ServerEntity a ClientEntity (zděděno
   nejspíš z ContainerEntity). Pak by šlo většinu metod z Entities přesunout
   čistě do server-side kódu.
+[done]
 
 - Má být Account zděděný z ContainerEntity?
   - nemá. Sice by lákalo dát do account.contents charactery, ale to není
