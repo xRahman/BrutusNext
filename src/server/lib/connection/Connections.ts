@@ -21,6 +21,23 @@ export class Connections
 
   // ------------- Public static methods ----------------
 
+  public static add(connection: Connection)
+  {
+    let connections = ServerApp.getConnections().connections;
+
+    if (!connections)
+      return;
+
+    if (connections.has(connection))
+    {
+      ERROR("Attempt to add connection which already "
+        + " exists in Connections");
+      return;
+    }
+
+    connections.add(connection);
+  }
+
   public static release(connection: Connection)
   {
     let connections = ServerApp.getConnections().connections;
@@ -31,7 +48,7 @@ export class Connections
     if (!connections.has(connection))
     {
       ERROR("Attempt to release connection which doesn't"
-        + " exist in ServerApp.connections");
+        + " exist in Connections");
       return;
     }
 

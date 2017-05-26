@@ -11,10 +11,9 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 ///import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 import {PropertyAttributes} from
   '../../../shared/lib/class/PropertyAttributes';
-import {ContainerEntity} from '../../../shared/lib/entity/ContainerEntity';
-import {SharedGameEntity} from '../../../shared/game/entity/SharedGameEntity';
+import {Entity} from '../../../shared/lib/entity/Entity';
 
-export class ClientGameEntity extends SharedGameEntity
+export class ClientGameEntity extends Entity
 {
   //----------------- Protected data --------------------
 
@@ -26,6 +25,8 @@ export class ClientGameEntity extends SharedGameEntity
 
   // -------------- Protected methods -------------------
 
+  /// Moved to server-side code only.
+  /*
   // ~ Overrides ContainerEntity.insertEntity() to prevent
   // changing 'location' of client-side entities.
   protected insertEntity(entity: ContainerEntity)
@@ -34,6 +35,7 @@ export class ClientGameEntity extends SharedGameEntity
       + " That is not allowed, entities can only change"
       + " their location on the server");
   }
+  */
 
   // --------------- Private methods --------------------
 }

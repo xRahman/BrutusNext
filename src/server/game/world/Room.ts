@@ -30,7 +30,7 @@ import {PropertyAttributes} from
 import {GameEntity} from '../../../server/game/GameEntity';
 import {Game} from '../../game/Game';
 ///import {RoomFlags} from '../../game/world/RoomFlags';
-import {Exits} from '../../game/world/Exits';
+///import {Exits} from '../../game/world/Exits';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 /// TEST:
@@ -130,8 +130,9 @@ export class Room extends GameEntity
   protected roomInfo: RoomInfo = null;
   */
 
+/// Probably to be deprecated or moved to /shared.
   // List of exits to other entities (usually rooms).
-  protected exits = new Exits();
+  ///protected exits = new Exits();
 
   // --------------- Protected methods ------------------
 

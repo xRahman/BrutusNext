@@ -48,9 +48,8 @@ import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Game} from '../../../server/game/Game';
 import {GameEntity} from '../../../server/game/GameEntity';
 import {Character} from '../../../server/game/character/Character';
-import {AutoSaveableObject} from '../../../server/lib/fs/AutoSaveableObject';
 
-export class Admins extends AutoSaveableObject
+export class Admins
 {
   // Hashmap<[ string, AdminLevel ]>
   //   Key: entity id

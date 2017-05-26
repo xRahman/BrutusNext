@@ -7,7 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {Coords} from '../../../shared/type/Coords';
+import {Coords} from '../../../shared/lib/utils/Coords';
 import {RoomRenderData} from '../../../client/gui/mapper/RoomRenderData';
 
 export class ExitRenderData
