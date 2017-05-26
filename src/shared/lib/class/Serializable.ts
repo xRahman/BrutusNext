@@ -41,17 +41,17 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
-/**/import {Classes} from '../../../shared/lib/class/Classes';
+/*+*////import {Classes} from '../../../shared/lib/class/Classes';
 import {PropertyAttributes} from
   '../../../shared/lib/class/PropertyAttributes';
 import {JsonObject} from '../../../shared/lib/json/JsonObject';
-/**/import {JsonSaver} from '../../../shared/lib/json/JsonSaver';
+/**////import {JsonSaver} from '../../../shared/lib/json/JsonSaver';
 ///import {Nameable} from '../../../shared/lib/class/Nameable';
 import {Attributable} from '../../../shared/lib/class/Attributable';
-/**/import {Entity} from '../../../shared/lib/entity/Entity';
-/**/import {Entities} from '../../../shared/lib/entity/Entities';
-/**/import {EntityProxyHandler} from
-  '../../../shared/lib/entity/EntityProxyHandler';
+/*+*////import {Entity} from '../../../shared/lib/entity/Entity';
+/*+*////import {Entities} from '../../../shared/lib/entity/Entities';
+/*+*//*import {EntityProxyHandler} from
+  '../../../shared/lib/entity/EntityProxyHandler';*/
 
 /// DEBUG:
 ///let Util = require('util');
@@ -289,6 +289,8 @@ let instance = this;
     if (Array.isArray(property))
       return this.serializeArray(param, property);
     
+//////////////////////////////////////
+/*
     // Access to 'isEntity' property is trapped by proxy.
     // (see EntityProxyHandler.get()).
     if (property.isEntity === true)
@@ -314,6 +316,7 @@ let instance = this;
 
     if (Utils.isPlainObject(property))
       return this.serializePlainObject(property);
+*/
 
     ERROR("Property '" + param.description + "' in class"
       + " '" + param.className + "' (or inherited from one of it's"
@@ -769,7 +772,8 @@ let instance = this;
     // there is an instance of some Serializable class saved directly
     // in Json, it can't be an entity class.
 
-    let Class = Classes.serializables.get(className);
+    ///////////let Class = Classes.serializables.get(className);
+    let Class = Serializable;
 
     if (!Class)
     {
@@ -838,11 +842,14 @@ let instance = this;
     if (this.isObjectValid(jsonObject) === false)
       return false;
 
+/////////////////////////////
+/*
     // Is there a 'className' property in JSON object
     // with value 'Bitvector'?
     if (jsonObject[Serializable.CLASS_NAME_PROPERTY]
         === JsonSaver.BITVECTOR_CLASS_NAME)
       return true;
+*/
 
     return false;
   }
@@ -854,11 +861,14 @@ let instance = this;
     if (this.isObjectValid(jsonObject) === false)
       return false;
 
+/////////////////////////////
+/*
     // Is there a 'className' property in JSON object
     // with value 'Date'?
     if (jsonObject[Serializable.CLASS_NAME_PROPERTY]
         === JsonSaver.DATE_CLASS_NAME)
       return true;
+*/
 
     return false;
   }
@@ -870,11 +880,14 @@ let instance = this;
     if (this.isObjectValid(jsonObject) === false)
       return false;
 
+//////////////////////////////
+/*
     // Is there a 'className' property in JSON object
     // with value 'Set'?
     if (jsonObject[Serializable.CLASS_NAME_PROPERTY]
         === JsonSaver.SET_CLASS_NAME)
       return true;
+*/
 
     return false;
   }
@@ -886,11 +899,14 @@ let instance = this;
     if (this.isObjectValid(jsonObject) === false)
       return false;
 
+//////////////////////////////////
+/*
     // Is there a 'className' property in JSON object
     // with value 'Map'?
     if (jsonObject[Serializable.CLASS_NAME_PROPERTY]
         === JsonSaver.MAP_CLASS_NAME)
       return true;
+*/
 
     return false;
   }
@@ -903,11 +919,14 @@ let instance = this;
     if (this.isObjectValid(jsonObject) === false)
       return false;
 
+//////////////////////////////////
+/*
     // Is there a 'className' property in JSON object with value
     // 'Reference'?
     if (jsonObject[Serializable.CLASS_NAME_PROPERTY]
         === JsonSaver.REFERENCE_CLASS_NAME)
       return true;
+*/
 
     return false;
   }
@@ -921,6 +940,8 @@ let instance = this;
   // Converts 'param.sourceProperty' to a FastBitSet object.
   private readBitvector(param: DeserializeParam)
   {
+    //////////////////////////////////////////////
+    /*
     let sourceRecord =
       this.readSourceRecord(param, JsonSaver.BITVECTOR_PROPERTY);
 
@@ -928,12 +949,15 @@ let instance = this;
       return null;
 
     return new FastBitSet(sourceRecord);
+    */
   }
 
 //+
   // Converts 'param.sourceProperty' to a Date object.
   private readDate(param: DeserializeParam): Date
   {
+    //////////////////////////////////////////////////
+    /*
     let sourceRecord =
       this.readSourceRecord(param, JsonSaver.DATE_PROPERTY);
 
@@ -941,11 +965,15 @@ let instance = this;
       return null;
 
     return new Date(sourceRecord);
+    */
+    return new Date();
   }
 
   // Converts 'param.sourceProperty' to a Set object.
   private readSet(param: DeserializeParam): Set<any>
   {
+    ////////////////////////////////////////
+    /*
     let sourceRecord = this.readSourceRecord(param, JsonSaver.SET_PROPERTY);
 
     if (sourceRecord === null)
@@ -973,12 +1001,16 @@ let instance = this;
 
     // And let the constructor of class Set to convert it to Set object.
     return new Set(loadedArray);
+    */
+    return new Set();
   }
 
 //+
   // Converts 'param.sourceProperty' to a Map object.
   private readMap(param: DeserializeParam): Map<any, any>
   {
+    //////////////////////////////////////////////
+    /*
     let sourceRecord = this.readSourceRecord(param, JsonSaver.MAP_PROPERTY);
 
     if (sourceRecord === null)
@@ -1006,6 +1038,8 @@ let instance = this;
 
     // And let the constructor of class Map to convert it to Map object.
     return new Map(loadedArray);
+    */
+    return new Map();
   }
 
 //+
