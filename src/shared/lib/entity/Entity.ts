@@ -198,7 +198,7 @@ export class Entity extends Serializable
     if (!this.hasOwnProperty(Entity.ID_PROPERTY) || this.id === null)
     {
       ERROR("Attempt to get 'id' of an entity which doesn't have an id."
-        + "This must never happen, each entity must have an id");
+        + " This must never happen, each entity must have an id");
       return null;
     }
 
@@ -247,7 +247,9 @@ export class Entity extends Serializable
   //  and are not loaded automatically.)
   public setPrototypeEntity(prototypeEntity: Entity, isPrototype: boolean)
   {
-    if (!Entity.isValid(prototypeEntity))
+    // Note: We can't use Entity.isValid() here, because prototypeEntity
+    // is deproxified so isValid() can't be used on it.
+    if (prototypeEntity === null || prototypeEntity === undefined)
     {
       ERROR("Attempt to set an invalid prototype to entity"
         + " " + this.getErrorIdString());
@@ -292,6 +294,29 @@ export class Entity extends Serializable
   */
 
   // ---------------- Public methods --------------------
+
+  // Deletes all properties (expect 'id') and set's prorotype to 'null'.
+  // (Any further access to this entity will throw an exception.)
+  public invalidate()
+  {
+    // Delete all own properties of 'this'.
+    for (let property in this)
+    {
+      // Leave the 'id' property for debugging purposes.
+      if (property === Entity.ID_PROPERTY)
+        continue;
+
+      if (this.hasOwnProperty(property))
+        delete this[property];
+    }
+
+    // Set 'null' to the prototype of 'this'.
+    // (Object.setPrototypeOf() slows down any code that accesses
+    //  object with modified prototype but that's ok here because
+    //  we are just making sure that any access to this entity
+    //  ends with an exception.}
+    Object.setPrototypeOf(this, null);
+  }
 
   // -> Returns 'true' if 'id' has been succesfuly deleted from
   //    either this.instanceIds or this.descendantIds.
@@ -343,7 +368,11 @@ export class Entity extends Serializable
 
   public isPrototypeEntity()
   {
-    if (!this.prototypeEntity)
+    // Root prototype objects don't have a 'prototypeEntity'.
+    if (this.prototypeEntity === null)
+      return true;
+
+    if (this.prototypeEntity === undefined)
     {
       ERROR("Invalid 'prototypeEntity' in " + this.getErrorIdString());
       return false;
@@ -411,13 +440,20 @@ export class Entity extends Serializable
     return false;
   }
 
-  // Returns something like 'Connection (id: d-imt2xk99)'
+  // Returns something like 'Character (id: d-imt2xk99)'
   // (indended for use in error messages).
   public getErrorIdString()
   {
-    let id = this.getId();
+    // Access 'this.id' directly (not using this.getId()) because
+    // it would trigger another ERROR() which would precede logging
+    // of the ERROR when getErrorIdString() is called. That would
+    // give confusing information about the actual error.
+    let id = this.id;
 
-    if (id === null)
+    if (this.id === undefined)
+      id = "undefined";
+
+    if (this.id === null)
       id = "null";
 
     return "{ className: " + this.getClassName() + ","
