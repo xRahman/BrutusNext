@@ -27,6 +27,9 @@
 
 'use strict';
 
+/// Deprecated.
+/*
+
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 import {Entity} from '../../../shared/lib/entity/Entity';
@@ -189,30 +192,28 @@ export class EntityProxyHandler
   }
 
   /// Tohle zjevně nefunguje.
-  /*
-  // A trap for the 'hawOwnProperty()' function.
-  public hasOwn(target: any, property: any): boolean
-  {
-    // Does the referenced entity exist?
-    // (isEntityValid() updates this.entity if it's possible)
-    if (this.isEntityValid() === false)
-    {
-      Syslog.log
-      (
-        "Attempt to call 'hasOwnProperty()' function on an invalid entity\n"
-          + Syslog.getTrimmedStackTrace(Syslog.TrimType.PROXY_HANDLER),
-        Message.Type.INVALID_ACCESS,
-        AdminLevel.IMMORTAL
-      );
+  // // A trap for the 'hawOwnProperty()' function.
+  // public hasOwn(target: any, property: any): boolean
+  // {
+  //   // Does the referenced entity exist?
+  //   // (isEntityValid() updates this.entity if it's possible)
+  //   if (this.isEntityValid() === false)
+  //   {
+  //     Syslog.log
+  //     (
+  //       "Attempt to call 'hasOwnProperty()' function on an invalid entity\n"
+  //         + Syslog.getTrimmedStackTrace(Syslog.TrimType.PROXY_HANDLER),
+  //       Message.Type.INVALID_ACCESS,
+  //       AdminLevel.IMMORTAL
+  //     );
 
-      // Invalid entity doesn't have any properties (it's value is null),
-      // so 'hasOwnProperty()' will always return false in this case.
-      return false;
-    }
+  //     // Invalid entity doesn't have any properties (it's value is null),
+  //     // so 'hasOwnProperty()' will always return false in this case.
+  //     return false;
+  //   }
 
-    return this.entity.hasOwnProperty(property);
-  }
-  */
+  //   return this.entity.hasOwnProperty(property);
+  // }
 
 
   // A trap for getting property values.
@@ -250,12 +251,10 @@ export class EntityProxyHandler
       ///console.log("EntityProxyHandler.get() trapped 'isValid'");
 
       /// Prozatím nepůjde "oživit" mrtvou referenci.
-      /*
-      // Entity reference is updated when someone asks if
-      // it's valid to provide them with up-to-date info.
-      if (this.entity === null)
-        this.updateEnityReference();
-      */
+      // // Entity reference is updated when someone asks if
+      // // it's valid to provide them with up-to-date info.
+      // if (this.entity === null)
+      //   this.updateEnityReference();
 
       return this.isEntityValidTrapHandler;
     }
@@ -267,17 +266,15 @@ export class EntityProxyHandler
     }
 
     /// Deprecated, 'id' property is checked for instead.
-    /*
-    // Trap calls of entity.isEtity() method.
-    if (property === 'isEntity')
-    {
-      // 'variable.isEntity' is tested by SaveableObject to
-      // determine if property should be saved as a reference
-      // rather then directly. This is true even for invalid
-      // references - that's why we always return 'true' here.
-      return true;
-    }
-    */
+    // // Trap calls of entity.isEtity() method.
+    // if (property === 'isEntity')
+    // {
+    //   // 'variable.isEntity' is tested by SaveableObject to
+    //   // determine if property should be saved as a reference
+    //   // rather then directly. This is true even for invalid
+    //   // references - that's why we always return 'true' here.
+    //   return true;
+    // }
 
     // This is an awful hack I'd very much liked to not to use...
     // But it's necessary in orderd for function trapping to work.
@@ -449,24 +446,22 @@ export class EntityProxyHandler
     /// This is probably not such a good idea. It would prevent
     /// checking if a property exists on an instance (because if
     //  it didn't exist, reading it would be reported as error).
-    /*
-    // Are we accessing a valid property?
-    if (value === undefined)
-    {
-      Syslog.log
-      (
-        "Attempt to read an undefined property '" + property + "'"
-          + " of entity " + this.entity.getErrorIdString() + "\n"
-          + Syslog.getTrimmedStackTrace(Syslog.TrimType.PROXY_HANDLER_PLUS_ONE),
-        Message.Type.INVALID_ACCESS,
-        AdminLevel.IMMORTAL
-      );
+    // // Are we accessing a valid property?
+    // if (value === undefined)
+    // {
+    //   Syslog.log
+    //   (
+    //     "Attempt to read an undefined property '" + property + "'"
+    //       + " of entity " + this.entity.getErrorIdString() + "\n"
+    //       + Syslog.getTrimmedStackTrace(Syslog.TrimType.PROXY_HANDLER_PLUS_ONE),
+    //     Message.Type.INVALID_ACCESS,
+    //     AdminLevel.IMMORTAL
+    //   );
 
-      // 'invalidVariable' that traps all access to it and reports
-      // it as invalid.
-      return InvalidValueProxyHandler.invalidVariable;
-    }
-    */
+    //   // 'invalidVariable' that traps all access to it and reports
+    //   // it as invalid.
+    //   return InvalidValueProxyHandler.invalidVariable;
+    // }
 
     return value;
   }
@@ -506,37 +501,35 @@ export class EntityProxyHandler
   }
 
   /// Prozatím nepůjde "oživit" mrtvou referenci.
-  /*
-  // Requests current reference to entity from Server.entityManager
-  // and updates this.reference with a new value.
-  //   Returns false if entity is unavailable.
-  private updateEnityReference(): boolean
-  {
-    if (this.id === null)
-    {
-      /// Nejsem si jistej, jestli je správně, aby tohle byl error,
-      /// ale nejspíš jo.
-      ERROR("Attempt to update entity reference of proxy handler with"
-        + " null id");
+  // // Requests current reference to entity from Server.entityManager
+  // // and updates this.reference with a new value.
+  // //   Returns false if entity is unavailable.
+  // private updateEnityReference(): boolean
+  // {
+  //   if (this.id === null)
+  //   {
+  //     /// Nejsem si jistej, jestli je správně, aby tohle byl error,
+  //     /// ale nejspíš jo.
+  //     ERROR("Attempt to update entity reference of proxy handler with"
+  //       + " null id");
 
-      // If we don't have a string id, there is no way we can
-      // update our entity reference.
-      return false;
-    }
+  //     // If we don't have a string id, there is no way we can
+  //     // update our entity reference.
+  //     return false;
+  //   }
 
-    let entity = Server.entityManager.updateReference(this);
+  //   let entity = Server.entityManager.updateReference(this);
 
-    if (entity !== undefined)
-    {
-      // Update our internal reference if entity does exist.
-      this.entity = entity;
+  //   if (entity !== undefined)
+  //   {
+  //     // Update our internal reference if entity does exist.
+  //     this.entity = entity;
 
-      return true;
-    }
+  //     return true;
+  //   }
 
-    return false;
-  }
-  */
+  //   return false;
+  // }
 
   // ------------ Private trap handlers ----------------
 
@@ -611,3 +604,4 @@ export class EntityProxyHandler
     return proxyHandler.getId();
   }
 }
+*/

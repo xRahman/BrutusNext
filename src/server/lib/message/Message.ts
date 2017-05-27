@@ -17,6 +17,7 @@ import {MessageColors} from '../../../server/lib/message/MessageColors';
 import {TelnetSocketDescriptor}
   from '../../../server/lib/net/telnet/TelnetSocketDescriptor';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
+import {Entity} from '../../../shared/lib/entity/Entity';
 import {GameEntity} from '../../../server/game/GameEntity';
 
 export class Message
@@ -89,7 +90,7 @@ export class Message
   )
   {
     // Sender must be valid so we can find her location.
-    if (sender === null || sender.isValid() === false)
+    if (!Entity.isValid(sender))
     {
       ERROR("Invalid sender. Message is not sent");
       return;
