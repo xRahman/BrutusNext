@@ -84,6 +84,25 @@ export class ServerPrototypes extends Prototypes
   // Recursively loads descendant prototypes of 'prototype' entity.
   private async loadDescendants(prototype: Entity)
   {
+    if (!prototype)
+    {
+      ERROR("Invalid 'prototype', descendants are not loaded");
+      return;
+    }
+
+    let set = new Set<string>();
+    set.add("1");
+    set.add("2");
+
+    for (let item of set)
+    {
+      console.log(item);
+    }
+
+
+
+///    let descendantIds = prototype.getDescendantIds();
+
     for (let descendantId of prototype.getDescendantIds())
     {
       let descendant = await ServerEntities.loadEntityById

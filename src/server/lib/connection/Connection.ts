@@ -847,9 +847,6 @@ export class Connection
   }
 }
 
-/// TODO: Connection by asi neměla být entita.
-Classes.registerEntityClass(Connection);
-
 // ------------------ Type declarations ----------------------
 
 // Module is exported so you can use enum type from outside this file.
