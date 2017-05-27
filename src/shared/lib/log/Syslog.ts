@@ -42,34 +42,21 @@ export class Syslog
   {
     let trimValue = 0;
 
+    // Cut off first few lines from tmpErr.stack string so
+    // it starts at the line where error actually occured.
     switch (trimType)
     {
       case Syslog.TrimType.ERROR:
-        // If the stack trace is requested by ERROR() function,
-        // cut off first three lines from tmpErr.stack string.
-        // - First line contains just: 'Error:' which we don't need.
-        // - Second line contains name and line of ERROR() function.
-        // - Third line contains name and line of getTrimmedStackTrace() function.
-        // By removing second and third line we trim stack trace to begin on the
-        // line where ERROR actually got triggered, which is exacly what user needs
-        // to see.
-        trimValue = 3;
+        
+        trimValue = 5;
         break;
 
       case Syslog.TrimType.PROXY_HANDLER:
-        // If the stack trace is requested by EntityProxyHandler,
-        // we cut off first five lines from tmpErr.stack string.
-        // - first three are the same as with ERROR, the other one
-        //   represent internal call of proxy handler.
-        trimValue = 4;
+        trimValue = 6;
         break;
 
       case Syslog.TrimType.PROXY_HANDLER_PLUS_ONE:
-        // If the stack trace is requested by EntityProxyHandler,
-        // we cut off first five lines from tmpErr.stack string.
-        // - first three are the same as with ERROR, another two
-        //   represent internal call of proxy handler.
-        trimValue = 5;
+        trimValue = 7;
         break;
     }
 

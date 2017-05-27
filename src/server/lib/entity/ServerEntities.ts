@@ -410,6 +410,9 @@ export class ServerEntities extends Entities
     // Create, proxify and register a new entity.
     let entity = this.createEntityFromPrototype(barePrototype, id);
 
+    if (!entity)
+      return null;
+
     // Set a prototype entity.
     // (Even though prototype object is already set using
     //  Object.create() when creating a new object, we still

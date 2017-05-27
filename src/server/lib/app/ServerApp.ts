@@ -137,16 +137,14 @@ export class ServerApp extends App
   // if there is no ./data directory).
   public static async run(telnetPort: number)
   {
-    if (this.instanceExists())
+    if (!this.instanceExists())
     {
-      ERROR("Instance of ServerApp already exists."
-        + "ServerApp.run() can only be called once");
+      ERROR("Instance of ServerApp doesn't exist yet."
+        + " Use ServerApp.createInstance() before you"
+        + " call ServerApp.run()");
       return;
     }
-
-    // Create the singleton instance of ServerApp.
-    this.createInstance();
-
+    
     // Run server application.
     await ServerApp.getInstance().run(telnetPort);
   }
@@ -177,11 +175,9 @@ export class ServerApp extends App
     return "&gMessage of the day:\n&_" + motd;
   }
 
-  // ------------ Protected static methods --------------
-
   // Creates an instance of a server. Server is a singleton,
   // so it must not already exist.
-  protected static createInstance()
+  public static createInstance()
   {
     if (App.instance !== null)
     {
@@ -191,6 +187,8 @@ export class ServerApp extends App
 
     App.instance = new ServerApp();
   }
+
+  // ------------ Protected static methods --------------
 
   // -> Returns the ServerApp singleton instance.
   protected static getInstance(): ServerApp
