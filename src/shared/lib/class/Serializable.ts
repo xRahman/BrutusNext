@@ -41,17 +41,12 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
-/*+*////import {Classes} from '../../../shared/lib/class/Classes';
+/*+*/import {Classes} from '../../../shared/lib/class/Classes';
 import {PropertyAttributes} from
   '../../../shared/lib/class/PropertyAttributes';
 import {JsonObject} from '../../../shared/lib/json/JsonObject';
-/**////import {JsonSaver} from '../../../shared/lib/json/JsonSaver';
-///import {Nameable} from '../../../shared/lib/class/Nameable';
 import {Attributable} from '../../../shared/lib/class/Attributable';
-/*+*////import {Entity} from '../../../shared/lib/entity/Entity';
-/*+*////import {Entities} from '../../../shared/lib/entity/Entities';
-/*+*//*import {EntityProxyHandler} from
-  '../../../shared/lib/entity/EntityProxyHandler';*/
+
 
 /// DEBUG:
 ///let Util = require('util');
@@ -61,8 +56,28 @@ let FastBitSet = require('fastbitset');
 
 export class Serializable extends Attributable
 {
+  public static get ID_PROPERTY()         { return 'id'; }
   public static get VERSION_PROPERTY()    { return 'version'; }
   public static get CLASS_NAME_PROPERTY() { return 'className'; }
+
+  // These are 'dummy' class names. They are only written to JSON
+  // but they don't really exists in code (Date, Set and Map are
+  // build-in javascript classes, Bitvector translates to a FastBitArray
+  // class and Reference is not a class at all but a reference to
+  // an Entity.
+  private static get BITVECTOR_CLASS_NAME()   { return 'Bitvector'; }
+  private static get DATE_CLASS_NAME()        { return 'Date'; }
+  private static get SET_CLASS_NAME()         { return 'Set'; }
+  private static get MAP_CLASS_NAME()         { return 'Map'; }
+
+  // These special property names are only written to serialized data.
+  // For example 'map' property holds an Array that represents serialized
+  // data of a Map object.
+  private static get BITVECTOR_PROPERTY()     { return 'bitvector'; }
+  private static get DATE_PROPERTY()          { return 'date'; }
+  private static get MAP_PROPERTY()           { return 'map'; }
+  private static get SET_PROPERTY()           { return 'set'; }
+  protected static get REFERENCE_CLASS_NAME() { return 'Reference'; }
 
   //----------------- Protected data --------------------
 
@@ -77,7 +92,7 @@ export class Serializable extends Attributable
 
   public serialize(mode: Serializable.Mode): string
   {
-    let jsonObject = this.saveToJsonObject(mode);
+    let jsonObject = this.saveToJsonObject(this, mode);
 
     if (jsonObject === undefined)
       return "";
@@ -142,7 +157,7 @@ export class Serializable extends Attributable
   {
     if (!(Serializable.VERSION_PROPERTY in jsonObject))
     {
-      let pathString = Serializable.composePathString(path);
+      let pathString = this.composePathString(path);
 
       ERROR("Missing '" + Serializable.VERSION_PROPERTY + "' property"
         + " in JSON data" + pathString);
@@ -151,7 +166,7 @@ export class Serializable extends Attributable
 
     if (jsonObject[Serializable.VERSION_PROPERTY] !== this.version)
     {
-      let pathString = Serializable.composePathString(path);
+      let pathString = this.composePathString(path);
 
       ERROR("Version of JSON data"
         + " (" + jsonObject[Serializable.VERSION_PROPERTY] + ")"
@@ -188,13 +203,13 @@ export class Serializable extends Attributable
   //   Properties with static attribute matching given serialization 'mode'
   // set to 'false' are not serialized.
   // -> Returns 'undefined' if serialization fails.
-  private saveToJsonObject(mode: Serializable.Mode): Object
+  protected saveToJsonObject
+  (
+    instance: Serializable,
+    mode: Serializable.Mode
+  )
+  : Object
   {
-    // Obtain unproxified instance of 'this'
-    // (so 'for .. in' operator works on it).
-////////    let instance = EntityProxyHandler.deproxify(this);
-let instance = this;
-
     let jsonObject: Object = {};
 
     // A little hack - save 'name' property first (out of order)
@@ -227,7 +242,7 @@ let instance = this;
         mode: mode
       }
       
-      jsonObject[<string>propertyName] =
+      jsonObject[propertyName] =
         instance.serializeProperty(serializeParam);
     }
 
@@ -288,35 +303,31 @@ let instance = this;
 
     if (Array.isArray(property))
       return this.serializeArray(param, property);
-    
-//////////////////////////////////////
-/*
-    // Access to 'isEntity' property is trapped by proxy.
-    // (see EntityProxyHandler.get()).
-    if (property.isEntity === true)
+
+    // If there is an 'id' in the property, we treat it as Entity.
+    if (property[Serializable.ID_PROPERTY] !== undefined)
       // Entities are saved to a separate files. Only a reference
       // (using a string id) to an entity will be saved.
-      return JsonSaver.createEntitySaver(property).saveToJsonObject(mode);
+      return this.createEntitySaver(property).saveToJsonObject(mode);
 
     // property is a Serializable object (but not an entity).
     if (this.isSerializable(property))
       return property.saveToJsonObject(mode);
 
     if (Utils.isDate(property))
-      return JsonSaver.createDateSaver(property).saveToJsonObject(mode);
+      return this.createDateSaver(property).saveToJsonObject(mode);
 
     if (Utils.isMap(property))
-      return JsonSaver.createMapSaver(property).saveToJsonObject(mode);
+      return this.createMapSaver(property).saveToJsonObject(mode);
 
     if (Utils.isBitvector(property))
-      return JsonSaver.createBitvectorSaver(property).saveToJsonObject(mode);
+      return this.createBitvectorSaver(property).saveToJsonObject(mode);
 
     if (Utils.isSet(property))
-      return JsonSaver.createSetSaver(property).saveToJsonObject(mode);
+      return this.createSetSaver(property).saveToJsonObject(mode);
 
     if (Utils.isPlainObject(property))
       return this.serializePlainObject(property);
-*/
 
     ERROR("Property '" + param.description + "' in class"
       + " '" + param.className + "' (or inherited from one of it's"
@@ -492,7 +503,7 @@ let instance = this;
     // Using 'in' operator on object with null value would cause crash.
     if (jsonObject === null)
     {
-      let pathString = Serializable.composePathString(path);
+      let pathString = this.composePathString(path);
 
       // Here we need fatal error, because data might already
       // be partialy loaded so we could end up with broken entity.
@@ -519,7 +530,7 @@ let instance = this;
 
     if (jsonClassName === undefined)
     {
-      let pathString = Serializable.composePathString(path);
+      let pathString = this.composePathString(path);
 
       ERROR("There is no '" + Serializable.CLASS_NAME_PROPERTY + "'"
         + " property in JSON data" + pathString);
@@ -528,7 +539,7 @@ let instance = this;
 
     if (jsonClassName !== this.getClassName())
     {
-      let pathString = Serializable.composePathString(path);
+      let pathString = this.composePathString(path);
 
       ERROR("Attempt to load JSON data of class"
         + " (" + jsonObject[Serializable.CLASS_NAME_PROPERTY] + ")"
@@ -556,7 +567,7 @@ let instance = this;
 
     if (!Utils.isBitvector(param.targetProperty))
     {
-      let pathString = Serializable.composePathString(param.path);
+      let pathString = this.composePathString(param.path);
 
       ERROR("Attempt to load bitvector property '" + param.propertyName + "'"
         + pathString + " to a non-bitvector property");
@@ -577,7 +588,7 @@ let instance = this;
 
     if (!Utils.isDate(param.targetProperty))
     {
-      let pathString = Serializable.composePathString(param.path);
+      let pathString = this.composePathString(param.path);
 
       ERROR("Attempt to load Date property '" + param.propertyName + "'"
         + pathString + " to a non-Date property");
@@ -598,7 +609,7 @@ let instance = this;
 
     if (!Utils.isSet(param.targetProperty))
     {
-      let pathString = Serializable.composePathString(param.path);
+      let pathString = this.composePathString(param.path);
 
       ERROR("Attempt to load Set property '" + param.propertyName + "'"
         + pathString + " to a non-Set property");
@@ -619,7 +630,7 @@ let instance = this;
 
     if (!Utils.isMap(param.targetProperty))
     {
-      let pathString = Serializable.composePathString(param.path);
+      let pathString = this.composePathString(param.path);
 
       ERROR("Attempt to load Map property '" + param.propertyName + "'"
         + pathString + " to a non-Map property");
@@ -639,7 +650,12 @@ let instance = this;
     if (!this.isReference(param.sourceProperty))
       return null;
 
-    return this.readEntityReference(param);
+    return this.readEntityReference
+    (
+      param.sourceProperty,
+      param.propertyName,
+      this.composePathString(param.path)
+    );
   }
 
 //+
@@ -653,7 +669,7 @@ let instance = this;
 
     if (!Array.isArray(param.targetProperty))
     {
-      let pathString = Serializable.composePathString(param.path);
+      let pathString = this.composePathString(param.path);
 
       ERROR("Attempt to load Array property '" + param.propertyName + "'"
         + pathString + " to a non-Array property");
@@ -679,7 +695,7 @@ let instance = this;
       && Utils.isPrimitiveType(param.targetProperty)
     )
     {
-      let pathString = Serializable.composePathString(param.path);
+      let pathString = this.composePathString(param.path);
 
       ERROR("Attempt to load nonprimitive property"
         + " '" + param.propertyName + "'" + pathString
@@ -701,7 +717,7 @@ let instance = this;
 
     if (instance === null || instance === undefined)
     {
-      let pathString = Serializable.composePathString(param.path);
+      let pathString = this.composePathString(param.path);
 
       ERROR("Failed to instantiate property '" + param.propertyName + "'"
         + pathString);
@@ -772,12 +788,11 @@ let instance = this;
     // there is an instance of some Serializable class saved directly
     // in Json, it can't be an entity class.
 
-    ///////////let Class = Classes.serializables.get(className);
-    let Class = Serializable;
+    let Class = Classes.serializables.get(className);
 
     if (!Class)
     {
-      let pathString = Serializable.composePathString(param.path);
+      let pathString = this.composePathString(param.path);
 
       // We can't safely recover from this error, it could corrupt the
       // data.
@@ -842,14 +857,11 @@ let instance = this;
     if (this.isObjectValid(jsonObject) === false)
       return false;
 
-/////////////////////////////
-/*
     // Is there a 'className' property in JSON object
     // with value 'Bitvector'?
     if (jsonObject[Serializable.CLASS_NAME_PROPERTY]
-        === JsonSaver.BITVECTOR_CLASS_NAME)
+        === Serializable.BITVECTOR_CLASS_NAME)
       return true;
-*/
 
     return false;
   }
@@ -861,14 +873,11 @@ let instance = this;
     if (this.isObjectValid(jsonObject) === false)
       return false;
 
-/////////////////////////////
-/*
     // Is there a 'className' property in JSON object
     // with value 'Date'?
     if (jsonObject[Serializable.CLASS_NAME_PROPERTY]
-        === JsonSaver.DATE_CLASS_NAME)
+        === Serializable.DATE_CLASS_NAME)
       return true;
-*/
 
     return false;
   }
@@ -880,14 +889,11 @@ let instance = this;
     if (this.isObjectValid(jsonObject) === false)
       return false;
 
-//////////////////////////////
-/*
     // Is there a 'className' property in JSON object
     // with value 'Set'?
     if (jsonObject[Serializable.CLASS_NAME_PROPERTY]
-        === JsonSaver.SET_CLASS_NAME)
+        === Serializable.SET_CLASS_NAME)
       return true;
-*/
 
     return false;
   }
@@ -899,14 +905,11 @@ let instance = this;
     if (this.isObjectValid(jsonObject) === false)
       return false;
 
-//////////////////////////////////
-/*
     // Is there a 'className' property in JSON object
     // with value 'Map'?
     if (jsonObject[Serializable.CLASS_NAME_PROPERTY]
-        === JsonSaver.MAP_CLASS_NAME)
+        === Serializable.MAP_CLASS_NAME)
       return true;
-*/
 
     return false;
   }
@@ -919,14 +922,11 @@ let instance = this;
     if (this.isObjectValid(jsonObject) === false)
       return false;
 
-//////////////////////////////////
-/*
     // Is there a 'className' property in JSON object with value
     // 'Reference'?
     if (jsonObject[Serializable.CLASS_NAME_PROPERTY]
-        === JsonSaver.REFERENCE_CLASS_NAME)
+        === Serializable.REFERENCE_CLASS_NAME)
       return true;
-*/
 
     return false;
   }
@@ -940,41 +940,32 @@ let instance = this;
   // Converts 'param.sourceProperty' to a FastBitSet object.
   private readBitvector(param: DeserializeParam)
   {
-    //////////////////////////////////////////////
-    /*
     let sourceRecord =
-      this.readSourceRecord(param, JsonSaver.BITVECTOR_PROPERTY);
+      this.readSourceRecord(param, Serializable.BITVECTOR_PROPERTY);
 
     if (sourceRecord === null)
       return null;
 
     return new FastBitSet(sourceRecord);
-    */
   }
 
 //+
   // Converts 'param.sourceProperty' to a Date object.
   private readDate(param: DeserializeParam): Date
   {
-    //////////////////////////////////////////////////
-    /*
     let sourceRecord =
-      this.readSourceRecord(param, JsonSaver.DATE_PROPERTY);
+      this.readSourceRecord(param, Serializable.DATE_PROPERTY);
 
     if (sourceRecord === null)
       return null;
 
     return new Date(sourceRecord);
-    */
-    return new Date();
   }
 
   // Converts 'param.sourceProperty' to a Set object.
   private readSet(param: DeserializeParam): Set<any>
   {
-    ////////////////////////////////////////
-    /*
-    let sourceRecord = this.readSourceRecord(param, JsonSaver.SET_PROPERTY);
+    let sourceRecord = this.readSourceRecord(param, Serializable.SET_PROPERTY);
 
     if (sourceRecord === null)
       return null;
@@ -1001,17 +992,13 @@ let instance = this;
 
     // And let the constructor of class Set to convert it to Set object.
     return new Set(loadedArray);
-    */
-    return new Set();
   }
 
 //+
   // Converts 'param.sourceProperty' to a Map object.
   private readMap(param: DeserializeParam): Map<any, any>
   {
-    //////////////////////////////////////////////
-    /*
-    let sourceRecord = this.readSourceRecord(param, JsonSaver.MAP_PROPERTY);
+    let sourceRecord = this.readSourceRecord(param, Serializable.MAP_PROPERTY);
 
     if (sourceRecord === null)
       return null;
@@ -1038,8 +1025,6 @@ let instance = this;
 
     // And let the constructor of class Map to convert it to Map object.
     return new Map(loadedArray);
-    */
-    return new Map();
   }
 
 //+
@@ -1048,26 +1033,20 @@ let instance = this;
   // existing entity proxy will be returned. Otherwise an 'invalid'
   // entity proxy will be created and returned.
   // -> Retuns an entity proxy object (possibly referencing an invalid entity).
-  private readEntityReference(param: DeserializeParam)
+  protected readEntityReference
+  (
+    sourceProperty: Object,
+    propertyName: string,
+    pathString: string
+  )
   {
-    /*////////////////////
-    if (!param.sourceProperty)
-      return null;
-    
-    let id = param.sourceProperty[Entity.ID_PROPERTY];
+    // Note: This method is overriden in Entity class. In order for
+    //   the override to be used, root object that is being deserialized
+    //   must be an instance of Entity.
+    FATAL_ERROR("Attempt to deserialize reference to an Entity from"
+      + " Serializable object which is not an instance of Entity"
+      + " class");
 
-    if (id === undefined || id === null)
-    {
-      let pathString = Serializable.composePathString(param.path);
-
-      ERROR("Missing or invalid 'id' property when loading entity"
-        + " reference '" + param.propertyName + "'" + pathString);
-    }
-
-    // Return an existing entity proxy if entity exists in
-    // entityManager, invalid entity proxy otherwise.
-    return Entities.getReference(id);
-    */
     return null;
   }
 
@@ -1086,7 +1065,7 @@ let instance = this;
 
     if (sourceArray === null || sourceArray === undefined)
     {
-      let pathString = Serializable.composePathString(param.path);
+      let pathString = this.composePathString(param.path);
 
       ERROR("Attempt to loadArray from invalid JSON property"
         + " '" + param.propertyName + "'" + pathString);
@@ -1095,7 +1074,7 @@ let instance = this;
     
     if (!Array.isArray(sourceArray))
     {
-      let pathString = Serializable.composePathString(param.path);
+      let pathString = this.composePathString(param.path);
 
       ERROR("Attempt to read Array from non-Array json property"
         + " '" + param.propertyName + "'" + pathString);
@@ -1163,7 +1142,7 @@ let instance = this;
 
     if (sourceRecord === undefined || sourceRecord === null)
     {
-      let pathString = Serializable.composePathString(param.path);
+      let pathString = this.composePathString(param.path);
 
       ERROR("Missing or invalid '" + recordName + "' property when"
         + " loading " + recordName + " record '" + param.propertyName + "'"
@@ -1195,10 +1174,228 @@ let instance = this;
     return true;
   }
 
+  // ------------ Protected static methods -------------- 
+
+  // ------------- Private static methods ---------------
+
+  // -> Returns a SaveableObject which saves Set to Json object
+  //      (using it's saveToJsonObject()) as a special object
+  //      with className 'Set' and property 'set' containing
+  //      an Array representation of Set contents.  
+  private createSetSaver(set: Set<any>)
+  {
+    if (set === null)
+    {
+      FATAL_ERROR("Null set");
+      return;
+    }
+
+    let saver = new Serializable();
+
+    // Set is saved as it's Array representation to property 'set'.
+    saver[Serializable.SET_PROPERTY] = this.saveSetToArray(set);
+
+    // We can't override 'className' property, because it's an accessor
+    // (see NamedClass.className), so we use Proxy to trap acces to
+    // 'className' to return our desired value instead.
+    //   This is done so that our return value will save with 'className'
+    // 'Set' instead of 'Serializable'.
+    return this.createSaveProxy(saver, Serializable.SET_CLASS_NAME);
+  }
+
+  // -> Returns a SaveableObject which saves Map to Json object
+  //      (using it's saveToJsonObject()) as a special object
+  //      with className 'Map' and property 'map' containing
+  //      an Array representation of hashmap contents.  
+  private createMapSaver(map: Map<any, any>)
+  {
+    if (map === null)
+    {
+      FATAL_ERROR("Null map");
+      return;
+    }
+
+    let saver = new Serializable();
+
+    // Map is saved as it's Array representation to property 'map'.
+    saver[Serializable.MAP_PROPERTY] = this.saveMapToArray(map);
+
+    // We can't override 'className' property, because it's an accessor
+    // (see NamedClass.className), so we use Proxy to trap acces to
+    // 'className' to return our desired value instead.
+    //   This is done so that our return value will save with 'className'
+    // 'Map' instead of 'Serializable'.
+    return this.createSaveProxy(saver, Serializable.MAP_CLASS_NAME);
+  }
+
+  // -> Returns a SaveableObject which saves FastBitSet to Json
+  //      object (using it's saveToJsonObject()) as a special object
+  //      with className 'Bitvector' and property 'bitvector' containing
+  //      a string represenation of FastBitSet object.
+  private createBitvectorSaver(bitvector: Date)
+  {
+    if (bitvector === null)
+    {
+      FATAL_ERROR("Null bitvector");
+      return;
+    }
+
+    let saver = new Serializable();
+
+    // Date is saved as it's JSON string representation to property 'date'.
+    saver[Serializable.BITVECTOR_PROPERTY] = bitvector.toJSON();
+
+    // We can't override 'className' property, because it's an accessor
+    // (see NamedClass.className), so we use Proxy to trap acces to
+    // 'className' to return our desired value instead.
+    //   This is done so that our return value will save with 'className'
+    // 'Bitvector' instead of 'Serializable'.
+    return this.createSaveProxy(saver, Serializable.BITVECTOR_CLASS_NAME);
+  }
+
+  // -> Returns a SaveableObject which saves Date to Json object
+  //      (using it's saveToJsonObject()) as a special object
+  //      with className 'Date' and property 'date' containing
+  //      a string represenation of Date object.  
+  private createDateSaver(date: Date)
+  {
+    if (date === null)
+    {
+      FATAL_ERROR("Null date");
+      return;
+    }
+
+    let saver = new Serializable();
+
+    // Date is saved as it's JSON string representation to property 'date'.
+    saver[Serializable.DATE_PROPERTY] = date.toJSON();
+
+    // We can't override 'className' property, because it's an accessor
+    // (see NamedClass.className), so we use Proxy to trap acces to
+    // 'className' to return our desired value instead.
+    //   This is done so that our return value will save with 'className'
+    // 'Date' instead of 'Serializable'.
+    return this.createSaveProxy(saver, Serializable.DATE_CLASS_NAME);
+  }
+
+  // -> Returns a SaveableObject which saves Entity to Json object
+  //      (using it's saveToJsonObject()) as a special object
+  //      with className 'Reference' and property 'id' containing
+  //      an Array representation of hashmap contents.  
+  protected createEntitySaver(entity: Serializable)
+  {
+    // Note: This method is overriden in Entity class. In order for
+    //   the override to be used, root object that is being serialized
+    //   must be an instance of Entity.
+    FATAL_ERROR("Attempt to serialize reference to an Entity from"
+      + " Serializable object which is not an instance of Entity"
+      + " class");
+
+    return null;
+    /*
+    if (entity === null)
+    {
+      FATAL_ERROR("Null entity");
+      return;
+    }
+
+    let saver = new Serializable();
+
+    // Entity is saved as it's string id to property 'id'.
+    saver[Serializable.ID_PROPERTY] = entity.getId();
+
+    // We can't override 'className' property, because it's an accessor
+    // (see NamedClass.className), so we use Proxy to trap acces to
+    // 'className' to return our desired value instead.
+    //   This is done so that our return value will save with 'className'
+    // 'Reference' instead of 'Serializable'.
+    return this.createSaveProxy(saver, Serializable.REFERENCE_CLASS_NAME);
+    */
+  }
+
+  // -> Returns an Array representation of Set object.
+  private saveBitvectorToArray(bitvector: any): Array<any>
+  {
+    if (!('array' in bitvector))
+    {
+      ERROR('Attempt to save bitvector to array that is'
+        + ' not of type FastBitSet. Empty array is saved');
+      return [];
+    }
+
+    // FastBitSet already contains method to convert bitvector to Array,
+    // so we just call it.
+    return bitvector.array();
+  }
+
+  // -> Returns an Array representation of Set object.
+  private saveSetToArray(set: Set<any>): Array<any>
+  {
+    let result = [];
+
+    for (let entry of set.values())
+      result.push(entry);
+    
+    return result;
+  }
+
+  // -> Returns an Array representation of Map object.
+  private saveMapToArray(map: Map<any, any>): Array<any>
+  {
+    let result = [];
+
+    for (let entry of map.entries())
+      result.push(entry);
+    
+    return result;
+  }
+
+//+
+  // -> Returns a Proxy object that traps access to 'className' property
+  //      on 'object' to return 'className' param instead of original value. 
+  protected createSaveProxy(saver: Serializable, className: string)
+  {
+    // This function will be passed to Proxy handler as it's 'get' trap.
+    let get = function(target: any, property: any)
+    {
+      // Here we are trapping access to 'className' property.
+      if (property === Serializable.CLASS_NAME_PROPERTY)
+        // Which will return our parameter 'className' instead
+        // of target's 'className'.
+        return className;
+
+      // Any other property access is just forwarded to the proxified object.
+      return target[property];
+    }
+
+    // Create a new Proxy what will trap acces to 'object' using object
+    // passed as second parameter as proxy handler (it will trap access
+    // to object's properties using our 'get' function).
+    return new Proxy(saver, { get: get })
+  }
+
+  private objectValidityCheck(jsonObject: Object): boolean
+  {
+    // Technically there can be a special record (entity reference,
+    // date record or map record) saved with 'null' value, but in
+    // that case we don't have to load it as special record, because
+    // it will be null anyways.
+    if (jsonObject === null)
+      return false;
+
+    if (jsonObject === undefined)
+    {
+      ERROR("Invalid jsonObject");
+      return false;
+    }
+
+    return true;
+  }
+
 //+
   // -> Returns string informing about file location or empty string
   //    if 'path' is not available.
-  private static composePathString(path: string)
+  private composePathString(path: string)
   {
     if (path === null)
       return "";

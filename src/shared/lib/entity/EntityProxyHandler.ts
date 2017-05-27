@@ -266,16 +266,18 @@ export class EntityProxyHandler
       return this.getIdTrapHandler;
     }
 
+    /// Deprecated, 'id' property is checked for instead.
+    /*
     // Trap calls of entity.isEtity() method.
     if (property === 'isEntity')
     {
-      // Note:
-      //   'variable.isEntity' is tested by SaveableObject to
+      // 'variable.isEntity' is tested by SaveableObject to
       // determine if property should be saved as a reference
       // rather then directly. This is true even for invalid
       // references - that's why we always return 'true' here.
       return true;
     }
+    */
 
     // This is an awful hack I'd very much liked to not to use...
     // But it's necessary in orderd for function trapping to work.

@@ -7,12 +7,19 @@ TODO: Admins by měla být Entity class a měla by se savovat.
 
 TODO: Přesunout server-side kód z Entity do ServerEntity.
 
+TODO: V Serializable (a asi i v Entity a možná ještě někde) přesunout
+private metody do modulu, ať je s sebou netahají všechny zděděné objekty.
+
 ---------------------------------------------------------------
 
 BIG TODO: Vyzkoušet, co se stane, když chyba typu dereference 'null'
   vyhodí výjimku
   (Mělo by se to odchytit a zalogovat, ale otázka je, jeslti to crashne
    program nebo ne).
+
+IDEA: Možná bych se pak obešel bez EntityProxyHandleru, když bych po smazání
+  entity deletnul všechny properties (možná s výjimkou ička, aby v případě
+  exceptionu šlo poznat, na kterou entitu se snažím přistupovat).
 
 ---------------------------------------------------------------
 
