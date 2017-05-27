@@ -503,15 +503,27 @@ export abstract class Entities
     if (entity)
       return entity;
 
-    return this.createInvalidEntity(id);
+    return this.createInvalidReference(id);
   }
 
-  // Creates an invalid entity. Access to this entity's properties
-  // will be reported as error.
+  // Creates an invalid entity reference.
   // (This is used when an entity that is being deserialized has
   //  a reference to an entity that doesn't exist at the moment.)
-  private createInvalidEntity(id: string)
+  private createInvalidReference(id: string)
   {
+    let ref =
+    {
+      id: id,
+      isvalid: function() { return false; },
+      getErrorStringId: function()
+      {
+        return "{ Invalid (not loaded) etity, id: " + id + " }";
+      },
+      getId: function() { return this.id; }
+    }
+
+    return ref;
+    /*
     let handler = new EntityProxyHandler();
 
     handler.id = id;
@@ -522,5 +534,6 @@ export abstract class Entities
     // Create a Javascript Proxy Object that will report access
     // of entity properties.
     return new Proxy({}, handler);
+    */
   }
 }

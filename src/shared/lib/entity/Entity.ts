@@ -29,12 +29,13 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
+import {Utils} from '../../../shared/lib/utils/Utils';
 ///import {App} from '../../../shared/lib/app/App';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {PropertyAttributes} from
   '../../../shared/lib/class/PropertyAttributes';
-import {EntityProxyHandler} from
-  '../../../shared/lib/entity/EntityProxyHandler';
+/*import {EntityProxyHandler} from
+  '../../../shared/lib/entity/EntityProxyHandler';*/
 import {Entities} from '../../../shared/lib/entity/Entities';
 
 // Note: Entity can't be abstract class, because variable 'Entity'
@@ -145,7 +146,6 @@ export class Entity extends Serializable
   {
     return entity !== null
         && entity !== undefined
-        // This will be trapped by EntityProxyHandler.
         && entity.isValid() === true;
   }
 
@@ -224,10 +224,8 @@ export class Entity extends Serializable
 
     if (this.hasOwnProperty('id') === false)
     {
-      FATAL_ERROR("Property 'id' has been set to prototype object"
-        + " rather than to the instance. This probably means that"
-        + " entity proxy has been used as prototype entity instead"
-        + " of unproxified entity");
+      FATAL_ERROR("Property 'id' has been set to prototype"
+        + " object rather than to the instance");
         return false;
     }
 
@@ -295,27 +293,69 @@ export class Entity extends Serializable
 
   // ---------------- Public methods --------------------
 
-  // Deletes all properties (expect 'id') and set's prorotype to 'null'.
-  // (Any further access to this entity will throw an exception.)
-  public invalidate()
+  private invalidateProperties(object: Object)
   {
-    // Delete all own properties of 'this'.
-    for (let property in this)
+    for (let propertyName in object)
     {
-      // Leave the 'id' property for debugging purposes.
-      if (property === Entity.ID_PROPERTY)
+      /// Není třeba, idčko se pamatuje v closure.
+      /*
+      // Leave the 'id' property (for debugging purposes).
+      if (propertyName === Entity.ID_PROPERTY)
+        continue;
+      */
+
+      // Only invalidate own properties.
+      if (!object.hasOwnProperty(propertyName))
         continue;
 
-      if (this.hasOwnProperty(property))
-        delete this[property];
+      let property = object[propertyName];
+      let isPrimitive = Utils.isPrimitiveType(property);
+      let isEntity = (property[Entity.ID_PROPERTY] !== undefined);
+
+      // Recursively invalidate nonprimitive (object) properties
+      // (but skip references to another entities).
+      if (!isPrimitive && !isEntity)
+        this.invalidateProperties(property);
+
+      delete object[propertyName];
     }
 
-    // Set 'null' to the prototype of 'this'.
+    // Set 'null' to the prototype of 'object'.
     // (Object.setPrototypeOf() slows down any code that accesses
     //  object with modified prototype but that's ok here because
-    //  we are just making sure that any access to this entity
-    //  ends with an exception.}
-    Object.setPrototypeOf(this, null);
+    //  we are just making sure that any access to 'object' ends
+    //  with an exception.)
+    Object.setPrototypeOf(object, null);
+  }
+
+  // All entities are valid until 'invalidate()' is called on them.
+  public isValid() { return true; }
+
+  // Invalidates all properties so any further access to this
+  // entity will throw an exception.
+  public invalidate()
+  {
+    let id = this.id;
+
+    this.invalidateProperties(this);
+
+    // Set a 'isValid()' method that will report that this
+    // entity is not valid anymore.
+    this.isValid = function() { return false; }
+
+    // Set a 'getErrorIdString()' function - 'id' of this
+    // entity will be printed because it's held in closure.
+    this.getErrorIdString = function()
+    {
+      // Note: 'id' variable is read from invalidate() function closure.
+      if (id === null)
+        id = 'null';
+
+      if (id === undefined)
+        id = 'undefined';
+
+      return "{ Invalid (deleted) entity, id: " + id + " }";
+    }
   }
 
   // -> Returns 'true' if 'id' has been succesfuly deleted from
@@ -400,6 +440,22 @@ export class Entity extends Serializable
     return this.instanceIds.size !== 0;
   }
 
+  public dynamicCast<T>(Class: { new (...args: any[]): T })
+  {
+    // Dynamic type check - we make sure that entity is inherited from
+    // requested class (or an instance of the class itself).
+    if (!(this instanceof Class))
+    {
+      FATAL_ERROR("Type cast error: entity " + this.getErrorIdString()
+        + " is not an instance of requested type (" + Class.name + ")");
+
+      return null;
+    }
+
+    return <any>this;
+  }
+  /// Deprecated
+  /*
   // This function exists only for typescript to stop complaining
   // that it doesn't exist. It should never be executed, however,
   // because 'dynamicCast()' call should always be trapped by
@@ -412,7 +468,10 @@ export class Entity extends Serializable
 
     return null;
   }
-
+  */
+  
+  /// Deprecated.
+  /*
   // This function exists only for typescript to stop complaining
   // that it doesn't exist. It should never be executed, however,
   // because 'dynamicTypeCheck()' call should always be trapped by
@@ -425,7 +484,10 @@ export class Entity extends Serializable
 
     return false;
   }
+  */
 
+/// To be deleted.
+/*
   // This function exists only for typescript to stop complaining
   // that it doesn't exist. It should never be executed, however,
   // because 'isValid()' call should always be trapped by
@@ -439,6 +501,7 @@ export class Entity extends Serializable
 
     return false;
   }
+*/
 
   // Returns something like 'Character (id: d-imt2xk99)'
   // (indended for use in error messages).
@@ -486,6 +549,8 @@ export class Entity extends Serializable
   protected removeFromNameLists() {}
   protected removeFromAbbrevLists() {}
 
+  /// To be deleted.
+  /*
   // ~ Overrides Serializable.saveToJsonObject().
   protected saveToJsonObject
   (
@@ -500,6 +565,7 @@ export class Entity extends Serializable
 
     return super.saveToJsonObject(instance, mode);
   }
+  */
 
   // ~ Overrides Serializable.createEntitySaver().
   // -> Returns a SaveableObject which saves Entity to Json object
@@ -537,10 +603,10 @@ export class Entity extends Serializable
 
   // ~ Overrides Serializable.readEntityReference().
   // Converts 'param.sourceProperty' to a reference to an Entity.
-  // If 'id' loaded from JSON already exists in Entities,
-  // existing entity proxy will be returned. Otherwise an 'invalid'
-  // entity proxy will be created and returned.
-  // -> Retuns an entity proxy object (possibly referencing an invalid entity).
+  //   If entity with 'id' loaded from JSON already exists in Entities,
+  // it will be returned. Otherwise an 'invalid reference will be
+  // created and returned.
+  // -> Retuns an entity or an invalid entity reference.
   protected readEntityReference
   (
     sourceProperty: Object,
@@ -559,8 +625,6 @@ export class Entity extends Serializable
         + " reference '" + propertyName + "'" + pathString);
     }
 
-    // Return an existing entity proxy if entity exists in
-    // entityManager, invalid entity proxy otherwise.
     return Entities.getReference(id);
   }
 
