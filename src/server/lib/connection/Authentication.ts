@@ -431,7 +431,7 @@ export class Authentication
   // -> Returns 'false' on failure.
   private validatePassword(account: Account, password: string)
   {
-    if (account === null || account.isValid() === false)
+    if (!Entity.isValid(account))
     {
       ERROR("Invalid account");
       return false;

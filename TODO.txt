@@ -3,6 +3,29 @@ TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 
 ---------------------------------------------------------------
 
+TODO: Zrušit Entity Proxy.
+- Entity už umí invalidate().
+  TODO: Měla by na ní zbýt metoda isValid();
+  [done]
+TODO: Zkontrolovat, že se mažou i metody.
+
+TODO: Invalid entity reference (vznikne loadem jiné entity, která má
+  referenci na zatím neexistující entitu) by měl být jiný objekt než
+  smazaná entita (ať se to neplete).
+Ona se vlastně moc lišit nebude.
+- Bude mít idčko (to potřebuje, aby se dala napojit po loadnutí správné entity)
+- Bude mít isValid() { return false; }
+- Bude mít getId()
+- Bude mít getErrorIdString()
+  {
+    return "Invalid (not yet loaded) etity (id: 'xxx')";
+  }
+
+TODO: Zrušit Proxy při serializaci.
+- bacha, jsou i v Entity
+
+---------------------------------------------------------------
+
 TODO: Admins by měla být Entity class a měla by se savovat.
 
 TODO: Přesunout server-side kód z Entity do ServerEntity.
