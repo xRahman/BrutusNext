@@ -14,6 +14,9 @@
 
 'use strict';
 
+/// Deprecated.
+/*
+
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Syslog} from '../../../shared/lib/log/Syslog';
 import {MessageType} from '../../../shared/lib/message/MessageType';
@@ -174,3 +177,4 @@ export class InvalidValueProxyHandler
   // {
   // }
 }
+*/

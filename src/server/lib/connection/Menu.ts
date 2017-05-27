@@ -177,7 +177,7 @@ export class Menu
   {
     let account = this.connection.account;
 
-    if (account === null || account.isValid() === false)
+    if (!Entity.isValid(account))
     {
       ERROR("Invalid account");
       return null;
