@@ -33,6 +33,8 @@ import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {PropertyAttributes} from
   '../../../shared/lib/class/PropertyAttributes';
+import {EntityProxyHandler} from
+  '../../../shared/lib/entity/EntityProxyHandler';
 import {Entities} from '../../../shared/lib/entity/Entities';
 
 // Note: Entity can't be abstract class, because variable 'Entity'
@@ -42,7 +44,6 @@ import {Entities} from '../../../shared/lib/entity/Entities';
 //   of nonabstract class (see Entities.loadEntityById() for example).
 export class Entity extends Serializable
 {
-  public static get ID_PROPERTY()         { return 'id'; }
   public static get NAME_PROPERTY()             { return "name"; }
   public static get PROTOTYPE_ENTITY_PROPERTY() { return "prototypeEntity"; }
   private static get INSTANCE_IDS_PROPERTY()    { return "instanceIds"; }
@@ -147,68 +148,6 @@ export class Entity extends Serializable
         // This will be trapped by EntityProxyHandler.
         && entity.isValid() === true;
   }
-
-  /// Moved to Entities.createEntityIstance().
-  /*
-  // Creates an instance of Entity with given 'prototype' and 'id'.
-  // Instance is then proxified and registered in Entities.
-  // -> Returns 'null' in case of error.
-  public static createInstance(prototype: Entity, id: string)
-  {
-    // There is no need to include Proxy objects to the prototype
-    // chain (it would even lead to errors), so we are going to
-    // deproxify 'prototype' before we use it as a prototype object.
-    let barePrototype = EntityProxyHandler.deproxify(prototype);
-
-    let instance = Classes.createInstanceFromPrototype(barePrototype);
-/// Moved to Classes.createEntityInstance().
-    // // Object.create() will create a new object with 'prototype'
-    // // as it's prototype object. This will ensure that all 'own'
-    // // properties of 'prorotype' (those initialized in constructor
-    // // or in class body of prototype) become 'inherited' properties
-    // // on the new instance (so that changing the value on prototype
-    // // will change the value for all instances that don't have that
-    // // property overriden).
-    // let instance = Object.create(barePrototype);
-
-    // // Prototype inheritance in Javascript handles nonprimitive
-    // // properties as direct references to such properties in
-    // // prototype object. That means that writing to a property
-    // // inside a nonprimitive property changes the value on the
-    // // prototype, not on the instance. To prevent this, we need
-    // // to manually instantiate all nonprimitive properties.
-    // instance.instantiateProperties(instance, prototype);
-
-    // Set id to our new entity instance
-    // (this shouldn't fail because we have just created it, but
-    //  better be sure).
-    if (instance.setId(id) === false)
-      return null;
-
-    // Hide instance beind a Proxy object which will report
-    // access to properties of invalid entity. Also create
-    // an EntityRecord that will be added to Entities.
-    let entityRecord = this.createEntityRecord(instance);
-
-    // Add entity to Entities. If a record with this 'id'
-    // already exists there, the existing one will be used instead
-    // of the one we have just created.
-    //   In case of error entity will be 'null'.
-    let entity = Entities.add(entityRecord);
-
-    if (entity === null)
-      return null;
-  
-    // Now we are sure that entity has been sucessfuly registered
-    // in Entities so we can add it's id to prototype's instanceIds.
-    prototype.addInstanceId(id);
-
-    // And also add the prototype's id as the entity's prototypeId.
-    entity.prototypeId = prototype.getId();
-
-    return entity;
-  }
-  */
 
   // --------------- Public accessors -------------------
 
@@ -510,6 +449,84 @@ export class Entity extends Serializable
 
   protected removeFromNameLists() {}
   protected removeFromAbbrevLists() {}
+
+  // ~ Overrides Serializable.saveToJsonObject().
+  protected saveToJsonObject
+  (
+    instance: Serializable,
+    mode: Serializable.Mode
+  )
+  : Object
+  {
+    // Unproxify the instance
+    // (so 'for .. in' operator works on it).
+    instance = EntityProxyHandler.deproxify(instance);
+
+    return super.saveToJsonObject(instance, mode);
+  }
+
+  // ~ Overrides Serializable.createEntitySaver().
+  // -> Returns a SaveableObject which saves Entity to Json object
+  //      (using it's saveToJsonObject()) as a special object
+  //      with className 'Reference' and property 'id' containing
+  //      an Array representation of hashmap contents.  
+  protected createEntitySaver(entity: Serializable)
+  {
+    if (entity === null)
+    {
+      FATAL_ERROR("Null entity");
+      return;
+    }
+
+    let id = entity[Entity.ID_PROPERTY];
+
+    if (!id)
+    {
+      FATAL_ERROR("Attempt to serialize an entity with invalid id");
+      return;
+    }
+
+    let saver = new Serializable();
+
+    // Entity is saved as it's string id to property 'id'.
+    saver[Entity.ID_PROPERTY] = id;
+
+    // We can't override 'className' property, because it's an accessor
+    // (see NamedClass.className), so we use Proxy to trap acces to
+    // 'className' to return our desired value instead.
+    //   This is done so that our return value will save with 'className'
+    // 'Reference' instead of 'Serializable'.
+    return this.createSaveProxy(saver, Entity.REFERENCE_CLASS_NAME);
+  }
+
+  // ~ Overrides Serializable.readEntityReference().
+  // Converts 'param.sourceProperty' to a reference to an Entity.
+  // If 'id' loaded from JSON already exists in Entities,
+  // existing entity proxy will be returned. Otherwise an 'invalid'
+  // entity proxy will be created and returned.
+  // -> Retuns an entity proxy object (possibly referencing an invalid entity).
+  protected readEntityReference
+  (
+    sourceProperty: Object,
+    propertyName: string,
+    pathString: string
+  )
+  {
+    if (!sourceProperty)
+      return null;
+    
+    let id = sourceProperty[Entity.ID_PROPERTY];
+
+    if (id === undefined || id === null)
+    {
+      ERROR("Missing or invalid 'id' property when loading entity"
+        + " reference '" + propertyName + "'" + pathString);
+    }
+
+    // Return an existing entity proxy if entity exists in
+    // entityManager, invalid entity proxy otherwise.
+    return Entities.getReference(id);
+  }
 
   /*
   // This method exists only to prevent accidental
