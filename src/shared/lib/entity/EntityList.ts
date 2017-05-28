@@ -7,10 +7,11 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Serializable} from '../../../shared/lib/class/Serializable';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {Entities} from '../../../shared/lib/entity/Entities';
 
-export class EntityList<T extends Entity>
+export class EntityList<T extends Entity> extends Serializable
 {
   //------------------ Private data ---------------------
 

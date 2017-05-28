@@ -90,19 +90,6 @@ export class ServerPrototypes extends Prototypes
       return;
     }
 
-    let set = new Set<string>();
-    set.add("1");
-    set.add("2");
-
-    for (let item of set)
-    {
-      console.log(item);
-    }
-
-
-
-///    let descendantIds = prototype.getDescendantIds();
-
     for (let descendantId of prototype.getDescendantIds())
     {
       let descendant = await ServerEntities.loadEntityById

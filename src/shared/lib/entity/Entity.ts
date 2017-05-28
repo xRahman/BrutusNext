@@ -45,9 +45,9 @@ import {Entities} from '../../../shared/lib/entity/Entities';
 //   of nonabstract class (see Entities.loadEntityById() for example).
 export class Entity extends Serializable
 {
-  public static get NAME_PROPERTY()             { return "name"; }
-  public static get PROTOTYPE_ENTITY_PROPERTY() { return "prototypeEntity"; }
-  private static get INSTANCE_IDS_PROPERTY()    { return "instanceIds"; }
+  public static get NAME_PROPERTY()             { return 'name'; }
+  public static get PROTOTYPE_ENTITY_PROPERTY() { return 'prototypeEntity'; }
+  private static get INSTANCE_IDS_PROPERTY()    { return 'instanceIds'; }
 
   // ----------------- Private data ----------------------
 
@@ -153,7 +153,6 @@ export class Entity extends Serializable
 
   public getName() { return this.name; }
 
-  // -> Returns 'false' if name isn't available.
   public async setName
   (
     name: string,
@@ -163,27 +162,8 @@ export class Entity extends Serializable
     createNameLock = true
   )
   {
-/// TODO: Před setnutím jména je třeba vyhodit entitu z NameListů
-/// přes this.removeFromNameLists() a pokud je to prototyp, tak taky
-/// z Prototypes. Po setnutí ji tam zase přidat.
-
-    let oldName = this.name;
-    let oldCathegory = this.nameCathegory;
-
-    if (createNameLock)
-    {
-      // Check if requested name is available.
-      // (This will always be false on client because entity name change
-      //  is disabled there.)
-      if (!await Entities.requestName(this.getId(), name, cathegory))
-        return false;
-    }
-
-    // Make the old name available again.
-    if (oldName && oldCathegory)
-      await Entities.releaseName(oldName, oldCathegory)
-
     this.name = name;
+    this.nameCathegory = cathegory;
 
     return true;
   }
@@ -254,9 +234,12 @@ export class Entity extends Serializable
       return;
     }
 
-    // When a new entity is created, it's 'prototytypeEntity'
-    // is null so there is no need to update it.
-    if (this.prototypeEntity)
+    // When a new entity is created, it doesn't have
+    // own 'prototypeEntity' property so there is no
+    // need to update it.
+    // (It does a 'prototypeEntity' inherited from
+    //  prototype object of course.)
+    if (this.prototypeEntity !== null)
     {
       // Remove 'this.id' from the old prototype's
       // 'instanceIds' or 'descendantIds' depending
@@ -265,9 +248,9 @@ export class Entity extends Serializable
     }
 
     if (isPrototype)
-      prototypeEntity.addInstanceId(this.getId());
-    else
       prototypeEntity.addDescendantId(this.getId());
+    else
+      prototypeEntity.addInstanceId(this.getId());
 
     this.prototypeEntity = prototypeEntity;
   }
@@ -369,7 +352,7 @@ export class Entity extends Serializable
       return true;
 
     ERROR("Attempt to delete child id '" + id + "' from"
-      + " prototype " + this.getErrorIdString + " but that"
+      + " prototype " + this.getErrorIdString() + " but that"
       + " id is not present neither in instanceIds nor in"
       + " desendantIds of this prototype");
     return false;
@@ -403,7 +386,16 @@ export class Entity extends Serializable
 
   public hasDescendant(entity: Entity)
   {
-    return this.descendantIds.has(entity.getId());
+    let has = this.descendantIds.has(entity.getId());
+
+    if (!has)
+    {
+      ERROR("!has");
+    }
+
+    return has;
+
+    ///return this.descendantIds.has(entity.getId());
   }
 
   public isPrototypeEntity()

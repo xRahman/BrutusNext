@@ -16,8 +16,6 @@ import {ServerApp} from '../../../server/lib/app/ServerApp';
 import {NameLock} from '../../../server/lib/entity/NameLock';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
 import {IdProvider} from '../../../server/lib/entity/IdProvider';
-import {EntityProxyHandler} from
-   '../../../shared/lib/entity/EntityProxyHandler';
 
 export class ServerEntities extends Entities
 {
@@ -33,6 +31,27 @@ export class ServerEntities extends Entities
   private idProvider: IdProvider = null;
 
   // ------------- Public static methods ----------------
+
+  // Attempts to create a name lock file.
+  // -> Returns 'false' if name change isn't allowed.
+  public static async requestName
+  (
+    id: string,
+    name: string,
+    cathegory: Entity.NameCathegory
+  )
+  {
+    return await ServerApp.getEntities().requestName(id, name, cathegory);
+  }
+
+  public static async releaseName
+  (
+    name: string,
+    cathegory: Entity.NameCathegory
+  )
+  {
+    return await ServerApp.getEntities().releaseName(name, cathegory);
+  }
 
   // Creates a new instance entity with a new id (can't be used as prototype).
   // -> Returns 'null' on failure.
@@ -62,6 +81,12 @@ export class ServerEntities extends Entities
       cathegory,
       false   // 'isPrototype'
     );
+
+    if (!entity)
+    {
+      ERROR("Failed to create new instance entity");
+      return null;
+    }
 
     // Dynamically check that entity is an
     // instance of type T and typecast to it.
@@ -106,7 +131,7 @@ export class ServerEntities extends Entities
     return entity.dynamicCast(typeCast);
   }
 
-    // Creates a new prototype entity with a new id.
+  // Creates a new prototype entity with a new id.
   // -> Returns 'null' on failure.
   public static async createRootPrototype(className: string): Promise<Entity>
   {
@@ -137,7 +162,7 @@ export class ServerEntities extends Entities
     cathegory: Entity.NameCathegory
   )
   {
-    return NameLock.exists
+    return await NameLock.exists
     (
       name,
       Entity.NameCathegory[cathegory]
@@ -204,7 +229,7 @@ export class ServerEntities extends Entities
     if (await FileSystem.ensureDirectoryExists(directory) === false)
       return false;
 
-    await FileSystem.writeFile(jsonString, directory + fileName);
+    await FileSystem.writeFile(directory + fileName, jsonString);
 
     await entity.postSave();
   }
@@ -369,7 +394,6 @@ export class ServerEntities extends Entities
     return prototypeId;
   }
 
-  // ~ Overrides Entities.createNewEntity().
   // Creates an entity with a new id.
   // -> Returns 'null' on failure.
   private async createNewEntity
@@ -386,7 +410,7 @@ export class ServerEntities extends Entities
     if (name !== null && cathegory !== null)
     {
       // Attempt to create a name lock file.
-      let isNameAvailable = await this.requestName
+      let isNameTaken = await this.requestName
       (
         id,
         name,
@@ -400,25 +424,35 @@ export class ServerEntities extends Entities
       //  course, but it would add a disk read operation even when
       //  the name is available, which is by far the most common
       //  scenario.)
-      if (!isNameAvailable)
+      if (isNameTaken)
+      {
+        ERROR("Attempt to create unique entity '" + name + "'"
+          + " in cathegory '" + Entity.NameCathegory[cathegory] + "'"
+          + " which already exists. Entity is not created");
         return null;
+      }
     }
 
-    // We use bare (unproxified) entity as a prototype object.
-    let barePrototype = EntityProxyHandler.deproxify(prototype);
-
-    // Create, proxify and register a new entity.
-    let entity = this.createEntityFromPrototype(barePrototype, id);
+    let entity = this.createEntityFromPrototype(prototype, id);
 
     if (!entity)
+    {
+      ERROR("Failed to create entity (id: " + id + ")");
       return null;
+    }
 
-    // Set a prototype entity.
-    // (Even though prototype object is already set using
-    //  Object.create() when creating a new object, we still
-    //  need to setup our internal link to the prototype entity
-    //  and set our entity's id to the prototype entity's list
-    //  of descendants.)
+    // Entity we have just created has {} as it's 'prototypeEntity'
+    // because all of it's nonprimitive properties got instantiated
+    // using Object.create(). We replace it with 'null' so that
+    // setPrototypeEntity() won't try to remove it from it's ancestor's
+    // descendantIds (that wouldn't work because we have just created it).
+    entity[Entity.PROTOTYPE_ENTITY_PROPERTY] = null;
+
+    // Even though prototype object is already set using
+    // Object.create() when creating a new entity, we still
+    // need to setup our internal link to the prototype entity
+    // and set our entity's id to the prototype entity's list
+    // of descendants.
     entity.setPrototypeEntity(prototype, isPrototype);
 
     if (name !== null)
