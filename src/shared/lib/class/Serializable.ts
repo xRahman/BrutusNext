@@ -68,6 +68,7 @@ export class Serializable extends Attributable
   private static get DATE_CLASS_NAME()        { return 'Date'; }
   private static get SET_CLASS_NAME()         { return 'Set'; }
   private static get MAP_CLASS_NAME()         { return 'Map'; }
+  protected static get REFERENCE_CLASS_NAME() { return 'Reference'; }
 
   // These special property names are only written to serialized data.
   // For example 'map' property holds an Array that represents serialized
@@ -76,7 +77,6 @@ export class Serializable extends Attributable
   private static get DATE_PROPERTY()          { return 'date'; }
   private static get MAP_PROPERTY()           { return 'map'; }
   private static get SET_PROPERTY()           { return 'set'; }
-  protected static get REFERENCE_CLASS_NAME() { return 'Reference'; }
 
   //----------------- Protected data --------------------
 
@@ -140,13 +140,6 @@ export class Serializable extends Attributable
     }
 
     return this;
-  }
-
-  public isProxy()
-  {
-    // If this entity is behind Proxy, EntityProxyHandler traps
-    // acces to isProxy() and returns 'true'.
-    return false;
   }
 
   // -------------- Protected methods -------------------
@@ -300,7 +293,7 @@ export class Serializable extends Attributable
       // Primitive values (number, string, etc.) are just assigned.
       return property;
 
-    if (Array.isArray(property))
+    if (Utils.isArray(property))
       return this.serializeArray(param, property);
 
     // If there is an 'id' in the property, we treat it as Entity.
@@ -385,20 +378,6 @@ export class Serializable extends Attributable
 
     if (sourceObject === null)
       return null;
-    
-    /// Asi jsem byl zbytečně moc důsledný - plain Object snad nemá důvod
-    /// být za proxy...
-    /*
-    // If 'property' is a proxy, 'for .. in' operator won't work on it,
-    // because 'handler.enumerate()' which used to trap it has been
-    // deprecated in ES7. So we have to use a hack - directly access
-    // internal entity of proxy by trapping access to '_internalEntity'
-    // property and use 'for .. in' operator on it.
-    let sourceObject = variable;
-
-    if (variable.isProxy === true)
-      sourceObject = variable['_internalEntity'];
-    */
 
     let jsonObject: Object = {};
 
@@ -1028,10 +1007,10 @@ export class Serializable extends Attributable
 
 //+
   // Converts 'param.sourceProperty' to a reference to an Entity.
-  // If 'id' loaded from JSON already exists in Entities,
-  // existing entity proxy will be returned. Otherwise an 'invalid'
-  // entity proxy will be created and returned.
-  // -> Retuns an entity proxy object (possibly referencing an invalid entity).
+  // If 'id' loaded from JSON already exists in Entities, existing
+  // entity will be returned. Otherwise an 'invalid'
+  // entity reference will be created and returned.
+  // -> Retuns an existing entity or an invalid entity reference.
   protected readEntityReference
   (
     sourceProperty: Object,
@@ -1291,25 +1270,6 @@ export class Serializable extends Attributable
       + " class");
 
     return null;
-    /*
-    if (entity === null)
-    {
-      FATAL_ERROR("Null entity");
-      return;
-    }
-
-    let saver = new Serializable();
-
-    // Entity is saved as it's string id to property 'id'.
-    saver[Serializable.ID_PROPERTY] = entity.getId();
-
-    // We can't override 'className' property, because it's an accessor
-    // (see NamedClass.className), so we use Proxy to trap acces to
-    // 'className' to return our desired value instead.
-    //   This is done so that our return value will save with 'className'
-    // 'Reference' instead of 'Serializable'.
-    return this.createSaveProxy(saver, Serializable.REFERENCE_CLASS_NAME);
-    */
   }
 
   // -> Returns an Array representation of Set object.

@@ -3,6 +3,35 @@ TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 
 ---------------------------------------------------------------
 
+TODO: index.ts asi nepůjde použít, importy pak nefungují, jak mají.
+(takže zrušit ten testovací v /shared/lib).
+
+---------------------------------------------------------------
+
+Statování "skriptů" ze hry:
+- Tohle vypíše kód funkce (závorky tam nejsou schválně):
+   console.log("" + funkce);
+- Tzn. takhle by asi šlo snadno statovat ze hry libovolné metody na herních
+  entitách.
+
+---------------------------------------------------------------
+
+Prototype inheritance Map a Set
+--------------------------------
+- zatím jsem to hacknul, že místo Object.create() se vytvoří new Map()
+  nebo new Set()
+  - tzn. nepřepisuje se prototyp, ale nedědí se.
+Teoreticky by to šlo vyřešit tak, že bych si vytvořil vlastní
+classy Map a Set a přetížil jim metody (set, has, atd.), takže by koukaly
+na prototyp, když by byly prázdné a zkopírovaly itemy z prototypu do instance,
+když by do toho někdo chtěl zapisovat....
+(Znamenalo by to v instantiateProperties vytvořit instanci téhle nové classy
+ - MyMap, MySet a dát jí odkaz na originální Map nebo Set na prototypu, páč
+ později už by se k němu nedostala.)
+(Zatím na to kašlu.)
+
+---------------------------------------------------------------
+
 TODO: Zrušit Entity Proxy.
 - Entity už umí invalidate().
   TODO: Měla by na ní zbýt metoda isValid();

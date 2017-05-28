@@ -136,7 +136,7 @@ export class FileSystem
       await this.saveAwaiter(promise);
 
     // Now it's our turn so we can save ourselves.
-    let success = await FileSystem.writeFile(path, data);
+    let success = await FileSystem.write(path, data);
 
     // Remove the lock and resolve saveAwaiter()
     // of whoever is waiting after us.
@@ -383,7 +383,7 @@ export class FileSystem
 
   // -> Returns Promise if file is being saved right now so
   //      the caller needs to wait (using the returned Promise).
-  //    Returns null if this file isn't beeing saved right now
+  // -> Returns null if this file isn't beeing saved right now
   //      so it is possible to start saving right away.
   private static requestSaving(path: string): Promise<{}>
   {

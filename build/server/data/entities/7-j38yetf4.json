@@ -1,0 +1,35 @@
+{
+  "name": "System Realm",
+  "className": "Realm",
+  "instanceIds":
+  {
+    "className": "Serializable"
+  },
+  "descendantIds":
+  {
+    "className": "Serializable"
+  },
+  "sNames":
+  {
+    "className": "Serializable"
+  },
+  "contents":
+  {
+    "className": "EntityList"
+  },
+  "aliases": [],
+  "prototypeEntity":
+  {
+    "className": "Serializable"
+  },
+  "nameCathegory": 3,
+  "location":
+  {
+    "className": "Serializable"
+  },
+  "version": 0,
+  "prototypeName": null,
+  "sName": null,
+  "sLocation": null,
+  "connection": null
+}
