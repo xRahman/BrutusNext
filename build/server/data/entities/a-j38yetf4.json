@@ -1,0 +1,37 @@
+{
+  "name": "Tutorial Room",
+  "className": "Room",
+  "instanceIds":
+  {
+    "className": "Serializable"
+  },
+  "descendantIds":
+  {
+    "className": "Serializable"
+  },
+  "sNames":
+  {
+    "className": "Serializable"
+  },
+  "contents":
+  {
+    "className": "EntityList"
+  },
+  "aliases": [],
+  "extraDescriptions": [],
+  "prototypeEntity":
+  {
+    "className": "Serializable"
+  },
+  "nameCathegory": 3,
+  "location":
+  {
+    "className": "Serializable"
+  },
+  "version": 0,
+  "prototypeName": null,
+  "sName": null,
+  "sLocation": null,
+  "connection": null,
+  "description": "Unfinished room."
+}

@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Implements client-side game entity.
+  Implements client-side entity.
 */
 
 'use strict';
@@ -12,7 +12,6 @@ import {PropertyAttributes} from
   '../../../shared/lib/class/PropertyAttributes';
 import {Entity} from '../../../shared/lib/entity/Entity';
 
-/// Todo: Asi by se to mělo jmenovat jen GameEntity.
 export class ClientGameEntity extends Entity
 {
   //----------------- Protected data --------------------
@@ -23,19 +22,24 @@ export class ClientGameEntity extends Entity
 
   // ---------------- Public methods --------------------
 
-  // -------------- Protected methods -------------------
-
-  /// Moved to server-side code only.
-  /*
-  // ~ Overrides ContainerEntity.insertEntity() to prevent
-  // changing 'location' of client-side entities.
-  protected insertEntity(entity: ContainerEntity)
+  // ~ Overrides Entity.setName().
+  // -> Returns 'false'.
+  public async setName
+  (
+    name: string,
+    cathegory: Entity.NameCathegory = null,
+    // This should only be 'false' if you have created
+    // a name lock file prior to calling setName().
+    createNameLock = true
+  )
   {
-    ERROR("Attempt to change location of client-side entity."
-      + " That is not allowed, entities can only change"
-      + " their location on the server");
+    ERROR("Attempt to change the name of an entity."
+      + " That's not allowed on the client");
+
+    return false;
   }
-  */
+
+  // -------------- Protected methods -------------------
 
   // --------------- Private methods --------------------
 }

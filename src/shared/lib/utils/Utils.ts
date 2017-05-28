@@ -10,8 +10,7 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 
 export module Utils
 {
-  // -> Returns 'true' if 'variable' is of type 'FastBitSet',
-  //    Returns 'false' otherwise.
+  // -> Returns 'true' if 'variable' is of type 'FastBitSet'.
   export function isBitvector(variable: any)
   {
     if (variable === null || variable === undefined || !variable.constructor)
@@ -20,8 +19,7 @@ export module Utils
     return variable.constructor.name === 'FastBitSet';
   }
 
-  // -> Returns 'true' if 'variable' is of type 'Date',
-  //    Returns 'false' otherwise.
+  // -> Returns 'true' if 'variable' is of type 'Date'.
   export function isDate(variable: any)
   {
     if (variable === null || variable === undefined || !variable.constructor)
@@ -31,7 +29,6 @@ export module Utils
   }
 
   // -> Returns 'true' if 'variable' is of type 'Map',
-  //    Returns 'false' otherwise.
   export function isMap(variable: any)
   {
     if (variable === null || variable === undefined || !variable.constructor)
@@ -42,7 +39,6 @@ export module Utils
 
   // Detects only native javascript Objects - not classes.
   // -> Returns 'true' if 'variable' is of type 'Object',
-  //    Returns 'false' otherwise.
   export function isPlainObject(variable: any)
   {
     if (variable === null || variable === undefined || !variable.constructor)
@@ -51,9 +47,18 @@ export module Utils
     return variable.constructor.name === 'Object';
   }
 
+  // Detects native javascript Arrays.
+  // -> Returns 'true' if 'variable' is of type 'Array',
+  export function isArray(variable: any)
+  {
+    if (variable === null || variable === undefined || !variable.constructor)
+      return false;
+
+    return variable.constructor.name === 'Array';
+  }
+
   // -> Returns 'true' if 'variable' is a primitive type
   //    (boolean, null, undefined, number, string or symbol).
-  //    Returns 'false' otherwise.
   export function isPrimitiveType(variable: any)
   {
     // For some reason typeof 'null' is 'object' in javascript
@@ -61,8 +66,7 @@ export module Utils
     return variable === null || typeof variable !== 'object';
   }
 
-  // -> Returns 'true' if 'variable' is of type 'Set',
-  //    Returns 'false' otherwise.
+  // -> Returns 'true' if 'variable' is of type 'Set'.
   export function isSet(variable: any)
   {
     if (variable === null || variable === undefined || !variable.constructor)

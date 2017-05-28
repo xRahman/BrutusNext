@@ -7,6 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../shared/lib/error/ERROR';
+import {FATAL_ERROR} from '../../shared/lib/error/FATAL_ERROR';
 import {Entity} from '../../shared/lib/entity/Entity';
 import {ServerEntities} from '../../server/lib/entity/ServerEntities';
 import {Prototypes} from '../../shared/lib/entity/Prototypes';
@@ -109,6 +110,11 @@ export class Game
       Game.DEFAULT_WORLD_NAME,
       Entity.NameCathegory.WORLD
     );
+
+    if (!this.world)
+      FATAL_ERROR("Failed to load game world. Perhaps"
+        + " directory" + ServerApp.DATA_DIRECTORY
+        + " exists but it is empty?");
   }
 
   //----------------- Protected data --------------------

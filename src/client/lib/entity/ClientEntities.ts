@@ -15,6 +15,8 @@ export class ClientEntities extends Entities
 {
   // --------------- Protected methods ------------------
 
+  /// To be deleted.
+  /*
   // ~ Overrides Entities.requestName().
   // -> Returns 'false'.
   protected async requestName
@@ -29,7 +31,10 @@ export class ClientEntities extends Entities
 
     return false;
   }
+  */
 
+  /// To be deleted.
+  /*
   // ~ Overrides Entities.releaseName().
   protected async releaseName
   (
@@ -40,6 +45,7 @@ export class ClientEntities extends Entities
     ERROR("Attempt to release the name of an entity."
       + " That's not allowed on the client");
   }
+  */
 
   // ~ Overrides Entities.saveEntity().
   protected async saveEntity(entity: Entity)

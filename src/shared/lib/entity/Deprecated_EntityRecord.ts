@@ -5,7 +5,7 @@
 */
 
 'use strict';
-
+/*
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {EntityProxyHandler} from
@@ -58,3 +58,4 @@ export class EntityRecord
     this.proxyHandler = null;
   }
 }
+*/
