@@ -7,15 +7,13 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {App} from '../../../shared/lib/app/App';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {Classes} from '../../../shared/lib/class/Classes';
 import {Prototypes} from '../../../shared/lib/entity/Prototypes';
-//import {Entity} from '../../../shared/lib/entity/Entity';
-import {Entity} from '../../../shared/lib';
-import {EntityRecord} from '../../../shared/lib/entity/EntityRecord';
-import {EntityProxyHandler} from
-  '../../../shared/lib/entity/EntityProxyHandler';
+import {Entity} from '../../../shared/lib/entity/Entity';
+//import {Entity} from '../../../shared/lib';
 
 export abstract class Entities
 {
@@ -23,8 +21,8 @@ export abstract class Entities
 
   // List of all entities that are loaded in memory.
   // Key:   entity id
-  // Value: record containing entity and its proxy handler
-  private records = new Map<string, EntityRecord>();
+  // Value: entity
+  private entities = new Map<string, Entity>();
 
   //----------------- Protected data -------------------- 
 
@@ -40,19 +38,24 @@ export abstract class Entities
   //    Returns invalid reference if entity with such 'id' isn't there.
   public static getReference(id: string): Entity
   {
-    return App.getEntities().getReference(id);
+    let entity = App.getEntities().entities.get(id);
+    
+    if (entity)
+      return entity;
+
+    return this.createInvalidReference(id);
   }
 
   // -> Returns 'true' if enity is available.
   public static has(id: string)
   {
-    return App.getEntities().has(id);
+    return App.getEntities().entities.has(id);
   }
 
   // -> Returns 'undefined' if entity isn't found.
   public static get(id: string)
   {
-    return App.getEntities().get(id);
+    return App.getEntities().entities.get(id);
   }
 
   // Removes entity from memory but doesn't delete it from disk
@@ -61,28 +64,27 @@ export abstract class Entities
   // be searched for.
   public static release(entity: Entity)
   {
-    App.getEntities().release(entity);
-  }
+    if (!Entity.isValid(entity))
+    {
+      ERROR("Attempt to remove invalid entity from Entities");
+      return;
+    }
 
-  // Attempts to create a name lock file.
-  // -> Returns 'false' if name change isn't allowed.
-  public static async requestName
-  (
-    id: string,
-    name: string,
-    cathegory: Entity.NameCathegory
-  )
-  {
-    return await App.getEntities().requestName(id, name, cathegory);
-  }
+    // Remove entity from entity lists so it can no longer be searched for.
+    entity.removeFromLists();
 
-  public static async releaseName
-  (
-    name: string,
-    cathegory: Entity.NameCathegory
-  )
-  {
-    return await App.getEntities().releaseName(name, cathegory);
+    // Remove the record from hashmap.
+    if (!App.getEntities().entities.delete(entity.getId()))
+    {
+      ERROR("Attempt to remove entity " + entity.getErrorIdString()
+        + " from Entities which is not there");
+    }
+
+    // Recursively delete all properties and set the prototype to 'null.
+    // This way if anyone has a reference to this entity and tries to use
+    // it, it will throw an exception (so we will know that someone tries
+    // to use a deleted entity).
+    entity.invalidate();
   }
 
   public static async save(entity: Entity)
@@ -99,6 +101,12 @@ export abstract class Entities
   : Promise<T>
   {
     let entity = await App.getEntities().loadEntityById(id);
+
+    if (!entity)
+    {
+      ERROR("Failed to load entity id: " + id);
+      return null;
+    }
 
     // Dynamically check that entity is an
     // instance of type T and typecast to it.
@@ -120,6 +128,13 @@ export abstract class Entities
       cathegory
     );
 
+    if (!entity)
+    {
+      ERROR("Failed to load entity '" + name + "' in cathegory"
+        + " '" + Entity.NameCathegory[cathegory] + "'");
+      return null;
+    }
+
     // Dynamically check that entity is an
     // instance of type T and typecast to it.
     return entity.dynamicCast(typeCast);
@@ -137,6 +152,8 @@ export abstract class Entities
 
   // --------------- Protected methods ------------------
   
+  /// To be deleted.
+  /*
   // -> Returns 'false' if name change isn't allowed.
   protected abstract async requestName
   (
@@ -144,12 +161,16 @@ export abstract class Entities
     name: string,
     cathegory: Entity.NameCathegory
   );
+  */
 
+  /// To be deleted.
+  /*
   protected abstract async releaseName
   (
     name: string,
     cathegory: Entity.NameCathegory
   );
+  */
 
   /// Tohle teď umí jen ServerEntities.
   /*
@@ -194,7 +215,7 @@ export abstract class Entities
     if (!prototype)
     {
       ERROR("Attempt to create an entity using an invalid"
-        + " prototype entity. Entity is not created");
+        + " prototype. Entity is not created");
       return null;
     }
 
@@ -206,13 +227,17 @@ export abstract class Entities
       return null;
     }
 
-    // Create new bare (unproxified) entity based on the prototype.
-    let bareEntity = this.instantiate(prototype);
+    // Create new entity based on the prototype.
+    let entity = this.instantiate(prototype);
 
-    if (bareEntity.setId(id) === false)
+    if (!entity.setId(id))
       return null;
 
-    return this.proxifyAndRegisterEntity(prototype, bareEntity);
+    // Add entity to Entities. If entity with this 'id' already
+    // exists, the existing one will be used instead of the one
+    // we have just created.
+    //   In case of error entity will be 'null'.
+    return this.add(entity);
   }
 
   // -> Returns 'null' if prototype object isn't found.
@@ -225,11 +250,7 @@ export abstract class Entities
       return prototype;
 
     // If it's not a class name, it has to be an entity id.
-    let prototypeRecord = this.records.get(prototypeId);
-
-    if (prototypeRecord)
-      // We use bare (unproxified) entity as a prototype object.
-      prototype = prototypeRecord.getEntity();
+    prototype = this.entities.get(prototypeId);
 
     if (!prototype)
     {
@@ -268,44 +289,50 @@ export abstract class Entities
   : Promise<Entity>;
   */
 
+  /// To be deleted.
+  /*
   // -> Returns 'true' if enity is available.
   protected has(id: string)
   {
-    return this.records.has(id);
+    return this.entities.has(id);
   }
+  */
 
+  /// To be deleted.
+  /*
   // -> Returns 'undefined' if entity isn't found.
   protected get(id: string)
   {
-    let entityRecord = this.records.get(id)
+    let entityRecord = this.entities.get(id)
 
     if (!entityRecord)
       return undefined;
 
     return entityRecord.getEntity();
   }
+  */
 
   // -> Returns added entity or 'null' on failure.
-  protected add(entityRecord: EntityRecord)
+  private add(entity: Entity)
   {
-    let id = entityRecord.getEntity().getId();
-    let existingRecord = this.records.get(id);
+    let id = entity.getId();
+    let existingEntity = this.entities.get(id);
 
-    if (existingRecord !== undefined)
+    if (existingEntity !== undefined)
     {
-      ERROR("Attempt to add entity "
-       + entityRecord.getEntity().getErrorIdString()
-       + " to Entities which already exists there."
-       + " Entity is not added, existing one will be used");
-      return existingRecord.getEntity();
+      ERROR("Attempt to add entity " + entity.getErrorIdString()
+       + " to Entities which already exists there. Entity is"
+       + " not added, existing one will be used");
+      return existingEntity;
     }
 
-    // Add entity record to hashmap under entity's id.
-    this.records.set(id, entityRecord);
+    this.entities.set(id, entity);
 
-    return entityRecord.getEntity();
+    return entity;
   }
 
+  /// To be deleted.
+  /*
   // Removes entity from memory but doesn't delete it from disk
   // (this is used for example when player quits the game).
   //   Also removes entity from entity lists so it can no
@@ -321,7 +348,7 @@ export abstract class Entities
     // Remove entity from entity lists so it can no longer be searched for.
     entity.removeFromLists();
 
-    let entityRecord = this.records.get(entity.getId());
+    let entityRecord = this.entities.get(entity.getId());
 
     if (!entityRecord)
     {
@@ -331,7 +358,7 @@ export abstract class Entities
     }
 
     // Remove the record from hashmap.
-    this.records.delete(entity.getId());
+    this.entities.delete(entity.getId());
 
     // Invalidate internal 'entity' reference in proxy handler
     // so the entity can be freed from memory by garbage collector.
@@ -339,6 +366,7 @@ export abstract class Entities
     //  by it's proxy handler as error).
     entityRecord.invalidate();
   }
+  */
 
   // -> Returns 'null' if 'prototypeId doesn't identify a root
   //    prototype object or if such root prototye entity already
@@ -351,7 +379,7 @@ export abstract class Entities
     if (!prototype)
       return null
 
-    if (Prototypes.get(className))
+    if (Prototypes.has(className))
     {
       ERROR("Attempt to create root prototype entity which"
         + " already exists. Entities with 'className' as"
@@ -382,7 +410,7 @@ export abstract class Entities
     // on the new instance (so that changing the value on prototype
     // will change the value for all instances that don't have that
     // property overriden).
-    let bareEntity: Entity = Object.create(prototype);
+    let entity: Entity = Object.create(prototype);
 
     // Prototype inheritance in Javascript handles nonprimitive
     // properties as direct references to such properties in
@@ -390,9 +418,9 @@ export abstract class Entities
     // inside a nonprimitive property changes the value on the
     // prototype, not on the instance. To prevent this, we need
     // to manually instantiate all nonprimitive properties.
-    this.instantiateProperties(bareEntity, prototype);
+    this.instantiateProperties(entity, prototype);
 
-    return bareEntity;
+    return entity;
   }
 
   // Ensures that all non-primitive properties of 'prototype'
@@ -442,9 +470,30 @@ export abstract class Entities
     // are instantiated (they are 'own' properties of object) are
     // not overwritten.
     if (!object.hasOwnProperty(propertyName))
+    {
+      // Properties of type Map or Set can't be instantiated using
+      // Object.create() because accessing them would thrown an exception,
+      // so we will just create a new instance of Map() or Set().
+      // (This means that prototypal inheritance won't really work for Map
+      //  or Set - instance won't have access to these properties on the
+      //  prototype - but at least it prevents changing the prototype by
+      //  writing to it's instance.
+      if (Utils.isMap(object[propertyName]))
+      {
+        object[propertyName] = new Map();
+        return;   // No need to instantiate 'new Map()' further.
+      }
+      
+      if (Utils.isSet(object[propertyName]))
+      {
+        object[propertyName] = new Set();  
+        return;   // No need to instantiate 'new Set()' further.
+      }
+
       // Object.create() will create a new {}, which will have
       // prototype[propertyName] as it's prototype object.
       object[propertyName] = Object.create(prototype[propertyName]);
+    }
 
     // Property we have just instantiated may have it's own
     // non-primitive properties that also need to be instantiated.
@@ -454,6 +503,8 @@ export abstract class Entities
     this.instantiateProperties(object[propertyName], prototype[propertyName]);
   }
 
+  /// To be deleted.
+  /*
   // -> Returns registered and proxified entity,
   //   'null' if entity couldn't be registered or proxified.
   private proxifyAndRegisterEntity(prototype: Entity, bareEntity: Entity)
@@ -473,7 +524,10 @@ export abstract class Entities
     //   In case of error entity will be 'null'.
     return this.add(entityRecord);
   }
+  */
 
+  /// To be deleted.
+  /*
   // Creates a Javascript Proxy Object that will trap access
   // of entity properties (using EntityProxyHandler we have
   // just created) and report en error if it becomes invalid.
@@ -482,7 +536,10 @@ export abstract class Entities
   {
     return new Proxy({}, handler);
   }
+  */
 
+  /// To be deleted.
+  /*
   // -> Returns EntityProxyHandler for 'bareEntity'.
   private createProxyHandler(bareEntity: Entity)
   {
@@ -493,7 +550,10 @@ export abstract class Entities
 
     return handler;
   }
+  */
 
+  /// To be deleted.
+  /*
   // -> Returns existing reference if entity already exists in Entities.
   //    Returns invalid reference if entity with such 'id' isn't there.
   private getReference(id: string): Entity
@@ -505,11 +565,12 @@ export abstract class Entities
 
     return this.createInvalidReference(id);
   }
+  */
 
   // Creates an invalid entity reference.
   // (This is used when an entity that is being deserialized has
   //  a reference to an entity that doesn't exist at the moment.)
-  private createInvalidReference(id: string)
+  private static createInvalidReference(id: string)
   {
     let ref =
     {
@@ -522,7 +583,10 @@ export abstract class Entities
       getId: function() { return this.id; }
     }
 
-    return ref;
+    // This typecast is wrong of course, but that's
+    // the point - access of invalid reference should
+    // generate a runtime error.
+    return <any>ref;
     /*
     let handler = new EntityProxyHandler();
 

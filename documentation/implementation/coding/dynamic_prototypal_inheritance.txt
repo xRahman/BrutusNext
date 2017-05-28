@@ -99,3 +99,30 @@ done by inheriting all game objects from class Entity.
 - Each instance of any Entity is assigned a unique id at it's creation.
 - All entities are stored in EntityManager.
 - Any entity can be used as prototype object for other entities.
+
+Trouble with Map and Set
+-------------------------
+Properties of type Map and Set can't be inherited for two reasons:
+1) If we create {} with original Map or Set as a prototype object,
+   attempt to use any method of this 'Map' or 'Set' will throw an
+   exception, because {} is not really Map or Set.
+2) Even if it worked, methods like Map.set() wouldn't create a new Map
+   object on a {} instance before writing to it, so they would probably
+   change the prototype.
+
+   Solution:
+   ----------
+   To circumvent the problem, instead of creating {} when instantiating
+   a property of type Set or Map, we areate a new empty Set or Map object.
+   - This is not really an inheritance, because an istance will not have
+     access to the Map or Set of the prototype, but it will ensure that
+     writing to the property of an instance will not change the prototype.
+
+   If you want to inherit some items from a property of the prototype and
+   be able to add more of them on the instance, use property of type Object
+   (instead of Map) or Array (instead of Set).
+
+   (Fortunately, Array is inherited correctly by Object.create(). If you
+    have array[1] on the prototype and you do push(2) on the instance,
+    prototype will still have array[1] and instance will have array[1, 2]
+    - exactly as expected.)

@@ -18,74 +18,13 @@ import {ContainerEntity} from '../../server/lib/entity/ContainerEntity';
 
 export class GameEntity extends ContainerEntity
 {
-  /*
-  /// TEST
-
-  protected testVariable = "Hello World!";
-  protected static testVariable = { isSaved: false };
-  protected static testStaticVariable = "GameEntityStaticVariable";
-  //public test() { console.log("GameEntity::" + this.className); }
-  public test()
-  {
-    console.log("GameEntity::" + GameEntity['testStaticVariable']);
-  }
-  */
-
-  /*
-  // If you were wondering why 'name' isn't passed to constructor,
-  // it's because of dynamic instantiation while loading from file.
-  // While it's possible to pass arguments to dynamically called
-  // constructor, it would be difficult to pass it a name before
-  // anything was actually loaded yet.
-  constructor(prototypeId: EntityId)
-  {
-    super();
-
-    if (prototypeId !== undefined)
-    {
-      this.prototypeId = prototypeId;
-
-      if (prototypeId === null)
-        this.initializePrototypeData();
-    }
-  }
-  */
-
   //------------------ Public data ----------------------
 
-  /// Tohle je v NamedEntity
-  /*
-  public name = "Unnamed Entity";
-  public isNameUnique = false;
-  */
   public aliases: Array<String> = [];
 
   // --------------- Public accessors -------------------
 
-  /*
-  public get connection(): Connection
-  {
-    // We need to return null if connectionId is null, because
-    // if accessing connection when connectionId is null
-    // was considered an error, saving game entity with null id would crash
-    // (even if id is not actually saved, crash would occur on attempt
-    // to find out if connection property is SaveableObject).
-    //    It's proabably better to be able to check connection to
-    // be null anyways, because it's intuitive way to do it (instead of
-    // having to check if connectionId is null).
-    if (this.connectionId === null)
-      return null;
-
-    return this.connectionId.getEntity({ typeCast: Connection });
-  }
-  */
-
-  /// Moved to /shared/lib/entity/ContainerEntity
-  ///public setLocation(location: ContainerEntity) { this.location = location; }
-  ///public getLocation() { return this.location; }
-
   // -------------- Protected accessors -----------------
-
 
   // ---------------- Public methods --------------------
 
@@ -95,7 +34,10 @@ export class GameEntity extends ContainerEntity
     /// nejspíš: CommandInterpretter.processCommand(command);
   }
 
-    // -> Returns 'null' if directory cannot be composed.
+
+  /// To be deleted.
+  /*
+  // -> Returns 'null' if directory cannot be composed.
   public static getPrototypeSaveDirectory()
   {
     // Note:
@@ -152,6 +94,7 @@ export class GameEntity extends ContainerEntity
     // will be something like: '/Room/SystemRoom/'
     return ancestorDirectory + ancestorClassName + '/';
   }
+  */
 
   // Send message to this entity.
   public receive

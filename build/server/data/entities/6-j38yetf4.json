@@ -1,0 +1,48 @@
+{
+  "name": "BrutusNext World",
+  "className": "World",
+  "instanceIds":
+  {
+    "className": "Serializable"
+  },
+  "descendantIds":
+  {
+    "className": "Serializable"
+  },
+  "sNames":
+  {
+    "className": "Serializable"
+  },
+  "contents":
+  {
+    "className": "EntityList"
+  },
+  "aliases": [],
+  "prototypeEntity":
+  {
+    "className": "Serializable"
+  },
+  "nameCathegory": 3,
+  "systemRealm":
+  {
+    "className": "Serializable"
+  },
+  "systemArea":
+  {
+    "className": "Serializable"
+  },
+  "systemRoom":
+  {
+    "className": "Serializable"
+  },
+  "tutorialRoom":
+  {
+    "className": "Serializable"
+  },
+  "version": 0,
+  "prototypeName": null,
+  "sName": null,
+  "sLocation": null,
+  "location": null,
+  "connection": null
+}

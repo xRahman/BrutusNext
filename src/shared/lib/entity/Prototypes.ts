@@ -17,22 +17,16 @@ export abstract class Prototypes
   // Value: prototype entity
   protected prototypes = new Map<string, Entity>();
 
-  // -> Returns 'null' if prototype with requested 'prototypeName' isn't found.
+  // -> Returns 'undefined' if reqeusted prototype isn't found.
   public static get(prototypeName: string)
   {
-    return App.getPrototypes().get(prototypeName);
+    return App.getPrototypes().prototypes.get(prototypeName);
+  }
+
+  public static has(prototypeName: string)
+  {
+    return App.getPrototypes().prototypes.has(prototypeName);
   }
 
   public abstract async init(entityClasses: Array<string>);
-
-  // -> Returns 'null' if reqeusted prototype isn't found.
-  private get(prototypeName: string)
-  {
-    let prototype = this.prototypes.get(prototypeName);
-
-    if (!prototype)
-      return null;
-
-    return prototype;
-  }
 }
