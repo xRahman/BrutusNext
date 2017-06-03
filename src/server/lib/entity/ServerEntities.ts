@@ -144,7 +144,7 @@ export class ServerEntities extends Entities
       return null;
     }
 
-    return await ServerApp.getEntities().createNewEntity
+    let entity = await ServerApp.getEntities().createNewEntity
     (
       prototype,
       // 'name' (root prototype entities don't have an entity name).
@@ -154,6 +154,10 @@ export class ServerEntities extends Entities
       // 'isPrototype'
       true
     );
+
+    ServerEntities.save(entity);
+
+    return entity;
   }
 
   public static async isNameTaken
@@ -448,12 +452,16 @@ export class ServerEntities extends Entities
     // descendantIds (that wouldn't work because we have just created it).
     entity[Entity.PROTOTYPE_ENTITY_PROPERTY] = null;
 
-    // Even though prototype object is already set using
-    // Object.create() when creating a new entity, we still
-    // need to setup our internal link to the prototype entity
-    // and set our entity's id to the prototype entity's list
-    // of descendants.
-    entity.setPrototypeEntity(prototype, isPrototype);
+    // Don't change 'null' value of 'prototypeEntity' if 'prototype'
+    // is a root object (which have 'null' value of 'id' property)
+    // (root objects are not true entities).
+    if (prototype[Entity.ID_PROPERTY] !== null)
+      // Even though prototype object is already set using
+      // Object.create() when creating a new entity, we still
+      // need to setup our internal link to the prototype entity
+      // and set our entity's id to the prototype entity's list
+      // of descendants.
+      entity.setPrototypeEntity(prototype, isPrototype);
 
     if (name !== null)
     {
