@@ -199,15 +199,14 @@ export class Serializable extends Attributable
   {
     let jsonObject: Object = {};
 
-    // A little hack - save 'name' property first (out of order)
+    // A little hack - serialize 'name' property first (out of order)
     // to make saved JSON files more readable.
-    if ('name' in this)
+    // (Only if it's own property though - if we are inheriting it,
+    //  we can't save it.)
+    if (this.hasOwnProperty('name'))
       jsonObject['name'] = this['name'];
 
-    // Anoter hack - save 'className'.
-    // (There is no 'className' property on Serializable objects,
-    //  it is used to save the name of the javascript class - which
-    //  is the 'name' property of the class constructor.)
+    // Anoter readability hack - serialize 'className'.
     jsonObject[Serializable.CLASS_NAME_PROPERTY] = this.getClassName();
 
     // Cycle through all properties in source object.
@@ -217,13 +216,24 @@ export class Serializable extends Attributable
       if (propertyName === 'name')
         continue;
 
+      // Skip inherited properties (they are serialized on prototype entity).
+      if (!this.hasOwnProperty(propertyName))
+        continue;
+
+      let sourceProperty = this[propertyName];
+      
+      // Also skip properties that are instantiated (because they are
+      // nonprimitive) but are completely inherited from prototype.
+      if (!this.hasOwnValue(sourceProperty))
+        continue
+
       // Check if property is to be serialized in this serialization mode.
       if (!this.isSerialized(propertyName, mode))
         continue;
 
       let serializeParam: SerializeParam =
       {
-        sourceProperty: this[propertyName],
+        sourceProperty: sourceProperty,
         description: propertyName,
         className: this.getClassName(),
         mode: mode
@@ -365,6 +375,52 @@ export class Serializable extends Attributable
     return jsonArray;
   }
 
+  private hasOwnValue(object: any): boolean
+  {
+    /// Deprecated.
+    /*
+    // When an instance is created from an Array using
+    // Object.create([0]), it behaves as a regular Object:
+    // instance.hasOwnProperty('0') will be 'false' (because
+    // this first item is inherited from prototype.
+    //   If you do instance.push(1), instance.hasOwnProperty('0')
+    // will still be 'false' and instance.hasOwnProperty('1')
+    // will be true (because property '1). There will also be
+    // an own property 'length' defined by you pop - and that's
+    // what we are going to exploit to find out that an instance
+    // of an array has own value (rather than being completely
+    // inherited from prototype).
+    if (Utils.isArray(value) && !value.hasOwnProperty('length'))
+      return false;
+    */
+
+    // Properties of primitive types are always serialized.
+    if (Utils.isPrimitiveType(object))
+      return true;
+
+    if (Utils.isMap(object) || Utils.isSet(object))
+    {
+      // Maps and Sets are always instantiated as 'new Map()'
+      // or 'new Set()'. We only serialize them if they contain
+      // anything.
+      return object.size !== 0;
+    }
+
+    // Other objects (nonprimitive properties) are only saved
+    // if they contain any own (not inherited) properties which
+    // have own (not inherited) value themselves.
+    for (let propertyName in object)
+    {
+      if (!object.hasOwnProperty(propertyName))
+        continue;
+      
+      if (this.hasOwnValue(object[propertyName]))
+        return true;
+    }
+
+    return false;
+  }
+
 //+
   // The purpose of manual saving of properties of primitive Objects
   // is to determine if some of them are SaveableObjects so they need
@@ -382,15 +438,22 @@ export class Serializable extends Attributable
     // Serialize all properties of sourceObject.
     for (let propertyName in sourceObject)
     {
+      let sourceProperty = sourceObject[propertyName];
+
+      // Skip properties that are instantiated (because they are
+      // nonprimitive) but are completely inherited from prototype.
+      if (!this.hasOwnValue(sourceProperty))
+        continue;
+
       // Setup a new serialize param.
       let serializeParam: SerializeParam =
       {
-        sourceProperty: sourceObject[propertyName],
+        sourceProperty: sourceProperty,
         description: propertyName,
         className: 'Object',
         mode: param.mode
       }
-
+      
       jsonObject[propertyName] = this.serializeProperty(serializeParam);
     }
 

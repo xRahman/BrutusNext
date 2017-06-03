@@ -15,6 +15,81 @@ import {Prototypes} from '../../../shared/lib/entity/Prototypes';
 import {Entity} from '../../../shared/lib/entity/Entity';
 //import {Entity} from '../../../shared/lib';
 
+/// Experiment s Proxy pro property typu Date, Set, Map, atd.
+/// - nefunguje, date.toJSON() pořád vyhazuje výjimku
+///    'Method Date.prototype.valueOf called on incompatible
+///     receiver [object Object]'
+///   Což znamená, že valueOf() má pořád špatně 'this' (objekt
+///   vyrobený pomocí Object.create() místo jedné ze dvou interních
+///   hodnot proxy handleru)...
+/*
+class PropertyProxyHandler
+{
+  private static setters = new Set
+  (
+    [
+      // Setters of 'Date' class.
+      'setDate',
+      'setFullYear',
+      'setHours',
+      'setMilliseconds',
+      'setMinutes',
+      'setMonth',
+      'setSeconds',
+      'setTime',
+      'setUTCDate',
+      'setUTCFullYear',
+      'setUTCHours',
+      'setUTCMilliseconds',
+      'setUTCMinutes',
+      'setUTCMonth',
+      'setUTCSeconds',
+      'setYear'
+    ]
+  );
+
+  // Proxified instantiated property always contain
+  // a new 'own' value, but it is not accessed unless
+  // someone tries to write to it using a setter method.
+  private isOwnProperty = false;
+
+  constructor(private prototypeValue, private ownValue) {}
+
+  // A trap for getting property values.
+  public get(target: any, property: any): any
+  {
+    if (this.isOwnProperty)
+      return Reflect.get(this.ownValue, property);
+
+    // Accessing a setter will flip 'isOwnProperty' flag
+    // so that 'own' value is accessed from now on.
+    // (We suppose that if anyone 'gets' a setter method,
+    //  he will also use it to set a value to this property.)
+    if (PropertyProxyHandler.setters.has(property))
+    {
+      this.isOwnProperty = true;
+
+      // And we return the setter of the 'ownValue' so
+      // it will be modified instead of prototype.
+      return Reflect.get(this.ownValue, property);
+    }
+
+    // If a non-setter property is accessed and we are
+    // not yet flagged as 'own' property, prototype
+    // value is read.
+    return Reflect.get(this.prototypeValue, property);
+  }
+
+  public apply(target, thisArg, argumentsList)
+  {
+    if (this.isOwnProperty)
+      return Reflect.apply(target, this.ownValue, argumentsList);
+    else
+      return Reflect.apply(target, this.prototypeValue, argumentsList);
+  }
+}
+*/
+
 export abstract class Entities
 {
   //------------------ Private data ---------------------
@@ -453,10 +528,12 @@ export abstract class Entities
       return;
     }
 
+    let prototypeProperty = prototype[propertyName];
+
     // There is no point of instantating properties that don't exist
     // on prototype object or have 'null' value on it.
-    if (prototype[propertyName] === undefined
-        || prototype[propertyName] === null)
+    if (prototypeProperty === undefined
+        || prototypeProperty === null)
       return;
 
     // Primitive properties (numbers, strings, etc) don't have to
@@ -478,21 +555,38 @@ export abstract class Entities
       //  or Set - instance won't have access to these properties on the
       //  prototype - but at least it prevents changing the prototype by
       //  writing to it's instance.
-      if (Utils.isMap(object[propertyName]))
+      if (Utils.isMap(prototypeProperty))
       {
         object[propertyName] = new Map();
-        return;   // No need to instantiate 'new Map()' further.
+        return;
       }
       
-      if (Utils.isSet(object[propertyName]))
+      if (Utils.isSet(prototypeProperty))
       {
         object[propertyName] = new Set();  
-        return;   // No need to instantiate 'new Set()' further.
+        return;
+      }
+
+      if (Utils.isDate(prototypeProperty))
+      {
+        // Copy the value from the prototype.
+        object[propertyName] = new Date(prototypeProperty.toString());
+        return;
+
+        /// Experiment s Proxy pro instance properties typu Date, Map a Set
+        /// (nefunguje, viz komentář u PropertyProxyHandler).
+        /*
+        let ownValue = new Date(0);
+        let handler = new PropertyProxyHandler(prototypeProperty, ownValue);
+
+        object[propertyName] = new Proxy(ownValue, handler);
+        return;
+        */
       }
 
       // Object.create() will create a new {}, which will have
-      // prototype[propertyName] as it's prototype object.
-      object[propertyName] = Object.create(prototype[propertyName]);
+      // 'prototypeProperty' as it's prototype object.
+      object[propertyName] = Object.create(prototypeProperty);
     }
 
     // Property we have just instantiated may have it's own
@@ -501,6 +595,19 @@ export abstract class Entities
     // have already been instantiated on 'object', because there
     // still may be some changes deeper in the structure).
     this.instantiateProperties(object[propertyName], prototype[propertyName]);
+  }
+
+  private instantiateDate(instance: Date, prototype: Date)
+  {
+    ///let instance = Object.create(prototype);
+
+    instance['_internalValue'] = null;
+
+    Date.prototype.valueOf = function()
+    {
+      return 1;
+    }
+
   }
 
   /// To be deleted.
