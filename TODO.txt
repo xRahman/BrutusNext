@@ -3,8 +3,31 @@ TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 
 ---------------------------------------------------------------
 
+IDEA:
+- nesavovat Set a Map, pokud jsou prázdné
+  (ono to asi moc nepomůže, protože se stejně v instantiate() vyrobí
+    nové prázdné...)
+[done]
+TODO: necheckovat jen Array (a own property 'length'), ale prostě přítomnost
+  libovolné own property.
+  - ta own property navíc musí mít v sobě nějakou savovatelnou value, jinak
+    nemá smysl ji savovat.
+[done]
+
+
+TODO: Savovat prototypy, když z nich udělám instanci nebo ancestora.
+[done]
+
+TODO: Serializovat jen own properties.
+[done]
+
+TODO: Savovat name lock fily.
+
 TODO: index.ts asi nepůjde použít, importy pak nefungují, jak mají.
 (takže zrušit ten testovací v /shared/lib).
+
+TODO: setPrototypeEntity() by asi měla mít jen ServerEntity
+  (a tudíž pak půjde volat ServerEntities.save() místo Entities.save()).
 
 ---------------------------------------------------------------
 

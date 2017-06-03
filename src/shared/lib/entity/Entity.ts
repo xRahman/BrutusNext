@@ -251,6 +251,10 @@ export class Entity extends Serializable
       prototypeEntity.addInstanceId(this.getId());
 
     this.prototypeEntity = prototypeEntity;
+
+    // Save the prototype entity because we have just added
+    // a descendant or an instance to it.
+    Entities.save(prototypeEntity);
   }
 
   public getInstanceIds()
@@ -574,7 +578,7 @@ export class Entity extends Serializable
 
     if (!id)
     {
-      FATAL_ERROR("Attempt to serialize an entity with invalid id");
+      FATAL_ERROR("Attempt to serialize an entity with an invalid id");
       return;
     }
 
