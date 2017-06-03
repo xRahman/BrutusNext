@@ -100,12 +100,12 @@ done by inheriting all game objects from class Entity.
 - All entities are stored in EntityManager.
 - Any entity can be used as prototype object for other entities.
 
-Trouble with Map and Set
+Trouble with Map, Set and Date
 -------------------------
-Properties of type Map and Set can't be inherited for two reasons:
-1) If we create {} with original Map or Set as a prototype object,
-   attempt to use any method of this 'Map' or 'Set' will throw an
-   exception, because {} is not really Map or Set.
+Properties of type Map, Set and Date can't be inherited for two reasons:
+1) If we create {} with original Map, Set or date as a prototype object,
+   attempt to use any method of this 'Map', 'Set' or 'Date' will throw an
+   exception, because {} is not really Map, Set or Date.
 2) Even if it worked, methods like Map.set() wouldn't create a new Map
    object on a {} instance before writing to it, so they would probably
    change the prototype.
@@ -113,9 +113,10 @@ Properties of type Map and Set can't be inherited for two reasons:
    Solution:
    ----------
    To circumvent the problem, instead of creating {} when instantiating
-   a property of type Set or Map, we areate a new empty Set or Map object.
+   a property of type Map, Set or Date, we areate a new empty Map, Set or
+   Date object.
    - This is not really an inheritance, because an istance will not have
-     access to the Map or Set of the prototype, but it will ensure that
+     access to the Map, Set or Date of the prototype, but it will ensure that
      writing to the property of an instance will not change the prototype.
 
    If you want to inherit some items from a property of the prototype and
@@ -126,3 +127,7 @@ Properties of type Map and Set can't be inherited for two reasons:
     have array[1] on the prototype and you do push(2) on the instance,
     prototype will still have array[1] and instance will have array[1, 2]
     - exactly as expected.)
+
+  If you want to correctly inherit a date property, save an number instead
+  of Date (and convert it to a Date when you need it). Conversion dan be
+  done by Date.getTime() and Date.setTime().
