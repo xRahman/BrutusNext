@@ -34,8 +34,6 @@ import {Utils} from '../../../shared/lib/utils/Utils';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {PropertyAttributes} from
   '../../../shared/lib/class/PropertyAttributes';
-/*import {EntityProxyHandler} from
-  '../../../shared/lib/entity/EntityProxyHandler';*/
 import {Entities} from '../../../shared/lib/entity/Entities';
 
 // Note: Entity can't be abstract class, because variable 'Entity'
@@ -580,17 +578,12 @@ export class Entity extends Serializable
       return;
     }
 
-    let saver = new Serializable();
+    let saver = Serializable.createSaver(Serializable.REFERENCE_CLASS_NAME);
 
     // Entity is saved as it's string id to property 'id'.
     saver[Entity.ID_PROPERTY] = id;
 
-    // We can't override 'className' property, because it's an accessor
-    // (see NamedClass.className), so we use Proxy to trap acces to
-    // 'className' to return our desired value instead.
-    //   This is done so that our return value will save with 'className'
-    // 'Reference' instead of 'Serializable'.
-    return this.createSaveProxy(saver, Entity.REFERENCE_CLASS_NAME);
+    return saver;
   }
 
   // ~ Overrides Serializable.readEntityReference().

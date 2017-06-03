@@ -1,0 +1,54 @@
+{
+  "name": "System Room",
+  "className": "Room",
+  "instanceIds":
+  {
+    "className": "Set",
+    "version": 0,
+    "set": []
+  },
+  "descendantIds":
+  {
+    "className": "Set",
+    "version": 0,
+    "set": []
+  },
+  "sNames":
+  {
+    "className": "Map",
+    "version": 0,
+    "map": []
+  },
+  "contents":
+  {
+    "className": "EntityList",
+    "entities":
+    {
+      "className": "Set",
+      "version": 0,
+      "set": []
+    },
+    "version": 0
+  },
+  "aliases": [],
+  "extraDescriptions": [],
+  "prototypeEntity":
+  {
+    "className": "Reference",
+    "version": 0,
+    "id": "3-j3h2v11g"
+  },
+  "nameCathegory": 3,
+  "location":
+  {
+    "className": "Reference",
+    "version": 0,
+    "id": "8-j3h2v11g"
+  },
+  "version": 0,
+  "prototypeName": null,
+  "sName": null,
+  "sLocation": null,
+  "connection": null,
+  "description": "Unfinished room."
+}

@@ -1,0 +1,62 @@
+{
+  "name": "System Area",
+  "className": "Area",
+  "instanceIds":
+  {
+    "className": "Set",
+    "version": 0,
+    "set": []
+  },
+  "descendantIds":
+  {
+    "className": "Set",
+    "version": 0,
+    "set": []
+  },
+  "sNames":
+  {
+    "className": "Map",
+    "version": 0,
+    "map": []
+  },
+  "contents":
+  {
+    "className": "EntityList",
+    "entities":
+    {
+      "className": "Set",
+      "version": 0,
+      "set": [
+      {
+        "className": "Reference",
+        "version": 0,
+        "id": "9-j3h2v11g"
+      },
+      {
+        "className": "Reference",
+        "version": 0,
+        "id": "a-j3h2v11g"
+      }]
+    },
+    "version": 0
+  },
+  "aliases": [],
+  "prototypeEntity":
+  {
+    "className": "Reference",
+    "version": 0,
+    "id": "2-j3h2v11g"
+  },
+  "nameCathegory": 3,
+  "location":
+  {
+    "className": "Reference",
+    "version": 0,
+    "id": "7-j3h2v11g"
+  },
+  "version": 0,
+  "prototypeName": null,
+  "sName": null,
+  "sLocation": null,
+  "connection": null
+}
