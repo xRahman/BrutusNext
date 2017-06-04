@@ -226,31 +226,6 @@ export abstract class Entities
   }
 
   // --------------- Protected methods ------------------
-  
-  /// To be deleted.
-  /*
-  // -> Returns 'false' if name change isn't allowed.
-  protected abstract async requestName
-  (
-    id: string,
-    name: string,
-    cathegory: Entity.NameCathegory
-  );
-  */
-
-  /// To be deleted.
-  /*
-  protected abstract async releaseName
-  (
-    name: string,
-    cathegory: Entity.NameCathegory
-  );
-  */
-
-  /// Tohle teď umí jen ServerEntities.
-  /*
-  protected abstract generateId(): string;
-  */
 
   protected abstract async saveEntity(entity: Entity);
   protected abstract async loadEntityById(id: string): Promise<Entity>;

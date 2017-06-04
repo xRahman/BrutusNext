@@ -12,6 +12,7 @@ import {Serializable} from '../../../shared/lib/class/Serializable';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {Entities} from '../../../shared/lib/entity/Entities';
 import {Prototypes} from '../../../shared/lib/entity/Prototypes';
+import {ServerPrototypes} from '../../../server/lib/entity/ServerPrototypes';
 import {ServerApp} from '../../../server/lib/app/ServerApp';
 import {NameLock} from '../../../server/lib/entity/NameLock';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
@@ -31,7 +32,7 @@ export class ServerEntities extends Entities
   private idProvider: IdProvider = null;
 
   // ------------- Public static methods ----------------
-
+  
   // Attempts to create a name lock file.
   // -> Returns 'false' if name change isn't allowed.
   public static async requestName
@@ -41,7 +42,33 @@ export class ServerEntities extends Entities
     cathegory: Entity.NameCathegory
   )
   {
-    return await ServerApp.getEntities().requestName(id, name, cathegory);
+    // Non-unique names are always available.
+    if (cathegory === null)
+      return true;
+
+    /*
+    if (isPrototype)
+    {
+      ERROR("Attempt to request unique name '" + name + "' in"
+        + " cathegory '" + Entity.NameCathegory[cathegory] + "'"
+        + " for a prototype entity. That's not allowed - name will"
+        + " be inherited (and thus duplicated) when an instance or"
+        + " a descendant prototype is created from this prototype"
+        + " entity so it's not possible to ensure that it's name"
+        + " will stay unique. Name is not set");
+      return false;
+    }
+    */
+
+    if (ServerEntities.isNameTaken(name, cathegory))
+      return false;
+
+    return await NameLock.save
+    (
+      id,
+      name,
+      Entity.NameCathegory[cathegory]
+    );
   }
 
   public static async releaseName
@@ -50,7 +77,11 @@ export class ServerEntities extends Entities
     cathegory: Entity.NameCathegory
   )
   {
-    return await ServerApp.getEntities().releaseName(name, cathegory);
+    await NameLock.delete
+    (
+      name,
+      Entity.NameCathegory[cathegory]
+    );
   }
 
   // Creates a new instance entity with a new id (can't be used as prototype).
@@ -74,8 +105,16 @@ export class ServerEntities extends Entities
       return null;
     }
 
+    let id = ServerEntities.generateId();
+
+    // Make sure that 'name' is available and create a name lock file
+    // for it if it's supposed to be unique.
+    if (!await this.createName(id, name, cathegory))
+      return null;
+
     let entity = await ServerApp.getEntities().createNewEntity
     (
+      id,
       prototype,
       name,
       cathegory,
@@ -87,6 +126,34 @@ export class ServerEntities extends Entities
       ERROR("Failed to create new instance entity");
       return null;
     }
+
+    // Dynamically check that entity is an
+    // instance of type T and typecast to it.
+    return entity.dynamicCast(typeCast);
+  }
+
+  private static async createPrototypeEntity<T extends Entity>
+  (
+    typeCast: { new (...args: any[]): T },
+    prototype: Entity,
+    prototypeName: string
+  )
+  {
+    let id = this.generateId();
+
+    if (!await this.createPrototypeName(id, prototypeName))
+      return null;
+
+    let entity = await ServerApp.getEntities().createNewEntity
+    (
+      id,
+      prototype,
+      name,
+      null,   // 'nameCathegory' - entity name of prototype can't be unique.
+      true    // 'isPrototype'
+    );
+
+    await ServerEntities.save(entity);
 
     // Dynamically check that entity is an
     // instance of type T and typecast to it.
@@ -118,17 +185,12 @@ export class ServerEntities extends Entities
       return null;
     }
 
-    let entity = await ServerApp.getEntities().createNewEntity
+    return this.createPrototypeEntity
     (
+      typeCast,
       ancestor,
-      name,
-      null,   // 'nameCathegory' - entity name of prototype can't be unique.
-      true    // 'isPrototype'
+      prototypeName
     );
-
-    // Dynamically check that entity is an
-    // instance of type T and typecast to it.
-    return entity.dynamicCast(typeCast);
   }
 
   // Creates a new prototype entity with a new id.
@@ -144,6 +206,14 @@ export class ServerEntities extends Entities
       return null;
     }
 
+    return this.createPrototypeEntity
+    (
+      Entity,     // Typecast.
+      prototype,
+      className   // Prototype name.
+    );
+
+    /*
     let entity = await ServerApp.getEntities().createNewEntity
     (
       prototype,
@@ -155,9 +225,10 @@ export class ServerEntities extends Entities
       true
     );
 
-    ServerEntities.save(entity);
+    await ServerEntities.save(entity);
 
     return entity;
+    */
   }
 
   public static async isNameTaken
@@ -173,11 +244,24 @@ export class ServerEntities extends Entities
     );
   }
 
+  public static async isPrototypeNameTaken(name: string)
+  {
+    return await NameLock.exists
+    (
+      name,
+      // Prototype names use separate name cathegory
+      // (which is not included in Entity.NameCathegory
+      //  because prototype names are not entity names).
+      ServerPrototypes.PROTOTYPE_NAMES_DIRECTORY
+    );
+  }
+
   // ------------- Private static methods ---------------
 
   // --------------- Protected methods ------------------
 
-  // ~ Overrides Entities.requestName().
+  /// To be deleted.
+  /*
   // Checks if requested name is available, creates
   // a name lock file if it is.
   // -> Returns 'false' if name change isn't allowed.
@@ -202,7 +286,10 @@ export class ServerEntities extends Entities
       Entity.NameCathegory[cathegory]
     );
   }
+  */
 
+  /// To be deleted.
+  /*
   protected async releaseName
   (
     name: string,
@@ -215,6 +302,7 @@ export class ServerEntities extends Entities
       Entity.NameCathegory[cathegory]
     );
   }
+  */
 
   // ~ Overrides Entities.saveEntity().
   protected async saveEntity(entity: Entity)
@@ -282,6 +370,34 @@ export class ServerEntities extends Entities
   }
 
   // ---------------- Private methods -------------------
+
+  private static generateId()
+  {
+    return ServerApp.getEntities().idProvider.generateId();
+  }
+
+  // Checks if requested prototype name is available, creates
+  // a name lock file if it is.
+  // -> Returns 'false' if name change isn't allowed.
+  private static async requestPrototypeName
+  (
+    id: string,
+    prototypeName: string
+  )
+  {
+    if (this.isPrototypeNameTaken(name))
+      return false;
+
+    return NameLock.save
+    (
+      id,
+      name,
+      // Prototype names use separate name cathegory
+      // (which is not included in Entity.NameCathegory
+      //  because prototype names are not entity names).
+      ServerPrototypes.PROTOTYPE_NAMES_DIRECTORY
+    );
+  }
 
   private getEntityFileName(id: string)
   {
@@ -398,45 +514,83 @@ export class ServerEntities extends Entities
     return prototypeId;
   }
 
+  // -> Returns 'false' if requested name isn't available.
+  private static async createPrototypeName
+  (
+    id: string,
+    prototypeName: string
+  )
+  {
+    let isNameAvailable = await this.requestPrototypeName(id, prototypeName);
+
+    if (!isNameAvailable)
+    {
+      ERROR("Attempt to create a new prototype entity (id: " + id + ")"
+        + " using prototype name '" + prototypeName + "' which is"
+        + " already taken. Prototype entity is not created");
+      return false;
+    }
+
+    return true;
+  }
+
+  // -> Returns 'false' if name isn't available.
+  private static async createName
+  (
+    id: string,
+    name: string,
+    cathegory: Entity.NameCathegory
+  )
+  {
+    // Attempt to create a name lock file.
+    let isNameTaken = await ServerEntities.requestName
+    (
+      id,
+      name,
+      cathegory
+    );
+
+    // If 'name' isn't available, we have just wasted an id.
+    // (It's unavoidable because id is written to the name lock
+    //  file so we need to generate id prior to writing the file.
+    //    We could first test if the name lock file exists of
+    //  course, but it would add a disk read operation even when
+    //  the name is available, which is by far the most common
+    //  scenario.)
+    if (isNameTaken)
+    {
+      ERROR("Attempt to create unique entity '" + name + "'"
+        + " in cathegory '" + Entity.NameCathegory[cathegory] + "'"
+        + " which already exists. Entity is not created");
+      return false;
+    }
+
+    return true;
+
+    /* 
+    {
+      {
+        ERROR("Attempt to create a prototype entity with unique name"
+          + " '" + name + "' That's not allowed - name will be inherited"
+          + " (and thus duplicated) when an instance or a descendant"
+          + " prototype is created for this prototype so it's not possible"
+          + " to ensure that name of a prototype entity will stay unique");
+      }
+    }
+    */
+  }
+
   // Creates an entity with a new id.
   // -> Returns 'null' on failure.
   private async createNewEntity
   (
+    id: string,
     prototype: Entity,
     name: string,
     cathegory: Entity.NameCathegory,
     isPrototype: boolean
   )
   {
-    // Generate a new id.
-    let id = this.idProvider.generateId();
-
-    if (name !== null && cathegory !== null)
-    {
-      // Attempt to create a name lock file.
-      let isNameTaken = await this.requestName
-      (
-        id,
-        name,
-        cathegory
-      );
-
-      // If 'name' isn't available, we have just wasted an id.
-      // (It's unavoidable because id is written to the name lock
-      //  file so we need to generate id prior to writing the file.
-      //    We could first test if the name lock file exists of
-      //  course, but it would add a disk read operation even when
-      //  the name is available, which is by far the most common
-      //  scenario.)
-      if (isNameTaken)
-      {
-        ERROR("Attempt to create unique entity '" + name + "'"
-          + " in cathegory '" + Entity.NameCathegory[cathegory] + "'"
-          + " which already exists. Entity is not created");
-        return null;
-      }
-    }
-
     let entity = this.createEntityFromPrototype(prototype, id);
 
     if (!entity)
