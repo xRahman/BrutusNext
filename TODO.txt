@@ -3,23 +3,8 @@ TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 
 ---------------------------------------------------------------
 
-IDEA:
-- nesavovat Set a Map, pokud jsou prázdné
-  (ono to asi moc nepomůže, protože se stejně v instantiate() vyrobí
-    nové prázdné...)
-[done]
-TODO: necheckovat jen Array (a own property 'length'), ale prostě přítomnost
-  libovolné own property.
-  - ta own property navíc musí mít v sobě nějakou savovatelnou value, jinak
-    nemá smysl ji savovat.
-[done]
-
-
-TODO: Savovat prototypy, když z nich udělám instanci nebo ancestora.
-[done]
-
-TODO: Serializovat jen own properties.
-[done]
+TODO: Assert, že nesetuju unikátní jméno pototypové entitě
+(a smazat ty zaremované hlášky ze ServerEntities)
 
 TODO: Savovat name lock fily.
 
@@ -28,6 +13,11 @@ TODO: index.ts asi nepůjde použít, importy pak nefungují, jak mají.
 
 TODO: setPrototypeEntity() by asi měla mít jen ServerEntity
   (a tudíž pak půjde volat ServerEntities.save() místo Entities.save()).
+
+TODO (ServerEtity.setName()):
+/// TODO: Před setnutím jména je třeba vyhodit entitu z NameListů
+/// přes this.removeFromNameLists() a pokud je to prototyp, tak taky
+/// z Prototypes. Po setnutí ji tam zase přidat.
 
 ---------------------------------------------------------------
 
@@ -75,6 +65,25 @@ Ona se vlastně moc lišit nebude.
 
 TODO: Zrušit Proxy při serializaci.
 - bacha, jsou i v Entity
+[done]
+
+IDEA:
+- nesavovat Set a Map, pokud jsou prázdné
+  (ono to asi moc nepomůže, protože se stejně v instantiate() vyrobí
+    nové prázdné...)
+[done]
+TODO: necheckovat jen Array (a own property 'length'), ale prostě přítomnost
+  libovolné own property.
+  - ta own property navíc musí mít v sobě nějakou savovatelnou value, jinak
+    nemá smysl ji savovat.
+[done]
+
+
+TODO: Savovat prototypy, když z nich udělám instanci nebo ancestora.
+[done]
+
+TODO: Serializovat jen own properties.
+[done]
 
 ---------------------------------------------------------------
 

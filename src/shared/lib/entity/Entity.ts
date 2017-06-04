@@ -655,7 +655,8 @@ export module Entity
   {
     ACCOUNT,
     CHARACTER,
-    PROTOTYPE,
+    ///PROTOTYPE, /// prototypenames are in a completely separate cathegory.
+                  /// (they are not entity names)
     // Unique world locations (Rooms, Realms, Areas, the name
     // of the world itself, etc.)
     WORLD
