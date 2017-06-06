@@ -42,11 +42,21 @@ export class ServerEntity extends Entity
 
     if (createNameLock)
     {
-      // Check if requested name is available.
-      // (This will always be false on client because entity name change
-      //  is disabled there.)
-      if (!await ServerEntities.requestName(this.getId(), name, cathegory))
+      let isNameAvailable = await ServerEntities.requestName
+      (
+        this.getId(),
+        name,
+        cathegory
+      );
+
+      if (!isNameAvailable)
+      {
+        ERROR("Attempt to set unique name '" + name + "' in"
+          + " cathegory '" + Entity.NameCathegory[cathegory] + "'"
+          + " to entity " + this.getErrorIdString() + " which"
+          + " is already taken. Name is not changed");
         return false;
+      }
     }
 
     // Make the old name available again.

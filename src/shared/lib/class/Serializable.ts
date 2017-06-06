@@ -91,7 +91,7 @@ export class Serializable extends Attributable
 
   public serialize(mode: Serializable.Mode): string
   {
-    let jsonObject = this.saveToJsonObject(this, mode);
+    let jsonObject = this.saveToJsonObject(mode);
 
     if (jsonObject === undefined)
       return "";
@@ -195,47 +195,52 @@ export class Serializable extends Attributable
   //   Properties with static attribute matching given serialization 'mode'
   // set to 'false' are not serialized.
   // -> Returns 'undefined' if serialization fails.
-  protected saveToJsonObject
-  (
-    instance: Serializable,
-    mode: Serializable.Mode
-  )
-  : Object
+  protected saveToJsonObject(mode: Serializable.Mode): Object
   {
     let jsonObject: Object = {};
 
-    // A little hack - save 'name' property first (out of order)
+    // A little hack - serialize 'name' property first (out of order)
     // to make saved JSON files more readable.
-    if ('name' in this)
+    // (Only if it's own property though - if we are inheriting it,
+    //  we can't save it.)
+    if (this.hasOwnProperty('name'))
       jsonObject['name'] = this['name'];
 
-    // Anoter hack - save 'className'.
-    // (There is no 'className' property on Serializable objects,
-    //  it is used to save the name of the javascript class - which
-    //  is the 'name' property of the class constructor.)
+    // Anoter readability hack - serialize 'className'.
     jsonObject[Serializable.CLASS_NAME_PROPERTY] = this.getClassName();
 
     // Cycle through all properties in source object.
-    for (let propertyName in instance)
+    for (let propertyName in this)
     {
       // Skip 'name' property because it's already saved by hack.
       if (propertyName === 'name')
         continue;
 
+      // Skip inherited properties (they are serialized on prototype entity).
+      if (!this.hasOwnProperty(propertyName))
+        continue;
+
+      let sourceProperty = this[propertyName];
+      
+      // Also skip properties that are instantiated (because they are
+      // nonprimitive) but are completely inherited from prototype.
+      if (!this.hasOwnValue(sourceProperty))
+        continue
+
       // Check if property is to be serialized in this serialization mode.
-      if (!this.isToBeSerialized(propertyName, mode))
+      if (!this.isSerialized(propertyName, mode))
         continue;
 
       let serializeParam: SerializeParam =
       {
-        sourceProperty: instance[propertyName],
+        sourceProperty: sourceProperty,
         description: propertyName,
-        className: instance.getClassName(),
+        className: this.getClassName(),
         mode: mode
       }
       
-      jsonObject[propertyName] =
-        instance.serializeProperty(serializeParam);
+      jsonObject[<string>propertyName] =
+        this.serializeProperty(serializeParam);
     }
 
     return jsonObject;
@@ -244,7 +249,7 @@ export class Serializable extends Attributable
 //+
   // Determines if property 'propertyName' is to be serialized
   // in given serializable 'mode'.
-  private isToBeSerialized(propertyName: string, mode: Serializable.Mode)
+  private isSerialized(propertyName: string, mode: Serializable.Mode)
   {
     // Access static variable named the same as property.
     let attributes = this.getPropertyAttributes(propertyName);
@@ -299,8 +304,11 @@ export class Serializable extends Attributable
     // If there is an 'id' in the property, we treat it as Entity.
     if (property[Serializable.ID_PROPERTY] !== undefined)
       // Entities are saved to a separate files. Only a reference
-      // (using a string id) to an entity will be saved.
-      return this.createEntitySaver(property).saveToJsonObject(mode);
+      //   (using a string id) to an entity will be saved.
+      // Note: We need to call createEntitySaver() on 'property' rather
+      //   than on 'this', because we need to run an override of Entity
+      //   class (which 'this' might not be but 'property' surely is).
+      return property.createEntitySaver(property).saveToJsonObject(mode);
 
     // property is a Serializable object (but not an entity).
     if (this.isSerializable(property))
@@ -367,6 +375,52 @@ export class Serializable extends Attributable
     return jsonArray;
   }
 
+  private hasOwnValue(object: any): boolean
+  {
+    /// Deprecated.
+    /*
+    // When an instance is created from an Array using
+    // Object.create([0]), it behaves as a regular Object:
+    // instance.hasOwnProperty('0') will be 'false' (because
+    // this first item is inherited from prototype.
+    //   If you do instance.push(1), instance.hasOwnProperty('0')
+    // will still be 'false' and instance.hasOwnProperty('1')
+    // will be true (because property '1). There will also be
+    // an own property 'length' defined by you pop - and that's
+    // what we are going to exploit to find out that an instance
+    // of an array has own value (rather than being completely
+    // inherited from prototype).
+    if (Utils.isArray(value) && !value.hasOwnProperty('length'))
+      return false;
+    */
+
+    // Properties of primitive types are always serialized.
+    if (Utils.isPrimitiveType(object))
+      return true;
+
+    if (Utils.isMap(object) || Utils.isSet(object))
+    {
+      // Maps and Sets are always instantiated as 'new Map()'
+      // or 'new Set()'. We only serialize them if they contain
+      // anything.
+      return object.size !== 0;
+    }
+
+    // Other objects (nonprimitive properties) are only saved
+    // if they contain any own (not inherited) properties which
+    // have own (not inherited) value themselves.
+    for (let propertyName in object)
+    {
+      if (!object.hasOwnProperty(propertyName))
+        continue;
+      
+      if (this.hasOwnValue(object[propertyName]))
+        return true;
+    }
+
+    return false;
+  }
+
 //+
   // The purpose of manual saving of properties of primitive Objects
   // is to determine if some of them are SaveableObjects so they need
@@ -384,15 +438,22 @@ export class Serializable extends Attributable
     // Serialize all properties of sourceObject.
     for (let propertyName in sourceObject)
     {
+      let sourceProperty = sourceObject[propertyName];
+
+      // Skip properties that are instantiated (because they are
+      // nonprimitive) but are completely inherited from prototype.
+      if (!this.hasOwnValue(sourceProperty))
+        continue;
+
       // Setup a new serialize param.
       let serializeParam: SerializeParam =
       {
-        sourceProperty: sourceObject[propertyName],
+        sourceProperty: sourceProperty,
         description: propertyName,
         className: 'Object',
         mode: param.mode
       }
-
+      
       jsonObject[propertyName] = this.serializeProperty(serializeParam);
     }
 
@@ -1156,6 +1217,16 @@ export class Serializable extends Attributable
 
   // ------------- Private static methods ---------------
 
+  protected static createSaver(className: string)
+  {
+    let saver = new Serializable();
+
+    // Fake the 'className' getter.    
+    saver['getClassName'] = function() { return className; };
+
+    return saver;
+  }
+
   // -> Returns a SaveableObject which saves Set to Json object
   //      (using it's saveToJsonObject()) as a special object
   //      with className 'Set' and property 'set' containing
@@ -1168,17 +1239,12 @@ export class Serializable extends Attributable
       return;
     }
 
-    let saver = new Serializable();
+    let saver = Serializable.createSaver(Serializable.SET_CLASS_NAME);
 
     // Set is saved as it's Array representation to property 'set'.
     saver[Serializable.SET_PROPERTY] = this.saveSetToArray(set);
 
-    // We can't override 'className' property, because it's an accessor
-    // (see NamedClass.className), so we use Proxy to trap acces to
-    // 'className' to return our desired value instead.
-    //   This is done so that our return value will save with 'className'
-    // 'Set' instead of 'Serializable'.
-    return this.createSaveProxy(saver, Serializable.SET_CLASS_NAME);
+    return saver;
   }
 
   // -> Returns a SaveableObject which saves Map to Json object
@@ -1193,17 +1259,12 @@ export class Serializable extends Attributable
       return;
     }
 
-    let saver = new Serializable();
+    let saver = Serializable.createSaver(Serializable.MAP_CLASS_NAME);
 
     // Map is saved as it's Array representation to property 'map'.
     saver[Serializable.MAP_PROPERTY] = this.saveMapToArray(map);
 
-    // We can't override 'className' property, because it's an accessor
-    // (see NamedClass.className), so we use Proxy to trap acces to
-    // 'className' to return our desired value instead.
-    //   This is done so that our return value will save with 'className'
-    // 'Map' instead of 'Serializable'.
-    return this.createSaveProxy(saver, Serializable.MAP_CLASS_NAME);
+    return saver;
   }
 
   // -> Returns a SaveableObject which saves FastBitSet to Json
@@ -1218,17 +1279,12 @@ export class Serializable extends Attributable
       return;
     }
 
-    let saver = new Serializable();
+    let saver = Serializable.createSaver(Serializable.BITVECTOR_CLASS_NAME);
 
     // Date is saved as it's JSON string representation to property 'date'.
     saver[Serializable.BITVECTOR_PROPERTY] = bitvector.toJSON();
 
-    // We can't override 'className' property, because it's an accessor
-    // (see NamedClass.className), so we use Proxy to trap acces to
-    // 'className' to return our desired value instead.
-    //   This is done so that our return value will save with 'className'
-    // 'Bitvector' instead of 'Serializable'.
-    return this.createSaveProxy(saver, Serializable.BITVECTOR_CLASS_NAME);
+    return saver;
   }
 
   // -> Returns a SaveableObject which saves Date to Json object
@@ -1243,24 +1299,19 @@ export class Serializable extends Attributable
       return;
     }
 
-    let saver = new Serializable();
+    let saver = Serializable.createSaver(Serializable.DATE_CLASS_NAME);
 
     // Date is saved as it's JSON string representation to property 'date'.
     saver[Serializable.DATE_PROPERTY] = date.toJSON();
 
-    // We can't override 'className' property, because it's an accessor
-    // (see NamedClass.className), so we use Proxy to trap acces to
-    // 'className' to return our desired value instead.
-    //   This is done so that our return value will save with 'className'
-    // 'Date' instead of 'Serializable'.
-    return this.createSaveProxy(saver, Serializable.DATE_CLASS_NAME);
+    return saver;
   }
 
   // -> Returns a SaveableObject which saves Entity to Json object
   //      (using it's saveToJsonObject()) as a special object
   //      with className 'Reference' and property 'id' containing
   //      an Array representation of hashmap contents.  
-  protected createEntitySaver(entity: Serializable)
+  protected createEntitySaver(entity: Serializable): Serializable
   {
     // Note: This method is overriden in Entity class. In order for
     //   the override to be used, root object that is being serialized
@@ -1309,6 +1360,8 @@ export class Serializable extends Attributable
     return result;
   }
 
+  /// To be deleted.
+  /*
 //+
   // -> Returns a Proxy object that traps access to 'className' property
   //      on 'object' to return 'className' param instead of original value. 
@@ -1332,6 +1385,7 @@ export class Serializable extends Attributable
     // to object's properties using our 'get' function).
     return new Proxy(saver, { get: get })
   }
+  */
 
   private objectValidityCheck(jsonObject: Object): boolean
   {

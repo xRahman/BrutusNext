@@ -15,9 +15,9 @@ import {Entity} from '../../../shared/lib/entity/Entity';
 
 export class ServerPrototypes extends Prototypes
 {
-  // Name of the directory in 'data/names' where prototype
+  // Name of directory in 'data/names' where prototype
   // name lock files are saved.
-  private static get PROTOTYPE_NAMES_DIRECTORY() { return 'prototypes'; }
+  public static get PROTOTYPE_NAMES_DIRECTORY() { return 'prototypes'; }
 
   // ---------------- Public methods --------------------
 
@@ -52,7 +52,7 @@ export class ServerPrototypes extends Prototypes
   // -> Returns 'null' on error.
   private async initRootPrototype(className: string)
   {
-    // We will use result to test if file exist.
+    // We are going to use the result to test if file exist.
     let id = await NameLock.readId
     (
       className,
