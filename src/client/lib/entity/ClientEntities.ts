@@ -15,38 +15,6 @@ export class ClientEntities extends Entities
 {
   // --------------- Protected methods ------------------
 
-  /// To be deleted.
-  /*
-  // ~ Overrides Entities.requestName().
-  // -> Returns 'false'.
-  protected async requestName
-  (
-    id: string,
-    name: string,
-    cathegory: Entity.NameCathegory
-  )
-  {
-    ERROR("Attempt to change the name of an entity."
-      + " That's not allowed on the client");
-
-    return false;
-  }
-  */
-
-  /// To be deleted.
-  /*
-  // ~ Overrides Entities.releaseName().
-  protected async releaseName
-  (
-    name: string,
-    cathegory: Entity.NameCathegory
-  )
-  {
-    ERROR("Attempt to release the name of an entity."
-      + " That's not allowed on the client");
-  }
-  */
-
   // ~ Overrides Entities.saveEntity().
   protected async saveEntity(entity: Entity)
   {
