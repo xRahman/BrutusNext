@@ -30,6 +30,10 @@ když by do toho někdo chtěl zapisovat....
  později už by se k němu nedostala.)
 (Zatím na to kašlu.)
 
+- asi lepší varianta, než hackovat protypovou dědičnost, by byla napsat
+  si vlastní Map a Set, které interně budou používat properties objektu.
+Nevýhoda: Uměly by jen stringové klíče.
+
 ---------------------------------------------------------------
 
 TODO: Zrušit Entity Proxy.
