@@ -137,10 +137,9 @@ async function main()
     AdminLevel.IMMORTAL
   );
 
-  let cmdlineParser = parseCmdlineParams();
+  let cmdline = parseCmdlineParams();
 
-  // Create an instance of ServerApp and run in at specified telnet port.
-  await ServerApp.run(cmdlineParser.port);
+  await ServerApp.run(cmdline.port);
 }
 
 // Run the main() function.

@@ -17,19 +17,19 @@ export abstract class App
 
   protected static instance: App = null;
 
-  //----------------- Protected data -------------------- 
+  //----------------- Protected data --------------------
 
   protected entities: Entities = null;
   protected prototypes: Prototypes = null;
 
   // --------------- Static accessors -------------------
 
-  public static getEntities()
+  public static get entities()
   {
     return App.getInstance().entities;
   }
 
-  public static getPrototypes()
+  public static get prototypes()
   {
     return App.getInstance().prototypes;
   }

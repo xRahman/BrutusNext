@@ -28,20 +28,20 @@ export class Accounts
   // -> Returns 'true' on success.
   public static add(account: Account)
   {
-    return ServerApp.getAccounts().names.add(account);
+    return ServerApp.accounts.names.add(account);
   }
 
   // -> Returns 'undefined' if entity 'name' isn't in the list.
   public static get(name: string)
   {
-    return ServerApp.getAccounts().names.get(name);
+    return ServerApp.accounts.names.get(name);
   }
 
   // Removes account from Accounts, but not from memory.
   // -> Returns 'true' on success.
   public static remove(account: Account)
   {
-    return ServerApp.getAccounts().names.remove(account);
+    return ServerApp.accounts.names.remove(account);
   }
 
   // Sets account name as taken in the memory but doesn't create name lock
@@ -49,27 +49,25 @@ export class Accounts
   // provided a password yet, so account hasn't yet been created.
   public static setSoftNameLock(name: string)
   {
-    ServerApp.getAccounts().nameLocks.add(name);
+    ServerApp.accounts.nameLocks.add(name);
   }
 
   // Removes a 'soft' lock on acount name.
   public static removeSoftNameLock(name: string)
   {
-    ServerApp.getAccounts().nameLocks.delete(name);
+    ServerApp.accounts.nameLocks.delete(name);
   }
 
   public static async isTaken(name: string)
   {
-    let accounts = ServerApp.getAccounts();
-
     // First check if account is already online so we can save ourselves
     // reading from disk.
-    if (accounts.names.has(name))
+    if (ServerApp.accounts.names.has(name))
       return true;
 
     // Also check for 'soft' name locks. This is used to prevent two
     // users to simultaneously create an account with the same name.
-    if (accounts.nameLocks.has(name))
+    if (ServerApp.accounts.nameLocks.has(name))
       return true;
 
     return await ServerEntities.isNameTaken

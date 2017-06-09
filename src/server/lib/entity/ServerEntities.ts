@@ -35,7 +35,7 @@ export class ServerEntities extends Entities
   
   // Attempts to create a name lock file.
   // -> Returns 'false' if name change isn't allowed.
-  public static async requestName
+  public static async requestEntityName
   (
     id: string,
     name: string,
@@ -112,7 +112,7 @@ export class ServerEntities extends Entities
     if (!await this.createName(id, name, cathegory))
       return null;
 
-    let entity = await ServerApp.getEntities().createNewEntity
+    let entity = await ServerApp.entities.createNewEntity
     (
       id,
       prototype,
@@ -144,7 +144,7 @@ export class ServerEntities extends Entities
     if (!await this.createPrototypeName(id, prototypeName))
       return null;
 
-    let entity = await ServerApp.getEntities().createNewEntity
+    let entity = await ServerApp.entities.createNewEntity
     (
       id,
       prototype,
@@ -197,7 +197,7 @@ export class ServerEntities extends Entities
   // -> Returns 'null' on failure.
   public static async createRootPrototype(className: string): Promise<Entity>
   {
-    let prototype = ServerApp.getEntities().getRootPrototypeObject(className);
+    let prototype = ServerApp.entities.getRootPrototypeObject(className);
 
     if (!prototype)
     {
@@ -373,11 +373,10 @@ export class ServerEntities extends Entities
 
   private static generateId()
   {
-    return ServerApp.getEntities().idProvider.generateId();
+    return ServerApp.entities.idProvider.generateId();
   }
 
-  // Checks if requested prototype name is available, creates
-  // a name lock file if it is.
+  // Attempts to create a name lock file.
   // -> Returns 'false' if name change isn't allowed.
   private static async requestPrototypeName
   (
@@ -543,7 +542,7 @@ export class ServerEntities extends Entities
   )
   {
     // Attempt to create a name lock file.
-    let isNameTaken = await ServerEntities.requestName
+    let isNameTaken = await ServerEntities.requestEntityName
     (
       id,
       name,
