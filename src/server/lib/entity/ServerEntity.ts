@@ -42,7 +42,7 @@ export class ServerEntity extends Entity
 
     if (createNameLock)
     {
-      let isNameAvailable = await ServerEntities.requestName
+      let isNameAvailable = await ServerEntities.requestEntityName
       (
         this.getId(),
         name,

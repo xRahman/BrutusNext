@@ -9,7 +9,12 @@
   // Controls the font size.
   "editor.fontSize": 20,
 
-  "window.zoomLevel": 1.0
+  "editor.minimap.enabled": false,
 
-   "http.proxy": "http://proxy.mlp.cz:8080/"
+  "window.zoomLevel": 0.0,
+
+  "http.proxy": "http://proxy.mlp.cz:8080/",
+  "workbench.colorTheme": "Visual Studio Light",
+  "editor.renderWhitespace": "none",
+  "editor.renderControlCharacters": false
 }

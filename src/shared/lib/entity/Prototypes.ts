@@ -15,17 +15,17 @@ export abstract class Prototypes
   /// (a mít v sobě vnořený abbrevsearchlist)
   // Key:   prototype name (which is the entity name)
   // Value: prototype entity
-  protected prototypes = new Map<string, Entity>();
+  protected prototypeList = new Map<string, Entity>();
 
   // -> Returns 'undefined' if reqeusted prototype isn't found.
   public static get(prototypeName: string)
   {
-    return App.getPrototypes().prototypes.get(prototypeName);
+    return App.prototypes.prototypeList.get(prototypeName);
   }
 
   public static has(prototypeName: string)
   {
-    return App.getPrototypes().prototypes.has(prototypeName);
+    return App.prototypes.prototypeList.has(prototypeName);
   }
 
   public abstract async init(entityClasses: Array<string>);

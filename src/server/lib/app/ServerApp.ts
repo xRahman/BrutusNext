@@ -6,7 +6,7 @@
   Manages an instance of server application.
 
   Usage:
-    import {ServerApp} from './server/lib/app/ServerApp';
+    ServerApp.createInstance();
     ServerApp.run(port);
 */
 
@@ -15,30 +15,20 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 import {App} from '../../../shared/lib/app/App';
-///import {IdProvider} from '../../../server/lib/entity/IdProvider';
-import {Classes} from '../../../shared/lib/class/Classes';
-import {ServerEntities} from
-  '../../../server/lib/entity/ServerEntities';
+import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
-///import {FlagNamesManager} from '../../../server/lib/flags/FlagNamesManager';
 import {Admins} from '../../../server/lib/admin/Admins';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
-import {Connection} from '../../../server/lib/connection/Connection';
 import {Connections} from '../../../server/lib/connection/Connections';
-import {Entity} from '../../../shared/lib/entity/Entity';
-import {EntityList} from '../../../shared/lib/entity/EntityList';
 import {ServerPrototypes} from '../../../server/lib/entity/ServerPrototypes';
 import {Accounts} from '../../../server/lib/account/Accounts';
 import {Syslog} from '../../../shared/lib/log/Syslog';
 import {ServerSyslog} from '../../../server/lib/log/ServerSyslog';
-import {Message} from '../../../server/lib/message/Message';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Game} from '../../../server/game/Game';
 import {GameEntity} from '../../../server/game/GameEntity';
 import {TelnetServer} from '../../../server/lib/net/telnet/TelnetServer';
-import {WebSocketServer} from '../../../server/lib/net/ws/WebSocketServer';
 import {HttpServer} from '../../../server/lib/net/http/HttpServer';
-import {Account} from '../../../server/lib/account/Account';
 
 export class ServerApp extends App
 {
@@ -50,15 +40,11 @@ export class ServerApp extends App
   //------------------ Private data ---------------------
 
   // 'null' means no message of the day is set at the moment.
-  private messageOfTheDay = null;
+  private messageOfTheDay: string = null;
 
-  // Keeps track of who has which admin rights.
   private admins = new Admins();
 
   private timeOfBoot = new Date();
-
-  // --- singleton instances ---
-  // (There is only one such instance per server.)
 
   private game = new Game();
 
@@ -67,69 +53,58 @@ export class ServerApp extends App
   /// Http server also runs a websocket server inside it.
   private httpServer = new HttpServer();
 
-  // --------- idLists ---------
-  // IdLists contain entity id's.
-
   private connections = new Connections();
   private accounts = new Accounts();
 
-  // -------- managers --------
   // ~ Overrides App.entities.
   protected entities = new ServerEntities(this.timeOfBoot);
 
   // ~ Overrides App.prototypes.
   protected prototypes = new ServerPrototypes();
 
-  /// Deprecated
-  // // flagNamesManager is in Server instead of Game, because flags are needed
-  // // even outside of game (for example account flags).
-  // private flagNamesManager = new FlagNamesManager();
-
   // --------------- Static accessors -------------------
 
-  public static getEntities()
+  // ~ Overrides App.entities().
+  public static get entities()
   {
-    return this.getInstance().entities;
+    return ServerApp.getInstance().entities;
   }
 
-  public static getPrototypes()
+  // ~ Overrides App.prototypes().
+  public static get prototypes()
   {
-    return this.getInstance().prototypes;
+    return ServerApp.getInstance().prototypes;
   }
 
-  public static getTimeOfBoot()
+  public static get timeOfBoot()
   {
     if (ServerApp.getInstance().timeOfBoot === null)
+    {
       ERROR("Time of boot is not initialized yet");
+    }
 
     return ServerApp.getInstance().timeOfBoot;
   }
 
-  public static getGame()
+  public static get game()
   {
     return ServerApp.getInstance().game;
   }
 
-  public static getAccounts()
+  public static get accounts()
   {
     return ServerApp.getInstance().accounts;
   }
 
-  public static getConnections()
+  public static get connections()
   {
     return ServerApp.getInstance().connections;
   }
 
-  public static getTelnetServer()
+  public static get telnetServer()
   {
     return ServerApp.getInstance().telnetServer;
   }
-
-  /// Deprecated
-  // public static get flagNamesManager()
-  // {
-  //   return ServerApp.getInstance().flagNamesManager;
-  // }
 
   // ------------- Public static methods ----------------
 
@@ -194,7 +169,9 @@ export class ServerApp extends App
   protected static getInstance(): ServerApp
   {
     if (ServerApp.instance === null || ServerApp.instance === undefined)
+    {
       FATAL_ERROR("Instance of server doesn't exist yet");
+    }
 
     // We can safely typecast here, because ServerApp.createInstance()
     // assigns an instance of ServerApp to App.instance.
@@ -224,7 +201,7 @@ export class ServerApp extends App
   protected reportFatalError(message: string)
   {
     let errorMsg = message + "\n"
-    + Syslog.getTrimmedStackTrace(Syslog.TrimType.ERROR);
+      + Syslog.getTrimmedStackTrace(Syslog.TrimType.ERROR);
 
     Syslog.log
     (
@@ -309,26 +286,11 @@ export class ServerApp extends App
 
   private async createDefaultData()
   {
-    /// Deprecated.
-    /*
-    // Mark flagNamesManager as ready without loading from file
-    // (there is nowhere to load it from so we will just start
-    //  with empty instance).
-    this.flagNamesManager.ready = true;
-    await this.flagNamesManager.save();
-    */
-
     await this.game.createDefaultWorld();
   }
 
   private async loadData()
   {
-    /// Deprecated.
-    /*
-    await this.flagNamesManager.load();
-    this.flagNamesManager.ready = true;
-    */
-
     // Load the game.
     await this.game.load();
   }

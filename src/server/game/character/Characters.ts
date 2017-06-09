@@ -8,9 +8,7 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
-///import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
 import {Entity} from '../../../shared/lib/entity/Entity';
-///import {Entities} from '../../../shared/lib/entity/Entities';
 import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
 import {AbbrevList} from '../../../server/game/search/AbbrevList';
 import {Connection} from '../../../server/lib/connection/Connection';
@@ -33,29 +31,27 @@ export class Characters
   // -> Returns 'true' on success.
   public static add(character: Character)
   {
-    return Game.getCharacters().names.add(character);
+    return Game.characters.names.add(character);
   }
 
   // -> Returns 'undefined' if entity 'name' isn't in the list.
   public static get(name: string)
   {
-    return Game.getCharacters().names.get(name);
+    return Game.characters.names.get(name);
   }
 
   // Removes character from Characters, but not from memory.
   // -> Returns 'true' on success.
   public static remove(character: Character)
   {
-    return Game.getCharacters().names.remove(character);
+    return Game.characters.names.remove(character);
   }
 
   public static async isTaken(name: string)
   {
-    let characters = Game.getCharacters();
-
     // First check if account is already online so we can save ourselves
     // reading from disk.
-    if (characters.names.has(name))
+    if (Game.characters.names.has(name))
       return true;
 
     return await ServerEntities.isNameTaken
