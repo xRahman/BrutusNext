@@ -29,6 +29,10 @@ Statování "skriptů" ze hry:
 
 ---------------------------------------------------------------
 
+TODO: Vyrobit class Time, která si bude datum interně držet jako number.
+
+---------------------------------------------------------------
+
 Prototype inheritance Map a Set
 --------------------------------
 - zatím jsem to hacknul, že místo Object.create() se vytvoří new Map()
