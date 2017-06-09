@@ -17,42 +17,32 @@ export class Connections
 {
   //------------------ Private data ---------------------
 
-  private connections = new Set<Connection>();
+  private connectionList = new Set<Connection>();
 
   // ------------- Public static methods ----------------
 
   public static add(connection: Connection)
   {
-    let connections = ServerApp.getConnections().connections;
-
-    if (!connections)
-      return;
-
-    if (connections.has(connection))
+    if (ServerApp.connections.connectionList.has(connection))
     {
       ERROR("Attempt to add connection which already "
         + " exists in Connections");
       return;
     }
 
-    connections.add(connection);
+    ServerApp.connections.connectionList.add(connection);
   }
 
   public static release(connection: Connection)
   {
-    let connections = ServerApp.getConnections().connections;
-
-    if (!connections)
-      return;
-
-    if (!connections.has(connection))
+    if (!ServerApp.connections.connectionList.has(connection))
     {
       ERROR("Attempt to release connection which doesn't"
         + " exist in Connections");
       return;
     }
 
-    connections.delete(connection);
+    ServerApp.connections.connectionList.delete(connection);
   }
 
   // Sends a message to all connections.
@@ -60,12 +50,7 @@ export class Connections
   // with valid ingame entity with sufficient AdminLevel.
   public static send(message: Message, visibility: AdminLevel = null)
   {
-    let connections = ServerApp.getConnections().connections;
-
-    if (!connections)
-      return;
-
-    for (let connection of connections)
+    for (let connection of ServerApp.connections.connectionList)
     {
       if (visibility !== null)
       {

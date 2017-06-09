@@ -34,38 +34,30 @@ export class Game
 {
   public static get DEFAULT_WORLD_NAME() { return 'BrutusNext World'; }
 
-  public static getCharacters()
+  public static get characters()
   {
-    return ServerApp.getGame().characters;
+    return ServerApp.game.characters;
   }
 
-  public static getRooms()
+  public static get rooms()
   {
-    return ServerApp.getGame().rooms;
+    return ServerApp.game.rooms;
   }
 
-  public static getAreas()
+  public static get areas()
   {
-    return ServerApp.getGame().areas;
+    return ServerApp.game.areas;
   }
 
-  public static getRealms()
+  public static get realms()
   {
-    return ServerApp.getGame().realms;
+    return ServerApp.game.realms;
   }
 
-  public static getWorld()
+  public static get world()
   {
-    return ServerApp.getGame().world;
+    return ServerApp.game.world;
   }
-
-  /// Tohle je blbost, jde použít rovnou Prototypes.
-  /*
-  public static get prototypes()
-  {
-    return ServerApp.getPrototypes();
-  }
-  */
 
   // ---------------- Public methods --------------------
 

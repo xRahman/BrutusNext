@@ -42,8 +42,10 @@ export class ServerPrototypes extends Prototypes
       let prototype = await this.initRootPrototype(className);
 
       if (prototype)
+      {
         // Add the prototype entity to this.prototypes hashmap.
-        this.prototypes.set(className, prototype);
+        this.prototypeList.set(className, prototype);
+      }
     }
   }
 
@@ -60,7 +62,7 @@ export class ServerPrototypes extends Prototypes
       false  // Do not log errors.
     );
 
-    if (id !== null)
+    if (id)
       return await ServerEntities.loadEntityById(id, Entity);
 
     return await ServerEntities.createRootPrototype(className);
@@ -75,7 +77,7 @@ export class ServerPrototypes extends Prototypes
     // while recursively loading their descendants.
     for (let className of Classes.entities.keys())
     {
-      let prototype = this.prototypes.get(className);
+      let prototype = this.prototypeList.get(className);
 
       await this.loadDescendants(prototype);
     }
@@ -105,7 +107,7 @@ export class ServerPrototypes extends Prototypes
       }
 
       // Add the desendant to this.prototypes hashmap.
-      this.prototypes.set(descendant.prototypeName, descendant);
+      this.prototypeList.set(descendant.prototypeName, descendant);
 
       // Recursively load decendant's descendants.
       await this.loadDescendants(descendant);

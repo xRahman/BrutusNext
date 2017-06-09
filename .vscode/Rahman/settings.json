@@ -6,6 +6,8 @@
   // Controls if the editor should automatically close brackets after opening them
   "editor.autoClosingBrackets": false,
 
+  "editor.minimap.enabled": false,
+
   // Controls the font size.
   "editor.fontSize": 20,
 

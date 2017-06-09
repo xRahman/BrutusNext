@@ -50,18 +50,18 @@ export class Character extends GameEntity
   // Sets birthroom (initial location), CHAR_IMMORTALITY flag.
   public init(account: Account)
   {
-    let world = Game.getWorld();
-
     if (this.getAdminLevel() > AdminLevel.MORTAL)
-    { 
+    {
+/// TODO: Možná by bylo lepší rovnou World.systemRoom.
       // Immortals enter game in System Room.
-      world.systemRoom.insert(this);
+      Game.world.systemRoom.insert(this);
       ///this.characterFlags.set(CharacterFlags.GOD_PROTECTION);
     }
     else
     {
+/// TODO: Možná by bylo lepší rovnou World.tutorialRoom.
       // Mortals enter game in Tutorial Room.
-      world.tutorialRoom.insert(this);
+      Game.world.tutorialRoom.insert(this);
     }
   }
 

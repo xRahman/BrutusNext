@@ -13,7 +13,6 @@ import {Serializable} from '../../../shared/lib/class/Serializable';
 import {Classes} from '../../../shared/lib/class/Classes';
 import {Prototypes} from '../../../shared/lib/entity/Prototypes';
 import {Entity} from '../../../shared/lib/entity/Entity';
-//import {Entity} from '../../../shared/lib';
 
 /// Experiment s Proxy pro property typu Date, Set, Map, atd.
 /// - nefunguje, date.toJSON() pořád vyhazuje výjimku
@@ -97,7 +96,7 @@ export abstract class Entities
   // List of all entities that are loaded in memory.
   // Key:   entity id
   // Value: entity
-  private entities = new Map<string, Entity>();
+  private entityList = new Map<string, Entity>();
 
   //----------------- Protected data -------------------- 
 
@@ -113,7 +112,7 @@ export abstract class Entities
   //    Returns invalid reference if entity with such 'id' isn't there.
   public static getReference(id: string): Entity
   {
-    let entity = App.getEntities().entities.get(id);
+    let entity = App.entities.entityList.get(id);
     
     if (entity)
       return entity;
@@ -124,13 +123,13 @@ export abstract class Entities
   // -> Returns 'true' if enity is available.
   public static has(id: string)
   {
-    return App.getEntities().entities.has(id);
+    return App.entities.entityList.has(id);
   }
 
   // -> Returns 'undefined' if entity isn't found.
   public static get(id: string)
   {
-    return App.getEntities().entities.get(id);
+    return App.entities.entityList.get(id);
   }
 
   // Removes entity from memory but doesn't delete it from disk
@@ -149,7 +148,7 @@ export abstract class Entities
     entity.removeFromLists();
 
     // Remove the record from hashmap.
-    if (!App.getEntities().entities.delete(entity.getId()))
+    if (!App.entities.entityList.delete(entity.getId()))
     {
       ERROR("Attempt to remove entity " + entity.getErrorIdString()
         + " from Entities which is not there");
@@ -164,7 +163,7 @@ export abstract class Entities
 
   public static async save(entity: Entity)
   {
-    return await App.getEntities().saveEntity(entity);
+    return await App.entities.saveEntity(entity);
   }
 
   // -> Returns 'null' on failure.
@@ -175,7 +174,7 @@ export abstract class Entities
   )
   : Promise<T>
   {
-    let entity = await App.getEntities().loadEntityById(id);
+    let entity = await App.entities.loadEntityById(id);
 
     if (!entity)
     {
@@ -197,7 +196,7 @@ export abstract class Entities
   )
   : Promise<T>
   {
-    let entity = await App.getEntities().loadEntityByName
+    let entity = await App.entities.loadEntityByName
     (
       name,
       cathegory
@@ -235,18 +234,6 @@ export abstract class Entities
     cathegory: Entity.NameCathegory
   )
   : Promise<Entity>;
-
-  /// Tohle teď umí jen ServerEntities.
-  /*
-  protected abstract async createNewEntity
-  (
-    prototype: Entity,
-    name: string,
-    cathegory: Entity.NameCathegory,
-    isPrototype: boolean
-  )
-  : Promise<Entity>;
-  */
 
   // -> Returns 'null' if entity instance couldn't be created.
   protected createEntityFromPrototype
@@ -300,7 +287,7 @@ export abstract class Entities
       return prototype;
 
     // If it's not a class name, it has to be an entity id.
-    prototype = this.entities.get(prototypeId);
+    prototype = this.entityList.get(prototypeId);
 
     if (!prototype)
     {
@@ -327,46 +314,11 @@ export abstract class Entities
     return this.createEntityFromPrototype(prototype, id);
   }
 
-  /// Tohle teď umí jen ServerEntities.
-  /*
-  // -> Returns 'null' on error.
-  protected abstract async createPrototype
-  (
-    prototypeId: string,
-    prototypeName: string,
-    name: string
-  )
-  : Promise<Entity>;
-  */
-
-  /// To be deleted.
-  /*
-  // -> Returns 'true' if enity is available.
-  protected has(id: string)
-  {
-    return this.entities.has(id);
-  }
-  */
-
-  /// To be deleted.
-  /*
-  // -> Returns 'undefined' if entity isn't found.
-  protected get(id: string)
-  {
-    let entityRecord = this.entities.get(id)
-
-    if (!entityRecord)
-      return undefined;
-
-    return entityRecord.getEntity();
-  }
-  */
-
   // -> Returns added entity or 'null' on failure.
   private add(entity: Entity)
   {
     let id = entity.getId();
-    let existingEntity = this.entities.get(id);
+    let existingEntity = this.entityList.get(id);
 
     if (existingEntity !== undefined)
     {
@@ -376,47 +328,10 @@ export abstract class Entities
       return existingEntity;
     }
 
-    this.entities.set(id, entity);
+    this.entityList.set(id, entity);
 
     return entity;
   }
-
-  /// To be deleted.
-  /*
-  // Removes entity from memory but doesn't delete it from disk
-  // (this is used for example when player quits the game).
-  //   Also removes entity from entity lists so it can no
-  // longer be searched for.
-  protected release(entity: Entity)
-  {
-    if (!Entity.isValid(entity))
-    {
-      ERROR("Attempt to remove invalid entity from Entities");
-      return;
-    }
-
-    // Remove entity from entity lists so it can no longer be searched for.
-    entity.removeFromLists();
-
-    let entityRecord = this.entities.get(entity.getId());
-
-    if (!entityRecord)
-    {
-      ERROR("Attempt to remove entity " + entity.getErrorIdString()
-        + " from Entities which is not there");
-      return;
-    }
-
-    // Remove the record from hashmap.
-    this.entities.delete(entity.getId());
-
-    // Invalidate internal 'entity' reference in proxy handler
-    // so the entity can be freed from memory by garbage collector.
-    // (any future access to entity's properties will be reported
-    //  by it's proxy handler as error).
-    entityRecord.invalidate();
-  }
-  */
 
   // -> Returns 'null' if 'prototypeId doesn't identify a root
   //    prototype object or if such root prototye entity already
@@ -585,70 +500,6 @@ export abstract class Entities
 
   }
 
-  /// To be deleted.
-  /*
-  // -> Returns registered and proxified entity,
-  //   'null' if entity couldn't be registered or proxified.
-  private proxifyAndRegisterEntity(prototype: Entity, bareEntity: Entity)
-  {
-    let handler = this.createProxyHandler(bareEntity);
-
-    // Hide bare entity behind a Proxy object which will report
-    // access to the entity's properties if it becomes invalid.
-    let proxy = this.createEntityProxy(handler);
-
-    // Create an new EntityRecord that will be added to Entities.
-    let entityRecord = new EntityRecord(proxy, handler);
-
-    // Add entity record to Entities. If a record with this 'id'
-    // already exists, the existing one will be used instead of
-    // the one we have just created.
-    //   In case of error entity will be 'null'.
-    return this.add(entityRecord);
-  }
-  */
-
-  /// To be deleted.
-  /*
-  // Creates a Javascript Proxy Object that will trap access
-  // of entity properties (using EntityProxyHandler we have
-  // just created) and report en error if it becomes invalid.
-  // -> Returns entity proxy.
-  private createEntityProxy(handler: EntityProxyHandler)
-  {
-    return new Proxy({}, handler);
-  }
-  */
-
-  /// To be deleted.
-  /*
-  // -> Returns EntityProxyHandler for 'bareEntity'.
-  private createProxyHandler(bareEntity: Entity)
-  {
-    let handler = new EntityProxyHandler();
-
-    handler.id = bareEntity.getId();
-    handler.entity = bareEntity;
-
-    return handler;
-  }
-  */
-
-  /// To be deleted.
-  /*
-  // -> Returns existing reference if entity already exists in Entities.
-  //    Returns invalid reference if entity with such 'id' isn't there.
-  private getReference(id: string): Entity
-  {
-    let entity = this.get(id);
-    
-    if (entity)
-      return entity;
-
-    return this.createInvalidReference(id);
-  }
-  */
-
   // Creates an invalid entity reference.
   // (This is used when an entity that is being deserialized has
   //  a reference to an entity that doesn't exist at the moment.)
@@ -669,17 +520,5 @@ export abstract class Entities
     // the point - access of invalid reference should
     // generate a runtime error.
     return <any>ref;
-    /*
-    let handler = new EntityProxyHandler();
-
-    handler.id = id;
-    // We are purposely creating an invalid reference so the internal
-    // entity reference shall be 'null'.
-    handler.entity = null;
-
-    // Create a Javascript Proxy Object that will report access
-    // of entity properties.
-    return new Proxy({}, handler);
-    */
   }
 }
