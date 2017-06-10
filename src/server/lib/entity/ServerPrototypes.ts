@@ -63,7 +63,7 @@ export class ServerPrototypes extends Prototypes
     );
 
     if (id)
-      return await ServerEntities.loadEntityById(id, Entity);
+      return await ServerEntities.loadRootPrototypeById(id, className);
 
     return await ServerEntities.createRootPrototype(className);
   }
