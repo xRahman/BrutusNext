@@ -71,7 +71,7 @@ export class Game
       return;
     }
     
-    this.world = await ServerEntities.createInstance
+    this.world = await ServerEntities.createInstanceEntity
     (
       World,      // Typecast.
       World.name, // Prototype name.

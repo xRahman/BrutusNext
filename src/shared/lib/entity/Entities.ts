@@ -508,7 +508,7 @@ export abstract class Entities
     let ref =
     {
       id: id,
-      isvalid: function() { return false; },
+      isValid: function() { return false; },
       getErrorStringId: function()
       {
         return "{ Invalid (not loaded) etity, id: " + id + " }";

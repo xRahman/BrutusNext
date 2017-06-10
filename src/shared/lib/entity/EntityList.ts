@@ -49,6 +49,12 @@ export class EntityList<T extends Entity> extends Serializable
     // Iterate over all values in this.entities hashmap.
     for (let entity of this.entities)
     {
+      if (entity === null)
+      {
+        ERROR("'null' entity reference in entity list");
+        continue;
+      }
+
       if (!entity.isValid())
       {
         // Remove the invalid reference from the set.
@@ -115,6 +121,35 @@ export class EntityList<T extends Entity> extends Serializable
   public has(entity: T): boolean
   {
     return this.entities.has(entity);
+  }
+
+  // -------------- Protected methods -------------------
+
+  // ~ Overrides Serializable.readEntityReference().
+  // Converts 'param.sourceProperty' to a reference to an Entity.
+  //   If entity with 'id' loaded from JSON already exists in Entities,
+  // it will be returned. Otherwise an 'invalid reference will be
+  // created and returned.
+  // -> Retuns an entity or an invalid entity reference.
+  protected readEntityReference
+  (
+    sourceProperty: Object,
+    propertyName: string,
+    pathString: string
+  )
+  {
+    if (!sourceProperty)
+      return null;
+    
+    let id = sourceProperty[Entity.ID_PROPERTY];
+
+    if (id === undefined || id === null)
+    {
+      ERROR("Missing or invalid 'id' property when loading entity"
+        + " reference '" + propertyName + "'" + pathString);
+    }
+
+    return Entities.getReference(id);
   }
 
   // -------------- Private methods -------------------

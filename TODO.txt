@@ -1,10 +1,72 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+Ok, co dál?
+------------
+
+1. momentální cíl je, tahat roomy ze serveru (updatovat si výřez).
+
+2. cíl je editor properties entit
+
+3. cíl je editor světa (vyrábět roomy kliknutím, exity dragnutím myši...)
+
+TODO:
+- vyzkoušet, jestli funguje zakládání acocuntů a logování do hry.
+  (i když to teď asi až tak moc nepotřebuju)
+- vyzkoušet, jestli klient funguje tak, jak fungoval.
+- zprovoznit strukturu Room (na serveru) - RoomData - Room (na klientu).
+- zprovoznit posílání Roomy ze serveru na klienta.
+
+---------------------------------------------------------------
+
+TODO: Symbolická konstanta pro 'version' v Serializable
+- už existuje, jen ji použít.
+[done]
+
+---------------------------------------------------------------
+
+createRootPrototype()
+{
+  najdi prototypový objekt;
+  createPrototypeEntity();
+}
+createDecendantPrototype()
+{
+  najdi prototypový objekt;
+  createPrototypeEntity();
+}
+
+   createPrototypeEntity()
+   {
+     generateId();
+     requestPrototypeName();
+     createNewEntity();
+     save();
+   }
+
+createInstanceEntity()
+{
+    createNewEntity();
+}
+
 ---------------------------------------------------------------
 
 TODO: Assert, že nesetuju unikátní jméno pototypové entitě
 (a smazat ty zaremované hlášky ze ServerEntities)
+    /*
+    if (isPrototype)
+    {
+      ERROR("Attempt to request unique name '" + name + "' in"
+        + " cathegory '" + Entity.NameCathegory[cathegory] + "'"
+        + " for a prototype entity. That's not allowed - name will"
+        + " be inherited (and thus duplicated) when an instance or"
+        + " a descendant prototype is created from this prototype"
+        + " entity so it's not possible to ensure that it's name"
+        + " will stay unique. Name is not set");
+      return false;
+    }
+    */
+[done]
 
 TODO: Savovat name lock fily.
 

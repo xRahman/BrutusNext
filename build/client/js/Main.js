@@ -21,11 +21,16 @@ requirejs.config
       'jquery': '../js/jquery/jquery.slim',
       // Alias so that you can use 'import d3 = require('d3');'.
       'd3': '../js/d3/d3.min',
+      'js-beautify': '../js/js-beautify/beautify',
+      'fastbitset': '../js/fastbitset/FastBitSet'
     }
   }
 );
 
 ///console.log('Main.js');
+
+require(['js-beautify']);
+require(['fastbitset']);
 
 // Launch the client.
 require(['./client/BrutusNextClient']);
