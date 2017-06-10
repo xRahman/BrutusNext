@@ -212,7 +212,7 @@ export class Authentication
       return null;
     }
 
-    let account = await ServerEntities.createInstance
+    let account = await ServerEntities.createInstanceEntity
     (
       Account,
       Account.name,

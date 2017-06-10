@@ -33,23 +33,26 @@ export class ServerEntity extends Entity
     createNameLock = true
   )
   {
-/// TODO: Před setnutím jména je třeba vyhodit entitu z NameListů
-/// přes this.removeFromNameLists() a pokud je to prototyp, tak taky
-/// z Prototypes. Po setnutí ji tam zase přidat.
+    if (cathegory !== null && this.isPrototypeEntity())
+    {
+      ERROR("Attempt to set unique name '" + name + "' in cathegory"
+        + " '" + Entity.NameCathegory[cathegory] + "' to a prototype"
+        + " entity. That's not allowed - name will be inherited"
+        + " (and thus duplicated) when an instance or a descendant"
+        + " prototype is created from this prototype entity so it's"
+        + " not possible to ensure that it will stay unique. Name is"
+        + " not set");
+      return false;
+    }
 
     let oldName = this.getName();
     let oldCathegory = this.getNameCathegory();
 
     if (createNameLock)
     {
-      let isNameAvailable = await ServerEntities.requestEntityName
-      (
-        this.getId(),
-        name,
-        cathegory
-      );
+      let id = this.getId();
 
-      if (!isNameAvailable)
+      if (!await ServerEntities.requestEntityName(id, name, cathegory))
       {
         ERROR("Attempt to set unique name '" + name + "' in"
           + " cathegory '" + Entity.NameCathegory[cathegory] + "'"

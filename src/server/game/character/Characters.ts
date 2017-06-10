@@ -54,7 +54,7 @@ export class Characters
     if (Game.characters.names.has(name))
       return true;
 
-    return await ServerEntities.isNameTaken
+    return await ServerEntities.isEntityNameTaken
     (
       name,
       Entity.NameCathegory.CHARACTER

@@ -70,7 +70,7 @@ export class Accounts
     if (ServerApp.accounts.nameLocks.has(name))
       return true;
 
-    return await ServerEntities.isNameTaken
+    return await ServerEntities.isEntityNameTaken
     (
       name,
       Entity.NameCathegory.ACCOUNT

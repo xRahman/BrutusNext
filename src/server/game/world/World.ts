@@ -51,7 +51,7 @@ export class World extends GameEntity
 
   public async createSystemRealm()
   {
-    this.systemRealm = await ServerEntities.createInstance
+    this.systemRealm = await ServerEntities.createInstanceEntity
     (
       Realm,      // Typecast.
       Realm.name, // Prototype name.
@@ -65,7 +65,7 @@ export class World extends GameEntity
 
     // --- System Area ---
 
-    this.systemArea = await ServerEntities.createInstance
+    this.systemArea = await ServerEntities.createInstanceEntity
     (
       Area,      // Typecast.
       Area.name, // Prototype name.
@@ -78,7 +78,7 @@ export class World extends GameEntity
 
     // --- System Room ---
 
-    this.systemRoom = await ServerEntities.createInstance
+    this.systemRoom = await ServerEntities.createInstanceEntity
     (
       Room,      // Typecast.
       Room.name, // Prototype name.
@@ -91,7 +91,7 @@ export class World extends GameEntity
 
     // --- Tutorial Room ---
 
-    this.tutorialRoom = await ServerEntities.createInstance
+    this.tutorialRoom = await ServerEntities.createInstanceEntity
     (
       Room,      // Typecast.
       Room.name, // Prototype name.
