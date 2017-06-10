@@ -160,8 +160,12 @@ export class Entity extends Serializable
     createNameLock = true
   )
   {
+    this.removeFromNameLists();
+
     this.name = name;
     this.nameCathegory = cathegory;
+
+    this.addToNameLists();
 
     return true;
   }
@@ -388,16 +392,21 @@ export class Entity extends Serializable
 
   public hasDescendant(entity: Entity)
   {
-    let has = this.descendantIds.has(entity.getId());
+    return this.descendantIds.has(entity.getId());
+  }
 
-    if (!has)
-    {
-      ERROR("!has");
-    }
+  /// Nevím, jestli to bude k něčemu potřeba, ale když už to tu mám...
+  public hasInstances()
+  {
+    // We have to make sure that we check our own property
+    // (because we surely have a nonempty 'instanceIds'
+    //  property inherited from our prototype).
+    if (!this.hasOwnProperty(Entity.INSTANCE_IDS_PROPERTY))
+      return false;
 
-    return has;
-
-    ///return this.descendantIds.has(entity.getId());
+    // We are a prototype if there is at least one
+    // entity that use us as it's prototype object.
+    return this.instanceIds.size !== 0;
   }
 
   public isPrototypeEntity()
@@ -420,19 +429,6 @@ export class Entity extends Serializable
 
   // Called after an entity is loaded from file.
   public async postLoad() {}
-
-  public isPrototype()
-  {
-    // We have to make sure that we check our own property
-    // (because we surely have a nonempty 'instanceIds'
-    //  property inherited from our prototype).
-    if (!this.hasOwnProperty(Entity.INSTANCE_IDS_PROPERTY))
-      return false;
-
-    // We are a prototype if there is at least one
-    // entity that use us as it's prototype object.
-    return this.instanceIds.size !== 0;
-  }
 
   public dynamicCast<T>(Class: { new (...args: any[]): T })
   {
@@ -497,6 +493,7 @@ export class Entity extends Serializable
   }
 */
 
+  // ~ Overrides Serializable.getErrorIdString().
   // Returns something like 'Character (id: d-imt2xk99)'
   // (indended for use in error messages).
   public getErrorIdString()

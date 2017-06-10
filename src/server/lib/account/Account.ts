@@ -162,7 +162,7 @@ export class Account extends ServerEntity
 
   public async createCharacter(name: string): Promise<Character>
   {
-    let character = await ServerEntities.createInstance
+    let character = await ServerEntities.createInstanceEntity
     (
       Character,
       Character.name,
@@ -381,4 +381,4 @@ export class Account extends ServerEntity
   }
 }
 
-Classes.registerSerializableClass(Account);
+Classes.registerEntityClass(Account);

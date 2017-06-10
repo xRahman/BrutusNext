@@ -55,7 +55,7 @@ export class NameLock
     // Name lock file name is something like 'Rahman.json'.
     let fileName = this.getFileName(name);
     
-    return await FileSystem.writeFile(jsonString, directory + fileName);
+    return await FileSystem.writeFile(directory + fileName, jsonString);
   }
 
   // -> Returns 'null' if name lock file doesn't exist or if it doesn't

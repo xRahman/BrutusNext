@@ -89,6 +89,13 @@ export class Serializable extends Attributable
 
   // ---------------- Public methods --------------------
 
+  // Returns string describing this object for error logging.
+  public getErrorIdString()
+  {
+    // There is not much to say about generic serializable object.
+    return "{ className: " + this.getClassName() + " }";
+  }
+
   public serialize(mode: Serializable.Mode): string
   {
     let jsonObject = this.saveToJsonObject(mode);
@@ -115,6 +122,9 @@ export class Serializable extends Attributable
         // Property 'className' isn't assigned (it represents the
         // name of the javascript class which cannot be changed).
         propertyName !== Serializable.CLASS_NAME_PROPERTY
+        // Property 'version' also isn't assigned - it is saved only
+        // to allow for custom loading code when it changes.
+        && propertyName !== Serializable.VERSION_PROPERTY
         // Only properties that exist on the class that is being loaded
         // are loaded from save. It means that you can remove properties
         // from existing classes without converting existing save files
@@ -147,7 +157,10 @@ export class Serializable extends Attributable
 //+
   protected checkVersion(jsonObject: Object, path: string = null): boolean
   {
-    if (!(Serializable.VERSION_PROPERTY in jsonObject))
+    let version = jsonObject[Serializable.VERSION_PROPERTY];
+
+    // Note: '0' is a valid 'version'.
+    if (version === undefined)
     {
       let pathString = this.composePathString(path);
 
@@ -156,7 +169,7 @@ export class Serializable extends Attributable
       return false;
     }
 
-    if (jsonObject[Serializable.VERSION_PROPERTY] !== this.version)
+    if (version !== this.version)
     {
       let pathString = this.composePathString(path);
 
@@ -187,6 +200,28 @@ export class Serializable extends Attributable
   ///////////////////// JsonSaver ///////////////////////
   ///////////////////////////////////////////////////////
 
+  private writeVersion(jsonObject: Object)
+  {
+    let version = this[Serializable.VERSION_PROPERTY];
+
+    // Note: '0' is a valid 'version'.
+    if (version === undefined)
+    {
+      ERROR("Missing '" + Serializable.VERSION_PROPERTY + "' property"
+        + " in " + this.getErrorIdString());
+
+      jsonObject[Serializable.VERSION_PROPERTY] = '<missing version>';
+      return;
+    }
+
+    // Always save 'version' even if it's not own property.
+    // ('version' property is used when loading from file
+    //  to enable custom loading code when data structure
+    //  chances. It is not loaded, only checked against
+    // current version.)
+    jsonObject[Serializable.VERSION_PROPERTY] = version;
+  }
+
 //+
   // Creates a primitive Javascript Object and fills it with serialized
   // properties of 'this'. Data types that can't be directly serialized
@@ -206,6 +241,9 @@ export class Serializable extends Attributable
     if (this.hasOwnProperty('name'))
       jsonObject['name'] = this['name'];
 
+    // Another hack for 'version' property.
+    this.writeVersion(jsonObject);
+
     // Anoter readability hack - serialize 'className'.
     jsonObject[Serializable.CLASS_NAME_PROPERTY] = this.getClassName();
 
@@ -214,6 +252,10 @@ export class Serializable extends Attributable
     {
       // Skip 'name' property because it's already saved by hack.
       if (propertyName === 'name')
+        continue;
+
+      // Skip 'version' property because it's already saved by hack.
+      if (propertyName === Serializable.VERSION_PROPERTY)
         continue;
 
       // Skip inherited properties (they are serialized on prototype entity).
@@ -485,7 +527,7 @@ export class Serializable extends Attributable
 
     // First handle the case that property in JSON has null value. In that
     // case target property will also be null, no matter what type it is.
-    if (param.targetProperty === null)
+    if (param.sourceProperty === null)
       return null;
 
     // Attempt to load property as FastBitSet object.
@@ -1079,12 +1121,11 @@ export class Serializable extends Attributable
     pathString: string
   )
   {
-    // Note: This method is overriden in Entity class. In order for
-    //   the override to be used, root object that is being deserialized
-    //   must be an instance of Entity.
+    // Note: This needs to be overriden in object that is being deserialized.
     FATAL_ERROR("Attempt to deserialize reference to an Entity from"
-      + " Serializable object which is not an instance of Entity"
-      + " class");
+      + " Serializable object which does not have readEntityReference()"
+      + " overload. Make sure that you only put references to other"
+      + " entities in classes that have own readEntityReference() method");
 
     return null;
   }
