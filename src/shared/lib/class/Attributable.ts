@@ -14,11 +14,13 @@
   {
     // A variable we want to set attributes for.
     protected counter = 0;
-    // Static attributes of variable 'counter'.
-    protected static counter = { isSaved: false };
+      // Static attributes of variable 'counter'.
+      protected static counter: PropertyAttributes =
+      {
+        saved: false
+      };
   }
 */
-
 
 'use strict';
 

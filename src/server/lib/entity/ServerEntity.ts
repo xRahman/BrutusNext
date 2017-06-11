@@ -62,11 +62,24 @@ export class ServerEntity extends Entity
       }
     }
 
-    // Make the old name available again.
     if (oldName && oldCathegory)
-      await ServerEntities.releaseName(oldName, oldCathegory)
+    {
+      this.removeFromNameLists();
 
-    return super.setName(name, cathegory, createNameLock);
+      // Make the old name available again.
+      await ServerEntities.releaseName(oldName, oldCathegory);
+    }
+
+    super.setName(name, cathegory, createNameLock);
+
+    // Only add entity back to name list if we are changing the name
+    // (if it previously had a non-null value).
+    if (oldName && oldCathegory)
+    {
+      this.addToNameLists();
+    }
+
+    return true;
   }
 
   // -------------- Protected methods -------------------

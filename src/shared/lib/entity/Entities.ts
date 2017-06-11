@@ -204,7 +204,7 @@ export abstract class Entities
 
     if (!entity)
     {
-      ERROR("Failed to load entity '" + name + "' in cathegory"
+      ERROR("Failed to load unique entity '" + name + "' in cathegory"
         + " '" + Entity.NameCathegory[cathegory] + "'");
       return null;
     }

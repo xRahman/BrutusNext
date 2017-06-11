@@ -1,6 +1,15 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+---------------------------------------------------------------
+
+TODO: Rozlišit Entity.setName() a Entity.changeName()
+
+setName() by nemělo entitu přidávat do name listů (protože když později
+zavolám addToLists() tak se do name listů přidá znova).
+
+---------------------------------------------------------------
+
 Ok, co dál?
 ------------
 
@@ -36,7 +45,14 @@ TODO: nějak lépe pořešit kopírování modulů do client files
    například modul fastbitset je třeba pro klienta upravit pomocí
    r.js z instalace reuqirejs, jinak nejde loadnout. A na serveru
    naopak upravený být nesmí).
-   
+
+---------------------------------------------------------------
+
+TODO: Tohle by asi neměl být error:
+[WEBSOCKET_SERVER] Websocket ERROR: Socket / (::ffff:84.47.65.112) closed normally
+
+(Obdobně když někdo zavře okno v browseru, tak to hlásí unknown error)
+
 ---------------------------------------------------------------
 
 createRootPrototype()
