@@ -9,8 +9,9 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Coords} from '../../../shared/lib/utils/Coords';
 import {Grid} from '../../../shared/lib/utils/Grid';
+import {Room} from '../../../client/game/world/Room';
+///import {RoomRenderData} from '../../../client/gui/mapper/RoomRenderData';
 import {RoomData} from '../../../shared/game/world/RoomData';
-import {RoomRenderData} from '../../../client/gui/mapper/RoomRenderData';
 import {ExitRenderData} from '../../../client/gui/mapper/ExitRenderData';
 
 export class MapData
@@ -25,10 +26,10 @@ export class MapData
 
   // All rooms are stored here, including those that are
   // not in current rendering area.
-  private roomGrid = new Grid<RoomRenderData>();
+  private roomGrid = new Grid<Room>();
 
   // Only rooms in current rendering area are present here.
-  private rooms = new Map<string, RoomRenderData>();
+  private rooms = new Map<string, Room>();
 
   // Only exits in current rendering area are present here.
   private exits = new Map<string, ExitRenderData>();
@@ -37,11 +38,11 @@ export class MapData
 
   // Sets room data to 'this.roomGrid'. Also updates 'this.rooms'
   // and 'this.exits' if room is in current rendering area.
-  public setRoom(room: RoomRenderData)
+  public setRoom(room: Room)
   {
     // Create a unique room id based on it's coordinates
     // (something like '[5,12,37]').
-    if (!room.initId())
+    if (!room.initRenderId())
       // Room will not be set if id couldn't be created.
       return;
 
@@ -49,7 +50,7 @@ export class MapData
     room.explored = true;
 
     // Set the room to the grid.
-    this.roomGrid.set(room, room.coords);
+    this.roomGrid.set(room, room.data.coords);
 
     // Update it in render data.
     this.setToRenderData(room);
@@ -124,13 +125,13 @@ export class MapData
     if (!toRoom || !fromRoom)
       return;
 
-    let direction = fromRoom.getDirection(to);
+    let direction = fromRoom.data.getDirection(to);
 
     if (direction)
     {
       fromRoom.setExit(direction, toRoom);
 
-      let reverseDirection = RoomData.getReverseDirection(direction);
+      let reverseDirection = Coords.reverseDirection(direction);
 
       if (reverseDirection)
         toRoom.setExit(reverseDirection, fromRoom);
@@ -143,10 +144,10 @@ export class MapData
   // ---------------- Private methods -------------------
 
   // -> Returns 'null' if exit id couldn't be composed.
-  private initExitRenderData(room: RoomRenderData, exitName: string)
+  private initExitRenderData(room: Room, exitName: string)
   {
     let exitRenderData = new ExitRenderData();
-    let targetCoords = room.getCoordsInDirection(exitName);
+    let targetCoords = room.data.coordsInDirection(exitName);
     let targetRoom = this.roomGrid.get(targetCoords);
 
     if (exitRenderData.init(room, targetRoom, exitName) === false)
@@ -156,16 +157,16 @@ export class MapData
   }
 
   // Adds room exits to exit render data.
-  private setRoomExitsToRenderData(room: RoomRenderData)
+  private setRoomExitsToRenderData(room: Room)
   {
-    if (!room.getId())
+    if (!room.getRenderId())
     {
       ERROR('Unable to add room exits to render data:'
         + ' Missing or invalid room id');
       return;
     }
 
-    for (let [exitName, exit] of room.exits)
+    for (let [exitName, exit] of room.data.exits)
     {
       let exitRenderData = this.initExitRenderData(room, exitName);
 
@@ -174,9 +175,9 @@ export class MapData
     }
   }
 
-  private setToRenderData(room: RoomRenderData)
+  private setToRenderData(room: Room)
   {
-    if (!room.getId())
+    if (!room.getRenderId())
     {
       ERROR('Unable to add room to render data: Missing or invalid room id');
       return;
@@ -186,7 +187,7 @@ export class MapData
     if (true)
     {
       // Add the room to room render data.
-      this.rooms.set(room.getId(), room);
+      this.rooms.set(room.getRenderId(), room);
 
       this.setRoomExitsToRenderData(room);
     }
@@ -285,9 +286,9 @@ export class MapData
       {
         for (let z = roomRange.fromZ; z <= roomRange.toZ; z++)
         {
-          let room = new RoomRenderData();
+          let room = new Room();
 
-          room.coords = new Coords(x, y, z);
+          room.data.coords = new Coords(x, y, z);
 
           this.setRoom(room);
         }

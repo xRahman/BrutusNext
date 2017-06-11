@@ -17,12 +17,17 @@ import {MessageType} from '../../shared/lib/message/MessageType';
 import {Connection} from '../../server/lib/connection/Connection';
 import {Game} from '../../server/game/Game';
 import {ContainerEntity} from '../../server/lib/entity/ContainerEntity';
+import {EntityData} from '../../shared/game/EntityData';
 
 export class GameEntity extends ContainerEntity
 {
   //------------------ Public data ----------------------
 
+  public data: EntityData = null;
+
   public aliases: Array<String> = [];
+
+  public extraDescriptions = [];
 
   // --------------- Public accessors -------------------
 

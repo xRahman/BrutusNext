@@ -31,6 +31,17 @@
 
 'use strict';
 
+/*
+TODO:
+{
+  saved,
+  edited,
+  sentBrief,  // Sent to client in brief mode.
+  sentFull,   // Sent to client in full mode.
+  received    // Received from client.
+}
+*/
+
 export interface PropertyAttributes
 {
   // Property is saved to disk.

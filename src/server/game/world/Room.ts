@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Room (a graph node that game world consists of).
+  Server-side room (a graph node that game world consists of).
 */
 
 /*
@@ -32,25 +32,10 @@ import {Game} from '../../game/Game';
 ///import {RoomFlags} from '../../game/world/RoomFlags';
 ///import {Exits} from '../../game/world/Exits';
 import {Classes} from '../../../shared/lib/class/Classes';
-
-/// TEST:
 import {RoomData} from '../../../shared/game/world/RoomData';
 
 export class Room extends GameEntity
 {
-  /// TODO: 'description' by možná mohly mít všechny entity.
-  public description = "Unfinished room.";
-    private static description: PropertyAttributes =
-    {
-      saved: true,
-      edited: true
-    }
-
-  /// TODO: 'extraDescriptions' by možná mohly mít všechny entity.
-  public extraDescriptions = [];
-
-  ///public roomFlags = new RoomFlags();
-
   constructor()
   {
     super();
@@ -60,6 +45,8 @@ export class Room extends GameEntity
     // .json files to conform to the new version.
     this.version = 0;
   }
+
+  public data = new RoomData();
 
   // --------------- Public accessors -------------------
 
@@ -93,6 +80,11 @@ export class Room extends GameEntity
   ///protected static get SAVE_DIRECTORY() { return "./data/rooms/"; }
 
   // ---------------- Public methods --------------------
+
+  public hasExit(exitName: string)
+  {
+    return this.data.exits.has(exitName);
+  }
 
   // Creates a formatted string describing room contents.
   protected printContents(): string
