@@ -160,12 +160,8 @@ export class Entity extends Serializable
     createNameLock = true
   )
   {
-    this.removeFromNameLists();
-
     this.name = name;
     this.nameCathegory = cathegory;
-
-    this.addToNameLists();
 
     return true;
   }

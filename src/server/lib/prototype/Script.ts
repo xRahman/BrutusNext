@@ -6,6 +6,8 @@
 
 'use strict';
 
+import {PropertyAttributes} from
+  '../../../shared/lib/class/PropertyAttributes';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {VirtualMachine} from '../../../server/lib/prototype/VirtualMachine';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
@@ -32,14 +34,19 @@ export class Script extends Serializable
   // Calling this function will execute compiled script code.
   // (Only after the script is compiled of course.)
   public run = null;
-  // Do not save variable run.
-  private static run = { isSaved: false };
+    private static run: PropertyAttributes =
+    {
+      saved: false
+    };
 
   // When the scrit is compiled, this is the function that represents
   // the script.
   private internalFunction = null;
   // Do not save variable internalFunction.
-  private static internalFunction = { isSaved: false };
+  private static internalFunction: PropertyAttributes =
+  {
+    saved: false
+  };
 
   constructor()
   {
