@@ -1,0 +1,30 @@
+﻿Klient nevidí do adresáře node_modules, takže nezbývá, než mít
+dvě verze modulů, které se používají na serveru (nebo obecně
+instalují přes npm, což by měly být bez výjimky všechny) a současně
+na klientu.
+
+d3.js
+---------
+Copy file node_modules/d3/build/d3.min.js
+to build/client/js/d3/d3.min.js
+
+jquery
+---------
+Copy file node_modules/jquery/dist/jquery.min.js
+to /build/client/js/jquery/jquery.min.js.
+
+js-beautify
+------------
+Copy file node_modules/js-beautify/js/lib/beautify.js
+to /build/client/js/js-beautify/beautify.js
+
+fastbitset
+-----------
+Copy file node_modules/fastbitset/FastBitSet.js
+to /build/client/js/fastbitset/FastBitSet.js
+
+Kromě toho je potřeba upravit modul pomocí r.js, aby šel loadnout přes
+require.js:
+node ./node_modules/requirejs/bin/r.js -convert ./build/client/js/fastbitset ./build/client/js/fastbitset
+(pozor, musí se to udělat jen na klientu, na serveru by upravený module nešel
+ loadnout.)

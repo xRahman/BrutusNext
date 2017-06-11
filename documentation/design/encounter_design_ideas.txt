@@ -35,9 +35,21 @@ Na raid bosse by nemělo být potřeba mít nabraný quest
 Mechaniky:
 -----------
 
-
 Boss spawne addy, kteri ze zacatku nedelaji moc velkou damage, ale postupne
 si ji zvedaji. Po dobu, kdy jsou addi up, dostava boss zvysenou damage - tim
 vetsi, cim dyl a cim vic je jich up.
+
+-------------------------------------------------------------------------
+
+Po dungeonu jsou rozhozené shriny, které shazují debuffy a dávají na chvíli
+imunitu (každá na jiný typ debuffu). A v dungeonu jsou mobové, kteří mají
+fakt hnusné debuffy...
+
+- shriny by mohlo být potřeba nejdřív aktivovat (a vydrží to třeba jen
+  omezenou dobu).
+
+Proč tam jsou ty shriny? Původně to byla svatyně nějakého dobrého boha.
+
+- dál mohou být shriny proti snarům, dispellům, atd.
 
 -------------------------------------------------------------------------

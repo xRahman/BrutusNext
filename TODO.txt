@@ -25,6 +25,20 @@ TODO: Symbolická konstanta pro 'version' v Serializable
 
 ---------------------------------------------------------------
 
+TODO: nějak lépe pořešit kopírování modulů do client files
+(asi nějaký build tool?)
+- stačí to dělat po instalaci (nebo updatu) modulu, není to nutné
+  při každém buildu.
+- ještě by byla možnost použít soft link na úrovni filesystému
+  (tj. že adresář v /build/client/js by vedl do /node_modules,
+   ale to by asi nepožral git a nefungovalo by to dobře na klientu
+   a současně serveru. Navíc to asi ani nejde použít, protože
+   například modul fastbitset je třeba pro klienta upravit pomocí
+   r.js z instalace reuqirejs, jinak nejde loadnout. A na serveru
+   naopak upravený být nesmí).
+   
+---------------------------------------------------------------
+
 createRootPrototype()
 {
   najdi prototypový objekt;

@@ -1,7 +1,7 @@
 ﻿Scrolling textarea html element
 --------------------------------
 
-Browser automatically scrolls textare to the end when it gets focus.
+Browser automatically scrolls textarea to the end when it gets focus.
 So you can scroll it to the end by doing:
   $textarea.blur().focus();
 
