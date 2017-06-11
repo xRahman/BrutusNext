@@ -10,6 +10,8 @@ import {Settings} from '../../../server/ServerSettings';
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
 ///import {FileSystem} from '../../../server/lib/fs/FileSystem';
+import {PropertyAttributes} from
+  '../../../shared/lib/class/PropertyAttributes';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Syslog} from '../../../shared/lib/log/Syslog';
 import {MessageType} from '../../../shared/lib/message/MessageType';
@@ -32,8 +34,10 @@ import * as crypto from 'crypto';  // Import namespace 'crypto' from node.js
 export class Account extends ServerEntity
 {
   public connection: Connection = null;
-  // Do not save and load property 'connection'.
-  private static connection = { isSaved: false };
+    private static connection: PropertyAttributes =
+    {
+      saved: false
+    };
 
   /// TODO: Accounty se vyrábí stejně jako ostatní entity,
   /// takže asi nebude průchozí předávat jim parametry v konstruktoru.

@@ -7,6 +7,8 @@
 'use strict';
 
 import {ERROR} from '../../shared/lib/error/ERROR';
+import {PropertyAttributes} from
+  '../../shared/lib/class/PropertyAttributes';
 import {Script} from '../../server/lib/prototype/Script';
 import {ServerApp} from '../../server/lib/app/ServerApp';
 import {Entities} from '../../shared/lib/entity/Entities';
@@ -192,11 +194,12 @@ export class GameEntity extends ContainerEntity
 
   //------------------ Private data ---------------------
 
-  // null if no player is connected to (is playing as) this entity,
-  // connectionId otherwise.
+  // 'null' if no player is connected to this entity.
   public connection: Connection = null;
-  // Flag saying that connectionId is not to be saved to JSON.
-  private static playerConnectionId = { isSaved: false };
+    private static connection: PropertyAttributes =
+    {
+      saved: false
+    };
 
   // --------------- Protected methods ------------------
 

@@ -19,6 +19,8 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
+import {PropertyAttributes} from
+  '../../../shared/lib/class/PropertyAttributes';
 ///import {NameList} from '../../../shared/lib/entity/NameList';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {EntityList} from '../../../shared/lib/entity/EntityList';
@@ -48,8 +50,10 @@ export class AbbrevList<T extends GameEntity>
   //   Key: abbreviation (like "warrio").
   //   Value: list of entity references that "listen" to this abbrev.
   private abbrevData = new Map<string, EntityList<T>>();
-  // Do not save and load property 'abbrevData'.
-  private static abbrevData = { isSaved: false };
+    private static abbrevData: PropertyAttributes =
+    {
+      saved: false
+    };
 
   // ---------------- Public methods --------------------
 

@@ -748,7 +748,10 @@ export class Serializable extends Attributable
     if (!Array.isArray(param.sourceProperty))
       return null;
 
-    if (!Array.isArray(param.targetProperty))
+    // Here we need to use Utils.isArray() instead of Array.isArray()
+    // because 'param.targetProperty' is probably a {} with an array
+    // as it's prototype created by object.create().
+    if (!Utils.isArray(param.targetProperty))
     {
       let pathString = this.composePathString(param.path);
 
