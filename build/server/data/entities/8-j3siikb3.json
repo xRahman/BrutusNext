@@ -1,0 +1,34 @@
+{
+  "name": "System Realm",
+  "version": 0,
+  "className": "Realm",
+  "contents":
+  {
+    "version": 0,
+    "className": "EntityList",
+    "entities":
+    {
+      "version": 0,
+      "className": "Set",
+      "set": [
+      {
+        "version": 0,
+        "className": "Reference",
+        "id": "9-j3siikb3"
+      }]
+    }
+  },
+  "prototypeEntity":
+  {
+    "version": 0,
+    "className": "Reference",
+    "id": "1-j3siikb3"
+  },
+  "nameCathegory": 2,
+  "location":
+  {
+    "version": 0,
+    "className": "Reference",
+    "id": "7-j3siikb3"
+  }
+}
