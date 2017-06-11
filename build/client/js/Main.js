@@ -29,7 +29,14 @@ requirejs.config
 
 ///console.log('Main.js');
 
+// If I don't reuire the module here, I get error:
+//   Uncaught Error: Module name "js-beautify" has not
+//   been loaded yet for context: _
 require(['js-beautify']);
+
+// If I don't reuire the module here, I get error:
+//   Uncaught Error: Module name "fastbitset" has not
+//   been loaded yet for context: _
 require(['fastbitset']);
 
 // Launch the client.
