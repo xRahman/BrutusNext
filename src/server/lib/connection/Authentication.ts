@@ -148,7 +148,7 @@ export class Authentication
     let account = await Entities.loadEntityByName
     (
       Account, // Typecast.
-      name,
+      this.accountName,
       Entity.NameCathegory.ACCOUNT
     );
 
@@ -166,6 +166,8 @@ export class Authentication
     }
 
     account.connection = this.connection;
+
+/// TODO: Zkontrolovat, jestli se tohle nevolá už někde jinde.
     account.addToLists();
 
     return account;
@@ -216,7 +218,7 @@ export class Authentication
     (
       Account,
       Account.name,
-      name,
+      this.accountName,
       Entity.NameCathegory.ACCOUNT
     );
 
@@ -229,6 +231,7 @@ export class Authentication
     account.setPasswordHash(password);
     account.connection = this.connection;
     this.connection.account = account;
+
     account.addToLists();
 
     // 'ServerEntities.createInstance()' has created
