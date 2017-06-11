@@ -6,14 +6,12 @@
 
 'use strict';
 
-import {ERROR} from '../../../shared/lib/error/ERROR';
-///import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
+import {ERROR} from '../../shared/lib/error/ERROR';
 import {PropertyAttributes} from
-  '../../../shared/lib/class/PropertyAttributes';
-import {Entity} from '../../../shared/lib/entity/Entity';
+  '../../shared/lib/class/PropertyAttributes';
+import {Entity} from '../../shared/lib/entity/Entity';
 
-/// Todo: Asi by se to mělo jmenovat jen GameEntity.
-export class ClientGameEntity extends Entity
+export class GameEntity extends Entity
 {
   //----------------- Protected data --------------------
 

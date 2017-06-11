@@ -14,23 +14,38 @@ export class RoomRenderData extends RoomData
 {
   //------------------ Public data ----------------------
 
+  /// Moved to Room.
+  /*
   // When a room is added to this.mapData, it is added
   // as 'explored = true' and all rooms reachable by its
   // exits are added as 'explored = false'.
   public explored = false;
+  */
 
   //------------------ Private data ---------------------
 
+  /// Moved to Room.
+  /*
   // Client-side id, not entity id.
   // (It is composed from room coordinates by MapData.composeRoomId()).
-  private id: string = null;
+  private renderId: string = null;
+  */
 
   // --------------- Public accessors -------------------
 
-  public getId() { return this.id; }
+  /// Moved to Room.
+  /*
+  public getRenderId() { return this.renderId; }
+  */
 
   // ---------------- Public methods --------------------
 
+  /// Moved to Room.
+  /*
+  /// TODO: Předělat na vyrábění exitů na serveru.
+  /// Tohle by nemělo existovat - exit se má vyrábět na serveru
+  /// a client má pak dostat updatnutá data roomů, kterých se to týká
+  /// (respektive všichni klienti, kteří to mají v aktivním výřezu).
   public setExit(direction: string, toRoom: RoomRenderData)
   {
     if (!direction)
@@ -50,7 +65,7 @@ export class RoomRenderData extends RoomData
   // Creates a unique room id based on it's coordinates
   // (something like '[5,12,37]').
   // -> Returns 'false' on error.
-  public initId()
+  public initRenderId()
   {
     if (!this.coords)
     {
@@ -58,11 +73,12 @@ export class RoomRenderData extends RoomData
       return false;
     }
 
-    // Room id will be something like: '[0,-12,37]'.
-    this.id = '[' + this.coords.s + ','
+    // Render id will be something like: '[0,-12,37]'.
+    this.renderId = '[' + this.coords.s + ','
                   + this.coords.e + ','
                   + this.coords.u + ']';
 
     return true;
   }
+  */
 }

@@ -3,6 +3,125 @@ TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 
 ---------------------------------------------------------------
 
+Zatracené exity...
+
+Problém: Exit je vnořená datová struktura...
+
+- teoreticky to můžu udělat metodou:
+  SharedExit
+    - Exit (client)
+    - Exit (server)
+s tím, že client a server si zaregistrujů svuj Exit v Classes.
+(Tohle bude fungovat jen díky tomu, že se to nijak dál nedědí. Kdybych chtěl
+ z Exitu na Serveru něco dědit, fungovat by to asi přestalo (respektive sdílená
+ data by všechny musela být v SharedExitu))
+
+Hmm, problém je s pojmenováním. Zatím jsem se držel stylu
+Entity
+  -> ServerEntity
+  -> ClientEntity
+To ale tady nemůžu, protože ta classa se musí na clientu a serveru jmenovat
+stejně.
+
+Asi bude nejlepší držet se stejného přístupu jako u entit, tj.
+
+/shared/ExitData
+/client/Exit
+  data: ExitData;
+/server/Exit
+  data: ExitData;
+
+Hmm. Že by Exit byla entita?
+To se zas vracím k tomu, co exit reprezentuje...
+- na klientu se podle ExitRenderData vykresluje. Mají své htmlId
+  a odkud kam vedou. Asi by dávalo smysl, aby Exit na clientu představoval
+  ExitRenderData stejně jako Room na clientu představuje RoomRenderData.
+
+
+Kromě toho - kam se budou savovat informace specifické pro exit?
+(Pokud nějaké budou).
+- buď to musí být jak v circlu, tj. že exity jsou popsané jen v roomách,
+  nebo Exit musí být entita, aby se mohla savovat samostatně (jinak bych
+  informace musel buď savnout do obou room, nebo nevím kam).
+=> Exity by asi fakt měly bý entity.
+
+
+Pozn: Když budou mít exity idčka, tak se asi na clientu obejdu
+bez htmlId - idčko roomy z coords získám přes room grid.
+
+---------------------------------------------------------------
+
+Otázka: Co s 'dummy' objektama na klientu, jako jsou třeba zatím
+neexistující roomy?
+
+- V zásadě si asi klient může vyrábět vlastní entity s tím, že
+  až se rooma vyrobí na serveru, tak to celé přepíše novými
+  daty (včetně nového idčka).
+
+
+TODO: Roomy se na klienta asi budou muset posílat v několika módech:
+- všechno
+- jen jméno roomu (a idčko)
+  (to když je rooma "unexplored": mám do ní zatím jen exit, ale ještě
+   jsem nenakouknul dovnitř - ať už skillem, nebo tím, že jsem tam vešel).
+Tzn. PropertyAttribites by mohly vypadat nějak takhle:
+{
+  saved,
+  edited,
+  sentBrief,  // Sent to client in brief mode.
+  sentFull,   // Sent to client in full mode.
+  received    // Received from client.
+}
+
+QUESTION: Co s exity, o kterých zatím player neví?
+- neměly by se posílat.
+(otázka je, jestli by se měly posílat (a renderovat), když už je player
+ jednou objeví - tj. jestli by se měly mapovat)
+(stejná otázka platí pro extra descriptiony).
+- možná je to škoda a lepší bude dát hráči možnost psát si poznámky
+  do mapy.
+Každopádně ale bude potřeba oddělit secret exity od obyč exitů co se
+serializace týče.
+(to se dál komplikuje tím, že secret exit může být otevřený - pak ho vidí
+ každý).
+
+Jak na to?
+TODO:
+Při serializaci mapy/pole/setu (obecně containerových datových struktur)
+by měla existovat možnost flagnout itemy jako neserializované.
+(možná u pole ne, pak by tam asi musely být díry... - což ale klidně mohou být)
+- a tohle nebude statická flaga, ale property každého objektu
+  (celý objekt se podle ní do struktury dá nebo nedá).
+
+---------------------------------------------------------------
+
+ÚVAHA k tomu, co má být v /server části entity a co v /shared:
+- obecně to, co se v clientu zobrazuje pořád, má být v XxxData
+  v /shared (tj. třeba description, terrain flagy, podle kterých
+  se vykresluje barva roomy, atd.)
+- to, co klient vykresluje pouze při requestu, nebo o tom vůbec neví,
+  naopak má být jen v /server části (extra description, systémové flagy).
+
+Zrada, 'name' by asi mělo být v .data (protože se na klientovi zobrazuje
+  furt...)
+ - tak asi ne, to by tam muselo být i idčko a to už vůbec
+   nedává smysl. Nejspíš to bude tak, že properties zděděné
+   z Entity se posílat budou (což je ok, client-side entity
+   je má určitě taky).
+TODO: Tzn. budu muset nějak zařídit, aby se propertes z Game entity
+  na klienta defaultně neposílala (zatímco properties z EntityData
+  by se defaultně posílat měly, abych to nemusel ke každé vypisovat).
+- možná přidat možnost definovat:
+    protected static defaultAttributes: PropertyAttributes = {}
+  kde to půjde nastavit pro celou classu?
+
+Prozatím budu předpokládat, že:
+- data z Entity (tj. ze shared předka) se defaultně posílají
+- data z EntityData se defaultně posílají
+- data z GameEntity se defaultně neposílají.
+
+---------------------------------------------------------------
+
 TODO: Rozlišit Entity.setName() a Entity.changeName()
 
 setName() by nemělo entitu přidávat do name listů (protože když později
