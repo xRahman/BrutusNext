@@ -7,9 +7,10 @@
 
 'use strict';
 
+import {Serializable} from '../../../shared/lib/class/Serializable';
 ///import {PacketData} from '../../../shared/protocol/PacketData';
 
-export class ExitData
+export class ExitData extends Serializable
 {
   /// Momentálně potřebuju vědět jen to, jestli exit do daného směru existuje.
   /// - Časem by tu mohlo být přetížení vodorovných exitů šikmo nahoru/dolů.

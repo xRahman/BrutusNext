@@ -8,6 +8,37 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 
+// Maps exit names to opposite directions.
+const REVERSE_DIRS =
+{
+  'n':   's',
+  'nw':  'se',
+  'w':   'e',
+  'sw':  'ne',
+  's':   'n',
+  'se':  'nw',
+  'e':   'w',
+  'ne':  'sw',
+  'nu':  'sd',
+  'nwu': 'sed',
+  'wu':  'ed',
+  'swu': 'ned',
+  'su':  'nd',
+  'seu': 'nwd',
+  'eu':  'wd',
+  'neu': 'swd',
+  'u':   'd',
+  'nd':  'su',
+  'nwd': 'seu',
+  'wd':  'eu',
+  'swd': 'neu',
+  'sd':  'nu',
+  'sed': 'nwu',
+  'ed':  'wu',
+  'ned': 'swu',
+  'd':   'u'
+}
+
 export class Coords
 {
   // Public overloads.
@@ -40,6 +71,13 @@ export class Coords
   // --------------- Public accessors -------------------
 
   // ------------- Public static methods ----------------
+
+  // -> Returns 'undefined' if 'direction' isn't a name of an exit
+  //    to and adjacent room.
+  public static reverseDirection(direction: string)
+  {
+    return REVERSE_DIRS[direction];
+  }
 
   // -> Returns new Coords which is the sum of operands.
   public static sum(op0: Coords, op1: Coords, ...moreOps: Array<Coords>)

@@ -8,7 +8,8 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Coords} from '../../../shared/lib/utils/Coords';
-import {RoomRenderData} from '../../../client/gui/mapper/RoomRenderData';
+import {Room} from '../../../client/game/world/Room';
+///import {RoomRenderData} from '../../../client/gui/mapper/RoomRenderData';
 
 export class ExitRenderData
 {
@@ -40,15 +41,15 @@ export class ExitRenderData
   // -> Returns 'false' if id could not be composed.
   public init
   (
-    fromRoom: RoomRenderData,
-    toRoom: RoomRenderData,
+    fromRoom: Room,
+    toRoom: Room,
     exitName: string
   )
   {
-    this.from = fromRoom.coords;
-    this.to = toRoom.coords;
+    this.from = fromRoom.data.coords;
+    this.to = toRoom.data.coords;
     this.oneWay = toRoom && !toRoom.hasExit(exitName);
-    return this.initId(fromRoom.getId(), toRoom.getId());
+    return this.initId(fromRoom.getRenderId(), toRoom.getRenderId());
   }
 
   // ---------------- Private methods -------------------

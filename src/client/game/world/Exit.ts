@@ -1,0 +1,49 @@
+/*
+  Part of BrutusNEXT
+
+  Client-side exit (connection between two rooms).
+*/
+
+'use strict';
+
+import {ERROR} from '../../../shared/lib/error/ERROR';
+import {PropertyAttributes} from
+  '../../../shared/lib/class/PropertyAttributes';
+import {GameEntity} from '../../../client/game/GameEntity';
+import {Classes} from '../../../shared/lib/class/Classes';
+import {ExitData} from '../../../shared/game/world/ExitData';
+
+export class Exit extends GameEntity
+{
+  constructor()
+  {
+    super();
+
+    this.version = 0;
+  }
+
+  public data = new ExitData();
+
+/// Zkusím jako html id použít entity id.
+  /*
+  // Client-side id, not entity id.
+  // (It is composed from room coordinates by MapData.composeRoomId()).
+  private renderId: string = null;
+  */
+
+  // --------------- Public accessors -------------------
+
+  ///public getRenderId() { return this.renderId; }
+
+  // -------------- Protected accessors -----------------
+
+  // ---------------- Public methods --------------------
+
+  //----------------- Protected data --------------------
+
+  // --------------- Protected methods ------------------
+
+  // ---------------- Private methods -------------------
+}
+
+Classes.registerEntityClass(Exit);

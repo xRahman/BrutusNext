@@ -1,14 +1,17 @@
 /*
   Part of BrutusNEXT
 
-  Part of client-server communication protocol.
-  Specifies format of room data.
+  Shared room data.
 */
 
 'use strict';
 
+import {PropertyAttributes} from
+  '../../../shared/lib/class/PropertyAttributes';
+import {Serializable} from '../../../shared/lib/class/Serializable';
 import {Flags} from '../../../shared/lib/utils/Flags';
 import {Coords} from '../../../shared/lib/utils/Coords';
+import {EntityData} from '../../../shared/game/EntityData';
 import {ExitData} from '../../../shared/game/world/ExitData';
 
 // Maps exit names to respective offsets in grid.
@@ -73,58 +76,20 @@ const EXIT_SHIFTS =
 //   'd':   { s:  0, e:  0, u: -1 }
 // }
 
-// Maps exit names to opposite directions.
-const REVERSE_DIRS =
-{
-  'n':   's',
-  'nw':  'se',
-  'w':   'e',
-  'sw':  'ne',
-  's':   'n',
-  'se':  'nw',
-  'e':   'w',
-  'ne':  'sw',
-  'nu':  'sd',
-  'nwu': 'sed',
-  'wu':  'ed',
-  'swu': 'ned',
-  'su':  'nd',
-  'seu': 'nwd',
-  'eu':  'wd',
-  'neu': 'swd',
-  'u':   'd',
-  'nd':  'su',
-  'nwd': 'seu',
-  'wd':  'eu',
-  'swd': 'neu',
-  'sd':  'nu',
-  'sed': 'nwu',
-  'ed':  'wu',
-  'ned': 'swu',
-  'd':   'u'
-}
-
-export class RoomData
+export class RoomData extends EntityData
 {
   //------------------ Public data ----------------------
 
-  /// ----------------- Test flagu. -----------------------
+  /// Tohle je asi ok v /shared - ale jen ty flagy, které
+  /// vykresluje klient (tj. třeba 'PEACEFUL' ano, systémové
+  /// flagy ne).
   public flags = new Flags<RoomData.Flags>();
-  // private testFlagu()
-  // {
-  //   this.flags.set(RoomData.Flags.ROOM_PEACEFUL);
-  //   /// Neprojde, hura! :\
-  //   this.flags.isSet(this.flags);
-  // }
-  ///------------------------------------------------------
 
-  // 'true' if the room exists on the server
-  // (nonexisting room placeholders are displayed in edit mode).
-  public exists = false;
+  public terrain: RoomData.Terrain = RoomData.Terrain.INDOORS;
 
-  // Room name.
-  public name: string = null;
-
+  /// TODO: Asi nebude stačit 'seu', bude ještě potřeba dimension,
+  /// nebo tak něco (roomy mohou být v různých souřadných soustavách).
+  /// - to by ale asi bylo vhodné doplnit přímo do Coords.
   // Absolute coordinates (in the world).
   public coords: Coords = null;
   
@@ -133,23 +98,24 @@ export class RoomData
 
   // ---------------- Public methods --------------------
 
-  // -> Returns 'undefined' if 'direction' isn't a name of an exit
-  //    to and adjacent room.
-  public static getReverseDirection(direction: string)
-  {
-    return REVERSE_DIRS[direction];
-  }
 
+  /// Tohle dává větší smysl na Roomě (sice to znamená zduplikovat kód
+  /// na klientu a serveru, ale co už.
+  /*
   public hasExit(exitName: string)
   {
     return this.exits.has(exitName);
   }
+  */
 
 /// Tohle by mohla umět class Coords.
+/// (Problém je, že se operuje s this.coords - takže to musí být
+///  metoda classy RoomData.)
+/// - EXIT_SHIFTS by ale asi stejně mohly být jinde (v Exitu?).
   // -> Returns coordinates in specified 'direction'.
   //    Returns 'null' if 'direction' isn't a name of
   //      an exit leading to an adjacent room.
-  public getCoordsInDirection(direction: string)
+  public coordsInDirection(direction: string)
   {
     let shift = EXIT_SHIFTS[direction];
 
@@ -158,7 +124,6 @@ export class RoomData
       return null;
 
     return Coords.sum(this.coords, shift);
-
   }
 
   // -> Returns exit name leading to 'to' coordinates.
@@ -186,5 +151,12 @@ export module RoomData
   export enum Flags
   {
     ROOM_PEACEFUL
+  }
+
+  export enum Terrain
+  {
+    INDOORS,
+    CAVES,
+    MOUNTAINS
   }
 }
