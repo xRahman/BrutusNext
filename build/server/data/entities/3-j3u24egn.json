@@ -1,0 +1,11 @@
+{
+  "version": 0,
+  "className": "Room",
+  "instanceIds":
+  {
+    "version": 0,
+    "className": "Set",
+    "set": ["a-j3u24egn", "b-j3u24egn"]
+  },
+  "prototypeEntity": null
+}

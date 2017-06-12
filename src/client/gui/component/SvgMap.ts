@@ -11,12 +11,12 @@ import {Coords} from '../../../shared/lib/utils/Coords';
 import {Component} from '../../../client/gui/component/Component';
 import {MapWindow} from '../../../client/gui/component/MapWindow';
 import {MapData} from '../../../client/gui/mapper/MapData';
-import {ExitRenderData} from '../../../client/gui/mapper/ExitRenderData';
+import {Exit} from '../../../client/game/world/Exit';
 ///import {RoomRenderData} from '../../../client/gui/mapper/RoomRenderData';
 import {Room} from '../../../client/game/world/Room';
 
 /// TEST:
-import {Packet} from '../../../shared/protocol/Packet';
+import {Packet} from '../../../shared/lib/protocol/Packet';
 
 import d3 = require('d3');
 type d3Selection = d3.Selection<any, any, HTMLElement, any>;
@@ -492,8 +492,8 @@ export class SvgMap extends Component
     let d3Room = d3Enter.append('g');
     d3Room.attr('transform', (d, i) => { return this.getRoomTransform(d); });
 
-    // Use 'Room.renderId' as html id.
-    d3Room.attr('id', function(d: Room) { return d.getRenderId(); });
+    // Use entity id as html id.
+    d3Room.attr('id', function(d: Room) { return d.getId(); });
 
     this.createRoomIcon(d3Room);
     this.createVerticalExitIcons(d3Room);
@@ -730,27 +730,27 @@ export class SvgMap extends Component
   }
 
 //.
-  private getFromXPos(d: ExitRenderData)
+  private getFromXPos(d: Exit)
   {
-    return this.getXPos(d.from);
+    return this.getXPos(d.from.data.coords);
   }
 
 //.
-  private getFromYPos(d: ExitRenderData)
+  private getFromYPos(d: Exit)
   {
-    return this.getYPos(d.from);
+    return this.getYPos(d.from.data.coords);
   }
 
 //.
-  private getToXPos(d: ExitRenderData)
+  private getToXPos(d: Exit)
   {
-    return this.getXPos(d.to);
+    return this.getXPos(d.to.data.coords);
   }
 
 //.
-  private getToYPos(d: ExitRenderData)
+  private getToYPos(d: Exit)
   {
-    return this.getYPos(d.to);
+    return this.getYPos(d.to.data.coords);
   }
 
   // ---------------- Event handlers --------------------
@@ -779,7 +779,7 @@ export class SvgMap extends Component
 //.
   private onRoomMouseDown(d: Room, element: HTMLElement)
   {
-    console.log('onRoomMouseDown(): ' + d.getRenderId());
+    console.log('onRoomMouseDown(): ' + d.getId());
 
     // Remember coordinates of room where dragging started.
     this.roomDragData.origCoords = d.data.coords;
@@ -827,12 +827,12 @@ export class SvgMap extends Component
 
   private onRoomMouseUp(d: Room, element: HTMLElement)
   {
-    console.log('onRoomMouseUp(): ' + d.getRenderId());
+    console.log('onRoomMouseUp(): ' + d.getId());
 
     /// TEST:
     if (d.exists === false)
     {
-      this.createRoom(d);
+      ///this.createRoom(d);
     }
 
     if (this.roomDragData.origCoords !== null)
@@ -846,6 +846,7 @@ export class SvgMap extends Component
 
   /// ------------- TEST -------------------
 
+  /*
   private createRoom(d: Room)
   {
     // Create a Packet informing server that the room should be created.
@@ -860,4 +861,5 @@ export class SvgMap extends Component
     
     this.mapWindow.send(packet);
   }
+  */
 }

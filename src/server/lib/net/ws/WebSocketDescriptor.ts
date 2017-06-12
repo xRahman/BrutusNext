@@ -6,7 +6,7 @@
 
 'use strict';
 
-import {Packet} from '../../../../shared/protocol/Packet';
+import {Packet} from '../../../../shared/lib/protocol/Packet';
 ///import {PacketData} from '../../../../shared/protocol/PacketData';
 import {ERROR} from '../../../../shared/lib/error/ERROR';
 import {Utils} from '../../../../shared/lib/utils/Utils';
@@ -109,7 +109,7 @@ export class WebSocketDescriptor extends SocketDescriptor
     this.send(packet);
   }
 
-  // Sends a string to the user.
+  // Sends packet to the client.
   public send(packet: Packet)
   {
     try
@@ -120,7 +120,7 @@ export class WebSocketDescriptor extends SocketDescriptor
     {
       Syslog.log
       (
-        "Client ERROR: Failed to send data to the socket"
+        "Client ERROR: Failed to send data packet to websocket"
         + " " + this.url + " (" + this.ip + "). Reason:"
         + " " + error.message + ".  Data is not processed",
         MessageType.WEBSOCKET_SERVER,

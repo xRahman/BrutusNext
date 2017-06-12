@@ -12,7 +12,6 @@ import {Window} from '../../../client/gui/component/Window';
 import {ScrollWindow} from '../../../client/gui/component/ScrollWindow';
 import {MapWindow} from '../../../client/gui/component/MapWindow';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
-import {Connection} from '../../../client/lib/connection/Connection';
 
 import $ = require('jquery');
 
@@ -26,12 +25,8 @@ export class Body extends Component
 
     this.$body = $('#' + this.id);
 
-    let connection = client.createConnection();
-    this.createScrollWindow(connection);
-    this.createMapWindow(connection);
-
-    /// TEST
-    connection.connect();
+    this.createScrollWindow();
+    this.createMapWindow();
   }
 
   //----------------- Protected data --------------------
@@ -56,10 +51,10 @@ export class Body extends Component
   // ---------------- Public methods --------------------
 
   // Creates a 'ScrollWindow' and adds it to app_body.
-  public createScrollWindow(connection: Connection)
+  public createScrollWindow()
   {
     /// Tohle je docasne - scrollWindowu muze byt vic.
-    let scrollWindow = new ScrollWindow(connection);
+    let scrollWindow = new ScrollWindow();
     this.windows.push(scrollWindow);
 
     // Create jquery element 'scrollwindow'.
@@ -71,9 +66,9 @@ export class Body extends Component
   }
 
   // Creates a 'Map' window and adds it to app_body.
-  public createMapWindow(connection: Connection)
+  public createMapWindow()
   {
-    let mapWindow = new MapWindow(connection);
+    let mapWindow = new MapWindow();
     this.windows.push(mapWindow);
 
     // Create jquery element 'mapwindow'.
