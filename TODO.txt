@@ -3,6 +3,32 @@ TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 
 ---------------------------------------------------------------
 
+Jak na mapper-editor:
+----------------------
+
+Základ by měl být stažení aktuální render oblasti ze serveru
+s tím, že když na dané pozici na serveru rooma není a client
+je v edit módu, vyrobí si dummy (nonexistent) roomu.
+
+---------------------------------------------------------------
+
+Connection-per-char, connection-per-account nebo connection-per-tab?
+
+- ideálně by to mělo fungovat i přes telnet.
+
+Vzato kolem a kolem je to asi jedno, protože i s per-char connection
+se pořád player musí nejdřív přilogovat na account. Čili když webclient
+bude mít možnost přes jednu connection posílat data z více charů, tak
+je to funkčnost navíc, která nebrání tomu mít connection per-char.
+
+V browseru každopádně dává zdaleka největší smysl mít jednu connection
+na každou záložku - tedy 1 connection per klient (protože nová záložka
+je nová instance celého klienta).
+  Zatím asi bude rozumné pracovat s tím, že se přes tuhle jednu connection
+připojí právě jeden char, časem to můžu rozšířit na víc.
+
+---------------------------------------------------------------
+
 Zatracené exity...
 
 Problém: Exit je vnořená datová struktura...

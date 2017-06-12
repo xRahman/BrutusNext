@@ -65,7 +65,7 @@ export class Grid<T>
   }
 
   // Sets 'item' at position [s, e, u].
-  public set(item: T, coords: Coords)
+  public set(coords: Coords, item: T)
   {
     if (!this.data)
       this.data = new Map<number, any>();

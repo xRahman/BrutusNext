@@ -17,13 +17,13 @@ import {MessageType} from '../../shared/lib/message/MessageType';
 import {Connection} from '../../server/lib/connection/Connection';
 import {Game} from '../../server/game/Game';
 import {ContainerEntity} from '../../server/lib/entity/ContainerEntity';
-import {EntityData} from '../../shared/game/EntityData';
+import {SharedData} from '../../shared/game/SharedData';
 
 export class GameEntity extends ContainerEntity
 {
   //------------------ Public data ----------------------
 
-  public data: EntityData = null;
+  public data: SharedData = null;
 
   public aliases: Array<String> = [];
 

@@ -11,7 +11,7 @@ import {PropertyAttributes} from
   '../../shared/lib/class/PropertyAttributes';
 import {Serializable} from '../../shared/lib/class/Serializable';
 
-export class EntityData extends Serializable
+export class SharedData extends Serializable
 {
   //------------------ Public data ----------------------
 

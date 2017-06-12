@@ -11,18 +11,18 @@ import {SvgMap} from '../../../client/gui/component/SvgMap';
 import {Connection} from '../../../client/lib/connection/Connection';
 
 /// TEST:
-import {Packet} from '../../../shared/protocol/Packet';
+import {Packet} from '../../../shared/lib/protocol/Packet';
 
 import $ = require('jquery');
 import d3 = require('d3');
 
 export class MapWindow extends Window
 {
-  constructor(private connection: Connection)
+  constructor()
   {
     super();
 
-    this.connection.mapWindow = this;
+    ///this.connection.mapWindow = this;
   }
 
   protected static get CSS_CLASS() { return 'MapWindow'; }
@@ -111,11 +111,13 @@ export class MapWindow extends Window
     return this.$content.height();
   }
 
+  /*
   /// TEST
   public send(packet: Packet)
   {
     this.connection.send(packet);
   }
+  */
 
   // --------------- Protected methods ------------------
 
