@@ -34,14 +34,15 @@ export class Room extends GameEntity
   // by mouse click).
   public explored = false;
 
+/// Zkusím místo toho použít entity id.
 /// Možná by bylo lepší 'htmlId'
   // Client-side id, not entity id.
   // (It is composed from room coordinates by MapData.composeRoomId()).
-  private renderId: string = null;
+  ///private renderId: string = null;
 
   // --------------- Public accessors -------------------
 
-  public getRenderId() { return this.renderId; }
+  ///public getRenderId() { return this.renderId; }
 
   // -------------- Protected accessors -----------------
 
@@ -56,6 +57,7 @@ export class Room extends GameEntity
   /// Tohle by nemělo existovat - exit se má vyrábět na serveru
   /// a client má pak dostat updatnutá data roomů, kterých se to týká
   /// (respektive všichni klienti, kteří to mají v aktivním výřezu).
+  /*
   public setExit(direction: string, toRoom: Room)
   {
     if (!direction)
@@ -71,7 +73,9 @@ export class Room extends GameEntity
 
     this.data.exits.set(direction, exitRenderData);
   }
+  */
 
+  /*
   // Creates a unique room id based on it's coordinates
   // (something like '[5,12,37]').
   // -> Returns 'false' on error.
@@ -90,6 +94,7 @@ export class Room extends GameEntity
 
     return true;
   }
+  */
 
   //----------------- Protected data --------------------
 

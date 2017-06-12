@@ -1,0 +1,39 @@
+{
+  "name": "System Area",
+  "version": 0,
+  "className": "Area",
+  "contents":
+  {
+    "version": 0,
+    "className": "EntityList",
+    "entities":
+    {
+      "version": 0,
+      "className": "Set",
+      "set": [
+      {
+        "version": 0,
+        "className": "Reference",
+        "id": "a-j3u24egn"
+      },
+      {
+        "version": 0,
+        "className": "Reference",
+        "id": "b-j3u24egn"
+      }]
+    }
+  },
+  "prototypeEntity":
+  {
+    "version": 0,
+    "className": "Reference",
+    "id": "2-j3u24egn"
+  },
+  "nameCathegory": 2,
+  "location":
+  {
+    "version": 0,
+    "className": "Reference",
+    "id": "8-j3u24egn"
+  }
+}

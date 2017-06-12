@@ -6,8 +6,13 @@
 
 'use strict';
 
+/*
+
 import {ERROR} from '../../../../shared/lib/error/ERROR';
-import {WebSocketDescriptor} from './WebSocketDescriptor';
+
+/// Tohle celé asi vůbec není potřeba.
+/// Metodu webSocketsAvailable() může mít třeba WebSocket
+/// (který se momentálně jmenuje WebSocketDescriptor...)
 
 export class WebSocketClient
 {
@@ -42,13 +47,10 @@ export class WebSocketClient
 
   // ---------------- Public methods --------------------
 
-  public createSocketDescriptor()
-  {
-    return new WebSocketDescriptor();
-  }
-
   // ---------------- Event handlers --------------------
 
   // ---------------- Private methods -------------------
 
 }
+
+*/

@@ -45,14 +45,40 @@ export abstract class App
   // (Don't call this directly, use ERROR() instead.)
   public static reportError(message: string)
   {
-    return App.getInstance().reportError(message);
+    // If ERROR() is called from within an initialization
+    // of App instance, the instance of App doesn't exist
+    // yet so we can only report it directly.
+    if (!App.instanceExists())
+    {
+      throw new Error
+      (
+        '[ERROR triggered prior to App.createInstance()]: ' + message
+      );
+    }
+    else
+    {
+      App.getInstance().reportError(message);
+    }
   }
 
   // Reports fatal runtime error.
   // (Don't call this directly, use FATAL_ERROR() instead.)
   public static reportFatalError(message: string)
   {
-    return App.getInstance().reportFatalError(message);
+    // If FATAL_ERROR() is called from within an initialization
+    // of App instance, the instance of App doesn't exist yet so
+    // we can only report it directly.  
+    if (!App.instanceExists())
+    {
+      throw new Error
+      (
+        '[ERROR triggered prior to App.createInstance()]: ' + message
+      );
+    }
+    else
+    {
+      App.getInstance().reportFatalError(message);
+    }
   }
 
   // Sends message to syslog.

@@ -7,11 +7,31 @@
 'use strict';
 
 import {ERROR} from '../../../../shared/lib/error/ERROR';
-import {Packet} from '../../../../shared/protocol/Packet';
+import {Packet} from '../../../../shared/lib/protocol/Packet';
 import {Connection} from '../../../../client/lib/connection/Connection';
 
 export class WebSocketDescriptor
 {
+  // ---------------- Static methods --------------------
+
+  // Checks if browser supports web sockets.
+  public static webSocketsAvailable()
+  {
+    if (WebSocket === undefined)
+    {
+      // Use 'MozWebSocket' if it's available.
+      if ('MozWebSocket' in window)
+      {
+        WebSocket = window['MozWebSocket'];
+        return true;
+      }
+
+      alert("Sorry, you browser doesn't support websockets.");
+      return false;
+    }
+
+    return true;
+  }
 
   // -------------- Static class data -------------------
 

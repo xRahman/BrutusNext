@@ -23,7 +23,9 @@ import {ClientPrototypes} from '../../../client/lib/entity/ClientPrototypes';
 import {Body} from '../../../client/gui/component/Body';
 import {Document} from '../../../client/gui/component/Document';
 import {Connection} from '../../../client/lib/connection/Connection';
-import {WebSocketClient} from '../../../client/lib/net/ws/WebSocketClient';
+///import {WebSocketClient} from '../../../client/lib/net/ws/WebSocketClient';
+import {WebSocketDescriptor} from
+  '../../../client/lib/net/ws/WebSocketDescriptor';
 
 export class ClientApp extends App
 {
@@ -47,10 +49,15 @@ export class ClientApp extends App
 
   // --- websocket communication ---
 
+  /// Deprecated
+  /*
   // Class handling websocket communication.
   private webSocketClient = new WebSocketClient();
+  */
 
-  private connections = new Set<Connection>();
+  /// Bude jen jedna connection na aplikaci (tj. na záložku v browseru).
+  ///private connections = new Set<Connection>();
+  private connection = new Connection();
 
   // --- components ---
 
@@ -62,7 +69,10 @@ export class ClientApp extends App
 
   // --------------- Static accessors -------------------
 
+  public static get connection() { return this.connection; }
+
   // ------------- Public static methods ---------------- 
+
 
   // Creates and runs an instance of ClientApp.
   public static async run()
@@ -109,15 +119,18 @@ export class ClientApp extends App
 
   // ---------------- Public methods --------------------
 
+  /// Deprecated
+  /*
   public createConnection()
   {
-    let socketDescriptor =  this.webSocketClient.createSocketDescriptor();
+    let socketDescriptor = this.webSocketClient.createSocketDescriptor();
     let connection = new Connection(socketDescriptor);
 
     this.connections.add(connection);
 
     return connection;
   }
+  */
 
   // Executes when html document is fully loaded.
   public onDocumentReady()
@@ -171,7 +184,15 @@ export class ClientApp extends App
   private async run()
   {
     // Reports the problem to the user if websockets aren't available.
-    if (!WebSocketClient.webSocketsAvailable())
+    if (!WebSocketDescriptor.webSocketsAvailable())
       return;
+
+    this.connection.connect();
+
+    /// TODO: Stáhnout viewport data ze serveru.
+    /// I když možná nestačí connection.connect(), ještě se asi bude
+    /// muset player přilogovat - aby se dalo vůbec zjistit, kde je
+    /// (a tedy co se má stáhnout a renderovat).
+    /// TODO: Vyrenderovat je do mapy.
   }
 }
