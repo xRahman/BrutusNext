@@ -13,14 +13,17 @@ import {ScrollWindow} from '../../../client/gui/component/ScrollWindow';
 import {MapWindow} from '../../../client/gui/component/MapWindow';
 
 /// TEST:
-import {Packet} from '../../../shared/protocol/Packet';
+import {Packet} from '../../../shared/lib/protocol/Packet';
 
 export class Connection
 {
+  private socketDescriptor: WebSocketDescriptor = null;
+  /*
   constructor (private socketDescriptor: WebSocketDescriptor)
   {
     socketDescriptor.connection = this;
   }
+  */
 
   // -------------- Static class data -------------------
 
@@ -40,6 +43,8 @@ export class Connection
   // Attempts to open the websocket connection.
   public connect()
   {
+    this.socketDescriptor = new WebSocketDescriptor();
+
     this.clientMessage('Opening websocket connection...');
 
     this.socketDescriptor.connect();

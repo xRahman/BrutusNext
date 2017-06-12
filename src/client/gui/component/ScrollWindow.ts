@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {ScrollWindowInput} from
   '../../../client/gui/component/ScrollWindowInput';
 import {ScrollWindowOutput} from
@@ -19,11 +20,11 @@ import $ = require('jquery');
 
 export class ScrollWindow extends Window
 {
-  constructor(private connection: Connection)
+  constructor()
   {
     super();
 
-    this.connection.scrollWindow = this;
+    ///this.connection.scrollWindow = this;
   }
 
   protected static get CSS_CLASS() { return 'ScrollWindow'; }
@@ -79,7 +80,7 @@ export class ScrollWindow extends Window
     this.output.scrollToBottom();
 
     // Send the command to the connection.
-    this.connection.sendCommand(command);
+    ClientApp.connection.sendCommand(command);
   }
 
   // Outputs a client system message.

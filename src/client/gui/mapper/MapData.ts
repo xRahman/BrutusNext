@@ -12,27 +12,29 @@ import {Grid} from '../../../shared/lib/utils/Grid';
 import {Room} from '../../../client/game/world/Room';
 ///import {RoomRenderData} from '../../../client/gui/mapper/RoomRenderData';
 import {RoomData} from '../../../shared/game/world/RoomData';
-import {ExitRenderData} from '../../../client/gui/mapper/ExitRenderData';
+import {Exit} from '../../../client/game/world/Exit';
 
 export class MapData
 {
   constructor()
   {
     /// TEST:
-    this.initWold();
+    ///this.initWold();
   }
 
   //------------------ Private data ---------------------
 
-  // All rooms are stored here, including those that are
-  // not in current rendering area.
-  private roomGrid = new Grid<Room>();
+/// Možná bude lepší roomy mimo rendering areu zahazovat - server
+/// je nejspíš nebude updatovat, takže by se z nich četla neaktuální data.
+  // All rooms known to the client are stored here, including
+  // those that are not in current rendering area.
+  private grid = new Grid<Room>();
 
-  // Only rooms in current rendering area are present here.
+  // Currently rendered rooms.
   private rooms = new Map<string, Room>();
 
-  // Only exits in current rendering area are present here.
-  private exits = new Map<string, ExitRenderData>();
+  // Currently rendered exits.
+  private exits = new Map<string, Exit>();
 
   // ---------------- Public methods --------------------
 
@@ -40,17 +42,20 @@ export class MapData
   // and 'this.exits' if room is in current rendering area.
   public setRoom(room: Room)
   {
+    /// Používá se entity id.
+    /*
     // Create a unique room id based on it's coordinates
     // (something like '[5,12,37]').
     if (!room.initRenderId())
       // Room will not be set if id couldn't be created.
       return;
+    */
 
     // Make sure that 'room' will be flagged as 'explored'.
     room.explored = true;
 
     // Set the room to the grid.
-    this.roomGrid.set(room, room.data.coords);
+    this.grid.set(room.data.coords, room);
 
     // Update it in render data.
     this.setToRenderData(room);
@@ -114,13 +119,13 @@ export class MapData
   // -> Returns 'undefined' if requested room isn't present in MapData.
   public getRoom(coords: Coords)
   {
-    return this.roomGrid.get(coords);
+    return this.grid.get(coords);
   }
 
   public connect(from: Coords, to: Coords)
   {
-    let toRoom = this.roomGrid.get(to);
-    let fromRoom = this.roomGrid.get(from);
+    let toRoom = this.grid.get(to);
+    let fromRoom = this.grid.get(from);
 
     if (!toRoom || !fromRoom)
       return;
@@ -129,12 +134,16 @@ export class MapData
 
     if (direction)
     {
+      /// TODO:
+      console.log("TODO: implementovat vyrábění exitů");
+      /*
       fromRoom.setExit(direction, toRoom);
 
       let reverseDirection = Coords.reverseDirection(direction);
 
       if (reverseDirection)
         toRoom.setExit(reverseDirection, fromRoom);
+      */
     }
 
     this.setToRenderData(fromRoom);
@@ -143,6 +152,8 @@ export class MapData
 
   // ---------------- Private methods -------------------
 
+  /// Deprecated (hopefuly)
+  /*
   // -> Returns 'null' if exit id couldn't be composed.
   private initExitRenderData(room: Room, exitName: string)
   {
@@ -155,17 +166,21 @@ export class MapData
 
     return exitRenderData;
   }
+  */
 
   // Adds room exits to exit render data.
   private setRoomExitsToRenderData(room: Room)
   {
-    if (!room.getRenderId())
+    if (!room.getId())
     {
       ERROR('Unable to add room exits to render data:'
         + ' Missing or invalid room id');
       return;
     }
 
+    /// TODO: Prozkoumat, nejspíš resuscitovat.
+    /// Prozatím disablováno.
+    /*
     for (let [exitName, exit] of room.data.exits)
     {
       let exitRenderData = this.initExitRenderData(room, exitName);
@@ -173,11 +188,12 @@ export class MapData
       if (exitRenderData !== null)
         this.exits.set(exitRenderData.getId(), exitRenderData);
     }
+    */
   }
 
   private setToRenderData(room: Room)
   {
-    if (!room.getRenderId())
+    if (!room.getId())
     {
       ERROR('Unable to add room to render data: Missing or invalid room id');
       return;
@@ -187,7 +203,7 @@ export class MapData
     if (true)
     {
       // Add the room to room render data.
-      this.rooms.set(room.getRenderId(), room);
+      this.rooms.set(room.getId(), room);
 
       this.setRoomExitsToRenderData(room);
     }
@@ -268,6 +284,8 @@ export class MapData
 
   // ------- Test ------
 
+  /// To be deprecated.
+  /*
   private initWold()
   {
     let roomRange =
@@ -295,6 +313,7 @@ export class MapData
       }
     }
   }
+  */
 }
 
 /*

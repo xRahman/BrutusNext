@@ -10,6 +10,7 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {PropertyAttributes} from
   '../../../shared/lib/class/PropertyAttributes';
 import {GameEntity} from '../../../client/game/GameEntity';
+import {Room} from '../../../client/game/world/Room';
 import {Classes} from '../../../shared/lib/class/Classes';
 import {ExitData} from '../../../shared/game/world/ExitData';
 
@@ -23,6 +24,10 @@ export class Exit extends GameEntity
   }
 
   public data = new ExitData();
+
+  // Connected rooms. Order only matters if this is a one-way exit.
+  public from: Room = null;
+  public to: Room = null;
 
 /// Zkusím jako html id použít entity id.
   /*
