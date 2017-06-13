@@ -7,6 +7,7 @@
 
 'use strict';
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Component} from '../../../client/gui/component/Component';
 import {Window} from '../../../client/gui/component/Window';
 import {ScrollWindow} from '../../../client/gui/component/ScrollWindow';
@@ -17,14 +18,14 @@ import $ = require('jquery');
 
 export class Body extends Component
 {
-  private windows: Array<Window> = [];
-
-  constructor(private client: ClientApp)
+  constructor()
   {
     super();
 
-    this.$body = $('#' + this.id);
+    ///this.$body = $('#' + this.id);
 
+    /// Todo: Asi to spíš nedělat tady, ale až v nějakém initu,
+    /// ať rozumně fungují errory.
     this.createScrollWindow();
     this.createMapWindow();
   }
@@ -37,46 +38,82 @@ export class Body extends Component
 
   // --- Jquery elements ---
 
-  $body = null;
+  protected $body = $('#' + this.id);
 
   //------------------ Private data ---------------------
 
   // 'id' parameter of html element.
   ///private id = '#scroll-view';
 
+  // All windows should be here.
+  private windows = new Set<Window>();
+
+  // There is just one map window per ClientApp.
+  // When avatar is switched, content is redrawn.
+  private mapWindow: MapWindow = null;
+
+  private activeScrollWindow: ScrollWindow = null;
+
   // --------------- Static accessors -------------------
 
+  public static get mapWindow()
+  {
+    return ClientApp.body.mapWindow;
+  }
+
+  public static get activeScrollWindow()
+  {
+    return ClientApp.body.activeScrollWindow;
+  }
+
+  public static set activeScrollWindow(window: ScrollWindow)
+  {
+    ClientApp.body.activeScrollWindow = window;
+  }
+
   // ---------------- Static methods --------------------
+
+  // Executes when html document is resized.
+  public static onDocumentResize()
+  {
+    for (let window of ClientApp.body.windows)
+      window.onDocumentResize();
+  }
 
   // ---------------- Public methods --------------------
 
   // Creates a 'ScrollWindow' and adds it to app_body.
   public createScrollWindow()
   {
-    /// Tohle je docasne - scrollWindowu muze byt vic.
     let scrollWindow = new ScrollWindow();
-    this.windows.push(scrollWindow);
+
+    this.windows.add(scrollWindow);
 
     // Create jquery element 'scrollwindow'.
     let $scrollWindow = scrollWindow.create();
     // Put it in the 'body' element.
     this.$body.append($scrollWindow);
 
-    this.client.activeScrollWindow = scrollWindow;
+    return scrollWindow;
   }
 
   // Creates a 'Map' window and adds it to app_body.
   public createMapWindow()
   {
-    let mapWindow = new MapWindow();
-    this.windows.push(mapWindow);
+    if (this.mapWindow !== null)
+    {
+      ERROR("Map window already exists. There can only be one"
+        + " map window per client application");
+      return;
+    }
+
+    this.mapWindow = new MapWindow();
+    this.windows.add(this.mapWindow);
 
     // Create jquery element 'mapwindow'.
-    let $mapWindow = mapWindow.create();
+    let $mapWindow = this.mapWindow.create();
     // Put it in the 'body' element.
     this.$body.append($mapWindow);
-
-    //this.client.mapper = mapper;
   }
 
   // Executes when html document is fully loaded.
@@ -84,13 +121,6 @@ export class Body extends Component
   {
     for (let window of this.windows)
       window.onDocumentReady();
-  }
-
-  // Executes when html document is resized.
-  public onDocumentResize()
-  {
-    for (let window of this.windows)
-      window.onDocumentResize();
   }
 
   // ---------------- Private methods -------------------

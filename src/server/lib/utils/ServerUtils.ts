@@ -10,8 +10,8 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Syslog} from '../../../shared/lib/log/Syslog';
 import {MessageType} from '../../../shared/lib/message/MessageType';
-import {TelnetSocketDescriptor} from
-  '../../../server/lib/net/telnet/TelnetSocketDescriptor';
+import {ServerTelnetSocket} from
+  '../../../server/lib/net/telnet/ServerTelnetSocket';
 
 export module ServerUtils
 {

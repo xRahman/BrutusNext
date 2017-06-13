@@ -99,9 +99,9 @@ export class ScrollWindow extends Window
     this.output.appendHtml(html, { forceScroll: true });
   }
   
-  public receiveData(data: string)
+  public receiveMessage(message: string)
   {
-    this.output.appendMessage(data);
+    this.output.appendMessage(message);
   }
 
   public triggerOutputEvent(event: JQueryKeyEventObject)

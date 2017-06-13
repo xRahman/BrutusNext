@@ -31,8 +31,7 @@ import {ServerApp} from '../../../../server/lib/app/ServerApp';
 import {Connection} from '../../../../server/lib/connection/Connection';
 import {Connections} from '../../../../server/lib/connection/Connections';
 import {HttpServer} from '../../../../server/lib/net/http/HttpServer';
-import {WebSocketDescriptor} from
-  '../../../../server/lib/net/ws/WebSocketDescriptor';
+import {ServerWebSocket} from '../../../../server/lib/net/ws/ServerWebSocket';
 
 import * as WebSocket from 'ws';
 
@@ -46,13 +45,15 @@ export class WebSocketServer
   // ----------------- Public data ----------------------
 
   // Do we accept new connections?
-  public isOpen = false;
+  private open = false;
 
   //------------------ Private data ---------------------
 
   private webSocketServer: WebSocket.Server = null;
 
   // ---------------- Public methods --------------------
+
+  public isOpen() { return this.open; }
 
   // Starts the websocket server inside a http server.
   public start(httpServer: http.Server)
@@ -87,15 +88,15 @@ export class WebSocketServer
       AdminLevel.IMMORTAL
     );
 
-    this.isOpen = true;
+    this.open = true;
   }
 
   // ---------------- Event handlers --------------------
 
   private async onNewConnection(socket: WebSocket)
   {
-    let ip = WebSocketDescriptor.parseRemoteAddress(socket);
-    let url = WebSocketDescriptor.parseRemoteUrl(socket);
+    let ip = ServerWebSocket.parseRemoteAddress(socket);
+    let url = ServerWebSocket.parseRemoteUrl(socket);
 
     if (!this.isServerOpen(socket, ip, url))
       return;
@@ -122,10 +123,10 @@ export class WebSocketServer
   // -> Returns 'null' if connection couldn't be created.
   private async createConnection(socket: WebSocket, ip: string, url: string)
   {
-    let socketDescriptor = new WebSocketDescriptor(socket, ip, url);
+    let socketDescriptor = new ServerWebSocket(socket, ip, url);
     let connection = new Connection();
 
-    connection.setSocketDescriptor(socketDescriptor);
+    connection.setSocket(socketDescriptor);
     Connections.add(connection);
 
     return connection;
@@ -133,7 +134,7 @@ export class WebSocketServer
 
   private isServerOpen(socket: WebSocket, ip: string, url: string)
   {
-    if (this.isOpen === false)
+    if (this.open === false)
     {
       Syslog.log
       (
