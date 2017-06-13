@@ -3,6 +3,21 @@ TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 
 ---------------------------------------------------------------
 
+TODO: connection.connect (a stahování dat ze serveru a tak)
+asi přesunout do onDocumentReady().
+- a nebo taky ne. Otázka je, jestli vůbec onDocumentReady() k něčemu
+  potřebuju. Někde jsem tuším četl, že když je script uvnitř <body>
+  (což je), tak se určitě pustí až ve chvíli, kdy existuje document
+  a v něm <body> - což je všechno, co potřebuju ke štěstí.
+
+
+TODO: V ServerSocket se neinicializuje this.connection ale používá se.
+
+TODO: TelnetServer, WebSocketServer a HttpServer by mohly mít
+  společného předka.
+
+---------------------------------------------------------------
+
 Jak na mapper-editor:
 ----------------------
 
@@ -26,6 +41,49 @@ na každou záložku - tedy 1 connection per klient (protože nová záložka
 je nová instance celého klienta).
   Zatím asi bude rozumné pracovat s tím, že se přes tuhle jednu connection
 připojí právě jeden char, časem to můžu rozšířit na víc.
+
+TODO: Na serveru rozdělit TelnetConnection a WebConnection
+
+TODO: Na clientu by pod Connection měly být Charactery (obecně ingame entity?)
+  (IngameEntity)
+  - zatím je asi nejlepší InGame, ale moc nedává smysl, že InGamů může být víc.
+  - GameEntity to být nemůže
+- connection je obecně pro celou app
+- ScrollView
+
+Avatar!
+
+TODO (Tohle asi stále stojí za zvážení - classu Game mám možná opravdu navíc):
+Místo stávající classy Game by asi šel použít World
+(obsahuje realms, areas, characters a tak - to by klidně mohlo všechno být
+ uvnitř světa.)
+- doteď jsem ale rozlišoval /game/world (coby fyzické lokace) a třeba
+  game/characters, etc. Tahle struktura by se musela změnit.
+
+TODO: ingameEntity (v telnet Connection) by se možná daky dala přejmenovat
+  na avatar (i když spíš ne, to bude něco jiného).
+  - ve skutečnosti bych měl avatar říkat té ingame entitě a pro IngameProcessor
+    vymyslet ještě jinej název...
+(Na druhou stranu pokud bych ingameEntitě říkal avatar, tak nikdy nebudu
+ mít 'public avatar: Avatar' - protože typem bude GameEntity).
+
+MapWindow asi stačí jedno per client (obsah se změní při přepnutí charů)
+(to samé platí pro GroupWindow, PlayerFrame, TargetFrame, etc.)
+- když by hráč (imm) nutně chtěl vidět tyhle věci pro víc charů současně,
+  může si prostě otevřít víc tabů v browseru (ty asi vedle sebe nedá, takže
+  spíš víc browserů).
+
+---------------------------------------------------------------
+
+Přejmenování SocketDescriptoru...
+
+- nejde to přejmenovat na Socket, WebSocket, TelnetSocket,
+  protože WebSocket je build-in classa browseru
+
+TODO: Možná MudSocket, MudWebSocket, MudTelnetSocket?
+(asi furt lepší než SocketDescriptor...)
+- nebo ClientWebSocket, ServerWebSocket
+  (to je asi lepší).
 
 ---------------------------------------------------------------
 

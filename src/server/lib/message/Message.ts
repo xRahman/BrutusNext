@@ -14,8 +14,9 @@ import {Connection} from '../../../server/lib/connection/Connection';
 import {Connections} from '../../../server/lib/connection/Connections';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {MessageColors} from '../../../server/lib/message/MessageColors';
-import {TelnetSocketDescriptor}
-  from '../../../server/lib/net/telnet/TelnetSocketDescriptor';
+import {ServerSocket} from '../../../server/lib/net/ServerSocket';
+import {ServerTelnetSocket}
+  from '../../../server/lib/net/telnet/ServerTelnetSocket';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {GameEntity} from '../../../server/game/GameEntity';
@@ -295,8 +296,8 @@ export class Message
       /// asi přidávala jen jedna newlina (prompt by nebyl odřádkovaný).
 
       // Two newlines create an empty line between message body and prompt.
-      data += TelnetSocketDescriptor.NEW_LINE
-            + TelnetSocketDescriptor.NEW_LINE
+      data += ServerSocket.NEW_LINE
+            + ServerSocket.NEW_LINE
       /// TODO: Ve skutečnosti asi spíš target.generatePrompt(),
             /// tj. target budu muset předávat jako parametr.
             + this.generatePrompt();
@@ -317,7 +318,7 @@ export class Message
 
     // Add newline to the start of the message, so there is an empty line
     // between every two messages.
-    data = TelnetSocketDescriptor.NEW_LINE + data;
+    data = ServerSocket.NEW_LINE + data;
 
     return data;
   }
@@ -411,7 +412,7 @@ export class Message
 
     // Add base color to the start of the string, but only if
     // it doesn't start with color code.
-    if (!TelnetSocketDescriptor.isColorCode(firstTwoCharacters))
+    if (!ServerTelnetSocket.isColorCode(firstTwoCharacters))
       return baseColor + str;
     else
       return str;      

@@ -1,19 +1,19 @@
 /*
   Part of BrutusNEXT
 
-  Implements functionality attached directly to html document
-  ('document' is a global variable).
+  Functionality attached directly to html 'document'.
 */
 
 'use strict';
 
+import {Body} from '../../../client/gui/component/Body';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 
 import $ = require('jquery');
 
 export class Document
 {
-  constructor(private client: ClientApp)
+  constructor()
   {
     // Attach handler for 'document.ready' event.
     $(document).ready
@@ -48,7 +48,7 @@ export class Document
   // scrollwindow.
   private focusInput()
   {
-    this.client.activeScrollWindow.focusInput();
+    Body.activeScrollWindow.focusInput();
   }
 
   // ---------------- Event handlers --------------------
@@ -65,12 +65,12 @@ export class Document
       (event) => { this.onKeyDown(event); }
     );
 
-    this.client.onDocumentReady();
+    ClientApp.onDocumentReady();
   }
 
   private onDocumentResize()
   {
-    this.client.onDocumentResize();
+    Body.onDocumentResize();
   }
 
   // Handles 'keydown' event.
@@ -184,7 +184,7 @@ export class Document
       // element while scrolling the output element).
       case 33:  // 'PgUp'
       case 34:  // 'PgDn'
-        this.client.activeScrollWindow.triggerOutputEvent(event);
+        Body.activeScrollWindow.triggerOutputEvent(event);
         break;    
 
       // Following keys are redirected only when a specific key

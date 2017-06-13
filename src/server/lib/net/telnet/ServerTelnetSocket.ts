@@ -13,7 +13,7 @@ import {MessageType} from '../../../../shared/lib/message/MessageType';
 import {Account} from '../../../../server/lib/account/Account';
 import {AdminLevel} from '../../../../shared/lib/admin/AdminLevel';
 import {ServerApp} from '../../../../server/lib/app/ServerApp';
-import {SocketDescriptor} from '../../../../server/lib/net/SocketDescriptor';
+import {ServerSocket} from '../../../../server/lib/net/ServerSocket';
 import {Connection} from '../../../../server/lib/connection/Connection';
 
 // Built-in node.js modules.
@@ -96,22 +96,22 @@ const ANSI256 = ['#000', '#B00', '#0B0', '#BB0', '#00B', '#B0B', '#0BB',
                 'rgb(218,218,218)', 'rgb(228,228,228)', 'rgb(238,238,238)'];
 */
 
-export class TelnetSocketDescriptor extends SocketDescriptor
+export class ServerTelnetSocket extends ServerSocket
 {
   constructor(socket: net.Socket, ip: string)
   {
     super(ip);
 
-    this.socket = socket;
+    this.rawSocket = socket;
 
-    this.initSocket();
+    this.init();
   }
 
   // -------------- Static class data -------------------
 
   //------------------ Private data ---------------------
 
-  private socket: net.Socket = null;
+  private rawSocket: net.Socket = null;
 
   private static events =
   {
@@ -160,19 +160,19 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     // Note: this only works for telnet and classic MUD clients.
     data = this.ansify(data);
 
-    this.socket.write(data);
+    this.rawSocket.write(data);
   }
 
   // Closes the socket, ending the connection.
-  public closeSocket()
+  public close()
   {
-    if (this.socket)
-      this.socket.end();
+    if (this.rawSocket)
+      this.rawSocket.end();
   }
 
   // ---------------- Event handlers --------------------
 
-  protected async onSocketReceivedData(data: string)
+  protected async onReceivedData(data: string)
   {
     // this.inputBuffer is used to store incomplete parts of commands.
     // If there is something in it, add new data to it and process it all
@@ -185,7 +185,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
 
     // Do not parse protocol data if user sent just an empty newline.
     // (This is often used by player to refresh prompt)
-    if (data !== SocketDescriptor.NEW_LINE)
+    if (data !== ServerSocket.NEW_LINE)
     {
       data = this.parseProtocolData(data);
 
@@ -206,7 +206,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     await this.processInput(input);
   }
 
-  protected onSocketError(error)
+  protected onError(error)
   {
     let player = "";
 
@@ -223,7 +223,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
 
     // Sending the syslog message to closed socket would result in
     // another error, which would result in stack overflow.
-    if (!this.socketClosed)
+    if (!this.closed)
     {
       // I don't really know what kind of errors can happen here.
       // For now let's just log the error and close the connection.
@@ -236,12 +236,12 @@ export class TelnetSocketDescriptor extends SocketDescriptor
       );
     }
 
-    this.closeSocket();
+    this.close();
   }
 
-  protected onSocketClose()
+  protected onClose()
   {
-    this.socketClosed = true;
+    this.closed = true;
 
     if (this.connection !== null)
       this.connection.onSocketClose();
@@ -252,7 +252,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
   protected checkEventHandlerAbsence(event: string)
   {
     let registeredEvents =
-      events.EventEmitter.listenerCount(this.socket, event);
+      events.EventEmitter.listenerCount(this.rawSocket, event);
 
     if (registeredEvents !== 0)
       ERROR("Event " + event + " is already registered on socket");
@@ -411,7 +411,7 @@ export class TelnetSocketDescriptor extends SocketDescriptor
     // newline (if there is any). There rest (or everything, if there is no
     // newline in input at all) needs to be buffered until the rest of the
     // data arrives.
-    let lastNewlineIndex = data.lastIndexOf(SocketDescriptor.NEW_LINE);
+    let lastNewlineIndex = data.lastIndexOf(ServerSocket.NEW_LINE);
 
     if (lastNewlineIndex === -1)
     {
@@ -478,9 +478,9 @@ export class TelnetSocketDescriptor extends SocketDescriptor
   // --------------- Private methods --------------------
 
   // Sets socket transfer mode, registers event handlers, etc.
-  private initSocket()
+  private init()
   {
-    if (this.socket === null || this.socket === undefined)
+    if (this.rawSocket === null || this.rawSocket === undefined)
     {
       ERROR('Attempt to init invalid socket');
       return;
@@ -488,45 +488,45 @@ export class TelnetSocketDescriptor extends SocketDescriptor
 
     // Tell the socket to interpret data as raw binary stream.
     // (it's necessary for unicode characters to transmit correctly)
-    this.socket.setEncoding('binary');
+    this.rawSocket.setEncoding('binary');
 
     // Check that event handler for 'data' event is not already registered.
     this.checkEventHandlerAbsence
     (
-      TelnetSocketDescriptor.events.SOCKET_RECEIVED_DATA
+      ServerTelnetSocket.events.SOCKET_RECEIVED_DATA
     );
 
     // Register event handler for 'data' event.
-    this.socket.on
+    this.rawSocket.on
     (
-      TelnetSocketDescriptor.events.SOCKET_RECEIVED_DATA,
-      (data) => { this.onSocketReceivedData(data); }
+      ServerTelnetSocket.events.SOCKET_RECEIVED_DATA,
+      (data) => { this.onReceivedData(data); }
     );
 
     // Check that event handler for 'error' event is not already registered.
     this.checkEventHandlerAbsence
     (
-      TelnetSocketDescriptor.events.SOCKET_ERROR
+      ServerTelnetSocket.events.SOCKET_ERROR
     );
 
     // Register event handler for 'error' event.
-    this.socket.on
+    this.rawSocket.on
     (
-      TelnetSocketDescriptor.events.SOCKET_ERROR,
-      (error) => { this.onSocketError(error); }
+      ServerTelnetSocket.events.SOCKET_ERROR,
+      (error) => { this.onError(error); }
     );
 
     // Check that event handler for 'close' event is not already registered.
     this.checkEventHandlerAbsence
     (
-      TelnetSocketDescriptor.events.SOCKET_CLOSE
+      ServerTelnetSocket.events.SOCKET_CLOSE
     );
 
     // Register event handler for 'close' event.
-    this.socket.on
+    this.rawSocket.on
     (
-      TelnetSocketDescriptor.events.SOCKET_CLOSE,
-      () => { this.onSocketClose(); }
+      ServerTelnetSocket.events.SOCKET_CLOSE,
+      () => { this.onClose(); }
     );
   }
 }

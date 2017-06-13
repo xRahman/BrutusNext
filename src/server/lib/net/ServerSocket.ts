@@ -14,7 +14,7 @@ import {Connection} from '../../../server/lib/connection/Connection';
 // Built-in node.js modules.
 import * as net from 'net';  // Import namespace 'net' from node.js
 
-export abstract class SocketDescriptor
+export abstract class ServerSocket
 {
   constructor(ip: string)
   {
@@ -63,7 +63,7 @@ export abstract class SocketDescriptor
   ///public connectionId: EntityId = null;
   public connection: Connection = null;
 
-  public socketClosed = false;
+  public closed = false;
 
   // ---------------- Public methods --------------------
  
@@ -73,7 +73,7 @@ export abstract class SocketDescriptor
   public abstract sendMudMessage(data: string);
 
   // Closes the socket, ending the connection.
-  public abstract closeSocket();
+  public abstract close();
 
   //----------------- Protected data --------------------
 
@@ -87,7 +87,7 @@ export abstract class SocketDescriptor
   protected async processInput(input: string)
   {
     // Split input by newlines.
-    let lines = input.split(SocketDescriptor.NEW_LINE);
+    let lines = input.split(ServerSocket.NEW_LINE);
 
     // And push each line as a separate command to commandsBuffer[] to be
     // processed (.push.apply() appends an array to another array).
