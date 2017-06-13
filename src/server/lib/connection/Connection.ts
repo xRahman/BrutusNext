@@ -13,7 +13,7 @@ import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Message} from '../../../server/lib/message/Message';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {ServerApp} from '../../../server/lib/app/ServerApp';
-import {SocketDescriptor} from '../../../server/lib/net/SocketDescriptor';
+import {ServerSocket} from '../../../server/lib/net/ServerSocket';
 import {Account} from '../../../server/lib/account/Account';
 import {Accounts} from '../../../server/lib/account/Accounts';
 import {Authentication} from '../../../server/lib/connection/Authentication';
@@ -35,7 +35,7 @@ export class Connection
   //------------------ Private data ---------------------
 
   private stage: Connection.Stage = null;
-  private socketDescriptor: SocketDescriptor = null;
+  private socket: ServerSocket = null;
   private authentication: Authentication = null;
   private menu: Menu = null;
   private chargen: Chargen = null;
@@ -162,18 +162,18 @@ export class Connection
 
   // ---------------- Public methods --------------------
 
-  public get ipAddress() { return this.socketDescriptor.getIpAddress(); }
+  public get ipAddress() { return this.socket.getIpAddress(); }
 
-  public setSocketDescriptor(socketDescriptor: SocketDescriptor)
+  public setSocket(socket: ServerSocket)
   {
-    if (socketDescriptor === null || socketDescriptor === undefined)
+    if (socket === null || socket === undefined)
     {
       ERROR("Invalid socket descriptor");
       return;
     } 
 
-    socketDescriptor.connection = this;
-    this.socketDescriptor = socketDescriptor;
+    socket.connection = this;
+    this.socket = socket;
   }
 
   /*
@@ -348,7 +348,7 @@ export class Connection
 
     // Closes the socket, which will trigger 'close' event on it, which
     // will be handled by calling onSocketClose() on this connection.
-    this.socketDescriptor.closeSocket();
+    this.socket.close();
   }
 
   // Handles 'close' event triggered on socket.
@@ -357,7 +357,7 @@ export class Connection
   // by calling this method).
   public onSocketClose()
   {
-    if (this.socketDescriptor.socketClosed === false)
+    if (this.socket.closed === false)
     {
       ERROR("Attempt to call Connection.onSocketClose() before respective"
         + " socket has been closed. Don't call Connection.onSocketClose()"
@@ -444,7 +444,7 @@ export class Connection
       return;
     }
 
-    this.socketDescriptor.sendMudMessage(message.compose());
+    this.socket.sendMudMessage(message.compose());
   }
 
   // --------------- Private methods --------------------

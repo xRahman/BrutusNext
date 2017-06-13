@@ -13,7 +13,7 @@ import {Utils} from '../../../../shared/lib/utils/Utils';
 import {Syslog} from '../../../../shared/lib/log/Syslog';
 import {MessageType} from '../../../../shared/lib/message/MessageType';
 import {AdminLevel} from '../../../../shared/lib/admin/AdminLevel';
-import {SocketDescriptor} from '../../../../server/lib/net/SocketDescriptor';
+import {ServerSocket} from '../../../../server/lib/net/ServerSocket';
 
 import * as WebSocket from 'ws';
 
@@ -21,16 +21,16 @@ import * as WebSocket from 'ws';
 // import * as net from 'net';  // Import namespace 'net' from node.js
 // import * as events from 'events';  // Import namespace 'events' from node.js
 
-export class WebSocketDescriptor extends SocketDescriptor
+export class ServerWebSocket extends ServerSocket
 {
-  constructor(socket: WebSocket, ip: string, url: string)
+  constructor(webSocket: WebSocket, ip: string, url: string)
   {
     super(ip);
 
     this.url = url;
-    this.socket = socket;
+    this.webSocket = webSocket;
 
-    this.initSocket();
+    this.init();
   }
 
   // -------------- Static class data -------------------
@@ -40,39 +40,39 @@ export class WebSocketDescriptor extends SocketDescriptor
   // Remote address url.
   private url: string = null;
 
-  private socket: WebSocket = null;
+  private webSocket: WebSocket = null;
 
   // ---------------- Public methods --------------------
 
-  public static parseRemoteUrl(socket: WebSocket)
+  public static parseRemoteUrl(webSocket: WebSocket)
   {
-    if (socket === null || socket === undefined)
+    if (webSocket === null || webSocket === undefined)
     {
       ERROR('Attempt to read ulr from an invalid websocket');
       return null;
     }
 
-    if (socket.upgradeReq === null || socket.upgradeReq === undefined)
+    if (webSocket.upgradeReq === null || webSocket.upgradeReq === undefined)
     {
       ERROR('Failed to read url from websocket');
       return;
     }
 
-    if (socket.upgradeReq.url === undefined)
+    if (webSocket.upgradeReq.url === undefined)
     {
       ERROR("Missing url on websocket");
 
       return null;
     }
 
-    return socket.upgradeReq.url;
+    return webSocket.upgradeReq.url;
   }
 
   // -> Returns remote ip adress read from 'socket'
   //    or 'null' if it doesn't exist on it.
-  public static parseRemoteAddress(socket: WebSocket)
+  public static parseRemoteAddress(webSocket: WebSocket)
   {
-    if (socket === null || socket === undefined)
+    if (webSocket === null || webSocket === undefined)
     {
       ERROR('Attempt to read address from an invalid websocket');
       return null;
@@ -80,24 +80,24 @@ export class WebSocketDescriptor extends SocketDescriptor
 
     if
     (
-      socket.upgradeReq === null
-      || socket.upgradeReq === undefined
-      || socket.upgradeReq.connection === null
-      || socket.upgradeReq.connection === undefined
+      webSocket.upgradeReq === null
+      || webSocket.upgradeReq === undefined
+      || webSocket.upgradeReq.connection === null
+      || webSocket.upgradeReq.connection === undefined
     )
     {
       ERROR('Failed to read address from websocket');
       return;
     }
 
-    if (socket.upgradeReq.connection.remoteAddress === undefined)
+    if (webSocket.upgradeReq.connection.remoteAddress === undefined)
     {
       ERROR("Missing address on websocket");
 
       return null;
     }
 
-    return socket.upgradeReq.connection.remoteAddress;
+    return webSocket.upgradeReq.connection.remoteAddress;
   }
 
   // Sends a mud message to the user.
@@ -114,7 +114,7 @@ export class WebSocketDescriptor extends SocketDescriptor
   {
     try
     {
-      this.socket.send(packet.toJson());
+      this.webSocket.send(packet.toJson());
     }
     catch (error)
     {
@@ -130,15 +130,15 @@ export class WebSocketDescriptor extends SocketDescriptor
   }
 
   // Closes the socket, ending the connection.
-  public closeSocket()
+  public close()
   {
-    if (this.socket)
-      this.socket.close();
+    if (this.webSocket)
+      this.webSocket.close();
   }
 
   // ---------------- Event handlers --------------------
 
-  private async onSocketReceivedData(data: any, flags: { binary: boolean })
+  private async onReceivedData(data: any, flags: { binary: boolean })
   {
     if (flags.binary === true)
     {
@@ -163,13 +163,13 @@ export class WebSocketDescriptor extends SocketDescriptor
     await this.processInput(data);
   }
 
-  private onSocketOpen()
+  private onOpen()
   {
     /// Asi neni treba nic reportit, uz je zalogovana new connection.
-    console.log('Socket opened');
+    console.log('Websocket opened');
   }
 
-  private onSocketError(event: Error)
+  private onError(event: Error)
   {
     Syslog.log
     (
@@ -180,7 +180,7 @@ export class WebSocketDescriptor extends SocketDescriptor
     );
   }
 
-  private onSocketClose
+  private onClose
   (
     event:
     {
@@ -219,21 +219,21 @@ export class WebSocketDescriptor extends SocketDescriptor
   // --------------- Private methods --------------------
 
   // Registers event handlers, etc.
-  private initSocket()
+  private init()
   {
-    if (this.socket === null || this.socket === undefined)
+    if (this.webSocket === null || this.webSocket === undefined)
     {
       ERROR('Attempt to init invalid socket');
       return;
     }
 
-    this.socket.on
+    this.webSocket.on
     (
       'message',
-      (data, flags) => { this.onSocketReceivedData(data, flags); }
+      (data, flags) => { this.onReceivedData(data, flags); }
     );
-    this.socket.onopen = (event) => { this.onSocketOpen(); };
-    this.socket.onerror = (event) => { this.onSocketError(event); };
-    this.socket.onclose = (event) => { this.onSocketClose(event); };
+    this.webSocket.onopen = (event) => { this.onOpen(); };
+    this.webSocket.onerror = (event) => { this.onError(event); };
+    this.webSocket.onclose = (event) => { this.onClose(event); };
   }
 }
