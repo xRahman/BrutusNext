@@ -264,7 +264,7 @@ export class ServerApp extends App
 
   private startTelnetServer(telnetPort: number)
   {
-    if (this.telnetServer.isOpen === true)
+    if (this.telnetServer.isOpen())
     {
       ERROR("Telnet server is already running");
       return;
@@ -275,7 +275,7 @@ export class ServerApp extends App
 
   private startHttpServer()
   {
-    if (this.httpServer.isOpen === true)
+    if (this.httpServer.isOpen())
     {
       ERROR("Http server is already running");
       return;

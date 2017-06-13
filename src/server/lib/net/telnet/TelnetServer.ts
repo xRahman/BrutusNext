@@ -30,8 +30,8 @@ import {MessageType} from '../../../../shared/lib/message/MessageType';
 import {ServerApp} from '../../../../server/lib/app/ServerApp';
 import {Connection} from '../../../../server/lib/connection/Connection';
 import {Connections} from '../../../../server/lib/connection/Connections';
-import {TelnetSocketDescriptor} from
-  '../../../../server/lib/net/telnet/TelnetSocketDescriptor';
+import {ServerTelnetSocket} from
+  '../../../../server/lib/net/telnet/ServerTelnetSocket';
 
 // Built-in node.js modules.
 import * as net from 'net';  // Import namespace 'net' from node.js
@@ -42,7 +42,7 @@ export class TelnetServer
   // ----------------- Public data ----------------------
 
   // Do we accept new connections?
-  public isOpen = false;
+  private open = false;
 
   public static get DEFAULT_PORT() { return 4443; }
 
@@ -60,6 +60,8 @@ export class TelnetServer
 
   // ---------------- Public methods --------------------
 
+  public isOpen() { return this.open; }
+
   public getPort() { return this.port; }
 
   // Starts the telnet server.
@@ -73,7 +75,7 @@ export class TelnetServer
     // corect 'this' will be passed to it. )
     this.telnetServer = net.createServer
     (
-      (socket) => { this.onNewConnection(socket); }
+      (rawSocket: net.Socket) => { this.onNewConnection(rawSocket); }
     );
 
     // Register handler for server errors (like attempt to run the server
@@ -107,7 +109,7 @@ export class TelnetServer
   // Handles 'listening' event of telnet server.
   private onServerStartsListening()
   {
-    this.isOpen = true;
+    this.open = true;
 
     Syslog.log
     (
@@ -144,11 +146,11 @@ export class TelnetServer
 
   // This handler is registered directly by net.createServer()
   // (it processes a new connection request)
-  private async onNewConnection(socket: net.Socket)
+  private async onNewConnection(rawSocket: net.Socket)
   {
-    let ip = TelnetSocketDescriptor.parseRemoteAddress(socket);
+    let ip = ServerTelnetSocket.parseRemoteAddress(rawSocket);
 
-    if (!this.isServerOpen(socket, ip))
+    if (this.serverClosed(rawSocket, ip))
       return;
 
     Syslog.log
@@ -171,7 +173,7 @@ export class TelnetServer
     /// zatim necham.
     ///s.socket = s; // conform to the websocket object to make easier to handle
 
-    let connection = await this.createConnection(socket, ip);
+    let connection = await this.createConnection(rawSocket, ip);
 
     if (connection === null)
       // Error is already reported by createConnection().
@@ -185,21 +187,21 @@ export class TelnetServer
   // -> Returns 'null' if connection couldn't be created.
   private async createConnection(socket: net.Socket, ip: string)
   {
-    let socketDescriptor = new TelnetSocketDescriptor(socket, ip);
+    let socketDescriptor = new ServerTelnetSocket(socket, ip);
     let connection = new Connection();
 
     if (connection === null)
       return null;
 
-    connection.setSocketDescriptor(socketDescriptor);
+    connection.setSocket(socketDescriptor);
     Connections.add(connection);
 
     return connection;
   }
 
-  private isServerOpen(socket: net.Socket, ip: string)
+  private serverClosed(rawSocket: net.Socket, ip: string)
   {
-    if (this.isOpen === false)
+    if (this.open === false)
     {
       Syslog.log
       (
@@ -211,11 +213,11 @@ export class TelnetServer
 
       // Half-closes the socket by sending a FIN packet.
       // It is possible the server will still send some data.
-      socket.end();
+      rawSocket.end();
 
-      return false;
+      return true;
     }
 
-    return true;
+    return false;
   }
 }

@@ -14,26 +14,22 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {MessageType} from '../../../shared/lib/message/MessageType';
-///import {Saveable} from '../..../shared/lib/class/Saveable';
 import {ClientSyslog} from '../../../client/lib/log/ClientSyslog';
 import {App} from '../../../shared/lib/app/App';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {ClientEntities} from '../../../client/lib/entity/ClientEntities';
 import {ClientPrototypes} from '../../../client/lib/entity/ClientPrototypes';
 import {Body} from '../../../client/gui/component/Body';
+import {ScrollWindow} from '../../../client/gui/component/ScrollWindow';
 import {Document} from '../../../client/gui/component/Document';
 import {Connection} from '../../../client/lib/connection/Connection';
-///import {WebSocketClient} from '../../../client/lib/net/ws/WebSocketClient';
-import {WebSocketDescriptor} from
-  '../../../client/lib/net/ws/WebSocketDescriptor';
+import {ClientWebSocket} from '../../../client/lib/net/ws/ClientWebSocket';
 
 export class ClientApp extends App
 {
   // -------------- Static class data -------------------
 
   //------------------ Public data ----------------------
-
-  public activeScrollWindow = null;
 
   //----------------- Protected data --------------------
 
@@ -55,21 +51,30 @@ export class ClientApp extends App
   private webSocketClient = new WebSocketClient();
   */
 
-  /// Bude jen jedna connection na aplikaci (tj. na záložku v browseru).
-  ///private connections = new Set<Connection>();
+  // There is only one connection per client application
+  // (it means one connection per browser tab if you
+  //  open the client in multiple tabs).
   private connection = new Connection();
 
   // --- components ---
 
   // Html document.
-  private document = new Document(this);
+  private document = new Document();
 
   // Html <body> element.
-  private body = new Body(this);
+  private body = new Body();
 
   // --------------- Static accessors -------------------
 
-  public static get connection() { return this.connection; }
+  public static get body()
+  {
+    return ClientApp.getInstance().body;
+  }
+
+  public static get connection()
+  {
+    return ClientApp.getInstance().connection;
+  }
 
   // ------------- Public static methods ---------------- 
 
@@ -89,6 +94,12 @@ export class ClientApp extends App
 
     // Run client application.
     await ClientApp.getInstance().run();
+  }
+
+  // Executes when html document is fully loaded.
+  public static onDocumentReady()
+  {
+    ClientApp.getInstance().body.onDocumentReady();
   }
 
   // ------------ Protected static methods -------------- 
@@ -132,18 +143,6 @@ export class ClientApp extends App
   }
   */
 
-  // Executes when html document is fully loaded.
-  public onDocumentReady()
-  {
-    this.body.onDocumentReady();
-  }
-
-  // Executes when html document is resized.
-  public onDocumentResize()
-  {
-    this.body.onDocumentResize();
-  }
-
   // --------------- Protected methods ------------------
 
   // ~ Overrides App.reportError().
@@ -177,15 +176,22 @@ export class ClientApp extends App
   {
     return ClientSyslog.log(message, msgType, adminLevel);
   }
-  
+
   // ---------------- Private methods -------------------
 
   // Starts the client application.
   private async run()
   {
     // Reports the problem to the user if websockets aren't available.
-    if (!WebSocketDescriptor.webSocketsAvailable())
+    if (!ClientWebSocket.checkWebSocketsSupport())
       return;
+
+    /// TODO:
+    /// Správně by se mělo scrollWindow a Avatar vytvořit po kliknutí
+    /// na jméno charu v MenuWindow (nebo možná LoginWindow).
+    let scrollWindow = this.body.createScrollWindow();
+    Body.activeScrollWindow = scrollWindow;
+    this.connection.activeAvatar = this.connection.createAvatar(scrollWindow);
 
     this.connection.connect();
 
@@ -194,5 +200,11 @@ export class ClientApp extends App
     /// muset player přilogovat - aby se dalo vůbec zjistit, kde je
     /// (a tedy co se má stáhnout a renderovat).
     /// TODO: Vyrenderovat je do mapy.
+
+    /// Možná bych se prozatím mohl vykašlat na zjišťování pozice avataru
+    /// a prostě stáhnout nějaký fixní výřez (ono v něm stejně nic nebude).
+
+    /// Jinak asi fakt budu muset udělat logovací komponenty, protože
+    /// z telnet-style loginu v clientu nepoznám, že se hráč nalogoval do hry.
   }
 }

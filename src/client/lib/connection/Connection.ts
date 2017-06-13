@@ -1,38 +1,32 @@
 /*
   Part of BrutusNEXT
 
-  Implements user connection to the server.
+  Connection to the server.
 */
 
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {WebSocketDescriptor} from
-  '../../../client/lib/net/ws/WebSocketDescriptor';
+import {ClientWebSocket} from '../../../client/lib/net/ws/ClientWebSocket';
 import {ScrollWindow} from '../../../client/gui/component/ScrollWindow';
-import {MapWindow} from '../../../client/gui/component/MapWindow';
+import {Avatar} from '../../../client/lib/connection/Avatar';
 
 /// TEST:
 import {Packet} from '../../../shared/lib/protocol/Packet';
 
 export class Connection
 {
-  private socketDescriptor: WebSocketDescriptor = null;
-  /*
-  constructor (private socketDescriptor: WebSocketDescriptor)
-  {
-    socketDescriptor.connection = this;
-  }
-  */
+  private socket: ClientWebSocket = null;
 
   // -------------- Static class data -------------------
 
   //------------------ Public data ----------------------
 
-  public scrollWindow: ScrollWindow = null;
-  public mapWindow: MapWindow = null;
+  public activeAvatar: Avatar = null;
 
   //------------------ Private data ---------------------
+
+  private avatars = new Set<Avatar>();
 
   // --------------- Static accessors -------------------
 
@@ -40,14 +34,23 @@ export class Connection
 
   // ---------------- Public methods --------------------
 
+  public createAvatar(scrollWindow: ScrollWindow)
+  {
+    let avatar = new Avatar(scrollWindow);
+
+    this.avatars.add(avatar);
+
+    return avatar;
+  }
+
   // Attempts to open the websocket connection.
   public connect()
   {
-    this.socketDescriptor = new WebSocketDescriptor();
+    this.socket = new ClientWebSocket();
 
     this.clientMessage('Opening websocket connection...');
 
-    this.socketDescriptor.connect();
+    this.socket.connect();
   }
 
   // Sends 'data' to the connection.
@@ -59,10 +62,10 @@ export class Connection
 
     // If the connection is closed, any user command
     // (even an empty one) triggers reconnect attempt.
-    if (!this.socketDescriptor.isSocketOpen())
-      this.socketDescriptor.reConnect();
+    if (!this.socket.isOpen())
+      this.socket.reConnect();
     else
-      this.socketDescriptor.send(data);
+      this.socket.send(data);
   }
 
   // Sends 'data' to the connection.
@@ -70,23 +73,25 @@ export class Connection
   {
     // If the connection is closed, any user command
     // (even an empty one) triggers reconnect attempt.
-    if (!this.socketDescriptor.isSocketOpen())
-      this.socketDescriptor.reConnect();
+    if (!this.socket.isOpen())
+      this.socket.reConnect();
     else
-      this.socketDescriptor.send(packet.toJson());
+      this.socket.send(packet.toJson());
   }
 
   // Receives 'message' from the connection
   // (appends it to the output of respective scrollwindow).
   public receiveMudMessage(message: string)
   {
-    this.scrollWindow.receiveData(message);
+    if (this.activeAvatar)
+      this.activeAvatar.receiveMessage(message);
   }
 
   // Outputs a client system message.
   public clientMessage(message: string)
   {
-    this.scrollWindow.clientMessage(message);
+    if (this.activeAvatar)
+      this.activeAvatar.clientMessage(message);
   }
 
   // ---------------- Event handlers --------------------

@@ -45,7 +45,7 @@ export class HttpServer
   // ----------------- Public data ----------------------
 
   // Do we accept http requests?
-  public isOpen = false;
+  private open = false;
 
   public getPort() { return this.port; }
 
@@ -54,6 +54,8 @@ export class HttpServer
   // --------------- Public accessors -------------------
 
   public getServer() { return this.httpServer; }
+
+  public isOpen() { return this.open; }
 
   // ---------------- Public methods --------------------
 
@@ -102,7 +104,7 @@ export class HttpServer
       AdminLevel.IMMORTAL
     );
 
-    this.isOpen = true;
+    this.open = true;
 
     // Start a websocket server inside the http server.
     this.webSocketServer.start(this.httpServer);

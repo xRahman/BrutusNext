@@ -10,12 +10,12 @@ import {ERROR} from '../../../../shared/lib/error/ERROR';
 import {Packet} from '../../../../shared/lib/protocol/Packet';
 import {Connection} from '../../../../client/lib/connection/Connection';
 
-export class WebSocketDescriptor
+export class ClientWebSocket
 {
   // ---------------- Static methods --------------------
 
   // Checks if browser supports web sockets.
-  public static webSocketsAvailable()
+  public static checkWebSocketsSupport()
   {
     if (WebSocket === undefined)
     {
@@ -69,7 +69,7 @@ export class WebSocketDescriptor
 
   // ---------------- Public methods --------------------
 
-  public isSocketOpen()
+  public isOpen()
   {
     if (this.socket === null)
       return false;
@@ -77,7 +77,7 @@ export class WebSocketDescriptor
     return this.socket.readyState === WebSocket.OPEN;
   }
 
-  public isSocketConnecting()
+  public isConnecting()
   {
     if (this.socket === null)
       return false;
@@ -85,7 +85,7 @@ export class WebSocketDescriptor
     return this.socket.readyState === WebSocket.CONNECTING;
   }
 
-  public isSocketClosing()
+  public isClosing()
   {
     if (this.socket === null)
       return false;
@@ -93,7 +93,7 @@ export class WebSocketDescriptor
     return this.socket.readyState === WebSocket.CLOSING;
   }
 
-  public isSocketClosed()
+  public isClosed()
   {
     // If we don't have a socket, it's considered closed.
     if (this.socket === null)
@@ -106,7 +106,7 @@ export class WebSocketDescriptor
   public send(data: string)
   {
     // No point in sending data unless the socket is open.
-    if (!this.isSocketOpen())
+    if (!this.isOpen())
       return;
 
     if (this.socket)
@@ -137,7 +137,7 @@ export class WebSocketDescriptor
     ///console.log('connect(). Status: ' + this.socket.readyState);
 
     if (this.socket)
-      this.initSocket();
+      this.init();
   }
 
   // Attempts to reconnect.
@@ -145,15 +145,15 @@ export class WebSocketDescriptor
   {
     ///console.log('reConnect(). Status: ' + this.socket.readyState);
 
-    if (this.isSocketOpen())
+    if (this.isOpen())
       // There is no point in reconnecting an open socket.
       return;
 
-    if (this.isSocketConnecting())
+    if (this.isConnecting())
       // There is no point if the socket is already trying to connect.
       return;
     
-    if (this.isSocketConnecting())
+    if (this.isConnecting())
       // If the socket is still closing, old event handlers are not yet
       // detached so we shouldn't create a new socket yet.
       /// TODO: Asi by to chtelo dát message playerovi a ideálně
@@ -169,7 +169,7 @@ export class WebSocketDescriptor
   }
 
   // Closes the socket, ending the connection.
-  public closeSocket()
+  public close()
   {
     this.socket.close();
   }
@@ -239,13 +239,13 @@ export class WebSocketDescriptor
   }
 
   // Attaches event handlers to this.socket.
-  private initSocket()
+  private init()
   {
     // Remember event listeners so we can close them later.
-    this.listeners.onopen = (event) => { this.onSocketOpen(event); };
+    this.listeners.onopen = (event) => { this.onOpen(event); };
     this.listeners.onmessage = (event) => { this.onReceiveMessage(event); };
-    this.listeners.onerror = (event) => { this.onSocketError(event); };
-    this.listeners.onclose = (event) => { this.onSocketClose(event); };
+    this.listeners.onerror = (event) => { this.onError(event); };
+    this.listeners.onclose = (event) => { this.onClose(event); };
 
     // Assign them to the socket.
     this.socket.onopen =  this.listeners.onopen;
@@ -255,7 +255,7 @@ export class WebSocketDescriptor
   }
 
   // Removes event handlers from this.socket.
-  private deinitSocket()
+  private deinit()
   {
     if (this.listeners.onopen)
       this.socket.removeEventListener('open', this.listeners.onopen);
@@ -272,14 +272,14 @@ export class WebSocketDescriptor
 
   // ---------------- Event handlers --------------------
 
-  private onSocketOpen(event: Event)
+  private onOpen(event: Event)
   {
     // 'open' event menas that connection has been succesfully
     // established. We remember it so we can later determine
     // if an error means failure to connect or a disconnect.
     this.wasConnected = true;
 
-    ///console.log('onSocketOpen(). Status: ' + this.socket.readyState);
+    ///console.log('onOpen(). Status: ' + this.socket.readyState);
     console.log('Socket opened');
     /// TODO: (info, že se podařilo připojit).
     /// To je asi zbytecny, server posle uvodni 'obrazovku'
@@ -310,7 +310,7 @@ export class WebSocketDescriptor
     } 
   }
 
-  private onSocketError(event: ErrorEvent)
+  private onError(event: ErrorEvent)
   {
     ///console.log('onSocketError(). Status: ' + this.socket.readyState);
 
@@ -329,12 +329,12 @@ export class WebSocketDescriptor
     }
   }
 
-  private onSocketClose(event: CloseEvent)
+  private onClose(event: CloseEvent)
   {
     ///console.log('onSocketClose(). Status: ' + this.socket.readyState);
 
     // Remove event handlers from the socket.
-    this.deinitSocket();
+    this.deinit();
 
     this.socket = null;
 
