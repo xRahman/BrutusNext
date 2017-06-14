@@ -1,4 +1,21 @@
-﻿persistent targetting
+﻿Combat rotations and resistances
+---------------------------------
+
+Rotace nemusí sestávat z různých spellů/skillů na to, aby nebyla jednotvárná.
+Priest na Brutusu má díky Divine Favour a Inner Ragi celkem fajn rotaci
+a přitom v ní má jen 2 kouzla (z nichž jedno navíc nedává damage, takže ho
+při změně rezistu není třeba měnit).
+
+- touhle metodou může sorc mít do každého rezistu jen jedno kouzlo (případně
+  nějaká další na aočkování a tak) a současně mít zajímavou rotaci.
+
+U mlátičů by něco podobného mohly umožňovat zbraně schopné damagit do více
+rezistů. S mečem se dá sekat a bodat, s válečným kladivem drtit a bodat,
+atd. Není tudíž třeba vyměňovat zbraň na to, aby šla damage do jiného rezistu
+- stačí použít jiný skill ('Quick Slash' místo 'Jab').
+
+
+persistent targetting
 ----------------------
 'target mob' bude vždycky validní, dokud mob neumře.
 (takže se půjde například na target teleportovat po recallu, atd.)
