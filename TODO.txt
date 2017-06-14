@@ -1,6 +1,13 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+
+---------------------------------------------------------------
+
+TODO: MudColorComponent by neměla být komponenta, ale statická
+  classa MudColors (a taky je třeba se podívat, jestli se něco
+  z toho nebude hodit i na serveru).
+
 ---------------------------------------------------------------
 
 TODO: connection.connect (a stahování dat ze serveru a tak)
