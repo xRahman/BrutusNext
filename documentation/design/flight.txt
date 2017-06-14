@@ -1,4 +1,30 @@
-﻿flight
+﻿Lítání všude outdoors
+----------------------
+Nakonec to vidím tak, že nad terénem nebude dalších X roomů 'In the air',
+budu se držet klasického stylu. Důvod je hlavně ten, že bych tím hodně
+ztížil buildění outdoor bludišť a obecně prostě ztrivializoval topologii
+všeho kromě podzemí.
+- Builder má možnost nabuildit roomy, kam se dá rozumně jen doletět
+  (nebo nějak složitě šplhat a tak), ale není tím vázaný - někde prostě
+  cesta není (a nebo vede tajným tunelem a nejde to prostě přeletět).
+
+Možná by to chtělo nějak vysvětlit v kosmologii světa.
+- nedá se létat moc vysoko, protože vzduch s rostoucí výškou rychle ztrácí
+  vztlak?
+
+Výška stropu v roomech
+-----------------------
+- asi by měla jít nastavit. Možná jen flagou (low ceiling).
+
+A nebo druhá možnost - mohl bych přece jen buildit jednu roomu 'In the Air'
+nad terén. Díky tomu pak budou fungovat standardní ranged attacky (do vedlejší
+roomy) a půjde i jednoduše poznat, kdo je v dosahu a kdo ne.
+(Ono by to teda asi šlo označit i ve výpisu mobů v roomě, ale mít na to
+jednotnou mechaniku - roomy a exity - je určitě lepší).
+- taky tím půjde snadno buildit tunely, kterými se dá jen proletět.
+
+
+flight
 ----------------------
 
 - Umožňuje použít exity, které jsou bez létání nedosažitelné (vyletět na hradby,
