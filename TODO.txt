@@ -1,6 +1,13 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+TODO: Zrušit css pro specializované WindowContent
+(protože si vystačí s defaultním).
+
+TODO: Zkusit upravit build task, aby přeložil server i clienta najednou.
+
+TODO: Metody v Component by měly rovnou vracet jquery element.
+  (a stačí createDiv() místo createDivElement()).
 
 ---------------------------------------------------------------
 

@@ -186,7 +186,11 @@ export class ClientApp extends App
     if (!ClientWebSocket.checkWebSocketsSupport())
       return;
 
-    /// TODO:
+    this.body.createLoginWindow();
+
+    /// Tohle by se asi mělo vytvářet až po přilogování.
+    this.body.createMapWindow();
+
     /// Správně by se mělo scrollWindow a Avatar vytvořit po kliknutí
     /// na jméno charu v MenuWindow (nebo možná LoginWindow).
     let scrollWindow = this.body.createScrollWindow();

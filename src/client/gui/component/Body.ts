@@ -10,6 +10,7 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Component} from '../../../client/gui/component/Component';
 import {Window} from '../../../client/gui/component/Window';
+import {LoginWindow} from '../../../client/gui/component/LoginWindow';
 import {ScrollWindow} from '../../../client/gui/component/ScrollWindow';
 import {MapWindow} from '../../../client/gui/component/MapWindow';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
@@ -24,10 +25,12 @@ export class Body extends Component
 
     ///this.$body = $('#' + this.id);
 
+    /*
     /// Todo: Asi to spíš nedělat tady, ale až v nějakém initu,
     /// ať rozumně fungují errory.
     this.createScrollWindow();
     this.createMapWindow();
+    */
   }
 
   //----------------- Protected data --------------------
@@ -47,6 +50,8 @@ export class Body extends Component
 
   // All windows should be here.
   private windows = new Set<Window>();
+
+  private loginWindow: LoginWindow = null;
 
   // There is just one map window per ClientApp.
   // When avatar is switched, content is redrawn.
@@ -81,6 +86,26 @@ export class Body extends Component
   }
 
   // ---------------- Public methods --------------------
+
+  public createLoginWindow()
+  {
+    if (this.loginWindow !== null)
+    {
+      ERROR("Login window already exists. There can only be one"
+        + " login window per client application");
+      return;
+    }
+
+    this.loginWindow = new LoginWindow();
+    this.windows.add(this.loginWindow);
+
+    // Create jquery element 'loginwindow'.
+    let $loginWindow = this.loginWindow.create();
+    // Put it in the 'body' element.
+    this.$body.append($loginWindow);
+
+    return this.loginWindow;
+  }
 
   // Creates a 'ScrollWindow' and adds it to app_body.
   public createScrollWindow()

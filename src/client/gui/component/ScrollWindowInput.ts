@@ -56,8 +56,7 @@ export class ScrollWindowInput extends Component
   {
     this.id = id;
 
-    // Create a DOM element.
-    let input = this.createTextAreaElement
+    this.$input = this.createTextArea
     (
       this.id,
       ScrollWindowInput.CSS_CLASS
@@ -65,11 +64,9 @@ export class ScrollWindowInput extends Component
 
     // Input element accepts multi-line text (its a 'textarea') but only
     // shows one line (because user commands are usualy single-line).
-    input.rows = 1;
-
-    // Create jquery element from the DOM element.
-    this.$input = $(input);
-
+    ///input.rows = 1;
+    this.$input.attr('rows', 1);
+    
     this.$input.attr({ 'autofocus': 'autofocus' });
 
     this.$input.keypress
