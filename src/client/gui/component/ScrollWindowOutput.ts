@@ -38,15 +38,11 @@ export class ScrollWindowOutput extends MudColorComponent
   {
     this.id = id;
 
-    // Create a DOM element.
-    let output = this.createDivElement
+    this.$output = this.createDiv
     (
       this.id,
       ScrollWindowOutput.CSS_CLASS
     );
-
-    // Create jquery element from the DOM element.
-    this.$output = $(output);
 
     // In order to trigger keyboard event on <div> element,
     // it must have focus. To give it a focus, it must have

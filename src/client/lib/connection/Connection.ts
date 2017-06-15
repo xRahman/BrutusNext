@@ -46,10 +46,8 @@ export class Connection
   // Attempts to open the websocket connection.
   public connect()
   {
-    this.socket = new ClientWebSocket();
-
+    this.socket = new ClientWebSocket(this);
     this.clientMessage('Opening websocket connection...');
-
     this.socket.connect();
   }
 

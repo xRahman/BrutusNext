@@ -12,6 +12,11 @@ import {Connection} from '../../../../client/lib/connection/Connection';
 
 export class ClientWebSocket
 {
+  constructor(connection: Connection)
+  {
+    this.connection = connection;
+  }
+
   // ---------------- Static methods --------------------
 
   // Checks if browser supports web sockets.

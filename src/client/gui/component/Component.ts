@@ -30,40 +30,69 @@ export abstract class Component
 
   // --------------- Protected methods ------------------
 
-  // -> Returns created 'div' DOM element.
-  protected createDivElement(id: string, cssClass: string)
+  // -> Returns created 'div' jquery element.
+  protected createDiv(id: string, cssClass: string): JQuery
   {
     let element = document.createElement('div');
 
     return this.initElement(element, id, cssClass);
   }
 
-  // -> Returns created 'title' DOM element.
-  protected createTitleElement(id: string, cssClass: string)
+  // -> Returns created 'title' jquery element.
+  protected createTitle(id: string, cssClass: string): JQuery
   {
     let element = document.createElement('title');
 
     return this.initElement(element, id, cssClass);
   }
 
-  // -> Returns created 'textarea' DOM element.
-  protected createTextAreaElement(id: string, cssClass: string)
+  // -> Returns created 'input' jquery element.
+  protected createTextInput(id: string, cssClass: string): JQuery
+  {
+    let element = document.createElement('input');
+
+    element.setAttribute('type', 'text');
+
+    return this.initElement(element, id, cssClass);
+  }
+
+  // -> Returns created 'input' jquery element.
+  protected createPasswordInput(id: string, cssClass: string): JQuery
+  {
+    let element = document.createElement('input');
+
+    element.setAttribute('type', 'password');
+
+    return this.initElement(element, id, cssClass);
+  }
+
+  // -> Returns created 'textarea' jquery element.
+  protected createTextArea(id: string, cssClass: string): JQuery
   {
     let element = document.createElement('textarea');
 
     return this.initElement(element, id, cssClass);
   }
 
-  protected createSvgElement(id: string, cssClass: string)
+  // -> Returns created 'svg' jquery element.
+  protected createSvg(id: string, cssClass: string): JQuery
   {
     let element = document.createElement('svg');
 
     return this.initElement(element, id, cssClass);
   }
 
+  // -> Returns created 'label' jquery element.
+  protected createLabel(id: string, cssClass: string): JQuery
+  {
+    let element = document.createElement('label');
+
+    return this.initElement(element, id, cssClass);
+  }
+
   // ---------------- Private methods -------------------
 
-  // -> Returns created DOM element.
+  // -> Returns created jquery element.
   private initElement<T extends HTMLElement>
   (
     element: T,
@@ -74,7 +103,8 @@ export abstract class Component
     element.id = id;
     element.className = cssClass;
 
-    return element;
+    // Create jquery element from the DOM element.
+    return $(element);
   }
 
   // ---------------- Event handlers --------------------

@@ -132,7 +132,7 @@
   width: 20%;
   height: 20%;
   outline: 0 none;
-  /*margin: 1px;*/
+  margin: 0;
   padding: 0;
   /*border: 1px solid rgba(100,100,100,0.8);*/
   border: 1px solid rgba(110,130,150,0.8);
@@ -192,6 +192,53 @@
   padding: 0;
   display: flex;
   flex-direction: column;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+/* ---------------- LoginWindow --------------- */
+
+.LoginWindow /* Extends .Window */
+{
+  /* Center at position 40% from top, 50% from left */
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* Window size is a multiple of font size */
+  width: 20em;
+  /*height: 10em;*/
+  max-width: 100%;
+  max-height: 100%;
+  position: absolute;
+  z-index: 1; /* Sit on top */
+  overflow: auto; /* Enable scroll if needed */
+  display: block;
+}
+
+.LoginWindowContent  /* Extends .WindowContent */
+{
+  /*width: 100%;*/
+  /*height: 100%;*/
+  outline: 0 none;
+  /*margin: 0;*/
+  padding: 1em;
+  /*display: flex;*/
+  /*flex-direction: column;*/
+}
+
+.LoginWindowLabel
+{
+  font-size: 0.75em;
+  font-family: CourierNew;
+  color: rgb(210, 230, 250); /* text color */
+  font-weight: bold;
+  text-overflow: ellipsis; /* Add '...' if text overflows */
+}
+
+/* Account name input and password input */
+.LoginWindowInput
+{
+  outline: 0 none;
+  /*width: 15em;*/
 }
 
 /* ---------------- ScrollWindow --------------- */
@@ -207,8 +254,9 @@
 .ScrollWindowContent  /* Extends .WindowContent */
 {
   outline: 0 none;
-  margin: 0;
-  padding: 0;
+  /*margin: 0;*/
+  /*padding: 0;*/
+  /*background: rgba(0,0,0,0.6);*/
   /*display: flex;*/
   /*flex-direction: column;*/
 }
@@ -226,7 +274,7 @@
   margin: 0;
   padding: 3px;
   font-size: 100%;
-  background-color: rgba(0,0,0,0.6);
+  /*background-color: rgba(0,0,0,0.6);*/
   overflow-x: hidden;   /* Do not use horizontal scrolling */
   overflow-y: auto;     /* Automatically create vertical scrollbar */
   word-wrap:break-word; /* Areak long words that wont fit */
@@ -263,9 +311,9 @@
 
 .MapWindowContent  /* Extends .WindowContent */
 {
+  outline: 0 none;
   /*display: flex;*/
   /*flex-direction: column;*/
-  background: rgba(0,0,0,0.6);
 }
 
 /* ------------ Map (svg element) ----------- */
