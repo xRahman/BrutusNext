@@ -1,4 +1,20 @@
-﻿Combat rotations and resistances
+﻿3 kategorie affectů
+---------------------
+
+- Lesser
+- Regular
+- Greater
+
+Lesser budou z proců, regular z anytime spellů/skillů a greater z nabitých
+resourců/dlouhých cooldownů.
+
+(Rozhodně by to nemělo být tak, že weapon spell nebo jiný proc nacastí
+ stejně silnou curse/unlucky a podobně jako někdo přímým castem, natož
+ cooldownovým.)
+
+
+
+Combat rotations and resistances
 ---------------------------------
 
 Rotace nemusí sestávat z různých spellů/skillů na to, aby nebyla jednotvárná.
