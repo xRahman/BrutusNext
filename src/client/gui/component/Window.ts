@@ -32,6 +32,7 @@ export class Window extends MudColorComponent
 
   $window = null;
   $title = null;
+  $titleBar = null;
   $content = null;
 
   // ----------------- Private data ---------------------
@@ -57,16 +58,16 @@ export class Window extends MudColorComponent
   // -> Returns created jquery element.
   public create()
   {
-    this.$window = this.createWindow();
+    this.$window = this.createDiv
+    (
+      this.id,
+      Window.CSS_CLASS
+    );
 
-    // Create jquery element 'title_bar'.
-    let $titleBar = this.createTitleBar();
-    // Put it in the 'window' element.
-    this.$window.append($titleBar);
+    this.$titleBar = this.createTitleBar();
+    this.$window.append(this.$titleBar);
 
-    // Create jquery element 'content'.
     this.$content = this.createContent();
-    // Put it in the 'window' element.
     this.$window.append(this.$content);
 
     return this.$window;
@@ -84,72 +85,34 @@ export class Window extends MudColorComponent
 
   // --------------- Protected methods ------------------
 
-  // -> Returns created jquery element.
-  protected createWindow()
+  // This method is overriden by descendants.
+  protected createContent()
   {
-    // Create a DOM element.
-    let window = this.createDivElement
+    return this.createDiv
     (
-      this.id,
-      Window.CSS_CLASS
+      this.getContentId(),
+      Window.CONTENT_CSS_CLASS
     );
-
-    // Create jquery element from the DOM element.
-    return $(window);
-  }
-
-  // -> Returns created jquery element.
-  protected createTitle()
-  {
-    // Create a DOM element.
-    let title = this.createTitleElement
-    (
-      this.getTitleId(),
-      Window.TITLE_CSS_CLASS
-    );
-
-    // Create jquery element from the DOM element.
-    let $title = $(title);
-
-    // Set the default text to 'title' element.
-    $title.text('New window');
-
-    return $title;
   }
 
   // -> Returns created jquery element.
   protected createTitleBar()
   {
-    // Create a DOM element.
-    let titleBar = this.createDivElement
+    let $titleBar = this.createDiv
     (
       this.getTitleBarId(),
       Window.TITLE_BAR_CSS_CLASS
     );
 
-    // Create a jquery element from the DOM element.
-    let $titleBar = $(titleBar);
-
-    // Create jquery element 'title'.
-    this.$title = this.createTitle();
-    // Put it in the 'titleBar' element.
+    this.$title = this.createTitle
+    (
+      this.getTitleId(),
+      Window.TITLE_CSS_CLASS
+    );
+    this.$title.text('New window');
     $titleBar.append(this.$title);
 
     return $titleBar;
-  }
-
-  // -> Returns created html element.
-  protected createContent()
-  {
-    // Create a DOM element.
-    let content = this.createDivElement
-    (
-      this.getContentId(),
-      Window.CONTENT_CSS_CLASS
-    );
-
-    // Create a jquery element from the DOM element.
-    return $(content);
   }
 
   // ---------------- Private methods -------------------

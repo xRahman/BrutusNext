@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Implements scrollable text window.
+  Scrollable text console.
 */
 
 'use strict';
