@@ -1,0 +1,14 @@
+﻿Sdílený svět a možnost spawnout si mrtvého moba
+-------------------------------------------------
+
+Klíčem by mohly být soulstony - hráči budou mít možnost
+(za nějakou cenu) urychlit respawn moba.
+
+Má to důsledky - nebude moci existovat campovatelný mob,
+tj. takový, ze kterého při každém killu dropne loot/goldy/atp.,
+a nebo bude muset být cena za urychlení respawnu závislá
+na hodnotě dropu.
+(spíš by ve hře nemělo být campení).
+
+
+
