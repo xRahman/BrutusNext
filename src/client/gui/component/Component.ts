@@ -38,6 +38,14 @@ export abstract class Component
     return this.initElement(element, id, cssClass);
   }
 
+  // -> Returns created 'div' jquery element.
+  protected createForm(id: string, cssClass: string): JQuery
+  {
+    let element = document.createElement('form');
+
+    return this.initElement(element, id, cssClass);
+  }
+
   // -> Returns created 'title' jquery element.
   protected createTitle(id: string, cssClass: string): JQuery
   {
@@ -86,6 +94,16 @@ export abstract class Component
   protected createLabel(id: string, cssClass: string): JQuery
   {
     let element = document.createElement('label');
+
+    return this.initElement(element, id, cssClass);
+  }
+
+  // -> Returns created 'label' jquery element.
+  protected createSubmitButton(id: string, cssClass: string): JQuery
+  {
+    let element = document.createElement('button');
+
+    element.setAttribute('type', 'submit');
 
     return this.initElement(element, id, cssClass);
   }
