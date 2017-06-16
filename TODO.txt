@@ -9,6 +9,10 @@ TODO: Zkusit upravit build task, aby přeložil server i clienta najednou.
 TODO: Metody v Component by měly rovnou vracet jquery element.
   (a stačí createDiv() místo createDivElement()).
 
+
+TODO: V css víc dědit (tj. skládat css classu z více class)
+  - například všechny inputy mohou mít stejný základ css (barvy, border a tak).
+
 ---------------------------------------------------------------
 
 TODO: MudColorComponent by neměla být komponenta, ale statická
