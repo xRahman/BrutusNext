@@ -24,6 +24,7 @@ export class LoginWindow extends Window
   protected static get CONTENT_CSS_CLASS() { return 'LoginWindowContent'; }
   protected static get LABEL_CSS_CLASS() { return 'LoginWindowLabel'; }
   protected static get INPUT_CSS_CLASS() { return 'LoginWindowInput'; }
+  protected static get BUTTON_CSS_CLASS() { return 'LoginWindowButton'; }
 
   // -------------- Static class data -------------------
 
@@ -74,14 +75,21 @@ export class LoginWindow extends Window
   // -> Returns created html element.
   protected createContent()
   {
-    let $content = super.createContent();
+    let $content = this.createForm
+    (
+      this.getContentId(),
+      Window.CONTENT_CSS_CLASS
+    );
 
     $content.addClass(LoginWindow.CONTENT_CSS_CLASS);
+
+    /// TODO: Action.
 
     this.appendLabel($content, 'accountname', 'Account Name');
     this.appendTextInput($content, 'Enter Account Name');
     this.appendLabel($content, 'password', 'Password');
     this.appendPasswordInput($content, 'Enter Password');
+    this.appendSubmitButton($content, 'login', 'Login');
 
     return $content;
   }
@@ -108,6 +116,9 @@ export class LoginWindow extends Window
     );
     this.$accountNameInput.attr('required', true);
     this.$accountNameInput.attr('placeholder', text);
+    // Allow maximum of 10 characters.
+    /// TODO: Číst tenhle parametr z limitu na délku acc name na serveru.
+    this.$accountNameInput.attr('maxlength', 10);
     $content.append(this.$accountNameInput);
   }
 
@@ -121,6 +132,17 @@ export class LoginWindow extends Window
     this.$passwordInput.attr('required', true);
     this.$passwordInput.attr('placeholder', text);
     $content.append(this.$passwordInput);
+  }
+
+  private appendSubmitButton($content: JQuery, id: string, text: string)
+  {
+    let $button = this.createSubmitButton
+    (
+      id + '_button',
+      LoginWindow.BUTTON_CSS_CLASS
+    );
+    $button.text(text);
+    $content.append($button);
   }
 
   // ---------------- Event handlers --------------------
