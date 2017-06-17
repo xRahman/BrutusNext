@@ -1,5 +1,12 @@
 ﻿-------------------------------------------------------------------------
 
+Heal debuffy
+------------------------------
+
+Heal debuffy by měly mít healeři (ale priest v jiné formě než poison).
+- a to proto, že nemají damage na to, aby healujícího protivníka předamagili.
+  (což je vidět zlvášť v duelu dvou healerů - aby vůbec se byli schopni zabít).
+
 Kategorie skillů podle efektu
 ------------------------------
 - efekt každého skillu spadá do jedné z několika málo kategorií.
