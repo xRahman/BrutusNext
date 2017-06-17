@@ -1,14 +1,28 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+TODO: Přidat všem input elementům ve formu atribut name.
+
+TODO: Zrušit idčka z komponent, které si někde pamatuju
+(k čemu pak mám to idčko?)
+- tj. nejspíš prakticky všechna kromě těch v svg mapě.
+
+TODO: Metody na vyrábění jquery elementů by asi mohly (a měly) být
+statické - nebudou se pak tlouct s vlastními metodami kompponent.
+
+TODO: podadresáře v rámci /gui/component
+
+
+TODO: Sjednotit max account length a ostatní kód na constraints
+  jména accountu a hesla.
+
 TODO: Zrušit css pro specializované WindowContent
 (protože si vystačí s defaultním).
 
-TODO: Zkusit upravit build task, aby přeložil server i clienta najednou.
 
 TODO: Metody v Component by měly rovnou vracet jquery element.
   (a stačí createDiv() místo createDivElement()).
-
+[done]
 
 TODO: V css víc dědit (tj. skládat css classu z více class)
   - například všechny inputy mohou mít stejný základ css (barvy, border a tak).
@@ -18,6 +32,11 @@ TODO: V css víc dědit (tj. skládat css classu z více class)
 TODO: MudColorComponent by neměla být komponenta, ale statická
   classa MudColors (a taky je třeba se podívat, jestli se něco
   z toho nebude hodit i na serveru).
+
+---------------------------------------------------------------
+
+TODO: Zkusit upravit build task, aby přeložil server i clienta najednou.
+[nepovedlo se, stále by to chtělo]
 
 ---------------------------------------------------------------
 

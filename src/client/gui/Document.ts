@@ -6,8 +6,8 @@
 
 'use strict';
 
-import {Body} from '../../../client/gui/component/Body';
-import {ClientApp} from '../../../client/lib/app/ClientApp';
+import {ClientApp} from '../../client/lib/app/ClientApp';
+import {Windows} from '../../client/gui/Windows';
 
 import $ = require('jquery');
 
@@ -32,11 +32,16 @@ export class Document
     )
   }
 
+  // Jquery <body> element.
+  private $body = $('#body');
+
   //----------------- Protected data --------------------
 
   //------------------ Private data ---------------------
 
   // --------------- Static accessors -------------------
+
+  public static get $body() { return ClientApp.document.$body; }
 
   // ---------------- Static methods --------------------
 
@@ -48,7 +53,7 @@ export class Document
   // scrollwindow.
   private focusInput()
   {
-    Body.activeScrollWindow.focusInput();
+    Windows.activeScrollWindow.focusInput();
   }
 
   // ---------------- Event handlers --------------------
@@ -70,7 +75,7 @@ export class Document
 
   private onDocumentResize()
   {
-    Body.onDocumentResize();
+    Windows.onDocumentResize();
   }
 
   // Handles 'keydown' event.
@@ -184,7 +189,7 @@ export class Document
       // element while scrolling the output element).
       case 33:  // 'PgUp'
       case 34:  // 'PgDn'
-        Body.activeScrollWindow.triggerOutputEvent(event);
+        Windows.activeScrollWindow.triggerOutputEvent(event);
         break;    
 
       // Following keys are redirected only when a specific key

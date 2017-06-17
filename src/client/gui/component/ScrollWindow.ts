@@ -24,7 +24,8 @@ export class ScrollWindow extends Window
   {
     super();
 
-    ///this.connection.scrollWindow = this;
+    // Show this window when app is in state 'INGAME'.
+    this.flags.set(ClientApp.State.IN_GAME);
   }
 
   protected static get CSS_CLASS() { return 'ScrollWindow'; }
