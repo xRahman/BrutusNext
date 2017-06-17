@@ -138,6 +138,7 @@
   background-color: rgba(0,0,0,0);    /* Transparent background */
   display: flex;
   flex-direction: column;
+  background: rgba(0, 0, 0, 0.6);
 }
 
 .WindowTitleBar
@@ -156,13 +157,21 @@
 
   /* --- Background --- */
   /* Old browsers */
-  background: rgba(50,50,50,0.8);
+  background: rgba(80, 80, 80, 0.5);
   /* FF3.6-15 */
-  background: -moz-linear-gradient(top, rgba(30,30,30, 0.8) 0%, rgba(50,50,50,0.8) 20%, rgba(50,50,50,0.8) 80%, rgba(30,30,30,0.8) 100%);
+  background: -moz-linear-gradient(top, rgba(50, 50, 50, 0.5) 0%, rgba(80, 80, 80, 0.5) 20%, rgba(80, 80, 80, 0.5) 80%, rgba(50, 50, 50, 0.5) 100%);
   /* Chrome10-25,Safari5.1-6 */
-  background: -webkit-linear-gradient(top, rgba(30,30,30, 0.8) 0%, rgba(50,50,50,0.8) 20%, rgba(50,50,50,0.8) 80%, rgba(30,30,30,0.8) 100%);
+  background: -webkit-linear-gradient(top, rgba(50, 50, 50, 0.5) 0%, rgba(80, 80, 80, 0.5) 20%, rgba(80, 80, 80, 0.5) 80%, rgba(50, 50, 50, 0.5) 100%);
   /* CSS3 compatible browsers*/
+  background: linear-gradient(rgba(50, 50, 50, 0.5) 0%, rgba(80, 80, 80, 0.5) 20%, rgba(80, 80, 80, 0.5) 80%, rgba(50, 50, 50, 0.5) 100%);
+
+  /* This variant was used when only contents had bacground color, instead of whole window */
+  /*
+  background: rgba(50,50,50,0.8);
+  background: -moz-linear-gradient(top, rgba(30,30,30, 0.8) 0%, rgba(50,50,50,0.8) 20%, rgba(50,50,50,0.8) 80%, rgba(30,30,30,0.8) 100%);
+  background: -webkit-linear-gradient(top, rgba(30,30,30, 0.8) 0%, rgba(50,50,50,0.8) 20%, rgba(50,50,50,0.8) 80%, rgba(30,30,30,0.8) 100%);
   background: linear-gradient(rgba(30,30,30, 0.8) 0%, rgba(50,50,50,0.8) 20%, rgba(50,50,50,0.8) 80%, rgba(30,30,30,0.8) 100%);
+  */
 }
 
 .WindowTitle
@@ -191,7 +200,8 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  background: rgba(0, 0, 0, 0.6);
+  /* Moved to .Window because it causes graphical glitch here */
+  /*background: rgba(0, 0, 0, 0.6);*/
 }
 
 /* Non-clickable text */
