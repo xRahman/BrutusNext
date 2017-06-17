@@ -1,34 +1,33 @@
 /*
   Part of BrutusNEXT
 
-  Login window.
+  Register window.
 */
 
 'use strict';
 
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Window} from '../../../client/gui/component/Window';
-import {LoginForm} from '../../../client/gui/component/LoginForm';
+import {RegisterForm} from '../../../client/gui/component/RegisterForm';
 
 import $ = require('jquery');
 
-export class LoginWindow extends Window
+export class RegisterWindow extends Window
 {
   constructor()
   {
     super();
 
     // Show this window when app is in state 'LOGIN'.
-    this.flags.set(ClientApp.State.LOGIN);
+    this.flags.set(ClientApp.State.REGISTER);
   }
 
-  protected static get CSS_CLASS() { return 'LoginWindow'; }
-  protected static get TITLE_BAR_CSS_CLASS() { return 'LoginWindowTitleBar'; }
-  ///protected static get TITLE_CSS_CLASS() { return 'LoginWindowTitle'; }
-  protected static get CONTENT_CSS_CLASS() { return 'LoginWindowContent'; }
-  protected static get REGISTER_LINK_CSS_CLASS()
+  protected static get CSS_CLASS() { return 'RegisterWindow'; }
+  protected static get TITLE_CSS_CLASS() { return 'RegisterWindowTitle'; }
+  protected static get CONTENT_CSS_CLASS() { return 'RegisterWindowContent'; }
+  protected static get TERMS_LINK_CSS_CLASS()
   {
-    return 'LoginWindowRegisterLink';
+    return 'RegisterWindowTermsLink';
   }
 
   // -------------- Static class data -------------------
@@ -37,13 +36,13 @@ export class LoginWindow extends Window
 
   // 'id' parameter of html element
   // (overrides Component.id).
-  protected id = 'loginwindow';
+  protected id = 'registerwindow';
 
   //------------------ Private data ---------------------
 
-  private form = new LoginForm();
+  private form = new RegisterForm();
 
-  private $registerLink = null;
+  private $termsLink = null;
 
   // --------------- Static accessors -------------------
 
@@ -58,14 +57,11 @@ export class LoginWindow extends Window
   {
     super.create();
 
-    // LoginWindow uses css class .LoginWindow along with .Window.
-    this.$window.addClass(LoginWindow.CSS_CLASS);
+    this.$window.addClass(RegisterWindow.CSS_CLASS);
 
-    this.$titleBar.addClass(LoginWindow.TITLE_BAR_CSS_CLASS);
+    this.$title.addClass(RegisterWindow.TITLE_CSS_CLASS);
 
-    let titleHtml = this.htmlizeMudColors("&wWelcome to &RBrutus&YNext");
-
-    this.$titleBar.html(titleHtml);
+    this.setTitle("Register new account");
 
     return this.$window;
   }
@@ -77,39 +73,39 @@ export class LoginWindow extends Window
   protected createContent()
   {
     this.$content = super.createContent();
-    this.$content.addClass(LoginWindow.CONTENT_CSS_CLASS);
+    this.$content.addClass(RegisterWindow.CONTENT_CSS_CLASS);
 
-    // Create login form.
+    // Create register form.
     this.$content.append(this.form.create());
 
-    this.appendRegisterLink();
+    this.appendTermsLink();
 
     return this.$content;
   }
 
   // ---------------- Private methods -------------------
 
-  private appendRegisterLink()
+  private appendTermsLink()
   {
     let $container = this.createDiv
     (
       null,   // No id.
-      LoginWindow.REGISTER_LINK_CSS_CLASS
+      RegisterWindow.TERMS_LINK_CSS_CLASS
     );
 
     // Add text link below the form.
-    this.appendText($container, "Don't have an account yet? ");
-    this.$registerLink = this.appendLink
+    this.appendText($container, "By creating an account you agree to our ");
+    this.$termsLink = this.appendLink
     (
       $container,
       'register_link',
-      "Register"
+      "Terms of Use"
     );
     this.appendText($container, ".");
 
-    this.$registerLink.click
+    this.$termsLink.click
     (
-      (event: Event) => { this.onRegisterClick(event); }
+      (event: Event) => { this.onTermsClick(event); }
     );
 
     this.$content.append($container);
@@ -119,9 +115,8 @@ export class LoginWindow extends Window
 
   // ---------------- Event handlers --------------------
 
-  private onRegisterClick(event: Event)
+  private onTermsClick(event: Event)
   {
-    console.log("Clicked on on register link");
-    ClientApp.setState(ClientApp.State.REGISTER);
+    console.log("Clicked on on terms link");
   }
 }

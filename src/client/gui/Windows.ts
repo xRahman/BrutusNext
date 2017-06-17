@@ -1,57 +1,33 @@
 /*
   Part of BrutusNEXT
 
-  Implements component 'body' (matches html element <body>).
-  All other gui components are inserted into it.
+  Windows of the client app.
 */
 
 'use strict';
 
-import {ERROR} from '../../../shared/lib/error/ERROR';
-import {Component} from '../../../client/gui/component/Component';
-import {Window} from '../../../client/gui/component/Window';
-import {LoginWindow} from '../../../client/gui/component/LoginWindow';
-import {ScrollWindow} from '../../../client/gui/component/ScrollWindow';
-import {MapWindow} from '../../../client/gui/component/MapWindow';
-import {ClientApp} from '../../../client/lib/app/ClientApp';
+import {ERROR} from '../../shared/lib/error/ERROR';
+import {Document} from '../../client/gui/Document';
+import {Window} from '../../client/gui/component/Window';
+import {LoginWindow} from '../../client/gui/component/LoginWindow';
+import {RegisterWindow} from '../../client/gui/component/RegisterWindow';
+import {ScrollWindow} from '../../client/gui/component/ScrollWindow';
+import {MapWindow} from '../../client/gui/component/MapWindow';
+import {ClientApp} from '../../client/lib/app/ClientApp';
 
 import $ = require('jquery');
 
-export class Body extends Component
+export class Windows
 {
-  constructor()
-  {
-    super();
-
-    ///this.$body = $('#' + this.id);
-
-    /*
-    /// Todo: Asi to spíš nedělat tady, ale až v nějakém initu,
-    /// ať rozumně fungují errory.
-    this.createScrollWindow();
-    this.createMapWindow();
-    */
-  }
-
   //----------------- Protected data --------------------
-
-  // 'id' parameter of html element
-  // (overrides Component.id).
-  protected id = 'body';
-
-  // --- Jquery elements ---
-
-  protected $body = $('#' + this.id);
 
   //------------------ Private data ---------------------
 
-  // 'id' parameter of html element.
-  ///private id = '#scroll-view';
-
-  // All windows should be here.
+  // All created windows (hidden or not).
   private windows = new Set<Window>();
 
   private loginWindow: LoginWindow = null;
+  private registerWindow: RegisterWindow = null;
 
   // There is just one map window per ClientApp.
   // When avatar is switched, content is redrawn.
@@ -63,17 +39,17 @@ export class Body extends Component
 
   public static get mapWindow()
   {
-    return ClientApp.body.mapWindow;
+    return ClientApp.windows.mapWindow;
   }
 
   public static get activeScrollWindow()
   {
-    return ClientApp.body.activeScrollWindow;
+    return ClientApp.windows.activeScrollWindow;
   }
 
   public static set activeScrollWindow(window: ScrollWindow)
   {
-    ClientApp.body.activeScrollWindow = window;
+    ClientApp.windows.activeScrollWindow = window;
   }
 
   // ---------------- Static methods --------------------
@@ -81,11 +57,21 @@ export class Body extends Component
   // Executes when html document is resized.
   public static onDocumentResize()
   {
-    for (let window of ClientApp.body.windows)
+    for (let window of ClientApp.windows.windows)
       window.onDocumentResize();
   }
 
+  // --------------- Public accessors -------------------
+
   // ---------------- Public methods --------------------
+
+  // Hides windows that should be hiden in given 'state' and
+  // shows those that should be visible.
+  public onAppStateChange(state: ClientApp.State)
+  {
+    for (let window of this.windows)
+      window.showByState(state);
+  }
 
   public createLoginWindow()
   {
@@ -99,12 +85,26 @@ export class Body extends Component
     this.loginWindow = new LoginWindow();
     this.windows.add(this.loginWindow);
 
-    // Create jquery element 'loginwindow'.
-    let $loginWindow = this.loginWindow.create();
-    // Put it in the 'body' element.
-    this.$body.append($loginWindow);
+    Document.$body.append(this.loginWindow.create());
 
     return this.loginWindow;
+  }
+
+  public createRegisterWindow()
+  {
+    if (this.registerWindow !== null)
+    {
+      ERROR("Register window already exists. There can only be one"
+        + " register window per client application");
+      return;
+    }
+
+    this.registerWindow = new RegisterWindow();
+    this.windows.add(this.registerWindow);
+
+    Document.$body.append(this.registerWindow.create());
+
+    return this.registerWindow;
   }
 
   // Creates a 'ScrollWindow' and adds it to app_body.
@@ -114,10 +114,7 @@ export class Body extends Component
 
     this.windows.add(scrollWindow);
 
-    // Create jquery element 'scrollwindow'.
-    let $scrollWindow = scrollWindow.create();
-    // Put it in the 'body' element.
-    this.$body.append($scrollWindow);
+    Document.$body.append(scrollWindow.create());
 
     return scrollWindow;
   }
@@ -135,10 +132,9 @@ export class Body extends Component
     this.mapWindow = new MapWindow();
     this.windows.add(this.mapWindow);
 
-    // Create jquery element 'mapwindow'.
-    let $mapWindow = this.mapWindow.create();
-    // Put it in the 'body' element.
-    this.$body.append($mapWindow);
+    Document.$body.append(this.mapWindow.create());
+
+    return this.mapWindow;
   }
 
   // Executes when html document is fully loaded.
@@ -149,7 +145,6 @@ export class Body extends Component
   }
 
   // ---------------- Private methods -------------------
-
 
   // ---------------- Event handlers --------------------
 
