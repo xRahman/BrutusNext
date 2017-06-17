@@ -43,7 +43,7 @@
 
 /* ----------- Generic settings ---------- */
 
-/* Include padding and border to the width and height of all elements */
+/* Count padding and border to the width and height of all elements */
 *
 {
     -webkit-box-sizing: border-box;
@@ -65,7 +65,6 @@
 }
 
 /* The scrollbar track's style */
-
 ::-webkit-scrollbar-track
 {
   /*-webkit-box-shadow: inset 0 0 6px rgb(80,100,120);*/
@@ -99,9 +98,6 @@
   margin: 0;
   /* Padding: 0 is defined to ensure the same behaviour in all browsers */
   padding: 0;
-  /*padding-right: 0.5px;*/  /* to make sure that window borders are visible */
-  /*padding-top: 1.1px;*/    /* to make sure that window borders are visible */
-  /*padding-bottom: 0.5px;*/ /* to make sure that window borders are visible */
   /* Fonts are saved on server so we don't need alternatives */
 	font-family: "CourierNew";
 	/* font-size: 100%;*/ /* Browser default (usually 16px) */
@@ -163,7 +159,8 @@
   /* Chrome10-25,Safari5.1-6 */
   background: -webkit-linear-gradient(top, rgba(50, 50, 50, 0.5) 0%, rgba(80, 80, 80, 0.5) 20%, rgba(80, 80, 80, 0.5) 80%, rgba(50, 50, 50, 0.5) 100%);
   /* CSS3 compatible browsers*/
-  background: linear-gradient(rgba(50, 50, 50, 0.5) 0%, rgba(80, 80, 80, 0.5) 20%, rgba(80, 80, 80, 0.5) 80%, rgba(50, 50, 50, 0.5) 100%);
+  /*background: linear-gradient(rgba(50, 50, 50, 0.5) 0%, rgba(80, 80, 80, 0.5) 20%, rgba(80, 80, 80, 0.5) 80%, rgba(50, 50, 50, 0.5) 100%);*/
+  background: linear-gradient(rgba(90, 90, 90, 0.3) 0%, rgba(100, 100, 100, 0.3) 5%, rgba(120, 120, 120, 0.3) 85%, rgba(70, 70, 70, 0.3) 100%);
 
   /* This variant was used when only contents had bacground color, instead of whole window */
   /*
