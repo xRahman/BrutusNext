@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Form} from '../../../client/gui/component/Form';
 
 import $ = require('jquery');
@@ -81,5 +82,7 @@ export class LoginForm extends Form
 
     console.log("Submit (acc_name: " + this.$accountNameInput.val() + ","
       +" passwd: " + this.$passwordInput.val() + " )");
+
+    ClientApp.setState(ClientApp.State.IN_GAME);
   }
 }
