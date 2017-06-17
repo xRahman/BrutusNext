@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Window} from '../../../client/gui/component/Window';
 import {SvgMap} from '../../../client/gui/component/SvgMap';
 import {Connection} from '../../../client/lib/connection/Connection';
@@ -22,7 +23,8 @@ export class MapWindow extends Window
   {
     super();
 
-    ///this.connection.mapWindow = this;
+    // Show this window when app is in state 'INGAME'.
+    this.flags.set(ClientApp.State.IN_GAME);
   }
 
   protected static get CSS_CLASS() { return 'MapWindow'; }

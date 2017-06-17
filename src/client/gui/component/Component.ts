@@ -61,6 +61,12 @@ export abstract class Component
 
     element.setAttribute('type', 'text');
 
+    // Disable spell checking and other annoying stuff.
+    element.setAttribute('spellcheck', 'false');
+    element.setAttribute('autocapitalize', 'none');
+    element.setAttribute('autocorrect', 'off');
+    element.setAttribute('autocomplete', 'off');
+
     return this.initElement(element, id, cssClass);
   }
 
@@ -70,6 +76,26 @@ export abstract class Component
     let element = document.createElement('input');
 
     element.setAttribute('type', 'password');
+
+    return this.initElement(element, id, cssClass);
+  }
+
+  // -> Returns created 'input' jquery element.
+  protected createEmailInput(id: string, cssClass: string): JQuery
+  {
+    let element = document.createElement('input');
+
+    element.setAttribute('type', 'email');
+
+    return this.initElement(element, id, cssClass);
+  }
+
+  // -> Returns created 'input' jquery element.
+  protected createCheckboxInput(id: string, cssClass: string): JQuery
+  {
+    let element = document.createElement('input');
+
+    element.setAttribute('type', 'checkbox');
 
     return this.initElement(element, id, cssClass);
   }
@@ -98,6 +124,36 @@ export abstract class Component
     return this.initElement(element, id, cssClass);
   }
 
+  protected createSpan(id: string, cssClass: string): JQuery
+  {
+    let element = document.createElement('span');
+
+    return this.initElement(element, id, cssClass);
+  }
+
+  // Creates a button which is not part of a form
+  // (use createSubmitButton() to create a button that
+  //  submits form data).
+  protected createButton(id: string, cssClass: string): JQuery
+  {
+    let element = document.createElement('button');
+
+    return this.initElement(element, id, cssClass);
+  }
+
+  /// Ve skutečnosti asi vůbec nechci používat href, ale button bez grafiky...
+  /// 
+  /*
+  protected createHref(id: string, cssClass: string): JQuery
+  {
+    let element = document.createElement('a');
+
+    return this.initElement(element, id, cssClass);
+  }
+  */
+
+  // Creates a button which submits data from a form
+  // (use createButton() to create a standalone button).
   // -> Returns created 'label' jquery element.
   protected createSubmitButton(id: string, cssClass: string): JQuery
   {
@@ -118,8 +174,11 @@ export abstract class Component
     cssClass: string
   )
   {
-    element.id = id;
-    element.className = cssClass;
+    if (id)
+      element.id = id;
+
+    if (cssClass)
+      element.className = cssClass;
 
     // Create jquery element from the DOM element.
     return $(element);

@@ -19,11 +19,12 @@ import {App} from '../../../shared/lib/app/App';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {ClientEntities} from '../../../client/lib/entity/ClientEntities';
 import {ClientPrototypes} from '../../../client/lib/entity/ClientPrototypes';
-import {Body} from '../../../client/gui/component/Body';
+///import {Body} from '../../../client/gui/component/Body';
 import {ScrollWindow} from '../../../client/gui/component/ScrollWindow';
-import {Document} from '../../../client/gui/component/Document';
+import {Document} from '../../../client/gui/Document';
 import {Connection} from '../../../client/lib/connection/Connection';
 import {ClientWebSocket} from '../../../client/lib/net/ws/ClientWebSocket';
+import {Windows} from '../../../client/gui/Windows';
 
 export class ClientApp extends App
 {
@@ -61,14 +62,28 @@ export class ClientApp extends App
   // Html document.
   private document = new Document();
 
+  /*
   // Html <body> element.
   private body = new Body();
+  */
+
+  // All windows should be here.
+  private windows = new Windows();
+
+  // Client application state
+  // (determines which windows are visible).
+  private state = ClientApp.State.INITIAL;
 
   // --------------- Static accessors -------------------
 
-  public static get body()
+  public static get document()
   {
-    return ClientApp.getInstance().body;
+    return ClientApp.getInstance().document;
+  }
+
+  public static get windows()
+  {
+    return ClientApp.getInstance().windows;
   }
 
   public static get connection()
@@ -76,8 +91,23 @@ export class ClientApp extends App
     return ClientApp.getInstance().connection;
   }
 
-  // ------------- Public static methods ---------------- 
+  // ------------- Public static methods ----------------
 
+  public static setState(state: ClientApp.State)
+  {
+    if (state === ClientApp.State.INITIAL)
+    {
+      ERROR("Attempt to set ClientApp.state to 'INITIAL'. This can"
+        + " only be done by implicit inicialization");
+      return;
+    }
+
+    let app = ClientApp.getInstance();
+
+    app.state = state;
+
+    app.windows.onAppStateChange(state);
+  }
 
   // Creates and runs an instance of ClientApp.
   public static async run()
@@ -99,7 +129,7 @@ export class ClientApp extends App
   // Executes when html document is fully loaded.
   public static onDocumentReady()
   {
-    ClientApp.getInstance().body.onDocumentReady();
+    ClientApp.getInstance().windows.onDocumentReady();
   }
 
   // ------------ Protected static methods -------------- 
@@ -186,18 +216,22 @@ export class ClientApp extends App
     if (!ClientWebSocket.checkWebSocketsSupport())
       return;
 
-    this.body.createLoginWindow();
+    this.windows.createLoginWindow();
+    this.windows.createRegisterWindow();
 
     /// Tohle by se asi mělo vytvářet až po přilogování.
-    this.body.createMapWindow();
+    this.windows.createMapWindow();
 
     /// Správně by se mělo scrollWindow a Avatar vytvořit po kliknutí
     /// na jméno charu v MenuWindow (nebo možná LoginWindow).
-    let scrollWindow = this.body.createScrollWindow();
-    Body.activeScrollWindow = scrollWindow;
+    let scrollWindow = this.windows.createScrollWindow();
+    Windows.activeScrollWindow = scrollWindow;
     this.connection.activeAvatar = this.connection.createAvatar(scrollWindow);
 
     this.connection.connect();
+
+    // Show login window, hide all others.
+    ClientApp.setState(ClientApp.State.LOGIN);
 
     /// TODO: Stáhnout viewport data ze serveru.
     /// I když možná nestačí connection.connect(), ještě se asi bude
@@ -210,5 +244,20 @@ export class ClientApp extends App
 
     /// Jinak asi fakt budu muset udělat logovací komponenty, protože
     /// z telnet-style loginu v clientu nepoznám, že se hráč nalogoval do hry.
+  }
+}
+
+// ------------------ Type declarations ----------------------
+
+// Module is exported so you can use enum type from outside this file.
+// It must be declared after the class because Typescript says so...
+export module ClientApp
+{
+  export enum State
+  {
+    INITIAL,
+    LOGIN,
+    REGISTER,
+    IN_GAME
   }
 }
