@@ -1,11 +1,38 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+TODO: Předělat css na selector grupy
+- v kódu budou mít css class přidělenou pouze komponenty, které se
+  skutečně vytváří (tj. nebude existovat class .Window).
+- každá komponenta bude mít jen 1 css class (protože když budou
+  classy v css filu roztahané po různých místech, tak přidat k tomu
+  ještě mergování css class by byl děsnej bordel).
+- defaultní font asi nechám, jak je (tj. pro '*'), ať nemusím
+  všechny classy přidávat do selector grupy Default text.
+
+TODO: Zkontrolovat disablování všemožných vymožeností v input boxech.
+
+
+TODO: Všem komponentám s textem setovat CSS class .Text
+  a vyhodit atributy fontu z jejich css stylů.
+(Atributy fontu se zjevně nedědí automaticky.)
+
+TODO: Nevracet vytvořenou komponentu, když se návratová hodnota na nic
+  nepoužívá.
+  (zejména když se komponenta rovnou přiřadila do this.$cosi).
+
+TODO: Vrátit se k setování atributů přes JQuery
+(mělo by stačí v Component).
+- udělal jsem to s text contentem, kde jsou zřejmé nekompatibility browseru.
+  Těžko říct, jestli to má smysl udělat se vším... (asi jo)
+
 TODO: Přidat všem input elementům ve formu atribut name.
+[done]
 
 TODO: Zrušit idčka z komponent, které si někde pamatuju
 (k čemu pak mám to idčko?)
 - tj. nejspíš prakticky všechna kromě těch v svg mapě.
+[done]
 
 TODO: Metody na vyrábění jquery elementů by asi mohly (a měly) být
 statické - nebudou se pak tlouct s vlastními metodami kompponent.
@@ -18,7 +45,7 @@ TODO: Sjednotit max account length a ostatní kód na constraints
 
 TODO: Zrušit css pro specializované WindowContent
 (protože si vystačí s defaultním).
-
+[done]
 
 TODO: Metody v Component by měly rovnou vracet jquery element.
   (a stačí createDiv() místo createDivElement()).

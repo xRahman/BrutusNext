@@ -37,34 +37,50 @@ export class LoginForm extends Form
 
   // ~ Overrides Form.create().
   // -> Returns created jquery element.
-  public create()
+  public create($container: JQuery)
   {
     /// TODO: Číst to ze stejné proměnné jako server a jako register form.
     // Maximum length of acocunt name (in characters).
     let maxChars = 20;
 
-    super.create(this.id);
+    super.create($container, 'login_form');
 
-    this.appendLabel('account_name_label', 'Account Name');
+    this.appendLabel('Account Name');
     this.$accountNameInput = this.appendTextInput
     (
-      'account_name_input',
-      'Enter Account Name',
-      maxChars
+      'account_name_input',   // 'name' attribute.
+      {
+        required: true,
+        placeholder: 'Enter Account Name',
+        maxlength: maxChars,
+        autocapitalize: 'words',
+        // 'autocomplete' value could be 'username' but we have 'remember me'
+        // option so there is no need for it.
+        autocomplete: 'off',
+        autocorrect: 'off',
+        spellcheck: false
+      }
     );
-    this.appendLabel('password_label', 'Password');
+
+    this.appendLabel('Password');
     this.$passwordInput = this.appendPasswordInput
     (
-      'password_input',
-      'Enter Password'
+      'password_input',       // 'name' attribute.
+      'Enter Password'        // Placeholder text.
     );
+    
     this.$rememberMeCheckbox = this.appendCheckboxInput
     (
       'remember_me_checkbox',
       'Remember me',
       true  // Checked.
     );
-    this.appendSubmitButton(this.$form, 'login', 'Login');
+    this.appendSubmitButton
+    (
+      this.$form,
+      'login_button',         // 'name' attribute.
+      'Login'                 // Button text.
+    );
 
     return this.$form;
   }

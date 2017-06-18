@@ -7,6 +7,7 @@
 'use strict';
 
 import {Flags} from '../../../shared/lib/utils/Flags';
+import {Document} from '../../../client/gui/Document';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {MudColorComponent} from
   '../../../client/gui/component/MudColorComponent';
@@ -19,15 +20,11 @@ export class Window extends MudColorComponent
   protected static get TITLE_BAR_CSS_CLASS() { return 'WindowTitleBar'; }
   protected static get TITLE_CSS_CLASS() { return 'WindowTitle'; }
   protected static get CONTENT_CSS_CLASS() { return 'WindowContent'; }
-  protected static get TEXT_CSS_CLASS() { return 'WindowText'; }
-  protected static get LINK_CSS_CLASS() { return 'WindowLink'; }
 
-  /*
   constructor()
   {
     super();
   }
-  */
 
   // -------------- Static class data -------------------
 
@@ -59,10 +56,6 @@ export class Window extends MudColorComponent
 
   // --------------- Public accessors -------------------
 
-  public getTitleBarId() { return this.id + '_titlebar'; }
-  public getTitleId() { return this.id + '_title'; }
-  public getContentId() { return this.id + '_content'; }
-
   public getFlags() { return this.flags; }
 
   // ---------------- Public methods --------------------
@@ -86,15 +79,14 @@ export class Window extends MudColorComponent
   {
     this.$window = this.createDiv
     (
-      this.id,
+      Document.$body,
       Window.CSS_CLASS
     );
 
     // Windows are created hidden.
     this.$window.hide();
 
-    this.$titleBar = this.createTitleBar();
-    this.$window.append(this.$titleBar);
+    this.createTitleBar();
 
     this.$content = this.createContent();
     this.$window.append(this.$content);
@@ -119,7 +111,7 @@ export class Window extends MudColorComponent
   {
     return this.createDiv
     (
-      this.getContentId(),
+      this.$window,
       Window.CONTENT_CSS_CLASS
     );
   }
@@ -127,53 +119,18 @@ export class Window extends MudColorComponent
   // -> Returns created jquery element.
   protected createTitleBar()
   {
-    let $titleBar = this.createDiv
+    this.$titleBar = this.createDiv
     (
-      this.getTitleBarId(),
+      this.$window,
       Window.TITLE_BAR_CSS_CLASS
     );
 
     this.$title = this.createTitle
     (
-      this.getTitleId(),
+      this.$titleBar,
       Window.TITLE_CSS_CLASS
     );
     this.$title.text('New window');
-    $titleBar.append(this.$title);
-
-    return $titleBar;
-  }
-
-  protected appendText($container: JQuery, text: string)
-  {
-    let $text = this.createSpan
-    (
-      null,  // No id.
-      Window.TEXT_CSS_CLASS
-    );
-
-    $text.text(text);
-
-    $container.append($text);
-
-    return $text;
-  }
-
-  protected appendLink($container: JQuery, id: string, text: string)
-  {
-    // Use <button> instead of <a href=...> because we
-    // are going to handle the clicks ourselves.
-    let $link = this.createButton
-    (
-      id,
-      Window.LINK_CSS_CLASS
-    );
-
-    $link.text(text);
-
-    $container.append($link);
-
-    return $link;
   }
 
   // ---------------- Private methods -------------------

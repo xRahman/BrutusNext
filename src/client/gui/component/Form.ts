@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {InputParam} from '../../../client/gui/component/Component'; 
 import {Component} from '../../../client/gui/component/Component';
 
 import $ = require('jquery');
@@ -13,7 +14,7 @@ import $ = require('jquery');
 export abstract class Form extends Component
 {
   protected static get CSS_CLASS() { return 'Form'; }
-  protected static get LABEL_CSS_CLASS() { return 'FormLabel'; }
+  public static get LABEL_CSS_CLASS() { return 'FormLabel'; }
   protected static get INPUT_CSS_CLASS() { return 'FormInput'; }
   protected static get BUTTON_CSS_CLASS() { return 'FormButton'; }
   protected static get CHECKBOX_CSS_CLASS() { return 'FormCheckbox'; }
@@ -40,12 +41,13 @@ export abstract class Form extends Component
 
   // --------------- Protected methods ------------------
 
-  protected create(id: string)
+  protected create($container: JQuery, name: string)
   {
     this.$form = this.createForm
     (
-      id,
-      Form.CSS_CLASS
+      $container,
+      Form.CSS_CLASS,
+      name
     );
 
     // Register 'submit' event handler.
@@ -53,119 +55,99 @@ export abstract class Form extends Component
     (
       (event: Event) => { this.onSubmit(event); }
     );
-
-    return this.$form;
   }
 
-  protected appendLabel(id: string, text: string)
+  protected appendLabel(text: string)
   {
-    let $label = this.createLabel
+    return this.createLabel
     (
-      id,
-      Form.LABEL_CSS_CLASS
+      this.$form,
+      Form.LABEL_CSS_CLASS,
+      text
     );
-    $label.text(text);
-    this.$form.append($label);
-
-    return $label;
   }
 
   protected appendTextInput
   (
-    id: string,
-    placeholderText: string,
-    maxCharacters: number)
+    name: string,
+    param: InputParam
+  )
   {
-    let $input = this.createTextInput
+    return this.createTextInput
     (
-      id,
-      Form.INPUT_CSS_CLASS
+      this.$form,
+      Form.INPUT_CSS_CLASS,
+      name,
+      param
     );
-
-    $input.prop('required', true);
-    $input.attr('placeholder', placeholderText);
-    $input.attr('maxlength', maxCharacters);
-
-    this.$form.append($input);
-
-    return $input;
   }
 
-  protected appendPasswordInput(id: string, placeholderText: string)
+  protected appendPasswordInput(name: string, placeholder: string)
   {
-    let $input = this.createPasswordInput
+    return this.createPasswordInput
     (
-      id,
-      Form.INPUT_CSS_CLASS
+      this.$form,
+      Form.INPUT_CSS_CLASS,
+      name,
+      {
+        required: true,
+        placeholder: placeholder
+      }
     );
-
-    $input.prop('required', true);
-    $input.attr('placeholder', placeholderText);
-
-    this.$form.append($input);
-
-    return $input;
   }
 
-  protected appendEmailInput(id: string, placeholderText: string)
+  protected appendEmailInput(name: string, placeholder: string)
   {
-    let $input = this.createEmailInput
+    return this.createEmailInput
     (
-      id,
-      Form.INPUT_CSS_CLASS
+      this.$form,
+      Form.INPUT_CSS_CLASS,
+      name,
+      {
+        required: true,
+        placeholder: placeholder
+      }
     );
-
-    $input.prop('required', true);
-    $input.attr('placeholder', placeholderText);
-
-    this.$form.append($input);
-
-    return $input;
   }
 
-  protected appendCheckboxInput(id: string, text: string, checked: boolean)
+  protected appendCheckboxInput(name: string, text: string, checked: boolean)
   {
     let $container = this.createDiv
     (
-      null, // No id.
+      this.$form,
       Form.CHECKBOX_CONTAINER_CSS_CLASS
     );
 
     let $checkbox = this.createCheckboxInput
     (
-      id,
-      Form.CHECKBOX_CSS_CLASS
+      $container,
+      Form.CHECKBOX_CSS_CLASS,
+      name,
+      {
+        checked: checked
+      }
     );
-    $checkbox.prop('checked', checked);
 
-    let $label = this.createLabel
+    this.createLabel
     (
-      null, // No id.
-      Form.LABEL_CSS_CLASS
+      $container,
+      Form.LABEL_CSS_CLASS,
+      text
     );
-    $label.text(text);
-
-    $container.append($checkbox);
-    $container.append($label)
-
-    this.$form.append($container);
 
     return $checkbox;
   }
 
-  protected appendSubmitButton($container: JQuery, id: string, text: string)
+  protected appendSubmitButton($container: JQuery, name: string, text: string)
   {
-    let $button = this.createSubmitButton
+    return this.createSubmitButton
     (
-      id,
-      Form.BUTTON_CSS_CLASS
+      $container,
+      Form.BUTTON_CSS_CLASS,
+      name,
+      text,
+      null    // No attributes.
     );
-
-    $button.text(text);
-
-    $container.append($button);
-
-    return $button;
   }
 
   // ---------------- Private methods -------------------

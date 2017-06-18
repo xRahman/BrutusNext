@@ -100,17 +100,15 @@ export class SvgMap extends Component
   // ---------------- Public methods --------------------
 
 //.
-  // Creates map svg element in '$ancestor' element.
-  public create(id: string, $ancestor: JQuery)
+  // Creates map svg element and appends it to '$containe' element.
+  public create($container: JQuery)
   {
-    this.id = id;
-
     // Select ancestor element using d3 library.
     // (Doing [0] on a jquery element accesses the DOM element.
     //  We do it instead of selecting ancetor element by it's
     //  id because ancestor element is not yet appended to the
     //  document at this time - so we need to use direct reference.)
-    let d3WindowContent = d3.select($ancestor[0]);
+    let d3WindowContent = d3.select($container[0]);
 
     // Append a svg element that will be used to draw map in.
     this.d3Map = d3WindowContent.append('svg');

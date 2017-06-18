@@ -8,6 +8,7 @@
 
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Window} from '../../../client/gui/component/Window';
+import {Form} from '../../../client/gui/component/Form';
 import {LoginForm} from '../../../client/gui/component/LoginForm';
 
 import $ = require('jquery');
@@ -63,7 +64,7 @@ export class LoginWindow extends Window
 
     this.$titleBar.addClass(LoginWindow.TITLE_BAR_CSS_CLASS);
 
-    let titleHtml = this.htmlizeMudColors("&wWelcome to &RBrutus&YNext");
+    let titleHtml = this.htmlizeMudColors("&gWelcome to &RBrutus&YNext");
 
     this.$titleBar.html(titleHtml);
 
@@ -80,11 +81,20 @@ export class LoginWindow extends Window
     this.$content.addClass(LoginWindow.CONTENT_CSS_CLASS);
 
     // Create login form.
-    this.$content.append(this.form.create());
+    this.form.create(this.$content);
 
     this.appendRegisterLink();
 
     return this.$content;
+  }
+
+  protected appendText($container: JQuery, text: string)
+  {
+    let $text = super.appendText($container, text);
+
+    $text.addClass(Form.LABEL_CSS_CLASS);
+
+    return $text;
   }
 
   // ---------------- Private methods -------------------
@@ -93,28 +103,25 @@ export class LoginWindow extends Window
   {
     let $container = this.createDiv
     (
-      null,   // No id.
+      this.$content,
       LoginWindow.REGISTER_LINK_CSS_CLASS
     );
 
     // Add text link below the form.
     this.appendText($container, "Don't have an account yet? ");
+
     this.$registerLink = this.appendLink
     (
       $container,
-      'register_link',
       "Register"
     );
-    this.appendText($container, ".");
-
+    this.$registerLink.addClass(Form.LABEL_CSS_CLASS);
     this.$registerLink.click
     (
       (event: Event) => { this.onRegisterClick(event); }
     );
 
-    this.$content.append($container);
-
-    return $container;
+    this.appendText($container, ".");
   }
 
   // ---------------- Event handlers --------------------
