@@ -70,7 +70,9 @@ export abstract class Form extends Component
   protected appendTextInput
   (
     name: string,
-    param: InputParam
+    placeholder: string,
+    minLength: number,
+    maxlength: number
   )
   {
     return this.createTextInput
@@ -78,11 +80,30 @@ export abstract class Form extends Component
       this.$form,
       Form.INPUT_CSS_CLASS,
       name,
-      param
+      {
+        required: true,
+        placeholder: placeholder,
+        minLength: minLength,
+        maxLength: maxlength,
+        /// Doesn't work in browsers yet
+        /// (account names should be case insensitive anyways).
+        /// autocapitalize: 'words',
+        autocorrect: 'off',
+        // 'autocomplete' value could be 'username' for LoginForm but
+        //  we have 'remember me' option so there is no need for it.
+        autocomplete: 'off',
+        spellcheck: false
+      }
     );
   }
 
-  protected appendPasswordInput(name: string, placeholder: string)
+  protected appendPasswordInput
+  (
+    name: string,
+    placeholder: string,
+    minLength: number,
+    maxLength: number
+  )
   {
     return this.createPasswordInput
     (
@@ -91,7 +112,12 @@ export abstract class Form extends Component
       name,
       {
         required: true,
-        placeholder: placeholder
+        placeholder: placeholder,
+        minLength: minLength,
+        maxLength: maxLength,
+        autocorrect: 'off',
+        autocomplete: 'off',
+        spellcheck: false
       }
     );
   }
@@ -105,7 +131,13 @@ export abstract class Form extends Component
       name,
       {
         required: true,
-        placeholder: placeholder
+        placeholder: placeholder,
+        autocorrect: 'off',
+        // 'autocomplete' value could be 'email' but user only needs
+        // to type email once when creating an account so I'll leave
+        // it off.
+        autocomplete: 'off',
+        spellcheck: false
       }
     );
   }

@@ -11,6 +11,8 @@ TODO: Předělat css na selector grupy
   všechny classy přidávat do selector grupy Default text.
 
 TODO: Zkontrolovat disablování všemožných vymožeností v input boxech.
+- zatím, je to pro text input (a možná by šlo sloučit login a register)
+TODO: dodělat to pro password a email input.
 
 
 TODO: Všem komponentám s textem setovat CSS class .Text
