@@ -29,7 +29,7 @@ export class ScrollWindow extends Window
   }
 
   protected static get CSS_CLASS() { return 'ScrollWindow'; }
-  protected static get CONTENT_CSS_CLASS() { return 'ScrollWindowContent'; }
+  ///protected static get CONTENT_CSS_CLASS() { return 'ScrollWindowContent'; }
 
   // -------------- Static class data -------------------
 
@@ -126,19 +126,10 @@ export class ScrollWindow extends Window
   {
     let $content = super.createContent();
 
-    // ScrollWindow content uses css class .ScrollWindowContent along with
-    // .WindowContent.
-    $content.addClass(ScrollWindow.CONTENT_CSS_CLASS);
+    ///$content.addClass(ScrollWindow.CONTENT_CSS_CLASS);
 
-    // Create jquery element 'output'.
-    let $output = this.output.create(this.getOutputId());
-    // Put it in the 'content' element.
-    $content.append($output);
-
-    // Create html element 'input'.
-    let $input = this.input.create(this.getInputId());
-    // Put it in the 'content' element.
-    $content.append($input);
+    this.output.create($content);
+    this.input.create($content);
 
     return $content;
   }

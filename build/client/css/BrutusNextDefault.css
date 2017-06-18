@@ -1,10 +1,3 @@
-/* body { height: auto; width: 99%; font-size: 11px; background: #000000 url(../images/dark-metal.jpg) 50% 50% repeat; } */
-
-/*
-@import url("../font/stylesheet.css");
-@import url("http://fonts.googleapis.com/css?family=Open+Sans");
-*/
-
 /* ---------------- Fonts ---------------- */
 
 /* Courier New */
@@ -41,7 +34,7 @@
   font-weight: bold;
 }
 
-/* ----------- Generic settings ---------- */
+/* ----------- Global settings ---------- */
 
 /* Count padding and border to the width and height of all elements */
 *
@@ -51,10 +44,30 @@
     box-sizing: border-box;
 }
 
+/* Default font attributes for all components. */
+*
+{
+  font-family: CourierNew;
+  font-size: 1em;
+  color: rgb(210, 230, 250); /* text color */
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5);
+  font-weight: bold;
+  text-overflow: ellipsis; /* Add '...' if text overflows */
+}
+
+/* Remove default blue outline around focused elements */
+input:focus,
+select:focus,
+textarea:focus,
+button:focus
+{
+  outline: none;
+}
+
 /* -------------- Scrollbars ------------- */
 
 /*
-  Only works in webkit-capable browsers (Chrome, Opera, Safari).
+  Scrollbar css only works in webkit-capable browsers (Chrome, Opera, Safari).
   Sorry, Firefox users...
 */
 
@@ -95,13 +108,10 @@
   /* '!important' is used so that other style won't overrule this */
 	outline: 0 none !important;
   /* Margin is defined to ensure the same behaviour in all browsers */
-  margin: 0;
+  margin: 0 !important;
   /* Padding: 0 is defined to ensure the same behaviour in all browsers */
-  padding: 0;
-  /* Fonts are saved on server so we don't need alternatives */
-	font-family: "CourierNew";
-	/* font-size: 100%;*/ /* Browser default (usually 16px) */
-  font-size: 17px; /* Base font size, all other sizes are relative to this */
+  padding: 0 !important;
+  
   width: 100%;
   height: 100%;
 	min-height: 100%;
@@ -110,7 +120,16 @@
   display: flex;
   background-color: black;
   background-image: url(/images/background-landscape.jpg);
-  
+
+  /* Fonts are saved on server so we don't need alternatives */
+	font-family: CourierNew;
+  /* Base font size, all other sizes are relative to this */
+    /* 
+      If we wanted to allow users to change font size, we should
+        set this attribute so all fonts scale accordingly.
+    */
+	font-size: 100%; /* Browser default (usually 16px) */
+
   /* Following code makes the image always cover whole area */
   background-repeat: no-repeat;
   background-attachment: fixed;
@@ -119,6 +138,26 @@
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
+}
+
+/* -------------- Component -------------- */
+
+/* Generic text link - note that it's <button>, not <a href...> */
+.Link
+{
+  outline: 0 none;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background-color: rgba(0,0,0,0);  /* Transparent background */
+  color: rgb(43, 144, 255); /* text color */
+  text-align: left;
+  display: inline;
+}
+
+.Link:hover
+{
+  text-decoration: underline;
 }
 
 /* ---------------- Window --------------- */
@@ -140,27 +179,20 @@
 .WindowTitleBar
 {
   width: 100%;
-  /*height: 18px;*/ /* Height is computed automatically */
-  /*border-top: 1 px solid dimgray;*/
-  /*border-bottom: 1px double rgba(100,100,100, 0.8);*/
+  /* Height is computed automatically */
   outline: 0 none;
   margin: 0;
-  /*padding: 2px;*/
-  /*background-color: rgba(50,50,50, 0.9);*/
-  /*background-image: url('/images/titlebar.jpg');*/
-  /*background-color: rgb(50,50,50);*/
-  /*display: table;*/ /* To make the title text centered */
+  padding: 0.1em;
 
   /* --- Background --- */
   /* Old browsers */
   background: rgba(80, 80, 80, 0.5);
   /* FF3.6-15 */
-  background: -moz-linear-gradient(top, rgba(50, 50, 50, 0.5) 0%, rgba(80, 80, 80, 0.5) 20%, rgba(80, 80, 80, 0.5) 80%, rgba(50, 50, 50, 0.5) 100%);
+  background: -moz-linear-gradient(top, rgba(50, 50, 50, 0.6) 0%, rgba(80, 80, 80, 0.6) 5%, rgba(80, 80, 80, 0.6) 90%, rgba(50, 50, 50, 0.6) 100%);
   /* Chrome10-25,Safari5.1-6 */
-  background: -webkit-linear-gradient(top, rgba(50, 50, 50, 0.5) 0%, rgba(80, 80, 80, 0.5) 20%, rgba(80, 80, 80, 0.5) 80%, rgba(50, 50, 50, 0.5) 100%);
+  background: -webkit-linear-gradient(top, rgba(50, 50, 50, 0.6) 0%, rgba(80, 80, 80, 0.6) 5%, rgba(80, 80, 80, 0.6) 90%, rgba(50, 50, 50, 0.6) 100%);
   /* CSS3 compatible browsers*/
-  /*background: linear-gradient(rgba(50, 50, 50, 0.5) 0%, rgba(80, 80, 80, 0.5) 20%, rgba(80, 80, 80, 0.5) 80%, rgba(50, 50, 50, 0.5) 100%);*/
-  background: linear-gradient(rgba(90, 90, 90, 0.3) 0%, rgba(100, 100, 100, 0.3) 5%, rgba(120, 120, 120, 0.3) 85%, rgba(70, 70, 70, 0.3) 100%);
+  background: linear-gradient(rgba(50, 50, 50, 0.6) 0%, rgba(80, 80, 80, 0.6) 5%, rgba(80, 80, 80, 0.6) 90%, rgba(50, 50, 50, 0.6) 100%);
 
   /* This variant was used when only contents had bacground color, instead of whole window */
   /*
@@ -173,19 +205,11 @@
 
 .WindowTitle
 {
-  color: rgb(210, 230, 250); /* text color */
   text-align: center;
   width: 100%;
   height: 100%;
-  /*border: 1px solid rgba(110,130,150,0.8);*/
-  text-overflow: ellipsis; /* Add '...' if text overflows */
-  /*display: table-cell;*/  /* To make the text horizonally centered */
   display: block;
-  /*vertical-align: middle;*/  /* To make the text horizonally centered */
   font-size: 0.8em;
-  font-family: CourierNew;
-  font-weight: bold;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5);
 }
 
 .WindowContent
@@ -201,60 +225,19 @@
   /*background: rgba(0, 0, 0, 0.6);*/
 }
 
-/* Non-clickable text */
-.WindowText
-{
-  font-size: 0.8em;
-  font-family: CourierNew;
-  color: rgb(210, 230, 250); /* text color */
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5);
-  font-weight: bold;
-  text-overflow: ellipsis; /* Add '...' if text overflows */
-  display: inline;
-}
-
-/* Text link - note that it's <button>, not <a href...> */
-.WindowLink
-{
-  outline: 0 none;
-  margin: 0;
-  padding: 0;
-  border: none;
-  background-color: rgba(0,0,0,0);  /* Transparent background */
-  font-size: 0.8em;
-  font-family: CourierNew;
-  /*color: rgb(0, 119, 204);*/ /* text color */
-  color: rgb(43, 144, 255); /* text color */
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5);
-  font-weight: bold;
-  text-overflow: ellipsis; /* Add '...' if text overflows */
-  text-align: left;
-  display: inline;
-}
-
-.WindowLink:hover
-{
-  text-decoration: underline;
-}
-
 /* ------------------- Form ------------------- */
 
 .Form
 {
   width: 100%;
   height: 100%;
-  background-color: rgba(0,0,0,0);
+  background-color: rgba(0, 0, 0, 0);
 }
 
 /* Labels like 'Account Name' or 'Password' */
 .FormLabel
 {
   font-size: 0.8em;
-  font-family: CourierNew;
-  color: rgb(210, 230, 250); /* text color */
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5);
-  font-weight: bold;
-  text-overflow: ellipsis; /* Add '...' if text overflows */
 }
 
 /* Account name input and password input */
@@ -271,21 +254,15 @@
   color: rgb(0,225,0); /* text color */
   font-family: CourierNew;
   font-weight: bold;
-  font-size: 100%;
+  font-size: 1em;
   background-color: rgba(50,50,50,0.6);
   border: 1px solid rgba(110,130,150,0.8);
-  /*width: 15em;*/
 }
 
 .FormButton
 {
   width: 100%;
   height: 100%;
-  color: rgb(210, 230, 250); /* text color */
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5);
-  font-family: CourierNew;
-  font-weight: bold;
-  font-size: 100%;
   background-color: rgba(150, 150, 150, 0.6);
   border: 1px solid rgba(110, 130, 150, 0.8);
 }
@@ -296,17 +273,11 @@
   border: 1px solid rgba(210, 230, 250, 0.8);
 }
 
+/* TODO: Better checkbox css. */
 .FormCheckbox
 {
   width: auto;
   height: auto;
-  color: rgb(210, 230, 250); /* text color */
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5);
-  font-family: CourierNew;
-  font-weight: bold;
-  font-size: 100%;
-  background-color: rgba(150, 150, 150, 0.6);
-  border: 1px solid rgba(110, 130, 150, 0.8);
 }
 
 .FormCheckboxContainer
@@ -318,8 +289,9 @@
 
 .LoginWindow /* Extends .Window */
 {
-  /* Center at position 40% from top, 50% from left */
-  top: 40%;
+  /* Center at position 50% from top, 50% from left */
+  position: absolute;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   /* Window size is a multiple of font size */
@@ -327,9 +299,7 @@
   height: auto; /* Resize by content */
   max-width: 100%;
   max-height: 100%;
-  position: absolute;
-  /*z-index: 1;*/ /* Sit on top */
-  /*overflow: auto;*/ /* Enable scroll if needed */
+  overflow: auto; /* Enable scroll if needed */
   display: block;
   /*display: inline-block;*/ 
 }
@@ -351,7 +321,6 @@
 
 .LoginWindowContent  /* Extends .WindowContent */
 {
-  outline: 0 none;
   padding: 1em;
   display: block;
 }
@@ -387,8 +356,9 @@
 
 .RegisterWindow /* Extends .Window */
 {
-  /* Center at position 40% from top, 50% from left */
-  top: 40%;
+  /* Center at position 50% from top, 50% from left */
+  position: absolute;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   /* Window size is a multiple of font size */
@@ -396,7 +366,7 @@
   height: auto; /* Resize by content */
   max-width: 100%;
   max-height: 100%;
-  position: absolute;
+  overflow: auto; /* Enable scroll if needed */
   display: block;
 }
 
@@ -408,7 +378,6 @@
 
 .RegisterWindowContent  /* Extends .WindowContent */
 {
-  outline: 0 none;
   padding: 1em;
   display: block;
 }
@@ -428,15 +397,16 @@
   overflow: hidden;
 }
 
-.ScrollWindowContent  /* Extends .WindowContent */
-{
-  outline: 0 none;
+/* Not used anymore */
+/*.ScrollWindowContent*/  /* Extends .WindowContent */
+/*{*/
+  /*outline: 0 none;*/
   /*margin: 0;*/
   /*padding: 0;*/
   /*background: rgba(0,0,0,0.6);*/
   /*display: flex;*/
   /*flex-direction: column;*/
-}
+/*}*/
 
 .ScrollWindowOutput
 {
@@ -450,11 +420,11 @@
   outline: 0 none;
   margin: 0;
   padding: 3px;
-  font-size: 100%;
+  /*font-size: 100%;*/
   /*background-color: rgba(0,0,0,0.6);*/
   overflow-x: hidden;   /* Do not use horizontal scrolling */
   overflow-y: auto;     /* Automatically create vertical scrollbar */
-  word-wrap:break-word; /* Areak long words that wont fit */
+  word-wrap:break-word; /* Break long words that wont fit */
 }
 
 /*
@@ -465,15 +435,21 @@
 {
   width: 100%;
   margin: 0;
-  padding: 3px; /* TODO: Předělat na em */
+  padding: 0.2em;
   resize: none; /* Disable the "grabger" corner which resizes the textarea */
   overflow: hidden; /* also hides the scrollbar */
   color: rgb(0,225,0); /* text color */
-  font-family: CourierNew;
-  font-weight: bold;
-  font-size: 100%;
   background-color: rgba(50,50,50,0.6);
   border: 1px solid rgba(110,130,150,0.8);
+  /*border-left: none;
+  border-right: none;
+  border-bottom: none;
+  border-top: 1px solid rgba(110,130,150,0.8);*/
+}
+
+.ScrollWindowInput:focus
+{
+  outline: solid 1px rgba(30, 30, 255, 0.8);
 }
 
 /* ---------------- MapWindow --------------- */
@@ -486,12 +462,13 @@
   overflow: hidden;
 }
 
-.MapWindowContent  /* Extends .WindowContent */
-{
-  outline: 0 none;
+/* Not used anymore */
+/*.MapWindowContent*/  /* Extends .WindowContent */
+/*{*/
+  /*outline: 0 none;*/
   /*display: flex;*/
   /*flex-direction: column;*/
-}
+/*}*/
 
 /* ------------ Map (svg element) ----------- */
 

@@ -34,13 +34,11 @@ export class ScrollWindowOutput extends MudColorComponent
   // ---------------- Public methods --------------------
 
   // -> Returns created jquery element.
-  public create(id: string)
+  public create($container: JQuery)
   {
-    this.id = id;
-
     this.$output = this.createDiv
     (
-      this.id,
+      $container,
       ScrollWindowOutput.CSS_CLASS
     );
 
@@ -54,8 +52,6 @@ export class ScrollWindowOutput extends MudColorComponent
     (
       (event) => { this.onKeyDown(event); }
     );
-
-    return this.$output;
   }
 
   // Converts message from mud colors (like '&Rhealth&g') to html

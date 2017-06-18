@@ -7,6 +7,7 @@
 'use strict';
 
 import {ClientApp} from '../../../client/lib/app/ClientApp';
+import {Form} from '../../../client/gui/component/Form';
 import {Window} from '../../../client/gui/component/Window';
 import {RegisterForm} from '../../../client/gui/component/RegisterForm';
 
@@ -76,11 +77,20 @@ export class RegisterWindow extends Window
     this.$content.addClass(RegisterWindow.CONTENT_CSS_CLASS);
 
     // Create register form.
-    this.$content.append(this.form.create());
+    this.form.create(this.$content);
 
     this.appendTermsLink();
 
     return this.$content;
+  }
+
+  protected appendText($container: JQuery, text: string)
+  {
+    let $text = super.appendText($container, text);
+
+    $text.addClass(Form.LABEL_CSS_CLASS);
+
+    return $text;
   }
 
   // ---------------- Private methods -------------------
@@ -89,28 +99,25 @@ export class RegisterWindow extends Window
   {
     let $container = this.createDiv
     (
-      null,   // No id.
+      this.$content,
       RegisterWindow.TERMS_LINK_CSS_CLASS
     );
 
     // Add text link below the form.
     this.appendText($container, "By creating an account you agree to our ");
+
     this.$termsLink = this.appendLink
     (
       $container,
-      'register_link',
       "Terms of Use"
     );
-    this.appendText($container, ".");
-
+    this.$termsLink.addClass(Form.LABEL_CSS_CLASS);
     this.$termsLink.click
     (
       (event: Event) => { this.onTermsClick(event); }
     );
 
-    this.$content.append($container);
-
-    return $container;
+    this.appendText($container, ".");
   }
 
   // ---------------- Event handlers --------------------
