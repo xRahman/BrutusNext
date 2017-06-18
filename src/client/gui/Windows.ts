@@ -83,9 +83,9 @@ export class Windows
     }
 
     this.loginWindow = new LoginWindow();
+    this.loginWindow.create();
     this.windows.add(this.loginWindow);
-
-    Document.$body.append(this.loginWindow.create());
+    
 
     return this.loginWindow;
   }
@@ -100,9 +100,8 @@ export class Windows
     }
 
     this.registerWindow = new RegisterWindow();
+    this.registerWindow.create();
     this.windows.add(this.registerWindow);
-
-    Document.$body.append(this.registerWindow.create());
 
     return this.registerWindow;
   }
@@ -112,9 +111,8 @@ export class Windows
   {
     let scrollWindow = new ScrollWindow();
 
+    scrollWindow.create();
     this.windows.add(scrollWindow);
-
-    Document.$body.append(scrollWindow.create());
 
     return scrollWindow;
   }
@@ -130,9 +128,8 @@ export class Windows
     }
 
     this.mapWindow = new MapWindow();
+    this.mapWindow.create();
     this.windows.add(this.mapWindow);
-
-    Document.$body.append(this.mapWindow.create());
 
     return this.mapWindow;
   }
