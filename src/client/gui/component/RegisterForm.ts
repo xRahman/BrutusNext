@@ -53,34 +53,41 @@ export class RegisterForm extends Form
 
   // ~ Overrides Form.create().
   // -> Returns created jquery element.
-  public create()
+  public create($container: JQuery)
   {
     /// TODO: Číst to ze stejné proměnné jako server a jako register form.
     // Maximum length of acocunt name (in characters).
     let maxChars = 20;
 
-    super.create(this.id);
+    super.create($container, 'register_form');
 
-    this.appendLabel('account_name_label', 'Account Name');
+    this.appendLabel('Account Name');
     this.$accountNameInput = this.appendTextInput
     (
-      'account_name_input',
-      'Enter Account Name',
-      maxChars
+      'account_name_input',   // 'name' attribute.
+      {
+        required: true,
+        placeholder: 'Enter Account Name',
+        maxlength: maxChars,
+        autocapitalize: 'words',
+        autocomplete: 'off',
+        autocorrect: 'off',
+        spellcheck: false
+      }
     );
 
-    this.appendLabel('email_label', 'E-mail');
+    this.appendLabel('E-mail');
     this.$emailInput = this.appendEmailInput
     (
-      'email_input',
-      'Enter E-mail'
+      'email_input',          // 'name' attribute.
+      'Enter E-mail'          // Placeholder text.
     );
 
-    this.appendLabel('password_label', 'Password');
+    this.appendLabel('Password');
     this.$passwordInput = this.appendPasswordInput
     (
-      'password_input',
-      'Enter Password'
+      'password_input',       // 'name' attribute.
+      'Enter Password'        // Placeholder text.
     );
 
     this.$rememberMeCheckbox = this.appendCheckboxInput
@@ -97,14 +104,10 @@ export class RegisterForm extends Form
 
   // --------------- Protected methods ------------------
 
-  protected appendSubmitButton($container: JQuery)
+  // ~Overrides Form.appendSubmitButton().
+  protected appendSubmitButton($container: JQuery, name: string, text: string)
   {
-    let $button = super.appendSubmitButton
-    (
-      $container,
-      'register',
-      'Register'
-    );
+    let $button = super.appendSubmitButton($container, name, text);
 
     $button.addClass(RegisterForm.SUBMIT_BUTTON_CSS_CLASS);
 
@@ -117,27 +120,33 @@ export class RegisterForm extends Form
   {
     let $container = this.createDiv
     (
-      null, // No id.
+      this.$form,
       RegisterForm.BUTTONS_CONTAINER_CSS_CLASS
     );
 
-    this.appendSubmitButton($container);
+    this.appendSubmitButton
+    (
+      $container,
+      'register_button',      // 'name' attribute.
+      'Register'              // Button text.
+    );
 
-    let $cancelButton = this.appendCancelButton($container);
-    $cancelButton.addClass(RegisterForm.CANCEL_BUTTON_CSS_CLASS);
-
-    this.$form.append($container);
+    this.appendCancelButton
+    (
+      $container,
+      'Cancel'              // Button text.
+    );
   }
 
-  private appendCancelButton($container: JQuery)
+  private appendCancelButton($container: JQuery, text: string)
   {
     let $button = this.createButton
     (
-      null, // No id.
-      Form.BUTTON_CSS_CLASS
+      $container,
+      Form.BUTTON_CSS_CLASS,
+      text,
+      null    // No additional attributes.
     );
-
-    $button.text("Cancel");
 
     $button.click
     (
@@ -145,8 +154,6 @@ export class RegisterForm extends Form
     );
 
     $button.addClass(RegisterForm.CANCEL_BUTTON_CSS_CLASS);
-
-    $container.append($button);
 
     return $button;
   }

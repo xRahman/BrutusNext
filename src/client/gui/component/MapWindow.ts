@@ -28,7 +28,7 @@ export class MapWindow extends Window
   }
 
   protected static get CSS_CLASS() { return 'MapWindow'; }
-  protected static get CONTENT_CSS_CLASS() { return 'MapWindowContent'; }
+  ///protected static get CONTENT_CSS_CLASS() { return 'MapWindowContent'; }
 
   // Map is updated only after 'resize' event doesn't fire
   // for this period (in miliseconds).
@@ -57,8 +57,6 @@ export class MapWindow extends Window
   // ---------------- Static methods --------------------
 
   // --------------- Public accessors -------------------
-
-  public getMapSvgId() { return this.id + '_mapsvg'; }
 
   // ---------------- Public methods --------------------
 
@@ -131,12 +129,9 @@ export class MapWindow extends Window
   {
     let $content = super.createContent();
 
-    // MapWindow content uses css class .MapWindowContent along with
-    // .WindowContent.
-    $content.addClass(MapWindow.CONTENT_CSS_CLASS);
+    ///$content.addClass(MapWindow.CONTENT_CSS_CLASS);
 
-    // Create map svg element in a '$content' element
-    this.svgMap.create(this.getMapSvgId(), $content);
+    this.svgMap.create($content);
 
     return $content;
   }

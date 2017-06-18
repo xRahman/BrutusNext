@@ -44,30 +44,31 @@ export class ScrollWindowInput extends Component
 
   // --------------- Public accessors -------------------
 
+  /*
   public getInputFrameId()
   {
     return this.id + '_frame';
   }
+  */
 
   // ---------------- Public methods --------------------
 
   // -> Returns created jquery element.
-  public create(id: string)
+  public create($container: JQuery)
   {
-    this.id = id;
-
     this.$input = this.createTextArea
     (
-      this.id,
-      ScrollWindowInput.CSS_CLASS
+      $container,
+      ScrollWindowInput.CSS_CLASS,
+      {
+        // Input element accepts multi-line text (its a 'textarea') but only
+        // shows one line (because user commands are usualy single-line).
+        rows: 1
+      }
     );
-
-    // Input element accepts multi-line text (its a 'textarea') but only
-    // shows one line (because user commands are usualy single-line).
-    ///input.rows = 1;
-    this.$input.attr('rows', 1);
     
-    this.$input.attr({ 'autofocus': 'autofocus' });
+    /// Na autofocus se asi úplně vykašlu - lepší bude, setovat focus ručně.
+    ///this.$input.prop('autofocus', true);
 
     this.$input.keypress
     (
@@ -78,8 +79,6 @@ export class ScrollWindowInput extends Component
     (
       (event) => { this.onKeyDown(event); }
     );
-
-    return this.$input;
   }
 
   public focus()
