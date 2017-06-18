@@ -44,7 +44,8 @@ export interface InputParam
   readonly?: boolean,
   disabled?: boolean,
   size?: number,
-  maxlength?: number,
+  minLength?: number,
+  maxLength?: number,
   spellcheck?: boolean,
   autocapitalize?: AutocapitalizeValue,
   autocorrect?: AutocorrectValue,
@@ -456,7 +457,6 @@ export abstract class Component
     cssClass: string
   )
   {
-
     // Create jquery element from the DOM element.
     let $element = $(element);
 
@@ -502,8 +502,11 @@ export abstract class Component
     if (param.size !== undefined)
       element.size = param.size;
 
-    if (param.maxlength !== undefined)
-      element.maxLength = param.maxlength;
+    if (param.maxLength !== undefined)
+      element.maxLength = param.maxLength;
+
+    if (param.minLength !== undefined)
+      element.minLength = param.minLength;
 
     if (param.autocomplete !== undefined)
       element.autocomplete = param.autocomplete;
@@ -517,8 +520,11 @@ export abstract class Component
     // Nonstandard attributes (so they can't be simply assigned
     // and must byt set using setAttribute()).
 
-    if (param.autocapitalize !== undefined)
-      element.setAttribute('autocapitalize', param.autocapitalize);
+    // Apparently 'autocapitalize' only works for virtual keybords at the
+    // moment in Chrome (and doesn't work in other browsers except Safari
+    // at all) so it's useless right now.
+    /// if (param.autocapitalize !== undefined)
+    ///   element.setAttribute('autocapitalize', param.autocapitalize);
 
     if (param.autocorrect !== undefined)
       element.setAttribute('autocorrect', param.autocorrect);

@@ -41,7 +41,10 @@ export class LoginForm extends Form
   {
     /// TODO: Číst to ze stejné proměnné jako server a jako register form.
     // Maximum length of acocunt name (in characters).
-    let maxChars = 20;
+    let minAccountNameLength = 3;
+    let maxAccountNameLength = 20;
+    let minPasswordLength = 4;
+    let maxPasswordLength = 50;
 
     super.create($container, 'login_form');
 
@@ -49,6 +52,10 @@ export class LoginForm extends Form
     this.$accountNameInput = this.appendTextInput
     (
       'account_name_input',   // 'name' attribute.
+      'Enter Account Name',   // Placeholder text.
+      minAccountNameLength,
+      maxAccountNameLength
+      /*
       {
         required: true,
         placeholder: 'Enter Account Name',
@@ -60,13 +67,16 @@ export class LoginForm extends Form
         autocorrect: 'off',
         spellcheck: false
       }
+      */
     );
 
     this.appendLabel('Password');
     this.$passwordInput = this.appendPasswordInput
     (
       'password_input',       // 'name' attribute.
-      'Enter Password'        // Placeholder text.
+      'Enter Password',        // Placeholder text.
+      minPasswordLength,
+      maxPasswordLength
     );
     
     this.$rememberMeCheckbox = this.appendCheckboxInput
