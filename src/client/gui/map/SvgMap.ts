@@ -8,9 +8,9 @@
 'use strict';
 
 import {Coords} from '../../../shared/lib/utils/Coords';
-import {Component} from '../../../client/gui/component/Component';
-import {MapWindow} from '../../../client/gui/component/MapWindow';
-import {MapData} from '../../../client/gui/mapper/MapData';
+import {Component} from '../../../client/gui/Component';
+import {MapWindow} from '../../../client/gui/map/MapWindow';
+import {MapData} from '../../../client/gui/map/MapData';
 import {Exit} from '../../../client/game/world/Exit';
 ///import {RoomRenderData} from '../../../client/gui/mapper/RoomRenderData';
 import {Room} from '../../../client/game/world/Room';

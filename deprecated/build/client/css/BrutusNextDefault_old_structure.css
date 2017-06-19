@@ -387,16 +387,7 @@ button:focus
   color: rgb(0,225,0); /* text color */
 }
 
-/* ----------- Text Decoration ----------- */
-
-/* :: Link Text Mouseover */
-.RegisterWindow_TextLink:hover,
-.LoginWindow_TextLink:hover
-{
-  text-decoration: underline;
-}
-
-/* -------------- Font Size -------------- */
+/* -------------- Font Size- ------------- */
 
 /* :: Small Font Size */
 .RegisterForm_Label,
@@ -445,7 +436,7 @@ button:focus
 }
 
 /***************************************************************/
-/*                           Graphics                          */
+/*                     Graphical Elements                      */
 /***************************************************************/
 
 /* --------------- Borders --------------- */
@@ -467,6 +458,8 @@ button:focus
 .RegisterForm_Label,
 .RegisterForm_Checkbox,
 .RegisterForm_CheckboxContainer,
+.RegisterForm_SubmitButton,
+.RegisterForm_CancelButton,
 .RegisterForm_ButtonsContainer,
 .LoginWindow_TitleBar,
 .LoginWindow_Title,
@@ -476,35 +469,32 @@ button:focus
 .LoginForm,
 .LoginForm_Label,
 .LoginForm_Checkbox,
-.LoginForm_CheckboxContainer
+.LoginForm_CheckboxContainer,
+.LoginForm_SubmitButton
 {
   border: none;
 }
 
-/* :: Standard Border */
+/* :: Window Border */
 .ScrollWindow,
 .MapWindow,
 .RegisterWindow,
 .LoginWindow,
-.RegisterForm_Input,
-.LoginForm_Input,
-.ScrollWindowInput,
-.RegisterForm_SubmitButton,
-.RegisterForm_CancelButton,
-.LoginForm_SubmitButton
 {
   border: 1px solid rgba(110,130,150,0.8);
 }
 
-/* Border Highligh on Mouseover */
-.RegisterForm_SubmitButton:hover,
-.RegisterForm_CancelButton:hover,
-.LoginForm_SubmitButton:hover
+/* :: Input Border */
+.RegisterForm_Input,
+.LoginForm_Input,
+.ScrollWindowInput
 {
-  border: 1px solid rgba(210, 230, 250, 0.8);
+  border: 1px solid rgba(110,130,150,0.8);
 }
 
 /* -------------- Background ------------- */
+
+
 
 /* :: Transparent Background */
 .LoginWindow_TextLink,
@@ -558,15 +548,6 @@ button:focus
   background-color: rgba(150, 150, 150, 0.6);
 }
 
-/* Button Background With Mouseover */
-.RegisterForm_SubmitButton:hover,
-.RegisterForm_CancelButton:hover,
-.LoginForm_SubmitButton:hover
-{
-  background-color: rgba(180, 180, 180, 0.6);
-}
-
-
 /* :: Title Bar Background */
 .ScrollWindow_TitleBar,
 .MapWindow_TitleBar,
@@ -591,41 +572,159 @@ button:focus
   */
 }
 
-/***************************************************************/
-/*                          Structure                          */
-/***************************************************************/
+/* -------------- Component -------------- */
 
-/* ----------------- Link ---------------- */
-
-/* :: Link */
-.RegisterWindow_TextLink,
-.LoginWindow_TextLink
+/* Generic text link - note that it's <button>, not <a href...> */
+.Link
 {
+  outline: 0 none;
   margin: 0;
   padding: 0;
+  border: none;
+  background-color: rgba(0,0,0,0);  /* Transparent background */
+  color: rgb(43, 144, 255); /* text color */
   text-align: left;
   display: inline;
 }
 
+.Link:hover
+{
+  text-decoration: underline;
+}
+
 /* ---------------- Window --------------- */
 
-/* :: Ingame Window :: */
-.ScrollWindow,
-.MapWindow,
-.RegisterWindow,
-.LoginWindow
+.Window
 {
   width: 20%;
   height: 20%;
+  outline: 0 none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid rgba(110,130,150,0.8);
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.WindowTitleBar
+{
+  width: 100%;
+  /* Height is computed automatically */
+  outline: 0 none;
+  margin: 0;
+  padding: 0.1em;
+
+  /* --- Background --- */
+  /* Old browsers */
+  background: rgba(80, 80, 80, 0.5);
+  /* FF3.6-15 */
+  background: -moz-linear-gradient(top, rgba(50, 50, 50, 0.6) 0%, rgba(80, 80, 80, 0.6) 5%, rgba(80, 80, 80, 0.6) 90%, rgba(50, 50, 50, 0.6) 100%);
+  /* Chrome10-25,Safari5.1-6 */
+  background: -webkit-linear-gradient(top, rgba(50, 50, 50, 0.6) 0%, rgba(80, 80, 80, 0.6) 5%, rgba(80, 80, 80, 0.6) 90%, rgba(50, 50, 50, 0.6) 100%);
+  /* CSS3 compatible browsers*/
+  background: linear-gradient(rgba(50, 50, 50, 0.6) 0%, rgba(80, 80, 80, 0.6) 5%, rgba(80, 80, 80, 0.6) 90%, rgba(50, 50, 50, 0.6) 100%);
+
+  /* This variant was used when only contents had bacground color, instead of whole window */
+  /*
+  background: rgba(50,50,50,0.8);
+  background: -moz-linear-gradient(top, rgba(30,30,30, 0.8) 0%, rgba(50,50,50,0.8) 20%, rgba(50,50,50,0.8) 80%, rgba(30,30,30,0.8) 100%);
+  background: -webkit-linear-gradient(top, rgba(30,30,30, 0.8) 0%, rgba(50,50,50,0.8) 20%, rgba(50,50,50,0.8) 80%, rgba(30,30,30,0.8) 100%);
+  background: linear-gradient(rgba(30,30,30, 0.8) 0%, rgba(50,50,50,0.8) 20%, rgba(50,50,50,0.8) 80%, rgba(30,30,30,0.8) 100%);
+  */
+}
+
+.WindowTitle
+{
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  display: block;
+  font-size: 0.8em;
+}
+
+.WindowContent
+{
+  width: 100%;
+  height: 100%;
+  outline: 0 none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
+  /* Moved to .Window because it causes graphical glitch here */
+  /*background: rgba(0, 0, 0, 0.6);*/
 }
 
-/* :: Standalone Form Window :: */
-.LoginWindow,
-.RegisterWindow
+/* ------------------- Form ------------------- */
+
+.Form
+{
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0);
+}
+
+/* Labels like 'Account Name' or 'Password' */
+.FormLabel
+{
+  font-size: 0.8em;
+}
+
+/* Account name input and password input */
+.FormInput
+{
+  width: 100%;
+  height: 100%;
+  outline: 0 none;
+  padding-top: 0.3em;
+  padding-bottom: 0.3em;
+  padding-left: 0.6em;
+  padding-right: 0.6em;
+  margin-bottom: 0.6em;
+  color: rgb(0,225,0); /* text color */
+  font-family: CourierNew;
+  font-weight: bold;
+  font-size: 1em;
+  background-color: rgba(50,50,50,0.6);
+  border: 1px solid rgba(110,130,150,0.8);
+}
+
+.FormButton
+{
+  width: 100%;
+  height: 100%;
+  background-color: rgba(150, 150, 150, 0.6);
+  border: 1px solid rgba(110, 130, 150, 0.8);
+}
+
+.FormButton:hover
+{
+  background-color: rgba(180, 180, 180, 0.6);
+  border: 1px solid rgba(210, 230, 250, 0.8);
+}
+
+/* TODO: Better checkbox css. */
+.FormCheckbox
+{
+  width: auto;
+  height: auto;
+}
+
+
+/* FormCheckboxContainer */
+.FormCheckboxContainer
+{
+  width: 100%;
+}
+
+/***************************************************************/
+/*                    Structural Elements                      */
+/***************************************************************/
+
+/* ---------------- LoginWindow --------------- */
+
+.LoginWindow /* Extends .Window */
 {
   /* Center at position 50% from top, 50% from left */
   position: absolute;
@@ -639,99 +738,8 @@ button:focus
   max-height: 100%;
   overflow: auto; /* Enable scroll if needed */
   display: block;
+  /*display: inline-block;*/ 
 }
-
-/* :: WindowTitleBar :: */
-.ScrollWindow_TitleBar,
-.MapWindow_TitleBar,
-.RegisterWindow_TitleBar,
-.LoginWindow_TitleBar
-{
-  width: 100%;
-  height: auto;
-  margin: 0;
-  padding: 0.1em;
-}
-
-/* :: WindowTitle :: */
-.ScrollWindow_Title,
-.MapWindow_Title,
-.RegisterWindow_Title,
-.LoginWindow_Title
-{
-  text-align: center;
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-/* :: WindowContent :: */
-.ScrollWindow_Content
-.MapWindow_Content
-.RegisterWindow_Content
-.LoginWindow_Content
-{
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-/* ----------------- Form ---------------- */
-
-/* :: Form :: */
-.LoginForm,
-.RegisterForm
-{
-  width: 100%;
-  height: 100%;
-}
-
-/* :: FormInput :: */
-.LoginForm_Input,
-.RegisterForm_Input
-{
-  width: 100%;
-  height: 100%;
-  padding-top: 0.3em;
-  padding-bottom: 0.3em;
-  padding-left: 0.6em;
-  padding-right: 0.6em;
-  margin-bottom: 0.6em;
-}
-
-/* :: Form Button :: */
-.LoginForm_SubmitButton,
-.RegisterForm_SubmitButton,
-.RegisterForm_CancelButton
-{
-  width: 100%;
-  height: 100%;
-}
-
-/* TODO: Better checkbox css. */
-/* :: Form Checkbox :: */
-.LoginForm_Checkbox,
-.RegisterForm_Checkbox
-{
-  width: auto;
-  height: auto;
-}
-
-/* :: Form Checkbox Container :: */
-.LoginForm_CheckboxContainer,
-.RegisterForm_CheckboxContainer
-{
-  width: 100%;
-  height: auto;
-}
-
-/*********************************************************************/
--mark-
-/* ---------------- LoginWindow --------------- */
-
 
 /* We use colored title which is inserted as html rather than as <title> */
 .LoginWindowTitleBar
@@ -782,6 +790,22 @@ button:focus
 }
 
 /* -------------- RegisterWindow -------------- */
+
+.RegisterWindow /* Extends .Window */
+{
+  /* Center at position 50% from top, 50% from left */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* Window size is a multiple of font size */
+  width: 20em;
+  height: auto; /* Resize by content */
+  max-width: 100%;
+  max-height: 100%;
+  overflow: auto; /* Enable scroll if needed */
+  display: block;
+}
 
 .RegisterWindowTitle /* Extends .WindowTitle */
 {

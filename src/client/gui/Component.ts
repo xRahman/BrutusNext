@@ -22,51 +22,14 @@
 
 'use strict';
 
-import {ERROR} from '../../../shared/lib/error/ERROR';
+import {ERROR} from '../../shared/lib/error/ERROR';
 
 import $ = require('jquery');
-
-// Valid values of 'autocapitalize' attribute.
-type AutocapitalizeValue = 'none' | 'characters' | 'words' | 'sentences';
-
-// Valid values of 'autocorrect' attribute.
-type AutocorrectValue = 'on' | 'off';
-
-// Valid values of 'autocomplete' attribute
-// (there are a lot more possible values, add them here
-//  if you need them).
-type AutocompleteValue = 'on' | 'off' | 'email' | 'username';
-
-export interface InputParam
-{
-  required?: boolean,
-  placeholder?: string,
-  readonly?: boolean,
-  disabled?: boolean,
-  size?: number,
-  minLength?: number,
-  maxLength?: number,
-  spellcheck?: boolean,
-  autocapitalize?: AutocapitalizeValue,
-  autocorrect?: AutocorrectValue,
-  autocomplete?: AutocompleteValue,
-  checked?: boolean
-}
-
-interface ButtonParam
-{
-  disabled?: boolean
-}
-
-interface TextAreaParam
-{
-  rows?: number
-}
 
 export abstract class Component
 {
   ///protected static get TEXT_CSS_CLASS() { return 'Text'; }
-  protected static get LINK_CSS_CLASS() { return 'Link'; }
+  ///protected static get LINK_CSS_CLASS() { return 'Link'; }
 
   // -------------- Static class data -------------------
 
@@ -85,7 +48,7 @@ export abstract class Component
   // --------------- Protected methods ------------------
 
   // -> Returns created 'div' jquery element.
-  protected createDiv($container: JQuery, cssClass: string): JQuery
+  protected static createDiv($container: JQuery, cssClass: string): JQuery
   {
     let element = document.createElement('div');
 
@@ -93,7 +56,7 @@ export abstract class Component
   }
 
   // -> Returns created 'div' jquery element.
-  protected createForm
+  protected static createForm
   (
     $container: JQuery,
     cssClass: string,
@@ -110,7 +73,7 @@ export abstract class Component
   }
 
   // -> Returns created 'title' jquery element.
-  protected createTitle($container: JQuery, cssClass: string): JQuery
+  protected static createTitle($container: JQuery, cssClass: string): JQuery
   {
     let element = document.createElement('title');
 
@@ -118,12 +81,12 @@ export abstract class Component
   }
 
   // -> Returns created 'input' jquery element.
-  protected createTextInput
+  protected static createTextInput
   (
     $container: JQuery,
     cssClass: string,
     name: string,               // 'name' attribute. Required.
-    param: InputParam
+    param: Component.InputParam
     /*
     {
       placeholder?: string,        // Placeholder text.
@@ -184,12 +147,12 @@ export abstract class Component
   }
 
   // -> Returns created 'input' jquery element.
-  protected createPasswordInput
+  protected static createPasswordInput
   (
     $container: JQuery,
     cssClass: string,
     name: string,               // 'name' attribute. Required.
-    param: InputParam
+    param: Component.InputParam
     /*
     {
       readonly: boolean,
@@ -221,12 +184,12 @@ export abstract class Component
   }
 
   // -> Returns created 'input' jquery element.
-  protected createEmailInput
+  protected static createEmailInput
   (
     $container: JQuery,
     cssClass: string,
     name: string,               // 'name' attribute. Required.
-    param: InputParam
+    param: Component.InputParam
     /*
     {
       readonly: boolean,
@@ -258,7 +221,7 @@ export abstract class Component
   }
 
   // -> Returns created 'input' jquery element.
-  protected createCheckboxInput
+  protected static createCheckboxInput
   (
     $container: JQuery,
     cssClass: string,
@@ -290,18 +253,13 @@ export abstract class Component
   // Creates a button which submits data from a form
   // (use createButton() to create a standalone button).
   // -> Returns created 'label' jquery element.
-  protected createSubmitButton
+  protected static createSubmitButton
   (
     $container: JQuery,
     cssClass: string,
     name: string,               // 'name' attribute. Required.
     text: string,
-    param: ButtonParam
-    /*
-    {
-      disabled?: boolean
-    }
-    */
+    param: Component.ButtonParam = null
   )
   : JQuery
   {
@@ -326,11 +284,11 @@ export abstract class Component
   }
 
   // -> Returns created 'textarea' jquery element.
-  protected createTextArea
+  protected static createTextArea
   (
     $container: JQuery,
     cssClass: string,
-    param: TextAreaParam
+    param: Component.TextAreaParam
   )
   : JQuery
   {
@@ -344,7 +302,7 @@ export abstract class Component
   /// Tohle se nejspíš nepoužívá (svg elementy se vyrábí přes knihovnu d3).
   /*
   // -> Returns created 'svg' jquery element.
-  protected createSvg(id: string, cssClass: string): JQuery
+  protected static createSvg(id: string, cssClass: string): JQuery
   {
     let element = document.createElement('svg');
 
@@ -353,7 +311,7 @@ export abstract class Component
   */
 
   // -> Returns created 'label' jquery element.
-  protected createLabel
+  protected static createLabel
   (
     $container: JQuery,
     cssClass: string,
@@ -370,7 +328,7 @@ export abstract class Component
     return $element;
   }
 
-  protected createSpan($container: JQuery, cssClass: string): JQuery
+  protected static createSpan($container: JQuery, cssClass: string): JQuery
   {
     let element = document.createElement('span');
 
@@ -380,12 +338,12 @@ export abstract class Component
   // Creates a button which is not part of a form
   // (use createSubmitButton() to create a button that
   //  submits form data).
-  protected createButton
+  protected static createButton
   (
     $container: JQuery,
     cssClass: string,
     text: string,
-    param: ButtonParam
+    param: Component.ButtonParam = null
   )
   : JQuery
   {
@@ -405,10 +363,32 @@ export abstract class Component
     return $element;
   }
 
+  // Generic clickable text link
+  // (note that it's <button>, not <a href=...>).
+  protected static createTextLink
+  (
+    $container: JQuery,
+    cssClass: string,
+    text: string,
+    param: Component.ButtonParam = null
+  )
+  : JQuery
+  {
+    // Use <button> instead of <a href=...> because we
+    // are going to handle the clicks ourselves.
+    return this.createButton
+    (
+      $container,
+      cssClass,
+      text,
+      param
+    );
+  }
+
   /// Ve skutečnosti asi vůbec nechci používat href, ale button bez grafiky...
   /// 
   /*
-  protected createHref(id: string, cssClass: string): JQuery
+  protected static createHref(id: string, cssClass: string): JQuery
   {
     let element = document.createElement('a');
 
@@ -417,7 +397,13 @@ export abstract class Component
   */
 
   // Generic non-clickable text.
-  protected appendText($container: JQuery, text: string)
+  protected static createText
+  (
+    $container: JQuery,
+    cssClass: string,
+    text: string
+  )
+  : JQuery
   {
     let $text = this.createSpan
     (
@@ -432,9 +418,10 @@ export abstract class Component
     return $text;
   }
 
+  /*
   // Generic clickable text link
   // (note that it's <button>, not <a href=...>).
-  protected appendLink($container: JQuery, text: string)
+  protected static appendLink($container: JQuery, text: string)
   {
     // Use <button> instead of <a href=...> because we
     // are going to handle the clicks ourselves.
@@ -446,11 +433,12 @@ export abstract class Component
       null
     );
   }
+  */
 
   // ---------------- Private methods -------------------
 
   // -> Returns created jquery element.
-  private initElement<T extends HTMLElement>
+  private static initElement<T extends HTMLElement>
   (
     element: T,
     $container: JQuery,
@@ -476,10 +464,10 @@ export abstract class Component
   }
 
   // Applies values of 'param' to input element.
-  private applyInputParam
+  private static applyInputParam
   (
     element: HTMLInputElement,
-    param: InputParam
+    param: Component.InputParam
   )
   {
     if (!element || !param)
@@ -530,7 +518,11 @@ export abstract class Component
       element.setAttribute('autocorrect', param.autocorrect);
   }
 
-  private applyButtonParam(element: HTMLButtonElement, param: ButtonParam)
+  private static applyButtonParam
+  (
+    element: HTMLButtonElement,
+    param: Component.ButtonParam
+  )
   {
     if (!element || !param)
       return;
@@ -539,10 +531,10 @@ export abstract class Component
       element.disabled = param.disabled;
   }
 
-  private applyTextAreaParam
+  private static applyTextAreaParam
   (
     element: HTMLTextAreaElement,
-    param: TextAreaParam
+    param: Component.TextAreaParam
   )
   {
     if (!element || !param)
@@ -552,7 +544,7 @@ export abstract class Component
       element.rows = param.rows;
   }
 
-  private checkNameParam(name: string)
+  private static checkNameParam(name: string)
   {
     if (!name)
     {
@@ -567,4 +559,46 @@ export abstract class Component
 
   // ---------------- Event handlers --------------------
 
+}
+
+// ------------------ Type declarations ----------------------
+
+export module Component
+{
+  export interface InputParam
+  {
+    required?: boolean,
+    placeholder?: string,
+    readonly?: boolean,
+    disabled?: boolean,
+    size?: number,
+    minLength?: number,
+    maxLength?: number,
+    spellcheck?: boolean,
+    autocapitalize?: AutocapitalizeValue,
+    autocorrect?: AutocorrectValue,
+    autocomplete?: AutocompleteValue,
+    checked?: boolean
+  }
+
+  export interface ButtonParam
+  {
+    disabled?: boolean
+  }
+
+  export interface TextAreaParam
+  {
+    rows?: number
+  }
+
+  // Valid values of 'autocapitalize' attribute.
+  type AutocapitalizeValue = 'none' | 'characters' | 'words' | 'sentences';
+
+  // Valid values of 'autocorrect' attribute.
+  type AutocorrectValue = 'on' | 'off';
+
+  // Valid values of 'autocomplete' attribute
+  // (there are a lot more possible values, add them here
+  //  if you need them).
+  type AutocompleteValue = 'on' | 'off' | 'email' | 'username';
 }
