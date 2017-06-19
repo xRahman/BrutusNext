@@ -8,11 +8,11 @@
 
 import {ERROR} from '../../shared/lib/error/ERROR';
 import {Document} from '../../client/gui/Document';
-import {Window} from '../../client/gui/component/Window';
-import {LoginWindow} from '../../client/gui/component/LoginWindow';
-import {RegisterWindow} from '../../client/gui/component/RegisterWindow';
-import {ScrollWindow} from '../../client/gui/component/ScrollWindow';
-import {MapWindow} from '../../client/gui/component/MapWindow';
+import {Window} from '../../client/gui/Window';
+import {LoginWindow} from '../../client/gui/login/LoginWindow';
+import {RegisterWindow} from '../../client/gui/register/RegisterWindow';
+import {ScrollWindow} from '../../client/gui/scroll/ScrollWindow';
+import {MapWindow} from '../../client/gui/map/MapWindow';
 import {ClientApp} from '../../client/lib/app/ClientApp';
 
 import $ = require('jquery');

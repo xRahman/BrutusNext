@@ -7,8 +7,8 @@
 'use strict';
 
 import {ClientApp} from '../../../client/lib/app/ClientApp';
-import {Window} from '../../../client/gui/component/Window';
-import {SvgMap} from '../../../client/gui/component/SvgMap';
+import {Window} from '../../../client/gui/Window';
+import {SvgMap} from '../../../client/gui/map/SvgMap';
 import {Connection} from '../../../client/lib/connection/Connection';
 
 /// TEST:
@@ -27,8 +27,14 @@ export class MapWindow extends Window
     this.flags.set(ClientApp.State.IN_GAME);
   }
 
-  protected static get CSS_CLASS() { return 'MapWindow'; }
-  ///protected static get CONTENT_CSS_CLASS() { return 'MapWindowContent'; }
+  private static get CSS_CLASS()
+    { return 'MapWindow'; }
+  private static get TITLE_BAR_CSS_CLASS()
+    { return 'MapWindow_TitleBar'; }
+  private static get TITLE_CSS_CLASS()
+    { return 'MapWindow_Title'; }
+  private static get CONTENT_CSS_CLASS()
+    { return 'MapWindow_Content'; }
 
   // Map is updated only after 'resize' event doesn't fire
   // for this period (in miliseconds).
@@ -37,10 +43,6 @@ export class MapWindow extends Window
   // -------------- Static class data -------------------
 
   //----------------- Protected data --------------------
-
-  // 'id' parameter of html element
-  // (overrides Component.id).
-  protected id = 'mapwindow';
 
   //------------------ Private data ---------------------
 
@@ -63,10 +65,13 @@ export class MapWindow extends Window
   // -> Returns created jquery element.
   public create()
   {
-    super.create();
-
-    // MapWindow uses css class .MapWindow along with .Window.
-    this.$window.addClass(MapWindow.CSS_CLASS);
+    super.create
+    (
+      MapWindow.CSS_CLASS,
+      MapWindow.CONTENT_CSS_CLASS,
+      MapWindow.TITLE_BAR_CSS_CLASS,
+      MapWindow.TITLE_CSS_CLASS
+    );
 
     this.$window.resize
     (
@@ -75,6 +80,8 @@ export class MapWindow extends Window
 
     /// TEST
     this.setTitle('Dragonhelm Mountains');
+
+    this.svgMap.create(this.$content);
 
     return this.$window;
   }
@@ -120,21 +127,6 @@ export class MapWindow extends Window
   */
 
   // --------------- Protected methods ------------------
-
-  // --- Element-generating methods ---
-
-  // ~ Overrides Window.createContentElement().
-  // -> Returns created html element.
-  protected createContent()
-  {
-    let $content = super.createContent();
-
-    ///$content.addClass(MapWindow.CONTENT_CSS_CLASS);
-
-    this.svgMap.create($content);
-
-    return $content;
-  }
 
   // ---------------- Private methods -------------------
 
