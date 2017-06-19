@@ -6,15 +6,15 @@
 
 'use strict';
 
-import {Component} from '../../../client/gui/component/Component';
-import {ScrollWindow} from '../../../client/gui/component/ScrollWindow';
+import {Component} from '../../../client/gui/Component';
+import {ScrollWindow} from '../../../client/gui/scroll/ScrollWindow';
 
 import $ = require('jquery');
 
 export class ScrollWindowInput extends Component
 {
-  public static get CSS_CLASS() { return 'ScrollWindowInput'; }
-  public static get FRAME_CSS_CLASS() { return 'ScrollWindowFrame'; }
+  private static get CSS_CLASS()
+    { return 'ScrollWindowInput'; }
 
   constructor(private scrollWindow: ScrollWindow)
   {
@@ -34,8 +34,6 @@ export class ScrollWindowInput extends Component
     buffer: new Array<string>()
   }
 
-  // --- Jquery elements ---
-
   private $input = null;
 
   // --------------- Static accessors -------------------
@@ -44,19 +42,12 @@ export class ScrollWindowInput extends Component
 
   // --------------- Public accessors -------------------
 
-  /*
-  public getInputFrameId()
-  {
-    return this.id + '_frame';
-  }
-  */
-
   // ---------------- Public methods --------------------
 
   // -> Returns created jquery element.
   public create($container: JQuery)
   {
-    this.$input = this.createTextArea
+    this.$input = Component.createTextArea
     (
       $container,
       ScrollWindowInput.CSS_CLASS,

@@ -8,7 +8,7 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {ClientWebSocket} from '../../../client/lib/net/ws/ClientWebSocket';
-import {ScrollWindow} from '../../../client/gui/component/ScrollWindow';
+import {ScrollWindow} from '../../../client/gui/scroll/ScrollWindow';
 import {Avatar} from '../../../client/lib/connection/Avatar';
 
 /// TEST:

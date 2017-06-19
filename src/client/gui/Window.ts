@@ -6,20 +6,22 @@
 
 'use strict';
 
-import {Flags} from '../../../shared/lib/utils/Flags';
-import {Document} from '../../../client/gui/Document';
-import {ClientApp} from '../../../client/lib/app/ClientApp';
-import {MudColorComponent} from
-  '../../../client/gui/component/MudColorComponent';
+import {Flags} from '../../shared/lib/utils/Flags';
+import {Document} from '../../client/gui/Document';
+import {ClientApp} from '../../client/lib/app/ClientApp';
+import {Component} from '../../client/gui/Component';
+import {MudColorComponent} from '../../client/gui/MudColorComponent';
 
 import $ = require('jquery');
 
 export class Window extends MudColorComponent
 {
+  /*
   protected static get CSS_CLASS() { return 'Window'; }
   protected static get TITLE_BAR_CSS_CLASS() { return 'WindowTitleBar'; }
   protected static get TITLE_CSS_CLASS() { return 'WindowTitle'; }
   protected static get CONTENT_CSS_CLASS() { return 'WindowContent'; }
+  */
 
   constructor()
   {
@@ -75,21 +77,25 @@ export class Window extends MudColorComponent
   }
 
   // -> Returns created jquery element.
-  public create()
+  public create
+  (
+    windowCssClass: string,
+    contentCssClass: string,
+    titleBarCssClass: string,
+    titleCssClass: string,
+  )
   {
-    this.$window = this.createDiv
+    this.$window = Component.createDiv
     (
       Document.$body,
-      Window.CSS_CLASS
+      windowCssClass
     );
 
     // Windows are created hidden.
     this.$window.hide();
 
-    this.createTitleBar();
-
-    this.$content = this.createContent();
-    this.$window.append(this.$content);
+    this.createTitleBar(titleBarCssClass, titleCssClass);
+    this.createContent(contentCssClass);
 
     return this.$window;
   }
@@ -107,28 +113,30 @@ export class Window extends MudColorComponent
   // --------------- Protected methods ------------------
 
   // This method is overriden by descendants.
-  protected createContent()
+  protected createContent(cssClass: string)
   {
-    return this.createDiv
+    this.$content = Component.createDiv
     (
       this.$window,
-      Window.CONTENT_CSS_CLASS
+      cssClass
     );
+
+    return this.$content;
   }
 
   // -> Returns created jquery element.
-  protected createTitleBar()
+  protected createTitleBar(titleBarCssClass: string, titleCssClass: string)
   {
-    this.$titleBar = this.createDiv
+    this.$titleBar = Component.createDiv
     (
       this.$window,
-      Window.TITLE_BAR_CSS_CLASS
+      titleBarCssClass
     );
 
-    this.$title = this.createTitle
+    this.$title = Component.createTitle
     (
       this.$titleBar,
-      Window.TITLE_CSS_CLASS
+      titleCssClass
     );
     this.$title.text('New window');
   }

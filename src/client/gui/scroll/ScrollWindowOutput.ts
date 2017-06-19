@@ -6,22 +6,21 @@
 
 'use strict';
 
-import {MudColorComponent} from
-  '../../../client/gui/component/MudColorComponent';
+import {Component} from '../../../client/gui/Component';
+import {MudColorComponent} from '../../../client/gui/MudColorComponent';
 
 import $ = require('jquery');
 
 export class ScrollWindowOutput extends MudColorComponent
 {
-  public static get CSS_CLASS() { return 'ScrollWindowOutput'; }
+  public static get CSS_CLASS()
+    { return 'ScrollWindowOutput'; }
 
   // -------------- Static class data -------------------
 
   //----------------- Protected data --------------------
 
   //------------------ Private data ---------------------
-
-  // --- Jquery elements ---
 
   private $output = null;
 
@@ -36,7 +35,7 @@ export class ScrollWindowOutput extends MudColorComponent
   // -> Returns created jquery element.
   public create($container: JQuery)
   {
-    this.$output = this.createDiv
+    this.$output = Component.createDiv
     (
       $container,
       ScrollWindowOutput.CSS_CLASS
@@ -46,7 +45,7 @@ export class ScrollWindowOutput extends MudColorComponent
     // it must have focus. To give it a focus, it must have
     // a 'tabindex' attribute set.
     // ('tabindex: -1' means: focusable only by script, not by user)
-    this.$output.attr({ tabindex: -1 });
+    this.$output.attr('tabindex',  '-1');
 
     this.$output.keydown
     (

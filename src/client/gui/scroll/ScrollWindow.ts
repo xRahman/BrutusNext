@@ -7,13 +7,11 @@
 'use strict';
 
 import {ClientApp} from '../../../client/lib/app/ClientApp';
-import {ScrollWindowInput} from
-  '../../../client/gui/component/ScrollWindowInput';
+import {ScrollWindowInput} from '../../../client/gui/scroll/ScrollWindowInput';
 import {ScrollWindowOutput} from
-  '../../../client/gui/component/ScrollWindowOutput';
-import {MudColorComponent} from
-  '../../../client/gui/component/MudColorComponent';
-import {Window} from '../../../client/gui/component/Window';
+  '../../../client/gui/scroll/ScrollWindowOutput';
+import {MudColorComponent} from '../../../client/gui/MudColorComponent';
+import {Window} from '../../../client/gui/Window';
 import {Connection} from '../../../client/lib/connection/Connection';
 
 import $ = require('jquery');
@@ -28,19 +26,18 @@ export class ScrollWindow extends Window
     this.flags.set(ClientApp.State.IN_GAME);
   }
 
-  protected static get CSS_CLASS() { return 'ScrollWindow'; }
-  ///protected static get CONTENT_CSS_CLASS() { return 'ScrollWindowContent'; }
+  private static get CSS_CLASS()
+    { return 'ScrollWindow'; }
+  private static get TITLE_BAR_CSS_CLASS()
+    { return 'ScrollWindow_TitleBar'; }
+  private static get TITLE_CSS_CLASS()
+    { return 'ScrollWindow_Title'; }
+  private static get CONTENT_CSS_CLASS()
+    { return 'ScrollWindow_Content'; }
 
   // -------------- Static class data -------------------
 
   //----------------- Protected data --------------------
-
-  // 'id' parameter of html element
-  // (overrides Component.id).
-  /// TODO: Kdyz bych chtel mit vic scrollWindows (jako ze jo,
-  //    budu chtit logovat imma a mortala najednou), tak Tohle
-  //  budu muset setovat zvenku (nebo nejak automaticky inkrementovat).
-  protected id = 'scrollwindow';
 
   //------------------ Private data ---------------------
 
@@ -53,21 +50,24 @@ export class ScrollWindow extends Window
 
   // --------------- Public accessors -------------------
 
-  public getOutputId() { return this.id + '_output'; }
-  public getInputId() { return this.id + '_input'; }
-
   // ---------------- Public methods --------------------
 
   // -> Returns created jquery element.
   public create()
   {
-    super.create();
-
-    // ScrollWindow uses css class .ScrollWindow along with .Window.
-    this.$window.addClass(ScrollWindow.CSS_CLASS);
+    super.create
+    (
+      ScrollWindow.CSS_CLASS,
+      ScrollWindow.CONTENT_CSS_CLASS,
+      ScrollWindow.TITLE_BAR_CSS_CLASS,
+      ScrollWindow.TITLE_CSS_CLASS
+    );
 
     /// TEST
     this.setTitle('Rahman@BrutusNext');
+
+    this.output.create(this.$content);
+    this.input.create(this.$content);
 
     return this.$window;
   }
@@ -117,22 +117,6 @@ export class ScrollWindow extends Window
   }
 
   // --------------- Protected methods ------------------
-
-  // --- Element-generating methods ---
-
-  // ~ Overrides Window.createContentElement().
-  // -> Returns created html element.
-  protected createContent()
-  {
-    let $content = super.createContent();
-
-    ///$content.addClass(ScrollWindow.CONTENT_CSS_CLASS);
-
-    this.output.create($content);
-    this.input.create($content);
-
-    return $content;
-  }
 
   // ---------------- Private methods -------------------
 
