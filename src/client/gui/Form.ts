@@ -6,23 +6,12 @@
 
 'use strict';
 
-import {InputParam} from '../../../client/gui/component/Component'; 
-import {Component} from '../../../client/gui/component/Component';
+import {Component} from '../../client/gui/Component';
 
 import $ = require('jquery');
 
 export abstract class Form extends Component
 {
-  protected static get CSS_CLASS() { return 'Form'; }
-  public static get LABEL_CSS_CLASS() { return 'FormLabel'; }
-  protected static get INPUT_CSS_CLASS() { return 'FormInput'; }
-  protected static get BUTTON_CSS_CLASS() { return 'FormButton'; }
-  protected static get CHECKBOX_CSS_CLASS() { return 'FormCheckbox'; }
-  protected static get CHECKBOX_CONTAINER_CSS_CLASS()
-  {
-    return 'FormCheckboxContainer';
-  }
-
   // -------------- Static class data -------------------
 
   //----------------- Protected data --------------------
@@ -41,12 +30,12 @@ export abstract class Form extends Component
 
   // --------------- Protected methods ------------------
 
-  protected create($container: JQuery, name: string)
+  protected create($container: JQuery, cssClass: string, name: string)
   {
-    this.$form = this.createForm
+    this.$form = Component.createForm
     (
       $container,
-      Form.CSS_CLASS,
+      cssClass,
       name
     );
 
@@ -57,28 +46,29 @@ export abstract class Form extends Component
     );
   }
 
-  protected appendLabel(text: string)
+  protected createLabel(text: string, cssClass: string)
   {
-    return this.createLabel
+    return Component.createLabel
     (
       this.$form,
-      Form.LABEL_CSS_CLASS,
+      cssClass,
       text
     );
   }
 
-  protected appendTextInput
+  protected createTextInput
   (
     name: string,
     placeholder: string,
     minLength: number,
-    maxlength: number
+    maxlength: number,
+    cssClass: string
   )
   {
-    return this.createTextInput
+    return Component.createTextInput
     (
       this.$form,
-      Form.INPUT_CSS_CLASS,
+      cssClass,
       name,
       {
         required: true,
@@ -97,18 +87,19 @@ export abstract class Form extends Component
     );
   }
 
-  protected appendPasswordInput
+  protected createPasswordInput
   (
     name: string,
     placeholder: string,
     minLength: number,
-    maxLength: number
+    maxLength: number,
+    cssClass: string
   )
   {
-    return this.createPasswordInput
+    return Component.createPasswordInput
     (
       this.$form,
-      Form.INPUT_CSS_CLASS,
+      cssClass,
       name,
       {
         required: true,
@@ -122,12 +113,17 @@ export abstract class Form extends Component
     );
   }
 
-  protected appendEmailInput(name: string, placeholder: string)
+  protected createEmailInput
+  (
+    name: string,
+    placeholder: string,
+    cssClass: string
+  )
   {
-    return this.createEmailInput
+    return Component.createEmailInput
     (
       this.$form,
-      Form.INPUT_CSS_CLASS,
+      cssClass,
       name,
       {
         required: true,
@@ -142,43 +138,55 @@ export abstract class Form extends Component
     );
   }
 
-  protected appendCheckboxInput(name: string, text: string, checked: boolean)
+  protected createCheckboxInput
+  (
+    name: string,
+    text: string,
+    checked: boolean,
+    containerCssClass: string,
+    labelCssClass: string,
+    checkboxCssClass: string
+  )
   {
-    let $container = this.createDiv
+    let $container = Component.createDiv
     (
       this.$form,
-      Form.CHECKBOX_CONTAINER_CSS_CLASS
+      containerCssClass
     );
 
-    let $checkbox = this.createCheckboxInput
+    let $checkbox = Component.createCheckboxInput
     (
       $container,
-      Form.CHECKBOX_CSS_CLASS,
+      checkboxCssClass,
       name,
       {
         checked: checked
       }
     );
 
-    this.createLabel
+    Component.createLabel
     (
       $container,
-      Form.LABEL_CSS_CLASS,
+      labelCssClass,
       text
     );
 
     return $checkbox;
   }
 
-  protected appendSubmitButton($container: JQuery, name: string, text: string)
+  protected createSubmitButton
+  (
+    $container: JQuery,
+    text: string,
+    cssClass: string
+  )
   {
-    return this.createSubmitButton
+    return Component.createSubmitButton
     (
       $container,
-      Form.BUTTON_CSS_CLASS,
-      name,
-      text,
-      null    // No attributes.
+      cssClass,
+      'submit_button',
+      text
     );
   }
 

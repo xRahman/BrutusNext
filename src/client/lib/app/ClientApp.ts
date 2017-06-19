@@ -20,7 +20,7 @@ import {Entity} from '../../../shared/lib/entity/Entity';
 import {ClientEntities} from '../../../client/lib/entity/ClientEntities';
 import {ClientPrototypes} from '../../../client/lib/entity/ClientPrototypes';
 ///import {Body} from '../../../client/gui/component/Body';
-import {ScrollWindow} from '../../../client/gui/component/ScrollWindow';
+///import {ScrollWindow} from '../../../client/gui/scroll/ScrollWindow';
 import {Document} from '../../../client/gui/Document';
 import {Connection} from '../../../client/lib/connection/Connection';
 import {ClientWebSocket} from '../../../client/lib/net/ws/ClientWebSocket';

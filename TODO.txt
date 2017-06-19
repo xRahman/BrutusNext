@@ -1,6 +1,16 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+TODO: S tím duplikováním css class jsem to trochu přehnal
+- sloučit ty, které jsou konceptuelně stejné.
+
+TODO: Projít css v SvgMap.
+
+TODO: Title text by se měl v LoginWindow setovat do Title, ne to TitleBaru.
+- nebo prostě zrušit title bary a nechat jen title...
+ (i když vlastně ne, pokud budou na title baru buttonky, tak title musí být
+  samostatná komponenta).
+
 TODO: Předělat css na selector grupy
 - v kódu budou mít css class přidělenou pouze komponenty, které se
   skutečně vytváří (tj. nebude existovat class .Window).
@@ -10,23 +20,32 @@ TODO: Předělat css na selector grupy
 - defaultní font asi nechám, jak je (tj. pro '*'), ať nemusím
   všechny classy přidávat do selector grupy Default text.
 
-TODO: Zkontrolovat disablování všemožných vymožeností v input boxech.
-- zatím, je to pro text input (a možná by šlo sloučit login a register)
-TODO: dodělat to pro password a email input.
-
+TODO: V css víc dědit (tj. skládat css classu z více class)
+  - například všechny inputy mohou mít stejný základ css (barvy, border a tak).
 
 TODO: Všem komponentám s textem setovat CSS class .Text
   a vyhodit atributy fontu z jejich css stylů.
 (Atributy fontu se zjevně nedědí automaticky.)
+- nakonec jsem default text setnul globálně všem komponentám.
 
-TODO: Nevracet vytvořenou komponentu, když se návratová hodnota na nic
-  nepoužívá.
-  (zejména když se komponenta rovnou přiřadila do this.$cosi).
+
+TODO: Sjednotit max account length a ostatní kód na constraints
+  jména accountu a hesla.
 
 TODO: Vrátit se k setování atributů přes JQuery
 (mělo by stačí v Component).
 - udělal jsem to s text contentem, kde jsou zřejmé nekompatibility browseru.
   Těžko říct, jestli to má smysl udělat se vším... (asi jo)
+
+TODO: Zkontrolovat disablování všemožných vymožeností v input boxech.
+- zatím, je to pro text input (a možná by šlo sloučit login a register)
+TODO: dodělat to pro password a email input.
+[done]
+
+TODO: Nevracet vytvořenou komponentu, když se návratová hodnota na nic
+  nepoužívá.
+  (zejména když se komponenta rovnou přiřadila do this.$cosi).
+[snad]
 
 TODO: Přidat všem input elementům ve formu atribut name.
 [done]
@@ -38,12 +57,13 @@ TODO: Zrušit idčka z komponent, které si někde pamatuju
 
 TODO: Metody na vyrábění jquery elementů by asi mohly (a měly) být
 statické - nebudou se pak tlouct s vlastními metodami kompponent.
+[na tohle asi kašlat]
 
 TODO: podadresáře v rámci /gui/component
+- nakonec jsem celé /component zrušil (což je dobře) a podadresáře
+  udělal rovnou v /gui
+[done]
 
-
-TODO: Sjednotit max account length a ostatní kód na constraints
-  jména accountu a hesla.
 
 TODO: Zrušit css pro specializované WindowContent
 (protože si vystačí s defaultním).
@@ -52,9 +72,6 @@ TODO: Zrušit css pro specializované WindowContent
 TODO: Metody v Component by měly rovnou vracet jquery element.
   (a stačí createDiv() místo createDivElement()).
 [done]
-
-TODO: V css víc dědit (tj. skládat css classu z více class)
-  - například všechny inputy mohou mít stejný základ css (barvy, border a tak).
 
 ---------------------------------------------------------------
 
