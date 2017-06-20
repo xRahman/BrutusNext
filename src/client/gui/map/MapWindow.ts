@@ -1,13 +1,13 @@
 /*
   Part of BrutusNEXT
 
-  Implements mapper window.
+  Map window.
 */
 
 'use strict';
 
 import {ClientApp} from '../../../client/lib/app/ClientApp';
-import {Window} from '../../../client/gui/Window';
+import {GameWindow} from '../../../client/gui/GameWindow';
 import {SvgMap} from '../../../client/gui/map/SvgMap';
 import {Connection} from '../../../client/lib/connection/Connection';
 
@@ -17,7 +17,7 @@ import {Packet} from '../../../shared/lib/protocol/Packet';
 import $ = require('jquery');
 import d3 = require('d3');
 
-export class MapWindow extends Window
+export class MapWindow extends GameWindow
 {
   constructor()
   {
@@ -27,14 +27,8 @@ export class MapWindow extends Window
     this.flags.set(ClientApp.State.IN_GAME);
   }
 
-  private static get CSS_CLASS()
+  protected static get CSS_CLASS()
     { return 'MapWindow'; }
-  private static get TITLE_BAR_CSS_CLASS()
-    { return 'MapWindow_TitleBar'; }
-  private static get TITLE_CSS_CLASS()
-    { return 'MapWindow_Title'; }
-  private static get CONTENT_CSS_CLASS()
-    { return 'MapWindow_Content'; }
 
   // Map is updated only after 'resize' event doesn't fire
   // for this period (in miliseconds).
@@ -65,13 +59,7 @@ export class MapWindow extends Window
   // -> Returns created jquery element.
   public create()
   {
-    super.create
-    (
-      MapWindow.CSS_CLASS,
-      MapWindow.CONTENT_CSS_CLASS,
-      MapWindow.TITLE_BAR_CSS_CLASS,
-      MapWindow.TITLE_CSS_CLASS
-    );
+    super.create(MapWindow.CSS_CLASS);
 
     this.$window.resize
     (
