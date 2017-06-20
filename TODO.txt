@@ -1,6 +1,37 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+TODO: Doplnit vendor-specific řádky k backgroundům.
+
+TODO: Nastavit klikatelným elementům:
+{
+   cursor: pointer;
+}
+
+TODO: Borderům u buttonů dat border-style: outset;
+- u inputů:  border-style: inset;
+- zbytek vyzkoušet, ale asi bude něco lepšího než obyč border.
+[done]
+
+TODO: Terms window by mělo reagovat na escape a enter
+(obojí ho zavře).
+
+TODO: Buttony by asi měly mít trochy výraznější border.
+
+TODO: Právě jsem nastyloval button, který je úplně stejný jako
+LoginForm_SubmitButton
+- sloučit to do stejné classy.
+
+TODO: Window.create() by taky měla mít defaultní hodnoty css class.
+TODO: použít createAndAdd() ve Widnows i na herní okna.
+
+TODO: vnitřky createXXXWindow() ve Windows sloučit do procedury.
+[done]
+
+TODO: volání windows.createXXXWindow() sloučit do metody
+createStandaloneWindows().
+[done]
+
 TODO: Abstraktní předkové komponent by měly v createCosi()
   metodách mít parametr cssClass s implicitní hodnotou.
   (Viz Form.)

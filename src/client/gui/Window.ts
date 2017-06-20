@@ -16,12 +16,14 @@ import $ = require('jquery');
 
 export class Window extends MudColorComponent
 {
-  /*
-  protected static get CSS_CLASS() { return 'Window'; }
-  protected static get TITLE_BAR_CSS_CLASS() { return 'WindowTitleBar'; }
-  protected static get TITLE_CSS_CLASS() { return 'WindowTitle'; }
-  protected static get CONTENT_CSS_CLASS() { return 'WindowContent'; }
-  */
+  protected static get CSS_CLASS()
+    { return 'Window'; }
+  protected static get TITLE_BAR_CSS_CLASS()
+    { return 'WindowTitleBar'; }
+  protected static get TITLE_CSS_CLASS()
+    { return 'WindowTitle'; }
+  protected static get CONTENT_CSS_CLASS()
+    { return 'WindowContent'; }
 
   constructor()
   {
@@ -86,10 +88,10 @@ export class Window extends MudColorComponent
 
   public create
   (
-    windowCssClass: string,
-    contentCssClass: string,
-    titleBarCssClass: string,
-    titleCssClass: string,
+    windowCssClass = Window.CSS_CLASS,
+    contentCssClass = Window.CONTENT_CSS_CLASS,
+    titleBarCssClass = Window.TITLE_BAR_CSS_CLASS,
+    titleCssClass = Window.TITLE_CSS_CLASS
   )
   {
     this.$window = Component.createDiv

@@ -14,18 +14,6 @@ import $ = require('jquery');
 
 export class RegisterForm extends Form
 {
-  /*
-  private static get CSS_CLASS()
-    { return 'RegisterForm'; }
-  private static get LABEL_CSS_CLASS()
-    { return 'RegisterForm_Label'; }
-  private static get INPUT_CSS_CLASS()
-    { return 'RegisterForm_Input'; }
-  private static get CHECKBOX_CSS_CLASS()
-    { return 'RegisterForm_Checkbox'; }
-  private static get CHECKBOX_CONTAINER_CSS_CLASS()
-    { return 'RegisterForm_CheckboxContainer'; }
-  */
   protected static get SUBMIT_BUTTON_CSS_CLASS()
     { return 'RegisterForm_SubmitButton'; }
   protected static get CANCEL_BUTTON_CSS_CLASS()
