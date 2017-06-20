@@ -11,12 +11,12 @@ import {ScrollWindowInput} from '../../../client/gui/scroll/ScrollWindowInput';
 import {ScrollWindowOutput} from
   '../../../client/gui/scroll/ScrollWindowOutput';
 import {MudColorComponent} from '../../../client/gui/MudColorComponent';
-import {Window} from '../../../client/gui/Window';
+import {GameWindow} from '../../../client/gui/GameWindow';
 import {Connection} from '../../../client/lib/connection/Connection';
 
 import $ = require('jquery');
 
-export class ScrollWindow extends Window
+export class ScrollWindow extends GameWindow
 {
   constructor()
   {
@@ -26,14 +26,8 @@ export class ScrollWindow extends Window
     this.flags.set(ClientApp.State.IN_GAME);
   }
 
-  private static get CSS_CLASS()
+  protected static get CSS_CLASS()
     { return 'ScrollWindow'; }
-  private static get TITLE_BAR_CSS_CLASS()
-    { return 'ScrollWindow_TitleBar'; }
-  private static get TITLE_CSS_CLASS()
-    { return 'ScrollWindow_Title'; }
-  private static get CONTENT_CSS_CLASS()
-    { return 'ScrollWindow_Content'; }
 
   // -------------- Static class data -------------------
 
@@ -55,13 +49,7 @@ export class ScrollWindow extends Window
   // -> Returns created jquery element.
   public create()
   {
-    super.create
-    (
-      ScrollWindow.CSS_CLASS,
-      ScrollWindow.CONTENT_CSS_CLASS,
-      ScrollWindow.TITLE_BAR_CSS_CLASS,
-      ScrollWindow.TITLE_CSS_CLASS
-    );
+    super.create(ScrollWindow.CSS_CLASS);
 
     /// TEST
     this.setTitle('Rahman@BrutusNext');

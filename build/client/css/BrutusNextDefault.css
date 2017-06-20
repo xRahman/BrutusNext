@@ -5,50 +5,15 @@
 */
 
 /*
-.ScrollWindow
-.ScrollWindow_TitleBar
-.ScrollWindow_Title
-.ScrollWindow_Content
+  Implementation notes:
+    Stylesheet is organized to statements like this:
 
-.ScrollWindowOutput
-.ScrollWindowInput
-
-.MapWindow
-.MapWindow_TitleBar
-.MapWindow_Title
-.MapWindow_Content
-
-.RegisterWindow
-.RegisterWindow_TitleBar
-.RegisterWindow_Title
-.RegisterWindow_Content
-
-.RegisterWindow_Text
-.RegisterWindow_TextLink
-
-.RegisterForm
-.RegisterForm_Label
-.RegisterForm_Input
-.RegisterForm_Checkbox
-.RegisterForm_CheckboxContainer
-.RegisterForm_SubmitButton
-.RegisterForm_CancelButton
-.RegisterForm_ButtonsContainer
-
-.LoginWindow
-.LoginWindow_TitleBar
-.LoginWindow_Title
-.LoginWindow_Content
-
-.LoginWindow_Text
-.LoginWindow_TextLink
-
-.LoginForm
-.LoginForm_Label
-.LoginForm_Input
-.LoginForm_Checkbox
-.LoginForm_CheckboxContainer
-.LoginForm_SubmitButton
+      :: Statement ::
+  
+    Each such statement should contain a unique graphical or
+    structural element. To style an element, you assign it a
+    css class and then list that class above all statements
+    that should apply to that element.
 */
 
 /***************************************************************/
@@ -96,31 +61,9 @@
 /* Count padding and border to the width and height of all elements */
 *
 {
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-}
-
-/* To be deleted */
-/* Default font attributes for all components. */
-/*
-*
-{
-  font-family: CourierNew;
-  font-size: 1em;
-  color: rgb(210, 230, 250);*/ /* text color */
-  /*text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5);
-  font-weight: bold;
-  text-overflow: ellipsis;*/ /* Add '...' if text overflows */
-/*}*/
-
-/* Remove default blue outline around focused elements */
-input:focus,
-select:focus,
-textarea:focus,
-button:focus
-{
-  outline: none;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 /* -------------- Scrollbars ------------- */
@@ -206,43 +149,32 @@ button:focus
 
 /* ---------------- Font ---------------- */
 
-/* :: CourierNew Bold */
+/* :: CourierNew Bold :: */
+.GameWindow,
+.GameWindow_TitleBar,
+.GameWindow_Title,
+.GameWindow_Content,
 .ScrollWindow,
-.ScrollWindow_TitleBar,
-.ScrollWindow_Title,
-.ScrollWindow_Content,
 .ScrollWindowOutput,
 .ScrollWindowInput,
 .MapWindow,
-.MapWindow_TitleBar,
-.MapWindow_Title,
-.MapWindow_Content,
-.RegisterWindow,
-.RegisterWindow_TitleBar,
-.RegisterWindow_Title,
-.RegisterWindow_Content,
-.RegisterWindow_Text,
-.RegisterWindow_TextLink,
-.RegisterForm,
-.RegisterForm_Label,
-.RegisterForm_Input,
-.RegisterForm_Checkbox,
-.RegisterForm_CheckboxContainer,
+.Form,
+.Form_Label,
+.Form_Input,
+.Form_Checkbox,
+.Form_CheckboxContainer,
+.Form_SubmitButton,
+.Form_ButtonContainer,
+.LoginForm_SubmitButton,
 .RegisterForm_SubmitButton,
 .RegisterForm_CancelButton,
-.RegisterForm_ButtonsContainer,
-.LoginWindow,
-.LoginWindow_TitleBar,
-.LoginWindow_Title,
-.LoginWindow_Content,
-.LoginWindow_Text,
-.LoginWindow_TextLink,
-.LoginForm,
-.LoginForm_Label,
-.LoginForm_Input,
-.LoginForm_Checkbox,
-.LoginForm_CheckboxContainer,
-.LoginForm_SubmitButton
+.FormWindow,
+.FormWindow_Title,
+.FormWindow_TitleBar,
+.FormWindow_Content,
+.FormWindow_Text,
+.FormWindow_LinkText,
+.FormWindow_LinkContainer
 {
   font-family: CourierNew;
   font-weight: bold;
@@ -250,138 +182,106 @@ button:focus
 
 /* ------------ Text Overflow ------------ */
 
-/* :: Text Overflow: Ellipsis */
+/* :: Text Overflow: Ellipsis :: */
+.GameWindow,
+.GameWindow_TitleBar,
+.GameWindow_Title,
+.GameWindow_Content,
 .ScrollWindow,
-.ScrollWindow_TitleBar,
-.ScrollWindow_Title,
-.ScrollWindow_Content,
 .ScrollWindowOutput,
 .ScrollWindowInput,
 .MapWindow,
-.MapWindow_TitleBar,
-.MapWindow_Title,
-.MapWindow_Content,
-.RegisterWindow,
-.RegisterWindow_TitleBar,
-.RegisterWindow_Title,
-.RegisterWindow_Content,
-.RegisterWindow_Text,
-.RegisterWindow_TextLink,
-.RegisterForm,
-.RegisterForm_Label,
-.RegisterForm_Input,
-.RegisterForm_Checkbox,
-.RegisterForm_CheckboxContainer,
+.Form,
+.Form_Label,
+.Form_Input,
+.Form_Checkbox,
+.Form_CheckboxContainer,
+.Form_SubmitButton,
+.Form_ButtonContainer,
+.LoginForm_SubmitButton,
 .RegisterForm_SubmitButton,
 .RegisterForm_CancelButton,
-.RegisterForm_ButtonsContainer,
-.LoginWindow,
-.LoginWindow_TitleBar,
-.LoginWindow_Title,
-.LoginWindow_Content,
-.LoginWindow_Text,
-.LoginWindow_TextLink,
-.LoginForm,
-.LoginForm_Label,
-.LoginForm_Input,
-.LoginForm_Checkbox,
-.LoginForm_CheckboxContainer,
-.LoginForm_SubmitButton
+.FormWindow,
+.FormWindow_Title,
+.FormWindow_TitleBar,
+.FormWindow_Content,
+.FormWindow_Text,
+.FormWindow_LinkText,
+.FormWindow_LinkContainer
 {
   text-overflow: ellipsis; /* Add '...' if text overflows */
 }
 
 /* ------------- Text Shadow ------------- */
 
-/* :: Text Shadow */
+/* :: Text Shadow :: */
+.GameWindow,
+.GameWindow_TitleBar,
+.GameWindow_Title,
+.GameWindow_Content,
 .ScrollWindow,
-.ScrollWindow_TitleBar,
-.ScrollWindow_Title,
-.ScrollWindow_Content,
 .ScrollWindowOutput,
 .ScrollWindowInput,
 .MapWindow,
-.MapWindow_TitleBar,
-.MapWindow_Title,
-.MapWindow_Content,
-.RegisterWindow,
-.RegisterWindow_TitleBar,
-.RegisterWindow_Title,
-.RegisterWindow_Content,
-.RegisterWindow_Text,
-.RegisterWindow_TextLink,
-.RegisterForm,
-.RegisterForm_Label,
-.RegisterForm_Input,
-.RegisterForm_Checkbox,
-.RegisterForm_CheckboxContainer,
+.Form,
+.Form_Label,
+.Form_Input,
+.Form_Checkbox,
+.Form_CheckboxContainer,
+.Form_SubmitButton,
+.Form_ButtonContainer,
+.LoginForm_SubmitButton,
 .RegisterForm_SubmitButton,
 .RegisterForm_CancelButton,
-.RegisterForm_ButtonsContainer,
-.LoginWindow,
-.LoginWindow_TitleBar,
-.LoginWindow_Title,
-.LoginWindow_Content,
-.LoginWindow_Text,
-.LoginWindow_TextLink,
-.LoginForm,
-.LoginForm_Label,
-.LoginForm_Input,
-.LoginForm_Checkbox,
-.LoginForm_CheckboxContainer,
-.LoginForm_SubmitButton
+.FormWindow,
+.FormWindow_Title,
+.FormWindow_TitleBar,
+.FormWindow_Content,
+.FormWindow_Text,
+.FormWindow_LinkText,
+.FormWindow_LinkContainer
 {
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5);
 }
 
 /* -------------- Text color ------------- */
 
-/* :: Default Text Color */
+/* :: Default Text Color :: */
+.GameWindow,
+.GameWindow_TitleBar,
+.GameWindow_Title,
+.GameWindow_Content,
 .ScrollWindow,
-.ScrollWindow_TitleBar,
-.ScrollWindow_Title,
-.ScrollWindow_Content,
 .ScrollWindowOutput,
 .MapWindow,
-.MapWindow_TitleBar,
-.MapWindow_Title,
-.MapWindow_Content,
-.RegisterWindow,
-.RegisterWindow_TitleBar,
-.RegisterWindow_Title,
-.RegisterWindow_Content,
-.RegisterWindow_Text,
-.RegisterForm,
-.RegisterForm_Label,
-.RegisterForm_Checkbox,
-.RegisterForm_CheckboxContainer,
+.Form,
+.Form_Label,
+.Form_Input,
+.Form_Checkbox,
+.Form_CheckboxContainer,
+.Form_SubmitButton,
+.Form_ButtonContainer,
+.LoginForm_SubmitButton,
 .RegisterForm_SubmitButton,
 .RegisterForm_CancelButton,
-.RegisterForm_ButtonsContainer,
-.LoginWindow,
-.LoginWindow_TitleBar,
-.LoginWindow_Title,
-.LoginWindow_Content,
-.LoginWindow_Text,
-.LoginForm,
-.LoginForm_Label,
-.LoginForm_Checkbox,
-.LoginForm_CheckboxContainer,
-.LoginForm_SubmitButton
+.FormWindow,
+.FormWindow_Title,
+.FormWindow_TitleBar,
+.FormWindow_Content,
+.FormWindow_Text,
+.FormWindow_LinkContainer
 {
   color: rgb(210, 230, 250); /* text color */
 }
 
-/* :: Link Text Color */
-.RegisterWindow_TextLink,
-.LoginWindow_TextLink
+/* :: Link Text Color :: */
+.FormWindow_LinkText
 {
   color: rgb(43, 144, 255); /* text color */
 }
 
-/* :: Player Input Text Color */
-.LoginForm_Input,
-.RegisterForm_Input,
+/* :: Player Input Text Color :: */
+.Form_Input,
 .ScrollWindowInput
 {
   color: rgb(0,225,0); /* text color */
@@ -389,57 +289,46 @@ button:focus
 
 /* ----------- Text Decoration ----------- */
 
-/* :: Link Text Mouseover */
-.RegisterWindow_TextLink:hover,
-.LoginWindow_TextLink:hover
+/* :: Link Text Mouseover :: */
+.FormWindow_LinkText:hover
 {
   text-decoration: underline;
 }
 
 /* -------------- Font Size -------------- */
 
-/* :: Small Font Size */
-.RegisterForm_Label,
-.LoginForm_Label,
-.ScrollWindow_Title,
-.MapWindow_Title,
-.RegisterWindow_Title,
-.LoginWindow_Title
+/* :: Small Font Size :: */
+.FormWindow_Text,
+.FormWindow_LinkText,
+.Form_Label,
+.GameWindow_Title
 {
   font-size: 0.8em;
 }
 
-/* :: Normal Font Size */
+/* :: Normal Font Size :: */
+.GameWindow,
 .ScrollWindow,
-.ScrollWindow_TitleBar,
-.ScrollWindow_Content,
+.GameWindow_TitleBar,
+.GameWindow_Content,
 .ScrollWindowOutput,
 .ScrollWindowInput,
 .MapWindow,
-.MapWindow_TitleBar,
-.MapWindow_Content,
-.RegisterWindow,
-.RegisterWindow_TitleBar,
-.RegisterWindow_Content,
-.RegisterWindow_Text,
-.RegisterWindow_TextLink,
-.RegisterForm,
-.RegisterForm_Input,
-.RegisterForm_Checkbox,
-.RegisterForm_CheckboxContainer,
+.Form,
+.Form_Label,
+.Form_Input,
+.Form_Checkbox,
+.Form_CheckboxContainer,
+.Form_SubmitButton,
+.Form_ButtonContainer,
+.LoginForm_SubmitButton,
 .RegisterForm_SubmitButton,
 .RegisterForm_CancelButton,
-.RegisterForm_ButtonsContainer,
-.LoginWindow,
-.LoginWindow_TitleBar,
-.LoginWindow_Content,
-.LoginWindow_Text,
-.LoginWindow_TextLink,
-.LoginForm,
-.LoginForm_Input,
-.LoginForm_Checkbox,
-.LoginForm_CheckboxContainer,
-.LoginForm_SubmitButton
+.FormWindow,
+.FormWindow_Title,
+.FormWindow_TitleBar,
+.FormWindow_Content,
+.FormWindow_LinkContainer
 {
   font-size: 1em;
 }
@@ -450,45 +339,34 @@ button:focus
 
 /* --------------- Borders --------------- */
 
-/* :: No Border */
-.ScrollWindow_TitleBar,
-.ScrollWindow_Title,
-.ScrollWindow_Content,
+/* :: No Border :: */
+.GameWindow_TitleBar,
+.GameWindow_Title,
+.GameWindow_Content,
 .ScrollWindowOutput,
-.MapWindow_TitleBar,
-.MapWindow_Title,
-.MapWindow_Content,
-.RegisterWindow_TitleBar,
-.RegisterWindow_Title,
-.RegisterWindow_Content,
-.RegisterWindow_Text,
-.RegisterWindow_TextLink,
-.RegisterForm,
-.RegisterForm_Label,
-.RegisterForm_Checkbox,
-.RegisterForm_CheckboxContainer,
-.RegisterForm_ButtonsContainer,
-.LoginWindow_TitleBar,
-.LoginWindow_Title,
-.LoginWindow_Content,
-.LoginWindow_Text,
-.LoginWindow_TextLink,
-.LoginForm,
-.LoginForm_Label,
-.LoginForm_Checkbox,
-.LoginForm_CheckboxContainer
+.Form,
+.Form_Label,
+.Form_Checkbox,
+.Form_CheckboxContainer,
+.Form_ButtonContainer,
+.FormWindow_Title,
+.FormWindow_TitleBar,
+.FormWindow_Content,
+.FormWindow_Text,
+.FormWindow_LinkText,
+.FormWindow_LinkContainer
 {
   border: none;
 }
 
-/* :: Standard Border */
+/* :: Standard Border :: */
+.GameWindow,
+.FormWindow,
+.Form_Input,
 .ScrollWindow,
-.MapWindow,
-.RegisterWindow,
-.LoginWindow,
-.RegisterForm_Input,
-.LoginForm_Input,
 .ScrollWindowInput,
+.MapWindow,
+.Form_SubmitButton,
 .RegisterForm_SubmitButton,
 .RegisterForm_CancelButton,
 .LoginForm_SubmitButton
@@ -496,7 +374,8 @@ button:focus
   border: 1px solid rgba(110,130,150,0.8);
 }
 
-/* Border Highligh on Mouseover */
+/* :: Border Highligh on Mouseover :: */
+.Form_SubmitButton:hover,
 .RegisterForm_SubmitButton:hover,
 .RegisterForm_CancelButton:hover,
 .LoginForm_SubmitButton:hover
@@ -506,51 +385,43 @@ button:focus
 
 /* -------------- Background ------------- */
 
-/* :: Transparent Background */
-.LoginWindow_TextLink,
-.RegisterWindow_TextLink,
-.RegisterForm,
-.LoginForm,
-.RegisterForm_ButtonsContainer,
-.RegisterForm_CheckboxContainer,
-.LoginForm_CheckboxContainer,
-.RegisterForm_Label,
-.LoginForm_Label,
-.ScrollWindow_Content,
-.MapWindow_Content,
-.RegisterWindow_Content,
-.LoginWindow_Content,
-.ScrollWindow_Title,
-.MapWindow_Title,
-.RegisterWindow_Title,
-.LoginWindow_Title,
-.RegisterForm_Checkbox,
-.LoginForm_Checkbox,
-.RegisterWindow_Text,
-.LoginWindow_Text,
+/* :: Transparent Background :: */
+.Form,
+.Form_Label,
+.Form_Checkbox,
+.Form_CheckboxContainer,
+.Form_ButtonContainer,
+.FormWindow_Title,
+.FormWindow_TitleBar,
+.FormWindow_Content,
+.FormWindow_Text,
+.FormWindow_LinkText,
+.FormWindow_LinkContainer,
+.GameWindow_Content,
+.GameWindow_Title,
 .ScrollWindowOutput
 {
   background: rgba(0,0,0,0);  /* Transparent background */
 }
 
-/* :: Window Background */
+/* :: Window Background :: */
+.GameWindow,
 .ScrollWindow,
 .MapWindow,
-.RegisterWindow,
-.LoginWindow
+.FormWindow
 {
   background: rgba(0, 0, 0, 0.6);
 }
 
-/* :: Input Background */
+/* :: Input Background :: */
 .ScrollWindowInput,
-.RegisterForm_Input,
-.LoginForm_Input
+.Form_Input
 {
   background: rgba(50,50,50,0.6);
 }
 
-/* :: Button Background */
+/* :: Button Background :: */
+.Form_SubmitButton,
 .RegisterForm_SubmitButton,
 .RegisterForm_CancelButton,
 .LoginForm_SubmitButton
@@ -558,7 +429,8 @@ button:focus
   background-color: rgba(150, 150, 150, 0.6);
 }
 
-/* Button Background With Mouseover */
+/* Button Background With Mouseover :: */
+.Form_SubmitButton:hover,
 .RegisterForm_SubmitButton:hover,
 .RegisterForm_CancelButton:hover,
 .LoginForm_SubmitButton:hover
@@ -566,12 +438,9 @@ button:focus
   background-color: rgba(180, 180, 180, 0.6);
 }
 
-
-/* :: Title Bar Background */
-.ScrollWindow_TitleBar,
-.MapWindow_TitleBar,
-.RegisterWindow_TitleBar,
-.LoginWindow_TitleBar
+/* :: Title Bar Background :: */
+.GameWindow_TitleBar,
+.FormWindow_TitleBar
 {
   /* Old browsers */
   background: rgba(80, 80, 80, 0.5);
@@ -581,51 +450,171 @@ button:focus
   background: -webkit-linear-gradient(top, rgba(50, 50, 50, 0.6) 0%, rgba(80, 80, 80, 0.6) 5%, rgba(80, 80, 80, 0.6) 90%, rgba(50, 50, 50, 0.6) 100%);
   /* CSS3 compatible browsers*/
   background: linear-gradient(rgba(50, 50, 50, 0.6) 0%, rgba(80, 80, 80, 0.6) 5%, rgba(80, 80, 80, 0.6) 90%, rgba(50, 50, 50, 0.6) 100%);
+}
 
-  /* This variant was used when only contents had bacground color, instead of whole window */
-  /*
-  background: rgba(50,50,50,0.8);
-  background: -moz-linear-gradient(top, rgba(30,30,30, 0.8) 0%, rgba(50,50,50,0.8) 20%, rgba(50,50,50,0.8) 80%, rgba(30,30,30,0.8) 100%);
-  background: -webkit-linear-gradient(top, rgba(30,30,30, 0.8) 0%, rgba(50,50,50,0.8) 20%, rgba(50,50,50,0.8) 80%, rgba(30,30,30,0.8) 100%);
-  background: linear-gradient(rgba(30,30,30, 0.8) 0%, rgba(50,50,50,0.8) 20%, rgba(50,50,50,0.8) 80%, rgba(30,30,30,0.8) 100%);
-  */
+/* --------------- Outline --------------- */
+
+/* :: No outline :: */
+.GameWindow,
+.GameWindow_TitleBar,
+.GameWindow_Title,
+.GameWindow_Content,
+.ScrollWindow,
+.ScrollWindowOutput,
+.ScrollWindowInput,
+.MapWindow,
+.Form,
+.Form_Label,
+.Form_Input,
+.Form_Checkbox,
+.Form_CheckboxContainer,
+.Form_SubmitButton,
+.Form_ButtonContainer,
+.LoginForm_SubmitButton,
+.RegisterForm_SubmitButton,
+.RegisterForm_CancelButton,
+.FormWindow,
+.FormWindow_Title,
+.FormWindow_TitleBar,
+.FormWindow_Content,
+.FormWindow_Text,
+.FormWindow_LinkText,
+.FormWindow_LinkContainer,
+.GameWindow:focus,
+.GameWindow_TitleBar:focus,
+.GameWindow_Title:focus,
+.GameWindow_Content:focus,
+.ScrollWindow:focus,
+.ScrollWindowOutput:focus,
+.MapWindow:focus,
+.Form:focus:focus,
+.Form_Label:focus,
+.Form_Checkbox:focus,
+.Form_CheckboxContainer:focus,
+.Form_SubmitButton:focus,
+.Form_ButtonContainer:focus,
+.LoginForm_SubmitButton:focus,
+.RegisterForm_SubmitButton:focus,
+.RegisterForm_CancelButton:focus,
+.FormWindow:focus,
+.FormWindow_Title:focus,
+.FormWindow_TitleBar:focus,
+.FormWindow_Content:focus,
+.FormWindow_Text:focus,
+.FormWindow_LinkText:focus,
+.FormWindow_LinkContainer:focus
+{
+  outline: none;
+}
+
+/* :: Focused Outline :: */
+.Form_Input:focus,
+.ScrollWindowInput:focus
+{
+  outline: solid 1px rgba(30, 30, 255, 0.8);
 }
 
 /***************************************************************/
 /*                          Structure                          */
 /***************************************************************/
 
-/* ----------------- Link ---------------- */
+/* --------------- Window ---------------- */
 
-/* :: Link */
-.RegisterWindow_TextLink,
-.LoginWindow_TextLink
+/* :: Window Title Bar :: */
+.GameWindow_TitleBar,
+.FormWindow_TitleBar
 {
+  width: 100%;
+  height: auto;
   margin: 0;
-  padding: 0;
-  text-align: left;
-  display: inline;
 }
 
-/* ---------------- Window --------------- */
+/* ------------- Game Window ------------- */
 
-/* :: Ingame Window :: */
-.ScrollWindow,
-.MapWindow,
-.RegisterWindow,
-.LoginWindow
+/* :: Default Game Window Size :: */
+.GameWindow
 {
   width: 20%;
   height: 20%;
+}
+
+/* :: Game Window :: */
+.ScrollWindow,
+.MapWindow,
+.GameWindow
+{
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
 }
 
-/* :: Standalone Form Window :: */
-.LoginWindow,
-.RegisterWindow
+/* :: Game Window Content :: */
+.GameWindow_Content
+{
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* :: Game Window Title :: */
+.GameWindow_Title
+{
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  padding: 0.1em;
+  display: block;
+}
+
+/* --------------- ScrollWindow --------------- */
+
+/* :: Scroll Window Size :: */
+.ScrollWindow
+{
+  width: 60%;
+  height: 80%;
+}
+
+/* :: Scroll Window Output :: */
+.ScrollWindowOutput
+{
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0.2em;
+  overflow-x: hidden;   /* Do not use horizontal scrolling */
+  overflow-y: auto;     /* Automatically create vertical scrollbar */
+  word-wrap:break-word; /* Break long words that wont fit */
+}
+
+/* :: Scroll Window Input :: */
+.ScrollWindowInput
+{
+  width: 100%;
+  height: auto;
+  margin: 0;
+  padding: 0.2em;
+  resize: none; /* Disable the "grabger" corner which resizes the textarea */
+  overflow: hidden; /* also hides the scrollbar */
+}
+
+/* ---------------- MapWindow --------------- */
+
+/* :: Map Window Size :: */
+.MapWindow
+{
+  width: 40%;
+  height: 40%;
+}
+
+/* ------------- Form Window ------------- */
+
+/* :: Form Window :: */
+.FormWindow
 {
   /* Center at position 50% from top, 50% from left */
   position: absolute;
@@ -641,57 +630,53 @@ button:focus
   display: block;
 }
 
-/* :: WindowTitleBar :: */
-.ScrollWindow_TitleBar,
-.MapWindow_TitleBar,
-.RegisterWindow_TitleBar,
-.LoginWindow_TitleBar
+/* :: Form Window Content :: */
+.FormWindow_Content
 {
-  width: 100%;
-  height: auto;
-  margin: 0;
-  padding: 0.1em;
+  padding: 1em;
+  display: block;
 }
 
-/* :: WindowTitle :: */
-.ScrollWindow_Title,
-.MapWindow_Title,
-.RegisterWindow_Title,
-.LoginWindow_Title
+/* :: Form Window Title :: */
+.FormWindow_Title
 {
   text-align: center;
   width: 100%;
   height: 100%;
+  padding: 0.4em;
   display: block;
 }
 
-/* :: WindowContent :: */
-.ScrollWindow_Content
-.MapWindow_Content
-.RegisterWindow_Content
-.LoginWindow_Content
+/* :: Form Window Text :: */
+.FormWindow_Text,
+.FormWindow_LinkText
 {
-  width: 100%;
-  height: 100%;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-direction: column;
+  text-align: left;
+  display: inline;
+}
+
+/* :: Form Window Link Container :: */
+.FormWindow_LinkContainer
+{
+  width: 100%;
+  height: auto;
+  margin-top: 1em;
+  display: block;
 }
 
 /* ----------------- Form ---------------- */
 
 /* :: Form :: */
-.LoginForm,
-.RegisterForm
+.Form
 {
   width: 100%;
   height: 100%;
 }
 
 /* :: FormInput :: */
-.LoginForm_Input,
-.RegisterForm_Input
+.Form_Input
 {
   width: 100%;
   height: 100%;
@@ -703,185 +688,58 @@ button:focus
 }
 
 /* :: Form Button :: */
+.Form_SubmitButton,
 .LoginForm_SubmitButton,
 .RegisterForm_SubmitButton,
 .RegisterForm_CancelButton
 {
   width: 100%;
-  height: 100%;
-}
-
-/* TODO: Better checkbox css. */
-/* :: Form Checkbox :: */
-.LoginForm_Checkbox,
-.RegisterForm_Checkbox
-{
-  width: auto;
   height: auto;
 }
 
-/* :: Form Checkbox Container :: */
-.LoginForm_CheckboxContainer,
-.RegisterForm_CheckboxContainer
-{
-  width: 100%;
-  height: auto;
-}
-
-/*********************************************************************/
--mark-
-/* ---------------- LoginWindow --------------- */
-
-
-/* We use colored title which is inserted as html rather than as <title> */
-.LoginWindowTitleBar
-{
-  padding: 0.4em;
-  text-align: center; /* Center the colored text */
-}
-
-/*
-.LoginWindowTitle
-{
-  font-size: 1em;
-  padding: 0.4em;
-}
-*/
-
-.LoginWindowContent  /* Extends .WindowContent */
-{
-  padding: 1em;
-  display: block;
-}
-
-.LoginWindowRegisterLink
-{
-  margin-top: 1em;
-}
-
-/* -------------- Register Form --------------- */
-
-.RegisterFormSubmitButton
-{
-  width: 60%;
-  float: left;
-}
-
-.RegisterFormCancelButton
-{
-  width: 35%;
-  float: left;
-  margin-left: 5%;
-}
-
-.RegisterFormButtonsContainer
+/* :: Form Button Container :: */
+.Form_ButtonContainer
 {
   width: 100%;
   height: auto;
   display: inline-block;
 }
 
-/* -------------- RegisterWindow -------------- */
-
-.RegisterWindowTitle /* Extends .WindowTitle */
+/* TODO: Better checkbox graphics. */
+/* :: Form Checkbox :: */
+.Form_Checkbox
 {
-  font-size: 1em;
-  padding: 0.4em;
+  width: auto;
+  height: auto;
 }
 
-.RegisterWindowContent  /* Extends .WindowContent */
+/* :: Form Checkbox Container :: */
+.Form_CheckboxContainer
 {
-  padding: 1em;
-  display: block;
+  width: 100%;
+  height: auto;
 }
 
-.RegisterWindowTermsLink
-{
-  margin-top: 1em;
-}
+/* -------------- Register Form --------------- */
 
-/* --------------- ScrollWindow --------------- */
-
-.ScrollWindow /* Extends .Window */
+/* :: Register Form Submit Button :: */
+.RegisterForm_SubmitButton
 {
   width: 60%;
-  height: 80%;
-  /* Clip overflowing content */
-  overflow: hidden;
+  float: left;
 }
 
-/* Not used anymore */
-/*.ScrollWindowContent*/  /* Extends .WindowContent */
-/*{*/
-  /*outline: 0 none;*/
-  /*margin: 0;*/
-  /*padding: 0;*/
-  /*background: rgba(0,0,0,0.6);*/
-  /*display: flex;*/
-  /*flex-direction: column;*/
-/*}*/
-
-.ScrollWindowOutput
+/* :: Register Form Cancel Button :: */
+.RegisterForm_CancelButton
 {
-  width: 100%;
-  height: 100%;
-  /*
-  border-left: 2px ridge dimgray;
-  border-right: 2px ridge dimgray;
-  border-bottom: 2px ridge dimgray;
-  */
-  outline: 0 none;
-  margin: 0;
-  padding: 3px;
-  /*font-size: 100%;*/
-  /*background-color: rgba(0,0,0,0.6);*/
-  overflow-x: hidden;   /* Do not use horizontal scrolling */
-  overflow-y: auto;     /* Automatically create vertical scrollbar */
-  word-wrap:break-word; /* Break long words that wont fit */
+  width: 35%;
+  float: left;
+  margin-left: 5%;
 }
 
-/*
-  'scrollwindow_input' is a textarea (multiline input box).
-  'height' is set automatically to match height of 1 line of text.
-*/
-.ScrollWindowInput
-{
-  width: 100%;
-  margin: 0;
-  padding: 0.2em;
-  resize: none; /* Disable the "grabger" corner which resizes the textarea */
-  overflow: hidden; /* also hides the scrollbar */
-  color: rgb(0,225,0); /* text color */
-  background-color: rgba(50,50,50,0.6);
-  border: 1px solid rgba(110,130,150,0.8);
-  /*border-left: none;
-  border-right: none;
-  border-bottom: none;
-  border-top: 1px solid rgba(110,130,150,0.8);*/
-}
-
-.ScrollWindowInput:focus
-{
-  outline: solid 1px rgba(30, 30, 255, 0.8);
-}
-
-/* ---------------- MapWindow --------------- */
-
-.MapWindow /* Extends .Window */
-{
-  width: 40%;
-  height: 40%;
-  /* Clip overflowing content */
-  overflow: hidden;
-}
-
-/* Not used anymore */
-/*.MapWindowContent*/  /* Extends .WindowContent */
-/*{*/
-  /*outline: 0 none;*/
-  /*display: flex;*/
-  /*flex-direction: column;*/
-/*}*/
+/***************************************************************/
+/*                             Svg                             */
+/***************************************************************/
 
 /* ------------ Map (svg element) ----------- */
 
