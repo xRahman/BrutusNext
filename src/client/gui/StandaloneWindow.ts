@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Abstract ancestor of windows containing a form.
+  Abstract ancestor of standalone windows containing a form.
 */
 
 'use strict';
@@ -9,32 +9,29 @@
 import {ClientApp} from '../../client/lib/app/ClientApp';
 import {Component} from '../../client/gui/Component';
 import {Window} from '../../client/gui/Window';
-import {Form} from '../../client/gui/Form';
 
 import $ = require('jquery');
 
-export class FormWindow extends Window
+export class StandaloneWindow extends Window
 {
   protected static get CSS_CLASS()
-    { return 'FormWindow'; }
+    { return 'StandaloneWindow'; }
   protected static get TITLE_BAR_CSS_CLASS()
-    { return 'FormWindow_TitleBar'; }
+    { return 'StandaloneWindow_TitleBar'; }
   protected static get TITLE_CSS_CLASS()
-    { return 'FormWindow_Title'; }
+    { return 'StandaloneWindow_Title'; }
   protected static get CONTENT_CSS_CLASS()
-    { return 'FormWindow_Content'; }
+    { return 'StandaloneWindow_Content'; }
   protected static get TEXT_CSS_CLASS()
-    { return 'FormWindow_Text'; }
+    { return 'StandaloneWindow_Text'; }
   protected static get LINK_TEXT_CSS_CLASS()
-    { return 'FormWindow_LinkText'; }
+    { return 'StandaloneWindow_LinkText'; }
   protected static get LINK_CONTAINER_CSS_CLASS()
-     { return 'FormWindow_LinkContainer'; }
+     { return 'StandaloneWindow_LinkContainer'; }
 
   // -------------- Static class data -------------------
 
   //----------------- Protected data --------------------
-
-  protected form: Form = null;
 
   //------------------ Private data ---------------------
 
@@ -49,10 +46,10 @@ export class FormWindow extends Window
   // ~ Overrides Window.create()
   public create
   (
-    windowCssClass = FormWindow.CSS_CLASS,
-    contentCssClass = FormWindow.CONTENT_CSS_CLASS,
-    titleBarCssClass = FormWindow.TITLE_BAR_CSS_CLASS,
-    titleCssClass = FormWindow.TITLE_CSS_CLASS,
+    windowCssClass = StandaloneWindow.CSS_CLASS,
+    contentCssClass = StandaloneWindow.CONTENT_CSS_CLASS,
+    titleBarCssClass = StandaloneWindow.TITLE_BAR_CSS_CLASS,
+    titleCssClass = StandaloneWindow.TITLE_CSS_CLASS,
   )
   {
     super.create
@@ -66,7 +63,10 @@ export class FormWindow extends Window
 
   // --------------- Protected methods ------------------
 
-  protected createLinkContainer(cssClass = FormWindow.LINK_CONTAINER_CSS_CLASS)
+  protected createLinkContainer
+  (
+    cssClass = StandaloneWindow.LINK_CONTAINER_CSS_CLASS
+  )
   {
     return Component.createDiv
     (
@@ -79,7 +79,7 @@ export class FormWindow extends Window
   (
     $container: JQuery,
     text: string,
-    cssClass = FormWindow.TEXT_CSS_CLASS
+    cssClass = StandaloneWindow.TEXT_CSS_CLASS
   )
   {
     return Component.createText
@@ -94,7 +94,7 @@ export class FormWindow extends Window
   (
     $container: JQuery,
     text: string,
-    cssClass = FormWindow.LINK_TEXT_CSS_CLASS
+    cssClass = StandaloneWindow.LINK_TEXT_CSS_CLASS
   )
   {
     return Component.createTextLink

@@ -11,6 +11,7 @@ import {Document} from '../../client/gui/Document';
 import {Window} from '../../client/gui/Window';
 import {LoginWindow} from '../../client/gui/login/LoginWindow';
 import {RegisterWindow} from '../../client/gui/register/RegisterWindow';
+import {TermsWindow} from '../../client/gui/terms/TermsWindow';
 import {ScrollWindow} from '../../client/gui/scroll/ScrollWindow';
 import {MapWindow} from '../../client/gui/map/MapWindow';
 import {ClientApp} from '../../client/lib/app/ClientApp';
@@ -28,6 +29,7 @@ export class Windows
 
   private loginWindow: LoginWindow = null;
   private registerWindow: RegisterWindow = null;
+  private termsWindow: TermsWindow = null;
 
   // There is just one map window per ClientApp.
   // When avatar is switched, content is redrawn.
@@ -73,63 +75,26 @@ export class Windows
       window.showByState(state);
   }
 
-  public createLoginWindow()
+  public createStandaloneWindows()
   {
-    if (this.loginWindow !== null)
-    {
-      ERROR("Login window already exists. There can only be one"
-        + " login window per client application");
-      return;
-    }
-
-    this.loginWindow = new LoginWindow();
-    this.loginWindow.create();
-    this.windows.add(this.loginWindow);
-    
-
-    return this.loginWindow;
-  }
-
-  public createRegisterWindow()
-  {
-    if (this.registerWindow !== null)
-    {
-      ERROR("Register window already exists. There can only be one"
-        + " register window per client application");
-      return;
-    }
-
-    this.registerWindow = new RegisterWindow();
-    this.registerWindow.create();
-    this.windows.add(this.registerWindow);
-
-    return this.registerWindow;
+    this.createLoginWindow();
+    this.createRegisterWindow();
+    this.createTermsWindow();
   }
 
   // Creates a 'ScrollWindow' and adds it to app_body.
   public createScrollWindow()
   {
-    let scrollWindow = new ScrollWindow();
-
-    scrollWindow.create();
-    this.windows.add(scrollWindow);
-
-    return scrollWindow;
+    return this.createAndAdd(new ScrollWindow());
   }
 
   // Creates a 'Map' window and adds it to app_body.
   public createMapWindow()
   {
-    if (this.mapWindow !== null)
-    {
-      ERROR("Map window already exists. There can only be one"
-        + " map window per client application");
+    if (this.alreadyExists(this.mapWindow, 'Map'))
       return;
-    }
 
-    this.mapWindow = new MapWindow();
-    this.mapWindow.create();
-    this.windows.add(this.mapWindow);
+    this.mapWindow = this.createAndAdd(new MapWindow());
 
     return this.mapWindow;
   }
@@ -142,6 +107,54 @@ export class Windows
   }
 
   // ---------------- Private methods -------------------
+
+  private createLoginWindow()
+  {
+    if (this.alreadyExists(this.loginWindow, 'Login'))
+      return;
+
+    this.loginWindow = this.createAndAdd(new LoginWindow());
+
+    return this.loginWindow;
+  }
+
+  private createRegisterWindow()
+  {
+    if (this.alreadyExists(this.registerWindow, 'Register'))
+      return;
+
+    this.registerWindow = this.createAndAdd(new RegisterWindow());
+
+    return this.registerWindow;
+  }
+
+  private createTermsWindow()
+  {
+    if (this.alreadyExists(this.termsWindow, 'Terms'))
+      return;
+
+    this.termsWindow = this.createAndAdd(new TermsWindow());
+
+    return this.termsWindow;
+  }
+
+  private alreadyExists(window: Window, wndName: string)
+  {
+    if (window !== null)
+    {
+      ERROR(wndName + " window already exists. There can only be one"
+        + " such window per client application");
+      return window;
+    }
+  }
+
+  private createAndAdd<T extends Window>(window: T)
+  {
+    window.create();
+    this.windows.add(window);
+
+    return window;
+  }
 
   // ---------------- Event handlers --------------------
 
