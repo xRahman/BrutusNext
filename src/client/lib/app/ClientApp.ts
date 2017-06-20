@@ -216,8 +216,8 @@ export class ClientApp extends App
     if (!ClientWebSocket.checkWebSocketsSupport())
       return;
 
-    this.windows.createLoginWindow();
-    this.windows.createRegisterWindow();
+    /// TODO: Sloučit do this.windows.createStandaloneWindows().
+    this.windows.createStandaloneWindows();
 
     /// Tohle by se asi mělo vytvářet až po přilogování.
     this.windows.createMapWindow();
@@ -258,6 +258,7 @@ export module ClientApp
     INITIAL,
     LOGIN,
     REGISTER,
+    TERMS,
     IN_GAME
   }
 }

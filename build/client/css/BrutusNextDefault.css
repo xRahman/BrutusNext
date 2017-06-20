@@ -150,6 +150,10 @@
 /* ---------------- Font ---------------- */
 
 /* :: CourierNew Bold :: */
+.Window,
+.WindowTitleBar,
+.WindowTitle,
+.WindowContent,
 .GameWindow,
 .GameWindow_TitleBar,
 .GameWindow_Title,
@@ -168,13 +172,17 @@
 .LoginForm_SubmitButton,
 .RegisterForm_SubmitButton,
 .RegisterForm_CancelButton,
-.FormWindow,
-.FormWindow_Title,
-.FormWindow_TitleBar,
-.FormWindow_Content,
-.FormWindow_Text,
-.FormWindow_LinkText,
-.FormWindow_LinkContainer
+.StandaloneWindow,
+.StandaloneWindow_Title,
+.StandaloneWindow_TitleBar,
+.StandaloneWindow_Content,
+.StandaloneWindow_Text,
+.StandaloneWindow_LinkText,
+.StandaloneWindow_LinkContainer,
+.TermsWindow,
+.TermsWindow_Content,
+.TermsWindow_Terms,
+.TermsWindow_AcceptButton
 {
   font-family: CourierNew;
   font-weight: bold;
@@ -183,6 +191,10 @@
 /* ------------ Text Overflow ------------ */
 
 /* :: Text Overflow: Ellipsis :: */
+.Window,
+.WindowTitleBar,
+.WindowTitle,
+.WindowContent,
 .GameWindow,
 .GameWindow_TitleBar,
 .GameWindow_Title,
@@ -201,13 +213,17 @@
 .LoginForm_SubmitButton,
 .RegisterForm_SubmitButton,
 .RegisterForm_CancelButton,
-.FormWindow,
-.FormWindow_Title,
-.FormWindow_TitleBar,
-.FormWindow_Content,
-.FormWindow_Text,
-.FormWindow_LinkText,
-.FormWindow_LinkContainer
+.StandaloneWindow,
+.StandaloneWindow_Title,
+.StandaloneWindow_TitleBar,
+.StandaloneWindow_Content,
+.StandaloneWindow_Text,
+.StandaloneWindow_LinkText,
+.StandaloneWindow_LinkContainer,
+.TermsWindow,
+.TermsWindow_Content,
+.TermsWindow_Terms,
+.TermsWindow_AcceptButton
 {
   text-overflow: ellipsis; /* Add '...' if text overflows */
 }
@@ -215,6 +231,10 @@
 /* ------------- Text Shadow ------------- */
 
 /* :: Text Shadow :: */
+.Window,
+.WindowTitleBar,
+.WindowTitle,
+.WindowContent,
 .GameWindow,
 .GameWindow_TitleBar,
 .GameWindow_Title,
@@ -233,13 +253,17 @@
 .LoginForm_SubmitButton,
 .RegisterForm_SubmitButton,
 .RegisterForm_CancelButton,
-.FormWindow,
-.FormWindow_Title,
-.FormWindow_TitleBar,
-.FormWindow_Content,
-.FormWindow_Text,
-.FormWindow_LinkText,
-.FormWindow_LinkContainer
+.StandaloneWindow,
+.StandaloneWindow_Title,
+.StandaloneWindow_TitleBar,
+.StandaloneWindow_Content,
+.StandaloneWindow_Text,
+.StandaloneWindow_LinkText,
+.StandaloneWindow_LinkContainer,
+.TermsWindow,
+.TermsWindow_Content,
+.TermsWindow_Terms,
+.TermsWindow_AcceptButton
 {
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5);
 }
@@ -247,6 +271,10 @@
 /* -------------- Text color ------------- */
 
 /* :: Default Text Color :: */
+.Window,
+.WindowTitleBar,
+.WindowTitle,
+.WindowContent,
 .GameWindow,
 .GameWindow_TitleBar,
 .GameWindow_Title,
@@ -264,18 +292,22 @@
 .LoginForm_SubmitButton,
 .RegisterForm_SubmitButton,
 .RegisterForm_CancelButton,
-.FormWindow,
-.FormWindow_Title,
-.FormWindow_TitleBar,
-.FormWindow_Content,
-.FormWindow_Text,
-.FormWindow_LinkContainer
+.StandaloneWindow,
+.StandaloneWindow_Title,
+.StandaloneWindow_TitleBar,
+.StandaloneWindow_Content,
+.StandaloneWindow_Text,
+.StandaloneWindow_LinkContainer,
+.TermsWindow,
+.TermsWindow_Content,
+.TermsWindow_Terms,
+.TermsWindow_AcceptButton
 {
   color: rgb(210, 230, 250); /* text color */
 }
 
 /* :: Link Text Color :: */
-.FormWindow_LinkText
+.StandaloneWindow_LinkText
 {
   color: rgb(43, 144, 255); /* text color */
 }
@@ -290,7 +322,7 @@
 /* ----------- Text Decoration ----------- */
 
 /* :: Link Text Mouseover :: */
-.FormWindow_LinkText:hover
+.StandaloneWindow_LinkText:hover
 {
   text-decoration: underline;
 }
@@ -298,8 +330,8 @@
 /* -------------- Font Size -------------- */
 
 /* :: Small Font Size :: */
-.FormWindow_Text,
-.FormWindow_LinkText,
+.StandaloneWindow_Text,
+.StandaloneWindow_LinkText,
 .Form_Label,
 .GameWindow_Title
 {
@@ -307,6 +339,10 @@
 }
 
 /* :: Normal Font Size :: */
+.Window,
+.WindowTitleBar,
+.WindowTitle,
+.WindowContent,
 .GameWindow,
 .ScrollWindow,
 .GameWindow_TitleBar,
@@ -324,17 +360,25 @@
 .LoginForm_SubmitButton,
 .RegisterForm_SubmitButton,
 .RegisterForm_CancelButton,
-.FormWindow,
-.FormWindow_Title,
-.FormWindow_TitleBar,
-.FormWindow_Content,
-.FormWindow_LinkContainer
+.StandaloneWindow,
+.StandaloneWindow_Title,
+.StandaloneWindow_TitleBar,
+.StandaloneWindow_Content,
+.StandaloneWindow_LinkContainer,
+.TermsWindow,
+.TermsWindow_Content,
+.TermsWindow_Terms,
+.TermsWindow_AcceptButton
 {
   font-size: 1em;
 }
 
 /* -------- Disabled Text Selection ------ */
 
+.Window,
+.WindowTitleBar,
+.WindowTitle,
+.WindowContent,
 .GameWindow,
 .GameWindow_TitleBar,
 .GameWindow_Title,
@@ -350,13 +394,16 @@
 .LoginForm_SubmitButton,
 .RegisterForm_SubmitButton,
 .RegisterForm_CancelButton,
-.FormWindow,
-.FormWindow_Title,
-.FormWindow_TitleBar,
-.FormWindow_Content,
-.FormWindow_Text,
-.FormWindow_LinkText,
-.FormWindow_LinkContainer
+.StandaloneWindow,
+.StandaloneWindow_Title,
+.StandaloneWindow_TitleBar,
+.StandaloneWindow_Content,
+.StandaloneWindow_Text,
+.StandaloneWindow_LinkText,
+.StandaloneWindow_LinkContainer,
+.TermsWindow,
+.TermsWindow_Content,
+.TermsWindow_AcceptButton
 {
   -khtml-user-select: none;
   -moz-user-select: none;
@@ -370,7 +417,8 @@
 
 .ScrollWindowOutput,
 .ScrollWindowInput,
-.Form_Input
+.Form_Input,
+.TermsWindow_Terms
 {
   -khtml-user-select: text;
   -moz-user-select: text;
@@ -396,38 +444,78 @@
 .Form_Checkbox,
 .Form_CheckboxContainer,
 .Form_ButtonContainer,
-.FormWindow_Title,
-.FormWindow_TitleBar,
-.FormWindow_Content,
-.FormWindow_Text,
-.FormWindow_LinkText,
-.FormWindow_LinkContainer
+.StandaloneWindow_Title,
+.StandaloneWindow_TitleBar,
+.StandaloneWindow_Content,
+.StandaloneWindow_Text,
+.StandaloneWindow_LinkText,
+.StandaloneWindow_LinkContainer,
+.TermsWindow_Terms,
+.TermsWindow_Content
 {
   border: none;
 }
 
-/* :: Standard Border :: */
+/* :: Default Border Color :: */
+.Window,
 .GameWindow,
-.FormWindow,
+.StandaloneWindow,
+.TermsWindow,
 .Form_Input,
 .ScrollWindow,
 .ScrollWindowInput,
-.MapWindow,
-.Form_SubmitButton,
-.RegisterForm_SubmitButton,
-.RegisterForm_CancelButton,
-.LoginForm_SubmitButton
+.MapWindow
 {
   border: 1px solid rgba(110,130,150,0.8);
 }
 
-/* :: Border Highligh on Mouseover :: */
+/* :: Button Border :: */
+.Form_SubmitButton,
+.RegisterForm_SubmitButton,
+.RegisterForm_CancelButton,
+.LoginForm_SubmitButton,
+.TermsWindow_AcceptButton
+{
+  border: 1px solid rgba(210, 230, 250, 0.8);
+}
+
+/* :: Button Border Highlight :: */
 .Form_SubmitButton:hover,
 .RegisterForm_SubmitButton:hover,
 .RegisterForm_CancelButton:hover,
-.LoginForm_SubmitButton:hover
+.LoginForm_SubmitButton:hover,
+.TermsWindow_AcceptButton:hover
 {
-  border: 1px solid rgba(210, 230, 250, 0.8);
+  border: 1px solid rgba(230, 240, 255, 0.8);
+}
+
+/* :: Border Outset :: */
+.Window,
+.GameWindow,
+.StandaloneWindow,
+.TermsWindow,
+.ScrollWindow,
+.MapWindow,
+.Form_SubmitButton,
+.RegisterForm_SubmitButton,
+.RegisterForm_CancelButton,
+.LoginForm_SubmitButton,
+.TermsWindow_AcceptButton,
+.Form_SubmitButton:hover,
+.RegisterForm_SubmitButton:hover,
+.RegisterForm_CancelButton:hover,
+.LoginForm_SubmitButton:hover,
+.TermsWindow_AcceptButton:hover
+{
+  border-style: outset;
+}
+
+/* :: Border Inset :: */
+
+.Form_Input,
+.ScrollWindowInput
+{
+  border-style: inset;
 }
 
 /* -------------- Background ------------- */
@@ -438,24 +526,28 @@
 .Form_Checkbox,
 .Form_CheckboxContainer,
 .Form_ButtonContainer,
-.FormWindow_Title,
-.FormWindow_TitleBar,
-.FormWindow_Content,
-.FormWindow_Text,
-.FormWindow_LinkText,
-.FormWindow_LinkContainer,
+.StandaloneWindow_Title,
+.StandaloneWindow_TitleBar,
+.StandaloneWindow_Content,
+.StandaloneWindow_Text,
+.StandaloneWindow_LinkText,
+.StandaloneWindow_LinkContainer,
 .GameWindow_Content,
 .GameWindow_Title,
-.ScrollWindowOutput
+.ScrollWindowOutput,
+.TermsWindow_Content,
+.TermsWindow_Terms
 {
   background: rgba(0,0,0,0);  /* Transparent background */
 }
 
 /* :: Window Background :: */
+.Window,
 .GameWindow,
 .ScrollWindow,
 .MapWindow,
-.FormWindow
+.StandaloneWindow,
+.TermsWindow
 {
   background: rgba(0, 0, 0, 0.6);
 }
@@ -464,30 +556,35 @@
 .ScrollWindowInput,
 .Form_Input
 {
-  background: rgba(50,50,50,0.6);
+  background: rgba(50, 50, 50, 0.8);
+  background: linear-gradient(rgba(60, 60, 60, 0.8), rgba(30, 30, 30, 0.8));
 }
 
 /* :: Button Background :: */
 .Form_SubmitButton,
 .RegisterForm_SubmitButton,
 .RegisterForm_CancelButton,
-.LoginForm_SubmitButton
+.LoginForm_SubmitButton,
+.TermsWindow_AcceptButton
 {
-  background-color: rgba(150, 150, 150, 0.6);
+  background-color: rgba(150, 150, 150, 0.8);
+  background: linear-gradient(rgba(170, 170, 170, 0.8), rgba(120, 120, 120, 0.8));
 }
 
 /* Button Background With Mouseover :: */
 .Form_SubmitButton:hover,
 .RegisterForm_SubmitButton:hover,
 .RegisterForm_CancelButton:hover,
-.LoginForm_SubmitButton:hover
+.LoginForm_SubmitButton:hover,
+.TermsWindow_AcceptButton:hover
 {
-  background-color: rgba(180, 180, 180, 0.6);
+  background-color: rgba(180, 180, 180, 0.8);
+  background: linear-gradient(rgba(200, 200, 200, 0.8), rgba(150, 150, 150, 0.8));
 }
 
 /* :: Title Bar Background :: */
 .GameWindow_TitleBar,
-.FormWindow_TitleBar
+.StandaloneWindow_TitleBar
 {
   /* Old browsers */
   background: rgba(80, 80, 80, 0.5);
@@ -496,12 +593,17 @@
   /* Chrome10-25,Safari5.1-6 */
   background: -webkit-linear-gradient(top, rgba(50, 50, 50, 0.6) 0%, rgba(80, 80, 80, 0.6) 5%, rgba(80, 80, 80, 0.6) 90%, rgba(50, 50, 50, 0.6) 100%);
   /* CSS3 compatible browsers*/
-  background: linear-gradient(rgba(50, 50, 50, 0.6) 0%, rgba(80, 80, 80, 0.6) 5%, rgba(80, 80, 80, 0.6) 90%, rgba(50, 50, 50, 0.6) 100%);
+  /*background: linear-gradient(rgba(50, 50, 50, 0.6) 0%, rgba(80, 80, 80, 0.6) 5%, rgba(80, 80, 80, 0.6) 90%, rgba(50, 50, 50, 0.6) 100%);*/
+  background: linear-gradient(rgba(80, 80, 80, 0.6) 0%, rgba(110, 110, 110, 0.6) 5%, rgba(60, 60, 60, 0.6) 90%, rgba(30, 30, 30, 0.6) 100%);
 }
 
 /* --------------- Outline --------------- */
 
 /* :: No outline :: */
+.Window,
+.WindowTitleBar,
+.WindowTitle,
+.WindowContent,
 .GameWindow,
 .GameWindow_TitleBar,
 .GameWindow_Title,
@@ -520,13 +622,17 @@
 .LoginForm_SubmitButton,
 .RegisterForm_SubmitButton,
 .RegisterForm_CancelButton,
-.FormWindow,
-.FormWindow_Title,
-.FormWindow_TitleBar,
-.FormWindow_Content,
-.FormWindow_Text,
-.FormWindow_LinkText,
-.FormWindow_LinkContainer,
+.StandaloneWindow,
+.StandaloneWindow_Title,
+.StandaloneWindow_TitleBar,
+.StandaloneWindow_Content,
+.StandaloneWindow_Text,
+.StandaloneWindow_LinkText,
+.StandaloneWindow_LinkContainer,
+.TermsWindow,
+.TermsWindow_Content,
+.TermsWindow_Terms,
+.TermsWindow_AcceptButton,
 .GameWindow:focus,
 .GameWindow_TitleBar:focus,
 .GameWindow_Title:focus,
@@ -543,13 +649,17 @@
 .LoginForm_SubmitButton:focus,
 .RegisterForm_SubmitButton:focus,
 .RegisterForm_CancelButton:focus,
-.FormWindow:focus,
-.FormWindow_Title:focus,
-.FormWindow_TitleBar:focus,
-.FormWindow_Content:focus,
-.FormWindow_Text:focus,
-.FormWindow_LinkText:focus,
-.FormWindow_LinkContainer:focus
+.StandaloneWindow:focus,
+.StandaloneWindow_Title:focus,
+.StandaloneWindow_TitleBar:focus,
+.StandaloneWindow_Content:focus,
+.StandaloneWindow_Text:focus,
+.StandaloneWindow_LinkText:focus,
+.StandaloneWindow_LinkContainer:focus,
+.TermsWindow:focus,
+.TermsWindow_Content:focus,
+.TermsWindow_Terms:focus,
+.TermsWindow_AcceptButton:focus
 {
   outline: none;
 }
@@ -567,25 +677,8 @@
 
 /* --------------- Window ---------------- */
 
-/* :: Window Title Bar :: */
-.GameWindow_TitleBar,
-.FormWindow_TitleBar
-{
-  width: 100%;
-  height: auto;
-  margin: 0;
-}
-
-/* ------------- Game Window ------------- */
-
-/* :: Default Game Window Size :: */
-.GameWindow
-{
-  width: 20%;
-  height: 20%;
-}
-
-/* :: Game Window :: */
+/* :: Default Window :: */
+.Window,
 .ScrollWindow,
 .MapWindow,
 .GameWindow
@@ -596,8 +689,39 @@
   flex-direction: column;
 }
 
-/* :: Game Window Content :: */
-.GameWindow_Content
+/* :: Default Window Size :: */
+.Window,
+.GameWindow
+{
+  width: 20%;
+  height: 20%;
+}
+
+/* :: Default Window Title Bar :: */
+.WindowTitleBar,
+.GameWindow_TitleBar,
+.StandaloneWindow_TitleBar
+{
+  width: 100%;
+  height: auto;
+  margin: 0;
+}
+
+/* :: Default Window Title :: */
+.WindowTitle,
+.StandaloneWindow_Title
+{
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  padding: 0.4em;
+  display: block;
+}
+
+/* :: Default Window Content :: */
+.WindowContent,
+.GameWindow_Content,
+.TermsWindow_Content
 {
   width: 100%;
   height: 100%;
@@ -606,6 +730,8 @@
   display: flex;
   flex-direction: column;
 }
+
+/* ------------- Game Window ------------- */
 
 /* :: Game Window Title :: */
 .GameWindow_Title
@@ -626,16 +752,22 @@
   height: 80%;
 }
 
-/* :: Scroll Window Output :: */
-.ScrollWindowOutput
+/* :: Scrollable Output :: */
+.ScrollWindowOutput,
+.TermsWindow_Terms
 {
   width: 100%;
   height: 100%;
   margin: 0;
-  padding: 0.2em;
   overflow-x: hidden;   /* Do not use horizontal scrolling */
   overflow-y: auto;     /* Automatically create vertical scrollbar */
-  word-wrap:break-word; /* Break long words that wont fit */
+}
+
+/* :: Scroll Window Output Text Display Properties :: */
+.ScrollWindowOutput
+{
+  padding: 0.2em;
+  word-wrap: break-word; /* Break long words that wont fit */
 }
 
 /* :: Scroll Window Input :: */
@@ -658,10 +790,10 @@
   height: 40%;
 }
 
-/* ------------- Form Window ------------- */
+/* ------------- Standalone Window ------------- */
 
-/* :: Form Window :: */
-.FormWindow
+/* :: Standalone Window :: */
+.StandaloneWindow
 {
   /* Center at position 50% from top, 50% from left */
   position: absolute;
@@ -677,26 +809,16 @@
   display: block;
 }
 
-/* :: Form Window Content :: */
-.FormWindow_Content
+/* :: Standalone Window Content :: */
+.StandaloneWindow_Content
 {
   padding: 1em;
   display: block;
 }
 
-/* :: Form Window Title :: */
-.FormWindow_Title
-{
-  text-align: center;
-  width: 100%;
-  height: 100%;
-  padding: 0.4em;
-  display: block;
-}
-
-/* :: Form Window Text :: */
-.FormWindow_Text,
-.FormWindow_LinkText
+/* :: Standalone Window Text :: */
+.StandaloneWindow_Text,
+.StandaloneWindow_LinkText
 {
   margin: 0;
   padding: 0;
@@ -704,13 +826,39 @@
   display: inline;
 }
 
-/* :: Form Window Link Container :: */
-.FormWindow_LinkContainer
+/* :: Standalone Window Link Container :: */
+.StandaloneWindow_LinkContainer
 {
   width: 100%;
   height: auto;
   margin-top: 1em;
   display: block;
+}
+
+/* --------------- Terms Window ---------------- */
+
+/* :: Terms Window :: */
+.TermsWindow
+{
+  /* Center at position 50% from top, 50% from left */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* Window size is a multiple of font size */
+  width: 30em;
+  height: 25em;
+  max-width: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* :: Terms Window Terms Text Properties :: */
+.TermsWindow_Terms
+{
+  padding: 1em;
+  text-align: justify;
 }
 
 /* ----------------- Form ---------------- */
@@ -734,11 +882,10 @@
   margin-bottom: 0.6em;
 }
 
-/* :: Form Button :: */
+/* :: Full Width Button :: */
 .Form_SubmitButton,
 .LoginForm_SubmitButton,
-.RegisterForm_SubmitButton,
-.RegisterForm_CancelButton
+.TermsWindow_AcceptButton
 {
   width: 100%;
   height: auto;
