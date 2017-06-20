@@ -70,13 +70,20 @@ export class Window extends MudColorComponent
       this.hide();
   }
 
-  // Sets html-formatted text to 'title' element.
+  // Sets text to 'title' element
+  // (accepts plain text or mud colored string).
   public setTitle(title: string)
   {
-    this.$title.html(title);
+    // First remove existing text title if there is any.
+    this.$title.empty();
+
+    if (title.indexOf('&') !== -1)
+      this.$title.append(this.htmlizeMudColors(title));
+    else
+      // Use text color set in css if string isn't colored.
+      this.$title.text(title);
   }
 
-  // -> Returns created jquery element.
   public create
   (
     windowCssClass: string,
@@ -124,7 +131,6 @@ export class Window extends MudColorComponent
     return this.$content;
   }
 
-  // -> Returns created jquery element.
   protected createTitleBar(titleBarCssClass: string, titleCssClass: string)
   {
     this.$titleBar = Component.createDiv

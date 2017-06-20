@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Ancestor of windows with form data.
+  Abstract ancestor of component containing a form.
 */
 
 'use strict';
@@ -12,6 +12,21 @@ import $ = require('jquery');
 
 export abstract class Form extends Component
 {
+  protected static get CSS_CLASS()
+    { return 'Form'; }
+  protected static get LABEL_CSS_CLASS()
+    { return 'Form_Label'; }
+  protected static get INPUT_CSS_CLASS()
+    { return 'Form_Input'; }
+  protected static get CHECKBOX_CSS_CLASS()
+    { return 'Form_Checkbox'; }
+  protected static get CHECKBOX_CONTAINER_CSS_CLASS()
+    { return 'Form_CheckboxContainer'; }
+  protected static get SUBMIT_BUTTON_CSS_CLASS()
+    { return 'Form_SubmitButton'; }
+  protected static  get BUTTON_CONTAINER_CSS_CLASS()
+    { return 'Form_ButtonContainer'; }
+
   // -------------- Static class data -------------------
 
   //----------------- Protected data --------------------
@@ -30,7 +45,12 @@ export abstract class Form extends Component
 
   // --------------- Protected methods ------------------
 
-  protected create($container: JQuery, cssClass: string, name: string)
+  protected create
+  (
+    $container: JQuery,
+    name: string,
+    cssClass = Form.CSS_CLASS
+  )
   {
     this.$form = Component.createForm
     (
@@ -46,7 +66,7 @@ export abstract class Form extends Component
     );
   }
 
-  protected createLabel(text: string, cssClass: string)
+  protected createLabel(text: string, cssClass = Form.LABEL_CSS_CLASS)
   {
     return Component.createLabel
     (
@@ -62,7 +82,7 @@ export abstract class Form extends Component
     placeholder: string,
     minLength: number,
     maxlength: number,
-    cssClass: string
+    cssClass = Form.INPUT_CSS_CLASS
   )
   {
     return Component.createTextInput
@@ -93,7 +113,7 @@ export abstract class Form extends Component
     placeholder: string,
     minLength: number,
     maxLength: number,
-    cssClass: string
+    cssClass = Form.INPUT_CSS_CLASS
   )
   {
     return Component.createPasswordInput
@@ -117,7 +137,7 @@ export abstract class Form extends Component
   (
     name: string,
     placeholder: string,
-    cssClass: string
+    cssClass = Form.INPUT_CSS_CLASS
   )
   {
     return Component.createEmailInput
@@ -143,9 +163,9 @@ export abstract class Form extends Component
     name: string,
     text: string,
     checked: boolean,
-    containerCssClass: string,
-    labelCssClass: string,
-    checkboxCssClass: string
+    containerCssClass = Form.CHECKBOX_CONTAINER_CSS_CLASS,
+    labelCssClass = Form.LABEL_CSS_CLASS,
+    checkboxCssClass = Form.CHECKBOX_CSS_CLASS
   )
   {
     let $container = Component.createDiv
@@ -174,11 +194,20 @@ export abstract class Form extends Component
     return $checkbox;
   }
 
+  protected createButtonContainer(cssClass = Form.BUTTON_CONTAINER_CSS_CLASS)
+  {
+    return Component.createDiv
+    (
+      this.$form,
+      cssClass
+    );
+  }
+
   protected createSubmitButton
   (
     $container: JQuery,
     text: string,
-    cssClass: string
+    cssClass = Form.SUBMIT_BUTTON_CSS_CLASS
   )
   {
     return Component.createSubmitButton

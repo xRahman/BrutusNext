@@ -1,6 +1,16 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+TODO: Abstraktní předkové komponent by měly v createCosi()
+  metodách mít parametr cssClass s implicitní hodnotou.
+  (Viz Form.)
+
+TODO: Text s linkem celý zavřít do containeru
+
+TODO: Button v LoginForm asi taky zavřít do containeru.
+  (Cancel button tam sice není, ale ať je to stejné.)
+[done]
+
 TODO: S tím duplikováním css class jsem to trochu přehnal
 - sloučit ty, které jsou konceptuelně stejné.
 

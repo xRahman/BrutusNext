@@ -8,13 +8,13 @@
 
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Component} from '../../../client/gui/Component';
-import {Window} from '../../../client/gui/Window';
+import {FormWindow} from '../../../client/gui/FormWindow';
 import {Form} from '../../../client/gui/Form';
 import {LoginForm} from '../../../client/gui/login/LoginForm';
 
 import $ = require('jquery');
 
-export class LoginWindow extends Window
+export class LoginWindow extends FormWindow
 {
   constructor()
   {
@@ -24,26 +24,13 @@ export class LoginWindow extends Window
     this.flags.set(ClientApp.State.LOGIN);
   }
 
-  private static get CSS_CLASS()
-    { return 'LoginWindow'; }
-  private static get TITLE_BAR_CSS_CLASS()
-    { return 'LoginWindow_TitleBar'; }
-  private static get TITLE_CSS_CLASS()
-    { return 'LoginWindow_Title'; }
-  private static get CONTENT_CSS_CLASS()
-    { return 'LoginWindow_Content'; }
-  private static get TEXT_CSS_CLASS()
-    { return 'LoginWindow_Text'; }
-  private static get TEXT_LINK_CSS_CLASS()
-    { return 'LoginWindow_TextLink'; }
-
   // -------------- Static class data -------------------
 
   //----------------- Protected data --------------------
 
-  //------------------ Private data ---------------------
+  protected form = new LoginForm();
 
-  private form = new LoginForm();
+  //------------------ Private data ---------------------
 
   private $registerLink = null;
 
@@ -55,18 +42,12 @@ export class LoginWindow extends Window
 
   // ---------------- Public methods --------------------
 
-  // -> Returns created jquery element.
+  // ~ Overrides Window.create()
   public create()
   {
-    super.create
-    (
-      LoginWindow.CSS_CLASS,
-      LoginWindow.CONTENT_CSS_CLASS,
-      LoginWindow.TITLE_BAR_CSS_CLASS,
-      LoginWindow.TITLE_CSS_CLASS
-    );
+    super.create();
 
-    this.initTitleText();
+    this.setTitle("&gWelcome to &RBrutus&YNext");
 
     // Create login form.
     this.form.create(this.$content);
@@ -80,31 +61,9 @@ export class LoginWindow extends Window
 
   // ---------------- Private methods -------------------
 
-  private initTitleText()
-  {
-    let titleHtml = this.htmlizeMudColors("&gWelcome to &RBrutus&YNext");
-
-    this.setTitle(titleHtml);
-  }
-
-  private createText($container: JQuery, text: string)
-  {
-    Component.createText
-    (
-      $container,
-      LoginWindow.TEXT_CSS_CLASS,
-      text
-    );
-  }
-
   private createRegisterLink($container: JQuery, text: string)
   {
-    this.$registerLink = Component.createTextLink
-    (
-      $container,
-      LoginWindow.TEXT_LINK_CSS_CLASS,
-      text
-    );
+    this.$registerLink = this.createLinkText($container, text);
 
     this.$registerLink.click
     (
@@ -114,11 +73,7 @@ export class LoginWindow extends Window
 
   private createRegisterInfo()
   {
-    let $container = Component.createDiv
-    (
-      this.$content,
-      LoginWindow.TEXT_LINK_CSS_CLASS
-    );
+    let $container = this.createLinkContainer();
 
     this.createText($container, "Don't have an account yet? ");
     this.createRegisterLink($container, "Register");

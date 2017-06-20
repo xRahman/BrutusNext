@@ -9,12 +9,12 @@
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Component} from '../../../client/gui/Component';
 import {Form} from '../../../client/gui/Form';
-import {Window} from '../../../client/gui/Window';
+import {FormWindow} from '../../../client/gui/FormWindow';
 import {RegisterForm} from '../../../client/gui/register/RegisterForm';
 
 import $ = require('jquery');
 
-export class RegisterWindow extends Window
+export class RegisterWindow extends FormWindow
 {
   constructor()
   {
@@ -24,26 +24,13 @@ export class RegisterWindow extends Window
     this.flags.set(ClientApp.State.REGISTER);
   }
 
-  private static get CSS_CLASS()
-    { return 'RegisterWindow'; }
-  private static get TITLE_BAR_CSS_CLASS()
-    { return 'RegisterWindow_TitleBar'; }
-  private static get TITLE_CSS_CLASS()
-    { return 'RegisterWindow_Title'; }
-  private static get CONTENT_CSS_CLASS()
-    { return 'RegisterWindow_Content'; }
-  private static get TEXT_CSS_CLASS()
-    { return 'RegisterWindow_Text'; }
-  private static get TEXT_LINK_CSS_CLASS()
-    { return 'RegisterWindow_TextLink'; }
-
   // -------------- Static class data -------------------
 
   //----------------- Protected data --------------------
 
-  //------------------ Private data ---------------------
+  protected form = new RegisterForm();
 
-  private form = new RegisterForm();
+  //------------------ Private data ---------------------
 
   private $termsLink = null;
 
@@ -55,16 +42,10 @@ export class RegisterWindow extends Window
 
   // ---------------- Public methods --------------------
 
-  // -> Returns created jquery element.
+  // ~ Overrides Window.create()
   public create()
   {
-    super.create
-    (
-      RegisterWindow.CSS_CLASS,
-      RegisterWindow.CONTENT_CSS_CLASS,
-      RegisterWindow.TITLE_BAR_CSS_CLASS,
-      RegisterWindow.TITLE_CSS_CLASS
-    );
+    super.create();
 
     this.setTitle("Register new account");
 
@@ -80,24 +61,9 @@ export class RegisterWindow extends Window
 
   // ---------------- Private methods -------------------
 
-  private createText($container: JQuery, text: string)
-  {
-    Component.createText
-    (
-      $container,
-      RegisterWindow.TEXT_CSS_CLASS,
-      text
-    );
-  }
-
   private createTermsLink($container: JQuery, text: string)
   {
-    this.$termsLink = Component.createTextLink
-    (
-      $container,
-      RegisterWindow.TEXT_LINK_CSS_CLASS,
-      text
-    );
+    this.$termsLink = this.createLinkText($container, text);
 
     this.$termsLink.click
     (
@@ -107,11 +73,7 @@ export class RegisterWindow extends Window
 
   private createTermsInfo()
   {
-    let $container = Component.createDiv
-    (
-      this.$content,
-      RegisterWindow.TEXT_LINK_CSS_CLASS
-    );
+    let $container = this.createLinkContainer();
 
     this.createText($container, "By creating an account you agree to our ");
     this.createTermsLink($container, "Terms of Use");
