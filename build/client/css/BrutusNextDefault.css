@@ -333,6 +333,53 @@
   font-size: 1em;
 }
 
+/* -------- Disabled Text Selection ------ */
+
+.GameWindow,
+.GameWindow_TitleBar,
+.GameWindow_Title,
+.GameWindow_Content,
+.ScrollWindow,
+.MapWindow,
+.Form,
+.Form_Label,
+.Form_Checkbox,
+.Form_CheckboxContainer,
+.Form_SubmitButton,
+.Form_ButtonContainer,
+.LoginForm_SubmitButton,
+.RegisterForm_SubmitButton,
+.RegisterForm_CancelButton,
+.FormWindow,
+.FormWindow_Title,
+.FormWindow_TitleBar,
+.FormWindow_Content,
+.FormWindow_Text,
+.FormWindow_LinkText,
+.FormWindow_LinkContainer
+{
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+/* -------- Enabled Text Selection ------ */
+
+.ScrollWindowOutput,
+.ScrollWindowInput,
+.Form_Input
+{
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -webkit-user-select: text;
+  -ms-user-select: text;
+  -o-user-select: text;
+  user-select: text;
+}
+
 /***************************************************************/
 /*                           Graphics                          */
 /***************************************************************/
