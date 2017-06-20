@@ -153,18 +153,6 @@ export abstract class Component
     cssClass: string,
     name: string,               // 'name' attribute. Required.
     param: Component.InputParam
-    /*
-    {
-      readonly: boolean,
-      disabled: boolean,
-      size: number,             // In characters.
-      maxlength: number,        // In characters.
-      spellcheck: boolean,      // Enables red wavy underilne.
-      autocapitalize: AutocapitalizeValue,
-      autocorrect: AutocorrectValue,
-      autocomplete: AutocompleteValue
-    }
-    */
   )
   : JQuery
   {
@@ -407,13 +395,11 @@ export abstract class Component
   {
     let $text = this.createSpan
     (
-      null,   // No id.
-      null    // No CSS class (use default font attributes).
+      $container,
+      cssClass
     );
 
     $text.text(text);
-
-    $container.append($text);
 
     return $text;
   }
