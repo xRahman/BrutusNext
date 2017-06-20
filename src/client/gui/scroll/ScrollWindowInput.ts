@@ -54,7 +54,9 @@ export class ScrollWindowInput extends Component
       {
         // Input element accepts multi-line text (its a 'textarea') but only
         // shows one line (because user commands are usualy single-line).
-        rows: 1
+        rows: 1,
+        spellcheck: false,
+        autocorrect: 'off'
       }
     );
     
