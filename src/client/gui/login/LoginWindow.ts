@@ -8,13 +8,13 @@
 
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Component} from '../../../client/gui/Component';
-import {FormWindow} from '../../../client/gui/FormWindow';
+import {StandaloneWindow} from '../../../client/gui/StandaloneWindow';
 import {Form} from '../../../client/gui/Form';
 import {LoginForm} from '../../../client/gui/login/LoginForm';
 
 import $ = require('jquery');
 
-export class LoginWindow extends FormWindow
+export class LoginWindow extends StandaloneWindow
 {
   constructor()
   {
@@ -28,9 +28,9 @@ export class LoginWindow extends FormWindow
 
   //----------------- Protected data --------------------
 
-  protected form = new LoginForm();
-
   //------------------ Private data ---------------------
+
+  private form = new LoginForm();
 
   private $registerLink = null;
 

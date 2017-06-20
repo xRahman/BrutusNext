@@ -9,12 +9,12 @@
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Component} from '../../../client/gui/Component';
 import {Form} from '../../../client/gui/Form';
-import {FormWindow} from '../../../client/gui/FormWindow';
+import {StandaloneWindow} from '../../../client/gui/StandaloneWindow';
 import {RegisterForm} from '../../../client/gui/register/RegisterForm';
 
 import $ = require('jquery');
 
-export class RegisterWindow extends FormWindow
+export class RegisterWindow extends StandaloneWindow
 {
   constructor()
   {
@@ -28,9 +28,9 @@ export class RegisterWindow extends FormWindow
 
   //----------------- Protected data --------------------
 
-  protected form = new RegisterForm();
-
   //------------------ Private data ---------------------
+
+  private form = new RegisterForm();
 
   private $termsLink = null;
 
@@ -85,5 +85,6 @@ export class RegisterWindow extends FormWindow
   private onTermsClick(event: Event)
   {
     console.log("Clicked on on terms link");
+    ClientApp.setState(ClientApp.State.TERMS);
   }
 }
