@@ -528,6 +528,15 @@ export abstract class Component
 
     if (param && param.rows)
       element.rows = param.rows;
+
+    if (param.spellcheck !== undefined)
+      element.spellcheck = param.spellcheck;
+
+    // Nonstandard attributes (so they can't be simply assigned
+    // and must byt set using setAttribute()).
+
+    if (param.autocorrect !== undefined)
+      element.setAttribute('autocorrect', param.autocorrect);
   }
 
   private static checkNameParam(name: string)
@@ -561,7 +570,7 @@ export module Component
     minLength?: number,
     maxLength?: number,
     spellcheck?: boolean,
-    autocapitalize?: AutocapitalizeValue,
+    ///autocapitalize?: AutocapitalizeValue,
     autocorrect?: AutocorrectValue,
     autocomplete?: AutocompleteValue,
     checked?: boolean
@@ -574,7 +583,9 @@ export module Component
 
   export interface TextAreaParam
   {
-    rows?: number
+    rows?: number,
+    spellcheck?: boolean,
+    autocorrect?: AutocorrectValue
   }
 
   // Valid values of 'autocapitalize' attribute.
