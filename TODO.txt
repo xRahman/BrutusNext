@@ -1,6 +1,26 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+TODO: Použít "label for" na text pro "Remember me" checkbox.
+
+
+Ja na character select/create?
+- má to vůbec smysl? Zatím stále počítám s 1 charem na mortalském
+  accountu
+- někde se ale musí ten jeden char vyrobit (aspoň zadat jméno).
+No nic, prostě to udělám a basta.
+
+Úzké okno, uvnitř velká tlačítka s chary a button "create new character".
+- tlačítka s chary by měla být selektovatelná (možná radiobutton?)
+
+Ještě to asi bude chtít ChargenWindow
+  Nebo možná prostě jen popup v charselectu?
+  - ten popup taky může bejt realizovanej jako okno (byť by v něm
+    byl jen text input a tlačítka create a cancel), aspoň to budu
+    mít připravený.
+
+---------------------------------------------------------------
+
 TODO: Nějak chytře pořešit zákaz selektování textu
  (ideálně aby se nemusely vypisovat všechny classy v css).
 - Možná to v css globálně zakázat a povolovat to flagou v kódu?
@@ -10,8 +30,10 @@ TODO: Možná by šlo z dvojice { gCssClass, sCssClass } udělat
   interface (Takže Window.create() by mělo 3 parametry místo 6...).
 
 TODO: Strukturální css classy přejmenovat na S_Cosi
+[done]
 
 TODO: Doplnit vendor-specific řádky k backgroundům.
+[done]
 
 TODO: Nastavit klikatelným elementům:
 {
@@ -28,6 +50,7 @@ TODO: Terms window by mělo reagovat na escape a enter
 (obojí ho zavře).
 
 TODO: Buttony by asi měly mít trochy výraznější border.
+[done]
 
 TODO: Právě jsem nastyloval button, který je úplně stejný jako
 LoginForm_SubmitButton
@@ -46,8 +69,10 @@ createStandaloneWindows().
 TODO: Abstraktní předkové komponent by měly v createCosi()
   metodách mít parametr cssClass s implicitní hodnotou.
   (Viz Form.)
+[done]
 
 TODO: Text s linkem celý zavřít do containeru
+[done]
 
 TODO: Button v LoginForm asi taky zavřít do containeru.
   (Cancel button tam sice není, ale ať je to stejné.)
@@ -55,6 +80,7 @@ TODO: Button v LoginForm asi taky zavřít do containeru.
 
 TODO: S tím duplikováním css class jsem to trochu přehnal
 - sloučit ty, které jsou konceptuelně stejné.
+[done]
 
 TODO: Projít css v SvgMap.
 
@@ -62,6 +88,7 @@ TODO: Title text by se měl v LoginWindow setovat do Title, ne to TitleBaru.
 - nebo prostě zrušit title bary a nechat jen title...
  (i když vlastně ne, pokud budou na title baru buttonky, tak title musí být
   samostatná komponenta).
+[done]
 
 TODO: Předělat css na selector grupy
 - v kódu budou mít css class přidělenou pouze komponenty, které se
@@ -71,15 +98,11 @@ TODO: Předělat css na selector grupy
   ještě mergování css class by byl děsnej bordel).
 - defaultní font asi nechám, jak je (tj. pro '*'), ať nemusím
   všechny classy přidávat do selector grupy Default text.
+[done]
 
 TODO: V css víc dědit (tj. skládat css classu z více class)
   - například všechny inputy mohou mít stejný základ css (barvy, border a tak).
-
-TODO: Všem komponentám s textem setovat CSS class .Text
-  a vyhodit atributy fontu z jejich css stylů.
-(Atributy fontu se zjevně nedědí automaticky.)
-- nakonec jsem default text setnul globálně všem komponentám.
-
+[done]
 
 TODO: Sjednotit max account length a ostatní kód na constraints
   jména accountu a hesla.
