@@ -15,19 +15,19 @@ import $ = require('jquery');
 export class StandaloneWindow extends Window
 {
   protected static get CSS_CLASS()
-    { return 'StandaloneWindow'; }
+    { return 'S_StandaloneWindow'; }
   protected static get TITLE_BAR_CSS_CLASS()
-    { return 'StandaloneWindow_TitleBar'; }
+    { return 'S_StandaloneWindow_TitleBar'; }
   protected static get TITLE_CSS_CLASS()
-    { return 'StandaloneWindow_Title'; }
+    { return 'S_StandaloneWindow_Title'; }
   protected static get CONTENT_CSS_CLASS()
-    { return 'StandaloneWindow_Content'; }
+    { return 'S_StandaloneWindow_Content'; }
   protected static get TEXT_CSS_CLASS()
-    { return 'StandaloneWindow_Text'; }
+    { return 'S_StandaloneWindow_Text'; }
   protected static get LINK_TEXT_CSS_CLASS()
-    { return 'StandaloneWindow_LinkText'; }
+    { return 'S_StandaloneWindow_LinkText'; }
   protected static get LINK_CONTAINER_CSS_CLASS()
-     { return 'StandaloneWindow_LinkContainer'; }
+    { return 'S_StandaloneWindow_LinkContainer'; }
 
   // -------------- Static class data -------------------
 

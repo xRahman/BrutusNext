@@ -19,19 +19,19 @@ import $ = require('jquery');
 export abstract class Form extends Component
 {
   protected static get S_CSS_CLASS()
-    { return 'Form'; }
+    { return 'S_Form'; }
   protected static get LABEL_S_CSS_CLASS()
-    { return 'Form_Label'; }
+    { return 'S_Form_Label'; }
   protected static get INPUT_S_CSS_CLASS()
-    { return 'Form_Input'; }
+    { return 'S_Form_Input'; }
   protected static get CHECKBOX_S_CSS_CLASS()
-    { return 'Form_Checkbox'; }
+    { return 'S_Form_Checkbox'; }
   protected static get CHECKBOX_CONTAINER_S_CSS_CLASS()
-    { return 'Form_CheckboxContainer'; }
+    { return 'S_Form_CheckboxContainer'; }
   protected static get SUBMIT_BUTTON_S_CSS_CLASS()
-    { return 'Form_SubmitButton'; }
+    { return 'S_Form_SubmitButton'; }
   protected static  get BUTTON_CONTAINER_S_CSS_CLASS()
-    { return 'Form_ButtonContainer'; }
+    { return 'S_Form_ButtonContainer'; }
 
   // -------------- Static class data -------------------
 
