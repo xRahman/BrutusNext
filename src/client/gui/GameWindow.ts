@@ -14,13 +14,13 @@ import $ = require('jquery');
 export class GameWindow extends Window
 {
   protected static get CSS_CLASS()
-    { return 'GameWindow'; }
+    { return 'S_GameWindow'; }
   protected static get TITLE_BAR_CSS_CLASS()
-    { return 'GameWindow_TitleBar'; }
+    { return 'S_GameWindow_TitleBar'; }
   protected static get TITLE_CSS_CLASS()
-    { return 'GameWindow_Title'; }
+    { return 'S_GameWindow_Title'; }
   protected static get CONTENT_CSS_CLASS()
-    { return 'GameWindow_Content'; }
+    { return 'S_GameWindow_Content'; }
 
   // -------------- Static class data -------------------
 

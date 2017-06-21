@@ -15,9 +15,9 @@ import $ = require('jquery');
 export class RegisterForm extends Form
 {
   protected static get SUBMIT_BUTTON_S_CSS_CLASS()
-    { return 'RegisterForm_SubmitButton'; }
+    { return 'S_RegisterForm_SubmitButton'; }
   protected static get CANCEL_BUTTON_S_CSS_CLASS()
-    { return 'RegisterForm_CancelButton'; }
+    { return 'S_RegisterForm_CancelButton'; }
 
   // -------------- Static class data -------------------
 

@@ -14,7 +14,7 @@ import $ = require('jquery');
 export class ScrollWindowInput extends Component
 {
   private static get S_CSS_CLASS()
-    { return 'ScrollWindowInput'; }
+    { return 'S_ScrollWindowInput'; }
 
   constructor(private scrollWindow: ScrollWindow)
   {

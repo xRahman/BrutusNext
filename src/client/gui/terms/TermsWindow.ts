@@ -23,13 +23,13 @@ export class TermsWindow extends StandaloneWindow
   }
 
   protected static get S_CSS_CLASS()
-    { return 'TermsWindow'; }
+    { return 'S_TermsWindow'; }
   protected static get CONTENT_S_CSS_CLASS()
-    { return 'TermsWindow_Content'; }
+    { return 'S_TermsWindow_Content'; }
   protected static get TERMS_S_CSS_CLASS()
-    { return 'TermsWindow_Terms'; }
+    { return 'S_TermsWindow_Terms'; }
   protected static get ACCEPT_BUTTON_S_CSS_CLASS()
-    { return 'TermsWindow_AcceptButton'; }
+    { return 'S_TermsWindow_AcceptButton'; }
 
   // -------------- Static class data -------------------
 
