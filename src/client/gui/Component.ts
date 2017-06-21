@@ -6,18 +6,21 @@
 */
 
 /*
-  Naming convention:
-    createSomething() methods always take css class as a parameter.
-    appendSomething() methods provide css class themselves.
+  Implementation notes:
+    Each html element uses two css classes: 'gCssClass' and 'sCssClass'.
 
-  So appendSomething() methods are usually used inside a specific
-  component and use it's CSS_CLASS constats.
+    'gCssClass' should only contain graphical attributes
+      (borders, background, font, font size, etc.).
 
-  Note:
-    appendSomething() methods can't be named createSomething(),
-  because they usually take different parameters than parent
-  method (Component.createSomething()) so they can't be simply
-  overriden.
+    'sCssClass': string should only contain structural attributes
+      (size, position, margin, padding, floating, etc.).
+
+    Constants defining 'gCssClass' names should only be
+    in class Component. Constants definining 'sCssNames' should be
+    in an inherited class that creates that element or in it's ancestor
+    if the class is used in multiple descendants without redefinition.
+    
+    Using these two css classes greatly simplifies resultning css sheet.
 */
 
 'use strict';
@@ -28,9 +31,21 @@ import $ = require('jquery');
 
 export abstract class Component
 {
-  ///protected static get TEXT_CSS_CLASS() { return 'Text'; }
-  ///protected static get LINK_CSS_CLASS() { return 'Link'; }
-
+  protected static get NO_GRAPHICS_G_CSS_CLASS()
+    { return 'G_NoGraphics'; }
+  protected static get WINDOW_G_CSS_CLASS()
+    { return 'G_Window'; }
+  protected static get TITLE_BAR_G_CSS_CLASS()
+    { return 'G_TitleBar'; }
+  protected static get BUTTON_G_CSS_CLASS()
+    { return 'G_Button'; }
+  protected static get INPUT_G_CSS_CLASS()
+    { return 'G_Input'; }
+  protected static get CHECKBOX_G_CSS_CLASS()
+    { return 'G_Checkbox'; }
+  protected static get LINK_TEXT_G_CSS_CLASS()
+    { return 'G_Link_text'; }
+  
   // -------------- Static class data -------------------
 
   //----------------- Protected data --------------------
@@ -48,19 +63,42 @@ export abstract class Component
   // --------------- Protected methods ------------------
 
   // -> Returns created 'div' jquery element.
-  protected static createDiv($container: JQuery, cssClass: string): JQuery
+  protected static createDiv
+  (
+    {
+      $container = null,
+      gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
+      sCssClass = null
+    }:
+    {
+      $container?: JQuery;
+      gCssClass?: string;
+      sCssClass?: string;
+    }
+    = {}
+  )
+  : JQuery
   {
     let element = document.createElement('div');
 
-    return this.initElement(element, $container, cssClass);
+    return this.initElement(element, $container, gCssClass, sCssClass);
   }
 
   // -> Returns created 'div' jquery element.
   protected static createForm
   (
-    $container: JQuery,
-    cssClass: string,
-    name: string               // 'name' attribute. Required.
+    {
+      $container = null,
+      name,
+      gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
+      sCssClass = null
+    }:
+    {
+      $container?: JQuery;
+      name: string;
+      gCssClass?: string;
+      sCssClass?: string;
+    }
   )
   : JQuery
   {
@@ -69,37 +107,47 @@ export abstract class Component
     // Form must have a 'name' attribute.
     element.name = name;
 
-    return this.initElement(element, $container, cssClass);
+    return this.initElement(element, $container, gCssClass, sCssClass);
   }
 
   // -> Returns created 'title' jquery element.
-  protected static createTitle($container: JQuery, cssClass: string): JQuery
+  protected static createTitle
+  (
+    {
+      $container = null,
+      gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
+      sCssClass = null
+    }:
+    {
+      $container?: JQuery;
+      gCssClass?: string;
+      sCssClass?: string;
+    }
+    = {}
+  )
+  : JQuery
   {
     let element = document.createElement('title');
 
-    return this.initElement(element, $container, cssClass);
+    return this.initElement(element, $container, gCssClass, sCssClass);
   }
 
   // -> Returns created 'input' jquery element.
   protected static createTextInput
   (
-    $container: JQuery,
-    cssClass: string,
-    name: string,               // 'name' attribute. Required.
-    param: Component.InputParam
-    /*
     {
-      placeholder?: string,        // Placeholder text.
-      readonly?: boolean,
-      disabled?: boolean,
-      size?: number,             // In characters.
-      maxlength?: number,        // In characters.
-      spellcheck?: boolean,      // Enables red wavy underilne.
-      autocapitalize?: AutocapitalizeValue,
-      autocorrect?: AutocorrectValue,
-      autocomplete?: AutocompleteValue
-    }
-    */
+      $container = null,
+      name,
+      gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
+      sCssClass = null
+    }:
+    {
+      $container?: JQuery;
+      name: string;
+      gCssClass?: string;
+      sCssClass?: string;
+    },
+    param: Component.InputParam = null
   )
   : JQuery
   {
@@ -115,44 +163,25 @@ export abstract class Component
 
     this.applyInputParam(element, param);
 
-    /*
-    if (param)
-    {
-      if (param.readonly)
-        element.readOnly = param.readonly;
-      if (param.disabled)
-        element.disabled = param.disabled;
-      if (param.size)
-        element.size = param.size;
-      if (param.maxlength)
-        element.maxLength = param.maxlength;
-      if (param.spellcheck)
-        element.spellcheck = param.spellcheck;
-      if (param.autocapitalize)
-        element.setAttribute('autocapitalize', param.autocapitalize);
-      if (param.autocorrect)
-        element.setAttribute('param.autocorrect', param.autocorrect);
-      if (param.autocomplete)
-        element.setAttribute('param.autocomplete', param.autocomplete);
-
-      // // Disable spell checking and other annoying stuff.
-      // element.setAttribute('spellcheck', 'false');
-      // element.setAttribute('autocapitalize', 'none');
-      // element.setAttribute('autocorrect', 'off');
-      // element.setAttribute('autocomplete', 'off');
-    }
-    */
-
-    return this.initElement(element, $container, cssClass);
+    return this.initElement(element, $container, gCssClass, sCssClass);
   }
 
   // -> Returns created 'input' jquery element.
   protected static createPasswordInput
   (
-    $container: JQuery,
-    cssClass: string,
-    name: string,               // 'name' attribute. Required.
-    param: Component.InputParam
+    {
+      $container = null,
+      name,
+      gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
+      sCssClass = null
+    }:
+    {
+      $container?: JQuery;
+      name: string;
+      gCssClass?: string;
+      sCssClass?: string;
+    },
+    param: Component.InputParam = null
   )
   : JQuery
   {
@@ -168,28 +197,25 @@ export abstract class Component
 
     this.applyInputParam(element, param);
 
-    return this.initElement(element, $container, cssClass);
+    return this.initElement(element, $container, gCssClass, sCssClass);
   }
 
   // -> Returns created 'input' jquery element.
   protected static createEmailInput
   (
-    $container: JQuery,
-    cssClass: string,
-    name: string,               // 'name' attribute. Required.
-    param: Component.InputParam
-    /*
     {
-      readonly: boolean,
-      disabled: boolean,
-      size: number,             // In characters.
-      maxlength: number,        // In characters.
-      spellcheck: boolean,      // Enables red wavy underilne.
-      autocapitalize: AutocapitalizeValue,
-      autocorrect: AutocorrectValue,
-      autocomplete: AutocompleteValue
-    }
-    */
+      $container = null,
+      name,
+      gCssClass = Component.INPUT_G_CSS_CLASS,
+      sCssClass = null
+    }:
+    {
+      $container?: JQuery;
+      name: string;
+      gCssClass?: string;
+      sCssClass?: string;
+    },
+    param: Component.InputParam = null
   )
   : JQuery
   {
@@ -205,21 +231,25 @@ export abstract class Component
 
     this.applyInputParam(element, param);
 
-    return this.initElement(element, $container, cssClass);
+    return this.initElement(element, $container, gCssClass, sCssClass);
   }
 
   // -> Returns created 'input' jquery element.
   protected static createCheckboxInput
   (
-    $container: JQuery,
-    cssClass: string,
-    name: string,               // 'name' attribute. Required.
-    param:
     {
-      readonly?: boolean,
-      disabled?: boolean,
-      checked?: boolean
-    }
+      $container = null,
+      name,
+      gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
+      sCssClass = null
+    }:
+    {
+      $container?: JQuery;
+      name: string;
+      gCssClass?: string;
+      sCssClass?: string;
+    },
+    param: Component.CheckboxParam = null
   )
   : JQuery
   {
@@ -235,7 +265,7 @@ export abstract class Component
 
     this.applyInputParam(element, param);
 
-    return this.initElement(element, $container, cssClass);
+    return this.initElement(element, $container, gCssClass, sCssClass);
   }
 
   // Creates a button which submits data from a form
@@ -243,10 +273,20 @@ export abstract class Component
   // -> Returns created 'label' jquery element.
   protected static createSubmitButton
   (
-    $container: JQuery,
-    cssClass: string,
-    name: string,               // 'name' attribute. Required.
-    text: string,
+    {
+      $container = null,
+      name,
+      gCssClass = Component.BUTTON_G_CSS_CLASS,
+      sCssClass = null,
+      text = null
+    }:
+    {
+      $container?: JQuery;
+      name: string;
+      gCssClass?: string;
+      sCssClass?: string;
+      text: string;
+    },
     param: Component.ButtonParam = null
   )
   : JQuery
@@ -263,10 +303,11 @@ export abstract class Component
 
     this.applyButtonParam(element, param);
 
-    let $element = this.initElement(element, $container, cssClass);
+    let $element = this.initElement(element, $container, gCssClass, sCssClass);
 
     // Set 'text' using JQuery to handle browser incompatibilities.
-    $element.text(text);
+    if (text)
+      $element.text(text);
 
     return $element;
   }
@@ -274,8 +315,16 @@ export abstract class Component
   // -> Returns created 'textarea' jquery element.
   protected static createTextArea
   (
-    $container: JQuery,
-    cssClass: string,
+    {
+      $container = null,
+      gCssClass = Component.INPUT_G_CSS_CLASS,
+      sCssClass = null
+    }:
+    {
+      $container?: JQuery;
+      gCssClass?: string;
+      sCssClass?: string;
+    },
     param: Component.TextAreaParam
   )
   : JQuery
@@ -284,31 +333,40 @@ export abstract class Component
 
     this.applyTextAreaParam(element, param);
 
-    return this.initElement(element, $container, cssClass);
+    return this.initElement(element, $container, gCssClass, sCssClass);
   }
 
   /// Tohle se nejspíš nepoužívá (svg elementy se vyrábí přes knihovnu d3).
   /*
   // -> Returns created 'svg' jquery element.
-  protected static createSvg(id: string, cssClass: string): JQuery
+  protected static createSvg(id: string, gCssClass, sCssClass: string): JQuery
   {
     let element = document.createElement('svg');
 
-    return this.initElement(element, $container, id, cssClass);
+    return this.initElement(element, $container, id, gCssClass, sCssClass);
   }
   */
 
   // -> Returns created 'label' jquery element.
   protected static createLabel
   (
-    $container: JQuery,
-    cssClass: string,
-    text: string
+    {
+      $container = null,
+      gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
+      sCssClass = null,
+      text
+    }:
+    {
+      $container?: JQuery;
+      gCssClass?: string;
+      sCssClass?: string;
+      text: string;
+    }
   )
   : JQuery
   {
     let element = document.createElement('label');
-    let $element = this.initElement(element, $container, cssClass);
+    let $element = this.initElement(element, $container, gCssClass, sCssClass);
 
     // Set 'text' using JQuery to handle browser incompatibilities.
     $element.text(text);
@@ -316,11 +374,25 @@ export abstract class Component
     return $element;
   }
 
-  protected static createSpan($container: JQuery, cssClass: string): JQuery
+  protected static createSpan
+  (
+    {
+      $container = null,
+      gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
+      sCssClass = null
+    }:
+    {
+      $container?: JQuery;
+      gCssClass?: string;
+      sCssClass?: string;
+    }
+    = {}
+  )
+  : JQuery
   {
     let element = document.createElement('span');
 
-    return this.initElement(element, $container, cssClass);
+    return this.initElement(element, $container, gCssClass, sCssClass);
   }
 
   // Creates a button which is not part of a form
@@ -328,9 +400,18 @@ export abstract class Component
   //  submits form data).
   protected static createButton
   (
-    $container: JQuery,
-    cssClass: string,
-    text: string,
+    {
+      $container = null,
+      gCssClass = Component.BUTTON_G_CSS_CLASS,
+      sCssClass = null,
+      text = null
+    }:
+    {
+      $container?: JQuery;
+      gCssClass?: string;
+      sCssClass?: string;
+      text: string;
+    },
     param: Component.ButtonParam = null
   )
   : JQuery
@@ -343,7 +424,7 @@ export abstract class Component
 
     this.applyButtonParam(element, param);
 
-    let $element = this.initElement(element, $container, cssClass);
+    let $element = this.initElement(element, $container, gCssClass, sCssClass);
 
     // Set 'text' using JQuery to handle browser incompatibilities.
     $element.text(text);
@@ -355,9 +436,18 @@ export abstract class Component
   // (note that it's <button>, not <a href=...>).
   protected static createTextLink
   (
-    $container: JQuery,
-    cssClass: string,
-    text: string,
+    {
+      $container = null,
+      gCssClass = Component.LINK_TEXT_G_CSS_CLASS,
+      sCssClass = null,
+      text = null
+    }:
+    {
+      $container?: JQuery;
+      gCssClass?: string;
+      sCssClass?: string;
+      text: string;
+    },
     param: Component.ButtonParam = null
   )
   : JQuery
@@ -366,9 +456,12 @@ export abstract class Component
     // are going to handle the clicks ourselves.
     return this.createButton
     (
-      $container,
-      cssClass,
-      text,
+      {
+        $container,
+        gCssClass,
+        sCssClass,
+        text
+      },
       param
     );
   }
@@ -376,50 +469,51 @@ export abstract class Component
   /// Ve skutečnosti asi vůbec nechci používat href, ale button bez grafiky...
   /// 
   /*
-  protected static createHref(id: string, cssClass: string): JQuery
+  protected static createHref
+  (
+    id: string,
+    gCssClass: string,
+    sCssClass: string
+  )
+  : JQuery
   {
     let element = document.createElement('a');
 
-    return this.initElement(element, $container, id, cssClass);
+    return this.initElement(element, $container, id, gCssClass, sCssClass);
   }
   */
 
   // Generic non-clickable text.
   protected static createText
   (
-    $container: JQuery,
-    cssClass: string,
-    text: string
+    {
+      $container = null,
+      gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
+      sCssClass = null,
+      text = null
+    }:
+    {
+      $container?: JQuery;
+      gCssClass?: string;
+      sCssClass?: string;
+      text: string;
+    }
   )
   : JQuery
   {
     let $text = this.createSpan
     (
-      $container,
-      cssClass
+      {
+        $container,
+        gCssClass,
+        sCssClass
+      }
     );
 
     $text.text(text);
 
     return $text;
   }
-
-  /*
-  // Generic clickable text link
-  // (note that it's <button>, not <a href=...>).
-  protected static appendLink($container: JQuery, text: string)
-  {
-    // Use <button> instead of <a href=...> because we
-    // are going to handle the clicks ourselves.
-    return this.createButton
-    (
-      $container,
-      Component.LINK_CSS_CLASS,
-      text,
-      null
-    );
-  }
-  */
 
   // ---------------- Private methods -------------------
 
@@ -428,20 +522,21 @@ export abstract class Component
   (
     element: T,
     $container: JQuery,
-    cssClass: string
+    // Css class with graphical attributes of the element
+    // (borders, background, font, font size, etc.).
+    gCssClass: string,
+    // Css class with structural attributes of the element
+    // (size, position, margin, padding, floating, etc.).
+    sCssClass: string
   )
   {
     // Create jquery element from the DOM element.
     let $element = $(element);
 
-    // All components use .Text css class.
-    // (This is because font attributes are not always
-    //  correctly inherited from <body> element. This
-    //  way all texts use the same base attributes.)
-    ///$element.addClass(Component.TEXT_CSS_CLASS);
+    $element.addClass(gCssClass);
 
-    if (cssClass)
-      $element.addClass(cssClass);
+    if (sCssClass)
+      $element.addClass(sCssClass);
 
     if ($container)
       $container.append($element);
@@ -580,6 +675,13 @@ export module Component
   {
     disabled?: boolean
   }
+
+  export interface CheckboxParam
+  {
+    readonly?: boolean,
+    disabled?: boolean,
+    checked?: boolean
+  }  
 
   export interface TextAreaParam
   {

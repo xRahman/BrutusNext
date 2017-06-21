@@ -27,7 +27,7 @@ export class MapWindow extends GameWindow
     this.flags.set(ClientApp.State.IN_GAME);
   }
 
-  protected static get CSS_CLASS()
+  protected static get S_CSS_CLASS()
     { return 'MapWindow'; }
 
   // Map is updated only after 'resize' event doesn't fire
@@ -59,7 +59,7 @@ export class MapWindow extends GameWindow
   // -> Returns created jquery element.
   public create()
   {
-    super.create(MapWindow.CSS_CLASS);
+    super.create(MapWindow.S_CSS_CLASS);
 
     this.$window.resize
     (
