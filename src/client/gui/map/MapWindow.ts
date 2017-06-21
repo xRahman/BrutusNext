@@ -28,7 +28,7 @@ export class MapWindow extends GameWindow
   }
 
   protected static get S_CSS_CLASS()
-    { return 'MapWindow'; }
+    { return 'S_MapWindow'; }
 
   // Map is updated only after 'resize' event doesn't fire
   // for this period (in miliseconds).

@@ -14,7 +14,7 @@ import $ = require('jquery');
 export class ScrollWindowOutput extends MudColorComponent
 {
   public static get S_CSS_CLASS()
-    { return 'ScrollWindowOutput'; }
+    { return 'S_ScrollWindowOutput'; }
 
   // -------------- Static class data -------------------
 

@@ -27,7 +27,7 @@ export class ScrollWindow extends GameWindow
   }
 
   protected static get S_CSS_CLASS()
-    { return 'ScrollWindow'; }
+    { return 'S_ScrollWindow'; }
 
   // -------------- Static class data -------------------
 
