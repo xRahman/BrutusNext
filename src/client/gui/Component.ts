@@ -9,16 +9,15 @@
   Implementation notes:
     Each html element uses two css classes: 'gCssClass' and 'sCssClass'.
 
-    'gCssClass' should only contain graphical attributes
-      (borders, background, font, font size, etc.).
+    'gCssClass' should only contain basic graphical attributes
+      (borders, background, font, etc.).
 
     'sCssClass': string should only contain structural attributes
-      (size, position, margin, padding, floating, etc.).
+      (size, font size, position, margin, padding, floating, etc.).
 
     Constants defining 'gCssClass' names should only be
     in class Component. Constants definining 'sCssNames' should be
-    in an inherited class that creates that element or in it's ancestor
-    if the class is used in multiple descendants without redefinition.
+    in an inherited class that creates that element or in it's ancestor.
     
     Using these two css classes greatly simplifies resultning css sheet.
 */
