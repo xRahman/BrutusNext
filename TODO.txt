@@ -1,12 +1,23 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+TODO: Nějak chytře pořešit zákaz selektování textu
+ (ideálně aby se nemusely vypisovat všechny classy v css).
+- Možná to v css globálně zakázat a povolovat to flagou v kódu?
+  (Tj. na konkrétních komponentách, nezávisle na css classách...)
+
+TODO: Možná by šlo z dvojice { gCssClass, sCssClass } udělat
+  interface (Takže Window.create() by mělo 3 parametry místo 6...).
+
+TODO: Strukturální css classy přejmenovat na S_Cosi
+
 TODO: Doplnit vendor-specific řádky k backgroundům.
 
 TODO: Nastavit klikatelným elementům:
 {
    cursor: pointer;
 }
+- a nebo ne? Klikatelné elementy reagují na mouseover, to by mohlo stačit.
 
 TODO: Borderům u buttonů dat border-style: outset;
 - u inputů:  border-style: inset;

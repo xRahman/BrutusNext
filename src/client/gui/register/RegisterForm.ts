@@ -14,9 +14,9 @@ import $ = require('jquery');
 
 export class RegisterForm extends Form
 {
-  protected static get SUBMIT_BUTTON_CSS_CLASS()
+  protected static get SUBMIT_BUTTON_S_CSS_CLASS()
     { return 'RegisterForm_SubmitButton'; }
-  protected static get CANCEL_BUTTON_CSS_CLASS()
+  protected static get CANCEL_BUTTON_S_CSS_CLASS()
     { return 'RegisterForm_CancelButton'; }
 
   // -------------- Static class data -------------------
@@ -39,19 +39,18 @@ export class RegisterForm extends Form
 
   // ---------------- Public methods --------------------
 
-  // ~ Overrides Form.create().
   // -> Returns created jquery element.
-  public create($container: JQuery)
+  public create({ $container }: { $container: JQuery; })
   {
-    super.create($container, 'register_form');
+    super.create({ $container: $container, name: 'register_form' });
 
-    this.createLabel('Account Name');
+    super.createLabel({ text: 'Account Name' });
     this.createAccountNameInput();
 
-    this.createLabel('E-mail');
+    super.createLabel({ text: 'E-mail' });
     this.createEmailInput();
 
-    this.createLabel('Password');
+    super.createLabel({ text: 'Password' });
     this.createPasswordInput();
 
     this.createRememberMeCheckbox();
@@ -60,65 +59,61 @@ export class RegisterForm extends Form
 
   // --------------- Protected methods ------------------
 
-  // ~Overrides Form.createEmailInput().
-  protected createEmailInput
-  (
-    name = 'email_input',
-    placeholder = 'Enter E-mail'
-  )
+  protected createEmailInput()
   {
-    this.$emailInput = super.createEmailInput(name, placeholder);
+    this.$emailInput = super.createEmailInput
+    (
+      {
+        name: 'email_input',
+        placeholder: 'Enter E-mail'
+      }
+    );
 
     return this.$emailInput;
   }
 
-  // ~Overrides Form.createPasswordInput().
-  protected createPasswordInput
-  (
-    name = 'password_input',
-    placeholder = 'Enter Password',
-    minLength = null,
-    maxLength = null
-  )
+  protected createPasswordInput()
   {
     /// TODO: Číst to ze stejné proměnné jako server a jako register form.
-    if (minLength === null)
-      minLength = 4;
-
-    if (maxLength === null)  
-      maxLength = 50;
+    let minLength = 4;
+    let maxLength = 50;
 
     this.$passwordInput = super.createPasswordInput
     (
-      name,
-      placeholder,
-      minLength,
-      maxLength
+      {
+        name: 'password_input',
+        placeholder: 'Enter Password',
+        minLength: minLength,
+        maxLength: maxLength
+      }
     );
 
     return this.$passwordInput;
   }
 
-  // ~Overrides Form.createSubmitButton().
-  protected createSubmitButton
-  (
-    $container,
-    text = 'Register',
-    cssClass = RegisterForm.SUBMIT_BUTTON_CSS_CLASS
-  )
+  protected createSubmitButton({ $container }: { $container: JQuery; })
   {
-    return super.createSubmitButton($container, text, cssClass);
+    return super.createSubmitButton
+    (
+      {
+        $container:  $container,
+        text: 'Register',
+        sCssClass: RegisterForm.SUBMIT_BUTTON_S_CSS_CLASS
+      }
+    );
   }
 
   // ---------------- Private methods -------------------
 
   private createRememberMeCheckbox()
   {
-    this.$rememberMeCheckbox = this.createCheckboxInput
+    this.$rememberMeCheckbox = super.createCheckboxInput
     (
-      'remember_me_checkbox',   // 'name' attribute.
-      'Remember me',            // Placeholder text.
-      true                     // Checked.
+      {
+        name: 'remember_me_checkbox',
+        text: 'Remember me',
+        checked: true
+      }
     );
   }
 
@@ -129,30 +124,34 @@ export class RegisterForm extends Form
     let minLength = 3;
     let maxLength = 20;
 
-    this.$accountNameInput = this.createTextInput
+    this.$accountNameInput = super.createTextInput
     (
-      'account_name_input',   // 'name' attribute.
-      'Enter Account Name',   // Placeholder text.
-      minLength,
-      maxLength
+      {
+        name: 'account_name_input',
+        placeholder: 'Enter Account Name',   // Placeholder text.
+        minLength: minLength,
+        maxLength: maxLength
+      }
     );
   }
 
   private createButtons()
   {
-    let $container = this.createButtonContainer();
+    let $container = super.createButtonContainer();
 
-    this.createSubmitButton($container);
-    this.createCancelButton($container);
+    this.createSubmitButton({ $container: $container });
+    this.createCancelButton({ $container: $container });
   }
 
-  private createCancelButton($container: JQuery)
+  private createCancelButton({ $container }: { $container: JQuery; })
   {
     let $button = Component.createButton
     (
-      $container,
-      RegisterForm.CANCEL_BUTTON_CSS_CLASS,
-      'Cancel'   // Button text.
+      {
+        $container: $container,
+        sCssClass: RegisterForm.CANCEL_BUTTON_S_CSS_CLASS,
+        text: 'Cancel'
+      }
     );
 
     $button.click

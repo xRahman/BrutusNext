@@ -16,13 +16,13 @@ import $ = require('jquery');
 
 export class Window extends MudColorComponent
 {
-  protected static get CSS_CLASS()
+  protected static get S_CSS_CLASS()
     { return 'Window'; }
-  protected static get TITLE_BAR_CSS_CLASS()
+  protected static get TITLE_BAR_S_CSS_CLASS()
     { return 'WindowTitleBar'; }
-  protected static get TITLE_CSS_CLASS()
+  protected static get TITLE_S_CSS_CLASS()
     { return 'WindowTitle'; }
-  protected static get CONTENT_CSS_CLASS()
+  protected static get CONTENT_S_CSS_CLASS()
     { return 'WindowContent'; }
 
   constructor()
@@ -31,7 +31,6 @@ export class Window extends MudColorComponent
   }
 
   // -------------- Static class data -------------------
-
 
   //----------------- Protected data --------------------
 
@@ -88,23 +87,50 @@ export class Window extends MudColorComponent
 
   public create
   (
-    windowCssClass = Window.CSS_CLASS,
-    contentCssClass = Window.CONTENT_CSS_CLASS,
-    titleBarCssClass = Window.TITLE_BAR_CSS_CLASS,
-    titleCssClass = Window.TITLE_CSS_CLASS
+    {
+      window_sCssClass = Window.S_CSS_CLASS,
+      window_gCssClass = Component.WINDOW_G_CSS_CLASS,
+      content_sCssClass = Window.CONTENT_S_CSS_CLASS,
+      content_gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
+      titleBar_sCssClass = Window.TITLE_BAR_S_CSS_CLASS,
+      titleBar_gCssClass = Component.TITLE_BAR_G_CSS_CLASS,
+      title_sCssClass = Window.TITLE_S_CSS_CLASS,
+      title_gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS
+    }:
+    {
+      window_sCssClass?: string;
+      window_gCssClass?: string;
+      content_sCssClass?: string;
+      content_gCssClass?: string;
+      titleBar_sCssClass?: string;
+      titleBar_gCssClass?: string;
+      title_sCssClass?: string;
+      title_gCssClass?: string;
+    }
+    = {}
   )
   {
     this.$window = Component.createDiv
     (
-      Document.$body,
-      windowCssClass
+      {
+        $container: Document.$body,
+        sCssClass: window_sCssClass,
+        gCssClass: window_gCssClass
+      }
     );
 
     // Windows are created hidden.
     this.$window.hide();
 
-    this.createTitleBar(titleBarCssClass, titleCssClass);
-    this.createContent(contentCssClass);
+    this.createTitleBar
+    (
+      titleBar_gCssClass,
+      titleBar_sCssClass,
+      title_gCssClass,
+      title_sCssClass
+    );
+
+    this.createContent(content_gCssClass, content_sCssClass);
 
     return this.$window;
   }
@@ -121,34 +147,6 @@ export class Window extends MudColorComponent
 
   // --------------- Protected methods ------------------
 
-  // This method is overriden by descendants.
-  protected createContent(cssClass: string)
-  {
-    this.$content = Component.createDiv
-    (
-      this.$window,
-      cssClass
-    );
-
-    return this.$content;
-  }
-
-  protected createTitleBar(titleBarCssClass: string, titleCssClass: string)
-  {
-    this.$titleBar = Component.createDiv
-    (
-      this.$window,
-      titleBarCssClass
-    );
-
-    this.$title = Component.createTitle
-    (
-      this.$titleBar,
-      titleCssClass
-    );
-    this.$title.text('New window');
-  }
-
   // ---------------- Private methods -------------------
 
   private hide()
@@ -160,6 +158,49 @@ export class Window extends MudColorComponent
   {
     if (!this.closed)
       this.$window.show();
+  }
+
+  private createTitleBar
+  (
+    titleBar_gCssClass: string,
+    titleBar_sCssClass: string,
+    title_gCssClass: string,
+    title_sCssClass: string
+  )
+  {
+    this.$titleBar = Component.createDiv
+    (
+      {
+        $container: this.$window,
+        gCssClass: titleBar_gCssClass,
+        sCssClass: titleBar_sCssClass
+      }
+    );
+
+    this.$title = Component.createTitle
+    (
+      {
+        $container: this.$titleBar,
+        gCssClass: title_gCssClass,
+        sCssClass: title_sCssClass
+      }
+    );
+
+    this.$title.text('New window');
+  }
+
+  private createContent(gCssClass: string, sCssClass: string)
+  {
+    this.$content = Component.createDiv
+    (
+      {
+        $container: this.$window,
+        gCssClass: gCssClass,
+        sCssClass: sCssClass
+      }
+    );
+
+    return this.$content;
   }
 
   // ---------------- Event handlers --------------------

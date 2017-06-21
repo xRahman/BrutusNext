@@ -13,7 +13,7 @@ import $ = require('jquery');
 
 export class ScrollWindowOutput extends MudColorComponent
 {
-  public static get CSS_CLASS()
+  public static get S_CSS_CLASS()
     { return 'ScrollWindowOutput'; }
 
   // -------------- Static class data -------------------
@@ -37,8 +37,10 @@ export class ScrollWindowOutput extends MudColorComponent
   {
     this.$output = Component.createDiv
     (
-      $container,
-      ScrollWindowOutput.CSS_CLASS
+      {
+        $container: $container,
+        sCssClass: ScrollWindowOutput.S_CSS_CLASS
+      }
     );
 
     // In order to trigger keyboard event on <div> element,

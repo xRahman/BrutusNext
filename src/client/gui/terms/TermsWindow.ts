@@ -22,13 +22,13 @@ export class TermsWindow extends StandaloneWindow
     this.flags.set(ClientApp.State.TERMS);
   }
 
-  protected static get CSS_CLASS()
+  protected static get S_CSS_CLASS()
     { return 'TermsWindow'; }
-  protected static get CONTENT_CSS_CLASS()
+  protected static get CONTENT_S_CSS_CLASS()
     { return 'TermsWindow_Content'; }
-  protected static get TERMS_CSS_CLASS()
+  protected static get TERMS_S_CSS_CLASS()
     { return 'TermsWindow_Terms'; }
-  protected static get ACCEPT_BUTTON_CSS_CLASS()
+  protected static get ACCEPT_BUTTON_S_CSS_CLASS()
     { return 'TermsWindow_AcceptButton'; }
 
   // -------------- Static class data -------------------
@@ -50,8 +50,10 @@ export class TermsWindow extends StandaloneWindow
   {
     super.create
     (
-      TermsWindow.CSS_CLASS,
-      TermsWindow.CONTENT_CSS_CLASS
+      {
+        window_sCssClass: TermsWindow.S_CSS_CLASS,
+        content_sCssClass: TermsWindow.CONTENT_S_CSS_CLASS
+      }
     );
 
     this.setTitle("Terms of Use");
@@ -158,11 +160,19 @@ export class TermsWindow extends StandaloneWindow
     
     let $container = Component.createDiv
     (
-      this.$content,
-      TermsWindow.TERMS_CSS_CLASS
+      {
+        $container: this.$content,
+        sCssClass: TermsWindow.TERMS_S_CSS_CLASS
+      }
     );
 
-    let $span = Component.createSpan($container, null);
+    let $span = Component.createSpan
+    (
+      {
+        $container: $container,
+        sCssClass: null
+      }
+    );
 
     ///$span.attr('word-wrap', 'break-word');
 
@@ -173,9 +183,11 @@ export class TermsWindow extends StandaloneWindow
   {
     let $button = Component.createButton
     (
-      this.$content,
-      TermsWindow.ACCEPT_BUTTON_CSS_CLASS,
-      'Accept'   // Button text.
+      {
+        $container: this.$content,
+        sCssClass: TermsWindow.ACCEPT_BUTTON_S_CSS_CLASS,
+        text: 'Accept'   // Button text.
+      }
     );
 
     $button.click
