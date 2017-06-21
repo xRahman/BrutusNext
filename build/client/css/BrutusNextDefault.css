@@ -161,39 +161,39 @@ G_LinkText
 
 /* :: CourierNew Bold :: */
 /*
-.Window,
-.WindowTitleBar,
-.WindowTitle,
-.WindowContent,
-.GameWindow,
-.GameWindow_TitleBar,
-.GameWindow_Title,
-.GameWindow_Content,
-.ScrollWindow,
-.ScrollWindowOutput,
-.ScrollWindowInput,
-.MapWindow,
-.Form,
-.Form_Label,
-.Form_Input,
-.Form_Checkbox,
-.Form_CheckboxContainer,
-.Form_SubmitButton,
-.Form_ButtonContainer,
-.LoginForm_SubmitButton,
-.RegisterForm_SubmitButton,
-.RegisterForm_CancelButton,
-.StandaloneWindow,
-.StandaloneWindow_Title,
-.StandaloneWindow_TitleBar,
-.StandaloneWindow_Content,
-.StandaloneWindow_Text,
-.StandaloneWindow_LinkText,
-.StandaloneWindow_LinkContainer,
-.TermsWindow,
-.TermsWindow_Content,
-.TermsWindow_Terms,
-.TermsWindow_AcceptButton
+.S_Window,
+.S_WindowTitleBar,
+.S_WindowTitle,
+.S_WindowContent,
+.S_GameWindow,
+.S_GameWindow_TitleBar,
+.S_GameWindow_Title,
+.S_GameWindow_Content,
+.S_ScrollWindow,
+.S_ScrollWindowOutput,
+.S_ScrollWindowInput,
+.S_MapWindow,
+.S_Form,
+.S_Form_Label,
+.S_Form_Input,
+.S_Form_Checkbox,
+.S_Form_CheckboxContainer,
+.S_Form_SubmitButton,
+.S_Form_ButtonContainer,
+.S_LoginForm_SubmitButton,
+.S_RegisterForm_SubmitButton,
+.S_RegisterForm_CancelButton,
+.S_StandaloneWindow,
+.S_StandaloneWindow_Title,
+.S_StandaloneWindow_TitleBar,
+.S_StandaloneWindow_Content,
+.S_StandaloneWindow_Text,
+.S_StandaloneWindow_LinkText,
+.S_StandaloneWindow_LinkContainer,
+.S_TermsWindow,
+.S_TermsWindow_Content,
+.S_TermsWindow_Terms,
+.S_TermsWindow_AcceptButton
 */
 .G_NoGraphics,
 .G_Window,
@@ -211,39 +211,39 @@ G_LinkText
 
 /* :: Text Overflow: Ellipsis :: */
 /*
-.Window,
-.WindowTitleBar,
-.WindowTitle,
-.WindowContent,
-.GameWindow,
-.GameWindow_TitleBar,
-.GameWindow_Title,
-.GameWindow_Content,
-.ScrollWindow,
-.ScrollWindowOutput,
-.ScrollWindowInput,
-.MapWindow,
-.Form,
-.Form_Label,
-.Form_Input,
-.Form_Checkbox,
-.Form_CheckboxContainer,
-.Form_SubmitButton,
-.Form_ButtonContainer,
-.LoginForm_SubmitButton,
-.RegisterForm_SubmitButton,
-.RegisterForm_CancelButton,
-.StandaloneWindow,
-.StandaloneWindow_Title,
-.StandaloneWindow_TitleBar,
-.StandaloneWindow_Content,
-.StandaloneWindow_Text,
-.StandaloneWindow_LinkText,
-.StandaloneWindow_LinkContainer,
-.TermsWindow,
-.TermsWindow_Content,
-.TermsWindow_Terms,
-.TermsWindow_AcceptButton
+.S_Window,
+.S_WindowTitleBar,
+.S_WindowTitle,
+.S_WindowContent,
+.S_GameWindow,
+.S_GameWindow_TitleBar,
+.S_GameWindow_Title,
+.S_GameWindow_Content,
+.S_ScrollWindow,
+.S_ScrollWindowOutput,
+.S_ScrollWindowInput,
+.S_MapWindow,
+.S_Form,
+.S_Form_Label,
+.S_Form_Input,
+.S_Form_Checkbox,
+.S_Form_CheckboxContainer,
+.S_Form_SubmitButton,
+.S_Form_ButtonContainer,
+.S_LoginForm_SubmitButton,
+.S_RegisterForm_SubmitButton,
+.S_RegisterForm_CancelButton,
+.S_StandaloneWindow,
+.S_StandaloneWindow_Title,
+.S_StandaloneWindow_TitleBar,
+.S_StandaloneWindow_Content,
+.S_StandaloneWindow_Text,
+.S_StandaloneWindow_LinkText,
+.S_StandaloneWindow_LinkContainer,
+.S_TermsWindow,
+.S_TermsWindow_Content,
+.S_TermsWindow_Terms,
+.S_TermsWindow_AcceptButton
 */
 .G_NoGraphics,
 .G_Window,
@@ -260,39 +260,39 @@ G_LinkText
 
 /* :: Text Shadow :: */
 /*
-.Window,
-.WindowTitleBar,
-.WindowTitle,
-.WindowContent,
-.GameWindow,
-.GameWindow_TitleBar,
-.GameWindow_Title,
-.GameWindow_Content,
-.ScrollWindow,
-.ScrollWindowOutput,
-.ScrollWindowInput,
-.MapWindow,
-.Form,
-.Form_Label,
-.Form_Input,
-.Form_Checkbox,
-.Form_CheckboxContainer,
-.Form_SubmitButton,
-.Form_ButtonContainer,
-.LoginForm_SubmitButton,
-.RegisterForm_SubmitButton,
-.RegisterForm_CancelButton,
-.StandaloneWindow,
-.StandaloneWindow_Title,
-.StandaloneWindow_TitleBar,
-.StandaloneWindow_Content,
-.StandaloneWindow_Text,
-.StandaloneWindow_LinkText,
-.StandaloneWindow_LinkContainer,
-.TermsWindow,
-.TermsWindow_Content,
-.TermsWindow_Terms,
-.TermsWindow_AcceptButton
+.S_Window,
+.S_WindowTitleBar,
+.S_WindowTitle,
+.S_WindowContent,
+.S_GameWindow,
+.S_GameWindow_TitleBar,
+.S_GameWindow_Title,
+.S_GameWindow_Content,
+.S_ScrollWindow,
+.S_ScrollWindowOutput,
+.S_ScrollWindowInput,
+.S_MapWindow,
+.S_Form,
+.S_Form_Label,
+.S_Form_Input,
+.S_Form_Checkbox,
+.S_Form_CheckboxContainer,
+.S_Form_SubmitButton,
+.S_Form_ButtonContainer,
+.S_LoginForm_SubmitButton,
+.S_RegisterForm_SubmitButton,
+.S_RegisterForm_CancelButton,
+.S_StandaloneWindow,
+.S_StandaloneWindow_Title,
+.S_StandaloneWindow_TitleBar,
+.S_StandaloneWindow_Content,
+.S_StandaloneWindow_Text,
+.S_StandaloneWindow_LinkText,
+.S_StandaloneWindow_LinkContainer,
+.S_TermsWindow,
+.S_TermsWindow_Content,
+.S_TermsWindow_Terms,
+.S_TermsWindow_AcceptButton
 */
 .G_NoGraphics,
 .G_Window,
@@ -309,37 +309,37 @@ G_LinkText
 
 /* :: Default Text Color :: */
 /*
-.Window,
-.WindowTitleBar,
-.WindowTitle,
-.WindowContent,
-.GameWindow,
-.GameWindow_TitleBar,
-.GameWindow_Title,
-.GameWindow_Content,
-.ScrollWindow,
-.ScrollWindowOutput,
-.MapWindow,
-.Form,
-.Form_Label,
-.Form_Input,
-.Form_Checkbox,
-.Form_CheckboxContainer,
-.Form_SubmitButton,
-.Form_ButtonContainer,
-.LoginForm_SubmitButton,
-.RegisterForm_SubmitButton,
-.RegisterForm_CancelButton,
-.StandaloneWindow,
-.StandaloneWindow_Title,
-.StandaloneWindow_TitleBar,
-.StandaloneWindow_Content,
-.StandaloneWindow_Text,
-.StandaloneWindow_LinkContainer,
-.TermsWindow,
-.TermsWindow_Content,
-.TermsWindow_Terms,
-.TermsWindow_AcceptButton
+.S_Window,
+.S_WindowTitleBar,
+.S_WindowTitle,
+.S_WindowContent,
+.S_GameWindow,
+.S_GameWindow_TitleBar,
+.S_GameWindow_Title,
+.S_GameWindow_Content,
+.S_ScrollWindow,
+.S_ScrollWindowOutput,
+.S_MapWindow,
+.S_Form,
+.S_Form_Label,
+.S_Form_Input,
+.S_Form_Checkbox,
+.S_Form_CheckboxContainer,
+.S_Form_SubmitButton,
+.S_Form_ButtonContainer,
+.S_LoginForm_SubmitButton,
+.S_RegisterForm_SubmitButton,
+.S_RegisterForm_CancelButton,
+.S_StandaloneWindow,
+.S_StandaloneWindow_Title,
+.S_StandaloneWindow_TitleBar,
+.S_StandaloneWindow_Content,
+.S_StandaloneWindow_Text,
+.S_StandaloneWindow_LinkContainer,
+.S_TermsWindow,
+.S_TermsWindow_Content,
+.S_TermsWindow_Terms,
+.S_TermsWindow_AcceptButton
 */
 .G_NoGraphics,
 .G_Window,
@@ -352,7 +352,7 @@ G_LinkText
 }
 
 /* :: Link Text Color :: */
-/*.StandaloneWindow_LinkText*/
+/*.S_StandaloneWindow_LinkText*/
 .G_Link_text
 {
   color: rgb(43, 144, 255); /* text color */
@@ -360,8 +360,8 @@ G_LinkText
 
 /* :: Player Input Text Color :: */
 /*
-.Form_Input,
-.ScrollWindowInput
+.S_Form_Input,
+.S_ScrollWindowInput
 */
 .G_Input
 {
@@ -371,7 +371,7 @@ G_LinkText
 /* ----------- Text Decoration ----------- */
 
 /* :: Link Text Mouseover :: */
-/*.StandaloneWindow_LinkText:hover*/
+/*.S_StandaloneWindow_LinkText:hover*/
 .G_Link_text:hover
 {
   text-decoration: underline;
@@ -379,35 +379,35 @@ G_LinkText
 
 /* -------- Disabled Text Selection ------ */
 /*
-.Window,
-.WindowTitleBar,
-.WindowTitle,
-.WindowContent,
-.GameWindow,
-.GameWindow_TitleBar,
-.GameWindow_Title,
-.GameWindow_Content,
-.ScrollWindow,
-.MapWindow,
-.Form,
-.Form_Label,
-.Form_Checkbox,
-.Form_CheckboxContainer,
-.Form_SubmitButton,
-.Form_ButtonContainer,
-.LoginForm_SubmitButton,
-.RegisterForm_SubmitButton,
-.RegisterForm_CancelButton,
-.StandaloneWindow,
-.StandaloneWindow_Title,
-.StandaloneWindow_TitleBar,
-.StandaloneWindow_Content,
-.StandaloneWindow_Text,
-.StandaloneWindow_LinkText,
-.StandaloneWindow_LinkContainer,
-.TermsWindow,
-.TermsWindow_Content,
-.TermsWindow_AcceptButton
+.S_Window,
+.S_WindowTitleBar,
+.S_WindowTitle,
+.S_WindowContent,
+.S_GameWindow,
+.S_GameWindow_TitleBar,
+.S_GameWindow_Title,
+.S_GameWindow_Content,
+.S_ScrollWindow,
+.S_MapWindow,
+.S_Form,
+.S_Form_Label,
+.S_Form_Checkbox,
+.S_Form_CheckboxContainer,
+.S_Form_SubmitButton,
+.S_Form_ButtonContainer,
+.S_LoginForm_SubmitButton,
+.S_RegisterForm_SubmitButton,
+.S_RegisterForm_CancelButton,
+.S_StandaloneWindow,
+.S_StandaloneWindow_Title,
+.S_StandaloneWindow_TitleBar,
+.S_StandaloneWindow_Content,
+.S_StandaloneWindow_Text,
+.S_StandaloneWindow_LinkText,
+.S_StandaloneWindow_LinkContainer,
+.S_TermsWindow,
+.S_TermsWindow_Content,
+.S_TermsWindow_AcceptButton
 */
 *
 {
@@ -421,10 +421,10 @@ G_LinkText
 
 /* -------- Enabled Text Selection ------ */
 
-.ScrollWindowOutput,
-.ScrollWindowInput,
-.Form_Input,
-.TermsWindow_Terms
+.S_ScrollWindowOutput,
+.S_ScrollWindowInput,
+.S_Form_Input,
+.S_TermsWindow_Terms
 {
   -khtml-user-select: text;
   -moz-user-select: text;
@@ -442,23 +442,23 @@ G_LinkText
 
 /* :: No Border :: */
 /*
-.GameWindow_TitleBar,
-.GameWindow_Title,
-.GameWindow_Content,
-.ScrollWindowOutput,
-.Form,
-.Form_Label,
-.Form_Checkbox,
-.Form_CheckboxContainer,
-.Form_ButtonContainer,
-.StandaloneWindow_Title,
-.StandaloneWindow_TitleBar,
-.StandaloneWindow_Content,
-.StandaloneWindow_Text,
-.StandaloneWindow_LinkText,
-.StandaloneWindow_LinkContainer,
-.TermsWindow_Terms,
-.TermsWindow_Content
+.S_GameWindow_TitleBar,
+.S_GameWindow_Title,
+.S_GameWindow_Content,
+.S_ScrollWindowOutput,
+.S_Form,
+.S_Form_Label,
+.S_Form_Checkbox,
+.S_Form_CheckboxContainer,
+.S_Form_ButtonContainer,
+.S_StandaloneWindow_Title,
+.S_StandaloneWindow_TitleBar,
+.S_StandaloneWindow_Content,
+.S_StandaloneWindow_Text,
+.S_StandaloneWindow_LinkText,
+.S_StandaloneWindow_LinkContainer,
+.S_TermsWindow_Terms,
+.S_TermsWindow_Content
 */
 .G_NoGraphics,
 .G_TitleBar,
@@ -470,14 +470,14 @@ G_LinkText
 
 /* :: Default Border Color :: */
 /*
-.Window,
-.GameWindow,
-.StandaloneWindow,
-.TermsWindow,
-.Form_Input,
-.ScrollWindow,
-.ScrollWindowInput,
-.MapWindow
+.S_Window,
+.S_GameWindow,
+.S_StandaloneWindow,
+.S_TermsWindow,
+.S_Form_Input,
+.S_ScrollWindow,
+.S_ScrollWindowInput,
+.S_MapWindow
 */
 .G_Input,
 .G_Window
@@ -487,11 +487,11 @@ G_LinkText
 
 /* :: Button Border :: */
 /*
-.Form_SubmitButton,
-.RegisterForm_SubmitButton,
-.RegisterForm_CancelButton,
-.LoginForm_SubmitButton,
-.TermsWindow_AcceptButton
+.S_Form_SubmitButton,
+.S_RegisterForm_SubmitButton,
+.S_RegisterForm_CancelButton,
+.S_LoginForm_SubmitButton,
+.S_TermsWindow_AcceptButton
 */
 .G_Button
 {
@@ -500,11 +500,11 @@ G_LinkText
 
 /* :: Button Border Highlight :: */
 /*
-.Form_SubmitButton:hover,
-.RegisterForm_SubmitButton:hover,
-.RegisterForm_CancelButton:hover,
-.LoginForm_SubmitButton:hover,
-.TermsWindow_AcceptButton:hover
+.S_Form_SubmitButton:hover,
+.S_RegisterForm_SubmitButton:hover,
+.S_RegisterForm_CancelButton:hover,
+.S_LoginForm_SubmitButton:hover,
+.S_TermsWindow_AcceptButton:hover
 */
 .G_Button:hover
 {
@@ -523,22 +523,22 @@ G_LinkText
 
 /* :: Border Outset :: */
 /*
-.Window,
-.GameWindow,
-.StandaloneWindow,
-.TermsWindow,
-.ScrollWindow,
-.MapWindow,
-.Form_SubmitButton,
-.RegisterForm_SubmitButton,
-.RegisterForm_CancelButton,
-.LoginForm_SubmitButton,
-.TermsWindow_AcceptButton,
-.Form_SubmitButton:hover,
-.RegisterForm_SubmitButton:hover,
-.RegisterForm_CancelButton:hover,
-.LoginForm_SubmitButton:hover,
-.TermsWindow_AcceptButton:hover
+.S_Window,
+.S_GameWindow,
+.S_StandaloneWindow,
+.S_TermsWindow,
+.S_ScrollWindow,
+.S_MapWindow,
+.S_Form_SubmitButton,
+.S_RegisterForm_SubmitButton,
+.S_RegisterForm_CancelButton,
+.S_LoginForm_SubmitButton,
+.S_TermsWindow_AcceptButton,
+.S_Form_SubmitButton:hover,
+.S_RegisterForm_SubmitButton:hover,
+.S_RegisterForm_CancelButton:hover,
+.S_LoginForm_SubmitButton:hover,
+.S_TermsWindow_AcceptButton:hover
 
 .G_Window,
 .G_Window:hover,
@@ -552,8 +552,8 @@ G_LinkText
 /* :: Border Inset :: */
 
 /*
-.Form_Input,
-.ScrollWindowInput
+.S_Form_Input,
+.S_ScrollWindowInput
 
 .G_Input
 {
@@ -565,22 +565,22 @@ G_LinkText
 
 /* :: Transparent Background :: */
 /*
-.Form,
-.Form_Label,
-.Form_Checkbox,
-.Form_CheckboxContainer,
-.Form_ButtonContainer,
-.StandaloneWindow_Title,
-.StandaloneWindow_TitleBar,
-.StandaloneWindow_Content,
-.StandaloneWindow_Text,
-.StandaloneWindow_LinkText,
-.StandaloneWindow_LinkContainer,
-.GameWindow_Content,
-.GameWindow_Title,
-.ScrollWindowOutput,
-.TermsWindow_Content,
-.TermsWindow_Terms
+.S_Form,
+.S_Form_Label,
+.S_Form_Checkbox,
+.S_Form_CheckboxContainer,
+.S_Form_ButtonContainer,
+.S_StandaloneWindow_Title,
+.S_StandaloneWindow_TitleBar,
+.S_StandaloneWindow_Content,
+.S_StandaloneWindow_Text,
+.S_StandaloneWindow_LinkText,
+.S_StandaloneWindow_LinkContainer,
+.S_GameWindow_Content,
+.S_GameWindow_Title,
+.S_ScrollWindowOutput,
+.S_TermsWindow_Content,
+.S_TermsWindow_Terms
 */
 .G_NoGraphics,
 .G_Checkbox,
@@ -591,12 +591,12 @@ G_LinkText
 
 /* :: Window Background :: */
 /*
-.Window,
-.GameWindow,
-.ScrollWindow,
-.MapWindow,
-.StandaloneWindow,
-.TermsWindow
+.S_Window,
+.S_GameWindow,
+.S_ScrollWindow,
+.S_MapWindow,
+.S_StandaloneWindow,
+.S_TermsWindow
 */
 .G_Window
 {
@@ -605,8 +605,8 @@ G_LinkText
 
 /* :: Input Background :: */
 /*
-.ScrollWindowInput,
-.Form_Input
+.S_ScrollWindowInput,
+.S_Form_Input
 */
 .G_Input
 {
@@ -622,11 +622,11 @@ G_LinkText
 
 /* :: Button Background :: */
 /*
-.Form_SubmitButton,
-.RegisterForm_SubmitButton,
-.RegisterForm_CancelButton,
-.LoginForm_SubmitButton,
-.TermsWindow_AcceptButton
+.S_Form_SubmitButton,
+.S_RegisterForm_SubmitButton,
+.S_RegisterForm_CancelButton,
+.S_LoginForm_SubmitButton,
+.S_TermsWindow_AcceptButton
 */
 .G_Button
 {
@@ -642,11 +642,11 @@ G_LinkText
 
 /* Button Background With Mouseover :: */
 /*
-.Form_SubmitButton:hover,
-.RegisterForm_SubmitButton:hover,
-.RegisterForm_CancelButton:hover,
-.LoginForm_SubmitButton:hover,
-.TermsWindow_AcceptButton:hover
+.S_Form_SubmitButton:hover,
+.S_RegisterForm_SubmitButton:hover,
+.S_RegisterForm_CancelButton:hover,
+.S_LoginForm_SubmitButton:hover,
+.S_TermsWindow_AcceptButton:hover
 */
 .G_Button:hover
 {
@@ -662,8 +662,8 @@ G_LinkText
 
 /* :: Title Bar Background :: */
 /*
-.GameWindow_TitleBar,
-.StandaloneWindow_TitleBar
+.S_GameWindow_TitleBar,
+.S_StandaloneWindow_TitleBar
 */
 .G_TitleBar
 {
@@ -681,66 +681,66 @@ G_LinkText
 
 /* :: No outline :: */
 /*
-.Window,
-.WindowTitleBar,
-.WindowTitle,
-.WindowContent,
-.GameWindow,
-.GameWindow_TitleBar,
-.GameWindow_Title,
-.GameWindow_Content,
-.ScrollWindow,
-.ScrollWindowOutput,
-.ScrollWindowInput,
-.MapWindow,
-.Form,
-.Form_Label,
-.Form_Input,
-.Form_Checkbox,
-.Form_CheckboxContainer,
-.Form_SubmitButton,
-.Form_ButtonContainer,
-.LoginForm_SubmitButton,
-.RegisterForm_SubmitButton,
-.RegisterForm_CancelButton,
-.StandaloneWindow,
-.StandaloneWindow_Title,
-.StandaloneWindow_TitleBar,
-.StandaloneWindow_Content,
-.StandaloneWindow_Text,
-.StandaloneWindow_LinkText,
-.StandaloneWindow_LinkContainer,
-.TermsWindow,
-.TermsWindow_Content,
-.TermsWindow_Terms,
-.TermsWindow_AcceptButton,
-.GameWindow:focus,
-.GameWindow_TitleBar:focus,
-.GameWindow_Title:focus,
-.GameWindow_Content:focus,
-.ScrollWindow:focus,
-.ScrollWindowOutput:focus,
-.MapWindow:focus,
-.Form:focus:focus,
-.Form_Label:focus,
-.Form_Checkbox:focus,
-.Form_CheckboxContainer:focus,
-.Form_SubmitButton:focus,
-.Form_ButtonContainer:focus,
-.LoginForm_SubmitButton:focus,
-.RegisterForm_SubmitButton:focus,
-.RegisterForm_CancelButton:focus,
-.StandaloneWindow:focus,
-.StandaloneWindow_Title:focus,
-.StandaloneWindow_TitleBar:focus,
-.StandaloneWindow_Content:focus,
-.StandaloneWindow_Text:focus,
-.StandaloneWindow_LinkText:focus,
-.StandaloneWindow_LinkContainer:focus,
-.TermsWindow:focus,
-.TermsWindow_Content:focus,
-.TermsWindow_Terms:focus,
-.TermsWindow_AcceptButton:focus
+.S_Window,
+.S_WindowTitleBar,
+.S_WindowTitle,
+.S_WindowContent,
+.S_GameWindow,
+.S_GameWindow_TitleBar,
+.S_GameWindow_Title,
+.S_GameWindow_Content,
+.S_ScrollWindow,
+.S_ScrollWindowOutput,
+.S_ScrollWindowInput,
+.S_MapWindow,
+.S_Form,
+.S_Form_Label,
+.S_Form_Input,
+.S_Form_Checkbox,
+.S_Form_CheckboxContainer,
+.S_Form_SubmitButton,
+.S_Form_ButtonContainer,
+.S_LoginForm_SubmitButton,
+.S_RegisterForm_SubmitButton,
+.S_RegisterForm_CancelButton,
+.S_StandaloneWindow,
+.S_StandaloneWindow_Title,
+.S_StandaloneWindow_TitleBar,
+.S_StandaloneWindow_Content,
+.S_StandaloneWindow_Text,
+.S_StandaloneWindow_LinkText,
+.S_StandaloneWindow_LinkContainer,
+.S_TermsWindow,
+.S_TermsWindow_Content,
+.S_TermsWindow_Terms,
+.S_TermsWindow_AcceptButton,
+.S_GameWindow:focus,
+.S_GameWindow_TitleBar:focus,
+.S_GameWindow_Title:focus,
+.S_GameWindow_Content:focus,
+.S_ScrollWindow:focus,
+.S_ScrollWindowOutput:focus,
+.S_MapWindow:focus,
+.S_Form:focus:focus,
+.S_Form_Label:focus,
+.S_Form_Checkbox:focus,
+.S_Form_CheckboxContainer:focus,
+.S_Form_SubmitButton:focus,
+.S_Form_ButtonContainer:focus,
+.S_LoginForm_SubmitButton:focus,
+.S_RegisterForm_SubmitButton:focus,
+.S_RegisterForm_CancelButton:focus,
+.S_StandaloneWindow:focus,
+.S_StandaloneWindow_Title:focus,
+.S_StandaloneWindow_TitleBar:focus,
+.S_StandaloneWindow_Content:focus,
+.S_StandaloneWindow_Text:focus,
+.S_StandaloneWindow_LinkText:focus,
+.S_StandaloneWindow_LinkContainer:focus,
+.S_TermsWindow:focus,
+.S_TermsWindow_Content:focus,
+.S_TermsWindow_Terms:focus,
+.S_TermsWindow_AcceptButton:focus
 */
 .G_NoGraphics,
 .G_NoGraphics:focus,
@@ -761,8 +761,8 @@ G_LinkText
 
 /* :: Focused Outline :: */
 /*
-.Form_Input:focus,
-.ScrollWindowInput:focus
+.S_Form_Input:focus,
+.S_ScrollWindowInput:focus
 */
 .G_Input:focus
 {
@@ -776,45 +776,45 @@ G_LinkText
 /* -------------- Font Size -------------- */
 
 /* :: Small Font Size :: */
-.StandaloneWindow_Text,
-.StandaloneWindow_LinkText,
-.Form_Label,
-.GameWindow_Title
+.S_StandaloneWindow_Text,
+.S_StandaloneWindow_LinkText,
+.S_Form_Label,
+.S_GameWindow_Title
 {
   font-size: 0.8em;
 }
 
 /* :: Normal Font Size :: */
 /*
-.Window,
-.WindowTitleBar,
-.WindowTitle,
-.WindowContent,
-.GameWindow,
-.ScrollWindow,
-.GameWindow_TitleBar,
-.GameWindow_Content,
-.ScrollWindowOutput,
-.ScrollWindowInput,
-.MapWindow,
-.Form,
-.Form_Input,
-.Form_Checkbox,
-.Form_CheckboxContainer,
-.Form_SubmitButton,
-.Form_ButtonContainer,
-.LoginForm_SubmitButton,
-.RegisterForm_SubmitButton,
-.RegisterForm_CancelButton,
-.StandaloneWindow,
-.StandaloneWindow_Title,
-.StandaloneWindow_TitleBar,
-.StandaloneWindow_Content,
-.StandaloneWindow_LinkContainer,
-.TermsWindow,
-.TermsWindow_Content,
-.TermsWindow_Terms,
-.TermsWindow_AcceptButton
+.S_Window,
+.S_WindowTitleBar,
+.S_WindowTitle,
+.S_WindowContent,
+.S_GameWindow,
+.S_ScrollWindow,
+.S_GameWindow_TitleBar,
+.S_GameWindow_Content,
+.S_ScrollWindowOutput,
+.S_ScrollWindowInput,
+.S_MapWindow,
+.S_Form,
+.S_Form_Input,
+.S_Form_Checkbox,
+.S_Form_CheckboxContainer,
+.S_Form_SubmitButton,
+.S_Form_ButtonContainer,
+.S_LoginForm_SubmitButton,
+.S_RegisterForm_SubmitButton,
+.S_RegisterForm_CancelButton,
+.S_StandaloneWindow,
+.S_StandaloneWindow_Title,
+.S_StandaloneWindow_TitleBar,
+.S_StandaloneWindow_Content,
+.S_StandaloneWindow_LinkContainer,
+.S_TermsWindow,
+.S_TermsWindow_Content,
+.S_TermsWindow_Terms,
+.S_TermsWindow_AcceptButton
 {
   font-size: 1em;
 }
@@ -823,10 +823,10 @@ G_LinkText
 /* --------------- Window ---------------- */
 
 /* :: Default Window :: */
-.Window,
-.ScrollWindow,
-.MapWindow,
-.GameWindow
+.S_Window,
+.S_ScrollWindow,
+.S_MapWindow,
+.S_GameWindow
 {
   margin: 0;
   padding: 0;
@@ -835,17 +835,17 @@ G_LinkText
 }
 
 /* :: Default Window Size :: */
-.Window,
-.GameWindow
+.S_Window,
+.S_GameWindow
 {
   width: 20%;
   height: 20%;
 }
 
 /* :: Default Window Title Bar :: */
-.WindowTitleBar,
-.GameWindow_TitleBar,
-.StandaloneWindow_TitleBar
+.S_WindowTitleBar,
+.S_GameWindow_TitleBar,
+.S_StandaloneWindow_TitleBar
 {
   width: 100%;
   height: auto;
@@ -853,8 +853,8 @@ G_LinkText
 }
 
 /* :: Default Window Title :: */
-.WindowTitle,
-.StandaloneWindow_Title
+.S_WindowTitle,
+.S_StandaloneWindow_Title
 {
   text-align: center;
   width: 100%;
@@ -864,9 +864,9 @@ G_LinkText
 }
 
 /* :: Default Window Content :: */
-.WindowContent,
-.GameWindow_Content,
-.TermsWindow_Content
+.S_WindowContent,
+.S_GameWindow_Content,
+.S_TermsWindow_Content
 {
   width: 100%;
   height: 100%;
@@ -879,7 +879,7 @@ G_LinkText
 /* ------------- Game Window ------------- */
 
 /* :: Game Window Title :: */
-.GameWindow_Title
+.S_GameWindow_Title
 {
   text-align: center;
   width: 100%;
@@ -891,15 +891,15 @@ G_LinkText
 /* --------------- ScrollWindow --------------- */
 
 /* :: Scroll Window Size :: */
-.ScrollWindow
+.S_ScrollWindow
 {
   width: 60%;
   height: 80%;
 }
 
 /* :: Scrollable Output :: */
-.ScrollWindowOutput,
-.TermsWindow_Terms
+.S_ScrollWindowOutput,
+.S_TermsWindow_Terms
 {
   width: 100%;
   height: 100%;
@@ -909,14 +909,14 @@ G_LinkText
 }
 
 /* :: Scroll Window Output Text Display Properties :: */
-.ScrollWindowOutput
+.S_ScrollWindowOutput
 {
   padding: 0.2em;
   word-wrap: break-word; /* Break long words that wont fit */
 }
 
 /* :: Scroll Window Input :: */
-.ScrollWindowInput
+.S_ScrollWindowInput
 {
   width: 100%;
   height: auto;
@@ -929,7 +929,7 @@ G_LinkText
 /* ---------------- MapWindow --------------- */
 
 /* :: Map Window Size :: */
-.MapWindow
+.S_MapWindow
 {
   width: 40%;
   height: 40%;
@@ -938,7 +938,7 @@ G_LinkText
 /* ------------- Standalone Window ------------- */
 
 /* :: Standalone Window :: */
-.StandaloneWindow
+.S_StandaloneWindow
 {
   /* Center at position 50% from top, 50% from left */
   position: absolute;
@@ -955,15 +955,15 @@ G_LinkText
 }
 
 /* :: Standalone Window Content :: */
-.StandaloneWindow_Content
+.S_StandaloneWindow_Content
 {
   padding: 1em;
   display: block;
 }
 
 /* :: Standalone Window Text :: */
-.StandaloneWindow_Text,
-.StandaloneWindow_LinkText
+.S_StandaloneWindow_Text,
+.S_StandaloneWindow_LinkText
 {
   margin: 0;
   padding: 0;
@@ -972,7 +972,7 @@ G_LinkText
 }
 
 /* :: Standalone Window Link Container :: */
-.StandaloneWindow_LinkContainer
+.S_StandaloneWindow_LinkContainer
 {
   width: 100%;
   height: auto;
@@ -983,7 +983,7 @@ G_LinkText
 /* --------------- Terms Window ---------------- */
 
 /* :: Terms Window :: */
-.TermsWindow
+.S_TermsWindow
 {
   /* Center at position 50% from top, 50% from left */
   position: absolute;
@@ -1000,7 +1000,7 @@ G_LinkText
 }
 
 /* :: Terms Window Terms Text Properties :: */
-.TermsWindow_Terms
+.S_TermsWindow_Terms
 {
   padding: 1em;
   text-align: justify;
@@ -1009,14 +1009,14 @@ G_LinkText
 /* ----------------- Form ---------------- */
 
 /* :: Form :: */
-.Form
+.S_Form
 {
   width: 100%;
   height: 100%;
 }
 
 /* :: FormInput :: */
-.Form_Input
+.S_Form_Input
 {
   width: 100%;
   height: 100%;
@@ -1028,16 +1028,16 @@ G_LinkText
 }
 
 /* :: Full Width Button :: */
-.Form_SubmitButton,
-.LoginForm_SubmitButton,
-.TermsWindow_AcceptButton
+.S_Form_SubmitButton,
+.S_LoginForm_SubmitButton,
+.S_TermsWindow_AcceptButton
 {
   width: 100%;
   height: auto;
 }
 
 /* :: Form Button Container :: */
-.Form_ButtonContainer
+.S_Form_ButtonContainer
 {
   width: 100%;
   height: auto;
@@ -1046,14 +1046,14 @@ G_LinkText
 
 /* TODO: Better checkbox graphics. */
 /* :: Form Checkbox :: */
-.Form_Checkbox
+.S_Form_Checkbox
 {
   width: auto;
   height: auto;
 }
 
 /* :: Form Checkbox Container :: */
-.Form_CheckboxContainer
+.S_Form_CheckboxContainer
 {
   width: 100%;
   height: auto;
@@ -1062,14 +1062,14 @@ G_LinkText
 /* -------------- Register Form --------------- */
 
 /* :: Register Form Submit Button :: */
-.RegisterForm_SubmitButton
+.S_RegisterForm_SubmitButton
 {
   width: 60%;
   float: left;
 }
 
 /* :: Register Form Cancel Button :: */
-.RegisterForm_CancelButton
+.S_RegisterForm_CancelButton
 {
   width: 35%;
   float: left;

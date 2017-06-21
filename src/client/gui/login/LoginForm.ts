@@ -15,7 +15,7 @@ import $ = require('jquery');
 export class LoginForm extends Form
 {
   protected static get SUBMIT_BUTTON_S_CSS_CLASS()
-    { return 'LoginForm_SubmitButton'; }
+    { return 'S_LoginForm_SubmitButton'; }
 
   // -------------- Static class data -------------------
 
