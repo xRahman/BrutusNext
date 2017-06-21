@@ -50,7 +50,7 @@ export class RegisterWindow extends StandaloneWindow
     this.setTitle("Register new account");
 
     // Create register form.
-    this.form.create(this.$content);
+    this.form.create({ $container: this.$content });
 
     this.createTermsInfo();
 
@@ -63,7 +63,7 @@ export class RegisterWindow extends StandaloneWindow
 
   private createTermsLink($container: JQuery, text: string)
   {
-    this.$termsLink = this.createLinkText($container, text);
+    this.$termsLink = super._createLinkText({ $container, text });
 
     this.$termsLink.click
     (
@@ -73,11 +73,17 @@ export class RegisterWindow extends StandaloneWindow
 
   private createTermsInfo()
   {
-    let $container = this.createLinkContainer();
+    let $container = super._createLinkContainer();
 
-    this.createText($container, "By creating an account you agree to our ");
+    super._createText
+    (
+      {
+        $container,
+        text: "By creating an account you agree to our "
+      }
+    );
     this.createTermsLink($container, "Terms of Use");
-    this.createText($container, ".");
+    super._createText({ $container, text: "." });
   }
 
   // ---------------- Event handlers --------------------

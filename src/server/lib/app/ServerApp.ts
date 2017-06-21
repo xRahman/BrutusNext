@@ -235,6 +235,8 @@ export class ServerApp extends App
   // Loads or reates the data and starts the server application.
   private async run(telnetPort: number)
   {
+    ///test();
+
     // Create an instance of each entity class registered in
     // Classes so they can be used as prototype objects
     // for root prototype entities.
@@ -295,3 +297,66 @@ export class ServerApp extends App
     await this.game.load();
   }
 }
+
+
+
+///////////////////////////////////////////////
+
+/*
+/// Test pojmenovaných parametrů s defaultní hodnotou.
+function createForm
+(
+  {
+    $container = null,
+    name,
+    gCssClass = 'G_NoGraphics',
+    sCssClass,
+  }:
+  {
+    $container?: JQuery,
+    name: string
+    gCssClass?: string,
+    sCssClass: string,
+  }
+)
+{
+  console.log('-----------------------------');
+  console.log('Container: ' + $container);
+  console.log('name: ' + name);
+  console.log('gCssClass: ' + gCssClass);
+  console.log('sCssClass: ' + sCssClass);
+  console.log('-----------------------------');
+}
+
+function create
+(
+  {
+    $container = null,
+    name,
+    gCssClass,
+    sCssClass = 'S_Form'
+  }:
+  {
+    $container?: JQuery,
+    name: string,
+    gCssClass?: string,
+    sCssClass?: string
+  }
+)
+{
+  createForm
+  (
+    {
+      $container,
+      gCssClass,
+      sCssClass,
+      name
+    }
+  );
+}
+
+function test()
+{
+  create({ name: 'account_name_input' });
+}
+*/

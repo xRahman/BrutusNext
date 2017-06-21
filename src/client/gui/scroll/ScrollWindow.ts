@@ -26,7 +26,7 @@ export class ScrollWindow extends GameWindow
     this.flags.set(ClientApp.State.IN_GAME);
   }
 
-  protected static get CSS_CLASS()
+  protected static get S_CSS_CLASS()
     { return 'ScrollWindow'; }
 
   // -------------- Static class data -------------------
@@ -49,7 +49,7 @@ export class ScrollWindow extends GameWindow
   // -> Returns created jquery element.
   public create()
   {
-    super.create(ScrollWindow.CSS_CLASS);
+    super.create(ScrollWindow.S_CSS_CLASS);
 
     /// TEST
     this.setTitle('Rahman@BrutusNext');

@@ -39,18 +39,20 @@ export class GameWindow extends Window
   // ~ Overrides Window.create()
   public create
   (
-    windowCssClass = GameWindow.CSS_CLASS,
-    contentCssClass = GameWindow.CONTENT_CSS_CLASS,
-    titleBarCssClass = GameWindow.TITLE_BAR_CSS_CLASS,
-    titleCssClass = GameWindow.TITLE_CSS_CLASS,
+    window_sCssClass = GameWindow.CSS_CLASS,
+    content_sCssClass = GameWindow.CONTENT_CSS_CLASS,
+    titleBar_sCssClass = GameWindow.TITLE_BAR_CSS_CLASS,
+    title_sCssClass = GameWindow.TITLE_CSS_CLASS,
   )
   {
     super.create
     (
-      windowCssClass,
-      contentCssClass,
-      titleBarCssClass,
-      titleCssClass,
+      {
+        window_sCssClass: window_sCssClass,
+        content_sCssClass: content_sCssClass,
+        titleBar_sCssClass: titleBar_sCssClass,
+        title_sCssClass: title_sCssClass,
+      }
     );
   }
 

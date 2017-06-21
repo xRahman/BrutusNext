@@ -13,7 +13,7 @@ import $ = require('jquery');
 
 export class ScrollWindowInput extends Component
 {
-  private static get CSS_CLASS()
+  private static get S_CSS_CLASS()
     { return 'ScrollWindowInput'; }
 
   constructor(private scrollWindow: ScrollWindow)
@@ -49,8 +49,10 @@ export class ScrollWindowInput extends Component
   {
     this.$input = Component.createTextArea
     (
-      $container,
-      ScrollWindowInput.CSS_CLASS,
+      {
+        $container: $container,
+        sCssClass: ScrollWindowInput.S_CSS_CLASS
+      },
       {
         // Input element accepts multi-line text (its a 'textarea') but only
         // shows one line (because user commands are usualy single-line).
