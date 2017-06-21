@@ -4,6 +4,12 @@
   Abstract ancestor of component containing a form.
 */
 
+/*
+  Implementation note: Some method names begin with '_' because
+  it's not possible to create an override of a method with different
+  parameters in Typescript.
+*/
+
 'use strict';
 
 import {Component} from '../../client/gui/Component';
@@ -12,19 +18,19 @@ import $ = require('jquery');
 
 export abstract class Form extends Component
 {
-  protected static get CSS_CLASS()
+  protected static get S_CSS_CLASS()
     { return 'Form'; }
-  protected static get LABEL_CSS_CLASS()
+  protected static get LABEL_S_CSS_CLASS()
     { return 'Form_Label'; }
-  protected static get INPUT_CSS_CLASS()
+  protected static get INPUT_S_CSS_CLASS()
     { return 'Form_Input'; }
-  protected static get CHECKBOX_CSS_CLASS()
+  protected static get CHECKBOX_S_CSS_CLASS()
     { return 'Form_Checkbox'; }
-  protected static get CHECKBOX_CONTAINER_CSS_CLASS()
+  protected static get CHECKBOX_CONTAINER_S_CSS_CLASS()
     { return 'Form_CheckboxContainer'; }
-  protected static get SUBMIT_BUTTON_CSS_CLASS()
+  protected static get SUBMIT_BUTTON_S_CSS_CLASS()
     { return 'Form_SubmitButton'; }
-  protected static  get BUTTON_CONTAINER_CSS_CLASS()
+  protected static  get BUTTON_CONTAINER_S_CSS_CLASS()
     { return 'Form_ButtonContainer'; }
 
   // -------------- Static class data -------------------
@@ -47,16 +53,28 @@ export abstract class Form extends Component
 
   protected create
   (
-    $container: JQuery,
-    name: string,
-    cssClass = Form.CSS_CLASS
+    {
+      $container = null,
+      name,
+      gCssClass,
+      sCssClass = Form.S_CSS_CLASS
+    }:
+    {
+      $container: JQuery;
+      name: string;
+      gCssClass?: string;
+      sCssClass?: string;
+    }
   )
   {
     this.$form = Component.createForm
     (
-      $container,
-      cssClass,
-      name
+      {
+        $container,
+        gCssClass,
+        sCssClass,
+        name
+      }
     );
 
     // Register 'submit' event handler.
@@ -66,35 +84,62 @@ export abstract class Form extends Component
     );
   }
 
-  protected createLabel(text: string, cssClass = Form.LABEL_CSS_CLASS)
+  protected createLabel
+  (
+    {
+      text,
+      sCssClass = Form.LABEL_S_CSS_CLASS
+    }:
+    {
+      text: string;
+      sCssClass?: string;
+    }
+  )
   {
     return Component.createLabel
     (
-      this.$form,
-      cssClass,
-      text
+      {
+        $container: this.$form,
+        gCssClass: Component.NO_GRAPHICS_G_CSS_CLASS,
+        sCssClass: sCssClass,
+        text: text
+      }
     );
   }
 
   protected createTextInput
   (
-    name: string,
-    placeholder: string,
-    minLength: number,
-    maxlength: number,
-    cssClass = Form.INPUT_CSS_CLASS
+    {
+      name,
+      placeholder,
+      minLength,
+      maxLength,
+      sCssClass = Form.INPUT_S_CSS_CLASS,
+      gCssClass = Component.INPUT_G_CSS_CLASS
+    }:
+    {
+      name: string;
+      placeholder: string;
+      minLength: number;
+      maxLength: number;
+      sCssClass?: string;
+      gCssClass?: string;
+    }
   )
   {
     return Component.createTextInput
     (
-      this.$form,
-      cssClass,
-      name,
+      {
+        $container: this.$form,
+        sCssClass: sCssClass,
+        gCssClass: gCssClass,
+        name: name,
+      },
       {
         required: true,
         placeholder: placeholder,
         minLength: minLength,
-        maxLength: maxlength,
+        maxLength: maxLength,
         /// Doesn't work in browsers yet
         /// (account names should be case insensitive anyways).
         /// autocapitalize: 'words',
@@ -109,18 +154,32 @@ export abstract class Form extends Component
 
   protected createPasswordInput
   (
-    name: string,
-    placeholder: string,
-    minLength: number,
-    maxLength: number,
-    cssClass = Form.INPUT_CSS_CLASS
+    {
+      name,
+      placeholder,
+      minLength,
+      maxLength,
+      sCssClass = Form.INPUT_S_CSS_CLASS,
+      gCssClass = Component.INPUT_G_CSS_CLASS
+    }:
+    {
+      name: string;
+      placeholder: string;
+      minLength: number;
+      maxLength: number;
+      sCssClass?: string;
+      gCssClass?: string;
+    }
   )
   {
     return Component.createPasswordInput
     (
-      this.$form,
-      cssClass,
-      name,
+      {
+        $container: this.$form,
+        sCssClass: sCssClass,
+        gCssClass: gCssClass,
+        name: name,
+      },
       {
         required: true,
         placeholder: placeholder,
@@ -135,16 +194,25 @@ export abstract class Form extends Component
 
   protected createEmailInput
   (
-    name: string,
-    placeholder: string,
-    cssClass = Form.INPUT_CSS_CLASS
+    {
+      name,
+      placeholder,
+      sCssClass = Form.INPUT_S_CSS_CLASS
+    }:
+    {
+      name: string;
+      placeholder: string;
+      sCssClass?: string;
+    }
   )
   {
     return Component.createEmailInput
     (
-      this.$form,
-      cssClass,
-      name,
+      {
+        $container: this.$form,
+        sCssClass: sCssClass,
+        name: name
+      },
       {
         required: true,
         placeholder: placeholder,
@@ -160,25 +228,39 @@ export abstract class Form extends Component
 
   protected createCheckboxInput
   (
-    name: string,
-    text: string,
-    checked: boolean,
-    containerCssClass = Form.CHECKBOX_CONTAINER_CSS_CLASS,
-    labelCssClass = Form.LABEL_CSS_CLASS,
-    checkboxCssClass = Form.CHECKBOX_CSS_CLASS
+    {
+      name,
+      text,
+      checked,
+      container_sCssClass = Form.CHECKBOX_CONTAINER_S_CSS_CLASS,
+      label_sCssClass = Form.LABEL_S_CSS_CLASS,
+      checkbox_sCssClass = Form.CHECKBOX_S_CSS_CLASS
+    }:
+    {
+      name: string;
+      text: string;
+      checked: boolean;
+      container_sCssClass?: string;
+      label_sCssClass?: string;
+      checkbox_sCssClass?: string;
+    }
   )
   {
     let $container = Component.createDiv
     (
-      this.$form,
-      containerCssClass
+      {
+        $container: this.$form,
+        sCssClass: container_sCssClass
+      }
     );
 
     let $checkbox = Component.createCheckboxInput
     (
-      $container,
-      checkboxCssClass,
-      name,
+      {
+        $container: $container,
+        sCssClass: checkbox_sCssClass,
+        name: name,
+      },
       {
         checked: checked
       }
@@ -186,36 +268,58 @@ export abstract class Form extends Component
 
     Component.createLabel
     (
-      $container,
-      labelCssClass,
-      text
+      {
+        $container: $container,
+        sCssClass: label_sCssClass,
+        text: text
+      }
     );
 
     return $checkbox;
   }
 
-  protected createButtonContainer(cssClass = Form.BUTTON_CONTAINER_CSS_CLASS)
+  protected createButtonContainer
+  (
+    {
+      sCssClass = Form.BUTTON_CONTAINER_S_CSS_CLASS
+    }:
+    {
+      sCssClass?: string;
+    }
+    = {}
+  )
   {
     return Component.createDiv
     (
-      this.$form,
-      cssClass
+      {
+        $container: this.$form,
+        sCssClass: sCssClass
+      }
     );
   }
 
   protected createSubmitButton
   (
-    $container: JQuery,
-    text: string,
-    cssClass = Form.SUBMIT_BUTTON_CSS_CLASS
+    {
+      $container,
+      text,
+      sCssClass = Form.SUBMIT_BUTTON_S_CSS_CLASS
+    }:
+    {
+      $container: JQuery;
+      text: string;
+      sCssClass?: string;
+    }
   )
   {
     return Component.createSubmitButton
     (
-      $container,
-      cssClass,
-      'submit_button',
-      text
+      {
+        $container: $container,
+        sCssClass: sCssClass,
+        name: 'submit_button',
+        text: text
+      }
     );
   }
 

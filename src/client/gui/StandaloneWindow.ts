@@ -43,65 +43,101 @@ export class StandaloneWindow extends Window
 
   // ---------------- Public methods --------------------
 
-  // ~ Overrides Window.create()
   public create
   (
-    windowCssClass = StandaloneWindow.CSS_CLASS,
-    contentCssClass = StandaloneWindow.CONTENT_CSS_CLASS,
-    titleBarCssClass = StandaloneWindow.TITLE_BAR_CSS_CLASS,
-    titleCssClass = StandaloneWindow.TITLE_CSS_CLASS,
+    {
+      window_sCssClass = StandaloneWindow.CSS_CLASS,
+      content_sCssClass = StandaloneWindow.CONTENT_CSS_CLASS,
+      titleBar_sCssClass = StandaloneWindow.TITLE_BAR_CSS_CLASS,
+      title_sCssClass = StandaloneWindow.TITLE_CSS_CLASS,
+    }:
+    {
+      window_sCssClass?: string;
+      content_sCssClass?: string;
+      titleBar_sCssClass?: string;
+      title_sCssClass?: string;
+    }
+    = {}
   )
   {
     super.create
     (
-      windowCssClass,
-      contentCssClass,
-      titleBarCssClass,
-      titleCssClass,
+      {
+        window_sCssClass: window_sCssClass,
+        content_sCssClass: content_sCssClass,
+        titleBar_sCssClass: titleBar_sCssClass,
+        title_sCssClass: title_sCssClass,
+      }
     );
   }
 
   // --------------- Protected methods ------------------
 
-  protected createLinkContainer
+  protected _createLinkContainer
   (
-    cssClass = StandaloneWindow.LINK_CONTAINER_CSS_CLASS
+    {
+      sCssClass = StandaloneWindow.LINK_CONTAINER_CSS_CLASS
+    }:
+    {
+      sCssClass?: string;
+    }
+    = {}
   )
   {
     return Component.createDiv
     (
-      this.$content,
-      cssClass
+      {
+        $container: this.$content,
+        sCssClass: sCssClass
+      }
     );
   }
 
-  protected createText
+  protected _createText
   (
-    $container: JQuery,
-    text: string,
-    cssClass = StandaloneWindow.TEXT_CSS_CLASS
+    {
+      $container,
+      text,
+      sCssClass = StandaloneWindow.TEXT_CSS_CLASS
+    }:
+    {
+      $container: JQuery;
+      text: string;
+      sCssClass?: string;
+    }
   )
   {
     return Component.createText
     (
-      $container,
-      cssClass,
-      text
+      {
+        $container: $container,
+        sCssClass: sCssClass,
+        text: text
+      }
     );
   }
 
-  protected createLinkText
+  protected _createLinkText
   (
-    $container: JQuery,
-    text: string,
-    cssClass = StandaloneWindow.LINK_TEXT_CSS_CLASS
+    {
+      $container,
+      text,
+      sCssClass = StandaloneWindow.LINK_TEXT_CSS_CLASS
+    }:
+    {
+      $container: JQuery;
+      text: string;
+      sCssClass?: string;
+    }
   )
   {
     return Component.createTextLink
     (
-      $container,
-      cssClass,
-      text
+      {
+        $container: $container,
+        sCssClass: sCssClass,
+        text: text
+      }
     );
   }
 

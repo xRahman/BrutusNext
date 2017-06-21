@@ -42,7 +42,6 @@ export class LoginWindow extends StandaloneWindow
 
   // ---------------- Public methods --------------------
 
-  // ~ Overrides Window.create()
   public create()
   {
     super.create();
@@ -50,7 +49,7 @@ export class LoginWindow extends StandaloneWindow
     this.setTitle("&gWelcome to &RBrutus&YNext");
 
     // Create login form.
-    this.form.create(this.$content);
+    this.form.create({ $container: this.$content });
 
     this.createRegisterInfo();
 
@@ -61,9 +60,19 @@ export class LoginWindow extends StandaloneWindow
 
   // ---------------- Private methods -------------------
 
-  private createRegisterLink($container: JQuery, text: string)
+  private createRegisterLink
+  (
+    {
+      $container,
+      text
+    }:
+    {
+      $container: JQuery;
+      text: string;
+    }
+  )
   {
-    this.$registerLink = this.createLinkText($container, text);
+    this.$registerLink = super._createLinkText({ $container, text });
 
     this.$registerLink.click
     (
@@ -73,11 +82,11 @@ export class LoginWindow extends StandaloneWindow
 
   private createRegisterInfo()
   {
-    let $container = this.createLinkContainer();
+    let $container = super._createLinkContainer();
 
-    this.createText($container, "Don't have an account yet? ");
-    this.createRegisterLink($container, "Register");
-    this.createText($container, ".");
+    super._createText({ $container, text: "Don't have an account yet? " });
+    this.createRegisterLink({ $container, text: "Register" });
+    super._createText({ $container, text: "." });
   }
 
   // ---------------- Event handlers --------------------

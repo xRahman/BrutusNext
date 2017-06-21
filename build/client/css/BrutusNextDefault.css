@@ -16,6 +16,16 @@
     that should apply to that element.
 */
 
+/*
+G_NoGraphics
+G_Window
+G_TitleBar
+G_Button
+G_Input
+G_Checkbox
+G_LinkText
+*/
+
 /***************************************************************/
 /*                           Fonts                             */
 /***************************************************************/
@@ -150,6 +160,7 @@
 /* ---------------- Font ---------------- */
 
 /* :: CourierNew Bold :: */
+/*
 .Window,
 .WindowTitleBar,
 .WindowTitle,
@@ -183,6 +194,14 @@
 .TermsWindow_Content,
 .TermsWindow_Terms,
 .TermsWindow_AcceptButton
+*/
+.G_NoGraphics,
+.G_Window,
+.G_TitleBar,
+.G_Button,
+.G_Input,
+.G_Checkbox,
+.G_Link_text
 {
   font-family: CourierNew;
   font-weight: bold;
@@ -191,6 +210,7 @@
 /* ------------ Text Overflow ------------ */
 
 /* :: Text Overflow: Ellipsis :: */
+/*
 .Window,
 .WindowTitleBar,
 .WindowTitle,
@@ -224,6 +244,14 @@
 .TermsWindow_Content,
 .TermsWindow_Terms,
 .TermsWindow_AcceptButton
+*/
+.G_NoGraphics,
+.G_Window,
+.G_TitleBar,
+.G_Button,
+.G_Input,
+.G_Checkbox,
+.G_Link_text
 {
   text-overflow: ellipsis; /* Add '...' if text overflows */
 }
@@ -231,6 +259,7 @@
 /* ------------- Text Shadow ------------- */
 
 /* :: Text Shadow :: */
+/*
 .Window,
 .WindowTitleBar,
 .WindowTitle,
@@ -264,6 +293,14 @@
 .TermsWindow_Content,
 .TermsWindow_Terms,
 .TermsWindow_AcceptButton
+*/
+.G_NoGraphics,
+.G_Window,
+.G_TitleBar,
+.G_Button,
+.G_Input,
+.G_Checkbox,
+.G_Link_text
 {
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5);
 }
@@ -271,6 +308,7 @@
 /* -------------- Text color ------------- */
 
 /* :: Default Text Color :: */
+/*
 .Window,
 .WindowTitleBar,
 .WindowTitle,
@@ -302,19 +340,30 @@
 .TermsWindow_Content,
 .TermsWindow_Terms,
 .TermsWindow_AcceptButton
+*/
+.G_NoGraphics,
+.G_Window,
+.G_TitleBar,
+.G_Button,
+.G_Checkbox,
+.G_Link_text
 {
   color: rgb(210, 230, 250); /* text color */
 }
 
 /* :: Link Text Color :: */
-.StandaloneWindow_LinkText
+/*.StandaloneWindow_LinkText*/
+.G_Link_text
 {
   color: rgb(43, 144, 255); /* text color */
 }
 
 /* :: Player Input Text Color :: */
+/*
 .Form_Input,
 .ScrollWindowInput
+*/
+.G_Input
 {
   color: rgb(0,225,0); /* text color */
 }
@@ -322,59 +371,14 @@
 /* ----------- Text Decoration ----------- */
 
 /* :: Link Text Mouseover :: */
-.StandaloneWindow_LinkText:hover
+/*.StandaloneWindow_LinkText:hover*/
+.G_Link_text:hover
 {
   text-decoration: underline;
 }
 
-/* -------------- Font Size -------------- */
-
-/* :: Small Font Size :: */
-.StandaloneWindow_Text,
-.StandaloneWindow_LinkText,
-.Form_Label,
-.GameWindow_Title
-{
-  font-size: 0.8em;
-}
-
-/* :: Normal Font Size :: */
-.Window,
-.WindowTitleBar,
-.WindowTitle,
-.WindowContent,
-.GameWindow,
-.ScrollWindow,
-.GameWindow_TitleBar,
-.GameWindow_Content,
-.ScrollWindowOutput,
-.ScrollWindowInput,
-.MapWindow,
-.Form,
-.Form_Label,
-.Form_Input,
-.Form_Checkbox,
-.Form_CheckboxContainer,
-.Form_SubmitButton,
-.Form_ButtonContainer,
-.LoginForm_SubmitButton,
-.RegisterForm_SubmitButton,
-.RegisterForm_CancelButton,
-.StandaloneWindow,
-.StandaloneWindow_Title,
-.StandaloneWindow_TitleBar,
-.StandaloneWindow_Content,
-.StandaloneWindow_LinkContainer,
-.TermsWindow,
-.TermsWindow_Content,
-.TermsWindow_Terms,
-.TermsWindow_AcceptButton
-{
-  font-size: 1em;
-}
-
 /* -------- Disabled Text Selection ------ */
-
+/*
 .Window,
 .WindowTitleBar,
 .WindowTitle,
@@ -404,6 +408,8 @@
 .TermsWindow,
 .TermsWindow_Content,
 .TermsWindow_AcceptButton
+*/
+*
 {
   -khtml-user-select: none;
   -moz-user-select: none;
@@ -435,6 +441,7 @@
 /* --------------- Borders --------------- */
 
 /* :: No Border :: */
+/*
 .GameWindow_TitleBar,
 .GameWindow_Title,
 .GameWindow_Content,
@@ -452,11 +459,17 @@
 .StandaloneWindow_LinkContainer,
 .TermsWindow_Terms,
 .TermsWindow_Content
+*/
+.G_NoGraphics,
+.G_TitleBar,
+.G_Checkbox,
+.G_Link_text
 {
   border: none;
 }
 
 /* :: Default Border Color :: */
+/*
 .Window,
 .GameWindow,
 .StandaloneWindow,
@@ -465,31 +478,51 @@
 .ScrollWindow,
 .ScrollWindowInput,
 .MapWindow
+*/
+.G_Input,
+.G_Window
 {
   border: 1px solid rgba(110,130,150,0.8);
 }
 
 /* :: Button Border :: */
+/*
 .Form_SubmitButton,
 .RegisterForm_SubmitButton,
 .RegisterForm_CancelButton,
 .LoginForm_SubmitButton,
 .TermsWindow_AcceptButton
+*/
+.G_Button
 {
   border: 1px solid rgba(210, 230, 250, 0.8);
 }
 
 /* :: Button Border Highlight :: */
+/*
 .Form_SubmitButton:hover,
 .RegisterForm_SubmitButton:hover,
 .RegisterForm_CancelButton:hover,
 .LoginForm_SubmitButton:hover,
 .TermsWindow_AcceptButton:hover
+*/
+.G_Button:hover
 {
   border: 1px solid rgba(230, 240, 255, 0.8);
 }
 
+/* :: Border Style :: */
+.G_Window,
+.G_Window:hover,
+.G_Button,
+.G_Button:hover
+.G_Input
+{
+  border-style: ridge;
+}
+
 /* :: Border Outset :: */
+/*
 .Window,
 .GameWindow,
 .StandaloneWindow,
@@ -506,21 +539,32 @@
 .RegisterForm_CancelButton:hover,
 .LoginForm_SubmitButton:hover,
 .TermsWindow_AcceptButton:hover
+
+.G_Window,
+.G_Window:hover,
+.G_Button,
+.G_Button:hover
 {
   border-style: outset;
 }
+*/
 
 /* :: Border Inset :: */
 
+/*
 .Form_Input,
 .ScrollWindowInput
+
+.G_Input
 {
   border-style: inset;
 }
+*/
 
 /* -------------- Background ------------- */
 
 /* :: Transparent Background :: */
+/*
 .Form,
 .Form_Label,
 .Form_Checkbox,
@@ -537,54 +581,73 @@
 .ScrollWindowOutput,
 .TermsWindow_Content,
 .TermsWindow_Terms
+*/
+.G_NoGraphics,
+.G_Checkbox,
+.G_Link_text
 {
   background: rgba(0,0,0,0);  /* Transparent background */
 }
 
 /* :: Window Background :: */
+/*
 .Window,
 .GameWindow,
 .ScrollWindow,
 .MapWindow,
 .StandaloneWindow,
 .TermsWindow
+*/
+.G_Window
 {
   background: rgba(0, 0, 0, 0.6);
 }
 
 /* :: Input Background :: */
+/*
 .ScrollWindowInput,
 .Form_Input
+*/
+.G_Input
 {
   background: rgba(50, 50, 50, 0.8);
   background: linear-gradient(rgba(60, 60, 60, 0.8), rgba(30, 30, 30, 0.8));
 }
 
 /* :: Button Background :: */
+/*
 .Form_SubmitButton,
 .RegisterForm_SubmitButton,
 .RegisterForm_CancelButton,
 .LoginForm_SubmitButton,
 .TermsWindow_AcceptButton
+*/
+.G_Button
 {
   background-color: rgba(150, 150, 150, 0.8);
   background: linear-gradient(rgba(170, 170, 170, 0.8), rgba(120, 120, 120, 0.8));
 }
 
 /* Button Background With Mouseover :: */
+/*
 .Form_SubmitButton:hover,
 .RegisterForm_SubmitButton:hover,
 .RegisterForm_CancelButton:hover,
 .LoginForm_SubmitButton:hover,
 .TermsWindow_AcceptButton:hover
+*/
+.G_Button:hover
 {
   background-color: rgba(180, 180, 180, 0.8);
   background: linear-gradient(rgba(200, 200, 200, 0.8), rgba(150, 150, 150, 0.8));
 }
 
 /* :: Title Bar Background :: */
+/*
 .GameWindow_TitleBar,
 .StandaloneWindow_TitleBar
+*/
+.G_TitleBar
 {
   /* Old browsers */
   background: rgba(80, 80, 80, 0.5);
@@ -600,6 +663,7 @@
 /* --------------- Outline --------------- */
 
 /* :: No outline :: */
+/*
 .Window,
 .WindowTitleBar,
 .WindowTitle,
@@ -660,13 +724,30 @@
 .TermsWindow_Content:focus,
 .TermsWindow_Terms:focus,
 .TermsWindow_AcceptButton:focus
+*/
+.G_NoGraphics,
+.G_NoGraphics:focus,
+.G_Window,
+.G_Window:focus,
+.G_TitleBar,
+.G_TitleBar:focus,
+.G_Button,
+.G_Button:focus,
+.G_Checkbox,
+.G_Checkbox:focus,
+.G_Link_text,
+.G_Link_text:focus,
+.G_Input
 {
   outline: none;
 }
 
 /* :: Focused Outline :: */
+/*
 .Form_Input:focus,
 .ScrollWindowInput:focus
+*/
+.G_Input:focus
 {
   outline: solid 1px rgba(30, 30, 255, 0.8);
 }
@@ -674,6 +755,53 @@
 /***************************************************************/
 /*                          Structure                          */
 /***************************************************************/
+
+/* -------------- Font Size -------------- */
+
+/* :: Small Font Size :: */
+.StandaloneWindow_Text,
+.StandaloneWindow_LinkText,
+.Form_Label,
+.GameWindow_Title
+{
+  font-size: 0.8em;
+}
+
+/* :: Normal Font Size :: */
+/*
+.Window,
+.WindowTitleBar,
+.WindowTitle,
+.WindowContent,
+.GameWindow,
+.ScrollWindow,
+.GameWindow_TitleBar,
+.GameWindow_Content,
+.ScrollWindowOutput,
+.ScrollWindowInput,
+.MapWindow,
+.Form,
+.Form_Input,
+.Form_Checkbox,
+.Form_CheckboxContainer,
+.Form_SubmitButton,
+.Form_ButtonContainer,
+.LoginForm_SubmitButton,
+.RegisterForm_SubmitButton,
+.RegisterForm_CancelButton,
+.StandaloneWindow,
+.StandaloneWindow_Title,
+.StandaloneWindow_TitleBar,
+.StandaloneWindow_Content,
+.StandaloneWindow_LinkContainer,
+.TermsWindow,
+.TermsWindow_Content,
+.TermsWindow_Terms,
+.TermsWindow_AcceptButton
+{
+  font-size: 1em;
+}
+*/
 
 /* --------------- Window ---------------- */
 
@@ -775,7 +903,7 @@
 {
   width: 100%;
   height: auto;
-  margin: 0;
+  /*margin: 1px;*/
   padding: 0.2em;
   resize: none; /* Disable the "grabger" corner which resizes the textarea */
   overflow: hidden; /* also hides the scrollbar */

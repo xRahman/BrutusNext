@@ -1,0 +1,52 @@
+Named Parameters
+-----------------
+
+All parameters are named inside an implementing function of course,
+but Typescript allows naming parameters when calling the function
+as well.
+
+This is especially useful if you have multiple parameters of the same
+type and you want any of them to have a default value (this wouln't be
+possible with regular parameters). Another advantage is that you make
+calling of the function more verbose and self-explaining.
+
+How to do it ('type' could of course be an interface):
+
+  function sayName
+  (
+    {
+      first,          // No default value.
+      last = 'Smith'
+  }:
+  {
+      first: string;  // Required parameter.
+      last?: string;   // Optional parameter.
+  }
+  )
+  {
+    // Named parameters are used just like regular ones:
+    console.log(first + " " + last);
+  }
+
+  sayName({ firstName: 'Bob' });
+
+If you want to make it optional to pass anything to the function,
+add a ? for all keys in the type, and add a default of '= {}' after
+the type declaration:
+
+  function sayName
+  (
+    {
+      first = 'Bob',
+      last = 'Smith'
+    }:
+    {
+      first?: string;
+      last?: string
+    } = {}
+  )
+  {
+    console.log(first + " " + last);
+  }
+
+  sayName();

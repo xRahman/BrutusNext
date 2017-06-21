@@ -14,7 +14,7 @@ import $ = require('jquery');
 
 export class LoginForm extends Form
 {
-  protected static get SUBMIT_BUTTON_CSS_CLASS()
+  protected static get SUBMIT_BUTTON_S_CSS_CLASS()
     { return 'LoginForm_SubmitButton'; }
 
   // -------------- Static class data -------------------
@@ -35,23 +35,15 @@ export class LoginForm extends Form
 
   // ---------------- Public methods --------------------
 
-  // ~ Overrides Form.create().
   // -> Returns created jquery element.
-  public create($container: JQuery)
+  public create({ $container = null }: { $container: JQuery; })
   {
-    /// TODO: Číst to ze stejné proměnné jako server a jako register form.
-    // Maximum length of acocunt name (in characters).
-    let minAccountNameLength = 3;
-    let maxAccountNameLength = 20;
-    let minPasswordLength = 4;
-    let maxPasswordLength = 50;
+    super.create({ $container: $container, name: 'login_form' });
 
-    super.create($container, 'login_form');
-
-    this.createLabel('Account Name');
+    super.createLabel({ text: 'Account Name' });
     this.createAccountNameInput();
 
-    this.createLabel('Password');
+    super.createLabel({ text: 'Password' });
     this.createPasswordInput();
     
     this.createRememberMeCheckbox();
@@ -60,42 +52,35 @@ export class LoginForm extends Form
 
   // --------------- Protected methods ------------------
 
-  // ~Overrides Form.createPasswordInput().
-  protected createPasswordInput
-  (
-    name = 'password_input',
-    placeholder = 'Enter Password',
-    minLength = null,
-    maxLength = null
-  )
+  protected createPasswordInput()
   {
     /// TODO: Číst to ze stejné proměnné jako server a jako register form.
-    if (minLength === null)
-      minLength = 4;
-
-    if (maxLength === null)
-      maxLength = 50;
+    let minLength = 4;
+    let maxLength = 50;
 
     this.$passwordInput = super.createPasswordInput
     (
-      name,
-      placeholder,
-      minLength,
-      maxLength
+      {
+        name: 'password_input',
+        placeholder: 'Enter Password',
+        minLength: minLength,
+        maxLength: maxLength
+      }
     );
 
     return this.$passwordInput;
   }
 
-  // ~Overrides Form.createSubmitButton().
-  protected createSubmitButton
-  (
-    $container,
-    text = 'Login',
-    cssClass = LoginForm.SUBMIT_BUTTON_CSS_CLASS
-  )
+  protected createSubmitButton({ $container }: { $container: JQuery; })
   {
-    return super.createSubmitButton($container, text, cssClass);
+    return super.createSubmitButton
+    (
+      {
+        $container: $container,
+        text: 'Login',
+        sCssClass: LoginForm.SUBMIT_BUTTON_S_CSS_CLASS
+      }
+    );
   }
 
   // ---------------- Private methods -------------------
@@ -107,30 +92,37 @@ export class LoginForm extends Form
     let minLength = 3;
     let maxLength = 20;
 
-    this.$accountNameInput = this.createTextInput
+    this.$accountNameInput = super.createTextInput
     (
-      'account_name_input',   // 'name' attribute.
-      'Enter Account Name',   // Placeholder text.
-      minLength,
-      maxLength
+      {
+        name: 'account_name_input',
+        placeholder: 'Enter Account Name',
+        minLength: minLength,
+        maxLength: maxLength
+      }
     );
   }
 
   private createRememberMeCheckbox()
   {
-    this.$rememberMeCheckbox = this.createCheckboxInput
+    this.$rememberMeCheckbox = super.createCheckboxInput
     (
-      'remember_me_checkbox',   // 'name' attribute.
-      'Remember me',            // Placeholder text.
-      true                     // Checked.
+      {
+        name: 'remember_me_checkbox',
+        text: 'Remember me',
+        checked: true
+      }
     );
   }
 
   private createButtons()
   {
-    let $container = this.createButtonContainer();
-
-    this.createSubmitButton($container);
+    this.createSubmitButton
+    (
+      {
+        $container: super.createButtonContainer()
+      }
+    );
   }
 
   // ---------------- Event handlers --------------------
