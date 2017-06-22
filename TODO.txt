@@ -3,6 +3,11 @@ TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 
 TODO: Nejspíš ve spoustě filů zbytečně importuju JQuery.
 
+TODO: Do Character plate dát dva labely
+(velké písmo - jméno, malé písmo - popisek)
+
+TODO: Char plate by měl mít vždycky 2x border (ať to neskáče).
+
 ---------------------------------------------------------------
 
 Jaká mám vlastně okna?

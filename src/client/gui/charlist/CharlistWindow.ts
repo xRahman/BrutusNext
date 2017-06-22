@@ -28,6 +28,8 @@ export class CharlistWindow extends StandaloneWindow
     { return 'S_CharlistWindow_CharacterPlateContainer'; }
   protected static get CHARACTER_PLATE_S_CSS_CLASS()
     { return 'S_CharlistWindow_CharacterPlate'; }
+  protected static get CHARACTER_PLATE_LABEL_S_CSS_CLASS()
+    { return 'S_CharlistWindow_CharacterPlateLabel'; }
 
   // -------------- Static class data -------------------
 
@@ -96,12 +98,21 @@ export class CharlistWindow extends StandaloneWindow
     // on <div> element.
     $plate.attr('tabindex',  '-1');
 
-    $plate.text("Zuzka (level 1 priest)");
-
     $plate.focus
     (
       (event: Event) => { this.onCharacterPlateFocus(event); }
     );
+
+    let $label = Component.createLabel
+    (
+      {
+        $container: $plate,
+        ///sCssClass: CharlistWindow.CHARACTER_PLATE_LABEL_S_CSS_CLASS,
+        text: "Zuzka (level 1 priest)"
+      }
+    );    
+
+    ///$plate.text("Zuzka (level 1 priest)");
   }
 
   private populateCharlist()
