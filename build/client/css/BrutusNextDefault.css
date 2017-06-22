@@ -156,7 +156,8 @@
 .G_Button,
 .G_Input,
 .G_Checkbox,
-.G_Link_text
+.G_LinkText,
+.G_SelectablePlate
 {
   font-family: CourierNew;
   font-weight: bold;
@@ -171,7 +172,8 @@
 .G_Button,
 .G_Input,
 .G_Checkbox,
-.G_Link_text
+.G_LinkText,
+.G_SelectablePlate
 {
   text-overflow: ellipsis; /* Add '...' if text overflows */
 }
@@ -185,7 +187,8 @@
 .G_Button,
 .G_Input,
 .G_Checkbox,
-.G_Link_text
+.G_LinkText,
+.G_SelectablePlate
 {
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5);
 }
@@ -198,14 +201,21 @@
 .G_TitleBar,
 .G_Button,
 .G_Checkbox,
-.G_Link_text
+.G_LinkText,
+.G_SelectablePlate
 {
   color: rgb(210, 230, 250); /* Text color */
 }
 
+/* Disabled Element Text Color */
+.G_Button:disabled
+{
+  color: rgb(130, 150, 170); /* Text color */
+}
+
 /* :: Link Text Color :: */
 /*.S_StandaloneWindow_LinkText*/
-.G_Link_text
+.G_LinkText
 {
   color: rgb(43, 144, 255); /* Text color */
 }
@@ -219,7 +229,7 @@
 /* ----------- Text Decoration ----------- */
 
 /* :: Link Text Mouseover :: */
-.G_Link_text:hover
+.G_LinkText:hover
 {
   text-decoration: underline;
 }
@@ -232,16 +242,13 @@
 .S_GameWindow,
 .S_GameWindow_TitleBar,
 .S_GameWindow_Title,
-.S_GameWindow_Content,
 .S_ScrollWindow,
 .S_MapWindow,
 .S_Form,
 .S_Form_Label,
 .S_Form_Checkbox,
 .S_Form_CheckboxContainer,
-.S_Form_SubmitButton,
 .S_Form_ButtonContainer,
-.S_LoginForm_SubmitButton,
 .S_RegisterForm_SubmitButton,
 .S_RegisterForm_CancelButton,
 .S_StandaloneWindow,
@@ -252,8 +259,8 @@
 .S_StandaloneWindow_LinkText,
 .S_StandaloneWindow_LinkContainer,
 .S_TermsWindow,
-.S_TermsWindow_Content,
-.S_TermsWindow_AcceptButton
+.S_CharlistWindow_Charlist,
+.S_CharlistWindow_CharacterPlate
 {
   -khtml-user-select: none;
   -moz-user-select: none;
@@ -288,14 +295,15 @@
 .G_NoGraphics,
 .G_TitleBar,
 .G_Checkbox,
-.G_Link_text
+.G_LinkText
 {
   border: none;
 }
 
 /* :: Default Border Color :: */
 .G_Input,
-.G_Window
+.G_Window,
+.G_SelectablePlate
 {
   border: 1px solid rgba(110,130,150,0.8);
 }
@@ -306,18 +314,28 @@
   border: 1px solid rgba(210, 230, 250, 0.8);
 }
 
-/* :: Button Border Highlight :: */
-.G_Button:hover
+/* :: Disabled Button Border :: */
+.G_Button:disabled
 {
-  border: 1px solid rgba(230, 240, 255, 0.8);
+  border: 1px solid rgba(130, 150, 170, 0.8);
+}
+
+/* :: Button Border Highlight :: */
+.G_Button:hover:enabled,
+.G_SelectablePlate:hover
+{
+  border: 1px solid rgba(230, 240, 255, 1);
 }
 
 /* :: Border Style :: */
 .G_Window,
 .G_Window:hover,
 .G_Button,
-.G_Button:hover
-.G_Input
+.G_Button:hover,
+.G_Input,
+.G_Input:hover,
+.G_SelectablePlate,
+.G_SelectablePlate:hover
 {
   border-style: ridge;
 }
@@ -327,7 +345,7 @@
 /* :: Transparent Background :: */
 .G_NoGraphics,
 .G_Checkbox,
-.G_Link_text
+.G_LinkText
 {
   background: rgba(0,0,0,0);  /* Transparent background */
 }
@@ -339,7 +357,8 @@
 }
 
 /* :: Input Background :: */
-.G_Input
+.G_Input,
+.G_SelectablePlate
 {
   /* Old browsers */
   background: rgba(45, 45, 45, 0.8);
@@ -349,6 +368,20 @@
   background: -webkit-linear-gradient(top, rgba(60, 60, 60, 0.8), rgba(30, 30, 30, 0.8));
   /* CSS3 compatible browsers*/
   background: linear-gradient(rgba(60, 60, 60, 0.8), rgba(30, 30, 30, 0.8));
+}
+
+/* :: Selectable Background with Mouseover :: */
+.G_SelectablePlate:hover
+{
+  /* Old browsers */
+  background: rgba(45, 45, 45, 0.8);
+  /* FF3.6-15 */
+  background: -moz-linear-gradient(top, rgba(60, 60, 60, 0.8), rgba(30, 30, 30, 0.8));
+  /* Chrome10-25,Safari5.1-6 */
+  background: -webkit-linear-gradient(top, rgba(60, 60, 60, 0.8), rgba(30, 30, 30, 0.8));
+  /* CSS3 compatible browsers*/
+  background: linear-gradient(rgba(90, 90, 90, 0.8), rgba(60, 60, 60, 0.8));
+  /*background: linear-gradient(rgba(60, 60, 60, 1), rgba(30, 30, 30, 1));*/
 }
 
 /* :: Button Background :: */
@@ -365,7 +398,7 @@
 }
 
 /* Button Background when Mouseover :: */
-.G_Button:hover
+.G_Button:hover:enabled
 {
   /* Old browsers */
   background: rgba(175, 175, 175, 0.8);
@@ -403,16 +436,26 @@
 .G_Button:focus,
 .G_Checkbox,
 .G_Checkbox:focus,
-.G_Link_text,
-.G_Link_text:focus,
+.G_LinkText,
+.G_LinkText:focus,
 .G_Input
 {
   outline: none;
 }
 
 /* :: Focused Outline :: */
-.G_Input:focus
+.G_Input:focus,
+.G_SelectablePlate:focus
 {
+  /*
+    IMPORTANT:
+      In order for outline to be drawn properly, there must
+    be space around the component for it - either margin in
+    component to be outlined or padding in parent component.
+      The best way to do it is to put component to be outlined
+    in another div with padding equal to the desired with of
+    the outline.
+  */
   outline: solid 1px rgba(30, 30, 255, 0.8);
 }
 
@@ -429,6 +472,12 @@
 .S_GameWindow_Title
 {
   font-size: 0.8em;
+}
+
+/* :: Large Font Size :: */
+.S_CharlistWindow_CharacterPlate
+{
+  font-size: 1.2em;
 }
 
 /* --------------- Window ---------------- */
@@ -475,9 +524,7 @@
 }
 
 /* :: Default Window Content :: */
-.S_WindowContent,
-.S_GameWindow_Content,
-.S_TermsWindow_Content
+.S_WindowContent
 {
   width: 100%;
   height: 100%;
@@ -521,11 +568,11 @@
 
 /* :: Scrollable Output :: */
 .S_ScrollWindowOutput,
-.S_TermsWindow_Terms
+.S_TermsWindow_Terms,
+.S_CharlistWindow_Charlist
 {
   width: 100%;
   height: 100%;
-  margin: 0;
   overflow-x: hidden;   /* Do not use horizontal scrolling */
   overflow-y: auto;     /* Automatically create vertical scrollbar */
 }
@@ -617,6 +664,38 @@
   text-align: justify;
 }
 
+/* -------------- Charlist Window -------------- */
+
+/* :: Charlist Window Character List :: */
+.S_CharlistWindow_Charlist
+{
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  height: 16em;
+}
+
+S_CharlistWindow_CharacterPlateContainer
+{
+  width: 100%;
+  height: 2em;
+
+  /*
+    This is to make sure that outline is visible when
+    character plate is focused. Margin value needs
+    to be equal to the outline width
+  */
+  margin: 1px;
+}
+
+/* :: Charlist Window Character Plate :: */
+.S_CharlistWindow_CharacterPlate
+{
+  margin: 1px;
+  /* To center the text vertically, 'line-height' should equal 'height' */
+  line-height: 2em;
+  text-align: center;
+}
+
 /* ----------------- Form ---------------- */
 
 /* :: Form :: */
@@ -639,9 +718,7 @@
 }
 
 /* :: Full Width Button :: */
-.S_Form_SubmitButton,
-.S_LoginForm_SubmitButton,
-.S_TermsWindow_AcceptButton
+.S_Component_FullWidthButton
 {
   width: 100%;
   height: auto;

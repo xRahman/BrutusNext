@@ -13,14 +13,12 @@ import $ = require('jquery');
 
 export class GameWindow extends Window
 {
-  protected static get CSS_CLASS()
+  protected static get S_CSS_CLASS()
     { return 'S_GameWindow'; }
-  protected static get TITLE_BAR_CSS_CLASS()
+  protected static get TITLE_BAR_S_CSS_CLASS()
     { return 'S_GameWindow_TitleBar'; }
-  protected static get TITLE_CSS_CLASS()
+  protected static get TITLE_S_CSS_CLASS()
     { return 'S_GameWindow_Title'; }
-  protected static get CONTENT_CSS_CLASS()
-    { return 'S_GameWindow_Content'; }
 
   // -------------- Static class data -------------------
 
@@ -36,13 +34,13 @@ export class GameWindow extends Window
 
   // ---------------- Public methods --------------------
 
-  // ~ Overrides Window.create()
+  // ~ Overrides Window.create().
   public create
   (
-    window_sCssClass = GameWindow.CSS_CLASS,
-    content_sCssClass = GameWindow.CONTENT_CSS_CLASS,
-    titleBar_sCssClass = GameWindow.TITLE_BAR_CSS_CLASS,
-    title_sCssClass = GameWindow.TITLE_CSS_CLASS,
+    window_sCssClass = GameWindow.S_CSS_CLASS,
+    content_sCssClass = Window.CONTENT_S_CSS_CLASS,
+    titleBar_sCssClass = GameWindow.TITLE_BAR_S_CSS_CLASS,
+    title_sCssClass = GameWindow.TITLE_S_CSS_CLASS,
   )
   {
     super.create
