@@ -251,6 +251,8 @@
 .S_Form_ButtonContainer,
 .S_RegisterForm_SubmitButton,
 .S_RegisterForm_CancelButton,
+.S_ChargenForm_SubmitButton,
+.S_RegisterForm_CancelButton,
 .S_StandaloneWindow,
 .S_StandaloneWindow_Title,
 .S_StandaloneWindow_TitleBar,
@@ -749,15 +751,17 @@ S_CharlistWindow_CharacterPlateContainer
 
 /* -------------- Register Form --------------- */
 
-/* :: Register Form Submit Button :: */
-.S_RegisterForm_SubmitButton
+/* :: Form Short Submit Button :: */
+.S_RegisterForm_SubmitButton,
+.S_ChargenForm_SubmitButton
 {
   width: 60%;
   float: left;
 }
 
-/* :: Register Form Cancel Button :: */
-.S_RegisterForm_CancelButton
+/* :: Form Short Cancel Button :: */
+.S_RegisterForm_CancelButton,
+.S_ChargenForm_CancelButton
 {
   width: 35%;
   float: left;

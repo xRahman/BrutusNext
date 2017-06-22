@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Register form.
+  Chargen form.
 */
 
 'use strict';
@@ -12,12 +12,12 @@ import {Form} from '../../../client/gui/Form';
 
 import $ = require('jquery');
 
-export class RegisterForm extends Form
+export class ChargenForm extends Form
 {
   protected static get SUBMIT_BUTTON_S_CSS_CLASS()
-    { return 'S_RegisterForm_SubmitButton'; }
+    { return 'S_ChargenForm_SubmitButton'; }
   protected static get CANCEL_BUTTON_S_CSS_CLASS()
-    { return 'S_RegisterForm_CancelButton'; }
+    { return 'S_ChargenForm_CancelButton'; }
 
   // -------------- Static class data -------------------
 
@@ -26,10 +26,7 @@ export class RegisterForm extends Form
 
   //------------------ Private data ---------------------
 
-  private $accountNameInput: JQuery = null;
-  private $emailInput: JQuery = null;
-  private $passwordInput: JQuery = null;
-  private $rememberMeCheckbox: JQuery = null;
+  private $characterNameInput: JQuery = null;
 
   // --------------- Static accessors -------------------
 
@@ -42,56 +39,15 @@ export class RegisterForm extends Form
   // ~ Overrides Form.create().
   public create({ $container }: { $container: JQuery; })
   {
-    super.create({ $container: $container, name: 'register_form' });
+    super.create({ $container: $container, name: 'chargen_form' });
 
-    super.createLabel({ text: 'Account Name' });
-    this.createAccountNameInput();
+    super.createLabel({ text: 'Character Name' });
+    this.createCharacterNameInput();
 
-    super.createLabel({ text: 'E-mail' });
-    this.createEmailInput();
-
-    super.createLabel({ text: 'Password' });
-    this.createPasswordInput();
-
-    this.createRememberMeCheckbox();
     this.createButtons();
   }
 
   // --------------- Protected methods ------------------
-
-  // ~ Overrides Form.createEmailInput().
-  protected createEmailInput()
-  {
-    this.$emailInput = super.createEmailInput
-    (
-      {
-        name: 'email_input',
-        placeholder: 'Enter E-mail'
-      }
-    );
-
-    return this.$emailInput;
-  }
-
-  // ~ Overrides Form.createPasswordInput().
-  protected createPasswordInput()
-  {
-    /// TODO: Číst to ze stejné proměnné jako server a jako register form.
-    let minLength = 4;
-    let maxLength = 50;
-
-    this.$passwordInput = super.createPasswordInput
-    (
-      {
-        name: 'password_input',
-        placeholder: 'Enter Password',
-        minLength: minLength,
-        maxLength: maxLength
-      }
-    );
-
-    return this.$passwordInput;
-  }
 
   // ~ Overrides Form.createSubmitButton().
   protected createSubmitButton({ $container }: { $container: JQuery; })
@@ -100,38 +56,26 @@ export class RegisterForm extends Form
     (
       {
         $container:  $container,
-        text: 'Register',
-        sCssClass: RegisterForm.SUBMIT_BUTTON_S_CSS_CLASS
+        text: 'Create Character',
+        sCssClass: ChargenForm.SUBMIT_BUTTON_S_CSS_CLASS
       }
     );
   }
 
   // ---------------- Private methods -------------------
 
-  private createRememberMeCheckbox()
-  {
-    this.$rememberMeCheckbox = super.createCheckboxInput
-    (
-      {
-        name: 'remember_me_checkbox',
-        text: 'Remember me',
-        checked: true
-      }
-    );
-  }
-
-  private createAccountNameInput()
+  private createCharacterNameInput()
   {
     /// TODO: Číst to ze stejné proměnné jako server a jako register form.
     // Maximum length of acocunt name (in characters).
     let minLength = 3;
     let maxLength = 20;
 
-    this.$accountNameInput = super.createTextInput
+    this.$characterNameInput = super.createTextInput
     (
       {
-        name: 'account_name_input',
-        placeholder: 'Enter Account Name',   // Placeholder text.
+        name: 'character_name_input',
+        placeholder: 'Enter Character Name',   // Placeholder text.
         minLength: minLength,
         maxLength: maxLength
       }
@@ -152,7 +96,7 @@ export class RegisterForm extends Form
     (
       {
         $container: $container,
-        sCssClass: RegisterForm.CANCEL_BUTTON_S_CSS_CLASS,
+        sCssClass: ChargenForm.CANCEL_BUTTON_S_CSS_CLASS,
         text: 'Cancel'
       }
     );
@@ -172,12 +116,13 @@ export class RegisterForm extends Form
     // We will handle the form submit ourselves.
     event.preventDefault();
 
-    console.log("Submit (acc_name: " + this.$accountNameInput.val() + ","
-      +" passwd: " + this.$passwordInput.val() + " )");
+    console.log("Submit (char_name: " + this.$characterNameInput.val() + " )");
+
+    ClientApp.setState(ClientApp.State.IN_GAME);
   }
 
   protected onCancel(event: Event)
   {
-    ClientApp.setState(ClientApp.State.LOGIN);
+    ClientApp.setState(ClientApp.State.CHARLIST);
   }
 }
