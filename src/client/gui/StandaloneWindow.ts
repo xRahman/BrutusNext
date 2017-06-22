@@ -43,6 +43,7 @@ export class StandaloneWindow extends Window
 
   // ---------------- Public methods --------------------
 
+  // ~ Overrides Window.create().
   public create
   (
     {

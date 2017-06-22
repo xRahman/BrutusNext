@@ -20,7 +20,7 @@ export class RegisterWindow extends StandaloneWindow
   {
     super();
 
-    // Show this window when app is in state 'LOGIN'.
+    // Show this window when app is in this state.
     this.flags.set(ClientApp.State.REGISTER);
   }
 
@@ -42,7 +42,7 @@ export class RegisterWindow extends StandaloneWindow
 
   // ---------------- Public methods --------------------
 
-  // ~ Overrides Window.create()
+  // ~ Overrides StandaloneWindow.create().
   public create()
   {
     super.create();
@@ -90,7 +90,7 @@ export class RegisterWindow extends StandaloneWindow
 
   private onTermsClick(event: Event)
   {
-    console.log("Clicked on on terms link");
+    console.log("Clicked on terms link");
     ClientApp.setState(ClientApp.State.TERMS);
   }
 }

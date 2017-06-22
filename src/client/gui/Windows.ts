@@ -12,6 +12,7 @@ import {Window} from '../../client/gui/Window';
 import {LoginWindow} from '../../client/gui/login/LoginWindow';
 import {RegisterWindow} from '../../client/gui/register/RegisterWindow';
 import {TermsWindow} from '../../client/gui/terms/TermsWindow';
+import {CharlistWindow} from '../../client/gui/charlist/CharlistWindow';
 import {ScrollWindow} from '../../client/gui/scroll/ScrollWindow';
 import {MapWindow} from '../../client/gui/map/MapWindow';
 import {ClientApp} from '../../client/lib/app/ClientApp';
@@ -30,6 +31,7 @@ export class Windows
   private loginWindow: LoginWindow = null;
   private registerWindow: RegisterWindow = null;
   private termsWindow: TermsWindow = null;
+  private charlistWindow: CharlistWindow = null;
 
   // There is just one map window per ClientApp.
   // When avatar is switched, content is redrawn.
@@ -80,6 +82,7 @@ export class Windows
     this.createLoginWindow();
     this.createRegisterWindow();
     this.createTermsWindow();
+    this.createCharlistWindow();
   }
 
   // Creates a 'ScrollWindow' and adds it to app_body.
@@ -136,6 +139,16 @@ export class Windows
     this.termsWindow = this.createAndAdd(new TermsWindow());
 
     return this.termsWindow;
+  }
+
+  private createCharlistWindow()
+  {
+    if (this.alreadyExists(this.charlistWindow, 'Charlist'))
+      return;
+
+    this.charlistWindow = this.createAndAdd(new CharlistWindow());
+
+    return this.charlistWindow;
   }
 
   private alreadyExists(window: Window, wndName: string)
