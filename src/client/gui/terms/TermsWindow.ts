@@ -8,6 +8,7 @@
 
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Component} from '../../../client/gui/Component';
+import {Window} from '../../../client/gui/Window';
 import {StandaloneWindow} from '../../../client/gui/StandaloneWindow';
 
 import $ = require('jquery');
@@ -18,18 +19,14 @@ export class TermsWindow extends StandaloneWindow
   {
     super();
 
-    // Show this window when app is in state 'LOGIN'.
+    // Show this window when app is in this state.
     this.flags.set(ClientApp.State.TERMS);
   }
 
   protected static get S_CSS_CLASS()
     { return 'S_TermsWindow'; }
-  protected static get CONTENT_S_CSS_CLASS()
-    { return 'S_TermsWindow_Content'; }
   protected static get TERMS_S_CSS_CLASS()
     { return 'S_TermsWindow_Terms'; }
-  protected static get ACCEPT_BUTTON_S_CSS_CLASS()
-    { return 'S_TermsWindow_AcceptButton'; }
 
   // -------------- Static class data -------------------
 
@@ -52,7 +49,7 @@ export class TermsWindow extends StandaloneWindow
     (
       {
         window_sCssClass: TermsWindow.S_CSS_CLASS,
-        content_sCssClass: TermsWindow.CONTENT_S_CSS_CLASS
+        content_sCssClass: Window.CONTENT_S_CSS_CLASS
       }
     );
 
@@ -185,7 +182,7 @@ export class TermsWindow extends StandaloneWindow
     (
       {
         $container: this.$content,
-        sCssClass: TermsWindow.ACCEPT_BUTTON_S_CSS_CLASS,
+        sCssClass: Component.FULL_WIDTH_BUTTON_S_CSS_CLASS,
         text: 'Accept'   // Button text.
       }
     );

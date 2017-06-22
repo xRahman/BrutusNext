@@ -39,7 +39,7 @@ export class RegisterForm extends Form
 
   // ---------------- Public methods --------------------
 
-  // -> Returns created jquery element.
+  // ~ Overrides Form.create().
   public create({ $container }: { $container: JQuery; })
   {
     super.create({ $container: $container, name: 'register_form' });
@@ -59,6 +59,7 @@ export class RegisterForm extends Form
 
   // --------------- Protected methods ------------------
 
+  // ~ Overrides Form.createEmailInput().
   protected createEmailInput()
   {
     this.$emailInput = super.createEmailInput
@@ -72,6 +73,7 @@ export class RegisterForm extends Form
     return this.$emailInput;
   }
 
+  // ~ Overrides Form.createPasswordInput().
   protected createPasswordInput()
   {
     /// TODO: Číst to ze stejné proměnné jako server a jako register form.
@@ -91,6 +93,7 @@ export class RegisterForm extends Form
     return this.$passwordInput;
   }
 
+  // ~ Overrides Form.createSubmitButton().
   protected createSubmitButton({ $container }: { $container: JQuery; })
   {
     return super.createSubmitButton

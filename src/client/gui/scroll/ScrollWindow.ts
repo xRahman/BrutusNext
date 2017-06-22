@@ -22,7 +22,7 @@ export class ScrollWindow extends GameWindow
   {
     super();
 
-    // Show this window when app is in state 'INGAME'.
+    // Show this window when app is in this state.
     this.flags.set(ClientApp.State.IN_GAME);
   }
 
@@ -46,7 +46,7 @@ export class ScrollWindow extends GameWindow
 
   // ---------------- Public methods --------------------
 
-  // -> Returns created jquery element.
+  // ~ Overrides GameWindow.create().
   public create()
   {
     super.create(ScrollWindow.S_CSS_CLASS);

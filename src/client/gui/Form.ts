@@ -28,8 +28,6 @@ export abstract class Form extends Component
     { return 'S_Form_Checkbox'; }
   protected static get CHECKBOX_CONTAINER_S_CSS_CLASS()
     { return 'S_Form_CheckboxContainer'; }
-  protected static get SUBMIT_BUTTON_S_CSS_CLASS()
-    { return 'S_Form_SubmitButton'; }
   protected static  get BUTTON_CONTAINER_S_CSS_CLASS()
     { return 'S_Form_ButtonContainer'; }
 
@@ -303,7 +301,7 @@ export abstract class Form extends Component
     {
       $container,
       text,
-      sCssClass = Form.SUBMIT_BUTTON_S_CSS_CLASS
+      sCssClass = Component.FULL_WIDTH_BUTTON_S_CSS_CLASS
     }:
     {
       $container: JQuery;

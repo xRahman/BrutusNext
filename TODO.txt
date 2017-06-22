@@ -1,7 +1,47 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+TODO: Nejspíš ve spoustě filů zbytečně importuju JQuery.
+
+---------------------------------------------------------------
+
+Jaká mám vlastně okna?
+
+StandaloneWindow
+- velký titlebar
+- centered
+    CharlistWindow
+    ChargenWindow
+    LoginWindow
+    RegisterWindow
+    - automaticky roztahovací na výšku
+      (Tohle by chtělo dědit, páč to je
+       stejné css pro všehchny.)
+
+    TermsWindow
+    - fixní výška
+      (to je sice default, ale každé z těhle oken si ji stejně potřebuje
+       nastavit podle sebe, takže každé potřebuje WINDOW_CONTENT).
+
+GameWindow
+- malý titlebar
+    ScrollWindow
+    MapWindow
+  
+=> Takže to mám dobře. Standalone okna s fixní výškou by sice uživila
+   kus nastavení contents defaultního okna, ale stejně si ten contents
+   musí předefinovat, protože mají jinak výšku. Takže správné řešení
+   je skutečně css pro contents předefinovat a reusnout příslušný kus
+   css uvnitř stylesheetu.
+- tak neeee, špatně. Výška okna se neurčuje v contents css, ale ve window css.
+- Na druhou stranu Charlist okno nemá výšku fixní, ale dynamickou
+  - sice má fixní výšku vnitřního charlistu, ale celé okno se roztáhne
+    podle toho.
+    - jo a padding může mít contents, nemusí ho mít komponenta charlist.
+---------------------------------------------------------------
+
 TODO: Použít "label for" na text pro "Remember me" checkbox.
+(Respektive vložit checkbox do labelu, to funguje stejně.)
 
 
 Ja na character select/create?
