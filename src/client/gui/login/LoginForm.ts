@@ -14,9 +14,6 @@ import $ = require('jquery');
 
 export class LoginForm extends Form
 {
-  protected static get SUBMIT_BUTTON_S_CSS_CLASS()
-    { return 'S_LoginForm_SubmitButton'; }
-
   // -------------- Static class data -------------------
 
   //----------------- Protected data --------------------
@@ -35,7 +32,7 @@ export class LoginForm extends Form
 
   // ---------------- Public methods --------------------
 
-  // -> Returns created jquery element.
+  // ~ Overrides Form.create().
   public create({ $container = null }: { $container: JQuery; })
   {
     super.create({ $container: $container, name: 'login_form' });
@@ -52,6 +49,7 @@ export class LoginForm extends Form
 
   // --------------- Protected methods ------------------
 
+  // ~ Overrides Form.createPasswordInput().
   protected createPasswordInput()
   {
     /// TODO: Číst to ze stejné proměnné jako server a jako register form.
@@ -71,6 +69,7 @@ export class LoginForm extends Form
     return this.$passwordInput;
   }
 
+  // ~ Overrides Form.createSubmitButton().
   protected createSubmitButton({ $container }: { $container: JQuery; })
   {
     return super.createSubmitButton
@@ -78,7 +77,7 @@ export class LoginForm extends Form
       {
         $container: $container,
         text: 'Login',
-        sCssClass: LoginForm.SUBMIT_BUTTON_S_CSS_CLASS
+        sCssClass: Component.FULL_WIDTH_BUTTON_S_CSS_CLASS
       }
     );
   }

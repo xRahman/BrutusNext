@@ -43,7 +43,12 @@ export abstract class Component
   protected static get CHECKBOX_G_CSS_CLASS()
     { return 'G_Checkbox'; }
   protected static get LINK_TEXT_G_CSS_CLASS()
-    { return 'G_Link_text'; }
+    { return 'G_LinkText'; }
+  protected static get SELECTABLE_PLATE_G_CSS_CLASS()
+    { return 'G_SelectablePlate'; }
+
+  protected static get FULL_WIDTH_BUTTON_S_CSS_CLASS()
+    { return 'S_Component_FullWidthButton'; }
   
   // -------------- Static class data -------------------
 

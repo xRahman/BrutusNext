@@ -20,7 +20,7 @@ export class LoginWindow extends StandaloneWindow
   {
     super();
 
-    // Show this window when app is in state 'LOGIN'.
+    // Show this window when app is in this state.
     this.flags.set(ClientApp.State.LOGIN);
   }
 
@@ -42,6 +42,7 @@ export class LoginWindow extends StandaloneWindow
 
   // ---------------- Public methods --------------------
 
+  // ~ Overrides StandaloneWindow.create().
   public create()
   {
     super.create();
