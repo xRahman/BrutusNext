@@ -8,8 +8,8 @@
 
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Component} from '../../../client/gui/Component';
-import {Form} from '../../../client/gui/Form';
 import {StandaloneWindow} from '../../../client/gui/StandaloneWindow';
+import {Form} from '../../../client/gui/Form';
 import {RegisterForm} from '../../../client/gui/register/RegisterForm';
 
 import $ = require('jquery');
