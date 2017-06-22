@@ -342,6 +342,12 @@
   border-style: ridge;
 }
 
+/* :: Focused Plate Borders :: */
+.G_SelectablePlate:focus
+{
+  border-width: 2px;
+}
+
 /* -------------- Background ------------- */
 
 /* :: Transparent Background :: */
@@ -676,27 +682,48 @@
   height: 16em;
 }
 
-S_CharlistWindow_CharacterPlateContainer
+.S_CharlistWindow_CharacterPlateContainer
 {
   width: 100%;
-  height: 2em;
+  height: auto;
 
   /*
     This is to make sure that outline is visible when
     character plate is focused. Margin value needs
     to be equal to the outline width
   */
-  margin: 1px;
+  padding: 1px;
 }
 
 /* :: Charlist Window Character Plate :: */
 .S_CharlistWindow_CharacterPlate
 {
-  margin: 1px;
-  /* To center the text vertically, 'line-height' should equal 'height' */
-  line-height: 2em;
+  width: 100%;
+  height: 100%;
+
+  /* To center the text vertically, 'line-height' should equal 'height'
+    of .S_CharlistWindow_CharacterPlateContainer element */
+  /*line-height: 2em;*/
+
+  padding: 0.8em;
   text-align: center;
 }
+
+/* :: Charlist Window Character Plate Label :: */
+/*
+.S_CharlistWindow_CharacterPlateLabel
+{
+*/
+  /*
+  display: inline-block;
+  vertical-align: middle;
+  */
+/*
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+*/
 
 /* ----------------- Form ---------------- */
 
