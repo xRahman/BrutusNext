@@ -231,9 +231,9 @@ export class ClientApp extends App
     this.connection.connect();
 
     // Show login window, hide all others.
-    ///ClientApp.setState(ClientApp.State.LOGIN);
+    ClientApp.setState(ClientApp.State.LOGIN);
     /// TEST:
-    ClientApp.setState(ClientApp.State.CHARLIST);
+    ///ClientApp.setState(ClientApp.State.CHARLIST);
 
     /// TODO: Stáhnout viewport data ze serveru.
     /// I když možná nestačí connection.connect(), ještě se asi bude
