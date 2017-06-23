@@ -28,8 +28,10 @@ export class CharlistWindow extends StandaloneWindow
     { return 'S_CharlistWindow_CharacterPlateContainer'; }
   protected static get CHARACTER_PLATE_S_CSS_CLASS()
     { return 'S_CharlistWindow_CharacterPlate'; }
-  protected static get CHARACTER_PLATE_LABEL_S_CSS_CLASS()
-    { return 'S_CharlistWindow_CharacterPlateLabel'; }
+  protected static get CHARACTER_PLATE_LABEL_BIG_S_CSS_CLASS()
+    { return 'S_CharlistWindow_CharacterPlateLabelBig'; }
+  protected static get CHARACTER_PLATE_LABEL_SMALL_S_CSS_CLASS()
+    { return 'S_CharlistWindow_CharacterPlateLabelSmall'; }
 
   // -------------- Static class data -------------------
 
@@ -103,14 +105,23 @@ export class CharlistWindow extends StandaloneWindow
       (event: Event) => { this.onCharacterPlateFocus(event); }
     );
 
-    let $label = Component.createLabel
+    Component.createLabel
     (
       {
         $container: $plate,
-        ///sCssClass: CharlistWindow.CHARACTER_PLATE_LABEL_S_CSS_CLASS,
-        text: "Zuzka (level 1 priest)"
+        sCssClass: CharlistWindow.CHARACTER_PLATE_LABEL_BIG_S_CSS_CLASS,
+        text: "Zuzka"
       }
-    );    
+    );
+
+    Component.createLabel
+    (
+      {
+        $container: $plate,
+        sCssClass: CharlistWindow.CHARACTER_PLATE_LABEL_SMALL_S_CSS_CLASS,
+        text: "Level 1 priest"
+      }
+    );
 
     ///$plate.text("Zuzka (level 1 priest)");
   }
