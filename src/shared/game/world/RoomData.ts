@@ -11,7 +11,7 @@ import {PropertyAttributes} from
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {Flags} from '../../../shared/lib/utils/Flags';
 import {Coords} from '../../../shared/lib/utils/Coords';
-import {SharedData} from '../../../shared/game/SharedData';
+import {GameEntityData} from '../../../shared/game/GameEntityData';
 import {ExitData} from '../../../shared/game/world/ExitData';
 
 // Maps exit names to respective offsets in grid.
@@ -76,7 +76,7 @@ const EXIT_SHIFTS =
 //   'd':   { s:  0, e:  0, u: -1 }
 // }
 
-export class RoomData extends SharedData
+export class RoomData extends GameEntityData
 {
   //------------------ Public data ----------------------
 

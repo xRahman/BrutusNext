@@ -89,7 +89,7 @@ export class HttpServer
 
   private httpServer: http.Server = null;
 
-  // WebSocketServer runs inside a http server.
+  // Websocket server runs inside a http server.
   private webSocketServer = new WebSocketServer();
   
   // ---------------- Event handlers --------------------
