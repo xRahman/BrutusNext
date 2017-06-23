@@ -475,13 +475,14 @@
 .S_StandaloneWindow_Text,
 .S_StandaloneWindow_LinkText,
 .S_Form_Label,
-.S_GameWindow_Title
+.S_GameWindow_Title,
+.S_CharlistWindow_CharacterPlateLabelSmall
 {
   font-size: 0.8em;
 }
 
 /* :: Large Font Size :: */
-.S_CharlistWindow_CharacterPlate
+.S_CharlistWindow_CharacterPlateLabelBig
 {
   font-size: 1.2em;
 }
@@ -708,6 +709,28 @@
 }
 
 /* :: Charlist Window Character Plate Label :: */
+.S_CharlistWindow_CharacterPlateLabelBig,
+.S_CharlistWindow_CharacterPlateLabelSmall
+{
+  width: 100%;
+  display: inline-block;
+}
+
+/* :: Charlist Window Character Plate Label Big :: */
+/*
+S_CharlistWindow_CharacterPlateLabelBig
+{
+}
+*/
+
+/* :: Charlist Window Character Plate Label Small :: */
+/*
+S_CharlistWindow_CharacterPlateLabelSmall
+{
+  
+}
+*/
+
 /*
 .S_CharlistWindow_CharacterPlateLabel
 {

@@ -134,6 +134,6 @@ export class LoginForm extends Form
     console.log("Submit (acc_name: " + this.$accountNameInput.val() + ","
       +" passwd: " + this.$passwordInput.val() + " )");
 
-    ClientApp.setState(ClientApp.State.IN_GAME);
+    ClientApp.setState(ClientApp.State.CHARLIST);
   }
 }
