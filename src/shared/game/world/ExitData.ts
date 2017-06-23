@@ -8,9 +8,9 @@
 'use strict';
 
 import {Flags} from '../../../shared/lib/utils/Flags';
-import {SharedData} from '../../../shared/game/SharedData';
+import {GameEntityData} from '../../../shared/game/GameEntityData';
 
-export class ExitData extends SharedData
+export class ExitData extends GameEntityData
 {
   /// Momentálně potřebuju vědět jen to, jestli exit do daného směru existuje.
   /// - Časem by tu mohlo být přetížení vodorovných exitů šikmo nahoru/dolů.

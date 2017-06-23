@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Player account.
+  Server-side player account.
 */
 
 'use strict';
@@ -26,6 +26,7 @@ import {Game} from '../../game/Game';
 ///import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
 import {Character} from '../../../server/game/character/Character';
 import {Classes} from '../../../shared/lib/class/Classes';
+import {AccountData} from '../../../shared/lib/account/AccountData';
 import {Accounts} from '../../../server/lib/account/Accounts';
 
 // Built-in node.js modules.
@@ -74,12 +75,8 @@ export class Account extends ServerEntity
 
   // ----------------- Public data ----------------------
 
-  /*
-  public get connection()
-  {
-    return this.connectionId.getEntity({ typeCast: Connection });
-  }
-  */
+  public data = new AccountData();
+
 
   // List of character names this account has access to.
   public characterNames: Array<string> = [];

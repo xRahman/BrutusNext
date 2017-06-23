@@ -49,9 +49,7 @@ export class JsonObject
     {
       let pathString = this.composePathString(path);
 
-      // Here we need fatal error, because data might already
-      // be partialy loaded so we could end up with broken entity.
-      FATAL_ERROR("Syntax error in JSON string: " + e.message + pathString);
+      ERROR("Syntax error in JSON string: " + e.message + pathString);
       return null;
     }
 
