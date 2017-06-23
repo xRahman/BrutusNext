@@ -7,7 +7,7 @@
 'use strict';
 
 import {Packet} from '../../../../shared/lib/protocol/Packet';
-///import {PacketData} from '../../../../shared/protocol/PacketData';
+import {Serializable} from '../../../../shared/lib/class/Serializable';
 import {ERROR} from '../../../../shared/lib/error/ERROR';
 import {Utils} from '../../../../shared/lib/utils/Utils';
 import {Syslog} from '../../../../shared/lib/log/Syslog';
@@ -104,7 +104,8 @@ export class ServerWebSocket extends ServerSocket
   public sendMudMessage(message: string)
   {
     let packet = new Packet();
-    packet.add(Packet.DataType.MUD_MESSAGE, message);
+
+    packet.addMudMessage(message);
 
     this.send(packet);
   }
@@ -114,7 +115,7 @@ export class ServerWebSocket extends ServerSocket
   {
     try
     {
-      this.webSocket.send(packet.toJson());
+      this.webSocket.send(packet.serialize(Serializable.Mode.SEND_TO_CLIENT));
     }
     catch (error)
     {

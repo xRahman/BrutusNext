@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Implements client-side game entity.
+  Client-side game entity.
 */
 
 'use strict';

@@ -96,7 +96,7 @@ export class Authentication
 
     this.sendAuthPrompt
     (
-      "&gWelcome to the &RBrutus &YNext!\n"
+      "&gWelcome to &RBrutus &YNext!\n"
       + "&wBy what account name do you want to be recognized?"
     );
 

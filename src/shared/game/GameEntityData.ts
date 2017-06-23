@@ -11,7 +11,7 @@ import {PropertyAttributes} from
   '../../shared/lib/class/PropertyAttributes';
 import {Serializable} from '../../shared/lib/class/Serializable';
 
-export class SharedData extends Serializable
+export class GameEntityData extends Serializable
 {
   //------------------ Public data ----------------------
 
