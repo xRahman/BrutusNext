@@ -1,6 +1,15 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+TODO: Vyrobit shared a clinet part of Account
+- v AccountData (v /shared) by pak mohly být minima a maxima
+  pro accname lenght a password lenght
+- minima a maxima pro character name lenght by tudíž asi měla být
+  v CharacterData.
+
+---------------------------------------------------------------
+
+
 TODO: Nejspíš ve spoustě filů zbytečně importuju JQuery.
 
 TODO: Do Character plate dát dva labely
