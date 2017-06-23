@@ -66,7 +66,6 @@ export abstract class Component
 
   // --------------- Protected methods ------------------
 
-  // -> Returns created 'div' jquery element.
   protected static createDiv
   (
     {
@@ -88,7 +87,27 @@ export abstract class Component
     return this.initElement(element, $container, gCssClass, sCssClass);
   }
 
-  // -> Returns created 'div' jquery element.
+  protected static createImg
+  (
+    {
+      $container = null,
+      gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
+      sCssClass = null
+    }:
+    {
+      $container?: JQuery;
+      gCssClass?: string;
+      sCssClass?: string;
+    }
+    = {}
+  )
+  : JQuery
+  {
+    let element = document.createElement('img');
+
+    return this.initElement(element, $container, gCssClass, sCssClass);
+  }
+
   protected static createForm
   (
     {
@@ -114,7 +133,6 @@ export abstract class Component
     return this.initElement(element, $container, gCssClass, sCssClass);
   }
 
-  // -> Returns created 'title' jquery element.
   protected static createTitle
   (
     {
@@ -136,7 +154,6 @@ export abstract class Component
     return this.initElement(element, $container, gCssClass, sCssClass);
   }
 
-  // -> Returns created 'input' jquery element.
   protected static createTextInput
   (
     {
@@ -170,7 +187,6 @@ export abstract class Component
     return this.initElement(element, $container, gCssClass, sCssClass);
   }
 
-  // -> Returns created 'input' jquery element.
   protected static createPasswordInput
   (
     {
@@ -204,7 +220,6 @@ export abstract class Component
     return this.initElement(element, $container, gCssClass, sCssClass);
   }
 
-  // -> Returns created 'input' jquery element.
   protected static createEmailInput
   (
     {
@@ -238,7 +253,6 @@ export abstract class Component
     return this.initElement(element, $container, gCssClass, sCssClass);
   }
 
-  // -> Returns created 'input' jquery element.
   protected static createCheckboxInput
   (
     {
@@ -272,9 +286,8 @@ export abstract class Component
     return this.initElement(element, $container, gCssClass, sCssClass);
   }
 
-  // Creates a button which submits data from a form
+  // Creates a button which submits form data
   // (use createButton() to create a standalone button).
-  // -> Returns created 'label' jquery element.
   protected static createSubmitButton
   (
     {
@@ -316,7 +329,6 @@ export abstract class Component
     return $element;
   }
 
-  // -> Returns created 'textarea' jquery element.
   protected static createTextArea
   (
     {
@@ -342,7 +354,6 @@ export abstract class Component
 
   /// Tohle se nejspíš nepoužívá (svg elementy se vyrábí přes knihovnu d3).
   /*
-  // -> Returns created 'svg' jquery element.
   protected static createSvg(id: string, gCssClass, sCssClass: string): JQuery
   {
     let element = document.createElement('svg');
@@ -351,7 +362,6 @@ export abstract class Component
   }
   */
 
-  // -> Returns created 'label' jquery element.
   protected static createLabel
   (
     {
@@ -521,7 +531,6 @@ export abstract class Component
 
   // ---------------- Private methods -------------------
 
-  // -> Returns created jquery element.
   private static initElement<T extends HTMLElement>
   (
     element: T,
