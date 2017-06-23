@@ -32,6 +32,10 @@ export class CharlistWindow extends StandaloneWindow
     { return 'S_CharlistWindow_CharacterPlateLabelBig'; }
   protected static get CHARACTER_PLATE_LABEL_SMALL_S_CSS_CLASS()
     { return 'S_CharlistWindow_CharacterPlateLabelSmall'; }
+  protected static get PORTRAIT_S_CSS_CLASS()
+    { return 'S_CharlistWindow_Portrait'; }
+  protected static get LABELS_CONTAINER_S_CSS_CLASS()
+    { return 'S_CharlistWindow_LabelsContainer'; }
 
   // -------------- Static class data -------------------
 
@@ -105,10 +109,29 @@ export class CharlistWindow extends StandaloneWindow
       (event: Event) => { this.onCharacterPlateFocus(event); }
     );
 
-    Component.createLabel
+    let $portrait = Component.createImg
     (
       {
         $container: $plate,
+        gCssClass: Component.WINDOW_G_CSS_CLASS,
+        sCssClass: CharlistWindow.PORTRAIT_S_CSS_CLASS
+      }
+    );
+
+    $portrait.attr('src', '/images/portraits/Zuzka.jpg');
+
+    let $labelsContainer = Component.createDiv
+    (
+      {
+        $container: $plate,
+        sCssClass: CharlistWindow.LABELS_CONTAINER_S_CSS_CLASS
+      }
+    );
+
+    Component.createLabel
+    (
+      {
+        $container: $labelsContainer,
         sCssClass: CharlistWindow.CHARACTER_PLATE_LABEL_BIG_S_CSS_CLASS,
         text: "Zuzka"
       }
@@ -117,7 +140,7 @@ export class CharlistWindow extends StandaloneWindow
     Component.createLabel
     (
       {
-        $container: $plate,
+        $container: $labelsContainer,
         sCssClass: CharlistWindow.CHARACTER_PLATE_LABEL_SMALL_S_CSS_CLASS,
         text: "Level 1 priest"
       }
@@ -129,6 +152,7 @@ export class CharlistWindow extends StandaloneWindow
   private populateCharlist()
   {
     this.createCharacterPlate();
+    /*
     this.createCharacterPlate();
     this.createCharacterPlate();
     this.createCharacterPlate();
@@ -140,6 +164,7 @@ export class CharlistWindow extends StandaloneWindow
     this.createCharacterPlate();
     this.createCharacterPlate();
     this.createCharacterPlate();
+    */
 
     /// TODO.
   }
@@ -150,6 +175,7 @@ export class CharlistWindow extends StandaloneWindow
     (
       {
         $container: this.$content,
+        gCssClass: Component.WINDOW_G_CSS_CLASS,
         sCssClass: CharlistWindow.CHARLIST_S_CSS_CLASS
       }
     );
