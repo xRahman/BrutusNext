@@ -372,7 +372,7 @@
 }
 
 /* :: Selectable Background with Mouseover :: */
-.G_SelectablePlate:hover
+.G_SelectablePlate:hover:not(:focus)
 {
   /* Old browsers */
   background: rgba(45, 45, 45, 0.8);
@@ -424,6 +424,16 @@
   background: linear-gradient(rgba(80, 80, 80, 0.6) 0%, rgba(110, 110, 110, 0.6) 5%, rgba(60, 60, 60, 0.6) 90%, rgba(30, 30, 30, 0.6) 100%);
 }
 
+/* ------------- Box Shadow -------------- */
+
+/* :: Selectable Background with Focus :: */
+.G_SelectablePlate:focus
+{
+  -webkit-box-shadow:inset 0 0 0.8em 0.1em rgba(210, 230, 250, 1);
+  -moz-box-shadow: inset 0 0 0.8em 0.1em rgba(210, 230, 250, 1);
+  box-shadow:inset 0 0 0.8em 0.1em rgba(210, 230, 250, 1);
+}
+
 /* --------------- Outline --------------- */
 
 /*
@@ -449,6 +459,8 @@
 .G_Checkbox:focus,
 .G_LinkText,
 .G_LinkText:focus,
+.G_SelectablePlate,
+.G_SelectablePlate:focus,
 .G_Input
 {
   outline: none;
@@ -460,10 +472,12 @@
   outline: solid 1px rgba(30, 30, 255, 0.8);
 }
 
+/*
 .G_SelectablePlate:focus
 {
   outline: solid 2px rgba(30, 30, 255, 0.8);
 }
+*/
 
 /***************************************************************/
 /*                          Structure                          */
@@ -685,27 +699,19 @@
 {
   width: 100%;
   height: auto;
-
-  /*
-    This is to make sure that outline is visible when
-    character plate is focused. Margin value needs
-    to be equal to the outline width
-  */
-  padding: 2px;
+  padding-left: 0.3em;
+  padding-right: 0.3em;
+  margin-top: 0.3em;
+  margin-bottom: 0.3em;
 }
 
 /* :: Charlist Window Character Plate :: */
 .S_CharlistWindow_CharacterPlate
 {
   width: 100%;
-  height: 100%;
-
-  /* To center the text vertically, 'line-height' should equal 'height'
-    of .S_CharlistWindow_CharacterPlateContainer element */
-  /*line-height: 2em;*/
-
+  height: auto;
   padding: 0.8em;
-  text-align: center;
+  display: flex;
 }
 
 /* :: Charlist Window Character Plate Label :: */
@@ -716,35 +722,21 @@
   display: inline-block;
 }
 
-/* :: Charlist Window Character Plate Label Big :: */
-/*
-S_CharlistWindow_CharacterPlateLabelBig
+/* :: Charlist Window Portrait :: */
+.S_CharlistWindow_Portrait
 {
+  /* Image will be scaled to this size. */
+  width: 4em;
+  height: 4em;
 }
-*/
 
-/* :: Charlist Window Character Plate Label Small :: */
-/*
-S_CharlistWindow_CharacterPlateLabelSmall
+/* :: Charlist Window Labels Container :: */
+.S_CharlistWindow_LabelsContainer
 {
-  
+  width: 100%;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
 }
-*/
-
-/*
-.S_CharlistWindow_CharacterPlateLabel
-{
-*/
-  /*
-  display: inline-block;
-  vertical-align: middle;
-  */
-/*
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-*/
 
 /* ----------------- Form ---------------- */
 
