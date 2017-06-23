@@ -1,6 +1,22 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+Packet
+-------
+
+Zdědit ze Serializable
+- Narvat dovnitř reference na objekty, které se mají poslat.
+- Serialize se udělá automaticky (metodou Serializable).
+- Deserialize je třeba udělat ručně
+  - vyrobí se JSON object.
+    - z něj se přečtou 'parts'.
+    - podle typu se deserializuje z JSONu.
+
+TODOOOOOOOOOOOO
+v ClientWebSocket.ts
+
+---------------------------------------------------------------
+
 TODO: Vyrobit shared a clinet part of Account
 - v AccountData (v /shared) by pak mohly být minima a maxima
   pro accname lenght a password lenght
@@ -9,13 +25,16 @@ TODO: Vyrobit shared a clinet part of Account
 
 ---------------------------------------------------------------
 
+TODO: Nejspíš ve spoustě souborů zbytečně importuju JQuery.
 
-TODO: Nejspíš ve spoustě filů zbytečně importuju JQuery.
+---------------------------------------------------------------
 
 TODO: Do Character plate dát dva labely
 (velké písmo - jméno, malé písmo - popisek)
+[done]
 
 TODO: Char plate by měl mít vždycky 2x border (ať to neskáče).
+[done]
 
 ---------------------------------------------------------------
 

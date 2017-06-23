@@ -7,6 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Serializable} from '../../../shared/lib/class/Serializable';
 import {ClientWebSocket} from '../../../client/lib/net/ws/ClientWebSocket';
 import {ScrollWindow} from '../../../client/gui/scroll/ScrollWindow';
 import {Avatar} from '../../../client/lib/connection/Avatar';
@@ -52,18 +53,18 @@ export class Connection
   }
 
   // Sends 'data' to the connection.
-  public sendCommand(data: string)
+  public sendCommand(command: string)
   {
-    /// TODO: Vytvoření packetu
     let packet = new Packet();
-    packet.add(Packet.DataType.COMMAND, data);
+
+    packet.addCommand(command);
 
     // If the connection is closed, any user command
     // (even an empty one) triggers reconnect attempt.
     if (!this.socket.isOpen())
       this.socket.reConnect();
     else
-      this.socket.send(data);
+      this.socket.send(packet.serialize(Serializable.Mode.SEND_TO_SERVER));
   }
 
   // Sends 'data' to the connection.
@@ -72,9 +73,12 @@ export class Connection
     // If the connection is closed, any user command
     // (even an empty one) triggers reconnect attempt.
     if (!this.socket.isOpen())
-      this.socket.reConnect();
-    else
-      this.socket.send(packet.toJson());
+    {
+      ERROR("Attempt to send packet to the closed connection");
+      return;
+    }
+
+    this.socket.send(packet.serialize(Serializable.Mode.SEND_TO_SERVER));
   }
 
   // Receives 'message' from the connection

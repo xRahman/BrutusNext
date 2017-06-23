@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Abstract ancestor for all game entities (rooms, items, characters, etc.).
+  Server-side game entity.
 */
 
 'use strict';
@@ -17,13 +17,13 @@ import {MessageType} from '../../shared/lib/message/MessageType';
 import {Connection} from '../../server/lib/connection/Connection';
 import {Game} from '../../server/game/Game';
 import {ContainerEntity} from '../../server/lib/entity/ContainerEntity';
-import {SharedData} from '../../shared/game/SharedData';
+import {GameEntityData} from '../../shared/game/GameEntityData';
 
 export class GameEntity extends ContainerEntity
 {
   //------------------ Public data ----------------------
 
-  public data: SharedData = null;
+  public data: GameEntityData = null;
 
   public aliases: Array<String> = [];
 

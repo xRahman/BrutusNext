@@ -27,23 +27,28 @@
 
 'use strict';
 
+import {Serializable} from '../../../shared/lib/class/Serializable';
+import {TextMessage} from '../../../shared/lib/protocol/TextMessage';
 ///import {PacketPart} from '../../shared/protocol/PacketPart';
 ///import {PacketData} from '../../shared/protocol/PacketData';
 
+/*
 interface PacketPart
 {
   type: Packet.DataType,
   data: any
 }
+*/
 
-export class Packet
+export class Packet extends Serializable
 {
 
   // -------------- Static class data -------------------
 
   //------------------ Public data ----------------------  
 
-  public parts = new Array<PacketPart>();
+  public parts = new Array<Packet.PartInterface>();
+  ///public parts = new Array<PacketPart>();
 
   //----------------- Protected data --------------------
 
@@ -57,44 +62,79 @@ export class Packet
 
   // ---------------- Public methods --------------------
 
-  public toJson()
+  /// To be deprecated.
+  // public toJson()
+  // {
+  //   return JSON.stringify(this);
+  // }
+
+  public addMudMessage(message: string)
   {
-    return JSON.stringify(this);
+    let mudMessage = new TextMessage();
+
+    mudMessage.message = message;
+
+    this.add(Packet.PartType.MUD_MESSAGE, mudMessage);
   }
 
-  public add(type: Packet.DataType, data: any)
+  public addCommand(message: string)
   {
-    let part: PacketPart =
-    {
-      type: type,
-      data: data
-    };
+    let mudMessage = new TextMessage();
 
-    this.parts.push(part);
+    mudMessage.message = message;
+
+    this.add(Packet.PartType.COMMAND, mudMessage);
   }
+
+  /// To be deleted.
+  // public add(type: Packet.DataType, data: any)
+  // {
+  //   let part: PacketPart =
+  //   {
+  //     type: type,
+  //     data: data
+  //   };
+
+  //   this.parts.push(part);
+  // }
 
   // --------------- Protected methods ------------------
 
   // ---------------- Private methods -------------------
 
+  private add(type: Packet.PartType, data: Serializable)
+  {
+    let part: Packet.PartInterface =
+    {
+      type: type,
+      data: data
+    }
+
+    this.parts.push(part);
+  }
+
 }
 
 // ------------------ Type declarations ----------------------
 
-// Module is exported so you can use enum type from outside this file.
-// It must be declared after the class because Typescript says so...
 export module Packet
 {
-  export enum DataType
+  export enum PartType
   {
     // Command send by player to the server.
     COMMAND,
     // Colored text sent by server that should be output to scrolview window.
     MUD_MESSAGE,
-    // Data to be processed by editor.
+    // Data sent to the editor to be processed.
     EDITOR_INPUT,
-    // Data sent back to the server by the editor.
+    // Data sent by the editor back to the server.
     EDITOR_OUTPUT,
-    EDITOR_CREATE_ROOM
+    MAP_CREATE_ROOM
+  }
+
+  export interface PartInterface
+  {
+    type: PartType,
+    data: any
   }
 }
