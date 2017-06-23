@@ -75,6 +75,7 @@ GameWindow
 
 TODO: Použít "label for" na text pro "Remember me" checkbox.
 (Respektive vložit checkbox do labelu, to funguje stejně.)
+[done]
 
 
 Ja na character select/create?

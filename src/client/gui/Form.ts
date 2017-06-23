@@ -230,7 +230,7 @@ export abstract class Form extends Component
       name,
       text,
       checked,
-      container_sCssClass = Form.CHECKBOX_CONTAINER_S_CSS_CLASS,
+      ///container_sCssClass = Form.CHECKBOX_CONTAINER_S_CSS_CLASS,
       label_sCssClass = Form.LABEL_S_CSS_CLASS,
       checkbox_sCssClass = Form.CHECKBOX_S_CSS_CLASS
     }:
@@ -244,18 +244,19 @@ export abstract class Form extends Component
     }
   )
   {
-    let $container = Component.createDiv
+    let $label = Component.createLabel
     (
       {
         $container: this.$form,
-        sCssClass: container_sCssClass
+        sCssClass: label_sCssClass,
+        text: null  // No text yet because we want checkbox to be first.
       }
     );
 
     let $checkbox = Component.createCheckboxInput
     (
       {
-        $container: $container,
+        $container: $label,
         sCssClass: checkbox_sCssClass,
         name: name,
       },
@@ -264,14 +265,8 @@ export abstract class Form extends Component
       }
     );
 
-    Component.createLabel
-    (
-      {
-        $container: $container,
-        sCssClass: label_sCssClass,
-        text: text
-      }
-    );
+    // Use append() because text() would delete the checkbox.
+    $label.append(text);
 
     return $checkbox;
   }
