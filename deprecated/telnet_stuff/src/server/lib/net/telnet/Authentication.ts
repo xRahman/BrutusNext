@@ -25,26 +25,27 @@
 
 'use strict';
 
-import {ERROR} from '../../../shared/lib/error/ERROR';
-import {Utils} from '../../../shared/lib/utils/Utils';
-import {Entity} from '../../../shared/lib/entity/Entity';
-import {Entities} from '../../../shared/lib/entity/Entities';
-import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
-import {Syslog} from '../../../shared/lib/log/Syslog';
-import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
-import {Message} from '../../../server/lib/message/Message';
-import {MessageType} from '../../../shared/lib/message/MessageType';
-import {Connection} from '../../../server/lib/connection/Connection';
-import {ServerApp} from '../../../server/lib/app/ServerApp';
-import {Account} from '../../../server/lib/account/Account';
-import {Accounts} from '../../../server/lib/account/Accounts';
+import {ERROR} from '../../../../shared/lib/error/ERROR';
+import {Utils} from '../../../../shared/lib/utils/Utils';
+import {Entity} from '../../../../shared/lib/entity/Entity';
+import {Entities} from '../../../../shared/lib/entity/Entities';
+import {ServerEntities} from '../../../../server/lib/entity/ServerEntities';
+import {Syslog} from '../../../../shared/lib/log/Syslog';
+import {AdminLevel} from '../../../../shared/lib/admin/AdminLevel';
+import {Message} from '../../../../server/lib/message/Message';
+import {MessageType} from '../../../../shared/lib/message/MessageType';
+import {TelnetConnection} from
+  '../../../../server/lib/connection/telnet/TelnetConnection';
+import {ServerApp} from '../../../../server/lib/app/ServerApp';
+import {Account} from '../../../../server/lib/account/Account';
+import {Accounts} from '../../../../server/lib/account/Accounts';
 
 export class Authentication
 {
   public static get MAX_ACCOUNT_NAME_LENGTH() { return 12; }
   public static get MIN_ACCOUNT_NAME_LENGTH() { return 2; }
 
-  constructor(protected connection: Connection) { }
+  constructor(protected connection: TelnetConnection) { }
 
   //------------------ Private data ---------------------
 

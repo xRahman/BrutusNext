@@ -6,24 +6,25 @@
 
 'use strict';
 
-import {Settings} from '../../../server/ServerSettings';
-import {ERROR} from '../../../shared/lib/error/ERROR';
-import {Utils} from '../../../shared/lib/utils/Utils';
-import {Entity} from '../../../shared/lib/entity/Entity';
-import {Message} from '../../../server/lib/message/Message';
-import {MessageType} from '../../../shared/lib/message/MessageType';
-import {Connection} from '../../../server/lib/connection/Connection';
-import {ServerApp} from '../../../server/lib/app/ServerApp';
-import {Game} from '../../../server/game/Game';
-import {Character} from '../../../server/game/character/Character';
-import {Characters} from '../../../server/game/character/Characters';
+import {Settings} from '../../../../server/ServerSettings';
+import {ERROR} from '../../../../shared/lib/error/ERROR';
+import {Utils} from '../../../../shared/lib/utils/Utils';
+import {Entity} from '../../../../shared/lib/entity/Entity';
+import {Message} from '../../../../server/lib/message/Message';
+import {MessageType} from '../../../../shared/lib/message/MessageType';
+import {TelnetConnection} from
+  '../../../../server/lib/connection/telnet/TelnetConnection';
+import {ServerApp} from '../../../../server/lib/app/ServerApp';
+import {Game} from '../../../../server/game/Game';
+import {Character} from '../../../../server/game/character/Character';
+import {Characters} from '../../../../server/game/character/Characters';
 
 export class Chargen
 {
   public static get MAX_CHARACTER_NAME_LENGTH() { return 12; }
   public static get MIN_CHARACTER_NAME_LENGTH() { return 2; }
 
-  constructor(protected connection: Connection) { }
+  constructor(protected connection: TelnetConnection) { }
 
   //------------------ Private data ---------------------
 

@@ -20,7 +20,7 @@
 
 import {ServerUtils} from '../server/lib/utils/ServerUtils';
 import {ServerApp} from '../server/lib/app/ServerApp';
-import {TelnetServer} from '../server/lib/net/telnet/TelnetServer';
+///import {TelnetServer} from '../server/lib/net/telnet/TelnetServer';
 import {Syslog} from '../shared/lib/log/Syslog';
 import {MessageType} from '../shared/lib/message/MessageType';
 import {AdminLevel} from '../shared/lib/admin/AdminLevel';
@@ -30,7 +30,7 @@ import {AdminLevel} from '../shared/lib/admin/AdminLevel';
 // stack trace (instead of stack trace in generated JavaScript).
 require('source-map-support').install();
 
-let parser = require('commander');
+///let parser = require('commander');
 
 // Include package.json file (located in BrutusNext directory)
 // (it contains version number and list of all required modules along with
@@ -108,19 +108,19 @@ process.on
 
 // Parses commandline parameters.
 // - Return object imported from 'commander' module.
-function parseCmdlineParams()
-{
-  parser.option
-  (
-    "-p, --port [portNumber]",
-    "Port to listen to telnet [default: " + TelnetServer.DEFAULT_PORT + "]",
-    TelnetServer.DEFAULT_PORT
-  );
+// function parseCmdlineParams()
+// {
+//   parser.option
+//   (
+//     "-p, --port [portNumber]",
+//     "Port to listen to telnet [default: " + TelnetServer.DEFAULT_PORT + "]",
+//     TelnetServer.DEFAULT_PORT
+//   );
 
-  parser.parse(process.argv);
+//   parser.parse(process.argv);
 
-  return parser;
-}
+//   return parser;
+// }
 
 // Program entry point.
 // It's called main() to sound familiar to C programmers ;)
@@ -137,9 +137,10 @@ async function main()
     AdminLevel.IMMORTAL
   );
 
-  let cmdline = parseCmdlineParams();
+  ///let cmdline = parseCmdlineParams();
 
-  await ServerApp.run(cmdline.port);
+  ///await ServerApp.run(cmdline.port);
+  await ServerApp.run();
 }
 
 // Run the main() function.

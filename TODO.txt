@@ -15,6 +15,59 @@ Zdědit ze Serializable
 TODOOOOOOOOOOOO
 v ClientWebSocket.ts
 
+Tak jinak - zpátky na stromy. Když by byl Packet zděděný ze Serializable,
+tak se vložené entity serializujou jako reference - což nechci.
+  Takže ho asi opravdu budu muset serializovat a deserializovat ručně.
+- data v něm vložená ale Serializable klidně být mohou (respektive by dokonce
+  i měla).
+
+Ok, tak ještě jinak:
+- data vložená do Packetu budou rovnou serializovaná, tj. string. Díky tomu
+  se mi serializují i deserializují taky jako string - takže pohoda.
+Tudíž Packet bude taky Serializable.
+
+PacketPart by mohla mít vlastní classu - a řešit serializaci/deserializaci
+vložených dat (na druhou stranu v Packetu toho moc nebude...).
+
+
+Teoreticky bych nemusel switchovat ručně podle PacketPart.type,
+ale automaticky přes polymorfismus - všechny datové části by byly
+zděděny z PacketPart a měly přetíženou metodu deserialize(),
+nebo tak něco.
+
+
+Možná na to jdu špatně
+- o části packetu by se asi měl starat každej typ packetu zvlášť
+  (ne všechny typy packetu potřebují víc částí a některé potřebují
+   líp specifikovat, co jsou ty části zač a případně je zabalit až
+   dovnitř packetu.)
+- asi by to chtělo vlastní classu na posílání entit
+  - a to tak, aby ji šlo zanořit někam dovnitř packetu.
+  (pořád zůstává, že v rámci packetu jsou entity data uložena prostě
+   jako string).
+TODO: Sloučit Packet a PacketPart.
+TODO: Různé requesty a podobně by asi měly být zděděné z Packetu.
+  (Možná pak fakt nebudu potřebovat Packet.Type, páč se mi vyrobí
+   příslušná classa při deserializaci
+   - i když, to jsem možná zrušil...)
+TODO: Vytvořit classu EntityData.
+
+
+
+TODO: Přidat protokolové classy do Classes.
+
+IMPORTANT:
+  Optimalizace si nechám na potom, teď to potřebuju hlavně nějak rozběhat.
+
+TODO: Při otevírání connection na clientu neposílat hlášku do ScrollWindow
+  ale do syslogu.
+
+TODO: /shared/lib/protocol možná přejmenovat na /shared/lib/packet
+  (je to kratší, na druhou stranu ne tak názorné)
+
+TODO: Vyhodit stuff z /ws a /http (na serveru i na clientu).
+TODO: Přejmenovat ClientWebSocket na ClientSocket.
+
 ---------------------------------------------------------------
 
 TODO: Vyrobit shared a clinet part of Account
@@ -28,6 +81,8 @@ TODO: Vyrobit shared a clinet part of Account
 TODO: Nejspíš ve spoustě souborů zbytečně importuju JQuery.
 
 ---------------------------------------------------------------
+
+TODO: CharlistWindow rozdělit na dvě části: CharlistWindow a Charlist.
 
 TODO: Do Character plate dát dva labely
 (velké písmo - jméno, malé písmo - popisek)

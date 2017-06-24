@@ -6,9 +6,10 @@
 
 'use strict';
 
-import {ClientApp} from '../../../client/lib/app/ClientApp';
+import {Connection} from '../../../client/lib/net/Connection';
 import {Component} from '../../../client/gui/Component';
 import {Form} from '../../../client/gui/Form';
+import {LoginRequest} from '../../../shared/lib/protocol/LoginRequest';
 
 import $ = require('jquery');
 
@@ -134,6 +135,17 @@ export class LoginForm extends Form
     console.log("Submit (acc_name: " + this.$accountNameInput.val() + ","
       +" passwd: " + this.$passwordInput.val() + " )");
 
-    ClientApp.setState(ClientApp.State.CHARLIST);
+    let packet = new LoginRequest();
+
+    packet.accountName = this.$accountNameInput.val();
+    packet.password = this.$passwordInput.val();
+
+     if (!packet.isValid())
+      return;
+
+    Connection.send(packet);
+
+    /// Not yet.
+    ///ClientApp.setState(ClientApp.State.CHARLIST);
   }
 }

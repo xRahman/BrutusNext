@@ -1,108 +1,237 @@
 /*
   Part of BrutusNEXT
 
-  Abstract ancestor for descriptors encapsulating specific types of sockets
-  (like telnet socket).
+  Encapsulates a websocket.
 */
 
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {ServerApp} from '../../../server/lib/app/ServerApp';
-import {Connection} from '../../../server/lib/connection/Connection';
+import {Utils} from '../../../shared/lib/utils/Utils';
+import {Syslog} from '../../../shared/lib/log/Syslog';
+import {Packet} from '../../..//shared/lib/protocol/Packet';
+import {Connection} from '../../../server/lib/net/Connection';
+import {MessageType} from '../../../shared/lib/message/MessageType';
+import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
+
+import * as WebSocket from 'ws';
 
 // Built-in node.js modules.
-import * as net from 'net';  // Import namespace 'net' from node.js
+// import * as net from 'net';  // Import namespace 'net' from node.js
+// import * as events from 'events';  // Import namespace 'events' from node.js
 
-export abstract class ServerSocket
+export class ServerSocket
 {
-  constructor(ip: string)
+  constructor
+  (
+    private webSocket: WebSocket,
+    // Remote ip address.
+    private ip: string,
+    // Remote url.
+    private url: string
+  )
   {
-    // Remember ip address because we need to know it
-    // even after ours socket closes.
-    this.ip = ip;
+    this.init();
   }
 
   // -------------- Static class data -------------------
 
-  // Newlines are normalized to this sequence both before
-  // sending (in Message.compose()) and after receiving
-  // (in TelnetSocketDescriptor.onSocketReceivedData()).
-  public static get NEW_LINE() { return '\r\n'; }
+  //------------------ Private data ---------------------
 
   // ----------------- Public data ----------------------
 
-  /*
-  public getConnectionId() { return this.connectionId; }
-  public setConnectionId(value: EntityId)
-  {
-    ASSERT(value !== undefined && value !== null,
-      "Invalid player connection id");
-    this.connectionId = value;
-  }
-  */
+  public connection: Connection = null;
+
+  // ---------------- Public methods --------------------
 
   public getIpAddress(): string
   {
-    if (this.ip === null)
-      ERROR("Ip address is not initialized on socket descriptor");
-
     return this.ip;
   }
 
-  /*
-  public get connection()
+  public static parseRemoteUrl(webSocket: WebSocket)
   {
-    ASSERT_FATAL(this.connectionId !== null,
-      "Invalid player connection id");
+    if (webSocket === null || webSocket === undefined)
+    {
+      ERROR('Attempt to read ulr from an invalid websocket');
+      return null;
+    }
 
-    return this.connectionId.getEntity({ typeCast: Connection });
+    if (webSocket.upgradeReq === null || webSocket.upgradeReq === undefined)
+    {
+      ERROR('Failed to read url from websocket');
+      return;
+    }
+
+    if (webSocket.upgradeReq.url === undefined)
+    {
+      ERROR("Missing url on websocket");
+
+      return null;
+    }
+
+    return webSocket.upgradeReq.url;
   }
-  */
 
-  ///public connectionId: EntityId = null;
-  public connection: Connection = null;
+  // -> Returns remote ip adress read from 'socket'
+  //    or 'null' if it doesn't exist on it.
+  public static parseRemoteAddress(webSocket: WebSocket)
+  {
+    if (webSocket === null || webSocket === undefined)
+    {
+      ERROR('Attempt to read address from an invalid websocket');
+      return null;
+    }
 
-  public closed = false;
+    if
+    (
+      webSocket.upgradeReq === null
+      || webSocket.upgradeReq === undefined
+      || webSocket.upgradeReq.connection === null
+      || webSocket.upgradeReq.connection === undefined
+    )
+    {
+      ERROR('Failed to read address from websocket');
+      return;
+    }
 
-  // ---------------- Public methods --------------------
- 
-  ///public abstract initSocket();
+    if (webSocket.upgradeReq.connection.remoteAddress === undefined)
+    {
+      ERROR("Missing address on websocket");
 
-  // Sends a string to the user.
-  public abstract sendMudMessage(data: string);
+      return null;
+    }
+
+    return webSocket.upgradeReq.connection.remoteAddress;
+  }
+
+  // Sends packet to the client.
+  public send(data: string)
+  {
+    try
+    {
+      this.webSocket.send(data);
+    }
+    catch (error)
+    {
+      Syslog.log
+      (
+        "Client ERROR: Failed to send packet to websocket"
+        + " " + this.url + " (" + this.ip + "). Reason:"
+        + " " + error.message,
+        MessageType.WEBSOCKET_SERVER,
+        AdminLevel.IMMORTAL
+      );
+    }
+  }
 
   // Closes the socket, ending the connection.
-  public abstract close();
+  public close()
+  {
+    if (this.webSocket)
+      this.webSocket.close();
+  }
 
-  //----------------- Protected data --------------------
+  // ---------------- Event handlers --------------------
 
-  protected ip: string = null;
+  private async onReceivedData(data: any, flags: { binary: boolean })
+  {
+    if (flags.binary === true)
+    {
+      // Data is supposed to be sent in text mode.
+      // (This is a client error, we can't really do
+      //  anything about it - so we just log it.)
+      Syslog.log
+      (
+        "Client ERROR: Received binary data from websocket connection"
+        + " " + this.url + " (" + this.ip + "). Data is not processed",
+        MessageType.WEBSOCKET_SERVER,
+        AdminLevel.IMMORTAL
+      );
+      return;
+    }
 
-  // Command lines waiting to be processed.
-  protected commandsBuffer = [];
+    /// DEBUG:
+    console.log('(ws) received message: ' + data);
+
+    /// TODO: Tohle by se mělo dělat až pro commandy.
+    ///data = Utils.normalizeCRLF(data);
+
+    this.connection.receiveData(data);
+  }
+
+  private onOpen()
+  {
+    /// Asi neni treba nic reportit, uz je zalogovana new connection.
+    console.log('Websocket opened');
+  }
+
+  private onError(event: Error)
+  {
+    Syslog.log
+    (
+      "Websocket ERROR: Error occured on socket"
+      + " " + this.url + " (" + this.ip + ")",
+      MessageType.WEBSOCKET_SERVER,
+      AdminLevel.IMMORTAL
+    );
+  }
+
+  private onClose
+  (
+    event:
+    {
+      wasClean: boolean,
+      code: number,
+      reason: string,
+      target: WebSocket
+    }
+  )
+  {
+    // Error code 1000 means that the connection was closed normally.
+    if (event.code != 1000)
+    {
+      Syslog.log
+      (
+        "Websocket ERROR: Socket " + this.url + " (" + this.ip + ")"
+        + " closed because of error: " + event.reason,
+        MessageType.WEBSOCKET_SERVER,
+        AdminLevel.IMMORTAL
+      );
+    }
+    else
+    {
+      Syslog.log
+      (
+        "Websocket ERROR: Socket " + this.url + " (" + this.ip + ")"
+        + " closed normally",
+        MessageType.WEBSOCKET_SERVER,
+        AdminLevel.IMMORTAL
+      );
+    }
+  }
 
   // -------------- Protected methods -------------------
 
-  protected async processInput(input: string)
+  // --------------- Private methods --------------------
+
+  // Registers event handlers, etc.
+  private init()
   {
-    // Split input by newlines.
-    let lines = input.split(ServerSocket.NEW_LINE);
-
-    // And push each line as a separate command to commandsBuffer[] to be
-    // processed (.push.apply() appends an array to another array).
-    this.commandsBuffer.push.apply(this.commandsBuffer, lines);
-
-    // Handle each line as a separate command.
-    for (let command of this.commandsBuffer)
+    if (this.webSocket === null || this.webSocket === undefined)
     {
-      // Trim the command (remove leading and trailing white
-      // spaces, including newlines) before processing.
-      await this.connection.processCommand(command.trim());
+      ERROR('Attempt to init invalid socket');
+      return;
     }
 
-    // All commands are processed, mark the buffer as empty.
-    // (if will also hopefully flag allocated data for freeing from memory)
-    this.commandsBuffer = [];
+    this.webSocket.on
+    (
+      'message',
+      (data, flags) => { this.onReceivedData(data, flags); }
+    );
+
+    this.webSocket.onopen = (event) => { this.onOpen(); };
+    this.webSocket.onerror = (event) => { this.onError(event); };
+    this.webSocket.onclose = (event) => { this.onClose(event); };
   }
 }

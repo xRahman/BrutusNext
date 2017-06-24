@@ -22,7 +22,7 @@ import {ClientPrototypes} from '../../../client/lib/entity/ClientPrototypes';
 ///import {Body} from '../../../client/gui/component/Body';
 ///import {ScrollWindow} from '../../../client/gui/scroll/ScrollWindow';
 import {Document} from '../../../client/gui/Document';
-import {Connection} from '../../../client/lib/connection/Connection';
+import {Connection} from '../../../client/lib/net/Connection';
 import {ClientWebSocket} from '../../../client/lib/net/ws/ClientWebSocket';
 import {Windows} from '../../../client/gui/Windows';
 
@@ -231,9 +231,9 @@ export class ClientApp extends App
     this.connection.connect();
 
     // Show login window, hide all others.
-    ///ClientApp.setState(ClientApp.State.LOGIN);
+    ClientApp.setState(ClientApp.State.LOGIN);
     /// TEST:
-    ClientApp.setState(ClientApp.State.CHARLIST);
+    ///ClientApp.setState(ClientApp.State.CHARLIST);
 
     /// TODO: Stáhnout viewport data ze serveru.
     /// I když možná nestačí connection.connect(), ještě se asi bude

@@ -49,7 +49,7 @@ export class JsonObject
     {
       let pathString = this.composePathString(path);
 
-      ERROR("Syntax error in JSON string: " + e.message + pathString);
+      ERROR("Syntax error in JSON data: " + e.message + pathString);
       return null;
     }
 

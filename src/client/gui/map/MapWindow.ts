@@ -9,7 +9,7 @@
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {GameWindow} from '../../../client/gui/GameWindow';
 import {SvgMap} from '../../../client/gui/map/SvgMap';
-import {Connection} from '../../../client/lib/connection/Connection';
+import {Connection} from '../../../client/lib/net/Connection';
 
 /// TEST:
 import {Packet} from '../../../shared/lib/protocol/Packet';

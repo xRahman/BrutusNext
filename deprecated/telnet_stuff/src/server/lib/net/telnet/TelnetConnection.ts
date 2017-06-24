@@ -1,41 +1,43 @@
 /*
   Part of BrutusNEXT
 
-  A connection to the server.
+  Telnet connection to the server.
 */
 
 'use strict';
 
-import {ERROR} from '../../../shared/lib/error/ERROR';
-import {Entity} from '../../../shared/lib/entity/Entity';
-import {Syslog} from '../../../shared/lib/log/Syslog';
-import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
-import {Message} from '../../../server/lib/message/Message';
-import {MessageType} from '../../../shared/lib/message/MessageType';
-import {ServerApp} from '../../../server/lib/app/ServerApp';
-import {ServerSocket} from '../../../server/lib/net/ServerSocket';
-import {Account} from '../../../server/lib/account/Account';
-import {Accounts} from '../../../server/lib/account/Accounts';
-import {Authentication} from '../../../server/lib/connection/Authentication';
-import {Menu} from '../../../server/lib/connection/Menu';
-import {Chargen} from '../../../server/lib/connection/Chargen';
-import {Game} from '../../../server/game/Game';
-import {GameEntity} from '../../../server/game/GameEntity';
-import {Character} from '../../../server/game/character/Character';
-import {Classes} from '../../../shared/lib/class/Classes';
-import {Connections} from '../../../server/lib/connection/Connections';
+import {ERROR} from '../../../../shared/lib/error/ERROR';
+import {Entity} from '../../../../shared/lib/entity/Entity';
+import {Syslog} from '../../../../shared/lib/log/Syslog';
+import {AdminLevel} from '../../../../shared/lib/admin/AdminLevel';
+import {Message} from '../../../../server/lib/message/Message';
+import {MessageType} from '../../../../shared/lib/message/MessageType';
+import {ServerApp} from '../../../../server/lib/app/ServerApp';
+import {ServerSocket} from '../../../../server/lib/net/ServerSocket';
+import {Account} from '../../../../server/lib/account/Account';
+import {Accounts} from '../../../../server/lib/account/Accounts';
+import {Authentication} from
+  '../../../../server/lib/connection/telnet/Authentication';
+import {Menu} from '../../../../server/lib/connection/telnet/Menu';
+import {Chargen} from '../../../../server/lib/connection/telnet/Chargen';
+import {Game} from '../../../../server/game/Game';
+import {GameEntity} from '../../../../server/game/GameEntity';
+import {Character} from '../../../../server/game/character/Character';
+import {Classes} from '../../../../shared/lib/class/Classes';
+import {Connection} from '../../../../server/lib/connection/Connection';
+import {Connections} from '../../../../server/lib/connection/Connections';
 
-export class Connection
+export class TelnetConnection extends Connection
 {
   // ----------------- Public data ----------------------
 
-  public account: Account = null;
-  public ingameEntity: GameEntity = null;
+  // public account: Account = null;
+  // public ingameEntity: GameEntity = null;
 
   //------------------ Private data ---------------------
 
-  private stage: Connection.Stage = null;
-  private socket: ServerSocket = null;
+  private stage: TelnetConnection.Stage = null;
+  // private socket: ServerSocket = null;
   private authentication: Authentication = null;
   private menu: Menu = null;
   private chargen: Chargen = null;
@@ -52,7 +54,7 @@ export class Connection
 
     this.authentication = new Authentication(this);
     this.authentication.startAuthenticating();
-    this.stage = Connection.Stage.AUTHENTICATION;
+    this.stage = TelnetConnection.Stage.AUTHENTICATION;
   }
 
   public finishAuthenticating()
@@ -70,7 +72,7 @@ export class Connection
 
     this.menu = new Menu(this);
     this.menu.sendMenu();
-    this.stage = Connection.Stage.IN_MENU;
+    this.stage = TelnetConnection.Stage.IN_MENU;
   }
 
   public leaveMenu()
@@ -88,7 +90,7 @@ export class Connection
 
     this.chargen = new Chargen(this);
     this.chargen.start();
-    this.stage = Connection.Stage.IN_CHARGEN;
+    this.stage = TelnetConnection.Stage.IN_CHARGEN;
   }
 
   public leaveChargen()
@@ -102,9 +104,9 @@ export class Connection
   // Connection will be attached to 'entity' prior to entering the game.
   public async enterGame(entity: GameEntity)
   {
-    let validStage = this.stage === Connection.Stage.IN_MENU
-                  || this.stage === Connection.Stage.IN_GAME
-                  || this.stage === Connection.Stage.IN_CHARGEN;
+    let validStage = this.stage === TelnetConnection.Stage.IN_MENU
+                  || this.stage === TelnetConnection.Stage.IN_GAME
+                  || this.stage === TelnetConnection.Stage.IN_CHARGEN;
 
     if (!validStage)
       ERROR("Entering game from wrong stage");
@@ -130,7 +132,7 @@ export class Connection
     );
 
     this.ingameEntity.announcePlayerEnteringGame();
-    this.stage = Connection.Stage.IN_GAME;
+    this.stage = TelnetConnection.Stage.IN_GAME;
   }
 
   // Connection will be attached to 'entity' prior to entering the game.
@@ -147,7 +149,7 @@ export class Connection
     this.announceReconnecting();
     this.ingameEntity.announcePlayerReconnecting();
 
-    this.stage = Connection.Stage.IN_GAME;
+    this.stage = TelnetConnection.Stage.IN_GAME;
   }
 
   public returnFromStringEditor()
@@ -162,19 +164,19 @@ export class Connection
 
   // ---------------- Public methods --------------------
 
-  public get ipAddress() { return this.socket.getIpAddress(); }
+  // public get ipAddress() { return this.socket.getIpAddress(); }
 
-  public setSocket(socket: ServerSocket)
-  {
-    if (socket === null || socket === undefined)
-    {
-      ERROR("Invalid socket descriptor");
-      return;
-    } 
+  // public setSocket(socket: ServerSocket)
+  // {
+  //   if (socket === null || socket === undefined)
+  //   {
+  //     ERROR("Invalid socket descriptor");
+  //     return;
+  //   } 
 
-    socket.connection = this;
-    this.socket = socket;
-  }
+  //   socket.connection = this;
+  //   this.socket = socket;
+  // }
 
   /*
   public sendMotd(param: { withPrompt: boolean })
@@ -245,62 +247,64 @@ export class Connection
   // is connecting from different computer without logging out first).
   public reconnectToAccount(account: Account)
   {
-    let oldStage = null;
-    let oldConnection = account.connection;
-    let oldIngameEntity = null;
+    /// Momentálně nebudu telnet řešit - nechávám si to tu pro inspiraci.
 
-    // If old connection is still alive, we need to send a message
-    // to it informing about usurping of connection and close it.
-    if (oldConnection)
-    {
-      oldStage = oldConnection.stage;
-      oldIngameEntity = oldConnection.ingameEntity;
+    // let oldStage = null;
+    // let oldConnection = account.connection;
+    // let oldIngameEntity = null;
 
-      // If ids of old a new connection are the same, it means that
-      // player is reconnecting using the same connection and so we
-      // don't need to announce that his connection has been usurped
-      // and we shouldn't close the connection.
-      // (I'm not sure if it's even possible, but better be sure)
-      if (oldConnection !== this)
-      {
-        oldConnection.announceConnectionBeingUsurped();
-        // Set null to oldConnection.accountId to prevent account being
-        // logged out when the connection closes.
-        oldConnection.account = null;
+    // // If old connection is still alive, we need to send a message
+    // // to it informing about usurping of connection and close it.
+    // if (oldConnection)
+    // {
+    //   oldStage = oldConnection.stage;
+    //   oldIngameEntity = oldConnection.ingameEntity;
+
+    //   // If ids of old a new connection are the same, it means that
+    //   // player is reconnecting using the same connection and so we
+    //   // don't need to announce that his connection has been usurped
+    //   // and we shouldn't close the connection.
+    //   // (I'm not sure if it's even possible, but better be sure)
+    //   if (oldConnection !== this)
+    //   {
+    //     oldConnection.announceConnectionBeingUsurped();
+    //     // Set null to oldConnection.accountId to prevent account being
+    //     // logged out when the connection closes.
+    //     oldConnection.account = null;
         
-        // Closes the socket, which will trigger 'close' event on it,
-        // which will then be handled by closing the connection.
-        oldConnection.close();
-      }
-    }
+    //     // Closes the socket, which will trigger 'close' event on it,
+    //     // which will then be handled by closing the connection.
+    //     oldConnection.close();
+    //   }
+    // }
 
-    account.connection = this;
-    this.account = account;
+    // account.connection = this;
+    // this.account = account;
 
-    Syslog.log
-    (
-      account.getName() + " [" + this.ipAddress + "] has reconnected."
-      + " Closing the old connection",
-      MessageType.SYSTEM_INFO,
-      AdminLevel.IMMORTAL
-    );
+    // Syslog.log
+    // (
+    //   account.getName() + " [" + this.ipAddress + "] has reconnected."
+    //   + " Closing the old connection",
+    //   MessageType.SYSTEM_INFO,
+    //   AdminLevel.IMMORTAL
+    // );
 
-    // If player was in game before and we know what game entity she has
-    // been connected to, send her back to the game.
-    if (oldStage === Connection.Stage.IN_GAME
-        && oldIngameEntity !== null)
-    {
+    // // If player was in game before and we know what game entity she has
+    // // been connected to, send her back to the game.
+    // if (oldStage === TelnetConnection.Stage.IN_GAME
+    //     && oldIngameEntity !== null)
+    // {
 
-      // If we know what entity has player been connected to before,
-      // connect her to it again.
-      this.reconnectToCharacter(oldIngameEntity);
-    }
-    else
-    {
-      // If player was anywhere else before, or if we didn't manage to
-      // retrieve her previous stage or active entity, send her to the menu.
-      this.enterMenu();
-    }
+    //   // If we know what entity has player been connected to before,
+    //   // connect her to it again.
+    //   this.reconnectToCharacter(oldIngameEntity);
+    // }
+    // else
+    // {
+    //   // If player was anywhere else before, or if we didn't manage to
+    //   // retrieve her previous stage or active entity, send her to the menu.
+    //   this.enterMenu();
+    // }
   }
 
   // Parses and executes a single-line command.
@@ -314,23 +318,23 @@ export class Connection
           + " to process any commands yet");
         break;
 
-      case Connection.Stage.AUTHENTICATION:
+      case TelnetConnection.Stage.AUTHENTICATION:
         await this.processAuthCommand(command);
         break;
 
-      case Connection.Stage.IN_MENU:
+      case TelnetConnection.Stage.IN_MENU:
         this.processMenuCommand(command);
         break;
 
-      case Connection.Stage.IN_CHARGEN:
+      case TelnetConnection.Stage.IN_CHARGEN:
         await this.processChargenCommand(command);
         break;
 
-      case Connection.Stage.IN_GAME:
+      case TelnetConnection.Stage.IN_GAME:
         this.processIngameCommand(command);
         break;
 
-      case Connection.Stage.LOGGED_OUT:
+      case TelnetConnection.Stage.LOGGED_OUT:
         ERROR("Player is logged out already, Connection"
           + " is not supposed to process any more commands");
         break;
@@ -344,7 +348,7 @@ export class Connection
   // Close the connection.
   public close()
   {
-    this.stage = Connection.Stage.LOGGED_OUT;
+    this.stage = TelnetConnection.Stage.LOGGED_OUT;
 
     // Closes the socket, which will trigger 'close' event on it, which
     // will be handled by calling onSocketClose() on this connection.
@@ -376,25 +380,25 @@ export class Connection
           + " any events yet");
         break;
 
-      case Connection.Stage.AUTHENTICATION:
+      case TelnetConnection.Stage.AUTHENTICATION:
         this.onSocketCloseWhenAuthenticating();
         break;
 
-      case Connection.Stage.IN_MENU:
+      case TelnetConnection.Stage.IN_MENU:
         this.onSocketCloseWhenInMenu();
         break;
 
-      case Connection.Stage.IN_CHARGEN:
+      case TelnetConnection.Stage.IN_CHARGEN:
         this.onSocketCloseWhenInChargen();
         break;
 
 
-      case Connection.Stage.IN_GAME:
+      case TelnetConnection.Stage.IN_GAME:
         this.onSocketCloseWhenInGame();
         break;
 
       // Player has correcly exited game from menu.
-      case Connection.Stage.LOGGED_OUT:
+      case TelnetConnection.Stage.LOGGED_OUT:
         this.onSocketCloseWhenLoggedOut();
         break;
     }
@@ -408,7 +412,7 @@ export class Connection
     if (this.ingameEntity === null)
       return false;
 
-    if (this.stage !== Connection.Stage.IN_GAME)
+    if (this.stage !== TelnetConnection.Stage.IN_GAME)
     {
       ERROR("Player connection has ingame entity assigned but"
         + " player connection stage is not 'IN_GAME'");
@@ -417,24 +421,24 @@ export class Connection
     return true;
   }
 
-  public attachToGameEntity(gameEntity: GameEntity)
-  {
-    this.ingameEntity = gameEntity;
-    gameEntity.connection = this;
-  }
+  // public attachToGameEntity(gameEntity: GameEntity)
+  // {
+  //   this.ingameEntity = gameEntity;
+  //   gameEntity.connection = this;
+  // }
 
-  public detachFromGameEntity()
-  {
-    if (this.ingameEntity === null)
-    {
-      ERROR("Attempt to detach ingame entity"
-        + " from " + this.account.getName() + "'s"
-        + " player connection when there is"
-        + " no ingame entity attached to it");
-    }
+  // public detachFromGameEntity()
+  // {
+  //   if (this.ingameEntity === null)
+  //   {
+  //     ERROR("Attempt to detach ingame entity"
+  //       + " from " + this.account.getName() + "'s"
+  //       + " player connection when there is"
+  //       + " no ingame entity attached to it");
+  //   }
 
-    this.ingameEntity.detachConnection();
-  }
+  //   this.ingameEntity.detachConnection();
+  // }
 
   public sendMessage(message: Message)
   {
@@ -851,7 +855,7 @@ export class Connection
 
 // Module is exported so you can use enum type from outside this file.
 // It must be declared after the class because Typescript says so...
-export module Connection
+export module TelnetConnection
 {
   export enum Stage
   {
