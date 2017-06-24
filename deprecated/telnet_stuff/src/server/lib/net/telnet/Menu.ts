@@ -6,23 +6,23 @@
 
 'use strict';
 
-import {Settings} from '../../../server/ServerSettings';
-import {ERROR} from '../../../shared/lib/error/ERROR';
-import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
-import {Utils} from '../../../shared/lib/utils/Utils';
-import {Entity} from '../../../shared/lib/entity/Entity';
-import {Entities} from '../../../shared/lib/entity/Entities';
-///import {NamedEntity} from '../../../server/lib/entity/NamedEntity';
-import {Syslog} from '../../../shared/lib/log/Syslog';
-import {Connection} from '../../../server/lib/connection/Connection';
-import {ServerApp} from '../../../server/lib/app/ServerApp';
-import {Account} from '../../../server/lib/account/Account';
-import {Message} from '../../../server/lib/message/Message';
-import {MessageType} from '../../../shared/lib/message/MessageType';
-import {Game} from '../../../server/game/Game';
-import {Character} from '../../../server/game/character/Character';
-import {Characters} from '../../../server/game/character/Characters';
-import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
+import {Settings} from '../../../../server/ServerSettings';
+import {ERROR} from '../../../../shared/lib/error/ERROR';
+import {FATAL_ERROR} from '../../../../shared/lib/error/FATAL_ERROR';
+import {Utils} from '../../../../shared/lib/utils/Utils';
+import {Entity} from '../../../../shared/lib/entity/Entity';
+import {Entities} from '../../../../shared/lib/entity/Entities';
+import {Syslog} from '../../../../shared/lib/log/Syslog';
+import {TelnetConnection} from
+  '../../../../server/lib/connection/telnet/TelnetConnection';
+import {ServerApp} from '../../../../server/lib/app/ServerApp';
+import {Account} from '../../../../server/lib/account/Account';
+import {Message} from '../../../../server/lib/message/Message';
+import {MessageType} from '../../../../shared/lib/message/MessageType';
+import {Game} from '../../../../server/game/Game';
+import {Character} from '../../../../server/game/character/Character';
+import {Characters} from '../../../../server/game/character/Characters';
+import {AdminLevel} from '../../../../shared/lib/admin/AdminLevel';
 
 export class Menu
 {
@@ -31,7 +31,7 @@ export class Menu
   // is owned by the very Connection we are storing reference
   // of here. In any other case, unique id of Connection (within
   // Sever.connections) needs to be used instead of a direct reference!
-  constructor(protected connection: Connection) { }
+  constructor(protected connection: TelnetConnection) { }
 
   private static get WELCOME()
   {

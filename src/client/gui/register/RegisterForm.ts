@@ -6,9 +6,11 @@
 
 'use strict';
 
+import {Connection} from '../../../client/lib/net/Connection';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Component} from '../../../client/gui/Component';
 import {Form} from '../../../client/gui/Form';
+import {RegisterRequest} from '../../../shared/lib/protocol/RegisterRequest';
 
 import $ = require('jquery');
 
@@ -173,7 +175,19 @@ export class RegisterForm extends Form
     event.preventDefault();
 
     console.log("Submit (acc_name: " + this.$accountNameInput.val() + ","
-      +" passwd: " + this.$passwordInput.val() + " )");
+      + " email: " + this.$emailInput.val() + ","
+      + " passwd: " + this.$passwordInput.val() + " )");
+
+    let packet = new RegisterRequest();
+
+    packet.accountName = this.$accountNameInput.val();
+    packet.email = this.$emailInput.val();
+    packet.password = this.$passwordInput.val();
+
+     if (!packet.isValid())
+      return;
+
+    Connection.send(packet);
   }
 
   protected onCancel(event: Event)

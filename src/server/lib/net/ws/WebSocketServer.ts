@@ -28,10 +28,10 @@ import {Syslog} from '../../../../shared/lib/log/Syslog';
 import {AdminLevel} from '../../../../shared/lib/admin/AdminLevel';
 import {MessageType} from '../../../../shared/lib/message/MessageType';
 import {ServerApp} from '../../../../server/lib/app/ServerApp';
-import {Connection} from '../../../../server/lib/connection/Connection';
-import {Connections} from '../../../../server/lib/connection/Connections';
+import {Connection} from '../../../../server/lib/net/Connection';
+import {Connections} from '../../../../server/lib/net/Connections';
 import {HttpServer} from '../../../../server/lib/net/http/HttpServer';
-import {ServerWebSocket} from '../../../../server/lib/net/ws/ServerWebSocket';
+import {ServerSocket} from '../../../../server/lib/net/ServerSocket';
 
 import * as WebSocket from 'ws';
 
@@ -95,8 +95,8 @@ export class WebSocketServer
 
   private async onNewConnection(socket: WebSocket)
   {
-    let ip = ServerWebSocket.parseRemoteAddress(socket);
-    let url = ServerWebSocket.parseRemoteUrl(socket);
+    let ip = ServerSocket.parseRemoteAddress(socket);
+    let url = ServerSocket.parseRemoteUrl(socket);
 
     if (!this.isServerOpen(socket, ip, url))
       return;
@@ -109,13 +109,7 @@ export class WebSocketServer
       AdminLevel.IMMORTAL
     );
 
-    let connection = await this.createConnection(socket, ip, url);
-
-    if (connection === null)
-      // Error is already reported by createConnection().
-      return;
-
-    connection.startAuthenticating();
+    await this.createConnection(socket, ip, url);
   }
 
   // ---------------- Private methods --------------------
@@ -123,13 +117,12 @@ export class WebSocketServer
   // -> Returns 'null' if connection couldn't be created.
   private async createConnection(socket: WebSocket, ip: string, url: string)
   {
-    let socketDescriptor = new ServerWebSocket(socket, ip, url);
+    let serverSocket = new ServerSocket(socket, ip, url);
     let connection = new Connection();
 
-    connection.setSocket(socketDescriptor);
-    Connections.add(connection);
+    connection.setSocket(serverSocket);
 
-    return connection;
+    Connections.add(connection);
   }
 
   private isServerOpen(socket: WebSocket, ip: string, url: string)

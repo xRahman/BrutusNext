@@ -22,8 +22,8 @@ export class Classes
 
   // Classes extended from Entity.
   // (we keep Entity classes aside from other Serializable classes
-  // even though Entity is extended from Serializable because they
-  // are instantiated differently).
+  //  even though Entity is extended from Serializable because they
+  //  are instantiated differently).
   public static entities = new Map<string, EntityClass>();
 
   // ------------- Public static methods ----------------

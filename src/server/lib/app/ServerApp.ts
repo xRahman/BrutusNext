@@ -19,7 +19,7 @@ import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
 import {Admins} from '../../../server/lib/admin/Admins';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
-import {Connections} from '../../../server/lib/connection/Connections';
+import {Connections} from '../../../server/lib/net/Connections';
 import {ServerPrototypes} from '../../../server/lib/entity/ServerPrototypes';
 import {Accounts} from '../../../server/lib/account/Accounts';
 import {Syslog} from '../../../shared/lib/log/Syslog';
@@ -27,7 +27,7 @@ import {ServerSyslog} from '../../../server/lib/log/ServerSyslog';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Game} from '../../../server/game/Game';
 import {GameEntity} from '../../../server/game/GameEntity';
-import {TelnetServer} from '../../../server/lib/net/telnet/TelnetServer';
+///import {TelnetServer} from '../../../server/lib/net/telnet/TelnetServer';
 import {HttpServer} from '../../../server/lib/net/http/HttpServer';
 
 export class ServerApp extends App
@@ -48,7 +48,7 @@ export class ServerApp extends App
 
   private game = new Game();
 
-  private telnetServer = new TelnetServer();
+  ///private telnetServer = new TelnetServer();
 
   /// Http server also runs a websocket server inside it.
   private httpServer = new HttpServer();
@@ -101,16 +101,16 @@ export class ServerApp extends App
     return ServerApp.getInstance().connections;
   }
 
-  public static get telnetServer()
-  {
-    return ServerApp.getInstance().telnetServer;
-  }
+  // public static get telnetServer()
+  // {
+  //   return ServerApp.getInstance().telnetServer;
+  // }
 
   // ------------- Public static methods ----------------
 
   // Loads the game (or creates a new default one
   // if there is no ./data directory).
-  public static async run(telnetPort: number)
+  public static async run(/*telnetPort: number*/)
   {
     if (!this.instanceExists())
     {
@@ -121,7 +121,7 @@ export class ServerApp extends App
     }
     
     // Run server application.
-    await ServerApp.getInstance().run(telnetPort);
+    await ServerApp.getInstance().run(/*telnetPort*/);
   }
 
   // If there are no admins yet, sets the highest possible admin rights
@@ -233,7 +233,7 @@ export class ServerApp extends App
   // --------------- Private methods --------------------
 
   // Loads or reates the data and starts the server application.
-  private async run(telnetPort: number)
+  private async run(/*telnetPort: number*/)
   {
     ///test();
 
@@ -258,22 +258,22 @@ export class ServerApp extends App
     else
       await this.loadData();
 
-    this.startTelnetServer(telnetPort);
+    ///this.startTelnetServer(telnetPort);
     
     // Http server also starts a websocket server inside it.
     this.startHttpServer();
   }
 
-  private startTelnetServer(telnetPort: number)
-  {
-    if (this.telnetServer.isOpen())
-    {
-      ERROR("Telnet server is already running");
-      return;
-    }
+  // private startTelnetServer(telnetPort: number)
+  // {
+  //   if (this.telnetServer.isOpen())
+  //   {
+  //     ERROR("Telnet server is already running");
+  //     return;
+  //   }
 
-    this.telnetServer.start();
-  }
+  //   this.telnetServer.start();
+  // }
 
   private startHttpServer()
   {

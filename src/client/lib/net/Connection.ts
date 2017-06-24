@@ -8,12 +8,13 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Serializable} from '../../../shared/lib/class/Serializable';
+import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {ClientWebSocket} from '../../../client/lib/net/ws/ClientWebSocket';
 import {ScrollWindow} from '../../../client/gui/scroll/ScrollWindow';
-import {Avatar} from '../../../client/lib/connection/Avatar';
-
-/// TEST:
+import {Avatar} from '../../../client/lib/net/Avatar';
 import {Packet} from '../../../shared/lib/protocol/Packet';
+import {Command} from '../../../shared/lib/protocol/Command';
+import {RegisterResponse} from '../../../shared/lib/protocol/RegisterResponse';
 
 export class Connection
 {
@@ -32,6 +33,46 @@ export class Connection
   // --------------- Static accessors -------------------
 
   // ---------------- Static methods --------------------
+
+  public static send(packet: Packet)
+  {
+    let connection = ClientApp.connection;
+
+    if (!connection)
+    {
+      ERROR("Missing or invalid connection. Packet is not sent");
+      return;
+    }
+
+    // If the connection is closed, any user command
+    // (even an empty one) triggers reconnect attempt.
+    if (!connection.socket.isOpen())
+    {
+      ERROR("Attempt to send packet to the closed connection");
+      return;
+    }
+
+    connection.socket.send
+    (
+      packet.serialize(Serializable.Mode.SEND_TO_SERVER)
+    );
+  }
+
+  public static receiveData(data: string)
+  {
+    let connection = ClientApp.connection;
+
+    if (!connection)
+    {
+      ERROR("Missing or invalid connection. Packet is not processed");
+      return;
+    }
+
+    let packet = Serializable.deserialize(data);
+
+    if (packet !== null)
+      connection.receive(packet);
+  }
 
   // ---------------- Public methods --------------------
 
@@ -55,30 +96,17 @@ export class Connection
   // Sends 'data' to the connection.
   public sendCommand(command: string)
   {
-    let packet = new Packet();
+    let packet = new Command();
 
-    packet.addCommand(command);
+    packet.command = command;
 
     // If the connection is closed, any user command
     // (even an empty one) triggers reconnect attempt.
     if (!this.socket.isOpen())
       this.socket.reConnect();
     else
-      this.socket.send(packet.serialize(Serializable.Mode.SEND_TO_SERVER));
-  }
-
-  // Sends 'data' to the connection.
-  public send(packet: Packet)
-  {
-    // If the connection is closed, any user command
-    // (even an empty one) triggers reconnect attempt.
-    if (!this.socket.isOpen())
-    {
-      ERROR("Attempt to send packet to the closed connection");
-      return;
-    }
-
-    this.socket.send(packet.serialize(Serializable.Mode.SEND_TO_SERVER));
+      ///this.socket.send(packet.serialize(Serializable.Mode.SEND_TO_SERVER));
+      this.send(packet);
   }
 
   // Receives 'message' from the connection
@@ -100,4 +128,32 @@ export class Connection
 
   // ---------------- Private methods -------------------
 
+  private send(packet: Packet)
+  {
+    this.socket.send
+    (
+      packet.serialize(Serializable.Mode.SEND_TO_SERVER)
+    );
+  }
+
+  // Processes received 'packet'.
+  private receive(packet: Packet)
+  {
+    /// Možná takhle? Nebo polymorfismus?
+    switch (packet.getClassName())
+    {
+      case RegisterResponse.name:
+        this.processRegisterResponse(<RegisterResponse>packet);
+        break;
+
+      default:
+        ERROR("Unknown packet type");
+        break;
+    }
+  }
+
+  private processRegisterResponse(packet: RegisterResponse)
+  {
+    console.log("Received register response. Problem: " + packet.problem);
+  }
 }

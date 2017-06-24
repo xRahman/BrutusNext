@@ -4,6 +4,7 @@
   Allows to edit text in terminal mode.
 */
 
+/*
 'use strict';
 
 import {Connection} from '../../../server/lib/connection/Connection';
@@ -60,3 +61,4 @@ export class StringEditor
 
 
 }
+*/
