@@ -23,15 +23,15 @@
 
 'use strict';
 
-import {FATAL_ERROR} from '../../../../shared/lib/error/FATAL_ERROR';
-import {Syslog} from '../../../../shared/lib/log/Syslog';
-import {AdminLevel} from '../../../../shared/lib/admin/AdminLevel';
-import {MessageType} from '../../../../shared/lib/message/MessageType';
-import {ServerApp} from '../../../../server/lib/app/ServerApp';
-import {Connection} from '../../../../server/lib/net/Connection';
-import {Connections} from '../../../../server/lib/net/Connections';
-import {HttpServer} from '../../../../server/lib/net/http/HttpServer';
-import {ServerSocket} from '../../../../server/lib/net/ServerSocket';
+import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
+import {Syslog} from '../../../shared/lib/log/Syslog';
+import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
+import {MessageType} from '../../../shared/lib/message/MessageType';
+import {ServerApp} from '../../../server/lib/app/ServerApp';
+import {Connection} from '../../../server/lib/net/Connection';
+import {Connections} from '../../../server/lib/net/Connections';
+import {HttpServer} from '../../../server/lib/net/HttpServer';
+import {ServerSocket} from '../../../server/lib/net/ServerSocket';
 
 import * as WebSocket from 'ws';
 

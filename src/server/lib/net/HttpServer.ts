@@ -6,11 +6,11 @@
 
 'use strict';
 
-import {Syslog} from '../../../../shared/lib/log/Syslog';
-import {AdminLevel} from '../../../../shared/lib/admin/AdminLevel';
-import {FileSystem} from '../../../../server/lib/fs/FileSystem';
-import {MessageType} from '../../../../shared/lib/message/MessageType';
-import {WebSocketServer} from '../../../../server/lib/net/ws/WebSocketServer';
+import {Syslog} from '../../../shared/lib/log/Syslog';
+import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
+import {FileSystem} from '../../../server/lib/fs/FileSystem';
+import {MessageType} from '../../../shared/lib/message/MessageType';
+import {WebSocketServer} from '../../../server/lib/net/WebSocketServer';
 
 // Built-in node.js modules.
 import * as http from 'http';  // Import namespace 'http' from node.js.
