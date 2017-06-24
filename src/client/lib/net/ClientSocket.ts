@@ -6,12 +6,12 @@
 
 'use strict';
 
-import {ERROR} from '../../../../shared/lib/error/ERROR';
-import {JsonObject} from '../../../../shared/lib/json/JsonObject';
-import {Packet} from '../../../../shared/lib/protocol/Packet';
-import {Connection} from '../../../../client/lib/net/Connection';
+import {ERROR} from '../../../shared/lib/error/ERROR';
+import {JsonObject} from '../../../shared/lib/json/JsonObject';
+import {Packet} from '../../../shared/lib/protocol/Packet';
+import {Connection} from '../../../client/lib/net/Connection';
 
-export class ClientWebSocket
+export class ClientSocket
 {
   constructor(connection: Connection)
   {
