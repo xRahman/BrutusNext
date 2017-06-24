@@ -10,13 +10,13 @@ import {Settings} from '../../../server/ServerSettings';
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {ServerApp} from '../../../server/lib/app/ServerApp';
-import {Connection} from '../../../server/lib/connection/Connection';
-import {Connections} from '../../../server/lib/connection/Connections';
+import {Connection} from '../../../server/lib/net/Connection';
+import {Connections} from '../../../server/lib/net/Connections';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {MessageColors} from '../../../server/lib/message/MessageColors';
 import {ServerSocket} from '../../../server/lib/net/ServerSocket';
-import {ServerTelnetSocket}
-  from '../../../server/lib/net/telnet/ServerTelnetSocket';
+///import {ServerTelnetSocket}
+///  from '../../../server/lib/net/telnet/ServerTelnetSocket';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {GameEntity} from '../../../server/game/GameEntity';
@@ -37,6 +37,8 @@ export class Message
     return "&wPlease contact admins at " + Settings.adminEmail
          + " &wand ask them to resolve this issue."
   }
+
+  public static get NEW_LINE() { return '\r\n'; }
 
   //------------------ Public data ----------------------
 
@@ -164,7 +166,7 @@ export class Message
       return;
     }
 
-    connection.sendMessage(this);
+    connection.sendMudMessage(this);
   }
 
   public sendToGameEntity(target: GameEntity, sender: GameEntity = null)
@@ -296,8 +298,8 @@ export class Message
       /// asi přidávala jen jedna newlina (prompt by nebyl odřádkovaný).
 
       // Two newlines create an empty line between message body and prompt.
-      data += ServerSocket.NEW_LINE
-            + ServerSocket.NEW_LINE
+      data += Message.NEW_LINE
+            + Message.NEW_LINE
       /// TODO: Ve skutečnosti asi spíš target.generatePrompt(),
             /// tj. target budu muset předávat jako parametr.
             + this.generatePrompt();
@@ -318,7 +320,7 @@ export class Message
 
     // Add newline to the start of the message, so there is an empty line
     // between every two messages.
-    data = ServerSocket.NEW_LINE + data;
+    data = Message.NEW_LINE + data;
 
     return data;
   }
@@ -412,7 +414,7 @@ export class Message
 
     // Add base color to the start of the string, but only if
     // it doesn't start with color code.
-    if (!ServerTelnetSocket.isColorCode(firstTwoCharacters))
+    if (!Utils.isColorCode(firstTwoCharacters))
       return baseColor + str;
     else
       return str;      

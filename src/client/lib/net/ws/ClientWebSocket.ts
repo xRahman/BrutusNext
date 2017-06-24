@@ -9,7 +9,7 @@
 import {ERROR} from '../../../../shared/lib/error/ERROR';
 import {JsonObject} from '../../../../shared/lib/json/JsonObject';
 import {Packet} from '../../../../shared/lib/protocol/Packet';
-import {Connection} from '../../../../client/lib/connection/Connection';
+import {Connection} from '../../../../client/lib/net/Connection';
 
 export class ClientWebSocket
 {
@@ -111,6 +111,8 @@ export class ClientWebSocket
   // Sends a string to the user.
   public send(data: string)
   {
+    console.log("Sending data: " + data);
+
     // No point in sending data unless the socket is open.
     if (!this.isOpen())
       return;
@@ -293,9 +295,11 @@ export class ClientWebSocket
 
   private onReceiveMessage(event: MessageEvent)
   {
-    ///console.log('Received message: ' + event.data);
+    console.log('Received message: ' + event.data);
 
-    let jsonObject = JsonObject.parse(event.data);
+    Connection.receiveData(event.data);
+
+    ///let jsonObject = JsonObject.parse(event.data);
 
 //// TODOOOOOOOOOOOO
 //// (Dneska mi to fakt nejde. Asi by bylo dobré z event.data vyrobit

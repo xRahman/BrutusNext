@@ -20,7 +20,7 @@ import {Entities} from '../../../shared/lib/entity/Entities';
 import {ServerEntity} from '../../../server/lib/entity/ServerEntity';
 import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
 ///import {ScriptableEntity} from '../../../server/lib/entity/ScriptableEntity';
-import {Connection} from '../../../server/lib/connection/Connection';
+import {Connection} from '../../../server/lib/net/Connection';
 import {ServerApp} from '../../../server/lib/app/ServerApp';
 import {Game} from '../../game/Game';
 ///import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
@@ -156,10 +156,12 @@ export class Account extends ServerEntity
     return this.passwordHash === this.md5hash(password);
   }
 
+  /*
   public isInGame(): boolean
   {
     return this.connection.isInGame();
   }
+  */
 
   public async createCharacter(name: string): Promise<Character>
   {

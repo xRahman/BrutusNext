@@ -9,7 +9,7 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
-import {Connection} from '../../../server/lib/connection/Connection';
+import {Connection} from '../../../server/lib/net/Connection';
 import {Message} from '../../../server/lib/message/Message';
 import {ServerApp} from '../../../server/lib/app/ServerApp';
 

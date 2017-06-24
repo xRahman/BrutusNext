@@ -87,6 +87,41 @@ export class Serializable extends Attributable
   // descendant classes and increment it when you change the properties.
   protected version = 0;
 
+  // ------------- Public static methods ----------------
+
+  // Use this only for plain Serializable objects, not entities.
+  // -> Returns 'null' on failure.
+  public static deserialize(data: string): Serializable
+  {
+    let jsonObject = JsonObject.parse(data);
+
+    if (!jsonObject)
+      return null;
+
+    let className = jsonObject[Serializable.CLASS_NAME_PROPERTY];
+
+    if (!className)
+    {
+      ERROR("Unable to deserialize data because there is"
+        + " no '" + Serializable.CLASS_NAME_PROPERTY + "'"
+        + " property in it");
+      return null;
+    }
+
+    let Class = Classes.serializables.get(className);
+
+    if (!Class)
+    {
+      ERROR("Unable to deserialize data because class '" + className + "'"
+        + " isn't registered in Classes as a serializable non-entity class");
+      return null;
+    }
+
+    let instance = new Class;
+
+    return instance.deserialize(jsonObject);
+  }
+
   // ---------------- Public methods --------------------
 
   // Returns string describing this object for error logging.

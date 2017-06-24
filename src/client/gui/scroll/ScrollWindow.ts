@@ -12,7 +12,7 @@ import {ScrollWindowOutput} from
   '../../../client/gui/scroll/ScrollWindowOutput';
 import {MudColorComponent} from '../../../client/gui/MudColorComponent';
 import {GameWindow} from '../../../client/gui/GameWindow';
-import {Connection} from '../../../client/lib/connection/Connection';
+import {Connection} from '../../../client/lib/net/Connection';
 
 import $ = require('jquery');
 
