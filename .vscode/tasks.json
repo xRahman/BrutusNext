@@ -1,17 +1,13 @@
 /*
-  Because we have two projects to build (/src/client/tsconfig.json and
-  /src/server/tsconfig.json), we need two tasks.
-  
-  In order to be able to run more than one build taks, you should
-  remap 'ctrl+shift+b' to offer what task to run instad of running
-  only one build task.
-  Add this to your keybindings.json (located somewhere like:
-  c:\Users\York\AppData\Roaming\Code\User\keybindings.json)
-  { "key": "ctrl+shift+b",  "command": "workbench.action.tasks.runTask" }
+  Part of BrutusNEXT
 
-  Also note that both task run in watch mode, so they recompile the code
-  and then continue to run, watch for file changes and recompile them.
-  incrementally.
+  Tasks definition for vs code.
+
+  Note:
+    Because we need to build two projects (client and server)
+  and there can only be one build task active in vs code, we
+  use an external script (located at ./.vscode/Build.js) run
+  with node.js to launch two external tsc processes.
 */
 
 {
@@ -26,60 +22,101 @@
   "tasks":
   [
     {
-      // This task build server, then keeps running and watching
-      // for file changes to incrementally compile them.
-      "taskName": "Build Server",
+      "taskName": "Build",
       "args":
       [
-        // Use locally installed typescript (in node_modules).
-        "./node_modules/typescript/lib/tsc.js",
-        // Watch for file changes.
-        "--watch",
-        "--project", "./src/server"
+        "./.vscode/Build.js"
       ],
       "problemMatcher": "$tsc",
       // Watch file changes ('--watch' must be passed to tsc for this to work).
-      "isBackground": true
-      // This trick could be used so you could map two task directly.
-      // We don't use this though, instead we remap 'ctrl+shift+b' to
-      // ask what task to run.
-      /*
+      "isBackground": true,
       // Run this task on "Ctrl+Shift+B".
-      "isBuildCommand": true,
-      // Do not run on "Ctrl+Shift+T".
-      "isTestCommand": false
-      */
-    },
-    {
-      // This task build client, then keeps running and watching
-      // for file changes to incrementally compile them.
-      "taskName": "Build Clinet",
-      "args":
-      [
-        // We use locally installed typescript (in node_modules).
-        "./node_modules/typescript/lib/tsc.js",
-        // Watch for file changes.
-        "--watch",
-        "--project", "./src/client"
-      ],
-      "problemMatcher": "$tsc",
-      // Watch file changes ('--watch' must be passed to tsc for this to work).
-      "isBackground": true
-      // This trick could be used so you could map two task directly.
-      // We don't use this though, instead we remap 'ctrl+shift+b' to
-      // ask what task to run.
-      /*
-      // Do not Run on "Ctrl+Shift+B".
-      "isBuildCommand": false,
-      // Run this task on "Ctrl+Shift+T".
-      "isTestCommand": true
-      */
+      "isBuildCommand": true
     }
   ]
 }
 
+/// Obsolete variant - this is no longer used.
+/*
+  Because we have two projects to build (/src/client/tsconfig.json and
+  /src/server/tsconfig.json), we need two tasks.
+  
+  In order to be able to run more than one build taks, you should
+  remap 'ctrl+shift+b' to offer what task to run instad of running
+  only one build task.
+  Add this to your keybindings.json (located somewhere like:
+  c:\Users\York\AppData\Roaming\Code\User\keybindings.json)
+  { "key": "ctrl+shift+b",  "command": "workbench.action.tasks.runTask" }
 
-/// Variant with globaly installed 'tsc':
+  Also note that both task run in watch mode, so they recompile the code
+  and then continue to run, watch for file changes and recompile them.
+  incrementally.
+*/
+// {
+//   // See https://go.microsoft.com/fwlink/?LinkId=733558
+//   // for the documentation about the tasks.json format
+//   "version": "0.1.0",
+//   "command": "node",
+//   "isShellCommand": true,
+//   "echoCommand": true, // Task runner will output what it is trying to do.
+//   "suppressTaskName": true, // Do not add 'taskName' as parameter to 'tsc'.
+//   "showOutput": "always",   // Output tsc messages.
+//   "tasks":
+//   [
+//     {
+//       // This task build server, then keeps running and watching
+//       // for file changes to incrementally compile them.
+//       "taskName": "Build Server",
+//       "args":
+//       [
+//         // Use locally installed typescript (in node_modules).
+//         "./node_modules/typescript/lib/tsc.js",
+//         // Watch for file changes.
+//         "--watch",
+//         "--project", "./src/server"
+//       ],
+//       "problemMatcher": "$tsc",
+//       // Watch file changes ('--watch' must be passed to tsc for this to work).
+//       "isBackground": true
+//       // This trick could be used so you could map two task directly.
+//       // We don't use this though, instead we remap 'ctrl+shift+b' to
+//       // ask what task to run.
+
+//       // // Run this task on "Ctrl+Shift+B".
+//       // "isBuildCommand": true,
+//       // // Do not run on "Ctrl+Shift+T".
+//       // "isTestCommand": false
+//     },
+//     {
+//       // This task build client, then keeps running and watching
+//       // for file changes to incrementally compile them.
+//       "taskName": "Build Clinet",
+//       "args":
+//       [
+//         // We use locally installed typescript (in node_modules).
+//         "./node_modules/typescript/lib/tsc.js",
+//         // Watch for file changes.
+//         "--watch",
+//         "--project", "./src/client"
+//       ],
+//       "problemMatcher": "$tsc",
+//       // Watch file changes ('--watch' must be passed to tsc for this to work).
+//       "isBackground": true
+//       // This trick could be used so you could map two task directly.
+//       // We don't use this though, instead we remap 'ctrl+shift+b' to
+//       // ask what task to run.
+
+//       // // Do not Run on "Ctrl+Shift+B".
+//       // "isBuildCommand": false,
+//       // // Run this task on "Ctrl+Shift+T".
+//       // "isTestCommand": true
+//     }
+//   ]
+// }
+
+
+
+/// Another obsolete variant (with globaly installed 'tsc'):
 // {
 //   // See https://go.microsoft.com/fwlink/?LinkId=733558
 //   // for the documentation about the tasks.json format
