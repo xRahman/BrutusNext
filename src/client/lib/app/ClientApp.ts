@@ -23,7 +23,7 @@ import {ClientPrototypes} from '../../../client/lib/entity/ClientPrototypes';
 ///import {ScrollWindow} from '../../../client/gui/scroll/ScrollWindow';
 import {Document} from '../../../client/gui/Document';
 import {Connection} from '../../../client/lib/net/Connection';
-import {ClientWebSocket} from '../../../client/lib/net/ws/ClientWebSocket';
+import {ClientSocket} from '../../../client/lib/net/ClientSocket';
 import {Windows} from '../../../client/gui/Windows';
 
 export class ClientApp extends App
@@ -213,7 +213,7 @@ export class ClientApp extends App
   private async run()
   {
     // Reports the problem to the user if websockets aren't available.
-    if (!ClientWebSocket.checkWebSocketsSupport())
+    if (!ClientSocket.checkWebSocketsSupport())
       return;
 
     /// TODO: Sloučit do this.windows.createStandaloneWindows().

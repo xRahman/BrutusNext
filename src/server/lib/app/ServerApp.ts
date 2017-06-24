@@ -27,8 +27,8 @@ import {ServerSyslog} from '../../../server/lib/log/ServerSyslog';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Game} from '../../../server/game/Game';
 import {GameEntity} from '../../../server/game/GameEntity';
-///import {TelnetServer} from '../../../server/lib/net/telnet/TelnetServer';
-import {HttpServer} from '../../../server/lib/net/http/HttpServer';
+///import {TelnetServer} from '../../../server/lib/net/TelnetServer';
+import {HttpServer} from '../../../server/lib/net/HttpServer';
 
 export class ServerApp extends App
 {

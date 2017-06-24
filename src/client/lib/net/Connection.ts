@@ -9,7 +9,7 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
-import {ClientWebSocket} from '../../../client/lib/net/ws/ClientWebSocket';
+import {ClientSocket} from '../../../client/lib/net/ClientSocket';
 import {ScrollWindow} from '../../../client/gui/scroll/ScrollWindow';
 import {Avatar} from '../../../client/lib/net/Avatar';
 import {Packet} from '../../../shared/lib/protocol/Packet';
@@ -18,7 +18,7 @@ import {RegisterResponse} from '../../../shared/lib/protocol/RegisterResponse';
 
 export class Connection
 {
-  private socket: ClientWebSocket = null;
+  private socket: ClientSocket = null;
 
   // -------------- Static class data -------------------
 
@@ -88,7 +88,7 @@ export class Connection
   // Attempts to open the websocket connection.
   public connect()
   {
-    this.socket = new ClientWebSocket(this);
+    this.socket = new ClientSocket(this);
     this.clientMessage('Opening websocket connection...');
     this.socket.connect();
   }

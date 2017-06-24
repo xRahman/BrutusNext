@@ -67,6 +67,7 @@ TODO: /shared/lib/protocol možná přejmenovat na /shared/lib/packet
 
 TODO: Vyhodit stuff z /ws a /http (na serveru i na clientu).
 TODO: Přejmenovat ClientWebSocket na ClientSocket.
+[done]
 
 ---------------------------------------------------------------
 
