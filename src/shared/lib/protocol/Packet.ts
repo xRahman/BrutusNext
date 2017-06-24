@@ -28,26 +28,22 @@
 'use strict';
 
 import {Serializable} from '../../../shared/lib/class/Serializable';
-import {TextMessage} from '../../../shared/lib/protocol/TextMessage';
-///import {PacketPart} from '../../shared/protocol/PacketPart';
-///import {PacketData} from '../../shared/protocol/PacketData';
 
-/*
-interface PacketPart
+export abstract class Packet extends Serializable
 {
-  type: Packet.DataType,
-  data: any
-}
-*/
+  /*
+  constructor()
+  {
+    super();
 
-export class Packet extends Serializable
-{
+    this.version = 0;
+  }
+  */
 
   // -------------- Static class data -------------------
 
   //------------------ Public data ----------------------  
 
-  public parts = new Array<Packet.PartInterface>();
   ///public parts = new Array<PacketPart>();
 
   //----------------- Protected data --------------------
@@ -62,79 +58,61 @@ export class Packet extends Serializable
 
   // ---------------- Public methods --------------------
 
-  /// To be deprecated.
-  // public toJson()
+  // public addMudMessage(message: string)
   // {
-  //   return JSON.stringify(this);
+  //   // Message is a string already so we don't have to serialize it.
+  //   let part = new PacketPart(PacketPart.Type.MUD_MESSAGE, message);
+
+  //   this.add(PacketPart.Type.MUD_MESSAGE, part);
   // }
 
-  public addMudMessage(message: string)
-  {
-    let mudMessage = new TextMessage();
-
-    mudMessage.message = message;
-
-    this.add(Packet.PartType.MUD_MESSAGE, mudMessage);
-  }
-
-  public addCommand(message: string)
-  {
-    let mudMessage = new TextMessage();
-
-    mudMessage.message = message;
-
-    this.add(Packet.PartType.COMMAND, mudMessage);
-  }
-
-  /// To be deleted.
-  // public add(type: Packet.DataType, data: any)
+  // public addCommand(message: string)
   // {
-  //   let part: PacketPart =
-  //   {
-  //     type: type,
-  //     data: data
-  //   };
+  //   // Command is a string already so we don't have to serialize it.
+  //   let part = new PacketPart(PacketPart.Type.COMMAND, message);
 
-  //   this.parts.push(part);
+  //   this.add(PacketPart.Type.MUD_MESSAGE, part);
+  // }
+
+  // public addLoginRequest(request: LoginRequest)
+  // {
+  //   let data = request.serialize(Serializable.Mode.SEND_TO_SERVER);
+  //   let part = new PacketPart(PacketPart.Type.LOGIN_REQUEST, data);
+
+  //   this.add(PacketPart.Type.MUD_MESSAGE, part);
   // }
 
   // --------------- Protected methods ------------------
 
   // ---------------- Private methods -------------------
 
-  private add(type: Packet.PartType, data: Serializable)
-  {
-    let part: Packet.PartInterface =
-    {
-      type: type,
-      data: data
-    }
-
-    this.parts.push(part);
-  }
+  // private add(type: PacketPart.Type, part: PacketPart)
+  // {
+  //   this.parts.push(part);
+  // }
 
 }
 
 // ------------------ Type declarations ----------------------
 
-export module Packet
-{
-  export enum PartType
-  {
-    // Command send by player to the server.
-    COMMAND,
-    // Colored text sent by server that should be output to scrolview window.
-    MUD_MESSAGE,
-    // Data sent to the editor to be processed.
-    EDITOR_INPUT,
-    // Data sent by the editor back to the server.
-    EDITOR_OUTPUT,
-    MAP_CREATE_ROOM
-  }
+// export module Packet
+// {
+//   export enum Type
+//   {
+//     // Command send by player to the server.
+//     COMMAND,
+//     // Colored text sent by server that should be output to scrolview window.
+//     MUD_MESSAGE,
+//     // Data sent to the editor to be processed.
+//     EDITOR_INPUT,
+//     // Data sent by the editor back to the server.
+//     EDITOR_OUTPUT,
+//     MAP_CREATE_ROOM
+//   }
 
-  export interface PartInterface
-  {
-    type: PartType,
-    data: any
-  }
-}
+//   export interface PartInterface
+//   {
+//     type: PartType,
+//     data: string
+//   }
+// }

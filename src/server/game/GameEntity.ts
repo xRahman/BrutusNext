@@ -14,7 +14,7 @@ import {ServerApp} from '../../server/lib/app/ServerApp';
 import {Entities} from '../../shared/lib/entity/Entities';
 import {Message} from '../../server/lib/message/Message';
 import {MessageType} from '../../shared/lib/message/MessageType';
-import {Connection} from '../../server/lib/connection/Connection';
+import {Connection} from '../../server/lib/net/Connection';
 import {Game} from '../../server/game/Game';
 import {ContainerEntity} from '../../server/lib/entity/ContainerEntity';
 import {GameEntityData} from '../../shared/game/GameEntityData';
@@ -268,7 +268,7 @@ export class GameEntity extends ContainerEntity
 
     this.receive("Goodbye, friend.. Come back soon!", MessageType.COMMAND);
     this.announcePlayerLeavingGame();
-    this.connection.enterMenu();
+    ///this.connection.enterMenu();
     this.connection.detachFromGameEntity();
 
     // Remove entity from memory and from all entity lists.

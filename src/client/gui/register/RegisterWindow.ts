@@ -47,7 +47,7 @@ export class RegisterWindow extends StandaloneWindow
   {
     super.create();
 
-    this.setTitle("Register new account");
+    this.setTitle("Register New Account");
 
     // Create register form.
     this.form.create({ $container: this.$content });

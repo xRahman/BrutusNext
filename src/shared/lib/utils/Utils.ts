@@ -10,6 +10,41 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 
 export module Utils
 {
+  export function isColorCode(code: string): boolean
+  {
+    switch (code)
+    {
+      case '&n':
+      case '&d':
+      case '&i':
+      case '&u':
+      case '&l':
+      case '&k':
+      case '&Ki':
+      case '&K':
+      case '&r':
+      case '&Ri':
+      case '&R':
+      case '&g':
+      case '&Gi':
+      case '&G':
+      case '&y':
+      case '&Y':
+      case '&b':
+      case '&Bi':
+      case '&B':
+      case '&m':
+      case '&M':
+      case '&c':
+      case '&C':
+      case '&w':
+      case '&W':
+        return true;        
+    }
+
+    return false;
+  }
+
   // -> Returns 'true' if 'variable' is of type 'FastBitSet'.
   export function isBitvector(variable: any)
   {
