@@ -6,10 +6,10 @@
   Command sent by player.
 */
 
-import {Serializable} from '../../../shared/lib/class/Serializable';
+import {Packet} from '../../../shared/lib/protocol/Packet';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class Command extends Serializable
+export class Command extends Packet
 {
   constructor()
   {

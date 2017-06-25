@@ -12,6 +12,7 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
+import {Syslog} from '../../../shared/lib/log/Syslog';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {ClientSyslog} from '../../../client/lib/log/ClientSyslog';
@@ -181,8 +182,11 @@ export class ClientApp extends App
   //  from /shared/lib/error/ERROR).
   protected reportError(message: string)
   {
+    let errorMsg = message + "\n"
+      + Syslog.getTrimmedStackTrace(Syslog.TrimType.ERROR);
+
     // Just log the message to the console for now.
-    console.log('ERROR: ' + message);
+    console.log('ERROR: ' + errorMsg);
   }
 
   // ~ Overrides App.reportFatalError().
@@ -191,9 +195,12 @@ export class ClientApp extends App
   //  from /shared/lib/error/ERROR).
   protected reportFatalError(message: string)
   {
+    let errorMsg = message + "\n"
+      + Syslog.getTrimmedStackTrace(Syslog.TrimType.ERROR);
+      
     // Just log the message to the console for now
     // (terminating the client application is probably not necessary).
-    console.log('FATAL_ERROR: ' + message);
+    console.log('FATAL_ERROR: ' + errorMsg);
   }
 
   // ~ Overrides App.syslog().
@@ -215,6 +222,11 @@ export class ClientApp extends App
     // Reports the problem to the user if websockets aren't available.
     if (!ClientSocket.checkWebSocketsSupport())
       return;
+
+    // Create an instance of each entity class registered in
+    // Classes so they can be used as prototype objects
+    // for root prototype entities.
+    this.entities.createRootObjects();
 
     /// TODO: Sloučit do this.windows.createStandaloneWindows().
     this.windows.createStandaloneWindows();

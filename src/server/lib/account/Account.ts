@@ -34,12 +34,6 @@ import * as crypto from 'crypto';  // Import namespace 'crypto' from node.js
 
 export class Account extends ServerEntity
 {
-  public connection: Connection = null;
-    private static connection: PropertyAttributes =
-    {
-      saved: false
-    };
-
   /// TODO: Accounty se vyrábí stejně jako ostatní entity,
   /// takže asi nebude průchozí předávat jim parametry v konstruktoru.
   /// - i když, možná to přece jen nakonec půjde, zatím to tu nechám
@@ -73,10 +67,29 @@ export class Account extends ServerEntity
 
   ///public static get SAVE_DIRECTORY() { return "./data/accounts/"; }
 
+  //------------------ Private data ---------------------
+
+  private passwordHash = "";
+    private static passwordHash: PropertyAttributes =
+    {
+      saved: true,
+      edited: false,
+      sentToClient: false,
+      sentToServer: false
+    };  
+
   // ----------------- Public data ----------------------
 
-  public data = new AccountData();
+  public connection: Connection = null;
+    private static connection: PropertyAttributes =
+    {
+      saved: false,
+      edited: false,
+      sentToClient: false,
+      sentToServer: false
+    };
 
+  public data = new AccountData();
 
   // List of character names this account has access to.
   public characterNames: Array<string> = [];
@@ -321,10 +334,6 @@ export class Account extends ServerEntity
     return Account.SAVE_DIRECTORY;
   }
   */
-
-  //------------------ Private data ---------------------
-
-  private passwordHash = "";
 
   // ---------------- Private methods --------------------
 

@@ -100,12 +100,12 @@ export class Connection
   }
 
   // Processes data received from the client.
-  public receiveData(data: string)
+  public async receiveData(data: string)
   {
     let packet = Serializable.deserialize(data);
 
     if (packet !== null)
-      this.receive(packet);
+      await this.receive(packet);
   }
 
   // --------------- Private methods --------------------
@@ -120,19 +120,19 @@ export class Connection
   }
 
   // Processes received 'packet'.
-  private receive(packet: Packet)
+  private async receive(packet: Packet)
   {
     /// Možná takhle? Nebo polymorfismus?
     switch (packet.getClassName())
     {
       case RegisterRequest.name:
         /// Možná by šel udělat dynamic type check.
-        this.processRegisterRequest(<RegisterRequest>packet);
+        await this.registerRequest(<RegisterRequest>packet);
         break;
 
       case LoginRequest.name:
         /// Možná by šel udělat dynamic type check.
-        this.processLoginRequest(<LoginRequest>packet);
+        await this.loginRequest(<LoginRequest>packet);
         break;
 
       default:
@@ -170,12 +170,28 @@ export class Connection
   //   }
   // }
 
-  private processRegisterRequest(packet: RegisterRequest)
+  private async registerRequest(packet: RegisterRequest)
   {
+    let account: Account = null;
     let response = new RegisterResponse();
     let problem = packet.getProblem();
 
     console.log("Connection.processRegisterRequest() - problem: " + problem);
+
+    /// TODO: Check if account already exists.
+    /// (To by mohl dělat rovnou packet.getProblem() - i když asi ne,
+    ///  to je shared kód -- možná by neměl bejt, btw).
+
+    if (!problem)
+    {
+      account = await Accounts.create(packet, this);
+
+      if (account === null)
+      {
+        problem = "&rFailed to create account./n"
+          + Message.PLEASE_CONTACT_ADMINS;
+      }
+    }
 
     if (problem)
     {
@@ -187,11 +203,18 @@ export class Connection
     }
 
     response.accepted = true;
-    /// TODO: Vyrobit account a přibalit ho do response.
+    
+    // Add newly create account to the response.
+    response.account.serializeEntity
+    (
+      account,
+      Serializable.Mode.SEND_TO_CLIENT
+    );
+    
     this.send(response);
   }
 
-  private processLoginRequest(packet: LoginRequest)
+  private async loginRequest(packet: LoginRequest)
   {
     /// TODO:
     /*

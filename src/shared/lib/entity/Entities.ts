@@ -8,6 +8,7 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
+import {JsonObject} from '../../../shared/lib/json/JsonObject';
 import {App} from '../../../shared/lib/app/App';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {Classes} from '../../../shared/lib/class/Classes';
@@ -214,6 +215,27 @@ export abstract class Entities
     return entity.dynamicCast(typeCast);
   }
 
+  // -> Returns 'null' on failure.
+  public static loadEntityFromJsonString<T extends Entity>
+  (
+    jsonString: string,
+    typeCast: { new (...args: any[]): T }
+  )
+  : T
+  {
+    let entity = App.entities.loadEntityFromJsonString(jsonString);
+
+    if (!entity)
+    {
+      ERROR("Failed to load entity from json string");
+      return null;
+    }
+
+    // Dynamically check that entity is an
+    // instance of type T and typecast to it.
+    return entity.dynamicCast(typeCast);
+  }
+
   // ---------------- Public methods --------------------
 
   // Creates instances of hardcoded classes that are used
@@ -234,6 +256,57 @@ export abstract class Entities
     cathegory: Entity.NameCathegory
   )
   : Promise<Entity>;
+
+  /*
+  protected abstract async loadEntityFromJsonString
+  (
+    jsonString: string
+  )
+  : Promise<Entity>;
+  */
+
+  protected loadEntityFromJsonObject
+  (
+    entity: Entity,
+    jsonObject: Object,
+    path: string
+  )
+  {
+    if (!entity)
+      return null;
+
+    entity.deserialize(jsonObject, path);
+
+    if (!entity)
+      return null;
+
+    return entity;
+  }
+
+  // -> Returns 'null' on failure.
+  protected loadEntityFromJsonString
+  (
+    jsonString: string,
+    // Id needs to be provided when loading from file because
+    // it's saved as file name rather than into the file.
+    id: string = null,
+    // Path should be provide when loading from file. It's only
+    // used in error messages.
+    path: string = null
+  )
+  {
+    if (!jsonString)
+      return null;
+
+    let jsonObject = JsonObject.parse(jsonString);
+
+    if (jsonObject === null)
+      return null;
+
+    let entity = this.createEntityFromJsonObject(jsonObject, id, path);
+
+    return this.loadEntityFromJsonObject(entity, jsonObject, path);
+  }
 
   // -> Returns 'null' if entity instance couldn't be created.
   protected createEntityFromPrototype
@@ -520,5 +593,98 @@ export abstract class Entities
     // the point - access of invalid reference should
     // generate a runtime error.
     return <any>ref;
+  }
+
+  private readPrototypeId
+  (
+    prototypeReference: Object,
+    id: string,
+    path: string
+  )
+  {
+    if (prototypeReference === null || prototypeReference === undefined)
+    {
+      ERROR("Invalid prototype reference when deserializing entity"
+        + " " + id + " from file " + path);
+      return null;
+    }
+
+    let prototypeId = prototypeReference[Entity.ID_PROPERTY];
+
+    if (prototypeId === null || prototypeId === undefined)
+    {
+      ERROR("Invalid prototype id when deserializing entity"
+        + " " + id + " from file " + path);
+      return null
+    }
+
+    return prototypeId;
+  }
+
+  // -> Returns 'null' if instance cannot be created.
+  private createEntityFromJsonObject
+  (
+    jsonObject: Object,
+    id: string,
+    path: string
+  )
+  {
+    if (!jsonObject)
+      return null;
+
+    // If 'id' parameter is 'null', it means that we are not loading from
+    // file but rather using a client-server communication protocol. In
+    // that case entity 'id' is not saved as file name (because no files
+    // are sent over the protocol) but rather as a regular 'id' property.
+    if (id === null)
+    {
+      id = jsonObject[Entity.ID_PROPERTY];
+
+      if (!id)
+      {
+        ERROR("Missing or invalid id in JSON when deserializing"
+          + " an entity. Entity is not created");
+        return null;
+      }
+    }
+
+    // Check if there is a 'prototypeEntity' property in json Object.
+    let prototypeEntity = jsonObject[Entity.PROTOTYPE_ENTITY_PROPERTY];
+
+    if (prototypeEntity === undefined)
+    {
+      ERROR("Missing or invalid '" + Entity.PROTOTYPE_ENTITY_PROPERTY + "'"
+          + " property in JSON when deserializing an entity (id '" + id + "')"
+          + " from file " + path + ". Entity is not created");
+        return null;
+    }
+
+    let prototypeId: string = null;
+
+    // If 'prototypeEntity' is 'null', it means that we are deserializing
+    // a root prototype entity (which doesn't have a prototype entity of
+    // course). In that case we use 'className' as a prototypeId (it will
+    // point to a root prototype object instead of an entity).
+    if (prototypeEntity === null)
+    {
+      prototypeId = jsonObject[Entity.CLASS_NAME_PROPERTY];
+    }
+    else
+    {
+      // Read 'id' from entity reference record.
+      prototypeId = this.readPrototypeId(prototypeEntity, id, path);
+    }
+
+    if (!prototypeId)
+    {
+      ERROR("Missing or invalid prototype 'id' in"
+       + " " + Entity.PROTOTYPE_ENTITY_PROPERTY
+       + " reference record in JSON when deserializing"
+       + " an entity (id '" + id + "')."
+       + " Entity is not created");
+      return null;
+    }
+
+    return this.createExistingEntity(prototypeId, id);
   }
 }
