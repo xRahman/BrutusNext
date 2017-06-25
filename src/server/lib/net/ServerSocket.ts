@@ -157,7 +157,7 @@ export class ServerSocket
     /// TODO: Tohle by se mělo dělat až pro commandy.
     ///data = Utils.normalizeCRLF(data);
 
-    this.connection.receiveData(data);
+    await this.connection.receiveData(data);
   }
 
   private onOpen()

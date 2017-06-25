@@ -110,6 +110,13 @@ export class Entity extends Serializable
   //  of an entity is deleted, we need to find it in 'instanceIds' to
   //  remove it from there.)
   private instanceIds = new Set<string>();
+    private static instanceIds: PropertyAttributes =
+    {
+      saved: true,
+      edited: false,
+      sentToClient: false,
+      sentToServer: false
+    };
 
   // Set of ids of entities that use this entity as their prototype
   // object and are prototypes themselves.
@@ -117,6 +124,13 @@ export class Entity extends Serializable
   //  of an entity is deleted, we need to find it in 'instanceIds' to
   //  remove it from there.)
   private descendantIds = new Set<string>();
+    private static descendantIds: PropertyAttributes =
+    {
+      saved: true,
+      edited: false,
+      sentToClient: false,
+      sentToServer: false
+    };
 
   // ------------------------------------------------- //
   //               Symbolic entity naming              //
@@ -277,6 +291,18 @@ export class Entity extends Serializable
   */
 
   // ---------------- Public methods --------------------
+
+  // Serializes entity and all its ancestors. Writes
+  // results to 'data' arrat, starting with root prototype.
+  public serializeTree(data: Array<string>, mode: Serializable.Mode)
+  {
+    if (this.prototypeEntity !== null)
+    {
+      this.prototypeEntity.serializeTree(data, mode);
+    }
+
+    data.push(this.serialize(mode));
+  }
 
   private invalidateProperties(object: Object)
   {

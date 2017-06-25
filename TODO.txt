@@ -1,6 +1,33 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+TODO: Trochu upravit metodu loadEntityById():
+- místo loadJsonObjectFromFile(path) volat prostě loadFile(path)
+- pak zavolat loadEntityFromJsonString().
+
+
+TODO: V Accountu se mi nesavuje spousta properties - pořešit.
+
+PROBLÉM: Mají se opravdu automaticky deserializovat properties,
+  které neexistují v cílové class? Takhle se totiž do accountu
+  na klientu propašuje třeba heslo (samozřejmě chyba je v prvé
+  řadě ho vůbec posílat, ale i tak).
+- asi je to ok, protože když by se někdo snažil na klientu takovou
+  property používat, tak se mu nebude ukazovat v intellisense,
+  takže si toho snad všimne (a když ne, tak to holt fungovat bude).
+
+TODO: Heslo (passwordHash) by neměla být obyčejná property na accountu
+  - nejspíš schovat do closure constructoru, ať je opravdu private.
+
+TODO: Založení accountu při zpracování register requestu.
+
+TODO: Buď soft locky na account name při vyrábění accountu,
+  nebo spojit test na dostupnost jména s vytvořením name lock
+  souboru (konec konců request mám k dispozici kompletní).
+
+TODO: Nějaký hezčí zápis do connection.account a account.connection
+  (asi by to neměly být prostě public properties).
+
 Packet
 -------
 
@@ -55,6 +82,7 @@ TODO: Vytvořit classu EntityData.
 
 
 TODO: Přidat protokolové classy do Classes.
+[done]
 
 IMPORTANT:
   Optimalizace si nechám na potom, teď to potřebuju hlavně nějak rozběhat.
@@ -64,6 +92,7 @@ TODO: Při otevírání connection na clientu neposílat hlášku do ScrollWindo
 
 TODO: /shared/lib/protocol možná přejmenovat na /shared/lib/packet
   (je to kratší, na druhou stranu ne tak názorné)
+[kašlat na to]
 
 TODO: Vyhodit stuff z /ws a /http (na serveru i na clientu).
 TODO: Přejmenovat ClientWebSocket na ClientSocket.
@@ -288,6 +317,11 @@ TODO: MudColorComponent by neměla být komponenta, ale statická
 
 TODO: Zkusit upravit build task, aby přeložil server i clienta najednou.
 [nepovedlo se, stále by to chtělo]
+- tak nakonec jsem to pořešil přes obyčejný js script.
+
+TODO: Automatické mazání buildu (FS.unlink())
+
+
 
 ---------------------------------------------------------------
 
