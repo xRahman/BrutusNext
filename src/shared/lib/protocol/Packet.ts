@@ -5,26 +5,6 @@
   Specifies format of data packet.
 */
 
-/*
-  Example of Packet (when serialized to JSON):
-
-  // Packet
-  {
-    parts =
-    [
-      // PacketPart
-      {
-        type: 'MUD_MESSAGE',
-        data:
-        // PacketData
-        {
-          message: 'Zuzka leaves north.'
-        }
-      }
-    ]
-  }
-*/
-
 'use strict';
 
 import {Serializable} from '../../../shared/lib/class/Serializable';

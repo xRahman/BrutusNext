@@ -48,18 +48,12 @@ export class ServerEntities extends Entities
     return ServerApp.entities.createEntityFromPrototype(prototype, id);
   }
 
-  private static async loadJsonObjectFromFile(path: string)
-  {
-    let jsonString = await FileSystem.readFile(path);
-
-    return JsonObject.parse(jsonString);
-  }
-
   // -> Returns 'null' on failure.
   public static async loadRootPrototypeById(id: string, className: string)
   {
     let path = this.getEntityPath(id);
-    let jsonObject = await ServerEntities.loadJsonObjectFromFile(path);
+    let jsonString = await FileSystem.readFile(path);
+    let jsonObject = JsonObject.parse(jsonString);
 
     if (jsonObject === null)
       return null;
@@ -311,40 +305,17 @@ export class ServerEntities extends Entities
     await entity.postSave();
   }
 
-  private async loadEntityFromJsonObject
-  (
-    entity: Entity,
-    jsonObject: Object,
-    path: string
-  )
-  {
-    if (!entity)
-      return null;
-
-    entity.deserialize(jsonObject, path);
-
-    if (!entity)
-      return null;
-
-    await entity.postLoad();
-
-    return entity;
-  }
-
   // ~ Overrides Entities.loadEntityById().
   // -> Returns 'null' on failure.
   protected async loadEntityById(id: string): Promise<Entity>
   {
     let path = ServerEntities.getEntityPath(id);
+    let jsonString = await FileSystem.readFile(path);
+    let entity = await this.loadEntityFromJsonString(jsonString, id, path);
 
-    let jsonObject = await ServerEntities.loadJsonObjectFromFile(path);
+    await entity.postLoad();
 
-    if (jsonObject === null)
-      return null;
-
-    let entity = this.createEntityFromJsonObject(jsonObject, id, path);
-
-    return await this.loadEntityFromJsonObject(entity, jsonObject, path);
+    return entity;
   }
 
   // ~ Overrides Entities.loadEntityByName().
@@ -421,89 +392,6 @@ export class ServerEntities extends Entities
     }
 
     return directory;
-  }
-
-  // -> Returns 'null' if instance cannot be created.
-  private createEntityFromJsonObject
-  (
-    jsonObject: Object,
-    id: string,
-    path: string
-  )
-  {
-    if (!jsonObject)
-      return null;
-
-/// TODO
-/// Tohle má smysl pouze pokud se createEntityFromJsonObject() bude
-/// volat taky při deserializaci z protokolu (což se zatím neděje).
-    // If 'id' parameter is 'null', it means that we are not loading from
-    // file but rather using a client-server communication protocol. In
-    // that case entity 'id' is not saved as file name (because no files
-    // are sent over the protocol) but rather as a regular 'id' property.
-    if (id === null)
-    {
-      id = jsonObject[Entity.ID_PROPERTY];
-
-      if (!id)
-      {
-        ERROR("Missing or invalid id in JSON when deserializing"
-          + " an entity. Entity is not created");
-        return null;
-      }
-    }
-
-    // Check if there is a 'prototypeEntity' property in json Object.
-    let prototypeEntity = jsonObject[Entity.PROTOTYPE_ENTITY_PROPERTY];
-
-    if (!prototypeEntity)
-    {
-      ERROR("Missing or invalid '" + Entity.PROTOTYPE_ENTITY_PROPERTY + "'"
-          + " property in JSON when deserializing an entity (id '" + id + "')"
-          + " from file " + path + ". Entity is not created");
-        return null;
-    }
-
-    // Read 'id' from entity reference record.
-    let prototypeId = this.readPrototypeId(prototypeEntity, id, path);
-
-    if (!prototypeId)
-    {
-      ERROR("Missing or invalid prototype 'id' in"
-       + " " + Entity.PROTOTYPE_ENTITY_PROPERTY
-       + " reference record in JSON when deserializing"
-       + " an entity (id '" + id + "')."
-       + " Entity is not created");
-      return null;
-    }
-
-    return this.createExistingEntity(prototypeId, id);
-  }
-
-  private readPrototypeId
-  (
-    prototypeReference: Object,
-    id: string,
-    path: string
-  )
-  {
-    if (prototypeReference === null || prototypeReference === undefined)
-    {
-      ERROR("Invalid prototype reference when deserializing entity"
-        + " " + id + " from file " + path);
-      return null;
-    }
-
-    let prototypeId = prototypeReference[Entity.ID_PROPERTY];
-
-    if (prototypeId === null || prototypeId === undefined)
-    {
-      ERROR("Invalid prototype id when deserializing entity"
-        + " " + id + " from file " + path);
-      return null
-    }
-
-    return prototypeId;
   }
 
   /// To be deleted.

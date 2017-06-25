@@ -7,10 +7,11 @@
 */
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {Serializable} from '../../../shared/lib/class/Serializable';
+import {Packet} from '../../../shared/lib/protocol/Packet';
+import {EntityData} from '../../../shared/lib/protocol/EntityData';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class RegisterResponse extends Serializable
+export class RegisterResponse extends Packet
 {
   constructor()
   {
@@ -28,7 +29,7 @@ export class RegisterResponse extends Serializable
   /// Tohle nebude tak jednoduché
   /// - Account je entita, takže může být na víc částí (předci zvlášť).
   /// TODO
-  ///public account: Account = null;
+  public account = new EntityData();
 }
 
 Classes.registerSerializableClass(RegisterResponse);

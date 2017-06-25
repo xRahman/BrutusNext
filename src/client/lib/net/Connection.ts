@@ -14,6 +14,7 @@ import {ScrollWindow} from '../../../client/gui/scroll/ScrollWindow';
 import {Avatar} from '../../../client/lib/net/Avatar';
 import {Packet} from '../../../shared/lib/protocol/Packet';
 import {Command} from '../../../shared/lib/protocol/Command';
+import {Account} from '../../../client/lib/account/Account';
 import {RegisterResponse} from '../../../shared/lib/protocol/RegisterResponse';
 
 export class Connection
@@ -152,8 +153,12 @@ export class Connection
     }
   }
 
-  private processRegisterResponse(packet: RegisterResponse)
+  private processRegisterResponse(response: RegisterResponse)
   {
-    console.log("Received register response. Problem: " + packet.problem);
+    console.log("Received register response. Problem: " + response.problem);
+
+    let account = response.account.deserializeEntity(Account);
+
+    console.log("Recreated account " + JSON.stringify(account));
   }
 }

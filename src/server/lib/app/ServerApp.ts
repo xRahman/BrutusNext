@@ -189,7 +189,7 @@ export class ServerApp extends App
   protected reportError(message: string)
   {
     let errorMsg = message + "\n"
-    + Syslog.getTrimmedStackTrace(Syslog.TrimType.ERROR);
+      + Syslog.getTrimmedStackTrace(Syslog.TrimType.ERROR);
 
     Syslog.log(errorMsg, MessageType.RUNTIME_ERROR, AdminLevel.ELDER_GOD);
   }
