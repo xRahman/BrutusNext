@@ -7,10 +7,10 @@
 */
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {Serializable} from '../../../shared/lib/class/Serializable';
+import {Packet} from '../../../shared/lib/protocol/Packet';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class RegisterRequest extends Serializable
+export class RegisterRequest extends Packet
 {
   constructor()
   {

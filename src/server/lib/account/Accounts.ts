@@ -12,6 +12,8 @@ import {NameList} from '../../../shared/lib/entity/NameList';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
 import {Account} from '../../../server/lib/account/Account';
+import {Connection} from '../../../server/lib/net/Connection';
+import {RegisterRequest} from '../../../shared/lib/protocol/RegisterRequest';
 
 export class Accounts
 {
@@ -23,7 +25,49 @@ export class Accounts
   // List of characters with unique names that are loaded in the memory.
   private names = new NameList<Account>(Entity.NameCathegory.ACCOUNT);
 
-  // ------------- Public static methods ---------------- 
+  // ------------- Public static methods ----------------
+
+  public static async create
+  (
+    request: RegisterRequest,
+    connection: Connection
+  )
+  : Promise<Account>
+  {
+    if (!connection)
+    {
+      ERROR("Invalid connection");
+      return null;
+    }
+
+    let account = await ServerEntities.createInstanceEntity
+    (
+      Account,
+      Account.name,
+      request.accountName,
+      Entity.NameCathegory.ACCOUNT
+    );
+
+    if (!Entity.isValid(account))
+    {
+      ERROR("Failed to create account '" + request.accountName + "'");
+      return null;
+    }
+
+    account.setPasswordHash(request.password);
+    account.connection = connection;
+    connection.account = account;
+
+    account.addToLists();
+
+    // // 'ServerEntities.createInstance()' has created
+    // // a name lock file, so we can remove soft name lock.
+    // Accounts.removeSoftNameLock(this.accountName);
+
+    await ServerEntities.save(account);
+
+    return account;
+  }
 
   // -> Returns 'true' on success.
   public static add(account: Account)

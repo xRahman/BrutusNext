@@ -7,7 +7,7 @@
     Because we need to build two projects (client and server)
   and there can only be one build task active in vs code, we
   use an external script (located at ./.vscode/Build.js) run
-  with node.js to launch two external tsc processes.
+  under node.js to launch two external tsc processes.
 */
 
 {
