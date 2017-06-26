@@ -1,4 +1,14 @@
-﻿Sdílený svět a možnost spawnout si mrtvého moba
+﻿Scan & visibility
+------------------
+
+Scan distance limited by:
+- light source (lantern only lights current room, lighthouse
+  several rooms away)
+- fog (limits scan distance)
+  (can be conjured magically)
+
+
+Sdílený svět a možnost spawnout si mrtvého moba
 -------------------------------------------------
 
 Klíčem by mohly být soulstony - hráči budou mít možnost

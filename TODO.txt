@@ -1,6 +1,9 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+Waiting cursor (asi bude nejlepší setovat css class):
+https://stackoverflow.com/questions/9681080/changing-cursor-to-waiting-in-javascript-jquery
+
 TODO: Trochu upravit metodu loadEntityById():
 - místo loadJsonObjectFromFile(path) volat prostě loadFile(path)
 - pak zavolat loadEntityFromJsonString().
