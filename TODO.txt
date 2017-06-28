@@ -1,6 +1,31 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+TODO: Enum savovat jako string value.
+(možná na to kašlat při posílání protokolem)
+
+---------------------------------------------------------------
+
+Proč se mi nesavuje Date:
+- Serializable.hasOwnValue() vrátí 'false', protože proměnná
+  typu Date nemá žádné properties.
+
+Řešení: Asi by fakt bylo nejlepší napsat si vlastní classu (Time?),
+  která bude interně držet number a používat metody z Date().
+  - a při serializaci se bude checkovat použití Date() a sprostě nadávat,
+    ať se místo toho použije Time().
+
+otázka je, jestli to udělat jako Proxy a přesměrovávat tudíž všechny
+  metody na metody Date(), nebo si ručně napsat pár, které opravdu použiju
+  - to první je sice obecnější, ale asi bude lepší se obejít bez Proxy...
+  Holt si ty metody někdo připíše, když je bude potřebovat...
+
+- možná bych mohl do classy Time propašovat 'null' hodnotu
+  (interní .time bude null - na druhou stranu, co to bude
+   vracet za hodnotu?).
+
+---------------------------------------------------------------
+
 Waiting cursor (asi bude nejlepší setovat css class):
 https://stackoverflow.com/questions/9681080/changing-cursor-to-waiting-in-javascript-jquery
 
