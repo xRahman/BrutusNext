@@ -9,6 +9,7 @@
 import {Settings} from '../../../server/ServerSettings';
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
+import {Time} from '../../../shared/lib/utils/Time';
 ///import {FileSystem} from '../../../server/lib/fs/FileSystem';
 import {PropertyAttributes} from
   '../../../shared/lib/class/PropertyAttributes';
@@ -96,7 +97,7 @@ export class Account extends ServerEntity
 
   // 'timeOfCreation' initializes to current time, but for existing
   // accounts will be overwritten when loading from file. 
-  public timeOfCreation = new Date();
+  public timeOfCreation = new Time();
 
   // ---------------- Public methods --------------------
 
@@ -121,8 +122,10 @@ export class Account extends ServerEntity
     return this.lastLoginAddress;
   }
   
-  public getLastLoginDate(): string
+  public getLastLoginTime(): string
   {
+    /// Tohle už by nemělo být potřeba.
+    /*
     if (typeof this.lastLoginDate === 'string')
     {
       // Date objects are saved as string in JSON so there must be
@@ -138,15 +141,16 @@ export class Account extends ServerEntity
 
       return "<invalid date>";
     }
+    */
 
-    if (this.lastLoginDate !== null)
+    if (this.lastLoginTime !== null)
     {
       /// Pozn: Pres telnet samozrejme nezjistim, jaky ma player nastaveny
       /// locale, takze to bude nejspis locale serveru, nebo tak neco.
       /// (Asi by se muselo nastavovat rucne v menu jaky chci mit format
       ///  data a casu)
       /// BTW toLocaleString('cs-CZ') nefunguje, porad je to anglicky format.
-      return this.lastLoginDate.toLocaleString();
+      return this.lastLoginTime.toLocaleString();
     }
     else
     {
@@ -237,8 +241,8 @@ export class Account extends ServerEntity
         + " is null");
     }
 
-    // Creating a new Date object initializes it to current date and time.
-    this.lastLoginDate = new Date();
+    // Creating a new Time object initializes it to current date and time.
+    this.lastLoginTime = new Time();
   }
 
   public logout(action: string)
@@ -282,7 +286,7 @@ export class Account extends ServerEntity
   //----------------- Protected data --------------------
 
   protected lastLoginAddress = null;
-  protected lastLoginDate = new Date(0);
+  protected lastLoginTime = new Time(0);
 
   // --------------- Protected methods ------------------
 
