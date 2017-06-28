@@ -1,6 +1,10 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+TODO: Interfacy nazývat INěco místo NěcoInterface...
+
+---------------------------------------------------------------
+
 TODO: Enum savovat jako string value.
 (možná na to kašlat při posílání protokolem)
 
