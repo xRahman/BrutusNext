@@ -28,12 +28,13 @@
 
 export class Time
 {
+  // Same parameters as for Date() can be used.
   constructor(param: any = null)
   {
     let date;
 
-    // Whatever parameter we get, we use to construct
-    // a Date() object with it.
+    // Whatever parameter we get, we use it to construct
+    // a Date() object.
     if (param === null)
       date = new Date();
     else

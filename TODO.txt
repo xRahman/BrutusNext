@@ -1,7 +1,34 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
-TODO: Interfacy nazývat INěco místo NěcoInterface...
+TODO: Nezobrazovat adresu pro kontakt adminů přímo, ale přes nějaký
+  javascript encode (např. http://www.mailtoencoder.com/).
+
+TODO: Buttonek "Check Availability"
+  (na druhou stranu pokud bude mail fungovat jako account name...)
+
+TODO: Label s červeným textem pod input boxy v RegisterForm.
+
+TODO: Budu vyžadovat unikátnost emailu?
+(Taky by se email mohl používat jako accname...
+ - na druhou stranu možná v emailu mohou být znaky, které nemohou
+   být ve file name...)
+ - email adresu zjevně nejde použít jako file name, takže by to muselo
+   být řešeno přes nějakou databázi.
+   => Kašlat na to, použiju account name (jak to mám teď).
+=> na jeden email půjde zaregistrovat víc accountů
+    (asi bude trochu problém recovernout password a acc name podle
+     mailu, protože maily nejsou nikde pohromadě - musela by se
+     použít nějaká forma databáze)
+
+Možná by šlo použít:
+encodeURIComponent(),  decodeURIComponent()
+
+---------------------------------------------------------------
+
+
+TODO: Interfacy možná nazývat INěco místo NěcoInterface...
+(Nebo se na I vykašlat úplně...)
 
 ---------------------------------------------------------------
 
@@ -27,6 +54,17 @@ otázka je, jestli to udělat jako Proxy a přesměrovávat tudíž všechny
 - možná bych mohl do classy Time propašovat 'null' hodnotu
   (interní .time bude null - na druhou stranu, co to bude
    vracet za hodnotu?).
+  - Je to asi blbost, null by se měl dávat rovnou do proměnné
+    typu Time.
+
+TODO: ERROR, když se někdo pokusí serializovat Date().
+
+TODO: Po vyrobení čehokoliv, co má interní timeOfCreation
+  je třeba tu proměnnou nastavit - jinak zdědí hodnotu z předka.
+- a v classe je naopak asi rozumné do toho zapsat null, ať je jasné,
+  že se to musí inicializovat.
+TODO: ERROR, když se někdo pokusí manipulovat s null hodnotou
+  timeOfCreation.
 
 ---------------------------------------------------------------
 
