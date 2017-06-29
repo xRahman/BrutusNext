@@ -19,6 +19,8 @@ import * as fs from 'fs';
 let promisifiedFS = require('fs-promise');
 let extfs = require('extfs');
 
+
+
 export class FileSystem
 {
   public static get TEXT_FILE_ENCODING() { return 'utf8'; }
@@ -34,6 +36,28 @@ export class FileSystem
   private static savingQueues = new Map<string, SavingQueue>();
 
   // ---------------- Public methods --------------------
+
+  // -> Returns true if 'str' is a valid filename
+  //    on both Windows and Linux.
+  public static isValidFileName(str: string)
+  {
+    if (!str || str.length > 255)
+		  return false;
+
+    // Disallow characters < > : " / \ | ? *
+    if ((/[<>:"\/\\|?*\x00-\x1F]/g).test(str))
+      return false;
+    
+    // Disallow names reserved on Windows.
+    if ((/^(con|prn|aux|nul|com[0-9]|lpt[0-9])$/i).test(str))
+      return false;
+
+    // Disallow '.' and '..'.
+    if (/^\.\.?$/.test(str))
+      return false;
+
+    return true;
+  }
 
   // -> Returns data read from file, 'null' if file could not be read.
   public static async readFile
@@ -119,8 +143,23 @@ export class FileSystem
   }
 
   // -> Returns 'true' if file was succesfully written.
-  public static async writeFile(path: string, data: string): Promise<boolean>
+  public static async writeFile
+  (
+    directory: string,
+    fileName: string,
+    data: string
+  )
+  : Promise<boolean>
   {
+    let path = directory + fileName;
+
+    if (!FileSystem.isValidFileName(fileName))
+    {
+      ERROR("Attempt to write file " + path + " which is"
+        + " not a valid file name. File is not written");
+      return false;
+    }
+
     // Following code is addresing feature of node.js file saving
     // functions, which says that we must not attempt saving the same
     // file until any previous saving finishes (otherwise it is not
