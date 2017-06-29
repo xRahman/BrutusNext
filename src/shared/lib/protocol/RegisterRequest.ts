@@ -133,6 +133,18 @@ export class RegisterRequest extends Packet
         + " after '@' in an email address.";
     }
 
+    // Characters allowed in email address.
+    /// TODO:
+    /*
+    "^[a-zA-Z0-9\"!#$%&'*+\-/=?^_`{|}~.]+$"
+    let regExp = new RegExp("!#$%&'*+-/=?^_`{|}~.", 'g');
+
+    /// Asi by bylo dobré říct, jaký nepovolený character
+    /// ve stringu je.
+    if (string.match("a-zA-Z0-9\"!#$%&'*+\-/=?^_`{|}~."))
+      return ""
+    */
+
     return null;
   }
 
