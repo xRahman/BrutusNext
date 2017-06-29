@@ -24,6 +24,19 @@ TODO: Budu vyžadovat unikátnost emailu?
 Možná by šlo použít:
 encodeURIComponent(),  decodeURIComponent()
 
+Nebo si napsat vlastní encode/decode.
+Znaky povolené v email adrese:
+abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#$%&'*+-/=?^_`{|}~.
+
+vadí: */?|
+
+TODO: Napsat si vlastní encode/decode.
+* (star)
+/ (slash)
+? (questionmark)
+| (verticalbar)
+
+
 ---------------------------------------------------------------
 
 
