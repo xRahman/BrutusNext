@@ -8,6 +8,16 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 
+const EMAIL_ENCODED_CHARACTERS = new Map
+(
+  [
+    ['*', '(star)'],
+    ['/', '(slash)'],
+    ['?', '(questionmark)'],
+    ['|', '(verticalbar)']
+  ]
+);
+
 export module Utils
 {
   export function isColorCode(code: string): boolean
@@ -186,5 +196,31 @@ export module Utils
       return null;
 
     return result;
+  }
+
+  // Encodes email address so it can be used as file name.
+  export function encodeEmail(email: string)
+  {
+    for (let [key, value] of EMAIL_ENCODED_CHARACTERS.entries())
+    {
+      let regExp = new RegExp(key, 'g');
+    
+      email = email.replace(regExp, value)
+    }
+
+    return email;
+  }
+
+  // Decodes string encoded with Utils.encodeEmail() back to original.
+  export function decodeEmail(email: string)
+  {
+    for (let [key, value] of EMAIL_ENCODED_CHARACTERS.entries())
+    {
+      let regExp = new RegExp(value, 'g');
+    
+      email = email.replace(regExp, key)
+    }
+
+    return email;
   }
 }
