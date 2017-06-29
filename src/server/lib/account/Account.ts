@@ -77,7 +77,12 @@ export class Account extends ServerEntity
       edited: false,
       sentToClient: false,
       sentToServer: false
-    };  
+    };
+
+  //----------------- Protected data --------------------
+
+  protected lastLoginAddress: string = null;
+  protected lastLoginTime: Time = null;
 
   // ----------------- Public data ----------------------
 
@@ -95,9 +100,7 @@ export class Account extends ServerEntity
   // List of character names this account has access to.
   public characterNames: Array<string> = [];
 
-  // 'timeOfCreation' initializes to current time, but for existing
-  // accounts will be overwritten when loading from file. 
-  public timeOfCreation = new Time();
+  public timeOfCreation: Time = null;
 
   // ---------------- Public methods --------------------
 
@@ -124,42 +127,21 @@ export class Account extends ServerEntity
   
   public getLastLoginTime(): string
   {
-    /// Tohle už by nemělo být potřeba.
-    /*
-    if (typeof this.lastLoginDate === 'string')
+    if (this.lastLoginTime === null)
     {
-      // Date objects are saved as string in JSON so there must be
-      // a conversion when date is loaded from file. If you try to
-      // load a date variable with value 'null', however, SaveableObject
-      // has no way to know what type is it supposed to load into, because
-      // null value doesn't know it's type. So the string which is saved
-      // in JSON is assigned directly, without a conversion to Date object.
-      ERROR("Wrong type of date object encountered in Account. This probably"
-        + " means that you have initialized a Date object with <null> value"
-        + " or assigned <null> to it prior to loading from file. You must not"
-        + " not assign <null> to properties of type Date.");
-
-      return "<invalid date>";
-    }
-    */
-
-    if (this.lastLoginTime !== null)
-    {
-      /// Pozn: Pres telnet samozrejme nezjistim, jaky ma player nastaveny
-      /// locale, takze to bude nejspis locale serveru, nebo tak neco.
-      /// (Asi by se muselo nastavovat rucne v menu jaky chci mit format
-      ///  data a casu)
-      /// BTW toLocaleString('cs-CZ') nefunguje, porad je to anglicky format.
-      return this.lastLoginTime.toLocaleString();
-    }
-    else
-    {
-      ERROR("Attempt to request last login date of account"
-        + " " + this.getName() + " which doesn't have it"
-        + " initialized yet");
+      ERROR("Attempt to read last login time of account"
+        + " " + this.getErrorIdString() + " which doesn't"
+        + " have it initialized yet");
 
       return "<unknown date>";
     }
+
+    /// Pozn: Pres telnet samozrejme nezjistim, jaky ma player nastaveny
+    /// locale, takze to bude nejspis locale serveru, nebo tak neco.
+    /// (Asi by se muselo nastavovat rucne v menu jaky chci mit format
+    ///  data a casu)
+    /// BTW toLocaleString('cs-CZ') nefunguje, porad je to anglicky format.
+    return this.lastLoginTime.toLocaleString();
   }
 
   // Only hash of the password is stored
@@ -282,11 +264,6 @@ export class Account extends ServerEntity
     }
   }
   */
-
-  //----------------- Protected data --------------------
-
-  protected lastLoginAddress = null;
-  protected lastLoginTime = new Time(0);
 
   // --------------- Protected methods ------------------
 
