@@ -300,7 +300,7 @@ export class ServerEntities extends Entities
     if (await FileSystem.ensureDirectoryExists(directory) === false)
       return false;
 
-    await FileSystem.writeFile(directory + fileName, jsonString);
+    await FileSystem.writeFile(directory, fileName, jsonString);
 
     await entity.postSave();
   }
