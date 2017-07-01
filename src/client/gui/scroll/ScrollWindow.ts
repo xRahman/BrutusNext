@@ -10,7 +10,7 @@ import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {ScrollWindowInput} from '../../../client/gui/scroll/ScrollWindowInput';
 import {ScrollWindowOutput} from
   '../../../client/gui/scroll/ScrollWindowOutput';
-import {MudColorComponent} from '../../../client/gui/MudColorComponent';
+import {MudColors} from '../../../client/gui/MudColors';
 import {GameWindow} from '../../../client/gui/GameWindow';
 import {Connection} from '../../../client/lib/net/Connection';
 
@@ -78,10 +78,10 @@ export class ScrollWindow extends GameWindow
     if (!message)
       return;    
 
-    let html = this.htmlizeMudColors
+    let html = MudColors.htmlize
     (
       message,
-      MudColorComponent.CLIENT_MESSAGE_COLOR
+      MudColors.CLIENT_MESSAGE_COLOR
     );
 
     // Append the message to the output element.
@@ -117,10 +117,10 @@ export class ScrollWindow extends GameWindow
     if (command === "")
       return;
 
-    let html = this.htmlizeMudColors
+    let html = MudColors.htmlize
     (
       command,
-      MudColorComponent.COMMAND_ECHO_COLOR
+      MudColors.COMMAND_ECHO_COLOR
     );
 
     // Local echo (append the command to the output element).

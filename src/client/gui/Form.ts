@@ -30,6 +30,8 @@ export abstract class Form extends Component
     { return 'S_Form_CheckboxContainer'; }
   protected static  get BUTTON_CONTAINER_S_CSS_CLASS()
     { return 'S_Form_ButtonContainer'; }
+  protected static get EMPTY_LINE_S_CSS_CLASS()
+    { return 'S_Form_EmptyLine'; }
 
   // -------------- Static class data -------------------
 
@@ -99,6 +101,28 @@ export abstract class Form extends Component
       {
         $container: this.$form,
         gCssClass: Component.NO_GRAPHICS_G_CSS_CLASS,
+        sCssClass: sCssClass,
+        text: text
+      }
+    );
+  }
+
+  protected createErrorLabel
+  (
+    {
+      text,
+      sCssClass = Form.LABEL_S_CSS_CLASS
+    }:
+    {
+      text: string;
+      sCssClass?: string;
+    }
+  )
+  {
+    return Component.createErrorLabel
+    (
+      {
+        $container: this.$form,
         sCssClass: sCssClass,
         text: text
       }
@@ -312,6 +336,26 @@ export abstract class Form extends Component
         sCssClass: sCssClass,
         name: 'submit_button',
         text: text
+      }
+    );
+  }
+
+  protected createEmptyLine
+  (
+    {
+      sCssClass = Form.EMPTY_LINE_S_CSS_CLASS
+    }:
+    {
+      sCssClass?: string;
+    }
+    = {}
+  )
+  {
+    return Component.createDiv
+    (
+      {
+        $container: this.$form,
+        sCssClass: sCssClass
       }
     );
   }

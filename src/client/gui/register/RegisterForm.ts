@@ -32,6 +32,8 @@ export class RegisterForm extends Form
   private $emailInput: JQuery = null;
   private $passwordInput: JQuery = null;
   private $rememberMeCheckbox: JQuery = null;
+  private $emailInputProblem: JQuery = null;
+  private $passwordInputProblem: JQuery = null;
 
   // --------------- Static accessors -------------------
 
@@ -46,14 +48,36 @@ export class RegisterForm extends Form
   {
     super.create({ $container: $container, name: 'register_form' });
 
-    super.createLabel({ text: 'Account Name' });
-    this.createAccountNameInput();
+    // super.createLabel({ text: 'Account Name' });
+    // this.createAccountNameInput();
 
-    super.createLabel({ text: 'E-mail' });
+    super.createLabel({ text: 'You E-mail Address' });
     this.createEmailInput();
+    this.createEmailProblemLabel();
 
-    super.createLabel({ text: 'Password' });
+    this.createEmptyLine();
+
+    super.createLabel({ text: 'Your New Password' });
     this.createPasswordInput();
+    this.createPasswordProblemLabel();
+
+    this.createEmptyLine();
+
+    let recommendation = '&YWe highly recommend to use different password'
+            + ' from your e-mail account.'
+    let $recommendation = super.createLabel({ text: '' });
+    Component.setColoredText($recommendation, recommendation);
+    /*
+    super.createLabel
+    (
+      {
+        text: 'We highly recommend to use different password'
+            + ' from your e-mail account.'
+      }
+    );
+    */
+
+    this.createEmptyLine();
 
     this.createRememberMeCheckbox();
     this.createButtons();
@@ -110,6 +134,18 @@ export class RegisterForm extends Form
 
   // ---------------- Private methods -------------------
 
+  private createEmailProblemLabel()
+  {
+    this.$emailInputProblem = super.createErrorLabel({ text: '' });
+    this.$emailInputProblem.hide();
+  }
+
+  private createPasswordProblemLabel()
+  {
+    this.$passwordInputProblem = super.createErrorLabel({ text: '' });
+    this.$passwordInputProblem.hide();
+  }
+
   private createRememberMeCheckbox()
   {
     this.$rememberMeCheckbox = super.createCheckboxInput
@@ -122,23 +158,24 @@ export class RegisterForm extends Form
     );
   }
 
-  private createAccountNameInput()
-  {
-    /// TODO: Číst to ze stejné proměnné jako server a jako register form.
-    // Maximum length of acocunt name (in characters).
-    let minLength = 3;
-    let maxLength = 20;
+  /// Deprecated.
+  // private createAccountNameInput()
+  // {
+  //   /// TODO: Číst to ze stejné proměnné jako server a jako register form.
+  //   // Maximum length of acocunt name (in characters).
+  //   let minLength = 3;
+  //   let maxLength = 20;
 
-    this.$accountNameInput = super.createTextInput
-    (
-      {
-        name: 'account_name_input',
-        placeholder: 'Enter Account Name',   // Placeholder text.
-        minLength: minLength,
-        maxLength: maxLength
-      }
-    );
-  }
+  //   this.$accountNameInput = super.createTextInput
+  //   (
+  //     {
+  //       name: 'account_name_input',
+  //       placeholder: 'Enter Account Name',   // Placeholder text.
+  //       minLength: minLength,
+  //       maxLength: maxLength
+  //     }
+  //   );
+  // }
 
   private createButtons()
   {
