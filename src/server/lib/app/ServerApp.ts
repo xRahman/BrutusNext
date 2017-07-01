@@ -14,6 +14,7 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
+import {Time} from '../../../shared/lib/utils/Time';
 import {App} from '../../../shared/lib/app/App';
 import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
@@ -44,7 +45,7 @@ export class ServerApp extends App
 
   private admins = new Admins();
 
-  private timeOfBoot = new Date();
+  private timeOfBoot = new Time();
 
   private game = new Game();
 
