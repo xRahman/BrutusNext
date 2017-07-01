@@ -478,7 +478,7 @@ export class ServerEntities extends Entities
       await entity.setName(name, cathegory, false);
     }
 
-    entity.propagateTrigger(Entity.ON_LOAD_TRIGGER);
+    entity.triggerEvent(Entity.ON_LOAD_TRIGGER_EVENT);
 
     return entity;
   }
