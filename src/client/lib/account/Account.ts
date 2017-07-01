@@ -7,8 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {PropertyAttributes} from
-  '../../../shared/lib/class/PropertyAttributes';
+///import {Attributes} from '../../../shared/lib/class/Attributes';
 import {Classes} from '../../../shared/lib/class/Classes';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {AccountData} from '../../../shared/lib/account/AccountData';

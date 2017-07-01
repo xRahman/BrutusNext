@@ -42,8 +42,7 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {Classes} from '../../../shared/lib/class/Classes';
-import {PropertyAttributes} from
-  '../../../shared/lib/class/PropertyAttributes';
+///import {Attributes} from '../../../shared/lib/class/Attributes';
 import {JsonObject} from '../../../shared/lib/json/JsonObject';
 import {Attributable} from '../../../shared/lib/class/Attributable';
 
@@ -366,7 +365,7 @@ export class Serializable extends Attributable
   private isSerialized(propertyName: string, mode: Serializable.Mode)
   {
     // Access static variable named the same as property.
-    let attributes = this.getPropertyAttributes(propertyName);
+    let attributes = this.getAttributes(propertyName);
 
     // If static attributes for this property don't exist, it means
     // it should always be serialized.

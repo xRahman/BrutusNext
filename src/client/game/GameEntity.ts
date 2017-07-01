@@ -6,9 +6,8 @@
 
 'use strict';
 
-import {ERROR} from '../../shared/lib/error/ERROR';
-import {PropertyAttributes} from
-  '../../shared/lib/class/PropertyAttributes';
+///import {ERROR} from '../../shared/lib/error/ERROR';
+///import {Attributes} from '../../shared/lib/class/Attributes';
 import {Entity} from '../../shared/lib/entity/Entity';
 
 export class GameEntity extends Entity

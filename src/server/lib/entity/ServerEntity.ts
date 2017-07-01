@@ -7,13 +7,24 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {PropertyAttributes} from
-  '../../../shared/lib/class/PropertyAttributes';
+import {Attributes} from '../../../shared/lib/class/Attributes';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
 
 export class ServerEntity extends Entity
 {
+  // Default values of property attributes
+  // (note that this applies to all properties including those inherited
+  //  from Entity class. So if you want to send some property of Entity
+  //  to client, you need to specify it's property attributes in Entity
+  //  and set 'sentToClient: true' there).
+  protected static defaultAttributes: Attributes =
+  {
+    // By default, properties of server entities are not sent to the client.
+    // (This does not apply to properties declared in ancestors like Entity).
+    sentToClient: false
+  };
+
   //----------------- Protected data --------------------
 
   // ------------- Public static methods ----------------
