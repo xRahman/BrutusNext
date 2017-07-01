@@ -25,6 +25,7 @@
 'use strict';
 
 import {ERROR} from '../../shared/lib/error/ERROR';
+import {MudColors} from '../../client/gui/MudColors';
 
 import $ = require('jquery');
 
@@ -44,6 +45,8 @@ export abstract class Component
     { return 'G_Checkbox'; }
   protected static get LINK_TEXT_G_CSS_CLASS()
     { return 'G_LinkText'; }
+  protected static get ERROR_MESSAGE_G_CSS_CLASS()
+    { return 'G_ErrorMessage'; }
   protected static get SELECTABLE_PLATE_G_CSS_CLASS()
     { return 'G_SelectablePlate'; }
 
@@ -65,6 +68,22 @@ export abstract class Component
   // ---------------- Public methods --------------------
 
   // --------------- Protected methods ------------------
+
+  protected static setColoredText($component: JQuery, text: string)
+  {
+    // First remove existing text title if there is any.
+    $component.empty();
+
+    if (text.indexOf('&') !== -1)
+    {
+      $component.append(MudColors.htmlize(text));
+    }
+    else
+    {
+      // Use text color set in css if string isn't colored.
+      $component.text(text);
+    }
+  }
 
   protected static createDiv
   (
@@ -386,6 +405,34 @@ export abstract class Component
     $element.text(text);
 
     return $element;
+  }
+
+  protected static createErrorLabel
+  (
+    {
+      $container = null,
+      gCssClass = Component.ERROR_MESSAGE_G_CSS_CLASS,
+      sCssClass = null,
+      text
+    }:
+    {
+      $container?: JQuery;
+      gCssClass?: string;
+      sCssClass?: string;
+      text: string;
+    }
+  )
+  : JQuery
+  {
+    return this.createLabel
+    (
+      {
+        $container,
+        gCssClass,
+        sCssClass,
+        text
+      }
+    );
   }
 
   protected static createSpan

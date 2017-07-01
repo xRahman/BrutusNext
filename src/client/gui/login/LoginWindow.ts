@@ -52,6 +52,8 @@ export class LoginWindow extends StandaloneWindow
     // Create login form.
     this.form.create({ $container: this.$content });
 
+    this.createEmptyLine();
+
     this.createRegisterInfo();
 
     return this.$window;
@@ -73,7 +75,7 @@ export class LoginWindow extends StandaloneWindow
     }
   )
   {
-    this.$registerLink = super._createLinkText({ $container, text });
+    this.$registerLink = super.createLinkText({ $container, text });
 
     this.$registerLink.click
     (
@@ -83,11 +85,11 @@ export class LoginWindow extends StandaloneWindow
 
   private createRegisterInfo()
   {
-    let $container = super._createLinkContainer();
+    let $container = super.createLinkContainer();
 
-    super._createText({ $container, text: "Don't have an account yet? " });
+    super.createText({ $container, text: "Don't have an account yet? " });
     this.createRegisterLink({ $container, text: "Register" });
-    super._createText({ $container, text: "." });
+    super.createText({ $container, text: "." });
   }
 
   // ---------------- Event handlers --------------------

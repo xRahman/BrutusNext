@@ -7,11 +7,11 @@
 'use strict';
 
 import {Component} from '../../../client/gui/Component';
-import {MudColorComponent} from '../../../client/gui/MudColorComponent';
+import {MudColors} from '../../../client/gui/MudColors';
 
 import $ = require('jquery');
 
-export class ScrollWindowOutput extends MudColorComponent
+export class ScrollWindowOutput extends Component
 {
   public static get S_CSS_CLASS()
     { return 'S_ScrollWindowOutput'; }
@@ -60,7 +60,7 @@ export class ScrollWindowOutput extends MudColorComponent
   // the end of output component.
   public appendMessage(message: string)
   {
-    let html = this.htmlizeMudColors(message);
+    let html = MudColors.htmlize(message);
 
     this.appendHtml(html, { forceScroll: false });
   }

@@ -14,20 +14,22 @@ import $ = require('jquery');
 
 export class StandaloneWindow extends Window
 {
-  protected static get CSS_CLASS()
+  protected static get S_CSS_CLASS()
     { return 'S_StandaloneWindow'; }
-  protected static get TITLE_BAR_CSS_CLASS()
+  protected static get TITLE_BAR_S_CSS_CLASS()
     { return 'S_StandaloneWindow_TitleBar'; }
-  protected static get TITLE_CSS_CLASS()
+  protected static get TITLE_S_CSS_CLASS()
     { return 'S_StandaloneWindow_Title'; }
-  protected static get CONTENT_CSS_CLASS()
+  protected static get CONTENT_S_CSS_CLASS()
     { return 'S_StandaloneWindow_Content'; }
-  protected static get TEXT_CSS_CLASS()
+  protected static get TEXT_S_CSS_CLASS()
     { return 'S_StandaloneWindow_Text'; }
-  protected static get LINK_TEXT_CSS_CLASS()
+  protected static get LINK_TEXT_S_CSS_CLASS()
     { return 'S_StandaloneWindow_LinkText'; }
-  protected static get LINK_CONTAINER_CSS_CLASS()
+  protected static get LINK_CONTAINER_S_CSS_CLASS()
     { return 'S_StandaloneWindow_LinkContainer'; }
+  protected static get EMPTY_LINE_S_CSS_CLASS()
+    { return 'S_StandaloneWindow_EmptyLine'; }
 
   // -------------- Static class data -------------------
 
@@ -47,10 +49,10 @@ export class StandaloneWindow extends Window
   public create
   (
     {
-      window_sCssClass = StandaloneWindow.CSS_CLASS,
-      content_sCssClass = StandaloneWindow.CONTENT_CSS_CLASS,
-      titleBar_sCssClass = StandaloneWindow.TITLE_BAR_CSS_CLASS,
-      title_sCssClass = StandaloneWindow.TITLE_CSS_CLASS,
+      window_sCssClass = StandaloneWindow.S_CSS_CLASS,
+      content_sCssClass = StandaloneWindow.CONTENT_S_CSS_CLASS,
+      titleBar_sCssClass = StandaloneWindow.TITLE_BAR_S_CSS_CLASS,
+      title_sCssClass = StandaloneWindow.TITLE_S_CSS_CLASS,
     }:
     {
       window_sCssClass?: string;
@@ -74,10 +76,10 @@ export class StandaloneWindow extends Window
 
   // --------------- Protected methods ------------------
 
-  protected _createLinkContainer
+  protected createEmptyLine
   (
     {
-      sCssClass = StandaloneWindow.LINK_CONTAINER_CSS_CLASS
+      sCssClass = StandaloneWindow.EMPTY_LINE_S_CSS_CLASS
     }:
     {
       sCssClass?: string;
@@ -94,12 +96,32 @@ export class StandaloneWindow extends Window
     );
   }
 
-  protected _createText
+  protected createLinkContainer
+  (
+    {
+      sCssClass = StandaloneWindow.LINK_CONTAINER_S_CSS_CLASS
+    }:
+    {
+      sCssClass?: string;
+    }
+    = {}
+  )
+  {
+    return Component.createDiv
+    (
+      {
+        $container: this.$content,
+        sCssClass: sCssClass
+      }
+    );
+  }
+
+  protected createText
   (
     {
       $container,
       text,
-      sCssClass = StandaloneWindow.TEXT_CSS_CLASS
+      sCssClass = StandaloneWindow.TEXT_S_CSS_CLASS
     }:
     {
       $container: JQuery;
@@ -118,12 +140,12 @@ export class StandaloneWindow extends Window
     );
   }
 
-  protected _createLinkText
+  protected createLinkText
   (
     {
       $container,
       text,
-      sCssClass = StandaloneWindow.LINK_TEXT_CSS_CLASS
+      sCssClass = StandaloneWindow.LINK_TEXT_S_CSS_CLASS
     }:
     {
       $container: JQuery;

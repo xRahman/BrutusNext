@@ -1,10 +1,45 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
----------------------------------------------------------------
+------------------------------------
+
+TODO: Zrušit Component.ERROR_MESSAGE_G_CSS_CLASS
+  (i z css)
+TODO: Zrušit Component.createErrorLabel
+TODO: Zrušit Component.setColoredText - místo toho
+  dávat do labelu rovnou colored text.
+- otázka je, jestli se to bude vztahovat i na window title..
+  - automaticky ne, protože do Component.createTitle() se nepředává
+    text - ale měl by, je to sakra title
+TODO: Component.createTitle() předávat parametrem text, stejně jako
+  u labelu.
+TODO: parametr 'text' by měl mít defaultní hodnotu (prázný label
+  může mít smysl, třeba když ho vyrábím schovaný pro pozdější použití).
+
+TODOOOOOOO: Implementovat "Remember me" funkcionalitu,
+  ať to nemusím pořád vyplňovat!
+
+TODO: Zrušit komplet accountName
+
+TODO: An account is already registered to this email address.
+
+TODO: Label s červeným textem pod input boxy v RegisterForm.
+
+TODO: Nezobrazovat adresu pro kontakt adminů přímo, ale přes nějaký
+  javascript encode (např. http://www.mailtoencoder.com/).
+
+Waiting cursor (asi bude nejlepší setovat css class):
+https://stackoverflow.com/questions/9681080/changing-cursor-to-waiting-in-javascript-jquery
+
+TODO: Buď soft locky na account name při vyrábění accountu,
+  nebo spojit test na dostupnost jména s vytvořením name lock
+  souboru (konec konců request mám k dispozici kompletní).
+
+TODO: encoding mailu před tím, než ho zapíšu do accountName.
 
 ---------------------------------------------------------------
 
 TODO: Globální nastavení atributů pro celou classu (a všechny potomky,
   kteří si to nepřetíží).
+[done]
 
 ---------------------------------------------------------------
 
@@ -21,18 +56,11 @@ TODO: Propašovat onLoad() i do .data
 
 ---------------------------------------------------------------
 
-TODO: An account is already registered to this email address.
-TODO: Lost your password?
-
-TODO: Nezobrazovat adresu pro kontakt adminů přímo, ale přes nějaký
-  javascript encode (např. http://www.mailtoencoder.com/).
-
 TODO: Buttonek "Check Availability"
   (na druhou stranu pokud bude mail fungovat jako account name...)
    - tak ho nebudu potřebovat
 [rejected]
 
-TODO: Label s červeným textem pod input boxy v RegisterForm.
 
 TODO: Budu vyžadovat unikátnost emailu?
 (Taky by se email mohl používat jako accname...
@@ -104,18 +132,17 @@ TODO: Po vyrobení čehokoliv, co má interní timeOfCreation
   že se to musí inicializovat.
 TODO: ERROR, když se někdo pokusí manipulovat s null hodnotou
   timeOfCreation.
+[done]
 
 ---------------------------------------------------------------
-
-Waiting cursor (asi bude nejlepší setovat css class):
-https://stackoverflow.com/questions/9681080/changing-cursor-to-waiting-in-javascript-jquery
 
 TODO: Trochu upravit metodu loadEntityById():
 - místo loadJsonObjectFromFile(path) volat prostě loadFile(path)
 - pak zavolat loadEntityFromJsonString().
-
+[done]
 
 TODO: V Accountu se mi nesavuje spousta properties - pořešit.
+[done]
 
 PROBLÉM: Mají se opravdu automaticky deserializovat properties,
   které neexistují v cílové class? Takhle se totiž do accountu
@@ -124,15 +151,17 @@ PROBLÉM: Mají se opravdu automaticky deserializovat properties,
 - asi je to ok, protože když by se někdo snažil na klientu takovou
   property používat, tak se mu nebude ukazovat v intellisense,
   takže si toho snad všimne (a když ne, tak to holt fungovat bude).
+Properties neexistující v cíli se nedeserializují.
+[not an issue]
 
 TODO: Heslo (passwordHash) by neměla být obyčejná property na accountu
   - nejspíš schovat do closure constructoru, ať je opravdu private.
+- ono to možná nebude potřeba, typescript údajně private properties
+  řeší přes symboly.
 
 TODO: Založení accountu při zpracování register requestu.
+[done]
 
-TODO: Buď soft locky na account name při vyrábění accountu,
-  nebo spojit test na dostupnost jména s vytvořením name lock
-  souboru (konec konců request mám k dispozici kompletní).
 
 TODO: Nějaký hezčí zápis do connection.account a account.connection
   (asi by to neměly být prostě public properties).

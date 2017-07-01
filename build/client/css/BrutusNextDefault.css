@@ -157,6 +157,7 @@
 .G_Input,
 .G_Checkbox,
 .G_LinkText,
+.G_ErrorMessage,
 .G_SelectablePlate
 {
   font-family: CourierNew;
@@ -173,6 +174,7 @@
 .G_Input,
 .G_Checkbox,
 .G_LinkText,
+.G_ErrorMessage,
 .G_SelectablePlate
 {
   text-overflow: ellipsis; /* Add '...' if text overflows */
@@ -188,6 +190,7 @@
 .G_Input,
 .G_Checkbox,
 .G_LinkText,
+.G_ErrorMessage,
 .G_SelectablePlate
 {
   /*text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5);*/
@@ -224,7 +227,13 @@
 /* :: Player Input Text Color :: */
 .G_Input
 {
-  color: rgb(0,225,0); /* Text color */
+  color: rgb(0, 225, 0); /* Text color */
+}
+
+/* :: Error Message Text Color :: */
+.G_ErrorMessage
+{
+  color: rgb(255, 0, 0); /* Text color */
 }
 
 /* ----------- Text Decoration ----------- */
@@ -298,7 +307,8 @@
 .G_NoGraphics,
 .G_TitleBar,
 .G_Checkbox,
-.G_LinkText
+.G_LinkText,
+.G_ErrorMessage
 {
   border: none;
 }
@@ -347,7 +357,8 @@
 /* :: Transparent Background :: */
 .G_NoGraphics,
 .G_Checkbox,
-.G_LinkText
+.G_LinkText,
+.G_ErrorMessage
 {
   background: rgba(0,0,0,0);  /* Transparent background */
 }
@@ -460,6 +471,8 @@
 .G_Checkbox:focus,
 .G_LinkText,
 .G_LinkText:focus,
+.G_ErrorMessage,
+.G_ErrorMessage:focus,
 .G_SelectablePlate,
 .G_SelectablePlate:focus,
 .G_Input
@@ -500,6 +513,27 @@
 .S_CharlistWindow_CharacterPlateLabelBig
 {
   font-size: 1.2em;
+}
+
+/* ------------- Component --------------- */
+
+/* :: Full Width Inline Block :: */
+.S_StandaloneWindow_Text,
+.S_Form_ButtonContainer,
+.S_Form_Label
+{
+  width: 100%;
+  height: auto;
+  display: inline-block;
+}
+
+/* :: Full Width Small Empty Line */
+.S_Form_EmptyLine,
+.S_StandaloneWindow_EmptyLine
+{
+  width: 100%;
+  height: 0.6em;
+  display: block;
 }
 
 /* --------------- Window ---------------- */
@@ -661,7 +695,6 @@
 {
   width: 100%;
   height: auto;
-  margin-top: 1em;
   display: block;
 }
 
@@ -757,7 +790,6 @@
   padding-bottom: 0.3em;
   padding-left: 0.6em;
   padding-right: 0.6em;
-  margin-bottom: 0.6em;
 }
 
 /* :: Full Width Button :: */
@@ -765,14 +797,6 @@
 {
   width: 100%;
   height: auto;
-}
-
-/* :: Form Button Container :: */
-.S_Form_ButtonContainer
-{
-  width: 100%;
-  height: auto;
-  display: inline-block;
 }
 
 /* TODO: Better checkbox graphics. */
