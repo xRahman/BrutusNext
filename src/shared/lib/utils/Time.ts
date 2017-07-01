@@ -26,6 +26,7 @@
 
 'use strict';
 
+import {Classes} from '../../../shared/lib/class/Classes';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {JsonObject} from '../../../shared/lib/json/JsonObject';
 
@@ -147,3 +148,5 @@ export class Time extends Serializable
     return new Date(this.time).toLocaleString();
   }
 }
+
+Classes.registerSerializableClass(Time);

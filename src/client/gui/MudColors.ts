@@ -7,8 +7,6 @@
 
 'use strict';
 
-import {Component} from '../../client/gui/Component';
-
 /// Color test: &kA&KB&rC&RD&gE&GF&yG&YH&bI&BJ&mK&ML&cM&CN&wO&WP
 const Colors =
 {
@@ -30,7 +28,7 @@ const Colors =
   '&W':	'rgb(255,255,255)'	// bright white
 }
 
-export abstract class MudColorComponent extends Component
+export abstract class MudColors
 {
   // Default base color that will be used if a message doesn't
   // start with a color code.
@@ -54,13 +52,13 @@ export abstract class MudColorComponent extends Component
   // Color of hypertext links in client messages.
   public static get CLIENT_LINK_COLOR() { return 'rgb(0,191,255)'; }
 
-  // --------------- Protected methods ------------------
+  // ------------- Public static methods ---------------- 
 
   // If 'baseColor' is 'null', the color from the start of the message
   // (or a default color) will be used (that's how common mud messages
   //  are handled).
   // -> Returns html that creates the element.
-  protected htmlizeMudColors(message: string, baseColor: string = null)
+  public static htmlize(message: string, baseColor: string = null)
   {
     // If 'baseColor' is provided, use it.
     if (baseColor !== null)
@@ -70,11 +68,13 @@ export abstract class MudColorComponent extends Component
     return this.parseBaseColorAndMudColors(message);
   }
 
-  // ---------------- Private methods -------------------
+  // ------------ Protected static methods --------------
+
+  // ------------- Private static methods ---------------
 
   // -> Returns html rgb code if two characters on 'index'
   //    represent a color code, 'null' otherwise.
-  private parseColorCode(colorCode: string, baseColor: string)
+  private static parseColorCode(colorCode: string, baseColor: string)
   {
     // '&_' means 'baseColor'
     // (which is usually the color at the start of the message).
@@ -89,7 +89,7 @@ export abstract class MudColorComponent extends Component
     return htmlColor;
   }
 
-  private closeSpanIfOpen(parser: { html: string, spanOpen: boolean })
+  private static closeSpanIfOpen(parser: { html: string, spanOpen: boolean })
   {
     if (parser.spanOpen === true)
     {
@@ -103,7 +103,7 @@ export abstract class MudColorComponent extends Component
   // tag. If you provide a 'color' param, it will be used instead
   // (without modifying parser.activeColor value, so the next opened
   // <span> tag will use parser.activeColor again).
-  private openSpanIfClosed
+  private static openSpanIfClosed
   (
     parser: { html: string, spanOpen: boolean, activeColor: string },
     color: string = null
@@ -126,7 +126,7 @@ export abstract class MudColorComponent extends Component
 
   // Adds 'characters' string to resulting html coloured with
   // 'color' if you provide it or 'parser.activeColor' if you don't.
-  private outputCharacters
+  private static outputCharacters
   (
     parser: { html: string, spanOpen: boolean, activeColor: string },
     characters: string,
@@ -139,7 +139,7 @@ export abstract class MudColorComponent extends Component
 
   // -> Returns number of extra parsed characters that need
   //    to be skipped in the main cycle.
-  private outputEscapedColorCode
+  private static outputEscapedColorCode
   (
     parser: { html: string, spanOpen: boolean, activeColor: string },
     colorCode: string
@@ -153,7 +153,7 @@ export abstract class MudColorComponent extends Component
       parser,
       colorCode,
       // Use special color to distiguish escaped color codes.
-      MudColorComponent.COLOR_CODE_COLOR
+      MudColors.COLOR_CODE_COLOR
     );
 
     this.closeSpanIfOpen(parser);
@@ -165,7 +165,7 @@ export abstract class MudColorComponent extends Component
 
   // -> Returns number of extra parsed characters that need
   //    to be skipped in the main cycle.
-  private parseEscapedColorCode
+  private static parseEscapedColorCode
   (
     parser: { html: string, spanOpen: boolean, activeColor: string },
     message: string,
@@ -195,7 +195,7 @@ export abstract class MudColorComponent extends Component
 
   // -> Returns number of extra parsed characters that need
   //    to be skipped in the main cycle.
-  private parseAmpersand
+  private static parseAmpersand
   (
     parser: { html: string, spanOpen: boolean, activeColor: string },
     message: string,
@@ -228,7 +228,7 @@ export abstract class MudColorComponent extends Component
 
   // -> Returns number of extra parsed characters that need
   //    to be skipped in the main cycle.
-  private parseCharacter
+  private static parseCharacter
   (
     parser: { html: string, spanOpen: boolean, activeColor: string },
     message: string,
@@ -258,7 +258,7 @@ export abstract class MudColorComponent extends Component
     return 0;
   }
 
-  private parseMudColors(message: string, baseColor: string)
+  private static parseMudColors(message: string, baseColor: string)
   {
     if (message.length === 0)
       return "";
@@ -288,18 +288,18 @@ export abstract class MudColorComponent extends Component
   }
 
   // -> Returns htmlized message.
-  private parseBaseColorAndMudColors(message: string)
+  private static parseBaseColorAndMudColors(message: string)
   {
     // Check the very beginning of the message for a color code.
     let code = message.substr(0, 2);
     // If the message begins with '&_' (which means 'return to base color'),
     // use DEFAULT_COLOR as base color.
-    let baseColor = this.parseColorCode(code, MudColorComponent.DEFAULT_COLOR);
+    let baseColor = this.parseColorCode(code, MudColors.DEFAULT_COLOR);
 
     // If there isn't a color code at the start at the message,
     // use DEFAULT_COLOR as base color.
     if (baseColor === null)
-      return this.parseMudColors(message, MudColorComponent.DEFAULT_COLOR);
+      return this.parseMudColors(message, MudColors.DEFAULT_COLOR);
 
     // If there is a color code, use it. Also skip the first
     // two characters because we don't have to parse it again.
