@@ -162,6 +162,11 @@ export class Room extends GameEntity
   */
 
   // ---------------- Private methods -------------------
+
+  // ---------------- Event Handlers -------------------
+
+  /// TEST
+  // protected onLoad() { console.log('Room.onLoad() ' + this.getId()); }
 }
 
 Classes.registerEntityClass(Room);

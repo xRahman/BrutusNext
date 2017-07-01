@@ -140,6 +140,11 @@ export class RoomData extends GameEntityData
 
     return null;
   }
+
+  // ---------------- Event Handlers -------------------
+
+  /// TEST
+  // protected onLoad() { console.log('RoomData.onLoad()'); }
 }
 
 // ------------------ Type declarations ----------------------
