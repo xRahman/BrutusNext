@@ -7,8 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {PropertyAttributes} from
-  '../../../shared/lib/class/PropertyAttributes';
+///import {Attributes} from '../../../shared/lib/class/Attributes';
 import {GameEntity} from '../../../client/game/GameEntity';
 import {Classes} from '../../../shared/lib/class/Classes';
 import {RoomData} from '../../../shared/game/world/RoomData';

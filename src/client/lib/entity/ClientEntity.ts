@@ -8,8 +8,7 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 ///import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
-import {PropertyAttributes} from
-  '../../../shared/lib/class/PropertyAttributes';
+///import {Attributes} from '../../../shared/lib/class/Attributes';
 import {Entity} from '../../../shared/lib/entity/Entity';
 
 export class ClientGameEntity extends Entity

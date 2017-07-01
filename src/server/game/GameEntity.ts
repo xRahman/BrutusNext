@@ -7,8 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../shared/lib/error/ERROR';
-import {PropertyAttributes} from
-  '../../shared/lib/class/PropertyAttributes';
+import {Attributes} from '../../shared/lib/class/Attributes';
 import {Script} from '../../server/lib/prototype/Script';
 import {ServerApp} from '../../server/lib/app/ServerApp';
 import {Entities} from '../../shared/lib/entity/Entities';
@@ -24,6 +23,12 @@ export class GameEntity extends ContainerEntity
   //------------------ Public data ----------------------
 
   public data: GameEntityData = null;
+    protected static data: Attributes =
+    {
+      // Entity shared data are sent to the client
+      // (that's why they exist).
+      sentToClient: true
+    }
 
   public aliases: Array<String> = [];
 
@@ -201,7 +206,7 @@ export class GameEntity extends ContainerEntity
 
   // 'null' if no player is connected to this entity.
   public connection: Connection = null;
-    private static connection: PropertyAttributes =
+    private static connection: Attributes =
     {
       saved: false
     };

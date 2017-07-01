@@ -6,8 +6,7 @@
 
 'use strict';
 
-import {PropertyAttributes} from
-  '../../../shared/lib/class/PropertyAttributes';
+///import {Attributes} from '../../../shared/lib/class/Attributes';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {Flags} from '../../../shared/lib/utils/Flags';
 
