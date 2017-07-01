@@ -10,8 +10,7 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Settings} from '../../../server/ServerSettings';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {Time} from '../../../shared/lib/utils/Time';
-import {PropertyAttributes} from
-  '../../../shared/lib/class/PropertyAttributes';
+import {Attributes} from '../../../shared/lib/class/Attributes';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Syslog} from '../../../shared/lib/log/Syslog';
 import {MessageType} from '../../../shared/lib/message/MessageType';
@@ -42,7 +41,7 @@ export class Account extends ServerEntity
   // ----------------- Public data ----------------------
 
   public connection: Connection = null;
-    private static connection: PropertyAttributes =
+    private static connection: Attributes =
     {
       saved: false,
       edited: false,
@@ -60,7 +59,7 @@ export class Account extends ServerEntity
   //------------------ Private data ---------------------
 
   private passwordHash = "";
-    private static passwordHash: PropertyAttributes =
+    private static passwordHash: Attributes =
     {
       saved: true,
       edited: false,

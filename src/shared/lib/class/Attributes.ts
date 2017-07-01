@@ -42,7 +42,7 @@ TODO:
 }
 */
 
-export interface PropertyAttributes
+export interface Attributes
 {
   // Property is saved to disk.
   //   Default: true
