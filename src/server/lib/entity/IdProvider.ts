@@ -8,6 +8,7 @@
 'use strict';
 
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
+import {Time} from '../../../shared/lib/utils/Time';
 
 export class IdProvider
 {
@@ -16,7 +17,7 @@ export class IdProvider
   // Number of issued ids in this boot.
   private lastIssuedId = 0;
 
-  constructor(private timeOfBoot: Date) { }
+  constructor(private timeOfBoot: Time) { }
 
   // ---------------- Public methods --------------------
 

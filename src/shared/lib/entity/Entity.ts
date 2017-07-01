@@ -47,6 +47,10 @@ export class Entity extends Serializable
   public static get PROTOTYPE_ENTITY_PROPERTY() { return 'prototypeEntity'; }
   private static get INSTANCE_IDS_PROPERTY()    { return 'instanceIds'; }
 
+  private static get DATA_PROPERTY()            { return 'data'; }
+
+  public static get ON_LOAD_TRIGGER()           { return 'onLoad'; }
+
   // ----------------- Private data ----------------------
 
   // Entity name.
@@ -291,6 +295,28 @@ export class Entity extends Serializable
   */
 
   // ---------------- Public methods --------------------
+
+  // Recursively calls 'trigger' method on all prototypes
+  // in the chain.
+  // (This saves the need to call super.function() in all
+  //  trigger handlers.)
+  public propagateTrigger(trigger: string)
+  {
+    if (!trigger)
+    {
+      ERROR("Invalid trigger name");
+      return;
+    }
+
+    let prototype = Object.getPrototypeOf(this);
+
+    // Recursively traverse prototype chain.
+    if (prototype && prototype['propagateTrigger'])
+      prototype.propagateTrigger(trigger);
+
+    this.runTriggerHandler(trigger);
+    this.runTriggerHandlerOnSharedData(trigger);
+  }
 
   // Serializes entity and all its ancestors. Writes
   // results to 'data' arrat, starting with root prototype.
@@ -656,6 +682,48 @@ export class Entity extends Serializable
       + " forces us never to use property named 'then'");
   }
   */
+
+  // --------------- Private methods --------------------
+
+  private runTriggerHandler(trigger: string)
+  {
+    if (this.hasOwnProperty(trigger))
+    {
+      let triggerFunction = this[trigger];
+
+      if (typeof triggerFunction !== 'function')
+      {
+        ERROR("Attempt to call trigger handler '" + trigger + "' which"
+          + " is not a function on entity " + this.getErrorIdString());
+        return;
+      }
+
+      triggerFunction();
+    }
+  }
+
+  private runTriggerHandlerOnSharedData(trigger: string)
+  {
+    let data = this[Entity.DATA_PROPERTY];
+
+    if (data && data.hasOwnProperty(trigger))
+    {
+      let triggerFunction = this[trigger];
+
+      if (typeof triggerFunction !== 'function')
+      {
+        ERROR("Attempt to call trigger handler '" + trigger + "'"
+          + " which is not a function on shared data of entity"
+          + " " + this.getErrorIdString());
+        return;
+      }
+
+      data.triggerFunction();
+    }
+  }
+
+  // ------------------ Triggers -----------------------
+
 }
 
 // ------------------ Type declarations ----------------------

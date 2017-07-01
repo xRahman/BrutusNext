@@ -7,6 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Time} from '../../../shared/lib/utils/Time';
 import {JsonObject} from '../../../shared/lib/json/JsonObject';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {Entity} from '../../../shared/lib/entity/Entity';
@@ -22,7 +23,7 @@ export class ServerEntities extends Entities
 {
   public static get DIRECTORY() { return 'entities/'; }
 
-  constructor (timeOfBoot: Date)
+  constructor (timeOfBoot: Time)
   {
     super();
 
@@ -476,6 +477,8 @@ export class ServerEntities extends Entities
       // a name lock file (because we have already created it).
       await entity.setName(name, cathegory, false);
     }
+
+    entity.propagateTrigger(Entity.ON_LOAD_TRIGGER);
 
     return entity;
   }
