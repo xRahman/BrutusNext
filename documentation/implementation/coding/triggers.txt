@@ -1,0 +1,22 @@
+Triggers
+----------
+
+Trigger handlers are functions that are run in specific situations.
+For example 'onLoad()' is run when an entity is instantiated.
+
+Automatic super() call
+-----------------------
+
+Don't call super.trigger() inside a trigger handler.
+
+Triggers are run by Entity.runTriggerHandler() method which traverses
+prototype tree and runs respective trigger handler on all prototype
+objects that have it. This eliminate the need to type suppper.trigger()
+in every trigger handler (which would definitely be ommited by mistake
+often which would lead to errors).
+
+Triggers on entity shared data
+-------------------------------------
+
+Trigger handlers are also automatically run on entity shared data
+(the same way as on entity so again don't call super.trigger()).

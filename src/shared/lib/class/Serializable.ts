@@ -60,12 +60,12 @@ export class Serializable extends Attributable
   public static get CLASS_NAME_PROPERTY() { return 'className'; }
 
   // These are 'dummy' class names. They are only written to JSON
-  // but they don't really exists in code (Date, Set and Map are
-  // build-in javascript classes, Bitvector translates to a FastBitArray
+  // but they don't really exists in code (Set and Map are build-in
+  // javascript classes, Bitvector translates to a FastBitArray
   // class and Reference is not a class at all but a reference to
   // an Entity.
   private static get BITVECTOR_CLASS_NAME()   { return 'Bitvector'; }
-  private static get DATE_CLASS_NAME()        { return 'Date'; }
+  ///private static get DATE_CLASS_NAME()        { return 'Date'; }
   private static get SET_CLASS_NAME()         { return 'Set'; }
   private static get MAP_CLASS_NAME()         { return 'Map'; }
   protected static get REFERENCE_CLASS_NAME() { return 'Reference'; }
@@ -74,7 +74,7 @@ export class Serializable extends Attributable
   // For example 'map' property holds an Array that represents serialized
   // data of a Map object.
   private static get BITVECTOR_PROPERTY()     { return 'bitvector'; }
-  private static get DATE_PROPERTY()          { return 'date'; }
+  ///private static get DATE_PROPERTY()          { return 'date'; }
   private static get MAP_PROPERTY()           { return 'map'; }
   private static get SET_PROPERTY()           { return 'set'; }
 
@@ -391,8 +391,14 @@ export class Serializable extends Attributable
     if (this.isSerializable(property))
       return property.saveToJsonObject(mode);
 
+    // Date() should no longer be used, Time() should be used instead.
+    /// if (Utils.isDate(property))
+    ///   return this.createDateSaver(property).saveToJsonObject(mode);
     if (Utils.isDate(property))
-      return this.createDateSaver(property).saveToJsonObject(mode);
+    {
+      this.reportSerializeDateErorr();
+      return null;
+    }
 
     if (Utils.isMap(property))
       return this.createMapSaver(property).saveToJsonObject(mode);
@@ -412,10 +418,10 @@ export class Serializable extends Attributable
       + " Serializable nor has a type that we know how to save."
       + " Make sure that you only use primitive types (numbers,"
       + " strings, etc.), Arrays, primitive javascript Objects,"
-      + " Dates, Maps or classes inherited from Serializable"
-      + " as properties of classes inherited from Serializable."
-      + " If you want a new type to be saved, you need to add this"
-      + " functionality to Serializable.ts. Property is not saved");
+      + " Maps or classes inherited from Serializable as properties"
+      + " of classes inherited from Serializable. If you want a new"
+      + " type to be saved, you need to add this functionality to "
+      + " Serializable.ts. Property is not saved");
     return null;
   }
 
@@ -569,9 +575,10 @@ export class Serializable extends Attributable
     if (result = this.deserializeAsBitvector(param))
       return result;
 
-    // Attempt to load property as Date object.
-    if (result = this.deserializeAsDate(param))
-      return result;
+    // Date() should no longer be used. Use Time() instead.
+    // // Attempt to load property as Date object.
+    // if (result = this.deserializeAsDate(param))
+    //   return result;
 
     // Attempt to load property as Set object.
     if (result = this.deserializeAsSet(param))
@@ -591,7 +598,7 @@ export class Serializable extends Attributable
 
     // Attempt to load property as an object
     // (including custom classes).
-    //   Note that this would also mean Dates, Arrrays and all other
+    //   Note that this would also mean Arrrays and all other
     // nonprimitive types, so they must be handled before this.
     if (result = this.deserializeAsObject(param))
       return result;
@@ -693,26 +700,26 @@ export class Serializable extends Attributable
     return this.readBitvector(param);
   }
 
-//+
-  // Attempts to convert 'param.sourceProperty' to Date object.
-  // -> Returns 'null' if 'param'.sourceVariable is not a Date
-  //    record or if loading failed.
-  private deserializeAsDate(param: DeserializeParam)
-  {
-    if (!this.isDateRecord(param.sourceProperty))
-      return null;
+  // Date() should no longer be used. Use Time() instead.
+  // // Attempts to convert 'param.sourceProperty' to Date object.
+  // // -> Returns 'null' if 'param'.sourceVariable is not a Date
+  // //    record or if loading failed.
+  // private deserializeAsDate(param: DeserializeParam)
+  // {
+  //   if (!this.isDateRecord(param.sourceProperty))
+  //     return null;
 
-    if (!Utils.isDate(param.targetProperty))
-    {
-      let pathString = this.composePathString(param.path);
+  //   if (!Utils.isDate(param.targetProperty))
+  //   {
+  //     let pathString = this.composePathString(param.path);
 
-      ERROR("Attempt to load Date property '" + param.propertyName + "'"
-        + pathString + " to a non-Date property");
-      return null;
-    }
+  //     ERROR("Attempt to load Date property '" + param.propertyName + "'"
+  //       + pathString + " to a non-Date property");
+  //     return null;
+  //   }
 
-    return this.readDate(param);
-  }
+  //   return this.readDate(param);
+  // }
 
 //+
   // Attempts to convert 'param.sourceProperty' to Set object.
@@ -986,20 +993,21 @@ export class Serializable extends Attributable
   }
 
 //+
-  // Checks if 'param.sourceProperty' represents a saved Date object.
-  private isDateRecord(jsonObject: Object): boolean
-  {
-    if (this.isObjectValid(jsonObject) === false)
-      return false;
+  // Date() should no longer be used. Use Time() instead.
+  // // Checks if 'param.sourceProperty' represents a saved Date object.
+  // private isDateRecord(jsonObject: Object): boolean
+  // {
+  //   if (this.isObjectValid(jsonObject) === false)
+  //     return false;
 
-    // Is there a 'className' property in JSON object
-    // with value 'Date'?
-    if (jsonObject[Serializable.CLASS_NAME_PROPERTY]
-        === Serializable.DATE_CLASS_NAME)
-      return true;
+  //   // Is there a 'className' property in JSON object
+  //   // with value 'Date'?
+  //   if (jsonObject[Serializable.CLASS_NAME_PROPERTY]
+  //       === Serializable.DATE_CLASS_NAME)
+  //     return true;
 
-    return false;
-  }
+  //   return false;
+  // }
 
 //+
   // Checks if 'param.sourceProperty' represents a saved Set object.
@@ -1069,17 +1077,18 @@ export class Serializable extends Attributable
   }
 
 //+
-  // Converts 'param.sourceProperty' to a Date object.
-  private readDate(param: DeserializeParam): Date
-  {
-    let sourceRecord =
-      this.readSourceRecord(param, Serializable.DATE_PROPERTY);
+  // Date() should no longer be used. Use Time() instead.
+  // // Converts 'param.sourceProperty' to a Date object.
+  // private readDate(param: DeserializeParam): Date
+  // {
+  //   let sourceRecord =
+  //     this.readSourceRecord(param, Serializable.DATE_PROPERTY);
 
-    if (sourceRecord === null)
-      return null;
+  //   if (sourceRecord === null)
+  //     return null;
 
-    return new Date(sourceRecord);
-  }
+  //   return new Date(sourceRecord);
+  // }
 
   // Converts 'param.sourceProperty' to a Set object.
   private readSet(param: DeserializeParam): Set<any>
@@ -1350,7 +1359,7 @@ export class Serializable extends Attributable
   //      object (using it's saveToJsonObject()) as a special object
   //      with className 'Bitvector' and property 'bitvector' containing
   //      a string represenation of FastBitSet object.
-  private createBitvectorSaver(bitvector: Date)
+  private createBitvectorSaver(bitvector: any)
   {
     if (bitvector === null)
     {
@@ -1360,31 +1369,33 @@ export class Serializable extends Attributable
 
     let saver = Serializable.createSaver(Serializable.BITVECTOR_CLASS_NAME);
 
-    // Date is saved as it's JSON string representation to property 'date'.
+    // Bitvector is saved as it's JSON string representation to
+    // property 'bitvector'.
     saver[Serializable.BITVECTOR_PROPERTY] = bitvector.toJSON();
 
     return saver;
   }
 
-  // -> Returns a SaveableObject which saves Date to Json object
-  //      (using it's saveToJsonObject()) as a special object
-  //      with className 'Date' and property 'date' containing
-  //      a string represenation of Date object.  
-  private createDateSaver(date: Date)
-  {
-    if (date === null)
-    {
-      FATAL_ERROR("Null date");
-      return;
-    }
+  // Date() should no longer be used, Time() should be used instead.
+  // // -> Returns a SaveableObject which saves Date to Json object
+  // //      (using it's saveToJsonObject()) as a special object
+  // //      with className 'Date' and property 'date' containing
+  // //      a string represenation of Date object.  
+  // private createDateSaver(date: Date)
+  // {
+  //   if (date === null)
+  //   {
+  //     FATAL_ERROR("Null date");
+  //     return;
+  //   }
 
-    let saver = Serializable.createSaver(Serializable.DATE_CLASS_NAME);
+  //   let saver = Serializable.createSaver(Serializable.DATE_CLASS_NAME);
 
-    // Date is saved as it's JSON string representation to property 'date'.
-    saver[Serializable.DATE_PROPERTY] = date.toJSON();
+  //   // Date is saved as it's JSON string representation to property 'date'.
+  //   saver[Serializable.DATE_PROPERTY] = date.toJSON();
 
-    return saver;
-  }
+  //   return saver;
+  // }
 
   // -> Returns a SaveableObject which saves Entity to Json object
   //      (using it's saveToJsonObject()) as a special object
@@ -1493,6 +1504,14 @@ export class Serializable extends Attributable
       return "";
 
     return " in file " + path;
+  }
+
+  private reportSerializeDateErorr()
+  {
+    ERROR("Attempt to serialize property of type Date()."
+      + " Date object should not be used because it can't"
+      + " be properly inherited using prototypal inheritance."
+      + " use class Time instead. Property is not serialized");
   }
 }
 
