@@ -7,6 +7,7 @@
 
 'use strict';
 
+import {ERROR} from '../../shared/lib/error/ERROR';
 import {PropertyAttributes} from
   '../../shared/lib/class/PropertyAttributes';
 import {Serializable} from '../../shared/lib/class/Serializable';
@@ -35,4 +36,50 @@ export class GameEntityData extends Serializable
     */
 
   // ---------------- Public methods --------------------
+
+  // Recursively calls 'eventHandler' method on all prototypes
+  // in the prototype chain.
+  // (This saves the need to call super.handler() in all
+  //  event handlers.)
+  public triggerEvent(eventHandler: string, instance: GameEntityData = this)
+  {
+    if (!eventHandler)
+    {
+      ERROR("Invalid event handler name");
+      return;
+    }
+
+    let prototype = Object.getPrototypeOf(this);
+
+    // Recursively traverse prototype chain.
+    if (prototype && prototype['triggerEvent'])
+      prototype.triggerEvent(eventHandler, instance);
+
+    this.handleEvent(eventHandler, instance);
+  }
+
+  // --------------- Private methods --------------------
+
+  private handleEvent(trigger: string, instance: any)
+  {
+    if (this.hasOwnProperty(trigger))
+    {
+      let triggerFunction = this[trigger];
+
+      if (typeof triggerFunction !== 'function')
+      {
+        ERROR("Attempt to call trigger handler '" + trigger + "'"
+          + " which is not a function");
+        return;
+      }
+
+      // Call trigger function with 'instance' as this.
+      triggerFunction.call(instance);
+    }
+  }
+
+  // ---------------- Event Handlers -------------------
+
+  /// TEST
+  // protected onLoad() { console.log('GameEntityData.onLoad()'); }
 }

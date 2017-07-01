@@ -49,7 +49,7 @@ export class Entity extends Serializable
 
   private static get DATA_PROPERTY()            { return 'data'; }
 
-  public static get ON_LOAD_TRIGGER_EVENT()           { return 'onLoad'; }
+  public static get ON_LOAD_EVENT()             { return 'onLoad'; }
 
   // ----------------- Private data ----------------------
 
@@ -296,15 +296,15 @@ export class Entity extends Serializable
 
   // ---------------- Public methods --------------------
 
-  // Recursively calls 'trigger' method on all prototypes
-  // in the chain.
-  // (This saves the need to call super.function() in all
-  //  trigger handlers.)
-  public triggerEvent(trigger: string, instance: Entity = this)
+  // Recursively calls 'eventHandler' method on all prototypes
+  // in the prototype chain.
+  // (This saves the need to call super.handler() in all
+  //  event handlers.)
+  public triggerEvent(eventHandler: string, instance: Entity = this)
   {
-    if (!trigger)
+    if (!eventHandler)
     {
-      ERROR("Invalid trigger name");
+      ERROR("Invalid event handler name");
       return;
     }
 
@@ -312,12 +312,18 @@ export class Entity extends Serializable
 
     // Recursively traverse prototype chain.
     if (prototype && prototype['triggerEvent'])
-    {
-      prototype.triggerEvent(trigger, instance);
-    }
+      prototype.triggerEvent(eventHandler, instance);
 
-    this.runTriggerHandler(trigger, instance);
-    this.runDataTriggerHandler(trigger, instance);
+    this.handleEvent(eventHandler, instance);
+
+    // Also trigger event on instance.data.
+    if (instance === this)
+    {
+      let data = instance[Entity.DATA_PROPERTY];
+
+      if (data && data['triggerEvent'])
+        data.triggerEvent(eventHandler);
+    }
   }
 
   // Serializes entity and all its ancestors. Writes
@@ -687,7 +693,7 @@ export class Entity extends Serializable
 
   // --------------- Private methods --------------------
 
-  private runTriggerHandler(trigger: string, instance: Entity)
+  private handleEvent(trigger: string, instance: Entity)
   {
     if (this.hasOwnProperty(trigger))
     {
@@ -705,28 +711,7 @@ export class Entity extends Serializable
     }
   }
 
-  private runDataTriggerHandler(trigger: string, instance: Entity)
-  {
-    let data = this[Entity.DATA_PROPERTY];
-
-    if (data && data.hasOwnProperty(trigger))
-    {
-      let triggerFunction = data[trigger];
-
-      if (typeof triggerFunction !== 'function')
-      {
-        ERROR("Attempt to call trigger handler '" + trigger + "'"
-          + " which is not a function on shared data of entity"
-          + " " + this.getErrorIdString());
-        return;
-      }
-
-      // Call trigger function with 'instance' as this.
-      triggerFunction.call(instance);
-    }
-  }
-
-  // ------------------ Triggers -----------------------
+  // ------------------- Events ------------------------
 
 }
 
