@@ -1,10 +1,18 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+---------------------------------------------------------------
+
+TODO: Globální nastavení atributů pro celou classu (a všechny potomky,
+  kteří to nepřetíží).
+
+---------------------------------------------------------------
+
 IMPORTANT TODO: onLoad() (neb možná init())
 - automaticky volat při vytvoření instance.
 [done]
 - použít to pro inicializaci timeOfCreation.
+[done]
 
 TODO: Propašovat onLoad() i do .data
 - ideálně tak, aby se v onLoad() na entitách nemuselo
