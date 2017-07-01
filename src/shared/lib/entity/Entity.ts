@@ -49,7 +49,7 @@ export class Entity extends Serializable
 
   private static get DATA_PROPERTY()            { return 'data'; }
 
-  public static get ON_LOAD_TRIGGER()           { return 'onLoad'; }
+  public static get ON_LOAD_TRIGGER_EVENT()           { return 'onLoad'; }
 
   // ----------------- Private data ----------------------
 
@@ -300,7 +300,7 @@ export class Entity extends Serializable
   // in the chain.
   // (This saves the need to call super.function() in all
   //  trigger handlers.)
-  public propagateTrigger(trigger: string)
+  public triggerEvent(trigger: string, instance: Entity = this)
   {
     if (!trigger)
     {
@@ -311,11 +311,13 @@ export class Entity extends Serializable
     let prototype = Object.getPrototypeOf(this);
 
     // Recursively traverse prototype chain.
-    if (prototype && prototype['propagateTrigger'])
-      prototype.propagateTrigger(trigger);
+    if (prototype && prototype['triggerEvent'])
+    {
+      prototype.triggerEvent(trigger, instance);
+    }
 
-    this.runTriggerHandler(trigger);
-    this.runTriggerHandlerOnSharedData(trigger);
+    this.runTriggerHandler(trigger, instance);
+    this.runDataTriggerHandler(trigger, instance);
   }
 
   // Serializes entity and all its ancestors. Writes
@@ -685,7 +687,7 @@ export class Entity extends Serializable
 
   // --------------- Private methods --------------------
 
-  private runTriggerHandler(trigger: string)
+  private runTriggerHandler(trigger: string, instance: Entity)
   {
     if (this.hasOwnProperty(trigger))
     {
@@ -698,17 +700,18 @@ export class Entity extends Serializable
         return;
       }
 
-      triggerFunction();
+      // Call trigger function with 'instance' as this.
+      triggerFunction.call(instance);
     }
   }
 
-  private runTriggerHandlerOnSharedData(trigger: string)
+  private runDataTriggerHandler(trigger: string, instance: Entity)
   {
     let data = this[Entity.DATA_PROPERTY];
 
     if (data && data.hasOwnProperty(trigger))
     {
-      let triggerFunction = this[trigger];
+      let triggerFunction = data[trigger];
 
       if (typeof triggerFunction !== 'function')
       {
@@ -718,7 +721,8 @@ export class Entity extends Serializable
         return;
       }
 
-      data.triggerFunction();
+      // Call trigger function with 'instance' as this.
+      triggerFunction.call(instance);
     }
   }
 

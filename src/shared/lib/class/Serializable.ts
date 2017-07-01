@@ -152,42 +152,71 @@ export class Serializable extends Attributable
     // Copy all properties from 'jsonObject'.
     for (let propertyName in jsonObject)
     {
-      if
-      (
-        // Property 'className' isn't assigned (it represents the
-        // name of the javascript class which cannot be changed).
-        propertyName !== Serializable.CLASS_NAME_PROPERTY
-        // Property 'version' also isn't assigned - it is saved only
-        // to allow for custom loading code when it changes.
-        && propertyName !== Serializable.VERSION_PROPERTY
-        // Only properties that exist on the class that is being loaded
-        // are loaded from save. It means that you can remove properties
-        // from existing classes without converting existing save files
-        // (no syslog message is generated).
-        && this[propertyName] !== undefined
-      )
-      {
-        let param: DeserializeParam =
-        {
-          propertyName: propertyName,
-          targetProperty: this[propertyName],
-          sourceProperty: jsonObject[propertyName],
-          path: path
-        }
+      // Property 'className' isn't assigned (it represents the
+      // name of the javascript class which cannot be changed).
+      if (propertyName === Serializable.CLASS_NAME_PROPERTY)
+        continue
 
-        // We are cycling over properties in JSON object, not in Serializable
-        // that is being loaded. It means that properties that are not present
-        // in the save will not get overwritten with 'undefined'. This allows
-        // adding new properties to existing classes without the need to
-        // convert all save files.
-        this[propertyName] = this.deserializeProperty(param);
+      // Property 'version' also isn't assigned - it is saved only
+      // to allow for custom loading code when it changes.
+      if (propertyName === Serializable.VERSION_PROPERTY)
+        continue;
+
+      // Only properties that exist on the class that is being loaded
+      // are loaded from save. It means that you can remove properties
+      // from existing classes without converting existing save files
+      // (no syslog message is generated).
+      if (this[propertyName] === undefined)
+        continue;
+
+      // Allow custom property deserialization in descendants.
+      let customValue = this.customDeserializeProperty
+      (
+        propertyName,
+        jsonObject[propertyName]
+      );
+      if (customValue !== undefined)
+      {
+        this[propertyName] = customValue;
+        continue;
       }
+
+      let param: DeserializeParam =
+      {
+        propertyName: propertyName,
+        targetProperty: this[propertyName],
+        sourceProperty: jsonObject[propertyName],
+        path: path
+      }
+
+      // We are cycling over properties in JSON object, not in Serializable
+      // that is being loaded. It means that properties that are not present
+      // in the save will not get overwritten with 'undefined'. This allows
+      // adding new properties to existing classes without the need to
+      // convert all save files.
+      this[propertyName] = this.deserializeProperty(param);
     }
 
     return this;
   }
 
   // -------------- Protected methods -------------------
+
+  // -> Returns 'undefined' if property is not customly serialized.
+  protected customSerializeProperty(propertyName: string)
+  {
+    return undefined;
+  }
+
+  // -> Returns 'undefined' if property is not customly deserialized.
+  protected customDeserializeProperty
+  (
+    propertyName: string,
+    sourceProperty: any
+  )
+  {
+    return undefined;
+  }
 
 //+
   protected checkVersion(jsonObject: Object, path: string = null): boolean
@@ -307,6 +336,14 @@ export class Serializable extends Attributable
       // Check if property is to be serialized in this serialization mode.
       if (!this.isSerialized(propertyName, mode))
         continue;
+
+      // Allow custom property serialization in descendants.
+      let customValue = this.customSerializeProperty(propertyName);
+      if (customValue !== undefined)
+      {
+        jsonObject[<string>propertyName] = customValue;
+        continue;
+      }
 
       let serializeParam: SerializeParam =
       {
