@@ -32,8 +32,7 @@ import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
 ///import {App} from '../../../shared/lib/app/App';
 import {Serializable} from '../../../shared/lib/class/Serializable';
-import {PropertyAttributes} from
-  '../../../shared/lib/class/PropertyAttributes';
+import {Attributes} from '../../../shared/lib/class/Attributes';
 import {Entities} from '../../../shared/lib/entity/Entities';
 
 // Note: Entity can't be abstract class, because variable 'Entity'
@@ -86,15 +85,14 @@ export class Entity extends Serializable
   // ------------------------------------------------- //
 
   private id: string = null;
-    private static id: PropertyAttributes =
+    private static id: Attributes =
     {
       // Property 'id' is not saved to file, because it is saved
       // as the name of the saved file (like 7-iu5by22s.json).
       saved: false,
-      edited: false
-      /// 'true' is implicit so we don't need to list this.
-      ///sentToClient: true,
-      ///sentToServer: true
+      edited: false,
+      sentToClient: true,
+      sentToServer: true
     };
 
   // ------------------------------------------------- //
@@ -105,6 +103,13 @@ export class Entity extends Serializable
   // entity. Only root prototype entities (created in Classes)
   // have 'null' value of 'prototypeEntity'.
   private prototypeEntity: Entity = null;
+    private static prototypeEntity: Attributes =
+    {
+      saved: true,
+      edited: false,
+      sentToClient: true,
+      sentToServer: true
+    };
 
   // Set of ids of entities that use this entity as their prototype
   // object and they are not prototypes themselves.
@@ -114,7 +119,7 @@ export class Entity extends Serializable
   //  of an entity is deleted, we need to find it in 'instanceIds' to
   //  remove it from there.)
   private instanceIds = new Set<string>();
-    private static instanceIds: PropertyAttributes =
+    private static instanceIds: Attributes =
     {
       saved: true,
       edited: false,
@@ -128,7 +133,7 @@ export class Entity extends Serializable
   //  of an entity is deleted, we need to find it in 'instanceIds' to
   //  remove it from there.)
   private descendantIds = new Set<string>();
-    private static descendantIds: PropertyAttributes =
+    private static descendantIds: Attributes =
     {
       saved: true,
       edited: false,

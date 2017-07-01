@@ -8,8 +8,7 @@
 'use strict';
 
 import {ERROR} from '../../shared/lib/error/ERROR';
-import {PropertyAttributes} from
-  '../../shared/lib/class/PropertyAttributes';
+///import {Attributes} from '../../shared/lib/class/Attributes';
 import {Serializable} from '../../shared/lib/class/Serializable';
 
 export class GameEntityData extends Serializable
@@ -28,7 +27,7 @@ export class GameEntityData extends Serializable
   public description = "Unfinished entity.";
     /// 'true' nejspíš bude defaultní hodnota.
     /*
-    private static description: PropertyAttributes =
+    private static description: Attributes =
     {
       saved: true,
       edited: true

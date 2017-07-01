@@ -25,8 +25,7 @@
 
 'use strict';
 
-import {PropertyAttributes} from
-  '../../../shared/lib/class/PropertyAttributes';
+///import {Attributes} from '../../../shared/lib/class/Attributes';
 import {GameEntity} from '../../../server/game/GameEntity';
 import {Game} from '../../game/Game';
 ///import {RoomFlags} from '../../game/world/RoomFlags';
