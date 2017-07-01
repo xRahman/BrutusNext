@@ -1,11 +1,28 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
+IMPORTANT TODO: onLoad() (neb možná init())
+- automaticky volat při vytvoření instance.
+[done]
+- použít to pro inicializaci timeOfCreation.
+
+TODO: Propašovat onLoad() i do .data
+- ideálně tak, aby se v onLoad() na entitách nemuselo
+  volat super().
+[done]
+
+---------------------------------------------------------------
+
+TODO: An account is already registered to this email address.
+TODO: Lost your password?
+
 TODO: Nezobrazovat adresu pro kontakt adminů přímo, ale přes nějaký
   javascript encode (např. http://www.mailtoencoder.com/).
 
 TODO: Buttonek "Check Availability"
   (na druhou stranu pokud bude mail fungovat jako account name...)
+   - tak ho nebudu potřebovat
+[rejected]
 
 TODO: Label s červeným textem pod input boxy v RegisterForm.
 
@@ -71,6 +88,7 @@ otázka je, jestli to udělat jako Proxy a přesměrovávat tudíž všechny
     typu Time.
 
 TODO: ERROR, když se někdo pokusí serializovat Date().
+[done]
 
 TODO: Po vyrobení čehokoliv, co má interní timeOfCreation
   je třeba tu proměnnou nastavit - jinak zdědí hodnotu z předka.

@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Class encapsulating javascript Date() object.
+  Class replacing javascript Date() object.
 */
 
 /*
@@ -13,7 +13,7 @@
   Date() object (which {} is not even though it has
   a Date() object as it's prototype object.
 
-  So instead Date() we use a Time() object, which internally
+  So instead of Date() we use a Time() object, which internally
   stores time as a number and uses Date() methods to work
   with it. Property of type number works fine with prototype
   inheritance.
@@ -26,11 +26,17 @@
 
 'use strict';
 
-export class Time
+import {Serializable} from '../../../shared/lib/class/Serializable';
+
+export class Time extends Serializable
 {
   // Same parameters as for Date() can be used.
   constructor(param: any = null)
   {
+    super();
+
+    this.version = 0;
+
     let date;
 
     // Whatever parameter we get, we use it to construct
@@ -44,14 +50,18 @@ export class Time
     this.time = date.getTime();
   }
 
+  public static get UNKNOWN_TIME_STRING() { return '<unknown time>'; }
+
   // Number of milliseconds since January 1, 1970, 00:00:00 UTC
   // (negative for prior times).
   private time: number = 0;
 
   // ---------------- Public methods --------------------
 
-  /// TODO: Buď to celé hodit za Proxy, nebo tu ručně vyjmenovat
-  /// používané metody (viz toJSON()).
+  public getTime()
+  {
+    return this.time;
+  }
 
   public toJSON()
   {

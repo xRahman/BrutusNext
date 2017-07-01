@@ -6,11 +6,10 @@
 
 'use strict';
 
-import {Settings} from '../../../server/ServerSettings';
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Settings} from '../../../server/ServerSettings';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {Time} from '../../../shared/lib/utils/Time';
-///import {FileSystem} from '../../../server/lib/fs/FileSystem';
 import {PropertyAttributes} from
   '../../../shared/lib/class/PropertyAttributes';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
@@ -20,11 +19,9 @@ import {Entity} from '../../../shared/lib/entity/Entity';
 import {Entities} from '../../../shared/lib/entity/Entities';
 import {ServerEntity} from '../../../server/lib/entity/ServerEntity';
 import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
-///import {ScriptableEntity} from '../../../server/lib/entity/ScriptableEntity';
 import {Connection} from '../../../server/lib/net/Connection';
 import {ServerApp} from '../../../server/lib/app/ServerApp';
 import {Game} from '../../game/Game';
-///import {ServerGameEntity} from '../../../server/game/entity/ServerGameEntity';
 import {Character} from '../../../server/game/character/Character';
 import {Classes} from '../../../shared/lib/class/Classes';
 import {AccountData} from '../../../shared/lib/account/AccountData';
@@ -35,54 +32,12 @@ import * as crypto from 'crypto';  // Import namespace 'crypto' from node.js
 
 export class Account extends ServerEntity
 {
-  /// TODO: Accounty se vyrábí stejně jako ostatní entity,
-  /// takže asi nebude průchozí předávat jim parametry v konstruktoru.
-  /// - i když, možná to přece jen nakonec půjde, zatím to tu nechám
-  ///constructor(name: string, connection: Connection)
   constructor()
   {
     super();
 
-    // Don't forget to bump up version number if you add or remove
-    // SaveableObjects. You will also need to convert data in respective
-    // .json files to conform to the new version.
     this.version = 0;
-
-    /// TODO: Accounty se vyrábí stejně jako ostatní entity,
-    /// takže asi nebude průchozí předávat jim parametry v konstruktoru.
-    /// - i když, možná to přece jen nakonec půjde, zatím to tu nechám
-    /*
-    this.connection = connection;
-
-    this.name = name;
-    */
-
-    /// Tohle už takhle jednoduše nastavit nejde, na setování this.name je
-    /// třeba použít:
-    /// this.setUniqueName(name, NamedEntity.UniqueNameCathegory.accounts);
-    /*
-    // Account names are unique.
-    this.isNameUnique = true;
-    */
   }
-
-  ///public static get SAVE_DIRECTORY() { return "./data/accounts/"; }
-
-  //------------------ Private data ---------------------
-
-  private passwordHash = "";
-    private static passwordHash: PropertyAttributes =
-    {
-      saved: true,
-      edited: false,
-      sentToClient: false,
-      sentToServer: false
-    };
-
-  //----------------- Protected data --------------------
-
-  protected lastLoginAddress: string = null;
-  protected lastLoginTime: Time = null;
 
   // ----------------- Public data ----------------------
 
@@ -100,9 +55,37 @@ export class Account extends ServerEntity
   // List of character names this account has access to.
   public characterNames: Array<string> = [];
 
-  public timeOfCreation: Time = null;
+  //----------------- Protected data --------------------
+
+  //------------------ Private data ---------------------
+
+  private passwordHash = "";
+    private static passwordHash: PropertyAttributes =
+    {
+      saved: true,
+      edited: false,
+      sentToClient: false,
+      sentToServer: false
+    };
+
+  private timeOfCreation: Time = null;
+
+  private lastLoginAddress: string = null;
+  private lastLoginTime: Time = null;
 
   // ---------------- Public methods --------------------
+
+  public getTimeOfCreation(): string
+  {
+    if (this.timeOfCreation === null)
+    {
+      ERROR("Time of creation has not been inicialized"
+        + " on account " + this.getErrorIdString());
+      return Time.UNKNOWN_TIME_STRING;
+    }
+
+    return this.timeOfCreation.toLocaleString();
+  }
 
   // -> Returns full name of the character matching to 'abbrev'.
   // -> Returns 'null' if no match is found.
@@ -117,10 +100,14 @@ export class Account extends ServerEntity
     return null;
   }
   
-  public getLastLoginAddress()
+  public getLastLoginAddress(): string
   {
     if (this.lastLoginAddress === null)
+    {
+      ERROR("Last login address has not been inicialized"
+        + " on account " + this.getErrorIdString());
       return "<unknown ip address>";
+    }
 
     return this.lastLoginAddress;
   }
@@ -133,7 +120,7 @@ export class Account extends ServerEntity
         + " " + this.getErrorIdString() + " which doesn't"
         + " have it initialized yet");
 
-      return "<unknown date>";
+      return Time.UNKNOWN_TIME_STRING;
     }
 
     /// Pozn: Pres telnet samozrejme nezjistim, jaky ma player nastaveny
@@ -371,6 +358,15 @@ export class Account extends ServerEntity
       MessageType.SYSTEM_INFO,
       AdminLevel.IMMORTAL
     );
+  }
+
+  // ------------------ Triggers -----------------------
+
+  // Triggers when an entity is instantiated.
+  protected onLoad()
+  {
+    // Calling Time() without parameters initializes it to current time.
+    this.timeOfCreation = new Time();
   }
 }
 

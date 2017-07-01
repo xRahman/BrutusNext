@@ -6,6 +6,8 @@
 
 'use strict';
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Time} from '../../../shared/lib/utils/Time';
 import {Account} from '../../../server/lib/account/Account';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Game} from '../../../server/game/Game';
@@ -16,7 +18,7 @@ import {Classes} from '../../../shared/lib/class/Classes';
 
 export class Character extends GameEntity
 {
-  protected timeOfCreation = new Date();
+  protected timeOfCreation = null;
 
 /// TODO: Tohle by asi nemělo být tady - admin levely jsou externě
 /// v Admins.
@@ -41,7 +43,17 @@ export class Character extends GameEntity
   }
   */
 
-  public getTimeOfCreation() { return this.timeOfCreation; }
+  public getTimeOfCreation(): string
+  {
+    if (this.timeOfCreation === null)
+    {
+      ERROR("Time of creation has not been inicialized"
+        + " on character " + this.getErrorIdString());
+      return Time.UNKNOWN_TIME_STRING;
+    }
+
+    return this.timeOfCreation.toLocaleString();
+  }
 
   public getAdminLevel() { return this.adminLevel; }
 
@@ -140,6 +152,15 @@ export class Character extends GameEntity
     console.log("Haf haf! 'sit': " + this.x);
   }
   */
+
+  // ------------------ Triggers -----------------------
+
+  // Triggers when an entity is instantiated.
+  protected onLoad()
+  {
+    // Calling Time() without parameters initializes it to current time.
+    this.timeOfCreation = new Time();
+  }
 }
 
 Classes.registerEntityClass(Character);
