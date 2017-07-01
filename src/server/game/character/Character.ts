@@ -153,7 +153,7 @@ export class Character extends GameEntity
   }
   */
 
-  // ------------------ Triggers -----------------------
+  // ---------------- Event Handlers -------------------
 
   // Triggers when an entity is instantiated.
   protected onLoad()

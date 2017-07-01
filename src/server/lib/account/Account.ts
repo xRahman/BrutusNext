@@ -360,7 +360,7 @@ export class Account extends ServerEntity
     );
   }
 
-  // ------------------ Triggers -----------------------
+  // ---------------- Event Handlers -------------------
 
   // Triggers when an entity is instantiated.
   protected onLoad()

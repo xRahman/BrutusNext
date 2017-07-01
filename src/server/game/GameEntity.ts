@@ -276,12 +276,12 @@ export class GameEntity extends ContainerEntity
     ///ServerApp.entityManager.remove(this);
   }
 
-  // ------------------ Triggers -----------------------
+  // ---------------- Event Handlers -------------------
 
   /// Not used yet.
   // // Triggers when an entity is instantiated.
   // protected onLoad()
-  // {    
+  // {
   // }
 
   // --------------- Command handlers ------------------
