@@ -41,8 +41,12 @@ export class LoginForm extends Form
     super.createLabel({ text: 'Account Name' });
     this.createAccountNameInput();
 
+    this.createEmptyLine();
+
     super.createLabel({ text: 'Password' });
     this.createPasswordInput();
+
+    this.createEmptyLine();
     
     this.createRememberMeCheckbox();
     this.createButtons();

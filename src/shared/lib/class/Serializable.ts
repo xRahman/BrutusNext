@@ -960,7 +960,9 @@ export class Serializable extends Attributable
       // data.
       FATAL_ERROR("Unable to create instance of class '" + className + "'"
         + " when deserializing property '" + param.propertyName + "'"
-        + pathString + " because no such class is registered in Classes");
+        + pathString + " because no such class is registered in Classes."
+        + " Maybe you forgot to add 'Classes.registerSerializableClass("
+        + className + ");' to the end of " + className + ".ts file?");
     }
 
     return new Class;

@@ -10,11 +10,11 @@ import {Flags} from '../../shared/lib/utils/Flags';
 import {Document} from '../../client/gui/Document';
 import {ClientApp} from '../../client/lib/app/ClientApp';
 import {Component} from '../../client/gui/Component';
-import {MudColorComponent} from '../../client/gui/MudColorComponent';
+import {MudColors} from '../../client/gui/MudColors';
 
 import $ = require('jquery');
 
-export class Window extends MudColorComponent
+export class Window extends Component
 {
   protected static get S_CSS_CLASS()
     { return 'S_Window'; }
@@ -75,14 +75,7 @@ export class Window extends MudColorComponent
   // (accepts plain text or mud colored string).
   public setTitle(title: string)
   {
-    // First remove existing text title if there is any.
-    this.$title.empty();
-
-    if (title.indexOf('&') !== -1)
-      this.$title.append(this.htmlizeMudColors(title));
-    else
-      // Use text color set in css if string isn't colored.
-      this.$title.text(title);
+    Component.setColoredText(this.$title, title);
   }
 
   public create
