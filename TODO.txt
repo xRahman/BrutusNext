@@ -4,7 +4,7 @@ TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 ---------------------------------------------------------------
 
 TODO: Globální nastavení atributů pro celou classu (a všechny potomky,
-  kteří to nepřetíží).
+  kteří si to nepřetíží).
 
 ---------------------------------------------------------------
 

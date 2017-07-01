@@ -308,6 +308,19 @@ export class Entity extends Serializable
       return;
     }
 
+    // How does this work:
+    //   We are going to traverse the prototype tree
+    // and look for method named 'eventHandler'. When
+    // we find it, we run it on original 'instance' object,
+    // not on current 'this'. The reason is that event
+    // handlers should work on instance data - when they
+    // write to some property, it should become instance's
+    // 'own' property, not property of some prototype.
+    //   Also note that we only run the event handler method
+    // if it's 'own' property of the respective prototype
+    // object. That's to prevent running method that is just
+    // inherited and not modified.
+
     let prototype = Object.getPrototypeOf(this);
 
     // Recursively traverse prototype chain.
