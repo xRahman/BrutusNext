@@ -43,6 +43,8 @@ export class GameEntityData extends Serializable
   //  event handlers.)
   public triggerEvent(eventHandler: string, instance: GameEntityData = this)
   {
+    // See Entity.triggerEvent for description of the algorithm.
+
     if (!eventHandler)
     {
       ERROR("Invalid event handler name");
