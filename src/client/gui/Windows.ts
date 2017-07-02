@@ -43,6 +43,11 @@ export class Windows
 
   // --------------- Static accessors -------------------
 
+  public static get registerWindow()
+  {
+    return ClientApp.windows.registerWindow;
+  }
+
   public static get mapWindow()
   {
     return ClientApp.windows.mapWindow;

@@ -6,16 +6,27 @@
 
 'use strict';
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Connection} from '../../../client/lib/net/Connection';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
+import {LocalStorage} from '../../../client/lib/storage/LocalStorage';
 import {Component} from '../../../client/gui/Component';
 import {Form} from '../../../client/gui/Form';
 import {RegisterRequest} from '../../../shared/lib/protocol/RegisterRequest';
+import {RegisterResponse} from '../../../shared/lib/protocol/RegisterResponse';
 
 import $ = require('jquery');
 
 export class RegisterForm extends Form
 {
+  private static get PROBLEM_TEXT_COLOR() { return '&R'; }
+
+  private static get RECOMMENDATION()
+  {
+    return '&YWe strongly recommend that you use different'
+         + ' password than on your e-mail account.';
+  }
+
   protected static get SUBMIT_BUTTON_S_CSS_CLASS()
     { return 'S_RegisterForm_SubmitButton'; }
   protected static get CANCEL_BUTTON_S_CSS_CLASS()
@@ -28,12 +39,15 @@ export class RegisterForm extends Form
 
   //------------------ Private data ---------------------
 
-  private $accountNameInput: JQuery = null;
+  ///private $accountNameInput: JQuery = null;
   private $emailInput: JQuery = null;
   private $passwordInput: JQuery = null;
   private $rememberMeCheckbox: JQuery = null;
   private $emailInputProblem: JQuery = null;
+  private $emailInputProblemEmptyLine: JQuery = null;
   private $passwordInputProblem: JQuery = null;
+  private $passwordInputProblemEmptyLine: JQuery = null;
+  private $infoLabel: JQuery = null;
 
   // --------------- Static accessors -------------------
 
@@ -51,7 +65,7 @@ export class RegisterForm extends Form
     // super.createLabel({ text: 'Account Name' });
     // this.createAccountNameInput();
 
-    super.createLabel({ text: 'You E-mail Address' });
+    super.createLabel({ text: 'Your E-mail Address' });
     this.createEmailInput();
     this.createEmailProblemLabel();
 
@@ -63,24 +77,63 @@ export class RegisterForm extends Form
 
     this.createEmptyLine();
 
-    let recommendation = '&YWe highly recommend to use different password'
-            + ' from your e-mail account.'
-    let $recommendation = super.createLabel({ text: '' });
-    Component.setColoredText($recommendation, recommendation);
-    /*
-    super.createLabel
-    (
-      {
-        text: 'We highly recommend to use different password'
-            + ' from your e-mail account.'
-      }
-    );
-    */
+    this.createInfoLabel();
+    this.showRecomendation();
 
     this.createEmptyLine();
 
     this.createRememberMeCheckbox();
     this.createButtons();
+  }
+
+  public displayProblem(response: RegisterResponse)
+  {
+    switch (response.result)
+    {
+      case RegisterResponse.Result.EMAIL_PROBLEM:
+        this.displayEmailProblem(response.problem);
+        break;
+
+      case RegisterResponse.Result.PASSWORD_PROBLEM:
+        this.displayPasswordProblem(response.problem);
+        break;
+
+      case RegisterResponse.Result.FAILED_TO_CREATE_ACCOUNT:
+        this.displayAccountCreationProblem(response.problem);
+        break;
+
+      case RegisterResponse.Result.OK:
+        ERROR("displayProblem() called with 'Result: OK'");
+        break;
+
+      default:
+        ERROR("Unknown register response result");
+        break;
+    }
+  }
+
+  public registrationSucceeded()
+  {
+    // Check if Html 5 local storage is available.
+    if (!LocalStorage.isAvailable())
+      return;
+
+    if (this.$rememberMeCheckbox.prop('checked'))
+    {
+      LocalStorage.write
+      (
+        LocalStorage.EMAIL_ENTRY,
+        this.$emailInput.val()
+      );
+
+      /// Heslo by se asi pamatovat nemělo (rozhodně ne nezakryptované),
+      /// ale pro účely ladění se mi to bude hodit.
+      LocalStorage.write
+      (
+        LocalStorage.PASSWORD_ENTRY,
+        this.$passwordInput.val()
+      );
+    }
   }
 
   // --------------- Protected methods ------------------
@@ -92,7 +145,7 @@ export class RegisterForm extends Form
     (
       {
         name: 'email_input',
-        placeholder: 'Enter E-mail'
+        placeholder: 'Enter E-mail Address'
       }
     );
 
@@ -102,17 +155,13 @@ export class RegisterForm extends Form
   // ~ Overrides Form.createPasswordInput().
   protected createPasswordInput()
   {
-    /// TODO: Číst to ze stejné proměnné jako server a jako register form.
-    let minLength = 4;
-    let maxLength = 50;
-
     this.$passwordInput = super.createPasswordInput
     (
       {
         name: 'password_input',
         placeholder: 'Enter Password',
-        minLength: minLength,
-        maxLength: maxLength
+        minLength: RegisterRequest.MIN_PASSWORD_LENGTH,
+        maxLength: RegisterRequest.MAX_PASSWORD_LENGTH
       }
     );
 
@@ -136,18 +185,67 @@ export class RegisterForm extends Form
 
   private createEmailProblemLabel()
   {
-    this.$emailInputProblem = super.createErrorLabel({ text: '' });
+    this.$emailInputProblemEmptyLine = this.createEmptyLine();
+    this.$emailInputProblemEmptyLine.hide();
+    this.$emailInputProblem = super.createLabel({ text: '' });
     this.$emailInputProblem.hide();
+  }
+
+  private displayEmailProblem(problem: string)
+  {
+    Component.setColoredText
+    (
+      this.$emailInputProblem,
+      RegisterForm.PROBLEM_TEXT_COLOR + problem
+    );
+    this.$emailInputProblemEmptyLine.show();
+    this.$emailInputProblem.show();
   }
 
   private createPasswordProblemLabel()
   {
-    this.$passwordInputProblem = super.createErrorLabel({ text: '' });
+    this.$passwordInputProblemEmptyLine = this.createEmptyLine();
+    this.$passwordInputProblemEmptyLine.hide();
+    this.$passwordInputProblem = super.createLabel({});
     this.$passwordInputProblem.hide();
+  }
+
+  private displayPasswordProblem(problem: string)
+  {
+    Component.setColoredText
+    (
+      this.$passwordInputProblem,
+      RegisterForm.PROBLEM_TEXT_COLOR + problem
+    );
+    this.$passwordInputProblemEmptyLine.show();
+    this.$passwordInputProblem.show();
+  }
+
+  private createInfoLabel()
+  {
+    this.$infoLabel = super.createLabel({});
+  }
+
+  private showRecomendation()
+  {
+    Component.setColoredText(this.$infoLabel, RegisterForm.RECOMMENDATION);
+  }
+
+  private displayAccountCreationProblem(problem: string)
+  {
+    Component.setColoredText
+    (
+      this.$infoLabel,
+      RegisterForm.PROBLEM_TEXT_COLOR + problem
+    );
   }
 
   private createRememberMeCheckbox()
   {
+    // Check if Html 5 local storage is available.
+    if (!LocalStorage.isAvailable())
+      return;
+
     this.$rememberMeCheckbox = super.createCheckboxInput
     (
       {
@@ -204,6 +302,36 @@ export class RegisterForm extends Form
     return $button;
   }
 
+  private isRequestOk(request: RegisterRequest)
+  {
+    let problem = null;
+
+    if (problem = request.getEmailProblem())
+    {
+      this.displayEmailProblem(problem);
+      return false;
+    }
+
+    if (problem = request.getPasswordProblem())
+    {
+      this.displayPasswordProblem(problem);
+      return false;
+    }
+
+    return true;
+  }
+
+  private hideErrorMessages()
+  {
+    this.$emailInputProblemEmptyLine.hide();
+    this.$emailInputProblem.hide();
+    this.$passwordInputProblemEmptyLine.hide();
+    this.$passwordInputProblem.hide();
+
+    // Rewrite $infoLabel with recommendation text.
+    this.showRecomendation();
+  }
+
   // ---------------- Event handlers --------------------
 
   protected onSubmit(event: Event)
@@ -211,24 +339,26 @@ export class RegisterForm extends Form
     // We will handle the form submit ourselves.
     event.preventDefault();
 
-    console.log("Submit (acc_name: " + this.$accountNameInput.val() + ","
-      + " email: " + this.$emailInput.val() + ","
-      + " passwd: " + this.$passwordInput.val() + " )");
+    this.hideErrorMessages();
 
-    let packet = new RegisterRequest();
+    let request = new RegisterRequest();
 
-    packet.accountName = this.$accountNameInput.val();
-    packet.email = this.$emailInput.val();
-    packet.password = this.$passwordInput.val();
+    request.email = this.$emailInput.val();
+    request.password = this.$passwordInput.val();
 
-     if (!packet.isValid())
+    // Thanks to the shared code we don't have to
+    // wait for server response to check for most
+    // problems (the check will be done again on
+    // the server of course to prevent exploits).
+    if (!this.isRequestOk(request))
       return;
 
-    Connection.send(packet);
+    Connection.send(request);
   }
 
   protected onCancel(event: Event)
   {
+    this.hideErrorMessages();
     ClientApp.setState(ClientApp.State.LOGIN);
   }
 }

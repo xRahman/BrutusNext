@@ -108,6 +108,7 @@ export class ServerEntities extends Entities
 
   // Creates a new instance entity with a new id (can't be used as prototype).
   // -> Returns 'null' on failure.
+  // -> Returns 'undefined' if requested unique name is already taken.
   public static async createInstanceEntity<T extends Entity>
   (
     typeCast: { new (...args: any[]): T },
@@ -138,10 +139,10 @@ export class ServerEntities extends Entities
     //  scenario.)
     if (!await ServerEntities.requestEntityName(id, name, cathegory))
     {
-      ERROR("Attempt to create unique entity '" + name + "'"
-        + " in cathegory '" + Entity.NameCathegory[cathegory] + "'"
-        + " which already exists. Entity is not created");
-      return null;
+      // ERROR("Attempt to create unique entity '" + name + "'"
+      //   + " in cathegory '" + Entity.NameCathegory[cathegory] + "'"
+      //   + " which already exists. Entity is not created");
+      return undefined;
     }
 
     let entity = await ServerApp.entities.createNewEntity

@@ -1,41 +1,133 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
-------------------------------------
+--------------------------------------------------------------
 
-TODO: Zrušit Component.ERROR_MESSAGE_G_CSS_CLASS
-  (i z css)
-TODO: Zrušit Component.createErrorLabel
-TODO: Zrušit Component.setColoredText - místo toho
-  dávat do labelu rovnou colored text.
-- otázka je, jestli se to bude vztahovat i na window title..
-  - automaticky ne, protože do Component.createTitle() se nepředává
-    text - ale měl by, je to sakra title
-TODO: Component.createTitle() předávat parametrem text, stejně jako
-  u labelu.
-TODO: parametr 'text' by měl mít defaultní hodnotu (prázný label
-  může mít smysl, třeba když ho vyrábím schovaný pro pozdější použití).
+TODO: LoginForm a RegisterForm mají pořád dost společného (zdvojeného)
+  kódu (např. createRememberMeCheckbox()). Asi by stálo za to vložit
+  před ně ještě jednoho předka.
+  - CredentialsForm?
 
 TODOOOOOOO: Implementovat "Remember me" funkcionalitu,
   ať to nemusím pořád vyplňovat!
+TODO: Zapsat entries do LocalStorage při loginu do hry
+  (smazat je, když je checkbox odškrtnutý).
 
 TODO: Zrušit komplet accountName
+TODO: Předělat v LoginForm acc name na email.
 
+
+TODO: Request spam protection (když user opakovaně rychle klikne
+  na 'Register', tak to nejspíš vyhodí 'account already registered').
+- asi bude nejjednodušší disablovat input button
+  (+ pro jistotu locknout onInputClic() handler).
+  Když se to resetne při ztrátě spojení, tak by to mělo být ok
+  - přinejhorším si use reloadne browser tab.
+TODO: Waiting cursor (asi bude nejlepší setovat css class):
+https://stackoverflow.com/questions/9681080/changing-cursor-to-waiting-in-javascript-jquery
+TODO: Nějak recovernout stav RegisterForm, když po odeslání requestu spadne
+  spojení (ještě nevím, co to bude obnášt, je třeba se nad tím zamyslet).
+
+TODO: Dynamic typecast při zpracování packetu (na klientu i na serveru,
+  obojí asi bude v Connection).
+
+TODO: V RegisterForm při každém user inputu (klávesa odhchycená
+  v jednom z inputů) pustit timer (tak 2s) a po něm vyčistit
+  error hlášky.
+  (a zrušit ho, když user mezi tím zmáčne submit).
+
+TODO: projít použití createInstanceEntity() a zkontrolvoat, že nikde
+nevadí 'undefined' return value když je jméno zabrané.
+  (někde by se to naopak mohlo hodit).
+- vadí to, protože jsem zrušil error hlášku, že jméno už existuje.
+TODO: Nejspíš to bude chtít parametr logErrors: boolean.
+TODO: Na několika místech se vůbec netestuje, jestli je entity úspěšně
+  vyrobena.
+
+TODO: Ještě se přece jen zamyslet, jestli jsou prázné řádky v RegisterForm
+  dobré řešení.
+
+--------------------------------------------------------------
+
+TODO: Korektně vyrobit mailto: link v error response.
+[Kašlat na to]
+
+TODO: Při čtení register response ošetřit stav FAILED_TO_CREATE_ACCOUNT
+ (respektive všechny stavy) a vypsat problém do RegisterForm.
+[done]
+
+TODO: V RegisterForm při vhodné příležitosti schovat error hlášky
+  (asi když user něco změní v inputech - nebo minimálně když odešle
+   další request.).
+[done]
+
+TODO: V RegisterForm enforcovat min a max email length.
+[done]
+
+TODO: Číst register response v klientovi a vypsat odpovídající hlášku
+  (případně advancnout stage, pokud je stav ok.)
+[done]
+
+TODO: Vymyslet, jak se bude reportovat account creation failure
+  (asi by to chtělo třetí error report label - úplně nahoru a následovaný
+   prázdnou řádkou).
+[tak nakonec do info labelu]
+
+TODO: Check that account doesn't already exists.
+  v Connection.isRegisterRequestOk()
+- respektive možná spíš v rámci vytváření accountu...
 TODO: An account is already registered to this email address.
+[done]
+TODO: Zkontrolovat, že se to správně vypisuje.
+TODO: Až to bude, tak vrátit zpět podmínku v Connection ;-)
+[done]
+
+TODO: Kontrolovat validitu formu hned, ne až na serveru.
+  (a asi zrušit stupidní metodu isValid())
+[done]
 
 TODO: Label s červeným textem pod input boxy v RegisterForm.
+[done]
 
 TODO: Nezobrazovat adresu pro kontakt adminů přímo, ale přes nějaký
   javascript encode (např. http://www.mailtoencoder.com/).
-
-Waiting cursor (asi bude nejlepší setovat css class):
-https://stackoverflow.com/questions/9681080/changing-cursor-to-waiting-in-javascript-jquery
+- to možná není potřeba, protože se vytváří v server kódu (nebo by aspoň
+  měla) a na klienta se posílá jedině když se nepodaří vyrobit account
+  z jiných důvodů než že je jméno zabrané - tj. boti to nemají jak
+  vysniffovat.
+[nakonec se nebude mailovat vůbec]
 
 TODO: Buď soft locky na account name při vyrábění accountu,
   nebo spojit test na dostupnost jména s vytvořením name lock
   souboru (konec konců request mám k dispozici kompletní).
+[done]
 
 TODO: encoding mailu před tím, než ho zapíšu do accountName.
+[done]
 
 ---------------------------------------------------------------
+
+TODO (Výhledově): Nějaký příkaz na výpis nefixnutých errorů z logu
+(ideálně by se creatorům měl automaticky vypsat při loginu ;-))
+- a asi taky nějaký nástroj na označení, že už jsou fixnuté.
+
+---------------------------------------------------------------
+
+TODO: Zrušit Component.ERROR_MESSAGE_G_CSS_CLASS
+  (i z css)
+[done]
+TODO: Zrušit Component.createErrorLabel
+[done]
+TODO: Zrušit Component.setColoredText - místo toho
+  dávat do labelu rovnou colored text.
+  - otázka je, jestli se to bude vztahovat i na window title..
+  - automaticky ne, protože do Component.createTitle() se nepředává
+    text - ale měl by, je to sakra title
+[rušit to nebudu, může se to hodit pro komponenty, které typicky text nemají]
+TODO: Component.createTitle() předávat parametrem text, stejně jako
+  u labelu.
+[done]
+TODO: parametr 'text' by měl mít defaultní hodnotu (prázný label
+  může mít smysl, třeba když ho vyrábím schovaný pro pozdější použití).
+[done]
 
 TODO: Globální nastavení atributů pro celou classu (a všechny potomky,
   kteří si to nepřetíží).

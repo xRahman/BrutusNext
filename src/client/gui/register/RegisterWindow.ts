@@ -11,6 +11,7 @@ import {Component} from '../../../client/gui/Component';
 import {StandaloneWindow} from '../../../client/gui/StandaloneWindow';
 import {Form} from '../../../client/gui/Form';
 import {RegisterForm} from '../../../client/gui/register/RegisterForm';
+import {RegisterResponse} from '../../../shared/lib/protocol/RegisterResponse';
 
 import $ = require('jquery');
 
@@ -57,6 +58,16 @@ export class RegisterWindow extends StandaloneWindow
     this.createTermsInfo();
 
     return this.$window;
+  }
+
+  public displayProblem(response: RegisterResponse)
+  {
+    this.form.displayProblem(response);
+  }
+
+  public registrationSucceeded()
+  {
+    this.form.registrationSucceeded();
   }
 
   // --------------- Protected methods ------------------

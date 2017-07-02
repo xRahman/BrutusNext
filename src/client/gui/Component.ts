@@ -26,6 +26,7 @@
 
 import {ERROR} from '../../shared/lib/error/ERROR';
 import {MudColors} from '../../client/gui/MudColors';
+import {RegisterRequest} from '../../shared/lib/protocol/RegisterRequest';
 
 import $ = require('jquery');
 
@@ -45,8 +46,6 @@ export abstract class Component
     { return 'G_Checkbox'; }
   protected static get LINK_TEXT_G_CSS_CLASS()
     { return 'G_LinkText'; }
-  protected static get ERROR_MESSAGE_G_CSS_CLASS()
-    { return 'G_ErrorMessage'; }
   protected static get SELECTABLE_PLATE_G_CSS_CLASS()
     { return 'G_SelectablePlate'; }
 
@@ -80,7 +79,8 @@ export abstract class Component
     }
     else
     {
-      // Use text color set in css if string isn't colored.
+      // Use text color set in css if string isn't colored
+      // (use JQuery to handle browser incompatibilities).
       $component.text(text);
     }
   }
@@ -157,20 +157,28 @@ export abstract class Component
     {
       $container = null,
       gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
-      sCssClass = null
+      sCssClass = null,
+      // 'text' can use mud colors. If it doesn't,
+      // color set in css will be used.
+      text = null
     }:
     {
       $container?: JQuery;
       gCssClass?: string;
       sCssClass?: string;
+      text?: string;
     }
     = {}
   )
   : JQuery
   {
     let element = document.createElement('title');
+    let $element = this.initElement(element, $container, gCssClass, sCssClass);
 
-    return this.initElement(element, $container, gCssClass, sCssClass);
+    if (text)
+      this.setColoredText($element, text);
+
+    return $element;
   }
 
   protected static createTextInput
@@ -244,12 +252,16 @@ export abstract class Component
     {
       $container = null,
       name,
+      minLength = RegisterRequest.MIN_EMAIL_LENGTH,
+      maxLength = RegisterRequest.MAX_EMAIL_LENGTH,
       gCssClass = Component.INPUT_G_CSS_CLASS,
       sCssClass = null
     }:
     {
       $container?: JQuery;
       name: string;
+      minLength?: number;
+      maxLength?: number;
       gCssClass?: string;
       sCssClass?: string;
     },
@@ -387,13 +399,15 @@ export abstract class Component
       $container = null,
       gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
       sCssClass = null,
-      text
+      // 'text' can use mud colors. If it doesn't,
+      // color set in css will be used.
+      text = null
     }:
     {
       $container?: JQuery;
       gCssClass?: string;
       sCssClass?: string;
-      text: string;
+      text?: string;
     }
   )
   : JQuery
@@ -401,38 +415,10 @@ export abstract class Component
     let element = document.createElement('label');
     let $element = this.initElement(element, $container, gCssClass, sCssClass);
 
-    // Set 'text' using JQuery to handle browser incompatibilities.
-    $element.text(text);
+    if (text)
+      this.setColoredText($element, text);
 
     return $element;
-  }
-
-  protected static createErrorLabel
-  (
-    {
-      $container = null,
-      gCssClass = Component.ERROR_MESSAGE_G_CSS_CLASS,
-      sCssClass = null,
-      text
-    }:
-    {
-      $container?: JQuery;
-      gCssClass?: string;
-      sCssClass?: string;
-      text: string;
-    }
-  )
-  : JQuery
-  {
-    return this.createLabel
-    (
-      {
-        $container,
-        gCssClass,
-        sCssClass,
-        text
-      }
-    );
   }
 
   protected static createSpan

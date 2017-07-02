@@ -32,10 +32,20 @@ export class Message
 
   // -------------- Static class data -------------------
 
-  public static get PLEASE_CONTACT_ADMINS()
+  /// Showing email address could lead to spam and it's not really
+  /// such a good idea to want user to email us anyways. Error should
+  /// be logged and we should fixt it asap without user telling us to.
+  // public static get PLEASE_CONTACT_ADMINS()
+  // {
+  //   return "&wPlease contact admins at " + Settings.adminEmail
+  //        + " &wand ask them to resolve this issue."
+  // }
+
+  public static get ADMINS_WILL_FIX_IT()
   {
-    return "&wPlease contact admins at " + Settings.adminEmail
-         + " &wand ask them to resolve this issue."
+    return "&CAdmins have been notified about this"
+        + " issue and will fix it as soon as"
+        + " possible. Please try again later."
   }
 
   public static get NEW_LINE() { return '\r\n'; }

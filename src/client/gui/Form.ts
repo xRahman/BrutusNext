@@ -91,7 +91,7 @@ export abstract class Form extends Component
       sCssClass = Form.LABEL_S_CSS_CLASS
     }:
     {
-      text: string;
+      text?: string;
       sCssClass?: string;
     }
   )
@@ -101,28 +101,6 @@ export abstract class Form extends Component
       {
         $container: this.$form,
         gCssClass: Component.NO_GRAPHICS_G_CSS_CLASS,
-        sCssClass: sCssClass,
-        text: text
-      }
-    );
-  }
-
-  protected createErrorLabel
-  (
-    {
-      text,
-      sCssClass = Form.LABEL_S_CSS_CLASS
-    }:
-    {
-      text: string;
-      sCssClass?: string;
-    }
-  )
-  {
-    return Component.createErrorLabel
-    (
-      {
-        $container: this.$form,
         sCssClass: sCssClass,
         text: text
       }

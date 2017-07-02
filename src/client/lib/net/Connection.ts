@@ -16,6 +16,7 @@ import {Packet} from '../../../shared/lib/protocol/Packet';
 import {Command} from '../../../shared/lib/protocol/Command';
 import {Account} from '../../../client/lib/account/Account';
 import {RegisterResponse} from '../../../shared/lib/protocol/RegisterResponse';
+import {Windows} from '../../../client/gui/Windows';
 
 export class Connection
 {
@@ -28,6 +29,8 @@ export class Connection
   public activeAvatar: Avatar = null;
 
   //------------------ Private data ---------------------
+
+  private account: Account = null;
 
   private avatars = new Set<Avatar>();
 
@@ -155,10 +158,19 @@ export class Connection
 
   private processRegisterResponse(response: RegisterResponse)
   {
-    console.log("Received register response. Problem: " + response.problem);
+    // If register request has been accepted, advance to the next
+    // application state.
+    if (response.result === RegisterResponse.Result.OK)
+    {
+      this.account = response.account.deserializeEntity(Account);
+      /// DEBUG:
+      console.log("Recreated account " + JSON.stringify(this.account));
+      Windows.registerWindow.registrationSucceeded();
+      ClientApp.setState(ClientApp.State.CHARLIST);
+      return;
+    }
 
-    let account = response.account.deserializeEntity(Account);
-
-    console.log("Recreated account " + JSON.stringify(account));
+    // Otherwise display to the user what the problem is.
+    Windows.registerWindow.displayProblem(response);
   }
 }

@@ -157,7 +157,6 @@
 .G_Input,
 .G_Checkbox,
 .G_LinkText,
-.G_ErrorMessage,
 .G_SelectablePlate
 {
   font-family: CourierNew;
@@ -174,7 +173,6 @@
 .G_Input,
 .G_Checkbox,
 .G_LinkText,
-.G_ErrorMessage,
 .G_SelectablePlate
 {
   text-overflow: ellipsis; /* Add '...' if text overflows */
@@ -190,7 +188,6 @@
 .G_Input,
 .G_Checkbox,
 .G_LinkText,
-.G_ErrorMessage,
 .G_SelectablePlate
 {
   /*text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5);*/
@@ -228,12 +225,6 @@
 .G_Input
 {
   color: rgb(0, 225, 0); /* Text color */
-}
-
-/* :: Error Message Text Color :: */
-.G_ErrorMessage
-{
-  color: rgb(255, 0, 0); /* Text color */
 }
 
 /* ----------- Text Decoration ----------- */
@@ -307,8 +298,7 @@
 .G_NoGraphics,
 .G_TitleBar,
 .G_Checkbox,
-.G_LinkText,
-.G_ErrorMessage
+.G_LinkText
 {
   border: none;
 }
@@ -357,8 +347,7 @@
 /* :: Transparent Background :: */
 .G_NoGraphics,
 .G_Checkbox,
-.G_LinkText,
-.G_ErrorMessage
+.G_LinkText
 {
   background: rgba(0,0,0,0);  /* Transparent background */
 }
@@ -471,8 +460,6 @@
 .G_Checkbox:focus,
 .G_LinkText,
 .G_LinkText:focus,
-.G_ErrorMessage,
-.G_ErrorMessage:focus,
 .G_SelectablePlate,
 .G_SelectablePlate:focus,
 .G_Input
