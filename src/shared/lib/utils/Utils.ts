@@ -203,9 +203,9 @@ export module Utils
   {
     for (let [key, value] of EMAIL_ENCODED_CHARACTERS.entries())
     {
-      let regExp = new RegExp(key, 'g');
-    
-      email = email.replace(regExp, value)
+      // We don't use javascript replace() so we don't have to
+      // escape special regexp characters.
+      email = email.split(key).join(value);
     }
 
     return email;
@@ -216,9 +216,9 @@ export module Utils
   {
     for (let [key, value] of EMAIL_ENCODED_CHARACTERS.entries())
     {
-      let regExp = new RegExp(value, 'g');
-    
-      email = email.replace(regExp, key)
+      // We don't use javascript replace() so we don't have to
+      // escape special regexp characters.
+      email = email.split(value).join(key);
     }
 
     return email;

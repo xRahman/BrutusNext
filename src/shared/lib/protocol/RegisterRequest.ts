@@ -10,6 +10,9 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Packet} from '../../../shared/lib/protocol/Packet';
 import {Classes} from '../../../shared/lib/class/Classes';
 
+const VALID_EMAIL_CHARACTERS = "abcdefghijklmnopqrstuvwxyz"
+  + "@ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#$%&'*+-/=?^_`{|}~.";
+
 export class RegisterRequest extends Packet
 {
   constructor()
@@ -19,28 +22,35 @@ export class RegisterRequest extends Packet
     this.version = 0;
   }
 
-  public static get MIN_ACCOUNT_NAME_LENGTH()
+  // public static get MIN_ACCOUNT_NAME_LENGTH()
+  //   { return  3;}
+  // public static get MAX_ACCOUNT_NAME_LENGTH()
+  //   { return  20;}
+
+  public static get MIN_EMAIL_LENGTH()
     { return  3;}
-  public static get MAX_ACCOUNT_NAME_LENGTH()
-    { return  20;}
+  public static get MAX_EMAIL_LENGTH()
+    { return  254;}
   public static get MIN_PASSWORD_LENGTH()
     { return  4;}
   public static get MAX_PASSWORD_LENGTH()
     { return  50;}
 
-  public accountName: string = null;
+  ///public accountName: string = null;
   public email: string = null;
   public password: string = null;
 
+  /// To be deleted.
+  /*
   public isValid(): boolean
   {
     let isValid = true;
 
-    if (!this.accountName)
-    {
-      ERROR("Missing or invalid 'accountName' in login request");
-      isValid = false;
-    }
+    // if (!this.accountName)
+    // {
+    //   ERROR("Missing or invalid 'accountName' in login request");
+    //   isValid = false;
+    // }
 
     if (!this.email)
     {
@@ -56,7 +66,10 @@ export class RegisterRequest extends Packet
 
     return isValid;
   }
+  */
 
+  /// To be deleted.
+  /*
   // -> Returns 'null' if request is ok,
   //    othwrwise returns the first found reason why it's not.
   public getProblem()
@@ -74,83 +87,98 @@ export class RegisterRequest extends Packet
 
     return null;
   }
+  */
 
-  // -> Returns 'null' if accountName is ok,
-  //    othwrwise returns the first found reason why it's not.
-  private getAccountNameProblem(): string
-  {
-    if (!this.accountName)
-      return "Account name must not be empty.";
+  /// Deprecated.
+  // // -> Returns 'null' if accountName is ok,
+  // //    othwrwise returns the first found reason why it's not.
+  // private getAccountNameProblem(): string
+  // {
+  //   if (!this.accountName)
+  //     return "Account name must not be empty.";
 
-    // 'only letters' variant:
-    // let regExp = /[^A-Za-z]/;
-    let regExp = /[^A-Za-z0-9]/;
+  //   // 'only letters' variant:
+  //   // let regExp = /[^A-Za-z]/;
+  //   let regExp = /[^A-Za-z0-9]/;
 
-    if (regExp.test(this.accountName))
-      return "Account name can only contain numbers and english letters.";
+  //   if (regExp.test(this.accountName))
+  //     return "Account name can only contain numbers and english letters.";
 
-    if (this.accountName.length < RegisterRequest.MIN_ACCOUNT_NAME_LENGTH)
-    {
-      return "Account name must be at least"
-        + " " + RegisterRequest.MIN_ACCOUNT_NAME_LENGTH
-        + " characters long";
-    }
+  //   if (this.accountName.length < RegisterRequest.MIN_ACCOUNT_NAME_LENGTH)
+  //   {
+  //     return "Account name must be at least"
+  //       + " " + RegisterRequest.MIN_ACCOUNT_NAME_LENGTH
+  //       + " characters long";
+  //   }
 
-    if (this.accountName.length > RegisterRequest.MAX_ACCOUNT_NAME_LENGTH)
-    {
-      return "Account name cannot be longer than"
-        + " " + RegisterRequest.MAX_ACCOUNT_NAME_LENGTH
-        + " characters";
-    }
+  //   if (this.accountName.length > RegisterRequest.MAX_ACCOUNT_NAME_LENGTH)
+  //   {
+  //     return "Account name cannot be longer than"
+  //       + " " + RegisterRequest.MAX_ACCOUNT_NAME_LENGTH
+  //       + " characters";
+  //   }
 
-    return null;
-  }
+  //   return null;
+  // }
 
   // -> Returns 'null' if email is ok,
   //    othwrwise returns the first found reason why it's not.
-  private getEmailProblem(): string
+  public getEmailProblem(): string
   {
     if (!this.email)
-      return "Email address must not be empty.";
+      return "E-mail address must not be empty.";
+
+    if (this.email.length < RegisterRequest.MIN_EMAIL_LENGTH)
+    {
+      return "E-mail address must be at least"
+        + " " + RegisterRequest.MIN_EMAIL_LENGTH
+        + " characters long.";
+    }
+
+    if (this.email.length > RegisterRequest.MAX_EMAIL_LENGTH)
+    {
+      return "E-mail address cannot be longer than"
+        + " " + RegisterRequest.MAX_EMAIL_LENGTH
+        + " characters.";
+    }
 
     let splitArray = this.email.split('@');
 
     if (splitArray.length < 2)
-      return "Email address must contain a '@'.";
+      return "E-mail address must contain a '@'.";
 
     if (splitArray.length > 2)
-      return "Email address can only contain one '@'.";
+      return "E-mail address can only contain one '@'.";
 
     if (splitArray[0].length < 1)
     {
       return "There must be at least 1 character"
-        + " before '@' in an email address.";
+        + " before '@' in an e-mail address.";
     }
 
     if (splitArray[1].length < 1)
     {
       return "There must be at least 1 character"
-        + " after '@' in an email address.";
+        + " after '@' in an e-mail address.";
     }
 
-    // Characters allowed in email address.
-    /// TODO:
-    /*
-    "^[a-zA-Z0-9\"!#$%&'*+\-/=?^_`{|}~.]+$"
-    let regExp = new RegExp("!#$%&'*+-/=?^_`{|}~.", 'g');
+    // Check for invalid characters.
+    for (let i = 0; i < this.email.length; i++)
+    {
+      // Is character at position 'i' present in VALID_EMAIL_CHARACTERS?
+      if (VALID_EMAIL_CHARACTERS.indexOf(this.email.charAt(i)) === -1)
+      {
+        return "E-mail address cannot contain character"
+          + " '" + this.email.charAt(i) + "'.";
+      }
+    }
 
-    /// Asi by bylo dobré říct, jaký nepovolený character
-    /// ve stringu je.
-    if (string.match("a-zA-Z0-9\"!#$%&'*+\-/=?^_`{|}~."))
-      return ""
-    */
-
-    return null;
+    return null;  // No problem found.
   }
 
   // -> Returns 'null' if password is ok,
   //    othwrwise returns the first found reason why it's not.
-  private getPasswordProblem(): string
+  public getPasswordProblem(): string
   {
     if (!this.password)
       return "Password must not be empty.";
@@ -159,14 +187,14 @@ export class RegisterRequest extends Packet
     {
       return "Password must be at least"
         + " " + RegisterRequest.MIN_PASSWORD_LENGTH
-        + " characters long";
+        + " characters long.";
     }
 
     if (this.password.length > RegisterRequest.MAX_PASSWORD_LENGTH)
     {
       return "Password cannot be longer than"
         + " " + RegisterRequest.MAX_PASSWORD_LENGTH
-        + " characters";
+        + " characters.";
     }
 
     return null;

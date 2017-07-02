@@ -21,15 +21,26 @@ export class RegisterResponse extends Packet
   }
 
   // Is the request accepted?
-  public accepted = false;
+  public result: RegisterResponse.Result = RegisterResponse.Result.OK;
 
   // Description of problem if the request is denied.
   public problem: string = null;
 
-  /// Tohle nebude tak jednoduché
-  /// - Account je entita, takže může být na víc částí (předci zvlášť).
-  /// TODO
+  // Serialized account data.
   public account = new EntityData();
+}
+
+// ------------------ Type declarations ----------------------
+
+export module RegisterResponse
+{
+  export enum Result
+  {
+    OK,
+    EMAIL_PROBLEM,
+    PASSWORD_PROBLEM,
+    FAILED_TO_CREATE_ACCOUNT
+  }
 }
 
 Classes.registerSerializableClass(RegisterResponse);

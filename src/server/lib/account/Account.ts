@@ -74,6 +74,15 @@ export class Account extends ServerEntity
 
   // ---------------- Public methods --------------------
 
+  public getEmail(): string
+  {
+    // Email address is used directly as account name,
+    // but it is encoded so it can also be used as file name.
+    // So to get original email address, we need to decode
+    // it back.
+    return Utils.decodeEmail(this.getName());
+  }
+
   public getTimeOfCreation(): string
   {
     if (this.timeOfCreation === null)
