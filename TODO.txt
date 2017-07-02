@@ -1,6 +1,10 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+TODO: Změna  "Remember Me" checkboxu v Login okně by ho měla přepnout
+  i v Register okně a naopak
+  - možná by to vážně mohlo být jen jedno okno a pouze přepínat konfiguraci...
+
 TODO: LoginForm a RegisterForm mají pořád dost společného (zdvojeného)
   kódu (např. createRememberMeCheckbox()). Asi by stálo za to vložit
   před ně ještě jednoho předka.
