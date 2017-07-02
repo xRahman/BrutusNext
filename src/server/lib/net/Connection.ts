@@ -170,39 +170,10 @@ export class Connection
   //   }
   // }
 
-  private async registerRequest(packet: RegisterRequest)
+  private acceptRegisterRequest(account: Account)
   {
-    let account: Account = null;
     let response = new RegisterResponse();
-    let problem = packet.getProblem();
-
-    console.log("Connection.processRegisterRequest() - problem: " + problem);
-
-    /// TODO: Check if account already exists.
-    /// (To by mohl dělat rovnou packet.getProblem() - i když asi ne,
-    ///  to je shared kód -- možná by neměl bejt, btw).
-
-    if (!problem)
-    {
-      account = await Accounts.create(packet, this);
-
-      if (account === null)
-      {
-        problem = "&rFailed to create account./n"
-          + Message.PLEASE_CONTACT_ADMINS;
-      }
-    }
-
-    if (problem)
-    {
-      response.problem = problem;
-      response.accepted = false;
-
-      this.send(response);
-      return;
-    }
-
-    response.accepted = true;
+    response.result = RegisterResponse.Result.OK;
     
     // Add newly create account to the response.
     response.account.serializeEntity
@@ -212,6 +183,82 @@ export class Connection
     );
     
     this.send(response);
+  }
+
+  private denyRegisterRequest
+  (
+    problem: string,
+    result: RegisterResponse.Result
+  )
+  {
+    let response = new RegisterResponse();
+
+    response.result = result;
+    response.problem = problem;
+
+    this.send(response);
+  }
+
+  private isRegisterRequestOk(request: RegisterRequest): boolean
+  {
+    let problem = null;
+
+    if (problem = request.getEmailProblem())
+    {
+      this.denyRegisterRequest
+      (
+        problem,
+        RegisterResponse.Result.EMAIL_PROBLEM
+      );
+      return false;
+    }
+
+    if (problem = request.getPasswordProblem())
+    {
+      this.denyRegisterRequest
+      (
+        problem,
+        RegisterResponse.Result.PASSWORD_PROBLEM
+      );
+      return false;
+    }
+
+    return true;
+  }
+
+  private async registerRequest(request: RegisterRequest)
+  {
+    if (!this.isRegisterRequestOk(request))
+      return;
+
+    let account: Account = null;
+
+    account = await Accounts.create(request, this);
+
+    // 'undefined' means that the name is already taken.
+    if (account === undefined)
+    {
+      this.denyRegisterRequest
+      (
+        "An account is already registered to this e-mail address.",
+        RegisterResponse.Result.EMAIL_PROBLEM
+      );
+      return;
+    }
+
+    if (account === null)
+    {
+      console.log('denying request');
+      this.denyRegisterRequest
+      (
+        "&R[ERROR]: Failed to create account.\n\n"
+        + Message.ADMINS_WILL_FIX_IT,
+        RegisterResponse.Result.FAILED_TO_CREATE_ACCOUNT
+      );
+      return;
+    }
+
+    this.acceptRegisterRequest(account);
   }
 
   private async loginRequest(packet: LoginRequest)

@@ -19,27 +19,27 @@ export class LoginRequest extends Packet
     this.version = 0;
   }
 
-  public accountName: string = null;
+  ///public accountName: string = null;
+  public email: string = null;
   public password: string = null;
 
-  public isValid(): boolean
-  {
-    let isValid = true;
+  /// To be deleted.
+  // public isValid(): boolean
+  // {
+  //   if (!this.email)
+  //   {
+  //     ERROR("Missing or invalid 'accountName' in login request");
+  //     return false;
+  //   }
 
-    if (!this.accountName)
-    {
-      ERROR("Missing or invalid 'accountName' in login request");
-      isValid = false;
-    }
+  //   if (!this.password)
+  //   {
+  //     ERROR("Missing or invalid 'password' in login request");
+  //     return false;
+  //   }
 
-    if (!this.password)
-    {
-      ERROR("Missing or invalid 'password' in login request");
-      isValid = false;
-    }
-
-    return isValid;
-  }
+  //   return true;
+  // }
 }
 
 Classes.registerSerializableClass(LoginRequest);

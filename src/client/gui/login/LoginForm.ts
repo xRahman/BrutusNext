@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {LocalStorage} from '../../../client/lib/storage/LocalStorage';
 import {Connection} from '../../../client/lib/net/Connection';
 import {Component} from '../../../client/gui/Component';
 import {Form} from '../../../client/gui/Form';
@@ -21,7 +22,8 @@ export class LoginForm extends Form
 
   //------------------ Private data ---------------------
 
-  private $accountNameInput = null;
+  ///private $accountNameInput = null;
+  private $emailInput: JQuery = null;
   private $passwordInput = null;
   private $rememberMeCheckbox = null;
 
@@ -38,8 +40,11 @@ export class LoginForm extends Form
   {
     super.create({ $container: $container, name: 'login_form' });
 
-    super.createLabel({ text: 'Account Name' });
-    this.createAccountNameInput();
+    // super.createLabel({ text: 'Account Name' });
+    // this.createAccountNameInput();
+
+    super.createLabel({ text: 'E-mail Address' });
+    this.createEmailInput();
 
     this.createEmptyLine();
 
@@ -53,6 +58,28 @@ export class LoginForm extends Form
   }
 
   // --------------- Protected methods ------------------
+
+  // ~ Overrides Form.createEmailInput().
+  protected createEmailInput()
+  {
+    this.$emailInput = super.createEmailInput
+    (
+      {
+        name: 'email_input',
+        placeholder: 'Enter E-mail Address'
+      }
+    );
+
+    if (LocalStorage.isAvailable)
+    {
+      let savedEmail = LocalStorage.read(LocalStorage.EMAIL_ENTRY);
+
+      if (savedEmail)
+        this.$emailInput.val(savedEmail);
+    }
+
+    return this.$emailInput;
+  }
 
   // ~ Overrides Form.createPasswordInput().
   protected createPasswordInput()
@@ -70,6 +97,14 @@ export class LoginForm extends Form
         maxLength: maxLength
       }
     );
+
+    if (LocalStorage.isAvailable)
+    {
+      let savedPassword = LocalStorage.read(LocalStorage.PASSWORD_ENTRY);
+
+      if (savedPassword)
+        this.$passwordInput.val(savedPassword);
+    }
 
     return this.$passwordInput;
   }
@@ -89,26 +124,32 @@ export class LoginForm extends Form
 
   // ---------------- Private methods -------------------
 
-  private createAccountNameInput()
-  {
-    /// TODO: Číst to ze stejné proměnné jako server a jako register form.
-    // Maximum length of acocunt name (in characters).
-    let minLength = 3;
-    let maxLength = 20;
+  /// Deprecated.
+  // private createAccountNameInput()
+  // {
+  //   /// TODO: Číst to ze stejné proměnné jako server a jako register form.
+  //   // Maximum length of acocunt name (in characters).
+  //   let minLength = 3;
+  //   let maxLength = 20;
 
-    this.$accountNameInput = super.createTextInput
-    (
-      {
-        name: 'account_name_input',
-        placeholder: 'Enter Account Name',
-        minLength: minLength,
-        maxLength: maxLength
-      }
-    );
-  }
+  //   this.$accountNameInput = super.createTextInput
+  //   (
+  //     {
+  //       name: 'account_name_input',
+  //       placeholder: 'Enter Account Name',
+  //       minLength: minLength,
+  //       maxLength: maxLength
+  //     }
+  //   );
+  // }
 
   private createRememberMeCheckbox()
   {
+    // Don't create 'Remember me' checkbox
+    // if Html 5 local storage isn't available.
+    if (Storage === undefined)
+      return;
+
     this.$rememberMeCheckbox = super.createCheckboxInput
     (
       {
@@ -136,20 +177,11 @@ export class LoginForm extends Form
     // We will handle the form submit ourselves.
     event.preventDefault();
 
-    console.log("Submit (acc_name: " + this.$accountNameInput.val() + ","
-      +" passwd: " + this.$passwordInput.val() + " )");
-
     let packet = new LoginRequest();
 
-    packet.accountName = this.$accountNameInput.val();
+    packet.email = this.$emailInput.val();
     packet.password = this.$passwordInput.val();
 
-     if (!packet.isValid())
-      return;
-
     Connection.send(packet);
-
-    /// Not yet.
-    ///ClientApp.setState(ClientApp.State.CHARLIST);
   }
 }
