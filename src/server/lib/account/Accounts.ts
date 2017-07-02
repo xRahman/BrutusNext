@@ -7,6 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {ServerApp} from '../../../server/lib/app/ServerApp';
 import {NameList} from '../../../shared/lib/entity/NameList';
 import {Entity} from '../../../shared/lib/entity/Entity';
@@ -27,12 +28,13 @@ export class Accounts
 
   // ------------- Public static methods ----------------
 
+  // -> Returns 'null' on failure.
+  // -> Returns 'undefined' if requested unique name is already taken.
   public static async create
   (
     request: RegisterRequest,
     connection: Connection
   )
-  : Promise<Account>
   {
     if (!connection)
     {
@@ -40,17 +42,27 @@ export class Accounts
       return null;
     }
 
+    // Encode email address so it can be used as file name
+    // (this usualy does nothing because characters that are
+    //  not allowed in email addresss are rarely used in e-mail
+    //  address - but better be sure).
+    let accountName = Utils.encodeEmail(request.email);
+
     let account = await ServerEntities.createInstanceEntity
     (
       Account,
-      Account.name,
-      request.accountName,
+      Account.name,   // Prototype name.
+      accountName,
       Entity.NameCathegory.ACCOUNT
     );
 
+    // 'undefined' means that the name is already taken.
+    if (account === undefined)
+      return undefined;
+
     if (!Entity.isValid(account))
     {
-      ERROR("Failed to create account '" + request.accountName + "'");
+      ERROR("Failed to create account '" + accountName + "'");
       return null;
     }
 
