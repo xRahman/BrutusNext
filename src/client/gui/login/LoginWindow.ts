@@ -61,6 +61,18 @@ export class LoginWindow extends StandaloneWindow
 
   // --------------- Protected methods ------------------
 
+  // ~ Overrides Window.onShow().
+  protected onShow()
+  {
+    this.form.onShow();
+  }
+
+  // ~ Overrides Window.onHide().
+  protected onHide()
+  {
+    this.form.onHide();
+  }
+
   // ---------------- Private methods -------------------
 
   private createRegisterLink
