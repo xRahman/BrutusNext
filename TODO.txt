@@ -8,7 +8,7 @@ TODO: Zapsat entries do LocalStorage při loginu do hry
 TODO: Request spam protection (když user opakovaně rychle klikne
   na 'Register', tak to nejspíš vyhodí 'account already registered').
 - asi bude nejjednodušší disablovat input button
-  (+ pro jistotu locknout onInputClic() handler).
+  (+ pro jistotu locknout onInputClick() handler přes nějakou flagu).
   Když se to resetne při ztrátě spojení, tak by to mělo být ok
   - přinejhorším si use reloadne browser tab.
 TODO: Waiting cursor (asi bude nejlepší setovat css class):
