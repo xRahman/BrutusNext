@@ -9,12 +9,12 @@
 import {LocalStorage} from '../../../client/lib/storage/LocalStorage';
 import {Connection} from '../../../client/lib/net/Connection';
 import {Component} from '../../../client/gui/Component';
-import {Form} from '../../../client/gui/Form';
+import {CredentialsForm} from '../../../client/gui/CredentialsForm';
 import {LoginRequest} from '../../../shared/lib/protocol/LoginRequest';
 
 import $ = require('jquery');
 
-export class LoginForm extends Form
+export class LoginForm extends CredentialsForm
 {
   // -------------- Static class data -------------------
 
@@ -23,9 +23,6 @@ export class LoginForm extends Form
   //------------------ Private data ---------------------
 
   ///private $accountNameInput = null;
-  private $emailInput: JQuery = null;
-  private $passwordInput = null;
-  private $rememberMeCheckbox = null;
 
   // --------------- Static accessors -------------------
 
@@ -58,56 +55,6 @@ export class LoginForm extends Form
   }
 
   // --------------- Protected methods ------------------
-
-  // ~ Overrides Form.createEmailInput().
-  protected createEmailInput()
-  {
-    this.$emailInput = super.createEmailInput
-    (
-      {
-        name: 'email_input',
-        placeholder: 'Enter E-mail Address'
-      }
-    );
-
-    if (LocalStorage.isAvailable)
-    {
-      let savedEmail = LocalStorage.read(LocalStorage.EMAIL_ENTRY);
-
-      if (savedEmail)
-        this.$emailInput.val(savedEmail);
-    }
-
-    return this.$emailInput;
-  }
-
-  // ~ Overrides Form.createPasswordInput().
-  protected createPasswordInput()
-  {
-    /// TODO: Číst to ze stejné proměnné jako server a jako register form.
-    let minLength = 4;
-    let maxLength = 50;
-
-    this.$passwordInput = super.createPasswordInput
-    (
-      {
-        name: 'password_input',
-        placeholder: 'Enter Password',
-        minLength: minLength,
-        maxLength: maxLength
-      }
-    );
-
-    if (LocalStorage.isAvailable)
-    {
-      let savedPassword = LocalStorage.read(LocalStorage.PASSWORD_ENTRY);
-
-      if (savedPassword)
-        this.$passwordInput.val(savedPassword);
-    }
-
-    return this.$passwordInput;
-  }
 
   // ~ Overrides Form.createSubmitButton().
   protected createSubmitButton({ $container }: { $container: JQuery; })
@@ -143,35 +90,14 @@ export class LoginForm extends Form
   //   );
   // }
 
-  private createRememberMeCheckbox()
-  {
-    // Don't create 'Remember me' checkbox
-    // if Html 5 local storage isn't available.
-    if (Storage === undefined)
-      return;
-
-    this.$rememberMeCheckbox = super.createCheckboxInput
-    (
-      {
-        name: 'remember_me_checkbox',
-        text: 'Remember me',
-        checked: true
-      }
-    );
-  }
-
   private createButtons()
   {
-    this.createSubmitButton
-    (
-      {
-        $container: super.createButtonContainer()
-      }
-    );
+    this.createSubmitButton({ $container: super.createButtonContainer() });
   }
 
   // ---------------- Event handlers --------------------
 
+  // ~ Overrides Form.onSubmit().
   protected onSubmit(event: Event)
   {
     // We will handle the form submit ourselves.
@@ -184,4 +110,10 @@ export class LoginForm extends Form
 
     Connection.send(packet);
   }
+
+  // // ~ Overrides CrendentialsForm.onRememberMeChange().
+  // protected onRememberMeChange(event: Event)
+  // {
+  //   this.$rememberMeCheckbox.prop('checked');
+  // }
 }
