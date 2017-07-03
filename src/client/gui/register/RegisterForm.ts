@@ -11,13 +11,13 @@ import {Connection} from '../../../client/lib/net/Connection';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {LocalStorage} from '../../../client/lib/storage/LocalStorage';
 import {Component} from '../../../client/gui/Component';
-import {Form} from '../../../client/gui/Form';
+import {CredentialsForm} from '../../../client/gui/CredentialsForm';
 import {RegisterRequest} from '../../../shared/lib/protocol/RegisterRequest';
 import {RegisterResponse} from '../../../shared/lib/protocol/RegisterResponse';
 
 import $ = require('jquery');
 
-export class RegisterForm extends Form
+export class RegisterForm extends CredentialsForm
 {
   private static get PROBLEM_TEXT_COLOR() { return '&R'; }
 
@@ -40,9 +40,6 @@ export class RegisterForm extends Form
   //------------------ Private data ---------------------
 
   ///private $accountNameInput: JQuery = null;
-  private $emailInput: JQuery = null;
-  private $passwordInput: JQuery = null;
-  private $rememberMeCheckbox: JQuery = null;
   private $emailInputProblem: JQuery = null;
   private $emailInputProblemEmptyLine: JQuery = null;
   private $passwordInputProblem: JQuery = null;
@@ -138,36 +135,6 @@ export class RegisterForm extends Form
 
   // --------------- Protected methods ------------------
 
-  // ~ Overrides Form.createEmailInput().
-  protected createEmailInput()
-  {
-    this.$emailInput = super.createEmailInput
-    (
-      {
-        name: 'email_input',
-        placeholder: 'Enter E-mail Address'
-      }
-    );
-
-    return this.$emailInput;
-  }
-
-  // ~ Overrides Form.createPasswordInput().
-  protected createPasswordInput()
-  {
-    this.$passwordInput = super.createPasswordInput
-    (
-      {
-        name: 'password_input',
-        placeholder: 'Enter Password',
-        minLength: RegisterRequest.MIN_PASSWORD_LENGTH,
-        maxLength: RegisterRequest.MAX_PASSWORD_LENGTH
-      }
-    );
-
-    return this.$passwordInput;
-  }
-
   // ~ Overrides Form.createSubmitButton().
   protected createSubmitButton({ $container }: { $container: JQuery; })
   {
@@ -237,22 +204,6 @@ export class RegisterForm extends Form
     (
       this.$infoLabel,
       RegisterForm.PROBLEM_TEXT_COLOR + problem
-    );
-  }
-
-  private createRememberMeCheckbox()
-  {
-    // Check if Html 5 local storage is available.
-    if (!LocalStorage.isAvailable())
-      return;
-
-    this.$rememberMeCheckbox = super.createCheckboxInput
-    (
-      {
-        name: 'remember_me_checkbox',
-        text: 'Remember me',
-        checked: true
-      }
     );
   }
 
@@ -334,6 +285,7 @@ export class RegisterForm extends Form
 
   // ---------------- Event handlers --------------------
 
+  // ~ Overrides Form.onSubmit().
   protected onSubmit(event: Event)
   {
     // We will handle the form submit ourselves.
@@ -361,4 +313,9 @@ export class RegisterForm extends Form
     this.hideErrorMessages();
     ClientApp.setState(ClientApp.State.LOGIN);
   }
+
+  // // ~ Overrides CrendentialsForm.onRememberMeChange().
+  // protected onRememberMeChange(event: Event)
+  // {
+  // }
 }

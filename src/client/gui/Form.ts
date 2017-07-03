@@ -4,12 +4,6 @@
   Abstract ancestor of component containing a form.
 */
 
-/*
-  Implementation note: Some method names begin with '_' because
-  it's not possible to create an override of a method with different
-  parameters in Typescript.
-*/
-
 'use strict';
 
 import {Component} from '../../client/gui/Component';
@@ -48,6 +42,9 @@ export abstract class Form extends Component
   // --------------- Public accessors -------------------
 
   // ---------------- Public methods --------------------
+
+  public onShow() {}
+  public onHide() {}
 
   // --------------- Protected methods ------------------
 

@@ -1,22 +1,8 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
-TODO: Změna  "Remember Me" checkboxu v Login okně by ho měla přepnout
-  i v Register okně a naopak
-  - možná by to vážně mohlo být jen jedno okno a pouze přepínat konfiguraci...
-
-TODO: LoginForm a RegisterForm mají pořád dost společného (zdvojeného)
-  kódu (např. createRememberMeCheckbox()). Asi by stálo za to vložit
-  před ně ještě jednoho předka.
-  - CredentialsForm?
-
-TODOOOOOOO: Implementovat "Remember me" funkcionalitu,
-  ať to nemusím pořád vyplňovat!
 TODO: Zapsat entries do LocalStorage při loginu do hry
-  (smazat je, když je checkbox odškrtnutý).
-
-TODO: Zrušit komplet accountName
-TODO: Předělat v LoginForm acc name na email.
+  (podobně jako se to dělá při založení accountu).
 
 
 TODO: Request spam protection (když user opakovaně rychle klikne
@@ -37,6 +23,7 @@ TODO: V RegisterForm při každém user inputu (klávesa odhchycená
   v jednom z inputů) pustit timer (tak 2s) a po něm vyčistit
   error hlášky.
   (a zrušit ho, když user mezi tím zmáčne submit).
+- timer je asi zbytečný, může se to vyčistit hned.
 
 TODO: projít použití createInstanceEntity() a zkontrolvoat, že nikde
 nevadí 'undefined' return value když je jméno zabrané.
@@ -50,6 +37,43 @@ TODO: Ještě se přece jen zamyslet, jestli jsou prázné řádky v RegisterFor
   dobré řešení.
 
 --------------------------------------------------------------
+
+TODO: Někam dát setování hesla ze storage
+ (původně to bylo v LoginForm.createPasswordInput()).
+- má se to fakt dělat při vyrábění komponenty?
+- možná by to mělo být spíš v onShow().
+[done]
+
+TODO: Do LocalStorage je třeba ukládat taky stav "Remember Me" checkboxu.
+  (stačí tam savnout cokoliv - existence té hodnoty znamená, že se má
+   rememberovat. Zapisovat to je asi třeba při každém překliknutí checkboxu.)
+[done]
+
+TODO: Při vytváření LoginForm a RegisterForm je třeba stav checkboxu
+  nastavit podle hodnoty "RememberMe" savnuté v local storagi
+  (aby user nemusel zaškrtávat checkbox při každém logování).
+[done]
+
+TODO: Zavést onShow() a onHide() metody v oknech
+ - checkboxy by ale měly svůj stav synchronizovat okamžitě při přepnutí,
+   ne až při show vedlejšího okna.
+- v onShow() by to mělo stačit.
+[done]
+
+TODO: LoginForm a RegisterForm mají pořád dost společného (zdvojeného)
+  kódu (např. createRememberMeCheckbox()). Asi by stálo za to vložit
+  před ně ještě jednoho předka.
+  - CredentialsForm?
+[done]
+
+TODOOOOOOO: Implementovat "Remember me" funkcionalitu,
+  ať to nemusím pořád vyplňovat!
+[skoro]
+
+TODO: Zrušit komplet accountName
+[done]
+TODO: Předělat v LoginForm acc name na email.
+[done]
 
 TODO: Korektně vyrobit mailto: link v error response.
 [Kašlat na to]

@@ -41,6 +41,7 @@ export class Window extends Component
   //  shown again - except those with 'closed' set to 'true').
   protected closed = false;
 
+
   // Determines app states at which this window is shown.
   protected flags = new Flags<ClientApp.State>();
 
@@ -52,6 +53,10 @@ export class Window extends Component
   protected $content = null;
 
   // ----------------- Private data ---------------------
+
+  // Internal flag to prevent calling onHide() if window
+  // is already hidden.
+  private hidden = true;
 
   // --------------- Static accessors -------------------
 
@@ -140,17 +145,32 @@ export class Window extends Component
 
   // --------------- Protected methods ------------------
 
+  protected onShow() {}
+  protected onHide() {}
+
   // ---------------- Private methods -------------------
 
   private hide()
   {
+    if (this.hidden)
+      return;
+
+    this.onHide();
     this.$window.hide();
+    this.hidden = true;
   }
 
   private show()
   {
-    if (!this.closed)
-      this.$window.show();
+    if (this.closed)
+      return;
+
+    if (!this.hidden)
+      return;
+
+    this.onShow();
+    this.$window.show();
+    this.hidden = false;
   }
 
   private createTitleBar
