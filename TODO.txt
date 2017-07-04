@@ -1,6 +1,31 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+TODO: Část mailové adresy před @ je case-sensitive.
+Co to pro nás znamená?
+- jména entit by se asi při savování neměla automaticky lowercasovat.
+  (respektive teda aspoň jména accountů)
+- na linuxu to bude fugnovat v pohodě, na Windowzech nikoliv.
+  (respektive možná i tam, aspoň trochu. a@b a A@b se sice budou tvářit
+  jako stejná adresa, ale po savnu/loadu souboru by snad měla být velká
+  písmena zachována (jen to nesmím lowercasovat ručně).
+JEŠTĚ JINAK:
+- fileName lowercasovat musím, jinak mi na linuxu půjdou vytvořit
+  2 accounty lišící se jen v casu. Tzn. budu muset držet originální
+  string někde stranou.
+Nebo možná encodovat velká písmena (Stačí v části před @), např. takle:
+  (h)(u)(a)(n)@brutusmud.net
+   - tak ne, to by zase způsobilo case-sensitive logování do hry,
+     což není dobrý nápad.
+ZÁVĚR:
+  - fileName lowercasovat, originální mail držet strnou v property
+    (a mailovat zásadně na originální mail, ne na dekódovaný accName).
+
+TODO: Nepsat error message do info labelu (v RegisterForm).
+  Místo toho hidnout info label a zapsat do error labelu.
+
+TODO: Login do hry.
+
 TODO: Zapsat entries do LocalStorage při loginu do hry
   (podobně jako se to dělá při založení accountu).
 
@@ -33,8 +58,17 @@ TODO: Nejspíš to bude chtít parametr logErrors: boolean.
 TODO: Na několika místech se vůbec netestuje, jestli je entity úspěšně
   vyrobena.
 
+TODO: LoginForm by asi taky měla mít labely na chybový výstup.
+
 TODO: Ještě se přece jen zamyslet, jestli jsou prázné řádky v RegisterForm
   dobré řešení.
+- není, zrušit je a předělt to na stylování konkrétních elementů.
+  (holt asi bude mít první label jinej styl než ty další - ale možná
+   ani to nebude potřeba).
+Ještě je otázka, jestli by nebylo od věci nechávat tam prázdné místo,
+i když se žádný error nevypisuje, aby okno neměnilo velikost, když se
+vypíše chybová hláška.
+- labely jsou inline-block, takže by asi mohly mít min-height.
 
 --------------------------------------------------------------
 
