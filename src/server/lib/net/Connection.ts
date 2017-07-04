@@ -7,7 +7,9 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {Entity} from '../../../shared/lib/entity/Entity';
+import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
 import {Syslog} from '../../../shared/lib/log/Syslog';
 import {JsonObject} from '../../../shared/lib/json/JsonObject';
 import {Serializable} from '../../../shared/lib/class/Serializable';
@@ -233,7 +235,7 @@ export class Connection
 
     let account: Account = null;
 
-    account = await Accounts.create(request, this);
+    account = await Accounts.register(request, this);
 
     // 'undefined' means that the name is already taken.
     if (account === undefined)
@@ -261,19 +263,64 @@ export class Connection
     this.acceptRegisterRequest(account);
   }
 
-  private async loginRequest(packet: LoginRequest)
+  private authenticate(account, password)
   {
-    /// TODO:
-    /*
-    let jsonObject = JsonObject.parse(data);
-    let request = new LoginRequest();
+    if (!account.checkPassword(password))
+      return false;
 
-    request.deserialize(jsonObject);
+    /// TODO: Send 'login failed' response.
 
-    if (!request.isValid())
+    return true;
+  }
+
+  private reconnect(accountName: string, password: string)
+  {
+    // Check if account is already loaded in memory.
+    let account = Accounts.get(accountName);
+
+    if (!account)
+      return false;
+
+    if (this.authenticate(account, password))
+      return false;
+
+    /// TODO: Nastavení connection atd.
+
+    return true;
+  }
+
+  private async login(accountName: string, password: string)
+  {
+    let account = await ServerEntities.loadEntityByName
+    (
+      Account, // Typecast.
+      accountName,
+      Entity.NameCathegory.ACCOUNT
+    );
+
+    if (!account)
+    {
+      /// TODO: ERROR (poslat zpět login response s errorem.)
       return;
-    */
-    
+    }
+
+    if (this.authenticate(account, password))
+      return;
+
+    /// TODO: Nastavení connection atd.
+  }
+
+  private async loginRequest(request: LoginRequest)
+  {
+    // E-mail address is used as account name but it needs
+    // to be encoded first so it can be used as file name.
+    let accountName = Utils.encodeEmail(request.email);
+    let password = request.password;
+
+    if (this.reconnect(accountName, password))
+      return;
+
+    await this.login(accountName, password);
   }
 }
 
