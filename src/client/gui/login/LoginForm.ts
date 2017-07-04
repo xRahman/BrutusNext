@@ -103,12 +103,12 @@ export class LoginForm extends CredentialsForm
     // We will handle the form submit ourselves.
     event.preventDefault();
 
-    let packet = new LoginRequest();
+    let request = new LoginRequest();
 
-    packet.email = this.$emailInput.val();
-    packet.password = this.$passwordInput.val();
+    request.email = this.$emailInput.val();
+    request.password = this.$passwordInput.val();
 
-    Connection.send(packet);
+    Connection.send(request);
   }
 
   // // ~ Overrides CrendentialsForm.onRememberMeChange().

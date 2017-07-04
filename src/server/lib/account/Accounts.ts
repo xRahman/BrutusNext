@@ -30,7 +30,7 @@ export class Accounts
 
   // -> Returns 'null' on failure.
   // -> Returns 'undefined' if requested unique name is already taken.
-  public static async create
+  public static async register
   (
     request: RegisterRequest,
     connection: Connection
