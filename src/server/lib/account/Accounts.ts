@@ -32,7 +32,8 @@ export class Accounts
   // -> Returns 'undefined' if requested unique name is already taken.
   public static async register
   (
-    request: RegisterRequest,
+    accountName: string,
+    password: string,
     connection: Connection
   )
   {
@@ -41,12 +42,6 @@ export class Accounts
       ERROR("Invalid connection");
       return null;
     }
-
-    // Encode email address so it can be used as file name
-    // (this usualy does nothing because characters that are
-    //  not allowed in email addresss are rarely used in e-mail
-    //  address - but better be sure).
-    let accountName = Utils.encodeEmail(request.email);
 
     let account = await ServerEntities.createInstanceEntity
     (
@@ -66,15 +61,9 @@ export class Accounts
       return null;
     }
 
-    account.setPasswordHash(request.password);
-    account.connection = connection;
-    connection.account = account;
-
+    account.setPasswordHash(password);
+    account.attachConnection(connection);
     account.addToLists();
-
-    // // 'ServerEntities.createInstance()' has created
-    // // a name lock file, so we can remove soft name lock.
-    // Accounts.removeSoftNameLock(this.accountName);
 
     await ServerEntities.save(account);
 
@@ -93,7 +82,8 @@ export class Accounts
     return ServerApp.accounts.names.get(name);
   }
 
-  // Removes account from Accounts, but not from memory.
+  // Removes account from Accounts, but not from memory
+  // (because it will stay in Entities).
   // -> Returns 'true' on success.
   public static remove(account: Account)
   {

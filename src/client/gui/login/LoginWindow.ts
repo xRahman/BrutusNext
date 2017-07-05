@@ -11,6 +11,7 @@ import {Component} from '../../../client/gui/Component';
 import {StandaloneWindow} from '../../../client/gui/StandaloneWindow';
 import {Form} from '../../../client/gui/Form';
 import {LoginForm} from '../../../client/gui/login/LoginForm';
+import {LoginResponse} from '../../../shared/lib/protocol/LoginResponse';
 
 import $ = require('jquery');
 
@@ -52,11 +53,19 @@ export class LoginWindow extends StandaloneWindow
     // Create login form.
     this.form.create({ $container: this.$content });
 
-    this.createEmptyLine();
-
     this.createRegisterInfo();
 
     return this.$window;
+  }
+
+  public displayProblem(response: LoginResponse)
+  {
+    this.form.displayProblem(response);
+  }
+
+  public loginSucceeded()
+  {
+    this.form.rememberCredentials();
   }
 
   // --------------- Protected methods ------------------

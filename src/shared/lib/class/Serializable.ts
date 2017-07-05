@@ -123,6 +123,23 @@ export class Serializable extends Attributable
 
   // ---------------- Public methods --------------------
 
+  public dynamicCast<T>(Class: { new (...args: any[]): T })
+  {
+    // Dynamic type check - we make sure that entity is inherited from
+    // requested class (or an instance of the class itself).
+    if (!(this instanceof Class))
+    {
+      ERROR("Type cast error: serializable"
+        + " object " + this.getErrorIdString()
+        + " is not an instance of requested"
+        + " type (" + Class.name + ")");
+
+      return null;
+    }
+
+    return <any>this;
+  }
+
   // Returns string describing this object for error logging.
   public getErrorIdString()
   {

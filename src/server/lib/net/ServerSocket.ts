@@ -126,10 +126,19 @@ export class ServerSocket
   }
 
   // Closes the socket, ending the connection.
+  // -> Returns 'false' if connection couldn't be closed.
   public close()
   {
-    if (this.webSocket)
-      this.webSocket.close();
+    if (!this.webSocket)
+      return false;
+      
+    // If the socket is already closed, close() would do nothing.
+    if (this.webSocket.readyState === 3)  // '3' means CLOSED.
+      return false;
+
+    this.webSocket.close();
+
+    return true;
   }
 
   // ---------------- Event handlers --------------------
@@ -209,6 +218,15 @@ export class ServerSocket
         AdminLevel.IMMORTAL
       );
     }
+
+    if (!this.connection)
+    {
+      ERROR("Missing connection reference on socket."
+        + " Account and connection won't be released"
+        + " from memory");
+    }
+
+    this.connection.onClose();
   }
 
   // -------------- Protected methods -------------------
