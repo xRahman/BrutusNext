@@ -131,7 +131,7 @@
       If we wanted to allow users to change font size, we should
         set this attribute so all fonts scale accordingly.
     */
-	font-size: 100%; /* Browser default (usually 16px) */
+	/*font-size: 1em;*/ /* Browser default (usually 16px) */
 
   /* Following code makes the image always cover whole area */
   background-repeat: no-repeat;
@@ -248,7 +248,7 @@
 .S_Form,
 .S_Form_Label,
 .S_Form_Checkbox,
-.S_Form_CheckboxContainer,
+/*.S_Form_CheckboxContainer,*/
 .S_Form_ButtonContainer,
 .S_RegisterForm_SubmitButton,
 .S_RegisterForm_CancelButton,
@@ -300,7 +300,7 @@
 .G_Checkbox,
 .G_LinkText
 {
-  border: none;
+  border: 0;
 }
 
 /* :: Default Border :: */
@@ -487,41 +487,40 @@
 /* -------------- Nonstandard Font Size -------------- */
 
 /* :: Small Font Size :: */
-.S_StandaloneWindow_Text,
-.S_StandaloneWindow_LinkText,
-.S_Form_Label,
+/*.S_StandaloneWindow_Text,
+.S_StandaloneWindow_LinkText,*/
+.S_StandaloneWindow_LinkContainer,
+.S_Form_LabelContainer,
+/*.S_Form_CheckboxContainer,*/
 .S_GameWindow_Title,
 .S_CharlistWindow_CharacterPlateLabelSmall
 {
-  font-size: 0.8em;
+  /*font-size: 0.8em;*/
+  font-size: 80%;
 }
 
 /* :: Large Font Size :: */
 .S_CharlistWindow_CharacterPlateLabelBig
 {
-  font-size: 1.2em;
+  /*font-size: 1.2em;*/
+  font-size: 100%;
 }
 
 /* ------------- Component --------------- */
 
 /* :: Full Width Inline Block :: */
+/*
 .S_StandaloneWindow_Text,
 .S_Form_ButtonContainer,
 .S_Form_Label
 {
+  margin: 0;
+  padding: 0;
   width: 100%;
   height: auto;
   display: inline-block;
 }
-
-/* :: Full Width Small Empty Line */
-.S_Form_EmptyLine,
-.S_StandaloneWindow_EmptyLine
-{
-  width: 100%;
-  height: 0.6em;
-  display: block;
-}
+*/
 
 /* --------------- Window ---------------- */
 
@@ -668,7 +667,8 @@
 }
 
 /* :: Standalone Window Text :: */
-.S_StandaloneWindow_Text,
+
+/*.S_StandaloneWindow_Text,*/
 .S_StandaloneWindow_LinkText
 {
   margin: 0;
@@ -680,6 +680,8 @@
 /* :: Standalone Window Link Container :: */
 .S_StandaloneWindow_LinkContainer
 {
+  margin: 0;
+  padding: 0;
   width: 100%;
   height: auto;
   display: block;
@@ -795,7 +797,16 @@
 }
 
 /* :: Form Checkbox Container :: */
+/*
 .S_Form_CheckboxContainer
+{
+  width: 100%;
+  height: auto;
+}
+*/
+
+/* :: Form Label Container :: */
+.S_Form_LabelContainer
 {
   width: 100%;
   height: auto;

@@ -1,6 +1,64 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+TODO: Asi bych měl všude používat 'rem' místo 'em' jednotky.
+- potom by komentář k základnímu font-size neměl být u <body>,
+  ale v <html>
+- hm, ono to 'rem' vlastně nic moc neřeší - stejně musí mít <div>
+  nastavenou stejnou velikost textu jako vnořený <span>, aby se
+  správně počítala jeho výška.
+
+TODO: Sjednotit setování textu komponentám
+- vždycky by to měly být spany (jeden nebo víc)
+- vždycky by se to mělo setovat stejnou metodou jako colored text
+  (a i když text není colored, tak by se v setText() stejně měl vyrobit span).
+- To mimo jiné znamená, že labely by měly být prostě <label> s display: block
+  (a uvnitř bude <span>), nikoliv <div><label><span>...</span></label></div>
+
+--------------------------------------------------------------
+
+TODO: Pořádně prostudovat https://www.npmjs.com/package/ws
+- zejména jak detekovat mrtvou connection, která nevygenerovala
+  onClose.
+
+TODO: Zkontrolovat, že se mi closnuté connections vyhazují z Connections.
+- Zavření connectionu při reconnectu by asi mělo fungovat tak, že se closne
+  web socket, tím se vygeneruje event onClose() a ten vyhodí connection
+  z connections - to se ale nemusí podařit, takže možná stojí za to udělat
+  to ještě jednou ručně (nebo kontrolovat, jestli to prošlo).
+
+TODO: Při registraci asi přece jen přidat check, že account
+  není online (nemělo by to sice nastat, ale...)
+
+TODO: Prozkoumat, jestli se mi správně dealokují struktury při disconnectu
+  (account, connection, socket)
+
+Co se stane při reconnectu.
+- Když se connectim ze stejného tabu, tak by se nejdřív měl zavřít socket
+  (což server obslouží a zahodí u toho account). Tudíž následný connect
+  by se měl zpracovat jako connectToAccount.
+- Když se connectím z jiné lokace (klidně z jiného tabu) a starou connection
+  jsem nezavřel, tak mi všechno visí v paměti
+   - account v něm connection a v ní socket.
+  Při reconnectu najdu podle jména account a musím:
+  - poslat mu zprávu o connection usurped
+  - zavřít socket
+  - dealokovat staré struktury (socket, connection a account).
+  - nalogovat se, jako kdyby šlo o čistý connect.
+
+--------------------------------------------------------------
+
+TODO: To, že se při deserializaci zahazují proměnné, které nejsou
+  na cílovém objektu, nejspíš není dobře - znemožní to savovat
+  proměnné deklarované ve skriptu (nebo obecně v runtimu).
+- pokud to povolím, tak by se asi současně s deserializací
+  takové proměnné pro ni měla nastavit statická proměnná (atribut),
+  že jde o dynamicky deklarovanou proměnnou (protože při další
+  serializaci už by to nebylo jak poznat - leda hledáním, jestli
+  ta proměnná existuje i na nějakém prototypu v chainu).
+
+--------------------------------------------------------------
+
 TODO: Část mailové adresy před @ je case-sensitive.
 Co to pro nás znamená?
 - jména entit by se asi při savování neměla automaticky lowercasovat.
@@ -43,6 +101,7 @@ TODO: Nějak recovernout stav RegisterForm, když po odeslání requestu spadne
 
 TODO: Dynamic typecast při zpracování packetu (na klientu i na serveru,
   obojí asi bude v Connection).
+[done]
 
 TODO: V RegisterForm při každém user inputu (klávesa odhchycená
   v jednom z inputů) pustit timer (tak 2s) a po něm vyčistit
