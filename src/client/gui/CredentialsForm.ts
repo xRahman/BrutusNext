@@ -4,9 +4,10 @@
   Abstract ancestor of forms that collect user credentials.
 */
 
-
 'use strict';
 
+import {ERROR} from '../../shared/lib/error/ERROR';
+import {Component} from '../../client/gui/Component';
 import {LocalStorage} from '../../client/lib/storage/LocalStorage';
 import {RegisterRequest} from '../../shared/lib/protocol/RegisterRequest';
 import {Form} from '../../client/gui/Form';
@@ -17,10 +18,15 @@ export abstract class CredentialsForm extends Form
 {
   // -------------- Static class data -------------------
 
+  protected static get PROBLEM_TEXT_COLOR() { return '&R'; }
+
   //----------------- Protected data --------------------
 
   protected $emailInput: JQuery = null;
+  protected $emailProblem: JQuery = null;
   protected $passwordInput: JQuery = null;
+  protected $passwordProblem: JQuery = null;
+  protected $errorLabel: JQuery = null;
   protected $rememberMeCheckbox = null;
 
   //------------------ Private data ---------------------
@@ -49,6 +55,30 @@ export abstract class CredentialsForm extends Form
   // ~ Overrides Form.onHide().
   public onHide() {}
 
+  public rememberCredentials()
+  {
+    // Check if Html 5 local storage is available.
+    if (!LocalStorage.isAvailable())
+      return;
+
+    if (this.$rememberMeCheckbox.prop('checked'))
+    {
+      LocalStorage.write
+      (
+        LocalStorage.EMAIL_ENTRY,
+        this.$emailInput.val()
+      );
+
+      /// Heslo by se asi pamatovat nemělo (rozhodně ne nezakryptované),
+      /// ale pro účely ladění se mi to bude hodit.
+      LocalStorage.write
+      (
+        LocalStorage.PASSWORD_ENTRY,
+        this.$passwordInput.val()
+      );
+    }
+  }
+
   // --------------- Protected methods ------------------
 
   // ~ Overrides Form.createEmailInput().
@@ -65,6 +95,29 @@ export abstract class CredentialsForm extends Form
     return this.$emailInput;
   }
 
+  protected createEmailProblemLabel()
+  {
+    this.$emailProblem = super.createLabel({ text: '' });
+    this.$emailProblem.hide();
+  }
+
+  protected displayEmailProblem(problem: string)
+  {
+    if (!this.$emailProblem)
+    {
+      ERROR("Invalid $emailProblem element");
+      return;
+    }
+
+    Component.setColoredText
+    (
+      this.$emailProblem,
+      CredentialsForm.PROBLEM_TEXT_COLOR + problem
+    );
+
+    this.$emailProblem.show();
+  }
+
   // ~ Overrides Form.createPasswordInput().
   protected createPasswordInput()
   {
@@ -79,6 +132,35 @@ export abstract class CredentialsForm extends Form
     );
 
     return this.$passwordInput;
+  }
+
+  protected createPasswordProblemLabel()
+  {
+    this.$passwordProblem = super.createLabel({});
+    this.$passwordProblem.hide();
+  }
+
+  protected displayPasswordProblem(problem: string)
+  {
+    if (!this.$passwordProblem)
+    {
+      ERROR("Invalid $passwordProblem element");
+      return;
+    }
+
+    Component.setColoredText
+    (
+      this.$passwordProblem,
+      CredentialsForm.PROBLEM_TEXT_COLOR + problem
+    );
+
+    this.$passwordProblem.show();
+  }
+
+  protected createErrorLabel()
+  {
+    this.$errorLabel = super.createLabel({});
+    this.$errorLabel.hide();
   }
 
   protected createRememberMeCheckbox()
@@ -100,6 +182,29 @@ export abstract class CredentialsForm extends Form
     (
       (event: Event) => { this.onRememberMeChange(event); }
     );
+  }
+
+  protected displayError(problem: string)
+  {
+    Component.setColoredText
+    (
+      this.$errorLabel,
+      CredentialsForm.PROBLEM_TEXT_COLOR + problem
+    );
+
+    this.$errorLabel.show();
+  }
+
+  protected hideProblems()
+  {
+    if (this.$emailProblem)
+      this.$emailProblem.hide();
+
+    if (this.$passwordProblem)
+      this.$passwordProblem.hide();
+
+    if (this.$errorLabel)
+      this.$errorLabel.hide();
   }
 
   // ---------------- Private methods -------------------

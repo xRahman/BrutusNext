@@ -53,8 +53,6 @@ export class RegisterWindow extends StandaloneWindow
     // Create register form.
     this.form.create({ $container: this.$content });
 
-    this.createEmptyLine();
-
     this.createTermsInfo();
 
     return this.$window;
@@ -67,7 +65,7 @@ export class RegisterWindow extends StandaloneWindow
 
   public registrationSucceeded()
   {
-    this.form.registrationSucceeded();
+    this.form.rememberCredentials();
   }
 
   // --------------- Protected methods ------------------

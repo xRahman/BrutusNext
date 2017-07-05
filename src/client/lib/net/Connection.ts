@@ -15,6 +15,7 @@ import {Avatar} from '../../../client/lib/net/Avatar';
 import {Packet} from '../../../shared/lib/protocol/Packet';
 import {Command} from '../../../shared/lib/protocol/Command';
 import {Account} from '../../../client/lib/account/Account';
+import {LoginResponse} from '../../../shared/lib/protocol/LoginResponse';
 import {RegisterResponse} from '../../../shared/lib/protocol/RegisterResponse';
 import {Windows} from '../../../client/gui/Windows';
 
@@ -143,11 +144,14 @@ export class Connection
   // Processes received 'packet'.
   private receive(packet: Packet)
   {
-    /// Možná takhle? Nebo polymorfismus?
     switch (packet.getClassName())
     {
       case RegisterResponse.name:
-        this.processRegisterResponse(<RegisterResponse>packet);
+        this.processRegisterResponse(packet.dynamicCast(RegisterResponse));
+        break;
+
+      case LoginResponse.name:
+        this.processLoginResponse(packet.dynamicCast(LoginResponse));
         break;
 
       default:
@@ -156,10 +160,22 @@ export class Connection
     }
   }
 
+  private processLoginResponse(response: LoginResponse)
+  {
+    if (response.result === LoginResponse.Result.OK)
+    {
+      this.account = response.account.deserializeEntity(Account);
+      Windows.loginWindow.loginSucceeded();
+      ClientApp.setState(ClientApp.State.CHARLIST);
+      return;
+    }
+
+    // Otherwise display to the user what the problem is.
+    Windows.loginWindow.displayProblem(response);
+  }
+
   private processRegisterResponse(response: RegisterResponse)
   {
-    // If register request has been accepted, advance to the next
-    // application state.
     if (response.result === RegisterResponse.Result.OK)
     {
       this.account = response.account.deserializeEntity(Account);

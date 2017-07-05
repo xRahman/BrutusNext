@@ -116,11 +116,8 @@ export class WebSocketServer
 
   // -> Returns 'null' if connection couldn't be created.
   private async createConnection(socket: WebSocket, ip: string, url: string)
-  {
-    let serverSocket = new ServerSocket(socket, ip, url);
-    let connection = new Connection();
-
-    connection.setSocket(serverSocket);
+  {    
+    let connection = new Connection(socket, ip, url);
 
     Connections.add(connection);
   }

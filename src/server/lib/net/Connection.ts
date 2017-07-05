@@ -28,11 +28,19 @@ import {Connections} from '../../../server/lib/net/Connections';
 import {MudMessage} from '../../../shared/lib/protocol/MudMessage';
 import {Packet} from '../../../shared/lib/protocol/Packet';
 import {LoginRequest} from '../../../shared/lib/protocol/LoginRequest';
+import {LoginResponse} from '../../../shared/lib/protocol/LoginResponse';
 import {RegisterRequest} from '../../../shared/lib/protocol/RegisterRequest';
 import {RegisterResponse} from '../../../shared/lib/protocol/RegisterResponse';
 
 export class Connection
 {
+  constructor(socket: WebSocket, ip: string, url: string)
+  {
+    let serverSocket = new ServerSocket(socket, ip, url);
+
+    this.setSocket(serverSocket);
+  }
+
   // ----------------- Public data ----------------------
 
   public account: Account = null;
@@ -44,20 +52,41 @@ export class Connection
 
   // -------- Public stage transition methods -----------
 
-  // ---------------- Public methods --------------------
+  // --------------- Public accessors -------------------
 
   public get ipAddress() { return this.socket.getIpAddress(); }
 
-  public setSocket(socket: ServerSocket)
-  {
-    if (socket === null || socket === undefined)
-    {
-      ERROR("Invalid socket");
-      return;
-    } 
+  // ---------------- Public methods --------------------
 
-    socket.connection = this;
-    this.socket = socket;
+  // Closes the connection and removes it from memory
+  // (this is not possible if it is still linked to an
+  //  account).
+  public close()
+  {
+    if (this.account !== null)
+    {
+      ERROR("Attempt to close connection that is still linked"
+        + " to account (" + this.account.getErrorIdString() + ")."
+        + " Connection is not closed");
+    }
+
+    if (!this.socket)
+    {
+      ERROR("Unable to close connection because it has no socket"
+        + " attached. Removing it from Connections");
+      Connections.release(this);
+      return;
+    }
+
+    if (!this.socket.close())
+    {
+      // If socket can't be closed (websocket is missing
+      // or it's already CLOSED), release the connection
+      // from memory. If it can be closed, 'onClose' event
+      // will be triggered and it's handler will release
+      // the connection.
+      Connections.release(this);
+    }
   }
 
   public attachToGameEntity(gameEntity: GameEntity)
@@ -112,6 +141,18 @@ export class Connection
 
   // --------------- Private methods --------------------
 
+  private setSocket(socket: ServerSocket)
+  {
+    if (socket === null || socket === undefined)
+    {
+      ERROR("Invalid socket");
+      return;
+    } 
+
+    socket.connection = this;
+    this.socket = socket;
+  }
+
   // Sends 'packet' to web socket.
   private send(packet: Packet)
   {
@@ -124,17 +165,15 @@ export class Connection
   // Processes received 'packet'.
   private async receive(packet: Packet)
   {
-    /// Možná takhle? Nebo polymorfismus?
     switch (packet.getClassName())
     {
       case RegisterRequest.name:
-        /// Možná by šel udělat dynamic type check.
-        await this.registerRequest(<RegisterRequest>packet);
+        await this.registerRequest(packet.dynamicCast(RegisterRequest));
         break;
 
       case LoginRequest.name:
         /// Možná by šel udělat dynamic type check.
-        await this.loginRequest(<LoginRequest>packet);
+        await this.loginRequest(packet.dynamicCast(LoginRequest));
         break;
 
       default:
@@ -233,9 +272,15 @@ export class Connection
     if (!this.isRegisterRequestOk(request))
       return;
 
+    // Encode email address so it can be used as file name
+    // (this usualy does nothing because characters that are
+    //  not allowed in email addresss are rarely used in e-mail
+    //  address - but better be sure).
+    let accountName = Utils.encodeEmail(request.email);
+    let password = request.password;
     let account: Account = null;
 
-    account = await Accounts.register(request, this);
+    account = await Accounts.register(accountName, password, this);
 
     // 'undefined' means that the name is already taken.
     if (account === undefined)
@@ -253,7 +298,7 @@ export class Connection
       console.log('denying request');
       this.denyRegisterRequest
       (
-        "&R[ERROR]: Failed to create account.\n\n"
+        "[ERROR]: Failed to create account.\n\n"
         + Message.ADMINS_WILL_FIX_IT,
         RegisterResponse.Result.FAILED_TO_CREATE_ACCOUNT
       );
@@ -263,17 +308,62 @@ export class Connection
     this.acceptRegisterRequest(account);
   }
 
+  private acceptLoginRequest(account: Account)
+  {
+    let response = new LoginResponse();
+    response.result = LoginResponse.Result.OK;
+    
+    // Add newly create account to the response.
+    response.account.serializeEntity
+    (
+      account,
+      Serializable.Mode.SEND_TO_CLIENT
+    );
+
+    this.send(response);
+  }
+
+  private denyLoginRequest
+  (
+    problem: string,
+    result: LoginResponse.Result
+  )
+  {
+    let response = new LoginResponse();
+
+    response.result = result;
+    response.problem = problem;
+
+    this.send(response);
+  }
+
   private authenticate(account, password)
   {
-    if (!account.checkPassword(password))
+    if (!account.validatePassword(password))
       return false;
 
-    /// TODO: Send 'login failed' response.
+    this.denyLoginRequest
+    (
+      "An account is already registered to this e-mail address.",
+      LoginResponse.Result.AUTHENTICATION_FAILED
+    );
 
     return true;
   }
 
-  private reconnect(accountName: string, password: string)
+  private announceReconnect()
+  {
+    let message = new Message
+    (
+      "Someone (hopefully you) has just logged into this account"
+      + " from different location. Closing this connection.",
+      MessageType.CONNECTION_INFO
+    );
+
+    this.sendMudMessage(message);
+  }
+
+  private reconnectToAccount(accountName: string, password: string)
   {
     // Check if account is already loaded in memory.
     let account = Accounts.get(accountName);
@@ -281,15 +371,33 @@ export class Connection
     if (!account)
       return false;
 
-    if (this.authenticate(account, password))
+    if (!this.authenticate(account, password))
       return false;
 
-    /// TODO: Nastavení connection atd.
+    if (!account.getConnection())
+    {
+      // This should never happen.
+      ERROR("Invalid connection on account " + account.getErrorIdString());
+      return;
+    }
+
+    // Let the old connection know that is has been usurped
+    // (we don't have to worry about not sending this message
+    //  when player just reloads her broswer tab, because in
+    //  that case browser closes the old connection so the serves
+    //  has already dealocated the account so connectToAccount()
+    //  has been called rather than reconnectToAccount().
+    account.getConnection().announceReconnect();
+
+    account.detachConnection().close();
+    account.attachConnection(this);
+
+    this.acceptLoginRequest(account);
 
     return true;
   }
 
-  private async login(accountName: string, password: string)
+  private async connectToAccount(accountName: string, password: string)
   {
     let account = await ServerEntities.loadEntityByName
     (
@@ -300,27 +408,77 @@ export class Connection
 
     if (!account)
     {
-      /// TODO: ERROR (poslat zpět login response s errorem.)
+      this.denyLoginRequest
+      (
+        "[ERROR]: Failed to load account.\n\n"
+        + Message.ADMINS_WILL_FIX_IT,
+        LoginResponse.Result.FAILED_TO_LOAD_ACCOUNT
+      );
       return;
     }
 
     if (this.authenticate(account, password))
       return;
 
-    /// TODO: Nastavení connection atd.
+    account.attachConnection(this);
+
+    this.acceptLoginRequest(account);
   }
 
   private async loginRequest(request: LoginRequest)
   {
+    if (this.account !== null)
+    {
+      ERROR("Login request is triggered on connection that has"
+        + " account (" + this.account.getErrorIdString() + ")"
+        + " attached to it. Login request can only be processed"
+        + " on connection with no account attached yet. Request"
+        + " is not processed");
+      return;
+    }
+
     // E-mail address is used as account name but it needs
     // to be encoded first so it can be used as file name.
     let accountName = Utils.encodeEmail(request.email);
     let password = request.password;
 
-    if (this.reconnect(accountName, password))
+    // If player has already been connected prior to this
+    // login request (for example if she logs in from different
+    // computer or browser tab while still being logged-in from
+    // the old location), her Account is still loaded in memory
+    // (because it is kept there as long as connection stays open).
+    //   In such case, we don't need to load account from disk
+    // (because it's already loaded) but we need to close the
+    // old connection and socket (if it's still open) and also
+    // possibly let the player know that her connection has been
+    // usurped.
+    if (this.reconnectToAccount(accountName, password))
       return;
 
-    await this.login(accountName, password);
+    // If account 'accountName' doesn't exist in memory,
+    // we need to load it from disk and connect to it.
+    // This also handles situation when user reloads
+    // browser tab - browser closes the old connection
+    // in such case so at the time user logs back in
+    // server has already dealocated old account, connection
+    // and socket.
+    await this.connectToAccount(accountName, password);
+  }
+
+  // ---------------- Event handlers --------------------
+
+  // Should be called from 'onClose' event on socket.
+  public onClose()
+  {
+    // It's ok if account doesn't exist here, it happens
+    // when brower has opened connection but player hasn't
+    // logged in yet or when player reconnects from different
+    // location and the old connection is closed.
+    if (this.account)
+      this.account.logout("has been logged out");
+
+    // Release this connection from memory.
+    Connections.release(this);
   }
 }
 

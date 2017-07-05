@@ -16,16 +16,19 @@ export abstract class Form extends Component
     { return 'S_Form'; }
   protected static get LABEL_S_CSS_CLASS()
     { return 'S_Form_Label'; }
+  protected static get LABEL_CONTAINER_S_CSS_CLASS()
+    { return 'S_Form_LabelContainer'; }
   protected static get INPUT_S_CSS_CLASS()
     { return 'S_Form_Input'; }
   protected static get CHECKBOX_S_CSS_CLASS()
     { return 'S_Form_Checkbox'; }
-  protected static get CHECKBOX_CONTAINER_S_CSS_CLASS()
-    { return 'S_Form_CheckboxContainer'; }
+  // protected static get CHECKBOX_CONTAINER_S_CSS_CLASS()
+  //   { return 'S_Form_CheckboxContainer'; }
   protected static  get BUTTON_CONTAINER_S_CSS_CLASS()
     { return 'S_Form_ButtonContainer'; }
-  protected static get EMPTY_LINE_S_CSS_CLASS()
-    { return 'S_Form_EmptyLine'; }
+  /// To be deleted.
+  // protected static get EMPTY_LINE_S_CSS_CLASS()
+  //   { return 'S_Form_EmptyLine'; }
 
   // -------------- Static class data -------------------
 
@@ -93,10 +96,18 @@ export abstract class Form extends Component
     }
   )
   {
-    return Component.createLabel
+    let $container = Component.createDiv
     (
       {
         $container: this.$form,
+        sCssClass: Form.LABEL_CONTAINER_S_CSS_CLASS
+      }
+    );
+
+    return Component.createLabel
+    (
+      {
+        $container: $container,
         gCssClass: Component.NO_GRAPHICS_G_CSS_CLASS,
         sCssClass: sCssClass,
         text: text
@@ -243,10 +254,18 @@ export abstract class Form extends Component
     }
   )
   {
-    let $label = Component.createLabel
+    let $container = Component.createDiv
     (
       {
         $container: this.$form,
+        sCssClass: Form.LABEL_CONTAINER_S_CSS_CLASS
+      }
+    );
+
+    let $label = Component.createLabel
+    (
+      {
+        $container: $container,
         sCssClass: label_sCssClass,
         text: null  // No text yet because we want checkbox to be first.
       }
@@ -315,6 +334,8 @@ export abstract class Form extends Component
     );
   }
 
+  /// To be deleted.
+  /*
   protected createEmptyLine
   (
     {
@@ -334,6 +355,7 @@ export abstract class Form extends Component
       }
     );
   }
+  */
 
   // ---------------- Private methods -------------------
 
