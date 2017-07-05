@@ -40,15 +40,6 @@ export class Account extends ServerEntity
 
   // ----------------- Public data ----------------------
 
-  public connection: Connection = null;
-    private static connection: Attributes =
-    {
-      saved: false,
-      edited: false,
-      sentToClient: false,
-      sentToServer: false
-    };
-
   public data = new AccountData();
 
   // List of character names this account has access to.
@@ -57,6 +48,15 @@ export class Account extends ServerEntity
   //----------------- Protected data --------------------
 
   //------------------ Private data ---------------------
+
+  private connection: Connection = null;
+    private static connection: Attributes =
+    {
+      saved: false,
+      edited: false,
+      sentToClient: false,
+      sentToServer: false
+    };
 
   private passwordHash = "";
     private static passwordHash: Attributes =
@@ -72,7 +72,46 @@ export class Account extends ServerEntity
   private lastLoginAddress: string = null;
   private lastLoginTime: Time = null;
 
+  // --------------- Public accessors -------------------
+
+  public getConnection()
+  {
+    return this.connection;
+  }
+
   // ---------------- Public methods --------------------
+
+  public attachConnection(connection: Connection)
+  {
+    if (!connection)
+    {
+      ERROR("Attempt to attach invalid connection to account"
+        + " " + this.getErrorIdString() + ". Connection is not"
+        + " attached");
+      return;
+    }
+
+    connection.account = this;
+    this.connection = connection;
+  }
+
+  public detachConnection()
+  {
+    let connection = this.connection;
+
+    if (!connection)
+    {
+      ERROR("Attempt to detach connection from account"
+        + " " + this.getErrorIdString() + " which has"
+        + " no connection attached");
+      return null;
+    }
+
+    connection.account = null;
+    this.connection = null;
+
+    return connection;
+  }
 
   public getEmail(): string
   {
@@ -145,7 +184,7 @@ export class Account extends ServerEntity
     this.passwordHash = this.md5hash(password);
   }
 
-  public checkPassword(password: string): boolean
+  public validatePassword(password: string): boolean
   {
     return this.passwordHash === this.md5hash(password);
   }

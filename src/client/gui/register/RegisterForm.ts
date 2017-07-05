@@ -19,8 +19,6 @@ import $ = require('jquery');
 
 export class RegisterForm extends CredentialsForm
 {
-  private static get PROBLEM_TEXT_COLOR() { return '&R'; }
-
   private static get RECOMMENDATION()
   {
     return '&YWe strongly recommend that you use different'
@@ -36,14 +34,9 @@ export class RegisterForm extends CredentialsForm
 
   //----------------- Protected data --------------------
 
-
   //------------------ Private data ---------------------
 
   ///private $accountNameInput: JQuery = null;
-  private $emailInputProblem: JQuery = null;
-  private $emailInputProblemEmptyLine: JQuery = null;
-  private $passwordInputProblem: JQuery = null;
-  private $passwordInputProblemEmptyLine: JQuery = null;
   private $infoLabel: JQuery = null;
 
   // --------------- Static accessors -------------------
@@ -66,18 +59,14 @@ export class RegisterForm extends CredentialsForm
     this.createEmailInput();
     this.createEmailProblemLabel();
 
-    this.createEmptyLine();
-
     super.createLabel({ text: 'Your New Password' });
     this.createPasswordInput();
     this.createPasswordProblemLabel();
 
-    this.createEmptyLine();
+    this.createErrorLabel();
 
     this.createInfoLabel();
     this.showRecomendation();
-
-    this.createEmptyLine();
 
     this.createRememberMeCheckbox();
     this.createButtons();
@@ -96,7 +85,7 @@ export class RegisterForm extends CredentialsForm
         break;
 
       case RegisterResponse.Result.FAILED_TO_CREATE_ACCOUNT:
-        this.displayAccountCreationProblem(response.problem);
+        this.displayError(response.problem);
         break;
 
       case RegisterResponse.Result.OK:
@@ -106,30 +95,6 @@ export class RegisterForm extends CredentialsForm
       default:
         ERROR("Unknown register response result");
         break;
-    }
-  }
-
-  public registrationSucceeded()
-  {
-    // Check if Html 5 local storage is available.
-    if (!LocalStorage.isAvailable())
-      return;
-
-    if (this.$rememberMeCheckbox.prop('checked'))
-    {
-      LocalStorage.write
-      (
-        LocalStorage.EMAIL_ENTRY,
-        this.$emailInput.val()
-      );
-
-      /// Heslo by se asi pamatovat nemělo (rozhodně ne nezakryptované),
-      /// ale pro účely ladění se mi to bude hodit.
-      LocalStorage.write
-      (
-        LocalStorage.PASSWORD_ENTRY,
-        this.$passwordInput.val()
-      );
     }
   }
 
@@ -148,45 +113,16 @@ export class RegisterForm extends CredentialsForm
     );
   }
 
+  // ~ Overrides CredentialsForm.hideProblemMessages().
+  protected hideProblems()
+  {
+    super.hideProblems();
+
+    // Rewrite $infoLabel with recommendation text.
+    this.showRecomendation();
+  }
+
   // ---------------- Private methods -------------------
-
-  private createEmailProblemLabel()
-  {
-    this.$emailInputProblemEmptyLine = this.createEmptyLine();
-    this.$emailInputProblemEmptyLine.hide();
-    this.$emailInputProblem = super.createLabel({ text: '' });
-    this.$emailInputProblem.hide();
-  }
-
-  private displayEmailProblem(problem: string)
-  {
-    Component.setColoredText
-    (
-      this.$emailInputProblem,
-      RegisterForm.PROBLEM_TEXT_COLOR + problem
-    );
-    this.$emailInputProblemEmptyLine.show();
-    this.$emailInputProblem.show();
-  }
-
-  private createPasswordProblemLabel()
-  {
-    this.$passwordInputProblemEmptyLine = this.createEmptyLine();
-    this.$passwordInputProblemEmptyLine.hide();
-    this.$passwordInputProblem = super.createLabel({});
-    this.$passwordInputProblem.hide();
-  }
-
-  private displayPasswordProblem(problem: string)
-  {
-    Component.setColoredText
-    (
-      this.$passwordInputProblem,
-      RegisterForm.PROBLEM_TEXT_COLOR + problem
-    );
-    this.$passwordInputProblemEmptyLine.show();
-    this.$passwordInputProblem.show();
-  }
 
   private createInfoLabel()
   {
@@ -196,15 +132,6 @@ export class RegisterForm extends CredentialsForm
   private showRecomendation()
   {
     Component.setColoredText(this.$infoLabel, RegisterForm.RECOMMENDATION);
-  }
-
-  private displayAccountCreationProblem(problem: string)
-  {
-    Component.setColoredText
-    (
-      this.$infoLabel,
-      RegisterForm.PROBLEM_TEXT_COLOR + problem
-    );
   }
 
   /// Deprecated.
@@ -272,17 +199,6 @@ export class RegisterForm extends CredentialsForm
     return true;
   }
 
-  private hideErrorMessages()
-  {
-    this.$emailInputProblemEmptyLine.hide();
-    this.$emailInputProblem.hide();
-    this.$passwordInputProblemEmptyLine.hide();
-    this.$passwordInputProblem.hide();
-
-    // Rewrite $infoLabel with recommendation text.
-    this.showRecomendation();
-  }
-
   // ---------------- Event handlers --------------------
 
   // ~ Overrides Form.onSubmit().
@@ -291,7 +207,7 @@ export class RegisterForm extends CredentialsForm
     // We will handle the form submit ourselves.
     event.preventDefault();
 
-    this.hideErrorMessages();
+    this.hideProblems();
 
     let request = new RegisterRequest();
 
@@ -310,12 +226,6 @@ export class RegisterForm extends CredentialsForm
 
   protected onCancel(event: Event)
   {
-    this.hideErrorMessages();
     ClientApp.setState(ClientApp.State.LOGIN);
   }
-
-  // // ~ Overrides CrendentialsForm.onRememberMeChange().
-  // protected onRememberMeChange(event: Event)
-  // {
-  // }
 }

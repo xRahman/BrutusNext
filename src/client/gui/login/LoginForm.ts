@@ -6,11 +6,13 @@
 
 'use strict';
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {LocalStorage} from '../../../client/lib/storage/LocalStorage';
 import {Connection} from '../../../client/lib/net/Connection';
 import {Component} from '../../../client/gui/Component';
 import {CredentialsForm} from '../../../client/gui/CredentialsForm';
 import {LoginRequest} from '../../../shared/lib/protocol/LoginRequest';
+import {LoginResponse} from '../../../shared/lib/protocol/LoginResponse';
 
 import $ = require('jquery');
 
@@ -43,15 +45,36 @@ export class LoginForm extends CredentialsForm
     super.createLabel({ text: 'E-mail Address' });
     this.createEmailInput();
 
-    this.createEmptyLine();
-
     super.createLabel({ text: 'Password' });
     this.createPasswordInput();
+    this.createPasswordProblemLabel();
 
-    this.createEmptyLine();
+    this.createErrorLabel();
     
     this.createRememberMeCheckbox();
     this.createButtons();
+  }
+
+  public displayProblem(response: LoginResponse)
+  {
+    switch (response.result)
+    {
+      case LoginResponse.Result.AUTHENTICATION_FAILED:
+        this.displayPasswordProblem(response.problem);
+        break;
+
+      case LoginResponse.Result.FAILED_TO_LOAD_ACCOUNT:
+        this.displayError(response.problem);
+        break;
+
+      case LoginResponse.Result.OK:
+        ERROR("displayProblem() called with 'Result: OK'");
+        break;
+
+      default:
+        ERROR("Unknown register response result");
+        break;
+    }
   }
 
   // --------------- Protected methods ------------------

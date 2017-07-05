@@ -7,6 +7,7 @@
 
 'use strict';
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 
 export abstract class Packet extends Serializable

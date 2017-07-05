@@ -28,8 +28,9 @@ export class StandaloneWindow extends Window
     { return 'S_StandaloneWindow_LinkText'; }
   protected static get LINK_CONTAINER_S_CSS_CLASS()
     { return 'S_StandaloneWindow_LinkContainer'; }
-  protected static get EMPTY_LINE_S_CSS_CLASS()
-    { return 'S_StandaloneWindow_EmptyLine'; }
+  /// To be deleted.
+  // protected static get EMPTY_LINE_S_CSS_CLASS()
+  //   { return 'S_StandaloneWindow_EmptyLine'; }
 
   // -------------- Static class data -------------------
 
@@ -76,6 +77,8 @@ export class StandaloneWindow extends Window
 
   // --------------- Protected methods ------------------
 
+  /// To be deleted.
+  /*
   protected createEmptyLine
   (
     {
@@ -95,6 +98,7 @@ export class StandaloneWindow extends Window
       }
     );
   }
+  */
 
   protected createLinkContainer
   (
