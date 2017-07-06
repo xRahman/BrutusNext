@@ -490,27 +490,25 @@
 /*.S_StandaloneWindow_Text,
 .S_StandaloneWindow_LinkText,*/
 .S_StandaloneWindow_LinkContainer,
-.S_Form_LabelContainer,
+.S_Form_Label,
+/*.S_Form_LabelContainer,*/
 /*.S_Form_CheckboxContainer,*/
 .S_GameWindow_Title,
 .S_CharlistWindow_CharacterPlateLabelSmall
 {
-  /*font-size: 0.8em;*/
-  font-size: 80%;
+  font-size: 0.8em;
 }
 
 /* :: Large Font Size :: */
 .S_CharlistWindow_CharacterPlateLabelBig
 {
-  /*font-size: 1.2em;*/
-  font-size: 100%;
+  font-size: 1.2em;
 }
 
 /* ------------- Component --------------- */
 
 /* :: Full Width Inline Block :: */
-/*
-.S_StandaloneWindow_Text,
+/*.S_StandaloneWindow_Text,*/
 .S_Form_ButtonContainer,
 .S_Form_Label
 {
@@ -520,7 +518,6 @@
   height: auto;
   display: inline-block;
 }
-*/
 
 /* --------------- Window ---------------- */
 
@@ -806,11 +803,13 @@
 */
 
 /* :: Form Label Container :: */
+/*
 .S_Form_LabelContainer
 {
   width: 100%;
   height: auto;
 }
+*/
 
 /* -------------- Register Form --------------- */
 

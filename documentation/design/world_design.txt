@@ -21,4 +21,12 @@ na hodnotě dropu.
 (spíš by ve hře nemělo být campení).
 
 
+Spirit realm
+--------------
 
+- neviditelní a neiteragovatelní mobové
+- schopnosti umožňující nahlížet do spirit realmu (duální vnímání)
+- roomy přítomné jen ve spirit realmu
+  - do nich se dá dostat jedině projekcí.
+
+Možná by realmů s podobnými vlastnostmi mohlo být víc (astral plane, atd.).
