@@ -358,6 +358,13 @@ export class Entity extends Serializable
 
   private invalidateProperties(object: Object)
   {
+    // Object can have property "_handlers" (which is of
+    // type EventHandlers) that doesn't have 'hasOwnProperty()'
+    // method. Trying to invalidate such object would cause
+    // crash (and it's not needed anyways).
+    if (object.hasOwnProperty === undefined)
+      return;
+
     for (let propertyName in object)
     {
       /// Není třeba, idčko se pamatuje v closure.

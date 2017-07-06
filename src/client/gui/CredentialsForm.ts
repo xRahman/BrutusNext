@@ -245,7 +245,11 @@ export abstract class CredentialsForm extends Form
   {
     let rememberMe = LocalStorage.read(LocalStorage.REMEMBER_ME_ENTRY);
 
-    this.$rememberMeCheckbox.prop('checked', rememberMe !== undefined);
+    this.$rememberMeCheckbox.prop
+    (
+      'checked',
+      rememberMe === LocalStorage.REMEMBER_ME_VALUE
+    );
   }
 
   // ---------------- Event handlers --------------------

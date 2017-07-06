@@ -58,13 +58,13 @@ export class NameLock
     return await FileSystem.writeFile(directory, fileName, jsonString);
   }
 
-  // -> Returns 'null' if name lock file doesn't exist or if it doesn't
-  //    contain an 'id' property.
+  // -> Returns 'undefined' if name lock file doesn't exist.
+  // -> Returns 'null' on error.
   public static async readId
   (
     name: string,
     cathegoryName: string,
-    reportErrors: boolean = true
+    reportNotFoundError: boolean = true
   )
   {
     let path = this.getPath(name, cathegoryName);
@@ -73,12 +73,12 @@ export class NameLock
       path,
       {
         binary: false,
-        reportErrors: reportErrors
+        reportErrors: reportNotFoundError
       }
     );
 
     if (jsonString === null)
-      return null;
+      return undefined;
 
     let jsonObject = JsonObject.parse(jsonString, path);
 

@@ -61,7 +61,11 @@ export class LoginForm extends CredentialsForm
   {
     switch (response.result)
     {
-      case LoginResponse.Result.AUTHENTICATION_FAILED:
+      case LoginResponse.Result.UNKNOWN_EMAIL:
+        this.displayEmailProblem(response.problem);
+        break;
+
+      case LoginResponse.Result.INCORRECT_PASSWORD:
         this.displayPasswordProblem(response.problem);
         break;
 
