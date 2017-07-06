@@ -15,6 +15,9 @@ TODO: Vymyslet, kam vypisovat problém při otevírání connection.
 
 --------------------------------------------------------------
 
+TODO: Register form by asi neměla vyplňovat login a heslo ze Storage.
+  (ale mohla by možná zkopírovat login z LoginFormu)
+
 TODO: Místo "has been logged out" možná logovat prostě jen:
   "Dropping account XY".
 
@@ -30,6 +33,8 @@ TODO: V charselectu jde odselectnout char (což je asi ok),
   pak ale zůstane enablovaný button 'enter game' - což už asi není
   ok (sice pak jde pořád vlézt do hry, ale pro hráče není jasné,
   se kterým charem se loguje).
+- problém je, že samotné kliknutí na button 'enter game' zruší selekci.
+  (možná bych měl použít jinej stav než 'selected' - třeba 'checked')
 
 TODO: Nefunguje mi synchronizace 'Remember Me' checkboxu.
 
