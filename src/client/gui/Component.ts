@@ -32,6 +32,12 @@ import $ = require('jquery');
 
 export abstract class Component
 {
+  // This is used to make an empty line of text.
+  // (HTML <label> or <span> with no text is not drawn at all
+  // because of zero height. Setting this text to it will fix it.)
+  protected static get EMPTY_LINE_TEXT()
+    { return '&K\n'; }
+
   protected static get NO_GRAPHICS_G_CSS_CLASS()
     { return 'G_NoGraphics'; }
   protected static get WINDOW_G_CSS_CLASS()
@@ -68,20 +74,28 @@ export abstract class Component
 
   // --------------- Protected methods ------------------
 
-  protected static setColoredText($component: JQuery, text: string)
+  // Replaces html content of '$component' with <spans> created from 'text'.
+  protected static setText($component: JQuery, text: string)
   {
     // First remove existing text title if there is any.
     $component.empty();
 
+    this.appendText($component, text);
+  }
+
+  // Appends <spans> created from 'text' to html content of '$component'.
+  protected static appendText($component: JQuery, text: string)
+  {
     if (text.indexOf('&') !== -1)
     {
       $component.append(MudColors.htmlize(text));
     }
     else
     {
-      // Use text color set in css if string isn't colored
-      // (use JQuery to handle browser incompatibilities).
-      $component.text(text);
+      let $span = $(document.createElement('span'))
+
+      $span.text(text);
+      $component.append($span);
     }
   }
 
@@ -89,11 +103,13 @@ export abstract class Component
   (
     {
       $container = null,
+      text = null,
       gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
       sCssClass = null
     }:
     {
       $container?: JQuery;
+      text?: string;
       gCssClass?: string;
       sCssClass?: string;
     }
@@ -103,7 +119,12 @@ export abstract class Component
   {
     let element = document.createElement('div');
 
-    return this.initElement(element, $container, gCssClass, sCssClass);
+    let $element = this.initElement(element, $container, gCssClass, sCssClass);
+
+    if (text)
+      this.setText($element, text);
+
+    return $element;
   }
 
   protected static createImg
@@ -176,7 +197,7 @@ export abstract class Component
     let $element = this.initElement(element, $container, gCssClass, sCssClass);
 
     if (text)
-      this.setColoredText($element, text);
+      this.setText($element, text);
 
     return $element;
   }
@@ -416,7 +437,7 @@ export abstract class Component
     let $element = this.initElement(element, $container, gCssClass, sCssClass);
 
     if (text)
-      this.setColoredText($element, text);
+      this.setText($element, text);
 
     return $element;
   }
