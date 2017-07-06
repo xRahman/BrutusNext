@@ -321,15 +321,26 @@ export class ServerEntities extends Entities
   }
 
   // ~ Overrides Entities.loadEntityByName().
+  // -> Returns 'undefined' if entity doesn't exist.
+  // -> Returns 'null' on error.
   protected async loadEntityByName
   (
     name: string,
-    cathegory: Entity.NameCathegory
+    cathegory: Entity.NameCathegory,
+    reportNotFoundError: boolean = true
   )
   {
-    let id = await NameLock.readId(name, Entity.NameCathegory[cathegory]);
+    let id = await NameLock.readId
+    (
+      name,
+      Entity.NameCathegory[cathegory],
+      reportNotFoundError
+    );
 
-    if (!id)
+    if (id === undefined)
+      return undefined;
+
+    if (id === null)
       return null;
 
     return await this.loadEntityById(id);
