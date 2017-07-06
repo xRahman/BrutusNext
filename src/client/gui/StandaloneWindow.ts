@@ -77,12 +77,10 @@ export class StandaloneWindow extends Window
 
   // --------------- Protected methods ------------------
 
-  /// To be deleted.
-  /*
   protected createEmptyLine
   (
     {
-      sCssClass = StandaloneWindow.EMPTY_LINE_S_CSS_CLASS
+      sCssClass
     }:
     {
       sCssClass?: string;
@@ -94,11 +92,11 @@ export class StandaloneWindow extends Window
     (
       {
         $container: this.$content,
-        sCssClass: sCssClass
+        sCssClass: sCssClass,
+        text: Component.EMPTY_LINE_TEXT
       }
     );
   }
-  */
 
   protected createLinkContainer
   (

@@ -64,9 +64,8 @@ export class RegisterForm extends CredentialsForm
     this.createPasswordProblemLabel();
 
     this.createErrorLabel();
-
     this.createInfoLabel();
-    this.showRecomendation();
+    this.createEmptyLine();
 
     this.createRememberMeCheckbox();
     this.createButtons();
@@ -117,21 +116,29 @@ export class RegisterForm extends CredentialsForm
   protected hideProblems()
   {
     super.hideProblems();
-
-    // Rewrite $infoLabel with recommendation text.
     this.showRecomendation();
+  }
+
+  // ~ Overrides CredentialsForm.displayError().
+  protected displayError(problem: string)
+  {
+    super.displayError(problem);
+    this.$infoLabel.hide();
   }
 
   // ---------------- Private methods -------------------
 
   private createInfoLabel()
   {
-    this.$infoLabel = super.createLabel({});
+    this.$infoLabel = super.createLabel
+    (
+      { text: RegisterForm.RECOMMENDATION }
+    );
   }
 
   private showRecomendation()
   {
-    Component.setColoredText(this.$infoLabel, RegisterForm.RECOMMENDATION);
+    this.$infoLabel.show();
   }
 
   /// Deprecated.

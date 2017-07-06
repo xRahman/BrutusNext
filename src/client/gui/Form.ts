@@ -16,8 +16,8 @@ export abstract class Form extends Component
     { return 'S_Form'; }
   protected static get LABEL_S_CSS_CLASS()
     { return 'S_Form_Label'; }
-  protected static get LABEL_CONTAINER_S_CSS_CLASS()
-    { return 'S_Form_LabelContainer'; }
+  // protected static get LABEL_CONTAINER_S_CSS_CLASS()
+  //   { return 'S_Form_LabelContainer'; }
   protected static get INPUT_S_CSS_CLASS()
     { return 'S_Form_Input'; }
   protected static get CHECKBOX_S_CSS_CLASS()
@@ -96,20 +96,11 @@ export abstract class Form extends Component
     }
   )
   {
-    let $container = Component.createDiv
-    (
-      {
-        $container: this.$form,
-        sCssClass: Form.LABEL_CONTAINER_S_CSS_CLASS
-      }
-    );
-
     return Component.createLabel
     (
       {
-        $container: $container,
-        gCssClass: Component.NO_GRAPHICS_G_CSS_CLASS,
-        sCssClass: sCssClass,
+        $container: this.$form,
+        sCssClass: Form.LABEL_S_CSS_CLASS,
         text: text
       }
     );
@@ -248,24 +239,27 @@ export abstract class Form extends Component
       name: string;
       text: string;
       checked: boolean;
-      container_sCssClass?: string;
+      ///container_sCssClass?: string;
       label_sCssClass?: string;
       checkbox_sCssClass?: string;
     }
   )
   {
+    /*
     let $container = Component.createDiv
     (
       {
         $container: this.$form,
-        sCssClass: Form.LABEL_CONTAINER_S_CSS_CLASS
+        //sCssClass: Form.LABEL_CONTAINER_S_CSS_CLASS
+        sCssClass: Form.LABEL_S_CSS_CLASS
       }
     );
+    */
 
     let $label = Component.createLabel
     (
       {
-        $container: $container,
+        $container: this.$form,
         sCssClass: label_sCssClass,
         text: null  // No text yet because we want checkbox to be first.
       }
@@ -283,8 +277,8 @@ export abstract class Form extends Component
       }
     );
 
-    // Use append() because text() would delete the checkbox.
-    $label.append(text);
+    // Use appendText() because setText() would delete the checkbox.
+    Component.appendText($label, text);
 
     return $checkbox;
   }
@@ -334,7 +328,26 @@ export abstract class Form extends Component
     );
   }
 
-  /// To be deleted.
+  protected createEmptyLine
+  (
+    {
+      sCssClass = Form.LABEL_S_CSS_CLASS
+    }:
+    {
+      sCssClass?: string;
+    }
+    = {}
+  )
+  {
+    return Component.createDiv
+    (
+      {
+        $container: this.$form,
+        sCssClass: Form.LABEL_S_CSS_CLASS,
+        text: Component.EMPTY_LINE_TEXT
+      }
+    );
+  }
   /*
   protected createEmptyLine
   (

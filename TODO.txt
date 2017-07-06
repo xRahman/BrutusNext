@@ -1,6 +1,11 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+TODO: Pro paznak '&K\n' udělat symbolickou konstantu.
+
+TODO: Zkusit nastavit disabled text selction do <body>, jestli
+  se to správně podědí.
+
 TODO: Asi bych měl všude používat 'rem' místo 'em' jednotky.
 - potom by komentář k základnímu font-size neměl být u <body>,
   ale v <html>
