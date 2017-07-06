@@ -7,6 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Serializable} from '../../../shared/lib/class/Serializable';
 
 const EMAIL_ENCODED_CHARACTERS = new Map
 (
@@ -118,6 +119,11 @@ export module Utils
       return false;
 
     return variable.constructor.name === 'Set';
+  }
+
+  export function isSerializable(variable: any)
+  {
+    return variable instanceof Serializable;
   }
 
     // Make sure that all newlines are representedy by '\n'.
