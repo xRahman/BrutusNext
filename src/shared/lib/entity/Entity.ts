@@ -356,6 +356,46 @@ export class Entity extends Serializable
     data.push(this.serialize(mode));
   }
 
+  private invalidateProperty(property: any)
+  {
+    if (property !== null && property !== undefined)
+      return;
+
+    // Skip properties of primitive type because they don't
+    // have any properties.
+    if (Utils.isPrimitiveType(property))
+      return;
+
+    // Also skip references to other entities
+    // (we definitely don't want to invalidate their properities).
+    if (property[Entity.ID_PROPERTY] !== undefined)
+      return;
+
+    // If property is a native javascript array, clear it.
+    if (Utils.isArray(property))
+    {
+      property.length = 0;
+      return;
+    }
+
+    // If property is a Map() or Set(), clear it.
+    if (Utils.isMap(property) || Utils.isSet(property))
+    {
+      property.clear();
+      return;
+    }
+
+    // Only invalidate properties of plain objects and Serializables
+    // (this prevents attempts to invalidate properties of WebSocket
+    //  and similar object which leads to crashes - not to mention
+    //  that there is no real need to do it).
+    if (!(Utils.isSerializable(property) || Utils.isPlainObject(property)))
+      return;
+
+    // Recursively invalidate property's properties.
+    this.invalidateProperties(property);
+  }
+
   private invalidateProperties(object: Object)
   {
     // Object can have property "_handlers" (which is of
@@ -367,29 +407,32 @@ export class Entity extends Serializable
 
     for (let propertyName in object)
     {
-      /// Není třeba, idčko se pamatuje v closure.
-      /*
-      // Leave the 'id' property (for debugging purposes).
-      if (propertyName === Entity.ID_PROPERTY)
-        continue;
-      */
+      // Only invalidate own properties.
+      if (object.hasOwnProperty(propertyName))
+        this.invalidateProperty(object[propertyName]);
 
+      /*
       // Only invalidate own properties.
       if (!object.hasOwnProperty(propertyName))
         continue;
 
       let property = object[propertyName];
 
-      if (property !== null)
+      if (property !== null && property !== undefined)
       {
         let isPrimitive = Utils.isPrimitiveType(property);
         let isEntity = (property[Entity.ID_PROPERTY] !== undefined);
+
+TODO: Only invalidate plain objects and Serializables
+(možná taky plain Array?)
+- jinak to lozí dovnitř objektů jako WebSocket a nedělá to dobrotu...
 
         // Recursively invalidate nonprimitive (object) properties
         // (but skip references to another entities).
         if (!isPrimitive && !isEntity)
           this.invalidateProperties(property);
       }
+      */
 
       delete object[propertyName];
     }
