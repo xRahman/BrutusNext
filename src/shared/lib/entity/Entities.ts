@@ -113,22 +113,34 @@ export abstract class Entities
     return entity.dynamicCast(typeCast);
   }
 
-  // -> Returns 'null' on failure.
+  // -> Returns 'undefined' if entity doesn't exist.
+  // -> Returns 'null' on error.
   public static async loadEntityByName<T extends Entity>
   (
     typeCast: { new (...args: any[]): T },
     name: string,
-    cathegory: Entity.NameCathegory
+    cathegory: Entity.NameCathegory,
+    reportNotFoundError: boolean = true
   )
   : Promise<T>
   {
     let entity = await App.entities.loadEntityByName
     (
       name,
-      cathegory
+      cathegory,
+      reportNotFoundError
     );
 
-    if (!entity)
+    if (entity === undefined)
+    {
+      if (reportNotFoundError)
+        ERROR("Failed to load unique entity '" + name + "' in cathegory"
+        + " '" + Entity.NameCathegory[cathegory] + "'. No such entity is"
+        + " saved");
+      return undefined;
+    }
+
+    if (entity === null)
     {
       ERROR("Failed to load unique entity '" + name + "' in cathegory"
         + " '" + Entity.NameCathegory[cathegory] + "'");
@@ -178,7 +190,8 @@ export abstract class Entities
   protected abstract async loadEntityByName
   (
     name: string,
-    cathegory: Entity.NameCathegory
+    cathegory: Entity.NameCathegory,
+    reportNotFoundError: boolean
   )
   : Promise<Entity>;
 

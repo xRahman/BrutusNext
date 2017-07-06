@@ -1,6 +1,36 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+TODO: Vymyslet, kam vypisovat problém při otevírání connection.
+- možná udělat standalone ConsoleWindow (nebo InfoWindow), které
+  se zobrazí jen v případě, že se nedaří connectit (úspěch tam
+  nemá smysl psát, to je očekáváný stav, takže se prostě zobrazí
+  loginWindow).
+  - mohly by se tam vypisovat pokusy o autoreconnect
+  - a taky případě oznámení o nestandardním stavu serveru,
+    banu (pokud je ban na ipčko) a podobně.
+    - tohle teda trochu komplikuje to, že offline server znamená,
+      že nejede ani http server - ale to se možná pořeší tím, že
+      site bude statická stránka a mud poběží až na /mud.
+
+--------------------------------------------------------------
+
+TODO: Místo "has been logged out" možná logovat prostě jen:
+  "Dropping account XY".
+
+TODO: Zrušit metodu Component.createText()
+- místo ní použít Component.appendText().
+
+TODO: Zrušit metodu Component.createTextLink()
+- místo ní zavést (a použít) Component.appendTextLink()
+  a Component.setTextLink()
+  - stejně jako s obyč textem.
+
+TODO: V charselectu jde odselectnout char (což je asi ok),
+  pak ale zůstane enablovaný button 'enter game' - což už asi není
+  ok (sice pak jde pořád vlézt do hry, ale pro hráče není jasné,
+  se kterým charem se loguje).
+
 TODO: Nefunguje mi synchronizace 'Remember Me' checkboxu.
 
 TODO: Při loginu je třeba testovat, jestli vůbec account existuje
