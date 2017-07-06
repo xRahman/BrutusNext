@@ -1,7 +1,18 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+TODO: Nefunguje mi synchronizace 'Remember Me' checkboxu.
+
+TODO: Při loginu je třeba testovat, jestli vůbec account existuje
+  (ne každý loadovací error je account load error).
+
+TODO: Zrušit hlášku 'Opening Websocket connection', která se posílá
+  do ScrollWindow.
+
+TODO: Nelowercasovat file name při savu.
+
 TODO: Pro paznak '&K\n' udělat symbolickou konstantu.
+[done]
 
 TODO: Zkusit nastavit disabled text selction do <body>, jestli
   se to správně podědí.
@@ -12,6 +23,7 @@ TODO: Asi bych měl všude používat 'rem' místo 'em' jednotky.
 - hm, ono to 'rem' vlastně nic moc neřeší - stejně musí mít <div>
   nastavenou stejnou velikost textu jako vnořený <span>, aby se
   správně počítala jeho výška.
+[kašlat na to, 'em' je ok]
 
 TODO: Sjednotit setování textu komponentám
 - vždycky by to měly být spany (jeden nebo víc)
@@ -19,6 +31,7 @@ TODO: Sjednotit setování textu komponentám
   (a i když text není colored, tak by se v setText() stejně měl vyrobit span).
 - To mimo jiné znamená, že labely by měly být prostě <label> s display: block
   (a uvnitř bude <span>), nikoliv <div><label><span>...</span></label></div>
+[done]
 
 --------------------------------------------------------------
 
