@@ -43,6 +43,14 @@ export class Accounts
       return null;
     }
 
+    if (ServerApp.accounts.names.has(accountName))
+    {
+      ERROR("Attempt to register account '" + accountName + "'"
+        + " which is already loaded to memory. Account is not"
+        + " registered");
+      return null;
+    }
+
     let account = await ServerEntities.createInstanceEntity
     (
       Account,
