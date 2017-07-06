@@ -428,7 +428,7 @@ export class Connection
       return;
     }
 
-    if (this.authenticate(account, password))
+    if (!this.authenticate(account, password))
       return;
 
     account.attachConnection(this);

@@ -16,10 +16,22 @@ TODO: Vymyslet, kam vypisovat problém při otevírání connection.
 --------------------------------------------------------------
 
 TODO: Register form by asi neměla vyplňovat login a heslo ze Storage.
-  (ale mohla by možná zkopírovat login z LoginFormu)
+  (ale mohla by je možná zkopírovat login z LoginFormu)
 
 TODO: Místo "has been logged out" možná logovat prostě jen:
   "Dropping account XY".
+
+TODO: Konečně už opravit syslog message při shození connectionu reloadem
+  tabu.
+
+TODO: Otestovat reconnect z jiného tabu.
+
+TODO: Pořádně vyzkoušet, že se správně vypisují (a zobrazují) chybové hlášky
+  při logování a autentifikaci.
+
+TODO: Ještě jednou se zamyslet nad prázdnými řádky (a zejména nad hackem
+  v LoginForm, kde se na konec error message přidává '\n\n'.
+
 
 TODO: Zrušit metodu Component.createText()
 - místo ní použít Component.appendText().
@@ -37,9 +49,11 @@ TODO: V charselectu jde odselectnout char (což je asi ok),
   (možná bych měl použít jinej stav než 'selected' - třeba 'checked')
 
 TODO: Nefunguje mi synchronizace 'Remember Me' checkboxu.
+[done]
 
 TODO: Při loginu je třeba testovat, jestli vůbec account existuje
   (ne každý loadovací error je account load error).
+[done]
 
 TODO: Zrušit hlášku 'Opening Websocket connection', která se posílá
   do ScrollWindow.
@@ -51,6 +65,8 @@ TODO: Pro paznak '&K\n' udělat symbolickou konstantu.
 
 TODO: Zkusit nastavit disabled text selction do <body>, jestli
   se to správně podědí.
+- podědilo
+[done]
 
 TODO: Asi bych měl všude používat 'rem' místo 'em' jednotky.
 - potom by komentář k základnímu font-size neměl být u <body>,
