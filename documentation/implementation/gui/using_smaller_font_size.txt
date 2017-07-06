@@ -1,0 +1,19 @@
+﻿Using font with smaller size
+-----------------------------
+
+When you put for example <span> inside a <div>, font size on both
+<span> and <div> matters. If <div> has large font size than <span>,
+it will use 'bigger' lines into which it will render smaller <spans>
+so <div> will actually be higher than the <span> inside it.
+  It's like when you type with big font and insert a word in smaller
+font into the text - the whole line will not become smaller.
+
+If you want to prevent it, you have to set the same font size to both
+<div> and <span> inside it. Also note that 'em' units are relative to
+the parent element, not the root <html> element (if you want units that
+are relative to the root font size, you have to use 'rem' instead of 'em'.)
+
+This is how labels are made - <span> is put inside a <div> and the font
+size is set to <div>, not the <span>. This way <div> is the same height
+as the text it contains.
+
