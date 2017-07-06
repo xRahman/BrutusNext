@@ -50,9 +50,6 @@ export abstract class CredentialsForm extends Form
       this.setStoredPassword();
       this.setStoredRememberMeValue();
     }
-
-    // TEST:
-    this.displayError("Strašně velkej problém.\n\n&CAdmins will fix it");
   }
 
   // ~ Overrides Form.onHide().

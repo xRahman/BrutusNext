@@ -372,13 +372,17 @@ export class Entity extends Serializable
         continue;
 
       let property = object[propertyName];
-      let isPrimitive = Utils.isPrimitiveType(property);
-      let isEntity = (property[Entity.ID_PROPERTY] !== undefined);
 
-      // Recursively invalidate nonprimitive (object) properties
-      // (but skip references to another entities).
-      if (!isPrimitive && !isEntity)
-        this.invalidateProperties(property);
+      if (property !== null)
+      {
+        let isPrimitive = Utils.isPrimitiveType(property);
+        let isEntity = (property[Entity.ID_PROPERTY] !== undefined);
+
+        // Recursively invalidate nonprimitive (object) properties
+        // (but skip references to another entities).
+        if (!isPrimitive && !isEntity)
+          this.invalidateProperties(property);
+      }
 
       delete object[propertyName];
     }
