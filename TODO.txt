@@ -15,6 +15,13 @@ TODO: Vymyslet, kam vypisovat problém při otevírání connection.
 
 --------------------------------------------------------------
 
+TODO: Pořešit error při pokusu založit už existující account.
+
+TODO: Rozdělit Connection.ts na víc modulů
+(určitě nejmíň Login, Register).
+- asi to v pohodě můžou bejt všechno static metody.
+[done]
+
 TODO: Register form by asi neměla vyplňovat login a heslo ze Storage.
   (ale mohla by je možná zkopírovat login z LoginFormu)
 
@@ -98,6 +105,7 @@ TODO: Zkontrolovat, že se mi closnuté connections vyhazují z Connections.
 
 TODO: Při registraci asi přece jen přidat check, že account
   není online (nemělo by to sice nastat, ale...)
+[done]
 
 TODO: Prozkoumat, jestli se mi správně dealokují struktury při disconnectu
   (account, connection, socket)
@@ -388,6 +396,7 @@ TODO: Enum savovat jako string value.
 Proč se mi nesavuje Date:
 - Serializable.hasOwnValue() vrátí 'false', protože proměnná
   typu Date nemá žádné properties.
+Connection.registerRequest -> Register.processRequest()
 
 Řešení: Asi by fakt bylo nejlepší napsat si vlastní classu (Time?),
   která bude interně držet number a používat metody z Date().
