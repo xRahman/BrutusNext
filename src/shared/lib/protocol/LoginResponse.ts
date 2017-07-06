@@ -37,7 +37,8 @@ export module LoginResponse
   export enum Result
   {
     OK,
-    AUTHENTICATION_FAILED,
+    UNKNOWN_EMAIL,
+    INCORRECT_PASSWORD,
     FAILED_TO_LOAD_ACCOUNT
   }
 }

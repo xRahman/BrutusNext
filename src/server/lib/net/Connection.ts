@@ -344,8 +344,8 @@ export class Connection
 
     this.denyLoginRequest
     (
-      "An account is already registered to this e-mail address.",
-      LoginResponse.Result.AUTHENTICATION_FAILED
+      "Incorrect password.",
+      LoginResponse.Result.INCORRECT_PASSWORD
     );
 
     return true;
@@ -401,12 +401,23 @@ export class Connection
   {
     let account = await ServerEntities.loadEntityByName
     (
-      Account, // Typecast.
+      Account,  // Typecast.
       accountName,
-      Entity.NameCathegory.ACCOUNT
+      Entity.NameCathegory.ACCOUNT,
+      false     // Do not report 'not found' error.
     );
 
-    if (!account)
+    if (account === undefined)
+    {
+      this.denyLoginRequest
+      (
+        "No account is registered for this e-mail address.",
+        LoginResponse.Result.UNKNOWN_EMAIL
+      );
+      return;
+    }
+
+    if (account === null)
     {
       this.denyLoginRequest
       (
