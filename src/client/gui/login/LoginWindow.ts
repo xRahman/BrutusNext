@@ -53,6 +53,8 @@ export class LoginWindow extends StandaloneWindow
     // Create login form.
     this.form.create({ $container: this.$content });
 
+    this.createEmptyLine();
+
     this.createRegisterInfo();
 
     return this.$window;

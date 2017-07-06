@@ -50,6 +50,9 @@ export abstract class CredentialsForm extends Form
       this.setStoredPassword();
       this.setStoredRememberMeValue();
     }
+
+    // TEST:
+    this.displayError("Strašně velkej problém.\n\n&CAdmins will fix it");
   }
 
   // ~ Overrides Form.onHide().
@@ -97,8 +100,10 @@ export abstract class CredentialsForm extends Form
 
   protected createEmailProblemLabel()
   {
-    this.$emailProblem = super.createLabel({ text: '' });
-    this.$emailProblem.hide();
+    this.$emailProblem = super.createLabel
+    (
+      { text: Component.EMPTY_LINE_TEXT }
+    );
   }
 
   protected displayEmailProblem(problem: string)
@@ -109,7 +114,7 @@ export abstract class CredentialsForm extends Form
       return;
     }
 
-    Component.setColoredText
+    Component.setText
     (
       this.$emailProblem,
       CredentialsForm.PROBLEM_TEXT_COLOR + problem
@@ -136,8 +141,10 @@ export abstract class CredentialsForm extends Form
 
   protected createPasswordProblemLabel()
   {
-    this.$passwordProblem = super.createLabel({});
-    this.$passwordProblem.hide();
+    this.$passwordProblem = super.createLabel
+    (
+      { text: Component.EMPTY_LINE_TEXT }
+    );
   }
 
   protected displayPasswordProblem(problem: string)
@@ -148,7 +155,7 @@ export abstract class CredentialsForm extends Form
       return;
     }
 
-    Component.setColoredText
+    Component.setText
     (
       this.$passwordProblem,
       CredentialsForm.PROBLEM_TEXT_COLOR + problem
@@ -186,7 +193,7 @@ export abstract class CredentialsForm extends Form
 
   protected displayError(problem: string)
   {
-    Component.setColoredText
+    Component.setText
     (
       this.$errorLabel,
       CredentialsForm.PROBLEM_TEXT_COLOR + problem
@@ -198,10 +205,22 @@ export abstract class CredentialsForm extends Form
   protected hideProblems()
   {
     if (this.$emailProblem)
-      this.$emailProblem.hide();
+    {
+      Component.setText
+      (
+        this.$emailProblem,
+        Component.EMPTY_LINE_TEXT
+      );
+    }
 
     if (this.$passwordProblem)
-      this.$passwordProblem.hide();
+    {
+      Component.setText
+      (
+        this.$passwordProblem,
+        Component.EMPTY_LINE_TEXT
+      );
+    }
 
     if (this.$errorLabel)
       this.$errorLabel.hide();

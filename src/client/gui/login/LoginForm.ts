@@ -44,13 +44,15 @@ export class LoginForm extends CredentialsForm
 
     super.createLabel({ text: 'E-mail Address' });
     this.createEmailInput();
+    this.createEmailProblemLabel();
 
     super.createLabel({ text: 'Password' });
     this.createPasswordInput();
     this.createPasswordProblemLabel();
 
     this.createErrorLabel();
-    
+    this.createEmptyLine();
+
     this.createRememberMeCheckbox();
     this.createButtons();
   }
@@ -90,6 +92,13 @@ export class LoginForm extends CredentialsForm
         sCssClass: Component.FULL_WIDTH_BUTTON_S_CSS_CLASS
       }
     );
+  }
+
+  // ~ Overrides CredentialsForm.hideProblems().
+  protected hideProblems()
+  {
+    super.hideProblems();
+    this.$passwordProblem.hide();
   }
 
   // ---------------- Private methods -------------------
