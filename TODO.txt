@@ -13,14 +13,15 @@ TODO: Vymyslet, kam vypisovat problém při otevírání connection.
       že nejede ani http server - ale to se možná pořeší tím, že
       site bude statická stránka a mud poběží až na /mud.
 
+TODO: Ošetřit ztrátu spojení se serverem (třeba když server
+  spadne, vypne se, nebo tak).
+  - logovací okno (a asi i všechna ostatní) teď zůstane otevřené
+    a odeslání požadavku vyhodí error, protože jde o pokus
+    o zápis do closnutého socketu.
+
 --------------------------------------------------------------
 
 TODO: Pořešit error při pokusu založit už existující account.
-
-TODO: Rozdělit Connection.ts na víc modulů
-(určitě nejmíň Login, Register).
-- asi to v pohodě můžou bejt všechno static metody.
-[done]
 
 TODO: Register form by asi neměla vyplňovat login a heslo ze Storage.
   (ale mohla by je možná zkopírovat login z LoginFormu)
@@ -38,6 +39,16 @@ TODO: Pořádně vyzkoušet, že se správně vypisují (a zobrazují) chybové 
 
 TODO: Ještě jednou se zamyslet nad prázdnými řádky (a zejména nad hackem
   v LoginForm, kde se na konec error message přidává '\n\n'.
+TODO: Ještě se přece jen zamyslet, jestli jsou prázné řádky v RegisterForm
+  dobré řešení.
+- není, zrušit je a předělt to na stylování konkrétních elementů.
+  (holt asi bude mít první label jinej styl než ty další - ale možná
+   ani to nebude potřeba).
+Ještě je otázka, jestli by nebylo od věci nechávat tam prázdné místo,
+i když se žádný error nevypisuje, aby okno neměnilo velikost, když se
+vypíše chybová hláška.
+- labely jsou inline-block, takže by asi mohly mít min-height.
+
 
 
 TODO: Zrušit metodu Component.createText()
@@ -55,45 +66,17 @@ TODO: V charselectu jde odselectnout char (což je asi ok),
 - problém je, že samotné kliknutí na button 'enter game' zruší selekci.
   (možná bych měl použít jinej stav než 'selected' - třeba 'checked')
 
-TODO: Nefunguje mi synchronizace 'Remember Me' checkboxu.
-[done]
-
-TODO: Při loginu je třeba testovat, jestli vůbec account existuje
-  (ne každý loadovací error je account load error).
-[done]
 
 TODO: Zrušit hlášku 'Opening Websocket connection', která se posílá
   do ScrollWindow.
 
 TODO: Nelowercasovat file name při savu.
 
-TODO: Pro paznak '&K\n' udělat symbolickou konstantu.
-[done]
-
-TODO: Zkusit nastavit disabled text selction do <body>, jestli
-  se to správně podědí.
-- podědilo
-[done]
-
-TODO: Asi bych měl všude používat 'rem' místo 'em' jednotky.
-- potom by komentář k základnímu font-size neměl být u <body>,
-  ale v <html>
-- hm, ono to 'rem' vlastně nic moc neřeší - stejně musí mít <div>
-  nastavenou stejnou velikost textu jako vnořený <span>, aby se
-  správně počítala jeho výška.
-[kašlat na to, 'em' je ok]
-
-TODO: Sjednotit setování textu komponentám
-- vždycky by to měly být spany (jeden nebo víc)
-- vždycky by se to mělo setovat stejnou metodou jako colored text
-  (a i když text není colored, tak by se v setText() stejně měl vyrobit span).
-- To mimo jiné znamená, že labely by měly být prostě <label> s display: block
-  (a uvnitř bude <span>), nikoliv <div><label><span>...</span></label></div>
-[done]
 
 --------------------------------------------------------------
 
-TODO: Pořádně prostudovat https://www.npmjs.com/package/ws
+TODO: Posílat keepalive pingy
+Pořádně prostudovat https://www.npmjs.com/package/ws
 - zejména jak detekovat mrtvou connection, která nevygenerovala
   onClose.
 
@@ -102,10 +85,6 @@ TODO: Zkontrolovat, že se mi closnuté connections vyhazují z Connections.
   web socket, tím se vygeneruje event onClose() a ten vyhodí connection
   z connections - to se ale nemusí podařit, takže možná stojí za to udělat
   to ještě jednou ručně (nebo kontrolovat, jestli to prošlo).
-
-TODO: Při registraci asi přece jen přidat check, že account
-  není online (nemělo by to sice nastat, ale...)
-[done]
 
 TODO: Prozkoumat, jestli se mi správně dealokují struktury při disconnectu
   (account, connection, socket)
@@ -156,15 +135,6 @@ ZÁVĚR:
   - fileName lowercasovat, originální mail držet strnou v property
     (a mailovat zásadně na originální mail, ne na dekódovaný accName).
 
-TODO: Nepsat error message do info labelu (v RegisterForm).
-  Místo toho hidnout info label a zapsat do error labelu.
-
-TODO: Login do hry.
-
-TODO: Zapsat entries do LocalStorage při loginu do hry
-  (podobně jako se to dělá při založení accountu).
-
-
 TODO: Request spam protection (když user opakovaně rychle klikne
   na 'Register', tak to nejspíš vyhodí 'account already registered').
 - asi bude nejjednodušší disablovat input button
@@ -176,15 +146,13 @@ https://stackoverflow.com/questions/9681080/changing-cursor-to-waiting-in-javasc
 TODO: Nějak recovernout stav RegisterForm, když po odeslání requestu spadne
   spojení (ještě nevím, co to bude obnášt, je třeba se nad tím zamyslet).
 
-TODO: Dynamic typecast při zpracování packetu (na klientu i na serveru,
-  obojí asi bude v Connection).
-[done]
-
 TODO: V RegisterForm při každém user inputu (klávesa odhchycená
   v jednom z inputů) pustit timer (tak 2s) a po něm vyčistit
   error hlášky.
   (a zrušit ho, když user mezi tím zmáčne submit).
 - timer je asi zbytečný, může se to vyčistit hned.
+Ono to možná nebude potřeba vůbec. Teď se to čistí až při odeslání
+formu a působí to celkem ok.
 
 TODO: projít použití createInstanceEntity() a zkontrolvoat, že nikde
 nevadí 'undefined' return value když je jméno zabrané.
@@ -194,19 +162,79 @@ TODO: Nejspíš to bude chtít parametr logErrors: boolean.
 TODO: Na několika místech se vůbec netestuje, jestli je entity úspěšně
   vyrobena.
 
-TODO: LoginForm by asi taky měla mít labely na chybový výstup.
+TODO: CharlistWindow rozdělit na dvě části: CharlistWindow a Charlist.
 
-TODO: Ještě se přece jen zamyslet, jestli jsou prázné řádky v RegisterForm
-  dobré řešení.
-- není, zrušit je a předělt to na stylování konkrétních elementů.
-  (holt asi bude mít první label jinej styl než ty další - ale možná
-   ani to nebude potřeba).
-Ještě je otázka, jestli by nebylo od věci nechávat tam prázdné místo,
-i když se žádný error nevypisuje, aby okno neměnilo velikost, když se
-vypíše chybová hláška.
-- labely jsou inline-block, takže by asi mohly mít min-height.
+
 
 --------------------------------------------------------------
+
+TODO: Dynamic typecast při zpracování packetu (na klientu i na serveru,
+  obojí asi bude v Connection).
+[done]
+
+TODO: Nepsat error message do info labelu (v RegisterForm).
+  Místo toho hidnout info label a zapsat do error labelu.
+[done]
+
+TODO: Login do hry.
+[done]
+
+TODO: Zapsat entries do LocalStorage při loginu do hry
+  (podobně jako se to dělá při založení accountu).
+[done]
+
+TODO: Při registraci asi přece jen přidat check, že account
+  není online (nemělo by to sice nastat, ale...)
+[done]
+
+TODO: Pro paznak '&K\n' udělat symbolickou konstantu.
+[done]
+
+TODO: Zkusit nastavit disabled text selction do <body>, jestli
+  se to správně podědí.
+- podědilo
+[done]
+
+TODO: Asi bych měl všude používat 'rem' místo 'em' jednotky.
+- potom by komentář k základnímu font-size neměl být u <body>,
+  ale v <html>
+- hm, ono to 'rem' vlastně nic moc neřeší - stejně musí mít <div>
+  nastavenou stejnou velikost textu jako vnořený <span>, aby se
+  správně počítala jeho výška.
+[kašlat na to, 'em' je ok]
+
+TODO: Sjednotit setování textu komponentám
+- vždycky by to měly být spany (jeden nebo víc)
+- vždycky by se to mělo setovat stejnou metodou jako colored text
+  (a i když text není colored, tak by se v setText() stejně měl vyrobit span).
+- To mimo jiné znamená, že labely by měly být prostě <label> s display: block
+  (a uvnitř bude <span>), nikoliv <div><label><span>...</span></label></div>
+[done]
+
+Teoreticky bych nemusel switchovat ručně podle PacketPart.type,
+ale automaticky přes polymorfismus - všechny datové části by byly
+zděděny z PacketPart a měly přetíženou metodu deserialize(),
+nebo tak něco.
+- to je problém, protože packety jsou shared kód a já potřebuju
+  server kód. Tzn. musel bych od nich dělat server-side potomky
+  a dost by se to tím celé zkomplikovalo. Raději zůstanu u dynamického
+  typecastu.
+[nakonec jinak]
+
+TODO: Nefunguje mi synchronizace 'Remember Me' checkboxu.
+[done]
+
+TODO: Při loginu je třeba testovat, jestli vůbec account existuje
+  (ne každý loadovací error je account load error).
+[done]
+
+TODO: LoginForm by asi taky měla mít labely na chybový výstup.
+[done]
+
+TODO: Rozdělit Connection.ts na víc modulů
+(určitě nejmíň Login, Register).
+- asi to v pohodě můžou bejt všechno static metody.
+[done]
 
 TODO: Někam dát setování hesla ze storage
  (původně to bylo v LoginForm.createPasswordInput()).
@@ -486,11 +514,6 @@ PacketPart by mohla mít vlastní classu - a řešit serializaci/deserializaci
 vložených dat (na druhou stranu v Packetu toho moc nebude...).
 
 
-Teoreticky bych nemusel switchovat ručně podle PacketPart.type,
-ale automaticky přes polymorfismus - všechny datové části by byly
-zděděny z PacketPart a měly přetíženou metodu deserialize(),
-nebo tak něco.
-
 
 Možná na to jdu špatně
 - o části packetu by se asi měl starat každej typ packetu zvlášť
@@ -541,8 +564,6 @@ TODO: Nejspíš ve spoustě souborů zbytečně importuju JQuery.
 
 ---------------------------------------------------------------
 
-TODO: CharlistWindow rozdělit na dvě části: CharlistWindow a Charlist.
-
 TODO: Do Character plate dát dva labely
 (velké písmo - jméno, malé písmo - popisek)
 [done]
@@ -591,28 +612,36 @@ TODO: Použít "label for" na text pro "Remember me" checkbox.
 (Respektive vložit checkbox do labelu, to funguje stejně.)
 [done]
 
-
 Ja na character select/create?
 - má to vůbec smysl? Zatím stále počítám s 1 charem na mortalském
   accountu
 - někde se ale musí ten jeden char vyrobit (aspoň zadat jméno).
 No nic, prostě to udělám a basta.
+[done]
 
 Úzké okno, uvnitř velká tlačítka s chary a button "create new character".
 - tlačítka s chary by měla být selektovatelná (možná radiobutton?)
+[done]
 
 Ještě to asi bude chtít ChargenWindow
   Nebo možná prostě jen popup v charselectu?
   - ten popup taky může bejt realizovanej jako okno (byť by v něm
     byl jen text input a tlačítka create a cancel), aspoň to budu
     mít připravený.
+[done]
 
 ---------------------------------------------------------------
+
+TODO: Vrátit se k setování atributů přes JQuery
+(mělo by stačí v Component).
+- udělal jsem to s text contentem, kde jsou zřejmé nekompatibility browseru.
+  Těžko říct, jestli to má smysl udělat se vším... (asi jo)
 
 TODO: Nějak chytře pořešit zákaz selektování textu
  (ideálně aby se nemusely vypisovat všechny classy v css).
 - Možná to v css globálně zakázat a povolovat to flagou v kódu?
   (Tj. na konkrétních komponentách, nezávisle na css classách...)
+[done]
 
 TODO: Možná by šlo z dvojice { gCssClass, sCssClass } udělat
   interface (Takže Window.create() by mělo 3 parametry místo 6...).
@@ -694,11 +723,7 @@ TODO: V css víc dědit (tj. skládat css classu z více class)
 
 TODO: Sjednotit max account length a ostatní kód na constraints
   jména accountu a hesla.
-
-TODO: Vrátit se k setování atributů přes JQuery
-(mělo by stačí v Component).
-- udělal jsem to s text contentem, kde jsou zřejmé nekompatibility browseru.
-  Těžko říct, jestli to má smysl udělat se vším... (asi jo)
+[done]
 
 TODO: Zkontrolovat disablování všemožných vymožeností v input boxech.
 - zatím, je to pro text input (a možná by šlo sloučit login a register)
@@ -747,8 +772,10 @@ TODO: MudColorComponent by neměla být komponenta, ale statická
 TODO: Zkusit upravit build task, aby přeložil server i clienta najednou.
 [nepovedlo se, stále by to chtělo]
 - tak nakonec jsem to pořešil přes obyčejný js script.
+[done]
 
 TODO: Automatické mazání buildu (FS.unlink())
+[done]
 
 
 
