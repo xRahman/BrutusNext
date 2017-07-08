@@ -9,6 +9,7 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {Syslog} from '../../../shared/lib/log/Syslog';
+import {WebSocketEvent} from '../../../shared/lib/net/WebSocketEvent';
 import {Packet} from '../../..//shared/lib/protocol/Packet';
 import {Connection} from '../../../server/lib/net/Connection';
 import {MessageType} from '../../../shared/lib/message/MessageType';
@@ -42,12 +43,19 @@ export class ServerSocket
 
   public connection: Connection = null;
 
-  // ---------------- Public methods --------------------
+  // --------------- Public accessors -------------------
+
+  public getOrigin()
+  {
+    return "(" + this.url + " [" + this.ip + "])";
+  }
 
   public getIpAddress(): string
   {
     return this.ip;
   }
+
+  // ---------------- Public methods --------------------
 
   public static parseRemoteUrl(webSocket: WebSocket)
   {
@@ -117,8 +125,7 @@ export class ServerSocket
       Syslog.log
       (
         "Client ERROR: Failed to send packet to websocket"
-        + " " + this.url + " (" + this.ip + "). Reason:"
-        + " " + error.message,
+          + " " + this.getOrigin() + ". Reason: " + error.message,
         MessageType.WEBSOCKET_SERVER,
         AdminLevel.IMMORTAL
       );
@@ -141,94 +148,6 @@ export class ServerSocket
     return true;
   }
 
-  // ---------------- Event handlers --------------------
-
-  private async onReceivedData(data: any, flags: { binary: boolean })
-  {
-    if (flags.binary === true)
-    {
-      // Data is supposed to be sent in text mode.
-      // (This is a client error, we can't really do
-      //  anything about it - so we just log it.)
-      Syslog.log
-      (
-        "Client ERROR: Received binary data from websocket connection"
-        + " " + this.url + " (" + this.ip + "). Data is not processed",
-        MessageType.WEBSOCKET_SERVER,
-        AdminLevel.IMMORTAL
-      );
-      return;
-    }
-
-    /// DEBUG:
-    console.log('(ws) received message: ' + data);
-
-    /// TODO: Tohle by se mělo dělat až pro commandy.
-    ///data = Utils.normalizeCRLF(data);
-
-    await this.connection.receiveData(data);
-  }
-
-  private onOpen()
-  {
-    /// Asi neni treba nic reportit, uz je zalogovana new connection.
-    console.log('Websocket opened');
-  }
-
-  private onError(event: Error)
-  {
-    Syslog.log
-    (
-      "Websocket ERROR: Error occured on socket"
-      + " " + this.url + " (" + this.ip + ")",
-      MessageType.WEBSOCKET_SERVER,
-      AdminLevel.IMMORTAL
-    );
-  }
-
-  private onClose
-  (
-    event:
-    {
-      wasClean: boolean,
-      code: number,
-      reason: string,
-      target: WebSocket
-    }
-  )
-  {
-    // Error code 1000 means that the connection was closed normally.
-    if (event.code != 1000)
-    {
-      Syslog.log
-      (
-        "Websocket ERROR: Socket " + this.url + " (" + this.ip + ")"
-        + " closed because of error: " + event.reason,
-        MessageType.WEBSOCKET_SERVER,
-        AdminLevel.IMMORTAL
-      );
-    }
-    else
-    {
-      Syslog.log
-      (
-        "Websocket ERROR: Socket " + this.url + " (" + this.ip + ")"
-        + " closed normally",
-        MessageType.WEBSOCKET_SERVER,
-        AdminLevel.IMMORTAL
-      );
-    }
-
-    if (!this.connection)
-    {
-      ERROR("Missing connection reference on socket."
-        + " Account and connection won't be released"
-        + " from memory");
-    }
-
-    this.connection.onClose();
-  }
-
   // -------------- Protected methods -------------------
 
   // --------------- Private methods --------------------
@@ -248,8 +167,107 @@ export class ServerSocket
       (data, flags) => { this.onReceivedData(data, flags); }
     );
 
-    this.webSocket.onopen = (event) => { this.onOpen(); };
-    this.webSocket.onerror = (event) => { this.onError(event); };
-    this.webSocket.onclose = (event) => { this.onClose(event); };
+    this.webSocket.onopen = (event: Event) => { this.onOpen(); };
+    this.webSocket.onerror = (event: ErrorEvent) => { this.onError(event); };
+    this.webSocket.onclose = (event: CloseEvent) => { this.onClose(event); };
+  }
+
+  private reportSocketClosingError(event: CloseEvent)
+  {
+    let message = "Socket " + this.getOrigin() + " closed"
+        + " because of error.";
+
+    if (event.reason)
+      message += " Reason: " + event.reason;
+
+    message += " Code: " + event.code + ". Description:"
+    message += " " + WebSocketEvent.description(event.code);
+
+    Syslog.log
+    (
+      message,
+      MessageType.WEBSOCKET_SERVER,
+      AdminLevel.IMMORTAL
+    );
+  }
+
+  private reportSocketClosing(event: CloseEvent)
+  {
+    // Error code 1000 means that the connection was closed normally.
+    // 'event.reason' is checked because for some reason Chrome sometimes
+    // closes webSocket with code 1006 when the tab is closed even though
+    // we close() the socket manually in onBeforeUnload() handler (see
+    // ClientApp.onBeforeUnload() for more details).
+    if (event.code === 1000 || event.reason === WebSocketEvent.REASON_CLOSE)
+    {
+      Syslog.log
+      (
+        "Connection " + this.getOrigin() + " has been closed",
+        MessageType.WEBSOCKET_SERVER,
+        AdminLevel.IMMORTAL
+      );
+      return;
+    }
+
+    this.reportSocketClosingError(event);
+  }
+
+
+  // ---------------- Event handlers --------------------
+
+  private async onReceivedData(data: any, flags: { binary: boolean })
+  {
+    if (flags.binary === true)
+    {
+      // Data is supposed to be sent in text mode.
+      // (This is a client error, we can't really do
+      //  anything about it - so we just log it.)
+      Syslog.log
+      (
+        "Client ERROR: Received binary data from connection"
+          + " " + this.getOrigin() + ". Data is not processed",
+        MessageType.WEBSOCKET_SERVER,
+        AdminLevel.IMMORTAL
+      );
+      return;
+    }
+
+    /// DEBUG:
+    console.log('(ws) received message: ' + data);
+
+    /// TODO: Tohle by se mělo dělat až pro commandy.
+    ///data = Utils.normalizeCRLF(data);
+
+    await this.connection.receiveData(data);
+  }
+
+  private onOpen()
+  {
+    // No action.
+  }
+
+  private onError(event: ErrorEvent)
+  {
+    Syslog.log
+    (
+      "Websocket ERROR: Error occured on socket " + this.getOrigin(),
+      MessageType.WEBSOCKET_SERVER,
+      AdminLevel.IMMORTAL
+    );
+  }
+
+  private onClose(event: CloseEvent)
+  {
+    this.reportSocketClosing(event);
+
+    if (!this.connection)
+    {
+      ERROR("Missing connection reference on socket."
+        + " Account and connection won't be released"
+        + " from memory");
+      return;
+    }
+
+    this.connection.release();
   }
 }
