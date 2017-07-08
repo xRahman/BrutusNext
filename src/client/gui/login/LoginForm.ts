@@ -61,6 +61,12 @@ export class LoginForm extends CredentialsForm
   {
     switch (response.result)
     {
+      case LoginResponse.Result.UNDEFINED:
+        ERROR("Received login response with unspecified result."
+          + " Someone problably forgot to set 'packet.result'"
+          + " when sending login response from the server");
+        break;
+
       case LoginResponse.Result.UNKNOWN_EMAIL:
         this.displayEmailProblem(response.problem);
         break;

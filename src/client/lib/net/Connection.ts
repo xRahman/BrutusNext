@@ -14,6 +14,7 @@ import {ScrollWindow} from '../../../client/gui/scroll/ScrollWindow';
 import {Avatar} from '../../../client/lib/net/Avatar';
 import {Packet} from '../../../shared/lib/protocol/Packet';
 import {Command} from '../../../shared/lib/protocol/Command';
+import {SystemMessage} from '../../../shared/lib/protocol/SystemMessage';
 import {Account} from '../../../client/lib/account/Account';
 import {LoginResponse} from '../../../shared/lib/protocol/LoginResponse';
 import {RegisterResponse} from '../../../shared/lib/protocol/RegisterResponse';
@@ -49,18 +50,7 @@ export class Connection
       return;
     }
 
-    // If the connection is closed, any user command
-    // (even an empty one) triggers reconnect attempt.
-    if (!connection.socket.isOpen())
-    {
-      ERROR("Attempt to send packet to the closed connection");
-      return;
-    }
-
-    connection.socket.send
-    (
-      packet.serialize(Serializable.Mode.SEND_TO_SERVER)
-    );
+    connection.send(packet);
   }
 
   public static receiveData(data: string)
@@ -98,7 +88,7 @@ export class Connection
     this.socket.connect();
   }
 
-  // Sends 'data' to the connection.
+  // Sends 'command' to the connection.
   public sendCommand(command: string)
   {
     let packet = new Command();
@@ -112,6 +102,17 @@ export class Connection
     else
       ///this.socket.send(packet.serialize(Serializable.Mode.SEND_TO_SERVER));
       this.send(packet);
+  }
+
+  // Sends system message to the connection.
+  public sendSystemMessage(type: SystemMessage.Type, message: string)
+  {
+    let packet = new SystemMessage();
+
+    packet.type = type;
+    packet.message = message;
+
+    this.send(packet);
   }
 
   // Receives 'message' from the connection
@@ -129,12 +130,29 @@ export class Connection
       this.activeAvatar.clientMessage(message);
   }
 
+  public reportClosingBrowserTab()
+  {
+    this.sendSystemMessage(SystemMessage.Type.CLIENT_CLOSED_BROWSER_TAB, null);
+  }
+
+  public close(reason: string = null)
+  {
+    if (this.socket)
+      this.socket.close(reason);
+  }
+
   // ---------------- Event handlers --------------------
 
   // ---------------- Private methods -------------------
 
   private send(packet: Packet)
   {
+    if (!this.socket.isOpen())
+    {
+      ERROR("Attempt to send packet to the closed connection");
+      return;
+    }
+
     this.socket.send
     (
       packet.serialize(Serializable.Mode.SEND_TO_SERVER)
@@ -162,6 +180,14 @@ export class Connection
 
   private processLoginResponse(response: LoginResponse)
   {
+    if (response.result === LoginResponse.Result.UNDEFINED)
+    {
+      ERROR("Received login response with unspecified result."
+        + " Someone problably forgot to set 'packet.result'"
+        + " when sending login response from the server");
+      return;
+    }
+
     if (response.result === LoginResponse.Result.OK)
     {
       this.account = response.account.deserializeEntity(Account);
@@ -176,6 +202,14 @@ export class Connection
 
   private processRegisterResponse(response: RegisterResponse)
   {
+    if (response.result === RegisterResponse.Result.UNDEFINED)
+    {
+      ERROR("Received register response with unspecified result."
+        + " Someone problably forgot to set 'packet.result'"
+        + " when sending register response from the server");
+      return;
+    }
+
     if (response.result === RegisterResponse.Result.OK)
     {
       this.account = response.account.deserializeEntity(Account);

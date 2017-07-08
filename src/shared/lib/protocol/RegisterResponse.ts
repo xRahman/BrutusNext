@@ -21,7 +21,7 @@ export class RegisterResponse extends Packet
   }
 
   // Is the request accepted?
-  public result: RegisterResponse.Result = RegisterResponse.Result.OK;
+  public result: RegisterResponse.Result = RegisterResponse.Result.UNDEFINED;
 
   // Description of problem if the request is denied.
   public problem: string = null;
@@ -36,6 +36,7 @@ export module RegisterResponse
 {
   export enum Result
   {
+    UNDEFINED,
     OK,
     EMAIL_PROBLEM,
     PASSWORD_PROBLEM,
