@@ -7,6 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {WebSocketEvent} from '../../../shared/lib/net/WebSocketEvent';
 import {JsonObject} from '../../../shared/lib/json/JsonObject';
 import {Packet} from '../../../shared/lib/protocol/Packet';
 import {Connection} from '../../../client/lib/net/Connection';
@@ -177,9 +178,13 @@ export class ClientSocket
   }
 
   // Closes the socket, ending the connection.
-  public close()
+  public close(reason: string = null)
   {
-    this.socket.close();
+    // Code '1000' means normal connection close.
+    if (reason)
+      this.socket.close(1000, reason);
+    else
+      this.socket.close(1000);
   }
 
   // ---------------- Private methods -------------------
@@ -208,14 +213,18 @@ export class ClientSocket
   // Prints message to the console.
   private logSocketClosed(event: CloseEvent)
   {
+    let message = "Socket closed";
+
     if (event.reason)
     {
-      console.log('Socket closed because of error: ' + event.reason);
+      message += " because of error: " + event.reason;
     }
-    else
-    {
-      console.log('Socket closed');
-    }
+
+    message += " (code: " + event.code + ", description:"
+      + " " + WebSocketEvent.description(event.code) + ")";
+
+    console.log();
+
   }
 
   private reportNormalDisconnect()
@@ -298,45 +307,6 @@ export class ClientSocket
     console.log('Received message: ' + event.data);
 
     Connection.receiveData(event.data);
-
-    ///let jsonObject = JsonObject.parse(event.data);
-
-//// TODOOOOOOOOOOOO
-//// (Dneska mi to fakt nejde. Asi by bylo dobré z event.data vyrobit
-////  Packet - respektive jen základní strukturu s tím, že v parts budou
-////  pověšené jsonObjecty. Tj. i to JsonObject.parse() by si mohl
-////  zařídit Packet - bude to potřeba i při přijímání dat z klienta,
-////  tak ať ten kód nepíšu dvakrát.)
-////    Se vzniklým packetem pak asi udělat:
-////  this.connection.receivePacket(packet) s tím, že connection
-////  už si to sama naparsuje.
-///     (Na druhou stranu deserializaci packet parts bude muset server
-///      dělat taky, takže by to opět dávalo větší smysl někde v /shared)
-
-    //this.connection.receiveJsonObject(jsonObject);
-
-
-    ///let packet = new Packet();
-    /*
-    // Copy all own enumerable properties from json data.
-    Object.assign(packet, JSON.parse(event.data));   
-    */
-
-    // for (let part of packet.parts)
-    // {
-    //   switch (part.type)
-    //   {
-    //     case Packet.PartType.MUD_MESSAGE:
-    //       this.connection.receiveMudMessage(part.data);
-    //       break;
-        
-    //     case Packet.PartType.EDITOR_INPUT:
-    //       break;
-
-    //     case Packet.PartType.EDITOR_OUTPUT:
-    //       break;
-    //   }
-    // }
   }
 
   private onError(event: ErrorEvent)

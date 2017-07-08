@@ -8,6 +8,8 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
+import {Syslog} from '../../../shared/lib/log/Syslog';
+import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
 import {Serializable} from '../../../shared/lib/class/Serializable';
@@ -35,15 +37,8 @@ export class Login
     connection: Connection
   )
   {
-    if (connection.account !== null)
-    {
-      ERROR("Login request is triggered on connection that has"
-        + " account (" + connection.account.getErrorIdString() + ")"
-        + " attached to it. Login request can only be processed"
-        + " on connection with no account attached yet. Request"
-        + " is not processed");
+    if (!this.isConnectionValid(connection))
       return;
-    }
 
     // E-mail address is used as account name but it needs
     // to be encoded first so it can be used as file name.
@@ -84,7 +79,7 @@ export class Login
     let response = new LoginResponse();
     response.result = LoginResponse.Result.OK;
     
-    // Add newly create account to the response.
+    // Add newly created account to the response.
     response.account.serializeEntity
     (
       account,
@@ -117,8 +112,8 @@ export class Login
   )
   : boolean
   {
-    if (!account.validatePassword(password))
-      return false;
+    if (account.validatePassword(password))
+      return true;
 
     this.denyRequest
     (
@@ -127,7 +122,64 @@ export class Login
       connection
     );
 
+    Syslog.log
+    (
+      "Bad PW: " + account.getUserInfo(),
+      MessageType.CONNECTION_INFO,
+      AdminLevel.IMMORTAL
+    );
+
+    return false;
+  }
+
+  private static isConnectionValid(connection: Connection)
+  {
+    if (!connection)
+      return false;
+
+    if (connection.account !== null)
+    {
+      ERROR("Login request is triggered on connection that has"
+        + " account (" + connection.account.getErrorIdString() + ")"
+        + " attached to it. Login request can only be processed"
+        + " on connection with no account attached yet. Request"
+        + " is not processed");
+      return false;
+    }
+
     return true;
+  }
+
+  private static isAccountValid(account: Account)
+  {
+    if (!account)
+      return false;
+
+    if (!account.getConnection())
+    {
+      // This should never happen.
+      ERROR("Invalid connection on account " + account.getErrorIdString());
+      return false;
+    }
+
+    return true;
+  }
+
+  private static attachNewConnection
+  (
+    account: Account,
+    connection: Connection
+  )
+  {
+    // Let the old connection know that is has been usurped
+    // (we don't have to worry about not sending this message
+    //  when player just reloads her broswer tab, because in
+    //  that case browser closes the old connection so the serves
+    //  has already dealocated the account so connectToAccount()
+    //  has been called rather than reconnectToAccount().
+    account.getConnection().announceReconnect();
+    account.detachConnection().close();
+    account.attachConnection(connection);
   }
 
   private static reconnectToAccount
@@ -140,31 +192,69 @@ export class Login
     // Check if account is already loaded in memory.
     let account = Accounts.get(accountName);
 
-    if (!account)
+    if (!this.isAccountValid(account))
       return false;
 
     if (!this.authenticate(account, password, connection))
       return false;
 
-    if (!account.getConnection())
-    {
-      // This should never happen.
-      ERROR("Invalid connection on account " + account.getErrorIdString());
-      return;
-    }
-
-    // Let the old connection know that is has been usurped
-    // (we don't have to worry about not sending this message
-    //  when player just reloads her broswer tab, because in
-    //  that case browser closes the old connection so the serves
-    //  has already dealocated the account so connectToAccount()
-    //  has been called rather than reconnectToAccount().
-    account.getConnection().announceReconnect();
-
-    account.detachConnection().close();
-    account.attachConnection(connection);
-
+    this.attachNewConnection(account, connection);
     this.acceptRequest(account, connection);
+
+    Syslog.log
+    (
+      account.getUserInfo() + " has re-logged from a different location",
+      MessageType.CONNECTION_INFO,
+      AdminLevel.IMMORTAL
+    );
+
+    return true;
+  }
+
+  private static exists
+  (
+    account: Account,
+    accountName,
+    connection: Connection
+  )
+  {
+    if (account !== undefined)
+      return true;
+
+    this.denyRequest
+    (
+      "No account is registered for this e-mail address.",
+      LoginResponse.Result.UNKNOWN_EMAIL,
+      connection
+    );
+
+    Syslog.log
+    (
+      "Unknown player (" + Utils.decodeEmail(accountName) + ")"
+        + " attempted to log in from " + connection.getOrigin(),
+      MessageType.CONNECTION_INFO,
+      AdminLevel.IMMORTAL
+    );
+
+    return false;
+  }
+
+  private static failedToLoad
+  (
+    account: Account,
+    connection: Connection
+  )
+  {
+    if (account !== null)
+      return false;
+
+    this.denyRequest
+    (
+      "[ERROR]: Failed to load account."
+        + Message.ADMINS_WILL_FIX_IT,
+      LoginResponse.Result.FAILED_TO_LOAD_ACCOUNT,
+      connection
+    );
 
     return true;
   }
@@ -184,34 +274,25 @@ export class Login
       false     // Do not report 'not found' error.
     );
 
-    if (account === undefined)
-    {
-      this.denyRequest
-      (
-        "No account is registered for this e-mail address.",
-        LoginResponse.Result.UNKNOWN_EMAIL,
-        connection
-      );
+    if (!this.exists(account, accountName, connection))
       return;
-    }
 
-    if (account === null)
-    {
-      this.denyRequest
-      (
-        "[ERROR]: Failed to load account.\n\n"
-          + Message.ADMINS_WILL_FIX_IT,
-        LoginResponse.Result.FAILED_TO_LOAD_ACCOUNT,
-        connection
-      );
+    if (this.failedToLoad(account, connection))
       return;
-    }
 
     if (!this.authenticate(account, password, connection))
       return;
 
     account.attachConnection(connection);
+    account.addToLists();
 
     this.acceptRequest(account, connection);
+
+    Syslog.log
+    (
+      account.getUserInfo() + " has logged in",
+      MessageType.CONNECTION_INFO,
+      AdminLevel.IMMORTAL
+    );
   }
 }

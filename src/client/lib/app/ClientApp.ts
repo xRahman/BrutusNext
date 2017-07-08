@@ -16,6 +16,7 @@ import {Syslog} from '../../../shared/lib/log/Syslog';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {ClientSyslog} from '../../../client/lib/log/ClientSyslog';
+import {WebSocketEvent} from '../../../shared/lib/net/WebSocketEvent';
 import {App} from '../../../shared/lib/app/App';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {ClientEntities} from '../../../client/lib/entity/ClientEntities';
@@ -223,6 +224,8 @@ export class ClientApp extends App
     if (!ClientSocket.checkWebSocketsSupport())
       return;
 
+    this.registerBeforeUnloadHandler();
+
     // Create an instance of each entity class registered in
     // Classes so they can be used as prototype objects
     // for root prototype entities.
@@ -258,6 +261,29 @@ export class ClientApp extends App
 
     /// Jinak asi fakt budu muset udělat logovací komponenty, protože
     /// z telnet-style loginu v clientu nepoznám, že se hráč nalogoval do hry.
+  }
+
+  private registerBeforeUnloadHandler()
+  {
+    window.onbeforeunload =
+      (event: BeforeUnloadEvent) => { this.onBeforeUnload(event); }
+  }
+
+  // ---------------- Event handlers --------------------
+
+  private onBeforeUnload(event: BeforeUnloadEvent)
+  {
+    this.connection.reportClosingBrowserTab();
+
+    // Close the connection to prevent browser from closing it
+    // abnormally with event code 1006.
+    //   For some strange reson this doesn't alway work in Chrome.
+    // If we call socket.close(1000, "Tab closed"), onClose() event
+    // handler on respective server socket will receive the reason
+    // but sometimes code will be 1006 instead of 1000. To circumvent
+    // this, we send WebSocketEvent.REASON_CLOSE when socket is closed
+    // from onBeforeUnload() and we check for it in ServerSocket.onClose().
+    this.connection.close(WebSocketEvent.REASON_CLOSE);
   }
 }
 

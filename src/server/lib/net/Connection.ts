@@ -7,6 +7,8 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Syslog} from '../../../shared/lib/log/Syslog';
+import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {Message} from '../../../server/lib/message/Message';
 import {MessageType} from '../../../shared/lib/message/MessageType';
@@ -15,8 +17,9 @@ import {Account} from '../../../server/lib/account/Account';
 import {GameEntity} from '../../../server/game/GameEntity';
 import {Classes} from '../../../shared/lib/class/Classes';
 import {Connections} from '../../../server/lib/net/Connections';
-import {MudMessage} from '../../../shared/lib/protocol/MudMessage';
 import {Packet} from '../../../shared/lib/protocol/Packet';
+import {MudMessage} from '../../../shared/lib/protocol/MudMessage';
+import {SystemMessage} from '../../../shared/lib/protocol/SystemMessage';
 import {Login} from '../../../server/lib/net/Login';
 import {LoginRequest} from '../../../shared/lib/protocol/LoginRequest';
 import {Register} from '../../../server/lib/net/Register';
@@ -42,7 +45,23 @@ export class Connection
 
   // --------------- Public accessors -------------------
 
-  public get ipAddress() { return this.socket.getIpAddress(); }
+  public getIpAddress() { return this.socket.getIpAddress(); }
+
+  // Connection origin description in format "(url [ip])".
+  public getOrigin() { return this.socket.getOrigin() }
+
+  public getUserInfo()
+  {
+    let info = "";
+
+    if (this.account)
+      info += this.account.getEmail() + " ";
+    
+    // Add (url [ip]).
+    info += this.getOrigin();
+
+    return info;
+  }
 
   // ---------------- Public methods --------------------
 
@@ -183,8 +202,46 @@ export class Connection
         );
         break;
 
+      case SystemMessage.name:
+        this.processSystemMessage
+        (
+          packet.dynamicCast(SystemMessage)
+        );
+        break;
+
       default:
         ERROR("Unknown packet type");
+        break;
+    }
+  }
+
+  private reportClientClosedBrowserTab()
+  {
+    Syslog.log
+    (
+      this.getUserInfo() + " has disconnected by"
+        + " closing or reloading browser tab",
+      MessageType.CONNECTION_INFO,
+      AdminLevel.IMMORTAL
+    );
+  }
+
+  private processSystemMessage(packet: SystemMessage)
+  {
+    switch (packet.type)
+    {
+      case SystemMessage.Type.UNDEFINED:
+        ERROR("Received system message with unspecified type."
+          + " Someone problably forgot to set 'packet.type'"
+          + " when sending system message from the client");
+        break;
+
+      case SystemMessage.Type.CLIENT_CLOSED_BROWSER_TAB:
+        this.reportClientClosedBrowserTab();
+        break;
+
+      default:
+        ERROR("Received system message of unknown type.");
         break;
     }
   }
@@ -192,14 +249,17 @@ export class Connection
   // ---------------- Event handlers --------------------
 
   // Should be called from 'onClose' event on socket.
-  public onClose()
+  public release()
   {
     // It's ok if account doesn't exist here, it happens
     // when brower has opened connection but player hasn't
     // logged in yet or when player reconnects from different
     // location and the old connection is closed.
     if (this.account)
-      this.account.logout("has been logged out");
+    {
+      this.account.logout();
+      this.account = null;
+    }
 
     // Release this connection from memory.
     Connections.release(this);

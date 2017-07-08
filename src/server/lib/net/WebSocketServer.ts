@@ -6,16 +6,18 @@
 
 /*
   Implementation note:
-    Event handlers need to be registered using lambda expression '() => {}'.
+    Event handlers are registered using lambda expression '() => {}'.
     For example:
+
       this.webSocketServer.on
       (
         'error',
         (error) => { this.onServerError(error); }
       );
-    The reason is, that it is not guaranteed in TypeScript that class
-    methods will get called on an instance of their class. In other words,
-    'this' will be something else than you expect when you register an event
+
+    The reason is that it is not guaranteed in TypeScript that methods
+    will get called on an instance of their class. In other words 'this'
+    will be something else than you expect when you register an event
     handler.
       Lambda expression solves this by capturing 'this', so you may use it
     correcly within lambda function body.
@@ -98,38 +100,30 @@ export class WebSocketServer
     let ip = ServerSocket.parseRemoteAddress(socket);
     let url = ServerSocket.parseRemoteUrl(socket);
 
-    if (!this.isServerOpen(socket, ip, url))
+    if (this.connectionDenied(socket, ip, url))
       return;
+
+    let connection = new Connection(socket, ip, url);
+
+    Connections.add(connection)
 
     Syslog.log
     (
-      "Received a new websocket connection request from"
-      + " " + url + " (" + ip + ")",
+      "Accepting connection " + connection.getOrigin(),
       MessageType.WEBSOCKET_SERVER,
       AdminLevel.IMMORTAL
     );
-
-    await this.createConnection(socket, ip, url);
   }
 
   // ---------------- Private methods --------------------
 
-  // -> Returns 'null' if connection couldn't be created.
-  private async createConnection(socket: WebSocket, ip: string, url: string)
-  {    
-    let connection = new Connection(socket, ip, url);
-
-    Connections.add(connection);
-  }
-
-  private isServerOpen(socket: WebSocket, ip: string, url: string)
+  private connectionDenied(socket: WebSocket, ip: string, url: string)
   {
     if (this.open === false)
     {
       Syslog.log
       (
-        "Denying websocket connection request from"
-        + " " + url + "(" + ip + "):"
+        "Denying connection (" + url + "[" + ip + "]):"
         + " Server is closed",
         MessageType.WEBSOCKET_SERVER,
         AdminLevel.IMMORTAL
@@ -137,9 +131,9 @@ export class WebSocketServer
 
       socket.close();
 
-      return false;
+      return true;
     }
 
-    return true;
+    return false;
   }
 }

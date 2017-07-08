@@ -28,56 +28,6 @@ export class Accounts
 
   // ------------- Public static methods ----------------
 
-  // -> Returns 'null' on failure.
-  // -> Returns 'undefined' if requested unique name is already taken.
-  public static async register
-  (
-    accountName: string,
-    password: string,
-    connection: Connection
-  )
-  {
-    if (!connection)
-    {
-      ERROR("Invalid connection");
-      return null;
-    }
-
-    if (ServerApp.accounts.names.has(accountName))
-    {
-      ERROR("Attempt to register account '" + accountName + "'"
-        + " which is already loaded to memory. Account is not"
-        + " registered");
-      return null;
-    }
-
-    let account = await ServerEntities.createInstanceEntity
-    (
-      Account,
-      Account.name,   // Prototype name.
-      accountName,
-      Entity.NameCathegory.ACCOUNT
-    );
-
-    // 'undefined' means that the name is already taken.
-    if (account === undefined)
-      return undefined;
-
-    if (!Entity.isValid(account))
-    {
-      ERROR("Failed to create account '" + accountName + "'");
-      return null;
-    }
-
-    account.setPasswordHash(password);
-    account.attachConnection(connection);
-    account.addToLists();
-
-    await ServerEntities.save(account);
-
-    return account;
-  }
-
   // -> Returns 'true' on success.
   public static add(account: Account)
   {
@@ -88,6 +38,11 @@ export class Accounts
   public static get(name: string)
   {
     return ServerApp.accounts.names.get(name);
+  }
+
+  public static has(name: string)
+  {
+    return ServerApp.accounts.names.has(name);
   }
 
   // Removes account from Accounts, but not from memory
