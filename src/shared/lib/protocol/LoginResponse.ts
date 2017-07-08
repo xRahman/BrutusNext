@@ -21,7 +21,7 @@ export class LoginResponse extends Packet
   }
 
   // Is the request accepted?
-  public result: LoginResponse.Result = LoginResponse.Result.OK;
+  public result: LoginResponse.Result = LoginResponse.Result.UNDEFINED;
 
   // Description of problem if the request is denied.
   public problem: string = null;
@@ -36,6 +36,7 @@ export module LoginResponse
 {
   export enum Result
   {
+    UNDEFINED,
     OK,
     UNKNOWN_EMAIL,
     INCORRECT_PASSWORD,

@@ -75,6 +75,12 @@ export class RegisterForm extends CredentialsForm
   {
     switch (response.result)
     {
+      case RegisterResponse.Result.UNDEFINED:
+        ERROR("Received register response with unspecified result."
+          + " Someone problably forgot to set 'packet.result'"
+          + " when sending register response from the server");
+        break;
+
       case RegisterResponse.Result.EMAIL_PROBLEM:
         this.displayEmailProblem(response.problem);
         break;

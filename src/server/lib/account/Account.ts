@@ -74,6 +74,15 @@ export class Account extends ServerEntity
 
   // --------------- Public accessors -------------------
 
+  // -> Returns string in format: email (url [ip]).
+  public getUserInfo()
+  {
+    if (this.connection)
+      return this.connection.getUserInfo();
+
+    return this.getEmail();
+  }
+
   public getConnection()
   {
     return this.connection;
@@ -248,7 +257,7 @@ export class Account extends ServerEntity
   {
     if (this.connection !== null)
     {
-      this.lastLoginAddress = this.connection.ipAddress;
+      this.lastLoginAddress = this.connection.getIpAddress();
     }
     else
     {
@@ -261,10 +270,10 @@ export class Account extends ServerEntity
     this.lastLoginTime = new Time();
   }
 
-  public logout(action: string)
+  public logout()
   {
     let accountName = this.getName();
-    let ipAddress = this.connection.ipAddress;
+    let ipAddress = this.connection.getIpAddress();
 
     /*
     /// Tohle je nakonec ok - kdyz player shodi linku ze hry,
@@ -276,7 +285,7 @@ export class Account extends ServerEntity
 
     Syslog.log
     (
-      accountName + " [" + ipAddress + "] " + action,
+      "Releasing account " + accountName + " [" + ipAddress + "]",
       MessageType.SYSTEM_INFO,
       AdminLevel.IMMORTAL
     );

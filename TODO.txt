@@ -13,24 +13,64 @@ TODO: Vymyslet, kam vypisovat problém při otevírání connection.
       že nejede ani http server - ale to se možná pořeší tím, že
       site bude statická stránka a mud poběží až na /mud.
 
+TODO: Automatický reconnect
+- momentálně to dělá Connection.sendCommand(), což asi není dobře.
+  Reconnectit by se mělo automaticky a periodicky.
+
 TODO: Ošetřit ztrátu spojení se serverem (třeba když server
   spadne, vypne se, nebo tak).
   - logovací okno (a asi i všechna ostatní) teď zůstane otevřené
     a odeslání požadavku vyhodí error, protože jde o pokus
     o zápis do closnutého socketu.
+TODO: Oštřit to projistotu i přímo v Connection.send() - když
+  by failnulo odchytnutí disconnectu, tak ať to nehází errory.
 
 --------------------------------------------------------------
 
+TODO: Click spam protection všude možně (login button například).
+- a asi nejen na clientovi, ale raději i na serveru. Tj. někam
+  bude třeba zapsat lock, že se zpracovává login na daném accountu,
+  aby se opakovaný login proces nerval o stejný account.
+
+TODO: Login s chybným heslem přidá account do Entities (se jménem null).
+- nezahazuju account poté, co neprojde autheticate(). Problém je, že
+  account se přidá do Entities hned v rámci loadu.
+  - ale nepřidá se do namelistů, takže když bych ho pak releasnul
+    z entities, bude to křičet, že ho vyhazuju z namelistu, ve kterém není.
+Otázka je, jestli by nebylo lepší savovat heslo rovnou do name lock filu...
+- pak bych nemusel loadovat celý account na to, abych zkontrolovat heslo.
+  Což by bylo obzvlášť cítit, když bych s accountem loadil rovnou všechny
+  chary kvůli charlist window (i když to můžu dělat až po autentifikaci tak
+  jako tak, takže to asi jako důvod neobstojí).
+  - nicméně otázka je, co všechno se bude v accountu savovat. Mapa třeba?
+    Musel bych ji tudíž asi savovat zvlášť (jako entitu asi).
+TODO: Zapisovat heslo do name lock filu.
+- při Loginu ručně přečíst name lock file, testnout heslo, pokud sedí,
+  přečíst idčko a zavolat loadEntityById() místo loadEntityByName().
+
+TODO: Při reloadu tabu už jsou sice hlášky správně, ale při zavření ne :\
+[ohackováno posíláním reasonu]
+
+TODO: Syslogové hlášky při zpracovávání login requestu a register requestu.
+- ještě zkontrolovat všechny varianty.
+
+TODO: Kód z Accounts.register přesunout do Register.ts
+[done]
+
 TODO: Pořešit error při pokusu založit už existující account.
+- není to při zakládání accountu ale při reloadu tabu po loginu do hry.
+[done]
 
 TODO: Register form by asi neměla vyplňovat login a heslo ze Storage.
   (ale mohla by je možná zkopírovat login z LoginFormu)
 
 TODO: Místo "has been logged out" možná logovat prostě jen:
   "Dropping account XY".
+[done]
 
 TODO: Konečně už opravit syslog message při shození connectionu reloadem
   tabu.
+[done]
 
 TODO: Otestovat reconnect z jiného tabu.
 
@@ -48,6 +88,7 @@ Ještě je otázka, jestli by nebylo od věci nechávat tam prázdné místo,
 i když se žádný error nevypisuje, aby okno neměnilo velikost, když se
 vypíše chybová hláška.
 - labely jsou inline-block, takže by asi mohly mít min-height.
+IMPORTANT: Z LoginResponse jsem to \n\n umazal.
 
 
 

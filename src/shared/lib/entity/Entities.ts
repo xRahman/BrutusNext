@@ -77,7 +77,8 @@ export abstract class Entities
     if (!App.entities.entityList.delete(entity.getId()))
     {
       ERROR("Attempt to remove entity " + entity.getErrorIdString()
-        + " from Entities which is not there");
+        + " from Entities which is not there. Maybe you forgot to"
+        + " call addToLists() wen you created it?");
     }
 
     // Recursively delete all properties and set the prototype to 'null.
