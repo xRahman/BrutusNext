@@ -35,6 +35,7 @@ export abstract class Form extends Component
   //----------------- Protected data --------------------
 
   protected $form = null;
+  protected $submitButton = null;
 
   //------------------ Private data ---------------------
 
@@ -317,7 +318,7 @@ export abstract class Form extends Component
     }
   )
   {
-    return Component.createSubmitButton
+    this.$submitButton = Component.createSubmitButton
     (
       {
         $container: $container,
@@ -326,6 +327,8 @@ export abstract class Form extends Component
         text: text
       }
     );
+
+    return this.$submitButton;
   }
 
   protected createEmptyLine

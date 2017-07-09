@@ -27,13 +27,29 @@ TODO: Oštřit to projistotu i přímo v Connection.send() - když
 
 --------------------------------------------------------------
 
+TODO: Buttonky by měly mít "pressed" grafiku.
+
+TODO: v onShow() se asi nehidují error message.
+[done]
+
+TODO: Při pokusu o login s neregistrovanou adresou by možná
+  přímo v textu problem message mělo být 'Please Register'.
+[kašlat na to, to už je fakt nepodstatnej detail]
+
 TODO: V LoginWindow se mi nemažou problémy při odeslání formu
  (zůstane tam viset password problém když mám chybu v emailu)
+[done]
 
 TODO: Click spam protection všude možně (login button například).
 - a asi nejen na clientovi, ale raději i na serveru. Tj. někam
   bude třeba zapsat lock, že se zpracovává login na daném accountu,
   aby se opakovaný login proces nerval o stejný account.
+TODO: Enablování submit buttonu když přijde response
+- a projistotu i v onShow().
+TODO: 'cancel' button v RegisterForm by asi měl zůstat enablovanej.
+  To ale znamená, že se může clientApp rozsynchronizovat se serverem.
+- Co s tím? Shodit connection a vyrobit novou?
+  - Account možná zůstane registrovaný, to je ale asi ok.
 
 TODO: Login s chybným heslem přidá account do Entities (se jménem null).
 - nezahazuju account poté, co neprojde autheticate(). Problém je, že
