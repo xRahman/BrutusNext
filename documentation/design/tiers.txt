@@ -1,0 +1,43 @@
+﻿Tiery
+==========
+
+Kombinace tierů
+-----------------
+
+Potvory s více tierama - například elementál (elemental tier power)
+ve službách boha (divine tier power).
+- To by asi mělo fungovat tak, že hráč potřebuje oba tiery.
+
+Power of gods
+--------------
+
+Jedna z možností, jak se mohou tiery projevovat, je moc bohů.
+
+Takže napřílad služebníci Talry, Gwa'ghara a podobně budou mít
+tier spojený s daným božstvem.
+
+Hráč má dvě možnosti, jak získat (tier) power daného boha - získat
+jeho přízeň (stát se jeho vyznavačem a šířit jeho víru, plnit jeho
+questy, zasvěcovat se u jeho oltářů a svatyní...) nebo ji drainovat
+z jeho služebníků.
+
+- Pokud se postava stane věřícím, respektive služebníkem nějakého boha,
+tak samozřejmě nebude moct "expit" tier power daného boha zabíjením
+jeho služebníků (ale neměla by tím nic ztrácet, aby to nebylo jak
+se zabíjením Yuttosáků v AOčku), zato bude ale rychleji "expit"
+na rituálech daného boha (v různých svatyních a tak), questech pro
+daného boha, atd.
+-- Něčím by mělo být omezeno maximum tier power, na které se char může
+  v danou chvíli dostat - asi nějakejma major access questama (otevíráním
+  nových zón, například).
+
+
+Úvahy: Dává to smysl, že mocní služebníci dvou bohů (nebo obecně potvory
+s různou tier power) se vzájemně instakillnou?
+- asi by mohla existovat nějaká obecná tier power, která se použije,
+  když mob nemá tu správnou.
+
+- Tier power by asi fakt měla bejt závislá na lokaci. Tj. v Talřině chrámu
+  se bude počítat Divine power of Talra, ale když její priest vyrazí do světa,
+  tak nebude nutně kosit všechno, co potká.
+  (Na druhou stranu pak by šlo zabíjet high-tier bosse vylákáním někam pryč...)
