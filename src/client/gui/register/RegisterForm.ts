@@ -220,8 +220,6 @@ export class RegisterForm extends CredentialsForm
     // We will handle the form submit ourselves.
     event.preventDefault();
 
-    this.hideProblems();
-
     let request = new RegisterRequest();
 
     request.email = this.$emailInput.val();
@@ -233,6 +231,10 @@ export class RegisterForm extends CredentialsForm
     // the server of course to prevent exploits).
     if (!this.isRequestOk(request))
       return;
+
+    // Disable submit button to prevent click-spamming
+    // requests.
+    this.disableSubmitButton();
 
     Connection.send(request);
   }
