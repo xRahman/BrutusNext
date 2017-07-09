@@ -27,6 +27,9 @@ TODO: Oštřit to projistotu i přímo v Connection.send() - když
 
 --------------------------------------------------------------
 
+TODO: V LoginWindow se mi nemažou problémy při odeslání formu
+ (zůstane tam viset password problém když mám chybu v emailu)
+
 TODO: Click spam protection všude možně (login button například).
 - a asi nejen na clientovi, ale raději i na serveru. Tj. někam
   bude třeba zapsat lock, že se zpracovává login na daném accountu,
@@ -47,6 +50,19 @@ Otázka je, jestli by nebylo lepší savovat heslo rovnou do name lock filu...
 TODO: Zapisovat heslo do name lock filu.
 - při Loginu ručně přečíst name lock file, testnout heslo, pokud sedí,
   přečíst idčko a zavolat loadEntityById() místo loadEntityByName().
+[done]
+
+TODO: Projít ještě jednou Register (a zkontrolovat, že se do accountu
+  zapíše passwordHash - nejen do nameLock filu).
+[done]
+
+TODO: Zkontrolovat, že se při loadu accountu načte passwordHash
+  z name lock filu.
+
+
+TODO: Správně savovat heslo do name lock filu při přejmenování accountu.
+[jakž takž]
+
 
 TODO: Při reloadu tabu už jsou sice hlášky správně, ale při zavření ne :\
 [ohackováno posíláním reasonu]

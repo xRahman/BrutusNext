@@ -13,6 +13,9 @@ import {MessageType} from '../../../shared/lib/message/MessageType';
 // import {ServerTelnetSocket} from
 //   '../../../server/lib/net/telnet/ServerTelnetSocket';
 
+// Built-in node.js modules.
+import * as crypto from 'crypto';  // Import namespace 'crypto' from node.js
+
 export module ServerUtils
 {
   // Reports exception to Syslog, not just to console.
@@ -26,6 +29,15 @@ export module ServerUtils
       MessageType.FATAL_RUNTIME_ERROR,
       AdminLevel.IMMORTAL
     );
+  }
+
+  export function md5hash(input: string)
+  {
+    let hashFacility = crypto.createHash('md5');
+
+    hashFacility.update(input.trim());
+
+    return hashFacility.digest('hex');
   }
 
   /*

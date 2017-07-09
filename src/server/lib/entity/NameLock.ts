@@ -16,6 +16,8 @@ import {ServerApp} from '../../../server/lib/app/ServerApp';
 
 export class NameLock
 {
+  public static get PASSWORD_HASH_PROPERTY() { return 'passwordHash'; }
+
   // ------------- Public static methods ----------------
 
   public static async exists
@@ -38,12 +40,16 @@ export class NameLock
   (
     id: string,
     name: string,
-    cathegoryName: string
+    cathegoryName: string,
+    passwordHash: string = null
   )
   {
-    // Name lock file will contain serialized object with a single
-    // 'id' property.
-    let jsonString = JsonObject.stringify({ id: id });
+    let fileContents = { id: id };
+
+    if (passwordHash !== null)
+      fileContents[NameLock.PASSWORD_HASH_PROPERTY] = passwordHash;
+
+    let jsonString = JsonObject.stringify(fileContents);
 
     // Name lock directory is something like './data/names/accounts/'.
     let directory = this.getDirectory(cathegoryName);
@@ -60,7 +66,7 @@ export class NameLock
 
   // -> Returns 'undefined' if name lock file doesn't exist.
   // -> Returns 'null' on error.
-  public static async readId
+  public static async load
   (
     name: string,
     cathegoryName: string,
@@ -81,6 +87,31 @@ export class NameLock
       return undefined;
 
     let jsonObject = JsonObject.parse(jsonString, path);
+
+    if (!jsonObject)
+      return null;
+
+    return jsonObject;
+  }
+
+  // -> Returns 'undefined' if name lock file doesn't exist.
+  // -> Returns 'null' on error.
+  public static async readId
+  (
+    name: string,
+    cathegoryName: string,
+    reportNotFoundError: boolean = true
+  )
+  {
+    let jsonObject = await NameLock.load
+    (
+      name,
+      cathegoryName,
+      reportNotFoundError
+    );
+
+    if (!jsonObject)
+      return jsonObject;
 
     if (!jsonObject[Entity.ID_PROPERTY])
       return null;
