@@ -180,6 +180,8 @@ export class Connection
 
   private processLoginResponse(response: LoginResponse)
   {
+    Windows.registerWindow.onReceivedResponse();
+
     if (response.result === LoginResponse.Result.UNDEFINED)
     {
       ERROR("Received login response with unspecified result."
@@ -202,6 +204,8 @@ export class Connection
 
   private processRegisterResponse(response: RegisterResponse)
   {
+    Windows.registerWindow.onReceivedResponse();
+    
     if (response.result === RegisterResponse.Result.UNDEFINED)
     {
       ERROR("Received register response with unspecified result."

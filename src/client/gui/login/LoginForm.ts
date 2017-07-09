@@ -59,6 +59,8 @@ export class LoginForm extends CredentialsForm
 
   public displayProblem(response: LoginResponse)
   {
+    this.enableSubmitButton();
+
     switch (response.result)
     {
       case LoginResponse.Result.UNDEFINED:
@@ -76,7 +78,9 @@ export class LoginForm extends CredentialsForm
         break;
 
       case LoginResponse.Result.FAILED_TO_LOAD_ACCOUNT:
-        this.displayError(response.problem);
+        // '\n\n' is and ugly hack which adds a new line
+        // to separate error message from next component.
+        this.displayError(response.problem + '\n\n');
         break;
 
       case LoginResponse.Result.OK:
@@ -149,6 +153,10 @@ export class LoginForm extends CredentialsForm
 
     request.email = this.$emailInput.val();
     request.password = this.$passwordInput.val();
+
+    // Disable submit button to prevent click-spamming
+    // requests.
+    this.disableSubmitButton();
 
     Connection.send(request);
   }

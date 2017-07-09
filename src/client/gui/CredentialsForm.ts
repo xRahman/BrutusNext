@@ -44,6 +44,9 @@ export abstract class CredentialsForm extends Form
   {
     super.onShow();
 
+    this.enableSubmitButton();
+    this.hideProblems();
+
     if (LocalStorage.isAvailable())
     {
       this.setStoredEmailAddress();
@@ -77,6 +80,12 @@ export abstract class CredentialsForm extends Form
         this.$passwordInput.val()
       );
     }
+  }
+
+  public onReceivedResponse()
+  {
+    this.hideProblems();
+    this.enableSubmitButton();
   }
 
   // --------------- Protected methods ------------------
@@ -221,6 +230,18 @@ export abstract class CredentialsForm extends Form
 
     if (this.$errorLabel)
       this.$errorLabel.hide();
+  }
+
+  protected disableSubmitButton()
+  {
+    if (this.$submitButton)
+      this.$submitButton.prop('disabled', true);
+  }
+
+  protected enableSubmitButton()
+  {
+    if (this.$submitButton)
+      this.$submitButton.prop('disabled', false);
   }
 
   // ---------------- Private methods -------------------

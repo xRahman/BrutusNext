@@ -65,6 +65,11 @@ export class LoginWindow extends StandaloneWindow
     this.form.displayProblem(response);
   }
 
+  public onReceivedResponse()
+  {
+    this.form.onReceivedResponse();
+  }
+
   public loginSucceeded()
   {
     this.form.rememberCredentials();
