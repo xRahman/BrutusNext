@@ -8,11 +8,13 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
+import {ServerUtils} from '../../../server/lib/utils/ServerUtils';
 import {Syslog} from '../../../shared/lib/log/Syslog';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
+import {Serializable} from '../../../shared/lib/class/Serializable';
+import {NameLock} from '../../../server/lib/entity/NameLock';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
-import {Serializable} from '../../../shared/lib/class/Serializable';
 import {Message} from '../../../server/lib/message/Message';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Account} from '../../../server/lib/account/Account';
@@ -23,12 +25,6 @@ import {LoginResponse} from '../../../shared/lib/protocol/LoginResponse';
 
 export class Login
 {
-  // ----------------- Public data ----------------------
-
-  // ----------------- Private data ---------------------
-
-  // --------------- Public accessors -------------------
-
   // ------------- Public static methods ----------------
 
   public static async processRequest
@@ -40,10 +36,11 @@ export class Login
     if (!this.isConnectionValid(connection))
       return;
 
+    let email = request.email;
     // E-mail address is used as account name but it needs
     // to be encoded first so it can be used as file name.
-    let accountName = Utils.encodeEmail(request.email);
-    let password = request.password;
+    let accountName = Utils.encodeEmail(email);
+    let passwordHash = ServerUtils.md5hash(request.password);
 
     // If player has already been connected prior to this
     // login request (for example if she logs in from different
@@ -55,7 +52,7 @@ export class Login
     // old connection and socket (if it's still open) and also
     // possibly let the player know that her connection has been
     // usurped.
-    if (this.reconnectToAccount(accountName, password, connection))
+    if (this.reconnectToAccount(accountName, passwordHash, connection))
       return;
 
     // If account 'accountName' doesn't exist in memory,
@@ -65,14 +62,10 @@ export class Login
     // in such case so at the time user logs back in
     // server has already dealocated old account, connection
     // and socket.
-    await this.connectToAccount(accountName, password, connection);
+    await this.connectToAccount(accountName, email, passwordHash, connection);
   }
 
   // ------------- Private static methods ---------------
-
-  // ---------------- Public methods --------------------
-
-  // --------------- Private methods --------------------
 
   private static acceptRequest(account: Account, connection: Connection)
   {
@@ -104,30 +97,46 @@ export class Login
     connection.send(response);
   }
 
-  private static authenticate
+  // -> Returns 'null'.
+  private static reportMissingIdProperty
   (
-    account: Account,
-    password: string,
+    email: string,
     connection: Connection
   )
-  : boolean
   {
-    if (account.validatePassword(password))
-      return true;
-
     this.denyRequest
     (
-      "Incorrect password.",
-      LoginResponse.Result.INCORRECT_PASSWORD,
+      "[ERROR]: Failed to read account data."
+        + Message.ADMINS_WILL_FIX_IT,
+      LoginResponse.Result.UNKNOWN_EMAIL,
       connection
     );
 
-    Syslog.log
+    ERROR("Missing or invalid '" + Entity.ID_PROPERTY + "'"
+      + " property in name lock file of account " + email + " "
+      + connection.getOrigin());
+
+    return null;
+  }
+
+  // -> Returns 'false'.
+  private static reportMissingPasswordProperty
+  (
+    email: string,
+    connection: Connection
+  )
+  {
+    this.denyRequest
     (
-      "Bad PW: " + account.getUserInfo(),
-      MessageType.CONNECTION_INFO,
-      AdminLevel.IMMORTAL
+      "[ERROR]: Failed to read account data."
+        + Message.ADMINS_WILL_FIX_IT,
+      LoginResponse.Result.UNKNOWN_EMAIL,
+      connection
     );
+
+    ERROR("Missing or invalid '" + NameLock.PASSWORD_HASH_PROPERTY + "'"
+      + " property in name lock file of account " + email + " "
+      + connection.getOrigin());
 
     return false;
   }
@@ -165,6 +174,30 @@ export class Login
     return true;
   }
 
+  // -> Returns 'false';
+  private static reportInvalidPassword
+  (
+    userInfo: string,
+    connection: Connection
+  )
+  {
+    this.denyRequest
+    (
+      "Incorrect password.",
+      LoginResponse.Result.INCORRECT_PASSWORD,
+      connection
+    );
+
+    Syslog.log
+    (
+      "Bad PW: " + userInfo,
+      MessageType.CONNECTION_INFO,
+      AdminLevel.IMMORTAL
+    );
+
+    return false;
+  }
+
   private static attachNewConnection
   (
     account: Account,
@@ -185,7 +218,7 @@ export class Login
   private static reconnectToAccount
   (
     accountName: string,
-    password: string,
+    passwordHash: string,
     connection: Connection
   )
   {
@@ -195,8 +228,8 @@ export class Login
     if (!this.isAccountValid(account))
       return false;
 
-    if (!this.authenticate(account, password, connection))
-      return false;
+    if (!account.validatePassword(passwordHash))
+      return this.reportInvalidPassword(account.getUserInfo(), connection);
 
     this.attachNewConnection(account, connection);
     this.acceptRequest(account, connection);
@@ -211,16 +244,27 @@ export class Login
     return true;
   }
 
-  private static exists
+  // -> Returns 'null'.
+  private static reportAccountLoadFailure
   (
-    account: Account,
-    accountName,
+    email: string,
     connection: Connection
   )
   {
-    if (account !== undefined)
-      return true;
+    this.denyRequest
+    (
+      "[ERROR]: Failed to load account."
+        + Message.ADMINS_WILL_FIX_IT,
+      LoginResponse.Result.FAILED_TO_LOAD_ACCOUNT,
+      connection
+    );
 
+    return null;
+  }
+
+  // -> Returns 'null'.
+  private static reportMissingNameLock(email: string, connection: Connection)
+  {
     this.denyRequest
     (
       "No account is registered for this e-mail address.",
@@ -230,31 +274,120 @@ export class Login
 
     Syslog.log
     (
-      "Unknown player (" + Utils.decodeEmail(accountName) + ")"
-        + " attempted to log in from " + connection.getOrigin(),
+      "Unregistered player (" + email + ") attempted to log in"
+        + " from " + connection.getOrigin(),
       MessageType.CONNECTION_INFO,
       AdminLevel.IMMORTAL
     );
 
-    return false;
+    return null;
   }
 
-  private static failedToLoad
-  (
-    account: Account,
-    connection: Connection
-  )
+  // -> Returns 'null'.
+  private static reportNameLockReadError(email: string, connection: Connection)
   {
-    if (account !== null)
-      return false;
-
     this.denyRequest
     (
-      "[ERROR]: Failed to load account."
+      "[ERROR]: Failed to read account data."
         + Message.ADMINS_WILL_FIX_IT,
-      LoginResponse.Result.FAILED_TO_LOAD_ACCOUNT,
+      LoginResponse.Result.UNKNOWN_EMAIL,
       connection
     );
+
+    ERROR("Failed to read name lock file for account"
+      + " " + email + " " + connection.getOrigin());
+
+    return null;
+  }
+
+  private static async loadNameLock
+  (
+    accountName: string,
+    email: string,
+    connection: Connection
+  )
+  : Promise<Object>
+  {
+    let nameLock = await NameLock.load
+    (
+      accountName,
+      Entity.NameCathegory[Entity.NameCathegory.ACCOUNT],
+      false     // Do not report 'not found' error.
+    );
+
+    if (nameLock === undefined)
+      return this.reportMissingNameLock(email, connection);
+
+    if (nameLock === null)
+      return this.reportNameLockReadError(email, connection);
+
+    return nameLock;
+  }
+
+  private static nameLockSanityCheck(nameLock: Object): boolean
+  {
+    if (!nameLock)
+    {
+      // This should already be handled.
+      ERROR("Invalid 'nameLock'");
+      return false;
+    }
+
+    return true;
+  }
+
+  private static async loadAccount
+  (
+    nameLock: Object,
+    email: string,
+    connection: Connection
+  )
+  : Promise<Account>
+  {
+    if (!this.nameLockSanityCheck(nameLock))
+      return null;
+
+    let id = nameLock[Entity.ID_PROPERTY];
+
+    if (!id)
+      return this.reportMissingIdProperty(email, connection);
+
+    let account = await ServerEntities.loadEntityById
+    (
+      id,
+      Account,  // Typecast.
+    );
+
+    if (!account)
+      return this.reportAccountLoadFailure(email, connection);
+
+    account.addToLists();
+
+    return account;
+  }
+
+  private static authenticate
+  (
+    nameLock: Object,
+    email: string,
+    passwordHash: string,
+    connection: Connection
+  )
+  : boolean
+  {
+    if (!this.nameLockSanityCheck(nameLock))
+      return null;
+
+    let savedPasswordHash = nameLock[NameLock.PASSWORD_HASH_PROPERTY];
+
+    if (!savedPasswordHash)
+      return this.reportMissingPasswordProperty(email, connection);
+
+    if (passwordHash !== nameLock[NameLock.PASSWORD_HASH_PROPERTY])
+    {
+      let userInfo = email + " " + connection.getOrigin();
+      return this.reportInvalidPassword(userInfo, connection);
+    }
 
     return true;
   }
@@ -262,30 +395,25 @@ export class Login
   private static async connectToAccount
   (
     accountName: string,
-    password: string,
+    email: string,
+    passwordHash: string,
     connection: Connection
   )
   {
-    let account = await ServerEntities.loadEntityByName
-    (
-      Account,  // Typecast.
-      accountName,
-      Entity.NameCathegory.ACCOUNT,
-      false     // Do not report 'not found' error.
-    );
+    let nameLock = await this.loadNameLock(accountName, email, connection);
 
-    if (!this.exists(account, accountName, connection))
+    if (!nameLock)
       return;
 
-    if (this.failedToLoad(account, connection))
+    if (!this.authenticate(nameLock, email, passwordHash, connection))
       return;
 
-    if (!this.authenticate(account, password, connection))
+    let account = await this.loadAccount(nameLock, email, connection);
+
+    if (!account)
       return;
 
     account.attachConnection(connection);
-    account.addToLists();
-
     this.acceptRequest(account, connection);
 
     Syslog.log

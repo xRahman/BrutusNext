@@ -26,9 +26,6 @@ import {Classes} from '../../../shared/lib/class/Classes';
 import {AccountData} from '../../../shared/lib/account/AccountData';
 import {Accounts} from '../../../server/lib/account/Accounts';
 
-// Built-in node.js modules.
-import * as crypto from 'crypto';  // Import namespace 'crypto' from node.js
-
 export class Account extends ServerEntity
 {
   constructor()
@@ -61,7 +58,8 @@ export class Account extends ServerEntity
   private passwordHash = "";
     private static passwordHash: Attributes =
     {
-      saved: true,
+      // Password hash is saved to name lock file.
+      saved: false,
       edited: false,
       sentToClient: false,
       sentToServer: false
@@ -187,15 +185,14 @@ export class Account extends ServerEntity
     return this.lastLoginTime.toLocaleString();
   }
 
-  // Only hash of the password is stored
-  public setPasswordHash(password: string)
+  public setPasswordHash(passwordHash: string)
   {
-    this.passwordHash = this.md5hash(password);
+    this.passwordHash = passwordHash;
   }
 
-  public validatePassword(password: string): boolean
+  public validatePassword(passwordHash: string): boolean
   {
-    return this.passwordHash === this.md5hash(password);
+    return this.passwordHash === passwordHash;
   }
 
   /*
@@ -332,15 +329,6 @@ export class Account extends ServerEntity
   protected removeFromAbbrevLists()
   {
     /// TODO
-  }
-
-  protected md5hash(input: string)
-  {
-    let hashFacility = crypto.createHash('md5');
-
-    hashFacility.update(input.trim());
-
-    return hashFacility.digest('hex');
   }
 
   /*
