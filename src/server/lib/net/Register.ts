@@ -8,6 +8,7 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
+import {ServerUtils} from '../../../server/lib/utils/ServerUtils';
 import {Syslog} from '../../../shared/lib/log/Syslog';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Serializable} from '../../../shared/lib/class/Serializable';
@@ -23,12 +24,6 @@ import {RegisterResponse} from '../../../shared/lib/protocol/RegisterResponse';
 
 export class Register
 {
-  // ----------------- Public data ----------------------
-
-  // ----------------- Private data ---------------------
-
-  // --------------- Public accessors -------------------
-
   // ------------- Public static methods ----------------
 
   public static async processRequest
@@ -37,7 +32,7 @@ export class Register
     connection: Connection
   )
   {
-    if (!this.isRequestOk(request, connection))
+    if (!this.isRequestValid(request, connection))
       return;
 
     // Encode email address so it can be used as file name
@@ -45,17 +40,21 @@ export class Register
     //  not allowed in email addresss are rarely used in e-mail
     //  address - but better be sure).
     let accountName = Utils.encodeEmail(request.email);
-    let password = request.password;
-    let account: Account = null;
+    // Only hash is stored, not original password.
+    let passwordHash = ServerUtils.md5hash(request.password);
 
-    account = await this.register(accountName, password, connection);
+    let account = await this.registerAccount
+    (
+      accountName,
+      request.email,
+      passwordHash,
+      connection
+    );
 
-    if (this.alreadyExists(account, request.email, connection))
+    if (!account)
       return;
 
-    if (this.failedToCreate(account, connection))
-      return;
-
+    account.attachConnection(connection);
     this.acceptRequest(account, connection);
 
     Syslog.log
@@ -68,16 +67,15 @@ export class Register
 
   // ------------- Private static methods ---------------
 
-  private static failedToCreate
+  // -> Returns 'null'.
+  private static reportCreationFailure
   (
     account: Account,
+    accountName,
     connection: Connection
   )
   : boolean
   {
-    if (account !== null)
-      return false;
-
     this.denyRequest
     (
       "[ERROR]: Failed to create account.\n\n"
@@ -86,21 +84,19 @@ export class Register
       connection
     );
 
-    return true;
+    ERROR("Failed to create account '" + accountName + "'");
+
+    return null;
   }
 
-  private static alreadyExists
+  // -> Returns 'null'.
+  private static reportAccountAlreadyExists
   (
     account: Account,
     email: string,
     connection: Connection
   )
-  : boolean
   {
-    // 'undefined' means that the name is already taken.
-    if (account !== undefined)
-      return false;
-
     this.denyRequest
     (
       "An account is already registered to this e-mail address.",
@@ -116,22 +112,19 @@ export class Register
       AdminLevel.IMMORTAL
     );
 
-    return true;
+    return null;
   }
 
-  // -> Returns 'null' on failure.
-  // -> Returns 'undefined' if requested unique name is already taken.
-  private static async register
+  private static registerSanityCheck
   (
     accountName: string,
-    password: string,
     connection: Connection
   )
   {
     if (!connection)
     {
       ERROR("Invalid connection");
-      return null;
+      return false;
     }
 
     if (Accounts.has(accountName))
@@ -139,29 +132,42 @@ export class Register
       ERROR("Attempt to register account '" + accountName + "'"
         + " which is already loaded to memory. Account is not"
         + " registered");
-      return null;
+      return false;
     }
+
+    return true;
+  }
+
+  // -> Returns 'null' on failure.
+  private static async registerAccount
+  (
+    accountName: string,
+    email: string,
+    passwordHash: string,
+    connection: Connection
+  )
+  {
+    if (!this.registerSanityCheck(accountName, connection))
+      return null;
 
     let account = await ServerEntities.createInstanceEntity
     (
       Account,
       Account.name,   // Prototype name.
       accountName,
-      Entity.NameCathegory.ACCOUNT
+      Entity.NameCathegory.ACCOUNT,
+      passwordHash
     );
 
     // 'undefined' means that the name is already taken.
     if (account === undefined)
-      return undefined;
+      return this.reportAccountAlreadyExists(account, email, connection);
 
-    if (!Entity.isValid(account))
-    {
-      ERROR("Failed to create account '" + accountName + "'");
-      return null;
-    }
+    // 'null' means error occured.
+    if (account === undefined)
+      return this.reportCreationFailure(account, accountName, connection);
 
-    account.setPasswordHash(password);
-    account.attachConnection(connection);
+    account.setPasswordHash(passwordHash);
     account.addToLists();
 
     await ServerEntities.save(account);
@@ -199,7 +205,7 @@ export class Register
     connection.send(response);
   }
 
-  private static isEmailOk
+  private static isEmailValid
   (
     request: RegisterRequest,
     connection: Connection
@@ -229,7 +235,7 @@ export class Register
     return false;
   }
 
-  private static isPasswordOk
+  private static isPasswordValid
   (
     request: RegisterRequest,
     connection: Connection
@@ -260,23 +266,19 @@ export class Register
     return false;
   }
 
-  private static isRequestOk
+  private static isRequestValid
   (
     request: RegisterRequest,
     connection: Connection
   )
   : boolean
   {
-    if (!this.isEmailOk(request, connection))
+    if (!this.isEmailValid(request, connection))
       return false;
 
-    if (!this.isPasswordOk(request, connection))
+    if (!this.isPasswordValid(request, connection))
       return false;
 
     return true;
   }
-
-  // ---------------- Public methods --------------------
-
-  // --------------- Private methods --------------------
 }

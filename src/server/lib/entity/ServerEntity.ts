@@ -8,6 +8,7 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Attributes} from '../../../shared/lib/class/Attributes';
+import {NameLock} from '../../../server/lib/entity/NameLock';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
 
@@ -62,8 +63,18 @@ export class ServerEntity extends Entity
     if (createNameLock)
     {
       let id = this.getId();
+      let passwordHash = this.readPasswordHashProperty();
 
-      if (!await ServerEntities.requestEntityName(id, name, cathegory))
+      if
+      (
+        !await ServerEntities.requestEntityName
+        (
+          id,
+          name,
+          cathegory,
+          passwordHash
+        )
+      )
       {
         ERROR("Attempt to set unique name '" + name + "' in"
           + " cathegory '" + Entity.NameCathegory[cathegory] + "'"
@@ -91,6 +102,17 @@ export class ServerEntity extends Entity
     }
 
     return true;
+  }
+
+  // 
+  private readPasswordHashProperty()
+  {
+    let passwordHash = this[NameLock.PASSWORD_HASH_PROPERTY];
+
+    if (!passwordHash)
+      return null;
+    
+    return passwordHash;
   }
 
   // -------------- Protected methods -------------------

@@ -75,7 +75,8 @@ export class ServerEntities extends Entities
   (
     id: string,
     name: string,
-    cathegory: Entity.NameCathegory
+    cathegory: Entity.NameCathegory,
+    passwordHash: string = null
   )
   {
     // Non-unique names are always available.
@@ -89,7 +90,8 @@ export class ServerEntities extends Entities
     (
       id,
       name,
-      Entity.NameCathegory[cathegory]
+      Entity.NameCathegory[cathegory],
+      passwordHash
     );
   }
 
@@ -115,7 +117,8 @@ export class ServerEntities extends Entities
     prototypeName: string,
     name: string,
     // 'null' means that entity won't have unique name.
-    cathegory: Entity.NameCathegory = null
+    cathegory: Entity.NameCathegory = null,
+    passwordHash = null
   )
   : Promise<T>
   {
@@ -137,7 +140,16 @@ export class ServerEntities extends Entities
     //  course, but it would add a disk read operation even when
     //  the name is available, which is by far the most common
     //  scenario.)
-    if (!await ServerEntities.requestEntityName(id, name, cathegory))
+    if
+    (
+      !await ServerEntities.requestEntityName
+      (
+        id,
+        name,
+        cathegory,
+        passwordHash
+      )
+    )
     {
       // ERROR("Attempt to create unique entity '" + name + "'"
       //   + " in cathegory '" + Entity.NameCathegory[cathegory] + "'"
