@@ -65,6 +65,11 @@ export class RegisterWindow extends StandaloneWindow
     this.form.displayProblem(response);
   }
 
+  public onReceivedResponse()
+  {
+    this.form.onReceivedResponse();
+  }
+
   public registrationSucceeded()
   {
     this.form.rememberCredentials();
