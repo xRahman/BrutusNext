@@ -1,6 +1,12 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+TODO: Nelowercasovat entity name při savu name lock filu.
+(Respektive ano, protože jinak by šly na Linuxu vytvořit dva accounty
+ lišící se jen v casu. Plus je ale třeba zapisovat originální e-mail
+ extra stranou.)
+- lowercasuje se v NameLock.getFileName().
+
 TODO: Vymyslet, kam vypisovat problém při otevírání connection.
 - možná udělat standalone ConsoleWindow (nebo InfoWindow), které
   se zobrazí jen v případě, že se nedaří connectit (úspěch tam
@@ -27,7 +33,54 @@ TODO: Oštřit to projistotu i přímo v Connection.send() - když
 
 --------------------------------------------------------------
 
+TODO: Výhledově pořešit:
+Když vyrobím entity s unikátním jménem, tak se name lock file savne
+hned (protože save slouží jako lock), ale entita se hned nesavne.
+Při releasu takové (nesavnuté) entity by se měl smazat name lock file
+  (protože jinak tam zůstane viset a nebude se odkazovat na žádnou entitu).
+
+TODO: Zrušit metodu Component.createText()
+- místo ní použít Component.appendText().
+
+TODO: Zrušit metodu Component.createTextLink()
+- místo ní zavést (a použít) Component.appendTextLink()
+  a Component.setTextLink()
+  - stejně jako s obyč textem.
+
+TODO: V charselectu jde odselectnout char (což je asi ok),
+  pak ale zůstane enablovaný button 'enter game' - což už asi není
+  ok (sice pak jde pořád vlézt do hry, ale pro hráče není jasné,
+  se kterým charem se loguje).
+- problém je, že samotné kliknutí na button 'enter game' zruší selekci.
+  (možná bych měl použít jinej stav než 'selected' - třeba 'checked')
+
+
+TODO: Zrušit hlášku 'Opening Websocket connection', která se posílá
+  do ScrollWindow.
+
+
+TODO: Register form by asi neměla vyplňovat login a heslo ze Storage.
+  (ale mohla by je možná zkopírovat login z LoginFormu)
+
+TODO: Otestovat reconnect z jiného tabu.
+- očividně to nefunguje úplně dobře.
+- tohle bych měl udělat zároveň s ošetřením disconnectu v clientu,
+  jinak to těžko odladím.
+
+--------------------------------------------------------------
+
+TODO: Pořádně vyzkoušet, že se správně vypisují (a zobrazují) chybové hlášky
+  při logování a autentifikaci.
+
+TODO: Zkontrolovat, že se při loadu accountu načte passwordHash
+  z name lock filu.
+
+
+
+
+
 TODO: Buttonky by měly mít "pressed" grafiku.
+[done]
 
 TODO: v onShow() se asi nehidují error message.
 [done]
@@ -50,6 +103,7 @@ TODO: 'cancel' button v RegisterForm by asi měl zůstat enablovanej.
   To ale znamená, že se může clientApp rozsynchronizovat se serverem.
 - Co s tím? Shodit connection a vyrobit novou?
   - Account možná zůstane registrovaný, to je ale asi ok.
+[disabluju submit buttony, na zbytek asi zatím kašlu]
 
 TODO: Login s chybným heslem přidá account do Entities (se jménem null).
 - nezahazuju account poté, co neprojde autheticate(). Problém je, že
@@ -72,18 +126,14 @@ TODO: Projít ještě jednou Register (a zkontrolovat, že se do accountu
   zapíše passwordHash - nejen do nameLock filu).
 [done]
 
-TODO: Zkontrolovat, že se při loadu accountu načte passwordHash
-  z name lock filu.
-
-
 TODO: Správně savovat heslo do name lock filu při přejmenování accountu.
 [jakž takž]
-
 
 TODO: Při reloadu tabu už jsou sice hlášky správně, ale při zavření ne :\
 [ohackováno posíláním reasonu]
 
 TODO: Syslogové hlášky při zpracovávání login requestu a register requestu.
+[done]
 - ještě zkontrolovat všechny varianty.
 
 TODO: Kód z Accounts.register přesunout do Register.ts
@@ -93,9 +143,6 @@ TODO: Pořešit error při pokusu založit už existující account.
 - není to při zakládání accountu ale při reloadu tabu po loginu do hry.
 [done]
 
-TODO: Register form by asi neměla vyplňovat login a heslo ze Storage.
-  (ale mohla by je možná zkopírovat login z LoginFormu)
-
 TODO: Místo "has been logged out" možná logovat prostě jen:
   "Dropping account XY".
 [done]
@@ -103,11 +150,6 @@ TODO: Místo "has been logged out" možná logovat prostě jen:
 TODO: Konečně už opravit syslog message při shození connectionu reloadem
   tabu.
 [done]
-
-TODO: Otestovat reconnect z jiného tabu.
-
-TODO: Pořádně vyzkoušet, že se správně vypisují (a zobrazují) chybové hlášky
-  při logování a autentifikaci.
 
 TODO: Ještě jednou se zamyslet nad prázdnými řádky (a zejména nad hackem
   v LoginForm, kde se na konec error message přidává '\n\n'.
@@ -121,29 +163,7 @@ i když se žádný error nevypisuje, aby okno neměnilo velikost, když se
 vypíše chybová hláška.
 - labely jsou inline-block, takže by asi mohly mít min-height.
 IMPORTANT: Z LoginResponse jsem to \n\n umazal.
-
-
-
-TODO: Zrušit metodu Component.createText()
-- místo ní použít Component.appendText().
-
-TODO: Zrušit metodu Component.createTextLink()
-- místo ní zavést (a použít) Component.appendTextLink()
-  a Component.setTextLink()
-  - stejně jako s obyč textem.
-
-TODO: V charselectu jde odselectnout char (což je asi ok),
-  pak ale zůstane enablovaný button 'enter game' - což už asi není
-  ok (sice pak jde pořád vlézt do hry, ale pro hráče není jasné,
-  se kterým charem se loguje).
-- problém je, že samotné kliknutí na button 'enter game' zruší selekci.
-  (možná bych měl použít jinej stav než 'selected' - třeba 'checked')
-
-
-TODO: Zrušit hlášku 'Opening Websocket connection', která se posílá
-  do ScrollWindow.
-
-TODO: Nelowercasovat file name při savu.
+ (ale přidal jsem ho zase zpět v LoginFormu, nechtělo se mi to zrovna řešit...)
 
 
 --------------------------------------------------------------
