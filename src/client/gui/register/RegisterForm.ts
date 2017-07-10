@@ -10,6 +10,7 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Connection} from '../../../client/lib/net/Connection';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {LocalStorage} from '../../../client/lib/storage/LocalStorage';
+import {Windows} from '../../../client/gui/Windows';
 import {Component} from '../../../client/gui/Component';
 import {CredentialsForm} from '../../../client/gui/CredentialsForm';
 import {RegisterRequest} from '../../../shared/lib/protocol/RegisterRequest';
@@ -36,7 +37,6 @@ export class RegisterForm extends CredentialsForm
 
   //------------------ Private data ---------------------
 
-  ///private $accountNameInput: JQuery = null;
   private $infoLabel: JQuery = null;
 
   // --------------- Static accessors -------------------
@@ -51,9 +51,6 @@ export class RegisterForm extends CredentialsForm
   public create({ $container }: { $container: JQuery; })
   {
     super.create({ $container: $container, name: 'register_form' });
-
-    // super.createLabel({ text: 'Account Name' });
-    // this.createAccountNameInput();
 
     super.createLabel({ text: 'Your E-mail Address' });
     this.createEmailInput();
@@ -103,6 +100,17 @@ export class RegisterForm extends CredentialsForm
     }
   }
 
+  // ~ Overrides CredentialsForm.onShow().
+  public onShow()
+  {
+    super.onShow();
+
+    // Set value from login window e-mail input to our
+    // email input so the user doesn't have to retype it
+    // (password still has to be enterer again).
+    this.$emailInput.val(Windows.loginWindow.getEmailInputValue());
+  }
+
   // --------------- Protected methods ------------------
 
   // ~ Overrides Form.createSubmitButton().
@@ -147,25 +155,6 @@ export class RegisterForm extends CredentialsForm
     this.$infoLabel.show();
   }
 
-  /// Deprecated.
-  // private createAccountNameInput()
-  // {
-  //   /// TODO: Číst to ze stejné proměnné jako server a jako register form.
-  //   // Maximum length of acocunt name (in characters).
-  //   let minLength = 3;
-  //   let maxLength = 20;
-
-  //   this.$accountNameInput = super.createTextInput
-  //   (
-  //     {
-  //       name: 'account_name_input',
-  //       placeholder: 'Enter Account Name',   // Placeholder text.
-  //       minLength: minLength,
-  //       maxLength: maxLength
-  //     }
-  //   );
-  // }
-
   private createButtons()
   {
     let $container = super.createButtonContainer();
@@ -193,7 +182,7 @@ export class RegisterForm extends CredentialsForm
     return $button;
   }
 
-  private isRequestOk(request: RegisterRequest)
+  private isRequestValid(request: RegisterRequest)
   {
     let problem = null;
 
@@ -229,7 +218,7 @@ export class RegisterForm extends CredentialsForm
     // wait for server response to check for most
     // problems (the check will be done again on
     // the server of course to prevent exploits).
-    if (!this.isRequestOk(request))
+    if (!this.isRequestValid(request))
       return;
 
     // Disable submit button to prevent click-spamming
