@@ -180,7 +180,7 @@ export class Connection
 
   private processLoginResponse(response: LoginResponse)
   {
-    Windows.registerWindow.onReceivedResponse();
+    Windows.loginWindow.onReceivedResponse();
 
     if (response.result === LoginResponse.Result.UNDEFINED)
     {

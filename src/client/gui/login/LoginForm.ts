@@ -24,7 +24,7 @@ export class LoginForm extends CredentialsForm
 
   //------------------ Private data ---------------------
 
-  ///private $accountNameInput = null;
+  private $errorEmptyLine = null;
 
   // --------------- Static accessors -------------------
 
@@ -39,9 +39,6 @@ export class LoginForm extends CredentialsForm
   {
     super.create({ $container: $container, name: 'login_form' });
 
-    // super.createLabel({ text: 'Account Name' });
-    // this.createAccountNameInput();
-
     super.createLabel({ text: 'E-mail Address' });
     this.createEmailInput();
     this.createEmailProblemLabel();
@@ -51,7 +48,6 @@ export class LoginForm extends CredentialsForm
     this.createPasswordProblemLabel();
 
     this.createErrorLabel();
-    this.createEmptyLine();
 
     this.createRememberMeCheckbox();
     this.createButtons();
@@ -59,8 +55,6 @@ export class LoginForm extends CredentialsForm
 
   public displayProblem(response: LoginResponse)
   {
-    this.enableSubmitButton();
-
     switch (response.result)
     {
       case LoginResponse.Result.UNDEFINED:
@@ -78,9 +72,7 @@ export class LoginForm extends CredentialsForm
         break;
 
       case LoginResponse.Result.FAILED_TO_LOAD_ACCOUNT:
-        // '\n\n' is and ugly hack which adds a new line
-        // to separate error message from next component.
-        this.displayError(response.problem + '\n\n');
+        this.displayError(response.problem);
         break;
 
       case LoginResponse.Result.OK:
@@ -91,6 +83,23 @@ export class LoginForm extends CredentialsForm
         ERROR("Unknown register response result");
         break;
     }
+  }
+
+  // ~ Overrides CredentialsForm.onShow().
+  public onShow()
+  {
+    super.onShow();
+
+    if (LocalStorage.isAvailable())
+    {
+      this.setStoredEmailAddress();
+      this.setStoredPassword();
+    }
+  }
+
+  public getEmailInputValue()
+  {
+    return this.$emailInput.val();
   }
 
   // --------------- Protected methods ------------------
@@ -112,33 +121,50 @@ export class LoginForm extends CredentialsForm
   protected hideProblems()
   {
     super.hideProblems();
-    this.$passwordProblem.hide();
+    this.$errorEmptyLine.hide();
+  }
+
+  // ~ Overrides CredentialsForm.createErrorLabel().
+  protected createErrorLabel()
+  {
+    super.createErrorLabel();
+    
+    // Add an empty line after error problem label
+    // to separate it from next component.
+    this.$errorEmptyLine = this.createEmptyLine();
+    this.$errorEmptyLine.hide();
+  }
+
+  // ~ Overrides CredentialsForm.displayError().
+  protected displayError(problem: string)
+  {
+    super.displayError(problem);
+
+    // Also show additional empty line.
+    this.$errorEmptyLine.show();
   }
 
   // ---------------- Private methods -------------------
 
-  /// Deprecated.
-  // private createAccountNameInput()
-  // {
-  //   /// TODO: Číst to ze stejné proměnné jako server a jako register form.
-  //   // Maximum length of acocunt name (in characters).
-  //   let minLength = 3;
-  //   let maxLength = 20;
-
-  //   this.$accountNameInput = super.createTextInput
-  //   (
-  //     {
-  //       name: 'account_name_input',
-  //       placeholder: 'Enter Account Name',
-  //       minLength: minLength,
-  //       maxLength: maxLength
-  //     }
-  //   );
-  // }
-
   private createButtons()
   {
     this.createSubmitButton({ $container: super.createButtonContainer() });
+  }
+
+  private setStoredEmailAddress()
+  {
+    let savedEmail = LocalStorage.read(LocalStorage.EMAIL_ENTRY);
+
+    if (savedEmail)
+      this.$emailInput.val(savedEmail);  
+  }
+
+  private setStoredPassword()
+  {
+    let savedPassword = LocalStorage.read(LocalStorage.PASSWORD_ENTRY);
+
+    if (savedPassword)
+      this.$passwordInput.val(savedPassword);
   }
 
   // ---------------- Event handlers --------------------
@@ -160,10 +186,4 @@ export class LoginForm extends CredentialsForm
 
     Connection.send(request);
   }
-
-  // // ~ Overrides CrendentialsForm.onRememberMeChange().
-  // protected onRememberMeChange(event: Event)
-  // {
-  //   this.$rememberMeCheckbox.prop('checked');
-  // }
 }
