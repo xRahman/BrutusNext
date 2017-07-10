@@ -4,6 +4,15 @@
   Abstract ancestor of forms that collect user credentials.
 */
 
+/*
+  Implementation note: We use empty lines (<span><br/></span>)
+  instead of margins because the actual height of a line of text
+  is neither font size nor line height. That means that it would
+  be difficult to set margin value to be the same as height of
+  a line of text (which is sometimes shown in place of an empty
+  line.
+*/
+
 'use strict';
 
 import {ERROR} from '../../shared/lib/error/ERROR';
@@ -48,11 +57,7 @@ export abstract class CredentialsForm extends Form
     this.hideProblems();
 
     if (LocalStorage.isAvailable())
-    {
-      this.setStoredEmailAddress();
-      this.setStoredPassword();
       this.setStoredRememberMeValue();
-    }
   }
 
   // ~ Overrides Form.onHide().
@@ -72,6 +77,7 @@ export abstract class CredentialsForm extends Form
         this.$emailInput.val()
       );
 
+      /// TODO:
       /// Heslo by se asi pamatovat nemělo (rozhodně ne nezakryptované),
       /// ale pro účely ladění se mi to bude hodit.
       LocalStorage.write
@@ -172,7 +178,7 @@ export abstract class CredentialsForm extends Form
 
   protected createErrorLabel()
   {
-    this.$errorLabel = super.createLabel({});
+    this.$errorLabel = this.createLabel({});
     this.$errorLabel.hide();
   }
 
@@ -234,8 +240,8 @@ export abstract class CredentialsForm extends Form
 
   protected disableSubmitButton()
   {
-    if (this.$submitButton)
-      this.$submitButton.prop('disabled', true);
+     if (this.$submitButton)
+       this.$submitButton.prop('disabled', true);
   }
 
   protected enableSubmitButton()
@@ -245,22 +251,6 @@ export abstract class CredentialsForm extends Form
   }
 
   // ---------------- Private methods -------------------
-
-  private setStoredEmailAddress()
-  {
-    let savedEmail = LocalStorage.read(LocalStorage.EMAIL_ENTRY);
-
-    if (savedEmail)
-      this.$emailInput.val(savedEmail);  
-  }
-
-  private setStoredPassword()
-  {
-    let savedPassword = LocalStorage.read(LocalStorage.PASSWORD_ENTRY);
-
-    if (savedPassword)
-      this.$passwordInput.val(savedPassword);
-  }
 
   private setStoredRememberMeValue()
   {

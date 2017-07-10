@@ -28,10 +28,23 @@ TODO: Ošetřit ztrátu spojení se serverem (třeba když server
   - logovací okno (a asi i všechna ostatní) teď zůstane otevřené
     a odeslání požadavku vyhodí error, protože jde o pokus
     o zápis do closnutého socketu.
-TODO: Oštřit to projistotu i přímo v Connection.send() - když
+TODO: Oštřit to pro jistotu i přímo v Connection.send() - když
   by failnulo odchytnutí disconnectu, tak ať to nehází errory.
 
 --------------------------------------------------------------
+
+TODO: Setování textu asi přesunout do InitElement
+  - beztak by to měly umět všechny komponenty.
+
+TODO: Checknout, jestli se používá Component.createSpan (asi by nemělo)
+  a pokud ne, zrušit.
+  - volá se v TermsWindow, ale neměla by
+  (mělo by se na div volat přímo Component.setText())
+
+TODO: Properties elementům setovat přes JQuery místo přes DOM.
+
+TODO: Při failu loginu mi zůstává disablovaný submit button.
+[done]
 
 TODO: Výhledově pořešit:
 Když vyrobím entity s unikátním jménem, tak se name lock file savne
@@ -60,7 +73,8 @@ TODO: Zrušit hlášku 'Opening Websocket connection', která se posílá
 
 
 TODO: Register form by asi neměla vyplňovat login a heslo ze Storage.
-  (ale mohla by je možná zkopírovat login z LoginFormu)
+  (ale mohla by možná zkopírovat login z LoginFormu)
+[done]
 
 TODO: Otestovat reconnect z jiného tabu.
 - očividně to nefunguje úplně dobře.
@@ -69,8 +83,11 @@ TODO: Otestovat reconnect z jiného tabu.
 
 --------------------------------------------------------------
 
+TODO: Ve Firefoxu se disablovanému buttonu zobrazuje grafika zmačknutí.
+
 TODO: Pořádně vyzkoušet, že se správně vypisují (a zobrazují) chybové hlášky
   při logování a autentifikaci.
+[done]
 
 TODO: Zkontrolovat, že se při loadu accountu načte passwordHash
   z name lock filu.

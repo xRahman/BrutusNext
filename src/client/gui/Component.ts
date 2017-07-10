@@ -117,11 +117,11 @@ export abstract class Component
   )
   : JQuery
   {
-    let element = document.createElement('div');
+    let $element = $(document.createElement('div'));
 
-    let $element = this.initElement(element, $container, gCssClass, sCssClass);
+    this.initElement($element, $container, gCssClass, sCssClass);
 
-    if (text)
+    if (text !== null)
       this.setText($element, text);
 
     return $element;
@@ -143,9 +143,9 @@ export abstract class Component
   )
   : JQuery
   {
-    let element = document.createElement('img');
+    let $element = $(document.createElement('img'));
 
-    return this.initElement(element, $container, gCssClass, sCssClass);
+    return this.initElement($element, $container, gCssClass, sCssClass);
   }
 
   protected static createForm
@@ -165,12 +165,12 @@ export abstract class Component
   )
   : JQuery
   {
-    let element = document.createElement('form');
+    let $element = $(document.createElement('form'));
 
     // Form must have a 'name' attribute.
-    element.name = name;
+    $element.attr('name', name);
 
-    return this.initElement(element, $container, gCssClass, sCssClass);
+    return this.initElement($element, $container, gCssClass, sCssClass);
   }
 
   protected static createTitle
@@ -193,10 +193,11 @@ export abstract class Component
   )
   : JQuery
   {
-    let element = document.createElement('title');
-    let $element = this.initElement(element, $container, gCssClass, sCssClass);
+    let $element = $(document.createElement('title'));
 
-    if (text)
+    this.initElement($element, $container, gCssClass, sCssClass);
+
+    if (text !== null)
       this.setText($element, text);
 
     return $element;
@@ -223,16 +224,13 @@ export abstract class Component
     if (!this.checkNameParam(name))
       return;
 
-    let element = document.createElement('input');
+    let $element = $(document.createElement('input'));
 
-    element.type = 'text';
+    this.initElement($element, $container, gCssClass, sCssClass);
+    this.initFormInputElement($element, 'text', name);
+    this.applyInputParam($element, param);
 
-    // Form input elements must have a 'name' attribute.
-    element.name = name;
-
-    this.applyInputParam(element, param);
-
-    return this.initElement(element, $container, gCssClass, sCssClass);
+    return $element;
   }
 
   protected static createPasswordInput
@@ -256,16 +254,13 @@ export abstract class Component
     if (!this.checkNameParam(name))
       return;
 
-    let element = document.createElement('input');
+    let $element = $(document.createElement('input'));
 
-    element.type = 'password';
+    this.initElement($element, $container, gCssClass, sCssClass);
+    this.initFormInputElement($element, 'password', name);
+    this.applyInputParam($element, param);
 
-    // Form input elements must have a 'name' attribute.
-    element.name = name;
-
-    this.applyInputParam(element, param);
-
-    return this.initElement(element, $container, gCssClass, sCssClass);
+    return $element;
   }
 
   protected static createEmailInput
@@ -293,16 +288,13 @@ export abstract class Component
     if (!this.checkNameParam(name))
       return;
 
-    let element = document.createElement('input');
+    let $element = $(document.createElement('input'));
 
-    element.type = 'email';
+    this.initElement($element, $container, gCssClass, sCssClass);
+    this.initFormInputElement($element, 'email', name);
+    this.applyInputParam($element, param);
 
-    // Form input elements must have a 'name' attribute.
-    element.name = name;
-
-    this.applyInputParam(element, param);
-
-    return this.initElement(element, $container, gCssClass, sCssClass);
+    return $element;
   }
 
   protected static createCheckboxInput
@@ -326,16 +318,13 @@ export abstract class Component
     if (!this.checkNameParam(name))
       return;
 
-    let element = document.createElement('input');
+    let $element = $(document.createElement('input'));
 
-    element.type = 'checkbox';
+    this.initElement($element, $container, gCssClass, sCssClass);
+    this.initFormInputElement($element, 'checkbox', name);
+    this.applyInputParam($element, param);
 
-    // Form input elements must have a 'name' attribute.
-    element.name = name;
-
-    this.applyInputParam(element, param);
-
-    return this.initElement(element, $container, gCssClass, sCssClass);
+    return $element;
   }
 
   // Creates a button which submits form data
@@ -363,20 +352,14 @@ export abstract class Component
     if (!this.checkNameParam(name))
       return;
 
-    let element = document.createElement('button');
+    let $element = $(document.createElement('button'));
 
-    element.type = 'submit';
+    this.initElement($element, $container, gCssClass, sCssClass);
+    this.initFormInputElement($element, 'submit', name);
+    this.applyButtonParam($element, param);
 
-    // Form input elements must have a 'name' attribute.
-    element.name = name;
-
-    this.applyButtonParam(element, param);
-
-    let $element = this.initElement(element, $container, gCssClass, sCssClass);
-
-    // Set 'text' using JQuery to handle browser incompatibilities.
-    if (text)
-      $element.text(text);
+    if (text !== null)
+      this.setText($element, text);
 
     return $element;
   }
@@ -397,11 +380,12 @@ export abstract class Component
   )
   : JQuery
   {
-    let element = document.createElement('textarea');
+    let $element = $(document.createElement('textarea'));
 
-    this.applyTextAreaParam(element, param);
+    this.initElement($element, $container, gCssClass, sCssClass);
+    this.applyTextAreaParam($element, param);
 
-    return this.initElement(element, $container, gCssClass, sCssClass);
+    return $element;
   }
 
   /// Tohle se nejspíš nepoužívá (svg elementy se vyrábí přes knihovnu d3).
@@ -433,10 +417,11 @@ export abstract class Component
   )
   : JQuery
   {
-    let element = document.createElement('label');
-    let $element = this.initElement(element, $container, gCssClass, sCssClass);
+    let $element = $(document.createElement('label'));
 
-    if (text)
+    this.initElement($element, $container, gCssClass, sCssClass);
+
+    if (text !== null)
       this.setText($element, text);
 
     return $element;
@@ -458,9 +443,9 @@ export abstract class Component
   )
   : JQuery
   {
-    let element = document.createElement('span');
+    let $element = $(document.createElement('span'));
 
-    return this.initElement(element, $container, gCssClass, sCssClass);
+    return this.initElement($element, $container, gCssClass, sCssClass);
   }
 
   // Creates a button which is not part of a form
@@ -484,18 +469,17 @@ export abstract class Component
   )
   : JQuery
   {
-    let element = document.createElement('button');
+    let $element = $(document.createElement('button'));
 
     // This must be set so the button click won't trigger submit
     // of a form.
-    element.type = 'button';
+    $element.attr('type', 'button');
 
-    this.applyButtonParam(element, param);
+    this.initElement($element, $container, gCssClass, sCssClass);
+    this.applyButtonParam($element, param);
 
-    let $element = this.initElement(element, $container, gCssClass, sCssClass);
-
-    // Set 'text' using JQuery to handle browser incompatibilities.
-    $element.text(text);
+    if (text !== null)
+      this.setText($element, text);
 
     return $element;
   }
@@ -585,9 +569,22 @@ export abstract class Component
 
   // ---------------- Private methods -------------------
 
-  private static initElement<T extends HTMLElement>
+  private static initFormInputElement
   (
-    element: T,
+    $element: JQuery,
+    type: string,
+    name: string
+  )
+  {
+    $element.attr('type', type);
+
+    // Form input elements must have a 'name' attribute.
+    $element.attr('name', name);
+  }
+
+  private static initElement
+  (
+    $element: JQuery,
     $container: JQuery,
     // Css class with graphical attributes of the element
     // (borders, background, font, font size, etc.).
@@ -597,9 +594,6 @@ export abstract class Component
     sCssClass: string
   )
   {
-    // Create jquery element from the DOM element.
-    let $element = $(element);
-
     $element.addClass(gCssClass);
 
     if (sCssClass)
@@ -614,13 +608,53 @@ export abstract class Component
   // Applies values of 'param' to input element.
   private static applyInputParam
   (
-    element: HTMLInputElement,
+    $element: JQuery,
     param: Component.InputParam
   )
   {
-    if (!element || !param)
+    if (!$element || !param)
       return;
 
+    if (param.required !== undefined)
+      $element.prop('required', param.required);
+
+    if (param.placeholder !== undefined)
+      $element.attr('placeholder', param.placeholder);
+
+    if (param.readonly !== undefined)
+      $element.prop('readOnly', param.readonly);
+
+    if (param.disabled !== undefined)
+      this.setDisabled($element, param.disabled);
+
+    if (param.size !== undefined)
+      $element.attr('size', param.size);
+
+    if (param.maxLength !== undefined)
+      $element.attr('maxLength', param.maxLength);
+
+    if (param.minLength !== undefined)
+      $element.attr('minLength', param.minLength);
+
+    if (param.autocomplete !== undefined)
+      $element.attr('autocomplete', param.autocomplete);
+
+    if (param.spellcheck !== undefined)
+      $element.prop('spellcheck', param.spellcheck);
+
+    if (param.checked !== undefined)
+      $element.prop('checked', param.checked);
+
+    // Apparently 'autocapitalize' only works for virtual keybords at the
+    // moment in Chrome (and doesn't work in other browsers except Safari
+    // at all) so it's useless right now.
+    /// if (param.autocapitalize !== undefined)
+    ///   element.setAttribute('autocapitalize', param.autocapitalize);
+
+    if (param.autocorrect !== undefined)
+      $element.attr('autocorrect', param.autocorrect);
+
+    /*
     // Standard attributes.
 
     if (param.required !== undefined)
@@ -632,8 +666,8 @@ export abstract class Component
     if (param.readonly !== undefined)
       element.readOnly = param.readonly;
 
-    if (param.disabled !== undefined)
-      element.disabled = param.disabled;
+    // if (param.disabled !== undefined)
+    //   element.disabled = param.disabled;
 
     if (param.size !== undefined)
       element.size = param.size;
@@ -664,30 +698,47 @@ export abstract class Component
 
     if (param.autocorrect !== undefined)
       element.setAttribute('autocorrect', param.autocorrect);
+    */
   }
 
   private static applyButtonParam
   (
-    element: HTMLButtonElement,
+    $element: JQuery,
     param: Component.ButtonParam
   )
   {
-    if (!element || !param)
+    if (!$element || !param)
       return;
 
-    if (param && param.disabled)
-      element.disabled = param.disabled;
+    // Note that there is difference between attribute 'disabled'
+    // and property 'disabled'. Attribute 'disabled' only specifies
+    // initial value of 'disabled' property of the element, property
+    // 'disabled' reflects actual state of the element.
+    if (param && param.disabled !== undefined)
+      this.setDisabled($element, param.disabled);
   }
 
   private static applyTextAreaParam
   (
-    element: HTMLTextAreaElement,
+    $element: JQuery,
     param: Component.TextAreaParam
   )
   {
-    if (!element || !param)
+    if (!$element || !param)
       return;
 
+    if (param && param.rows)
+      $element.attr('rows', param.rows);
+
+    if (param.spellcheck !== undefined)
+      $element.prop('spellcheck', param.spellcheck);
+
+    // Nonstandard attributes (so they can't be simply assigned
+    // and must byt set using setAttribute()).
+
+    if (param.autocorrect !== undefined)
+      $element.attr('autocorrect', param.autocorrect);
+/*
     if (param && param.rows)
       element.rows = param.rows;
 
@@ -699,6 +750,7 @@ export abstract class Component
 
     if (param.autocorrect !== undefined)
       element.setAttribute('autocorrect', param.autocorrect);
+*/
   }
 
   private static checkNameParam(name: string)
@@ -712,6 +764,15 @@ export abstract class Component
     }
 
     return true;
+  }
+
+  private static setDisabled($element: JQuery, value: boolean)
+  {
+    // That there is difference between attribute 'disabled' and
+    // property 'disabled'. Attribute only specifies initial value
+    // of 'disabled' property of the element, property reflects
+    // actual state of the element.
+    $element.prop('disabled', value);
   }
 
   // ---------------- Event handlers --------------------
