@@ -75,6 +75,11 @@ export class LoginWindow extends StandaloneWindow
     this.form.rememberCredentials();
   }
 
+  public getEmailInputValue()
+  {
+    return this.form.getEmailInputValue();
+  }
+
   // --------------- Protected methods ------------------
 
   // ~ Overrides Window.onShow().
