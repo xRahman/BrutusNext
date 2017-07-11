@@ -115,9 +115,7 @@ export abstract class MudColors
     if (parser.spanOpen === false)
     {
       parser.html += '<span style="'
-                  +    'color:' + color + ';'
-                  +    'font-family:CourierNew;'
-                  +    'font-weight:bold'
+                  +    'color:' + color
                   +  '">';
 
       parser.spanOpen = true;
@@ -173,7 +171,7 @@ export abstract class MudColors
     baseColor: string
   )
   {
-    // Take a peak at the two following characters.
+    // Take a peek at the two following characters.
     let colorCode = message.substr(index + 1, 2);
     let color = this.parseColorCode(colorCode, baseColor);
 
@@ -203,7 +201,7 @@ export abstract class MudColors
     baseColor: string
   )
   {
-    // Check if thre is a color code at position 'index'.
+    // Check if there is a color code at position 'index'.
     let colorCode = message.substr(index, 2);
     let color = this.parseColorCode(colorCode, baseColor);
 
@@ -267,7 +265,7 @@ export abstract class MudColors
     {
       // Resulting html string. We start by an opening <div> tag.
       html: '<div>',
-      // Flag to indicate if we have a <span> tag open.
+      // Flag to indicate that we have a <span> tag open.
       spanOpen: false,
       // 'baseColor' is the first color used in the string.
       activeColor: baseColor
