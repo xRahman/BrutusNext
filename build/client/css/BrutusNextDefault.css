@@ -230,7 +230,7 @@
 }
 
 /* :: Pressed Button Text Color :: */
-.G_Button:active  /* When pressed */
+.G_Button:active:not(:disabled)  /* When pressed */
 {
   color: rgb(170, 190, 210); /* Text color */
 }
@@ -318,8 +318,8 @@
 }
 
 /* :: Pressed Button Border :: */
-.G_Button:active,  /* When pressed */
-.G_Button:active:hover
+.G_Button:active:not(:disabled),  /* When pressed */
+.G_Button:active:hover:not(:disabled)
 {
   border: 1px ridge rgba(170, 190, 210, 0.8);
 }
@@ -409,8 +409,8 @@
 }
 
 /* :: Pressed Button Background :: */
-.G_Button:active,  /* When pressed */
-.G_Button:active:hover
+.G_Button:active:not(:disabled),  /* When pressed */
+.G_Button:active:hover:not(:disabled)
 {
   /* Old browsers */
   background-color: rgba(145, 145, 145, 0.8);
