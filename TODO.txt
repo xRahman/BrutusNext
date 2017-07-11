@@ -33,6 +33,29 @@ TODO: Oštřit to pro jistotu i přímo v Connection.send() - když
 
 --------------------------------------------------------------
 
+TODO: Možná by bylo lepší přejít v GUI metodách na pojmenované
+  objekty coby parametry - mohlo by to zpřehlednit kód.
+  (protože když je objekt pojmenovaný, dá se předat celý najednou).
+
+TODO: Zvážit, jestli click handlery (a obecně všechny standardní
+  gui handlery) nepředávat v rámci parametrů create metod.
+
+TODO: Z class .S_StandaloneWindow_LinkText udělat
+  .S_Component_LinkText
+(protože link text je button, takže na rozdíl od <spanu> musí
+ mít S_CSS classu)
+[done]
+
+TODO: Z MudColors.htmlize() vyhodit style properties (font a tak).
+- text dědí styl z nadřazené komponenty.
+
+TODO: Statické metody v Component asi nakonec nejsou dobrý nápad
+- jak se ukázalo, potomek může přetěžovat metody s menším počtem
+  parametrů, pokud ty zbylé mají defaultní hodnoty.
+- Dává to asi celkem smysl z hlediska logiky dědičnosti - potomek
+  přetíží metodu z Component tím, že jí předá jiné defaultní
+  parametry (typicky css classy).
+
 TODO: Setování textu asi přesunout do InitElement
   - beztak by to měly umět všechny komponenty.
 
@@ -40,8 +63,18 @@ TODO: Checknout, jestli se používá Component.createSpan (asi by nemělo)
   a pokud ne, zrušit.
   - volá se v TermsWindow, ale neměla by
   (mělo by se na div volat přímo Component.setText())
+- tak možná nerušit, hodit se to může, ale rozhodně nepoužívat mimo setText().
+TODO: V SetTextu by se asi ale měly předávat parametry a volat
+  Component.createSpan(), kdyby si to přece jen někdo chtěl nějak přestylovávat.
+  (Ale nemělo by tam být G_NoGraphics)
 
 TODO: Properties elementům setovat přes JQuery místo přes DOM.
+[done]
+
+TODO: Občas mi pořád přijde close event s kódem 1006
+(při zavření browseru nejspíš)
+- asi by to chtělo vypisovat jinou hlášku než tu description z webu,
+  aby to nevypadalo jako bug, který je nutně potřeba řešit.
 
 TODO: Při failu loginu mi zůstává disablovaný submit button.
 [done]

@@ -55,6 +55,8 @@ export abstract class Component
   protected static get SELECTABLE_PLATE_G_CSS_CLASS()
     { return 'G_SelectablePlate'; }
 
+  protected static get LINK_TEXT_S_CSS_CLASS()
+    { return 'S_Component_LinkText'; }
   protected static get FULL_WIDTH_BUTTON_S_CSS_CLASS()
     { return 'S_Component_FullWidthButton'; }
   
@@ -77,7 +79,7 @@ export abstract class Component
   // Replaces html content of '$component' with <spans> created from 'text'.
   protected static setText($component: JQuery, text: string)
   {
-    // First remove existing text title if there is any.
+    // Remove existing text if there is any.
     $component.empty();
 
     this.appendText($component, text);
@@ -97,6 +99,70 @@ export abstract class Component
       $span.text(text);
       $component.append($span);
     }
+  }
+
+  // Replaces html content of '$component' with clickable text link.
+  protected static setTextLink
+  (
+    $component: JQuery,
+    text: string,
+    {
+      gCssClass,
+      sCssClass
+    }:
+    {
+      gCssClass?: string;
+      sCssClass?: string;
+    },
+    param: Component.ButtonParam = null
+  )
+  {
+    // Remove existing html content if there is any.
+    $component.empty();
+
+    return this.appendTextLink
+    (
+      $component,
+      text,
+      {
+        gCssClass: gCssClass,
+        sCssClass: sCssClass
+      },
+      param
+    );
+  }
+
+  // Appends clickable text link created from 'text' to html
+  // content of '$component'.
+  protected static appendTextLink
+  (
+    $component: JQuery,
+    text: string,
+    {
+      gCssClass = Component.LINK_TEXT_G_CSS_CLASS,
+      sCssClass = Component.LINK_TEXT_S_CSS_CLASS
+    }:
+    {
+      gCssClass?: string;
+      sCssClass?: string;
+    }
+    = {},
+    param: Component.ButtonParam = null
+  )
+  {
+    // Text link is a button containing requested link text.
+    // (Use <button> instead of <a href=...> because
+    //  we are going to handle the clicks ourselves.)
+    return this.createButton
+    (
+      {
+        $container: $component,
+        gCssClass: gCssClass,
+        sCssClass: sCssClass,
+        text: text
+      },
+      param
+    );
   }
 
   protected static createDiv
@@ -484,39 +550,40 @@ export abstract class Component
     return $element;
   }
 
-  // Generic clickable text link
-  // (note that it's <button>, not <a href=...>).
-  protected static createTextLink
-  (
-    {
-      $container = null,
-      gCssClass = Component.LINK_TEXT_G_CSS_CLASS,
-      sCssClass = null,
-      text = null
-    }:
-    {
-      $container?: JQuery;
-      gCssClass?: string;
-      sCssClass?: string;
-      text: string;
-    },
-    param: Component.ButtonParam = null
-  )
-  : JQuery
-  {
-    // Use <button> instead of <a href=...> because we
-    // are going to handle the clicks ourselves.
-    return this.createButton
-    (
-      {
-        $container,
-        gCssClass,
-        sCssClass,
-        text
-      },
-      param
-    );
-  }
+  /// Deprecated. Use Component.setTextLink() instead.
+  // // Generic clickable text link
+  // // (note that it's <button>, not <a href=...>).
+  // protected static createTextLink
+  // (
+  //   {
+  //     $container = null,
+  //     gCssClass = Component.LINK_TEXT_G_CSS_CLASS,
+  //     sCssClass = null,
+  //     text = null
+  //   }:
+  //   {
+  //     $container?: JQuery;
+  //     gCssClass?: string;
+  //     sCssClass?: string;
+  //     text: string;
+  //   },
+  //   param: Component.ButtonParam = null
+  // )
+  // : JQuery
+  // {
+  //   // Use <button> instead of <a href=...> because we
+  //   // are going to handle the clicks ourselves.
+  //   return this.createButton
+  //   (
+  //     {
+  //       $container,
+  //       gCssClass,
+  //       sCssClass,
+  //       text
+  //     },
+  //     param
+  //   );
+  // }
 
   /// Ve skutečnosti asi vůbec nechci používat href, ale button bez grafiky...
   /// 
@@ -535,37 +602,38 @@ export abstract class Component
   }
   */
 
+  /// Deprecated. Use Component.setText() instead.
   // Generic non-clickable text.
-  protected static createText
-  (
-    {
-      $container = null,
-      gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
-      sCssClass = null,
-      text = null
-    }:
-    {
-      $container?: JQuery;
-      gCssClass?: string;
-      sCssClass?: string;
-      text: string;
-    }
-  )
-  : JQuery
-  {
-    let $text = this.createSpan
-    (
-      {
-        $container,
-        gCssClass,
-        sCssClass
-      }
-    );
+  // protected static createText
+  // (
+  //   {
+  //     $container = null,
+  //     gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
+  //     sCssClass = null,
+  //     text = null
+  //   }:
+  //   {
+  //     $container?: JQuery;
+  //     gCssClass?: string;
+  //     sCssClass?: string;
+  //     text: string;
+  //   }
+  // )
+  // : JQuery
+  // {
+  //   let $text = this.createSpan
+  //   (
+  //     {
+  //       $container,
+  //       gCssClass,
+  //       sCssClass
+  //     }
+  //   );
 
-    $text.text(text);
+  //   $text.text(text);
 
-    return $text;
-  }
+  //   return $text;
+  // }
 
   // ---------------- Private methods -------------------
 
