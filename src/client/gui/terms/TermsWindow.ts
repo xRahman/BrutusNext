@@ -67,27 +67,17 @@ export class TermsWindow extends StandaloneWindow
 
   private createTermsText()
   {
+    /// TEST:
     let termsText = "Don't be a jerk, please.";
     
-    let $container = Component.createDiv
+    Component.createDiv
     (
       {
+        text: termsText,
         $container: this.$content,
         sCssClass: TermsWindow.TERMS_S_CSS_CLASS
       }
     );
-
-    let $span = Component.createSpan
-    (
-      {
-        $container: $container,
-        sCssClass: null
-      }
-    );
-
-    ///$span.attr('word-wrap', 'break-word');
-
-    $span.text(termsText);
   }
 
   private createAcceptButton()
