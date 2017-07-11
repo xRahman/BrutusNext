@@ -242,7 +242,6 @@
 }
 
 /* :: Link Text Color :: */
-/*.S_StandaloneWindow_LinkText*/
 .G_LinkText
 {
   color: rgb(43, 144, 255); /* Text color */
@@ -507,6 +506,15 @@
 
 /* ------------- Component --------------- */
 
+/* :: Link Text :: */
+.S_Component_LinkText
+{
+  /* Link text is a <button> element styled as inline text element */
+  margin: 0;
+  padding: 0;
+  display: inline;
+}
+
 /* :: Full Width Inline Block :: */
 .S_Form_ButtonContainer,
 .S_Form_Label
@@ -660,17 +668,6 @@
 {
   padding: 1em;
   display: block;
-}
-
-/* :: Standalone Window Text :: */
-
-/*.S_StandaloneWindow_Text,*/
-.S_StandaloneWindow_LinkText
-{
-  margin: 0;
-  padding: 0;
-  text-align: left;
-  display: inline;
 }
 
 /* :: Standalone Window Link Container :: */
