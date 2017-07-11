@@ -22,10 +22,10 @@ export class StandaloneWindow extends Window
     { return 'S_StandaloneWindow_Title'; }
   protected static get CONTENT_S_CSS_CLASS()
     { return 'S_StandaloneWindow_Content'; }
-  protected static get TEXT_S_CSS_CLASS()
-    { return 'S_StandaloneWindow_Text'; }
-  protected static get LINK_TEXT_S_CSS_CLASS()
-    { return 'S_StandaloneWindow_LinkText'; }
+  // protected static get TEXT_S_CSS_CLASS()
+  //   { return 'S_StandaloneWindow_Text'; }
+  // protected static get LINK_TEXT_S_CSS_CLASS()
+  //   { return 'S_StandaloneWindow_LinkText'; }
   protected static get LINK_CONTAINER_S_CSS_CLASS()
     { return 'S_StandaloneWindow_LinkContainer'; }
   /// To be deleted.
@@ -118,53 +118,53 @@ export class StandaloneWindow extends Window
     );
   }
 
-  protected createText
-  (
-    {
-      $container,
-      text,
-      sCssClass = StandaloneWindow.TEXT_S_CSS_CLASS
-    }:
-    {
-      $container: JQuery;
-      text: string;
-      sCssClass?: string;
-    }
-  )
-  {
-    return Component.createText
-    (
-      {
-        $container: $container,
-        sCssClass: sCssClass,
-        text: text
-      }
-    );
-  }
+  // protected createText
+  // (
+  //   {
+  //     $container,
+  //     text,
+  //     sCssClass = StandaloneWindow.TEXT_S_CSS_CLASS
+  //   }:
+  //   {
+  //     $container: JQuery;
+  //     text: string;
+  //     sCssClass?: string;
+  //   }
+  // )
+  // {
+  //   return Component.createText
+  //   (
+  //     {
+  //       $container: $container,
+  //       sCssClass: sCssClass,
+  //       text: text
+  //     }
+  //   );
+  // }
 
-  protected createLinkText
-  (
-    {
-      $container,
-      text,
-      sCssClass = StandaloneWindow.LINK_TEXT_S_CSS_CLASS
-    }:
-    {
-      $container: JQuery;
-      text: string;
-      sCssClass?: string;
-    }
-  )
-  {
-    return Component.createTextLink
-    (
-      {
-        $container: $container,
-        sCssClass: sCssClass,
-        text: text
-      }
-    );
-  }
+  // protected createLinkText
+  // (
+  //   {
+  //     $container,
+  //     text,
+  //     sCssClass = StandaloneWindow.LINK_TEXT_S_CSS_CLASS
+  //   }:
+  //   {
+  //     $container: JQuery;
+  //     text: string;
+  //     sCssClass?: string;
+  //   }
+  // )
+  // {
+  //   return Component.createTextLink
+  //   (
+  //     {
+  //       $container: $container,
+  //       sCssClass: sCssClass,
+  //       text: text
+  //     }
+  //   );
+  // }
 
   // ---------------- Private methods -------------------
 
