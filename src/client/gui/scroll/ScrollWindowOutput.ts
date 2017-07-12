@@ -55,41 +55,75 @@ export class ScrollWindowOutput extends Component
     );
   }
 
+  public append
+  (
+    message: string,
+    {
+      baseTextColor = null,
+      forceScroll = false
+    }:
+    {
+      baseTextColor?: string;
+      forceScroll?: boolean;
+    }
+    = {}
+  )
+  {
+    let userScrolled = false;
+
+    // Determine if output is scrolled up by user
+    // (there is no need to do it if 'forceScroll' is true).
+    if (!forceScroll)
+      userScrolled = this.isUserScrolled();
+
+    // Create a new <div> element, set 'message' as it's
+    // text content and append it to 'this.$output'.
+    Component.createDiv
+    (
+      {
+        $container: this.$output,
+        baseTextColor: baseTextColor
+      }
+    );
+
+    // If user scolls up manually, we don't want to scroll
+    // the output down to the bottom on each output, that
+    // would be very inconvinient. However, 'forceScroll'
+    // parameter overrides it.
+    if (!userScrolled || forceScroll)
+      this.scrollToBottom();
+  }
+
+  /// Deprecated.
   // Converts message from mud colors (like '&Rhealth&g') to html
   // reprezentation (using <span> elements) and adds the result to
   // the end of output component.
   public appendMessage(message: string)
   {
-    let html = MudColors.htmlize(message);
-
-    this.appendHtml(html, { forceScroll: false });
+    this.append(message);
   }
 
-  // If 'param.forceScroll' is 'true', output always scrolls to the bottom.
-  // Otherwise it only scrolls if user hasn't scrolled up manually.
-  public appendHtml(html: string, param: { forceScroll: boolean })
-  {
-    // Size of the scrollable range (in pixels).
-    let range =
-      this.$output.prop('scrollHeight') - this.$output.prop('clientHeight');
+  // // If 'param.forceScroll' is 'true', output always scrolls to the bottom.
+  // // Otherwise it only scrolls if user hasn't scrolled up manually.
+  // public appendHtml(html: string, param: { forceScroll: boolean })
+  // {
+  //   // Size of the scrollable range (in pixels).
+  //   let range =
+  //     this.$output.prop('scrollHeight') - this.$output.prop('clientHeight');
 
-    // 'true' if user has scrolled up manually
-    // (-1 to account for rounding errors. If use scolled up by
-    //  less than one pixel, we can safely scoll back down anyways).
-    let userScrolled = (this.$output.scrollTop()) < (range - 1);
+  //   // 'true' if user has scrolled up manually
+  //   // (-1 to account for rounding errors. If user scolled up by
+  //   //  less than one pixel, we can safely scoll back down anyways).
+  //   let userScrolled = (this.$output.scrollTop()) < (range - 1);
 
-    this.$output.append(html);
+  //   this.$output.append(html);
 
-    // If user scolls up manually, we don't want to scroll
-    // the output down to the bottom on each output, that
-    // would be very inconvinient.
-    if (param.forceScroll || !userScrolled)
-      this.scrollToBottom();
-  }
-
-  // --------------- Protected methods ------------------
-
-  // ---------------- Private methods -------------------
+  //   // If user scolls up manually, we don't want to scroll
+  //   // the output down to the bottom on each output, that
+  //   // would be very inconvinient.
+  //   if (param.forceScroll || !userScrolled)
+  //     this.scrollToBottom();
+  // }
 
   public scrollToTop()
   {
@@ -111,6 +145,23 @@ export class ScrollWindowOutput extends Component
 
     // Now we can trigger the keyboard event.
     this.$output.trigger(event);
+  }
+
+  // --------------- Protected methods ------------------
+
+  // ---------------- Private methods -------------------
+
+  // Determines if output is scrolled up by user.
+  private isUserScrolled()
+  {
+    // Size of the scrollable range (in pixels).
+    let range =
+      this.$output.prop('scrollHeight') - this.$output.prop('clientHeight');
+
+    // 'true' if user has scrolled up manually
+    // (-1 to account for rounding errors. If user scolled up by
+    //  less than one pixel, we can safely scoll back down anyways).
+    return (this.$output.scrollTop()) < (range - 1);
   }
 
   // ---------------- Event handlers --------------------
