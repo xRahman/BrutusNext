@@ -1,10 +1,10 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
-TODO: Nelowercasovat entity name při savu name lock filu.
-(Respektive ano, protože jinak by šly na Linuxu vytvořit dva accounty
- lišící se jen v casu. Plus je ale třeba zapisovat originální e-mail
- extra stranou.)
+TODO: Zapisovat originální e-mail do accountu
+  (Protože ten savnutý jak file name je lowercasovaný - což je správně,
+   protože jinak by se to nechovalo stejně na windowzech a linuxu - na
+   linuxu by šlo vytvořit dva accounty lišící se jen v casu).
 - lowercasuje se v NameLock.getFileName().
 
 TODO: Vymyslet, kam vypisovat problém při otevírání connection.
@@ -32,6 +32,17 @@ TODO: Oštřit to pro jistotu i přímo v Connection.send() - když
   by failnulo odchytnutí disconnectu, tak ať to nehází errory.
 
 --------------------------------------------------------------
+
+TODO: Asi přece jen sloučím všechny parametry metod v Component
+  do jednoho objektu - i když, hmm, to povede k tomu, že budu
+  v hromadě interfaců opakovat společné atributy (například
+  u všech input elementů, ty jich mají hromadu). Tzn. když budu
+  chtít přidat další html atribut, budu ho muset dát do několika
+  interfaců (což zaručeně na něco zapomenu).
+  - to asi fakt není dobrej nápad.
+Půjde to díky dědičnosti:
+- a to dokonce i do jednoho interfacu, protože lze dědit vícenásobně.
+
 
 TODO: Jako jsem udělal interface Window.CreateParam tak stejně
 vyrobit i interfacy pro paramy jednotlivých elementů
