@@ -434,20 +434,14 @@ export abstract class Component
   // (use createButton() to create a standalone button).
   protected static createSubmitButton
   (
+    name,
     {
       $container = null,
-      name,
       gCssClass = Component.BUTTON_G_CSS_CLASS,
       sCssClass = null,
       text = null
-    }:
-    {
-      $container?: JQuery;
-      name: string;
-      gCssClass?: string;
-      sCssClass?: string;
-      text: string;
-    },
+    }
+    :Component.ButtonParameters,
     attributes: Component.ButtonAttributes = null
   )
   : JQuery
@@ -473,12 +467,8 @@ export abstract class Component
       $container = null,
       gCssClass = Component.INPUT_G_CSS_CLASS,
       sCssClass = null
-    }:
-    {
-      $container?: JQuery;
-      gCssClass?: string;
-      sCssClass?: string;
-    },
+    }
+    : Component.TextAreaParameters,
     attributes: Component.TextAreaAttributes
   )
   : JQuery
@@ -507,16 +497,9 @@ export abstract class Component
       $container = null,
       gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
       sCssClass = null,
-      // 'text' can use mud colors. If it doesn't,
-      // color set in css will be used.
       text = null
-    }:
-    {
-      $container?: JQuery;
-      gCssClass?: string;
-      sCssClass?: string;
-      text?: string;
     }
+    : Component.LabelParameters
   )
   : JQuery
   {
@@ -568,13 +551,8 @@ export abstract class Component
       gCssClass = Component.BUTTON_G_CSS_CLASS,
       sCssClass = null,
       text = null
-    }:
-    {
-      $container?: JQuery;
-      gCssClass?: string;
-      sCssClass?: string;
-      text: string;
-    },
+    }
+    : Component.ButtonParameters,
     attributes: Component.ButtonAttributes = null
   )
   : JQuery
@@ -935,6 +913,33 @@ export abstract class Component
 
 export module Component
 {
+  interface BasicParameters
+  {
+    $container?: JQuery;
+    gCssClass?: string;
+    sCssClass?: string;
+  }
+
+  interface TextComponentParameters extends BasicParameters
+  {
+    text?: string;
+  }
+
+  export interface TextAreaParameters extends BasicParameters
+  {
+    // Nothing here, just default (inherited) parameters.
+  }
+
+  export interface ButtonParameters extends TextComponentParameters
+  {
+    // Nothing here, just default (inherited) parameters.
+  }
+
+  export interface LabelParameters extends TextComponentParameters
+  {
+    // Nothing here, just default (inherited) parameters.
+  }
+
   export interface InputAttributes
   {
     required?: boolean,
