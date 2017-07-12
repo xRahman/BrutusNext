@@ -57,15 +57,39 @@ export abstract class MudColors
   // If 'baseColor' is 'null', the color from the start of the message
   // (or a default color) will be used (that's how common mud messages
   //  are handled).
+  // For colorless messages, no color is specified unless 'baseColor' is
+  // provided. It means that text color or parent html element is used.
   // -> Returns html that creates the element.
   public static htmlize(message: string, baseColor: string = null)
   {
-    // If 'baseColor' is provided, use it.
-    if (baseColor !== null)
-      return this.parseMudColors(message, baseColor);
+    if (this.hasNoColors(message))
+      return this.htmlizeColorlessMessage(message, baseColor);
 
-    // Otherwise read it from the begenning of the 'message' first.
-    return this.parseBaseColorAndMudColors(message);
+    let baseColorParseResult =
+    {
+      offset: 0,
+      baseColor: baseColor
+    };
+
+    // If 'baseColor' isn't provided, read it from
+    // the beginning of the message.
+    if (baseColor !== null)
+      baseColorParseResult = this.parseBaseColor(message);
+    
+    // Skip the characters we have already parsed.
+    if (baseColorParseResult.offset !== 0)
+      message = message.substr(baseColorParseResult.offset);
+    
+    // Encapsulate the result in one more <span> element so it
+    // behaves as a single html element.
+    return "<span>" + this.parseMudColors(message, baseColor) + "</span>";
+
+    // // If 'baseColor' is provided, use it.
+    // if (baseColor !== null)
+    //   return this.parseMudColors(message, baseColor);
+
+    // // Otherwise read it from the begenning of the 'message' first.
+    // return this.parseBaseColor(message);
   }
 
   // ------------ Protected static methods --------------
@@ -256,6 +280,7 @@ export abstract class MudColors
     return 0;
   }
 
+  // Creates a series of colored <span> elements.
   private static parseMudColors(message: string, baseColor: string)
   {
     if (message.length === 0)
@@ -263,8 +288,8 @@ export abstract class MudColors
 
     let parser = 
     {
-      // Resulting html string. We start by an opening <div> tag.
-      html: '<div>',
+      // Start with empty string.
+      html: "",
       // Flag to indicate that we have a <span> tag open.
       spanOpen: false,
       // 'baseColor' is the first color used in the string.
@@ -280,16 +305,15 @@ export abstract class MudColors
 
     this.closeSpanIfOpen(parser);
 
-    parser.html += '</div>';
-
     return parser.html;
   }
 
   // -> Returns htmlized message.
-  private static parseBaseColorAndMudColors(message: string)
+  private static parseBaseColor(message: string)
   {
+    let offset = 2;
     // Check the very beginning of the message for a color code.
-    let code = message.substr(0, 2);
+    let code = message.substr(0, offset);
     // If the message begins with '&_' (which means 'return to base color'),
     // use DEFAULT_COLOR as base color.
     let baseColor = this.parseColorCode(code, MudColors.DEFAULT_COLOR);
@@ -297,10 +321,29 @@ export abstract class MudColors
     // If there isn't a color code at the start at the message,
     // use DEFAULT_COLOR as base color.
     if (baseColor === null)
-      return this.parseMudColors(message, MudColors.DEFAULT_COLOR);
+    {
+      offset = 0;
+      baseColor = MudColors.DEFAULT_COLOR;
+    }
 
-    // If there is a color code, use it. Also skip the first
-    // two characters because we don't have to parse it again.
-    return this.parseMudColors(message.substr(2), baseColor);
+    // // If there is a color code, use it. Also skip the first
+    // // two characters because we don't have to parse it again.
+    // return this.parseMudColors(message.substr(2), baseColor);
+
+    return { baseColor: baseColor, offset: offset };
+  }
+
+  private static hasNoColors(message: string)
+  {
+    return message.indexOf('&') === -1;
+  }
+
+  // -> Returns <span> element containing 'message'.
+  private static htmlizeColorlessMessage(message: string, baseColor: string)
+  {
+    if (baseColor)
+      return '<span style="color:' + baseColor + '">' + message + "</span>";
+
+    return "<span>" + message + "</span>";
   }
 }

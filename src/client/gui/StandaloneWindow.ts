@@ -42,30 +42,16 @@ export class StandaloneWindow extends Window
   // ~ Overrides Window.create().
   public create
   (
+    param: Window.CreateParam =
     {
-      window_sCssClass = StandaloneWindow.S_CSS_CLASS,
-      content_sCssClass = StandaloneWindow.CONTENT_S_CSS_CLASS,
-      titleBar_sCssClass = StandaloneWindow.TITLE_BAR_S_CSS_CLASS,
-      title_sCssClass = StandaloneWindow.TITLE_S_CSS_CLASS,
-    }:
-    {
-      window_sCssClass?: string;
-      content_sCssClass?: string;
-      titleBar_sCssClass?: string;
-      title_sCssClass?: string;
+      window_sCssClass: StandaloneWindow.S_CSS_CLASS,
+      content_sCssClass: StandaloneWindow.CONTENT_S_CSS_CLASS,
+      titleBar_sCssClass: StandaloneWindow.TITLE_BAR_S_CSS_CLASS,
+      title_sCssClass: StandaloneWindow.TITLE_S_CSS_CLASS
     }
-    = {}
   )
   {
-    super.create
-    (
-      {
-        window_sCssClass: window_sCssClass,
-        content_sCssClass: content_sCssClass,
-        titleBar_sCssClass: titleBar_sCssClass,
-        title_sCssClass: title_sCssClass,
-      }
-    );
+    super.create(param);
   }
 
   // --------------- Protected methods ------------------

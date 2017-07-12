@@ -346,32 +346,11 @@ export abstract class Form extends Component
     (
       {
         $container: this.$form,
-        sCssClass: Form.LABEL_S_CSS_CLASS,
+        sCssClass: sCssClass,
         text: Component.EMPTY_LINE_TEXT
       }
     );
   }
-  /*
-  protected createEmptyLine
-  (
-    {
-      sCssClass = Form.EMPTY_LINE_S_CSS_CLASS
-    }:
-    {
-      sCssClass?: string;
-    }
-    = {}
-  )
-  {
-    return Component.createDiv
-    (
-      {
-        $container: this.$form,
-        sCssClass: sCssClass
-      }
-    );
-  }
-  */
 
   // ---------------- Private methods -------------------
 

@@ -77,28 +77,64 @@ export abstract class Component
   // --------------- Protected methods ------------------
 
   // Replaces html content of '$component' with <spans> created from 'text'.
-  protected static setText($component: JQuery, text: string)
+  protected static setText
+  (
+    $component: JQuery,
+    text: string,
+    baseColor = null
+  )
   {
     // Remove existing text if there is any.
     $component.empty();
 
-    this.appendText($component, text);
+    this.appendText
+    (
+      $component,
+      text,
+      baseColor
+    );
   }
 
-  // Appends <spans> created from 'text' to html content of '$component'.
-  protected static appendText($component: JQuery, text: string)
+  // Appends <spans> created from 'text' to html content of '$component'
+  // ('text' can contain mud color codes. It it doesn't and no 'baseColor'
+  //  is provided, text color of $component will be used).
+  protected static appendText
+  (
+    $component: JQuery,
+    text: string,
+    baseColor = null
+  )
   {
-    if (text.indexOf('&') !== -1)
-    {
-      $component.append(MudColors.htmlize(text));
-    }
-    else
-    {
-      let $span = $(document.createElement('span'))
+    $component.append
+    (
+      MudColors.htmlize(text, baseColor)
+    );
 
-      $span.text(text);
-      $component.append($span);
-    }
+    // if (text.indexOf('&') !== -1)
+    // {
+    //   $component.append
+    //   (
+    //     MudColors.htmlize(text, baseColor)
+    //   );
+    // }
+    // else
+    // {
+    //   // let $span = $(document.createElement('span'))
+
+    //   // $span.text(text);
+    //   // $component.append($span);
+
+    //   /// TODO: Použít baseColor, pokud není null.
+    //   /// TODO: Nevolat createSpan, vyrobit ho na přímo (zaremovaným
+    //   ///  kódem o kus výš).
+    //   Component.createSpan
+    //   (
+    //     text,
+    //     {
+    //       $container: $component
+    //     }
+    //   )
+    // }
   }
 
   // Replaces html content of '$component' with clickable text link.
@@ -114,7 +150,7 @@ export abstract class Component
       gCssClass?: string;
       sCssClass?: string;
     },
-    param: Component.ButtonParam = null
+    attributes: Component.ButtonAttributes = null
   )
   {
     // Remove existing html content if there is any.
@@ -128,7 +164,7 @@ export abstract class Component
         gCssClass: gCssClass,
         sCssClass: sCssClass
       },
-      param
+      attributes
     );
   }
 
@@ -147,7 +183,7 @@ export abstract class Component
       sCssClass?: string;
     }
     = {},
-    param: Component.ButtonParam = null
+    attributes: Component.ButtonAttributes = null
   )
   {
     // Text link is a button containing requested link text.
@@ -161,7 +197,7 @@ export abstract class Component
         sCssClass: sCssClass,
         text: text
       },
-      param
+      attributes
     );
   }
 
@@ -170,16 +206,17 @@ export abstract class Component
     {
       $container = null,
       text = null,
+      baseTextColor = null,
       gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
       sCssClass = null
     }:
     {
       $container?: JQuery;
       text?: string;
+      baseTextColor?: string;
       gCssClass?: string;
       sCssClass?: string;
     }
-    = {}
   )
   : JQuery
   {
@@ -188,7 +225,7 @@ export abstract class Component
     this.initElement($element, $container, gCssClass, sCssClass);
 
     if (text !== null)
-      this.setText($element, text);
+      this.setText($element, text, baseTextColor);
 
     return $element;
   }
@@ -283,18 +320,18 @@ export abstract class Component
       gCssClass?: string;
       sCssClass?: string;
     },
-    param: Component.InputParam = null
+    attributes: Component.InputAttributes = null
   )
   : JQuery
   {
-    if (!this.checkNameParam(name))
+    if (!this.checkNameAttribute(name))
       return;
 
     let $element = $(document.createElement('input'));
 
     this.initElement($element, $container, gCssClass, sCssClass);
     this.initFormInputElement($element, 'text', name);
-    this.applyInputParam($element, param);
+    this.setAttributes($element, attributes);
 
     return $element;
   }
@@ -313,18 +350,18 @@ export abstract class Component
       gCssClass?: string;
       sCssClass?: string;
     },
-    param: Component.InputParam = null
+    attributes: Component.InputAttributes = null
   )
   : JQuery
   {
-    if (!this.checkNameParam(name))
+    if (!this.checkNameAttribute(name))
       return;
 
     let $element = $(document.createElement('input'));
 
     this.initElement($element, $container, gCssClass, sCssClass);
     this.initFormInputElement($element, 'password', name);
-    this.applyInputParam($element, param);
+    this.setAttributes($element, attributes);
 
     return $element;
   }
@@ -347,18 +384,18 @@ export abstract class Component
       gCssClass?: string;
       sCssClass?: string;
     },
-    param: Component.InputParam = null
+    attributes: Component.InputAttributes = null
   )
   : JQuery
   {
-    if (!this.checkNameParam(name))
+    if (!this.checkNameAttribute(name))
       return;
 
     let $element = $(document.createElement('input'));
 
     this.initElement($element, $container, gCssClass, sCssClass);
     this.initFormInputElement($element, 'email', name);
-    this.applyInputParam($element, param);
+    this.setAttributes($element, attributes);
 
     return $element;
   }
@@ -377,18 +414,18 @@ export abstract class Component
       gCssClass?: string;
       sCssClass?: string;
     },
-    param: Component.CheckboxParam = null
+    attributes: Component.CheckboxAttributes = null
   )
   : JQuery
   {
-    if (!this.checkNameParam(name))
+    if (!this.checkNameAttribute(name))
       return;
 
     let $element = $(document.createElement('input'));
 
     this.initElement($element, $container, gCssClass, sCssClass);
     this.initFormInputElement($element, 'checkbox', name);
-    this.applyInputParam($element, param);
+    this.setAttributes($element, attributes);
 
     return $element;
   }
@@ -411,18 +448,18 @@ export abstract class Component
       sCssClass?: string;
       text: string;
     },
-    param: Component.ButtonParam = null
+    attributes: Component.ButtonAttributes = null
   )
   : JQuery
   {
-    if (!this.checkNameParam(name))
+    if (!this.checkNameAttribute(name))
       return;
 
     let $element = $(document.createElement('button'));
 
     this.initElement($element, $container, gCssClass, sCssClass);
     this.initFormInputElement($element, 'submit', name);
-    this.applyButtonParam($element, param);
+    this.setAttributes($element, attributes);
 
     if (text !== null)
       this.setText($element, text);
@@ -442,14 +479,14 @@ export abstract class Component
       gCssClass?: string;
       sCssClass?: string;
     },
-    param: Component.TextAreaParam
+    attributes: Component.TextAreaAttributes
   )
   : JQuery
   {
     let $element = $(document.createElement('textarea'));
 
     this.initElement($element, $container, gCssClass, sCssClass);
-    this.applyTextAreaParam($element, param);
+    this.setAttributes($element, attributes);
 
     return $element;
   }
@@ -493,26 +530,33 @@ export abstract class Component
     return $element;
   }
 
-  protected static createSpan
-  (
-    {
-      $container = null,
-      gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
-      sCssClass = null
-    }:
-    {
-      $container?: JQuery;
-      gCssClass?: string;
-      sCssClass?: string;
-    }
-    = {}
-  )
-  : JQuery
-  {
-    let $element = $(document.createElement('span'));
+  /// Not used anymore.
+  // protected static createSpan
+  // (
+  //   text: string = null,
+  //   {
+  //     $container = null,
+  //     gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
+  //     sCssClass = null
+  //   }:
+  //   {
+  //     $container?: JQuery;
+  //     gCssClass?: string;
+  //     sCssClass?: string;
+  //   }
+  //   = {}
+  // )
+  // : JQuery
+  // {
+  //   let $element = $(document.createElement('span'));
 
-    return this.initElement($element, $container, gCssClass, sCssClass);
-  }
+  //   this.initElement($element, $container, gCssClass, sCssClass);
+
+  //   if (text !== null)
+  //     this.setText($element, text);
+
+  //   return $element;
+  // }
 
   // Creates a button which is not part of a form
   // (use createSubmitButton() to create a button that
@@ -531,7 +575,7 @@ export abstract class Component
       sCssClass?: string;
       text: string;
     },
-    param: Component.ButtonParam = null
+    attributes: Component.ButtonAttributes = null
   )
   : JQuery
   {
@@ -542,7 +586,7 @@ export abstract class Component
     $element.attr('type', 'button');
 
     this.initElement($element, $container, gCssClass, sCssClass);
-    this.applyButtonParam($element, param);
+    this.setAttributes($element, attributes);
 
     if (text !== null)
       this.setText($element, text);
@@ -644,9 +688,9 @@ export abstract class Component
     name: string
   )
   {
+    // Both 'type' and 'name' attributes are mandatory
+    // for input elements.
     $element.attr('type', type);
-
-    // Form input elements must have a 'name' attribute.
     $element.attr('name', name);
   }
 
@@ -673,155 +717,204 @@ export abstract class Component
     return $element;
   }
 
-  // Applies values of 'param' to input element.
-  private static applyInputParam
+  // // Applies values of 'attributes' to input element.
+  // private static applyInputAttributes
+  // (
+  //   $element: JQuery,
+  //   attributes: Component.InputAttributes
+  // )
+  // {
+  //   if (!$element || !attributes)
+  //     return;
+
+  //   if (attributes.required !== undefined)
+  //     $element.prop('required', attributes.required);
+
+  //   if (attributes.placeholder !== undefined)
+  //     $element.attr('placeholder', attributes.placeholder);
+
+  //   if (attributes.readonly !== undefined)
+  //     $element.prop('readOnly', attributes.readonly);
+
+  //   if (attributes.disabled !== undefined)
+  //     this.setDisabled($element, attributes.disabled);
+
+  //   if (attributes.size !== undefined)
+  //     $element.attr('size', attributes.size);
+
+  //   if (attributes.maxLength !== undefined)
+  //     $element.attr('maxLength', attributes.maxLength);
+
+  //   if (attributes.minLength !== undefined)
+  //     $element.attr('minLength', attributes.minLength);
+
+  //   if (attributes.autocomplete !== undefined)
+  //     $element.attr('autocomplete', attributes.autocomplete);
+
+  //   if (attributes.spellcheck !== undefined)
+  //     $element.prop('spellcheck', attributes.spellcheck);
+
+  //   if (attributes.checked !== undefined)
+  //     $element.prop('checked', attributes.checked);
+
+  //   // Apparently 'autocapitalize' only works for virtual keybords at the
+  //   // moment in Chrome (and doesn't work in other browsers except Safari
+  //   // at all) so it's useless right now.
+  //   /// if (attributes.autocapitalize !== undefined)
+  //   ///   element.setAttribute('autocapitalize', attributes.autocapitalize);
+
+  //   if (attributes.autocorrect !== undefined)
+  //     $element.attr('autocorrect', attributes.autocorrect);
+
+  //   // // Standard attributes.
+
+  //   // if (attributes.required !== undefined)
+  //   //   element.required = attributes.required;
+
+  //   // if (attributes.placeholder !== undefined)
+  //   //   element.placeholder = attributes.placeholder;
+
+  //   // if (attributes.readonly !== undefined)
+  //   //   element.readOnly = attributes.readonly;
+
+  //   // // if (attributes.disabled !== undefined)
+  //   // //   element.disabled = attributes.disabled;
+
+  //   // if (attributes.size !== undefined)
+  //   //   element.size = attributes.size;
+
+  //   // if (attributes.maxLength !== undefined)
+  //   //   element.maxLength = attributes.maxLength;
+
+  //   // if (attributes.minLength !== undefined)
+  //   //   element.minLength = attributes.minLength;
+
+  //   // if (attributes.autocomplete !== undefined)
+  //   //   element.autocomplete = attributes.autocomplete;
+
+  //   // if (attributes.spellcheck !== undefined)
+  //   //   element.spellcheck = attributes.spellcheck;
+
+  //   // if (attributes.checked !== undefined)
+  //   //   element.checked = attributes.checked
+
+  //   // // Nonstandard attributes (so they can't be simply assigned
+  //   // // and must byt set using setAttribute()).
+
+  //   // // Apparently 'autocapitalize' only works for virtual keybords at the
+  //   // // moment in Chrome (and doesn't work in other browsers except Safari
+  //   // // at all) so it's useless right now.
+  //   // /// if (attributes.autocapitalize !== undefined)
+  //   // ///   element.setAttribute('autocapitalize', attributes.autocapitalize);
+
+  //   // if (attributes.autocorrect !== undefined)
+  //   //   element.setAttribute('autocorrect', attributes.autocorrect);
+  // }
+
+  // private static applyButtonAttributes
+  // (
+  //   $element: JQuery,
+  //   attributes: Component.ButtonAttributes
+  // )
+  // {
+  //   if (!$element || !attributes)
+  //     return;
+
+  //   // Note that there is difference between attribute 'disabled'
+  //   // and property 'disabled'. Attribute 'disabled' only specifies
+  //   // initial value of 'disabled' property of the element, property
+  //   // 'disabled' reflects actual state of the element.
+  //   if (attributes && attributes.disabled !== undefined)
+  //     this.setDisabled($element, attributes.disabled);
+  // }
+
+  // private static applyTextAreaAttributes
+  // (
+  //   $element: JQuery,
+  //   attributes: Component.TextAreaAttributes
+  // )
+  // {
+  //   if (!$element || !attributes)
+  //     return;
+
+  //   if (attributes && attributes.rows)
+  //     $element.attr('rows', attributes.rows);
+
+  //   if (attributes.spellcheck !== undefined)
+  //     $element.prop('spellcheck', attributes.spellcheck);
+
+  //   // Nonstandard attributes (so they can't be simply assigned
+  //   // and must byt set using setAttribute()).
+
+  //   if (attributes.autocorrect !== undefined)
+  //     $element.attr('autocorrect', attributes.autocorrect);
+
+  //   // if (attributes && attributes.rows)
+  //   //   element.rows = attributes.rows;
+
+  //   // if (attributes.spellcheck !== undefined)
+  //   //   element.spellcheck = attributes.spellcheck;
+
+  //   // // Nonstandard attributes (so they can't be simply assigned
+  //   // // and must byt set using setAttribute()).
+
+  //   // if (attributes.autocorrect !== undefined)
+  //   //   element.setAttribute('autocorrect', attributes.autocorrect);
+  // }
+
+  private static setAttributes
   (
     $element: JQuery,
-    param: Component.InputParam
+    attributes: Component.Attributes
   )
   {
-    if (!$element || !param)
+    if (!$element || !attributes)
       return;
 
-    if (param.required !== undefined)
-      $element.prop('required', param.required);
+    if (attributes.required !== undefined)
+      $element.prop('required', attributes.required);
 
-    if (param.placeholder !== undefined)
-      $element.attr('placeholder', param.placeholder);
+    if (attributes.placeholder !== undefined)
+      $element.attr('placeholder', attributes.placeholder);
 
-    if (param.readonly !== undefined)
-      $element.prop('readOnly', param.readonly);
+    if (attributes.readonly !== undefined)
+      $element.prop('readOnly', attributes.readonly);
 
-    if (param.disabled !== undefined)
-      this.setDisabled($element, param.disabled);
+    if (attributes.size !== undefined)
+      $element.attr('size', attributes.size);
 
-    if (param.size !== undefined)
-      $element.attr('size', param.size);
+    if (attributes.maxLength !== undefined)
+      $element.attr('maxLength', attributes.maxLength);
 
-    if (param.maxLength !== undefined)
-      $element.attr('maxLength', param.maxLength);
+    if (attributes.minLength !== undefined)
+      $element.attr('minLength', attributes.minLength);
 
-    if (param.minLength !== undefined)
-      $element.attr('minLength', param.minLength);
+    if (attributes.checked !== undefined)
+      $element.prop('checked', attributes.checked);
 
-    if (param.autocomplete !== undefined)
-      $element.attr('autocomplete', param.autocomplete);
+    // There is difference between attribute 'disabled' and
+    // property 'disabled'. Attribute specifies initial value
+    // of 'disabled' property of the element, property reflects
+    // actual state of the element.
+    //   We only set property 'disabled', never the attribute.
+    if (attributes && attributes.disabled !== undefined)
+      $element.prop('disabled', attributes.disabled);
 
-    if (param.spellcheck !== undefined)
-      $element.prop('spellcheck', param.spellcheck);
+    if (attributes && attributes.rows)
+      $element.attr('rows', attributes.rows);
 
-    if (param.checked !== undefined)
-      $element.prop('checked', param.checked);
+    if (attributes.spellcheck !== undefined)
+      $element.prop('spellcheck', attributes.spellcheck);
 
-    // Apparently 'autocapitalize' only works for virtual keybords at the
-    // moment in Chrome (and doesn't work in other browsers except Safari
-    // at all) so it's useless right now.
-    /// if (param.autocapitalize !== undefined)
-    ///   element.setAttribute('autocapitalize', param.autocapitalize);
+    if (attributes.autocorrect !== undefined)
+      $element.attr('autocorrect', attributes.autocorrect);
 
-    if (param.autocorrect !== undefined)
-      $element.attr('autocorrect', param.autocorrect);
+    if (attributes.autocomplete !== undefined)
+      $element.attr('autocomplete', attributes.autocomplete);
 
-    /*
-    // Standard attributes.
-
-    if (param.required !== undefined)
-      element.required = param.required;
-
-    if (param.placeholder !== undefined)
-      element.placeholder = param.placeholder;
-
-    if (param.readonly !== undefined)
-      element.readOnly = param.readonly;
-
-    // if (param.disabled !== undefined)
-    //   element.disabled = param.disabled;
-
-    if (param.size !== undefined)
-      element.size = param.size;
-
-    if (param.maxLength !== undefined)
-      element.maxLength = param.maxLength;
-
-    if (param.minLength !== undefined)
-      element.minLength = param.minLength;
-
-    if (param.autocomplete !== undefined)
-      element.autocomplete = param.autocomplete;
-
-    if (param.spellcheck !== undefined)
-      element.spellcheck = param.spellcheck;
-
-    if (param.checked !== undefined)
-      element.checked = param.checked
-
-    // Nonstandard attributes (so they can't be simply assigned
-    // and must byt set using setAttribute()).
-
-    // Apparently 'autocapitalize' only works for virtual keybords at the
-    // moment in Chrome (and doesn't work in other browsers except Safari
-    // at all) so it's useless right now.
-    /// if (param.autocapitalize !== undefined)
-    ///   element.setAttribute('autocapitalize', param.autocapitalize);
-
-    if (param.autocorrect !== undefined)
-      element.setAttribute('autocorrect', param.autocorrect);
-    */
   }
 
-  private static applyButtonParam
-  (
-    $element: JQuery,
-    param: Component.ButtonParam
-  )
-  {
-    if (!$element || !param)
-      return;
-
-    // Note that there is difference between attribute 'disabled'
-    // and property 'disabled'. Attribute 'disabled' only specifies
-    // initial value of 'disabled' property of the element, property
-    // 'disabled' reflects actual state of the element.
-    if (param && param.disabled !== undefined)
-      this.setDisabled($element, param.disabled);
-  }
-
-  private static applyTextAreaParam
-  (
-    $element: JQuery,
-    param: Component.TextAreaParam
-  )
-  {
-    if (!$element || !param)
-      return;
-
-    if (param && param.rows)
-      $element.attr('rows', param.rows);
-
-    if (param.spellcheck !== undefined)
-      $element.prop('spellcheck', param.spellcheck);
-
-    // Nonstandard attributes (so they can't be simply assigned
-    // and must byt set using setAttribute()).
-
-    if (param.autocorrect !== undefined)
-      $element.attr('autocorrect', param.autocorrect);
-/*
-    if (param && param.rows)
-      element.rows = param.rows;
-
-    if (param.spellcheck !== undefined)
-      element.spellcheck = param.spellcheck;
-
-    // Nonstandard attributes (so they can't be simply assigned
-    // and must byt set using setAttribute()).
-
-    if (param.autocorrect !== undefined)
-      element.setAttribute('autocorrect', param.autocorrect);
-*/
-  }
-
-  private static checkNameParam(name: string)
+  private static checkNameAttribute(name: string)
   {
     if (!name)
     {
@@ -834,15 +927,6 @@ export abstract class Component
     return true;
   }
 
-  private static setDisabled($element: JQuery, value: boolean)
-  {
-    // That there is difference between attribute 'disabled' and
-    // property 'disabled'. Attribute only specifies initial value
-    // of 'disabled' property of the element, property reflects
-    // actual state of the element.
-    $element.prop('disabled', value);
-  }
-
   // ---------------- Event handlers --------------------
 
 }
@@ -851,7 +935,7 @@ export abstract class Component
 
 export module Component
 {
-  export interface InputParam
+  export interface InputAttributes
   {
     required?: boolean,
     placeholder?: string,
@@ -861,30 +945,44 @@ export module Component
     minLength?: number,
     maxLength?: number,
     spellcheck?: boolean,
-    ///autocapitalize?: AutocapitalizeValue,
+    // Apparently 'autocapitalize' only works for virtual keybords at the
+    // moment in Chrome (and doesn't work in other browsers except Safari
+    // at all) so it's useless right now.
+    /// autocapitalize?: AutocapitalizeValue,
     autocorrect?: AutocorrectValue,
     autocomplete?: AutocompleteValue,
     checked?: boolean
   }
 
-  export interface ButtonParam
+  export interface ButtonAttributes
   {
     disabled?: boolean
   }
 
-  export interface CheckboxParam
+  export interface CheckboxAttributes
   {
     readonly?: boolean,
     disabled?: boolean,
     checked?: boolean
   }  
 
-  export interface TextAreaParam
+  export interface TextAreaAttributes
   {
     rows?: number,
     spellcheck?: boolean,
     autocorrect?: AutocorrectValue
   }
+
+  // This inteface contains properties of all other attribute
+  // interfaces (by extending them all). This way we can have
+  // just one method (setAttributes()) to set them for any
+  // component.
+  export interface Attributes extends InputAttributes,
+    ButtonAttributes, CheckboxAttributes, TextAreaAttributes
+  {
+    // Nothing here because the point is just to inherit
+    // attributes from all other attribute interfaces.
+  };
 
   // Valid values of 'autocapitalize' attribute.
   type AutocapitalizeValue = 'none' | 'characters' | 'words' | 'sentences';
