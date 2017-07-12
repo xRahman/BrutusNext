@@ -86,62 +86,42 @@ export class Window extends Component
   public create
   (
     {
-      window_sCssClass = Window.S_CSS_CLASS,
       window_gCssClass = Component.WINDOW_G_CSS_CLASS,
-      content_sCssClass = Window.CONTENT_S_CSS_CLASS,
+      window_sCssClass = Window.S_CSS_CLASS,
       content_gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
-      titleBar_sCssClass = Window.TITLE_BAR_S_CSS_CLASS,
+      content_sCssClass = Window.CONTENT_S_CSS_CLASS,
       titleBar_gCssClass = Component.TITLE_BAR_G_CSS_CLASS,
-      title_sCssClass = Window.TITLE_S_CSS_CLASS,
-      title_gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS
-    }:
-    {
-      window_sCssClass?: string;
-      window_gCssClass?: string;
-      content_sCssClass?: string;
-      content_gCssClass?: string;
-      titleBar_sCssClass?: string;
-      titleBar_gCssClass?: string;
-      title_sCssClass?: string;
-      title_gCssClass?: string;
+      titleBar_sCssClass = Window.TITLE_BAR_S_CSS_CLASS,
+      title_gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
+      title_sCssClass = Window.TITLE_S_CSS_CLASS
     }
-    = {}
+    : Window.CreateParam = {}
   )
   {
     this.$window = Component.createDiv
     (
       {
         $container: Document.$body,
-        sCssClass: window_sCssClass,
-        gCssClass: window_gCssClass
+        sCssClass: window_gCssClass,
+        gCssClass: window_sCssClass
       }
     );
 
     // Windows are created hidden.
     this.$window.hide();
 
-    this.createTitleBar
-    (
-      titleBar_gCssClass,
-      titleBar_sCssClass,
-      title_gCssClass,
-      title_sCssClass
-    );
-
+    this.createTitleBar(titleBar_gCssClass, titleBar_sCssClass);
+    this.createTitle(title_gCssClass, title_sCssClass);
     this.createContent(content_gCssClass, content_sCssClass);
 
     return this.$window;
   }
 
   // Executes when html document is fully loaded.
-  public onDocumentReady()
-  {
-  }
+  public onDocumentReady() {}
 
   // Executes when html document is resized.
-  public onDocumentResize()
-  {
-  }
+  public onDocumentResize() {}
 
   // --------------- Protected methods ------------------
 
@@ -173,29 +153,26 @@ export class Window extends Component
     this.hidden = false;
   }
 
-  private createTitleBar
-  (
-    titleBar_gCssClass: string,
-    titleBar_sCssClass: string,
-    title_gCssClass: string,
-    title_sCssClass: string
-  )
+  private createTitleBar(gCssClass: string, sCssClass: string)
   {
     this.$titleBar = Component.createDiv
     (
       {
         $container: this.$window,
-        gCssClass: titleBar_gCssClass,
-        sCssClass: titleBar_sCssClass
+        gCssClass,
+        sCssClass
       }
     );
+  }
 
+  private createTitle(gCssClass: string, sCssClass: string)
+  {
     this.$title = Component.createTitle
     (
       {
         $container: this.$titleBar,
-        gCssClass: title_gCssClass,
-        sCssClass: title_sCssClass
+        gCssClass,
+        sCssClass
       }
     );
 
@@ -208,14 +185,29 @@ export class Window extends Component
     (
       {
         $container: this.$window,
-        gCssClass: gCssClass,
-        sCssClass: sCssClass
+        gCssClass,
+        sCssClass
       }
     );
-
-    return this.$content;
   }
 
   // ---------------- Event handlers --------------------
 
+}
+
+// ------------------ Type declarations ----------------------
+
+export module Window
+{
+  export interface CreateParam
+  {
+    window_sCssClass?: string;
+    window_gCssClass?: string;
+    content_sCssClass?: string;
+    content_gCssClass?: string;
+    titleBar_sCssClass?: string;
+    titleBar_gCssClass?: string;
+    title_sCssClass?: string;
+    title_gCssClass?: string;
+  }
 }

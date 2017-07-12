@@ -78,14 +78,23 @@ export class ScrollWindow extends GameWindow
     if (!message)
       return;    
 
-    let html = MudColors.htmlize
+    this.output.append
     (
       message,
-      MudColors.CLIENT_MESSAGE_COLOR
+      {
+        baseTextColor: MudColors.CLIENT_MESSAGE_COLOR,
+        forceScroll: true
+      }
     );
 
-    // Append the message to the output element.
-    this.output.appendHtml(html, { forceScroll: true });
+    // let html = MudColors.htmlize
+    // (
+    //   message,
+    //   MudColors.CLIENT_MESSAGE_COLOR
+    // );
+
+    // // Append the message to the output element.
+    // this.output.appendHtml(html, { forceScroll: true });
   }
   
   public receiveMessage(message: string)
@@ -117,14 +126,23 @@ export class ScrollWindow extends GameWindow
     if (command === "")
       return;
 
-    let html = MudColors.htmlize
+    this.output.append
     (
       command,
-      MudColors.COMMAND_ECHO_COLOR
+      {
+        baseTextColor: MudColors.COMMAND_ECHO_COLOR,
+        forceScroll: true
+      }
     );
 
-    // Local echo (append the command to the output element).
-    this.output.appendHtml(html, { forceScroll: true });
+    // let html = MudColors.htmlize
+    // (
+    //   command,
+    //   MudColors.COMMAND_ECHO_COLOR
+    // );
+
+    // // Local echo (append the command to the output element).
+    // this.output.appendHtml(html, { forceScroll: true });
   }
 
   // ---------------- Event handlers --------------------

@@ -33,12 +33,63 @@ TODO: Oštřit to pro jistotu i přímo v Connection.send() - když
 
 --------------------------------------------------------------
 
+TODO: Jako jsem udělal interface Window.CreateParam tak stejně
+vyrobit i interfacy pro paramy jednotlivých elementů
+(DivParam, etc.)
+
+TODO: applyAttributes() by asi měla být jedna společná
+  metoda, ať neopakuju nastavování stejných parametrů
+  na víc místech (nebo to realizovat před submetody jako
+  u setDisabled()).
+[done]
+
+TODO: Ke všem createCosi() přidat parametr insertMode
+ (append, prepend - default je append).
+
+TODO: Přidat 'tabindex' do property paramu (settuje se ve
+  ScrollWindowOutput.create()).
+
+TODO: Vyzkoušet klikatelné spany místo buttonů.
+
+TODO: Asi budu muset propašovat css parametr i do vyrábění spanů
+  v MudColors - budu určitě chtít klikatelné linky s barevným
+  textem bez extra grafiky (extra descriptions), klikatelné linky
+  s barevným textem s extra grafikou (objekty, exity a kdo ví co), atd.
+- na druhou stranu to by asi šlo udělat tak, že dám tu css classu
+  containeru, do kterého jsou příslušné spany vnořené.
+(pokud jo, tak bych to asi měl aplikovat na veškerej text a tudíž
+ se vykašlat na předávání css parametrů do createSpan (leda bych
+ používal span coby text container)).
+Další otázka je, jestli by MudColors.htmlize nemělo používat něco
+jiného než divy - nejspíš <p>.
+- Aha, tak tohle asi bude jednoduché, <div> to totiž pouze obaluje.
+  To by teda neměl, container by měl dodat ten, kdo si o barevný
+  text požádal (a containerem asi může být i <p>, tím se řeší
+  problém s jeho stylováním). Uvnitř barevného textu jsou pak
+  jen <br> tagy, což je ok.
+TODO: Zrušit obalující <div> z MudColors.htmlize().
+[done]
+  - vyrábět ho ve ScrollViewOutput (a to metodama z Component).
+    [done]
+  - nahradit ho spanem
+    (ať je veškerý vnořený text vždycky obalený spanem)
+    [done]
+    - u nebarevného textu to není třeba dělat, ten je vždycky
+      složený jen z jednoho spanu.
+TODO: Úplně zrušit css classy ze spanů uvnitř textu.
+[done];
+  (vyzkoušet, jestli půjde stylovat linky tím, že nastyluju
+   container).
+  [jde]
+
 TODO: Možná by bylo lepší přejít v GUI metodách na pojmenované
   objekty coby parametry - mohlo by to zpřehlednit kód.
   (protože když je objekt pojmenovaný, dá se předat celý najednou).
 
 TODO: Zvážit, jestli click handlery (a obecně všechny standardní
   gui handlery) nepředávat v rámci parametrů create metod.
+TODO: A možná na to taky zavést interfacy, ať to nemusim copypastovat
+  do každé overridnuté metody.
 
 TODO: Z class .S_StandaloneWindow_LinkText udělat
   .S_Component_LinkText
