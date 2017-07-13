@@ -51,9 +51,7 @@ export class ScrollWindowInput extends Component
     (
       {
         $container: $container,
-        sCssClass: ScrollWindowInput.S_CSS_CLASS
-      },
-      {
+        sCssClass: ScrollWindowInput.S_CSS_CLASS,
         // Input element accepts multi-line text (its a 'textarea') but only
         // shows one line (because user commands are usualy single-line).
         rows: 1,
@@ -61,9 +59,6 @@ export class ScrollWindowInput extends Component
         autocorrect: 'off'
       }
     );
-    
-    /// Na autofocus se asi úplně vykašlu - lepší bude, setovat focus ručně.
-    ///this.$input.prop('autofocus', true);
 
     this.$input.keypress
     (
