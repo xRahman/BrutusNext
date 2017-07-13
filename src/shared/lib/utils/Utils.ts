@@ -229,4 +229,15 @@ export module Utils
 
     return email;
   }
+
+  // Copies properties of 'defaults' object to 'target' object
+  // if they are not present in it.
+  export function applyDefaults(target: Object, defaults: Object)
+  {
+    for (let property in defaults)
+    {
+      if (defaults[property] !== undefined && target[property] === undefined)
+        target[property] = defaults[property];
+    }
+  }
 }
