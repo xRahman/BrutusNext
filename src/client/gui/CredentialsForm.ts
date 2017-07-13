@@ -188,12 +188,16 @@ export abstract class CredentialsForm extends Form
     if (!LocalStorage.isAvailable())
       return;
 
-    this.$rememberMeCheckbox = super.createCheckboxInput
+    this.$rememberMeCheckbox = super.createCheckbox
     (
+      // Checkbox param.
       {
         name: 'remember_me_checkbox',
-        text: 'Remember me',
         checked: false
+      },
+      // Label param.
+      {
+        text: 'Remember me'
       }
     );
 

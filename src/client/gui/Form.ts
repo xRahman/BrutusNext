@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {Utils} from '../../shared/lib/utils/Utils';
 import {Component} from '../../client/gui/Component';
 
 import $ = require('jquery');
@@ -109,6 +110,8 @@ export abstract class Form extends Component
 
   protected createTextInput
   (
+    param: Component.TextInputParam = {}
+    /*
     {
       name,
       placeholder,
@@ -125,35 +128,51 @@ export abstract class Form extends Component
       sCssClass?: string;
       gCssClass?: string;
     }
+    */
   )
   {
-    return Component.createTextInput
+    Utils.applyDefaults
     (
+      param,
       {
-        $container: this.$form,
-        sCssClass: sCssClass,
-        gCssClass: gCssClass,
-        name: name,
-      },
-      {
-        required: true,
-        placeholder: placeholder,
-        minLength: minLength,
-        maxLength: maxLength,
-        /// Doesn't work in browsers yet
-        /// (account names should be case insensitive anyways).
-        /// autocapitalize: 'words',
+        sCssClass: Form.INPUT_S_CSS_CLASS,
         autocorrect: 'off',
-        // 'autocomplete' value could be 'username' for LoginForm but
-        //  we have 'remember me' option so there is no need for it.
         autocomplete: 'off',
         spellcheck: false
       }
     );
+
+    return Component.createTextInput(param);
+
+    // return Component.createTextInput
+    // (
+    //   {
+    //     $container: this.$form,
+    //     sCssClass: sCssClass,
+    //     gCssClass: gCssClass,
+    //     name: name,
+    //   },
+    //   {
+    //     required: true,
+    //     placeholder: placeholder,
+    //     minLength: minLength,
+    //     maxLength: maxLength,
+    //     /// Doesn't work in browsers yet
+    //     /// (account names should be case insensitive anyways).
+    //     /// autocapitalize: 'words',
+    //     autocorrect: 'off',
+    //     // 'autocomplete' value could be 'username' for LoginForm but
+    //     //  we have 'remember me' option so there is no need for it.
+    //     autocomplete: 'off',
+    //     spellcheck: false
+    //   }
+    // );
   }
 
   protected createPasswordInput
   (
+    param: Component.PasswordInputParam = {}
+    /*
     {
       name,
       placeholder,
@@ -170,8 +189,23 @@ export abstract class Form extends Component
       sCssClass?: string;
       gCssClass?: string;
     }
+    */
   )
   {
+    Utils.applyDefaults
+    (
+      param,
+      {
+        sCssClass: Form.INPUT_S_CSS_CLASS,
+        required: true,
+        autocorrect: 'off',
+        autocomplete: 'off',
+        spellcheck: false
+      }
+    );
+
+    return Component.createPasswordInput(param);
+    /*
     return Component.createPasswordInput
     (
       {
@@ -190,10 +224,13 @@ export abstract class Form extends Component
         spellcheck: false
       }
     );
+    */
   }
 
   protected createEmailInput
   (
+    param: Component.EmailInputParam = {}
+    /*
     {
       name,
       placeholder,
@@ -204,8 +241,25 @@ export abstract class Form extends Component
       placeholder: string;
       sCssClass?: string;
     }
+    */
   )
   {
+    Utils.applyDefaults
+    (
+      param,
+      {
+        sCssClass: Form.INPUT_S_CSS_CLASS,
+        required: true,
+        autocorrect: 'off',
+        // 'autocomplete' value could be 'email' but we have
+        // 'remember me' option so there is no need for it.
+        autocomplete: 'off',
+        spellcheck: false
+      }
+    );
+
+    return Component.createEmailInput(param);
+    /*
     return Component.createEmailInput
     (
       {
@@ -224,10 +278,14 @@ export abstract class Form extends Component
         spellcheck: false
       }
     );
+    */
   }
 
-  protected createCheckboxInput
+  protected createCheckbox
   (
+    checkboxParam: Component.CheckboxInputParam,
+    labelParam: Component.LabelParam = {}
+    /*
     {
       name,
       text,
@@ -244,44 +302,66 @@ export abstract class Form extends Component
       label_sCssClass?: string;
       checkbox_sCssClass?: string;
     }
+    */
   )
   {
-    /*
-    let $container = Component.createDiv
+    Utils.applyDefaults
     (
-      {
-        $container: this.$form,
-        //sCssClass: Form.LABEL_CONTAINER_S_CSS_CLASS
-        sCssClass: Form.LABEL_S_CSS_CLASS
-      }
-    );
-    */
-
-    let $label = Component.createLabel
-    (
-      {
-        $container: this.$form,
-        sCssClass: label_sCssClass,
-        text: null  // No text yet because we want checkbox to be first.
-      }
+      checkboxParam,
+      { sCssClass: Form.CHECKBOX_S_CSS_CLASS }
     );
 
-    let $checkbox = Component.createCheckboxInput
+    Utils.applyDefaults
     (
-      {
-        $container: $label,
-        sCssClass: checkbox_sCssClass,
-        name: name,
-      },
-      {
-        checked: checked
-      }
+      labelParam,
+      { sCssClass: Form.LABEL_S_CSS_CLASS }
     );
 
-    // Use appendText() because setText() would delete the checkbox.
-    Component.appendText($label, text);
+    // Put checkbox inside a label so mouse clicks
+    // on label text will toggle the checkbox.
+    checkboxParam.$container = Component.createLabel(labelParam);
 
-    return $checkbox;
+    // We want checkbox to be placed before the text.
+    checkboxParam.insertMode = Component.InsertMode.PREPEND;
+
+    return Component.createCheckboxInput(checkboxParam);
+
+    // /*
+    // let $container = Component.createDiv
+    // (
+    //   {
+    //     $container: this.$form,
+    //     //sCssClass: Form.LABEL_CONTAINER_S_CSS_CLASS
+    //     sCssClass: Form.LABEL_S_CSS_CLASS
+    //   }
+    // );
+    // */
+
+    // let $label = Component.createLabel
+    // (
+    //   {
+    //     $container: this.$form,
+    //     sCssClass: label_sCssClass,
+    //     text: null  // No text yet because we want checkbox to be first.
+    //   }
+    // );
+
+    // let $checkbox = Component.createCheckboxInput
+    // (
+    //   {
+    //     $container: $label,
+    //     sCssClass: checkbox_sCssClass,
+    //     name: name,
+    //   },
+    //   {
+    //     checked: checked
+    //   }
+    // );
+
+    // // Use appendText() because setText() would delete the checkbox.
+    // Component.appendText($label, text);
+
+    // return $checkbox;
   }
 
   protected createButtonContainer

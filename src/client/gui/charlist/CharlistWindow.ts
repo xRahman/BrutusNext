@@ -208,10 +208,8 @@ export class CharlistWindow extends StandaloneWindow
     (
       {
         $container: this.$content,
-        sCssClass: Component.FULL_WIDTH_BUTTON_S_CSS_CLASS,
         text: 'Enter Game',
-      },
-      {
+        sCssClass: Component.FULL_WIDTH_BUTTON_S_CSS_CLASS,
         disabled: true
       }
     );

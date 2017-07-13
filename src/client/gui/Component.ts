@@ -176,213 +176,134 @@ export abstract class Component
     );
   }
 
-  protected static createDiv
-  (
-    param: Component.DivParameters,
-    defaults: Component.DivParameters = {}
-  )
-  : JQuery
+  protected static createDiv(param: Component.DivParam = {}): JQuery
   {
-    Utils.applyDefaults(param, defaults);
-
     return this.createElement('div', param);
   }
 
-  protected static createImg
-  (
-    param: Component.ImgParameters,
-    defaults: Component.ImgParameters = {}
-  )
-  : JQuery
+  protected static createImg(param: Component.ImgParam = {}): JQuery
   {
-    Utils.applyDefaults(param, defaults);
-
     return this.createElement('img', param);
   }
 
-  protected static createForm
-  (
-    param: Component.FormParameters,
-    defaults: Component.FormParameters = {}
-  )
-  : JQuery
+  protected static createForm(param: Component.FormParam = {}): JQuery
   {
-    Utils.applyDefaults(param, defaults);
+    Utils.applyDefaults(param, { name: "form" });
 
-    return this.createElement
-    (
-      'form',
-      param,
-      { name: "form" }
-    );
+    return this.createElement('form', param);
   }
 
-  protected static createTitle
-  (
-    param: Component.TitleParameters,
-    defaults: Component.TitleParameters = {}
-  )
-  : JQuery
+  protected static createTitle(param: Component.TitleParam = {}): JQuery
   {
-    Utils.applyDefaults(param, defaults);
-
     return this.createElement('title', param);
   }
 
-  protected static createTextInput
-  (
-    param: Component.TextInputParameters,
-    defaults: Component.TextInputParameters = {}
-  )
+  protected static createTextInput(param: Component.TextInputParam = {})
   : JQuery
   {
-    Utils.applyDefaults(param, defaults);
-
-    return this.createInputElement
+    Utils.applyDefaults
     (
-      'text',
       param,
       {
         gCssClass: Component.INPUT_G_CSS_CLASS,
         name: "text_input"
       }
     );
+
+    return this.createInputElement('text', param);
   }
 
   protected static createPasswordInput
   (
-    param: Component.PasswordInputParameters,
-    defaults: Component.PasswordInputParameters = {}
+    param: Component.PasswordInputParam = {}
   )
   : JQuery
   {
-    Utils.applyDefaults(param, defaults);
-
-    return this.createInputElement
+    Utils.applyDefaults
     (
-      'password',
       param,
       {
         gCssClass: Component.INPUT_G_CSS_CLASS,
         name: "password_input"
       }
     );
+
+    return this.createInputElement('password', param);
   }
 
-  protected static createEmailInput
-  (
-    param: Component.EmailInputParameters,
-    defaults: Component.EmailInputParameters = {}
-  )
+  protected static createEmailInput(param: Component.EmailInputParam = {})
   : JQuery
   {
-    Utils.applyDefaults(param, defaults);
-
-    return this.createInputElement
+    Utils.applyDefaults
     (
-      'email',
       param,
       {
         gCssClass: Component.INPUT_G_CSS_CLASS,
         name: "email_input"
       }
     );
+
+    return this.createInputElement('email', param);
   }
 
   protected static createCheckboxInput
   (
-    param: Component.CheckboxInputParameters,
-    defaults: Component.CheckboxInputParameters = {}
+    param: Component.CheckboxInputParam = {}
   )
   : JQuery
   {
-    Utils.applyDefaults(param, defaults);
+    Utils.applyDefaults(param, { name: "checkbox_input" });
 
-    return this.createInputElement
-    (
-      'checkbox',
-      param,
-      { name: "checkbox_input" }
-    );
+    return this.createInputElement('checkbox', param);
   }
 
   // Creates a button which submits form data
   // (use createButton() to create a standalone button).
-  protected static createSubmitButton
-  (
-    param: Component.SubmitButtonParameters,
-    defaults: Component.SubmitButtonParameters = {}
-  )
+  protected static createSubmitButton(param: Component.SubmitButtonParam = {})
   : JQuery
   {
-    Utils.applyDefaults(param, defaults);
-
-    return this.createInputElement
+    Utils.applyDefaults
     (
-      'button',
       param,
       {
         gCssClass: Component.BUTTON_G_CSS_CLASS,
         name: "submit_button"
       }
     );
+
+    return this.createInputElement('button', param);
   }
 
-  protected static createTextArea
-  (
-    param: Component.TextAreaParameters,
-    defaults: Component.TextAreaParameters = {}
-  )
-  : JQuery
+  protected static createTextArea(param: Component.TextAreaParam = {}): JQuery
   {
-    Utils.applyDefaults(param, defaults);
-
-    return this.createElement
+    Utils.applyDefaults
     (
-      'textarea',
       param,
       {
         gCssClass: Component.INPUT_G_CSS_CLASS,
         name: "textarea"
       }
     );
+
+    return this.createElement('textarea', param);
   }
 
-  protected static createLabel
-  (
-    param: Component.LabelParameters,
-    defaults: Component.LabelParameters = {}
-  )
-  : JQuery
+  protected static createLabel(param: Component.LabelParam = {}): JQuery
   {
-    Utils.applyDefaults(param, defaults);
-
     return this.createElement('label', param);
   }
 
   // Creates a button which is not part of a form
-  // (use createSubmitButton() to create a button that
-  //  submits form data).
-  protected static createButton
-  (
-    param: Component.ButtonParameters,
-    defaults: Component.ButtonParameters = {}
-  )
-  : JQuery
+  // (use createSubmitButton() to create a button
+  //  that submits form data).
+  protected static createButton(param: Component.ButtonParam = {}): JQuery
   {
-    Utils.applyDefaults(param, defaults);
+    Utils.applyDefaults(param, { gCssClass: Component.BUTTON_G_CSS_CLASS });
 
-    let $element = this.createElement
-    (
-      'button',
-      param,
-      {
-        gCssClass: Component.BUTTON_G_CSS_CLASS
-      }
-    );
+    let $element = this.createElement('button', param);
 
-    // This must be set in order for the button click
-    // not to trigger form submit.
+    // Type must be set to ensure that the button click
+    // doesn't submit the form.
     $element.attr('type', 'button');
 
     return $element;
@@ -390,15 +311,8 @@ export abstract class Component
 
   // ---------------- Private methods -------------------
 
-  private static createElement
-  (
-    type: string,
-    param: Object,
-    defaults: Object = {}
-  )
+  private static createElement(type: string, param: Object): JQuery
   {
-    Utils.applyDefaults(param, defaults);
-
     let $element = $(document.createElement(type));
 
     this.applyParameters($element, param);
@@ -462,15 +376,8 @@ export abstract class Component
       $element.addClass(param.sCssClass);
   }
 
-  private static createInputElement
-  (
-    type: string,
-    param: Object,
-    defaults: Object = {}
-  )
+  private static createInputElement(type: string, param: Object): JQuery
   {
-    Utils.applyDefaults(param, defaults);
-
     let $element = this.createElement('input', param);
     
     $element.attr('type', type);
@@ -643,7 +550,7 @@ export module Component
 
   // ---------- Specific Component Parameters -----------
 
-  export interface DivParameters extends
+  export interface DivParam extends
     CommonParameters,
     TextParameters,
     CommonAttributes
@@ -651,21 +558,21 @@ export module Component
     // All properties are inherited.
   }
 
-  export interface ImgParameters extends
+  export interface ImgParam extends
     CommonParameters,
     CommonAttributes
   {
     // All properties are inherited.
   }
 
-  export interface FormParameters extends
+  export interface FormParam extends
     CommonParameters,
     CommonAttributes
   {
     // All properties are inherited.
   }
 
-  export interface TitleParameters extends
+  export interface TitleParam extends
     CommonParameters,
     TextParameters,
     CommonAttributes
@@ -673,7 +580,7 @@ export module Component
     // All properties are inherited.
   }
 
-  export interface TextInputParameters extends
+  export interface TextInputParam extends
     CommonParameters,
     CommonAttributes,
     AutofocusAttribute,
@@ -684,7 +591,7 @@ export module Component
     // All properties are inherited.
   }
 
-  export interface EmailInputParameters extends
+  export interface EmailInputParam extends
     CommonParameters,
     CommonAttributes,
     AutofocusAttribute,
@@ -695,7 +602,7 @@ export module Component
     // All properties are inherited.
   }
 
-  export interface PasswordInputParameters extends
+  export interface PasswordInputParam extends
     CommonParameters,
     CommonAttributes,
     AutofocusAttribute,
@@ -706,7 +613,7 @@ export module Component
     // All properties are inherited.
   }
 
-  export interface CheckboxInputParameters extends
+  export interface CheckboxInputParam extends
     CommonParameters,
     CommonAttributes,
     CheckedAttribute,
@@ -717,7 +624,7 @@ export module Component
   }
 
   //.
-  export interface TextAreaParameters extends
+  export interface TextAreaParam extends
     CommonParameters,
     CommonAttributes,
     AutofocusAttribute,
@@ -727,7 +634,7 @@ export module Component
     // All properties are inherited.
   }
 
-  export interface ButtonParameters extends
+  export interface ButtonParam extends
     CommonParameters,
     TextParameters,
     CommonAttributes,
@@ -736,7 +643,7 @@ export module Component
     // All properties are inherited.
   }
 
-  export interface SubmitButtonParameters extends
+  export interface SubmitButtonParam extends
     CommonParameters,
     TextParameters,
     CommonAttributes,
@@ -746,7 +653,7 @@ export module Component
     // All properties are inherited.
   }
 
-  export interface LabelParameters extends
+  export interface LabelParam extends
     CommonParameters,
     TextParameters,
     CommonAttributes
