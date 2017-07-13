@@ -230,14 +230,32 @@ export module Utils
     return email;
   }
 
+
   // Copies properties of 'defaults' object to 'target' object
-  // if they are not present in it.
-  export function applyDefaults(target: Object, defaults: Object)
+  // if they are not present in it. This is even done recursively
+  // so you can default only some sub-properties.
+  // (Generic type is used to ensure that 'defaults' parameter is
+  //  of the same type as 'target' parameter).
+  export function applyDefaults<T>(target: T, defaults: T)
   {
-    for (let property in defaults)
+    for (let propertyName in defaults)
     {
-      if (defaults[property] !== undefined && target[property] === undefined)
-        target[property] = defaults[property];
+      let sourceProperty = defaults[propertyName];
+      let targetProperty = target[propertyName]
+
+      if (sourceProperty === undefined)
+        continue;
+
+      if (targetProperty === undefined)
+      {
+        target[propertyName] = sourceProperty;
+        continue;
+      }
+
+      // If both properties are non-null objects, call applyDefaults()
+      // recursively on them.
+      if (!isPrimitiveType(sourceProperty) && !isPrimitiveType(targetProperty))
+        applyDefaults(targetProperty, sourceProperty);
     }
   }
 }

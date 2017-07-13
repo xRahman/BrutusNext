@@ -75,7 +75,7 @@ export class ChargenForm extends Form
     (
       {
         name: 'character_name_input',
-        placeholder: 'Enter Character Name',   // Placeholder text.
+        placeholder: 'Enter Character Name',
         minLength: minLength,
         maxLength: maxLength
       }
