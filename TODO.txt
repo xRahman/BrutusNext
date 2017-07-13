@@ -33,6 +33,24 @@ TODO: Oštřit to pro jistotu i přímo v Connection.send() - když
 
 --------------------------------------------------------------
 
+TODO: Zrušit povinný name atribut
+  - stačí, když u komponent, které musí mít, bude mít nastavený default.
+Díky tomu nebudu muset rvát default do parametru, bude vždycky při volání.
+[done]
+
+TODO: aply parameter 'autofocus', 'dirname', 'form'
+
+TODO: Zapojit Component.InsertMode
+[done]
+
+TODO: Pořešit setTexty a SetTextLinky
+  (zatím je nechám být).
+
+TODO: U metod v Component asi nepotřebuju 'null' default hodnoty
+- stačí 'undefined'
+Na druhou stranu bych asi měl počítat i s hodnotou 'null', aby šel
+  "vypnout" parametr přetížený někde níž...
+
 TODO: Asi přece jen sloučím všechny parametry metod v Component
   do jednoho objektu - i když, hmm, to povede k tomu, že budu
   v hromadě interfaců opakovat společné atributy (například
