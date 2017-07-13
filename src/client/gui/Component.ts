@@ -25,6 +25,7 @@
 'use strict';
 
 import {ERROR} from '../../shared/lib/error/ERROR';
+import {Utils} from '../../shared/lib/utils/Utils';
 import {MudColors} from '../../client/gui/MudColors';
 import {RegisterRequest} from '../../shared/lib/protocol/RegisterRequest';
 
@@ -62,9 +63,9 @@ export abstract class Component
   
   // -------------- Static class data -------------------
 
-  //----------------- Protected data --------------------
+  // ---------------- Protected data --------------------
 
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   // --------------- Static accessors -------------------
 
@@ -109,32 +110,6 @@ export abstract class Component
     (
       MudColors.htmlize(text, baseColor)
     );
-
-    // if (text.indexOf('&') !== -1)
-    // {
-    //   $component.append
-    //   (
-    //     MudColors.htmlize(text, baseColor)
-    //   );
-    // }
-    // else
-    // {
-    //   // let $span = $(document.createElement('span'))
-
-    //   // $span.text(text);
-    //   // $component.append($span);
-
-    //   /// TODO: Použít baseColor, pokud není null.
-    //   /// TODO: Nevolat createSpan, vyrobit ho na přímo (zaremovaným
-    //   ///  kódem o kus výš).
-    //   Component.createSpan
-    //   (
-    //     text,
-    //     {
-    //       $container: $component
-    //     }
-    //   )
-    // }
   }
 
   // Replaces html content of '$component' with clickable text link.
@@ -203,642 +178,305 @@ export abstract class Component
 
   protected static createDiv
   (
-    {
-      $container = null,
-      text = null,
-      baseTextColor = null,
-      gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
-      sCssClass = null
-    }:
-    {
-      $container?: JQuery;
-      text?: string;
-      baseTextColor?: string;
-      gCssClass?: string;
-      sCssClass?: string;
-    }
+    param: Component.DivParameters,
+    defaults: Component.DivParameters = {}
   )
   : JQuery
   {
-    let $element = $(document.createElement('div'));
+    Utils.applyDefaults(param, defaults);
 
-    this.initElement($element, $container, gCssClass, sCssClass);
-
-    if (text !== null)
-      this.setText($element, text, baseTextColor);
-
-    return $element;
+    return this.createElement('div', param);
   }
 
   protected static createImg
   (
-    {
-      $container = null,
-      gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
-      sCssClass = null
-    }:
-    {
-      $container?: JQuery;
-      gCssClass?: string;
-      sCssClass?: string;
-    }
-    = {}
+    param: Component.ImgParameters,
+    defaults: Component.ImgParameters = {}
   )
   : JQuery
   {
-    let $element = $(document.createElement('img'));
+    Utils.applyDefaults(param, defaults);
 
-    return this.initElement($element, $container, gCssClass, sCssClass);
+    return this.createElement('img', param);
   }
 
   protected static createForm
   (
-    {
-      $container = null,
-      name,
-      gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
-      sCssClass = null
-    }:
-    {
-      $container?: JQuery;
-      name: string;
-      gCssClass?: string;
-      sCssClass?: string;
-    }
+    param: Component.FormParameters,
+    defaults: Component.FormParameters = {}
   )
   : JQuery
   {
-    let $element = $(document.createElement('form'));
+    Utils.applyDefaults(param, defaults);
 
-    // Form must have a 'name' attribute.
-    $element.attr('name', name);
-
-    return this.initElement($element, $container, gCssClass, sCssClass);
+    return this.createElement
+    (
+      'form',
+      param,
+      { name: "form" }
+    );
   }
 
   protected static createTitle
   (
-    {
-      $container = null,
-      gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
-      sCssClass = null,
-      // 'text' can use mud colors. If it doesn't,
-      // color set in css will be used.
-      text = null
-    }:
-    {
-      $container?: JQuery;
-      gCssClass?: string;
-      sCssClass?: string;
-      text?: string;
-    }
-    = {}
+    param: Component.TitleParameters,
+    defaults: Component.TitleParameters = {}
   )
   : JQuery
   {
-    let $element = $(document.createElement('title'));
+    Utils.applyDefaults(param, defaults);
 
-    this.initElement($element, $container, gCssClass, sCssClass);
-
-    if (text !== null)
-      this.setText($element, text);
-
-    return $element;
+    return this.createElement('title', param);
   }
 
   protected static createTextInput
   (
-    {
-      $container = null,
-      name,
-      gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
-      sCssClass = null
-    }:
-    {
-      $container?: JQuery;
-      name: string;
-      gCssClass?: string;
-      sCssClass?: string;
-    },
-    attributes: Component.InputAttributes = null
+    param: Component.TextInputParameters,
+    defaults: Component.TextInputParameters = {}
   )
   : JQuery
   {
-    if (!this.checkNameAttribute(name))
-      return;
+    Utils.applyDefaults(param, defaults);
 
-    let $element = $(document.createElement('input'));
-
-    this.initElement($element, $container, gCssClass, sCssClass);
-    this.initFormInputElement($element, 'text', name);
-    this.setAttributes($element, attributes);
-
-    return $element;
+    return this.createInputElement
+    (
+      'text',
+      param,
+      {
+        gCssClass: Component.INPUT_G_CSS_CLASS,
+        name: "text_input"
+      }
+    );
   }
 
   protected static createPasswordInput
   (
-    {
-      $container = null,
-      name,
-      gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
-      sCssClass = null
-    }:
-    {
-      $container?: JQuery;
-      name: string;
-      gCssClass?: string;
-      sCssClass?: string;
-    },
-    attributes: Component.InputAttributes = null
+    param: Component.PasswordInputParameters,
+    defaults: Component.PasswordInputParameters = {}
   )
   : JQuery
   {
-    if (!this.checkNameAttribute(name))
-      return;
+    Utils.applyDefaults(param, defaults);
 
-    let $element = $(document.createElement('input'));
-
-    this.initElement($element, $container, gCssClass, sCssClass);
-    this.initFormInputElement($element, 'password', name);
-    this.setAttributes($element, attributes);
-
-    return $element;
+    return this.createInputElement
+    (
+      'password',
+      param,
+      {
+        gCssClass: Component.INPUT_G_CSS_CLASS,
+        name: "password_input"
+      }
+    );
   }
 
   protected static createEmailInput
   (
-    {
-      $container = null,
-      name,
-      minLength = RegisterRequest.MIN_EMAIL_LENGTH,
-      maxLength = RegisterRequest.MAX_EMAIL_LENGTH,
-      gCssClass = Component.INPUT_G_CSS_CLASS,
-      sCssClass = null
-    }:
-    {
-      $container?: JQuery;
-      name: string;
-      minLength?: number;
-      maxLength?: number;
-      gCssClass?: string;
-      sCssClass?: string;
-    },
-    attributes: Component.InputAttributes = null
+    param: Component.EmailInputParameters,
+    defaults: Component.EmailInputParameters = {}
   )
   : JQuery
   {
-    if (!this.checkNameAttribute(name))
-      return;
+    Utils.applyDefaults(param, defaults);
 
-    let $element = $(document.createElement('input'));
-
-    this.initElement($element, $container, gCssClass, sCssClass);
-    this.initFormInputElement($element, 'email', name);
-    this.setAttributes($element, attributes);
-
-    return $element;
+    return this.createInputElement
+    (
+      'email',
+      param,
+      {
+        gCssClass: Component.INPUT_G_CSS_CLASS,
+        name: "email_input"
+      }
+    );
   }
 
   protected static createCheckboxInput
   (
-    {
-      $container = null,
-      name,
-      gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
-      sCssClass = null
-    }:
-    {
-      $container?: JQuery;
-      name: string;
-      gCssClass?: string;
-      sCssClass?: string;
-    },
-    attributes: Component.CheckboxAttributes = null
+    param: Component.CheckboxInputParameters,
+    defaults: Component.CheckboxInputParameters = {}
   )
   : JQuery
   {
-    if (!this.checkNameAttribute(name))
-      return;
+    Utils.applyDefaults(param, defaults);
 
-    let $element = $(document.createElement('input'));
-
-    this.initElement($element, $container, gCssClass, sCssClass);
-    this.initFormInputElement($element, 'checkbox', name);
-    this.setAttributes($element, attributes);
-
-    return $element;
+    return this.createInputElement
+    (
+      'checkbox',
+      param,
+      { name: "checkbox_input" }
+    );
   }
 
   // Creates a button which submits form data
   // (use createButton() to create a standalone button).
   protected static createSubmitButton
   (
-    name,
-    {
-      $container = null,
-      gCssClass = Component.BUTTON_G_CSS_CLASS,
-      sCssClass = null,
-      text = null
-    }
-    :Component.ButtonParameters,
-    attributes: Component.ButtonAttributes = null
+    param: Component.SubmitButtonParameters,
+    defaults: Component.SubmitButtonParameters = {}
   )
   : JQuery
   {
-    if (!this.checkNameAttribute(name))
-      return;
+    Utils.applyDefaults(param, defaults);
 
-    let $element = $(document.createElement('button'));
-
-    this.initElement($element, $container, gCssClass, sCssClass);
-    this.initFormInputElement($element, 'submit', name);
-    this.setAttributes($element, attributes);
-
-    if (text !== null)
-      this.setText($element, text);
-
-    return $element;
+    return this.createInputElement
+    (
+      'button',
+      param,
+      {
+        gCssClass: Component.BUTTON_G_CSS_CLASS,
+        name: "submit_button"
+      }
+    );
   }
 
   protected static createTextArea
   (
-    {
-      $container = null,
-      gCssClass = Component.INPUT_G_CSS_CLASS,
-      sCssClass = null
-    }
-    : Component.TextAreaParameters,
-    attributes: Component.TextAreaAttributes
+    param: Component.TextAreaParameters,
+    defaults: Component.TextAreaParameters = {}
   )
   : JQuery
   {
-    let $element = $(document.createElement('textarea'));
+    Utils.applyDefaults(param, defaults);
 
-    this.initElement($element, $container, gCssClass, sCssClass);
-    this.setAttributes($element, attributes);
-
-    return $element;
+    return this.createElement
+    (
+      'textarea',
+      param,
+      {
+        gCssClass: Component.INPUT_G_CSS_CLASS,
+        name: "textarea"
+      }
+    );
   }
-
-  /// Tohle se nejspíš nepoužívá (svg elementy se vyrábí přes knihovnu d3).
-  /*
-  protected static createSvg(id: string, gCssClass, sCssClass: string): JQuery
-  {
-    let element = document.createElement('svg');
-
-    return this.initElement(element, $container, id, gCssClass, sCssClass);
-  }
-  */
 
   protected static createLabel
   (
-    {
-      $container = null,
-      gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
-      sCssClass = null,
-      text = null
-    }
-    : Component.LabelParameters
+    param: Component.LabelParameters,
+    defaults: Component.LabelParameters = {}
   )
   : JQuery
   {
-    let $element = $(document.createElement('label'));
+    Utils.applyDefaults(param, defaults);
 
-    this.initElement($element, $container, gCssClass, sCssClass);
-
-    if (text !== null)
-      this.setText($element, text);
-
-    return $element;
+    return this.createElement('label', param);
   }
-
-  /// Not used anymore.
-  // protected static createSpan
-  // (
-  //   text: string = null,
-  //   {
-  //     $container = null,
-  //     gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
-  //     sCssClass = null
-  //   }:
-  //   {
-  //     $container?: JQuery;
-  //     gCssClass?: string;
-  //     sCssClass?: string;
-  //   }
-  //   = {}
-  // )
-  // : JQuery
-  // {
-  //   let $element = $(document.createElement('span'));
-
-  //   this.initElement($element, $container, gCssClass, sCssClass);
-
-  //   if (text !== null)
-  //     this.setText($element, text);
-
-  //   return $element;
-  // }
 
   // Creates a button which is not part of a form
   // (use createSubmitButton() to create a button that
   //  submits form data).
   protected static createButton
   (
-    {
-      $container = null,
-      gCssClass = Component.BUTTON_G_CSS_CLASS,
-      sCssClass = null,
-      text = null
-    }
-    : Component.ButtonParameters,
-    attributes: Component.ButtonAttributes = null
+    param: Component.ButtonParameters,
+    defaults: Component.ButtonParameters = {}
   )
   : JQuery
   {
-    let $element = $(document.createElement('button'));
+    Utils.applyDefaults(param, defaults);
 
-    // This must be set so the button click won't trigger submit
-    // of a form.
+    let $element = this.createElement
+    (
+      'button',
+      param,
+      {
+        gCssClass: Component.BUTTON_G_CSS_CLASS
+      }
+    );
+
+    // This must be set in order for the button click
+    // not to trigger form submit.
     $element.attr('type', 'button');
-
-    this.initElement($element, $container, gCssClass, sCssClass);
-    this.setAttributes($element, attributes);
-
-    if (text !== null)
-      this.setText($element, text);
 
     return $element;
   }
-
-  /// Deprecated. Use Component.setTextLink() instead.
-  // // Generic clickable text link
-  // // (note that it's <button>, not <a href=...>).
-  // protected static createTextLink
-  // (
-  //   {
-  //     $container = null,
-  //     gCssClass = Component.LINK_TEXT_G_CSS_CLASS,
-  //     sCssClass = null,
-  //     text = null
-  //   }:
-  //   {
-  //     $container?: JQuery;
-  //     gCssClass?: string;
-  //     sCssClass?: string;
-  //     text: string;
-  //   },
-  //   param: Component.ButtonParam = null
-  // )
-  // : JQuery
-  // {
-  //   // Use <button> instead of <a href=...> because we
-  //   // are going to handle the clicks ourselves.
-  //   return this.createButton
-  //   (
-  //     {
-  //       $container,
-  //       gCssClass,
-  //       sCssClass,
-  //       text
-  //     },
-  //     param
-  //   );
-  // }
-
-  /// Ve skutečnosti asi vůbec nechci používat href, ale button bez grafiky...
-  /// 
-  /*
-  protected static createHref
-  (
-    id: string,
-    gCssClass: string,
-    sCssClass: string
-  )
-  : JQuery
-  {
-    let element = document.createElement('a');
-
-    return this.initElement(element, $container, id, gCssClass, sCssClass);
-  }
-  */
-
-  /// Deprecated. Use Component.setText() instead.
-  // Generic non-clickable text.
-  // protected static createText
-  // (
-  //   {
-  //     $container = null,
-  //     gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
-  //     sCssClass = null,
-  //     text = null
-  //   }:
-  //   {
-  //     $container?: JQuery;
-  //     gCssClass?: string;
-  //     sCssClass?: string;
-  //     text: string;
-  //   }
-  // )
-  // : JQuery
-  // {
-  //   let $text = this.createSpan
-  //   (
-  //     {
-  //       $container,
-  //       gCssClass,
-  //       sCssClass
-  //     }
-  //   );
-
-  //   $text.text(text);
-
-  //   return $text;
-  // }
 
   // ---------------- Private methods -------------------
 
-  private static initFormInputElement
+  private static createElement
   (
-    $element: JQuery,
     type: string,
-    name: string
+    param: Object,
+    defaults: Object = {}
   )
   {
-    // Both 'type' and 'name' attributes are mandatory
-    // for input elements.
-    $element.attr('type', type);
-    $element.attr('name', name);
-  }
+    Utils.applyDefaults(param, defaults);
 
-  private static initElement
-  (
-    $element: JQuery,
-    $container: JQuery,
-    // Css class with graphical attributes of the element
-    // (borders, background, font, font size, etc.).
-    gCssClass: string,
-    // Css class with structural attributes of the element
-    // (size, position, margin, padding, floating, etc.).
-    sCssClass: string
-  )
-  {
-    $element.addClass(gCssClass);
+    let $element = $(document.createElement(type));
 
-    if (sCssClass)
-      $element.addClass(sCssClass);
-
-    if ($container)
-      $container.append($element);
+    this.applyParameters($element, param);
+    this.setAttributes($element, param);
 
     return $element;
   }
 
-  // // Applies values of 'attributes' to input element.
-  // private static applyInputAttributes
-  // (
-  //   $element: JQuery,
-  //   attributes: Component.InputAttributes
-  // )
-  // {
-  //   if (!$element || !attributes)
-  //     return;
+  private static applyTextParam
+  (
+    $element: JQuery,
+    text: string,
+    baseTextColor: string
+  )
+  {
+    if (baseTextColor)
+      this.setText($element, text, baseTextColor);
+    else
+      this.setText($element, text);
+  }
 
-  //   if (attributes.required !== undefined)
-  //     $element.prop('required', attributes.required);
+  private static insertToContainer
+  (
+    $element: JQuery,
+    $container: JQuery,
+    mode: Component.InsertMode
+  )
+  {
+    switch (mode)
+    {
+      case Component.InsertMode.APPEND:
+        $container.append($element);
+        break;
 
-  //   if (attributes.placeholder !== undefined)
-  //     $element.attr('placeholder', attributes.placeholder);
+      case Component.InsertMode.PREPEND:
+        $container.prepend($element);
+        break;
 
-  //   if (attributes.readonly !== undefined)
-  //     $element.prop('readOnly', attributes.readonly);
+      default:
+        ERROR("Unknown insert mode");
+        break;
+    }
+  }
 
-  //   if (attributes.disabled !== undefined)
-  //     this.setDisabled($element, attributes.disabled);
+  private static applyParameters
+  (
+    $element: JQuery,
+    param: Component.Parameters
+  )
+  {
+    if (param.text)
+      this.applyTextParam($element, param.text, param.baseTextColor);
 
-  //   if (attributes.size !== undefined)
-  //     $element.attr('size', attributes.size);
+    if (param.$container)
+      this.insertToContainer($element, param.$container, param.insertMode)
 
-  //   if (attributes.maxLength !== undefined)
-  //     $element.attr('maxLength', attributes.maxLength);
+    if (param.gCssClass)
+      $element.addClass(param.gCssClass);
 
-  //   if (attributes.minLength !== undefined)
-  //     $element.attr('minLength', attributes.minLength);
+    if (param.sCssClass)
+      $element.addClass(param.sCssClass);
+  }
 
-  //   if (attributes.autocomplete !== undefined)
-  //     $element.attr('autocomplete', attributes.autocomplete);
+  private static createInputElement
+  (
+    type: string,
+    param: Object,
+    defaults: Object = {}
+  )
+  {
+    Utils.applyDefaults(param, defaults);
 
-  //   if (attributes.spellcheck !== undefined)
-  //     $element.prop('spellcheck', attributes.spellcheck);
+    let $element = this.createElement('input', param);
+    
+    $element.attr('type', type);
 
-  //   if (attributes.checked !== undefined)
-  //     $element.prop('checked', attributes.checked);
-
-  //   // Apparently 'autocapitalize' only works for virtual keybords at the
-  //   // moment in Chrome (and doesn't work in other browsers except Safari
-  //   // at all) so it's useless right now.
-  //   /// if (attributes.autocapitalize !== undefined)
-  //   ///   element.setAttribute('autocapitalize', attributes.autocapitalize);
-
-  //   if (attributes.autocorrect !== undefined)
-  //     $element.attr('autocorrect', attributes.autocorrect);
-
-  //   // // Standard attributes.
-
-  //   // if (attributes.required !== undefined)
-  //   //   element.required = attributes.required;
-
-  //   // if (attributes.placeholder !== undefined)
-  //   //   element.placeholder = attributes.placeholder;
-
-  //   // if (attributes.readonly !== undefined)
-  //   //   element.readOnly = attributes.readonly;
-
-  //   // // if (attributes.disabled !== undefined)
-  //   // //   element.disabled = attributes.disabled;
-
-  //   // if (attributes.size !== undefined)
-  //   //   element.size = attributes.size;
-
-  //   // if (attributes.maxLength !== undefined)
-  //   //   element.maxLength = attributes.maxLength;
-
-  //   // if (attributes.minLength !== undefined)
-  //   //   element.minLength = attributes.minLength;
-
-  //   // if (attributes.autocomplete !== undefined)
-  //   //   element.autocomplete = attributes.autocomplete;
-
-  //   // if (attributes.spellcheck !== undefined)
-  //   //   element.spellcheck = attributes.spellcheck;
-
-  //   // if (attributes.checked !== undefined)
-  //   //   element.checked = attributes.checked
-
-  //   // // Nonstandard attributes (so they can't be simply assigned
-  //   // // and must byt set using setAttribute()).
-
-  //   // // Apparently 'autocapitalize' only works for virtual keybords at the
-  //   // // moment in Chrome (and doesn't work in other browsers except Safari
-  //   // // at all) so it's useless right now.
-  //   // /// if (attributes.autocapitalize !== undefined)
-  //   // ///   element.setAttribute('autocapitalize', attributes.autocapitalize);
-
-  //   // if (attributes.autocorrect !== undefined)
-  //   //   element.setAttribute('autocorrect', attributes.autocorrect);
-  // }
-
-  // private static applyButtonAttributes
-  // (
-  //   $element: JQuery,
-  //   attributes: Component.ButtonAttributes
-  // )
-  // {
-  //   if (!$element || !attributes)
-  //     return;
-
-  //   // Note that there is difference between attribute 'disabled'
-  //   // and property 'disabled'. Attribute 'disabled' only specifies
-  //   // initial value of 'disabled' property of the element, property
-  //   // 'disabled' reflects actual state of the element.
-  //   if (attributes && attributes.disabled !== undefined)
-  //     this.setDisabled($element, attributes.disabled);
-  // }
-
-  // private static applyTextAreaAttributes
-  // (
-  //   $element: JQuery,
-  //   attributes: Component.TextAreaAttributes
-  // )
-  // {
-  //   if (!$element || !attributes)
-  //     return;
-
-  //   if (attributes && attributes.rows)
-  //     $element.attr('rows', attributes.rows);
-
-  //   if (attributes.spellcheck !== undefined)
-  //     $element.prop('spellcheck', attributes.spellcheck);
-
-  //   // Nonstandard attributes (so they can't be simply assigned
-  //   // and must byt set using setAttribute()).
-
-  //   if (attributes.autocorrect !== undefined)
-  //     $element.attr('autocorrect', attributes.autocorrect);
-
-  //   // if (attributes && attributes.rows)
-  //   //   element.rows = attributes.rows;
-
-  //   // if (attributes.spellcheck !== undefined)
-  //   //   element.spellcheck = attributes.spellcheck;
-
-  //   // // Nonstandard attributes (so they can't be simply assigned
-  //   // // and must byt set using setAttribute()).
-
-  //   // if (attributes.autocorrect !== undefined)
-  //   //   element.setAttribute('autocorrect', attributes.autocorrect);
-  // }
+    return $element;
+  }
 
   private static setAttributes
   (
@@ -892,102 +530,234 @@ export abstract class Component
 
   }
 
-  private static checkNameAttribute(name: string)
-  {
-    if (!name)
-    {
-      ERROR("Missing or empty 'name' attribute. Form input"
-        + " elements must have it or the form won't work"
-        + " propely. Element is not created");
-      return false;
-    }
-
-    return true;
-  }
-
   // ---------------- Event handlers --------------------
 
 }
 
-// ------------------ Type declarations ----------------------
+// ------------------ Type Declarations ----------------------
 
 export module Component
 {
-  interface BasicParameters
+  export enum InsertMode
+  {
+    APPEND,
+    PREPEND
+  }
+
+  // ------------- Non-attribute Parameters -------------
+
+  interface CommonParameters
   {
     $container?: JQuery;
+    insertMode?: InsertMode;
     gCssClass?: string;
     sCssClass?: string;
   }
 
-  interface TextComponentParameters extends BasicParameters
+  interface TextParameters
   {
     text?: string;
+    baseTextColor?: string;   // For example 'rgb(255, 255, 255)'.
   }
 
-  export interface TextAreaParameters extends BasicParameters
+  // This inteface contains properties of all other parameters
+  // interfaces (by extending them all). This way we can have
+  // just one method (applyParameters()) to set them for any
+  // component.
+  export interface Parameters extends
+    CommonParameters,
+    TextParameters
   {
-    // Nothing here, just default (inherited) parameters.
+     // All properties are inherited.
   }
 
-  export interface ButtonParameters extends TextComponentParameters
-  {
-    // Nothing here, just default (inherited) parameters.
-  }
+  // ----------------- Html Attributes ------------------
 
-  export interface LabelParameters extends TextComponentParameters
+  // Attributes common to all html elements.
+  interface CommonAttributes
   {
-    // Nothing here, just default (inherited) parameters.
-  }
-
-  export interface InputAttributes
-  {
-    required?: boolean,
-    placeholder?: string,
-    readonly?: boolean,
-    disabled?: boolean,
-    size?: number,
-    minLength?: number,
-    maxLength?: number,
-    spellcheck?: boolean,
-    // Apparently 'autocapitalize' only works for virtual keybords at the
-    // moment in Chrome (and doesn't work in other browsers except Safari
-    // at all) so it's useless right now.
-    /// autocapitalize?: AutocapitalizeValue,
-    autocorrect?: AutocorrectValue,
-    autocomplete?: AutocompleteValue,
-    checked?: boolean
-  }
-
-  export interface ButtonAttributes
-  {
+    name?: string,
     disabled?: boolean
   }
 
-  export interface CheckboxAttributes
+  interface CheckedAttribute
   {
-    readonly?: boolean,
-    disabled?: boolean,
     checked?: boolean
-  }  
+  }
+
+  // These elements should have 'autofocus' attribute:
+  //  <button>, <input>, <keygen>, <select>, <textarea>
+  interface AutofocusAttribute
+  {
+    autofocus?: boolean
+  }
+
+  interface InputAttributes
+  {
+    required?: boolean,
+    readonly?: boolean,
+    form?: string
+  }
+
+  interface TextInputAttributes
+  {
+    placeholder?: string,
+    dirname?: string,
+    maxLength?: number,
+    size?: number,
+    spellcheck?: boolean,
+    autocorrect?: AutocorrectValue,
+    autocomplete?: AutocompleteValue
+    // Apparently 'autocapitalize' only works for virtual keybords at the
+    // moment in Chrome (and doesn't work in other browsers except Safari
+    // at all) so it's useless right now.
+    /// autocapitalize?: AutocapitalizeValue
+  }
+
+  interface SingleLineInputAttributes
+  {
+    minLength?: number
+  }
 
   export interface TextAreaAttributes
   {
     rows?: number,
-    spellcheck?: boolean,
-    autocorrect?: AutocorrectValue
+    wrap?: WrapValue
   }
 
   // This inteface contains properties of all other attribute
   // interfaces (by extending them all). This way we can have
   // just one method (setAttributes()) to set them for any
   // component.
-  export interface Attributes extends InputAttributes,
-    ButtonAttributes, CheckboxAttributes, TextAreaAttributes
+  export interface Attributes extends
+    CommonAttributes,
+    CheckedAttribute,
+    AutofocusAttribute,
+    InputAttributes,
+    TextInputAttributes,
+    SingleLineInputAttributes,
+    TextAreaAttributes
   {
-    // Nothing here because the point is just to inherit
-    // attributes from all other attribute interfaces.
+    // All properties are inherited.
   };
+
+  // ---------- Specific Component Parameters -----------
+
+  export interface DivParameters extends
+    CommonParameters,
+    TextParameters,
+    CommonAttributes
+  {
+    // All properties are inherited.
+  }
+
+  export interface ImgParameters extends
+    CommonParameters,
+    CommonAttributes
+  {
+    // All properties are inherited.
+  }
+
+  export interface FormParameters extends
+    CommonParameters,
+    CommonAttributes
+  {
+    // All properties are inherited.
+  }
+
+  export interface TitleParameters extends
+    CommonParameters,
+    TextParameters,
+    CommonAttributes
+  {
+    // All properties are inherited.
+  }
+
+  export interface TextInputParameters extends
+    CommonParameters,
+    CommonAttributes,
+    AutofocusAttribute,
+    InputAttributes,
+    TextInputAttributes,
+    SingleLineInputAttributes
+  {
+    // All properties are inherited.
+  }
+
+  export interface EmailInputParameters extends
+    CommonParameters,
+    CommonAttributes,
+    AutofocusAttribute,
+    InputAttributes,
+    TextInputAttributes,
+    SingleLineInputAttributes
+  {
+    // All properties are inherited.
+  }
+
+  export interface PasswordInputParameters extends
+    CommonParameters,
+    CommonAttributes,
+    AutofocusAttribute,
+    InputAttributes,
+    TextInputAttributes,
+    SingleLineInputAttributes
+  {
+    // All properties are inherited.
+  }
+
+  export interface CheckboxInputParameters extends
+    CommonParameters,
+    CommonAttributes,
+    CheckedAttribute,
+    AutofocusAttribute,
+    InputAttributes
+  {
+    // All properties are inherited.
+  }
+
+  //.
+  export interface TextAreaParameters extends
+    CommonParameters,
+    CommonAttributes,
+    AutofocusAttribute,
+    TextInputAttributes,
+    TextAreaAttributes
+  {
+    // All properties are inherited.
+  }
+
+  export interface ButtonParameters extends
+    CommonParameters,
+    TextParameters,
+    CommonAttributes,
+    AutofocusAttribute
+  {
+    // All properties are inherited.
+  }
+
+  export interface SubmitButtonParameters extends
+    CommonParameters,
+    TextParameters,
+    CommonAttributes,
+    AutofocusAttribute,
+    InputAttributes
+  {
+    // All properties are inherited.
+  }
+
+  export interface LabelParameters extends
+    CommonParameters,
+    TextParameters,
+    CommonAttributes
+  {
+    // All properties are inherited.
+  }
+
+  // -------------- Valid Attribute Values --------------
+
+  // Valid values of 'wrap' attribute.
+  type WrapValue = 'soft' | 'hard';
 
   // Valid values of 'autocapitalize' attribute.
   type AutocapitalizeValue = 'none' | 'characters' | 'words' | 'sentences';

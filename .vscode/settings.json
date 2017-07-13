@@ -1,30 +1,36 @@
 // Place your settings in this file to overwrite default and user settings.
 {
-    // Configure glob patterns for excluding files and folders.
-    "files.exclude":
-    {
-        ".git/": true,
-        "node_modules/": true,
-        //"**/*.js": { "when": "$(basename).ts"},
-        "build/": true,
-        "documentation/": true,
-        "resources/": true,
-        "deprecated/": true,
-        ".gitattributes": true,
-        ".gitignore": true,
-        "**/*.bat": true
-    },
-    "search.exclude":
-    {
-        ".git/": true,
-        "node_modules/": true,
-        "documentation/": true,
-        "deprecated/": true,
-        "build/": true,
-        "**/*.bat": true
-    },
-    "editor.rulers": [80],
-    "editor.tabSize": 2,
-    // The default end of line character.
-    "files.eol": "\n"
+  // Configure glob patterns for excluding files and folders.
+  "files.exclude":
+  {
+      ".git/": true,
+      "node_modules/": true,
+      //"**/*.js": { "when": "$(basename).ts"},
+      "build/": true,
+      "documentation/": true,
+      "resources/": true,
+      "deprecated/": true,
+      ".gitattributes": true,
+      ".gitignore": true,
+      "**/*.bat": true
+  },
+  "search.exclude":
+  {
+      ".git/": true,
+      "node_modules/": true,
+      "documentation/": true,
+      "deprecated/": true,
+      "build/": true,
+      "**/*.bat": true
+  },
+
+  "editor.rulers": [80],
+
+  "editor.tabSize": 2,
+
+  // When opening a file, `editor.tabSize` and `editor.insertSpaces` will be detected based on the file contents.
+  "editor.detectIndentation": false,
+
+  // The default end of line character.
+  "files.eol": "\n"
 }
