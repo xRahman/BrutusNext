@@ -93,8 +93,15 @@ export class RegisterWindow extends StandaloneWindow
 
   private appendTermsLink($container: JQuery, text: string)
   {
-    this.$termsLink = Component.appendTextLink($container, text);
-    // this.$termsLink = super.createLinkText({ $container, text });
+    //this.$termsLink = Component.appendTextLink($container, text);
+    this.$termsLink = Component.createTextLink
+    (
+      {
+        $container,
+        text,
+        insertMode: Component.InsertMode.APPEND
+      }
+    );
 
     this.$termsLink.click
     (
@@ -106,9 +113,15 @@ export class RegisterWindow extends StandaloneWindow
   {
     let $container = super.createLinkContainer();
 
-    Component.setText($container, "By creating an account you agree to our ");
+    Component.createText
+    (
+      { $container, text: "By creating an account you agree to our " }
+    );
     this.appendTermsLink($container, "Terms of Use");
-    Component.appendText($container, ".");
+    Component.createText
+    (
+      { $container, text: "." }
+    );
   }
 
   // ---------------- Event handlers --------------------

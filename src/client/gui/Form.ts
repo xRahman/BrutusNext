@@ -35,8 +35,8 @@ export abstract class Form extends Component
 
   //----------------- Protected data --------------------
 
-  protected $form = null;
-  protected $submitButton = null;
+  protected $form: JQuery = null;
+  protected $submitButton: JQuery = null;
 
   //------------------ Private data ---------------------
 
@@ -134,7 +134,9 @@ export abstract class Form extends Component
     Utils.applyDefaults
     (
       param,
+      <Component.PasswordInputParam>
       {
+        $container: this.$form,
         sCssClass: Form.INPUT_S_CSS_CLASS,
         autocorrect: 'off',
         autocomplete: 'off',
@@ -195,7 +197,9 @@ export abstract class Form extends Component
     Utils.applyDefaults
     (
       param,
+      <Component.PasswordInputParam>
       {
+        $container: this.$form,
         sCssClass: Form.INPUT_S_CSS_CLASS,
         required: true,
         autocorrect: 'off',
@@ -247,7 +251,9 @@ export abstract class Form extends Component
     Utils.applyDefaults
     (
       param,
+      <Component.PasswordInputParam>
       {
+        $container: this.$form,
         sCssClass: Form.INPUT_S_CSS_CLASS,
         required: true,
         autocorrect: 'off',
@@ -314,7 +320,10 @@ export abstract class Form extends Component
     Utils.applyDefaults
     (
       labelParam,
-      { sCssClass: Form.LABEL_S_CSS_CLASS }
+      {
+        $container: this.$form,
+        sCssClass: Form.LABEL_S_CSS_CLASS
+      }
     );
 
     // Put checkbox inside a label so mouse clicks

@@ -126,10 +126,13 @@ export abstract class CredentialsForm extends Form
       return;
     }
 
-    Component.setText
+    Component.createText
     (
-      this.$emailProblem,
-      CredentialsForm.PROBLEM_TEXT_COLOR + problem
+      {
+        $container: this.$emailProblem,
+        text: CredentialsForm.PROBLEM_TEXT_COLOR + problem,
+        insertMode: Component.InsertMode.REPLACE
+      }
     );
 
     this.$emailProblem.show();
@@ -167,10 +170,13 @@ export abstract class CredentialsForm extends Form
       return;
     }
 
-    Component.setText
+    Component.createText
     (
-      this.$passwordProblem,
-      CredentialsForm.PROBLEM_TEXT_COLOR + problem
+      {
+        $container: this.$passwordProblem,
+        text: CredentialsForm.PROBLEM_TEXT_COLOR + problem,
+        insertMode: Component.InsertMode.REPLACE
+      }
     );
 
     this.$passwordProblem.show();
@@ -209,10 +215,13 @@ export abstract class CredentialsForm extends Form
 
   protected displayError(problem: string)
   {
-    Component.setText
+    Component.createText
     (
-      this.$errorLabel,
-      CredentialsForm.PROBLEM_TEXT_COLOR + problem
+      {
+        $container: this.$errorLabel,
+        text: CredentialsForm.PROBLEM_TEXT_COLOR + problem,
+        insertMode: Component.InsertMode.REPLACE
+      }
     );
 
     this.$errorLabel.show();
@@ -222,19 +231,25 @@ export abstract class CredentialsForm extends Form
   {
     if (this.$emailProblem)
     {
-      Component.setText
+      Component.createText
       (
-        this.$emailProblem,
-        Component.EMPTY_LINE_TEXT
+        {
+          $container: this.$emailProblem,
+          text: Component.EMPTY_LINE_TEXT,
+          insertMode: Component.InsertMode.REPLACE
+        }
       );
     }
 
     if (this.$passwordProblem)
     {
-      Component.setText
+      Component.createText
       (
-        this.$passwordProblem,
-        Component.EMPTY_LINE_TEXT
+        {
+          $container: this.$passwordProblem,
+          text: Component.EMPTY_LINE_TEXT,
+          insertMode: Component.InsertMode.REPLACE
+        }
       );
     }
 
