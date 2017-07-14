@@ -507,13 +507,13 @@
 /* ------------- Component --------------- */
 
 /* :: Link Text :: */
-.S_Component_LinkText
-{
+/*.S_Component_LinkText
+{*/
   /* Link text is a <button> element styled as inline text element */
-  margin: 0;
+  /*margin: 0;
   padding: 0;
   display: inline;
-}
+}*/
 
 /* :: Full Width Inline Block :: */
 .S_Form_ButtonContainer,
