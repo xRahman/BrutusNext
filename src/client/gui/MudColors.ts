@@ -73,7 +73,7 @@ export abstract class MudColors
 
     // If 'baseColor' isn't provided, read it from
     // the beginning of the message.
-    if (baseColor !== null)
+    if (baseColor)
       baseColorParseResult = this.parseBaseColor(message);
     
     // Skip the characters we have already parsed.
@@ -335,12 +335,20 @@ export abstract class MudColors
 
   private static hasNoColors(message: string)
   {
+    if (!message)
+      return true;
+
     return message.indexOf('&') === -1;
   }
 
   // -> Returns <span> element containing 'message'.
   private static htmlizeColorlessMessage(message: string, baseColor: string)
   {
+    // Treat 'undefined' or 'null' value as ""
+    // (to prevent outputing words 'undefined' or 'null').
+    if (!message)
+      message = "";
+
     if (baseColor)
       return '<span style="color:' + baseColor + '">' + message + "</span>";
 

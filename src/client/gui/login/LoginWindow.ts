@@ -98,7 +98,15 @@ export class LoginWindow extends StandaloneWindow
 
   private appendRegisterLink($container: JQuery, text: string)
   {
-    this.$registerLink = Component.appendTextLink($container, text);
+    //this.$registerLink = Component.appendTextLink($container, text);
+    this.$registerLink = Component.createTextLink
+    (
+      {
+        $container,
+        text,
+        insertMode: Component.InsertMode.APPEND
+      }
+    );
 
     this.$registerLink.click
     (
@@ -110,9 +118,15 @@ export class LoginWindow extends StandaloneWindow
   {
     let $container = super.createLinkContainer();
 
-    Component.setText($container, "Don't have an account yet? ");
+    Component.createText
+    (
+      { $container, text: "Don't have an account yet? " }
+    );
     this.appendRegisterLink($container, "Register");
-    Component.appendText($container, ".");
+    Component.createText
+    (
+      { $container, text: "." }
+    );
   }
 
   // ---------------- Event handlers --------------------

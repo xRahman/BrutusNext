@@ -80,7 +80,14 @@ export class Window extends Component
   // (accepts plain text or mud colored string).
   public setTitle(title: string)
   {
-    Component.setText(this.$title, title);
+    Component.createText
+    (
+      {
+        $container: this.$title,
+        text: title,
+        insertMode: Component.InsertMode.REPLACE
+      }
+    );
   }
 
   public create
