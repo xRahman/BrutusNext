@@ -15,11 +15,11 @@
     'sCssClass': string should only contain structural attributes
       (size, font size, position, margin, padding, floating, etc.).
 
-    Constants defining 'gCssClass' names should only be
-    in class Component. Constants definining 'sCssNames' should be
-    in an inherited class that creates that element or in it's ancestor.
+    Constants defining 'gCssClass' names should only be declared in
+    class Component. Constants definining 'sCssNames' should be declared
+    with regard to inheritance (try to reuse them if possible).
     
-    Using these two css classes greatly simplifies resultning css sheet.
+    Using these two css classes greatly simplifies the resulting css sheet.
 */
 
 'use strict';
@@ -56,8 +56,8 @@ export abstract class Component
   protected static get SELECTABLE_PLATE_G_CSS_CLASS()
     { return 'G_SelectablePlate'; }
 
-  protected static get LINK_TEXT_S_CSS_CLASS()
-    { return 'S_Component_LinkText'; }
+  // protected static get LINK_TEXT_S_CSS_CLASS()
+  //   { return 'S_Component_LinkText'; }
   protected static get FULL_WIDTH_BUTTON_S_CSS_CLASS()
     { return 'S_Component_FullWidthButton'; }
   
@@ -77,28 +77,79 @@ export abstract class Component
 
   // --------------- Protected methods ------------------
 
-  // Replaces html content of '$component' with <spans> created from 'text'.
-  protected static setText
-  (
-    $component: JQuery,
-    text: string,
-    baseColor = null
-  )
-  {
-    // Remove existing text if there is any.
-    $component.empty();
+  // // Shortcut to create text with no attributes
+  // // ($component attributes will be used).
+  // protected static setText
+  // (
+  //   $component: JQuery,
+  //   text: string,
+  //   baseColor = null,
+  //   insertMode = Component.InsertMode.REPLACE
+  // )
+  // {
+  //   return this.createText
+  //   (
+  //     {
+  //       $container: $component,
+  //       text: text,
+  //       baseTextColor: baseColor,
+  //       insertMode: insertMode
+  //     }
+  //   );
+  // }
 
-    this.appendText
-    (
-      $component,
-      text,
-      baseColor
-    );
+  // // Shortcut to create text with no attributes
+  // // ($component attributes will be used).
+  // protected static setTextLink
+  // (
+  //   $component: JQuery,
+  //   text: string,
+  //   baseColor = null,
+  //   insertMode = Component.InsertMode.REPLACE
+  // )
+  // {
+  //   return this.createText
+  //   (
+  //     {
+  //       $container: $component,
+  //       text: text,
+  //       baseTextColor: baseColor,
+  //       insertMode: insertMode,
+  //       gCssClass: Component.LINK_TEXT_G_CSS_CLASS
+  //     }
+  //   );
+  // }
+
+  // Creates text styled as link.
+  protected static createTextLink(param: Component.TextParam = {}): JQuery
+  {
+    Utils.applyDefaults(param, { gCssClass: Component.LINK_TEXT_G_CSS_CLASS });
+
+    return this.createText(param);
   }
 
+  // Creates colored <spans> from 'text' and sets them to html
+  // content of '$component' (in a way specified by param.insertMode).
+  // (If 'text' contains mud color codes, they will be used. It it doesn't
+  //  and no 'baseColor' is provided, text color of $component will be used)
+  protected static createText(param: Component.TextParam = {}): JQuery
+  {
+    console.log("createText(), text: " + param.text + ", insertMode: " + param.insertMode);
+    let $text = $(MudColors.htmlize(param.text, param.baseTextColor));
+
+    // Reset 'param.text' to prevent recursively setting text to itself.
+    param.text = undefined;
+
+    this.applyParameters($text, param);
+    this.setAttributes($text, param);
+
+    return $text;
+  }
+
+  /*
   // Appends <spans> created from 'text' to html content of '$component'
-  // ('text' can contain mud color codes. It it doesn't and no 'baseColor'
-  //  is provided, text color of $component will be used).
+  // (If 'text' contains mud color codes, they will be used. It it doesn't
+  //  and no 'baseColor' is provided, text color of $component will be used).
   protected static appendText
   (
     $component: JQuery,
@@ -112,6 +163,24 @@ export abstract class Component
     );
   }
 
+  // Prepends <spans> created from 'text' to html content of '$component'
+  // (If 'text' contains mud color codes, they will be used. It it doesn't
+  //  and no 'baseColor' is provided, text color of $component will be used).
+  protected static prependText
+  (
+    $component: JQuery,
+    text: string,
+    baseColor = null
+  )
+  {
+    $component.prepend
+    (
+      MudColors.htmlize(text, baseColor)
+    );
+  }
+  */
+
+  /*
   // Replaces html content of '$component' with clickable text link.
   protected static setTextLink
   (
@@ -142,7 +211,9 @@ export abstract class Component
       attributes
     );
   }
+  */
 
+  /*
   // Appends clickable text link created from 'text' to html
   // content of '$component'.
   protected static appendTextLink
@@ -175,6 +246,7 @@ export abstract class Component
       attributes
     );
   }
+  */
 
   protected static createDiv(param: Component.DivParam = {}): JQuery
   {
@@ -271,7 +343,17 @@ export abstract class Component
       }
     );
 
-    return this.createInputElement('button', param);
+    let $element = this.createElement('button', param);
+
+    // We use element <button> with 'type: "submit"' instead
+    // of element <submit> with 'type: "button" because there
+    // can be no html content inside a <submit> element so
+    // we couldn't use <span> to display text.
+    $element.attr('type', 'submit');
+
+    return $element;
+
+    //return this.createInputElement('submit', param);
   }
 
   protected static createTextArea(param: Component.TextAreaParam = {}): JQuery
@@ -328,10 +410,20 @@ export abstract class Component
     baseTextColor: string
   )
   {
+    this.createText
+    (
+      {
+        $container: $element,
+        text: text,
+        baseTextColor: baseTextColor
+      }
+    );
+    /*
     if (baseTextColor)
       this.setText($element, text, baseTextColor);
     else
       this.setText($element, text);
+    */
   }
 
   private static insertToContainer
@@ -351,6 +443,12 @@ export abstract class Component
         $container.prepend($element);
         break;
 
+      case Component.InsertMode.REPLACE:
+        // Clear html content first.
+        $container.empty();
+        $container.append($element);
+        break;
+
       default:
         ERROR("Unknown insert mode");
         break;
@@ -363,6 +461,10 @@ export abstract class Component
     param: Component.Parameters
   )
   {
+    console.log("::applyDefaults() - APPEND");
+    Utils.applyDefaults(param, { insertMode: Component.InsertMode.APPEND });
+    console.log("::param.insertMode: " + param.insertMode);
+
     if (param.text)
       this.applyTextParam($element, param.text, param.baseTextColor);
 
@@ -447,8 +549,9 @@ export module Component
 {
   export enum InsertMode
   {
-    APPEND,
-    PREPEND
+    APPEND,   // Default value.
+    PREPEND,
+    REPLACE   // $container html contents is cleared first.
   }
 
   // ------------- Non-attribute Parameters -------------
@@ -513,7 +616,7 @@ export module Component
     maxLength?: number,
     size?: number,
     spellcheck?: boolean,
-    autocorrect?: AutocorrectValue,
+    autocorrect?: Component.AutocorrectValue,
     autocomplete?: AutocompleteValue
     // Apparently 'autocapitalize' only works for virtual keybords at the
     // moment in Chrome (and doesn't work in other browsers except Safari
@@ -549,6 +652,13 @@ export module Component
   };
 
   // ---------- Specific Component Parameters -----------
+
+  export interface TextParam extends
+    CommonParameters,
+    TextParameters,
+    CommonAttributes
+  {
+  }
 
   export interface DivParam extends
     CommonParameters,
@@ -670,7 +780,7 @@ export module Component
   type AutocapitalizeValue = 'none' | 'characters' | 'words' | 'sentences';
 
   // Valid values of 'autocorrect' attribute.
-  type AutocorrectValue = 'on' | 'off';
+  export type AutocorrectValue = 'on' | 'off';
 
   // Valid values of 'autocomplete' attribute
   // (there are a lot more possible values, add them here

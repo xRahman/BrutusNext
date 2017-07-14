@@ -33,6 +33,18 @@ TODO: Oštřit to pro jistotu i přímo v Connection.send() - když
 
 --------------------------------------------------------------
 
+TODO: Možná se přece jen vrátit k shortcutům na setování textu
+  (replaceText, appendText, prependText).
+
+TODO: Ještě se zamyslet nad problematickými typedefy v paramu
+  (autocorrect a tak). Možná by šlo použít enum, třeba by to pak
+  nevyžadovalo ruční přetypování.
+
+TODO: Výpis problémů by neměl být <label> (asi spíš <div>).
+
+TODO: Přidat do zobrazení souborů vs vs code css fily a dokumentaci
+  (asi jen texťáky).
+
 TODO: Zrušit povinný name atribut
   - stačí, když u komponent, které musí mít, bude mít nastavený default.
 Díky tomu nebudu muset rvát default do parametru, bude vždycky při volání.
