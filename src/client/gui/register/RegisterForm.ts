@@ -165,7 +165,7 @@ export class RegisterForm extends CredentialsForm
 
   private createCancelButton({ $container }: { $container: JQuery; })
   {
-    let $button = Component.createButton
+    let $button = this.createButton
     (
       {
         $container: $container,

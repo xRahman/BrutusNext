@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {Utils} from '../../shared/lib/utils/Utils';
 import {ClientApp} from '../../client/lib/app/ClientApp';
 import {Window} from '../../client/gui/Window';
 
@@ -35,17 +36,18 @@ export class GameWindow extends Window
   // ---------------- Public methods --------------------
 
   // ~ Overrides Window.create().
-  public create
-  (
-    param: Window.CreateParam =
-    {
-      window_sCssClass: GameWindow.S_CSS_CLASS,
-      ///contentCss: { sClass: Window.CONTENT_S_CSS_CLASS },
-      titleBar_sCssClass: GameWindow.TITLE_BAR_S_CSS_CLASS,
-      title_sCssClass: GameWindow.TITLE_S_CSS_CLASS
-    }
-  )
+  public create(param: Window.CreateParam = {})
   {
+    Utils.applyDefaults
+    (
+      param,
+      {
+        windowCss:   { sClass: GameWindow.S_CSS_CLASS },
+        titleBarCss: { sClass: GameWindow.TITLE_BAR_S_CSS_CLASS },
+        titleCss:    { sClass: GameWindow.TITLE_S_CSS_CLASS }
+      }
+    );
+
     super.create(param);
   }
 

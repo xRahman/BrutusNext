@@ -10,27 +10,28 @@ import {Serializable} from '../../../shared/lib/class/Serializable';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {Entities} from '../../../shared/lib/entity/Entities';
 
-// Type describing constructor of a Serializable class.
-type SerializableClass = new <T extends Serializable>(...args: any[]) => T;
-// Type describing constructor of an Entity class.
-type EntityClass = new <T extends Entity>(...args: any[]) => T;
+/// This doesn't work in Typescript 2.4.1 anymore :\.
+// // Type describing constructor of a Serializable class.
+// type SerializableClass = new <T extends Serializable>(...args: any[]) => T;
+// // Type describing constructor of an Entity class.
+// type EntityClass = new <T extends Entity>(...args: any[]) => T;
 
 export class Classes
 {
   // Classes extended from Serializable but not from Entity.
-  public static serializables = new Map<string, SerializableClass>();
+  public static serializables = new Map<string, new() => any>();
 
   // Classes extended from Entity.
   // (we keep Entity classes aside from other Serializable classes
   //  even though Entity is extended from Serializable because they
   //  are instantiated differently).
-  public static entities = new Map<string, EntityClass>();
+  public static entities = new Map<string, new() => any>();
 
   // ------------- Public static methods ----------------
 
   public static registerSerializableClass<T extends Serializable>
   (
-    Class: SerializableClass
+    Class: new() => T
   )
   {
     this.serializables.set(Class.name, Class);
@@ -38,7 +39,7 @@ export class Classes
 
   public static registerEntityClass<T extends Entity>
   (
-    Class: EntityClass
+    Class: new() => T
   )
   {
     this.entities.set(Class.name, Class);

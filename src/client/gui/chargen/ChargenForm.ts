@@ -92,7 +92,7 @@ export class ChargenForm extends Form
 
   private createCancelButton({ $container }: { $container: JQuery; })
   {
-    let $button = Component.createButton
+    let $button = this.createButton
     (
       {
         $container: $container,

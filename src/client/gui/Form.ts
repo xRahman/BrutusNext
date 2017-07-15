@@ -69,7 +69,7 @@ export abstract class Form extends Component
     }
   )
   {
-    this.$form = Component.createForm
+    this.$form = this.createForm
     (
       {
         $container,
@@ -98,7 +98,7 @@ export abstract class Form extends Component
     }
   )
   {
-    return Component.createLabel
+    return super.createLabel
     (
       {
         $container: this.$form,
@@ -134,17 +134,17 @@ export abstract class Form extends Component
     Utils.applyDefaults
     (
       param,
-      <Component.PasswordInputParam>
+      ///<Component.PasswordInputParam>
       {
         $container: this.$form,
         sCssClass: Form.INPUT_S_CSS_CLASS,
-        autocorrect: 'off',
-        autocomplete: 'off',
+        autocorrect: Component.Autocorrect.OFF,
+        autocomplete: Component.Autocomplete.OFF,
         spellcheck: false
       }
     );
 
-    return Component.createTextInput(param);
+    return super.createTextInput(param);
 
     // return Component.createTextInput
     // (
@@ -197,18 +197,18 @@ export abstract class Form extends Component
     Utils.applyDefaults
     (
       param,
-      <Component.PasswordInputParam>
+      ///<Component.PasswordInputParam>
       {
         $container: this.$form,
         sCssClass: Form.INPUT_S_CSS_CLASS,
         required: true,
-        autocorrect: 'off',
-        autocomplete: 'off',
+        autocorrect: Component.Autocorrect.OFF,
+        autocomplete: Component.Autocomplete.OFF,
         spellcheck: false
       }
     );
 
-    return Component.createPasswordInput(param);
+    return super.createPasswordInput(param);
     /*
     return Component.createPasswordInput
     (
@@ -251,20 +251,20 @@ export abstract class Form extends Component
     Utils.applyDefaults
     (
       param,
-      <Component.PasswordInputParam>
+      ///<Component.PasswordInputParam>
       {
         $container: this.$form,
         sCssClass: Form.INPUT_S_CSS_CLASS,
         required: true,
-        autocorrect: 'off',
+        autocorrect: Component.Autocorrect.OFF,
         // 'autocomplete' value could be 'email' but we have
         // 'remember me' option so there is no need for it.
-        autocomplete: 'off',
+        autocomplete: Component.Autocomplete.OFF,
         spellcheck: false
       }
     );
 
-    return Component.createEmailInput(param);
+    return super.createEmailInput(param);
     /*
     return Component.createEmailInput
     (
@@ -328,12 +328,12 @@ export abstract class Form extends Component
 
     // Put checkbox inside a label so mouse clicks
     // on label text will toggle the checkbox.
-    checkboxParam.$container = Component.createLabel(labelParam);
+    checkboxParam.$container = this.createLabel(labelParam);
 
     // We want checkbox to be placed before the text.
     checkboxParam.insertMode = Component.InsertMode.PREPEND;
 
-    return Component.createCheckboxInput(checkboxParam);
+    return this.createCheckboxInput(checkboxParam);
 
     // /*
     // let $container = Component.createDiv
@@ -384,7 +384,7 @@ export abstract class Form extends Component
     = {}
   )
   {
-    return Component.createDiv
+    return this.createDiv
     (
       {
         $container: this.$form,
@@ -407,7 +407,7 @@ export abstract class Form extends Component
     }
   )
   {
-    this.$submitButton = Component.createSubmitButton
+    this.$submitButton = super.createSubmitButton
     (
       {
         $container: $container,
@@ -431,7 +431,7 @@ export abstract class Form extends Component
     = {}
   )
   {
-    return Component.createDiv
+    return this.createDiv
     (
       {
         $container: this.$form,

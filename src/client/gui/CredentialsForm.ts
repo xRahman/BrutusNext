@@ -126,7 +126,7 @@ export abstract class CredentialsForm extends Form
       return;
     }
 
-    Component.createText
+    this.createText
     (
       {
         $container: this.$emailProblem,
@@ -170,7 +170,7 @@ export abstract class CredentialsForm extends Form
       return;
     }
 
-    Component.createText
+    this.createText
     (
       {
         $container: this.$passwordProblem,
@@ -215,7 +215,7 @@ export abstract class CredentialsForm extends Form
 
   protected displayError(problem: string)
   {
-    Component.createText
+    this.createText
     (
       {
         $container: this.$errorLabel,
@@ -231,7 +231,7 @@ export abstract class CredentialsForm extends Form
   {
     if (this.$emailProblem)
     {
-      Component.createText
+      this.createText
       (
         {
           $container: this.$emailProblem,
@@ -243,7 +243,7 @@ export abstract class CredentialsForm extends Form
 
     if (this.$passwordProblem)
     {
-      Component.createText
+      this.createText
       (
         {
           $container: this.$passwordProblem,
