@@ -79,7 +79,7 @@ export class CharlistWindow extends StandaloneWindow
     // Use another container with no graphics and margin
     // to make sure that outline is drawn correctly when
     // the plate is focused.
-    let $container = Component.createDiv
+    let $container = this.createDiv
     (
       {
         $container: this.$charlist,
@@ -88,7 +88,7 @@ export class CharlistWindow extends StandaloneWindow
       }
     );
 
-    let $plate = Component.createDiv
+    let $plate = this.createDiv
     (
       {
         $container: $container,
@@ -109,7 +109,7 @@ export class CharlistWindow extends StandaloneWindow
       (event: Event) => { this.onCharacterPlateFocus(event); }
     );
 
-    let $portrait = Component.createImg
+    let $portrait = this.createImg
     (
       {
         $container: $plate,
@@ -120,7 +120,7 @@ export class CharlistWindow extends StandaloneWindow
 
     $portrait.attr('src', '/images/portraits/Zuzka.jpg');
 
-    let $labelsContainer = Component.createDiv
+    let $labelsContainer = this.createDiv
     (
       {
         $container: $plate,
@@ -128,7 +128,7 @@ export class CharlistWindow extends StandaloneWindow
       }
     );
 
-    Component.createLabel
+    this.createLabel
     (
       {
         $container: $labelsContainer,
@@ -137,7 +137,7 @@ export class CharlistWindow extends StandaloneWindow
       }
     );
 
-    Component.createLabel
+    this.createLabel
     (
       {
         $container: $labelsContainer,
@@ -171,7 +171,7 @@ export class CharlistWindow extends StandaloneWindow
 
   private createCharlist()
   {
-    this.$charlist = Component.createDiv
+    this.$charlist = this.createDiv
     (
       {
         $container: this.$content,
@@ -187,7 +187,7 @@ export class CharlistWindow extends StandaloneWindow
 
   private createButtonNewCharacter()
   {
-    let $button = Component.createButton
+    let $button = this.createButton
     (
       {
         $container: this.$content,
@@ -204,7 +204,7 @@ export class CharlistWindow extends StandaloneWindow
 
   private createButtonEnterGame()
   {
-    this.$enterGameButton = Component.createButton
+    this.$enterGameButton = this.createButton
     (
       {
         $container: this.$content,

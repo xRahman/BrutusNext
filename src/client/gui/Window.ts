@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {Utils} from '../../shared/lib/utils/Utils';
 import {Flags} from '../../shared/lib/utils/Flags';
 import {Document} from '../../client/gui/Document';
 import {ClientApp} from '../../client/lib/app/ClientApp';
@@ -80,7 +81,7 @@ export class Window extends Component
   // (accepts plain text or mud colored string).
   public setTitle(title: string)
   {
-    Component.createText
+    this.createText
     (
       {
         $container: this.$title,
@@ -90,36 +91,38 @@ export class Window extends Component
     );
   }
 
-  public create
-  (
-    {
-      window_gCssClass = Component.WINDOW_G_CSS_CLASS,
-      window_sCssClass = Window.S_CSS_CLASS,
-      content_gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
-      content_sCssClass = Window.CONTENT_S_CSS_CLASS,
-      titleBar_gCssClass = Component.TITLE_BAR_G_CSS_CLASS,
-      titleBar_sCssClass = Window.TITLE_BAR_S_CSS_CLASS,
-      title_gCssClass = Component.NO_GRAPHICS_G_CSS_CLASS,
-      title_sCssClass = Window.TITLE_S_CSS_CLASS
-    }
-    : Window.CreateParam = {}
-  )
+  public create(param: Window.CreateParam = {})
   {
-    this.$window = Component.createDiv
+    Utils.applyDefaults
     (
+      param,
       {
-        $container: Document.$body,
-        sCssClass: window_gCssClass,
-        gCssClass: window_sCssClass
+        windowCss:
+        {
+          gClass: Component.WINDOW_G_CSS_CLASS,
+          sClass: Window.S_CSS_CLASS
+        },
+        contentCss:
+        {
+          gClass: Component.NO_GRAPHICS_G_CSS_CLASS,
+          sClass: Window.CONTENT_S_CSS_CLASS
+        },
+        titleBarCss:
+        {
+          gClass: Component.TITLE_BAR_G_CSS_CLASS,
+          sClass: Window.TITLE_BAR_S_CSS_CLASS
+        },
+        titleCss:
+        {
+          gClass: Component.NO_GRAPHICS_G_CSS_CLASS,
+          sClass: Window.TITLE_S_CSS_CLASS
+        }
       }
     );
 
-    // Windows are created hidden.
-    this.$window.hide();
-
-    this.createTitleBar(titleBar_gCssClass, titleBar_sCssClass);
-    this.createTitle(title_gCssClass, title_sCssClass);
-    this.createContent(content_gCssClass, content_sCssClass);
+    this.createWindow(param.windowCss);
+    this.createTitleBar(param.titleBarCss, param.titleCss);
+    this.createContent(param.contentCss);
 
     return this.$window;
   }
@@ -160,40 +163,51 @@ export class Window extends Component
     this.hidden = false;
   }
 
-  private createTitleBar(gCssClass: string, sCssClass: string)
+  private createWindow(css: Window.Css)
   {
-    this.$titleBar = Component.createDiv
+    this.$window = this.createDiv
+    (
+      {
+        $container: Document.$body,
+        sCssClass: css.gClass,
+        gCssClass: css.sClass
+      }
+    );
+
+    // Windows are created hidden.
+    this.$window.hide();
+  }
+
+  private createTitleBar(titleBarCss: Window.Css, titleCss: Window.Css)
+  {
+    this.$titleBar = this.createDiv
     (
       {
         $container: this.$window,
-        gCssClass,
-        sCssClass
+        gCssClass: titleBarCss.gClass,
+        sCssClass: titleBarCss.sClass
       }
     );
-  }
 
-  private createTitle(gCssClass: string, sCssClass: string)
-  {
-    this.$title = Component.createTitle
+    this.$title = super.createTitle
     (
       {
         $container: this.$titleBar,
-        gCssClass,
-        sCssClass
+        gCssClass: titleCss.gClass,
+        sCssClass: titleCss.sClass,
+        text: "New window"
       }
     );
-
-    this.$title.text('New window');
   }
 
-  private createContent(gCssClass: string, sCssClass: string)
+  private createContent(css: Window.Css)
   {
-    this.$content = Component.createDiv
+    this.$content = this.createDiv
     (
       {
         $container: this.$window,
-        gCssClass,
-        sCssClass
+        sCssClass: css.gClass,
+        gCssClass: css.sClass
       }
     );
   }
@@ -206,15 +220,16 @@ export class Window extends Component
 
 export module Window
 {
+  export interface Css
+  {
+    gClass?: string,
+    sClass?: string
+  }
   export interface CreateParam
   {
-    window_sCssClass?: string;
-    window_gCssClass?: string;
-    content_sCssClass?: string;
-    content_gCssClass?: string;
-    titleBar_sCssClass?: string;
-    titleBar_gCssClass?: string;
-    title_sCssClass?: string;
-    title_gCssClass?: string;
+    windowCss?: Css,
+    contentCss?: Css,
+    titleBarCss?: Css,
+    titleCss?: Css
   }
 }

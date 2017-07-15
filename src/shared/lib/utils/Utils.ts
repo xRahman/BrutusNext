@@ -9,6 +9,8 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 
+// Conversion table used to encode and decode e-mail
+// address so it can be used as file name on all OSses.
 const EMAIL_ENCODED_CHARACTERS = new Map
 (
   [
@@ -243,6 +245,9 @@ export module Utils
       let sourceProperty = defaults[propertyName];
       let targetProperty = target[propertyName]
 
+      if (!defaults.hasOwnProperty(propertyName))
+        continue;
+
       if (sourceProperty === undefined)
         continue;
 
@@ -252,10 +257,13 @@ export module Utils
         continue;
       }
 
-      // If both properties are non-null objects, call applyDefaults()
+      // If both properties are plain objects, call applyDefaults()
       // recursively on them.
-      if (!isPrimitiveType(sourceProperty) && !isPrimitiveType(targetProperty))
+      if (isPlainObject(sourceProperty) && isPlainObject(targetProperty))
+      {
+        console.log('propertyName: ' + propertyName);
         applyDefaults(targetProperty, sourceProperty);
+      }
     }
   }
 }

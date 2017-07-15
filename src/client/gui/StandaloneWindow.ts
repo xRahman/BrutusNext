@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {Utils} from '../../shared/lib/utils/Utils';
 import {ClientApp} from '../../client/lib/app/ClientApp';
 import {Component} from '../../client/gui/Component';
 import {Window} from '../../client/gui/Window';
@@ -40,17 +41,19 @@ export class StandaloneWindow extends Window
   // ---------------- Public methods --------------------
 
   // ~ Overrides Window.create().
-  public create
-  (
-    param: Window.CreateParam =
-    {
-      window_sCssClass: StandaloneWindow.S_CSS_CLASS,
-      content_sCssClass: StandaloneWindow.CONTENT_S_CSS_CLASS,
-      titleBar_sCssClass: StandaloneWindow.TITLE_BAR_S_CSS_CLASS,
-      title_sCssClass: StandaloneWindow.TITLE_S_CSS_CLASS
-    }
-  )
+  public create(param: Window.CreateParam = {})
   {
+    Utils.applyDefaults
+    (
+      param,
+      {
+        windowCss:   { sClass: StandaloneWindow.S_CSS_CLASS },
+        contentCss:   { sClass: StandaloneWindow.CONTENT_S_CSS_CLASS },
+        titleBarCss: { sClass: StandaloneWindow.TITLE_BAR_S_CSS_CLASS },
+        titleCss:    { sClass: StandaloneWindow.TITLE_S_CSS_CLASS }
+      }
+    );
+
     super.create(param);
   }
 
@@ -67,7 +70,7 @@ export class StandaloneWindow extends Window
     = {}
   )
   {
-    return Component.createDiv
+    return this.createDiv
     (
       {
         $container: this.$content,
@@ -88,7 +91,7 @@ export class StandaloneWindow extends Window
     = {}
   )
   {
-    return Component.createDiv
+    return this.createDiv
     (
       {
         $container: this.$content,

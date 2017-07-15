@@ -94,7 +94,7 @@ export class RegisterWindow extends StandaloneWindow
   private appendTermsLink($container: JQuery, text: string)
   {
     //this.$termsLink = Component.appendTextLink($container, text);
-    this.$termsLink = Component.createTextLink
+    this.$termsLink = this.createTextLink
     (
       {
         $container,
@@ -113,12 +113,12 @@ export class RegisterWindow extends StandaloneWindow
   {
     let $container = super.createLinkContainer();
 
-    Component.createText
+    this.createText
     (
       { $container, text: "By creating an account you agree to our " }
     );
     this.appendTermsLink($container, "Terms of Use");
-    Component.createText
+    this.createText
     (
       { $container, text: "." }
     );

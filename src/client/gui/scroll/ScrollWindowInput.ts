@@ -47,7 +47,7 @@ export class ScrollWindowInput extends Component
   // -> Returns created jquery element.
   public create($container: JQuery)
   {
-    this.$input = Component.createTextArea
+    this.$input = this.createTextArea
     (
       {
         $container: $container,
@@ -56,7 +56,7 @@ export class ScrollWindowInput extends Component
         // shows one line (because user commands are usualy single-line).
         rows: 1,
         spellcheck: false,
-        autocorrect: 'off'
+        autocorrect: Component.Autocorrect.OFF
       }
     );
 
