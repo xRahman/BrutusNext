@@ -82,7 +82,7 @@ export class CharlistWindow extends StandaloneWindow
     let $container = this.createDiv
     (
       {
-        $container: this.$charlist,
+        $parent: this.$charlist,
         gCssClass: Component.NO_GRAPHICS_G_CSS_CLASS,
         sCssClass: CharlistWindow.CHARACTER_PLATE_CONTAINER_S_CSS_CLASS
       }
@@ -91,7 +91,7 @@ export class CharlistWindow extends StandaloneWindow
     let $plate = this.createDiv
     (
       {
-        $container: $container,
+        $parent: $container,
         gCssClass: Component.SELECTABLE_PLATE_G_CSS_CLASS,
         sCssClass: CharlistWindow.CHARACTER_PLATE_S_CSS_CLASS
       }
@@ -112,7 +112,7 @@ export class CharlistWindow extends StandaloneWindow
     let $portrait = this.createImg
     (
       {
-        $container: $plate,
+        $parent: $plate,
         gCssClass: Component.WINDOW_G_CSS_CLASS,
         sCssClass: CharlistWindow.PORTRAIT_S_CSS_CLASS
       }
@@ -123,7 +123,7 @@ export class CharlistWindow extends StandaloneWindow
     let $labelsContainer = this.createDiv
     (
       {
-        $container: $plate,
+        $parent: $plate,
         sCssClass: CharlistWindow.LABELS_CONTAINER_S_CSS_CLASS
       }
     );
@@ -131,7 +131,7 @@ export class CharlistWindow extends StandaloneWindow
     this.createLabel
     (
       {
-        $container: $labelsContainer,
+        $parent: $labelsContainer,
         sCssClass: CharlistWindow.CHARACTER_PLATE_LABEL_BIG_S_CSS_CLASS,
         text: "Zuzka"
       }
@@ -140,7 +140,7 @@ export class CharlistWindow extends StandaloneWindow
     this.createLabel
     (
       {
-        $container: $labelsContainer,
+        $parent: $labelsContainer,
         sCssClass: CharlistWindow.CHARACTER_PLATE_LABEL_SMALL_S_CSS_CLASS,
         text: "Level 1 priest"
       }
@@ -174,7 +174,7 @@ export class CharlistWindow extends StandaloneWindow
     this.$charlist = this.createDiv
     (
       {
-        $container: this.$content,
+        $parent: this.$content,
         gCssClass: Component.WINDOW_G_CSS_CLASS,
         sCssClass: CharlistWindow.CHARLIST_S_CSS_CLASS
       }
@@ -190,16 +190,17 @@ export class CharlistWindow extends StandaloneWindow
     let $button = this.createButton
     (
       {
-        $container: this.$content,
-        sCssClass: Component.FULL_WIDTH_BUTTON_S_CSS_CLASS,
-        text: 'Create New Character'
+        $parent: this.$content,
+        sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS,
+        text: 'Create New Character',
+        click: (event: Event) => { this.onCreateNewCharacterClick(event); }
       }
     );
 
-    $button.click
-    (
-      (event: Event) => { this.onCreateNewCharacterClick(event); }
-    );
+    // $button.click
+    // (
+    //   (event: Event) => { this.onCreateNewCharacterClick(event); }
+    // );
   }
 
   private createButtonEnterGame()
@@ -207,17 +208,18 @@ export class CharlistWindow extends StandaloneWindow
     this.$enterGameButton = this.createButton
     (
       {
-        $container: this.$content,
+        $parent: this.$content,
         text: 'Enter Game',
-        sCssClass: Component.FULL_WIDTH_BUTTON_S_CSS_CLASS,
-        disabled: true
+        sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS,
+        disabled: true,
+        click: (event: Event) => { this.onEnterGameClick(event); }
       }
     );
 
-    this.$enterGameButton.click
-    (
-      (event: Event) => { this.onEnterGameClick(event); }
-    );
+    // this.$enterGameButton.click
+    // (
+    //   (event: Event) => { this.onEnterGameClick(event); }
+    // );
   }
 
   // ---------------- Event handlers --------------------

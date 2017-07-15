@@ -50,7 +50,7 @@ export class ScrollWindowInput extends Component
     this.$input = this.createTextArea
     (
       {
-        $container: $container,
+        $parent: $container,
         sCssClass: ScrollWindowInput.S_CSS_CLASS,
         // Input element accepts multi-line text (its a 'textarea') but only
         // shows one line (because user commands are usualy single-line).

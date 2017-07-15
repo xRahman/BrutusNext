@@ -260,10 +260,7 @@ export module Utils
       // If both properties are plain objects, call applyDefaults()
       // recursively on them.
       if (isPlainObject(sourceProperty) && isPlainObject(targetProperty))
-      {
-        console.log('propertyName: ' + propertyName);
         applyDefaults(targetProperty, sourceProperty);
-      }
     }
   }
 }

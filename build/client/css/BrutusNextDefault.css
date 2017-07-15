@@ -490,8 +490,8 @@
 /* -------------- Nonstandard Font Size -------------- */
 
 /* :: Small Font Size :: */
-.S_StandaloneWindow_LinkContainer,
-.S_Form_Label,
+.S_StandaloneWindow_Text,
+.S_Form_Text,
 .S_GameWindow_Title,
 .S_CharlistWindow_CharacterPlateLabelSmall
 {
@@ -517,7 +517,8 @@
 
 /* :: Full Width Inline Block :: */
 .S_Form_ButtonContainer,
-.S_Form_Label
+.S_StandaloneWindow_Text,
+.S_Form_Text
 {
   margin: 0;
   padding: 0;
@@ -670,16 +671,6 @@
   display: block;
 }
 
-/* :: Standalone Window Link Container :: */
-.S_StandaloneWindow_LinkContainer
-{
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
 /* --------------- Terms Window ---------------- */
 
 /* :: Terms Window :: */
@@ -774,8 +765,8 @@
   padding-right: 0.6em;
 }
 
-/* :: Full Width Button :: */
-.S_Component_FullWidthButton
+/* :: Full Width Block :: */
+.S_Component_FullWidthBlock
 {
   width: 100%;
   height: auto;
