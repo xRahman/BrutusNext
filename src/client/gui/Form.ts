@@ -15,8 +15,8 @@ export abstract class Form extends Component
 {
   protected static get S_CSS_CLASS()
     { return 'S_Form'; }
-  protected static get LABEL_S_CSS_CLASS()
-    { return 'S_Form_Label'; }
+  protected static get TEXT_S_CSS_CLASS()
+    { return 'S_Form_Text'; }
   // protected static get LABEL_CONTAINER_S_CSS_CLASS()
   //   { return 'S_Form_LabelContainer'; }
   protected static get INPUT_S_CSS_CLASS()
@@ -55,6 +55,8 @@ export abstract class Form extends Component
 
   protected create
   (
+    param: Component.FormParam
+    /*
     {
       $container = null,
       name,
@@ -67,17 +69,18 @@ export abstract class Form extends Component
       gCssClass?: string;
       sCssClass?: string;
     }
+    */
   )
   {
-    this.$form = this.createForm
+    Utils.applyDefaults
     (
+      param,
       {
-        $container,
-        gCssClass,
-        sCssClass,
-        name
+        sCssClass: Form.S_CSS_CLASS
       }
     );
+
+    this.$form = this.createForm(param);
 
     // Register 'submit' event handler.
     this.$form.submit
@@ -88,6 +91,8 @@ export abstract class Form extends Component
 
   protected createLabel
   (
+    param: Component.LabelParam = {}
+    /*
     {
       text,
       sCssClass = Form.LABEL_S_CSS_CLASS
@@ -96,16 +101,19 @@ export abstract class Form extends Component
       text?: string;
       sCssClass?: string;
     }
+    */
   )
   {
-    return super.createLabel
+    Utils.applyDefaults
     (
+      param,
       {
-        $container: this.$form,
-        sCssClass: Form.LABEL_S_CSS_CLASS,
-        text: text
+        $parent: this.$form,
+        sCssClass: Form.TEXT_S_CSS_CLASS
       }
     );
+
+    return super.createLabel(param);
   }
 
   protected createTextInput
@@ -134,9 +142,8 @@ export abstract class Form extends Component
     Utils.applyDefaults
     (
       param,
-      ///<Component.PasswordInputParam>
       {
-        $container: this.$form,
+        $parent: this.$form,
         sCssClass: Form.INPUT_S_CSS_CLASS,
         autocorrect: Component.Autocorrect.OFF,
         autocomplete: Component.Autocomplete.OFF,
@@ -197,9 +204,8 @@ export abstract class Form extends Component
     Utils.applyDefaults
     (
       param,
-      ///<Component.PasswordInputParam>
       {
-        $container: this.$form,
+        $parent: this.$form,
         sCssClass: Form.INPUT_S_CSS_CLASS,
         required: true,
         autocorrect: Component.Autocorrect.OFF,
@@ -253,7 +259,7 @@ export abstract class Form extends Component
       param,
       ///<Component.PasswordInputParam>
       {
-        $container: this.$form,
+        $parent: this.$form,
         sCssClass: Form.INPUT_S_CSS_CLASS,
         required: true,
         autocorrect: Component.Autocorrect.OFF,
@@ -321,14 +327,14 @@ export abstract class Form extends Component
     (
       labelParam,
       {
-        $container: this.$form,
-        sCssClass: Form.LABEL_S_CSS_CLASS
+        $parent: this.$form,
+        sCssClass: Form.TEXT_S_CSS_CLASS
       }
     );
 
     // Put checkbox inside a label so mouse clicks
     // on label text will toggle the checkbox.
-    checkboxParam.$container = this.createLabel(labelParam);
+    checkboxParam.$parent = this.createLabel(labelParam);
 
     // We want checkbox to be placed before the text.
     checkboxParam.insertMode = Component.InsertMode.PREPEND;
@@ -375,6 +381,8 @@ export abstract class Form extends Component
 
   protected createButtonContainer
   (
+    param: Component.DivParam = {}
+    /*
     {
       sCssClass = Form.BUTTON_CONTAINER_S_CSS_CLASS
     }:
@@ -382,19 +390,25 @@ export abstract class Form extends Component
       sCssClass?: string;
     }
     = {}
+    */
   )
   {
-    return this.createDiv
+    Utils.applyDefaults
     (
+      param,
       {
-        $container: this.$form,
-        sCssClass: sCssClass
+        $parent: this.$form,
+        sCssClass: Form.BUTTON_CONTAINER_S_CSS_CLASS
       }
     );
+
+    return this.createDiv(param);
   }
 
   protected createSubmitButton
   (
+    param: Component.SubmitButtonParam = {}
+    /*
     {
       $container,
       text,
@@ -405,40 +419,34 @@ export abstract class Form extends Component
       text: string;
       sCssClass?: string;
     }
+    */
   )
   {
-    this.$submitButton = super.createSubmitButton
+    Utils.applyDefaults
     (
+      param,
       {
-        $container: $container,
-        sCssClass: sCssClass,
-        name: 'submit_button',
-        text: text
+        sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS
       }
     );
+
+    this.$submitButton = super.createSubmitButton(param);
 
     return this.$submitButton;
   }
 
-  protected createEmptyLine
-  (
-    {
-      sCssClass = Form.LABEL_S_CSS_CLASS
-    }:
-    {
-      sCssClass?: string;
-    }
-    = {}
-  )
+  protected createEmptyLine(param: Component.DivParam = {})
   {
-    return this.createDiv
+    Utils.applyDefaults
     (
+      param,
       {
-        $container: this.$form,
-        sCssClass: sCssClass,
-        text: Component.EMPTY_LINE_TEXT
+        $parent: this.$form,
+        sCssClass: Form.TEXT_S_CSS_CLASS
       }
     );
+
+    return super.createEmptyLine(param);
   }
 
   // ---------------- Private methods -------------------

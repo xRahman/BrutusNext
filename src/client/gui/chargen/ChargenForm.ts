@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Component} from '../../../client/gui/Component';
 import {Form} from '../../../client/gui/Form';
@@ -37,11 +38,13 @@ export class ChargenForm extends Form
   // ---------------- Public methods --------------------
 
   // ~ Overrides Form.create().
-  public create({ $container }: { $container: JQuery; })
+  public create(param: Component.FormParam = {})
   {
-    super.create({ $container: $container, name: 'chargen_form' });
+    Utils.applyDefaults(param, { name: 'chargen_form' });
 
-    super.createLabel({ text: 'Character Name' });
+    super.create(param);
+
+    this.createLabel({ text: 'Character Name' });
     this.createCharacterNameInput();
 
     this.createButtons();
@@ -50,12 +53,11 @@ export class ChargenForm extends Form
   // --------------- Protected methods ------------------
 
   // ~ Overrides Form.createSubmitButton().
-  protected createSubmitButton({ $container }: { $container: JQuery; })
+  protected createSubmitButton(param: Component.SubmitButtonParam = {})
   {
     return super.createSubmitButton
     (
       {
-        $container:  $container,
         text: 'Create Character',
         sCssClass: ChargenForm.SUBMIT_BUTTON_S_CSS_CLASS
       }
@@ -84,29 +86,34 @@ export class ChargenForm extends Form
 
   private createButtons()
   {
-    let $container = super.createButtonContainer();
+    let $parent = super.createButtonContainer();
 
-    this.createSubmitButton({ $container: $container });
-    this.createCancelButton({ $container: $container });
+    this.createSubmitButton({ $parent });
+    this.createCancelButton({ $parent });
   }
 
-  private createCancelButton({ $container }: { $container: JQuery; })
+  private createCancelButton(param: Component.ButtonParam = {})
   {
-    let $button = this.createButton
+    Utils.applyDefaults
     (
+      param,
       {
-        $container: $container,
         sCssClass: ChargenForm.CANCEL_BUTTON_S_CSS_CLASS,
-        text: 'Cancel'
+        text: 'Cancel',
+        click: (event: Event) => { this.onCancel(event); }
       }
     );
 
-    $button.click
-    (
-      (event: Event) => { this.onCancel(event); }
-    );
+    return this.createButton(param);
 
-    return $button;
+    // let $button = this.createButton(param);
+
+    // $button.click
+    // (
+    //   (event: Event) => { this.onCancel(event); }
+    // );
+
+    // return $button;
   }
 
   // ---------------- Event handlers --------------------

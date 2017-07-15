@@ -110,11 +110,11 @@ export abstract class CredentialsForm extends Form
     return this.$emailInput;
   }
 
-  protected createEmailProblemLabel()
+  protected createEmailProblemNotice()
   {
-    this.$emailProblem = super.createLabel
+    this.$emailProblem = this.createEmptyLine
     (
-      { text: Component.EMPTY_LINE_TEXT }
+      { name: 'email_problem_notice'}
     );
   }
 
@@ -129,7 +129,7 @@ export abstract class CredentialsForm extends Form
     this.createText
     (
       {
-        $container: this.$emailProblem,
+        $parent: this.$emailProblem,
         text: CredentialsForm.PROBLEM_TEXT_COLOR + problem,
         insertMode: Component.InsertMode.REPLACE
       }
@@ -154,11 +154,11 @@ export abstract class CredentialsForm extends Form
     return this.$passwordInput;
   }
 
-  protected createPasswordProblemLabel()
+  protected createPasswordProblemNotice()
   {
-    this.$passwordProblem = super.createLabel
+    this.$passwordProblem = this.createEmptyLine
     (
-      { text: Component.EMPTY_LINE_TEXT }
+      { name: 'password_problem_notice'}
     );
   }
 
@@ -173,7 +173,7 @@ export abstract class CredentialsForm extends Form
     this.createText
     (
       {
-        $container: this.$passwordProblem,
+        $parent: this.$passwordProblem,
         text: CredentialsForm.PROBLEM_TEXT_COLOR + problem,
         insertMode: Component.InsertMode.REPLACE
       }
@@ -218,7 +218,7 @@ export abstract class CredentialsForm extends Form
     this.createText
     (
       {
-        $container: this.$errorLabel,
+        $parent: this.$errorLabel,
         text: CredentialsForm.PROBLEM_TEXT_COLOR + problem,
         insertMode: Component.InsertMode.REPLACE
       }
@@ -234,7 +234,7 @@ export abstract class CredentialsForm extends Form
       this.createText
       (
         {
-          $container: this.$emailProblem,
+          $parent: this.$emailProblem,
           text: Component.EMPTY_LINE_TEXT,
           insertMode: Component.InsertMode.REPLACE
         }
@@ -246,7 +246,7 @@ export abstract class CredentialsForm extends Form
       this.createText
       (
         {
-          $container: this.$passwordProblem,
+          $parent: this.$passwordProblem,
           text: Component.EMPTY_LINE_TEXT,
           insertMode: Component.InsertMode.REPLACE
         }

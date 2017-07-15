@@ -56,10 +56,9 @@ export abstract class Component
   protected static get SELECTABLE_PLATE_G_CSS_CLASS()
     { return 'G_SelectablePlate'; }
 
+  protected static get FULL_WIDTH_BLOCK_S_CSS_CLASS()
+    { return 'S_Component_FullWidthBlock'; }
 
-  protected static get FULL_WIDTH_BUTTON_S_CSS_CLASS()
-    { return 'S_Component_FullWidthButton'; }
-  
   // -------------- Static class data -------------------
 
   // ---------------- Protected data --------------------
@@ -95,6 +94,11 @@ export abstract class Component
     // Reset 'param.text' to prevent recursively setting text to itself.
     param.text = undefined;
 
+    // Hack: Set 'name' attribute first so it's listed first
+    //   in DOM inspector in browser.
+    if (param.name !== undefined)
+      $text.attr('name', param.name);
+
     this.applyParameters($text, param);
     this.setAttributes($text, param);
 
@@ -113,7 +117,7 @@ export abstract class Component
 
   protected createForm(param: Component.FormParam = {}): JQuery
   {
-    Utils.applyDefaults(param, { name: "form" });
+    Utils.applyDefaults(param, { name: 'form' });
 
     return this.createElement('form', param);
   }
@@ -131,7 +135,7 @@ export abstract class Component
       param,
       {
         gCssClass: Component.INPUT_G_CSS_CLASS,
-        name: "text_input"
+        name: 'text_input'
       }
     );
 
@@ -149,22 +153,21 @@ export abstract class Component
       param,
       {
         gCssClass: Component.INPUT_G_CSS_CLASS,
-        name: "password_input"
+        name: 'password_input'
       }
     );
 
     return this.createInputElement('password', param);
   }
 
-  protected createEmailInput(param: Component.EmailInputParam = {})
-  : JQuery
+  protected createEmailInput(param: Component.EmailInputParam = {}): JQuery
   {
     Utils.applyDefaults
     (
       param,
       {
         gCssClass: Component.INPUT_G_CSS_CLASS,
-        name: "email_input"
+        name: 'email_input'
       }
     );
 
@@ -177,22 +180,21 @@ export abstract class Component
   )
   : JQuery
   {
-    Utils.applyDefaults(param, { name: "checkbox_input" });
+    Utils.applyDefaults(param, { name: 'checkbox_input' });
 
     return this.createInputElement('checkbox', param);
   }
 
   // Creates a button which submits form data
   // (use createButton() to create a standalone button).
-  protected createSubmitButton(param: Component.SubmitButtonParam = {})
-  : JQuery
+  protected createSubmitButton(param: Component.SubmitButtonParam = {}): JQuery
   {
     Utils.applyDefaults
     (
       param,
       {
         gCssClass: Component.BUTTON_G_CSS_CLASS,
-        name: "submit_button"
+        name: 'submit_button'
       }
     );
 
@@ -214,7 +216,7 @@ export abstract class Component
       param,
       {
         gCssClass: Component.INPUT_G_CSS_CLASS,
-        name: "textarea"
+        name: 'textarea'
       }
     );
 
@@ -242,11 +244,31 @@ export abstract class Component
     return $element;
   }
 
+  protected createEmptyLine(param: Component.DivParam = {})
+  {
+    Utils.applyDefaults
+    (
+      param,
+      {
+        sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS,
+        text: Component.EMPTY_LINE_TEXT,
+        name: 'empty_line'
+      }
+    );
+
+    return this.createDiv(param);
+  }
+
   // ---------------- Private methods -------------------
 
   private createElement(type: string, param: Object): JQuery
   {
     let $element = $(document.createElement(type));
+
+    // Hack: Set 'name' attribute first so it's listed first
+    //   in DOM inspector in browser.
+    if (param['name'] !== undefined)
+      $element.attr('name', param['name']);
 
     this.applyParameters($element, param);
     this.setAttributes($element, param);
@@ -264,34 +286,34 @@ export abstract class Component
     this.createText
     (
       {
-        $container: $element,
+        $parent: $element,
         text: text,
         baseTextColor: baseTextColor
       }
     );
   }
 
-  private insertToContainer
+  private insertToParent
   (
     $element: JQuery,
-    $container: JQuery,
+    $parent: JQuery,
     mode: Component.InsertMode
   )
   {
     switch (mode)
     {
       case Component.InsertMode.APPEND:
-        $container.append($element);
+        $parent.append($element);
         break;
 
       case Component.InsertMode.PREPEND:
-        $container.prepend($element);
+        $parent.prepend($element);
         break;
 
       case Component.InsertMode.REPLACE:
         // Clear html content first.
-        $container.empty();
-        $container.append($element);
+        $parent.empty();
+        $parent.append($element);
         break;
 
       default:
@@ -311,14 +333,19 @@ export abstract class Component
     if (param.text)
       this.applyTextParam($element, param.text, param.baseTextColor);
 
-    if (param.$container)
-      this.insertToContainer($element, param.$container, param.insertMode)
+    if (param.$parent)
+      this.insertToParent($element, param.$parent, param.insertMode)
 
     if (param.gCssClass)
       $element.addClass(param.gCssClass);
 
     if (param.sCssClass)
       $element.addClass(param.sCssClass);
+
+    // Attach event handlers if there are present in 'param'.
+
+    if (param.click)
+      $element.click(param.click);
   }
 
   private createInputElement(type: string, param: Object): JQuery
@@ -339,6 +366,10 @@ export abstract class Component
     if (!$element || !attributes)
       return;
 
+    // Note: Don't set 'name' attribute because we have
+    //   already done it out of order (to make it show
+    //   first in browser DOM inspector).
+
     if (attributes.required !== undefined)
       $element.prop('required', attributes.required);
 
@@ -357,7 +388,7 @@ export abstract class Component
     if (attributes.wrap !== undefined)
     {
       let value = Component.Wrap[attributes.wrap].toLowerCase();
-      $element.attr('warp', value);
+      $element.attr('wrap', value);
     }
 
     if (attributes.size !== undefined)
@@ -380,6 +411,9 @@ export abstract class Component
     if (attributes && attributes.disabled !== undefined)
       $element.prop('disabled', attributes.disabled);
 
+    if (attributes && attributes.tabindex !== undefined)
+      $element.attr('tabindex', attributes.tabindex);
+
     if (attributes && attributes.rows)
       $element.attr('rows', attributes.rows);
 
@@ -388,13 +422,14 @@ export abstract class Component
 
     if (attributes.autocorrect !== undefined)
     {
-      let value = Component.Wrap[attributes.autocorrect].toLowerCase();
+      let value = Component.Autocorrect[attributes.autocorrect].toLowerCase();
       $element.attr('autocorrect', value);
     }
 
     if (attributes.autocomplete !== undefined)
     {
-      let value = Component.Wrap[attributes.autocomplete].toLowerCase();
+      let value =
+        Component.Autocomplete[attributes.autocomplete].toLowerCase();
       $element.attr('autocomplete', value);
     }
   }
@@ -411,17 +446,20 @@ export module Component
   {
     APPEND,   // Default value.
     PREPEND,
-    REPLACE   // $container html contents is cleared first.
+    REPLACE   // Html contents of $parent is cleared first.
   }
 
   // ------------- Non-attribute Parameters -------------
 
   interface CommonParameters
   {
-    $container?: JQuery;
+    $parent?: JQuery;
     insertMode?: InsertMode;
     gCssClass?: string;
     sCssClass?: string;
+
+    // Event handlers.
+    click?: (event: Event) => any;
   }
 
   interface TextParameters
@@ -447,7 +485,12 @@ export module Component
   interface CommonAttributes
   {
     name?: string,
-    disabled?: boolean
+    disabled?: boolean,
+    // Specifies oder in which elements are selected by 'tab' key
+    // ('tabindex: -1' means selectetable only by scripts and mouse
+    //  clicks, not by tabbing. It also enables keyboard events on
+    //  elements which don't normally fire them - like <div>).
+    tabindex?: number
   }
 
   interface CheckedAttribute
