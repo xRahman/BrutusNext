@@ -23,8 +23,8 @@ export class StandaloneWindow extends Window
     { return 'S_StandaloneWindow_Title'; }
   protected static get CONTENT_S_CSS_CLASS()
     { return 'S_StandaloneWindow_Content'; }
-  protected static get LINK_CONTAINER_S_CSS_CLASS()
-    { return 'S_StandaloneWindow_LinkContainer'; }
+  protected static get TEXT_S_CSS_CLASS()
+    { return 'S_StandaloneWindow_Text'; }
 
   // -------------- Static class data -------------------
 
@@ -59,31 +59,44 @@ export class StandaloneWindow extends Window
 
   // --------------- Protected methods ------------------
 
-  protected createEmptyLine
-  (
-    {
-      sCssClass
-    }:
-    {
-      sCssClass?: string;
-    }
-    = {}
-  )
+  protected createEmptyLine(param: Component.DivParam = {})
   {
-    return this.createDiv
+    Utils.applyDefaults
     (
+      param,
       {
-        $container: this.$content,
-        sCssClass: sCssClass,
-        text: Component.EMPTY_LINE_TEXT
+        $parent: this.$content,
+        sCssClass: StandaloneWindow.TEXT_S_CSS_CLASS
       }
     );
+
+    return super.createEmptyLine(param);
   }
+  // protected createEmptyLine
+  // (
+  //   {
+  //     sCssClass
+  //   }:
+  //   {
+  //     sCssClass?: string;
+  //   }
+  //   = {}
+  // )
+  // {
+  //   return this.createDiv
+  //   (
+  //     {
+  //       $parent: this.$content,
+  //       sCssClass: sCssClass,
+  //       text: Component.EMPTY_LINE_TEXT
+  //     }
+  //   );
+  // }
 
   protected createLinkContainer
   (
     {
-      sCssClass = StandaloneWindow.LINK_CONTAINER_S_CSS_CLASS
+      sCssClass = StandaloneWindow.TEXT_S_CSS_CLASS
     }:
     {
       sCssClass?: string;
@@ -94,7 +107,7 @@ export class StandaloneWindow extends Window
     return this.createDiv
     (
       {
-        $container: this.$content,
+        $parent: this.$content,
         sCssClass: sCssClass
       }
     );

@@ -84,7 +84,7 @@ export class Window extends Component
     this.createText
     (
       {
-        $container: this.$title,
+        $parent: this.$title,
         text: title,
         insertMode: Component.InsertMode.REPLACE
       }
@@ -168,7 +168,7 @@ export class Window extends Component
     this.$window = this.createDiv
     (
       {
-        $container: Document.$body,
+        $parent: Document.$body,
         sCssClass: css.gClass,
         gCssClass: css.sClass
       }
@@ -183,7 +183,7 @@ export class Window extends Component
     this.$titleBar = this.createDiv
     (
       {
-        $container: this.$window,
+        $parent: this.$window,
         gCssClass: titleBarCss.gClass,
         sCssClass: titleBarCss.sClass
       }
@@ -192,7 +192,7 @@ export class Window extends Component
     this.$title = super.createTitle
     (
       {
-        $container: this.$titleBar,
+        $parent: this.$titleBar,
         gCssClass: titleCss.gClass,
         sCssClass: titleCss.sClass,
         text: "New window"
@@ -205,7 +205,7 @@ export class Window extends Component
     this.$content = this.createDiv
     (
       {
-        $container: this.$window,
+        $parent: this.$window,
         sCssClass: css.gClass,
         gCssClass: css.sClass
       }

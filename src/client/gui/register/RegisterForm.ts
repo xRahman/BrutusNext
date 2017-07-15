@@ -7,6 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {Connection} from '../../../client/lib/net/Connection';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {LocalStorage} from '../../../client/lib/storage/LocalStorage';
@@ -48,17 +49,19 @@ export class RegisterForm extends CredentialsForm
   // ---------------- Public methods --------------------
 
   // ~ Overrides Form.create().
-  public create({ $container }: { $container: JQuery; })
+  public create(param: Component.FormParam = {})
   {
-    super.create({ $container: $container, name: 'register_form' });
+    Utils.applyDefaults(param, { name: 'register_form' });
+
+    super.create(param);
 
     super.createLabel({ text: 'Your E-mail Address' });
     this.createEmailInput();
-    this.createEmailProblemLabel();
+    this.createEmailProblemNotice();
 
     super.createLabel({ text: 'Your New Password' });
     this.createPasswordInput();
-    this.createPasswordProblemLabel();
+    this.createPasswordProblemNotice();
 
     this.createErrorLabel();
     this.createInfoLabel();
@@ -114,16 +117,18 @@ export class RegisterForm extends CredentialsForm
   // --------------- Protected methods ------------------
 
   // ~ Overrides Form.createSubmitButton().
-  protected createSubmitButton({ $container }: { $container: JQuery; })
+  protected createSubmitButton(param: Component.SubmitButtonParam = {})
   {
-    return super.createSubmitButton
+    Utils.applyDefaults
     (
+      param,
       {
-        $container:  $container,
         text: 'Register',
         sCssClass: RegisterForm.SUBMIT_BUTTON_S_CSS_CLASS
       }
     );
+
+    return super.createSubmitButton(param);
   }
 
   // ~ Overrides CredentialsForm.hideProblemMessages().
@@ -157,29 +162,34 @@ export class RegisterForm extends CredentialsForm
 
   private createButtons()
   {
-    let $container = super.createButtonContainer();
+    let $parent = super.createButtonContainer();
 
-    this.createSubmitButton({ $container: $container });
-    this.createCancelButton({ $container: $container });
+    this.createSubmitButton({ $parent });
+    this.createCancelButton({ $parent });
   }
 
-  private createCancelButton({ $container }: { $container: JQuery; })
+  private createCancelButton(param: Component.ButtonParam = {})
   {
-    let $button = this.createButton
+    Utils.applyDefaults
     (
+      param,
       {
-        $container: $container,
         sCssClass: RegisterForm.CANCEL_BUTTON_S_CSS_CLASS,
-        text: 'Cancel'
+        text: 'Cancel',
+        click: (event: Event) => { this.onCancel(event); }
       }
     );
 
-    $button.click
-    (
-      (event: Event) => { this.onCancel(event); }
-    );
+    return this.createButton(param);
 
-    return $button;
+    // let $button = this.createButton(param);
+
+    // $button.click
+    // (
+    //   (event: Event) => { this.onCancel(event); }
+    // );
+
+    // return $button;
   }
 
   private isRequestValid(request: RegisterRequest)

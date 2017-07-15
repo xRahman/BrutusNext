@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {LocalStorage} from '../../../client/lib/storage/LocalStorage';
 import {Connection} from '../../../client/lib/net/Connection';
@@ -35,17 +36,19 @@ export class LoginForm extends CredentialsForm
   // ---------------- Public methods --------------------
 
   // ~ Overrides Form.create().
-  public create({ $container = null }: { $container: JQuery; })
+  public create(param: Component.FormParam = {})
   {
-    super.create({ $container: $container, name: 'login_form' });
+    Utils.applyDefaults(param, { name: 'login_form' });
+
+    super.create(param);
 
     super.createLabel({ text: 'E-mail Address' });
     this.createEmailInput();
-    this.createEmailProblemLabel();
+    this.createEmailProblemNotice();
 
     super.createLabel({ text: 'Password' });
     this.createPasswordInput();
-    this.createPasswordProblemLabel();
+    this.createPasswordProblemNotice();
 
     this.createErrorLabel();
 
@@ -105,16 +108,11 @@ export class LoginForm extends CredentialsForm
   // --------------- Protected methods ------------------
 
   // ~ Overrides Form.createSubmitButton().
-  protected createSubmitButton({ $container }: { $container: JQuery; })
+  protected createSubmitButton(param: Component.SubmitButtonParam = {})
   {
-    return super.createSubmitButton
-    (
-      {
-        $container: $container,
-        text: 'Login',
-        sCssClass: Component.FULL_WIDTH_BUTTON_S_CSS_CLASS
-      }
-    );
+    Utils.applyDefaults(param, { text: 'Login' });
+
+    return super.createSubmitButton(param);
   }
 
   // ~ Overrides CredentialsForm.hideProblems().
@@ -148,7 +146,7 @@ export class LoginForm extends CredentialsForm
 
   private createButtons()
   {
-    this.createSubmitButton({ $container: super.createButtonContainer() });
+    this.createSubmitButton({ $parent: this.createButtonContainer() });
   }
 
   private setStoredEmailAddress()
