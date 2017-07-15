@@ -35,7 +35,7 @@ export class ScrollWindowOutput extends Component
   // -> Returns created jquery element.
   public create($container: JQuery)
   {
-    this.$output = Component.createDiv
+    this.$output = this.createDiv
     (
       {
         $container: $container,
@@ -78,7 +78,7 @@ export class ScrollWindowOutput extends Component
 
     // Create a new <div> element, set 'message' as it's
     // text content and append it to 'this.$output'.
-    Component.createDiv
+    this.createDiv
     (
       {
         $container: this.$output,

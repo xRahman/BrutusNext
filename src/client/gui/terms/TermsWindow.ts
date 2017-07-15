@@ -48,8 +48,8 @@ export class TermsWindow extends StandaloneWindow
     super.create
     (
       {
-        window_sCssClass: TermsWindow.S_CSS_CLASS,
-        content_sCssClass: Window.CONTENT_S_CSS_CLASS
+        windowCss: { sClass: TermsWindow.S_CSS_CLASS },
+        contentCss: { sClass: Window.CONTENT_S_CSS_CLASS }
       }
     );
 
@@ -70,7 +70,7 @@ export class TermsWindow extends StandaloneWindow
     /// TEST:
     let termsText = "Don't be a jerk, please.";
     
-    Component.createDiv
+    this.createDiv
     (
       {
         text: termsText,
@@ -82,7 +82,7 @@ export class TermsWindow extends StandaloneWindow
 
   private createAcceptButton()
   {
-    let $button = Component.createButton
+    let $button = this.createButton
     (
       {
         $container: this.$content,

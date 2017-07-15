@@ -59,7 +59,7 @@ export class MapWindow extends GameWindow
   // ~ Overrides GameWindow.create().
   public create()
   {
-    super.create(MapWindow.S_CSS_CLASS);
+    super.create({ windowCss: { sClass: MapWindow.S_CSS_CLASS } });
 
     this.$window.resize
     (
