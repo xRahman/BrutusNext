@@ -51,11 +51,11 @@ export class LoginWindow extends StandaloneWindow
     this.setTitle("&gWelcome to &RBrutus&YNext");
 
     // Create login form.
-    this.form.create({ $container: this.$content });
+    this.form.create({ $parent: this.$content });
 
     this.createEmptyLine();
 
-    this.createRegisterInfo();
+    this.createRegisterLink();
 
     return this.$window;
   }
@@ -96,37 +96,45 @@ export class LoginWindow extends StandaloneWindow
 
   // ---------------- Private methods -------------------
 
-  private appendRegisterLink($container: JQuery, text: string)
+  // private appendRegisterLink($container: JQuery, text: string)
+  // {
+  //   //this.$registerLink = Component.appendTextLink($container, text);
+  //   this.$registerLink = this.createTextLink
+  //   (
+  //     {
+  //       $parent,
+  //       text,
+  //       insertMode: Component.InsertMode.APPEND
+  //     }
+  //   );
+
+  //   this.$registerLink.click
+  //   (
+  //     (event: Event) => { this.onRegisterClick(event); }
+  //   );
+  // }
+
+  private createRegisterLink()
   {
-    //this.$registerLink = Component.appendTextLink($container, text);
+    let $parent = super.createLinkContainer();
+
+    this.createText({ $parent, text: "Don't have an account yet? " });
+
     this.$registerLink = this.createTextLink
     (
       {
-        $container,
-        text,
-        insertMode: Component.InsertMode.APPEND
+        $parent,
+        text: "Register",
+        click: (event: Event) => { this.onRegisterClick(event); }
       }
     );
 
-    this.$registerLink.click
-    (
-      (event: Event) => { this.onRegisterClick(event); }
-    );
-  }
+    // this.$registerLink.click
+    // (
+    //   (event: Event) => { this.onRegisterClick(event); }
+    // );
 
-  private createRegisterInfo()
-  {
-    let $container = super.createLinkContainer();
-
-    this.createText
-    (
-      { $container, text: "Don't have an account yet? " }
-    );
-    this.appendRegisterLink($container, "Register");
-    this.createText
-    (
-      { $container, text: "." }
-    );
+    this.createText({ $parent, text: "." });
   }
 
   // ---------------- Event handlers --------------------

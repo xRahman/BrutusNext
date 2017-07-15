@@ -74,7 +74,7 @@ export class TermsWindow extends StandaloneWindow
     (
       {
         text: termsText,
-        $container: this.$content,
+        $parent: this.$content,
         sCssClass: TermsWindow.TERMS_S_CSS_CLASS
       }
     );
@@ -82,21 +82,22 @@ export class TermsWindow extends StandaloneWindow
 
   private createAcceptButton()
   {
-    let $button = this.createButton
+    return this.createButton
     (
       {
-        $container: this.$content,
-        sCssClass: Component.FULL_WIDTH_BUTTON_S_CSS_CLASS,
-        text: 'Accept'   // Button text.
+        $parent: this.$content,
+        sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS,
+        text: 'Accept',
+        click: (event: Event) => { this.onAcceptClick(event); }
       }
     );
 
-    $button.click
-    (
-      (event: Event) => { this.onAcceptClick(event); }
-    );
+    // $button.click
+    // (
+    //   (event: Event) => { this.onAcceptClick(event); }
+    // );
 
-    return $button;
+    // return $button;
   }
 
   // ---------------- Event handlers --------------------

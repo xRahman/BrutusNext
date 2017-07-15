@@ -51,11 +51,11 @@ export class RegisterWindow extends StandaloneWindow
     this.setTitle("Create New Account");
 
     // Create register form.
-    this.form.create({ $container: this.$content });
+    this.form.create({ $parent: this.$content });
 
     this.createEmptyLine();
 
-    this.createTermsInfo();
+    this.createTermsLink();
 
     return this.$window;
   }
@@ -91,37 +91,48 @@ export class RegisterWindow extends StandaloneWindow
 
   // ---------------- Private methods -------------------
 
-  private appendTermsLink($container: JQuery, text: string)
+  // private appendTermsLink($container: JQuery, text: string)
+  // {
+  //   //this.$termsLink = Component.appendTextLink($container, text);
+  //   this.$termsLink = this.createTextLink
+  //   (
+  //     {
+  //       $parent,
+  //       text,
+  //       insertMode: Component.InsertMode.APPEND
+  //     }
+  //   );
+
+  //   this.$termsLink.click
+  //   (
+  //     (event: Event) => { this.onTermsClick(event); }
+  //   );
+  // }
+
+  private createTermsLink()
   {
-    //this.$termsLink = Component.appendTextLink($container, text);
+    let $parent = this.createLinkContainer();
+
+    this.createText
+    (
+      { $parent, text: "By creating an account you agree to our " }
+    );
+
     this.$termsLink = this.createTextLink
     (
       {
-        $container,
-        text,
-        insertMode: Component.InsertMode.APPEND
+        $parent,
+        text: "Terms of Use",
+        click: (event: Event) => { this.onTermsClick(event); }
       }
     );
 
-    this.$termsLink.click
-    (
-      (event: Event) => { this.onTermsClick(event); }
-    );
-  }
+    // this.$termsLink.click
+    // (
+    //   (event: Event) => { this.onTermsClick(event); }
+    // );
 
-  private createTermsInfo()
-  {
-    let $container = super.createLinkContainer();
-
-    this.createText
-    (
-      { $container, text: "By creating an account you agree to our " }
-    );
-    this.appendTermsLink($container, "Terms of Use");
-    this.createText
-    (
-      { $container, text: "." }
-    );
+    this.createText({ $parent, text: "." });
   }
 
   // ---------------- Event handlers --------------------

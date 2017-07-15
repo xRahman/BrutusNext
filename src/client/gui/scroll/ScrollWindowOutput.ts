@@ -38,16 +38,23 @@ export class ScrollWindowOutput extends Component
     this.$output = this.createDiv
     (
       {
-        $container: $container,
-        sCssClass: ScrollWindowOutput.S_CSS_CLASS
+        $parent: $container,
+        sCssClass: ScrollWindowOutput.S_CSS_CLASS,
+        // In order to trigger keyboard events on <div> element,
+        // it must have focus. To give it a focus, it must have
+        // a 'tabindex' attribute set.
+        // ('tabindex: -1' means: focusable only by script, not by user)
+        tabindex: -1
       }
     );
 
-    // In order to trigger keyboard event on <div> element,
+    /*
+    // In order to trigger keyboard events on <div> element,
     // it must have focus. To give it a focus, it must have
     // a 'tabindex' attribute set.
     // ('tabindex: -1' means: focusable only by script, not by user)
     this.$output.attr('tabindex',  '-1');
+    */
 
     this.$output.keydown
     (
@@ -81,7 +88,7 @@ export class ScrollWindowOutput extends Component
     this.createDiv
     (
       {
-        $container: this.$output,
+        $parent: this.$output,
         baseTextColor: baseTextColor
       }
     );

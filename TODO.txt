@@ -33,6 +33,10 @@ TODO: Oštřit to pro jistotu i přímo v Connection.send() - když
 
 --------------------------------------------------------------
 
+TODO: Dát všem strukturálně významným komponentám 'name'
+(oknům, formům, atd.)
+
+
 TODO: Vykoumat zobrazování linků s barevným textem.
 - aspoň to zkusit.
 
@@ -42,8 +46,31 @@ TODO: Zvážit, jestli click handlery (a obecně všechny standardní
 TODO: A možná na to taky zavést interfacy, ať to nemusim copypastovat
   do každé overridnuté metody.
 
+
+TODO: Zkonvertovat všechny metody ve Form
+[done]
+TODO: Projít ještě jednou všechny GUI classy.
+
+TODO: Přidat do zobrazení souborů vs vs code css fily a dokumentaci
+  (asi jen texťáky).
+
+--------------------------------------------------------------
+
+TODO: Výpis problémů by neměl být <label> (asi spíš <div>).
+[done]
+
+TODO: Přesunout createEmptyLine() do Component.
+[done]
+
+TODO: Přejmenovat $container na $parent
+- mohlo by to dávat větší smysl při setování textu.
+  (i když...)
+- a je to kratší...
+[done]
+
 TODO: Přidat 'tabindex' do property paramu (settuje se ve
   ScrollWindowOutput.create()).
+[done]
 
 TODO: Možná se přece jen vrátit k shortcutům na setování textu
   (replaceText, appendText, prependText).
@@ -53,13 +80,6 @@ TODO: Ještě se zamyslet nad problematickými typedefy v paramu
   (autocorrect a tak). Možná by šlo použít enum, třeba by to pak
   nevyžadovalo ruční přetypování.
 [done]
-
-TODO: Výpis problémů by neměl být <label> (asi spíš <div>).
-
-TODO: Přidat do zobrazení souborů vs vs code css fily a dokumentaci
-  (asi jen texťáky).
-
---------------------------------------------------------------
 
 TODO: Zrušit povinný name atribut
   - stačí, když u komponent, které musí mít, bude mít nastavený default.
