@@ -39,6 +39,11 @@ TODO: Dát všem strukturálně významným komponentám 'name'
 
 TODO: Vykoumat zobrazování linků s barevným textem.
 - aspoň to zkusit.
+Tak kupodivu je to tak, že když dám 'text-decoration: underline;' nadřazené
+komponentě, tak se celý barevný text podtrhne barvou fontu v nadřazené
+komponentě (tj. defaultně šedě) - což je fajn.
+(Zatím to víc pitvat nepotřebuju)
+[done]
 
 TODO: Předávat event handlery jako parametr create funkcí.
 TODO: Zvážit, jestli click handlery (a obecně všechny standardní
@@ -53,6 +58,7 @@ TODO: Projít ještě jednou všechny GUI classy.
 
 TODO: Přidat do zobrazení souborů vs vs code css fily a dokumentaci
   (asi jen texťáky).
+[done]
 
 --------------------------------------------------------------
 
