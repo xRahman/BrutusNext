@@ -56,8 +56,7 @@ export abstract class Component
   protected static get SELECTABLE_PLATE_G_CSS_CLASS()
     { return 'G_SelectablePlate'; }
 
-  // protected static get LINK_TEXT_S_CSS_CLASS()
-  //   { return 'S_Component_LinkText'; }
+
   protected static get FULL_WIDTH_BUTTON_S_CSS_CLASS()
     { return 'S_Component_FullWidthButton'; }
   
@@ -77,51 +76,8 @@ export abstract class Component
 
   // --------------- Protected methods ------------------
 
-  // // Shortcut to create text with no attributes
-  // // ($component attributes will be used).
-  // protected static setText
-  // (
-  //   $component: JQuery,
-  //   text: string,
-  //   baseColor = null,
-  //   insertMode = Component.InsertMode.REPLACE
-  // )
-  // {
-  //   return this.createText
-  //   (
-  //     {
-  //       $container: $component,
-  //       text: text,
-  //       baseTextColor: baseColor,
-  //       insertMode: insertMode
-  //     }
-  //   );
-  // }
-
-  // // Shortcut to create text with no attributes
-  // // ($component attributes will be used).
-  // protected static setTextLink
-  // (
-  //   $component: JQuery,
-  //   text: string,
-  //   baseColor = null,
-  //   insertMode = Component.InsertMode.REPLACE
-  // )
-  // {
-  //   return this.createText
-  //   (
-  //     {
-  //       $container: $component,
-  //       text: text,
-  //       baseTextColor: baseColor,
-  //       insertMode: insertMode,
-  //       gCssClass: Component.LINK_TEXT_G_CSS_CLASS
-  //     }
-  //   );
-  // }
-
   // Creates text styled as link.
-  protected static createTextLink(param: Component.TextParam = {}): JQuery
+  protected createTextLink(param: Component.TextParam = {}): JQuery
   {
     Utils.applyDefaults(param, { gCssClass: Component.LINK_TEXT_G_CSS_CLASS });
 
@@ -132,9 +88,8 @@ export abstract class Component
   // content of '$component' (in a way specified by param.insertMode).
   // (If 'text' contains mud color codes, they will be used. It it doesn't
   //  and no 'baseColor' is provided, text color of $component will be used)
-  protected static createText(param: Component.TextParam = {}): JQuery
+  protected createText(param: Component.TextParam = {}): JQuery
   {
-    console.log("createText(), text: " + param.text + ", insertMode: " + param.insertMode);
     let $text = $(MudColors.htmlize(param.text, param.baseTextColor));
 
     // Reset 'param.text' to prevent recursively setting text to itself.
@@ -146,131 +101,29 @@ export abstract class Component
     return $text;
   }
 
-  /*
-  // Appends <spans> created from 'text' to html content of '$component'
-  // (If 'text' contains mud color codes, they will be used. It it doesn't
-  //  and no 'baseColor' is provided, text color of $component will be used).
-  protected static appendText
-  (
-    $component: JQuery,
-    text: string,
-    baseColor = null
-  )
-  {
-    $component.append
-    (
-      MudColors.htmlize(text, baseColor)
-    );
-  }
-
-  // Prepends <spans> created from 'text' to html content of '$component'
-  // (If 'text' contains mud color codes, they will be used. It it doesn't
-  //  and no 'baseColor' is provided, text color of $component will be used).
-  protected static prependText
-  (
-    $component: JQuery,
-    text: string,
-    baseColor = null
-  )
-  {
-    $component.prepend
-    (
-      MudColors.htmlize(text, baseColor)
-    );
-  }
-  */
-
-  /*
-  // Replaces html content of '$component' with clickable text link.
-  protected static setTextLink
-  (
-    $component: JQuery,
-    text: string,
-    {
-      gCssClass,
-      sCssClass
-    }:
-    {
-      gCssClass?: string;
-      sCssClass?: string;
-    },
-    attributes: Component.ButtonAttributes = null
-  )
-  {
-    // Remove existing html content if there is any.
-    $component.empty();
-
-    return this.appendTextLink
-    (
-      $component,
-      text,
-      {
-        gCssClass: gCssClass,
-        sCssClass: sCssClass
-      },
-      attributes
-    );
-  }
-  */
-
-  /*
-  // Appends clickable text link created from 'text' to html
-  // content of '$component'.
-  protected static appendTextLink
-  (
-    $component: JQuery,
-    text: string,
-    {
-      gCssClass = Component.LINK_TEXT_G_CSS_CLASS,
-      sCssClass = Component.LINK_TEXT_S_CSS_CLASS
-    }:
-    {
-      gCssClass?: string;
-      sCssClass?: string;
-    }
-    = {},
-    attributes: Component.ButtonAttributes = null
-  )
-  {
-    // Text link is a button containing requested link text.
-    // (Use <button> instead of <a href=...> because
-    //  we are going to handle the clicks ourselves.)
-    return this.createButton
-    (
-      {
-        $container: $component,
-        gCssClass: gCssClass,
-        sCssClass: sCssClass,
-        text: text
-      },
-      attributes
-    );
-  }
-  */
-
-  protected static createDiv(param: Component.DivParam = {}): JQuery
+  protected createDiv(param: Component.DivParam = {}): JQuery
   {
     return this.createElement('div', param);
   }
 
-  protected static createImg(param: Component.ImgParam = {}): JQuery
+  protected createImg(param: Component.ImgParam = {}): JQuery
   {
     return this.createElement('img', param);
   }
 
-  protected static createForm(param: Component.FormParam = {}): JQuery
+  protected createForm(param: Component.FormParam = {}): JQuery
   {
     Utils.applyDefaults(param, { name: "form" });
 
     return this.createElement('form', param);
   }
 
-  protected static createTitle(param: Component.TitleParam = {}): JQuery
+  protected createTitle(param: Component.TitleParam = {}): JQuery
   {
     return this.createElement('title', param);
   }
 
-  protected static createTextInput(param: Component.TextInputParam = {})
+  protected createTextInput(param: Component.TextInputParam = {})
   : JQuery
   {
     Utils.applyDefaults
@@ -285,7 +138,7 @@ export abstract class Component
     return this.createInputElement('text', param);
   }
 
-  protected static createPasswordInput
+  protected createPasswordInput
   (
     param: Component.PasswordInputParam = {}
   )
@@ -303,7 +156,7 @@ export abstract class Component
     return this.createInputElement('password', param);
   }
 
-  protected static createEmailInput(param: Component.EmailInputParam = {})
+  protected createEmailInput(param: Component.EmailInputParam = {})
   : JQuery
   {
     Utils.applyDefaults
@@ -318,7 +171,7 @@ export abstract class Component
     return this.createInputElement('email', param);
   }
 
-  protected static createCheckboxInput
+  protected createCheckboxInput
   (
     param: Component.CheckboxInputParam = {}
   )
@@ -331,7 +184,7 @@ export abstract class Component
 
   // Creates a button which submits form data
   // (use createButton() to create a standalone button).
-  protected static createSubmitButton(param: Component.SubmitButtonParam = {})
+  protected createSubmitButton(param: Component.SubmitButtonParam = {})
   : JQuery
   {
     Utils.applyDefaults
@@ -352,11 +205,9 @@ export abstract class Component
     $element.attr('type', 'submit');
 
     return $element;
-
-    //return this.createInputElement('submit', param);
   }
 
-  protected static createTextArea(param: Component.TextAreaParam = {}): JQuery
+  protected createTextArea(param: Component.TextAreaParam = {}): JQuery
   {
     Utils.applyDefaults
     (
@@ -370,7 +221,7 @@ export abstract class Component
     return this.createElement('textarea', param);
   }
 
-  protected static createLabel(param: Component.LabelParam = {}): JQuery
+  protected createLabel(param: Component.LabelParam = {}): JQuery
   {
     return this.createElement('label', param);
   }
@@ -378,7 +229,7 @@ export abstract class Component
   // Creates a button which is not part of a form
   // (use createSubmitButton() to create a button
   //  that submits form data).
-  protected static createButton(param: Component.ButtonParam = {}): JQuery
+  protected createButton(param: Component.ButtonParam = {}): JQuery
   {
     Utils.applyDefaults(param, { gCssClass: Component.BUTTON_G_CSS_CLASS });
 
@@ -393,7 +244,7 @@ export abstract class Component
 
   // ---------------- Private methods -------------------
 
-  private static createElement(type: string, param: Object): JQuery
+  private createElement(type: string, param: Object): JQuery
   {
     let $element = $(document.createElement(type));
 
@@ -403,7 +254,7 @@ export abstract class Component
     return $element;
   }
 
-  private static applyTextParam
+  private applyTextParam
   (
     $element: JQuery,
     text: string,
@@ -418,15 +269,9 @@ export abstract class Component
         baseTextColor: baseTextColor
       }
     );
-    /*
-    if (baseTextColor)
-      this.setText($element, text, baseTextColor);
-    else
-      this.setText($element, text);
-    */
   }
 
-  private static insertToContainer
+  private insertToContainer
   (
     $element: JQuery,
     $container: JQuery,
@@ -455,15 +300,13 @@ export abstract class Component
     }
   }
 
-  private static applyParameters
+  private applyParameters
   (
     $element: JQuery,
     param: Component.Parameters
   )
   {
-    console.log("::applyDefaults() - APPEND");
     Utils.applyDefaults(param, { insertMode: Component.InsertMode.APPEND });
-    console.log("::param.insertMode: " + param.insertMode);
 
     if (param.text)
       this.applyTextParam($element, param.text, param.baseTextColor);
@@ -478,7 +321,7 @@ export abstract class Component
       $element.addClass(param.sCssClass);
   }
 
-  private static createInputElement(type: string, param: Object): JQuery
+  private createInputElement(type: string, param: Object): JQuery
   {
     let $element = this.createElement('input', param);
     
@@ -487,7 +330,7 @@ export abstract class Component
     return $element;
   }
 
-  private static setAttributes
+  private setAttributes
   (
     $element: JQuery,
     attributes: Component.Attributes
@@ -504,6 +347,18 @@ export abstract class Component
 
     if (attributes.readonly !== undefined)
       $element.prop('readOnly', attributes.readonly);
+
+    if (attributes.autofocus !== undefined)
+      $element.prop('autofocus', attributes.autofocus);
+
+    if (attributes.form !== undefined)
+      $element.attr('form', attributes.form);
+
+    if (attributes.wrap !== undefined)
+    {
+      let value = Component.Wrap[attributes.wrap].toLowerCase();
+      $element.attr('warp', value);
+    }
 
     if (attributes.size !== undefined)
       $element.attr('size', attributes.size);
@@ -532,11 +387,16 @@ export abstract class Component
       $element.prop('spellcheck', attributes.spellcheck);
 
     if (attributes.autocorrect !== undefined)
-      $element.attr('autocorrect', attributes.autocorrect);
+    {
+      let value = Component.Wrap[attributes.autocorrect].toLowerCase();
+      $element.attr('autocorrect', value);
+    }
 
     if (attributes.autocomplete !== undefined)
-      $element.attr('autocomplete', attributes.autocomplete);
-
+    {
+      let value = Component.Wrap[attributes.autocomplete].toLowerCase();
+      $element.attr('autocomplete', value);
+    }
   }
 
   // ---------------- Event handlers --------------------
@@ -612,16 +472,15 @@ export module Component
   interface TextInputAttributes
   {
     placeholder?: string,
-    dirname?: string,
     maxLength?: number,
     size?: number,
     spellcheck?: boolean,
-    autocorrect?: Component.AutocorrectValue,
-    autocomplete?: AutocompleteValue
+    autocorrect?: Component.Autocorrect,
+    autocomplete?: Component.Autocomplete
     // Apparently 'autocapitalize' only works for virtual keybords at the
     // moment in Chrome (and doesn't work in other browsers except Safari
     // at all) so it's useless right now.
-    /// autocapitalize?: AutocapitalizeValue
+    /// autocapitalize?: Component.Autocapitalize
   }
 
   interface SingleLineInputAttributes
@@ -632,7 +491,7 @@ export module Component
   export interface TextAreaAttributes
   {
     rows?: number,
-    wrap?: WrapValue
+    wrap?: Component.Wrap
   }
 
   // This inteface contains properties of all other attribute
@@ -774,16 +633,39 @@ export module Component
   // -------------- Valid Attribute Values --------------
 
   // Valid values of 'wrap' attribute.
-  type WrapValue = 'soft' | 'hard';
+  export enum Wrap
+  {
+    SOFT,
+    HARD
+  }
 
-  // Valid values of 'autocapitalize' attribute.
-  type AutocapitalizeValue = 'none' | 'characters' | 'words' | 'sentences';
+  // Apparently 'autocapitalize' only works for virtual keybords at the
+  // moment in Chrome (and doesn't work in other browsers except Safari
+  // at all) so it's useless right now.
+  // // Valid values of 'autocapitalize' attribute.
+  // export enum Autocapitalize
+  // {
+  //   NONE,
+  //   CHARACTERS,
+  //   WORDS,
+  //   SENTENCES
+  // }
 
   // Valid values of 'autocorrect' attribute.
-  export type AutocorrectValue = 'on' | 'off';
+  export enum Autocorrect
+  {
+    ON,
+    OFF
+  }
 
   // Valid values of 'autocomplete' attribute
   // (there are a lot more possible values, add them here
   //  if you need them).
-  type AutocompleteValue = 'on' | 'off' | 'email' | 'username';
+  export enum Autocomplete
+  {
+    ON,
+    OFF,
+    EMAIL,
+    USERNAME
+  }
 }

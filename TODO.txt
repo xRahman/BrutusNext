@@ -33,17 +33,33 @@ TODO: Oštřit to pro jistotu i přímo v Connection.send() - když
 
 --------------------------------------------------------------
 
+TODO: Vykoumat zobrazování linků s barevným textem.
+- aspoň to zkusit.
+
+TODO: Předávat event handlery jako parametr create funkcí.
+TODO: Zvážit, jestli click handlery (a obecně všechny standardní
+  gui handlery) nepředávat v rámci parametrů create metod.
+TODO: A možná na to taky zavést interfacy, ať to nemusim copypastovat
+  do každé overridnuté metody.
+
+TODO: Přidat 'tabindex' do property paramu (settuje se ve
+  ScrollWindowOutput.create()).
+
 TODO: Možná se přece jen vrátit k shortcutům na setování textu
   (replaceText, appendText, prependText).
+[kašlat na to]
 
 TODO: Ještě se zamyslet nad problematickými typedefy v paramu
   (autocorrect a tak). Možná by šlo použít enum, třeba by to pak
   nevyžadovalo ruční přetypování.
+[done]
 
 TODO: Výpis problémů by neměl být <label> (asi spíš <div>).
 
 TODO: Přidat do zobrazení souborů vs vs code css fily a dokumentaci
   (asi jen texťáky).
+
+--------------------------------------------------------------
 
 TODO: Zrušit povinný name atribut
   - stačí, když u komponent, které musí mít, bude mít nastavený default.
@@ -51,17 +67,21 @@ Díky tomu nebudu muset rvát default do parametru, bude vždycky při volání.
 [done]
 
 TODO: aply parameter 'autofocus', 'dirname', 'form'
+- a vůbec zkontrolovat, že se všehny atributy z interfaců skutečně setují.
+[done]
 
 TODO: Zapojit Component.InsertMode
 [done]
 
 TODO: Pořešit setTexty a SetTextLinky
   (zatím je nechám být).
+[done]
 
 TODO: U metod v Component asi nepotřebuju 'null' default hodnoty
 - stačí 'undefined'
 Na druhou stranu bych asi měl počítat i s hodnotou 'null', aby šel
   "vypnout" parametr přetížený někde níž...
+[done]
 
 TODO: Asi přece jen sloučím všechny parametry metod v Component
   do jednoho objektu - i když, hmm, to povede k tomu, že budu
@@ -72,11 +92,12 @@ TODO: Asi přece jen sloučím všechny parametry metod v Component
   - to asi fakt není dobrej nápad.
 Půjde to díky dědičnosti:
 - a to dokonce i do jednoho interfacu, protože lze dědit vícenásobně.
-
+[done]
 
 TODO: Jako jsem udělal interface Window.CreateParam tak stejně
 vyrobit i interfacy pro paramy jednotlivých elementů
 (DivParam, etc.)
+[done]
 
 TODO: applyAttributes() by asi měla být jedna společná
   metoda, ať neopakuju nastavování stejných parametrů
@@ -86,11 +107,10 @@ TODO: applyAttributes() by asi měla být jedna společná
 
 TODO: Ke všem createCosi() přidat parametr insertMode
  (append, prepend - default je append).
-
-TODO: Přidat 'tabindex' do property paramu (settuje se ve
-  ScrollWindowOutput.create()).
+ [done]
 
 TODO: Vyzkoušet klikatelné spany místo buttonů.
+[done]
 
 TODO: Asi budu muset propašovat css parametr i do vyrábění spanů
   v MudColors - budu určitě chtít klikatelné linky s barevným
@@ -126,11 +146,7 @@ TODO: Úplně zrušit css classy ze spanů uvnitř textu.
 TODO: Možná by bylo lepší přejít v GUI metodách na pojmenované
   objekty coby parametry - mohlo by to zpřehlednit kód.
   (protože když je objekt pojmenovaný, dá se předat celý najednou).
-
-TODO: Zvážit, jestli click handlery (a obecně všechny standardní
-  gui handlery) nepředávat v rámci parametrů create metod.
-TODO: A možná na to taky zavést interfacy, ať to nemusim copypastovat
-  do každé overridnuté metody.
+[done]
 
 TODO: Z class .S_StandaloneWindow_LinkText udělat
   .S_Component_LinkText
@@ -148,9 +164,11 @@ TODO: Statické metody v Component asi nakonec nejsou dobrý nápad
 - Dává to asi celkem smysl z hlediska logiky dědičnosti - potomek
   přetíží metodu z Component tím, že jí předá jiné defaultní
   parametry (typicky css classy).
+[done]
 
 TODO: Setování textu v Component asi přesunout do InitElement()
   - beztak by to měly umět všechny komponenty.
+[done]
 
 TODO: Checknout, jestli se používá Component.createSpan (asi by nemělo)
   a pokud ne, zrušit.
@@ -162,6 +180,7 @@ TODO: Checknout, jestli se používá Component.createSpan (asi by nemělo)
 TODO: V SetTextu by se asi ale měly předávat parametry a volat
   Component.createSpan(), kdyby si to přece jen někdo chtěl nějak přestylovávat.
   (Ale nemělo by tam být G_NoGraphics)
+[done]
 
 TODO: Properties elementům setovat přes JQuery místo přes DOM.
 [done]
@@ -182,11 +201,13 @@ Při releasu takové (nesavnuté) entity by se měl smazat name lock file
 
 TODO: Zrušit metodu Component.createText()
 - místo ní použít Component.appendText().
+[jinak, ale done]
 
 TODO: Zrušit metodu Component.createTextLink()
 - místo ní zavést (a použít) Component.appendTextLink()
   a Component.setTextLink()
   - stejně jako s obyč textem.
+[jinak, ale done]
 
 TODO: V charselectu jde odselectnout char (což je asi ok),
   pak ale zůstane enablovaný button 'enter game' - což už asi není

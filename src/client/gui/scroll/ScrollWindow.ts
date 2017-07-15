@@ -49,7 +49,7 @@ export class ScrollWindow extends GameWindow
   // ~ Overrides GameWindow.create().
   public create()
   {
-    super.create(ScrollWindow.S_CSS_CLASS);
+    super.create({ windowCss: { sClass: ScrollWindow.S_CSS_CLASS } });
 
     /// TEST
     this.setTitle('Rahman@BrutusNext');
