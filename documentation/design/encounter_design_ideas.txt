@@ -53,3 +53,10 @@ Proč tam jsou ty shriny? Původně to byla svatyně nějakého dobrého boha.
 - dál mohou být shriny proti snarům, dispellům, atd.
 
 -------------------------------------------------------------------------
+
+Boss si nahazuje buffy, které mění, jaký druh resourcu generuje, a tedy
+jaké velké skilly pak použije.
+- tnz. správnejma dispelama jde ovlivnit, co bude boss dělat.
+
+Obecně by ve hře měly být způsoby, jak ovlivnit, co bude boss používat
+(a asi ne nutně jen boss, v pvp to může fungovat taky).

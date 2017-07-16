@@ -10,8 +10,6 @@ import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Component} from '../../../client/gui/Component';
 import {StandaloneWindow} from '../../../client/gui/StandaloneWindow';
 
-import $ = require('jquery');
-
 export class CharlistWindow extends StandaloneWindow
 {
   constructor()
@@ -57,7 +55,7 @@ export class CharlistWindow extends StandaloneWindow
   // ~ Overrides StandaloneWindow.create().
   public create()
   {
-    super.create();
+    super.create({ name: 'charlist_window' });
 
     this.setTitle("Your Characters");
 
@@ -93,20 +91,15 @@ export class CharlistWindow extends StandaloneWindow
       {
         $parent: $container,
         gCssClass: Component.SELECTABLE_PLATE_G_CSS_CLASS,
-        sCssClass: CharlistWindow.CHARACTER_PLATE_S_CSS_CLASS
+        sCssClass: CharlistWindow.CHARACTER_PLATE_S_CSS_CLASS,
+        // Set 'tabindex' attribute to make the <div> selectable
+        // ('-1' means: focusable only by script or mouse click,
+        //  not by tabbing).
+        // As a side effect, 'tabindex' also enables keyboard events
+        // on <div> element.
+        tabindex: -1,
+        focus: (event: FocusEvent) => { this.onCharacterPlateFocus(event); }
       }
-    );
-
-    // Set 'tabindex' attribute to make the <div> selectable
-    // ('-1' means: focusable only by script or mouse click,
-    //  not by tabbing).
-    // As a side effect, 'tabindex' also enables keyboard events
-    // on <div> element.
-    $plate.attr('tabindex',  '-1');
-
-    $plate.focus
-    (
-      (event: Event) => { this.onCharacterPlateFocus(event); }
     );
 
     let $portrait = this.createImg
@@ -114,11 +107,10 @@ export class CharlistWindow extends StandaloneWindow
       {
         $parent: $plate,
         gCssClass: Component.WINDOW_G_CSS_CLASS,
-        sCssClass: CharlistWindow.PORTRAIT_S_CSS_CLASS
+        sCssClass: CharlistWindow.PORTRAIT_S_CSS_CLASS,
+        src: '/images/portraits/Zuzka.jpg'
       }
     );
-
-    $portrait.attr('src', '/images/portraits/Zuzka.jpg');
 
     let $labelsContainer = this.createDiv
     (
@@ -145,8 +137,6 @@ export class CharlistWindow extends StandaloneWindow
         text: "Level 1 priest"
       }
     );
-
-    ///$plate.text("Zuzka (level 1 priest)");
   }
 
   private populateCharlist()
@@ -179,8 +169,6 @@ export class CharlistWindow extends StandaloneWindow
         sCssClass: CharlistWindow.CHARLIST_S_CSS_CLASS
       }
     );
-    /// Container by měl mít pevnou velikost - ideálně celočíselný
-    /// násobek velikosti 1 charu + 2 * padding.
 
     this.populateCharlist();
   }
@@ -193,14 +181,9 @@ export class CharlistWindow extends StandaloneWindow
         $parent: this.$content,
         sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS,
         text: 'Create New Character',
-        click: (event: Event) => { this.onCreateNewCharacterClick(event); }
+        click: (event) => { this.onCreateNewCharacterClick(event); }
       }
     );
-
-    // $button.click
-    // (
-    //   (event: Event) => { this.onCreateNewCharacterClick(event); }
-    // );
   }
 
   private createButtonEnterGame()
@@ -212,32 +195,25 @@ export class CharlistWindow extends StandaloneWindow
         text: 'Enter Game',
         sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS,
         disabled: true,
-        click: (event: Event) => { this.onEnterGameClick(event); }
+        click: (event: MouseEvent) => { this.onEnterGameClick(event); }
       }
     );
-
-    // this.$enterGameButton.click
-    // (
-    //   (event: Event) => { this.onEnterGameClick(event); }
-    // );
   }
 
   // ---------------- Event handlers --------------------
 
-  private onCharacterPlateFocus(event: Event)
+  private onCharacterPlateFocus(event: FocusEvent)
   {
     this.$enterGameButton.prop('disabled', false);
   }
 
-  private onCreateNewCharacterClick(event: Event)
+  private onCreateNewCharacterClick(event: MouseEvent)
   {
-    console.log("Clicked on 'Create New Character'");
     ClientApp.setState(ClientApp.State.CHARGEN);
   }
 
-  private onEnterGameClick(event: Event)
+  private onEnterGameClick(event: MouseEvent)
   {
-    console.log("Clicked on 'Enter Game'");
     ClientApp.setState(ClientApp.State.IN_GAME);
   }
 }

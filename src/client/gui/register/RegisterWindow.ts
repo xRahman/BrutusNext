@@ -9,11 +9,8 @@
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Component} from '../../../client/gui/Component';
 import {StandaloneWindow} from '../../../client/gui/StandaloneWindow';
-import {Form} from '../../../client/gui/Form';
 import {RegisterForm} from '../../../client/gui/register/RegisterForm';
 import {RegisterResponse} from '../../../shared/lib/protocol/RegisterResponse';
-
-import $ = require('jquery');
 
 export class RegisterWindow extends StandaloneWindow
 {
@@ -33,7 +30,7 @@ export class RegisterWindow extends StandaloneWindow
 
   private form = new RegisterForm();
 
-  private $termsLink = null;
+  private $termsLink: JQuery = null;
 
   // --------------- Static accessors -------------------
 
@@ -46,7 +43,7 @@ export class RegisterWindow extends StandaloneWindow
   // ~ Overrides StandaloneWindow.create().
   public create()
   {
-    super.create();
+    super.create({ name: 'register_window' });
 
     this.setTitle("Create New Account");
 
@@ -91,27 +88,9 @@ export class RegisterWindow extends StandaloneWindow
 
   // ---------------- Private methods -------------------
 
-  // private appendTermsLink($container: JQuery, text: string)
-  // {
-  //   //this.$termsLink = Component.appendTextLink($container, text);
-  //   this.$termsLink = this.createTextLink
-  //   (
-  //     {
-  //       $parent,
-  //       text,
-  //       insertMode: Component.InsertMode.APPEND
-  //     }
-  //   );
-
-  //   this.$termsLink.click
-  //   (
-  //     (event: Event) => { this.onTermsClick(event); }
-  //   );
-  // }
-
   private createTermsLink()
   {
-    let $parent = this.createLinkContainer();
+    let $parent = this.createTextContainer();
 
     this.createText
     (
@@ -123,23 +102,17 @@ export class RegisterWindow extends StandaloneWindow
       {
         $parent,
         text: "Terms of Use",
-        click: (event: Event) => { this.onTermsClick(event); }
+        click: (event: MouseEvent) => { this.onTermsClick(event); }
       }
     );
-
-    // this.$termsLink.click
-    // (
-    //   (event: Event) => { this.onTermsClick(event); }
-    // );
 
     this.createText({ $parent, text: "." });
   }
 
   // ---------------- Event handlers --------------------
 
-  private onTermsClick(event: Event)
+  private onTermsClick(event: MouseEvent)
   {
-    console.log("Clicked on terms link");
     ClientApp.setState(ClientApp.State.TERMS);
   }
 }
