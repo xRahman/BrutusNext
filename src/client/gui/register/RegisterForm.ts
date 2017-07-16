@@ -10,14 +10,12 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {Connection} from '../../../client/lib/net/Connection';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
-import {LocalStorage} from '../../../client/lib/storage/LocalStorage';
 import {Windows} from '../../../client/gui/Windows';
 import {Component} from '../../../client/gui/Component';
+import {Form} from '../../../client/gui/Form';
 import {CredentialsForm} from '../../../client/gui/CredentialsForm';
 import {RegisterRequest} from '../../../shared/lib/protocol/RegisterRequest';
 import {RegisterResponse} from '../../../shared/lib/protocol/RegisterResponse';
-
-import $ = require('jquery');
 
 export class RegisterForm extends CredentialsForm
 {
@@ -26,11 +24,6 @@ export class RegisterForm extends CredentialsForm
     return '&YWe strongly recommend that you use different'
          + ' password than on your e-mail account.';
   }
-
-  protected static get SUBMIT_BUTTON_S_CSS_CLASS()
-    { return 'S_RegisterForm_SubmitButton'; }
-  protected static get CANCEL_BUTTON_S_CSS_CLASS()
-    { return 'S_RegisterForm_CancelButton'; }
 
   // -------------- Static class data -------------------
 
@@ -124,7 +117,7 @@ export class RegisterForm extends CredentialsForm
       param,
       {
         text: 'Register',
-        sCssClass: RegisterForm.SUBMIT_BUTTON_S_CSS_CLASS
+        sCssClass: Form.LEFT_BUTTON_S_CSS_CLASS
       }
     );
 
@@ -174,22 +167,13 @@ export class RegisterForm extends CredentialsForm
     (
       param,
       {
-        sCssClass: RegisterForm.CANCEL_BUTTON_S_CSS_CLASS,
+        sCssClass: Form.RIGHT_BUTTON_S_CSS_CLASS,
         text: 'Cancel',
-        click: (event: Event) => { this.onCancel(event); }
+        click: (event: MouseEvent) => { this.onCancel(event); }
       }
     );
 
     return this.createButton(param);
-
-    // let $button = this.createButton(param);
-
-    // $button.click
-    // (
-    //   (event: Event) => { this.onCancel(event); }
-    // );
-
-    // return $button;
   }
 
   private isRequestValid(request: RegisterRequest)
@@ -238,7 +222,7 @@ export class RegisterForm extends CredentialsForm
     Connection.send(request);
   }
 
-  protected onCancel(event: Event)
+  protected onCancel(event: MouseEvent)
   {
     ClientApp.setState(ClientApp.State.LOGIN);
   }

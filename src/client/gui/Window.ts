@@ -1,35 +1,21 @@
 /*
   Part of BrutusNEXT
 
-  Implements draggble and resizable window within the browser viewport.
+  Window element.
 */
 
 'use strict';
 
 import {Utils} from '../../shared/lib/utils/Utils';
 import {Flags} from '../../shared/lib/utils/Flags';
-import {Document} from '../../client/gui/Document';
 import {ClientApp} from '../../client/lib/app/ClientApp';
 import {Component} from '../../client/gui/Component';
-import {MudColors} from '../../client/gui/MudColors';
-
-import $ = require('jquery');
+import {Document} from '../../client/gui/Document';
 
 export class Window extends Component
 {
   protected static get S_CSS_CLASS()
     { return 'S_Window'; }
-  protected static get TITLE_BAR_S_CSS_CLASS()
-    { return 'S_WindowTitleBar'; }
-  protected static get TITLE_S_CSS_CLASS()
-    { return 'S_WindowTitle'; }
-  protected static get CONTENT_S_CSS_CLASS()
-    { return 'S_WindowContent'; }
-
-  constructor()
-  {
-    super();
-  }
 
   // -------------- Static class data -------------------
 
@@ -42,16 +28,10 @@ export class Window extends Component
   //  shown again - except those with 'closed' set to 'true').
   protected closed = false;
 
-
   // Determines app states at which this window is shown.
   protected flags = new Flags<ClientApp.State>();
 
-  // --- Jquery elements ---
-
-  protected $window = null;
-  protected $title = null;
-  protected $titleBar = null;
-  protected $content = null;
+  protected $window: JQuery = null;
 
   // ----------------- Private data ---------------------
 
@@ -69,62 +49,31 @@ export class Window extends Component
 
   // ---------------- Public methods --------------------
 
+  public create(param: Component.DivParam = {})
+  {
+    Utils.applyDefaults
+    (
+      param,
+      {
+        name: 'window',
+        $parent: Document.$body,
+        gCssClass: Component.WINDOW_G_CSS_CLASS,
+        sCssClass: Window.S_CSS_CLASS
+      }
+    );
+
+    this.$window = this.createDiv(param);
+
+    // Windows are created hidden.
+    this.$window.hide();
+  }
+
   public showByState(state: ClientApp.State)
   {
     if (this.flags.isSet(state))
       this.show();
     else
       this.hide();
-  }
-
-  // Sets text to 'title' element
-  // (accepts plain text or mud colored string).
-  public setTitle(title: string)
-  {
-    this.createText
-    (
-      {
-        $parent: this.$title,
-        text: title,
-        insertMode: Component.InsertMode.REPLACE
-      }
-    );
-  }
-
-  public create(param: Window.CreateParam = {})
-  {
-    Utils.applyDefaults
-    (
-      param,
-      {
-        windowCss:
-        {
-          gClass: Component.WINDOW_G_CSS_CLASS,
-          sClass: Window.S_CSS_CLASS
-        },
-        contentCss:
-        {
-          gClass: Component.NO_GRAPHICS_G_CSS_CLASS,
-          sClass: Window.CONTENT_S_CSS_CLASS
-        },
-        titleBarCss:
-        {
-          gClass: Component.TITLE_BAR_G_CSS_CLASS,
-          sClass: Window.TITLE_BAR_S_CSS_CLASS
-        },
-        titleCss:
-        {
-          gClass: Component.NO_GRAPHICS_G_CSS_CLASS,
-          sClass: Window.TITLE_S_CSS_CLASS
-        }
-      }
-    );
-
-    this.createWindow(param.windowCss);
-    this.createTitleBar(param.titleBarCss, param.titleCss);
-    this.createContent(param.contentCss);
-
-    return this.$window;
   }
 
   // Executes when html document is fully loaded.
@@ -163,73 +112,6 @@ export class Window extends Component
     this.hidden = false;
   }
 
-  private createWindow(css: Window.Css)
-  {
-    this.$window = this.createDiv
-    (
-      {
-        $parent: Document.$body,
-        sCssClass: css.gClass,
-        gCssClass: css.sClass
-      }
-    );
-
-    // Windows are created hidden.
-    this.$window.hide();
-  }
-
-  private createTitleBar(titleBarCss: Window.Css, titleCss: Window.Css)
-  {
-    this.$titleBar = this.createDiv
-    (
-      {
-        $parent: this.$window,
-        gCssClass: titleBarCss.gClass,
-        sCssClass: titleBarCss.sClass
-      }
-    );
-
-    this.$title = super.createTitle
-    (
-      {
-        $parent: this.$titleBar,
-        gCssClass: titleCss.gClass,
-        sCssClass: titleCss.sClass,
-        text: "New window"
-      }
-    );
-  }
-
-  private createContent(css: Window.Css)
-  {
-    this.$content = this.createDiv
-    (
-      {
-        $parent: this.$window,
-        sCssClass: css.gClass,
-        gCssClass: css.sClass
-      }
-    );
-  }
-
   // ---------------- Event handlers --------------------
 
-}
-
-// ------------------ Type declarations ----------------------
-
-export module Window
-{
-  export interface Css
-  {
-    gClass?: string,
-    sClass?: string
-  }
-  export interface CreateParam
-  {
-    windowCss?: Css,
-    contentCss?: Css,
-    titleBarCss?: Css,
-    titleCss?: Css
-  }
 }

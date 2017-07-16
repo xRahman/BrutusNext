@@ -196,20 +196,18 @@ export abstract class CredentialsForm extends Form
 
     this.$rememberMeCheckbox = super.createCheckbox
     (
-      // Checkbox param.
       {
-        name: 'remember_me_checkbox',
-        checked: false
-      },
-      // Label param.
-      {
-        text: 'Remember me'
+        checkboxParam:
+        {
+          name: 'remember_me_checkbox',
+          checked: false,
+          change: (event: Event) => { this.onRememberMeChange(event); }
+        },
+        labelParam:
+        {
+          text: 'Remember me'
+        }
       }
-    );
-
-    this.$rememberMeCheckbox.change
-    (
-      (event: Event) => { this.onRememberMeChange(event); }
     );
   }
 

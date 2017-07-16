@@ -9,11 +9,8 @@
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Component} from '../../../client/gui/Component';
 import {StandaloneWindow} from '../../../client/gui/StandaloneWindow';
-import {Form} from '../../../client/gui/Form';
 import {LoginForm} from '../../../client/gui/login/LoginForm';
 import {LoginResponse} from '../../../shared/lib/protocol/LoginResponse';
-
-import $ = require('jquery');
 
 export class LoginWindow extends StandaloneWindow
 {
@@ -33,7 +30,7 @@ export class LoginWindow extends StandaloneWindow
 
   private form = new LoginForm();
 
-  private $registerLink = null;
+  private $registerLink: JQuery = null;
 
   // --------------- Static accessors -------------------
 
@@ -46,7 +43,7 @@ export class LoginWindow extends StandaloneWindow
   // ~ Overrides StandaloneWindow.create().
   public create()
   {
-    super.create();
+    super.create({ name: 'login_window' });
 
     this.setTitle("&gWelcome to &RBrutus&YNext");
 
@@ -56,8 +53,6 @@ export class LoginWindow extends StandaloneWindow
     this.createEmptyLine();
 
     this.createRegisterLink();
-
-    return this.$window;
   }
 
   public displayProblem(response: LoginResponse)
@@ -96,27 +91,9 @@ export class LoginWindow extends StandaloneWindow
 
   // ---------------- Private methods -------------------
 
-  // private appendRegisterLink($container: JQuery, text: string)
-  // {
-  //   //this.$registerLink = Component.appendTextLink($container, text);
-  //   this.$registerLink = this.createTextLink
-  //   (
-  //     {
-  //       $parent,
-  //       text,
-  //       insertMode: Component.InsertMode.APPEND
-  //     }
-  //   );
-
-  //   this.$registerLink.click
-  //   (
-  //     (event: Event) => { this.onRegisterClick(event); }
-  //   );
-  // }
-
   private createRegisterLink()
   {
-    let $parent = super.createLinkContainer();
+    let $parent = super.createTextContainer();
 
     this.createText({ $parent, text: "Don't have an account yet? " });
 
@@ -125,23 +102,17 @@ export class LoginWindow extends StandaloneWindow
       {
         $parent,
         text: "Register",
-        click: (event: Event) => { this.onRegisterClick(event); }
+        click: (event: MouseEvent) => { this.onRegisterClick(event); }
       }
     );
-
-    // this.$registerLink.click
-    // (
-    //   (event: Event) => { this.onRegisterClick(event); }
-    // );
 
     this.createText({ $parent, text: "." });
   }
 
   // ---------------- Event handlers --------------------
 
-  private onRegisterClick(event: Event)
+  private onRegisterClick(event: MouseEvent)
   {
-    console.log("Clicked on register link");
     ClientApp.setState(ClientApp.State.REGISTER);
   }
 }

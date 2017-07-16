@@ -7,17 +7,17 @@
 'use strict';
 
 import {ClientApp} from '../../../client/lib/app/ClientApp';
-import {GameWindow} from '../../../client/gui/GameWindow';
+import {TitledWindow} from '../../../client/gui/TitledWindow';
 import {SvgMap} from '../../../client/gui/map/SvgMap';
 import {Connection} from '../../../client/lib/net/Connection';
 
 /// TEST:
 import {Packet} from '../../../shared/lib/protocol/Packet';
 
-import $ = require('jquery');
-import d3 = require('d3');
+///import $ = require('jquery');
+///import d3 = require('d3');
 
-export class MapWindow extends GameWindow
+export class MapWindow extends TitledWindow
 {
   constructor()
   {
@@ -42,8 +42,6 @@ export class MapWindow extends GameWindow
 
   private svgMap = new SvgMap(this);
 
-  // ----- timers ------
-
   // Prevents map updating until MapWindow.RESIZE_UPDATE_DELAY
   // miliseconds after last 'window.resize' event.
   private resizeTimeout = null;
@@ -59,7 +57,7 @@ export class MapWindow extends GameWindow
   // ~ Overrides GameWindow.create().
   public create()
   {
-    super.create({ windowCss: { sClass: MapWindow.S_CSS_CLASS } });
+    super.create({ name: 'map_window', sCssClass: MapWindow.S_CSS_CLASS });
 
     this.$window.resize
     (
@@ -75,14 +73,14 @@ export class MapWindow extends GameWindow
   }
 
   // ~ Overrides Window.onDocumentReady().
-  // Executes when html document is fully loaded.
+  //  (Executes when html document is fully loaded.)
   public onDocumentReady()
   {
     this.updateMap();
   }
 
   // ~ Overrides Window.onDocumentResize().
-  // Executes when html document is resized
+  //  (Executes when html document is resized.)
   public onDocumentResize()
   {
     clearTimeout(this.resizeTimeout);

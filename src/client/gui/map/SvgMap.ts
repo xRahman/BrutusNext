@@ -105,7 +105,7 @@ export class SvgMap extends Component
   {
     // Select ancestor element using d3 library.
     // (Doing [0] on a jquery element accesses the DOM element.
-    //  We do it instead of selecting ancetor element by it's
+    //  We do it instead of selecting ancestor element by it's
     //  id because ancestor element is not yet appended to the
     //  document at this time - so we need to use direct reference.)
     let d3WindowContent = d3.select($container[0]);

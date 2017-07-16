@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {Component} from '../../../client/gui/Component';
 import {ScrollWindow} from '../../../client/gui/scroll/ScrollWindow';
 
@@ -45,30 +46,25 @@ export class ScrollWindowInput extends Component
   // ---------------- Public methods --------------------
 
   // -> Returns created jquery element.
-  public create($container: JQuery)
+  public create(param: Component.TextAreaParam = {})
   {
-    this.$input = this.createTextArea
+    Utils.applyDefaults
     (
+      param,
       {
-        $parent: $container,
+        name: 'scroll_window_input',
         sCssClass: ScrollWindowInput.S_CSS_CLASS,
         // Input element accepts multi-line text (its a 'textarea') but only
         // shows one line (because user commands are usualy single-line).
         rows: 1,
         spellcheck: false,
-        autocorrect: Component.Autocorrect.OFF
+        autocorrect: Component.Autocorrect.OFF,
+        keypress: (event: KeyboardEvent) => { this.onKeyPress(event); },
+        keydown: (event: KeyboardEvent) => { this.onKeyDown(event); }
       }
     );
 
-    this.$input.keypress
-    (
-      (event) => { this.onKeyPress(event); }
-    );
-
-    this.$input.keydown
-    (
-      (event) => { this.onKeyDown(event); }
-    );
+    this.$input = this.createTextArea(param);
   }
 
   public focus()
