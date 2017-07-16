@@ -11,12 +11,10 @@ import {ScrollWindowInput} from '../../../client/gui/scroll/ScrollWindowInput';
 import {ScrollWindowOutput} from
   '../../../client/gui/scroll/ScrollWindowOutput';
 import {MudColors} from '../../../client/gui/MudColors';
-import {GameWindow} from '../../../client/gui/GameWindow';
+import {TitledWindow} from '../../../client/gui/TitledWindow';
 import {Connection} from '../../../client/lib/net/Connection';
 
-import $ = require('jquery');
-
-export class ScrollWindow extends GameWindow
+export class ScrollWindow extends TitledWindow
 {
   constructor()
   {
@@ -49,15 +47,19 @@ export class ScrollWindow extends GameWindow
   // ~ Overrides GameWindow.create().
   public create()
   {
-    super.create({ windowCss: { sClass: ScrollWindow.S_CSS_CLASS } });
+    super.create
+    (
+      {
+        name: 'scroll_window',
+        sCssClass: ScrollWindow.S_CSS_CLASS
+      }
+    );
 
     /// TEST
     this.setTitle('Rahman@BrutusNext');
 
-    this.output.create(this.$content);
-    this.input.create(this.$content);
-
-    return this.$window;
+    this.output.create({ $parent: this.$content });
+    this.input.create({ $parent: this.$content });
   }
 
   // Writes the command to the output and sends it to the connection.
@@ -86,20 +88,11 @@ export class ScrollWindow extends GameWindow
         forceScroll: true
       }
     );
-
-    // let html = MudColors.htmlize
-    // (
-    //   message,
-    //   MudColors.CLIENT_MESSAGE_COLOR
-    // );
-
-    // // Append the message to the output element.
-    // this.output.appendHtml(html, { forceScroll: true });
   }
   
   public receiveMessage(message: string)
   {
-    this.output.appendMessage(message);
+    this.output.append(message);
   }
 
   public triggerOutputEvent(event: JQueryKeyEventObject)
@@ -134,15 +127,6 @@ export class ScrollWindow extends GameWindow
         forceScroll: true
       }
     );
-
-    // let html = MudColors.htmlize
-    // (
-    //   command,
-    //   MudColors.COMMAND_ECHO_COLOR
-    // );
-
-    // // Local echo (append the command to the output element).
-    // this.output.appendHtml(html, { forceScroll: true });
   }
 
   // ---------------- Event handlers --------------------

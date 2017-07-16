@@ -6,10 +6,8 @@
 
 'use strict';
 
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {Component} from '../../../client/gui/Component';
-import {MudColors} from '../../../client/gui/MudColors';
-
-import $ = require('jquery');
 
 export class ScrollWindowOutput extends Component
 {
@@ -33,33 +31,24 @@ export class ScrollWindowOutput extends Component
   // ---------------- Public methods --------------------
 
   // -> Returns created jquery element.
-  public create($container: JQuery)
+  public create(param: Component.DivParam = {})
   {
-    this.$output = this.createDiv
+    Utils.applyDefaults
     (
+      param,
       {
-        $parent: $container,
+        name: 'scroll_window_output',
         sCssClass: ScrollWindowOutput.S_CSS_CLASS,
         // In order to trigger keyboard events on <div> element,
         // it must have focus. To give it a focus, it must have
         // a 'tabindex' attribute set.
         // ('tabindex: -1' means: focusable only by script, not by user)
-        tabindex: -1
+        tabindex: -1,
+        keydown: (event) => { this.onKeyDown(event); }
       }
     );
 
-    /*
-    // In order to trigger keyboard events on <div> element,
-    // it must have focus. To give it a focus, it must have
-    // a 'tabindex' attribute set.
-    // ('tabindex: -1' means: focusable only by script, not by user)
-    this.$output.attr('tabindex',  '-1');
-    */
-
-    this.$output.keydown
-    (
-      (event) => { this.onKeyDown(event); }
-    );
+    this.$output = this.createDiv(param);
   }
 
   public append
@@ -99,15 +88,6 @@ export class ScrollWindowOutput extends Component
     // parameter overrides it.
     if (!userScrolled || forceScroll)
       this.scrollToBottom();
-  }
-
-  /// Deprecated.
-  // Converts message from mud colors (like '&Rhealth&g') to html
-  // reprezentation (using <span> elements) and adds the result to
-  // the end of output component.
-  public appendMessage(message: string)
-  {
-    this.append(message);
   }
 
   // // If 'param.forceScroll' is 'true', output always scrolls to the bottom.

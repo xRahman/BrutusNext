@@ -11,21 +11,14 @@ import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Component} from '../../../client/gui/Component';
 import {Form} from '../../../client/gui/Form';
 
-import $ = require('jquery');
-
 export class ChargenForm extends Form
 {
-  protected static get SUBMIT_BUTTON_S_CSS_CLASS()
-    { return 'S_ChargenForm_SubmitButton'; }
-  protected static get CANCEL_BUTTON_S_CSS_CLASS()
-    { return 'S_ChargenForm_CancelButton'; }
-
   // -------------- Static class data -------------------
 
-  //----------------- Protected data --------------------
+  // ---------------- Protected data --------------------
 
 
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   private $characterNameInput: JQuery = null;
 
@@ -59,7 +52,7 @@ export class ChargenForm extends Form
     (
       {
         text: 'Create Character',
-        sCssClass: ChargenForm.SUBMIT_BUTTON_S_CSS_CLASS
+        sCssClass: Form.LEFT_BUTTON_S_CSS_CLASS
       }
     );
   }
@@ -98,22 +91,13 @@ export class ChargenForm extends Form
     (
       param,
       {
-        sCssClass: ChargenForm.CANCEL_BUTTON_S_CSS_CLASS,
+        sCssClass: Form.RIGHT_BUTTON_S_CSS_CLASS,
         text: 'Cancel',
-        click: (event: Event) => { this.onCancel(event); }
+        click: (event: MouseEvent) => { this.onCancel(event); }
       }
     );
 
     return this.createButton(param);
-
-    // let $button = this.createButton(param);
-
-    // $button.click
-    // (
-    //   (event: Event) => { this.onCancel(event); }
-    // );
-
-    // return $button;
   }
 
   // ---------------- Event handlers --------------------
@@ -128,7 +112,7 @@ export class ChargenForm extends Form
     ClientApp.setState(ClientApp.State.IN_GAME);
   }
 
-  protected onCancel(event: Event)
+  protected onCancel(event: MouseEvent)
   {
     ClientApp.setState(ClientApp.State.CHARLIST);
   }

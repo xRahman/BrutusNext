@@ -487,12 +487,12 @@
 /*                          Structure                          */
 /***************************************************************/
 
-/* -------------- Nonstandard Font Size -------------- */
+/* ------------- Font Size --------------- */
 
 /* :: Small Font Size :: */
 .S_StandaloneWindow_Text,
 .S_Form_Text,
-.S_GameWindow_Title,
+.S_TitledWindow_Title,
 .S_CharlistWindow_CharacterPlateLabelSmall
 {
   font-size: 0.8em;
@@ -505,15 +505,6 @@
 }
 
 /* ------------- Component --------------- */
-
-/* :: Link Text :: */
-/*.S_Component_LinkText
-{*/
-  /* Link text is a <button> element styled as inline text element */
-  /*margin: 0;
-  padding: 0;
-  display: inline;
-}*/
 
 /* :: Full Width Inline Block :: */
 .S_Form_ButtonContainer,
@@ -532,8 +523,7 @@
 /* :: Default Window :: */
 .S_Window,
 .S_ScrollWindow,
-.S_MapWindow,
-.S_GameWindow
+.S_MapWindow
 {
   margin: 0;
   padding: 0;
@@ -542,43 +532,19 @@
 }
 
 /* :: Default Window Size :: */
-.S_Window,
-.S_GameWindow
+.S_Window
 {
   width: 20%;
   height: 20%;
 }
 
 /* :: Default Window Title Bar :: */
-.S_WindowTitleBar,
-.S_GameWindow_TitleBar,
+.S_TitledWindow_TitleBar,
 .S_StandaloneWindow_TitleBar
 {
   width: 100%;
   height: auto;
   margin: 0;
-}
-
-/* :: Default Window Title :: */
-.S_WindowTitle,
-.S_StandaloneWindow_Title
-{
-  text-align: center;
-  width: 100%;
-  height: 100%;
-  padding: 0.4em;
-  display: block;
-}
-
-/* :: Default Window Content :: */
-.S_WindowContent
-{
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
 }
 
 /* :: Center At Screen :: */
@@ -592,15 +558,37 @@
   transform: translate(-50%, -50%);
 }
 
-/* ------------- Game Window ------------- */
+/* ------------ Titled Window ------------ */
 
-/* :: Game Window Title :: */
-.S_GameWindow_Title
+/* :: Default Window Title :: */
+.S_TitledWindow_Title
 {
   text-align: center;
   width: 100%;
   height: 100%;
   padding: 0.1em;
+  display: block;
+}
+
+/* :: Default Window Content :: */
+.S_TitledWindow_Content
+{
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- Standalone Window ---------- */
+
+.S_StandaloneWindow_Title
+{
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  padding: 0.4em;
   display: block;
 }
 
@@ -628,7 +616,7 @@
 .S_ScrollWindowOutput
 {
   padding: 0.2em;
-  word-wrap: break-word; /* Break long words that wont fit */
+  word-wrap: break-word; /* Break long words that won't fit */
 }
 
 /* :: Scroll Window Input :: */
@@ -780,19 +768,15 @@
   height: auto;
 }
 
-/* -------------- Register Form --------------- */
-
-/* :: Form Short Submit Button :: */
-.S_RegisterForm_SubmitButton,
-.S_ChargenForm_SubmitButton
+/* :: Form Left Button :: */
+.S_Form_LeftButton
 {
   width: 60%;
   float: left;
 }
 
-/* :: Form Short Cancel Button :: */
-.S_RegisterForm_CancelButton,
-.S_ChargenForm_CancelButton
+/* :: Form Right Button :: */
+.S_Form_RightButton
 {
   width: 35%;
   float: left;
