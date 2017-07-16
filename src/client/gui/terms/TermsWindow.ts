@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Component} from '../../../client/gui/Component';
 import {Window} from '../../../client/gui/Window';
@@ -48,8 +49,8 @@ export class TermsWindow extends StandaloneWindow
     super.create
     (
       {
-        windowCss: { sClass: TermsWindow.S_CSS_CLASS },
-        contentCss: { sClass: Window.CONTENT_S_CSS_CLASS }
+        name: 'terms_window',
+        sCssClass: TermsWindow.S_CSS_CLASS
       }
     );
 
@@ -62,6 +63,18 @@ export class TermsWindow extends StandaloneWindow
   }
 
   // --------------- Protected methods ------------------
+
+  // ~ Overrides TermsWindow.createContent().
+  protected createContent(param: Component.DivParam = {})
+  {
+    Utils.applyDefaults
+    (
+      param,
+      { sCssClass: TermsWindow.CONTENT_S_CSS_CLASS }
+    );
+
+    return super.createContent(param);
+  }
 
   // ---------------- Private methods -------------------
 
@@ -88,21 +101,14 @@ export class TermsWindow extends StandaloneWindow
         $parent: this.$content,
         sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS,
         text: 'Accept',
-        click: (event: Event) => { this.onAcceptClick(event); }
+        click: (event: MouseEvent) => { this.onAcceptClick(event); }
       }
     );
-
-    // $button.click
-    // (
-    //   (event: Event) => { this.onAcceptClick(event); }
-    // );
-
-    // return $button;
   }
 
   // ---------------- Event handlers --------------------
 
-  private onAcceptClick(event: Event)
+  private onAcceptClick(event: MouseEvent)
   {
     console.log("Clicked on Accept button");
     ClientApp.setState(ClientApp.State.REGISTER);

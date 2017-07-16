@@ -9,10 +9,7 @@
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Component} from '../../../client/gui/Component';
 import {StandaloneWindow} from '../../../client/gui/StandaloneWindow';
-import {Form} from '../../../client/gui/Form';
 import {ChargenForm} from '../../../client/gui/chargen/ChargenForm';
-
-import $ = require('jquery');
 
 export class ChargenWindow extends StandaloneWindow
 {
@@ -23,13 +20,6 @@ export class ChargenWindow extends StandaloneWindow
     // Show this window when app is in this state.
     this.flags.set(ClientApp.State.CHARGEN);
   }
-
-  // protected static get CHARLIST_S_CSS_CLASS()
-  //   { return 'S_CharlistWindow_Charlist'; }
-  // protected static get CHARACTER_PLATE_CONTAINER_S_CSS_CLASS()
-  //   { return 'S_CharlistWindow_CharacterPlateContainer'; }
-  // protected static get CHARACTER_PLATE_S_CSS_CLASS()
-  //   { return 'S_CharlistWindow_CharacterPlate'; }
 
   // -------------- Static class data -------------------
 
@@ -50,7 +40,7 @@ export class ChargenWindow extends StandaloneWindow
   // ~ Overrides StandaloneWindow.create().
   public create()
   {
-    super.create();
+    super.create({ name: 'chargen_window' });
 
     this.setTitle("Character Creation");
 

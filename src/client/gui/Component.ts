@@ -29,8 +29,6 @@ import {Utils} from '../../shared/lib/utils/Utils';
 import {MudColors} from '../../client/gui/MudColors';
 import {RegisterRequest} from '../../shared/lib/protocol/RegisterRequest';
 
-import $ = require('jquery');
-
 export abstract class Component
 {
   // This is used to make an empty line of text.
@@ -250,9 +248,9 @@ export abstract class Component
     (
       param,
       {
+        name: 'empty_line',
         sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS,
-        text: Component.EMPTY_LINE_TEXT,
-        name: 'empty_line'
+        text: Component.EMPTY_LINE_TEXT
       }
     );
 
@@ -346,6 +344,21 @@ export abstract class Component
 
     if (param.click)
       $element.click(param.click);
+
+    if (param.keypress)
+      $element.keypress(param.keypress);
+
+    if (param.keydown)
+      $element.keydown(param.keydown);
+
+    if (param.focus)
+      $element.focus(param.focus);
+
+    if (param.submit)
+      $element.submit(param.submit);
+
+    if (param.change)
+      $element.change(param.change);
   }
 
   private createInputElement(type: string, param: Object): JQuery
@@ -403,6 +416,9 @@ export abstract class Component
     if (attributes.checked !== undefined)
       $element.prop('checked', attributes.checked);
 
+    if (attributes.src !== undefined)
+      $element.attr('src', attributes.src);
+
     // There is difference between attribute 'disabled' and
     // property 'disabled'. Attribute specifies initial value
     // of 'disabled' property of the element, property reflects
@@ -459,7 +475,10 @@ export module Component
     sCssClass?: string;
 
     // Event handlers.
-    click?: (event: Event) => any;
+    click?: (event: MouseEvent) => any;
+    keypress?: (event: KeyboardEvent) => any;
+    keydown?: (event: KeyboardEvent) => any;
+    focus?: (event: FocusEvent) => any;
   }
 
   interface TextParameters
@@ -468,13 +487,28 @@ export module Component
     baseTextColor?: string;   // For example 'rgb(255, 255, 255)'.
   }
 
+  interface FormParameters
+  {
+    // Event handlers.
+    submit?: (event: Event) => any;
+  }
+
+  // These elements fire 'change' events:
+  // <input>, <select>, and <textarea>
+  interface ChangeEventParameter
+  {
+    change?: (event: Event) => any;
+  }
+
   // This inteface contains properties of all other parameters
   // interfaces (by extending them all). This way we can have
   // just one method (applyParameters()) to set them for any
   // component.
   export interface Parameters extends
     CommonParameters,
-    TextParameters
+    TextParameters,
+    FormParameters,
+    ChangeEventParameter
   {
      // All properties are inherited.
   }
@@ -493,9 +527,14 @@ export module Component
     tabindex?: number
   }
 
-  interface CheckedAttribute
+  interface CheckboxAttributes
   {
     checked?: boolean
+  }
+
+  interface ImgAttributes
+  {
+    src?: string
   }
 
   // These elements should have 'autofocus' attribute:
@@ -543,7 +582,8 @@ export module Component
   // component.
   export interface Attributes extends
     CommonAttributes,
-    CheckedAttribute,
+    CheckboxAttributes,
+    ImgAttributes,
     AutofocusAttribute,
     InputAttributes,
     TextInputAttributes,
@@ -560,6 +600,7 @@ export module Component
     TextParameters,
     CommonAttributes
   {
+    // All properties are inherited.
   }
 
   export interface DivParam extends
@@ -572,13 +613,15 @@ export module Component
 
   export interface ImgParam extends
     CommonParameters,
-    CommonAttributes
+    CommonAttributes,
+    ImgAttributes
   {
     // All properties are inherited.
   }
 
   export interface FormParam extends
     CommonParameters,
+    FormParameters,
     CommonAttributes
   {
     // All properties are inherited.
@@ -595,6 +638,7 @@ export module Component
   export interface TextInputParam extends
     CommonParameters,
     CommonAttributes,
+    ChangeEventParameter,
     AutofocusAttribute,
     InputAttributes,
     TextInputAttributes,
@@ -605,6 +649,7 @@ export module Component
 
   export interface EmailInputParam extends
     CommonParameters,
+    ChangeEventParameter,
     CommonAttributes,
     AutofocusAttribute,
     InputAttributes,
@@ -616,6 +661,7 @@ export module Component
 
   export interface PasswordInputParam extends
     CommonParameters,
+    ChangeEventParameter,
     CommonAttributes,
     AutofocusAttribute,
     InputAttributes,
@@ -627,17 +673,18 @@ export module Component
 
   export interface CheckboxInputParam extends
     CommonParameters,
+    ChangeEventParameter,
     CommonAttributes,
-    CheckedAttribute,
+    CheckboxAttributes,
     AutofocusAttribute,
     InputAttributes
   {
     // All properties are inherited.
   }
 
-  //.
   export interface TextAreaParam extends
     CommonParameters,
+    ChangeEventParameter,
     CommonAttributes,
     AutofocusAttribute,
     TextInputAttributes,

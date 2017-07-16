@@ -6,16 +6,14 @@
 
 'use strict';
 
-import {Utils} from '../../../shared/lib/utils/Utils';
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {LocalStorage} from '../../../client/lib/storage/LocalStorage';
 import {Connection} from '../../../client/lib/net/Connection';
 import {Component} from '../../../client/gui/Component';
 import {CredentialsForm} from '../../../client/gui/CredentialsForm';
 import {LoginRequest} from '../../../shared/lib/protocol/LoginRequest';
 import {LoginResponse} from '../../../shared/lib/protocol/LoginResponse';
-
-import $ = require('jquery');
 
 export class LoginForm extends CredentialsForm
 {
@@ -25,7 +23,7 @@ export class LoginForm extends CredentialsForm
 
   //------------------ Private data ---------------------
 
-  private $errorEmptyLine = null;
+  private $errorEmptyLine: JQuery = null;
 
   // --------------- Static accessors -------------------
 
