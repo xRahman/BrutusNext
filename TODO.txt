@@ -33,6 +33,12 @@ TODO: Oštřit to pro jistotu i přímo v Connection.send() - když
 
 --------------------------------------------------------------
 
+TODO: Zakázat outlinu u scrollview outputu.
+
+TODO: Komponenty s disablovanou text selection mají stále nad sebou
+  selekční/editační kurzor
+- dát tam normální šipku.
+
 TODO: Eliminovat možnost mít víc paramů byla asi blbost - nutnost overridnout
 kvůli tomu nějakou další metodu je hodně neintuitivní.
 - na druhou stranu ale teď dává smysl předávat celé paramy, tj.

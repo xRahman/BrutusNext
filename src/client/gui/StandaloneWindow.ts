@@ -14,6 +14,8 @@ export class StandaloneWindow extends TitledWindow
 {
   protected static get S_CSS_CLASS()
     { return 'S_StandaloneWindow'; }
+  protected static get TITLE_S_CSS_CLASS()
+    { return 'S_StandaloneWindow_Title'; }
   protected static get CONTENT_S_CSS_CLASS()
     { return 'S_StandaloneWindow_Content'; }
   protected static get TEXT_S_CSS_CLASS()
@@ -33,19 +35,48 @@ export class StandaloneWindow extends TitledWindow
 
   // ---------------- Public methods --------------------
 
-  // ~ Overrides Window.create().
-  public create(param: Component.DivParam = {})
+  // ~ Overrides TitledWindow.create().
+  public create
+  (
+    {
+      windowParam = {},
+      titleBarParam = {},
+      titleParam = {},
+      contentParam = {}
+    }
+    : TitledWindow.Param = {}
+  )
   {
     Utils.applyDefaults
     (
-      param,
+      windowParam,
       {
         name: 'standalone_window',
         sCssClass: StandaloneWindow.S_CSS_CLASS
       }
     );
 
-    super.create(param);
+    Utils.applyDefaults
+    (
+      titleParam,
+      { sCssClass: StandaloneWindow.TITLE_S_CSS_CLASS }
+    );
+
+    Utils.applyDefaults
+    (
+      contentParam,
+      { sCssClass: StandaloneWindow.CONTENT_S_CSS_CLASS }
+    );
+
+    super.create
+    (
+      {
+        windowParam,
+        titleBarParam,
+        titleParam,
+        contentParam
+      }
+    );
   }
 
   // --------------- Protected methods ------------------

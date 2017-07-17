@@ -49,11 +49,14 @@ export class Window extends Component
 
   // ---------------- Public methods --------------------
 
-  public create(param: Component.DivParam = {})
+  public create
+  (
+    { windowParam }: { windowParam?: Component.DivParam } = {}
+  )
   {
     Utils.applyDefaults
     (
-      param,
+      windowParam,
       {
         name: 'window',
         $parent: Document.$body,
@@ -62,7 +65,7 @@ export class Window extends Component
       }
     );
 
-    this.$window = this.createDiv(param);
+    this.$window = this.createDiv(windowParam);
 
     // Windows are created hidden.
     this.$window.hide();
