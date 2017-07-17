@@ -43,7 +43,7 @@ export class RegisterWindow extends StandaloneWindow
   // ~ Overrides StandaloneWindow.create().
   public create()
   {
-    super.create({ name: 'register_window' });
+    super.create({ windowParam: { name: 'register_window' }});
 
     this.setTitle("Create New Account");
 

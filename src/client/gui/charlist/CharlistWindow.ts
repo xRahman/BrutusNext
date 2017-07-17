@@ -55,7 +55,7 @@ export class CharlistWindow extends StandaloneWindow
   // ~ Overrides StandaloneWindow.create().
   public create()
   {
-    super.create({ name: 'charlist_window' });
+    super.create({ windowParam: { name: 'charlist_window' }});
 
     this.setTitle("Your Characters");
 
