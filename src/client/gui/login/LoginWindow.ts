@@ -43,7 +43,7 @@ export class LoginWindow extends StandaloneWindow
   // ~ Overrides StandaloneWindow.create().
   public create()
   {
-    super.create({ name: 'login_window' });
+    super.create({ windowParam: { name: 'login_window' }});
 
     this.setTitle("&gWelcome to &RBrutus&YNext");
 

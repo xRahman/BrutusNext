@@ -50,8 +50,11 @@ export class ScrollWindow extends TitledWindow
     super.create
     (
       {
-        name: 'scroll_window',
-        sCssClass: ScrollWindow.S_CSS_CLASS
+        windowParam:
+        {
+          name: 'scroll_window',
+          sCssClass: ScrollWindow.S_CSS_CLASS
+        }
       }
     );
 
