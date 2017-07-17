@@ -56,6 +56,7 @@ kvůli tomu nějakou další metodu je hodně neintuitivní.
 TODO: Udělat to tak ještě s Window.create()
 (Form.createCheckbox() jsem už předělal)
 - bacha, někde jsem přetěžoval createContent().
+[done]
 
 Ke zvážení
 - dělat vložené komponenty public, ať nemusím psát tuny provolávacích
@@ -78,23 +79,14 @@ asi reusnout z .S_Form_ButtonContainer
 
 TODO: Zkontrolvoat, jestli /* :: Full Width Inline Block :: */
 musí být inline-block (imho by měl stačit block).
+- očividně musí
+[done]
 
-TODO: Jak vyrábět složené komponenty:
-1. crete() containeru dát jen param té základní komponenty.
-2. z něj pak volat create() jednotlivých podkomponent - každá
-   má opět jen param pro tu jednu komponentu
-3. Potomci si mohou přetížit metody na create jednotlivých komponent
-- udělat to s Window.create() a mrknout i na checkbox ve formu.
-
-- skládat komponenty co nejdřív (tj. titleBar si rovnou vyrobí title)
-- když budu chtít okno bez titlu a contentu, tak přerovnat dědičnost
-  - Window by nemělo mít nic, z něj zdědit TitledWindow (s titlebarem
-    a contententem, z něj zdědit další).
-
+--------------------------------------------------------------
 
 TODO: Dát všem strukturálně významným komponentám 'name'
 (oknům, formům, atd.)
-
+[done]
 
 TODO: Vykoumat zobrazování linků s barevným textem.
 - aspoň to zkusit.
@@ -109,7 +101,7 @@ TODO: Zvážit, jestli click handlery (a obecně všechny standardní
   gui handlery) nepředávat v rámci parametrů create metod.
 TODO: A možná na to taky zavést interfacy, ať to nemusim copypastovat
   do každé overridnuté metody.
-
+[done]
 
 TODO: Zkonvertovat všechny metody ve Form
 [done]
@@ -118,8 +110,6 @@ TODO: Projít ještě jednou všechny GUI classy.
 TODO: Přidat do zobrazení souborů vs vs code css fily a dokumentaci
   (asi jen texťáky).
 [done]
-
---------------------------------------------------------------
 
 TODO: Výpis problémů by neměl být <label> (asi spíš <div>).
 [done]
