@@ -10,6 +10,7 @@ import {Utils} from '../../../shared/lib/utils/Utils';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Component} from '../../../client/gui/Component';
 import {Window} from '../../../client/gui/Window';
+import {TitledWindow} from '../../../client/gui/TitledWindow';
 import {StandaloneWindow} from '../../../client/gui/StandaloneWindow';
 
 import $ = require('jquery');
@@ -49,8 +50,15 @@ export class TermsWindow extends StandaloneWindow
     super.create
     (
       {
-        name: 'terms_window',
-        sCssClass: TermsWindow.S_CSS_CLASS
+        windowParam:
+        {
+          name: 'terms_window',
+          sCssClass: TermsWindow.S_CSS_CLASS
+        },
+        contentParam:
+        {
+          sCssClass: TitledWindow.CONTENT_S_CSS_CLASS
+        }
       }
     );
 
@@ -63,18 +71,6 @@ export class TermsWindow extends StandaloneWindow
   }
 
   // --------------- Protected methods ------------------
-
-  // ~ Overrides TermsWindow.createContent().
-  protected createContent(param: Component.DivParam = {})
-  {
-    Utils.applyDefaults
-    (
-      param,
-      { sCssClass: TermsWindow.CONTENT_S_CSS_CLASS }
-    );
-
-    return super.createContent(param);
-  }
 
   // ---------------- Private methods -------------------
 

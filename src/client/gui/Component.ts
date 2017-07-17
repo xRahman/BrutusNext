@@ -359,6 +359,9 @@ export abstract class Component
 
     if (param.change)
       $element.change(param.change);
+
+    if (param.resize)
+      $element.resize(param.resize);
   }
 
   private createInputElement(type: string, param: Object): JQuery
@@ -479,6 +482,7 @@ export module Component
     keypress?: (event: KeyboardEvent) => any;
     keydown?: (event: KeyboardEvent) => any;
     focus?: (event: FocusEvent) => any;
+    resize?: (event: Event) => any;
   }
 
   interface TextParameters

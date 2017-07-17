@@ -37,14 +37,23 @@ export class TitledWindow extends Window
 
   // ---------------- Public methods --------------------
 
-  public create(param: Component.DivParam = {})
+  public create
+  (
+    {
+      windowParam = {},
+      titleBarParam = {},
+      titleParam = {},
+      contentParam = {}
+    }
+    : TitledWindow.Param = {}
+  )
   {
-    Utils.applyDefaults(param, { name: 'titled_window' });
+    Utils.applyDefaults(windowParam, { name: 'titled_window' });
 
-    super.create(param);
+    super.create({ windowParam });
 
-    this.createTitleBar();
-    this.createContent();
+    this.createTitleBar(titleBarParam, titleParam);
+    this.createContent(contentParam);
   }
 
   // Sets text to 'title' element
@@ -63,21 +72,26 @@ export class TitledWindow extends Window
 
   // --------------- Protected methods ------------------
 
-  protected createTitleBar(param: Component.DivParam = {})
+  protected createTitleBar
+  (
+    titleBarParam: Component.DivParam,
+    titleParam: Component.TitleParam
+  )
   {
     Utils.applyDefaults
     (
-      param,
+      titleBarParam,
       {
         name: 'title_bar',
+        $parent: this.$window,
         gCssClass: Component.TITLE_BAR_G_CSS_CLASS,
         sCssClass: TitledWindow.TITLE_BAR_S_CSS_CLASS
       }
     );
 
-    this.$titleBar = this.createDiv(param);
+    this.$titleBar = this.createDiv(titleBarParam);
 
-    this.createWindowTitle();
+    this.createWindowTitle(titleParam);
   }
 
   protected createWindowTitle(param: Component.TitleParam = {})
@@ -115,4 +129,17 @@ export class TitledWindow extends Window
 
   // ---------------- Event handlers --------------------
 
+}
+
+// ------------------ Type Declarations ----------------------
+
+export module TitledWindow
+{
+  export interface Param
+  {
+    windowParam?: Component.DivParam,
+    titleBarParam?: Component.DivParam,
+    titleParam?: Component.TitleParam,
+    contentParam?: Component.DivParam
+  }
 }

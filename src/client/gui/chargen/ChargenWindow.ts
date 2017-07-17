@@ -40,7 +40,7 @@ export class ChargenWindow extends StandaloneWindow
   // ~ Overrides StandaloneWindow.create().
   public create()
   {
-    super.create({ name: 'chargen_window' });
+    super.create({ windowParam: { name: 'chargen_window' }});
 
     this.setTitle("Character Creation");
 
