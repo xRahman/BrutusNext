@@ -46,6 +46,22 @@ TODO: Místo .S_Form_ButtonContainer by šlo asi použít
 TODO: css u .S_StandaloneWindow_Text, .S_Form_Text by šlo
 asi reusnout z .S_Form_ButtonContainer
 
+TODO: V charselectu jde odselectnout char (což je asi ok),
+  pak ale zůstane enablovaný button 'enter game' - což už asi není
+  ok (sice pak jde pořád vlézt do hry, ale pro hráče není jasné,
+  se kterým charem se loguje).
+- problém je, že samotné kliknutí na button 'enter game' zruší selekci.
+  (možná bych měl použít jinej stav než 'selected' - třeba 'checked')
+
+
+TODO: Zrušit hlášku 'Opening Websocket connection', která se posílá
+  do ScrollWindow.
+
+TODO: Otestovat reconnect z jiného tabu.
+- očividně to nefunguje úplně dobře.
+- tohle bych měl udělat zároveň s ošetřením disconnectu v clientu,
+  jinak to těžko odladím.
+
 
 --------------------------------------------------------------
 
@@ -286,26 +302,9 @@ TODO: Zrušit metodu Component.createTextLink()
   - stejně jako s obyč textem.
 [jinak, ale done]
 
-TODO: V charselectu jde odselectnout char (což je asi ok),
-  pak ale zůstane enablovaný button 'enter game' - což už asi není
-  ok (sice pak jde pořád vlézt do hry, ale pro hráče není jasné,
-  se kterým charem se loguje).
-- problém je, že samotné kliknutí na button 'enter game' zruší selekci.
-  (možná bych měl použít jinej stav než 'selected' - třeba 'checked')
-
-
-TODO: Zrušit hlášku 'Opening Websocket connection', která se posílá
-  do ScrollWindow.
-
-
 TODO: Register form by asi neměla vyplňovat login a heslo ze Storage.
   (ale mohla by možná zkopírovat login z LoginFormu)
 [done]
-
-TODO: Otestovat reconnect z jiného tabu.
-- očividně to nefunguje úplně dobře.
-- tohle bych měl udělat zároveň s ošetřením disconnectu v clientu,
-  jinak to těžko odladím.
 
 --------------------------------------------------------------
 
