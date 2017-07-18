@@ -38,9 +38,13 @@ persistent targetting
 - možná by to měl být default, tj. skill by neměl být potřeba
 
 
-Dlouhodobá kouzla a mechanismy
--------------------------------
+Dlouhodobá kouzla a výroba mechanismů
+---------------------------------------
 
-- kouzlo na otevírání zámku heslem, výroba mechanických zámků, at.d
+- kouzlo na očarování zámku, aby se otevíral heslem
+- iluze mága (hráčské postavy), která se objeví přede dveřma věže
+  a oznámí, že mistr není doma.
+- výroba mechanických zámků, pastí, atd.
+
 (tohle všechno začne mít smysl ve chvíli, kdy bude housing, stavění
  hradů a tak).
