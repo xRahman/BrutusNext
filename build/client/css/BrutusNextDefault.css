@@ -154,6 +154,13 @@
   -o-user-select: none;
   user-select: none;
 
+  /*
+    Set default cursor
+    (otherwise text select cursor would appear on components
+     with disabled text selection)
+  */
+  cursor: default;
+
   /* Following code makes the image always cover whole area */
   background-repeat: no-repeat;
   background-attachment: fixed;

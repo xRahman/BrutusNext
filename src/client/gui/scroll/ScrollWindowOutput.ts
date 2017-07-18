@@ -38,6 +38,9 @@ export class ScrollWindowOutput extends Component
       param,
       {
         name: 'scroll_window_output',
+        // Use NO_GRAPHICS_G_CSS_CLASS to disable default outline
+        // when selected.
+        gCssClass: Component.NO_GRAPHICS_G_CSS_CLASS,
         sCssClass: ScrollWindowOutput.S_CSS_CLASS,
         // In order to trigger keyboard events on <div> element,
         // it must have focus. To give it a focus, it must have
