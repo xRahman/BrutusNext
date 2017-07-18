@@ -1,7 +1,18 @@
 ﻿Follow a battle-Follow
 - obyč (tj. grupové) follow nebude followovat, když je někdo z grupy
   v boji
-  - jen bacha na to, aby to nebylo zmatkovité. 
+  - jen bacha na to, aby to nebylo zmatkovité.
+
+A nebo prostě automatické follow úplně zrušit.
+- možná místo něj dát nějaké skilly na zobrazení
+  party memberů na mapě.
+(ostatně ve hře jsou skilly na trackování, teleporty, group summony,
+ portály, atd., takže by to ani nemusel bejt až takovej problém)
+ - folsové samozřejmě budou followovat automaticky.
+- možná by ještě šlo udělat follow, které se zruší libovolným
+  skillem (možná kromě spellupu)
+  + indikaci v grupě, kdo má follow a kdo ne.
+  (fol bez parametru by folnulo leadera grupy)
 
 -----------------------------------------------------------------
 
