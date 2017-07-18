@@ -1,0 +1,27 @@
+
+
+Budovy by měly mít nějaký hmatatelný efekt
+- magická věž zrychluje mágovi studium nových kouzel,
+ practice yard totéž pro fighterské skilly, atd.
+- věž umožňuje mágovi vysummonit strážné elementály, barracks
+  umožní fighterovi naverbovat guardy, thieves den bude mít
+  možnost nainstalovat spustu pastí a "naverbovat" ranaře,
+  kteří tam nepustí nikoho cizího, atd.
+
+Všechny budovy (tj. nejen velké hrady, ale i obyčejné domy,
+  magické věže, thiefovská doupata a tak) by měly mít navěšené
+  hráči spustitelné eventy (něco jako když se hráči v dolech
+  prokopou do nové oblasti).
+
+Začít od malých budov, vesnic a tak, nikoliv rovnou hrady. Hráči
+by měli postupně osidlovat oblast (a měli by mít i nástroje na
+přilákání NPC setlerů, kteří pak osídlí vesnice a tak).
+
+- celý región by mohl mít na sobě navěšené hráčsky spustitelné
+  eventy - upgradnutí vesnice bude mít u sebe poznámku, že to může
+  vyvolat nájezdy banditů, orků z nedalekého dungeonu, nebo tak
+  něco (hráči si vybírají, kdy ten upgrade provedou, čímž určí,
+  kdy se event spustí).
+  - měl by existovat způsob, jak tuhle hrozbu trvale odstranit
+    (např. výprava do orcské pevnosti a zničení přenosných
+     soulstonů, u kterých se orkové oživují).
