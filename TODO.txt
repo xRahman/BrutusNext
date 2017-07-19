@@ -35,13 +35,10 @@ TODO: Oštřit to pro jistotu i přímo v Connection.send() - když
 
 --------------------------------------------------------------
 
-Ke zvážení
-- dělat vložené komponenty public, ať nemusím psát tuny provolávacích
-  metod...
+TODO: V ChargeonForm číst limity na character name ze shared kódu.
 
 TODO: CharlistWindow rozdělit do víc class.
 (a v createMetodách udělat submetody).
-
 
 TODO: metoda applyDefaults by mohla být v Component
   (klidně může interně volat Utils.applyDefaults()),
@@ -65,6 +62,11 @@ TODO: Otestovat reconnect z jiného tabu.
 
 --------------------------------------------------------------
 
+Ke zvážení
+- dělat vložené komponenty public, ať nemusím psát tuny provolávacích
+  metod...
+[done]
+
 Hodně divoká myšlenka k celému GUI:
 - celá ta dědičnost silně zavání prototypovou dědičností.
   Problém je, že parametry komponenty nemohou být classa,
@@ -79,7 +81,6 @@ Problém je, že bych to asi musel dělat ve třech krocích:
 3) Zavolám create na příslušnou komponentu s finálním param objectem.
 ... což je asi dost naprd.
 [kašlat na to]
-
 
 TODO: Místo .S_Form_ButtonContainer by šlo asi použít
 .S_Component_FullWidthBlock

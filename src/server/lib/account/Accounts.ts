@@ -18,7 +18,7 @@ import {RegisterRequest} from '../../../shared/lib/protocol/RegisterRequest';
 
 export class Accounts
 {
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   // Account names that are temporarily marked as taken.
   private nameLocks = new Set<string>();

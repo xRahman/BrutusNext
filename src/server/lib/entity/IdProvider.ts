@@ -12,7 +12,7 @@ import {Time} from '../../../shared/lib/utils/Time';
 
 export class IdProvider
 {
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   // Number of issued ids in this boot.
   private lastIssuedId = 0;

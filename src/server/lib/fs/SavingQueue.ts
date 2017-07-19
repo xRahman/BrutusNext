@@ -22,7 +22,7 @@ let FastPriorityQueue = require('fastpriorityqueue');
 
 export class SavingQueue
 {
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   // FastPriorityQueue of resolve callbacks.
   private requests = null;

@@ -24,14 +24,14 @@ export class Avatar
 
   // -------------- Static class data -------------------
 
-  //------------------ Public data ----------------------
+  // ----------------- Public data ----------------------
 
   public scrollWindow: ScrollWindow = null;
 
   /// MapWindow bude jen jedno pro celou ClientApp.
   ///public mapWindow: MapWindow = null;
 
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   // --------------- Static accessors -------------------
 

@@ -13,7 +13,7 @@ import {Entities} from '../../../shared/lib/entity/Entities';
 
 export class EntityList<T extends Entity> extends Serializable
 {
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   private entities = new Set<T>();
 

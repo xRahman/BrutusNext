@@ -52,7 +52,7 @@ export class Sector extends GameEntity
   }
   */
 
-  //----------------- Protected data --------------------
+  // ---------------- Protected data --------------------
 
   // --------------- Protected methods ------------------
 

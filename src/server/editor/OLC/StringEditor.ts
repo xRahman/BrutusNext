@@ -21,9 +21,9 @@ export class StringEditor
     this.origText = initialText;
   }
 
-  //----------------- Protected data --------------------
+  // ---------------- Protected data --------------------
 
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   // Text that is being edited.
   private text = "";

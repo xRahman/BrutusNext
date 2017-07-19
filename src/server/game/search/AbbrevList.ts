@@ -27,7 +27,7 @@ import {GameEntity} from "../../../server/game/GameEntity";
 
 export class AbbrevList<T extends GameEntity>
 {
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   /// Converted to enum
   /*

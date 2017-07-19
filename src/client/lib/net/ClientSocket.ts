@@ -42,7 +42,7 @@ export class ClientSocket
 
   // -------------- Static class data -------------------
 
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   private socket: WebSocket = null;
 

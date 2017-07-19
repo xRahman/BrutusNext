@@ -32,7 +32,7 @@ export class Dimension extends GameEntity
 
   // ---------------- Public methods --------------------
 
-  //----------------- Protected data --------------------
+  // ---------------- Protected data --------------------
 
   // --------------- Protected methods ------------------
 

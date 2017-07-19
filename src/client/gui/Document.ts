@@ -35,9 +35,9 @@ export class Document
   // Jquery <body> element.
   private $body = $('#body');
 
-  //----------------- Protected data --------------------
+  // ---------------- Protected data --------------------
 
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   // --------------- Static accessors -------------------
 

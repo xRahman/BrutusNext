@@ -7,7 +7,6 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {Utils} from '../../../shared/lib/utils/Utils';
 import {LocalStorage} from '../../../client/lib/storage/LocalStorage';
 import {Connection} from '../../../client/lib/net/Connection';
 import {Component} from '../../../client/gui/Component';
@@ -17,26 +16,16 @@ import {LoginResponse} from '../../../shared/lib/protocol/LoginResponse';
 
 export class LoginForm extends CredentialsForm
 {
-  // -------------- Static class data -------------------
-
-  //----------------- Protected data --------------------
-
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   private $errorEmptyLine: JQuery = null;
-
-  // --------------- Static accessors -------------------
-
-  // ---------------- Static methods --------------------
-
-  // --------------- Public accessors -------------------
 
   // ---------------- Public methods --------------------
 
   // ~ Overrides Form.create().
   public create(param: Component.FormParam = {})
   {
-    Utils.applyDefaults(param, { name: 'login_form' });
+    this.applyDefaults(param, { name: 'login_form' });
 
     super.create(param);
 
@@ -108,7 +97,7 @@ export class LoginForm extends CredentialsForm
   // ~ Overrides Form.createSubmitButton().
   protected createSubmitButton(param: Component.SubmitButtonParam = {})
   {
-    Utils.applyDefaults(param, { text: 'Login' });
+    this.applyDefaults(param, { text: 'Login' });
 
     return super.createSubmitButton(param);
   }
@@ -144,7 +133,10 @@ export class LoginForm extends CredentialsForm
 
   private createButtons()
   {
-    this.createSubmitButton({ $parent: this.createButtonContainer() });
+    this.createSubmitButton
+    (
+      { $parent: this.createButtonContainer() }
+    );
   }
 
   private setStoredEmailAddress()

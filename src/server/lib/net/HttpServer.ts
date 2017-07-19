@@ -83,7 +83,7 @@ export class HttpServer
     );
   }
 
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   private port = HttpServer.DEFAULT_PORT;
 
