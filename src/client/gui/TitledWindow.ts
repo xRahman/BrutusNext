@@ -85,7 +85,8 @@ export class TitledWindow extends Window
         name: 'title_bar',
         $parent: this.$window,
         gCssClass: Component.TITLE_BAR_G_CSS_CLASS,
-        sCssClass: TitledWindow.TITLE_BAR_S_CSS_CLASS
+        ///sCssClass: TitledWindow.TITLE_BAR_S_CSS_CLASS
+        sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS
       }
     );
 
