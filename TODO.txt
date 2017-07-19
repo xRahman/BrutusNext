@@ -40,10 +40,6 @@ TODO: V ChargeonForm číst limity na character name ze shared kódu.
 TODO: CharlistWindow rozdělit do víc class.
 (a v createMetodách udělat submetody).
 
-TODO: metoda applyDefaults by mohla být v Component
-  (klidně může interně volat Utils.applyDefaults()),
-  ať nemusím všude importovat Utils.
-
 TODO: V charselectu jde odselectnout char (což je asi ok),
   pak ale zůstane enablovaný button 'enter game' - což už asi není
   ok (sice pak jde pořád vlézt do hry, ale pro hráče není jasné,
@@ -61,6 +57,11 @@ TODO: Otestovat reconnect z jiného tabu.
   jinak to těžko odladím.
 
 --------------------------------------------------------------
+
+TODO: metoda applyDefaults by mohla být v Component
+  (klidně může interně volat Utils.applyDefaults()),
+  ať nemusím všude importovat Utils.
+[done]
 
 Ke zvážení
 - dělat vložené komponenty public, ať nemusím psát tuny provolávacích
