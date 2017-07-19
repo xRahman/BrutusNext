@@ -513,16 +513,13 @@
 
 /* ------------- Component --------------- */
 
-/* :: Full Width Inline Block :: */
-.S_Form_ButtonContainer,
+/* :: Full Width Block :: */
+.S_Component_FullWidthBlock,
 .S_StandaloneWindow_Text,
 .S_Form_Text
 {
-  margin: 0;
-  padding: 0;
   width: 100%;
-  height: auto;
-  display: inline-block;
+  display: block;
 }
 
 /* --------------- Window ---------------- */
@@ -545,15 +542,6 @@
   height: 20%;
 }
 
-/* :: Default Window Title Bar :: */
-.S_TitledWindow_TitleBar,
-.S_StandaloneWindow_TitleBar
-{
-  width: 100%;
-  height: auto;
-  margin: 0;
-}
-
 /* :: Center At Screen :: */
 .S_StandaloneWindow,
 .S_TermsWindow
@@ -572,7 +560,6 @@
 {
   text-align: center;
   width: 100%;
-  height: 100%;
   padding: 0.1em;
   display: block;
 }
@@ -594,7 +581,7 @@
 {
   text-align: center;
   width: 100%;
-  height: 100%;
+  /*height: 100%;*/
   padding: 0.4em;
   display: block;
 }
@@ -630,7 +617,6 @@
 .S_ScrollWindowInput
 {
   width: 100%;
-  height: auto;
   padding: 0.2em;
   resize: none; /* Disable the "grabger" corner which resizes the textarea */
   overflow: hidden; /* also hides the scrollbar */
@@ -652,18 +638,15 @@
 {
   /* Window size is a multiple of font size */
   width: 20em;
-  height: auto; /* Resize by content */
   max-width: 100%;
   max-height: 100%;
   overflow: auto; /* Enable scroll if needed */
-  display: block;
 }
 
 /* :: Standalone Window Content :: */
 .S_StandaloneWindow_Content
 {
   padding: 1em;
-  display: block;
 }
 
 /* --------------- Terms Window ---------------- */
@@ -700,7 +683,6 @@
 .S_CharlistWindow_CharacterPlateContainer
 {
   width: 100%;
-  height: auto;
   padding-left: 0.3em;
   padding-right: 0.3em;
   margin-top: 0.3em;
@@ -711,7 +693,6 @@
 .S_CharlistWindow_CharacterPlate
 {
   width: 100%;
-  height: auto;
   padding: 0.8em;
   display: flex;
 }
@@ -742,29 +723,14 @@
 
 /* ----------------- Form ---------------- */
 
-/* :: Form :: */
-.S_Form
-{
-  width: 100%;
-  height: 100%;
-}
-
 /* :: FormInput :: */
 .S_Form_Input
 {
   width: 100%;
-  height: 100%;
   padding-top: 0.3em;
   padding-bottom: 0.3em;
   padding-left: 0.6em;
   padding-right: 0.6em;
-}
-
-/* :: Full Width Block :: */
-.S_Component_FullWidthBlock
-{
-  width: 100%;
-  height: auto;
 }
 
 /* TODO: Better checkbox graphics. */
@@ -772,21 +738,18 @@
 .S_Form_Checkbox
 {
   width: auto;
-  height: auto;
 }
 
 /* :: Form Left Button :: */
 .S_Form_LeftButton
 {
   width: 60%;
-  float: left;
 }
 
 /* :: Form Right Button :: */
 .S_Form_RightButton
 {
   width: 35%;
-  float: left;
   margin-left: 5%;
 }
 
