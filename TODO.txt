@@ -35,6 +35,12 @@ TODO: Oštřit to pro jistotu i přímo v Connection.send() - když
 
 --------------------------------------------------------------
 
+TODO: Opravit chargen window.
+
+TODO: Zprovoznit enablování "Enter Game" buttonu v Charlistu.
+
+TODO: Metody na create subkomponent (jako createCharlist()).
+
 TODO: V ChargeonForm číst limity na character name ze shared kódu.
 
 TODO: CharlistWindow rozdělit do víc class.
