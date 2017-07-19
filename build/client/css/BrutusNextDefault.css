@@ -500,13 +500,13 @@
 .S_StandaloneWindow_Text,
 .S_Form_Text,
 .S_TitledWindow_Title,
-.S_CharlistWindow_CharacterPlateLabelSmall
+.S_Charplate_LabelSmall
 {
   font-size: 0.8em;
 }
 
 /* :: Large Font Size :: */
-.S_CharlistWindow_CharacterPlateLabelBig
+.S_Charplate_LabelBig
 {
   font-size: 1.2em;
 }
@@ -598,7 +598,7 @@
 /* :: Scrollable Output :: */
 .S_ScrollWindowOutput,
 .S_TermsWindow_Terms,
-.S_CharlistWindow_Charlist
+.S_Charlist
 {
   width: 100%;
   height: 100%;
@@ -672,15 +672,19 @@
 
 /* -------------- Charlist Window -------------- */
 
+/* ----------------- Charplate ----------------- */
+
 /* :: Charlist Window Character List :: */
-.S_CharlistWindow_Charlist
+.S_Charlist
 {
   margin-top: 0.5em;
   margin-bottom: 0.5em;
   height: 16em;
 }
 
-.S_CharlistWindow_CharacterPlateContainer
+/* ----------------- Charplate ----------------- */
+
+.S_Charplate_OuterContainer
 {
   width: 100%;
   padding-left: 0.3em;
@@ -689,24 +693,24 @@
   margin-bottom: 0.3em;
 }
 
-/* :: Charlist Window Character Plate :: */
-.S_CharlistWindow_CharacterPlate
+/* :: Character Plate :: */
+.S_Charplate
 {
   width: 100%;
   padding: 0.8em;
   display: flex;
 }
 
-/* :: Charlist Window Character Plate Label :: */
-.S_CharlistWindow_CharacterPlateLabelBig,
-.S_CharlistWindow_CharacterPlateLabelSmall
+/* :: Character Plate Label :: */
+.S_Charplate_LabelBig,
+.S_Charplate_LabelSmall
 {
   width: 100%;
   display: inline-block;
 }
 
-/* :: Charlist Window Portrait :: */
-.S_CharlistWindow_Portrait
+/* :: Character Plate Portrait :: */
+.S_Charplate_Portrait
 {
   /* Image will be scaled to this size. */
   width: 4em;
@@ -714,7 +718,7 @@
 }
 
 /* :: Charlist Window Labels Container :: */
-.S_CharlistWindow_LabelsContainer
+.S_Charplate_LabelsContainer
 {
   width: 100%;
   padding-left: 0.5em;
