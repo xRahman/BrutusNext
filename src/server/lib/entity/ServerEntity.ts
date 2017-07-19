@@ -26,7 +26,7 @@ export class ServerEntity extends Entity
     sentToClient: false
   };
 
-  //----------------- Protected data --------------------
+  // ---------------- Protected data --------------------
 
   // ------------- Public static methods ----------------
 

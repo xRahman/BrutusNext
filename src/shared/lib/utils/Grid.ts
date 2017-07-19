@@ -19,9 +19,9 @@ export class Grid<T>
 {
   // -------------- Static class data -------------------
 
-  //----------------- Protected data --------------------
+  // ---------------- Protected data --------------------
 
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   private data = null;
 

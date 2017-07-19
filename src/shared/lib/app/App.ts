@@ -17,7 +17,7 @@ export abstract class App
 
   protected static instance: App = null;
 
-  //----------------- Protected data --------------------
+  // ---------------- Protected data --------------------
 
   protected entities: Entities = null;
   protected prototypes: Prototypes = null;

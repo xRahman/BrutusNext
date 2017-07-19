@@ -51,7 +51,7 @@ export class Realm extends GameEntity
   }
   */
 
-  //----------------- Protected data --------------------
+  // ---------------- Protected data --------------------
 
   // ~ Overrides Entity.addToNameLists().
   protected addToNameLists()

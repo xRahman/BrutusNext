@@ -28,7 +28,7 @@ export class FileSystem
 
   public static get JSON_EXTENSION() { return '.json'; }
 
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   // Hashmap<[ string, SavingRecord ]>
   //   Key: full save path

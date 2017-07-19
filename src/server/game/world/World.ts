@@ -27,7 +27,7 @@ export class World extends GameEntity
 
   ///protected static get SAVE_DIRECTORY() { return "./data/"; }
 
-  //------------------ Public data ----------------------
+  // ----------------- Public data ----------------------
 
   public systemRealm: Realm = null;
   public systemArea: Area = null;
@@ -35,7 +35,7 @@ export class World extends GameEntity
   // The room newly created player characters spawn to.
   public tutorialRoom: Room = null;
 
-  //----------------- Protected data --------------------
+  // ---------------- Protected data --------------------
 
   constructor()
   {

@@ -38,7 +38,7 @@ export class ServerApp extends App
     return './server/data/';
   }
 
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   // 'null' means no message of the day is set at the moment.
   private messageOfTheDay: string = null;

@@ -7,10 +7,8 @@
 'use strict';
 
 import {ClientApp} from '../../../client/lib/app/ClientApp';
-import {Component} from '../../../client/gui/Component';
 import {StandaloneWindow} from '../../../client/gui/StandaloneWindow';
 import {LoginForm} from '../../../client/gui/login/LoginForm';
-import {LoginResponse} from '../../../shared/lib/protocol/LoginResponse';
 
 export class LoginWindow extends StandaloneWindow
 {
@@ -22,21 +20,13 @@ export class LoginWindow extends StandaloneWindow
     this.flags.set(ClientApp.State.LOGIN);
   }
 
-  // -------------- Static class data -------------------
+  // ----------------- Public data ----------------------
 
-  //----------------- Protected data --------------------
+  public form = new LoginForm();
 
-  //------------------ Private data ---------------------
-
-  private form = new LoginForm();
+  // ----------------- Private data ---------------------
 
   private $registerLink: JQuery = null;
-
-  // --------------- Static accessors -------------------
-
-  // ---------------- Static methods --------------------
-
-  // --------------- Public accessors -------------------
 
   // ---------------- Public methods --------------------
 
@@ -53,26 +43,6 @@ export class LoginWindow extends StandaloneWindow
     this.createEmptyLine();
 
     this.createRegisterLink();
-  }
-
-  public displayProblem(response: LoginResponse)
-  {
-    this.form.displayProblem(response);
-  }
-
-  public onReceivedResponse()
-  {
-    this.form.onReceivedResponse();
-  }
-
-  public loginSucceeded()
-  {
-    this.form.rememberCredentials();
-  }
-
-  public getEmailInputValue()
-  {
-    return this.form.getEmailInputValue();
   }
 
   // --------------- Protected methods ------------------

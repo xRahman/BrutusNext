@@ -6,7 +6,6 @@
 
 'use strict';
 
-import {Utils} from '../../shared/lib/utils/Utils';
 import {Component} from '../../client/gui/Component';
 import {TitledWindow} from '../../client/gui/TitledWindow';
 
@@ -20,18 +19,6 @@ export class StandaloneWindow extends TitledWindow
     { return 'S_StandaloneWindow_Content'; }
   protected static get TEXT_S_CSS_CLASS()
     { return 'S_StandaloneWindow_Text'; }
-
-  // -------------- Static class data -------------------
-
-  //----------------- Protected data --------------------
-
-  //------------------ Private data ---------------------
-
-  // --------------- Static accessors -------------------
-
-  // ---------------- Static methods --------------------
-
-  // --------------- Public accessors -------------------
 
   // ---------------- Public methods --------------------
 
@@ -47,7 +34,7 @@ export class StandaloneWindow extends TitledWindow
     : TitledWindow.Param = {}
   )
   {
-    Utils.applyDefaults
+    this.applyDefaults
     (
       windowParam,
       {
@@ -56,13 +43,13 @@ export class StandaloneWindow extends TitledWindow
       }
     );
 
-    Utils.applyDefaults
+    this.applyDefaults
     (
       titleParam,
       { sCssClass: StandaloneWindow.TITLE_S_CSS_CLASS }
     );
 
-    Utils.applyDefaults
+    this.applyDefaults
     (
       contentParam,
       { sCssClass: StandaloneWindow.CONTENT_S_CSS_CLASS }
@@ -83,7 +70,7 @@ export class StandaloneWindow extends TitledWindow
 
   protected createEmptyLine(param: Component.DivParam = {})
   {
-    Utils.applyDefaults
+    this.applyDefaults
     (
       param,
       {
@@ -97,7 +84,7 @@ export class StandaloneWindow extends TitledWindow
 
   protected createTextContainer(param: Component.DivParam = {})
   {
-    Utils.applyDefaults
+    this.applyDefaults
     (
       param,
       {

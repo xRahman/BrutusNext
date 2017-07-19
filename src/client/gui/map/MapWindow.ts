@@ -11,12 +11,6 @@ import {TitledWindow} from '../../../client/gui/TitledWindow';
 import {SvgMap} from '../../../client/gui/map/SvgMap';
 import {Connection} from '../../../client/lib/net/Connection';
 
-/// TEST:
-import {Packet} from '../../../shared/lib/protocol/Packet';
-
-///import $ = require('jquery');
-///import d3 = require('d3');
-
 export class MapWindow extends TitledWindow
 {
   constructor()
@@ -36,9 +30,9 @@ export class MapWindow extends TitledWindow
 
   // -------------- Static class data -------------------
 
-  //----------------- Protected data --------------------
+  // ---------------- Protected data --------------------
 
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   private svgMap = new SvgMap(this);
 
@@ -106,16 +100,6 @@ export class MapWindow extends TitledWindow
   {
     return this.$content.height();
   }
-
-  /*
-  /// TEST
-  public send(packet: Packet)
-  {
-    this.connection.send(packet);
-  }
-  */
-
-  // --------------- Protected methods ------------------
 
   // ---------------- Private methods -------------------
 

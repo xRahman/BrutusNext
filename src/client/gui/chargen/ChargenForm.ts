@@ -13,20 +13,9 @@ import {Form} from '../../../client/gui/Form';
 
 export class ChargenForm extends Form
 {
-  // -------------- Static class data -------------------
-
-  // ---------------- Protected data --------------------
-
-
   // ----------------- Private data ---------------------
 
   private $characterNameInput: JQuery = null;
-
-  // --------------- Static accessors -------------------
-
-  // ---------------- Static methods --------------------
-
-  // --------------- Public accessors -------------------
 
   // ---------------- Public methods --------------------
 

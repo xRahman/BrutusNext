@@ -25,9 +25,9 @@ export class Account extends Entity
 
   public data = new AccountData();
 
-  //----------------- Protected data --------------------
+  // ---------------- Protected data --------------------
 
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   // --------------- Protected methods ------------------
 

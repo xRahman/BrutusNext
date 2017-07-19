@@ -13,7 +13,7 @@ import {Serializable} from '../../shared/lib/class/Serializable';
 
 export class GameEntityData extends Serializable
 {
-  //------------------ Public data ----------------------
+  // ----------------- Public data ----------------------
 
   /// Tohle asi fakt dává smysl v XxxData, chmura...
   /// - tak asi ne, to by tu muselo být i idčko a to už vůbec

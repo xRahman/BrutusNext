@@ -6,23 +6,16 @@
 
 'use strict';
 
-import {Utils} from '../../shared/lib/utils/Utils';
 import {Component} from '../../client/gui/Component';
-
-///import $ = require('jquery');
 
 export abstract class Form extends Component
 {
-  // protected static get S_CSS_CLASS()
-  //   { return 'S_Form'; }
   protected static get TEXT_S_CSS_CLASS()
     { return 'S_Form_Text'; }
   protected static get INPUT_S_CSS_CLASS()
     { return 'S_Form_Input'; }
   protected static get CHECKBOX_S_CSS_CLASS()
     { return 'S_Form_Checkbox'; }
-  // protected static  get BUTTON_CONTAINER_S_CSS_CLASS()
-  //   { return 'S_Form_ButtonContainer'; }
   protected static  get LEFT_BUTTON_S_CSS_CLASS()
     { return 'S_Form_LeftButton'; }
   protected static  get RIGHT_BUTTON_S_CSS_CLASS()
@@ -30,12 +23,12 @@ export abstract class Form extends Component
 
   // -------------- Static class data -------------------
 
-  //----------------- Protected data --------------------
+  // ---------------- Protected data --------------------
 
   protected $form: JQuery = null;
   protected $submitButton: JQuery = null;
 
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   // --------------- Static accessors -------------------
 
@@ -52,11 +45,10 @@ export abstract class Form extends Component
 
   protected create(param: Component.FormParam = {})
   {
-    Utils.applyDefaults
+    this.applyDefaults
     (
       param,
       {
-        ///sCssClass: Form.S_CSS_CLASS,
         sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS,
         submit: (event: Event) => { this.onSubmit(event); }
       }
@@ -67,7 +59,7 @@ export abstract class Form extends Component
 
   protected createLabel(param: Component.LabelParam = {})
   {
-    Utils.applyDefaults
+    this.applyDefaults
     (
       param,
       {
@@ -81,7 +73,7 @@ export abstract class Form extends Component
 
   protected createTextInput(param: Component.TextInputParam = {})
   {
-    Utils.applyDefaults
+    this.applyDefaults
     (
       param,
       {
@@ -98,7 +90,7 @@ export abstract class Form extends Component
 
   protected createPasswordInput(param: Component.PasswordInputParam = {})
   {
-    Utils.applyDefaults
+    this.applyDefaults
     (
       param,
       {
@@ -116,7 +108,7 @@ export abstract class Form extends Component
 
   protected createEmailInput(param: Component.EmailInputParam = {})
   {
-    Utils.applyDefaults
+    this.applyDefaults
     (
       param,
       {
@@ -145,7 +137,7 @@ export abstract class Form extends Component
   )
   : JQuery
   {
-    Utils.applyDefaults
+    this.applyDefaults
     (
       labelParam,
       {
@@ -157,7 +149,7 @@ export abstract class Form extends Component
 
     let $label = this.createLabel(labelParam);
 
-    Utils.applyDefaults
+    this.applyDefaults
     (
       checkboxParam,
       {
@@ -165,7 +157,7 @@ export abstract class Form extends Component
         // on label text will toggle the checkbox.
         $parent: $label,
         sCssClass: Form.CHECKBOX_S_CSS_CLASS,
-        // Pace checkbox before the text.
+        // Place checkbox before the text.
         insertMode: Component.InsertMode.PREPEND
       }
     );
@@ -175,13 +167,12 @@ export abstract class Form extends Component
 
   protected createButtonContainer(param: Component.DivParam = {})
   {
-    Utils.applyDefaults
+    this.applyDefaults
     (
       param,
       {
         name: 'button_container',
         $parent: this.$form,
-        ///sCssClass: Form.BUTTON_CONTAINER_S_CSS_CLASS
         sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS
       }
     );
@@ -191,7 +182,7 @@ export abstract class Form extends Component
 
   protected createSubmitButton(param: Component.SubmitButtonParam = {}): JQuery
   {
-    Utils.applyDefaults
+    this.applyDefaults
     (
       param,
       { sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS }
@@ -204,7 +195,7 @@ export abstract class Form extends Component
 
   protected createEmptyLine(param: Component.DivParam = {})
   {
-    Utils.applyDefaults
+    this.applyDefaults
     (
       param,
       {
@@ -215,8 +206,6 @@ export abstract class Form extends Component
 
     return super.createEmptyLine(param);
   }
-
-  // ---------------- Private methods -------------------
 
   // ---------------- Event handlers --------------------
 

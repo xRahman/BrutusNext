@@ -21,19 +21,9 @@ export class ChargenWindow extends StandaloneWindow
     this.flags.set(ClientApp.State.CHARGEN);
   }
 
-  // -------------- Static class data -------------------
-
-  //----------------- Protected data --------------------
-
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   private form = new ChargenForm();
-
-  // --------------- Static accessors -------------------
-
-  // ---------------- Static methods --------------------
-
-  // --------------- Public accessors -------------------
 
   // ---------------- Public methods --------------------
 
@@ -46,13 +36,5 @@ export class ChargenWindow extends StandaloneWindow
 
     // Create chargen form.
     this.form.create({ $parent: this.$content });
-
-    return this.$window;
   }
-
-  // --------------- Protected methods ------------------
-
-  // ---------------- Private methods -------------------
-
-  // ---------------- Event handlers --------------------
 }

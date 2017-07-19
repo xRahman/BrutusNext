@@ -95,7 +95,7 @@ export class Room extends GameEntity
   }
   */
 
-  //----------------- Protected data --------------------
+  // ---------------- Protected data --------------------
 
   // --------------- Protected methods ------------------
 

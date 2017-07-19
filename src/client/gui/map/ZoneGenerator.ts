@@ -17,9 +17,9 @@ export class ZoneGenerator
 
   public static lastId = 0;
 
-  //----------------- Protected data --------------------
+  // ---------------- Protected data --------------------
 
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   name: string;
 

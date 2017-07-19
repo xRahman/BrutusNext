@@ -42,9 +42,9 @@ export class Account extends ServerEntity
   // List of character names this account has access to.
   public characterNames: Array<string> = [];
 
-  //----------------- Protected data --------------------
+  // ---------------- Protected data --------------------
 
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   private connection: Connection = null;
     private static connection: Attributes =

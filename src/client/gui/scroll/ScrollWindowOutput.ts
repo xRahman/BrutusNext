@@ -1,12 +1,11 @@
 /*
   Part of BrutusNEXT
 
-  Implements output element of scrollable text window.
+  Displays scrollable text.
 */
 
 'use strict';
 
-import {Utils} from '../../../shared/lib/utils/Utils';
 import {Component} from '../../../client/gui/Component';
 
 export class ScrollWindowOutput extends Component
@@ -14,26 +13,16 @@ export class ScrollWindowOutput extends Component
   public static get S_CSS_CLASS()
     { return 'S_ScrollWindowOutput'; }
 
-  // -------------- Static class data -------------------
+  // ----------------- Private data ---------------------
 
-  //----------------- Protected data --------------------
-
-  //------------------ Private data ---------------------
-
-  private $output = null;
-
-  // --------------- Static accessors -------------------
-
-  // ---------------- Static methods --------------------
-
-  // --------------- Public accessors -------------------
+  private $output: JQuery = null;
 
   // ---------------- Public methods --------------------
 
   // -> Returns created jquery element.
   public create(param: Component.DivParam = {})
   {
-    Utils.applyDefaults
+    this.applyDefaults
     (
       param,
       {
@@ -60,12 +49,8 @@ export class ScrollWindowOutput extends Component
     {
       baseTextColor = null,
       forceScroll = false
-    }:
-    {
-      baseTextColor?: string;
-      forceScroll?: boolean;
     }
-    = {}
+    : ScrollWindowOutput.AppendParam = {}
   )
   {
     let userScrolled = false;
@@ -93,28 +78,6 @@ export class ScrollWindowOutput extends Component
       this.scrollToBottom();
   }
 
-  // // If 'param.forceScroll' is 'true', output always scrolls to the bottom.
-  // // Otherwise it only scrolls if user hasn't scrolled up manually.
-  // public appendHtml(html: string, param: { forceScroll: boolean })
-  // {
-  //   // Size of the scrollable range (in pixels).
-  //   let range =
-  //     this.$output.prop('scrollHeight') - this.$output.prop('clientHeight');
-
-  //   // 'true' if user has scrolled up manually
-  //   // (-1 to account for rounding errors. If user scolled up by
-  //   //  less than one pixel, we can safely scoll back down anyways).
-  //   let userScrolled = (this.$output.scrollTop()) < (range - 1);
-
-  //   this.$output.append(html);
-
-  //   // If user scolls up manually, we don't want to scroll
-  //   // the output down to the bottom on each output, that
-  //   // would be very inconvinient.
-  //   if (param.forceScroll || !userScrolled)
-  //     this.scrollToBottom();
-  // }
-
   public scrollToTop()
   {
     this.$output.scrollTop(0);
@@ -125,7 +88,7 @@ export class ScrollWindowOutput extends Component
     this.$output.scrollTop(this.$output.prop('scrollHeight'));
   }
 
-  public triggerKeyboardEvent(event: JQueryKeyEventObject)
+  public triggerKeyboardEvent(event)
   {
     // In order for <div> element to process keyboard events,
     // it must have focus. To be able to give it a focus,
@@ -136,8 +99,6 @@ export class ScrollWindowOutput extends Component
     // Now we can trigger the keyboard event.
     this.$output.trigger(event);
   }
-
-  // --------------- Protected methods ------------------
 
   // ---------------- Private methods -------------------
 
@@ -177,5 +138,16 @@ export class ScrollWindowOutput extends Component
       // propagate would lead to infinite recursion.
       event.stopPropagation();
     }
+  }
+}
+
+// ------------------ Type Declarations ----------------------
+
+export module ScrollWindowOutput
+{
+  export interface AppendParam
+  {
+    baseTextColor?: string;
+    forceScroll?: boolean;
   }
 }
