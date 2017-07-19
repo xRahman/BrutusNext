@@ -13,14 +13,14 @@ import {Room} from '../../../client/game/world/Room';
 
 export class ExitRenderData
 {
-  //------------------ Public data ---------------------- 
+  // ----------------- Public data ----------------------
 
   // // Coords of connected rooms. Order only matters if
   // // this is a one-way exit.
   // public from = new Coords();
   // public to = new Coords();
 
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   // // Client-side id created by concatenating of id's
   // // of connected rooms in alphabetical order.

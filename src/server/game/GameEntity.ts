@@ -20,7 +20,7 @@ import {GameEntityData} from '../../shared/game/GameEntityData';
 
 export class GameEntity extends ContainerEntity
 {
-  //------------------ Public data ----------------------
+  // ----------------- Public data ----------------------
 
   public data: GameEntityData = null;
     protected static data: Attributes =
@@ -202,7 +202,7 @@ export class GameEntity extends ContainerEntity
     ///   přes message.isCommunication().
   }
 
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   // 'null' if no player is connected to this entity.
   public connection: Connection = null;

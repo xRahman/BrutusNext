@@ -26,11 +26,11 @@ export class Connection
 
   // -------------- Static class data -------------------
 
-  //------------------ Public data ----------------------
+  // ----------------- Public data ----------------------
 
   public activeAvatar: Avatar = null;
 
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   private account: Account = null;
 
@@ -180,7 +180,7 @@ export class Connection
 
   private processLoginResponse(response: LoginResponse)
   {
-    Windows.loginWindow.onReceivedResponse();
+    Windows.loginWindow.form.onResponse();
 
     if (response.result === LoginResponse.Result.UNDEFINED)
     {
@@ -193,18 +193,18 @@ export class Connection
     if (response.result === LoginResponse.Result.OK)
     {
       this.account = response.account.deserializeEntity(Account);
-      Windows.loginWindow.loginSucceeded();
+      Windows.loginWindow.form.rememberCredentials();
       ClientApp.setState(ClientApp.State.CHARLIST);
       return;
     }
 
     // Otherwise display to the user what the problem is.
-    Windows.loginWindow.displayProblem(response);
+    Windows.loginWindow.form.displayProblem(response);
   }
 
   private processRegisterResponse(response: RegisterResponse)
   {
-    Windows.registerWindow.onReceivedResponse();
+    Windows.registerWindow.form.onResponse();
     
     if (response.result === RegisterResponse.Result.UNDEFINED)
     {
@@ -219,12 +219,13 @@ export class Connection
       this.account = response.account.deserializeEntity(Account);
       /// DEBUG:
       console.log("Recreated account " + JSON.stringify(this.account));
-      Windows.registerWindow.registrationSucceeded();
+
+      Windows.registerWindow.form.rememberCredentials();
       ClientApp.setState(ClientApp.State.CHARLIST);
       return;
     }
 
     // Otherwise display to the user what the problem is.
-    Windows.registerWindow.displayProblem(response);
+    Windows.registerWindow.form.displayProblem(response);
   }
 }

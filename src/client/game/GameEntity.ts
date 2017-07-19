@@ -12,7 +12,7 @@ import {Entity} from '../../shared/lib/entity/Entity';
 
 export class GameEntity extends Entity
 {
-  //----------------- Protected data --------------------
+  // ---------------- Protected data --------------------
 
   // ------------- Public static methods ----------------
 

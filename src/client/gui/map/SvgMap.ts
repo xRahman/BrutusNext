@@ -61,9 +61,9 @@ export class SvgMap extends Component
 
   // -------------- Static class data -------------------
 
-  //----------------- Protected data --------------------
+  // ---------------- Protected data --------------------
 
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   private editMode = true;
 

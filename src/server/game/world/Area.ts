@@ -36,7 +36,7 @@ export class Area  extends GameEntity
   /// Pozn: Area tu nic nemá, protože je zděděná ze Sectoru, kde
   ///  je veškerá funkcionalita. Možná to nakonec bude jinak...
 
-  //----------------- Protected data --------------------
+  // ---------------- Protected data --------------------
 
   // --------------- Protected methods ------------------
 

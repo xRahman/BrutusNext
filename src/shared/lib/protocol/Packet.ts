@@ -23,11 +23,11 @@ export abstract class Packet extends Serializable
 
   // -------------- Static class data -------------------
 
-  //------------------ Public data ----------------------  
+  // ----------------- Public data ----------------------
 
   ///public parts = new Array<PacketPart>();
 
-  //----------------- Protected data --------------------
+  // ---------------- Protected data --------------------
 
   // ----------------- Private data ---------------------
 

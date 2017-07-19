@@ -6,7 +6,6 @@
 
 'use strict';
 
-import {Utils} from '../../shared/lib/utils/Utils';
 import {Component} from '../../client/gui/Component';
 import {Window} from '../../client/gui/Window';
 
@@ -21,7 +20,7 @@ export class TitledWindow extends Window
 
   // -------------- Static class data -------------------
 
-  //----------------- Protected data --------------------
+  // ---------------- Protected data --------------------
 
   protected $title: JQuery = null;
   protected $titleBar: JQuery = null;
@@ -48,7 +47,7 @@ export class TitledWindow extends Window
     : TitledWindow.Param = {}
   )
   {
-    Utils.applyDefaults(windowParam, { name: 'titled_window' });
+    this.applyDefaults(windowParam, { name: 'titled_window' });
 
     super.create({ windowParam });
 
@@ -78,14 +77,13 @@ export class TitledWindow extends Window
     titleParam: Component.TitleParam
   )
   {
-    Utils.applyDefaults
+    this.applyDefaults
     (
       titleBarParam,
       {
         name: 'title_bar',
         $parent: this.$window,
         gCssClass: Component.TITLE_BAR_G_CSS_CLASS,
-        ///sCssClass: TitledWindow.TITLE_BAR_S_CSS_CLASS
         sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS
       }
     );
@@ -97,7 +95,7 @@ export class TitledWindow extends Window
 
   protected createWindowTitle(param: Component.TitleParam = {})
   {
-    Utils.applyDefaults
+    this.applyDefaults
     (
       param,
       {
@@ -113,7 +111,7 @@ export class TitledWindow extends Window
 
   protected createContent(param: Component.DivParam = {})
   {
-    Utils.applyDefaults
+    this.applyDefaults
     (
       param,
       {
@@ -127,8 +125,6 @@ export class TitledWindow extends Window
   }
 
   // ---------------- Private methods -------------------
-
-  // ---------------- Event handlers --------------------
 
 }
 

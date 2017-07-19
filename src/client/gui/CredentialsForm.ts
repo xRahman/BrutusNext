@@ -10,7 +10,7 @@
   is neither font size nor line height. That means that it would
   be difficult to set margin value to be the same as height of
   a line of text (which is sometimes shown in place of an empty
-  line.
+  line in the form).
 */
 
 'use strict';
@@ -21,15 +21,13 @@ import {LocalStorage} from '../../client/lib/storage/LocalStorage';
 import {RegisterRequest} from '../../shared/lib/protocol/RegisterRequest';
 import {Form} from '../../client/gui/Form';
 
-import $ = require('jquery');
-
 export abstract class CredentialsForm extends Form
 {
   // -------------- Static class data -------------------
 
   protected static get PROBLEM_TEXT_COLOR() { return '&R'; }
 
-  //----------------- Protected data --------------------
+  // ---------------- Protected data --------------------
 
   protected $emailInput: JQuery = null;
   protected $emailProblem: JQuery = null;
@@ -37,14 +35,6 @@ export abstract class CredentialsForm extends Form
   protected $passwordProblem: JQuery = null;
   protected $errorLabel: JQuery = null;
   protected $rememberMeCheckbox = null;
-
-  //------------------ Private data ---------------------
-
-  // --------------- Static accessors -------------------
-
-  // ---------------- Static methods --------------------
-
-  // --------------- Public accessors -------------------
 
   // ---------------- Public methods --------------------
 
@@ -59,9 +49,6 @@ export abstract class CredentialsForm extends Form
     if (LocalStorage.isAvailable())
       this.setStoredRememberMeValue();
   }
-
-  // ~ Overrides Form.onHide().
-  public onHide() {}
 
   public rememberCredentials()
   {
@@ -88,7 +75,7 @@ export abstract class CredentialsForm extends Form
     }
   }
 
-  public onReceivedResponse()
+  public onResponse()
   {
     this.hideProblems();
     this.enableSubmitButton();
@@ -257,14 +244,12 @@ export abstract class CredentialsForm extends Form
 
   protected disableSubmitButton()
   {
-     if (this.$submitButton)
-       this.$submitButton.prop('disabled', true);
+     this.disable(this.$submitButton);
   }
 
   protected enableSubmitButton()
   {
-    if (this.$submitButton)
-      this.$submitButton.prop('disabled', false);
+    this.enable(this.$submitButton);
   }
 
   // ---------------- Private methods -------------------

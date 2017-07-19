@@ -32,9 +32,9 @@ export class ClientApp extends App
 {
   // -------------- Static class data -------------------
 
-  //------------------ Public data ----------------------
+  // ----------------- Public data ----------------------
 
-  //----------------- Protected data --------------------
+  // ---------------- Protected data --------------------
 
   // ~ Overrides App.entityManager.
   // Contains all entities (accounts, characters, rooms, etc.).
@@ -44,7 +44,7 @@ export class ClientApp extends App
   // Manages prototype entities.
   protected prototypes = new ClientPrototypes();
 
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   // --- websocket communication ---
 

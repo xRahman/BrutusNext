@@ -27,7 +27,6 @@
 import {ERROR} from '../../shared/lib/error/ERROR';
 import {Utils} from '../../shared/lib/utils/Utils';
 import {MudColors} from '../../client/gui/MudColors';
-import {RegisterRequest} from '../../shared/lib/protocol/RegisterRequest';
 
 export abstract class Component
 {
@@ -56,20 +55,6 @@ export abstract class Component
 
   protected static get FULL_WIDTH_BLOCK_S_CSS_CLASS()
     { return 'S_Component_FullWidthBlock'; }
-
-  // -------------- Static class data -------------------
-
-  // ---------------- Protected data --------------------
-
-  // ----------------- Private data ---------------------
-
-  // --------------- Static accessors -------------------
-
-  // ---------------- Static methods --------------------
-
-  // --------------- Public accessors -------------------
-
-  // ---------------- Public methods --------------------
 
   // --------------- Protected methods ------------------
 
@@ -125,8 +110,7 @@ export abstract class Component
     return this.createElement('title', param);
   }
 
-  protected createTextInput(param: Component.TextInputParam = {})
-  : JQuery
+  protected createTextInput(param: Component.TextInputParam = {}): JQuery
   {
     Utils.applyDefaults
     (
@@ -140,10 +124,7 @@ export abstract class Component
     return this.createInputElement('text', param);
   }
 
-  protected createPasswordInput
-  (
-    param: Component.PasswordInputParam = {}
-  )
+  protected createPasswordInput(param: Component.PasswordInputParam = {})
   : JQuery
   {
     Utils.applyDefaults
@@ -172,10 +153,7 @@ export abstract class Component
     return this.createInputElement('email', param);
   }
 
-  protected createCheckboxInput
-  (
-    param: Component.CheckboxInputParam = {}
-  )
+  protected createCheckboxInput(param: Component.CheckboxInputParam = {})
   : JQuery
   {
     Utils.applyDefaults(param, { name: 'checkbox_input' });
@@ -242,7 +220,7 @@ export abstract class Component
     return $element;
   }
 
-  protected createEmptyLine(param: Component.DivParam = {})
+  protected createEmptyLine(param: Component.DivParam = {}): JQuery
   {
     Utils.applyDefaults
     (
@@ -255,6 +233,25 @@ export abstract class Component
     );
 
     return this.createDiv(param);
+  }
+
+  // Copies properties of 'defaults' object to 'target' object
+  // if they are not present in it.
+  protected applyDefaults<T>(target: T, defaults: T)
+  {
+    Utils.applyDefaults(target, defaults);
+  }
+
+  protected disable($element: JQuery)
+  {
+    if ($element)
+      $element.prop('disabled', true);
+  }
+
+  protected enable($element: JQuery)
+  {
+    if ($element)
+      $element.prop('disabled', false);
   }
 
   // ---------------- Private methods -------------------
@@ -326,6 +323,7 @@ export abstract class Component
     param: Component.Parameters
   )
   {
+    // Make 'APPEND' a default insert mode.
     Utils.applyDefaults(param, { insertMode: Component.InsertMode.APPEND });
 
     if (param.text)
@@ -452,9 +450,6 @@ export abstract class Component
       $element.attr('autocomplete', value);
     }
   }
-
-  // ---------------- Event handlers --------------------
-
 }
 
 // ------------------ Type Declarations ----------------------
@@ -542,7 +537,7 @@ export module Component
   }
 
   // These elements should have 'autofocus' attribute:
-  //  <button>, <input>, <keygen>, <select>, <textarea>
+  // <button>, <input>, <keygen>, <select>, <textarea>
   interface AutofocusAttribute
   {
     autofocus?: boolean

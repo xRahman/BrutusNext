@@ -77,7 +77,7 @@ const EXIT_SHIFTS =
 
 export class RoomData extends GameEntityData
 {
-  //------------------ Public data ----------------------
+  // ----------------- Public data ----------------------
 
   /// Tohle je asi ok v /shared - ale jen ty flagy, které
   /// vykresluje klient (tj. třeba 'PEACEFUL' ano, systémové

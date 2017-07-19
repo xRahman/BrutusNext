@@ -50,9 +50,9 @@ export class Message
 
   public static get NEW_LINE() { return '\r\n'; }
 
-  //------------------ Public data ----------------------
+  // ----------------- Public data ----------------------
 
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   // 'sender' can be null (for example for syslog messages, global infos, etc.) 
   private sender: GameEntity = null;

@@ -73,7 +73,7 @@ export abstract class Commands /* extends ScriptableEntity*/
       this.unknownCommand();
   }
 
-  //----------------- Protected data --------------------
+  // ---------------- Protected data --------------------
   
   // Container holding abbreviations of all known commands and names of their
   // respective handlers.

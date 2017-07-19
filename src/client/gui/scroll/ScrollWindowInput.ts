@@ -1,32 +1,25 @@
 /*
   Part of BrutusNEXT
 
-  Implements input element of scrollable text window.
+  Input console of scrollable text window.
 */
 
 'use strict';
 
-import {Utils} from '../../../shared/lib/utils/Utils';
 import {Component} from '../../../client/gui/Component';
 import {ScrollWindow} from '../../../client/gui/scroll/ScrollWindow';
 
-import $ = require('jquery');
-
 export class ScrollWindowInput extends Component
 {
-  private static get S_CSS_CLASS()
-    { return 'S_ScrollWindowInput'; }
-
   constructor(private scrollWindow: ScrollWindow)
   {
     super();
   }
 
-  // -------------- Static class data -------------------
+  private static get S_CSS_CLASS()
+    { return 'S_ScrollWindowInput'; }
 
-  //----------------- Protected data --------------------
-
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   // Command history.
   private commands =
@@ -35,20 +28,14 @@ export class ScrollWindowInput extends Component
     buffer: new Array<string>()
   }
 
-  private $input = null;
-
-  // --------------- Static accessors -------------------
-
-  // ---------------- Static methods --------------------
-
-  // --------------- Public accessors -------------------
+  private $input: JQuery = null;
 
   // ---------------- Public methods --------------------
 
   // -> Returns created jquery element.
   public create(param: Component.TextAreaParam = {})
   {
-    Utils.applyDefaults
+    this.applyDefaults
     (
       param,
       {
@@ -71,8 +58,6 @@ export class ScrollWindowInput extends Component
   {
     this.$input.focus();
   }
-
-  // --------------- Protected methods ------------------
 
   // ---------------- Private methods -------------------
 
@@ -270,9 +255,8 @@ export class ScrollWindowInput extends Component
       return false;  // Stop processing the event.
     }
 
-    return true; // Continue processing the event.
+    return true;   // Continue processing the event.
   }
-
 
   // ---------------- Event handlers --------------------
 

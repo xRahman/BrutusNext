@@ -77,7 +77,7 @@ export class Serializable extends Attributable
   private static get MAP_PROPERTY()           { return 'map'; }
   private static get SET_PROPERTY()           { return 'set'; }
 
-  //----------------- Protected data --------------------
+  // ---------------- Protected data --------------------
 
   // Version will be checked for. Default behaviour is to trigger
   // an ERROR when versions don't match. You can change it by

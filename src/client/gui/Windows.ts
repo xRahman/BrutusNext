@@ -18,13 +18,11 @@ import {ScrollWindow} from '../../client/gui/scroll/ScrollWindow';
 import {MapWindow} from '../../client/gui/map/MapWindow';
 import {ClientApp} from '../../client/lib/app/ClientApp';
 
-import $ = require('jquery');
-
 export class Windows
 {
-  //----------------- Protected data --------------------
+  // ---------------- Protected data --------------------
 
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   // All created windows (hidden or not).
   private windows = new Set<Window>();
@@ -76,8 +74,6 @@ export class Windows
     for (let window of ClientApp.windows.windows)
       window.onDocumentResize();
   }
-
-  // --------------- Public accessors -------------------
 
   // ---------------- Public methods --------------------
 
@@ -191,7 +187,4 @@ export class Windows
 
     return window;
   }
-
-  // ---------------- Event handlers --------------------
-
 }

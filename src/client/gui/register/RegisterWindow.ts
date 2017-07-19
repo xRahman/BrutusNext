@@ -7,10 +7,8 @@
 'use strict';
 
 import {ClientApp} from '../../../client/lib/app/ClientApp';
-import {Component} from '../../../client/gui/Component';
 import {StandaloneWindow} from '../../../client/gui/StandaloneWindow';
 import {RegisterForm} from '../../../client/gui/register/RegisterForm';
-import {RegisterResponse} from '../../../shared/lib/protocol/RegisterResponse';
 
 export class RegisterWindow extends StandaloneWindow
 {
@@ -22,21 +20,13 @@ export class RegisterWindow extends StandaloneWindow
     this.flags.set(ClientApp.State.REGISTER);
   }
 
-  // -------------- Static class data -------------------
+  // ----------------- Public data ----------------------
 
-  //----------------- Protected data --------------------
+  public form = new RegisterForm();
 
-  //------------------ Private data ---------------------
-
-  private form = new RegisterForm();
+  // ----------------- Private data ---------------------
 
   private $termsLink: JQuery = null;
-
-  // --------------- Static accessors -------------------
-
-  // ---------------- Static methods --------------------
-
-  // --------------- Public accessors -------------------
 
   // ---------------- Public methods --------------------
 
@@ -51,25 +41,7 @@ export class RegisterWindow extends StandaloneWindow
     this.form.create({ $parent: this.$content });
 
     this.createEmptyLine();
-
     this.createTermsLink();
-
-    return this.$window;
-  }
-
-  public displayProblem(response: RegisterResponse)
-  {
-    this.form.displayProblem(response);
-  }
-
-  public onReceivedResponse()
-  {
-    this.form.onReceivedResponse();
-  }
-
-  public registrationSucceeded()
-  {
-    this.form.rememberCredentials();
   }
 
   // --------------- Protected methods ------------------
