@@ -33,18 +33,19 @@ TODO: Oštřit to pro jistotu i přímo v Connection.send() - když
 
 --------------------------------------------------------------
 
+--------------------------------------------------------------
+
 Ke zvážení
 - dělat vložené komponenty public, ať nemusím psát tuny provolávacích
-  metody...
+  metod...
 
 TODO: CharlistWindow rozdělit do víc class.
 (a v createMetodách udělat submetody).
 
 
-TODO: Místo .S_Form_ButtonContainer by šlo asi použít
-.S_Component_FullWidthBlock
-TODO: css u .S_StandaloneWindow_Text, .S_Form_Text by šlo
-asi reusnout z .S_Form_ButtonContainer
+TODO: metoda applyDefaults by mohla být v Component
+  (klidně může interně volat Utils.applyDefaults()),
+  ať nemusím všude importovat Utils.
 
 TODO: V charselectu jde odselectnout char (což je asi ok),
   pak ale zůstane enablovaný button 'enter game' - což už asi není
@@ -62,13 +63,42 @@ TODO: Otestovat reconnect z jiného tabu.
 - tohle bych měl udělat zároveň s ošetřením disconnectu v clientu,
   jinak to těžko odladím.
 
-
 --------------------------------------------------------------
+
+Hodně divoká myšlenka k celému GUI:
+- celá ta dědičnost silně zavání prototypovou dědičností.
+  Problém je, že parametry komponenty nemohou být classa,
+  protože classu nejde vícenásobně dědit (a to je u properties
+  potřeba).
+- pořád by to ale asi šlo udělat jako sadu objektů poděděných
+  přes Object.create() místo Utils.applyDefaults().
+Problém je, že bych to asi musel dělat ve třech krocích:
+1) rekurzivně si říct předkovi o param
+  (abych z něj přes Object.create() mohl zdědit)
+2) Do následného paramu pak zapíšu své properties.
+3) Zavolám create na příslušnou komponentu s finálním param objectem.
+... což je asi dost naprd.
+[kašlat na to]
+
+
+TODO: Místo .S_Form_ButtonContainer by šlo asi použít
+.S_Component_FullWidthBlock
+-- nešlo, ButtonContainer musí být inline-block.
+Tak nemusí. Problém je, že mám u buttonků v Button Containeru
+float. Když ho zruším, funguje to správně i s block elementama.
+[done]
 
 TODO: Zkontrolvoat, jestli /* :: Full Width Inline Block :: */
 musí být inline-block (imho by měl stačit block).
 - očividně musí
+- tak nemusí
+- už není
 [done]
+
+TODO: css u .S_StandaloneWindow_Text, .S_Form_Text by šlo
+asi reusnout z .S_Form_ButtonContainer respektive z FullWidhtBlock
+[done]
+
 
 TODO: Sloučit .S_RegisterForm_SubmitButton, .S_ChargenForm_SubmitButton
 (hodit to asi do Form).
@@ -410,7 +440,7 @@ vypíše chybová hláška.
 - labely jsou inline-block, takže by asi mohly mít min-height.
 IMPORTANT: Z LoginResponse jsem to \n\n umazal.
  (ale přidal jsem ho zase zpět v LoginFormu, nechtělo se mi to zrovna řešit...)
-
+[prázdné řádky ano, kvůli řádkování a velikosti fontu v divech]
 
 --------------------------------------------------------------
 

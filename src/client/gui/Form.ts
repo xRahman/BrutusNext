@@ -13,16 +13,16 @@ import {Component} from '../../client/gui/Component';
 
 export abstract class Form extends Component
 {
-  protected static get S_CSS_CLASS()
-    { return 'S_Form'; }
+  // protected static get S_CSS_CLASS()
+  //   { return 'S_Form'; }
   protected static get TEXT_S_CSS_CLASS()
     { return 'S_Form_Text'; }
   protected static get INPUT_S_CSS_CLASS()
     { return 'S_Form_Input'; }
   protected static get CHECKBOX_S_CSS_CLASS()
     { return 'S_Form_Checkbox'; }
-  protected static  get BUTTON_CONTAINER_S_CSS_CLASS()
-    { return 'S_Form_ButtonContainer'; }
+  // protected static  get BUTTON_CONTAINER_S_CSS_CLASS()
+  //   { return 'S_Form_ButtonContainer'; }
   protected static  get LEFT_BUTTON_S_CSS_CLASS()
     { return 'S_Form_LeftButton'; }
   protected static  get RIGHT_BUTTON_S_CSS_CLASS()
@@ -56,7 +56,8 @@ export abstract class Form extends Component
     (
       param,
       {
-        sCssClass: Form.S_CSS_CLASS,
+        ///sCssClass: Form.S_CSS_CLASS,
+        sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS,
         submit: (event: Event) => { this.onSubmit(event); }
       }
     );
@@ -180,7 +181,8 @@ export abstract class Form extends Component
       {
         name: 'button_container',
         $parent: this.$form,
-        sCssClass: Form.BUTTON_CONTAINER_S_CSS_CLASS
+        ///sCssClass: Form.BUTTON_CONTAINER_S_CSS_CLASS
+        sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS
       }
     );
 
