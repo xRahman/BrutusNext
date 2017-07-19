@@ -20,9 +20,9 @@ import {EntityList} from '../../../shared/lib/entity/EntityList';
 
 export class ContainerEntity extends ServerEntity
 {
-  //------------------ Public data ----------------------
+  // ----------------- Public data ----------------------
 
-  //----------------- Protected data --------------------
+  // ---------------- Protected data --------------------
 
   // Every game entity can contain other game entities.
   // (Rooms contain characters and objects, bags contain other objects,
@@ -34,7 +34,7 @@ export class ContainerEntity extends ServerEntity
   //  objects may be in room or object, etc.)
   protected location: ContainerEntity = null;
 
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
 
   // --------------- Public accessors -------------------

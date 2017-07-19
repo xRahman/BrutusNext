@@ -6,14 +6,10 @@
 
 'use strict';
 
-import {Utils} from '../../../shared/lib/utils/Utils';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Component} from '../../../client/gui/Component';
-import {Window} from '../../../client/gui/Window';
 import {TitledWindow} from '../../../client/gui/TitledWindow';
 import {StandaloneWindow} from '../../../client/gui/StandaloneWindow';
-
-import $ = require('jquery');
 
 export class TermsWindow extends StandaloneWindow
 {
@@ -29,18 +25,6 @@ export class TermsWindow extends StandaloneWindow
     { return 'S_TermsWindow'; }
   protected static get TERMS_S_CSS_CLASS()
     { return 'S_TermsWindow_Terms'; }
-
-  // -------------- Static class data -------------------
-
-  //----------------- Protected data --------------------
-
-  //------------------ Private data ---------------------
-
-  // --------------- Static accessors -------------------
-
-  // ---------------- Static methods --------------------
-
-  // --------------- Public accessors -------------------
 
   // ---------------- Public methods --------------------
 
@@ -66,8 +50,6 @@ export class TermsWindow extends StandaloneWindow
 
     this.createTermsText();
     this.createAcceptButton();
-
-    return this.$window;
   }
 
   // --------------- Protected methods ------------------

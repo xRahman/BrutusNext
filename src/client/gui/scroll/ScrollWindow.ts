@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Scrollable text console.
+  Scrollable text window with input console.
 */
 
 'use strict';
@@ -27,20 +27,10 @@ export class ScrollWindow extends TitledWindow
   protected static get S_CSS_CLASS()
     { return 'S_ScrollWindow'; }
 
-  // -------------- Static class data -------------------
-
-  //----------------- Protected data --------------------
-
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   private input = new ScrollWindowInput(this);
   public output = new ScrollWindowOutput();
-
-  // --------------- Static accessors -------------------
-
-  // ---------------- Static methods --------------------
-
-  // --------------- Public accessors -------------------
 
   // ---------------- Public methods --------------------
 
@@ -98,7 +88,7 @@ export class ScrollWindow extends TitledWindow
     this.output.append(message);
   }
 
-  public triggerOutputEvent(event: JQueryKeyEventObject)
+  public triggerOutputEvent(event)
   {
     this.output.triggerKeyboardEvent(event);
   }
@@ -108,8 +98,6 @@ export class ScrollWindow extends TitledWindow
   {
     this.input.focus();
   }
-
-  // --------------- Protected methods ------------------
 
   // ---------------- Private methods -------------------
 
@@ -131,7 +119,4 @@ export class ScrollWindow extends TitledWindow
       }
     );
   }
-
-  // ---------------- Event handlers --------------------
-
 }

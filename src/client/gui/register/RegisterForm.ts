@@ -7,7 +7,6 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {Utils} from '../../../shared/lib/utils/Utils';
 import {Connection} from '../../../client/lib/net/Connection';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Windows} from '../../../client/gui/Windows';
@@ -25,26 +24,16 @@ export class RegisterForm extends CredentialsForm
          + ' password than on your e-mail account.';
   }
 
-  // -------------- Static class data -------------------
-
-  //----------------- Protected data --------------------
-
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   private $infoLabel: JQuery = null;
-
-  // --------------- Static accessors -------------------
-
-  // ---------------- Static methods --------------------
-
-  // --------------- Public accessors -------------------
 
   // ---------------- Public methods --------------------
 
   // ~ Overrides Form.create().
   public create(param: Component.FormParam = {})
   {
-    Utils.applyDefaults(param, { name: 'register_form' });
+    this.applyDefaults(param, { name: 'register_form' });
 
     super.create(param);
 
@@ -104,7 +93,7 @@ export class RegisterForm extends CredentialsForm
     // Set value from login window e-mail input to our
     // email input so the user doesn't have to retype it
     // (password still has to be enterer again).
-    this.$emailInput.val(Windows.loginWindow.getEmailInputValue());
+    this.$emailInput.val(Windows.loginWindow.form.getEmailInputValue());
   }
 
   // --------------- Protected methods ------------------
@@ -112,7 +101,7 @@ export class RegisterForm extends CredentialsForm
   // ~ Overrides Form.createSubmitButton().
   protected createSubmitButton(param: Component.SubmitButtonParam = {})
   {
-    Utils.applyDefaults
+    this.applyDefaults
     (
       param,
       {
@@ -163,7 +152,7 @@ export class RegisterForm extends CredentialsForm
 
   private createCancelButton(param: Component.ButtonParam = {})
   {
-    Utils.applyDefaults
+    this.applyDefaults
     (
       param,
       {

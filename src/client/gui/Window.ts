@@ -6,7 +6,6 @@
 
 'use strict';
 
-import {Utils} from '../../shared/lib/utils/Utils';
 import {Flags} from '../../shared/lib/utils/Flags';
 import {ClientApp} from '../../client/lib/app/ClientApp';
 import {Component} from '../../client/gui/Component';
@@ -17,9 +16,7 @@ export class Window extends Component
   protected static get S_CSS_CLASS()
     { return 'S_Window'; }
 
-  // -------------- Static class data -------------------
-
-  //----------------- Protected data --------------------
+  // ---------------- Protected data --------------------
 
   // Prevents this window to show when app state is changed
   // (for example if player is disconnected, all game windows
@@ -39,10 +36,6 @@ export class Window extends Component
   // is already hidden.
   private hidden = true;
 
-  // --------------- Static accessors -------------------
-
-  // ---------------- Static methods --------------------
-
   // --------------- Public accessors -------------------
 
   public getFlags() { return this.flags; }
@@ -54,7 +47,7 @@ export class Window extends Component
     { windowParam }: { windowParam?: Component.DivParam } = {}
   )
   {
-    Utils.applyDefaults
+    this.applyDefaults
     (
       windowParam,
       {
@@ -114,7 +107,4 @@ export class Window extends Component
     this.$window.show();
     this.hidden = false;
   }
-
-  // ---------------- Event handlers --------------------
-
 }

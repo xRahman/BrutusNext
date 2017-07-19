@@ -15,7 +15,7 @@ import {ServerApp} from '../../../server/lib/app/ServerApp';
 
 export class Connections
 {
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   private connectionList = new Set<Connection>();
 

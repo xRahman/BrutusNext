@@ -109,7 +109,7 @@ export class Game
         + " exists but it is empty?");
   }
 
-  //----------------- Protected data --------------------
+  // ---------------- Protected data --------------------
 
   // -------- idLists ---------
   // IdLists only contain entity id's (instances of

@@ -22,7 +22,7 @@ export class MapData
     ///this.initWold();
   }
 
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
 /// Možná bude lepší roomy mimo rendering areu zahazovat - server
 /// je nejspíš nebude updatovat, takže by se z nich četla neaktuální data.

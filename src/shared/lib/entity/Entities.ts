@@ -17,14 +17,14 @@ import {Entity} from '../../../shared/lib/entity/Entity';
 
 export abstract class Entities
 {
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   // List of all entities that are loaded in memory.
   // Key:   entity id
   // Value: entity
   private entityList = new Map<string, Entity>();
 
-  //----------------- Protected data -------------------- 
+  // ---------------- Protected data -------------------- 
 
   // List of instances of hardcoded entity classes that are
   // used as prototype objects for root prototype entities.

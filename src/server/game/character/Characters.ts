@@ -18,7 +18,7 @@ import {NameList} from '../../../shared/lib/entity/NameList';
 
 export class Characters
 {
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   // List of characters with unique names that are loaded in the memory.
   private names = new NameList<Character>(Entity.NameCathegory.CHARACTER);
@@ -112,7 +112,7 @@ export class Characters
   }
   */
 
-  //----------------- Protected data --------------------
+  // ---------------- Protected data --------------------
  
   // -------------- Protected methods -------------------
 

@@ -49,7 +49,7 @@ export class WebSocketServer
   // Do we accept new connections?
   private open = false;
 
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   private webSocketServer: WebSocket.Server = null;
 

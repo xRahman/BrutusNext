@@ -21,7 +21,7 @@ export class NameList<T extends Entity>
   {
   }
 
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   // Key:   entity name
   // Value: entity

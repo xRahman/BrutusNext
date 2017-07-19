@@ -35,20 +35,10 @@ export class CharlistWindow extends StandaloneWindow
   protected static get LABELS_CONTAINER_S_CSS_CLASS()
     { return 'S_CharlistWindow_LabelsContainer'; }
 
-  // -------------- Static class data -------------------
-
-  //----------------- Protected data --------------------
-
-  //------------------ Private data ---------------------
+  // ----------------- Private data ---------------------
 
   private $charlist: JQuery = null;
   private $enterGameButton: JQuery = null;
-
-  // --------------- Static accessors -------------------
-
-  // ---------------- Static methods --------------------
-
-  // --------------- Public accessors -------------------
 
   // ---------------- Public methods --------------------
 
@@ -60,15 +50,9 @@ export class CharlistWindow extends StandaloneWindow
     this.setTitle("Your Characters");
 
     this.createButtonNewCharacter();
-
     this.createCharlist();
-
     this.createButtonEnterGame();
-
-    return this.$window;
   }
-
-  // --------------- Protected methods ------------------
 
   // ---------------- Private methods -------------------
 
@@ -204,7 +188,7 @@ export class CharlistWindow extends StandaloneWindow
 
   private onCharacterPlateFocus(event: FocusEvent)
   {
-    this.$enterGameButton.prop('disabled', false);
+    this.enable(this.$enterGameButton);
   }
 
   private onCreateNewCharacterClick(event: MouseEvent)
