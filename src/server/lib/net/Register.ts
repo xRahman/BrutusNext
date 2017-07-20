@@ -39,7 +39,10 @@ export class Register
     // (this usualy does nothing because characters that are
     //  not allowed in email addresss are rarely used in e-mail
     //  address - but better be sure).
-    let accountName = Utils.encodeEmail(request.email);
+    // Also lowercase it to prevent creating two accounts differing
+    // just in character case on Linux (file names are lowercased
+    // before saving anyways but better be sure).
+    let accountName = Utils.encodeEmail(request.email).toLowerCase();
     // Only hash is stored, not original password.
     let passwordHash = ServerUtils.md5hash(request.password);
 
@@ -167,6 +170,7 @@ export class Register
     if (account === undefined)
       return this.reportCreationFailure(account, accountName, connection);
 
+    account.email = email;
     account.setPasswordHash(passwordHash);
     account.addToLists();
 

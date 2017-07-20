@@ -42,6 +42,11 @@ export class Account extends ServerEntity
   // List of character names this account has access to.
   public characterNames: Array<string> = [];
 
+  // Original (nonecoded) email address
+  // ('name' also contains email address but it's encoded
+  // and lowercased so it can be used as a file name).
+  public email: string = null;
+
   // ---------------- Protected data --------------------
 
   // ----------------- Private data ---------------------
@@ -78,7 +83,7 @@ export class Account extends ServerEntity
     if (this.connection)
       return this.connection.getUserInfo();
 
-    return this.getEmail();
+    return this.email;
   }
 
   public getConnection()
@@ -118,15 +123,6 @@ export class Account extends ServerEntity
     this.connection = null;
 
     return connection;
-  }
-
-  public getEmail(): string
-  {
-    // Email address is used directly as account name,
-    // but it is encoded so it can also be used as file name.
-    // So to get original email address, we need to decode
-    // it back.
-    return Utils.decodeEmail(this.getName());
   }
 
   public getTimeOfCreation(): string
