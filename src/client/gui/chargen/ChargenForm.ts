@@ -29,6 +29,8 @@ export class ChargenForm extends Form
     this.createLabel({ text: 'Character Name' });
     this.createCharacterNameInput();
 
+    this.createEmptyLine();
+
     this.createButtons();
   }
 
@@ -37,13 +39,16 @@ export class ChargenForm extends Form
   // ~ Overrides Form.createSubmitButton().
   protected createSubmitButton(param: Component.SubmitButtonParam = {})
   {
-    return super.createSubmitButton
+    this.applyDefaults
     (
+      param,
       {
         text: 'Create Character',
         sCssClass: Form.LEFT_BUTTON_S_CSS_CLASS
       }
     );
+
+    return super.createSubmitButton(param);
   }
 
   // ---------------- Private methods -------------------

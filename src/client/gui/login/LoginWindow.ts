@@ -37,8 +37,7 @@ export class LoginWindow extends StandaloneWindow
 
     this.setTitle("&gWelcome to &RBrutus&YNext");
 
-    // Create login form.
-    this.form.create({ $parent: this.$content });
+    this.createLoginForm();
 
     this.createEmptyLine();
 
@@ -60,6 +59,11 @@ export class LoginWindow extends StandaloneWindow
   }
 
   // ---------------- Private methods -------------------
+
+  private createLoginForm()
+  {
+    this.form.create({ $parent: this.$content });
+  }
 
   private createRegisterLink()
   {

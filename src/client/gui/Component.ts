@@ -55,6 +55,8 @@ export abstract class Component
 
   protected static get FULL_WIDTH_BLOCK_S_CSS_CLASS()
     { return 'S_Component_FullWidthBlock'; }
+  protected static get HIDDEN_S_CSS_CLASS()
+  { return 'S_Component_Hidden'; }
 
   // --------------- Protected methods ------------------
 
@@ -159,6 +161,13 @@ export abstract class Component
     Utils.applyDefaults(param, { name: 'checkbox_input' });
 
     return this.createInputElement('checkbox', param);
+  }
+
+  protected createRadioInput(param: Component.RadioInputParam = {}): JQuery
+  {
+    Utils.applyDefaults(param, { name: 'radiobutton_input' });
+
+    return this.createInputElement('radio', param);
   }
 
   // Creates a button which submits form data
@@ -420,6 +429,9 @@ export abstract class Component
     if (attributes.src !== undefined)
       $element.attr('src', attributes.src);
 
+    if (attributes.draggable !== undefined)
+      $element.prop('draggable', attributes.draggable);
+
     // There is difference between attribute 'disabled' and
     // property 'disabled'. Attribute specifies initial value
     // of 'disabled' property of the element, property reflects
@@ -533,7 +545,8 @@ export module Component
 
   interface ImgAttributes
   {
-    src?: string
+    src?: string,
+    draggable?: boolean
   }
 
   // These elements should have 'autofocus' attribute:
@@ -671,6 +684,17 @@ export module Component
   }
 
   export interface CheckboxInputParam extends
+    CommonParameters,
+    ChangeEventParameter,
+    CommonAttributes,
+    CheckboxAttributes,
+    AutofocusAttribute,
+    InputAttributes
+  {
+    // All properties are inherited.
+  }
+
+  export interface RadioInputParam extends
     CommonParameters,
     ChangeEventParameter,
     CommonAttributes,

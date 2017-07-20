@@ -27,10 +27,13 @@ export class ScrollWindow extends TitledWindow
   protected static get S_CSS_CLASS()
     { return 'S_ScrollWindow'; }
 
+  // ----------------- Public data ----------------------
+
+  public output = new ScrollWindowOutput();
+
   // ----------------- Private data ---------------------
 
   private input = new ScrollWindowInput(this);
-  public output = new ScrollWindowOutput();
 
   // ---------------- Public methods --------------------
 
@@ -51,8 +54,8 @@ export class ScrollWindow extends TitledWindow
     /// TEST
     this.setTitle('Rahman@BrutusNext');
 
-    this.output.create({ $parent: this.$content });
-    this.input.create({ $parent: this.$content });
+    this.createOutput();
+    this.createInput();
   }
 
   // Writes the command to the output and sends it to the connection.
@@ -100,6 +103,16 @@ export class ScrollWindow extends TitledWindow
   }
 
   // ---------------- Private methods -------------------
+
+  private createOutput()
+  { 
+    this.output.create({ $parent: this.$content });
+  }
+
+  private createInput()
+  {
+    this.input.create({ $parent: this.$content });
+  }
 
   // Adds the 'command' string to the 'output' element.
   private echoCommand(command: string)
