@@ -338,9 +338,7 @@
 }
 
 /* :: Selectable Plate Border Highlight :: */
-.G_SelectablePlate:hover,
-.G_SelectablePlate:focus,
-.G_SelectablePlate:hover:focus
+.G_SelectablePlate:hover
 {
   border: 2px ridge rgba(230, 240, 255, 1);
 }
@@ -376,7 +374,7 @@
 }
 
 /* :: Selectable Background with Mouseover :: */
-.G_SelectablePlate:hover:not(:focus)
+.G_SelectablePlate:hover
 {
   /* Old browsers */
   background: rgba(45, 45, 45, 0.8);
@@ -444,12 +442,16 @@
 
 /* ------------- Box Shadow -------------- */
 
-/* :: Selectable Background with Focus :: */
-.G_SelectablePlate:focus
+/* :: Checked Selectable Plate :: */
+/*
+  This selector targets components with css class .G_SelectablePlate
+  that immediately follow a checked input element.
+*/
+input:checked + .G_SelectablePlate
 {
-  -webkit-box-shadow:inset 0 0 0.8em 0.1em rgba(210, 230, 250, 1);
-  -moz-box-shadow: inset 0 0 0.8em 0.1em rgba(210, 230, 250, 1);
-  box-shadow:inset 0 0 0.8em 0.1em rgba(210, 230, 250, 1);
+  -webkit-box-shadow:inset 0 0 0.8em 0.2em rgba(210, 230, 250, 1);
+  -moz-box-shadow: inset 0 0 0.8em 0.2em rgba(210, 230, 250, 1);
+  box-shadow:inset 0 0 0.8em 0.2em rgba(210, 230, 250, 1);
 }
 
 /* --------------- Outline --------------- */
@@ -512,6 +514,12 @@
 }
 
 /* ------------- Component --------------- */
+
+/* :: Hidden Component :: */
+.S_Component_Hidden
+{
+  display: none;
+}
 
 /* :: Full Width Block :: */
 .S_Component_FullWidthBlock,
@@ -684,13 +692,14 @@
 
 /* ----------------- Charplate ----------------- */
 
-.S_Charplate_OuterContainer
+.S_Charplate_OuterLabel
 {
   width: 100%;
   padding-left: 0.3em;
   padding-right: 0.3em;
   margin-top: 0.3em;
   margin-bottom: 0.3em;
+  display: block;
 }
 
 /* :: Character Plate :: */
