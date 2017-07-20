@@ -7,9 +7,15 @@
 'use strict';
 
 import {Component} from '../../../client/gui/Component';
+import {CharlistWindow} from '../../../client/gui/charlist/CharlistWindow';
 
 export class Charplate extends Component
 {
+  constructor(private charlistWindow: CharlistWindow)
+  {
+    super();
+  }
+
   protected static get S_CSS_CLASS()
     { return 'S_Charplate'; }
   protected static get OUTER_LABEL_S_CSS_CLASS()
@@ -18,7 +24,6 @@ export class Charplate extends Component
     { return 'S_Charplate_Portrait'; }
   protected static get LABELS_CONTAINER_S_CSS_CLASS()
     { return 'S_Charplate_LabelsContainer'; }
-
   protected static get LABEL_BIG_S_CSS_CLASS()
     { return 'S_Charplate_LabelBig'; }
   protected static get LABEL_SMALL_S_CSS_CLASS()
@@ -26,17 +31,43 @@ export class Charplate extends Component
 
   // ----------------- Private data ---------------------
 
-  private $outerLabel: JQuery = null;
-  private $charplate: JQuery = null;
-
   // ---------------- Public methods --------------------
 
   // -> Returns created jquery element.
   public create(param: Component.LabelParam = {})
   {
-    // Use outer container with no graphics and margin
-    // to make sure that outline is drawn correctly when
-    // the plate is focused.
+    // Implementation note:
+    //   In order to style radiobutton with css, we need
+    // to hide the actual radiobutton and style the element
+    // right after it using 'input:checked + .class' css
+    // selector.
+    //   There are two ways to do it: Either we place a label
+    // right next to (hidden) radiobutton and set a 'for'
+    // attribute to it to bind it to the checkbox (so the
+    // checkbox is cliecked when the label is clicked, or we
+    // put a checkbox inside a label (which also makes it
+    // clicked anytime the label is clicked) and put another
+    // element inside the label which we will be able to style
+    // using the '+' css selector.
+    //   We use the second option because it allows us to style
+    // something else than <label> and we don't have to use
+    // 'for' attribute on label this way.
+
+    // Create a <label> element.
+    let $label = this.createLabelContainer(param);
+    
+    // Put a hidden radiobutton inside it.
+    this.createRadiobutton({ $parent: $label });
+
+    // Put another element inside the label which will
+    // be styled using css.
+    this.createCharplate({ $parent: $label });
+  }
+
+  // ---------------- Private methods -------------------
+
+  private createLabelContainer(param: Component.LabelParam)
+  {
     this.applyDefaults
     (
       param,
@@ -46,38 +77,35 @@ export class Charplate extends Component
       }
     );
 
-    this.$outerLabel = this.createLabel(param);
-    
-    let $radioButton = this.createRadioInput
+    return this.createLabel(param);
+  }
+
+  private createRadiobutton(param: Component.RadioInputParam)
+  {
+    this.applyDefaults
     (
+      param,
       {
-        $parent: this.$outerLabel,
-        sCssClass: Component.HIDDEN_S_CSS_CLASS
+        sCssClass: Component.HIDDEN_S_CSS_CLASS,
+        change: (event: Event) => this.onChange(event)
       }
     );
 
-    this.createCharplate({ $parent: this.$outerLabel });
+    this.createRadioInput(param);
   }
-
-  // ---------------- Private methods -------------------
 
   private createCharplate(param: Component.DivParam = {})
   {
-    let $charplate = this.createDiv
+    this.applyDefaults
     (
+      param,
       {
-        $parent: this.$outerLabel,
         gCssClass: Component.SELECTABLE_PLATE_G_CSS_CLASS,
-        sCssClass: Charplate.S_CSS_CLASS,
-        // Set 'tabindex' attribute to make the <div> selectable
-        // ('-1' means: focusable only by script or mouse click,
-        //  not by tabbing).
-        // As a side effect, 'tabindex' also enables keyboard events
-        // on <div> element.
-        //tabindex: -1,
-        //focus: (event: FocusEvent) => { this.onCharacterPlateFocus(event); }
+        sCssClass: Charplate.S_CSS_CLASS
       }
     );
+
+    let $charplate = this.createDiv(param);
 
     this.createPortrait({ $parent: $charplate });
     this.createPortraitLabels({ $parent: $charplate });
@@ -145,78 +173,10 @@ export class Charplate extends Component
     this.createDiv(param);
   }
 
-  // private createCharacterPlate()
-  // {
-  //   // Use another container with no graphics and margin
-  //   // to make sure that outline is drawn correctly when
-  //   // the plate is focused.
-  //   let $container = this.createDiv
-  //   (
-  //     {
-  //       $parent: this.$charlist,
-  //       gCssClass: Component.NO_GRAPHICS_G_CSS_CLASS,
-  //       sCssClass: CharlistWindow.CHARACTER_PLATE_CONTAINER_S_CSS_CLASS
-  //     }
-  //   );
-
-  //   let $plate = this.createDiv
-  //   (
-  //     {
-  //       $parent: $container,
-  //       gCssClass: Component.SELECTABLE_PLATE_G_CSS_CLASS,
-  //       sCssClass: CharlistWindow.CHARACTER_PLATE_S_CSS_CLASS,
-  //       // Set 'tabindex' attribute to make the <div> selectable
-  //       // ('-1' means: focusable only by script or mouse click,
-  //       //  not by tabbing).
-  //       // As a side effect, 'tabindex' also enables keyboard events
-  //       // on <div> element.
-  //       tabindex: -1,
-  //       focus: (event: FocusEvent) => { this.onCharacterPlateFocus(event); }
-  //     }
-  //   );
-
-  //   let $portrait = this.createImg
-  //   (
-  //     {
-  //       $parent: $plate,
-  //       gCssClass: Component.WINDOW_G_CSS_CLASS,
-  //       sCssClass: CharlistWindow.PORTRAIT_S_CSS_CLASS,
-  //       src: '/images/portraits/Zuzka.jpg'
-  //     }
-  //   );
-
-  //   let $labelsContainer = this.createDiv
-  //   (
-  //     {
-  //       $parent: $plate,
-  //       sCssClass: CharlistWindow.LABELS_CONTAINER_S_CSS_CLASS
-  //     }
-  //   );
-
-  //   this.createLabel
-  //   (
-  //     {
-  //       $parent: $labelsContainer,
-  //       sCssClass: CharlistWindow.CHARACTER_PLATE_LABEL_BIG_S_CSS_CLASS,
-  //       text: "Zuzka"
-  //     }
-  //   );
-
-  //   this.createLabel
-  //   (
-  //     {
-  //       $parent: $labelsContainer,
-  //       sCssClass: CharlistWindow.CHARACTER_PLATE_LABEL_SMALL_S_CSS_CLASS,
-  //       text: "Level 1 priest"
-  //     }
-  //   );
-  // }
-
   // ---------------- Event handlers --------------------
 
-  // private onCharacterPlateFocus(event: FocusEvent)
-  // {
-  //   /// TODO:
-  //   ///this.enable(this.$enterGameButton);
-  // }
+  private onChange(event: Event)
+  {
+    this.charlistWindow.onSelectionChange();
+  }
 }
