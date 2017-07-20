@@ -1,12 +1,6 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
-TODO: Zapisovat originální e-mail do accountu
-  (Protože ten savnutý jak file name je lowercasovaný - což je správně,
-   protože jinak by se to nechovalo stejně na windowzech a linuxu - na
-   linuxu by šlo vytvořit dva accounty lišící se jen v casu).
-- lowercasuje se v NameLock.getFileName().
-
 TODO: Vymyslet, kam vypisovat problém při otevírání connection.
 - možná udělat standalone ConsoleWindow (nebo InfoWindow), které
   se zobrazí jen v případě, že se nedaří connectit (úspěch tam
@@ -28,12 +22,33 @@ TODO: Ošetřit ztrátu spojení se serverem (třeba když server
   - logovací okno (a asi i všechna ostatní) teď zůstane otevřené
     a odeslání požadavku vyhodí error, protože jde o pokus
     o zápis do closnutého socketu.
-TODO: Oštřit to pro jistotu i přímo v Connection.send() - když
+TODO: Ošetřit to pro jistotu i přímo v Connection.send() - když
   by failnulo odchytnutí disconnectu, tak ať to nehází errory.
 
 --------------------------------------------------------------
 
 --------------------------------------------------------------
+
+TODO: V ChargenForm číst limity na character name ze shared kódu.
+
+
+TODO: Zrušit hlášku 'Opening websocket connection', která se posílá
+  do ScrollWindow.
+(sice už zmizla, ale to nejspíš bude bug - jo, byl to bug)
+
+TODO: Otestovat reconnect z jiného tabu.
+- očividně to nefunguje úplně dobře.
+- tohle bych měl udělat zároveň s ošetřením disconnectu v clientu,
+  jinak to těžko odladím.
+
+--------------------------------------------------------------
+
+TODO: Zapisovat originální e-mail do accountu
+  (Protože ten savnutý jak file name je lowercasovaný - což je správně,
+   protože jinak by se to nechovalo stejně na windowzech a linuxu - na
+   linuxu by šlo vytvořit dva accounty lišící se jen v casu).
+- lowercasuje se v NameLock.getFileName().
+[done]
 
 TODO: V charselectu jde odselectnout char (což je asi ok),
   pak ale zůstane enablovaný button 'enter game' - což už asi není
@@ -45,19 +60,7 @@ TODO: Udělat z charlistu radiobutton.
 [done]
 
 TODO: Zprovoznit enablování "Enter Game" buttonu v Charlistu.
-
-TODO: V ChargenForm číst limity na character name ze shared kódu.
-
-
-TODO: Zrušit hlášku 'Opening Websocket connection', která se posílá
-  do ScrollWindow.
-
-TODO: Otestovat reconnect z jiného tabu.
-- očividně to nefunguje úplně dobře.
-- tohle bych měl udělat zároveň s ošetřením disconnectu v clientu,
-  jinak to těžko odladím.
-
---------------------------------------------------------------
+[done]
 
 TODO: Metody na create subkomponent (jako createCharlist()).
 (self-documenting kód má fakt něco do sebe...)
