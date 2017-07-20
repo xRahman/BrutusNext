@@ -12,8 +12,8 @@ export class Charplate extends Component
 {
   protected static get S_CSS_CLASS()
     { return 'S_Charplate'; }
-  protected static get OUTER_CONTAINER_S_CSS_CLASS()
-    { return 'S_Charplate_OuterContainer'; }
+  protected static get OUTER_LABEL_S_CSS_CLASS()
+    { return 'S_Charplate_OuterLabel'; }
   protected static get PORTRAIT_S_CSS_CLASS()
     { return 'S_Charplate_Portrait'; }
   protected static get LABELS_CONTAINER_S_CSS_CLASS()
@@ -26,13 +26,13 @@ export class Charplate extends Component
 
   // ----------------- Private data ---------------------
 
-  private $outerContainer: JQuery = null;
+  private $outerLabel: JQuery = null;
   private $charplate: JQuery = null;
 
   // ---------------- Public methods --------------------
 
   // -> Returns created jquery element.
-  public create(param: Component.DivParam = {})
+  public create(param: Component.LabelParam = {})
   {
     // Use outer container with no graphics and margin
     // to make sure that outline is drawn correctly when
@@ -42,13 +42,21 @@ export class Charplate extends Component
       param,
       {
         gCssClass: Component.NO_GRAPHICS_G_CSS_CLASS,
-        sCssClass: Charplate.OUTER_CONTAINER_S_CSS_CLASS
+        sCssClass: Charplate.OUTER_LABEL_S_CSS_CLASS
       }
     );
 
-    this.$outerContainer = this.createDiv(param);
+    this.$outerLabel = this.createLabel(param);
+    
+    let $radioButton = this.createRadioInput
+    (
+      {
+        $parent: this.$outerLabel,
+        sCssClass: Component.HIDDEN_S_CSS_CLASS
+      }
+    );
 
-    this.createCharplate({ $parent: this.$outerContainer });
+    this.createCharplate({ $parent: this.$outerLabel });
   }
 
   // ---------------- Private methods -------------------
@@ -58,7 +66,7 @@ export class Charplate extends Component
     let $charplate = this.createDiv
     (
       {
-        $parent: this.$outerContainer,
+        $parent: this.$outerLabel,
         gCssClass: Component.SELECTABLE_PLATE_G_CSS_CLASS,
         sCssClass: Charplate.S_CSS_CLASS,
         // Set 'tabindex' attribute to make the <div> selectable
@@ -66,8 +74,8 @@ export class Charplate extends Component
         //  not by tabbing).
         // As a side effect, 'tabindex' also enables keyboard events
         // on <div> element.
-        tabindex: -1,
-        focus: (event: FocusEvent) => { this.onCharacterPlateFocus(event); }
+        //tabindex: -1,
+        //focus: (event: FocusEvent) => { this.onCharacterPlateFocus(event); }
       }
     );
 
@@ -83,7 +91,8 @@ export class Charplate extends Component
       {
         gCssClass: Component.WINDOW_G_CSS_CLASS,
         sCssClass: Charplate.PORTRAIT_S_CSS_CLASS,
-        src: '/images/portraits/Zuzka.jpg'
+        src: '/images/portraits/Zuzka.jpg',
+        draggable: false
       }
     );
 
@@ -104,7 +113,7 @@ export class Charplate extends Component
     this.createInfoLabel({ $parent: $container });
   }
 
-  private createNameLabel(param: Component.LabelParam = {})
+  private createNameLabel(param: Component.DivParam = {})
   {
     this.applyDefaults
     (
@@ -115,10 +124,12 @@ export class Charplate extends Component
       }
     );
 
-    this.createLabel(param);
+    // Note: We can't use <label> element because
+    // it would prevent clicks on the radiobutton.
+    this.createDiv(param);
   }
 
-  private createInfoLabel(param: Component.LabelParam = {})
+  private createInfoLabel(param: Component.DivParam = {})
   {
     this.applyDefaults
     (
@@ -129,7 +140,9 @@ export class Charplate extends Component
       }
     );
 
-    this.createLabel(param);
+    // Note: We can't use <label> element because
+    // it would prevent clicks on the radiobutton.
+    this.createDiv(param);
   }
 
   // private createCharacterPlate()
@@ -201,9 +214,9 @@ export class Charplate extends Component
 
   // ---------------- Event handlers --------------------
 
-  private onCharacterPlateFocus(event: FocusEvent)
-  {
-    /// TODO:
-    ///this.enable(this.$enterGameButton);
-  }
+  // private onCharacterPlateFocus(event: FocusEvent)
+  // {
+  //   /// TODO:
+  //   ///this.enable(this.$enterGameButton);
+  // }
 }

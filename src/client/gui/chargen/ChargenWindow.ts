@@ -34,7 +34,13 @@ export class ChargenWindow extends StandaloneWindow
 
     this.setTitle("Character Creation");
 
-    // Create chargen form.
+    this.createChargenForm();
+  }
+
+  // ---------------- Private methods -------------------
+
+  private createChargenForm()
+  {
     this.form.create({ $parent: this.$content });
   }
 }
