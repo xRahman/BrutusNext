@@ -8,7 +8,7 @@
 
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Component} from '../../../client/gui/Component';
-import {Charlist} from '../../../client/gui/charlist/Charlist';
+import {CharlistForm} from '../../../client/gui/charlist/CharlistForm';
 import {StandaloneWindow} from '../../../client/gui/StandaloneWindow';
 
 export class CharlistWindow extends StandaloneWindow
@@ -23,7 +23,7 @@ export class CharlistWindow extends StandaloneWindow
 
   // ----------------- Private data ---------------------
 
-  private charlist = new Charlist();
+  private charlistForm = new CharlistForm();
 
   ///private $charlist: JQuery = null;
   private $enterGameButton: JQuery = null;
@@ -38,15 +38,15 @@ export class CharlistWindow extends StandaloneWindow
     this.setTitle("Your Characters");
 
     this.createButtonNewCharacter();
-    this.createCharlist();
+    this.createCharlistForm();
     this.createButtonEnterGame();
   }
 
   // ---------------- Private methods -------------------
 
-  private createCharlist()
+  private createCharlistForm()
   {
-    this.charlist.create({ $parent: this.$content });
+    this.charlistForm.create({ $parent: this.$content });
   }
 
   private createButtonNewCharacter()

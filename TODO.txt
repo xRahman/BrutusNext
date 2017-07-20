@@ -35,23 +35,18 @@ TODO: Oštřit to pro jistotu i přímo v Connection.send() - když
 
 --------------------------------------------------------------
 
-TODO: Opravit chargen window.
-
-TODO: Zprovoznit enablování "Enter Game" buttonu v Charlistu.
-
-TODO: Metody na create subkomponent (jako createCharlist()).
-
-TODO: V ChargeonForm číst limity na character name ze shared kódu.
-
-TODO: CharlistWindow rozdělit do víc class.
-(a v createMetodách udělat submetody).
-
 TODO: V charselectu jde odselectnout char (což je asi ok),
   pak ale zůstane enablovaný button 'enter game' - což už asi není
   ok (sice pak jde pořád vlézt do hry, ale pro hráče není jasné,
   se kterým charem se loguje).
 - problém je, že samotné kliknutí na button 'enter game' zruší selekci.
   (možná bych měl použít jinej stav než 'selected' - třeba 'checked')
+TODO: Udělat z charlistu radiobutton.
+[done]
+
+TODO: Zprovoznit enablování "Enter Game" buttonu v Charlistu.
+
+TODO: V ChargenForm číst limity na character name ze shared kódu.
 
 
 TODO: Zrušit hlášku 'Opening Websocket connection', která se posílá
@@ -63,6 +58,17 @@ TODO: Otestovat reconnect z jiného tabu.
   jinak to těžko odladím.
 
 --------------------------------------------------------------
+
+TODO: Metody na create subkomponent (jako createCharlist()).
+(self-documenting kód má fakt něco do sebe...)
+[done]
+
+TODO: CharlistWindow rozdělit do víc class.
+(a v createMetodách udělat submetody).
+[done]
+
+TODO: Opravit chargen window.
+[done]
 
 TODO: metoda applyDefaults by mohla být v Component
   (klidně může interně volat Utils.applyDefaults()),

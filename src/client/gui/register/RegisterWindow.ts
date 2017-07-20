@@ -37,8 +37,7 @@ export class RegisterWindow extends StandaloneWindow
 
     this.setTitle("Create New Account");
 
-    // Create register form.
-    this.form.create({ $parent: this.$content });
+    this.createRegisterForm();
 
     this.createEmptyLine();
     this.createTermsLink();
@@ -59,6 +58,11 @@ export class RegisterWindow extends StandaloneWindow
   }
 
   // ---------------- Private methods -------------------
+
+  private createRegisterForm()
+  {
+    this.form.create({ $parent: this.$content });
+  }
 
   private createTermsLink()
   {

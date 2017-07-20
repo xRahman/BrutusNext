@@ -100,7 +100,7 @@ export class SvgMap extends Component
   // ---------------- Public methods --------------------
 
 //.
-  // Creates map svg element and appends it to '$containe' element.
+  // Creates map svg element and appends it to '$container' element.
   public create($container: JQuery)
   {
     // Select ancestor element using d3 library.

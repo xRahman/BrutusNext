@@ -6,17 +6,16 @@
 
 'use strict';
 
+import {Form} from '../../../client/gui/Form';
 import {Component} from '../../../client/gui/Component';
 import {Charplate} from '../../../client/gui/charlist/Charplate';
 
-export class Charlist extends Component
+export class CharlistForm extends Form
 {
   public static get S_CSS_CLASS()
     { return 'S_Charlist'; }
 
   // ----------------- Private data ---------------------
-
-  private $charlist: JQuery = null;
 
   private charplates = new Array<Charplate>();
 
@@ -29,12 +28,13 @@ export class Charlist extends Component
     (
       param,
       {
+        name: 'charlist_form',
         gCssClass: Component.WINDOW_G_CSS_CLASS,
-        sCssClass: Charlist.S_CSS_CLASS
+        sCssClass: CharlistForm.S_CSS_CLASS
       }
     );
 
-    this.$charlist = this.createDiv(param);
+    super.create(param);
 
     /// TEST:
     /// TODO: Tohle by se asi spíš mělo volat v onShow() nebo tak.
@@ -47,7 +47,7 @@ export class Charlist extends Component
   {
     let charplate = new Charplate();
 
-    charplate.create({ $parent: this.$charlist });
+    charplate.create({ $parent: this.$form });
 
     this.charplates.push(charplate);
   }
@@ -55,6 +55,8 @@ export class Charlist extends Component
   private populate()
   {
     this.createCharacterPlate();
+    this.createCharacterPlate();
+    ///this.createCharacterPlate();
     /*
     this.createCharacterPlate();
     this.createCharacterPlate();
@@ -74,4 +76,12 @@ export class Charlist extends Component
 
   // ---------------- Event handlers --------------------
 
+  // ~ Overrides Form.onSubmit().
+  protected onSubmit(event: Event)
+  {
+    // We will handle the form submit ourselves.
+    event.preventDefault();
+
+    /// TODO
+  }
 }

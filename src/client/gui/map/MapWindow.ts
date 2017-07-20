@@ -66,7 +66,7 @@ export class MapWindow extends TitledWindow
     /// TEST
     this.setTitle('Dragonhelm Mountains');
 
-    this.svgMap.create(this.$content);
+    this.createSvgMap();
   }
 
   // ~ Overrides Window.onDocumentReady().
@@ -102,6 +102,11 @@ export class MapWindow extends TitledWindow
   }
 
   // ---------------- Private methods -------------------
+
+  private createSvgMap()
+  {
+    this.svgMap.create(this.$content);
+  }
 
   // Adds or removes svg elements in the map to match
   // changes in bound data.
