@@ -47,7 +47,7 @@ export class Avatar
   // Outputs a client system message.
   public clientMessage(message: string)
   {
-     this.scrollWindow.clientMessage(message);
+    this.scrollWindow.clientMessage(message);
   }
 
   // ---------------- Event handlers --------------------

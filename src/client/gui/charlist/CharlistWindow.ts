@@ -23,7 +23,7 @@ export class CharlistWindow extends StandaloneWindow
 
   // ----------------- Private data ---------------------
 
-  private charlistForm = new CharlistForm();
+  private charlistForm = new CharlistForm(this);
 
   ///private $charlist: JQuery = null;
   private $enterGameButton: JQuery = null;
@@ -40,6 +40,11 @@ export class CharlistWindow extends StandaloneWindow
     this.createButtonNewCharacter();
     this.createCharlistForm();
     this.createButtonEnterGame();
+  }
+
+  public onSelectionChange()
+  {
+    this.enable(this.$enterGameButton);
   }
 
   // ---------------- Private methods -------------------

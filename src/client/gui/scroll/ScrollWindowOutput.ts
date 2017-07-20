@@ -66,7 +66,8 @@ export class ScrollWindowOutput extends Component
     (
       {
         $parent: this.$output,
-        baseTextColor: baseTextColor
+        baseTextColor: baseTextColor,
+        text: message
       }
     );
 

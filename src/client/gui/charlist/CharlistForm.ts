@@ -9,9 +9,15 @@
 import {Form} from '../../../client/gui/Form';
 import {Component} from '../../../client/gui/Component';
 import {Charplate} from '../../../client/gui/charlist/Charplate';
+import {CharlistWindow} from '../../../client/gui/charlist/CharlistWindow';
 
 export class CharlistForm extends Form
 {
+  constructor(private charlistWindow: CharlistWindow)
+  {
+    super();
+  }
+
   public static get S_CSS_CLASS()
     { return 'S_Charlist'; }
 
@@ -45,7 +51,7 @@ export class CharlistForm extends Form
 
   private createCharacterPlate()
   {
-    let charplate = new Charplate();
+    let charplate = new Charplate(this.charlistWindow);
 
     charplate.create({ $parent: this.$form });
 
