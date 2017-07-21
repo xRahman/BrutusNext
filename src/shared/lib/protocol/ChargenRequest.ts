@@ -3,13 +3,14 @@
 
   Part of client-server communication protocol.
 
-  Login request.
+  Character creation request.
 */
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Packet} from '../../../shared/lib/protocol/Packet';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class LoginRequest extends Packet
+export class ChargenRequest extends Packet
 {
   constructor()
   {
@@ -18,8 +19,7 @@ export class LoginRequest extends Packet
     this.version = 0;
   }
 
-  public email: string = null;
-  public password: string = null;
+  public characterName: string = null;
 }
 
-Classes.registerSerializableClass(LoginRequest);
+Classes.registerSerializableClass(ChargenRequest);

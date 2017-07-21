@@ -20,11 +20,13 @@ import {Connections} from '../../../server/lib/net/Connections';
 import {Packet} from '../../../shared/lib/protocol/Packet';
 import {MudMessage} from '../../../shared/lib/protocol/MudMessage';
 import {SystemMessage} from '../../../shared/lib/protocol/SystemMessage';
+import {Command} from '../../../shared/lib/protocol/Command';
 import {Login} from '../../../server/lib/net/Login';
 import {LoginRequest} from '../../../shared/lib/protocol/LoginRequest';
 import {Register} from '../../../server/lib/net/Register';
 import {RegisterRequest} from '../../../shared/lib/protocol/RegisterRequest';
-import {Command} from '../../../shared/lib/protocol/Command';
+import {Chargen} from '../../../server/lib/net/Chargen';
+import {ChargenRequest} from '../../../shared/lib/protocol/ChargenRequest';
 
 export class Connection
 {
@@ -192,6 +194,14 @@ export class Connection
         await Login.processRequest
         (
           packet.dynamicCast(LoginRequest),
+          this
+        );
+        break;
+
+      case ChargenRequest.name:
+        await Chargen.processRequest
+        (
+          packet.dynamicCast(ChargenRequest),
           this
         );
         break;
