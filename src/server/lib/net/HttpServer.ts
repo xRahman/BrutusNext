@@ -69,6 +69,12 @@ export class HttpServer
       (request, response) => { this.onRequest(request, response); }
     );
 
+    this.httpServer.on
+    (
+      'error',
+      (error) => { this.onError(error); }
+    )
+
     Syslog.log
     (
       "Starting http server at port " + port,
@@ -128,8 +134,8 @@ export class HttpServer
       path,
       {
         binary: true,
-        // Do not report http request errors to the server log,
-        // it would spam if someone player with typing random urls.
+        // Do not report http request errors to the server log, it
+        // would cause spam if someone played with typing random urls.
         reportErrors: false
       }
     );
@@ -148,6 +154,16 @@ export class HttpServer
     response.setHeader('Content-type', MIME_TYPE[ext] || 'text/plain');
     // Send 'data' as response.
     response.end(data, FileSystem.BINARY_FILE_ENCODING);
+  }
+
+  private onError(error)
+  {
+    Syslog.log
+    (
+      "Error: " + error.message,
+      MessageType.HTTP_SERVER,
+      AdminLevel.IMMORTAL
+    );
   }
 
   /*

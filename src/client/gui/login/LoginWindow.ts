@@ -76,7 +76,7 @@ export class LoginWindow extends StandaloneWindow
       {
         $parent,
         text: "Register",
-        click: (event: MouseEvent) => { this.onRegisterClick(event); }
+        click: (event) => { this.onRegisterClick(event); }
       }
     );
 
@@ -85,7 +85,7 @@ export class LoginWindow extends StandaloneWindow
 
   // ---------------- Event handlers --------------------
 
-  private onRegisterClick(event: MouseEvent)
+  private onRegisterClick(event: JQueryEventObject)
   {
     ClientApp.setState(ClientApp.State.REGISTER);
   }

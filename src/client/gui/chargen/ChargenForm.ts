@@ -87,7 +87,7 @@ export class ChargenForm extends Form
       {
         sCssClass: Form.RIGHT_BUTTON_S_CSS_CLASS,
         text: 'Cancel',
-        click: (event: MouseEvent) => { this.onCancel(event); }
+        click: (event) => { this.onCancel(event); }
       }
     );
 
@@ -96,7 +96,7 @@ export class ChargenForm extends Form
 
   // ---------------- Event handlers --------------------
 
-  protected onSubmit(event: Event)
+  protected onSubmit(event: JQueryEventObject)
   {
     // We will handle the form submit ourselves.
     event.preventDefault();
@@ -106,7 +106,7 @@ export class ChargenForm extends Form
     ClientApp.setState(ClientApp.State.IN_GAME);
   }
 
-  protected onCancel(event: MouseEvent)
+  protected onCancel(event: JQueryEventObject)
   {
     ClientApp.setState(ClientApp.State.CHARLIST);
   }
