@@ -24,6 +24,7 @@ import {Login} from '../../../server/lib/net/Login';
 import {LoginRequest} from '../../../shared/lib/protocol/LoginRequest';
 import {Register} from '../../../server/lib/net/Register';
 import {RegisterRequest} from '../../../shared/lib/protocol/RegisterRequest';
+import {Command} from '../../../shared/lib/protocol/Command';
 
 export class Connection
 {
@@ -130,13 +131,6 @@ export class Connection
     this.send(packet);
   }
 
-/// Connection parsuje commandy?
-  // Parses and executes a single-line command.
-  public async processCommand(command: string)
-  {
-    /// TODO:
-  }
-
   // Processes data received from the client.
   public async receiveData(data: string)
   {
@@ -209,6 +203,13 @@ export class Connection
         );
         break;
 
+      case Command.name:
+        await this.processCommand
+        (
+          packet.dynamicCast(Command)
+        );
+        break;
+
       default:
         ERROR("Unknown packet type");
         break;
@@ -244,6 +245,14 @@ export class Connection
         ERROR("Received system message of unknown type.");
         break;
     }
+  }
+
+  private async processCommand(packet: Command)
+  {
+    console.log("Received command: " + packet.command);
+    /// TODO:
+    
+    //let command = Utils.normalizeCRLF(packet.command);
   }
 
   // ---------------- Event handlers --------------------
