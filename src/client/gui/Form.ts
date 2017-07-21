@@ -207,6 +207,16 @@ export abstract class Form extends Component
     return super.createEmptyLine(param);
   }
 
+  protected disableSubmitButton()
+  {
+     this.disable(this.$submitButton);
+  }
+
+  protected enableSubmitButton()
+  {
+    this.enable(this.$submitButton);
+  }
+
   // ---------------- Event handlers --------------------
 
   protected abstract onSubmit(event: JQueryEventObject);

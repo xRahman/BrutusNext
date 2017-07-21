@@ -242,16 +242,6 @@ export abstract class CredentialsForm extends Form
       this.$errorLabel.hide();
   }
 
-  protected disableSubmitButton()
-  {
-     this.disable(this.$submitButton);
-  }
-
-  protected enableSubmitButton()
-  {
-    this.enable(this.$submitButton);
-  }
-
   // ---------------- Private methods -------------------
 
   private setStoredRememberMeValue()
