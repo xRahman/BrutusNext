@@ -46,8 +46,8 @@ export class ScrollWindowInput extends Component
         rows: 1,
         spellcheck: false,
         autocorrect: Component.Autocorrect.OFF,
-        keypress: (event: KeyboardEvent) => { this.onKeyPress(event); },
-        keydown: (event: KeyboardEvent) => { this.onKeyDown(event); }
+        keypress: (event) => { this.onKeyPress(event); },
+        keydown: (event) => { this.onKeyDown(event); }
       }
     );
 
@@ -238,7 +238,7 @@ export class ScrollWindowInput extends Component
 
   // Recall command from command buffer and sets it to the
   // input element.
-  private recallCommand(event: KeyboardEvent, offset: number)
+  private recallCommand(event: JQueryEventObject, offset: number)
   {
     if (this.isEditingMultilineCommand(offset))
       return true;  // Continue processing the event.
@@ -260,9 +260,9 @@ export class ScrollWindowInput extends Component
 
   // ---------------- Event handlers --------------------
 
-  private onKeyPress(event: KeyboardEvent)
+  private onKeyPress(event: JQueryEventObject)
   {
-    switch (event.keyCode)
+    switch (event.which)
     {
       // Changes default behaviour of textarea (a new line
       // is added to the text on enter by default) to send
@@ -276,9 +276,9 @@ export class ScrollWindowInput extends Component
     return true;  // Continue processing the event.
   }
 
-  private onKeyDown(event: KeyboardEvent)
+  private onKeyDown(event: JQueryEventObject)
   {
-    switch (event.keyCode)
+    switch (event.which)
     {
       case 38:  // 'Up'
         return this.recallCommand(event, -1);

@@ -122,7 +122,7 @@ export class ScrollWindowOutput extends Component
   // (Note that this will only trigger on <div> element
   //  if it has a focus and it can only have a focus if
   //  it has a 'tabidnex' attribute set.)
-  private onKeyDown(event: KeyboardEvent)
+  private onKeyDown(event: JQueryEventObject)
   {
     let key = event.which;
 

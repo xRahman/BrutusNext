@@ -27,7 +27,12 @@ TODO: Ošetřit to pro jistotu i přímo v Connection.send() - když
 
 --------------------------------------------------------------
 
+TODO: Eventy u handlerů attachovaných přes jquery (což by měly být
+  všechny by asi měly mít typ JQueryEventObject.
+
 --------------------------------------------------------------
+
+TODO: Character creation.
 
 TODO: V ChargenForm číst limity na character name ze shared kódu.
 
