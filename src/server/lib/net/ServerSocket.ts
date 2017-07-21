@@ -235,9 +235,6 @@ export class ServerSocket
     /// DEBUG:
     console.log('(ws) received message: ' + data);
 
-    /// TODO: Tohle by se mělo dělat až pro commandy.
-    ///data = Utils.normalizeCRLF(data);
-
     await this.connection.receiveData(data);
   }
 
