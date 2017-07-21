@@ -8,8 +8,10 @@
 
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
+import {Connection} from '../../../client/lib/net/Connection';
 import {Component} from '../../../client/gui/Component';
 import {Form} from '../../../client/gui/Form';
+import {ChargenRequest} from '../../../shared/lib/protocol/ChargenRequest';
 
 export class ChargenForm extends Form
 {
@@ -101,9 +103,18 @@ export class ChargenForm extends Form
     // We will handle the form submit ourselves.
     event.preventDefault();
 
-    console.log("Submit (char_name: " + this.$characterNameInput.val() + " )");
+    let request = new ChargenRequest();
 
-    ClientApp.setState(ClientApp.State.IN_GAME);
+    request.characterName = this.$characterNameInput.val();
+
+    // Disable submit button to prevent click-spamming
+    // requests.
+    this.disableSubmitButton();
+
+    Connection.send(request);
+
+    /// TODO: Tohle až když přije response.
+    ///ClientApp.setState(ClientApp.State.IN_GAME);
   }
 
   protected onCancel(event: JQueryEventObject)

@@ -33,6 +33,10 @@ TODO: Eventy u handlerů attachovaných přes jquery (což by měly být
 --------------------------------------------------------------
 
 TODO: Character creation.
+TODO: serverový Chargen.ts by asi měl být spíš někde v /game než v /lib/net
+(možná v /game/character)
+TODO: Stejně tak Register.ts (a možná i Login.ts) by mohlo být spíš
+  v /lib/account
 
 TODO: V ChargenForm číst limity na character name ze shared kódu.
 
