@@ -83,7 +83,7 @@ export class CharlistForm extends Form
   // ---------------- Event handlers --------------------
 
   // ~ Overrides Form.onSubmit().
-  protected onSubmit(event: Event)
+  protected onSubmit(event: JQueryEventObject)
   {
     // We will handle the form submit ourselves.
     event.preventDefault();

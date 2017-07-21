@@ -47,6 +47,11 @@ export class CharlistWindow extends StandaloneWindow
     this.enable(this.$enterGameButton);
   }
 
+  public onCharplateDoubleClick()
+  {
+    this.enterGame();
+  }
+
   // ---------------- Private methods -------------------
 
   private createCharlistForm()
@@ -76,20 +81,33 @@ export class CharlistWindow extends StandaloneWindow
         text: 'Enter Game',
         sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS,
         disabled: true,
-        click: (event: MouseEvent) => { this.onEnterGameClick(event); }
+        click: (event) => { this.onEnterGameClick(event); }
       }
     );
   }
 
-  // ---------------- Event handlers --------------------
-
-  private onCreateNewCharacterClick(event: MouseEvent)
+  private enterChargen()
   {
     ClientApp.setState(ClientApp.State.CHARGEN);
   }
 
-  private onEnterGameClick(event: MouseEvent)
+  private enterGame()
   {
+    /// TODO: Přečíst z charlistu, jaký je selectnutý char,
+    /// a setnout ho jako ingame entity.
+
     ClientApp.setState(ClientApp.State.IN_GAME);
+  }
+
+  // ---------------- Event handlers --------------------
+
+  private onCreateNewCharacterClick(event: JQueryEventObject)
+  {
+    this.enterChargen();
+  }
+
+  private onEnterGameClick(event: JQueryEventObject)
+  {
+    this.enterGame();
   }
 }

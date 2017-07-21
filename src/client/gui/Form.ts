@@ -50,7 +50,7 @@ export abstract class Form extends Component
       param,
       {
         sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS,
-        submit: (event: Event) => { this.onSubmit(event); }
+        submit: (event) => { this.onSubmit(event); }
       }
     );
 
@@ -209,7 +209,7 @@ export abstract class Form extends Component
 
   // ---------------- Event handlers --------------------
 
-  protected abstract onSubmit(event: Event);
+  protected abstract onSubmit(event: JQueryEventObject);
 }
 
 // ------------------ Type Declarations ----------------------

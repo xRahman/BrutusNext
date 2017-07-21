@@ -158,7 +158,7 @@ export class RegisterForm extends CredentialsForm
       {
         sCssClass: Form.RIGHT_BUTTON_S_CSS_CLASS,
         text: 'Cancel',
-        click: (event: MouseEvent) => { this.onCancel(event); }
+        click: (event) => { this.onCancel(event); }
       }
     );
 
@@ -187,7 +187,7 @@ export class RegisterForm extends CredentialsForm
   // ---------------- Event handlers --------------------
 
   // ~ Overrides Form.onSubmit().
-  protected onSubmit(event: Event)
+  protected onSubmit(event: JQueryEventObject)
   {
     // We will handle the form submit ourselves.
     event.preventDefault();
@@ -211,7 +211,7 @@ export class RegisterForm extends CredentialsForm
     Connection.send(request);
   }
 
-  protected onCancel(event: MouseEvent)
+  protected onCancel(event: JQueryEventObject)
   {
     ClientApp.setState(ClientApp.State.LOGIN);
   }

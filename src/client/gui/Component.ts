@@ -352,6 +352,9 @@ export abstract class Component
     if (param.click)
       $element.click(param.click);
 
+    if (param.dblclick)
+      $element.dblclick(param.dblclick);
+
     if (param.keypress)
       $element.keypress(param.keypress);
 
@@ -484,12 +487,20 @@ export module Component
     gCssClass?: string;
     sCssClass?: string;
 
+    // Note: I'm not sure about correct types for UI events.
+    //   There is something about event normalization in jquery
+    // documentation and JQueryEventObject really is inherited
+    // from several more specific event object interfaces so
+    // it's probably ok to use it for all UI events registered
+    // using jquery.
+
     // Event handlers.
-    click?: (event: MouseEvent) => any;
-    keypress?: (event: KeyboardEvent) => any;
-    keydown?: (event: KeyboardEvent) => any;
-    focus?: (event: FocusEvent) => any;
-    resize?: (event: Event) => any;
+    click?: (event: JQueryEventObject) => any;
+    dblclick?: (event: JQueryEventObject) => any;
+    keypress?: (event: JQueryEventObject) => any;
+    keydown?: (event: JQueryEventObject) => any;
+    focus?: (event: JQueryEventObject) => any;
+    resize?: (event: JQueryEventObject) => any;
   }
 
   interface TextParameters
@@ -501,14 +512,14 @@ export module Component
   interface FormParameters
   {
     // Event handlers.
-    submit?: (event: Event) => any;
+    submit?: (event: JQueryEventObject) => any;
   }
 
   // These elements fire 'change' events:
   // <input>, <select>, and <textarea>
   interface ChangeEventParameter
   {
-    change?: (event: Event) => any;
+    change?: (event: JQueryEventObject) => any;
   }
 
   // This inteface contains properties of all other parameters
