@@ -178,12 +178,18 @@ export class Serializable extends Attributable
       if (propertyName === Serializable.VERSION_PROPERTY)
         continue;
 
+/// TODO: Tohle asi není dobrej nápad, nepůjdou díky tomu vytvářet
+///   properties v runtimu (tedy půjdou, ale po savu/loadu se ztratí).
       // Only properties that exist on the class that is being loaded
       // are loaded from save. It means that you can remove properties
       // from existing classes without converting existing save files
       // (no syslog message is generated).
-      if (this[propertyName] === undefined)
-        continue;
+      //   Note that if a property is not initialized in typescript,
+      // it's not created on javascript instance at all - so make sure
+      // that you initialize all properties if you want them to be
+      // deserialized.
+      /// if (!(propertyName in this))
+      ///   continue;
 
       // Allow custom property deserialization in descendants.
       let customValue = this.customDeserializeProperty

@@ -18,7 +18,7 @@ export class Command extends Packet
     this.version = 0;
   }
 
-  public command: string;
+  public command: string = null;
 }
 
 Classes.registerSerializableClass(Command);
