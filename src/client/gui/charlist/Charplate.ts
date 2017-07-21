@@ -87,7 +87,7 @@ export class Charplate extends Component
       param,
       {
         sCssClass: Component.HIDDEN_S_CSS_CLASS,
-        change: (event: Event) => this.onChange(event)
+        change: (event) => this.onChange(event)
       }
     );
 
@@ -101,7 +101,14 @@ export class Charplate extends Component
       param,
       {
         gCssClass: Component.SELECTABLE_PLATE_G_CSS_CLASS,
-        sCssClass: Charplate.S_CSS_CLASS
+        sCssClass: Charplate.S_CSS_CLASS,
+        // Note: 'dblclick' event must be attached to the
+        // charplate rather than the actual radiobutton
+        // because the radiobutton is hidden so it doesn't
+        // fire mouse events (other than 'change' which it
+        // fires because it's inside a label that also
+        // contains charplate).
+        dblclick: (event) => this.onDoubleClick(event)
       }
     );
 
@@ -175,8 +182,14 @@ export class Charplate extends Component
 
   // ---------------- Event handlers --------------------
 
-  private onChange(event: Event)
+  private onChange(event: JQueryEventObject)
   {
     this.charlistWindow.onSelectionChange();
+  }
+
+  private onDoubleClick(event: JQueryEventObject)
+  {
+    console.log('onDoubleclick');
+    this.charlistWindow.onCharplateDoubleClick();
   }
 }

@@ -188,7 +188,7 @@ export abstract class CredentialsForm extends Form
         {
           name: 'remember_me_checkbox',
           checked: false,
-          change: (event: Event) => { this.onRememberMeChange(event); }
+          change: (event) => { this.onRememberMeChange(event); }
         },
         labelParam:
         {
@@ -267,7 +267,7 @@ export abstract class CredentialsForm extends Form
 
   // ---------------- Event handlers --------------------
 
-  protected onRememberMeChange(event: Event)
+  protected onRememberMeChange(event: JQueryEventObject)
   {
     if (!LocalStorage.isAvailable())
       return;

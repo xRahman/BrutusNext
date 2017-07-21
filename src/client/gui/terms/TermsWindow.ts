@@ -79,14 +79,14 @@ export class TermsWindow extends StandaloneWindow
         $parent: this.$content,
         sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS,
         text: 'Accept',
-        click: (event: MouseEvent) => { this.onAcceptClick(event); }
+        click: (event) => { this.onAcceptClick(event); }
       }
     );
   }
 
   // ---------------- Event handlers --------------------
 
-  private onAcceptClick(event: MouseEvent)
+  private onAcceptClick(event: JQueryEventObject)
   {
     console.log("Clicked on Accept button");
     ClientApp.setState(ClientApp.State.REGISTER);

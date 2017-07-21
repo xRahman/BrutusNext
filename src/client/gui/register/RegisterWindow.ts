@@ -78,7 +78,7 @@ export class RegisterWindow extends StandaloneWindow
       {
         $parent,
         text: "Terms of Use",
-        click: (event: MouseEvent) => { this.onTermsClick(event); }
+        click: (event) => { this.onTermsClick(event); }
       }
     );
 
@@ -87,7 +87,7 @@ export class RegisterWindow extends StandaloneWindow
 
   // ---------------- Event handlers --------------------
 
-  private onTermsClick(event: MouseEvent)
+  private onTermsClick(event: JQueryEventObject)
   {
     ClientApp.setState(ClientApp.State.TERMS);
   }

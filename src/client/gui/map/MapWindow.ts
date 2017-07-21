@@ -156,7 +156,7 @@ export class MapWindow extends TitledWindow
 
   // ---------------- Event handlers --------------------
 
-  private onResize(event: Event)
+  private onResize(event: JQueryEventObject)
   {
     ///console.log('onResize()');
     this.updateMap();
