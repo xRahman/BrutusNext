@@ -1,0 +1,32 @@
+Výpis mobů v okolních místnostech by mohl být prostě lineární
+
+[here]
+  gray goblin warrior (in combat)
+  gray goblin mage (in combat)
+[north]
+  large war wolf
+[east]
+  hill giant
+[south]
+[west]
+[up]
+[down]
+
+- problém je, že těch směrů může být docela hodně
+  - a asi by se ten seznam neměl moc překládávat, aby mobové neuhýbali
+    před nakliknutím
+- výhoda je, že když bych to chtěl rozšířit na 2 roomy do všech směrů,
+  tak není třeba přidávat směry
+
+status (in combat, atp) by šel udělat inkonkama, aby to nebylo moc dlouhé.
+
+
+Nebo jinak:
+- vypisovat jen obecné info
+[north]
+  3x friendly
+  2x hostile (minion)
+  1x hostile (boss)
+
+a konkrétní moby vypsat vedle do [focused room] komponenty
+- otázka je, jestli se má focused room pohybovat (s targetem, možná)?
