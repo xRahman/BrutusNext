@@ -1,4 +1,16 @@
-﻿Scan & visibility
+﻿Speed
+------
+
+- pomalý pohyb pěšky
+- rychlý (skoro brutusoidní) na mountovi
+
+tzn. v pěším boji (pokud se bude bojovat pěšky) se bude pohybovat
+pomalu
+- rozhodně to platí pro moby, pro boj někde v jeskyních či stokách a tak.
+  (mohlo by to taky pocitově odlišit outdoor a indoor sektory)
+
+
+Scan & visibility
 ------------------
 
 Scan distance limited by:
