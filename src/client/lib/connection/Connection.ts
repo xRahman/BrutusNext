@@ -11,7 +11,7 @@ import {Serializable} from '../../../shared/lib/class/Serializable';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {ClientSocket} from '../../../client/lib/net/ClientSocket';
 import {ScrollWindow} from '../../../client/gui/scroll/ScrollWindow';
-import {Avatar} from '../../../client/lib/net/Avatar';
+import {Avatar} from '../../../client/lib/connection/Avatar';
 import {Packet} from '../../../shared/lib/protocol/Packet';
 import {Command} from '../../../shared/lib/protocol/Command';
 import {SystemMessage} from '../../../shared/lib/protocol/SystemMessage';

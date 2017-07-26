@@ -16,16 +16,16 @@ import {ServerSocket} from '../../../server/lib/net/ServerSocket';
 import {Account} from '../../../server/lib/account/Account';
 import {GameEntity} from '../../../server/game/GameEntity';
 import {Classes} from '../../../shared/lib/class/Classes';
-import {Connections} from '../../../server/lib/net/Connections';
+import {Connections} from '../../../server/lib/connection/Connections';
 import {Packet} from '../../../shared/lib/protocol/Packet';
 import {MudMessage} from '../../../shared/lib/protocol/MudMessage';
 import {SystemMessage} from '../../../shared/lib/protocol/SystemMessage';
 import {Command} from '../../../shared/lib/protocol/Command';
-import {Login} from '../../../server/lib/net/Login';
+import {Login} from '../../../server/lib/account/Login';
 import {LoginRequest} from '../../../shared/lib/protocol/LoginRequest';
-import {Register} from '../../../server/lib/net/Register';
+import {Register} from '../../../server/lib/account/Register';
 import {RegisterRequest} from '../../../shared/lib/protocol/RegisterRequest';
-import {Chargen} from '../../../server/lib/net/Chargen';
+import {Chargen} from '../../../server/game/character/Chargen';
 import {ChargenRequest} from '../../../shared/lib/protocol/ChargenRequest';
 
 export class Connection
