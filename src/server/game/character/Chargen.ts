@@ -9,19 +9,19 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 // import {Utils} from '../../../shared/lib/utils/Utils';
 // import {ServerUtils} from '../../../server/lib/utils/ServerUtils';
-// import {Syslog} from '../../../shared/lib/log/Syslog';
-// import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
+import {Syslog} from '../../../shared/lib/log/Syslog';
+import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 // import {Serializable} from '../../../shared/lib/class/Serializable';
 // import {NameLock} from '../../../server/lib/entity/NameLock';
 // import {Entity} from '../../../shared/lib/entity/Entity';
 // import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
 // import {Message} from '../../../server/lib/message/Message';
-// import {MessageType} from '../../../shared/lib/message/MessageType';
+import {MessageType} from '../../../shared/lib/message/MessageType';
 // import {Account} from '../../../server/lib/account/Account';
 // import {Accounts} from '../../../server/lib/account/Accounts';
 import {Connection} from '../../../server/lib/connection/Connection';
 import {ChargenRequest} from '../../../shared/lib/protocol/ChargenRequest';
-// import {LoginResponse} from '../../../shared/lib/protocol/LoginResponse';
+import {ChargenResponse} from '../../../shared/lib/protocol/ChargenResponse';
 
 export class Chargen
 {
@@ -36,36 +36,68 @@ export class Chargen
     if (!this.isConnectionValid(connection))
       return;
 
-    // let email = request.email;
-    // // E-mail address is used as account name but it needs
-    // // to be encoded first so it can be used as file name.
-    // let accountName = Utils.encodeEmail(email);
-    // let passwordHash = ServerUtils.md5hash(request.password);
+    if (!this.isRequestValid(request, connection))
+      return;
 
-    // // If player has already been connected prior to this
-    // // login request (for example if she logs in from different
-    // // computer or browser tab while still being logged-in from
-    // // the old location), her Account is still loaded in memory
-    // // (because it is kept there as long as connection stays open).
-    // //   In such case, we don't need to load account from disk
-    // // (because it's already loaded) but we need to close the
-    // // old connection and socket (if it's still open) and also
-    // // possibly let the player know that her connection has been
-    // // usurped.
-    // if (this.reconnectToAccount(accountName, passwordHash, connection))
-    //   return;
-
-    // // If account 'accountName' doesn't exist in memory,
-    // // we need to load it from disk and connect to it.
-    // // This also handles situation when user reloads
-    // // browser tab - browser closes the old connection
-    // // in such case so at the time user logs back in
-    // // server has already dealocated old account, connection
-    // // and socket.
-    // await this.connectToAccount(accountName, email, passwordHash, connection);
+    await this.createCharacter(request, connection);
   }
 
   // ------------- Private static methods ---------------
+
+  private static async createCharacter
+  (
+    request: ChargenRequest,
+    connection: Connection
+  )
+  {
+    let characterName = request.characterName;
+
+    /// TODO
+  }
+
+  private static isRequestValid
+  (
+    request: ChargenRequest,
+    connection: Connection
+  )
+  : boolean
+  {
+    if (!this.isCharacterNameValid(request, connection))
+      return false;
+
+    return true;
+  }
+
+  private static isCharacterNameValid
+  (
+    request: ChargenRequest,
+    connection: Connection
+  )
+  : boolean
+  {
+    let problem = request.getCharacterNameProblem();
+
+    if (!problem)
+      return true;
+
+    this.denyRequest
+    (
+      problem,
+      ChargenResponse.Result.CHARACTER_NAME_PROBLEM,
+      connection
+    );
+
+    Syslog.log
+    (
+      "Attempt to create character with invalid name"
+        + " (" + request.characterName + ")."
+        + " Problem: " + problem,
+      MessageType.CONNECTION_INFO,
+      AdminLevel.IMMORTAL
+    );
+    
+    return false;
+  }
 
   // private static acceptRequest(account: Account, connection: Connection)
   // {
@@ -82,20 +114,20 @@ export class Chargen
   //   connection.send(response);
   // }
 
-  // private static denyRequest
-  // (
-  //   problem: string,
-  //   result: LoginResponse.Result,
-  //   connection: Connection
-  // )
-  // {
-  //   let response = new LoginResponse();
+  private static denyRequest
+  (
+    problem: string,
+    result: ChargenResponse.Result,
+    connection: Connection
+  )
+  {
+    let response = new ChargenResponse();
 
-  //   response.result = result;
-  //   response.problem = problem;
+    response.result = result;
+    response.problem = problem;
 
-  //   connection.send(response);
-  // }
+    connection.send(response);
+  }
 
   // // -> Returns 'null'.
   // private static reportMissingIdProperty

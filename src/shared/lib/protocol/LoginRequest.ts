@@ -18,6 +18,8 @@ export class LoginRequest extends Packet
     this.version = 0;
   }
 
+  // ----------------- Public data ----------------------
+
   public email: string = null;
   public password: string = null;
 }

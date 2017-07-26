@@ -3,7 +3,7 @@
 
   Part of client-server communication protocol.
 
-  Server response to login request.
+  Server response to character creation request.
 */
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
@@ -11,7 +11,7 @@ import {Packet} from '../../../shared/lib/protocol/Packet';
 import {EntityData} from '../../../shared/lib/protocol/EntityData';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class LoginResponse extends Packet
+export class ChargenResponse extends Packet
 {
   constructor()
   {
@@ -23,27 +23,25 @@ export class LoginResponse extends Packet
   // ----------------- Public data ----------------------
 
   // Is the request accepted?
-  public result: LoginResponse.Result = LoginResponse.Result.UNDEFINED;
+  public result = ChargenResponse.Result.UNDEFINED;
 
   // Description of problem if the request is denied.
   public problem: string = null;
 
-  // Serialized account data.
-  public account = new EntityData();
+  // Serialized character data.
+  public character = new EntityData();
 }
 
 // ------------------ Type declarations ----------------------
 
-export module LoginResponse
+export module ChargenResponse
 {
   export enum Result
   {
     UNDEFINED,
     OK,
-    UNKNOWN_EMAIL,
-    INCORRECT_PASSWORD,
-    FAILED_TO_LOAD_ACCOUNT
+    CHARACTER_NAME_PROBLEM
   }
 }
 
-Classes.registerSerializableClass(LoginResponse);
+Classes.registerSerializableClass(ChargenResponse);

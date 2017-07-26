@@ -22,11 +22,6 @@ export class RegisterRequest extends Packet
     this.version = 0;
   }
 
-  // public static get MIN_ACCOUNT_NAME_LENGTH()
-  //   { return  3;}
-  // public static get MAX_ACCOUNT_NAME_LENGTH()
-  //   { return  20;}
-
   public static get MIN_EMAIL_LENGTH()
     { return  3;}
   public static get MAX_EMAIL_LENGTH()
@@ -36,142 +31,30 @@ export class RegisterRequest extends Packet
   public static get MAX_PASSWORD_LENGTH()
     { return  50;}
 
-  ///public accountName: string = null;
+  // ----------------- Public data ----------------------
+
   public email: string = null;
   public password: string = null;
 
-  /// To be deleted.
-  /*
-  public isValid(): boolean
-  {
-    let isValid = true;
-
-    // if (!this.accountName)
-    // {
-    //   ERROR("Missing or invalid 'accountName' in login request");
-    //   isValid = false;
-    // }
-
-    if (!this.email)
-    {
-      ERROR("Missing or invalid 'email' in login request");
-      isValid = false;
-    }
-
-    if (!this.password)
-    {
-      ERROR("Missing or invalid 'password' in login request");
-      isValid = false;
-    }
-
-    return isValid;
-  }
-  */
-
-  /// To be deleted.
-  /*
-  // -> Returns 'null' if request is ok,
-  //    othwrwise returns the first found reason why it's not.
-  public getProblem()
-  {
-    let problem;
-
-    if (problem = this.getAccountNameProblem())
-      return problem;
-
-    if (problem = this.getEmailProblem())
-      return problem;
-
-    if (problem = this.getPasswordProblem())
-      return problem;
-
-    return null;
-  }
-  */
-
-  /// Deprecated.
-  // // -> Returns 'null' if accountName is ok,
-  // //    othwrwise returns the first found reason why it's not.
-  // private getAccountNameProblem(): string
-  // {
-  //   if (!this.accountName)
-  //     return "Account name must not be empty.";
-
-  //   // 'only letters' variant:
-  //   // let regExp = /[^A-Za-z]/;
-  //   let regExp = /[^A-Za-z0-9]/;
-
-  //   if (regExp.test(this.accountName))
-  //     return "Account name can only contain numbers and english letters.";
-
-  //   if (this.accountName.length < RegisterRequest.MIN_ACCOUNT_NAME_LENGTH)
-  //   {
-  //     return "Account name must be at least"
-  //       + " " + RegisterRequest.MIN_ACCOUNT_NAME_LENGTH
-  //       + " characters long";
-  //   }
-
-  //   if (this.accountName.length > RegisterRequest.MAX_ACCOUNT_NAME_LENGTH)
-  //   {
-  //     return "Account name cannot be longer than"
-  //       + " " + RegisterRequest.MAX_ACCOUNT_NAME_LENGTH
-  //       + " characters";
-  //   }
-
-  //   return null;
-  // }
+  // ---------------- Public methods --------------------
 
   // -> Returns 'null' if email is ok,
   //    othwrwise returns the first found reason why it's not.
   public getEmailProblem(): string
   {
+    let problem = null;
+
     if (!this.email)
       return "E-mail address must not be empty.";
 
-    if (this.email.length < RegisterRequest.MIN_EMAIL_LENGTH)
-    {
-      return "E-mail address must be at least"
-        + " " + RegisterRequest.MIN_EMAIL_LENGTH
-        + " characters long.";
-    }
+    if (problem = this.getEmailLengthProblem())
+      return problem;
 
-    if (this.email.length > RegisterRequest.MAX_EMAIL_LENGTH)
-    {
-      return "E-mail address cannot be longer than"
-        + " " + RegisterRequest.MAX_EMAIL_LENGTH
-        + " characters.";
-    }
+    if (problem = this.getAmpersandProblem())
+      return problem;
 
-    let splitArray = this.email.split('@');
-
-    if (splitArray.length < 2)
-      return "E-mail address must contain a '@'.";
-
-    if (splitArray.length > 2)
-      return "E-mail address can only contain one '@'.";
-
-    if (splitArray[0].length < 1)
-    {
-      return "There must be at least 1 character"
-        + " before '@' in an e-mail address.";
-    }
-
-    if (splitArray[1].length < 1)
-    {
-      return "There must be at least 1 character"
-        + " after '@' in an e-mail address.";
-    }
-
-    // Check for invalid characters.
-    for (let i = 0; i < this.email.length; i++)
-    {
-      // Is character at position 'i' present in VALID_EMAIL_CHARACTERS?
-      if (VALID_EMAIL_CHARACTERS.indexOf(this.email.charAt(i)) === -1)
-      {
-        return "E-mail address cannot contain character"
-          + " '" + this.email.charAt(i) + "'.";
-      }
-    }
+    if (problem = this.getInvalidCharacterProblem())
+      return problem;
 
     return null;  // No problem found.
   }
@@ -195,6 +78,68 @@ export class RegisterRequest extends Packet
       return "Password cannot be longer than"
         + " " + RegisterRequest.MAX_PASSWORD_LENGTH
         + " characters.";
+    }
+
+    return null;
+  }
+
+  // ---------------- Private methods -------------------
+
+  private getEmailLengthProblem()
+  {
+    if (this.email.length < RegisterRequest.MIN_EMAIL_LENGTH)
+    {
+      return "E-mail address must be at least"
+        + " " + RegisterRequest.MIN_EMAIL_LENGTH
+        + " characters long.";
+    }
+
+    if (this.email.length > RegisterRequest.MAX_EMAIL_LENGTH)
+    {
+      return "E-mail address cannot be longer than"
+        + " " + RegisterRequest.MAX_EMAIL_LENGTH
+        + " characters.";
+    }
+
+    return null;
+  }
+
+  private getAmpersandProblem()
+  {
+    let splitArray = this.email.split('@');
+
+    if (splitArray.length < 2)
+      return "E-mail address must contain a '@'.";
+
+    if (splitArray.length > 2)
+      return "E-mail address can only contain one '@'.";
+
+    if (splitArray[0].length < 1)
+    {
+      return "There must be at least 1 character"
+        + " before '@' in an e-mail address.";
+    }
+
+    if (splitArray[1].length < 1)
+    {
+      return "There must be at least 1 character"
+        + " after '@' in an e-mail address.";
+    }
+
+    return null;
+  }
+
+  private getInvalidCharacterProblem()
+  {
+    // Check for invalid characters.
+    for (let i = 0; i < this.email.length; i++)
+    {
+      // Is character at position 'i' present in VALID_EMAIL_CHARACTERS?
+      if (VALID_EMAIL_CHARACTERS.indexOf(this.email.charAt(i)) === -1)
+      {
+        return "E-mail address cannot contain character"
+          + " '" + this.email.charAt(i) + "'.";
+      }
     }
 
     return null;
