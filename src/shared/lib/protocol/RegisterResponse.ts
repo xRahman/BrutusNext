@@ -20,8 +20,10 @@ export class RegisterResponse extends Packet
     this.version = 0;
   }
 
+  // ----------------- Public data ----------------------
+
   // Is the request accepted?
-  public result: RegisterResponse.Result = RegisterResponse.Result.UNDEFINED;
+  public result = RegisterResponse.Result.UNDEFINED;
 
   // Description of problem if the request is denied.
   public problem: string = null;

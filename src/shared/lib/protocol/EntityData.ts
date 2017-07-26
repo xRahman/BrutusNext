@@ -21,9 +21,13 @@ export class EntityData extends Serializable
     this.version = 0;
   }
 
+  // ----------------- Public data ----------------------
+
   // Contains serialized entity and all it's ancestor
   // entities starting with root ancestor.
   public data = new Array<string>();
+
+  // ---------------- Public methods --------------------
 
   public serializeEntity(entity: Entity, mode: Serializable.Mode)
   {
