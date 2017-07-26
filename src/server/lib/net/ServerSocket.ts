@@ -11,7 +11,7 @@ import {Utils} from '../../../shared/lib/utils/Utils';
 import {Syslog} from '../../../shared/lib/log/Syslog';
 import {WebSocketEvent} from '../../../shared/lib/net/WebSocketEvent';
 import {Packet} from '../../..//shared/lib/protocol/Packet';
-import {Connection} from '../../../server/lib/net/Connection';
+import {Connection} from '../../../server/lib/connection/Connection';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 

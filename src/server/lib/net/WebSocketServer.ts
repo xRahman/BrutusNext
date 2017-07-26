@@ -30,8 +30,8 @@ import {Syslog} from '../../../shared/lib/log/Syslog';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {ServerApp} from '../../../server/lib/app/ServerApp';
-import {Connection} from '../../../server/lib/net/Connection';
-import {Connections} from '../../../server/lib/net/Connections';
+import {Connection} from '../../../server/lib/connection/Connection';
+import {Connections} from '../../../server/lib/connection/Connections';
 import {HttpServer} from '../../../server/lib/net/HttpServer';
 import {ServerSocket} from '../../../server/lib/net/ServerSocket';
 

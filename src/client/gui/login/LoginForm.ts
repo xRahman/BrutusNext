@@ -8,7 +8,7 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {LocalStorage} from '../../../client/lib/storage/LocalStorage';
-import {Connection} from '../../../client/lib/net/Connection';
+import {Connection} from '../../../client/lib/connection/Connection';
 import {Component} from '../../../client/gui/Component';
 import {CredentialsForm} from '../../../client/gui/CredentialsForm';
 import {LoginRequest} from '../../../shared/lib/protocol/LoginRequest';

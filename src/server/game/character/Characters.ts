@@ -11,7 +11,7 @@ import {FileSystem} from '../../../server/lib/fs/FileSystem';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
 import {AbbrevList} from '../../../server/game/search/AbbrevList';
-import {Connection} from '../../../server/lib/net/Connection';
+import {Connection} from '../../../server/lib/connection/Connection';
 import {Game} from '../../../server/game/Game';
 import {Character} from '../../../server/game/character/Character';
 import {NameList} from '../../../shared/lib/entity/NameList';

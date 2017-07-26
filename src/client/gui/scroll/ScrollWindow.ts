@@ -12,7 +12,7 @@ import {ScrollWindowOutput} from
   '../../../client/gui/scroll/ScrollWindowOutput';
 import {MudColors} from '../../../client/gui/MudColors';
 import {TitledWindow} from '../../../client/gui/TitledWindow';
-import {Connection} from '../../../client/lib/net/Connection';
+import {Connection} from '../../../client/lib/connection/Connection';
 
 export class ScrollWindow extends TitledWindow
 {

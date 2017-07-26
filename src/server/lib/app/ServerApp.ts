@@ -20,7 +20,7 @@ import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
 import {Admins} from '../../../server/lib/admin/Admins';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
-import {Connections} from '../../../server/lib/net/Connections';
+import {Connections} from '../../../server/lib/connection/Connections';
 import {ServerPrototypes} from '../../../server/lib/entity/ServerPrototypes';
 import {Accounts} from '../../../server/lib/account/Accounts';
 import {Syslog} from '../../../shared/lib/log/Syslog';

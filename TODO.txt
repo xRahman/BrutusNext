@@ -27,16 +27,7 @@ TODO: Ošetřit to pro jistotu i přímo v Connection.send() - když
 
 --------------------------------------------------------------
 
-TODO: Eventy u handlerů attachovaných přes jquery (což by měly být
-  všechny by asi měly mít typ JQueryEventObject.
-
---------------------------------------------------------------
-
 TODO: Character creation.
-TODO: serverový Chargen.ts by asi měl být spíš někde v /game než v /lib/net
-(možná v /game/character)
-TODO: Stejně tak Register.ts (a možná i Login.ts) by mohlo být spíš
-  v /lib/account
 
 TODO: V ChargenForm číst limity na character name ze shared kódu.
 
@@ -51,6 +42,16 @@ TODO: Otestovat reconnect z jiného tabu.
   jinak to těžko odladím.
 
 --------------------------------------------------------------
+
+TODO: serverový Chargen.ts by asi měl být spíš někde v /game než v /lib/net
+(možná v /game/character)
+TODO: Stejně tak Register.ts (a možná i Login.ts) by mohlo být spíš
+  v /lib/account
+[done]
+
+TODO: Eventy u handlerů attachovaných přes jquery (což by měly být
+  všechny by asi měly mít typ JQueryEventObject.
+[done]
 
 TODO: Zapisovat originální e-mail do accountu
   (Protože ten savnutý jak file name je lowercasovaný - což je správně,

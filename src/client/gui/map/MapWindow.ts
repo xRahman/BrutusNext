@@ -9,7 +9,7 @@
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {TitledWindow} from '../../../client/gui/TitledWindow';
 import {SvgMap} from '../../../client/gui/map/SvgMap';
-import {Connection} from '../../../client/lib/net/Connection';
+import {Connection} from '../../../client/lib/connection/Connection';
 
 export class MapWindow extends TitledWindow
 {

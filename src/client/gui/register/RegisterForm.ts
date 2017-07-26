@@ -7,7 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {Connection} from '../../../client/lib/net/Connection';
+import {Connection} from '../../../client/lib/connection/Connection';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Windows} from '../../../client/gui/Windows';
 import {Component} from '../../../client/gui/Component';
