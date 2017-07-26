@@ -13,7 +13,7 @@ import {ServerApp} from '../../server/lib/app/ServerApp';
 import {Entities} from '../../shared/lib/entity/Entities';
 import {Message} from '../../server/lib/message/Message';
 import {MessageType} from '../../shared/lib/message/MessageType';
-import {Connection} from '../../server/lib/net/Connection';
+import {Connection} from '../../server/lib/connection/Connection';
 import {Game} from '../../server/game/Game';
 import {ContainerEntity} from '../../server/lib/entity/ContainerEntity';
 import {GameEntityData} from '../../shared/game/GameEntityData';
