@@ -18,6 +18,8 @@ export class Command extends Packet
     this.version = 0;
   }
 
+  // ----------------- Public data ----------------------
+
   public command: string = null;
 }
 

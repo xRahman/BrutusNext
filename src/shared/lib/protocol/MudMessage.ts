@@ -18,6 +18,8 @@ export class MudMessage extends Packet
     this.version = 0;
   }
 
+  // ----------------- Public data ----------------------
+
   public message: string;
 }
 
