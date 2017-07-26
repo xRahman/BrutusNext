@@ -18,7 +18,7 @@ import {Entity} from '../../../shared/lib/entity/Entity';
 import {Entities} from '../../../shared/lib/entity/Entities';
 import {ServerEntity} from '../../../server/lib/entity/ServerEntity';
 import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
-import {Connection} from '../../../server/lib/net/Connection';
+import {Connection} from '../../../server/lib/connection/Connection';
 import {ServerApp} from '../../../server/lib/app/ServerApp';
 import {Game} from '../../game/Game';
 import {Character} from '../../../server/game/character/Character';

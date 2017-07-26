@@ -8,7 +8,7 @@
 
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
-import {Connection} from '../../../client/lib/net/Connection';
+import {Connection} from '../../../client/lib/connection/Connection';
 import {Component} from '../../../client/gui/Component';
 import {Form} from '../../../client/gui/Form';
 import {ChargenRequest} from '../../../shared/lib/protocol/ChargenRequest';

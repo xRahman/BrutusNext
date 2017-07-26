@@ -19,7 +19,7 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 // import {MessageType} from '../../../shared/lib/message/MessageType';
 // import {Account} from '../../../server/lib/account/Account';
 // import {Accounts} from '../../../server/lib/account/Accounts';
-import {Connection} from '../../../server/lib/net/Connection';
+import {Connection} from '../../../server/lib/connection/Connection';
 import {ChargenRequest} from '../../../shared/lib/protocol/ChargenRequest';
 // import {LoginResponse} from '../../../shared/lib/protocol/LoginResponse';
 

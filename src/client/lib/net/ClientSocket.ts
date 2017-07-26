@@ -10,7 +10,7 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {WebSocketEvent} from '../../../shared/lib/net/WebSocketEvent';
 import {JsonObject} from '../../../shared/lib/json/JsonObject';
 import {Packet} from '../../../shared/lib/protocol/Packet';
-import {Connection} from '../../../client/lib/net/Connection';
+import {Connection} from '../../../client/lib/connection/Connection';
 
 export class ClientSocket
 {
