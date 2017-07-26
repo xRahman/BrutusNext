@@ -18,6 +18,8 @@ export class SystemMessage extends Packet
     this.version = 0;
   }
 
+  // ----------------- Public data ----------------------
+
   public type = SystemMessage.Type.UNDEFINED;
 
   public message: string = null;
