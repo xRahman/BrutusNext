@@ -27,6 +27,9 @@ TODO: Ošetřit to pro jistotu i přímo v Connection.send() - když
 
 --------------------------------------------------------------
 
+TODO: Revidovat Accounts.addCharacter()
+- chary by se v accountu asi měly držet jako reference.
+
 TODO: Character creation.
 
 TODO: V ChargenForm číst limity na character name ze shared kódu.
