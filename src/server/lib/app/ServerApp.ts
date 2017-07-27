@@ -102,6 +102,11 @@ export class ServerApp extends App
     return ServerApp.getInstance().connections;
   }
 
+  public static get admins()
+  {
+    return ServerApp.getInstance().admins;
+  }
+
   // public static get telnetServer()
   // {
   //   return ServerApp.getInstance().telnetServer;
@@ -120,23 +125,26 @@ export class ServerApp extends App
         + " call ServerApp.run()");
       return;
     }
-    
+
     // Run server application.
     await ServerApp.getInstance().run(/*telnetPort*/);
   }
 
-  // If there are no admins yet, sets the highest possible admin rights
-  // to the character (in other words, the first character created when
-  // the mud is 'freshly installed' gets maximum admin rights).
-  public static onCharacterCreation(character: GameEntity)
-  {
-    ServerApp.getInstance().admins.onCharacterCreation(character);
-  }
+  /// Moved to Admins as static method.
+  // // If there are no admins yet, sets the highest possible admin rights
+  // // to the character (in other words, the first character created when
+  // // the mud is 'freshly installed' gets maximum admin rights).
+  // public static onCharacterCreation(character: GameEntity)
+  // {
+  //   ServerApp.getInstance().admins.onCharacterCreation(character);
+  // }
 
-  public static getAdminLevel(entity: GameEntity)
-  {
-    return ServerApp.getInstance().admins.getAdminLevel(entity);
-  }
+  /// Moved to Admins as static method.
+  // /// TODO: Přesunout do Admins jako statickou metodu.
+  // public static getAdminLevel(entity: GameEntity)
+  // {
+  //   return ServerApp.getInstance().admins.getAdminLevel(entity);
+  // }
 
   // -> Returns null if no message of the day is set at the moment.
   public static getMotd(): string

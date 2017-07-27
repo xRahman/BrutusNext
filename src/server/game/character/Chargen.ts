@@ -11,9 +11,11 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 // import {ServerUtils} from '../../../server/lib/utils/ServerUtils';
 import {Syslog} from '../../../shared/lib/log/Syslog';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
+import {Admins} from '../../../server/lib/admin/Admins';
+import {Characters} from '../../../server/game/character/Characters';
 // import {Serializable} from '../../../shared/lib/class/Serializable';
 // import {NameLock} from '../../../server/lib/entity/NameLock';
-// import {Entity} from '../../../shared/lib/entity/Entity';
+import {Entity} from '../../../shared/lib/entity/Entity';
 // import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
 // import {Message} from '../../../server/lib/message/Message';
 import {MessageType} from '../../../shared/lib/message/MessageType';
@@ -33,10 +35,15 @@ export class Chargen
     connection: Connection
   )
   {
+    request.normalizeCharacterName();
+
     if (!this.isConnectionValid(connection))
       return;
 
     if (!this.isRequestValid(request, connection))
+      return;
+
+    if (!await this.isNameAvailable(request, connection))
       return;
 
     await this.createCharacter(request, connection);
@@ -50,9 +57,32 @@ export class Chargen
     connection: Connection
   )
   {
-    let characterName = request.characterName;
+    // TODO: Posílat responsy clientovi.
+    if (!connection)
+    {
+      ERROR("Invalid connection, character is not created");
+      return null;
+    }
 
-    /// TODO
+    let account = connection.account;
+
+    if (!Entity.isValid(account))
+    {
+      ERROR("Invalid account, character is not created");
+      return null;
+    }
+
+    let character = await account.createCharacter(request.characterName);
+
+    if (character === null)
+      return null;
+
+    // Promote character to the highest admin level if there
+    // are no admins yet (the first character created on fresh
+    // server automaticaly becomes admin).
+    Admins.onCharacterCreation(character);
+
+    return character;
   }
 
   private static isRequestValid
@@ -64,6 +94,44 @@ export class Chargen
   {
     if (!this.isCharacterNameValid(request, connection))
       return false;
+
+    return true;
+  }
+
+  private static async isNameAvailable
+  (
+    request: ChargenRequest,
+    connection: Connection
+  )
+  : Promise<boolean>
+  {
+    /// TODO: Časem asi nějaké přísnější testy - například nepovolit jméno,
+    ///   když existuje jeho hodně blízký prefix.
+    /// (tzn otestovat abbreviations od
+    ///  ChargenRequest.MIN_CHARACTER_NAME_LENGTH
+    ///  do name.length - 1).
+    /// Asi taky nepovolit slovníková jména.
+
+    if (await Characters.isTaken(name))
+    {
+      this.denyRequest
+      (
+        "Sorry, this name is not available.",
+        ChargenResponse.Result.CHARACTER_NAME_PROBLEM,
+        connection
+      );
+
+      Syslog.log
+      (
+        "User " + connection.getUserInfo + " has attempted"
+          + " to create new character using existing name"
+          + " (" + request.characterName + ")",
+        MessageType.CONNECTION_INFO,
+        AdminLevel.IMMORTAL
+      );
+
+      return false;
+    }
 
     return true;
   }
