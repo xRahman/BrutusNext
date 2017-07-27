@@ -7,6 +7,7 @@
 */
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {Packet} from '../../../shared/lib/protocol/Packet';
 import {Classes} from '../../../shared/lib/class/Classes';
 
@@ -46,6 +47,13 @@ export class ChargenRequest extends Packet
       return problem;
 
     return null;
+  }
+
+  public normalizeCharacterName()
+  {
+    // Uppercase the first character of 'characterName',
+    // lowercase the rest.
+    this.characterName = Utils.upperCaseFirstCharacter(this.characterName);
   }
 
   // ---------------- Private methods -------------------

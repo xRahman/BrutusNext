@@ -48,6 +48,7 @@ import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Game} from '../../../server/game/Game';
 import {GameEntity} from '../../../server/game/GameEntity';
 import {Character} from '../../../server/game/character/Character';
+import {ServerApp} from '../../../server/lib/app/ServerApp';
 
 export class Admins
 {
@@ -56,22 +57,17 @@ export class Admins
   //   Value: admin level.
   private adminLevels = new Map();
 
-  // ---------------- Public methods --------------------
+  // ------------- Public static methods ---------------- 
 
-  public onCharacterEnteringGame(character: GameEntity)
+  public static onCharacterCreation(character: GameEntity)
   {
-    /// TODO
-    /// Pokud je character immortal, ak mu setnout referenci
-    // na Server.admins, aby přes ni mohl promotovat, demotovat a tak.
-  }
+    let admins = ServerApp.admins;
 
-  public onCharacterCreation(character: GameEntity)
-  {
     // If there is no other character with admin rights when
     // a new character is created, make this new character
     // a Creator.
-    if (this.isEmpty())
-      this.setAdminLevel(character, AdminLevel.CREATOR);
+    if (Admins.isEmpty())
+      Admins.setAdminLevel(character, AdminLevel.CREATOR);
 
     // TODO Hláška do logu (info je asi zbytečné).
 
@@ -79,7 +75,7 @@ export class Admins
     // na Server.admins, aby přes ni mohl promotovat, demotovat a tak.
   }
 
-  public getAdminLevel(entity: GameEntity): AdminLevel
+  public static getAdminLevel(entity: GameEntity): AdminLevel
   {
     if (entity === null || entity === undefined)
     {
@@ -87,7 +83,9 @@ export class Admins
       return;
     }
 
-    let level = this.adminLevels.get(entity.getId());
+    let adminLevels = ServerApp.admins.adminLevels;
+
+    let level = adminLevels.get(entity.getId());
 
     if (level === undefined)
       return AdminLevel.MORTAL;
@@ -103,14 +101,14 @@ export class Admins
         + " " + AdminLevel[AdminLevel.MORTAL] + "."
         + " Removing it from Admins");
 
-      this.adminLevels.delete(entity.getId());
+      adminLevels.delete(entity.getId());
     }
 
     return level;
   }
 
-  // Promote target one adminLevel hiher if possible.
-  public promote(actor: GameEntity, target: GameEntity)
+  // Promote target one admin level higher if possible.
+  public static promote(actor: GameEntity, target: GameEntity)
   {
     if (!this.actionSanityCheck(actor, target, "promote"))
       return;
@@ -140,8 +138,8 @@ export class Admins
     this.setAdminLevel(target, newLevel);
   }
 
-  // Demote target one adminLevel lower if possible.
-  public demote(actor: GameEntity, target: GameEntity)
+  // Demote target one admin level lower if possible.
+  public static demote(actor: GameEntity, target: GameEntity)
   {
     if (!this.actionSanityCheck(actor, target, "demote"))
       return;
@@ -152,7 +150,7 @@ export class Admins
     if (actorAdminLevel <= targetAdminLevel)
     {
       actor.receive("You can only demote"
-        + "  targets below your own admin level.",
+        + "  characters below your own admin level.",
         MessageType.COMMAND);
       return;
     }
@@ -171,14 +169,26 @@ export class Admins
     this.setAdminLevel(target, targetAdminLevel - 1);
   }
 
-  // ---------------- Private methods -------------------
+  // ---------------- Public methods --------------------
+
+  public onCharacterEnteringGame(character: GameEntity)
+  {
+    /// TODO
+    /// Pokud je character immortal, ak mu setnout referenci
+    // na Server.admins, aby přes ni mohl promotovat, demotovat a tak.
+  }
+
+  // ------------- Private static methods ---------------
 
   // -> Returns true if there are no characters with admin rights.
-  private isEmpty() { return this.adminLevels.size === 0; }
+  private static isEmpty()
+  {
+    return ServerApp.admins.adminLevels.size === 0;
+  }
 
   // Sets specified admin level to a character. Doesn't check
   // if actor is allowed to do such promotion.
-  private setAdminLevel(target: GameEntity, level: AdminLevel)
+  private static setAdminLevel(target: GameEntity, level: AdminLevel)
   {
     if (target === null || target === undefined)
     {
@@ -186,18 +196,20 @@ export class Admins
       return false;
     }
 
+    let adminLevels = ServerApp.admins.adminLevels;
+
     // If target already is an admin, remove him from the list.
-    if (this.adminLevels.has(target.getId()))
-      this.adminLevels.delete(target.getId());
+    if (adminLevels.has(target.getId()))
+      adminLevels.delete(target.getId());
 
     // And add him with a new admin level
     // (MORTALS are not added, the fact that they are not
     //  present in adminList signifies that they are MORTALS).
     if (level > AdminLevel.MORTAL)
-      this.adminLevels.set(target.getId(), level);
+      adminLevels.set(target.getId(), level);
   }
 
-  public actionSanityCheck
+  private static actionSanityCheck
   (
     actor: GameEntity,
     target: GameEntity,
@@ -228,7 +240,7 @@ export class Admins
     }
   }
 
-  private announceAction
+  private static announceAction
   (
     actor: GameEntity,
     target: GameEntity,
