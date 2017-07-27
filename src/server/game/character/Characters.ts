@@ -49,8 +49,7 @@ export class Characters
 
   public static async isTaken(name: string)
   {
-    // First check if account is already online so we can save ourselves
-    // reading from disk.
+    // First check if character is already online.
     if (Game.characters.names.has(name))
       return true;
 
