@@ -370,6 +370,9 @@ export abstract class Component
     if (param.change)
       $element.change(param.change);
 
+    if (param.input)
+      $element.on('input', param.input);
+
     if (param.resize)
       $element.resize(param.resize);
   }
@@ -522,6 +525,13 @@ export module Component
     change?: (event: JQueryEventObject) => any;
   }
 
+  // 'input' event is fired when user types into
+  // input element or textarea.
+  interface InputEventParameter
+  {
+    input?: (event: JQueryEventObject) => any;
+  }
+
   // This inteface contains properties of all other parameters
   // interfaces (by extending them all). This way we can have
   // just one method (applyParameters()) to set them for any
@@ -530,7 +540,8 @@ export module Component
     CommonParameters,
     TextParameters,
     FormParameters,
-    ChangeEventParameter
+    ChangeEventParameter,
+    InputEventParameter
   {
      // All properties are inherited.
   }
@@ -662,6 +673,7 @@ export module Component
     CommonParameters,
     CommonAttributes,
     ChangeEventParameter,
+    InputEventParameter,
     AutofocusAttribute,
     InputAttributes,
     TextInputAttributes,
@@ -673,6 +685,7 @@ export module Component
   export interface EmailInputParam extends
     CommonParameters,
     ChangeEventParameter,
+    InputEventParameter,
     CommonAttributes,
     AutofocusAttribute,
     InputAttributes,
@@ -685,6 +698,7 @@ export module Component
   export interface PasswordInputParam extends
     CommonParameters,
     ChangeEventParameter,
+    InputEventParameter,
     CommonAttributes,
     AutofocusAttribute,
     InputAttributes,
@@ -719,6 +733,7 @@ export module Component
   export interface TextAreaParam extends
     CommonParameters,
     ChangeEventParameter,
+    InputEventParameter,
     CommonAttributes,
     AutofocusAttribute,
     TextInputAttributes,

@@ -9,6 +9,7 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
+import {Admins} from '../../../server/lib/admin/Admins';
 import {Connection} from '../../../server/lib/connection/Connection';
 import {Message} from '../../../server/lib/message/Message';
 import {ServerApp} from '../../../server/lib/app/ServerApp';
@@ -59,7 +60,7 @@ export class Connections
 
         // Skip game entities that don't have sufficient admin level
         // to see this message.
-        if (ServerApp.getAdminLevel(connection.ingameEntity) < visibility)
+        if (Admins.getAdminLevel(connection.ingameEntity) < visibility)
           continue;
       }
 

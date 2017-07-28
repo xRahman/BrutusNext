@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Registration of a new player account.
+  Player account creation.
 */
 
 'use strict';
@@ -35,6 +35,7 @@ export class Register
     if (!this.isRequestValid(request, connection))
       return;
 
+    let email = request.email;
     // Encode email address so it can be used as file name
     // (this usualy does nothing because characters that are
     //  not allowed in email addresss are rarely used in e-mail
@@ -46,38 +47,23 @@ export class Register
     // Only hash is stored, not original password.
     let passwordHash = ServerUtils.md5hash(request.password);
 
-    let account = await this.registerAccount
+    await this.processAccountCreation
     (
+      email,
       accountName,
-      request.email,
       passwordHash,
       connection
-    );
-
-    if (!account)
-      return;
-
-    account.attachConnection(connection);
-    this.acceptRequest(account, connection);
-
-    Syslog.log
-    (
-      "New player: " + account.getUserInfo(),
-      MessageType.CONNECTION_INFO,
-      AdminLevel.IMMORTAL
     );
   }
 
   // ------------- Private static methods ---------------
 
-  // -> Returns 'null'.
   private static reportCreationFailure
   (
     account: Account,
     accountName,
     connection: Connection
   )
-  : boolean
   {
     this.denyRequest
     (
@@ -88,11 +74,8 @@ export class Register
     );
 
     ERROR("Failed to create account '" + accountName + "'");
-
-    return null;
   }
 
-  // -> Returns 'null'.
   private static reportAccountAlreadyExists
   (
     account: Account,
@@ -114,46 +97,75 @@ export class Register
       MessageType.CONNECTION_INFO,
       AdminLevel.IMMORTAL
     );
-
-    return null;
   }
 
-  private static registerSanityCheck
+  private static existsInMemory(accountName: string)
+  {
+    if (Accounts.has(accountName))
+    {
+      ERROR("Attempt to register account '" + accountName + "'"
+        + " which is already loaded to memory. Account is not"
+        + " registered");
+      return true;
+    }
+
+    return false;
+  }
+
+  private static async processAccountCreation
+  (
+    email: string,
+    accountName: string,
+    passwordHash: string,
+    connection: Connection
+  )
+  {
+    let account = await this.createAccount
+    (
+      accountName,
+      passwordHash,
+      connection
+    );
+
+    // 'undefined' means that the name is already taken.
+    if (account === undefined)
+    {
+      this.reportAccountAlreadyExists(account, email, connection);
+      return;
+    }
+
+    // 'null' means that an error occured.
+    if (account === undefined)
+    {
+      this.reportCreationFailure(account, accountName, connection);
+      return;
+    }
+
+    this.initAccount(account, email, passwordHash, connection);
+
+    await ServerEntities.save(account);
+    
+    this.acceptRequest(account, connection);
+  }
+
+  // -> Returns 'null' on failure, 'undefined' if account already exists.
+  private static async createAccount
   (
     accountName: string,
+    passwordHash: string,
     connection: Connection
   )
   {
     if (!connection)
     {
       ERROR("Invalid connection");
-      return false;
-    }
-
-    if (Accounts.has(accountName))
-    {
-      ERROR("Attempt to register account '" + accountName + "'"
-        + " which is already loaded to memory. Account is not"
-        + " registered");
-      return false;
-    }
-
-    return true;
-  }
-
-  // -> Returns 'null' on failure.
-  private static async registerAccount
-  (
-    accountName: string,
-    email: string,
-    passwordHash: string,
-    connection: Connection
-  )
-  {
-    if (!this.registerSanityCheck(accountName, connection))
       return null;
+    }
 
-    let account = await ServerEntities.createInstanceEntity
+    if (this.existsInMemory(accountName))
+      return undefined;
+
+    return await ServerEntities.createInstanceEntity
     (
       Account,
       Account.name,   // Prototype name.
@@ -161,22 +173,21 @@ export class Register
       Entity.NameCathegory.ACCOUNT,
       passwordHash
     );
+  }
 
-    // 'undefined' means that the name is already taken.
-    if (account === undefined)
-      return this.reportAccountAlreadyExists(account, email, connection);
-
-    // 'null' means error occured.
-    if (account === undefined)
-      return this.reportCreationFailure(account, accountName, connection);
-
+  private static initAccount
+  (
+    account: Account,
+    email: string,
+    passwordHash: string,
+    connection: Connection
+  )
+  {
     account.email = email;
     account.setPasswordHash(passwordHash);
     account.addToLists();
 
-    await ServerEntities.save(account);
-
-    return account;
+    account.attachConnection(connection);
   }
 
   private static acceptRequest(account: Account, connection: Connection)
@@ -189,6 +200,13 @@ export class Register
     (
       account,
       Serializable.Mode.SEND_TO_CLIENT
+    );
+
+    Syslog.log
+    (
+      "New player: " + account.getUserInfo(),
+      MessageType.CONNECTION_INFO,
+      AdminLevel.IMMORTAL
     );
     
     connection.send(response);
