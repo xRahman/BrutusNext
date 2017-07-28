@@ -40,7 +40,8 @@ export module ChargenResponse
   {
     UNDEFINED,
     OK,
-    CHARACTER_NAME_PROBLEM
+    CHARACTER_NAME_PROBLEM,
+    FAILED_TO_CREATE_CHARACTER
   }
 }
 

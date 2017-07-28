@@ -12,6 +12,8 @@
   entity (for example if player quits and logs back in). So we have
   to keep string ids instead of references to ensure that each
   admin is present only once.
+TODO: Tohle už neplatí - mohou sice existovat dvě reference na stejnou
+  entitu, ale ta stará je invalidovaná a nedá se použít.
 */
 
 /*
@@ -38,6 +40,8 @@
       akce provádí, pak stejným způsobem (přes privátní odkaz na admins)
       zkontroluje, že ticket je platný, a že akci volá stejná entita, která
       si zažádala o ticket).
+- problém je, že tohle nejspíš pořád půjde obejít tím, že si někdo sežene
+  referenci na nějakého admina a zavolá příkaz přes ni.
 */
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
@@ -110,7 +114,7 @@ export class Admins
   // Promote target one admin level higher if possible.
   public static promote(actor: GameEntity, target: GameEntity)
   {
-    if (!this.actionSanityCheck(actor, target, "promote"))
+    if (!this.isActorValid(actor, target, "promote"))
       return;
 
     let actorAdminLevel = this.getAdminLevel(target);
@@ -141,7 +145,7 @@ export class Admins
   // Demote target one admin level lower if possible.
   public static demote(actor: GameEntity, target: GameEntity)
   {
-    if (!this.actionSanityCheck(actor, target, "demote"))
+    if (!this.isActorValid(actor, target, "demote"))
       return;
 
     let actorAdminLevel = this.getAdminLevel(target);
@@ -209,7 +213,7 @@ export class Admins
       adminLevels.set(target.getId(), level);
   }
 
-  private static actionSanityCheck
+  private static isActorValid
   (
     actor: GameEntity,
     target: GameEntity,
@@ -234,10 +238,12 @@ export class Admins
     if (actorAdminLevel === AdminLevel.MORTAL)
     {
       ERROR("Attempt to use '" +  action + "' command by"
-        + " entity " + actor.getErrorIdString + " who is"
+        + " " + actor.getErrorIdString() + " who is"
         + " not an admin");
-      return;
+      return false;
     }
+
+    return true;
   }
 
   private static announceAction

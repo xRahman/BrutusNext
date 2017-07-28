@@ -25,7 +25,18 @@ TODO: Ošetřit ztrátu spojení se serverem (třeba když server
 TODO: Ošetřit to pro jistotu i přímo v Connection.send() - když
   by failnulo odchytnutí disconnectu, tak ať to nehází errory.
 
+TODO: Savovat Admins (asi by to měla bejt entita).
+(Nebo se na to vykašlat a zapisovat adminLevel do entity)
+
 --------------------------------------------------------------
+
+TODO: Zpracovat založení nového charu v klientovi.
+
+TODO: V ChargenForm.onCharacterNameInput() dělat kontrolu
+  rovnou při tom, jak user píše.
+
+TODO: Zalogovat založení nového charu.
+[done]
 
 TODO: Revidovat Accounts.addCharacter()
 - chary by se v accountu asi měly držet jako reference.
