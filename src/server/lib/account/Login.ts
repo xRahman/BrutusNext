@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Login.
+  Player login.
 */
 
 'use strict';
@@ -67,7 +67,12 @@ export class Login
 
   // ------------- Private static methods ---------------
 
-  private static acceptRequest(account: Account, connection: Connection)
+  private static acceptRequest
+  (
+    account: Account,
+    connection: Connection,
+    action: string
+  )
   {
     let response = new LoginResponse();
     response.result = LoginResponse.Result.OK;
@@ -77,6 +82,13 @@ export class Login
     (
       account,
       Serializable.Mode.SEND_TO_CLIENT
+    );
+
+    Syslog.log
+    (
+      account.getUserInfo() + " " + action,
+      MessageType.CONNECTION_INFO,
+      AdminLevel.IMMORTAL
     );
 
     connection.send(response);
@@ -97,7 +109,6 @@ export class Login
     connection.send(response);
   }
 
-  // -> Returns 'null'.
   private static reportMissingIdProperty
   (
     email: string,
@@ -115,11 +126,8 @@ export class Login
     ERROR("Missing or invalid '" + Entity.ID_PROPERTY + "'"
       + " property in name lock file of account " + email + " "
       + connection.getOrigin());
-
-    return null;
   }
 
-  // -> Returns 'false'.
   private static reportMissingPasswordProperty
   (
     email: string,
@@ -137,8 +145,6 @@ export class Login
     ERROR("Missing or invalid '" + NameLock.PASSWORD_HASH_PROPERTY + "'"
       + " property in name lock file of account " + email + " "
       + connection.getOrigin());
-
-    return false;
   }
 
   private static isConnectionValid(connection: Connection)
@@ -174,7 +180,6 @@ export class Login
     return true;
   }
 
-  // -> Returns 'false';
   private static reportInvalidPassword
   (
     userInfo: string,
@@ -194,8 +199,6 @@ export class Login
       MessageType.CONNECTION_INFO,
       AdminLevel.IMMORTAL
     );
-
-    return false;
   }
 
   private static attachNewConnection
@@ -229,22 +232,22 @@ export class Login
       return false;
 
     if (!account.validatePassword(passwordHash))
-      return this.reportInvalidPassword(account.getUserInfo(), connection);
+    {
+      this.reportInvalidPassword(account.getUserInfo(), connection);
+      return false;
+    }
 
     this.attachNewConnection(account, connection);
-    this.acceptRequest(account, connection);
-
-    Syslog.log
+    this.acceptRequest
     (
-      account.getUserInfo() + " has re-logged from a different location",
-      MessageType.CONNECTION_INFO,
-      AdminLevel.IMMORTAL
+      account,
+      connection,
+      "has re-logged from different location"
     );
 
     return true;
   }
 
-  // -> Returns 'null'.
   private static reportAccountLoadFailure
   (
     email: string,
@@ -258,11 +261,8 @@ export class Login
       LoginResponse.Result.FAILED_TO_LOAD_ACCOUNT,
       connection
     );
-
-    return null;
   }
 
-  // -> Returns 'null'.
   private static reportMissingNameLock(email: string, connection: Connection)
   {
     this.denyRequest
@@ -279,11 +279,8 @@ export class Login
       MessageType.CONNECTION_INFO,
       AdminLevel.IMMORTAL
     );
-
-    return null;
   }
 
-  // -> Returns 'null'.
   private static reportNameLockReadError(email: string, connection: Connection)
   {
     this.denyRequest
@@ -296,10 +293,9 @@ export class Login
 
     ERROR("Failed to read name lock file for account"
       + " " + email + " " + connection.getOrigin());
-
-    return null;
   }
 
+  // -> Returns 'null' on failure.
   private static async loadNameLock
   (
     accountName: string,
@@ -316,19 +312,24 @@ export class Login
     );
 
     if (nameLock === undefined)
-      return this.reportMissingNameLock(email, connection);
+    {
+      this.reportMissingNameLock(email, connection);
+      return null;
+    }
 
     if (nameLock === null)
-      return this.reportNameLockReadError(email, connection);
+    {
+      this.reportNameLockReadError(email, connection);
+      return null;
+    }
 
     return nameLock;
   }
 
-  private static nameLockSanityCheck(nameLock: Object): boolean
+  private static isNameLockValid(nameLock: Object): boolean
   {
     if (!nameLock)
     {
-      // This should already be handled.
       ERROR("Invalid 'nameLock'");
       return false;
     }
@@ -336,6 +337,7 @@ export class Login
     return true;
   }
 
+  // -> Returns 'null' on failure.
   private static async loadAccount
   (
     nameLock: Object,
@@ -344,13 +346,16 @@ export class Login
   )
   : Promise<Account>
   {
-    if (!this.nameLockSanityCheck(nameLock))
+    if (!this.isNameLockValid(nameLock))
       return null;
 
     let id = nameLock[Entity.ID_PROPERTY];
 
     if (!id)
-      return this.reportMissingIdProperty(email, connection);
+    {
+      this.reportMissingIdProperty(email, connection);
+      return null;
+    }
 
     let account = await ServerEntities.loadEntityById
     (
@@ -359,7 +364,10 @@ export class Login
     );
 
     if (!account)
-      return this.reportAccountLoadFailure(email, connection);
+    {
+      this.reportAccountLoadFailure(email, connection);
+      return null;
+    }
 
     account.addToLists();
 
@@ -375,18 +383,23 @@ export class Login
   )
   : boolean
   {
-    if (!this.nameLockSanityCheck(nameLock))
-      return null;
+    if (!this.isNameLockValid(nameLock))
+      return false;
 
     let savedPasswordHash = nameLock[NameLock.PASSWORD_HASH_PROPERTY];
 
     if (!savedPasswordHash)
-      return this.reportMissingPasswordProperty(email, connection);
+    {
+      this.reportMissingPasswordProperty(email, connection);
+      return false;
+    }
 
     if (passwordHash !== nameLock[NameLock.PASSWORD_HASH_PROPERTY])
     {
       let userInfo = email + " " + connection.getOrigin();
-      return this.reportInvalidPassword(userInfo, connection);
+
+      this.reportInvalidPassword(userInfo, connection);
+      return false;
     }
 
     return true;
@@ -414,13 +427,11 @@ export class Login
       return;
 
     account.attachConnection(connection);
-    this.acceptRequest(account, connection);
-
-    Syslog.log
+    this.acceptRequest
     (
-      account.getUserInfo() + " has logged in",
-      MessageType.CONNECTION_INFO,
-      AdminLevel.IMMORTAL
+      account,
+      connection,
+      "has logged in"
     );
   }
 }
