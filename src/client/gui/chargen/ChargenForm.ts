@@ -57,18 +57,14 @@ export class ChargenForm extends Form
 
   private createCharacterNameInput()
   {
-    /// TODO: Číst to ze stejné proměnné jako server a jako register form.
-    // Maximum length of acocunt name (in characters).
-    let minLength = 3;
-    let maxLength = 20;
-
     this.$characterNameInput = super.createTextInput
     (
       {
         name: 'character_name_input',
         placeholder: 'Enter Character Name',
-        minLength: minLength,
-        maxLength: maxLength
+        minLength: ChargenRequest.MIN_CHARACTER_NAME_LENGTH,
+        maxLength: ChargenRequest.MAX_CHARACTER_NAME_LENGTH,
+        input: (event) => { this.onCharacterNameInput(event); }
       }
     );
   }
@@ -117,7 +113,17 @@ export class ChargenForm extends Form
     ///ClientApp.setState(ClientApp.State.IN_GAME);
   }
 
-  protected onCancel(event: JQueryEventObject)
+  private onCharacterNameInput(event: JQueryEventObject)
+  {
+    console.log('onCharacterNameInputChange');
+
+    let oldValue = this.$characterNameInput.val();
+    let newValue = Utils.upperCaseFirstCharacter(oldValue);
+
+    this.$characterNameInput.val(newValue);
+  }
+
+  private onCancel(event: JQueryEventObject)
   {
     ClientApp.setState(ClientApp.State.CHARLIST);
   }
