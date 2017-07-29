@@ -28,8 +28,11 @@ export class ChargenResponse extends Packet
   // Description of problem if the request is denied.
   public problem: string = null;
 
-  // Serialized character data.
-  public character = new EntityData();
+  // Serialized account data.
+  // (We send account back to client, not the created character,
+  //  because client will need updated account to display character
+  //  select form).
+  public account = new EntityData();
 }
 
 // ------------------ Type declarations ----------------------

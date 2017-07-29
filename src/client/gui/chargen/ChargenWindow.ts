@@ -8,7 +8,7 @@
 
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Component} from '../../../client/gui/Component';
-import {StandaloneWindow} from '../../../client/gui/StandaloneWindow';
+import {StandaloneWindow} from '../../../client/gui/window/StandaloneWindow';
 import {ChargenForm} from '../../../client/gui/chargen/ChargenForm';
 
 export class ChargenWindow extends StandaloneWindow
@@ -21,9 +21,9 @@ export class ChargenWindow extends StandaloneWindow
     this.flags.set(ClientApp.State.CHARGEN);
   }
 
-  // ----------------- Private data ---------------------
+  // ----------------- Public data ----------------------
 
-  private form = new ChargenForm();
+  public form = new ChargenForm();
 
   // ---------------- Public methods --------------------
 

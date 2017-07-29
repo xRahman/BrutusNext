@@ -10,16 +10,12 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {LocalStorage} from '../../../client/lib/storage/LocalStorage';
 import {Connection} from '../../../client/lib/connection/Connection';
 import {Component} from '../../../client/gui/Component';
-import {CredentialsForm} from '../../../client/gui/CredentialsForm';
+import {CredentialsForm} from '../../../client/gui/form/CredentialsForm';
 import {LoginRequest} from '../../../shared/lib/protocol/LoginRequest';
 import {LoginResponse} from '../../../shared/lib/protocol/LoginResponse';
 
 export class LoginForm extends CredentialsForm
 {
-  // ----------------- Private data ---------------------
-
-  private $errorEmptyLine: JQuery = null;
-
   // ---------------- Public methods --------------------
 
   // ~ Overrides Form.create().
@@ -36,8 +32,6 @@ export class LoginForm extends CredentialsForm
     super.createLabel({ text: 'Password' });
     this.createPasswordInput();
     this.createPasswordProblemNotice();
-
-    this.createErrorLabel();
 
     this.createRememberMeCheckbox();
     this.createButtons();
@@ -102,31 +96,26 @@ export class LoginForm extends CredentialsForm
     return super.createSubmitButton(param);
   }
 
-  // ~ Overrides CredentialsForm.hideProblems().
-  protected hideProblems()
+  // ~ Overrides Form.createRequest().
+  protected createRequest()
   {
-    super.hideProblems();
-    this.$errorEmptyLine.hide();
+    let request = new LoginRequest();
+
+    request.email = this.$emailInput.val();
+    request.password = this.$passwordInput.val();
+
+    return request;
   }
 
-  // ~ Overrides CredentialsForm.createErrorLabel().
-  protected createErrorLabel()
+  // ~ Overrides Form.isRequestValid().
+  protected isRequestValid(request: LoginRequest)
   {
-    super.createErrorLabel();
-    
-    // Add an empty line after error problem label
-    // to separate it from next component.
-    this.$errorEmptyLine = this.createEmptyLine();
-    this.$errorEmptyLine.hide();
-  }
-
-  // ~ Overrides CredentialsForm.displayError().
-  protected displayError(problem: string)
-  {
-    super.displayError(problem);
-
-    // Also show additional empty line.
-    this.$errorEmptyLine.show();
+    // We don't validate login request on the client
+    // because rules of email and password creation
+    // might change in time and if we enforced new
+    // ones here, players who created accounts under
+    // old rules might be unable to log in.
+    return true;
   }
 
   // ---------------- Private methods -------------------
@@ -157,6 +146,8 @@ export class LoginForm extends CredentialsForm
 
   // ---------------- Event handlers --------------------
 
+  /// To be deleted.
+  /*
   // ~ Overrides Form.onSubmit().
   protected onSubmit(event: JQueryEventObject)
   {
@@ -174,4 +165,5 @@ export class LoginForm extends CredentialsForm
 
     Connection.send(request);
   }
+  */
 }

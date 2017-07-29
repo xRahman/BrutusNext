@@ -15,25 +15,21 @@
 
 'use strict';
 
-import {ERROR} from '../../shared/lib/error/ERROR';
-import {Component} from '../../client/gui/Component';
-import {LocalStorage} from '../../client/lib/storage/LocalStorage';
-import {RegisterRequest} from '../../shared/lib/protocol/RegisterRequest';
-import {Form} from '../../client/gui/Form';
+import {ERROR} from '../../../shared/lib/error/ERROR';
+import {MudColors} from '../../../client/gui/MudColors';
+import {Component} from '../../../client/gui/Component';
+import {LocalStorage} from '../../../client/lib/storage/LocalStorage';
+import {RegisterRequest} from '../../../shared/lib/protocol/RegisterRequest';
+import {Form} from '../../../client/gui/form/Form';
 
 export abstract class CredentialsForm extends Form
 {
-  // -------------- Static class data -------------------
-
-  protected static get PROBLEM_TEXT_COLOR() { return '&R'; }
-
   // ---------------- Protected data --------------------
 
   protected $emailInput: JQuery = null;
   protected $emailProblem: JQuery = null;
   protected $passwordInput: JQuery = null;
   protected $passwordProblem: JQuery = null;
-  protected $errorLabel: JQuery = null;
   protected $rememberMeCheckbox = null;
 
   // ---------------- Public methods --------------------
@@ -75,12 +71,6 @@ export abstract class CredentialsForm extends Form
     }
   }
 
-  public onResponse()
-  {
-    this.hideProblems();
-    this.enableSubmitButton();
-  }
-
   // --------------- Protected methods ------------------
 
   // ~ Overrides Form.createEmailInput().
@@ -117,7 +107,7 @@ export abstract class CredentialsForm extends Form
     (
       {
         $parent: this.$emailProblem,
-        text: CredentialsForm.PROBLEM_TEXT_COLOR + problem,
+        text: MudColors.PROBLEM_TEXT_COLOR + problem,
         insertMode: Component.InsertMode.REPLACE
       }
     );
@@ -161,18 +151,12 @@ export abstract class CredentialsForm extends Form
     (
       {
         $parent: this.$passwordProblem,
-        text: CredentialsForm.PROBLEM_TEXT_COLOR + problem,
+        text: MudColors.PROBLEM_TEXT_COLOR + problem,
         insertMode: Component.InsertMode.REPLACE
       }
     );
 
     this.$passwordProblem.show();
-  }
-
-  protected createErrorLabel()
-  {
-    this.$errorLabel = this.createLabel({});
-    this.$errorLabel.hide();
   }
 
   protected createRememberMeCheckbox()
@@ -198,22 +182,11 @@ export abstract class CredentialsForm extends Form
     );
   }
 
-  protected displayError(problem: string)
-  {
-    this.createText
-    (
-      {
-        $parent: this.$errorLabel,
-        text: CredentialsForm.PROBLEM_TEXT_COLOR + problem,
-        insertMode: Component.InsertMode.REPLACE
-      }
-    );
-
-    this.$errorLabel.show();
-  }
-
+  // ~ Overrides Form.hideProblems();
   protected hideProblems()
   {
+    super.hideProblems();
+
     if (this.$emailProblem)
     {
       this.createText
@@ -237,9 +210,6 @@ export abstract class CredentialsForm extends Form
         }
       );
     }
-
-    if (this.$errorLabel)
-      this.$errorLabel.hide();
   }
 
   // ---------------- Private methods -------------------

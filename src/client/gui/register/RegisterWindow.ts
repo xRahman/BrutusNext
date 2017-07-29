@@ -7,7 +7,7 @@
 'use strict';
 
 import {ClientApp} from '../../../client/lib/app/ClientApp';
-import {StandaloneWindow} from '../../../client/gui/StandaloneWindow';
+import {StandaloneWindow} from '../../../client/gui/window/StandaloneWindow';
 import {RegisterForm} from '../../../client/gui/register/RegisterForm';
 
 export class RegisterWindow extends StandaloneWindow

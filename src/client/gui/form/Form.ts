@@ -6,7 +6,11 @@
 
 'use strict';
 
-import {Component} from '../../client/gui/Component';
+import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Connection} from '../../../client/lib/connection/Connection';
+import {MudColors} from '../../../client/gui/MudColors';
+import {Component} from '../../../client/gui/Component';
+import {Packet} from '../../../shared/lib/protocol/Packet';
 
 export abstract class Form extends Component
 {
@@ -27,6 +31,8 @@ export abstract class Form extends Component
 
   protected $form: JQuery = null;
   protected $submitButton: JQuery = null;
+  protected $errorLabel: JQuery = null;
+  protected $errorEmptyLine: JQuery = null;
 
   // ----------------- Private data ---------------------
 
@@ -55,6 +61,8 @@ export abstract class Form extends Component
     );
 
     this.$form = this.createForm(param);
+
+    this.createErrorLabel();
   }
 
   protected createLabel(param: Component.LabelParam = {})
@@ -217,9 +225,84 @@ export abstract class Form extends Component
     this.enable(this.$submitButton);
   }
 
+  protected createErrorLabel()
+  {
+    this.$errorLabel = this.createLabel({});
+    this.$errorLabel.hide();
+
+    // Add an empty line after error problem label
+    // to separate it from next component.
+    this.$errorEmptyLine = this.createEmptyLine();
+    this.$errorEmptyLine.hide();
+  }
+
+  protected displayError(problem: string)
+  {
+    this.createText
+    (
+      {
+        $parent: this.$errorLabel,
+        text: MudColors.PROBLEM_TEXT_COLOR + problem,
+        insertMode: Component.InsertMode.REPLACE
+      }
+    );
+
+    if (!this.$errorLabel)
+    {
+      ERROR("Missing $errorLabel");
+      return;
+    }
+
+    this.$errorLabel.show();
+
+    if (!this.$errorEmptyLine)
+    {
+      ERROR("Missing $errorEmptyLine");
+      return;
+    }
+
+    // Also show additional empty line.
+    this.$errorEmptyLine.show();
+  }
+
+  protected hideProblems()
+  {
+    if (this.$errorLabel)
+      this.$errorLabel.hide();
+  }
+
+  protected abstract createRequest();
+
+  protected abstract isRequestValid(request: Packet);
+
   // ---------------- Event handlers --------------------
 
-  protected abstract onSubmit(event: JQueryEventObject);
+  public onResponse()
+  {
+    this.hideProblems();
+    this.enableSubmitButton();
+  }
+
+  protected onSubmit(event: JQueryEventObject)
+  {
+    // We will handle the form submit ourselves.
+    event.preventDefault();
+
+    let request = this.createRequest();
+
+    // Thanks to the shared code we don't have to
+    // wait for server response to check for most
+    // problems (the check will be done again on
+    // the server of course to prevent exploits).
+    if (!this.isRequestValid(request))
+      return;
+
+    // Disable submit button to prevent click-spamming
+    // requests.
+    this.disableSubmitButton();
+
+    Connection.send(request);
+  }
 }
 
 // ------------------ Type Declarations ----------------------

@@ -124,7 +124,7 @@ export class Chargen
     ///  do name.length - 1).
     /// Asi taky nepovolit slovníková jména.
 
-    if (await Characters.isTaken(name))
+    if (await Characters.isTaken(request.characterName))
     {
       this.denyRequest
       (
@@ -185,18 +185,18 @@ export class Chargen
     let response = new ChargenResponse();
     response.result = ChargenResponse.Result.OK;
     
-    // Add newly created character to the response.
-    response.character.serializeEntity
+    // Add account (which contains newly added character) to the response.
+    response.account.serializeEntity
     (
-      character,
+      connection.account,
       Serializable.Mode.SEND_TO_CLIENT
     );
 
     Syslog.log
     (
-      "Player " + connection.account.getUserInfo() + " has"
-        + " created a new character: " + character.getName(),
-      MessageType.CONNECTION_INFO,
+      "Player " + connection.account.email + " has created"
+        + " a new character: " + character.getName(),
+      MessageType.SYSTEM_INFO,
       AdminLevel.IMMORTAL
     );
 

@@ -7,11 +7,11 @@
 'use strict';
 
 import {Component} from '../../../client/gui/Component';
-import {CharlistWindow} from '../../../client/gui/charlist/CharlistWindow';
+import {CharselectWindow} from '../../../client/gui/charselect/CharselectWindow';
 
 export class Charplate extends Component
 {
-  constructor(private charlistWindow: CharlistWindow)
+  constructor(private charselectWindow: CharselectWindow)
   {
     super();
   }
@@ -184,12 +184,12 @@ export class Charplate extends Component
 
   private onChange(event: JQueryEventObject)
   {
-    this.charlistWindow.onSelectionChange();
+    this.charselectWindow.onSelectionChange();
   }
 
   private onDoubleClick(event: JQueryEventObject)
   {
     console.log('onDoubleclick');
-    this.charlistWindow.onCharplateDoubleClick();
+    this.charselectWindow.onCharplateDoubleClick();
   }
 }

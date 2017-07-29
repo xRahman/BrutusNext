@@ -52,6 +52,12 @@ export abstract class MudColors
   // Color of hypertext links in client messages.
   public static get CLIENT_LINK_COLOR() { return 'rgb(0,191,255)'; }
 
+  // Color of form input problems like "Name is too short".
+  public static get PROBLEM_TEXT_COLOR() { return '&R'; }
+
+  // Color of recommendation text (it should really stand out).
+  public static get RECOMMENDATION_TEXT_COLOR() { return '&Y'; }
+
   // ------------- Public static methods ---------------- 
 
   // If 'baseColor' is 'null', the color from the start of the message

@@ -3,15 +3,15 @@
 
   Part of client-server communication protocol.
 
-  Server response to login request.
+  Server response to character selection request.
 */
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Packet} from '../../../shared/lib/protocol/Packet';
-import {EntityData} from '../../../shared/lib/protocol/EntityData';
+///import {EntityData} from '../../../shared/lib/protocol/EntityData';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class LoginResponse extends Packet
+export class CharselectResponse extends Packet
 {
   constructor()
   {
@@ -23,27 +23,25 @@ export class LoginResponse extends Packet
   // ----------------- Public data ----------------------
 
   // Is the request accepted?
-  public result = LoginResponse.Result.UNDEFINED;
+  public result = CharselectResponse.Result.UNDEFINED;
 
   // Description of problem if the request is denied.
   public problem: string = null;
 
-  // Serialized account data.
-  public account = new EntityData();
+  // // Serialized character data.
+  // public character = new EntityData();
 }
 
 // ------------------ Type declarations ----------------------
 
-export module LoginResponse
+export module CharselectResponse
 {
   export enum Result
   {
     UNDEFINED,
     OK,
-    UNKNOWN_EMAIL,
-    INCORRECT_PASSWORD,
-    FAILED_TO_LOAD_ACCOUNT
+    FAILED_TO_LOAD_CHARACTER
   }
 }
 
-Classes.registerSerializableClass(LoginResponse);
+Classes.registerSerializableClass(CharselectResponse);

@@ -218,7 +218,6 @@ export class Account extends ServerEntity
     character.addToLists();
 
     await this.addCharacter(name);
-    this.logCharacterCreation(this.getName(), name);
 
     // Save the character to the disk.
     await ServerEntities.save(character);
@@ -387,17 +386,6 @@ export class Account extends ServerEntity
   {
     ERROR("Attempt to create character '" + characterName + "'"
       + " that already exists");
-  }
-
-  private logCharacterCreation(accountName: string, characterName: string)
-  {
-    Syslog.log
-    (
-      "Player " + this.getName() + " has created a new character: "
-      + characterName,
-      MessageType.SYSTEM_INFO,
-      AdminLevel.IMMORTAL
-    );
   }
 
   // ---------------- Event Handlers -------------------
