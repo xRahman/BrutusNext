@@ -6,10 +6,10 @@
 
 'use strict';
 
-import {Flags} from '../../shared/lib/utils/Flags';
-import {ClientApp} from '../../client/lib/app/ClientApp';
-import {Component} from '../../client/gui/Component';
-import {Document} from '../../client/gui/Document';
+import {Flags} from '../../../shared/lib/utils/Flags';
+import {ClientApp} from '../../../client/lib/app/ClientApp';
+import {Component} from '../../../client/gui/Component';
+import {Document} from '../../../client/gui/Document';
 
 export class Window extends Component
 {

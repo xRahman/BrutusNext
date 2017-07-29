@@ -7,7 +7,7 @@
 'use strict';
 
 import {ClientApp} from '../../client/lib/app/ClientApp';
-import {Windows} from '../../client/gui/Windows';
+import {Windows} from '../../client/gui/window/Windows';
 
 import $ = require('jquery');
 

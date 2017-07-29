@@ -10,6 +10,7 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {ClientSocket} from '../../../client/lib/net/ClientSocket';
+import {Windows} from '../../../client/gui/window/Windows';
 import {ScrollWindow} from '../../../client/gui/scroll/ScrollWindow';
 import {Avatar} from '../../../client/lib/connection/Avatar';
 import {Packet} from '../../../shared/lib/protocol/Packet';
@@ -18,7 +19,9 @@ import {SystemMessage} from '../../../shared/lib/protocol/SystemMessage';
 import {Account} from '../../../client/lib/account/Account';
 import {LoginResponse} from '../../../shared/lib/protocol/LoginResponse';
 import {RegisterResponse} from '../../../shared/lib/protocol/RegisterResponse';
-import {Windows} from '../../../client/gui/Windows';
+import {ChargenResponse} from '../../../shared/lib/protocol/ChargenResponse';
+import {CharselectResponse} from
+  '../../../shared/lib/protocol/CharselectResponse';
 
 export class Connection
 {
@@ -159,6 +162,13 @@ export class Connection
     );
   }
 
+  private reportInvalidResponse(action: string)
+  {
+    ERROR("Received " + action + " response with unspecified result."
+        + " Someone problably forgot to set 'packet.result' when"
+        + " sending " + action + " response from the server");
+  }
+
   // Processes received 'packet'.
   private receive(packet: Packet)
   {
@@ -172,34 +182,18 @@ export class Connection
         this.processLoginResponse(packet.dynamicCast(LoginResponse));
         break;
 
+      case ChargenResponse.name:
+        this.processChargenResponse(packet.dynamicCast(ChargenResponse));
+        break;
+
+      case CharselectResponse.name:
+        this.processCharselectResponse(packet.dynamicCast(CharselectResponse));
+        break;
+
       default:
         ERROR("Unknown packet type");
         break;
     }
-  }
-
-  private processLoginResponse(response: LoginResponse)
-  {
-    Windows.loginWindow.form.onResponse();
-
-    if (response.result === LoginResponse.Result.UNDEFINED)
-    {
-      ERROR("Received login response with unspecified result."
-        + " Someone problably forgot to set 'packet.result'"
-        + " when sending login response from the server");
-      return;
-    }
-
-    if (response.result === LoginResponse.Result.OK)
-    {
-      this.account = response.account.deserializeEntity(Account);
-      Windows.loginWindow.form.rememberCredentials();
-      ClientApp.setState(ClientApp.State.CHARLIST);
-      return;
-    }
-
-    // Otherwise display to the user what the problem is.
-    Windows.loginWindow.form.displayProblem(response);
   }
 
   private processRegisterResponse(response: RegisterResponse)
@@ -208,9 +202,7 @@ export class Connection
     
     if (response.result === RegisterResponse.Result.UNDEFINED)
     {
-      ERROR("Received register response with unspecified result."
-        + " Someone problably forgot to set 'packet.result'"
-        + " when sending register response from the server");
+      this.reportInvalidResponse('register');
       return;
     }
 
@@ -221,11 +213,69 @@ export class Connection
       console.log("Recreated account " + JSON.stringify(this.account));
 
       Windows.registerWindow.form.rememberCredentials();
-      ClientApp.setState(ClientApp.State.CHARLIST);
+      ClientApp.setState(ClientApp.State.CHARSELECT);
       return;
     }
 
     // Otherwise display to the user what the problem is.
     Windows.registerWindow.form.displayProblem(response);
+  }
+
+  private processLoginResponse(response: LoginResponse)
+  {
+    Windows.loginWindow.form.onResponse();
+
+    if (response.result === LoginResponse.Result.UNDEFINED)
+    {
+      this.reportInvalidResponse('login');
+      return;
+    }
+
+    if (response.result === LoginResponse.Result.OK)
+    {
+      this.account = response.account.deserializeEntity(Account);
+      Windows.loginWindow.form.rememberCredentials();
+      ClientApp.setState(ClientApp.State.CHARSELECT);
+      return;
+    }
+
+    // Otherwise display to the user what the problem is.
+    Windows.loginWindow.form.displayProblem(response);
+  }
+
+  private processChargenResponse(response: ChargenResponse)
+  {
+     Windows.chargenWindow.form.onResponse();
+    
+    if (response.result === ChargenResponse.Result.UNDEFINED)
+    {
+      this.reportInvalidResponse('chargen');
+      return;
+    }
+
+    if (response.result === ChargenResponse.Result.OK)
+    {
+      // Extract updated account (with the newly added character)
+      // from the response.
+      this.account = response.account.deserializeEntity
+      (
+        Account,
+        true    // Overwrite existing entity.
+      );
+
+      /// DEBUG:
+      console.log("Recreated account " + JSON.stringify(this.account));
+
+      ClientApp.setState(ClientApp.State.CHARSELECT);
+      return;
+    }
+
+    // Otherwise display to the user what the problem is.
+    Windows.chargenWindow.form.displayProblem(response);
+  }
+
+  private processCharselectResponse(response: CharselectResponse)
+  {
+    /// TODO:
   }
 }

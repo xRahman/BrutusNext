@@ -43,7 +43,8 @@ export class EntityData extends Serializable
 
   public deserializeEntity<T extends Entity>
   (
-    typeCast: { new (...args: any[]): T }
+    typeCast: { new (...args: any[]): T },
+    overwrite = false
   )
   {
     let entity: T = null;
@@ -53,7 +54,12 @@ export class EntityData extends Serializable
       // Load entity and all of its ancestor entities, starting
       // with root prototype entity (because this.data contains
       // entity and it's prototype entities exactly in this order).
-      entity = Entities.loadEntityFromJsonString(jsonString, typeCast);
+      entity = Entities.loadEntityFromJsonString
+      (
+        jsonString,
+        typeCast,
+        overwrite
+      );
     }
 
     // 'entity' now contains last loaded entity, which is our instance.

@@ -11,7 +11,7 @@ import {ScrollWindowInput} from '../../../client/gui/scroll/ScrollWindowInput';
 import {ScrollWindowOutput} from
   '../../../client/gui/scroll/ScrollWindowOutput';
 import {MudColors} from '../../../client/gui/MudColors';
-import {TitledWindow} from '../../../client/gui/TitledWindow';
+import {TitledWindow} from '../../../client/gui/window/TitledWindow';
 import {Connection} from '../../../client/lib/connection/Connection';
 
 export class ScrollWindow extends TitledWindow

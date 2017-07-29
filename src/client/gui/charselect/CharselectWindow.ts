@@ -1,31 +1,29 @@
 /*
   Part of BrutusNEXT
 
-  Charlist window.
+  Character selection window.
 */
 
 'use strict';
 
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Component} from '../../../client/gui/Component';
-import {CharlistForm} from '../../../client/gui/charlist/CharlistForm';
-import {StandaloneWindow} from '../../../client/gui/StandaloneWindow';
+import {CharselectForm} from '../../../client/gui/charselect/CharselectForm';
+import {StandaloneWindow} from '../../../client/gui/window/StandaloneWindow';
 
-export class CharlistWindow extends StandaloneWindow
+export class CharselectWindow extends StandaloneWindow
 {
   constructor()
   {
     super();
 
     // Show this window when app is in this state.
-    this.flags.set(ClientApp.State.CHARLIST);
+    this.flags.set(ClientApp.State.CHARSELECT);
   }
 
   // ----------------- Private data ---------------------
 
-  private charlistForm = new CharlistForm(this);
-
-  ///private $charlist: JQuery = null;
+  private charselectForm = new CharselectForm(this);
   private $enterGameButton: JQuery = null;
 
   // ---------------- Public methods --------------------
@@ -33,12 +31,12 @@ export class CharlistWindow extends StandaloneWindow
   // ~ Overrides StandaloneWindow.create().
   public create()
   {
-    super.create({ windowParam: { name: 'charlist_window' }});
+    super.create({ windowParam: { name: 'charselect_window' }});
 
     this.setTitle("Your Characters");
 
     this.createButtonNewCharacter();
-    this.createCharlistForm();
+    this.createCharselectForm();
     this.createButtonEnterGame();
   }
 
@@ -54,9 +52,9 @@ export class CharlistWindow extends StandaloneWindow
 
   // ---------------- Private methods -------------------
 
-  private createCharlistForm()
+  private createCharselectForm()
   {
-    this.charlistForm.create({ $parent: this.$content });
+    this.charselectForm.create({ $parent: this.$content });
   }
 
   private createButtonNewCharacter()
@@ -93,7 +91,7 @@ export class CharlistWindow extends StandaloneWindow
 
   private enterGame()
   {
-    /// TODO: Přečíst z charlistu, jaký je selectnutý char,
+    /// TODO: Přečíst z charselectForm, jaký je selectnutý char,
     /// a setnout ho jako ingame entity.
 
     ClientApp.setState(ClientApp.State.IN_GAME);
