@@ -325,7 +325,14 @@ export class ServerEntities extends Entities
   {
     let path = ServerEntities.getEntityPath(id);
     let jsonString = await FileSystem.readFile(path);
-    let entity = await this.loadEntityFromJsonString(jsonString, id, path);
+    let entity = await this.loadEntityFromJsonString
+    (
+      {
+        jsonString,
+        id,
+        path
+      }
+    );
 
     await entity.postLoad();
 

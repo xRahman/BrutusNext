@@ -6,8 +6,8 @@
 
 'use strict';
 
-import {Component} from '../../client/gui/Component';
-import {TitledWindow} from '../../client/gui/TitledWindow';
+import {Component} from '../../../client/gui/Component';
+import {TitledWindow} from '../../../client/gui/window/TitledWindow';
 
 export class StandaloneWindow extends TitledWindow
 {

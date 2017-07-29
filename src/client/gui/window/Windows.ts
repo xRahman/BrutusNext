@@ -6,17 +6,17 @@
 
 'use strict';
 
-import {ERROR} from '../../shared/lib/error/ERROR';
-import {Document} from '../../client/gui/Document';
-import {Window} from '../../client/gui/Window';
-import {LoginWindow} from '../../client/gui/login/LoginWindow';
-import {RegisterWindow} from '../../client/gui/register/RegisterWindow';
-import {TermsWindow} from '../../client/gui/terms/TermsWindow';
-import {CharlistWindow} from '../../client/gui/charlist/CharlistWindow';
-import {ChargenWindow} from '../../client/gui/chargen/ChargenWindow';
-import {ScrollWindow} from '../../client/gui/scroll/ScrollWindow';
-import {MapWindow} from '../../client/gui/map/MapWindow';
-import {ClientApp} from '../../client/lib/app/ClientApp';
+import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Document} from '../../../client/gui/Document';
+import {Window} from '../../../client/gui/window/Window';
+import {LoginWindow} from '../../../client/gui/login/LoginWindow';
+import {RegisterWindow} from '../../../client/gui/register/RegisterWindow';
+import {TermsWindow} from '../../../client/gui/terms/TermsWindow';
+import {CharselectWindow} from '../../../client/gui/charselect/CharSelectWindow';
+import {ChargenWindow} from '../../../client/gui/chargen/ChargenWindow';
+import {ScrollWindow} from '../../../client/gui/scroll/ScrollWindow';
+import {MapWindow} from '../../../client/gui/map/MapWindow';
+import {ClientApp} from '../../../client/lib/app/ClientApp';
 
 export class Windows
 {
@@ -30,7 +30,7 @@ export class Windows
   private loginWindow: LoginWindow = null;
   private registerWindow: RegisterWindow = null;
   private termsWindow: TermsWindow = null;
-  private charlistWindow: CharlistWindow = null;
+  private charselectWindow: CharselectWindow = null;
   private chargenWindow: ChargenWindow = null;
 
   // There is just one map window per ClientApp.
@@ -49,6 +49,16 @@ export class Windows
   public static get registerWindow()
   {
     return ClientApp.windows.registerWindow;
+  }
+
+  public static get chargenWindow()
+  {
+    return ClientApp.windows.chargenWindow;
+  }
+
+  public static get charselectWindow()
+  {
+    return ClientApp.windows.charselectWindow;
   }
 
   public static get mapWindow()
@@ -152,12 +162,12 @@ export class Windows
 
   private createCharlistWindow()
   {
-    if (this.alreadyExists(this.charlistWindow, 'Charlist'))
+    if (this.alreadyExists(this.charselectWindow, 'Charlist'))
       return;
 
-    this.charlistWindow = this.createAndAdd(new CharlistWindow());
+    this.charselectWindow = this.createAndAdd(new CharselectWindow());
 
-    return this.charlistWindow;
+    return this.charselectWindow;
   }
 
   private createChargenWindow()

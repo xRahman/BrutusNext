@@ -7,12 +7,13 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {MudColors} from '../../../client/gui/MudColors';
 import {Connection} from '../../../client/lib/connection/Connection';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
-import {Windows} from '../../../client/gui/Windows';
+import {Windows} from '../../../client/gui/window/Windows';
 import {Component} from '../../../client/gui/Component';
-import {Form} from '../../../client/gui/Form';
-import {CredentialsForm} from '../../../client/gui/CredentialsForm';
+import {Form} from '../../../client/gui/form/Form';
+import {CredentialsForm} from '../../../client/gui/form/CredentialsForm';
 import {RegisterRequest} from '../../../shared/lib/protocol/RegisterRequest';
 import {RegisterResponse} from '../../../shared/lib/protocol/RegisterResponse';
 
@@ -20,8 +21,9 @@ export class RegisterForm extends CredentialsForm
 {
   private static get RECOMMENDATION()
   {
-    return '&YWe strongly recommend that you use different'
-         + ' password than on your e-mail account.';
+    return MudColors.RECOMMENDATION_TEXT_COLOR
+      + 'We strongly recommend that you use different'
+      + ' password than on your e-mail account.';
   }
 
   // ----------------- Private data ---------------------
@@ -45,7 +47,6 @@ export class RegisterForm extends CredentialsForm
     this.createPasswordInput();
     this.createPasswordProblemNotice();
 
-    this.createErrorLabel();
     this.createInfoLabel();
     this.createEmptyLine();
 
@@ -113,18 +114,35 @@ export class RegisterForm extends CredentialsForm
     return super.createSubmitButton(param);
   }
 
-  // ~ Overrides CredentialsForm.hideProblemMessages().
-  protected hideProblems()
+  // ~ Overrides Form.createRequest().
+  protected createRequest()
   {
-    super.hideProblems();
-    this.showRecomendation();
+    let request = new RegisterRequest();
+
+    request.email = this.$emailInput.val();
+    request.password = this.$passwordInput.val();
+
+    return request;
   }
 
-  // ~ Overrides CredentialsForm.displayError().
-  protected displayError(problem: string)
+  // ~ Overrides Form.isRequestValid().
+  protected isRequestValid(request: RegisterRequest)
   {
-    super.displayError(problem);
-    this.$infoLabel.hide();
+    let problem = null;
+
+    if (problem = request.getEmailProblem())
+    {
+      this.displayEmailProblem(problem);
+      return false;
+    }
+
+    if (problem = request.getPasswordProblem())
+    {
+      this.displayPasswordProblem(problem);
+      return false;
+    }
+
+    return true;
   }
 
   // ---------------- Private methods -------------------
@@ -135,11 +153,6 @@ export class RegisterForm extends CredentialsForm
     (
       { text: RegisterForm.RECOMMENDATION }
     );
-  }
-
-  private showRecomendation()
-  {
-    this.$infoLabel.show();
   }
 
   private createButtons()
@@ -165,37 +178,17 @@ export class RegisterForm extends CredentialsForm
     return this.createButton(param);
   }
 
-  private isRequestValid(request: RegisterRequest)
-  {
-    let problem = null;
-
-    if (problem = request.getEmailProblem())
-    {
-      this.displayEmailProblem(problem);
-      return false;
-    }
-
-    if (problem = request.getPasswordProblem())
-    {
-      this.displayPasswordProblem(problem);
-      return false;
-    }
-
-    return true;
-  }
-
   // ---------------- Event handlers --------------------
 
+  /// To be deleted.
+  /*
   // ~ Overrides Form.onSubmit().
   protected onSubmit(event: JQueryEventObject)
   {
     // We will handle the form submit ourselves.
     event.preventDefault();
 
-    let request = new RegisterRequest();
-
-    request.email = this.$emailInput.val();
-    request.password = this.$passwordInput.val();
+    let request = this.createRequest();
 
     // Thanks to the shared code we don't have to
     // wait for server response to check for most
@@ -210,6 +203,7 @@ export class RegisterForm extends CredentialsForm
 
     Connection.send(request);
   }
+  */
 
   protected onCancel(event: JQueryEventObject)
   {

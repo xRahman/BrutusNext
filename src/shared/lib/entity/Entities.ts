@@ -66,7 +66,8 @@ export abstract class Entities
   {
     if (!Entity.isValid(entity))
     {
-      ERROR("Attempt to remove invalid entity from Entities");
+      ERROR("Attempt to release invalid entity " + entity.getErrorIdString()
+        + " from Entities");
       return;
     }
 
@@ -157,11 +158,18 @@ export abstract class Entities
   public static loadEntityFromJsonString<T extends Entity>
   (
     jsonString: string,
-    typeCast: { new (...args: any[]): T }
+    typeCast: { new (...args: any[]): T },
+    overwrite = false
   )
   : T
   {
-    let entity = App.entities.loadEntityFromJsonString(jsonString);
+    let entity = App.entities.loadEntityFromJsonString
+    (
+      {
+        jsonString,
+        overwrite
+      }
+    );
 
     if (!entity)
     {
@@ -225,13 +233,25 @@ export abstract class Entities
   // -> Returns 'null' on failure.
   protected loadEntityFromJsonString
   (
-    jsonString: string,
-    // Id needs to be provided when loading from file because
-    // it's saved as file name rather than into the file.
-    id: string = null,
-    // Path should be provide when loading from file. It's only
-    // used in error messages.
-    path: string = null
+    {
+      jsonString,
+      // Id needs to be provided when loading from file because
+      // it's saved as file name rather than into the file.
+      id = null,
+      // Path should be provide when loading from file. It's only
+      // used in error messages.
+      path = null,
+      // Overwrite existing entity
+      // (when overwrite is 'true', attempt to overwrite existing
+      //  entity will log an error).
+      overwrite = false
+    }:
+    {
+      jsonString: string;
+      id?: string;
+      path?: string;
+      overwrite?: boolean
+    }
   )
   {
     if (!jsonString)
@@ -242,7 +262,13 @@ export abstract class Entities
     if (jsonObject === null)
       return null;
 
-    let entity = this.createEntityFromJsonObject(jsonObject, id, path);
+    let entity = this.createEntityFromJsonObject
+    (
+      jsonObject,
+      id,
+      path,
+      overwrite
+    );
 
     return this.loadEntityFromJsonObject(entity, jsonObject, path);
   }
@@ -251,7 +277,8 @@ export abstract class Entities
   protected createEntityFromPrototype
   (
     prototype: Entity,
-    id: string
+    id: string,
+    overwrite = false
   )
   {
     if (!id)
@@ -282,11 +309,9 @@ export abstract class Entities
     if (!entity.setId(id))
       return null;
 
-    // Add entity to Entities. If entity with this 'id' already
-    // exists, the existing one will be used instead of the one
-    // we have just created.
+    // Add entity to Entities.
     //   In case of error entity will be 'null'.
-    return this.add(entity);
+    return this.add(entity, overwrite);
   }
 
   // -> Returns 'null' if prototype object isn't found.
@@ -316,31 +341,53 @@ export abstract class Entities
 
   // Creates and proxifies entity with specified 'id'.
   // -> Returns 'null' if entity couldn't be created.
-  protected createExistingEntity(prototypeId: string, id: string): Entity
+  protected createExistingEntity
+  (
+    prototypeId: string,
+    id: string,
+    overwrite: boolean
+  )
+  : Entity
   {
     let prototype = this.getPrototypeObject(prototypeId);
 
     if (!prototype)
       return null;
 
-    return this.createEntityFromPrototype(prototype, id);
+    return this.createEntityFromPrototype(prototype, id, overwrite);
   }
 
   // -> Returns added entity or 'null' on failure.
-  private add(entity: Entity)
+  private add(entity: Entity, overwrite: boolean)
   {
     let id = entity.getId();
     let existingEntity = this.entityList.get(id);
 
     if (existingEntity !== undefined)
     {
-      ERROR("Attempt to add entity " + entity.getErrorIdString()
-       + " to Entities which already exists there. Entity is"
-       + " not added, existing one will be used");
-      return existingEntity;
+      if (overwrite)
+      {
+        console.log
+        (
+          "Overwriting (removing) existingEntity " + entity.getErrorIdString()
+        );
+
+        // In 'overwrite' mode, old entity is released from Entities
+        // and a new one is added instead.
+        Entities.release(existingEntity);
+      }
+      else
+      {
+        ERROR("Attempt to add entity " + entity.getErrorIdString()
+          + " to Entities which is already there. Entity is not"
+          + " added, existing one will be used");
+        return existingEntity;
+      }
     }
 
     this.entityList.set(id, entity);
+
+    console.log("Added entity " + entity.getErrorIdString());
 
     return entity;
   }
@@ -544,7 +591,8 @@ export abstract class Entities
   (
     jsonObject: Object,
     id: string,
-    path: string
+    path: string,
+    overwrite: boolean
   )
   {
     if (!jsonObject)
@@ -603,6 +651,6 @@ export abstract class Entities
       return null;
     }
 
-    return this.createExistingEntity(prototypeId, id);
+    return this.createExistingEntity(prototypeId, id, overwrite);
   }
 }
