@@ -30,10 +30,73 @@ TODO: Savovat Admins (asi by to měla bejt entita).
 
 --------------------------------------------------------------
 
+TODO: Přepis entity musím dělat na existujícím objektu,
+  jinak mi přestanou fungovat stávající reference.
+- problém je, že tohle nemůžu udělat, když se změní prototyp.
+  (protože Object.setPrototypeOf je perfomance killer...)
+...
+Pozn.: Když releasnu prototypovou entitu, která má nějaké instance
+  nebo potomky, tak jsem tím všechny ty instance a potomky znefunkčnil.
+=> Nemůžu updatovat prototypové entity tak, že je smažu a vytvořím znovu.
+...
+U instancí (entita bez potomků) asi není problém entitu smazat, znova
+  vytvořit a addnout do Entities. Ti, kdo na ní měli referenci, ji sice
+  budou mít invalid, ale to se může stát i přes save/load, takže před
+  použitím nějaké reference je třeba checknout validitu a případně si říct
+  o aktuální referenci tak jako tak. Díky tomu bych nemusel používat
+  Object.setPrototypeOf()...
+V zásadě by to řešilo i změnu prototypu - prostě bych vyrobil novou
+  entitu a nasetoval ji properties (asi přes Object.assign()), samozřejmě
+  před tím, než tu původní invaliduju.
+...
+Jenže co s těma prototypama? Kdybych to chtěl udělat stejně, tak bych takhle
+  musel rekurzivně recreatnout všechny potomky. To by teda asi v principu
+  nevadilo, sice by to byla pekelně drahá operace, ale nezpomalilo by to
+  následnej běh programu (což Object.setPrototypeOf() způsobí). Asi je to
+  ok, protože měnit prototypy prototypům se budou jen při editování, nikoliv
+  v runtimu (zatímco možnost změnit prototyp instanci v runtimu je hodně
+  šikovné, toho se nechci zbavit). Přinejhorším to chvilku lagne - pořád lepší,
+  než kdyby to bylo zpomalené až do rebootu/reloadu browseru.
+...
+Zbývá otázka, jestli by přece jen nebylo lepší přepsat properties na existující
+  referenci, pokud se nemění prototyp (což bude v drtivé většině případů)...
+Hmm, u prototypů to vlastně udělat dokonce musím (přepsat properties na
+  stávající referenci, protože jinak bych musel recreatnout všechny potomky
+  - nejen všechny v chainu, ale úplně celý podstrom).
+...
+TODO: Opravdu budu muset implementovat přepis properties na stávající
+  referenci.
+Problém bude s inicializací, to jinak než přes new() nezařídím.
+- na druhou stranu možná není potřeba, přepíšou se prostě jen ty properties,
+  které jsou v jsonu, zbylé zůstanou nezměněné.
+
+
+--------------------------------------------------------------
+
+TODO: Přida do ChargenForm prázdnou řádku za error message
+  (žádku vždycky, problemNotice schovávat).
+
+TODO: V ChargenResponse neposílat vytvořený character, ale celý account
+  (protože ten se změnil taky a budu ho potřebovat v charselectu).
+
+TODO: Charlist by se asi spíš měl jmenovat Charselect
+(protože selectujeme char, se kterým se player naloguje.
+ Navíc CharlistReuest nic neříká, CharselectReuqest dává
+ větší smysl.)
+[done]
+
+TODO: error label by měl být ve formu vždycky úplně nahoře
+  a asi by za ním měl být prázdný řádek
+  - může se asi creatovat rovnou ve formu (stejně je defaultně
+    hidden, takže to nikdo nebude potřebobat overridnout), včetně
+    toho prázdného řádku.
+[done]
+
 TODO: Zpracovat založení nového charu v klientovi.
 
 TODO: V ChargenForm.onCharacterNameInput() dělat kontrolu
   rovnou při tom, jak user píše.
+[na to kašlat]
 
 TODO: Zalogovat založení nového charu.
 [done]

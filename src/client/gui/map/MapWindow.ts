@@ -7,7 +7,7 @@
 'use strict';
 
 import {ClientApp} from '../../../client/lib/app/ClientApp';
-import {TitledWindow} from '../../../client/gui/TitledWindow';
+import {TitledWindow} from '../../../client/gui/window/TitledWindow';
 import {SvgMap} from '../../../client/gui/map/SvgMap';
 import {Connection} from '../../../client/lib/connection/Connection';
 

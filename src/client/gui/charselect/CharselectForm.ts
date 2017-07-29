@@ -6,20 +6,24 @@
 
 'use strict';
 
-import {Form} from '../../../client/gui/Form';
+import {Form} from '../../../client/gui/form/Form';
 import {Component} from '../../../client/gui/Component';
-import {Charplate} from '../../../client/gui/charlist/Charplate';
-import {CharlistWindow} from '../../../client/gui/charlist/CharlistWindow';
+import {Charplate} from '../../../client/gui/charselect/Charplate';
+import {CharselectWindow} from '../../../client/gui/charselect/CharselectWindow';
+import {CharselectRequest} from
+  '../../../shared/lib/protocol/CharselectRequest';
+import {CharselectResponse} from
+  '../../../shared/lib/protocol/CharselectResponse';
 
-export class CharlistForm extends Form
+export class CharselectForm extends Form
 {
-  constructor(private charlistWindow: CharlistWindow)
+  constructor(private charselectWindow: CharselectWindow)
   {
     super();
   }
 
   public static get S_CSS_CLASS()
-    { return 'S_Charlist'; }
+    { return 'S_Charselect'; }
 
   // ----------------- Private data ---------------------
 
@@ -34,9 +38,9 @@ export class CharlistForm extends Form
     (
       param,
       {
-        name: 'charlist_form',
+        name: 'charselect_form',
         gCssClass: Component.WINDOW_G_CSS_CLASS,
-        sCssClass: CharlistForm.S_CSS_CLASS
+        sCssClass: CharselectForm.S_CSS_CLASS
       }
     );
 
@@ -47,11 +51,31 @@ export class CharlistForm extends Form
     this.populate();
   }
 
+  // --------------- Protected methods ------------------
+
+  // ~ Overrides Form.createRequest().
+  protected createRequest()
+  {
+    let request = new CharselectRequest();
+
+    /// TODO: Vyřešit pamatování idček charů a tady ho přiřadit do requestu.
+    // request.selectedCharacterId = this.$emailInput.val();
+
+    return request;
+  }
+
+  // ~ Overrides Form.isRequestValid().
+  protected isRequestValid(request: CharselectRequest)
+  {
+    // There is nothing to validate in charselect form.
+    return true;
+  }
+
   // ---------------- Private methods -------------------
 
   private createCharacterPlate()
   {
-    let charplate = new Charplate(this.charlistWindow);
+    let charplate = new Charplate(this.charselectWindow);
 
     charplate.create({ $parent: this.$form });
 

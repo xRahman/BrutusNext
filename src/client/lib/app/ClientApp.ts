@@ -26,7 +26,7 @@ import {ClientPrototypes} from '../../../client/lib/entity/ClientPrototypes';
 import {Document} from '../../../client/gui/Document';
 import {Connection} from '../../../client/lib/connection/Connection';
 import {ClientSocket} from '../../../client/lib/net/ClientSocket';
-import {Windows} from '../../../client/gui/Windows';
+import {Windows} from '../../../client/gui/window/Windows';
 
 export class ClientApp extends App
 {
@@ -248,7 +248,7 @@ export class ClientApp extends App
     // Show login window, hide all others.
     ClientApp.setState(ClientApp.State.LOGIN);
     /// TEST:
-    //ClientApp.setState(ClientApp.State.CHARLIST);
+    //ClientApp.setState(ClientApp.State.CHARSELECT);
 
     /// TODO: Stáhnout viewport data ze serveru.
     /// I když možná nestačí connection.connect(), ještě se asi bude
@@ -299,7 +299,7 @@ export module ClientApp
     LOGIN,
     REGISTER,
     TERMS,
-    CHARLIST,
+    CHARSELECT,
     CHARGEN,
     IN_GAME
   }

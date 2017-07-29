@@ -411,29 +411,6 @@ export class Entity extends Serializable
       if (object.hasOwnProperty(propertyName))
         this.invalidateProperty(object[propertyName]);
 
-      /*
-      // Only invalidate own properties.
-      if (!object.hasOwnProperty(propertyName))
-        continue;
-
-      let property = object[propertyName];
-
-      if (property !== null && property !== undefined)
-      {
-        let isPrimitive = Utils.isPrimitiveType(property);
-        let isEntity = (property[Entity.ID_PROPERTY] !== undefined);
-
-TODO: Only invalidate plain objects and Serializables
-(možná taky plain Array?)
-- jinak to lozí dovnitř objektů jako WebSocket a nedělá to dobrotu...
-
-        // Recursively invalidate nonprimitive (object) properties
-        // (but skip references to another entities).
-        if (!isPrimitive && !isEntity)
-          this.invalidateProperties(property);
-      }
-      */
-
       delete object[propertyName];
     }
 
@@ -471,7 +448,7 @@ TODO: Only invalidate plain objects and Serializables
       if (id === undefined)
         id = 'undefined';
 
-      return "{ Invalid (deleted) entity, id: " + id + " }";
+      return "{ Reference to invalid (deleted) entity, id: " + id + " }";
     }
   }
 

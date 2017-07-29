@@ -8,8 +8,8 @@
 
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Component} from '../../../client/gui/Component';
-import {TitledWindow} from '../../../client/gui/TitledWindow';
-import {StandaloneWindow} from '../../../client/gui/StandaloneWindow';
+import {TitledWindow} from '../../../client/gui/window/TitledWindow';
+import {StandaloneWindow} from '../../../client/gui/window/StandaloneWindow';
 
 export class TermsWindow extends StandaloneWindow
 {
