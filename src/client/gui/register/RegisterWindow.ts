@@ -7,10 +7,11 @@
 'use strict';
 
 import {ClientApp} from '../../../client/lib/app/ClientApp';
-import {StandaloneWindow} from '../../../client/gui/window/StandaloneWindow';
+import {StandaloneFormWindow} from
+  '../../../client/gui/window/StandaloneFormWindow';
 import {RegisterForm} from '../../../client/gui/register/RegisterForm';
 
-export class RegisterWindow extends StandaloneWindow
+export class RegisterWindow extends StandaloneFormWindow
 {
   constructor()
   {
@@ -41,20 +42,6 @@ export class RegisterWindow extends StandaloneWindow
 
     this.createEmptyLine();
     this.createTermsLink();
-  }
-
-  // --------------- Protected methods ------------------
-
-  // ~ Overrides Window.onShow().
-  protected onShow()
-  {
-    this.form.onShow();
-  }
-
-  // ~ Overrides Window.onHide().
-  protected onHide()
-  {
-    this.form.onHide();
   }
 
   // ---------------- Private methods -------------------
