@@ -9,9 +9,10 @@
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Component} from '../../../client/gui/Component';
 import {CharselectForm} from '../../../client/gui/charselect/CharselectForm';
-import {StandaloneWindow} from '../../../client/gui/window/StandaloneWindow';
+import {StandaloneFormWindow} from
+  '../../../client/gui/window/StandaloneFormWindow';
 
-export class CharselectWindow extends StandaloneWindow
+export class CharselectWindow extends StandaloneFormWindow
 {
   constructor()
   {
@@ -21,9 +22,12 @@ export class CharselectWindow extends StandaloneWindow
     this.flags.set(ClientApp.State.CHARSELECT);
   }
 
+  // ----------------- Public data ----------------------
+
+  public form = new CharselectForm(this);
+
   // ----------------- Private data ---------------------
 
-  private charselectForm = new CharselectForm(this);
   private $enterGameButton: JQuery = null;
 
   // ---------------- Public methods --------------------
@@ -54,7 +58,7 @@ export class CharselectWindow extends StandaloneWindow
 
   private createCharselectForm()
   {
-    this.charselectForm.create({ $parent: this.$content });
+    this.form.create({ $parent: this.$content });
   }
 
   private createButtonNewCharacter()

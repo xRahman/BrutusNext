@@ -12,7 +12,8 @@ import {Window} from '../../../client/gui/window/Window';
 import {LoginWindow} from '../../../client/gui/login/LoginWindow';
 import {RegisterWindow} from '../../../client/gui/register/RegisterWindow';
 import {TermsWindow} from '../../../client/gui/terms/TermsWindow';
-import {CharselectWindow} from '../../../client/gui/charselect/CharSelectWindow';
+import {CharselectWindow} from
+  '../../../client/gui/charselect/CharselectWindow';
 import {ChargenWindow} from '../../../client/gui/chargen/ChargenWindow';
 import {ScrollWindow} from '../../../client/gui/scroll/ScrollWindow';
 import {MapWindow} from '../../../client/gui/map/MapWindow';

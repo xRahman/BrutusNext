@@ -36,6 +36,8 @@ export class ChargenForm extends Form
     this.createCharacterNameInput();
     this.createNameProblemNotice();
 
+    this.createEmptyLine();
+
     this.createButtons();
   }
 
@@ -65,6 +67,16 @@ export class ChargenForm extends Form
         ERROR("Unknown register response result");
         break;
     }
+  }
+
+  // ~ Overrides Form.onShow().
+  public onShow()
+  {
+    super.onShow();
+
+    this.resetForm();
+    this.enableSubmitButton();
+    this.hideProblems();
   }
 
   // --------------- Protected methods ------------------
@@ -108,6 +120,27 @@ export class ChargenForm extends Form
     return true;
   }
 
+    // ~ Overrides Form.hideProblems();
+  protected hideProblems()
+  {
+    super.hideProblems();
+
+    // if (this.$characterNameProblem)
+    //   this.$characterNameProblem.hide();
+
+    if (this.$characterNameProblem)
+    {
+      this.createText
+      (
+        {
+          $parent: this.$characterNameProblem,
+          text: Component.EMPTY_LINE_TEXT,
+          insertMode: Component.InsertMode.REPLACE
+        }
+      );
+    }
+  }
+
   // ---------------- Private methods -------------------
 
   protected createNameProblemNotice()
@@ -116,6 +149,8 @@ export class ChargenForm extends Form
     (
       { name: 'name_problem_notice'}
     );
+
+    ///this.$characterNameProblem.hide();
   }
 
   protected displayCharacterNameProblem(problem: string)

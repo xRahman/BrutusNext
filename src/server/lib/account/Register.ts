@@ -205,7 +205,7 @@ export class Register
     Syslog.log
     (
       "New player: " + account.getUserInfo(),
-      MessageType.CONNECTION_INFO,
+      MessageType.SYSTEM_INFO,
       AdminLevel.IMMORTAL
     );
     
