@@ -8,10 +8,11 @@
 
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Component} from '../../../client/gui/Component';
-import {StandaloneWindow} from '../../../client/gui/window/StandaloneWindow';
+import {StandaloneFormWindow} from
+  '../../../client/gui/window/StandaloneFormWindow';
 import {ChargenForm} from '../../../client/gui/chargen/ChargenForm';
 
-export class ChargenWindow extends StandaloneWindow
+export class ChargenWindow extends StandaloneFormWindow
 {
   constructor()
   {
