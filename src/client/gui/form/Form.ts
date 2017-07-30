@@ -47,6 +47,13 @@ export abstract class Form extends Component
   public onShow() {}
   public onHide() {}
 
+  public resetForm()
+  {
+    let formElement = <HTMLFormElement>this.$form[0];
+
+    formElement.reset();
+  }
+
   // --------------- Protected methods ------------------
 
   protected create(param: Component.FormParam = {})
