@@ -371,8 +371,6 @@ export abstract class Entities
 
     this.entityList.set(id, entity);
 
-    console.log("Added entity " + entity.getErrorIdString());
-
     return entity;
   }
 

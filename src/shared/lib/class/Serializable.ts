@@ -747,7 +747,12 @@ export class Serializable extends Attributable
     if (!this.isBitvectorRecord(param.sourceProperty))
       return null;
 
-    if (!Utils.isBitvector(param.targetProperty))
+    if
+    (
+      // It's ok to load into 'null' property.
+      param.targetProperty !== null
+      && !Utils.isBitvector(param.targetProperty)
+    )
     {
       let pathString = this.composePathString(param.path);
 
@@ -789,7 +794,12 @@ export class Serializable extends Attributable
     if (!this.isSetRecord(param.sourceProperty))
       return null;
 
-    if (!Utils.isSet(param.targetProperty))
+    if
+    (
+      // It's ok to load into 'null' property.
+      param.targetProperty !== null
+      && !Utils.isSet(param.targetProperty)
+    )
     {
       let pathString = this.composePathString(param.path);
 
@@ -810,7 +820,12 @@ export class Serializable extends Attributable
     if (!this.isMapRecord(param.sourceProperty))
       return null;
 
-    if (!Utils.isMap(param.targetProperty))
+    if
+    (
+      // It's ok to load into 'null' property.
+      param.targetProperty !== null
+      && !Utils.isMap(param.targetProperty)
+    )
     {
       let pathString = this.composePathString(param.path);
 
@@ -852,7 +867,12 @@ export class Serializable extends Attributable
     // Here we need to use Utils.isArray() instead of Array.isArray()
     // because 'param.targetProperty' is probably a {} with an array
     // as it's prototype created by object.create().
-    if (!Utils.isArray(param.targetProperty))
+    if
+    (
+      // It's ok to load into 'null' property.
+      param.targetProperty !== null
+      && !Utils.isArray(param.targetProperty)
+    )
     {
       let pathString = this.composePathString(param.path);
 
@@ -1168,9 +1188,7 @@ export class Serializable extends Attributable
     let deserializeParam: DeserializeParam =
     {
       propertyName: 'Serialized record: Set',
-      // We need to pass 'null' as 'sourceProperty' so an instance
-      // of corect type will be created (by createNewIfNull()).
-      targetProperty: null,
+      targetProperty: [],   // Load into a new array.
       sourceProperty: sourceRecord,
       path: param.path
     }
@@ -1201,9 +1219,7 @@ export class Serializable extends Attributable
     let deserializeParam: DeserializeParam =
     {
       propertyName: 'Serialized record: Map',
-      // We need to pass 'null' as 'sourceProperty' so an instance
-      // of corect type will be created (by createNewIfNull()).
-      targetProperty: null,
+      targetProperty: [],   // Load into a new array.
       sourceProperty: sourceRecord,
       path: param.path
     }
