@@ -30,6 +30,13 @@ TODO: Savovat Admins (asi by to měla bejt entita).
 
 --------------------------------------------------------------
 
+TODO: Vypadá to, že když v klientovi vyhodím výjimku, tak
+  stack vypíše v typecriptové soubory
+- tzn. nepatlat si clientové error message sám, ale prostě hodit
+  exception.
+
+--------------------------------------------------------------
+
 Změny prototypu
 ----------------
 
@@ -79,15 +86,87 @@ TODO: Ok. Zatím udělám přepisování properties (s kontrolou, že se neměn�
 
 --------------------------------------------------------------
 
+TODO: Při loginu nebo registeru poslat v rámci response i charactery
+  na accountu.
+(to mimo jiné znamená, že je na serveru budu muset všechny loadnout,
+ to možná není úplně ideální. Char toho může mít fakt hodně, včetně
+ hromady equipu, fog of war infa, atd.)
+- možná by to vyřešil speciální load a send mód, kdy se loadne (a pošle)
+  čistě jen character, nikoliv entity z něj odkázané.
+- druhá možnost je, zduplikovat některé informace do accountu
+  (jméno, level a tak, prostě to, co se mi zobrazuje v char selectu).
+
+
+TODO: Revidovat Accounts.addCharacter()
+- chary by se v accountu asi měly držet jako reference.
+- a měly by být v Account.data, aby se daly posílat na klienta.
+
+TODO: V ChargenResponse neposílat vytvořený character, ale celý account
+  (protože ten se změnil taky a budu ho potřebovat v charselectu).
+
+TODO: Zpracovat založení nového charu v klientovi.
+
+TODO: Character creation.
+
+TODO: Zrušit hlášku 'Opening websocket connection', která se posílá
+  do ScrollWindow.
+(sice už zmizla, ale to nejspíš bude bug - jo, byl to bug)
+
+TODO: Otestovat reconnect z jiného tabu.
+- očividně to nefunguje úplně dobře.
+- tohle bych měl udělat zároveň s ošetřením disconnectu v clientu,
+  jinak to těžko odladím.
+
+--------------------------------------------------------------
+
+TODO: Do Entity.setName() přidat check na byte length po encodování
+  jako file name.
+  - jen když má být jméno unikátní.
+[done]
+
+TODO: Account.email by asi měl být v account.data.email
+  (a měl by se posílat na clienta).
+[accout.email jsem zrušil]
+
+TODO: Encódovat file name při savování.
+[done]
+
+TODO: Chtělo by to metodu, která vrátí byte length stringu po encódnutí
+  na fileName (abych mohl testovat, jestli jméno entity nepřelezlo limit).
+- nebo ještě lépe vracet rovnou truncatnutý string (neencódnutý, ofc).
+[done (sort of)]
+
+TODO: Mít na accountu .name jiné než email je dost napikaču.
+- chtělo by to asi dělat z 'name' fileName až při savu/loadu.
+Řešení: Neencódovat jen account name, ale všechna jména entit.
+[done]
+
+TODO: Zrušit z accountu položku email (bude se používat přímo .name).
+[done]
+
+TODO: Savovat .name nejen jako jméno name lock filu, ale i jako property
+  dovnitř entity savu (to se asi i dělá).
+- file name bude oescapované.
+(jo, to se dělá)
+[done]
+
+TODO: V ChargenForm.onCharacterNameInput() dělat kontrolu
+  rovnou při tom, jak user píše.
+[na to kašlat]
+
+TODO: Zalogovat založení nového charu.
+[done]
+
+TODO: V ChargenForm číst limity na character name ze shared kódu.
+[done]
+
 TODO: Mazat jméno v chargenform v onShow.
 - a hidnout errory.
 [done]
 
 TODO: Přida do ChargenForm prázdnou řádku za error message
-  (žádku vždycky, problemNotice schovávat).
-
-TODO: V ChargenResponse neposílat vytvořený character, ale celý account
-  (protože ten se změnil taky a budu ho potřebovat v charselectu).
+  (řádku vždycky, problemNotice schovávat).
+[done]
 
 TODO: Charlist by se asi spíš měl jmenovat Charselect
 (protože selectujeme char, se kterým se player naloguje.
@@ -101,34 +180,6 @@ TODO: error label by měl být ve formu vždycky úplně nahoře
     hidden, takže to nikdo nebude potřebobat overridnout), včetně
     toho prázdného řádku.
 [done]
-
-TODO: Zpracovat založení nového charu v klientovi.
-
-TODO: V ChargenForm.onCharacterNameInput() dělat kontrolu
-  rovnou při tom, jak user píše.
-[na to kašlat]
-
-TODO: Zalogovat založení nového charu.
-[done]
-
-TODO: Revidovat Accounts.addCharacter()
-- chary by se v accountu asi měly držet jako reference.
-
-TODO: Character creation.
-
-TODO: V ChargenForm číst limity na character name ze shared kódu.
-
-
-TODO: Zrušit hlášku 'Opening websocket connection', která se posílá
-  do ScrollWindow.
-(sice už zmizla, ale to nejspíš bude bug - jo, byl to bug)
-
-TODO: Otestovat reconnect z jiného tabu.
-- očividně to nefunguje úplně dobře.
-- tohle bych měl udělat zároveň s ošetřením disconnectu v clientu,
-  jinak to těžko odladím.
-
---------------------------------------------------------------
 
 TODO: serverový Chargen.ts by asi měl být spíš někde v /game než v /lib/net
 (možná v /game/character)

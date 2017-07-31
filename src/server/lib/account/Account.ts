@@ -39,14 +39,6 @@ export class Account extends ServerEntity
 
   public data = new AccountData();
 
-  // List of character names this account has access to.
-  public characterNames: Array<string> = [];
-
-  // Original (nonecoded) email address
-  // ('name' also contains email address but it's encoded
-  // and lowercased so it can be used as a file name).
-  public email: string = null;
-
   // ---------------- Protected data --------------------
 
   // ----------------- Private data ---------------------
@@ -83,12 +75,20 @@ export class Account extends ServerEntity
     if (this.connection)
       return this.connection.getUserInfo();
 
-    return this.email;
+    return this.getEmail();
   }
 
   public getConnection()
   {
     return this.connection;
+  }
+
+  public getEmail()
+  {
+    // Email address is used as account name
+    // (It means that to change the email address,
+    // you would have to use setName()).
+    return this.getName();
   }
 
   // ---------------- Public methods --------------------
@@ -137,18 +137,19 @@ export class Account extends ServerEntity
     return this.timeOfCreation.toLocaleString();
   }
 
-  // -> Returns full name of the character matching to 'abbrev'.
-  // -> Returns 'null' if no match is found.
-  public getCharacterNameByAbbrev(abbrev: string): string
-  {
-    for (let characterName of this.characterNames)
-    {
-      if (Utils.isAbbrev(abbrev, characterName))
-        return characterName;
-    }
+  // Probably to be deleted.
+  // // -> Returns full name of the character matching to 'abbrev'.
+  // // -> Returns 'null' if no match is found.
+  // public getCharacterNameByAbbrev(abbrev: string): string
+  // {
+  //   for (let characterName of this.characterNames)
+  //   {
+  //     if (Utils.isAbbrev(abbrev, characterName))
+  //       return characterName;
+  //   }
 
-    return null;
-  }
+  //   return null;
+  // }
   
   public getLastLoginAddress(): string
   {
@@ -217,33 +218,35 @@ export class Account extends ServerEntity
     character.atachConnection(this.connection);
     character.addToLists();
 
-    await this.addCharacter(name);
-
     // Save the character to the disk.
     await ServerEntities.save(character);
+
+    await this.addCharacter(character);
 
     return character;
   }
 
-  public getNumberOfCharacters(): number
-  {
-    return this.characterNames.length;
-  }
+  /// Probably to be deleted.
+  // public getNumberOfCharacters(): number
+  // {
+  //   return this.characterNames.length;
+  // }
 
-  public getCharacterName(charNumber: number): string
-  {
-    if (charNumber < 0 || charNumber >= this.getNumberOfCharacters())
-    {
-      ERROR("Attempt to get name of character"
-        + " number " + charNumber + " from account"
-        + " " + this.getName() + " which only has "
-        + " " + this.getNumberOfCharacters()
-        + " characters");
-      return null;
-    }
+  /// Probably to be deleted.
+  // public getCharacterName(charNumber: number): string
+  // {
+  //   if (charNumber < 0 || charNumber >= this.getNumberOfCharacters())
+  //   {
+  //     ERROR("Attempt to get name of character"
+  //       + " number " + charNumber + " from account"
+  //       + " " + this.getName() + " which only has "
+  //       + " " + this.getNumberOfCharacters()
+  //       + " characters");
+  //     return null;
+  //   }
 
-    return this.characterNames[charNumber];
-  }
+  //   return this.characterNames[charNumber];
+  // }
 
   public updateLastLoginInfo()
   {
@@ -356,28 +359,26 @@ export class Account extends ServerEntity
   }
   */
 
-  private async addCharacter(characterName: string)
+  private async addCharacter(character: Character)
   {
-    if (characterName === "")
+    if (!character.getName())
     {
-      ERROR("Attempt to add new character with empty name to"
-        + " account " + this.getName() + ". Character is not added");
+      ERROR("Attempt to add new character with empty or invalid name"
+        + " to account " + this.getName() + ". Character is not added");
       return;
     }
 
-    /// Zpet k odkazovani postav jmeny.
-    ///     Duvod pro ukladani postav v souboru podle jmena postavy je,
-    ///   ze stat file <charName> by nemel jak najit spravny soubor, kdyz
-    ///   by byl pojmenovany hodnotou idcka.
-    ///     Kdyz budou soubory pojmenovane jmenem charu, tak zas nepujde najit
-    ///   soubor podle idcka, coz pri vstupu hrace do hry potrebuju.
-    /// Reseni tedy je, pojmenovavat player character savy jmenem charu
-    /// a seznam charu v accountu ukladat taky pres jmeno charu.
-    /// (ukladat entity s unikatnimi jmeny pod jmenem entity ma navic tu
-    /// vyhodu, ze si nemusim nekde stranou drzet seznam existujicich jmen,
-    /// muzu proste checknout, jestli existuje soubor daneho jmena.
+    if (this.data.characters.has(character.getId()))
+    {
+      ERROR("Attempt to add character " + character.getErrorIdString()
+        + " to account " + this.getErrorIdString() + " which is already"
+        + " there. Character is not added");
+      return;
+    }
 
-    this.characterNames.push(characterName);
+    console.log('Adding character ' + character.getName());
+
+    this.data.characters.set(character.getId(), character);
 
     await Entities.save(this);
   }

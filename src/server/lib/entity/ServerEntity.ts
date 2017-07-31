@@ -7,6 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {Attributes} from '../../../shared/lib/class/Attributes';
 import {NameLock} from '../../../server/lib/entity/NameLock';
 import {Entity} from '../../../shared/lib/entity/Entity';
@@ -49,11 +50,24 @@ export class ServerEntity extends Entity
     {
       ERROR("Attempt to set unique name '" + name + "' in cathegory"
         + " '" + Entity.NameCathegory[cathegory] + "' to a prototype"
-        + " entity. That's not allowed - name will be inherited"
-        + " (and thus duplicated) when an instance or a descendant"
-        + " prototype is created from this prototype entity so it's"
-        + " not possible to ensure that it will stay unique. Name is"
-        + " not set");
+        + " entity " + this.getErrorIdString() + ". That's not allowed"
+        + " - name will be inherited (and thus duplicated) when an"
+        + " instance or a descendant prototype is created from this"
+        + " prototype entity so it's not possible to ensure that it"
+        + " will stay unique. Name is not set");
+      return false;
+    }
+
+    if (cathegory !== null && !Utils.hasValidByteLengthAsFileName(name))
+    {
+      ERROR("Attempt to set unique name '" + name + "' in cathegory"
+        + " '" + Entity.NameCathegory[cathegory] + "' to entity"
+        + " " + this.getErrorIdString() + " which is longer than"
+        + " " + Utils.MAX_FILENAME_BYTE_LENGTH + " bytes when escaped"
+        + " to be useable as file name. That's not allowed because"
+        + " unique entity names are used as file names (to know that"
+        + " the name is taken) and there is a limit of file name length"
+        + " (in bytes) on most Unix file systems. Name is not set");
       return false;
     }
 
