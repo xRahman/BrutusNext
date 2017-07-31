@@ -47,23 +47,28 @@ export class EntityData extends Serializable
     overwrite = false
   )
   {
-    let entity: T = null;
+    let entity = null;
 
+    // 'this.data' is an array of json strings - each representing
+    // one serialized entity (beginning with rootmost ancestor).
     for (let jsonString of this.data)
     {
       // Load entity and all of its ancestor entities, starting
-      // with root prototype entity (because this.data contains
-      // entity and it's prototype entities exactly in this order).
+      // with it's root prototype entity.
       entity = Entities.loadEntityFromJsonString
       (
         jsonString,
-        typeCast,
+        // We can't typecast to 'typeCast' here because ancestors
+        // aren't instances of the same type as their descendant.
+        Entity,
         overwrite
       );
     }
 
     // 'entity' now contains last loaded entity, which is our instance.
-    return entity;
+    //   Dynamically check that entity is an instance of type T and
+    // typecast to it.
+    return entity.dynamicCast(typeCast);
   }
 }
 

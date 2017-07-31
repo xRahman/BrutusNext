@@ -7,6 +7,7 @@
 */
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {Packet} from '../../../shared/lib/protocol/Packet';
 import {Classes} from '../../../shared/lib/class/Classes';
 
@@ -48,6 +49,9 @@ export class RegisterRequest extends Packet
       return "E-mail address must not be empty.";
 
     if (problem = this.getEmailLengthProblem())
+      return problem;
+
+    if (problem = this.getEmailByteLengthProblem())
       return problem;
 
     if (problem = this.getAmpersandProblem())
@@ -99,6 +103,33 @@ export class RegisterRequest extends Packet
       return "E-mail address cannot be longer than"
         + " " + RegisterRequest.MAX_EMAIL_LENGTH
         + " characters.";
+    }
+
+    return null;
+  }
+
+  private getEmailByteLengthProblem()
+  {
+    // There is a limit of 255 bytes to the length of file
+    // name on most Unix file systems. It matters because we
+    // use email address as an account name and thus as a file
+    // name (after encoding it to escape characters and names
+    // that are not valid in file name). Unfortunally the limit
+    // is in bytes rather than characters which prevents us to
+    // comprehensibly communicate to the user what the problem
+    // is and how much shorter the adress must be. It wouldn't
+    // be of much use anyways because email address is supposed
+    // to already exist to be used as an account name. User just
+    // has to use another email account with shorted address.
+    if (!Utils.hasValidByteLengthAsFileName(this.email))
+    {
+      // 64 characters should be safe because there is maximum of
+      // 4 bytes per character in utf-8 and one of them needs to
+      // be '@' which uses less then 4 bytes. However, this may
+      // not be true if address contains characters that need to
+      // be escaped to be used in file name.
+      return "E-mail address is too long (please try to pick one"
+        + " that is up to 64 characters long).";
     }
 
     return null;

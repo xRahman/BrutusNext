@@ -58,7 +58,7 @@ export class Connection
     let info = "";
 
     if (this.account)
-      info += this.account.email + " ";
+      info += this.account.getEmail() + " ";
     
     // Add (url [ip]).
     info += this.getOrigin();

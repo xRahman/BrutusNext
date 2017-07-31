@@ -37,9 +37,9 @@ export class Login
       return;
 
     let email = request.email;
-    // E-mail address is used as account name but it needs
-    // to be encoded first so it can be used as file name.
-    let accountName = Utils.encodeEmail(email);
+    // // E-mail address is used as account name but it needs
+    // // to be encoded first so it can be used as file name.
+    // let accountName = Utils.encodeEmail(email);
     let passwordHash = ServerUtils.md5hash(request.password);
 
     // If player has already been connected prior to this
@@ -52,17 +52,17 @@ export class Login
     // old connection and socket (if it's still open) and also
     // possibly let the player know that her connection has been
     // usurped.
-    if (this.reconnectToAccount(accountName, passwordHash, connection))
+    if (this.reconnectToAccount(email, passwordHash, connection))
       return;
 
-    // If account 'accountName' doesn't exist in memory,
-    // we need to load it from disk and connect to it.
-    // This also handles situation when user reloads
+    // If account 'doesn't exist in memory, we need to
+    // load it from disk and connect to it.
+    //   This also handles situation when user reloads
     // browser tab - browser closes the old connection
     // in such case so at the time user logs back in
     // server has already dealocated old account, connection
     // and socket.
-    await this.connectToAccount(accountName, email, passwordHash, connection);
+    await this.connectToAccount(email, passwordHash, connection);
   }
 
   // ------------- Private static methods ---------------
@@ -220,13 +220,13 @@ export class Login
 
   private static reconnectToAccount
   (
-    accountName: string,
+    email: string,
     passwordHash: string,
     connection: Connection
   )
   {
     // Check if account is already loaded in memory.
-    let account = Accounts.get(accountName);
+    let account = Accounts.get(email);
 
     if (!this.isAccountValid(account))
       return false;
@@ -298,7 +298,6 @@ export class Login
   // -> Returns 'null' on failure.
   private static async loadNameLock
   (
-    accountName: string,
     email: string,
     connection: Connection
   )
@@ -306,7 +305,7 @@ export class Login
   {
     let nameLock = await NameLock.load
     (
-      accountName,
+      email,    // Use 'email' as account name.
       Entity.NameCathegory[Entity.NameCathegory.ACCOUNT],
       false     // Do not report 'not found' error.
     );
@@ -407,13 +406,12 @@ export class Login
 
   private static async connectToAccount
   (
-    accountName: string,
     email: string,
     passwordHash: string,
     connection: Connection
   )
   {
-    let nameLock = await this.loadNameLock(accountName, email, connection);
+    let nameLock = await this.loadNameLock(email, connection);
 
     if (!nameLock)
       return;

@@ -8,8 +8,8 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {JsonObject} from '../../../shared/lib/json/JsonObject';
-///import {Serializable} from '../../../shared/lib/class/Serializable';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
 import {ServerApp} from '../../../server/lib/app/ServerApp';
@@ -143,10 +143,16 @@ export class NameLock
   private static getFileName(name: string)
   {
     // Name lock file name is something like 'rahman.json'.
-    // (It is lovercased to prevent different behaviour on
-    //  different file systems - Windows FS is case insensitive
-    //  while Unix/Linux use case sensitive paths).
-    return name.toLowerCase() + '.json';
+    // (It needs to be encoded so all characters that are
+    //  invalid in file name are escaped as well as reserved
+    //  file names. File name is also lowercased to prevent
+    //  different behaviour on different file systems - Windows
+    //  FS is case insensitive while Unix/Linux use case sensitive
+    //  paths).
+    // Also note that there is a limt of 255 bytes of file name
+    // length on most Unix file systems. File name will be truncated
+    // if it exceeds it.
+    return Utils.encodeAsFileName(name) + '.json';
   }
 
   private static getDirectory(directory: string)
