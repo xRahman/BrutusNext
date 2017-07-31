@@ -24,7 +24,7 @@ export class ClientSocket
   // Checks if browser supports web sockets.
   public static checkWebSocketsSupport()
   {
-    if (WebSocket === undefined)
+    if (typeof WebSocket === 'undefined')
     {
       // Use 'MozWebSocket' if it's available.
       if ('MozWebSocket' in window)

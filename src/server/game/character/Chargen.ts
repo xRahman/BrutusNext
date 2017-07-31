@@ -135,7 +135,7 @@ export class Chargen
 
       Syslog.log
       (
-        "User " + connection.getUserInfo + " has attempted"
+        "User " + connection.getUserInfo() + " has attempted"
           + " to create new character using existing name"
           + " (" + request.characterName + ")",
         MessageType.CONNECTION_INFO,
@@ -192,9 +192,11 @@ export class Chargen
       Serializable.Mode.SEND_TO_CLIENT
     );
 
+    console.log('Serialized account: ' + response.account.data);
+
     Syslog.log
     (
-      "Player " + connection.account.email + " has created"
+      "Player " + connection.account.getEmail() + " has created"
         + " a new character: " + character.getName(),
       MessageType.SYSTEM_INFO,
       AdminLevel.IMMORTAL
