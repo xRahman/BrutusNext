@@ -1161,7 +1161,7 @@ export class Serializable extends Attributable
 
     // In order to deserialize a Set object, we need to load all items
     // in array which represents it in serialized form, because they
-    // may require special handling themselvs (for example if you put
+    // may require special handling themselves (for example if you put
     // another Set into your Set).
 
     // Setup a new deserialize param.

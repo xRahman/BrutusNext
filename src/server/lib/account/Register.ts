@@ -35,23 +35,12 @@ export class Register
     if (!this.isRequestValid(request, connection))
       return;
 
-    let email = request.email;
-    // Encode email address so it can be used as file name
-    // (this usualy does nothing because characters that are
-    //  not allowed in email addresss are rarely used in e-mail
-    //  address - but better be sure).
-    // Also lowercase it to prevent creating two accounts differing
-    // just in character case on Linux (file names are lowercased
-    // before saving anyways but better be sure).
-    let accountName = Utils.encodeEmail(request.email).toLowerCase();
-    // Only hash is stored, not original password.
-    let passwordHash = ServerUtils.md5hash(request.password);
-
     await this.processAccountCreation
     (
-      email,
-      accountName,
-      passwordHash,
+      // Email is used as account name.
+      request.email,
+      // Only hash is stored, not original password.
+      ServerUtils.md5hash(request.password),
       connection
     );
   }
@@ -79,7 +68,7 @@ export class Register
   private static reportAccountAlreadyExists
   (
     account: Account,
-    email: string,
+    accountName: string,
     connection: Connection
   )
   {
@@ -92,7 +81,7 @@ export class Register
 
     Syslog.log
     (
-      "Attempt to register already registered e-mail " + email
+      "Attempt to register already registered e-mail " + accountName
         + " from " + connection.getOrigin(),
       MessageType.CONNECTION_INFO,
       AdminLevel.IMMORTAL
@@ -114,7 +103,6 @@ export class Register
 
   private static async processAccountCreation
   (
-    email: string,
     accountName: string,
     passwordHash: string,
     connection: Connection
@@ -130,7 +118,7 @@ export class Register
     // 'undefined' means that the name is already taken.
     if (account === undefined)
     {
-      this.reportAccountAlreadyExists(account, email, connection);
+      this.reportAccountAlreadyExists(account, accountName, connection);
       return;
     }
 
@@ -141,7 +129,7 @@ export class Register
       return;
     }
 
-    this.initAccount(account, email, passwordHash, connection);
+    this.initAccount(account, passwordHash, connection);
 
     await ServerEntities.save(account);
     
@@ -178,12 +166,10 @@ export class Register
   private static initAccount
   (
     account: Account,
-    email: string,
     passwordHash: string,
     connection: Connection
   )
   {
-    account.email = email;
     account.setPasswordHash(passwordHash);
     account.addToLists();
 

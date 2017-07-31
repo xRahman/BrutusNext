@@ -277,8 +277,7 @@ export abstract class Entities
   protected createEntityFromPrototype
   (
     prototype: Entity,
-    id: string,
-    overwrite = false
+    id: string
   )
   {
     if (!id)
@@ -311,7 +310,7 @@ export abstract class Entities
 
     // Add entity to Entities.
     //   In case of error entity will be 'null'.
-    return this.add(entity, overwrite);
+    return this.add(entity);
   }
 
   // -> Returns 'null' if prototype object isn't found.
@@ -339,13 +338,12 @@ export abstract class Entities
     return prototype;
   }
 
-  // Creates and proxifies entity with specified 'id'.
+  // Creates and proxifies entity with provided 'id'.
   // -> Returns 'null' if entity couldn't be created.
-  protected createExistingEntity
+  protected createEntityUsingExistingId
   (
     prototypeId: string,
-    id: string,
-    overwrite: boolean
+    id: string
   )
   : Entity
   {
@@ -354,35 +352,21 @@ export abstract class Entities
     if (!prototype)
       return null;
 
-    return this.createEntityFromPrototype(prototype, id, overwrite);
+    return this.createEntityFromPrototype(prototype, id);
   }
 
   // -> Returns added entity or 'null' on failure.
-  private add(entity: Entity, overwrite: boolean)
+  private add(entity: Entity)
   {
     let id = entity.getId();
     let existingEntity = this.entityList.get(id);
 
     if (existingEntity !== undefined)
     {
-      if (overwrite)
-      {
-        console.log
-        (
-          "Overwriting (removing) existingEntity " + entity.getErrorIdString()
-        );
-
-        // In 'overwrite' mode, old entity is released from Entities
-        // and a new one is added instead.
-        Entities.release(existingEntity);
-      }
-      else
-      {
-        ERROR("Attempt to add entity " + entity.getErrorIdString()
-          + " to Entities which is already there. Entity is not"
-          + " added, existing one will be used");
-        return existingEntity;
-      }
+      ERROR("Attempt to add entity " + entity.getErrorIdString()
+        + " to Entities which is already there. Entity is not"
+        + " added, existing one will be used");
+      return existingEntity;
     }
 
     this.entityList.set(id, entity);
@@ -560,7 +544,7 @@ export abstract class Entities
     return <any>ref;
   }
 
-  private readPrototypeId
+  private readPrototypeIdFromPrototypeEntity
   (
     prototypeReference: Object,
     id: string,
@@ -586,6 +570,149 @@ export abstract class Entities
     return prototypeId;
   }
 
+  // -> Returns 'null' if there is no valid 'id' property in 'jsonObject'.
+  private readIdFromJsonObject(jsonObject: Object)
+  {
+    let id = jsonObject[Entity.ID_PROPERTY];
+
+    if (!id)
+    {
+      ERROR("Missing or invalid id in JSON when deserializing"
+        + " an entity. Entity is not created");
+      return null;
+    }
+
+    return id;
+  }
+
+  private reportMisssingPrototypeEntityProperty(id: string, path: string)
+  {
+    ERROR("Missing or invalid '" + Entity.PROTOTYPE_ENTITY_PROPERTY + "'"
+      + " property in JSON when deserializing an entity (id '" + id + "')"
+      + " from file " + path + ". Entity is not created");
+  }
+
+  private reportMissingPrototypeIdProperty(id: string)
+  {
+    ERROR("Missing or invalid prototype 'id' in"
+       + " " + Entity.PROTOTYPE_ENTITY_PROPERTY
+       + " reference record in JSON when deserializing"
+       + " an entity (id '" + id + "')."
+       + " Entity is not created");
+  }
+
+  // -> Returns 'null' on error.
+  private readPrototypeId
+  (
+    prototypeEntity: Entity,
+    jsonObject: Object,
+    id: string,
+    path: string
+  )
+  {
+    let prototypeId: string = null;
+
+    if (prototypeEntity === null)
+    {
+      // If 'prototypeEntity' is 'null', it means that we are deserializing
+      // a root prototype entity (which doesn't have a prototype entity of
+      // course). In that case we use 'className' as a prototypeId (it will
+      // point to a root prototype object instead of an entity).
+      prototypeId = jsonObject[Entity.CLASS_NAME_PROPERTY];
+    }
+    else
+    {
+      // If there was a 'prototypeEntity' record, read 'id' from it.
+      prototypeId = this.readPrototypeIdFromPrototypeEntity(prototypeEntity, id, path);
+    }
+
+    return prototypeId;
+  }
+
+  private getPrototypeId
+  (
+    jsonObject: Object,
+    id: string,
+    path: string
+  )
+  {
+    // Check if there is a 'prototypeEntity' property in json Object.
+    let prototypeEntity = jsonObject[Entity.PROTOTYPE_ENTITY_PROPERTY];
+
+    // Note: 'null' is a valid value of 'prototypeEntity'
+    //   for root prototype entities.
+    if (prototypeEntity === undefined)
+    {
+      this.reportMisssingPrototypeEntityProperty(id, path);
+      return null;
+    }
+
+    let prototypeId = this.readPrototypeId
+    (
+      prototypeEntity,
+      jsonObject,
+      id,
+      path
+    );
+
+    if (!prototypeId)
+    {
+      this.reportMissingPrototypeIdProperty(id);
+      return null;
+    }
+
+    return prototypeId;
+  }
+
+  // -> Returns 'undefined' if entity with 'id' isn't present in
+  //    Entities (so there is nothing to overwrite).
+  //    Returns 'null' on error.
+  private getEntityToOverwrite
+  (
+    id: string,
+    prototypeId: string
+  )
+  {
+    let existingEntity = Entities.get(id);
+
+    if (existingEntity === undefined)
+      return undefined;
+
+    let prototypeEntity = existingEntity.getPrototypeEntity();
+
+    // Note: It's ok for root prototype entities to have 'null'
+    // prototype entity.
+    if (prototypeEntity === null)
+    {
+      // Note: Root prototype entities use 'className' as 'prototypeId'.
+      if (prototypeId !== existingEntity.getClassName())
+      {
+        ERROR("Attempt to overwrite existing root prototype"
+          + " entity " + existingEntity.getErrorIdString()
+          + " using data from json string containing"
+          + " different prototypeId. That's not possible,"
+          + " because changing prototypes is not implemented"
+          + " yet. Entity will not be overwritten");
+        return null;
+      }
+
+      return existingEntity;
+    }
+
+    if (prototypeEntity.getId() !== prototypeId)
+    {
+      ERROR("Attempt to ovewrite existing entity"
+        + " " + existingEntity.getErrorIdString()
+        + " using data from json string containing"
+        + " different prototypeId. That's not possible,"
+        + " because changing prototypes is not implemented"
+        + " yet. Entity will not be overwritten");
+      return null;
+    }
+
+    return existingEntity;
+  }
+
   // -> Returns 'null' if instance cannot be created.
   private createEntityFromJsonObject
   (
@@ -603,54 +730,26 @@ export abstract class Entities
     // that case entity 'id' is not saved as file name (because no files
     // are sent over the protocol) but rather as a regular 'id' property.
     if (id === null)
-    {
-      id = jsonObject[Entity.ID_PROPERTY];
+      id = this.readIdFromJsonObject(jsonObject);
 
-      if (!id)
-      {
-        ERROR("Missing or invalid id in JSON when deserializing"
-          + " an entity. Entity is not created");
-        return null;
-      }
-    }
+    if (!id)
+      return null;
 
-    // Check if there is a 'prototypeEntity' property in json Object.
-    let prototypeEntity = jsonObject[Entity.PROTOTYPE_ENTITY_PROPERTY];
-
-    if (prototypeEntity === undefined)
-    {
-      ERROR("Missing or invalid '" + Entity.PROTOTYPE_ENTITY_PROPERTY + "'"
-          + " property in JSON when deserializing an entity (id '" + id + "')"
-          + " from file " + path + ". Entity is not created");
-        return null;
-    }
-
-    let prototypeId: string = null;
-
-    // If 'prototypeEntity' is 'null', it means that we are deserializing
-    // a root prototype entity (which doesn't have a prototype entity of
-    // course). In that case we use 'className' as a prototypeId (it will
-    // point to a root prototype object instead of an entity).
-    if (prototypeEntity === null)
-    {
-      prototypeId = jsonObject[Entity.CLASS_NAME_PROPERTY];
-    }
-    else
-    {
-      // Read 'id' from entity reference record.
-      prototypeId = this.readPrototypeId(prototypeEntity, id, path);
-    }
+    let prototypeId = this.getPrototypeId(jsonObject, id, path);
 
     if (!prototypeId)
-    {
-      ERROR("Missing or invalid prototype 'id' in"
-       + " " + Entity.PROTOTYPE_ENTITY_PROPERTY
-       + " reference record in JSON when deserializing"
-       + " an entity (id '" + id + "')."
-       + " Entity is not created");
       return null;
+
+    if (overwrite)
+    {
+      // This will return 'undefined' if entity with given 'id' isn't
+      // present in Entities so there is nothing to overwrite.
+      let entityToOverwrite = this.getEntityToOverwrite(id, prototypeId);
+
+      if (entityToOverwrite !== undefined)
+        return entityToOverwrite;
     }
 
-    return this.createExistingEntity(prototypeId, id, overwrite);
+    return this.createEntityUsingExistingId(prototypeId, id);
   }
 }
