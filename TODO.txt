@@ -86,6 +86,17 @@ TODO: Ok. Zatím udělám přepisování properties (s kontrolou, že se neměn�
 
 --------------------------------------------------------------
 
+Pozn.: Aktuální error bude mít asi příčinu v tom, že se deserializují
+  Account.data, což není Entita, tzn. nemá přetíženou metodu
+  readEntityReference().
+- řešení by mohlo být, do ní tu metodu dát...
+  Lepší by ale bylo, to udělat nějak jinak, protože takhle budu muset
+  tuhle metodu přidávat do každého Serializable objectu, který má mít
+  v sobě reference na entity.
+Problém je zřejmě v tom, že v Serializable nemůžu importnout {Entities},
+  tzn. tam nemůžu zavolat Entities.getReference(id);
+(teoreticky by mohlo pomoct zkusit to zavolat přes App místo přes Entities...)
+
 TODO: Při loginu nebo registeru poslat v rámci response i charactery
   na accountu.
 (to mimo jiné znamená, že je na serveru budu muset všechny loadnout,

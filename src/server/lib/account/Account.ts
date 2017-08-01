@@ -38,6 +38,13 @@ export class Account extends ServerEntity
   // ----------------- Public data ----------------------
 
   public data = new AccountData();
+    private static data: Attributes =
+    {
+      saved: true,
+      edited: true,
+      sentToClient: true,
+      sentToServer: true
+    };
 
   // ---------------- Protected data --------------------
 
