@@ -30,7 +30,6 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
-///import {App} from '../../../shared/lib/app/App';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {Attributes} from '../../../shared/lib/class/Attributes';
 import {Entities} from '../../../shared/lib/entity/Entities';
@@ -290,15 +289,6 @@ export class Entity extends Serializable
     return this.descendantIds;
   }
 
-  /// Z nějakých důvodů jsem tuším setoval komplet
-  /// celá instanceIds - třeba to už není potřeba.
-  /*
-  public setInstanceIds(instanceIds: Set<string>)
-  {
-    this.instanceIds = instanceIds;
-  }
-  */
-
   // ---------------- Public methods --------------------
 
   // Recursively calls 'eventHandler' method on all prototypes
@@ -549,54 +539,6 @@ export class Entity extends Serializable
 
     return <any>this;
   }
-  /// Deprecated
-  /*
-  // This function exists only for typescript to stop complaining
-  // that it doesn't exist. It should never be executed, however,
-  // because 'dynamicCast()' call should always be trapped by
-  // entity proxy (see EntityProxyHandler.get()).
-  public dynamicCast<T>(typeCast: { new (...args: any[]): T })
-  {
-    ERROR("Entity.dynamicCast() function should never be called."
-      + " You somehow managed to get your hands on direct reference"
-      + " to entity instead of a proxy. That must never happen");
-
-    return null;
-  }
-  */
-  
-  /// Deprecated.
-  /*
-  // This function exists only for typescript to stop complaining
-  // that it doesn't exist. It should never be executed, however,
-  // because 'dynamicTypeCheck()' call should always be trapped by
-  // entity proxy (see EntityProxyHandler.get()).
-  private dynamicTypeCheck<T>(type: { new (...args: any[]): T })
-  {
-    ERROR("Entity.dynamicTypeCheck() function should never be called."
-      + " You somehow managed to get your hands on direct reference"
-      + " to entity instead of a proxy. That must never happen");
-
-    return false;
-  }
-  */
-
-/// To be deleted.
-/*
-  // This function exists only for typescript to stop complaining
-  // that it doesn't exist. It should never be executed, however,
-  // because 'isValid()' call should always be trapped by
-  // entity proxy (see EntityProxyHandler.get()).
-  public isValid(): boolean
-  {
-    ERROR("Entity.isValid() function should never be called. You"
-      + " somehow managed to get your hands on direct reference to"
-      + " entity " + this.getErrorIdString() + " instead of a proxy."
-      + " That must never happen");
-
-    return false;
-  }
-*/
 
   // ~ Overrides Serializable.getErrorIdString().
   // Returns something like 'Character (id: d-imt2xk99)'
@@ -644,101 +586,6 @@ export class Entity extends Serializable
 
   protected removeFromNameLists() {}
   protected removeFromAbbrevLists() {}
-
-  /// To be deleted.
-  /*
-  // ~ Overrides Serializable.saveToJsonObject().
-  protected saveToJsonObject
-  (
-    instance: Serializable,
-    mode: Serializable.Mode
-  )
-  : Object
-  {
-    // Unproxify the instance
-    // (so 'for .. in' operator works on it).
-    instance = EntityProxyHandler.deproxify(instance);
-
-    return super.saveToJsonObject(instance, mode);
-  }
-  */
-
-  // ~ Overrides Serializable.createEntitySaver().
-  // -> Returns a SaveableObject which saves Entity to Json object
-  //      (using it's saveToJsonObject()) as a special object
-  //      with className 'Reference' and property 'id' containing
-  //      an Array representation of hashmap contents.  
-  protected createEntitySaver(entity: Serializable)
-  {
-    if (entity === null)
-    {
-      FATAL_ERROR("Null entity");
-      return;
-    }
-
-    let id = entity[Entity.ID_PROPERTY];
-
-    if (!id)
-    {
-      FATAL_ERROR("Attempt to serialize an entity with an invalid id");
-      return;
-    }
-
-    let saver = Serializable.createSaver(Serializable.REFERENCE_CLASS_NAME);
-
-    // Entity is saved as it's string id to property 'id'.
-    saver[Entity.ID_PROPERTY] = id;
-
-    return saver;
-  }
-
-  // ~ Overrides Serializable.readEntityReference().
-  // Converts 'param.sourceProperty' to a reference to an Entity.
-  //   If entity with 'id' loaded from JSON already exists in Entities,
-  // it will be returned. Otherwise an 'invalid reference will be
-  // created and returned.
-  // -> Retuns an entity or an invalid entity reference.
-  protected readEntityReference
-  (
-    sourceProperty: Object,
-    propertyName: string,
-    pathString: string
-  )
-  {
-    if (!sourceProperty)
-      return null;
-    
-    let id = sourceProperty[Entity.ID_PROPERTY];
-
-    if (id === undefined || id === null)
-    {
-      ERROR("Missing or invalid 'id' property when loading entity"
-        + " reference '" + propertyName + "'" + pathString);
-    }
-
-    return Entities.getReference(id);
-  }
-
-  /*
-  // This method exists only to prevent accidental
-  // delcaring of 'then' property. See error message
-  // inside this method for more info.
-  private then()
-  {
-    FATAL_ERROR("Attempt to access 'then' property"
-      + " of entity " + this.getErrorIdString() + "."
-      + " Property 'then' is accessed by async functions"
-      + " when they return value in order to check if"
-      + " the value is already a Promise or it needs"
-      + " to be promisified. If you see this error, it"
-      + " can either mean that you have declared a method"
-      + " or class variable named 'then' somewhere - in"
-      + " that case just choose another name for it, or"
-      + " TODO"
-      + "It's an ugly hack, but it"
-      + " forces us never to use property named 'then'");
-  }
-  */
 
   // --------------- Private methods --------------------
 

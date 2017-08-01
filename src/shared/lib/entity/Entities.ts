@@ -34,18 +34,6 @@ export abstract class Entities
 
   // ------------- Public static methods ----------------
 
-  // -> Returns existing reference if entity already exists in Entities.
-  //    Returns invalid reference if entity with such 'id' isn't there.
-  public static getReference(id: string): Entity
-  {
-    let entity = App.entities.entityList.get(id);
-    
-    if (entity)
-      return entity;
-
-    return this.createInvalidReference(id);
-  }
-
   // -> Returns 'true' if enity is available.
   public static has(id: string)
   {
@@ -184,6 +172,18 @@ export abstract class Entities
 
   // ---------------- Public methods --------------------
 
+  // -> Returns existing reference if entity already exists in Entities.
+  //    Returns invalid reference if entity with such 'id' isn't there.
+  public getReference(id: string): Entity
+  {
+    let entity = App.entities.entityList.get(id);
+    
+    if (entity)
+      return entity;
+
+    return this.createInvalidReference(id);
+  }
+
   // Creates instances of hardcoded classes that are used
   // as prototype objects for root prototypes.
   public createRootObjects()
@@ -203,14 +203,6 @@ export abstract class Entities
     reportNotFoundError: boolean
   )
   : Promise<Entity>;
-
-  /*
-  protected abstract async loadEntityFromJsonString
-  (
-    jsonString: string
-  )
-  : Promise<Entity>;
-  */
 
   protected loadEntityFromJsonObject
   (
@@ -523,7 +515,7 @@ export abstract class Entities
   // Creates an invalid entity reference.
   // (This is used when an entity that is being deserialized has
   //  a reference to an entity that doesn't exist at the moment.)
-  private static createInvalidReference(id: string)
+  private createInvalidReference(id: string)
   {
     let ref =
     {
