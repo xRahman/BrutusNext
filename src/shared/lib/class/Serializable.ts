@@ -42,12 +42,10 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {Classes} from '../../../shared/lib/class/Classes';
-///import {Attributes} from '../../../shared/lib/class/Attributes';
 import {JsonObject} from '../../../shared/lib/json/JsonObject';
 import {Attributable} from '../../../shared/lib/class/Attributable';
 
-/// DEBUG:
-///let Util = require('util');
+import {App} from '../../../shared/lib/app/App';
 
 // 3rd party modules.
 let FastBitSet = require('fastbitset');
@@ -271,17 +269,6 @@ export class Serializable extends Attributable
 
   // --------------- Private methods --------------------
 
-  /// Tohle je nejspíš potřeba jen v Saveable (zatím si to tu nechám).
-  // // This is just a generic async function that will finish
-  // // when 'promise' parameter gets resolved.
-  // // (This only makes sense if you also store 'resolve' callback
-  // //  of the promise so you can call it to finish this awaiter.
-  // //  See SavingRecord.addRequest() for example how is it done.)
-  // private saveAwaiter(promise: Promise<void>)
-  // {
-  //   return promise;
-  // }
-
   ///////////////////////////////////////////////////////
   ///////////////////// JsonSaver ///////////////////////
   ///////////////////////////////////////////////////////
@@ -441,10 +428,7 @@ export class Serializable extends Attributable
     if (property[Serializable.ID_PROPERTY] !== undefined)
       // Entities are saved to a separate files. Only a reference
       //   (using a string id) to an entity will be saved.
-      // Note: We need to call createEntitySaver() on 'property' rather
-      //   than on 'this', because we need to run an override of Entity
-      //   class (which 'this' might not be but 'property' surely is).
-      return property.createEntitySaver(property).saveToJsonObject(mode);
+      return this.createEntitySaver(property).saveToJsonObject(mode);
 
     // property is a Serializable object (but not an entity).
     if (this.isSerializable(property))
@@ -1245,13 +1229,22 @@ export class Serializable extends Attributable
     pathString: string
   )
   {
-    // Note: This needs to be overriden in object that is being deserialized.
-    FATAL_ERROR("Attempt to deserialize reference to an Entity from"
-      + " Serializable object which does not have readEntityReference()"
-      + " overload. Make sure that you only put references to other"
-      + " entities in classes that have own readEntityReference() method");
+    if (!sourceProperty)
+      return null;
+    
+    let id = sourceProperty[Serializable.ID_PROPERTY];
 
-    return null;
+    if (id === undefined || id === null)
+    {
+      ERROR("Missing or invalid '" + Serializable.ID_PROPERTY + "'"
+        + " property when loading entity reference '" + propertyName + "'"
+        + pathString);
+    }
+
+    // Note: We have to access entities using App.entities rather than
+    //   Etities because importing {Entities} to Serializable would lead
+    //   to circular imports expection.
+    return App.entities.getReference(id)
   }
 
 //+
@@ -1480,14 +1473,26 @@ export class Serializable extends Attributable
   //      an Array representation of hashmap contents.  
   protected createEntitySaver(entity: Serializable): Serializable
   {
-    // Note: This method is overriden in Entity class. In order for
-    //   the override to be used, root object that is being serialized
-    //   must be an instance of Entity.
-    FATAL_ERROR("Attempt to serialize reference to an Entity from"
-      + " Serializable object which is not an instance of Entity"
-      + " class");
+    if (entity === null)
+    {
+      FATAL_ERROR("Null entity");
+      return;
+    }
 
-    return null;
+    let id = entity[Serializable.ID_PROPERTY];
+
+    if (!id)
+    {
+      FATAL_ERROR("Attempt to serialize an entity with an invalid id");
+      return;
+    }
+
+    let saver = Serializable.createSaver(Serializable.REFERENCE_CLASS_NAME);
+
+    // Entity is saved as it's string id to property 'id'.
+    saver[Serializable.ID_PROPERTY] = id;
+
+    return saver;
   }
 
   // -> Returns an Array representation of Set object.
@@ -1526,33 +1531,6 @@ export class Serializable extends Attributable
     
     return result;
   }
-
-  /// To be deleted.
-  /*
-//+
-  // -> Returns a Proxy object that traps access to 'className' property
-  //      on 'object' to return 'className' param instead of original value. 
-  protected createSaveProxy(saver: Serializable, className: string)
-  {
-    // This function will be passed to Proxy handler as it's 'get' trap.
-    let get = function(target: any, property: any)
-    {
-      // Here we are trapping access to 'className' property.
-      if (property === Serializable.CLASS_NAME_PROPERTY)
-        // Which will return our parameter 'className' instead
-        // of target's 'className'.
-        return className;
-
-      // Any other property access is just forwarded to the proxified object.
-      return target[property];
-    }
-
-    // Create a new Proxy what will trap acces to 'object' using object
-    // passed as second parameter as proxy handler (it will trap access
-    // to object's properties using our 'get' function).
-    return new Proxy(saver, { get: get })
-  }
-  */
 
   private objectValidityCheck(jsonObject: Object): boolean
   {
