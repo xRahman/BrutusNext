@@ -519,11 +519,8 @@ export class Entity extends Serializable
     return this.prototypeEntity.hasDescendant(this);
   }
 
-  // Called after an entity is saved to file.
   public async postSave() {}
-
-  // Called after an entity is loaded from file.
-  public async postLoad() {}
+  public async postLoad(loadContents = true) {}
 
   public dynamicCast<T>(Class: { new (...args: any[]): T })
   {

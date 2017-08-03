@@ -63,7 +63,7 @@ export class Admins
 
   // ------------- Public static methods ---------------- 
 
-  public static onCharacterCreation(character: GameEntity)
+  public static onCharacterCreation(character: Character)
   {
     let admins = ServerApp.admins;
 
@@ -71,7 +71,20 @@ export class Admins
     // a new character is created, make this new character
     // a Creator.
     if (Admins.isEmpty())
-      Admins.setAdminLevel(character, AdminLevel.CREATOR);
+    {
+      const level = AdminLevel.CREATOR;
+
+      Admins.setAdminLevel(character, level);
+
+      Syslog.log
+      (
+        character.getName() + " is the first character created"
+          + " on this server and is thus promoted to admin"
+          + " level " + AdminLevel[level],
+        MessageType.SYSTEM_INFO,
+        AdminLevel.IMMORTAL
+      );
+    }
 
     // TODO Hláška do logu (info je asi zbytečné).
 

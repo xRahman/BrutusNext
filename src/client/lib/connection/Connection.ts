@@ -17,6 +17,7 @@ import {Packet} from '../../../shared/lib/protocol/Packet';
 import {Command} from '../../../shared/lib/protocol/Command';
 import {SystemMessage} from '../../../shared/lib/protocol/SystemMessage';
 import {Account} from '../../../client/lib/account/Account';
+import {Character} from '../../../client/game/character/Character';
 import {LoginResponse} from '../../../shared/lib/protocol/LoginResponse';
 import {RegisterResponse} from '../../../shared/lib/protocol/RegisterResponse';
 import {ChargenResponse} from '../../../shared/lib/protocol/ChargenResponse';
@@ -40,6 +41,19 @@ export class Connection
   private avatars = new Set<Avatar>();
 
   // --------------- Static accessors -------------------
+
+  public static get account()
+  {
+    let connection = ClientApp.connection;
+
+    if (!connection)
+    {
+      ERROR("Missing or invalid connection");
+      return;
+    }
+
+    return connection.account;
+  }
 
   // ---------------- Static methods --------------------
 
@@ -196,6 +210,11 @@ export class Connection
     }
   }
 
+  private extractRegisterResponseData(response: RegisterResponse)
+  {
+    this.account = response.account.deserializeEntity(Account);
+  }
+
   private processRegisterResponse(response: RegisterResponse)
   {
     Windows.registerWindow.form.onResponse();
@@ -208,10 +227,7 @@ export class Connection
 
     if (response.result === RegisterResponse.Result.OK)
     {
-      this.account = response.account.deserializeEntity(Account);
-      /// DEBUG:
-      console.log("Recreated account " + JSON.stringify(this.account));
-
+      this.extractRegisterResponseData(response);
       Windows.registerWindow.form.rememberCredentials();
       ClientApp.setState(ClientApp.State.CHARSELECT);
       return;
@@ -219,6 +235,20 @@ export class Connection
 
     // Otherwise display to the user what the problem is.
     Windows.registerWindow.form.displayProblem(response);
+  }
+
+  private extractLoginResponseData(response: LoginResponse)
+  {
+    this.account = response.account.deserializeEntity(Account);
+
+    // Also deserialize characters on the account. We will
+    // need them to populate character select window.
+    for (let characterData of response.characters)
+    {
+      let character: Character = characterData.deserializeEntity(Character);
+
+      this.account.data.updateCharacterReference(character);
+    }
   }
 
   private processLoginResponse(response: LoginResponse)
@@ -233,7 +263,7 @@ export class Connection
 
     if (response.result === LoginResponse.Result.OK)
     {
-      this.account = response.account.deserializeEntity(Account);
+      this.extractLoginResponseData(response);
       Windows.loginWindow.form.rememberCredentials();
       ClientApp.setState(ClientApp.State.CHARSELECT);
       return;
@@ -241,6 +271,15 @@ export class Connection
 
     // Otherwise display to the user what the problem is.
     Windows.loginWindow.form.displayProblem(response);
+  }
+
+  private extractChargenResponseData(response: ChargenResponse)
+  {
+    this.account = response.account.deserializeEntity(Account);
+
+    let character = response.character.deserializeEntity(Character);
+
+    this.account.data.updateCharacterReference(character);
   }
 
   private processChargenResponse(response: ChargenResponse)
@@ -255,17 +294,7 @@ export class Connection
 
     if (response.result === ChargenResponse.Result.OK)
     {
-      // Extract updated account (with the newly added character)
-      // from the response.
-      this.account = response.account.deserializeEntity
-      (
-        Account,
-        true    // Overwrite existing entity.
-      );
-
-      /// DEBUG:
-      console.log("Recreated account " + JSON.stringify(this.account));
-
+      this.extractChargenResponseData(response);
       ClientApp.setState(ClientApp.State.CHARSELECT);
       return;
     }
