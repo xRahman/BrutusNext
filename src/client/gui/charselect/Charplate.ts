@@ -124,7 +124,7 @@ export class Charplate extends Component
     this.createPortraitLabels({ $parent: $charplate });
   }
 
-  private createPortrait(param: Component.ImgParam = {})
+  private createPortrait(param: Component.DivParam = {})
   {
     this.applyDefaults
     (
@@ -132,12 +132,11 @@ export class Charplate extends Component
       {
         gCssClass: Component.WINDOW_G_CSS_CLASS,
         sCssClass: Charplate.PORTRAIT_S_CSS_CLASS,
-        src: '/images/portraits/Zuzka.jpg',
-        draggable: false
+        backgroundImage: '/images/portraits/Zuzka.jpg'
       }
     );
 
-    this.createImg(param);
+    this.createDiv(param);
   }
 
   private createPortraitLabels(param: Component.DivParam = {})
