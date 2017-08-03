@@ -435,6 +435,15 @@ export abstract class Component
     if (attributes.src !== undefined)
       $element.attr('src', attributes.src);
 
+    if (attributes.backgroundImage !== undefined)
+    {
+      $element.css
+      (
+        'background-image',
+        'url("' + attributes.backgroundImage + '")'
+      );
+    }
+
     if (attributes.draggable !== undefined)
       $element.prop('draggable', attributes.draggable);
 
@@ -557,7 +566,8 @@ export module Component
     // ('tabindex: -1' means selectetable only by scripts and mouse
     //  clicks, not by tabbing. It also enables keyboard events on
     //  elements which don't normally fire them - like <div>).
-    tabindex?: number
+    tabindex?: number,
+    backgroundImage?: string
   }
 
   interface CheckboxAttributes
