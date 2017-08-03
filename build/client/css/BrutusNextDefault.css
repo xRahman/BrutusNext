@@ -161,7 +161,7 @@
   */
   cursor: default;
 
-  /* Following code makes the image always cover whole area */
+  /* Following code makes the background image always cover whole area */
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-position: center; 
@@ -707,7 +707,9 @@ input:checked + .G_SelectablePlate
 {
   width: 100%;
   padding: 0.8em;
-  display: flex;
+  display: grid;
+  grid-template-columns: 4em auto;
+  grid-template-rows: 4em;
 }
 
 /* :: Character Plate Label :: */
@@ -721,15 +723,25 @@ input:checked + .G_SelectablePlate
 /* :: Character Plate Portrait :: */
 .S_Charplate_Portrait
 {
-  /* Image will be scaled to this size. */
   width: 4em;
   height: 4em;
+  grid-column: 1;
+
+  /* Following code makes the image always cover whole area */
+  background-repeat: no-repeat;
+  background-clip: content-box;
+  background-position: center center;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  /* Add 2% to work around a display bug in chrome */
+  background-size: 102%;
 }
 
 /* :: Character Plate Labels Container :: */
 .S_Charplate_LabelsContainer
 {
-  width: 100%;
+  grid-column: 2/3;
   padding-left: 0.5em;
   padding-right: 0.5em;
 }
