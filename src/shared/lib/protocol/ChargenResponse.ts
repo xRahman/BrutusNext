@@ -7,6 +7,8 @@
 */
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Serializable} from '../../../shared/lib/class/Serializable';
+import {Entity} from '../../../shared/lib/entity/Entity';
 import {Packet} from '../../../shared/lib/protocol/Packet';
 import {EntityData} from '../../../shared/lib/protocol/EntityData';
 import {Classes} from '../../../shared/lib/class/Classes';
@@ -32,7 +34,34 @@ export class ChargenResponse extends Packet
   // (We send account back to client, not the created character,
   //  because client will need updated account to display character
   //  select form).
-  public account = new EntityData();
+  public account: EntityData = null;
+
+  // Serialized data of newly added character.
+  public character: EntityData = null;
+
+  // ---------------- Public methods --------------------
+
+  public setAccount(account: Entity)
+  {
+    this.account = new EntityData();
+
+    this.account.serializeEntity
+    (
+      account,
+      Serializable.Mode.SEND_TO_CLIENT
+    );
+  }
+
+  public setCharacter(character: Entity)
+  {
+    this.character = new EntityData();
+
+    this.character.serializeEntity
+    (
+      character,
+      Serializable.Mode.SEND_TO_CLIENT
+    );
+  }
 }
 
 // ------------------ Type declarations ----------------------

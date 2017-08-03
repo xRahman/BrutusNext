@@ -7,13 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-// import {WebSocketDescriptor} from
-//   '../../../client/lib/net/ws/WebSocketDescriptor';
 import {ScrollWindow} from '../../../client/gui/scroll/ScrollWindow';
-///import {MapWindow} from '../../../client/gui/component/MapWindow';
-
-/// TEST:
-///import {Packet} from '../../../shared/lib/protocol/Packet';
 
 export class Avatar
 {

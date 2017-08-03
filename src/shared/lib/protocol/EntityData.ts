@@ -43,8 +43,7 @@ export class EntityData extends Serializable
 
   public deserializeEntity<T extends Entity>
   (
-    typeCast: { new (...args: any[]): T },
-    overwrite = false
+    typeCast: { new (...args: any[]): T }
   )
   {
     let entity = null;
@@ -61,7 +60,11 @@ export class EntityData extends Serializable
         // We can't typecast to 'typeCast' here because ancestors
         // aren't instances of the same type as their descendant.
         Entity,
-        overwrite
+        // We have to overwrite existing entities. Even if wanted
+        // to deserialize a completely new entity, we would still
+        // have to deserialize (update) all it's ancestors which
+        // most probably already exist on the client.
+        true
       );
     }
 

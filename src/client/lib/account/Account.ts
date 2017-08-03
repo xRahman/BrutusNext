@@ -23,11 +23,13 @@ export class Account extends Entity
 
   // ----------------- Public data ----------------------
 
-  public data = new AccountData();
+  public data = new AccountData(this);
 
   // ---------------- Protected data --------------------
 
   // ----------------- Private data ---------------------
+
+  // ---------------- Public methods --------------------
 
   // --------------- Protected methods ------------------
 

@@ -7,6 +7,8 @@
 */
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Serializable} from '../../../shared/lib/class/Serializable';
+import {Entity} from '../../../shared/lib/entity/Entity';
 import {Packet} from '../../../shared/lib/protocol/Packet';
 import {EntityData} from '../../../shared/lib/protocol/EntityData';
 import {Classes} from '../../../shared/lib/class/Classes';
@@ -29,7 +31,35 @@ export class LoginResponse extends Packet
   public problem: string = null;
 
   // Serialized account data.
-  public account = new EntityData();
+  public account: EntityData = null;
+
+  public characters = new Array<EntityData>();
+
+  // ---------------- Public methods --------------------
+
+  public setAccount(account: Entity)
+  {
+    this.account = new EntityData();
+
+    this.account.serializeEntity
+    (
+      account,
+      Serializable.Mode.SEND_TO_CLIENT
+    );
+  }
+
+  public addCharacter(character: Entity)
+  {
+    let characterData = new EntityData();
+
+    characterData.serializeEntity
+    (
+      character,
+      Serializable.Mode.SEND_TO_CLIENT
+    );
+
+    this.characters.push(characterData);
+  }
 }
 
 // ------------------ Type declarations ----------------------
