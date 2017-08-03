@@ -321,7 +321,12 @@ export class ServerEntities extends Entities
 
   // ~ Overrides Entities.loadEntityById().
   // -> Returns 'null' on failure.
-  protected async loadEntityById(id: string): Promise<Entity>
+  protected async loadEntityById
+  (
+    id: string,
+    loadContents = true
+  )
+  : Promise<Entity>
   {
     let path = ServerEntities.getEntityPath(id);
     let jsonString = await FileSystem.readFile(path);
@@ -334,7 +339,7 @@ export class ServerEntities extends Entities
       }
     );
 
-    await entity.postLoad();
+    await entity.postLoad(loadContents);
 
     return entity;
   }

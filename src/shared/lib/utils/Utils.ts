@@ -120,7 +120,7 @@ export module Utils
     return variable instanceof Serializable;
   }
 
-    // Make sure that all newlines are representedy by '\n'.
+  // Make sure that all newlines are representedy by '\n'.
   export function normalizeCRLF(data: string)
   {
     if (data && data.length > 0)

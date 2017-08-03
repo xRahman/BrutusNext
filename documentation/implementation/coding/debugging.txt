@@ -1,0 +1,7 @@
+Inspect objects on client
+----------------------------------
+
+console.log(object);
+
+// Just remember not to coerce object to string by doing something
+// like console.log("Object: " + object).

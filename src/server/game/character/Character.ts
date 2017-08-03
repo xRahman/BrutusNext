@@ -10,9 +10,11 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Time} from '../../../shared/lib/utils/Time';
 import {Account} from '../../../server/lib/account/Account';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
+import {Admins} from '../../../server/lib/admin/Admins';
 import {Game} from '../../../server/game/Game';
 import {GameEntity} from '../../../server/game/GameEntity';
 import {World} from '../../../server/game/world/World';
+import {CharacterData} from '../../../shared/game/character/CharacterData';
 import {Characters} from '../../../server/game/character/Characters';
 import {Classes} from '../../../shared/lib/class/Classes';
 
@@ -22,7 +24,7 @@ export class Character extends GameEntity
 
 /// TODO: Tohle by asi nemělo být tady - admin levely jsou externě
 /// v Admins.
-  private adminLevel = AdminLevel.MORTAL;
+  // private adminLevel = AdminLevel.MORTAL;
 
   constructor()
   {
@@ -33,6 +35,10 @@ export class Character extends GameEntity
     // .json files to conform to the new version.
     this.version = 0;
   }
+
+  // ----------------- Public data ----------------------
+
+  public data = new CharacterData();
 
   // --------------- Public accessors -------------------
 
@@ -55,7 +61,10 @@ export class Character extends GameEntity
     return this.timeOfCreation.toLocaleString();
   }
 
-  public getAdminLevel() { return this.adminLevel; }
+  public getAdminLevel()
+  {
+    return Admins.getAdminLevel(this);
+  }
 
   // ---------------- Public methods --------------------
 

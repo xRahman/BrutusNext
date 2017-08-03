@@ -6,14 +6,16 @@
 
 'use strict';
 
-import {Form} from '../../../client/gui/form/Form';
+import {Connection} from '../../../client/lib/connection/Connection';
 import {Component} from '../../../client/gui/Component';
+import {Form} from '../../../client/gui/form/Form';
 import {Charplate} from '../../../client/gui/charselect/Charplate';
 import {CharselectWindow} from '../../../client/gui/charselect/CharselectWindow';
 import {CharselectRequest} from
   '../../../shared/lib/protocol/CharselectRequest';
 import {CharselectResponse} from
   '../../../shared/lib/protocol/CharselectResponse';
+import {Character} from '../../../client/game/character/Character';
 
 export class CharselectForm extends Form
 {
@@ -45,9 +47,13 @@ export class CharselectForm extends Form
     );
 
     super.create(param);
+  }
 
-    /// TEST:
-    /// TODO: Tohle by se asi spíš mělo volat v onShow() nebo tak.
+  // ~ Overrides Form.onShow().
+  public onShow()
+  {
+    super.onShow();
+
     this.populate();
   }
 
@@ -73,19 +79,34 @@ export class CharselectForm extends Form
 
   // ---------------- Private methods -------------------
 
-  private createCharacterPlate()
+  private createCharacterPlate(character: Character)
   {
-    let charplate = new Charplate(this.charselectWindow);
+    let charplate = new Charplate(this.charselectWindow, character);
 
     charplate.create({ $parent: this.$form });
 
     this.charplates.push(charplate);
   }
 
+  private clear()
+  {
+    this.charplates = new Array<Charplate>();
+    
+    // Clear html content of $form.
+    this.$form.empty();
+  }
+
   private populate()
   {
-    this.createCharacterPlate();
-    this.createCharacterPlate();
+    this.clear();
+
+    let account = Connection.account;
+
+    for (let character of account.data.characters.values())
+      this.createCharacterPlate(character);
+
+    // this.createCharacterPlate();
+    // this.createCharacterPlate();
     ///this.createCharacterPlate();
     /*
     this.createCharacterPlate();

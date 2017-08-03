@@ -86,11 +86,12 @@ export abstract class Entities
   public static async loadEntityById<T extends Entity>
   (
     id: string,
-    typeCast: { new (...args: any[]): T }
+    typeCast: { new (...args: any[]): T },
+    loadContents = true
   )
   : Promise<T>
   {
-    let entity = await App.entities.loadEntityById(id);
+    let entity = await App.entities.loadEntityById(id, loadContents);
 
     if (!entity)
     {
@@ -195,7 +196,14 @@ export abstract class Entities
   // --------------- Protected methods ------------------
 
   protected abstract async saveEntity(entity: Entity);
-  protected abstract async loadEntityById(id: string): Promise<Entity>;
+
+  protected abstract async loadEntityById
+  (
+    id: string,
+    loadContents: boolean
+  )
+  : Promise<Entity>;
+
   protected abstract async loadEntityByName
   (
     name: string,
@@ -463,6 +471,11 @@ export abstract class Entities
     // be instantiated because Javascript prototype inheritance
     // handles them correctly.
     if (typeof object[propertyName] !== 'object')
+      return;
+
+    // Do not recursively instantiate propeties of other entities
+    // (that could lead to infinite recursion among other things).
+    if (object[propertyName] instanceof Entity)
       return;
 
     // This check allows re-instantiating of properties of existing

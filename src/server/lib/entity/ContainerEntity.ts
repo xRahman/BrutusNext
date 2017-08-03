@@ -54,12 +54,14 @@ export class ContainerEntity extends ServerEntity
     await this.contents.save();
   }
 
-  // When loading an entity, all referenced entities are loaded as well.
-  // This is to prevent situation when you e. g. load a conainer but
-  // it's contents is not available in the world.
-  public async postLoad()
+  // If 'loadContents' is true, load all entities referenced in
+  // this.contentns. This is used to prevent situation when you
+  // e. g. load a conainer but it's contents is not available in
+  // the world.
+  public async postLoad(loadContents = true)
   {
-    await this.contents.load(this.getErrorIdString());
+    if (loadContents)
+      await this.contents.load(this.getErrorIdString());
   }
 
   // --------------- Protected methods ------------------
