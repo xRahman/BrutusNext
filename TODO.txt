@@ -88,7 +88,16 @@ TODO: Ok. Zatím udělám přepisování properties (s kontrolou, že se neměn�
 
 TODO: Pořešit errory při relogu po vytvoření characterů.
 
-TODO: Pořešit chybnou výšku poretrétu v charplatu.
+TODO: Zrušit hlášku 'Opening websocket connection', která se posílá
+  do ScrollWindow.
+(sice už zmizla, ale to nejspíš bude bug - jo, byl to bug)
+
+TODO: Otestovat reconnect z jiného tabu.
+- očividně to nefunguje úplně dobře.
+- tohle bych měl udělat zároveň s ošetřením disconnectu v clientu,
+  jinak to těžko odladím.
+
+--------------------------------------------------------------
 
 TODO: Přidat do /shared interfacy pro herní entity.
 např:
@@ -99,18 +108,15 @@ např:
 - z tohohle interfacu pak zdědit character na clientu i serveru
 Důvod: Bez toho v EntityData nemůžu rozumně manipulovat s referencema
   na entity, což je potřeba.
+[done (zatím pro Character a Account)]
 
 TODO: Někde (asi v client/Connection) jsem dynamicky typecastoval Character
 - zrušit
+[done]
 
 TODO: Při extrakci characterů v Connection rovnou updatovat
   reference v accountu.
-
-TODO: Udělat dva módy loadu entity (možná 3)
-- bez contents
-- s contents
-- čistě contents (když už je vlastní entita loadnutá).
-[zatím umím loadnout entitu bez contents]
+[done]
 
 TODO: Při loginu nebo registeru poslat v rámci response i charactery
   na accountu.
@@ -142,20 +148,19 @@ Pozn: Ono je asi v zásadě jedno, jestli chary pošlu v rámci login response
        V register respoense chary posílat nemusím, protože po registraci na
      accountu samozřejmě žádnej char není ;-)
 => Posílat nově vytvořený char (bez inventáře) v chargen response.
+[done]
 
 TODO: Plnit charlist v CharselectForm podle dat ze serveru.
+[done]
 
+TODO: Udělat dva módy loadu entity (možná 3)
+- bez contents
+- s contents
+- čistě contents (když už je vlastní entita loadnutá).
+[zatím umím loadnout entitu bez contents]
 
-TODO: Zrušit hlášku 'Opening websocket connection', která se posílá
-  do ScrollWindow.
-(sice už zmizla, ale to nejspíš bude bug - jo, byl to bug)
-
-TODO: Otestovat reconnect z jiného tabu.
-- očividně to nefunguje úplně dobře.
-- tohle bych měl udělat zároveň s ošetřením disconnectu v clientu,
-  jinak to těžko odladím.
-
---------------------------------------------------------------
+TODO: Pořešit chybnou výšku poretrétu v charplatu.
+[done]
 
 TODO: Revidovat Accounts.addCharacter()
 - chary by se v accountu asi měly držet jako reference.
