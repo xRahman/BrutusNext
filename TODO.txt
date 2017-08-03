@@ -86,16 +86,31 @@ TODO: Ok. Zatím udělám přepisování properties (s kontrolou, že se neměn�
 
 --------------------------------------------------------------
 
-Pozn.: Aktuální error bude mít asi příčinu v tom, že se deserializují
-  Account.data, což není Entita, tzn. nemá přetíženou metodu
-  readEntityReference().
-- řešení by mohlo být, do ní tu metodu dát...
-  Lepší by ale bylo, to udělat nějak jinak, protože takhle budu muset
-  tuhle metodu přidávat do každého Serializable objectu, který má mít
-  v sobě reference na entity.
-Problém je zřejmě v tom, že v Serializable nemůžu importnout {Entities},
-  tzn. tam nemůžu zavolat Entities.getReference(id);
-(teoreticky by mohlo pomoct zkusit to zavolat přes App místo přes Entities...)
+TODO: Pořešit errory při relogu po vytvoření characterů.
+
+TODO: Pořešit chybnou výšku poretrétu v charplatu.
+
+TODO: Přidat do /shared interfacy pro herní entity.
+např:
+  interface Character extends Entity
+  {
+    data: CharacterData;
+  }
+- z tohohle interfacu pak zdědit character na clientu i serveru
+Důvod: Bez toho v EntityData nemůžu rozumně manipulovat s referencema
+  na entity, což je potřeba.
+
+TODO: Někde (asi v client/Connection) jsem dynamicky typecastoval Character
+- zrušit
+
+TODO: Při extrakci characterů v Connection rovnou updatovat
+  reference v accountu.
+
+TODO: Udělat dva módy loadu entity (možná 3)
+- bez contents
+- s contents
+- čistě contents (když už je vlastní entita loadnutá).
+[zatím umím loadnout entitu bez contents]
 
 TODO: Při loginu nebo registeru poslat v rámci response i charactery
   na accountu.
@@ -106,18 +121,30 @@ TODO: Při loginu nebo registeru poslat v rámci response i charactery
   čistě jen character, nikoliv entity z něj odkázané.
 - druhá možnost je, zduplikovat některé informace do accountu
   (jméno, level a tak, prostě to, co se mi zobrazuje v char selectu).
+Kdy loadovat charactery na accountu a posílat je na klienta?
+- asi stačí to udělat, kdykoliv se to může změnit.
+  Což je:
+  - Při loginu
+  - Při vytvoření nového charu (stačí poslat ten nově vytvořený).
+Pozn: Ono je asi v zásadě jedno, jestli chary pošlu v rámci login response
+  nebo při loadu charlistu, protože z loginu se přechází okamžitě do charlistu,
+  takže se tam bude čekat tak jako tak. Udělat to už v rámci login response
+  mi ušetří dotaz z klienta na server (a jak jsem si právě rozepsal, není
+  třeba loadovat chary, když jde player ze hry do char selectu, protože
+  je už loadnuté má a mezi tím se neměly jak změnit).
+  - co víc, i kdybych je chtěl ostatní chary (kromě toho, se kterým se hráč
+    logne na serveru po loginu do hry dealokovat, stejně není třeba je znova
+    posílat na klienta, protože ten už je má (od loginu) a nic se na nich
+    mimo char select nemůže změnit).
+=> Posílat chary (bez inventáře) už v login response (spolu s accountem).
+   - jo a vlastně i v register response, páč z té se jde rovnou do charselectu.
+     Err, blbnu...
+       V register respoense chary posílat nemusím, protože po registraci na
+     accountu samozřejmě žádnej char není ;-)
+=> Posílat nově vytvořený char (bez inventáře) v chargen response.
 
+TODO: Plnit charlist v CharselectForm podle dat ze serveru.
 
-TODO: Revidovat Accounts.addCharacter()
-- chary by se v accountu asi měly držet jako reference.
-- a měly by být v Account.data, aby se daly posílat na klienta.
-
-TODO: V ChargenResponse neposílat vytvořený character, ale celý account
-  (protože ten se změnil taky a budu ho potřebovat v charselectu).
-
-TODO: Zpracovat založení nového charu v klientovi.
-
-TODO: Character creation.
 
 TODO: Zrušit hlášku 'Opening websocket connection', která se posílá
   do ScrollWindow.
@@ -129,6 +156,37 @@ TODO: Otestovat reconnect z jiného tabu.
   jinak to těžko odladím.
 
 --------------------------------------------------------------
+
+TODO: Revidovat Accounts.addCharacter()
+- chary by se v accountu asi měly držet jako reference.
+- a měly by být v Account.data, aby se daly posílat na klienta.
+[done]
+
+TODO: V ChargenResponse neposílat vytvořený character, ale celý account
+  (protože ten se změnil taky a budu ho potřebovat v charselectu).
+[done]
+
+TODO: Zpracovat založení nového charu v klientovi.
+[done]
+
+TODO: Character creation.
+[done]
+
+Zjistit (a fixnout), proč v recreatnutém accountu nejsou characters.
+- jsou, jen jsem pouížval blbou metodu na inspect objektu.
+[done]
+
+Pozn.: Aktuální error bude mít asi příčinu v tom, že se deserializují
+  Account.data, což není Entita, tzn. nemá přetíženou metodu
+  readEntityReference().
+- řešení by mohlo být, do ní tu metodu dát...
+  Lepší by ale bylo, to udělat nějak jinak, protože takhle budu muset
+  tuhle metodu přidávat do každého Serializable objectu, který má mít
+  v sobě reference na entity.
+Problém je zřejmě v tom, že v Serializable nemůžu importnout {Entities},
+  tzn. tam nemůžu zavolat Entities.getReference(id);
+(teoreticky by mohlo pomoct zkusit to zavolat přes App místo přes Entities...)
+[done (hurá)!]
 
 TODO: Do Entity.setName() přidat check na byte length po encodování
   jako file name.

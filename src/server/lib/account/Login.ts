@@ -52,7 +52,7 @@ export class Login
     // old connection and socket (if it's still open) and also
     // possibly let the player know that her connection has been
     // usurped.
-    if (this.reconnectToAccount(email, passwordHash, connection))
+    if (await this.reconnectToAccount(email, passwordHash, connection))
       return;
 
     // If account 'doesn't exist in memory, we need to
@@ -67,22 +67,40 @@ export class Login
 
   // ------------- Private static methods ---------------
 
-  private static acceptRequest
+  private static async createResponse(account: Account)
+  {
+    let response = new LoginResponse();
+    response.result = LoginResponse.Result.OK;
+
+    response.setAccount(account);
+
+    // Add characters on the account to the response.
+    for (let id of account.data.characters.keys())
+    {
+      let character = await ServerEntities.loadEntityById
+      (
+        id,
+        Entity,
+        // Do not load referenced entities yet. Right now we need
+        // just basic character data to display them it character
+        // selection window.
+        false
+      );
+
+      response.addCharacter(character);
+    }
+
+    return response;
+  }
+
+  private static async acceptRequest
   (
     account: Account,
     connection: Connection,
     action: string
   )
   {
-    let response = new LoginResponse();
-    response.result = LoginResponse.Result.OK;
-    
-    // Add newly created account to the response.
-    response.account.serializeEntity
-    (
-      account,
-      Serializable.Mode.SEND_TO_CLIENT
-    );
+    let response = await this.createResponse(account);
 
     Syslog.log
     (
@@ -218,7 +236,7 @@ export class Login
     account.attachConnection(connection);
   }
 
-  private static reconnectToAccount
+  private static async reconnectToAccount
   (
     email: string,
     passwordHash: string,
@@ -238,7 +256,8 @@ export class Login
     }
 
     this.attachNewConnection(account, connection);
-    this.acceptRequest
+
+    await this.acceptRequest
     (
       account,
       connection,
@@ -425,7 +444,8 @@ export class Login
       return;
 
     account.attachConnection(connection);
-    this.acceptRequest
+
+    await this.acceptRequest
     (
       account,
       connection,

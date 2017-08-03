@@ -183,16 +183,10 @@ export class Chargen
   private static acceptRequest(character: Character, connection: Connection)
   {
     let response = new ChargenResponse();
-    response.result = ChargenResponse.Result.OK;
-    
-    // Add account (which contains newly added character) to the response.
-    response.account.serializeEntity
-    (
-      connection.account,
-      Serializable.Mode.SEND_TO_CLIENT
-    );
 
-    console.log('Serialized account: ' + response.account.data);
+    response.result = ChargenResponse.Result.OK;
+    response.setAccount(connection.account);
+    response.setCharacter(character);
 
     Syslog.log
     (

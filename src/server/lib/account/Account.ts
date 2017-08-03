@@ -37,7 +37,7 @@ export class Account extends ServerEntity
 
   // ----------------- Public data ----------------------
 
-  public data = new AccountData();
+  public data = new AccountData(this);
     private static data: Attributes =
     {
       saved: true,

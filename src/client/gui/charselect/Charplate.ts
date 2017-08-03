@@ -7,11 +7,17 @@
 'use strict';
 
 import {Component} from '../../../client/gui/Component';
-import {CharselectWindow} from '../../../client/gui/charselect/CharselectWindow';
+import {CharselectWindow} from
+  '../../../client/gui/charselect/CharselectWindow';
+import {Character} from '../../../client/game/character/Character';
 
 export class Charplate extends Component
 {
-  constructor(private charselectWindow: CharselectWindow)
+  constructor
+  (
+    private charselectWindow: CharselectWindow,
+    private character: Character
+  )
   {
     super();
   }
@@ -155,7 +161,7 @@ export class Charplate extends Component
       param,
       {
         sCssClass: Charplate.LABEL_BIG_S_CSS_CLASS,
-        text: "Zuzka"
+        text: this.character.getName()
       }
     );
 
@@ -166,6 +172,7 @@ export class Charplate extends Component
 
   private createInfoLabel(param: Component.DivParam = {})
   {
+    /// TODO: Tohle je zatím čistě ilustrační.
     this.applyDefaults
     (
       param,
