@@ -30,6 +30,22 @@ TODO: Savovat Admins (asi by to měla bejt entita).
 
 --------------------------------------------------------------
 
+TODO: Pokud fakt bude fungovat object parametr bez uvádění typu
+(viz Account.loadCharacters()), tak to sakra používat, protože to
+je super!
+
+--------------------------------------------------------------
+
+TODO: Udělat základní kontrolu memoryleaků - při shutdownu
+  releasnout všechny entity a pak zkontrolovat, že v Entities
+  žádné nezbyly.
+(I když je otázka, jestli si tím pomůžu. Teď jsem třeba při
+ disconnectu nereleasoval charactery na account - když bych
+ při shutdownu prošel všechny acocunty a releasnul jejich
+ chary - což bych asi měl, tak tím tuhle chybu neodhalím).
+
+--------------------------------------------------------------
+
 TODO: Vypadá to, že když v klientovi vyhodím výjimku, tak
   stack vypíše v typecriptové soubory
 - tzn. nepatlat si clientové error message sám, ale prostě hodit
@@ -86,8 +102,6 @@ TODO: Ok. Zatím udělám přepisování properties (s kontrolou, že se neměn�
 
 --------------------------------------------------------------
 
-TODO: Pořešit errory při relogu po vytvoření characterů.
-
 TODO: Zrušit hlášku 'Opening websocket connection', která se posílá
   do ScrollWindow.
 (sice už zmizla, ale to nejspíš bude bug - jo, byl to bug)
@@ -98,6 +112,11 @@ TODO: Otestovat reconnect z jiného tabu.
   jinak to těžko odladím.
 
 --------------------------------------------------------------
+
+TODO: Pořešit errory při relogu po vytvoření characterů.
+- loadují se charactery, které už jsou naloadované.
+TODO: Releasovat chary z Entities při releasu accountu.
+[done]
 
 TODO: Přidat do /shared interfacy pro herní entity.
 např:

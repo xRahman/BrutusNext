@@ -9,6 +9,8 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {Entity} from '../../../shared/lib/entity/Entity';
+import {Account} from '../../../shared/lib/account/Account';
+import {Character} from '../../../shared/game/character/Character';
 import {Packet} from '../../../shared/lib/protocol/Packet';
 import {EntityData} from '../../../shared/lib/protocol/EntityData';
 import {Classes} from '../../../shared/lib/class/Classes';
@@ -41,7 +43,7 @@ export class ChargenResponse extends Packet
 
   // ---------------- Public methods --------------------
 
-  public setAccount(account: Entity)
+  public setAccount(account: Account)
   {
     this.account = new EntityData();
 
@@ -52,7 +54,7 @@ export class ChargenResponse extends Packet
     );
   }
 
-  public setCharacter(character: Entity)
+  public setCharacter(character: Character)
   {
     this.character = new EntityData();
 
