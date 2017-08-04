@@ -420,6 +420,9 @@ export abstract class Component
       $element.attr('wrap', value);
     }
 
+    if (attributes.value !== undefined)
+      $element.val(attributes.value);
+
     if (attributes.size !== undefined)
       $element.attr('size', attributes.size);
 
@@ -620,6 +623,13 @@ export module Component
     wrap?: Component.Wrap
   }
 
+  // These elements should have 'value' attribute:
+  // <button>, <option>, <input>, <li>, <meter>, <progress>, <param>
+  export interface ValueAttribute
+  {
+    value?: string | number
+  }
+
   // This inteface contains properties of all other attribute
   // interfaces (by extending them all). This way we can have
   // just one method (setAttributes()) to set them for any
@@ -632,7 +642,8 @@ export module Component
     InputAttributes,
     TextInputAttributes,
     SingleLineInputAttributes,
-    TextAreaAttributes
+    TextAreaAttributes,
+    ValueAttribute
   {
     // All properties are inherited.
   };
@@ -687,7 +698,8 @@ export module Component
     AutofocusAttribute,
     InputAttributes,
     TextInputAttributes,
-    SingleLineInputAttributes
+    SingleLineInputAttributes,
+    ValueAttribute
   {
     // All properties are inherited.
   }
@@ -700,7 +712,8 @@ export module Component
     AutofocusAttribute,
     InputAttributes,
     TextInputAttributes,
-    SingleLineInputAttributes
+    SingleLineInputAttributes,
+    ValueAttribute
   {
     // All properties are inherited.
   }
@@ -713,7 +726,8 @@ export module Component
     AutofocusAttribute,
     InputAttributes,
     TextInputAttributes,
-    SingleLineInputAttributes
+    SingleLineInputAttributes,
+    ValueAttribute
   {
     // All properties are inherited.
   }
@@ -724,7 +738,8 @@ export module Component
     CommonAttributes,
     CheckboxAttributes,
     AutofocusAttribute,
-    InputAttributes
+    InputAttributes,
+    ValueAttribute
   {
     // All properties are inherited.
   }
@@ -735,7 +750,8 @@ export module Component
     CommonAttributes,
     CheckboxAttributes,
     AutofocusAttribute,
-    InputAttributes
+    InputAttributes,
+    ValueAttribute
   {
     // All properties are inherited.
   }
@@ -756,7 +772,8 @@ export module Component
     CommonParameters,
     TextParameters,
     CommonAttributes,
-    AutofocusAttribute
+    AutofocusAttribute,
+    ValueAttribute
   {
     // All properties are inherited.
   }

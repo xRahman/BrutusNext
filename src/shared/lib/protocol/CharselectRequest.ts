@@ -20,7 +20,7 @@ export class CharselectRequest extends Packet
 
   // ----------------- Public data ----------------------
 
-  public selectedCharacterId: string = null;
+  public characterId: string = null;
 }
 
 Classes.registerSerializableClass(CharselectRequest);

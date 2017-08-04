@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Connection} from '../../../client/lib/connection/Connection';
 import {Component} from '../../../client/gui/Component';
 import {Form} from '../../../client/gui/form/Form';
@@ -62,10 +63,19 @@ export class CharselectForm extends Form
   // ~ Overrides Form.createRequest().
   protected createRequest()
   {
+    console.log('CharselectForm.createRequest()');
+
+    let id = this.$form.find(':checked').val();
+
+    if (!id)
+    {
+      ERROR("Unable to read selected character id");
+      return null;
+    }
+
     let request = new CharselectRequest();
 
-    /// TODO: Vyřešit pamatování idček charů a tady ho přiřadit do requestu.
-    // request.selectedCharacterId = this.$emailInput.val();
+    request.characterId = id;
 
     return request;
   }
@@ -73,7 +83,9 @@ export class CharselectForm extends Form
   // ~ Overrides Form.isRequestValid().
   protected isRequestValid(request: CharselectRequest)
   {
-    // There is nothing to validate in charselect form.
+    if (!request)
+      return false;
+
     return true;
   }
 
@@ -127,12 +139,14 @@ export class CharselectForm extends Form
 
   // ---------------- Event handlers --------------------
 
-  // ~ Overrides Form.onSubmit().
-  protected onSubmit(event: JQueryEventObject)
-  {
-    // We will handle the form submit ourselves.
-    event.preventDefault();
+  // // ~ Overrides Form.onSubmit().
+  // protected onSubmit(event: JQueryEventObject)
+  // {
+  //   // We will handle the form submit ourselves.
+  //   event.preventDefault();
 
-    /// TODO
-  }
+  //   ERROR("CharselectForm is not supposed to be submited."
+  //     + " CharselectWindow.enterGame() should be called"
+  //     + " instead");
+  // }
 }
