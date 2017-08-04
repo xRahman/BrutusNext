@@ -82,7 +82,7 @@ export class NameList<T extends Entity>
     if (!this.names.has(name))
     {
       ERROR("Attempt to remove entity " + entity.getErrorIdString()
-       + " from NameList which is not even there");
+       + " from NameList which is not there");
       return false;
     }
 

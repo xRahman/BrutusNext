@@ -15,6 +15,7 @@ import {Serializable} from '../../../shared/lib/class/Serializable';
 import {NameLock} from '../../../server/lib/entity/NameLock';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
+import {Character} from '../../../server/game/character/Character';
 import {Message} from '../../../server/lib/message/Message';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Account} from '../../../server/lib/account/Account';
@@ -74,18 +75,21 @@ export class Login
 
     response.setAccount(account);
 
+    // Do not load referenced entities (like inventory contents)
+    // yet. Right now we need just basic character data to display
+    //  them it character selection window.
+    await account.loadCharacters({ loadContents: false });
+
     // Add characters on the account to the response.
-    for (let id of account.data.characters.keys())
+    for (let character of account.data.characters.values())
     {
-      let character = await ServerEntities.loadEntityById
-      (
-        id,
-        Entity,
-        // Do not load referenced entities yet. Right now we need
-        // just basic character data to display them it character
-        // selection window.
-        false
-      );
+      if (!character.isValid())
+      {
+        ERROR("Invalid character (" + character.getErrorIdString + ")"
+          + " on account " + account.getErrorIdString() + ". Character"
+          + " is not added to login response");
+        continue;
+      }
 
       response.addCharacter(character);
     }

@@ -6,6 +6,8 @@
 
 'use strict';
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Entity} from '../../../shared/lib/entity/Entity';
 import {Component} from '../../../client/gui/Component';
 import {CharselectWindow} from
   '../../../client/gui/charselect/CharselectWindow';
@@ -155,6 +157,12 @@ export class Charplate extends Component
 
   private createNameLabel(param: Component.DivParam = {})
   {
+    if (!Entity.isValid(this.character))
+    {
+      ERROR("Invalid 'character' on charplate. Name label is not created");
+      return;
+    }
+
     this.applyDefaults
     (
       param,
@@ -171,6 +179,12 @@ export class Charplate extends Component
 
   private createInfoLabel(param: Component.DivParam = {})
   {
+    if (!Entity.isValid(this.character))
+    {
+      ERROR("Invalid 'character' on charplate. Info label is not created");
+      return;
+    }
+
     /// TODO: Tohle je zatím čistě ilustrační.
     this.applyDefaults
     (

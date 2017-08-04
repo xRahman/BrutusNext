@@ -339,6 +339,9 @@ export class ServerEntities extends Entities
       }
     );
 
+    if (entity === null)
+      return null;
+
     await entity.postLoad(loadContents);
 
     return entity;
