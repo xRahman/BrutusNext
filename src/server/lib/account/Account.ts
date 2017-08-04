@@ -292,6 +292,17 @@ export class Account extends ServerEntity
       AdminLevel.IMMORTAL
     );
 
+    /// TODO: Asi bych neměl automaticky releasovat char, se kterým
+    ///   byl user lognutej do hry.
+    /// TODO: A asi by bylo hezčí, kdybych tady volal metodu characteru
+    ///   (asi taky logout(), stejně jako u accountu?).
+    // Release characters on this account from memory.
+    for (let character of this.data.characters.values())
+    {
+      if (Entity.isValid(character))
+        Entities.release(character);
+    }
+
     // Release 'this' from memory
     // (this will also remove it from all lists).
     Entities.release(this);
@@ -309,6 +320,36 @@ export class Account extends ServerEntity
     }
   }
   */
+
+  public async loadCharacters({ loadContents = false })
+  {
+    for (let id of this.data.characters.keys())
+    {
+      if (this.characterToLoadAlreadyExists(id))
+        continue;
+
+      let character = await ServerEntities.loadEntityById
+      (
+        id,
+        Character,
+        loadContents
+      );
+    
+      if (character === null)
+      {
+        ERROR("Failed to load character (id: " + id + ") on"
+          + " account " + this.getErrorIdString() + "."
+          + " Perhaps user has re-logged to this acocunt and"
+          + " the character has not been properly released"
+          + " from Entities after losing connection?");
+        continue;
+      }
+
+      character.addToLists();
+
+      this.data.updateCharacterReference(character);
+    }        
+  }
 
   // --------------- Protected methods ------------------
 
@@ -353,6 +394,21 @@ export class Account extends ServerEntity
   */
 
   // ---------------- Private methods --------------------
+
+  private characterToLoadAlreadyExists(id: string)
+  {
+    let character = ServerEntities.get(id);
+
+    if (character)
+    {
+      ERROR("Character" + character.getErrorIdString()
+        + " on account " + this.getErrorIdString() + " is already"
+        + " loaded in memory when loadCharacters() is called");
+      return true;
+    }
+
+    return false;
+  }
 
   /*
   private sendAuthError(text: string)

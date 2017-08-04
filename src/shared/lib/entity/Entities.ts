@@ -94,10 +94,7 @@ export abstract class Entities
     let entity = await App.entities.loadEntityById(id, loadContents);
 
     if (!entity)
-    {
-      ERROR("Failed to load entity id: " + id);
       return null;
-    }
 
     // Dynamically check that entity is an
     // instance of type T and typecast to it.
@@ -358,6 +355,20 @@ export abstract class Entities
   // -> Returns added entity or 'null' on failure.
   private add(entity: Entity)
   {
+    if (!Entity.isValid(entity))
+    {
+      if (entity)
+      {
+        ERROR("Attempt to addd invalid entity "
+          + entity.getErrorIdString() + " to Entities");
+      }
+      else
+      {
+        ERROR("Attempt to addd invalid entity to Entities");
+      }
+      return null;
+    }
+
     let id = entity.getId();
     let existingEntity = this.entityList.get(id);
 
@@ -365,8 +376,12 @@ export abstract class Entities
     {
       ERROR("Attempt to add entity " + entity.getErrorIdString()
         + " to Entities which is already there. Entity is not"
-        + " added, existing one will be used");
-      return existingEntity;
+        + " added");
+      // Note: Even though it would make sense to return 'existingEntity'
+      //   here, we are not going to do it because it would mask the
+      //   error. By returning 'null', whoever called us can test for
+      //   it and log an ERROR which will help resolve the problem.
+      return null;
     }
 
     this.entityList.set(id, entity);
@@ -534,7 +549,7 @@ export abstract class Entities
     {
       id: id,
       isValid: function() { return false; },
-      getErrorStringId: function()
+      getErrorIdString: function()
       {
         return "{ Invalid (not loaded) etity, id: " + id + " }";
       },

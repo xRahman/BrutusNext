@@ -11,6 +11,7 @@ import {Syslog} from '../../../shared/lib/log/Syslog';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Admins} from '../../../server/lib/admin/Admins';
 import {Serializable} from '../../../shared/lib/class/Serializable';
+import {Account} from '../../../server/lib/account/Account';
 import {Character} from '../../../server/game/character/Character';
 import {Characters} from '../../../server/game/character/Characters';
 import {Entity} from '../../../shared/lib/entity/Entity';
@@ -180,13 +181,20 @@ export class Chargen
     return false;
   }
 
-  private static acceptRequest(character: Character, connection: Connection)
+  private static createResponse(account: Account, character: Character)
   {
     let response = new ChargenResponse();
 
     response.result = ChargenResponse.Result.OK;
-    response.setAccount(connection.account);
+    response.setAccount(account);
     response.setCharacter(character);
+
+    return response;
+  }
+
+  private static acceptRequest(character: Character, connection: Connection)
+  {
+    let response = this.createResponse(connection.account, character);
 
     Syslog.log
     (
