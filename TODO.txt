@@ -1,6 +1,11 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+TODO: Procesit (a možná i posílat) charselect request a response.
+- request se procesí (a na serveru to vyhodí chybu, páč se nezpracovává).
+
+--------------------------------------------------------------
+
 TODO: Vymyslet, kam vypisovat problém při otevírání connection.
 - možná udělat standalone ConsoleWindow (nebo InfoWindow), které
   se zobrazí jen v případě, že se nedaří connectit (úspěch tam

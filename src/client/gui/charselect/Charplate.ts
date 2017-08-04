@@ -90,11 +90,20 @@ export class Charplate extends Component
 
   private createRadiobutton(param: Component.RadioInputParam)
   {
+    if (!Entity.isValid(this.character))
+    {
+      ERROR("Invalid 'character' on charplate. Radiobutton is not created");
+      return;
+    }
+
     this.applyDefaults
     (
       param,
       {
         sCssClass: Component.HIDDEN_S_CSS_CLASS,
+        // This value will be read to extract character 'id' when
+        // 'enter game' button is pressed.
+        value: this.character.getId(),
         change: (event) => this.onChange(event)
       }
     );
@@ -209,7 +218,6 @@ export class Charplate extends Component
 
   private onDoubleClick(event: JQueryEventObject)
   {
-    console.log('onDoubleclick');
-    this.charselectWindow.onCharplateDoubleClick();
+    this.charselectWindow.form.submit();
   }
 }

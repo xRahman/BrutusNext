@@ -49,11 +49,6 @@ export class CharselectWindow extends StandaloneFormWindow
     this.enable(this.$enterGameButton);
   }
 
-  public onCharplateDoubleClick()
-  {
-    this.enterGame();
-  }
-
   // ---------------- Private methods -------------------
 
   private createCharselectForm()
@@ -93,14 +88,6 @@ export class CharselectWindow extends StandaloneFormWindow
     ClientApp.setState(ClientApp.State.CHARGEN);
   }
 
-  private enterGame()
-  {
-    /// TODO: Přečíst z charselectForm, jaký je selectnutý char,
-    /// a setnout ho jako ingame entity.
-
-    ClientApp.setState(ClientApp.State.IN_GAME);
-  }
-
   // ---------------- Event handlers --------------------
 
   private onCreateNewCharacterClick(event: JQueryEventObject)
@@ -110,6 +97,6 @@ export class CharselectWindow extends StandaloneFormWindow
 
   private onEnterGameClick(event: JQueryEventObject)
   {
-    this.enterGame();
+    this.form.submit();
   }
 }
