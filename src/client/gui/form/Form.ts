@@ -54,6 +54,12 @@ export abstract class Form extends Component
     formElement.reset();
   }
 
+  public submit()
+  {
+    if (this.$form)
+      this.$form.submit();
+  }
+
   // --------------- Protected methods ------------------
 
   protected create(param: Component.FormParam = {})
