@@ -1,4 +1,20 @@
-﻿3 kategorie affectů
+﻿Silence a mental cast
+----------------------
+
+- Silence by mohlo skutečně bránit kouzlení, ale kdokoliv se
+  bude moct naučit mental casting
+
+- Mental casting se při silencu aktivuje automaticky 
+
+- Mental casting zdraží manacost a možná i zvedne cast time
+  (obecně tudíž silence bude buď fungovat jako anticast
+   cc na moby, kteří nemají mental casting, nebo jako
+   manacost/casting speed debuff)
+
+Pořád by mělo platit, že silné debuffy nejde držet permanentně,
+tj. vydrží krátce a stojí generované resourcy.
+
+3 kategorie affectů
 ---------------------
 
 - Lesser
