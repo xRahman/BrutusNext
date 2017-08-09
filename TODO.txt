@@ -35,6 +35,13 @@ TODO: Savovat Admins (asi by to měla bejt entita).
 
 --------------------------------------------------------------
 
+TODO (quality of life improvements):
+- Po vytvoření nového charu checknout příslušný charplate.
+- Dávat focus na email input a charname input, pokud ještě není
+  vyplněno.
+
+--------------------------------------------------------------
+
 TODO: Pokud fakt bude fungovat object parametr bez uvádění typu
 (viz Account.loadCharacters()), tak to sakra používat, protože to
 je super!
@@ -48,6 +55,9 @@ TODO: Udělat základní kontrolu memoryleaků - při shutdownu
  disconnectu nereleasoval charactery na account - když bych
  při shutdownu prošel všechny acocunty a releasnul jejich
  chary - což bych asi měl, tak tím tuhle chybu neodhalím).
+- musel bych při shutdownu projít a releasnout jen kořenové
+  entity, tj. například accounty, world a tak. A pustit to
+  rekurzivně na entity, které jsou do toho vnořené.
 
 --------------------------------------------------------------
 
