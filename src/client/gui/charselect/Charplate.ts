@@ -39,6 +39,8 @@ export class Charplate extends Component
 
   // ----------------- Private data ---------------------
 
+  private $radio: JQuery = null;
+
   // ---------------- Public methods --------------------
 
   // -> Returns created jquery element.
@@ -64,12 +66,23 @@ export class Charplate extends Component
     // Create a <label> element.
     let $label = this.createLabelContainer(param);
     
-    // Put a hidden radiobutton inside it.
-    this.createRadiobutton({ $parent: $label });
+    // Put a hidden radio input inside it.
+    this.$radio = this.createRadio({ $parent: $label });
 
     // Put another element inside the label which will
     // be styled using css.
     this.createCharplate({ $parent: $label });
+  }
+
+  public select()
+  {
+    if (!this.$radio)
+    {
+      ERROR("Radio input doesn't exist. Charplate is not selected");
+      return;
+    }
+
+    this.$radio.prop('checked', true);
   }
 
   // ---------------- Private methods -------------------
@@ -88,7 +101,7 @@ export class Charplate extends Component
     return this.createLabel(param);
   }
 
-  private createRadiobutton(param: Component.RadioInputParam)
+  private createRadio(param: Component.RadioInputParam)
   {
     if (!Entity.isValid(this.character))
     {
@@ -108,7 +121,7 @@ export class Charplate extends Component
       }
     );
 
-    this.createRadioInput(param);
+    return this.createRadioInput(param);
   }
 
   private createCharplate(param: Component.DivParam = {})
