@@ -91,10 +91,17 @@ export class RegisterForm extends CredentialsForm
   {
     super.onShow();
 
+    let email = Windows.loginWindow.form.getEmailInputValue();
+
     // Set value from login window e-mail input to our
     // email input so the user doesn't have to retype it
     // (password still has to be enterer again).
-    this.$emailInput.val(Windows.loginWindow.form.getEmailInputValue());
+    this.$emailInput.val(email);
+
+    if (!email)
+      this.focusEmailInput();
+    else
+      this.focusPasswordInput();
   }
 
   // --------------- Protected methods ------------------

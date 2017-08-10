@@ -86,7 +86,7 @@ export class Document
     let ctrl = event.ctrlKey;
     let shift = event.shiftKey;
 
-    ///console.log('onKeyDown(): ' + key);
+    console.log('Document.onKeyDown(): ' + key);
 
     /*
       Notes on shortcuts:
@@ -262,6 +262,9 @@ export class Document
         break;
     }
 
-    return true;
+    /// Nevím, jestli to bylo k něčemu potřeba - pokud ne,
+    /// je lepší to tu nemít, protože není jasné, co ta return
+    /// value dělá (podporovaný způsob je event.preventDefault()).
+    ///return true;
   }
 }
