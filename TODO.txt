@@ -4,6 +4,11 @@ TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 TODO: Procesit (a možná i posílat) charselect request a response.
 - request se procesí (a na serveru to vyhodí chybu, páč se nezpracovává).
 
+TODO: Různě po GUI mám podmínky jako:
+  if (this.$form)
+    this.$form.hide();
+- Většinou by to měl bejt assert.
+
 --------------------------------------------------------------
 
 TODO: Vymyslet, kam vypisovat problém při otevírání connection.
@@ -37,6 +42,7 @@ TODO: Savovat Admins (asi by to měla bejt entita).
 
 TODO (quality of life improvements):
 - Po vytvoření nového charu checknout příslušný charplate.
+[done]
 - Dávat focus na email input a charname input, pokud ještě není
   vyplněno.
 
@@ -45,6 +51,10 @@ TODO (quality of life improvements):
 TODO: Pokud fakt bude fungovat object parametr bez uvádění typu
 (viz Account.loadCharacters()), tak to sakra používat, protože to
 je super!
+
+TODO: Výhledově bych mohl zvážit použití privátních funkcí modulu
+místo privátních metod classy.
+(nemusel bych pak všude psát this.doCosi()).
 
 --------------------------------------------------------------
 
