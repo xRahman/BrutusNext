@@ -30,7 +30,9 @@ export class CharselectForm extends Form
 
   // ----------------- Private data ---------------------
 
-  private charplates = new Array<Charplate>();
+  // Key:   character id
+  // Value: charplate
+  private charplates = new Map<string, Charplate>();
 
   // ---------------- Public methods --------------------
 
@@ -56,6 +58,20 @@ export class CharselectForm extends Form
     super.onShow();
 
     this.populate();
+  }
+
+  public selectCharacter(id: string)
+  {
+    let charplate = this.charplates.get(id);
+
+    if (!charplate)
+    {
+      ERROR("Unable to find charplate for character id '" + id + "'."
+        + " Charplate will not be selected");
+      return;
+    }
+
+    charplate.select();
   }
 
   // --------------- Protected methods ------------------
@@ -97,12 +113,12 @@ export class CharselectForm extends Form
 
     charplate.create({ $parent: this.$form });
 
-    this.charplates.push(charplate);
+    this.charplates.set(character.getId(), charplate);
   }
 
   private clear()
   {
-    this.charplates = new Array<Charplate>();
+    this.charplates.clear();
     
     // Clear html content of $form.
     this.$form.empty();
