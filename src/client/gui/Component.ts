@@ -426,11 +426,11 @@ export abstract class Component
     if (attributes.size !== undefined)
       $element.attr('size', attributes.size);
 
-    if (attributes.maxLength !== undefined)
-      $element.attr('maxLength', attributes.maxLength);
-
     if (attributes.minLength !== undefined)
       $element.attr('minLength', attributes.minLength);
+
+    if (attributes.maxLength !== undefined)
+      $element.attr('maxLength', attributes.maxLength);
 
     if (attributes.checked !== undefined)
       $element.prop('checked', attributes.checked);

@@ -113,6 +113,7 @@ export abstract class CredentialsForm extends Form
     );
 
     this.$emailProblem.show();
+    this.focusEmailInput();
   }
 
   // ~ Overrides Form.createPasswordInput().
@@ -157,6 +158,7 @@ export abstract class CredentialsForm extends Form
     );
 
     this.$passwordProblem.show();
+    this.focusPasswordInput();
   }
 
   protected createRememberMeCheckbox()
@@ -210,6 +212,28 @@ export abstract class CredentialsForm extends Form
         }
       );
     }
+  }
+
+  protected focusEmailInput()
+  {
+    if (!this.$emailInput)
+    {
+      ERROR("$emailInput doesn't exist so it won't be focused");
+      return;
+    }
+
+    this.$emailInput.focus();
+  }
+
+  protected focusPasswordInput()
+  {
+    if (!this.$passwordInput)
+    {
+      ERROR("$passwordInput doesn't exist so it won't be focused");
+      return;
+    }
+
+    this.$passwordInput.focus();
   }
 
   // ---------------- Private methods -------------------

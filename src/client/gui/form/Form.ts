@@ -56,8 +56,13 @@ export abstract class Form extends Component
 
   public submit()
   {
-    if (this.$form)
-      this.$form.submit();
+    if (!this.$form)
+    {
+      ERROR("Invalid this.$form. Not submitting the form");
+      return;
+    }
+
+    this.$form.submit();
   }
 
   // --------------- Protected methods ------------------
@@ -298,6 +303,8 @@ export abstract class Form extends Component
 
   protected onSubmit(event: JQueryEventObject)
   {
+    console.log('onSubmit()');
+
     // We will handle the form submit ourselves.
     event.preventDefault();
 

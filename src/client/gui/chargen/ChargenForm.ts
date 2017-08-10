@@ -77,6 +77,7 @@ export class ChargenForm extends Form
     this.resetForm();
     this.enableSubmitButton();
     this.hideProblems();
+    this.focusCharacterNameInput();
   }
 
   // --------------- Protected methods ------------------
@@ -120,7 +121,7 @@ export class ChargenForm extends Form
     return true;
   }
 
-    // ~ Overrides Form.hideProblems();
+  // ~ Overrides Form.hideProblems();
   protected hideProblems()
   {
     super.hideProblems();
@@ -141,16 +142,12 @@ export class ChargenForm extends Form
     }
   }
 
-  // ---------------- Private methods -------------------
-
   protected createNameProblemNotice()
   {
     this.$characterNameProblem = this.createEmptyLine
     (
       { name: 'name_problem_notice'}
     );
-
-    ///this.$characterNameProblem.hide();
   }
 
   protected displayCharacterNameProblem(problem: string)
@@ -171,6 +168,20 @@ export class ChargenForm extends Form
     );
 
     this.$characterNameProblem.show();
+    this.focusCharacterNameInput();
+  }
+
+  // ---------------- Private methods -------------------
+
+  private focusCharacterNameInput()
+  {
+    if (!this.$characterNameInput)
+    {
+      ERROR("$characterNameInput doesn't exist so it won't be focused");
+      return;
+    }
+
+    this.$characterNameInput.focus();
   }
 
   private createCharacterNameInput()
@@ -182,6 +193,7 @@ export class ChargenForm extends Form
         placeholder: 'Enter Character Name',
         minLength: ChargenRequest.MIN_CHARACTER_NAME_LENGTH,
         maxLength: ChargenRequest.MAX_CHARACTER_NAME_LENGTH,
+        required: true,
         input: (event) => { this.onCharacterNameInput(event); }
       }
     );
@@ -213,7 +225,10 @@ export class ChargenForm extends Form
   private upperCaseFirstCharacter($element: JQuery)
   {
     let oldValue = $element.val();
-    let newValue = Utils.upperCaseFirstCharacter(oldValue);
+    let newValue = "";
+
+    if (oldValue)
+      newValue = Utils.upperCaseFirstCharacter(oldValue);
 
     $element.val(newValue);
   }
@@ -247,14 +262,23 @@ export class ChargenForm extends Form
   private onCharacterNameInput(event: JQueryEventObject)
   {
     // Remember original selection (and cursor) position.
-    let $element = <HTMLInputElement>this.$characterNameInput[0];
-    let selectionStart = $element.selectionStart;
-    let selectionEnd = $element.selectionEnd;
+    let element = <HTMLInputElement>this.$characterNameInput[0];
+    let selectionStart = element.selectionStart;
+    let selectionEnd = element.selectionEnd;
 
+    console.log("Is valid: " + element.checkValidity());
+
+    /// TODO: Chmura, setnutí value elementu mu nastaví validitu
+    ///   na 'true', přestože by se setnutou hodnotou neměl být valid :\
     this.upperCaseFirstCharacter(this.$characterNameInput);
+    ///element.value = "Aa";
+
+    console.log("Is valid: " + element.checkValidity());
 
     // Restore original selection (and cursor) position.
-    $element.setSelectionRange(selectionStart, selectionEnd);
+    element.setSelectionRange(selectionStart, selectionEnd);
+
+    return true;
   }
 
   private onCancel(event: JQueryEventObject)
