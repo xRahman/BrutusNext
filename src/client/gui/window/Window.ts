@@ -103,8 +103,12 @@ export class Window extends Component
     if (!this.hidden)
       return;
 
-    this.onShow();
     this.$window.show();
     this.hidden = false;
+
+    // Note: onShow() must be called after this.$window.show()
+    //   because hidden components can't be manipulated with
+    //   (for example they can't be given focus).
+    this.onShow();
   }
 }

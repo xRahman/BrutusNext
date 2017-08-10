@@ -40,11 +40,46 @@ TODO: Savovat Admins (asi by to měla bejt entita).
 
 --------------------------------------------------------------
 
+TODO: V TermsWindow zprovoznit escape a enter.
+
+TODO: Přesměrování kláves v Document.onKeyDown() dělat jen
+  ve hře (a checkovat, jestli vůbec activeScrollWindow existuje).
+
 TODO (quality of life improvements):
 - Po vytvoření nového charu checknout příslušný charplate.
 [done]
 - Dávat focus na email input a charname input, pokud ještě není
   vyplněno.
+TODO: Focusovat input taky v případě, kdy přijde negativní response
+  (ideálně focusnout ten input, kterému patří error message).
+Chargen: [done]
+Charselect:
+Login:
+Register:
+
+TODO: V charselectu v onShow() selectnout naposledy lognutý character
+  (takže asi jako v loginu - pamatovat si idčko v offline storage).
+
+TOFIX: V login window nefunguje enter.
+- aha, okno totiž nemá focus.
+  (tzn tohle se vyřeší, když budu dávat focus nějakému inputu)
+I když... Pořád může uživatel kliknout jinam a focus oknu sebrat.
+- Tzn. asi bych měl přetížit document.onKeyDown() a přesměrovávat ho
+  do viditelného okna (nebo to okno focusnout, nebo prostě zavolat
+  ten submit()).
+
+TODO: Za error hláškama v loginu a registeru by se asi hodila
+  prázdná řádka (v chargenu je).
+(tzn. prázdnou řádku tam mít vždycky a error noticy hidovat)
+
+TODO: V Chargeon form nejsou nastavené limity na character name length
+  v atributech input elementu.
+
+
+TODO (dost šílené):
+  Všechny možné responsy zdědit z classy Response, problem udělat jako
+  private property a v metodě setProblem() kontrolovat, že string
+  končí tečkou.
 
 --------------------------------------------------------------
 

@@ -74,14 +74,14 @@ export class ChargenRequest extends Packet
     {
       return "Character name must be at least"
         + " " + ChargenRequest.MIN_CHARACTER_NAME_LENGTH
-        + " characters long";
+        + " characters long.";
     }
 
     if (this.characterName.length > ChargenRequest.MAX_CHARACTER_NAME_LENGTH)
     {
       return "Character name cannot be longer than"
         + " " + ChargenRequest.MAX_CHARACTER_NAME_LENGTH
-        + " characters";
+        + " characters.";
     }
 
     return null;
