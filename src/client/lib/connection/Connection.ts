@@ -273,6 +273,7 @@ export class Connection
     Windows.loginWindow.form.displayProblem(response);
   }
 
+  // -> Returns extracted character.
   private extractChargenResponseData(response: ChargenResponse)
   {
     this.account = response.account.deserializeEntity(Account);
@@ -280,11 +281,25 @@ export class Connection
     let character = response.character.deserializeEntity(Character);
 
     this.account.data.updateCharacterReference(character);
+
+    return character;
+  }
+
+  private acceptChargenResponse(response: ChargenResponse)
+  {
+    let character = this.extractChargenResponseData(response);
+
+    ClientApp.setState(ClientApp.State.CHARSELECT);
+
+    // Select newly added character
+    // (we can do it here because ClientApp.setState() called
+    //  charselectForm.onShow() which created the charplate).
+    Windows.charselectWindow.form.selectCharacter(character.getId());
   }
 
   private processChargenResponse(response: ChargenResponse)
   {
-     Windows.chargenWindow.form.onResponse();
+    Windows.chargenWindow.form.onResponse();
     
     if (response.result === ChargenResponse.Result.UNDEFINED)
     {
@@ -294,8 +309,7 @@ export class Connection
 
     if (response.result === ChargenResponse.Result.OK)
     {
-      this.extractChargenResponseData(response);
-      ClientApp.setState(ClientApp.State.CHARSELECT);
+      this.acceptChargenResponse(response);
       return;
     }
 
