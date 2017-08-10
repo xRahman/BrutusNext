@@ -79,6 +79,8 @@ export class LoginForm extends CredentialsForm
       this.setStoredEmailAddress();
       this.setStoredPassword();
     }
+
+    this.focusEmailInput();
   }
 
   public getEmailInputValue()
