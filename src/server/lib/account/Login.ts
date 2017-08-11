@@ -126,7 +126,7 @@ export class Login
     let response = new LoginResponse();
 
     response.result = result;
-    response.problem = problem;
+    response.setProblem(problem);
 
     connection.send(response);
   }

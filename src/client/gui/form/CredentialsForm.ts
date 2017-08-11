@@ -93,6 +93,8 @@ export abstract class CredentialsForm extends Form
     (
       { name: 'email_problem_notice'}
     );
+
+    this.$emailProblem.hide();
   }
 
   protected displayEmailProblem(problem: string)
@@ -124,7 +126,10 @@ export abstract class CredentialsForm extends Form
       {
         name: 'password_input',
         placeholder: 'Enter Password',
-        minLength: RegisterRequest.MIN_PASSWORD_LENGTH,
+        /// We are not using automatic 'minLength' validation
+        /// because it doesn't work if value is set to the
+        /// input element by script.
+        ///minLength: RegisterRequest.MIN_PASSWORD_LENGTH,
         maxLength: RegisterRequest.MAX_PASSWORD_LENGTH
       }
     );
@@ -138,6 +143,8 @@ export abstract class CredentialsForm extends Form
     (
       { name: 'password_problem_notice'}
     );
+
+    this.$passwordProblem.hide();
   }
 
   protected displayPasswordProblem(problem: string)
@@ -191,26 +198,30 @@ export abstract class CredentialsForm extends Form
 
     if (this.$emailProblem)
     {
-      this.createText
-      (
-        {
-          $parent: this.$emailProblem,
-          text: Component.EMPTY_LINE_TEXT,
-          insertMode: Component.InsertMode.REPLACE
-        }
-      );
+      // this.createText
+      // (
+      //   {
+      //     $parent: this.$emailProblem,
+      //     text: Component.EMPTY_LINE_TEXT,
+      //     insertMode: Component.InsertMode.REPLACE
+      //   }
+      // );
+
+      this.$emailProblem.hide();
     }
 
     if (this.$passwordProblem)
     {
-      this.createText
-      (
-        {
-          $parent: this.$passwordProblem,
-          text: Component.EMPTY_LINE_TEXT,
-          insertMode: Component.InsertMode.REPLACE
-        }
-      );
+      // this.createText
+      // (
+      //   {
+      //     $parent: this.$passwordProblem,
+      //     text: Component.EMPTY_LINE_TEXT,
+      //     insertMode: Component.InsertMode.REPLACE
+      //   }
+      // );
+
+      this.$passwordProblem.hide();
     }
   }
 
