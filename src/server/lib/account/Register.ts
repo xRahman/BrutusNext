@@ -208,7 +208,7 @@ export class Register
     let response = new RegisterResponse();
 
     response.result = result;
-    response.problem = problem;
+    response.setProblem(problem);
 
     connection.send(response);
   }
