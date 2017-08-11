@@ -7,11 +7,10 @@
 */
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {Packet} from '../../../shared/lib/protocol/Packet';
-///import {EntityData} from '../../../shared/lib/protocol/EntityData';
+import {Response} from '../../../shared/lib/protocol/Response';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class CharselectResponse extends Packet
+export class CharselectResponse extends Response
 {
   constructor()
   {
@@ -24,9 +23,6 @@ export class CharselectResponse extends Packet
 
   // Is the request accepted?
   public result = CharselectResponse.Result.UNDEFINED;
-
-  // Description of problem if the request is denied.
-  public problem: string = null;
 
   // // Serialized character data.
   // public character = new EntityData();

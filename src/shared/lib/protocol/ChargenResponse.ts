@@ -11,11 +11,11 @@ import {Serializable} from '../../../shared/lib/class/Serializable';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {Account} from '../../../shared/lib/account/Account';
 import {Character} from '../../../shared/game/character/Character';
-import {Packet} from '../../../shared/lib/protocol/Packet';
+import {Response} from '../../../shared/lib/protocol/Response';
 import {EntityData} from '../../../shared/lib/protocol/EntityData';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class ChargenResponse extends Packet
+export class ChargenResponse extends Response
 {
   constructor()
   {
@@ -28,9 +28,6 @@ export class ChargenResponse extends Packet
 
   // Is the request accepted?
   public result = ChargenResponse.Result.UNDEFINED;
-
-  // Description of problem if the request is denied.
-  public problem: string = null;
 
   // Serialized account data.
   // (We send account back to client, not the created character,

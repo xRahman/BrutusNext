@@ -68,18 +68,12 @@ I když... Pořád může uživatel kliknout jinam a focus oknu sebrat.
   do viditelného okna (nebo to okno focusnout, nebo prostě zavolat
   ten submit()).
 
-TODO: Za error hláškama v loginu a registeru by se asi hodila
-  prázdná řádka (v chargenu je).
-(tzn. prázdnou řádku tam mít vždycky a error noticy hidovat)
 
-TODO: V Chargeon form nejsou nastavené limity na character name length
-  v atributech input elementu.
-
-
-TODO (dost šílené):
-  Všechny možné responsy zdědit z classy Response, problem udělat jako
-  private property a v metodě setProblem() kontrolovat, že string
-  končí tečkou.
+Hodně ďábelská myšlenka:
+- udělat komponentu na inputy, která bude obsahovat imput a jeho
+  label a problem label.
+(a možná by se dalo sloučit vyrábění komponent přes new() a volání
+ create())
 
 --------------------------------------------------------------
 
@@ -172,6 +166,30 @@ TODO: Otestovat reconnect z jiného tabu.
   jinak to těžko odladím.
 
 --------------------------------------------------------------
+
+TODO: Za error hláškama v loginu a registeru by se asi hodila
+  prázdná řádka (v chargenu je).
+(tzn. prázdnou řádku tam mít vždycky a error noticy hidovat)
+[done]
+
+TODO (dost šílené):
+  Všechny možné responsy zdědit z classy Response, problem udělat jako
+  private property a v metodě setProblem() kontrolovat, že string
+  končí tečkou.
+[done]
+
+TODO: V ChargenWindow filtrovat z character name nonalpha charactery.
+[done]
+
+TODO: V Chargen form nejsou nastavené limity na character name length
+  v atributech input elementu.
+- jsou. Problém je, že setnutí value input elementu rozbije validaci.
+Vyřešil jsem to tak, že jsem všude zrušil validování 'minLenght', takže
+  se pouze vypíše náš problem message. Výhoda je, že to nepoužívá škaredou
+  grafiku defaultního upozornění v browseru.
+Pozn: Validovat maxLength je ok, protože to browser řeší prostě tak,
+  že nepovolí napsat víc písmenek (to je žádoucí).
+[done]
 
 TODO: Pořešit errory při relogu po vytvoření characterů.
 - loadují se charactery, které už jsou naloadované.

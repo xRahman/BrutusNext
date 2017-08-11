@@ -29,9 +29,13 @@ export class LoginForm extends CredentialsForm
     this.createEmailInput();
     this.createEmailProblemNotice();
 
+    this.createEmptyLine();
+
     super.createLabel({ text: 'Password' });
     this.createPasswordInput();
     this.createPasswordProblemNotice();
+
+    this.createEmptyLine();
 
     this.createRememberMeCheckbox();
     this.createButtons();
@@ -48,15 +52,15 @@ export class LoginForm extends CredentialsForm
         break;
 
       case LoginResponse.Result.UNKNOWN_EMAIL:
-        this.displayEmailProblem(response.problem);
+        this.displayEmailProblem(response.getProblem());
         break;
 
       case LoginResponse.Result.INCORRECT_PASSWORD:
-        this.displayPasswordProblem(response.problem);
+        this.displayPasswordProblem(response.getProblem());
         break;
 
       case LoginResponse.Result.FAILED_TO_LOAD_ACCOUNT:
-        this.displayError(response.problem);
+        this.displayError(response.getProblem());
         break;
 
       case LoginResponse.Result.OK:

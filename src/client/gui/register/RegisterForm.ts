@@ -43,9 +43,13 @@ export class RegisterForm extends CredentialsForm
     this.createEmailInput();
     this.createEmailProblemNotice();
 
+    this.createEmptyLine();
+
     super.createLabel({ text: 'Your New Password' });
     this.createPasswordInput();
     this.createPasswordProblemNotice();
+
+    this.createEmptyLine();
 
     this.createInfoLabel();
     this.createEmptyLine();
@@ -65,15 +69,15 @@ export class RegisterForm extends CredentialsForm
         break;
 
       case RegisterResponse.Result.EMAIL_PROBLEM:
-        this.displayEmailProblem(response.problem);
+        this.displayEmailProblem(response.getProblem());
         break;
 
       case RegisterResponse.Result.PASSWORD_PROBLEM:
-        this.displayPasswordProblem(response.problem);
+        this.displayPasswordProblem(response.getProblem());
         break;
 
       case RegisterResponse.Result.FAILED_TO_CREATE_ACCOUNT:
-        this.displayError(response.problem);
+        this.displayError(response.getProblem());
         break;
 
       case RegisterResponse.Result.OK:

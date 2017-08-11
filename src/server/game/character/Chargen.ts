@@ -217,7 +217,7 @@ export class Chargen
     let response = new ChargenResponse();
 
     response.result = result;
-    response.problem = problem;
+    response.setProblem(problem);
 
     connection.send(response);
   }
