@@ -52,11 +52,11 @@ export class ChargenForm extends Form
         break;
 
       case ChargenResponse.Result.CHARACTER_NAME_PROBLEM:
-        this.displayCharacterNameProblem(response.problem);
+        this.displayCharacterNameProblem(response.getProblem());
         break;
 
       case ChargenResponse.Result.FAILED_TO_CREATE_CHARACTER:
-        this.displayError(response.problem);
+        this.displayError(response.getProblem());
         break;
 
       case ChargenResponse.Result.OK:
@@ -191,7 +191,10 @@ export class ChargenForm extends Form
       {
         name: 'character_name_input',
         placeholder: 'Enter Character Name',
-        minLength: ChargenRequest.MIN_CHARACTER_NAME_LENGTH,
+        /// We are not letting browser to validate 'minLenght'
+        /// because 'minLength' validation does't work anyways
+        /// after setting value to the input element.
+        ///minLength: ChargenRequest.MIN_CHARACTER_NAME_LENGTH,
         maxLength: ChargenRequest.MAX_CHARACTER_NAME_LENGTH,
         required: true,
         input: (event) => { this.onCharacterNameInput(event); }
@@ -222,6 +225,20 @@ export class ChargenForm extends Form
     return this.createButton(param);
   }
 
+  // Note that this is also enforced in
+  // ChargenRequest.getInvalidCharacterProblem().
+  private removeInvalidCharacters($element: JQuery)
+  {
+    let oldValue = $element.val();
+    let newValue = "";
+    let regexp = ChargenRequest.VALID_CHARACTERS_REGEXP;
+
+    if (oldValue)
+      newValue = oldValue.replace(regexp, '');
+
+    $element.val(newValue);
+  }
+
   private upperCaseFirstCharacter($element: JQuery)
   {
     let oldValue = $element.val();
@@ -235,28 +252,6 @@ export class ChargenForm extends Form
 
   // ---------------- Event handlers --------------------
 
-  /// To be deleted.
-  /*
-  protected onSubmit(event: JQueryEventObject)
-  {
-    // We will handle the form submit ourselves.
-    event.preventDefault();
-
-    let request = new ChargenRequest();
-
-    request.characterName = this.$characterNameInput.val();
-
-    // Disable submit button to prevent click-spamming
-    // requests.
-    this.disableSubmitButton();
-
-    Connection.send(request);
-
-    /// TODO: Tohle až když přije response.
-    ///ClientApp.setState(ClientApp.State.IN_GAME);
-  }
-  */
-
   // This handler is called whenever user types into
   // 'character name' input.
   private onCharacterNameInput(event: JQueryEventObject)
@@ -266,14 +261,12 @@ export class ChargenForm extends Form
     let selectionStart = element.selectionStart;
     let selectionEnd = element.selectionEnd;
 
-    console.log("Is valid: " + element.checkValidity());
-
-    /// TODO: Chmura, setnutí value elementu mu nastaví validitu
-    ///   na 'true', přestože by se setnutou hodnotou neměl být valid :\
+    // Note: Setting value to an input element breaks automatic
+    //   value validation on the browser (I didn't manage to find
+    //   a true solution so I disabled validating 'minLenght' as
+    //   a workaround).
+    this.removeInvalidCharacters(this.$characterNameInput);
     this.upperCaseFirstCharacter(this.$characterNameInput);
-    ///element.value = "Aa";
-
-    console.log("Is valid: " + element.checkValidity());
 
     // Restore original selection (and cursor) position.
     element.setSelectionRange(selectionStart, selectionEnd);

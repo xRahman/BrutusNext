@@ -7,11 +7,11 @@
 */
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {Packet} from '../../../shared/lib/protocol/Packet';
+import {Response} from '../../../shared/lib/protocol/Response';
 import {EntityData} from '../../../shared/lib/protocol/EntityData';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class RegisterResponse extends Packet
+export class RegisterResponse extends Response
 {
   constructor()
   {
@@ -24,9 +24,6 @@ export class RegisterResponse extends Packet
 
   // Is the request accepted?
   public result = RegisterResponse.Result.UNDEFINED;
-
-  // Description of problem if the request is denied.
-  public problem: string = null;
 
   // Serialized account data.
   public account = new EntityData();

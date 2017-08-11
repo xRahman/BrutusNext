@@ -25,6 +25,9 @@ export class ChargenRequest extends Packet
   public static get MAX_CHARACTER_NAME_LENGTH()
     { return  12;}
 
+  public static get VALID_CHARACTERS_REGEXP()
+    { return /[^A-Za-z]/gi; }
+
   // ----------------- Public data ----------------------
 
   public characterName: string = null;
@@ -58,9 +61,11 @@ export class ChargenRequest extends Packet
 
   // ---------------- Private methods -------------------
 
+  // Note that this is also enforced in
+  // ChargenForm.removeInvalidCharacters().
   private getInvalidCharacterProblem()
   {
-    let regExp = /[^A-Za-z]/;
+    let regExp = ChargenRequest.VALID_CHARACTERS_REGEXP;
 
     if (regExp.test(this.characterName))
       return "Character name can only contain english letters.";
