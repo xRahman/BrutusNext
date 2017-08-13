@@ -75,6 +75,23 @@ Hodně ďábelská myšlenka:
 (a možná by se dalo sloučit vyrábění komponent přes new() a volání
  create())
 
+TODO: Udělat si vlastní validování minLenghtu
+- jde tuším nějak komponentě nastavit problem message.
+
+TODO: Udělat vlastní grafiku pro validation problem notice.
+
+TODO: Udělat vlastní grafiku pro checkbox (když už to umím ;-)).
+  (Hmm, problém bude asi s jazykem - ostatní hlášky budou lokalizované).
+
+Hmm, nakonec bude asi fakt nejlepší vypnout veškerou nativní validaci
+  s výjimkou maxlength (protože to prostě omezí počet znaků, které
+  se dají do inputu napsat) a používat pouze vlastní.
+- vlastní validaci stejně musím mít (server-side).
+- díky shared kódu ji mohou z části volat rovnou na klientu
+  (a taky to dělám).
+Nevýhoda je, že se to nevyhazuje v tooltip boxu (i když i to bych asi mohl
+zařídit, když bych o to stál).
+
 --------------------------------------------------------------
 
 TODO: Pokud fakt bude fungovat object parametr bez uvádění typu
