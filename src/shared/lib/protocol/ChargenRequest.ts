@@ -41,7 +41,7 @@ export class ChargenRequest extends Packet
     let problem = null;
 
     if (!this.characterName)
-      return "Character name must not be empty.";
+      return "Name must not be empty.";
 
     if (problem = this.getInvalidCharacterProblem())
       return problem;
@@ -68,7 +68,7 @@ export class ChargenRequest extends Packet
     let regExp = ChargenRequest.VALID_CHARACTERS_REGEXP;
 
     if (regExp.test(this.characterName))
-      return "Character name can only contain english letters.";
+      return "Name can only contain english letters.";
 
     return null;
   }
@@ -77,14 +77,14 @@ export class ChargenRequest extends Packet
   {
     if (this.characterName.length < ChargenRequest.MIN_CHARACTER_NAME_LENGTH)
     {
-      return "Character name must be at least"
+      return "Name must be at least"
         + " " + ChargenRequest.MIN_CHARACTER_NAME_LENGTH
         + " characters long.";
     }
 
     if (this.characterName.length > ChargenRequest.MAX_CHARACTER_NAME_LENGTH)
     {
-      return "Character name cannot be longer than"
+      return "Name cannot be longer than"
         + " " + ChargenRequest.MAX_CHARACTER_NAME_LENGTH
         + " characters.";
     }
