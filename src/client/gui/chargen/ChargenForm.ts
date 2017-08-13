@@ -248,6 +248,12 @@ export class ChargenForm extends Form
       newValue = Utils.upperCaseFirstCharacter(oldValue);
 
     $element.val(newValue);
+
+    $element.attr('valid', 'invalid');
+
+    // let element = <any>$element[0];
+
+    // element.setCustomValidity("Name is too short");
   }
 
   // ---------------- Event handlers --------------------
