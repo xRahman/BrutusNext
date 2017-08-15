@@ -6,11 +6,49 @@
 
 'use strict';
 
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {Component} from '../../../client/gui/Component';
 import {TitledWindow} from '../../../client/gui/window/TitledWindow';
 
 export class StandaloneWindow extends TitledWindow
 {
+  constructor
+  (
+    {
+      windowParam = {},
+      titleBarParam = {},
+      titleParam = {},
+      contentParam = {}
+    }
+    : TitledWindow.Param = {}
+  )
+  {
+    super
+    (
+      {
+        windowParam: Utils.applyDefaults
+        (
+          windowParam,
+          {
+            name: 'standalone_window',
+            sCssClass: StandaloneWindow.S_CSS_CLASS
+          }
+        ),
+        titleBarParam,
+        titleParam: Utils.applyDefaults
+        (
+          titleParam,
+          { sCssClass: StandaloneWindow.TITLE_S_CSS_CLASS }
+        ),
+        contentParam: Utils.applyDefaults
+        (
+          contentParam,
+          { sCssClass: StandaloneWindow.CONTENT_S_CSS_CLASS }
+        )
+      }
+    );
+  }
+
   protected static get S_CSS_CLASS()
     { return 'S_StandaloneWindow'; }
   protected static get TITLE_S_CSS_CLASS()
@@ -22,55 +60,55 @@ export class StandaloneWindow extends TitledWindow
 
   // ---------------- Public methods --------------------
 
-  // ~ Overrides TitledWindow.create().
-  public create
-  (
-    {
-      windowParam = {},
-      titleBarParam = {},
-      titleParam = {},
-      contentParam = {}
-    }
-    : TitledWindow.Param = {}
-  )
-  {
-    this.applyDefaults
-    (
-      windowParam,
-      {
-        name: 'standalone_window',
-        sCssClass: StandaloneWindow.S_CSS_CLASS
-      }
-    );
+  // // ~ Overrides TitledWindow.create().
+  // public create
+  // (
+  //   {
+  //     windowParam = {},
+  //     titleBarParam = {},
+  //     titleParam = {},
+  //     contentParam = {}
+  //   }
+  //   : TitledWindow.Param = {}
+  // )
+  // {
+  //   Utils.applyDefaults
+  //   (
+  //     windowParam,
+  //     {
+  //       name: 'standalone_window',
+  //       sCssClass: StandaloneWindow.S_CSS_CLASS
+  //     }
+  //   );
 
-    this.applyDefaults
-    (
-      titleParam,
-      { sCssClass: StandaloneWindow.TITLE_S_CSS_CLASS }
-    );
+  //   Utils.applyDefaults
+  //   (
+  //     titleParam,
+  //     { sCssClass: StandaloneWindow.TITLE_S_CSS_CLASS }
+  //   );
 
-    this.applyDefaults
-    (
-      contentParam,
-      { sCssClass: StandaloneWindow.CONTENT_S_CSS_CLASS }
-    );
+  //   Utils.applyDefaults
+  //   (
+  //     contentParam,
+  //     { sCssClass: StandaloneWindow.CONTENT_S_CSS_CLASS }
+  //   );
 
-    super.create
-    (
-      {
-        windowParam,
-        titleBarParam,
-        titleParam,
-        contentParam
-      }
-    );
-  }
+  //   super.create
+  //   (
+  //     {
+  //       windowParam,
+  //       titleBarParam,
+  //       titleParam,
+  //       contentParam
+  //     }
+  //   );
+  // }
 
   // --------------- Protected methods ------------------
 
   protected createEmptyLine(param: Component.DivParam = {})
   {
-    this.applyDefaults
+    Utils.applyDefaults
     (
       param,
       {
@@ -84,7 +122,7 @@ export class StandaloneWindow extends TitledWindow
 
   protected createTextContainer(param: Component.DivParam = {})
   {
-    this.applyDefaults
+    Utils.applyDefaults
     (
       param,
       {

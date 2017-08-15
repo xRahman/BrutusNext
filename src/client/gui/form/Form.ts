@@ -7,6 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {Connection} from '../../../client/lib/connection/Connection';
 import {MudColors} from '../../../client/gui/MudColors';
 import {Component} from '../../../client/gui/Component';
@@ -14,6 +15,28 @@ import {Packet} from '../../../shared/lib/protocol/Packet';
 
 export abstract class Form extends Component
 {
+  constructor
+  (
+    parent: Component,
+    param: Component.FormParam = {}
+  )
+  {
+    super(parent);
+
+    Utils.applyDefaults
+    (
+      param,
+      {
+        sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS,
+        submit: (event) => { this.onSubmit(event); }
+      }
+    );
+
+    this.$element = this.createForm(param);
+
+    this.createErrorLabel();
+  }
+
   protected static get TEXT_S_CSS_CLASS()
     { return 'S_Form_Text'; }
   protected static get INPUT_S_CSS_CLASS()
@@ -29,7 +52,6 @@ export abstract class Form extends Component
 
   // ---------------- Protected data --------------------
 
-  protected $form: JQuery = null;
   protected $submitButton: JQuery = null;
   protected $errorLabel: JQuery = null;
   protected $errorEmptyLine: JQuery = null;
@@ -44,52 +66,49 @@ export abstract class Form extends Component
 
   // ---------------- Public methods --------------------
 
-  public onShow() {}
-  public onHide() {}
-
-  public resetForm()
+  public reset()
   {
-    let formElement = <HTMLFormElement>this.$form[0];
+    let form = <HTMLFormElement>this.$element[0];
 
-    formElement.reset();
+    form.reset();
   }
 
   public submit()
   {
-    if (!this.$form)
+    if (!this.$element)
     {
-      ERROR("Invalid this.$form. Not submitting the form");
+      ERROR("Invalid this.$element. Form is not submitted");
       return;
     }
 
-    this.$form.submit();
+    this.$element.submit();
   }
 
   // --------------- Protected methods ------------------
 
-  protected create(param: Component.FormParam = {})
-  {
-    this.applyDefaults
-    (
-      param,
-      {
-        sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS,
-        submit: (event) => { this.onSubmit(event); }
-      }
-    );
+  // protected create(param: Component.FormParam = {})
+  // {
+  //   this.applyDefaults
+  //   (
+  //     param,
+  //     {
+  //       sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS,
+  //       submit: (event) => { this.onSubmit(event); }
+  //     }
+  //   );
 
-    this.$form = this.createForm(param);
+  //   this.$form = this.createForm(param);
 
-    this.createErrorLabel();
-  }
+  //   this.createErrorLabel();
+  // }
 
   protected createLabel(param: Component.LabelParam = {})
   {
-    this.applyDefaults
+    Utils.applyDefaults
     (
       param,
       {
-        $parent: this.$form,
+        $parent: this.$element,
         sCssClass: Form.TEXT_S_CSS_CLASS
       }
     );
@@ -99,11 +118,11 @@ export abstract class Form extends Component
 
   protected createTextInput(param: Component.TextInputParam = {})
   {
-    this.applyDefaults
+    Utils.applyDefaults
     (
       param,
       {
-        $parent: this.$form,
+        $parent: this.$element,
         sCssClass: Form.INPUT_S_CSS_CLASS,
         autocorrect: Component.Autocorrect.OFF,
         autocomplete: Component.Autocomplete.OFF,
@@ -116,11 +135,11 @@ export abstract class Form extends Component
 
   protected createPasswordInput(param: Component.PasswordInputParam = {})
   {
-    this.applyDefaults
+    Utils.applyDefaults
     (
       param,
       {
-        $parent: this.$form,
+        $parent: this.$element,
         sCssClass: Form.INPUT_S_CSS_CLASS,
         required: true,
         autocorrect: Component.Autocorrect.OFF,
@@ -134,11 +153,11 @@ export abstract class Form extends Component
 
   protected createEmailInput(param: Component.EmailInputParam = {})
   {
-    this.applyDefaults
+    Utils.applyDefaults
     (
       param,
       {
-        $parent: this.$form,
+        $parent: this.$element,
         sCssClass: Form.INPUT_S_CSS_CLASS,
         required: true,
         autocorrect: Component.Autocorrect.OFF,
@@ -163,19 +182,19 @@ export abstract class Form extends Component
   )
   : JQuery
   {
-    this.applyDefaults
+    Utils.applyDefaults
     (
       labelParam,
       {
         name: 'checkbox_label',
-        $parent: this.$form,
+        $parent: this.$element,
         sCssClass: Form.TEXT_S_CSS_CLASS
       }
     );
 
     let $label = this.createLabel(labelParam);
 
-    this.applyDefaults
+    Utils.applyDefaults
     (
       checkboxParam,
       {
@@ -193,12 +212,12 @@ export abstract class Form extends Component
 
   protected createButtonContainer(param: Component.DivParam = {})
   {
-    this.applyDefaults
+    Utils.applyDefaults
     (
       param,
       {
         name: 'button_container',
-        $parent: this.$form,
+        $parent: this.$element,
         sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS
       }
     );
@@ -208,7 +227,7 @@ export abstract class Form extends Component
 
   protected createSubmitButton(param: Component.SubmitButtonParam = {}): JQuery
   {
-    this.applyDefaults
+    Utils.applyDefaults
     (
       param,
       { sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS }
@@ -221,11 +240,11 @@ export abstract class Form extends Component
 
   protected createEmptyLine(param: Component.DivParam = {})
   {
-    this.applyDefaults
+    Utils.applyDefaults
     (
       param,
       {
-        $parent: this.$form,
+        $parent: this.$element,
         sCssClass: Form.TEXT_S_CSS_CLASS
       }
     );

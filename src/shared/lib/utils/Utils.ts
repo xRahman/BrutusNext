@@ -243,6 +243,7 @@ export module Utils
   // so you can default only some sub-properties.
   // (Generic type is used to ensure that 'defaults' parameter is
   //  of the same type as 'target' parameter).
+  // -> Returns modified 'target'.
   export function applyDefaults<T>(target: T, defaults: T)
   {
     for (let propertyName in defaults)
@@ -267,6 +268,8 @@ export module Utils
       if (isPlainObject(sourceProperty) && isPlainObject(targetProperty))
         applyDefaults(targetProperty, sourceProperty);
     }
+
+    return target;
   }
 }
 

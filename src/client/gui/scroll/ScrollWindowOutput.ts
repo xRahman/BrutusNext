@@ -6,23 +6,20 @@
 
 'use strict';
 
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {Component} from '../../../client/gui/Component';
 
 export class ScrollWindowOutput extends Component
 {
-  public static get S_CSS_CLASS()
-    { return 'S_ScrollWindowOutput'; }
-
-  // ----------------- Private data ---------------------
-
-  private $output: JQuery = null;
-
-  // ---------------- Public methods --------------------
-
-  // -> Returns created jquery element.
-  public create(param: Component.DivParam = {})
+  constructor
+  (
+    parent: Component,
+    param: Component.DivParam = {}
+  )
   {
-    this.applyDefaults
+    super(parent);
+
+    Utils.applyDefaults
     (
       param,
       {
@@ -40,8 +37,37 @@ export class ScrollWindowOutput extends Component
       }
     );
 
-    this.$output = this.createDiv(param);
+    this.$element = this.createDiv(param);
   }
+
+  public static get S_CSS_CLASS()
+    { return 'S_ScrollWindowOutput'; }
+
+  // ---------------- Public methods --------------------
+
+  // // -> Returns created jquery element.
+  // public create(param: Component.DivParam = {})
+  // {
+  //   this.applyDefaults
+  //   (
+  //     param,
+  //     {
+  //       name: 'scroll_window_output',
+  //       // Use NO_GRAPHICS_G_CSS_CLASS to disable default outline
+  //       // when selected.
+  //       gCssClass: Component.NO_GRAPHICS_G_CSS_CLASS,
+  //       sCssClass: ScrollWindowOutput.S_CSS_CLASS,
+  //       // In order to trigger keyboard events on <div> element,
+  //       // it must have focus. To give it a focus, it must have
+  //       // a 'tabindex' attribute set.
+  //       // ('tabindex: -1' means: focusable only by script, not by user)
+  //       tabindex: -1,
+  //       keydown: (event) => { this.onKeyDown(event); }
+  //     }
+  //   );
+
+  //   this.$output = this.createDiv(param);
+  // }
 
   public append
   (
@@ -61,11 +87,11 @@ export class ScrollWindowOutput extends Component
       userScrolled = this.isUserScrolled();
 
     // Create a new <div> element, set 'message' as it's
-    // text content and append it to 'this.$output'.
+    // text content and append it to 'this.$element'.
     this.createDiv
     (
       {
-        $parent: this.$output,
+        $parent: this.$element,
         baseTextColor: baseTextColor,
         text: message
       }
@@ -81,12 +107,12 @@ export class ScrollWindowOutput extends Component
 
   public scrollToTop()
   {
-    this.$output.scrollTop(0);
+    this.$element.scrollTop(0);
   }
 
   public scrollToBottom()
   {
-    this.$output.scrollTop(this.$output.prop('scrollHeight'));
+    this.$element.scrollTop(this.$element.prop('scrollHeight'));
   }
 
   public triggerKeyboardEvent(event)
@@ -95,10 +121,10 @@ export class ScrollWindowOutput extends Component
     // it must have focus. To be able to give it a focus,
     // it must have a 'tabindex' attribute set (that's done
     // in ScrollWindowOutput.create()).
-    this.$output.focus();
+    this.$element.focus();
 
     // Now we can trigger the keyboard event.
-    this.$output.trigger(event);
+    this.$element.trigger(event);
   }
 
   // ---------------- Private methods -------------------
@@ -108,12 +134,12 @@ export class ScrollWindowOutput extends Component
   {
     // Size of the scrollable range (in pixels).
     let range =
-      this.$output.prop('scrollHeight') - this.$output.prop('clientHeight');
+      this.$element.prop('scrollHeight') - this.$element.prop('clientHeight');
 
     // 'true' if user has scrolled up manually
     // (-1 to account for rounding errors. If user scolled up by
     //  less than one pixel, we can safely scoll back down anyways).
-    return (this.$output.scrollTop()) < (range - 1);
+    return (this.$element.scrollTop()) < (range - 1);
   }
 
   // ---------------- Event handlers --------------------

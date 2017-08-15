@@ -30,6 +30,16 @@ import {MudColors} from '../../client/gui/MudColors';
 
 export abstract class Component
 {
+  constructor
+  (
+    protected parent: Component
+  )
+  {
+    // Root components (like windows) don't have parent.
+    if (parent !== null)
+      parent.children.add(this);
+  }
+
   // This is used to make an empty line of text.
   // (HTML <label> or <span> with no text is not drawn at all
   // because of zero height. Setting this text to it will fix it.)
@@ -56,9 +66,40 @@ export abstract class Component
   protected static get FULL_WIDTH_BLOCK_S_CSS_CLASS()
     { return 'S_Component_FullWidthBlock'; }
   protected static get HIDDEN_S_CSS_CLASS()
-  { return 'S_Component_Hidden'; }
+    { return 'S_Component_Hidden'; }
+
+  // ---------------- Protected data -------------------- 
+
+  // JQuery container referencing html element representing
+  // this component in DOM.
+  protected $element: JQuery = null;
+  protected children = new Set<Component>();
+
+  // ---------------- Public methods --------------------
+
+  public delete()
+  {
+    // Remove element from DOM
+    // (this also removes all children, all bound events
+    //  and all asociated JQuery data).
+    this.$element.remove();
+
+    this.parent.children.delete(this);
+  }
 
   // --------------- Protected methods ------------------
+
+  protected onShow()
+  {
+    for (let child of this.children)
+      child.onShow();
+  }
+
+  protected onHide()
+  {
+    for (let child of this.children)
+      child.onHide();
+  }
 
   // Creates text styled as link.
   protected createTextLink(param: Component.TextParam = {}): JQuery
@@ -244,12 +285,16 @@ export abstract class Component
     return this.createDiv(param);
   }
 
-  // Copies properties of 'defaults' object to 'target' object
-  // if they are not present in it.
-  protected applyDefaults<T>(target: T, defaults: T)
-  {
-    Utils.applyDefaults(target, defaults);
-  }
+  /// Zrušeno - volá se to v rámci super() callu v constructoru,
+  /// kde nejde použít this, takže je to třeba volat přes Utils.
+  /// A když už to někde bude volané přes Utils, tak bude lepší
+  /// to tak dělat všude.
+  // // Copies properties of 'defaults' object to 'target' object
+  // // if they are not present in it.
+  // protected applyDefaults<T>(target: T, defaults: T)
+  // {
+  //   return Utils.applyDefaults(target, defaults);
+  // }
 
   protected disable($element: JQuery)
   {

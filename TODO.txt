@@ -92,6 +92,32 @@ Hmm, nakonec bude asi fakt nejlepší vypnout veškerou nativní validaci
 Nevýhoda je, že se to nevyhazuje v tooltip boxu (i když i to bych asi mohl
 zařídit, když bych o to stál).
 
+
+TODO: V Component udělat pole 'children', do kterého se budou vkládat
+  subkomponenty (možná spíš Set).
+  Důvod: Bude se jim automaticky provolávat onShow(), onHide() a podobně.
+- konstruktor komponet by měl mít jako parametr 'parent' a automaticky
+  se přidávat do jeho childů.
+  (otázka je, jak pořešit root komponentu (třeba window). Parametr
+  'parent' by ideálně neměl mít defaultní hodnotu, aby ho nešlo opomenout.
+  Tzn. při vytváření oken se do něj asi bude muset explicitně předávat 'null'.
+
+TODO: create() metody by měly být protected, ne public
+  (budou se volat automaticky v constructoru).
+
+TODO: Pokud bude přechod na 'children' fungovat, tak můžu zrušit
+  celé StandalonFormWindow property $form si budou holt muset
+  deklarovat konkrétní okna.
+  - nebo ho nechat jen kvůli deklaradi property $form...
+
+TODO: Metoda na rušení komponent. Možná delete()?
+  - komponenta by se v rámci delete() měla vyhodit z .children parenta.
+    (problém ale je, že se asi nevyhodí z pojmenované reference...)
+
+TODO: Korektní mazání charplatů z CharselectForm
+  (musej se mimo jiné vyhazovat z .children)
+[snad]
+
 --------------------------------------------------------------
 
 TODO: Pokud fakt bude fungovat object parametr bez uvádění typu
