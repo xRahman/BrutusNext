@@ -18,17 +18,17 @@ export class StandaloneFormWindow extends StandaloneWindow
 
   // --------------- Protected methods ------------------
 
-  // ~ Overrides Window.onShow().
-  protected onShow()
-  {
-    if (this.form)
-      this.form.onShow();
-  }
+  // // ~ Overrides Window.onShow().
+  // protected onShow()
+  // {
+  //   if (this.form)
+  //     this.form.onShow();
+  // }
 
-  // ~ Overrides Window.onHide().
-  protected onHide()
-  {
-    if (this.form)
-      this.form.onHide();
-  }
+  // // ~ Overrides Window.onHide().
+  // protected onHide()
+  // {
+  //   if (this.form)
+  //     this.form.onHide();
+  // }
 }

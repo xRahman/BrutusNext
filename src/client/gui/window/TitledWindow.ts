@@ -6,11 +6,32 @@
 
 'use strict';
 
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {Component} from '../../../client/gui/Component';
 import {Window} from '../../../client/gui/window/Window';
 
 export class TitledWindow extends Window
 {
+  constructor
+  (
+    {
+      windowParam = {},
+      titleBarParam = {},
+      titleParam = {},
+      contentParam = {}
+    }
+    : TitledWindow.Param = {}
+  )
+  {
+    super
+    (
+      Utils.applyDefaults(windowParam, { name: 'titled_window' })
+    );
+
+    this.createTitleBar(titleBarParam, titleParam);
+    this.createContent(contentParam);
+  }
+
   protected static get TITLE_BAR_S_CSS_CLASS()
     { return 'S_TitledWindow_TitleBar'; }
   protected static get TITLE_S_CSS_CLASS()
@@ -35,25 +56,6 @@ export class TitledWindow extends Window
   // --------------- Public accessors -------------------
 
   // ---------------- Public methods --------------------
-
-  public create
-  (
-    {
-      windowParam = {},
-      titleBarParam = {},
-      titleParam = {},
-      contentParam = {}
-    }
-    : TitledWindow.Param = {}
-  )
-  {
-    this.applyDefaults(windowParam, { name: 'titled_window' });
-
-    super.create({ windowParam });
-
-    this.createTitleBar(titleBarParam, titleParam);
-    this.createContent(contentParam);
-  }
 
   // Sets text to 'title' element
   // (accepts plain text or mud colored string).

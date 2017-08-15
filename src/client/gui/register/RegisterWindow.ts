@@ -15,26 +15,7 @@ export class RegisterWindow extends StandaloneFormWindow
 {
   constructor()
   {
-    super();
-
-    // Show this window when app is in this state.
-    this.flags.set(ClientApp.State.REGISTER);
-  }
-
-  // ----------------- Public data ----------------------
-
-  public form = new RegisterForm();
-
-  // ----------------- Private data ---------------------
-
-  private $termsLink: JQuery = null;
-
-  // ---------------- Public methods --------------------
-
-  // ~ Overrides StandaloneWindow.create().
-  public create()
-  {
-    super.create({ windowParam: { name: 'register_window' }});
+    super({ windowParam: { name: 'register_window' }});
 
     this.setTitle("Create New Account");
 
@@ -42,13 +23,39 @@ export class RegisterWindow extends StandaloneFormWindow
 
     this.createEmptyLine();
     this.createTermsLink();
+
+    // Show this window when app is in this state.
+    this.flags.set(ClientApp.State.REGISTER);
   }
+
+  // ----------------- Private data ---------------------
+
+  private $termsLink: JQuery = null;
+
+  // ---------------- Public methods --------------------
+
+  // // ~ Overrides StandaloneWindow.create().
+  // public create()
+  // {
+  //   super.create({ windowParam: { name: 'register_window' }});
+
+  //   this.setTitle("Create New Account");
+
+  //   this.createRegisterForm();
+
+  //   this.createEmptyLine();
+  //   this.createTermsLink();
+  // }
 
   // ---------------- Private methods -------------------
 
   private createRegisterForm()
   {
-    this.form.create({ $parent: this.$content });
+    this.form = new RegisterForm
+    (
+      this,
+      { $parent: this.$content }
+    );
   }
 
   private createTermsLink()

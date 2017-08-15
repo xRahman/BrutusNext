@@ -16,32 +16,31 @@ export class ChargenWindow extends StandaloneFormWindow
 {
   constructor()
   {
-    super();
+    super({ windowParam: { name: 'chargen_window' }});
+
+    this.setTitle("Character Creation");
+    this.createChargenForm();
 
     // Show this window when app is in this state.
     this.flags.set(ClientApp.State.CHARGEN);
   }
 
-  // ----------------- Public data ----------------------
-
-  public form = new ChargenForm();
-
   // ---------------- Public methods --------------------
 
-  // ~ Overrides StandaloneWindow.create().
-  public create()
-  {
-    super.create({ windowParam: { name: 'chargen_window' }});
+  // // ~ Overrides StandaloneWindow.create().
+  // public create()
+  // {
+  //   super.create({ windowParam: { name: 'chargen_window' }});
 
-    this.setTitle("Character Creation");
+  //   this.setTitle("Character Creation");
 
-    this.createChargenForm();
-  }
+  //   this.createChargenForm();
+  // }
 
   // ---------------- Private methods -------------------
 
   private createChargenForm()
   {
-    this.form.create({ $parent: this.$content });
+    this.form = new ChargenForm(this, { $parent: this.$content });
   }
 }

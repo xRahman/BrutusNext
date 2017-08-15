@@ -39,9 +39,25 @@ export class SvgMap extends Component
   private static get ROOM_SPACING() { return 20; }
   private static get ROOM_RADIUS() { return 6; }
 
-  constructor(private mapWindow: MapWindow)
+  constructor(protected parent: MapWindow, $container: JQuery)
   {
-    super();
+    super(parent);
+
+    // Select ancestor element using d3 library.
+    // (Doing [0] on a jquery element accesses the DOM element.
+    //  We do it instead of selecting ancestor element by it's
+    //  id because ancestor element is not yet appended to the
+    //  document at this time - so we need to use direct reference.)
+    let d3WindowContent = d3.select($container[0]);
+
+    // Append a svg element that will be used to draw map in.
+    this.d3Map = d3WindowContent.append('svg');
+    this.d3Map.attr('class', SvgMap.SVG_MAP_CSS_CLASS);
+
+    // Create a <defs> element inside a <svg> element.
+    this.createDefs();
+    // Create <g> elements that will contain the graphical elements.
+    this.createGs();
 
     /// TEST:
     /* TO BE DEPRECATED */
@@ -656,7 +672,7 @@ export class SvgMap extends Component
     // Obtaining dimensions of svg element is complicated as hell,
     // so we 'cheat' a little bit and use the with of mapwindow content
     // element instead.
-    return this.mapWindow.getContentWidth() / 2;
+    return this.parent.getContentWidth() / 2;
   }
 
 //.
@@ -667,7 +683,7 @@ export class SvgMap extends Component
     // Obtaining dimensions of svg element is complicated as hell,
     // so we 'cheat' a little bit and use the with of mapwindow content
     // element instead.
-    return this.mapWindow.getContentHeight() / 2;
+    return this.parent.getContentHeight() / 2;
   }
 
 //.

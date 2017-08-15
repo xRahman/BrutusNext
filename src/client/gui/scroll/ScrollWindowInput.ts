@@ -6,36 +6,21 @@
 
 'use strict';
 
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {Component} from '../../../client/gui/Component';
 import {ScrollWindow} from '../../../client/gui/scroll/ScrollWindow';
 
 export class ScrollWindowInput extends Component
 {
-  constructor(private scrollWindow: ScrollWindow)
+  constructor
+  (
+    protected parent: ScrollWindow,
+    param: Component.TextAreaParam = {}
+  )
   {
-    super();
-  }
+    super(parent);
 
-  private static get S_CSS_CLASS()
-    { return 'S_ScrollWindowInput'; }
-
-  // ----------------- Private data ---------------------
-
-  // Command history.
-  private commands =
-  {
-    active: 0,  // Which command is the user viewing/editing.
-    buffer: new Array<string>()
-  }
-
-  private $input: JQuery = null;
-
-  // ---------------- Public methods --------------------
-
-  // -> Returns created jquery element.
-  public create(param: Component.TextAreaParam = {})
-  {
-    this.applyDefaults
+    Utils.applyDefaults
     (
       param,
       {
@@ -51,25 +36,61 @@ export class ScrollWindowInput extends Component
       }
     );
 
-    this.$input = this.createTextArea(param);
+    this.$element = this.createTextArea(param);
   }
+
+  private static get S_CSS_CLASS()
+    { return 'S_ScrollWindowInput'; }
+
+  // ----------------- Private data ---------------------
+
+  // Command history.
+  private commands =
+  {
+    active: 0,  // Which command is the user viewing/editing.
+    buffer: new Array<string>()
+  }
+
+  // ---------------- Public methods --------------------
+
+  // // -> Returns created jquery element.
+  // public create(param: Component.TextAreaParam = {})
+  // {
+  //   this.applyDefaults
+  //   (
+  //     param,
+  //     {
+  //       name: 'scroll_window_input',
+  //       sCssClass: ScrollWindowInput.S_CSS_CLASS,
+  //       // Input element accepts multi-line text (its a 'textarea') but only
+  //       // shows one line (because user commands are usualy single-line).
+  //       rows: 1,
+  //       spellcheck: false,
+  //       autocorrect: Component.Autocorrect.OFF,
+  //       keypress: (event) => { this.onKeyPress(event); },
+  //       keydown: (event) => { this.onKeyDown(event); }
+  //     }
+  //   );
+
+  //   this.$element = this.createTextArea(param);
+  // }
 
   public focus()
   {
-    this.$input.focus();
+    this.$element.focus();
   }
 
   // ---------------- Private methods -------------------
 
   private sendCommand()
   {
-    let command = this.$input.val();
+    let command = this.$element.val();
 
     this.bufferCommand(command);
-    this.scrollWindow.sendCommand(command);
+    this.parent.sendCommand(command);
     
     // Empty the textarea.
-    this.$input.val('');
+    this.$element.val('');
   }
 
   private shouldBeBuffered(command: string)
@@ -144,13 +165,13 @@ export class ScrollWindowInput extends Component
   //    value instead of recalling next or previous command.
   private isEditingMultilineCommand(offset: number): boolean
   {
-    let currentValue = this.$input.val();
+    let currentValue = this.$element.val();
 
     // Is there a multi-line command in the input box?
     if (currentValue.indexOf('\n') !== -1)
     {
-      let selectionStart = this.$input.prop('selectionStart');
-      var selectionEnd = this.$input.prop('selectionEnd');
+      let selectionStart = this.$element.prop('selectionStart');
+      var selectionEnd = this.$element.prop('selectionEnd');
       // Note: When there is no selection, start is equal to end.
 
       // Position at the end of the input text.
@@ -170,7 +191,7 @@ export class ScrollWindowInput extends Component
     endpos: number
   )
   {
-    let oldValue = this.$input.val();
+    let oldValue = this.$element.val();
     let cursorPosition = endpos;
 
     // 'offset < 0' mens that we are recalling previous command
@@ -189,7 +210,7 @@ export class ScrollWindowInput extends Component
       //   - Then we put the text back in
       //   - And Finally we set the cursor position.
       // Here we do just the first step:
-      this.$input.val('');
+      this.$element.val('');
       // And prepare the fourth:
       cursorPosition = 0;
     }
@@ -201,14 +222,14 @@ export class ScrollWindowInput extends Component
     // (This is better than setting 'scrollTop' property, because
     //  doing so changes vertical text position so the text 'jumps'
     //  up and down when commands are retrieved from the buffer).
-    this.$input.blur().focus();
+    this.$element.blur().focus();
 
     // Restore the original text.
-    this.$input.val(oldValue);
+    this.$element.val(oldValue);
 
     // Finaly set the cursor position.
-    this.$input.prop('selectionStart', cursorPosition);
-    this.$input.prop('selectionEnd', cursorPosition);
+    this.$element.prop('selectionStart', cursorPosition);
+    this.$element.prop('selectionEnd', cursorPosition);
   }
 
   // Sets the string from position 'index' in command buffer
@@ -223,7 +244,7 @@ export class ScrollWindowInput extends Component
     if (index < this.commands.buffer.length)
       recalledCommand = this.commands.buffer[index];
 
-    this.$input.val(recalledCommand);
+    this.$element.val(recalledCommand);
     this.commands.active = index;
 
     let isMultiline = recalledCommand.indexOf('\n') !== -1;
