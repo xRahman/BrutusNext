@@ -24,6 +24,15 @@ import {Form} from '../../../client/gui/form/Form';
 
 export abstract class CredentialsForm extends Form
 {
+  constructor 
+  (
+    parent: Component,
+    param: Component.FormParam = {}
+  )
+  {
+    super(parent, param);
+  }
+
   // ---------------- Protected data --------------------
 
   protected $emailInput: JQuery = null;
@@ -34,7 +43,7 @@ export abstract class CredentialsForm extends Form
 
   // ---------------- Public methods --------------------
 
-  // ~ Overrides Form.onShow().
+  // ~ Overrides Component.onShow().
   public onShow()
   {
     super.onShow();

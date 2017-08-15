@@ -15,15 +15,17 @@ export class LoginWindow extends StandaloneFormWindow
 {
   constructor()
   {
-    super();
+    super({ windowParam: { name: 'login_window' }});
+
+    this.setTitle("&gWelcome to &RBrutus&YNext");
+
+    this.createLoginForm();
+    this.createEmptyLine();
+    this.createRegisterLink();
 
     // Show this window when app is in this state.
     this.flags.set(ClientApp.State.LOGIN);
   }
-
-  // ----------------- Public data ----------------------
-
-  public form = new LoginForm();
 
   // ----------------- Private data ---------------------
 
@@ -31,25 +33,25 @@ export class LoginWindow extends StandaloneFormWindow
 
   // ---------------- Public methods --------------------
 
-  // ~ Overrides StandaloneWindow.create().
-  public create()
-  {
-    super.create({ windowParam: { name: 'login_window' }});
+  // // ~ Overrides StandaloneWindow.create().
+  // public create()
+  // {
+  //   super.create({ windowParam: { name: 'login_window' }});
 
-    this.setTitle("&gWelcome to &RBrutus&YNext");
+  //   this.setTitle("&gWelcome to &RBrutus&YNext");
 
-    this.createLoginForm();
+  //   this.createLoginForm();
 
-    this.createEmptyLine();
+  //   this.createEmptyLine();
 
-    this.createRegisterLink();
-  }
+  //   this.createRegisterLink();
+  // }
 
   // ---------------- Private methods -------------------
 
   private createLoginForm()
   {
-    this.form.create({ $parent: this.$content });
+    this.form = new LoginForm(this, { $parent: this.$content });
   }
 
   private createRegisterLink()

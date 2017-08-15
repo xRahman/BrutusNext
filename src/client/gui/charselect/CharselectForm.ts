@@ -7,6 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {Connection} from '../../../client/lib/connection/Connection';
 import {Component} from '../../../client/gui/Component';
 import {Form} from '../../../client/gui/form/Form';
@@ -20,9 +21,25 @@ import {Character} from '../../../client/game/character/Character';
 
 export class CharselectForm extends Form
 {
-  constructor(private charselectWindow: CharselectWindow)
+  constructor
+  (
+    protected parent: CharselectWindow,
+    param: Component.FormParam = {}
+  )
   {
-    super();
+    super
+    (
+      parent,
+      Utils.applyDefaults
+      (
+        param,
+        {
+          name: 'charselect_form',
+          gCssClass: Component.WINDOW_G_CSS_CLASS,
+          sCssClass: CharselectForm.S_CSS_CLASS
+        }
+      )
+    );
   }
 
   public static get S_CSS_CLASS()
@@ -36,21 +53,21 @@ export class CharselectForm extends Form
 
   // ---------------- Public methods --------------------
 
-  // -> Returns created jquery element.
-  public create(param: Component.DivParam = {})
-  {
-    this.applyDefaults
-    (
-      param,
-      {
-        name: 'charselect_form',
-        gCssClass: Component.WINDOW_G_CSS_CLASS,
-        sCssClass: CharselectForm.S_CSS_CLASS
-      }
-    );
+  // // -> Returns created jquery element.
+  // public create(param: Component.DivParam = {})
+  // {
+  //   this.applyDefaults
+  //   (
+  //     param,
+  //     {
+  //       name: 'charselect_form',
+  //       gCssClass: Component.WINDOW_G_CSS_CLASS,
+  //       sCssClass: CharselectForm.S_CSS_CLASS
+  //     }
+  //   );
 
-    super.create(param);
-  }
+  //   super.create(param);
+  // }
 
   // ~ Overrides Form.onShow().
   public onShow()
@@ -81,7 +98,7 @@ export class CharselectForm extends Form
   {
     console.log('CharselectForm.createRequest()');
 
-    let id = this.$form.find(':checked').val();
+    let id = this.$element.find(':checked').val();
 
     if (!id)
     {
@@ -109,19 +126,25 @@ export class CharselectForm extends Form
 
   private createCharacterPlate(character: Character)
   {
-    let charplate = new Charplate(this.charselectWindow, character);
-
-    charplate.create({ $parent: this.$form });
+    let charplate = new Charplate
+    (
+      this.parent,
+      character,
+      { $parent: this.$element }
+    );
 
     this.charplates.set(character.getId(), charplate);
   }
 
   private clear()
   {
+    for (let charplate of this.charplates.values())
+      charplate.delete();
+
     this.charplates.clear();
     
-    // Clear html content of $form.
-    this.$form.empty();
+    /// Tohle už by nemělo bejt potřeba, dělá se to v charplate.delete().
+    // this.$element.empty();
   }
 
   private populate()

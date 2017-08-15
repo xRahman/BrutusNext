@@ -7,6 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {Component} from '../../../client/gui/Component';
 import {CharselectWindow} from
@@ -17,35 +18,13 @@ export class Charplate extends Component
 {
   constructor
   (
-    private charselectWindow: CharselectWindow,
-    private character: Character
+    protected parent: CharselectWindow,
+    private character: Character,
+    param: Component.LabelParam = {}
   )
   {
-    super();
-  }
+    super(parent);
 
-  protected static get S_CSS_CLASS()
-    { return 'S_Charplate'; }
-  protected static get OUTER_LABEL_S_CSS_CLASS()
-    { return 'S_Charplate_OuterLabel'; }
-  protected static get PORTRAIT_S_CSS_CLASS()
-    { return 'S_Charplate_Portrait'; }
-  protected static get LABELS_CONTAINER_S_CSS_CLASS()
-    { return 'S_Charplate_LabelsContainer'; }
-  protected static get LABEL_BIG_S_CSS_CLASS()
-    { return 'S_Charplate_LabelBig'; }
-  protected static get LABEL_SMALL_S_CSS_CLASS()
-    { return 'S_Charplate_LabelSmall'; }
-
-  // ----------------- Private data ---------------------
-
-  private $radio: JQuery = null;
-
-  // ---------------- Public methods --------------------
-
-  // -> Returns created jquery element.
-  public create(param: Component.LabelParam = {})
-  {
     // Implementation note:
     //   In order to style radiobutton with css, we need
     // to hide the actual radiobutton and style the element
@@ -74,6 +53,56 @@ export class Charplate extends Component
     this.createCharplate({ $parent: $label });
   }
 
+  protected static get S_CSS_CLASS()
+    { return 'S_Charplate'; }
+  protected static get OUTER_LABEL_S_CSS_CLASS()
+    { return 'S_Charplate_OuterLabel'; }
+  protected static get PORTRAIT_S_CSS_CLASS()
+    { return 'S_Charplate_Portrait'; }
+  protected static get LABELS_CONTAINER_S_CSS_CLASS()
+    { return 'S_Charplate_LabelsContainer'; }
+  protected static get LABEL_BIG_S_CSS_CLASS()
+    { return 'S_Charplate_LabelBig'; }
+  protected static get LABEL_SMALL_S_CSS_CLASS()
+    { return 'S_Charplate_LabelSmall'; }
+
+  // ----------------- Private data ---------------------
+
+  private $radio: JQuery = null;
+
+  // ---------------- Public methods --------------------
+
+  // // -> Returns created jquery element.
+  // public create(param: Component.LabelParam = {})
+  // {
+  //   // Implementation note:
+  //   //   In order to style radiobutton with css, we need
+  //   // to hide the actual radiobutton and style the element
+  //   // right after it using 'input:checked + .class' css
+  //   // selector.
+  //   //   There are two ways to do it: Either we place a label
+  //   // right next to (hidden) radiobutton and set a 'for'
+  //   // attribute to it to bind it to the checkbox (so the
+  //   // checkbox is cliecked when the label is clicked, or we
+  //   // put a checkbox inside a label (which also makes it
+  //   // clicked anytime the label is clicked) and put another
+  //   // element inside the label which we will be able to style
+  //   // using the '+' css selector.
+  //   //   We use the second option because it allows us to style
+  //   // something else than <label> and we don't have to use
+  //   // 'for' attribute on label this way.
+
+  //   // Create a <label> element.
+  //   let $label = this.createLabelContainer(param);
+    
+  //   // Put a hidden radio input inside it.
+  //   this.$radio = this.createRadio({ $parent: $label });
+
+  //   // Put another element inside the label which will
+  //   // be styled using css.
+  //   this.createCharplate({ $parent: $label });
+  // }
+
   public select()
   {
     if (!this.$radio)
@@ -89,7 +118,7 @@ export class Charplate extends Component
 
   private createLabelContainer(param: Component.LabelParam)
   {
-    this.applyDefaults
+    Utils.applyDefaults
     (
       param,
       {
@@ -109,7 +138,7 @@ export class Charplate extends Component
       return;
     }
 
-    this.applyDefaults
+    Utils.applyDefaults
     (
       param,
       {
@@ -126,7 +155,7 @@ export class Charplate extends Component
 
   private createCharplate(param: Component.DivParam = {})
   {
-    this.applyDefaults
+    Utils.applyDefaults
     (
       param,
       {
@@ -150,7 +179,7 @@ export class Charplate extends Component
 
   private createPortrait(param: Component.DivParam = {})
   {
-    this.applyDefaults
+    Utils.applyDefaults
     (
       param,
       {
@@ -165,7 +194,7 @@ export class Charplate extends Component
 
   private createPortraitLabels(param: Component.DivParam = {})
   {
-    this.applyDefaults
+    Utils.applyDefaults
     (
       param,
       { sCssClass: Charplate.LABELS_CONTAINER_S_CSS_CLASS }
@@ -185,7 +214,7 @@ export class Charplate extends Component
       return;
     }
 
-    this.applyDefaults
+    Utils.applyDefaults
     (
       param,
       {
@@ -208,7 +237,7 @@ export class Charplate extends Component
     }
 
     /// TODO: Tohle je zatím čistě ilustrační.
-    this.applyDefaults
+    Utils.applyDefaults
     (
       param,
       {
@@ -226,11 +255,11 @@ export class Charplate extends Component
 
   private onChange(event: JQueryEventObject)
   {
-    this.charselectWindow.onSelectionChange();
+    this.parent.onSelectionChange();
   }
 
   private onDoubleClick(event: JQueryEventObject)
   {
-    this.charselectWindow.form.submit();
+    this.parent.form.submit();
   }
 }

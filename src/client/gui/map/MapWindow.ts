@@ -15,7 +15,22 @@ export class MapWindow extends TitledWindow
 {
   constructor()
   {
-    super();
+    super
+    (
+      {
+        windowParam:
+        {
+          name: 'map_window',
+          sCssClass: MapWindow.S_CSS_CLASS,
+          resize: (event) => { this.onResize(event); }
+        }
+      }
+    );
+
+    /// TEST
+    this.setTitle('Dragonhelm Mountains');
+
+    this.createSvgMap();
 
     // Show this window when app is in this state.
     this.flags.set(ClientApp.State.IN_GAME);
@@ -34,7 +49,7 @@ export class MapWindow extends TitledWindow
 
   // ----------------- Private data ---------------------
 
-  private svgMap = new SvgMap(this);
+  private svgMap: SvgMap = null;
 
   // Prevents map updating until MapWindow.RESIZE_UPDATE_DELAY
   // miliseconds after last 'window.resize' event.
@@ -48,26 +63,26 @@ export class MapWindow extends TitledWindow
 
   // ---------------- Public methods --------------------
 
-  // ~ Overrides GameWindow.create().
-  public create()
-  {
-    super.create
-    (
-      {
-        windowParam:
-        {
-          name: 'map_window',
-          sCssClass: MapWindow.S_CSS_CLASS,
-          resize: (event) => { this.onResize(event); }
-        }
-      }
-    );
+  // // ~ Overrides GameWindow.create().
+  // public create()
+  // {
+  //   super.create
+  //   (
+  //     {
+  //       windowParam:
+  //       {
+  //         name: 'map_window',
+  //         sCssClass: MapWindow.S_CSS_CLASS,
+  //         resize: (event) => { this.onResize(event); }
+  //       }
+  //     }
+  //   );
 
-    /// TEST
-    this.setTitle('Dragonhelm Mountains');
+  //   /// TEST
+  //   this.setTitle('Dragonhelm Mountains');
 
-    this.createSvgMap();
-  }
+  //   this.createSvgMap();
+  // }
 
   // ~ Overrides Window.onDocumentReady().
   //  (Executes when html document is fully loaded.)
@@ -105,7 +120,7 @@ export class MapWindow extends TitledWindow
 
   private createSvgMap()
   {
-    this.svgMap.create(this.$content);
+    this.svgMap = new SvgMap(this, this.$content);
   }
 
   // Adds or removes svg elements in the map to match

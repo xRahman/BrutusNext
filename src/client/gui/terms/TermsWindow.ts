@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Component} from '../../../client/gui/Component';
 import {TitledWindow} from '../../../client/gui/window/TitledWindow';
@@ -15,23 +16,7 @@ export class TermsWindow extends StandaloneWindow
 {
   constructor()
   {
-    super();
-
-    // Show this window when app is in this state.
-    this.flags.set(ClientApp.State.TERMS);
-  }
-
-  protected static get S_CSS_CLASS()
-    { return 'S_TermsWindow'; }
-  protected static get TERMS_S_CSS_CLASS()
-    { return 'S_TermsWindow_Terms'; }
-
-  // ---------------- Public methods --------------------
-
-  // ~ Overrides Window.create()
-  public create()
-  {
-    super.create
+    super
     (
       {
         windowParam:
@@ -50,7 +35,41 @@ export class TermsWindow extends StandaloneWindow
 
     this.createTermsText();
     this.createAcceptButton();
+
+    // Show this window when app is in this state.
+    this.flags.set(ClientApp.State.TERMS);
   }
+
+  protected static get S_CSS_CLASS()
+    { return 'S_TermsWindow'; }
+  protected static get TERMS_S_CSS_CLASS()
+    { return 'S_TermsWindow_Terms'; }
+
+  // ---------------- Public methods --------------------
+
+  // // ~ Overrides Window.create()
+  // public create()
+  // {
+  //   super.create
+  //   (
+  //     {
+  //       windowParam:
+  //       {
+  //         name: 'terms_window',
+  //         sCssClass: TermsWindow.S_CSS_CLASS
+  //       },
+  //       contentParam:
+  //       {
+  //         sCssClass: TitledWindow.CONTENT_S_CSS_CLASS
+  //       }
+  //     }
+  //   );
+
+  //   this.setTitle("Terms of Use");
+
+  //   this.createTermsText();
+  //   this.createAcceptButton();
+  // }
 
   // --------------- Protected methods ------------------
 
