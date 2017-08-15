@@ -18,29 +18,7 @@ export class ScrollWindow extends TitledWindow
 {
   constructor()
   {
-    super();
-
-    // Show this window when app is in this state.
-    this.flags.set(ClientApp.State.IN_GAME);
-  }
-
-  protected static get S_CSS_CLASS()
-    { return 'S_ScrollWindow'; }
-
-  // ----------------- Public data ----------------------
-
-  public output = new ScrollWindowOutput();
-
-  // ----------------- Private data ---------------------
-
-  private input = new ScrollWindowInput(this);
-
-  // ---------------- Public methods --------------------
-
-  // ~ Overrides GameWindow.create().
-  public create()
-  {
-    super.create
+    super
     (
       {
         windowParam:
@@ -51,12 +29,49 @@ export class ScrollWindow extends TitledWindow
       }
     );
 
-    /// TEST
+     /// TEST
     this.setTitle('Rahman@BrutusNext');
 
     this.createOutput();
     this.createInput();
+
+    // Show this window when app is in this state.
+    this.flags.set(ClientApp.State.IN_GAME);
   }
+
+  protected static get S_CSS_CLASS()
+    { return 'S_ScrollWindow'; }
+
+  // ----------------- Public data ----------------------
+
+  public output: ScrollWindowOutput = null;
+
+  // ----------------- Private data ---------------------
+
+  private input: ScrollWindowInput = null;
+
+  // ---------------- Public methods --------------------
+
+  // // ~ Overrides GameWindow.create().
+  // public create()
+  // {
+  //   super.create
+  //   (
+  //     {
+  //       windowParam:
+  //       {
+  //         name: 'scroll_window',
+  //         sCssClass: ScrollWindow.S_CSS_CLASS
+  //       }
+  //     }
+  //   );
+
+  //   /// TEST
+  //   this.setTitle('Rahman@BrutusNext');
+
+  //   this.createOutput();
+  //   this.createInput();
+  // }
 
   // Writes the command to the output and sends it to the connection.
   public sendCommand(command: string)
@@ -105,13 +120,21 @@ export class ScrollWindow extends TitledWindow
   // ---------------- Private methods -------------------
 
   private createOutput()
-  { 
-    this.output.create({ $parent: this.$content });
+  {
+    this.output = new ScrollWindowOutput
+    (
+      this,
+      { $parent: this.$content }
+    );
   }
 
   private createInput()
   {
-    this.input.create({ $parent: this.$content });
+    this.input = new ScrollWindowInput
+    (
+      this,
+      this.input.create({ $parent: this.$content })
+    );
   }
 
   // Adds the 'command' string to the 'output' element.

@@ -108,7 +108,7 @@ export class Windows
   // Creates a 'ScrollWindow' and adds it to app_body.
   public createScrollWindow()
   {
-    return this.createAndAdd(new ScrollWindow());
+    return this.add(new ScrollWindow());
   }
 
   // Creates a 'Map' window and adds it to app_body.
@@ -117,7 +117,7 @@ export class Windows
     if (this.alreadyExists(this.mapWindow, 'Map'))
       return;
 
-    this.mapWindow = this.createAndAdd(new MapWindow());
+    this.mapWindow = this.add(new MapWindow());
 
     return this.mapWindow;
   }
@@ -136,7 +136,7 @@ export class Windows
     if (this.alreadyExists(this.loginWindow, 'Login'))
       return;
 
-    this.loginWindow = this.createAndAdd(new LoginWindow());
+    this.loginWindow = this.add(new LoginWindow());
 
     return this.loginWindow;
   }
@@ -146,7 +146,7 @@ export class Windows
     if (this.alreadyExists(this.registerWindow, 'Register'))
       return;
 
-    this.registerWindow = this.createAndAdd(new RegisterWindow());
+    this.registerWindow = this.add(new RegisterWindow());
 
     return this.registerWindow;
   }
@@ -156,7 +156,7 @@ export class Windows
     if (this.alreadyExists(this.termsWindow, 'Terms'))
       return;
 
-    this.termsWindow = this.createAndAdd(new TermsWindow());
+    this.termsWindow = this.add(new TermsWindow());
 
     return this.termsWindow;
   }
@@ -166,7 +166,7 @@ export class Windows
     if (this.alreadyExists(this.charselectWindow, 'Charlist'))
       return;
 
-    this.charselectWindow = this.createAndAdd(new CharselectWindow());
+    this.charselectWindow = this.add(new CharselectWindow());
 
     return this.charselectWindow;
   }
@@ -176,7 +176,7 @@ export class Windows
     if (this.alreadyExists(this.chargenWindow, 'Chargen'))
       return;
 
-    this.chargenWindow = this.createAndAdd(new ChargenWindow());
+    this.chargenWindow = this.add(new ChargenWindow());
 
     return this.chargenWindow;
   }
@@ -191,9 +191,8 @@ export class Windows
     }
   }
 
-  private createAndAdd<T extends Window>(window: T)
+  private add<T extends Window>(window: T)
   {
-    window.create();
     this.windows.add(window);
 
     return window;

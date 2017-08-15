@@ -7,6 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {MudColors} from '../../../client/gui/MudColors';
 import {Connection} from '../../../client/lib/connection/Connection';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
@@ -19,25 +20,13 @@ import {RegisterResponse} from '../../../shared/lib/protocol/RegisterResponse';
 
 export class RegisterForm extends CredentialsForm
 {
-  private static get RECOMMENDATION()
+  constructor(parent: Component, param: Component.FormParam = {})
   {
-    return MudColors.RECOMMENDATION_TEXT_COLOR
-      + 'We strongly recommend that you use different'
-      + ' password than on your e-mail account.';
-  }
-
-  // ----------------- Private data ---------------------
-
-  private $infoLabel: JQuery = null;
-
-  // ---------------- Public methods --------------------
-
-  // ~ Overrides Form.create().
-  public create(param: Component.FormParam = {})
-  {
-    this.applyDefaults(param, { name: 'register_form' });
-
-    super.create(param);
+    super
+    (
+      parent,
+      Utils.applyDefaults(param, { name: 'register_form' })  
+    );
 
     super.createLabel({ text: 'Your E-mail Address' });
     this.createEmailInput();
@@ -57,6 +46,45 @@ export class RegisterForm extends CredentialsForm
     this.createRememberMeCheckbox();
     this.createButtons();
   }
+
+  private static get RECOMMENDATION()
+  {
+    return MudColors.RECOMMENDATION_TEXT_COLOR
+      + 'We strongly recommend that you use different'
+      + ' password than on your e-mail account.';
+  }
+
+  // ----------------- Private data ---------------------
+
+  private $infoLabel: JQuery = null;
+
+  // ---------------- Public methods --------------------
+
+  // // ~ Overrides Form.create().
+  // public create(param: Component.FormParam = {})
+  // {
+  //   Utils.applyDefaults(param, { name: 'register_form' });
+
+  //   super.create(param);
+
+  //   super.createLabel({ text: 'Your E-mail Address' });
+  //   this.createEmailInput();
+  //   this.createEmailProblemNotice();
+
+  //   this.createEmptyLine();
+
+  //   super.createLabel({ text: 'Your New Password' });
+  //   this.createPasswordInput();
+  //   this.createPasswordProblemNotice();
+
+  //   this.createEmptyLine();
+
+  //   this.createInfoLabel();
+  //   this.createEmptyLine();
+
+  //   this.createRememberMeCheckbox();
+  //   this.createButtons();
+  // }
 
   public displayProblem(response: RegisterResponse)
   {
@@ -113,7 +141,7 @@ export class RegisterForm extends CredentialsForm
   // ~ Overrides Form.createSubmitButton().
   protected createSubmitButton(param: Component.SubmitButtonParam = {})
   {
-    this.applyDefaults
+    Utils.applyDefaults
     (
       param,
       {
@@ -176,7 +204,7 @@ export class RegisterForm extends CredentialsForm
 
   private createCancelButton(param: Component.ButtonParam = {})
   {
-    this.applyDefaults
+    Utils.applyDefaults
     (
       param,
       {

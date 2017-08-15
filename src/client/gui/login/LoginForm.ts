@@ -7,6 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {LocalStorage} from '../../../client/lib/storage/LocalStorage';
 import {Connection} from '../../../client/lib/connection/Connection';
 import {Component} from '../../../client/gui/Component';
@@ -16,22 +17,21 @@ import {LoginResponse} from '../../../shared/lib/protocol/LoginResponse';
 
 export class LoginForm extends CredentialsForm
 {
-  // ---------------- Public methods --------------------
-
-  // ~ Overrides Form.create().
-  public create(param: Component.FormParam = {})
+  constructor(parent: Component, param: Component.FormParam = {})
   {
-    this.applyDefaults(param, { name: 'login_form' });
+    super
+    (
+      parent,
+      Utils.applyDefaults(param, { name: 'login_form' })  
+    );
 
-    super.create(param);
-
-    super.createLabel({ text: 'E-mail Address' });
+    this.createLabel({ text: 'E-mail Address' });
     this.createEmailInput();
     this.createEmailProblemNotice();
 
     this.createEmptyLine();
 
-    super.createLabel({ text: 'Password' });
+    this.createLabel({ text: 'Password' });
     this.createPasswordInput();
     this.createPasswordProblemNotice();
 
@@ -40,6 +40,31 @@ export class LoginForm extends CredentialsForm
     this.createRememberMeCheckbox();
     this.createButtons();
   }
+
+  // ---------------- Public methods --------------------
+
+  // // ~ Overrides Form.create().
+  // public create(param: Component.FormParam = {})
+  // {
+  //   this.applyDefaults(param, { name: 'login_form' });
+
+  //   super.create(param);
+
+  //   super.createLabel({ text: 'E-mail Address' });
+  //   this.createEmailInput();
+  //   this.createEmailProblemNotice();
+
+  //   this.createEmptyLine();
+
+  //   super.createLabel({ text: 'Password' });
+  //   this.createPasswordInput();
+  //   this.createPasswordProblemNotice();
+
+  //   this.createEmptyLine();
+
+  //   this.createRememberMeCheckbox();
+  //   this.createButtons();
+  // }
 
   public displayProblem(response: LoginResponse)
   {
@@ -97,7 +122,7 @@ export class LoginForm extends CredentialsForm
   // ~ Overrides Form.createSubmitButton().
   protected createSubmitButton(param: Component.SubmitButtonParam = {})
   {
-    this.applyDefaults(param, { text: 'Login' });
+    Utils.applyDefaults(param, { text: 'Login' });
 
     return super.createSubmitButton(param);
   }

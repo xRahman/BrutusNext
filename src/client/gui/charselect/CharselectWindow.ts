@@ -16,15 +16,17 @@ export class CharselectWindow extends StandaloneFormWindow
 {
   constructor()
   {
-    super();
+    super({ windowParam: { name: 'charselect_window' }});
+
+    this.setTitle("Your Characters");
+
+    this.createButtonNewCharacter();
+    this.createCharselectForm();
+    this.createButtonEnterGame();
 
     // Show this window when app is in this state.
     this.flags.set(ClientApp.State.CHARSELECT);
   }
-
-  // ----------------- Public data ----------------------
-
-  public form = new CharselectForm(this);
 
   // ----------------- Private data ---------------------
 
@@ -32,17 +34,17 @@ export class CharselectWindow extends StandaloneFormWindow
 
   // ---------------- Public methods --------------------
 
-  // ~ Overrides StandaloneWindow.create().
-  public create()
-  {
-    super.create({ windowParam: { name: 'charselect_window' }});
+  // // ~ Overrides StandaloneWindow.create().
+  // public create()
+  // {
+  //   super.create({ windowParam: { name: 'charselect_window' }});
 
-    this.setTitle("Your Characters");
+  //   this.setTitle("Your Characters");
 
-    this.createButtonNewCharacter();
-    this.createCharselectForm();
-    this.createButtonEnterGame();
-  }
+  //   this.createButtonNewCharacter();
+  //   this.createCharselectForm();
+  //   this.createButtonEnterGame();
+  // }
 
   public onSelectionChange()
   {
@@ -53,7 +55,7 @@ export class CharselectWindow extends StandaloneFormWindow
 
   private createCharselectForm()
   {
-    this.form.create({ $parent: this.$content });
+    this.form = new CharselectForm(this, { $parent: this.$content });
   }
 
   private createButtonNewCharacter()

@@ -18,19 +18,13 @@ import {ChargenResponse} from '../../../shared/lib/protocol/ChargenResponse';
 
 export class ChargenForm extends Form
 {
-  // ----------------- Private data ---------------------
-
-  private $characterNameInput: JQuery = null;
-  private $characterNameProblem: JQuery = null;
-
-  // ---------------- Public methods --------------------
-
-  // ~ Overrides Form.create().
-  public create(param: Component.FormParam = {})
+  constructor(parent: Component, param: Component.FormParam = {})
   {
-    Utils.applyDefaults(param, { name: 'chargen_form' });
-
-    super.create(param);
+    super
+    (
+      parent,
+      Utils.applyDefaults(param, { name: 'chargen_form' })  
+    );
 
     this.createLabel({ text: 'Character Name' });
     this.createCharacterNameInput();
@@ -40,6 +34,29 @@ export class ChargenForm extends Form
 
     this.createButtons();
   }
+
+  // ----------------- Private data ---------------------
+
+  private $characterNameInput: JQuery = null;
+  private $characterNameProblem: JQuery = null;
+
+  // ---------------- Public methods --------------------
+
+  // // ~ Overrides Form.create().
+  // public create(param: Component.FormParam = {})
+  // {
+  //   Utils.applyDefaults(param, { name: 'chargen_form' });
+
+  //   super.create(param);
+
+  //   this.createLabel({ text: 'Character Name' });
+  //   this.createCharacterNameInput();
+  //   this.createNameProblemNotice();
+
+  //   this.createEmptyLine();
+
+  //   this.createButtons();
+  // }
 
   public displayProblem(response: ChargenResponse)
   {
@@ -74,7 +91,7 @@ export class ChargenForm extends Form
   {
     super.onShow();
 
-    this.resetForm();
+    this.reset();
     this.enableSubmitButton();
     this.hideProblems();
     this.focusCharacterNameInput();
@@ -85,7 +102,7 @@ export class ChargenForm extends Form
   // ~ Overrides Form.createSubmitButton().
   protected createSubmitButton(param: Component.SubmitButtonParam = {})
   {
-    this.applyDefaults
+    Utils.applyDefaults
     (
       param,
       {

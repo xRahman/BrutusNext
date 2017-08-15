@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {Flags} from '../../../shared/lib/utils/Flags';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Component} from '../../../client/gui/Component';
@@ -13,6 +14,28 @@ import {Document} from '../../../client/gui/Document';
 
 export class Window extends Component
 {
+  constructor(windowParam: Component.DivParam = {})
+  {
+    // Windows are root components, they don't have parent.
+    super(null);
+
+    Utils.applyDefaults
+    (
+      windowParam,
+      {
+        name: 'window',
+        $parent: Document.$body,
+        gCssClass: Component.WINDOW_G_CSS_CLASS,
+        sCssClass: Window.S_CSS_CLASS
+      }
+    );
+
+    this.$element = this.createDiv(windowParam);
+
+    // Windows are created hidden.
+    this.$element.hide();
+  }
+
   protected static get S_CSS_CLASS()
     { return 'S_Window'; }
 
@@ -28,8 +51,6 @@ export class Window extends Component
   // Determines app states at which this window is shown.
   protected flags = new Flags<ClientApp.State>();
 
-  protected $window: JQuery = null;
-
   // ----------------- Private data ---------------------
 
   // Internal flag to prevent calling onHide() if window
@@ -42,27 +63,27 @@ export class Window extends Component
 
   // ---------------- Public methods --------------------
 
-  public create
-  (
-    { windowParam }: { windowParam?: Component.DivParam } = {}
-  )
-  {
-    this.applyDefaults
-    (
-      windowParam,
-      {
-        name: 'window',
-        $parent: Document.$body,
-        gCssClass: Component.WINDOW_G_CSS_CLASS,
-        sCssClass: Window.S_CSS_CLASS
-      }
-    );
+  // private create
+  // (
+  //   windowParam: Component.DivParam = {}
+  // )
+  // {
+  //   this.applyDefaults
+  //   (
+  //     windowParam,
+  //     {
+  //       name: 'window',
+  //       $parent: Document.$body,
+  //       gCssClass: Component.WINDOW_G_CSS_CLASS,
+  //       sCssClass: Window.S_CSS_CLASS
+  //     }
+  //   );
 
-    this.$window = this.createDiv(windowParam);
+  //   this.$window = this.createDiv(windowParam);
 
-    // Windows are created hidden.
-    this.$window.hide();
-  }
+  //   // Windows are created hidden.
+  //   this.$window.hide();
+  // }
 
   public showByState(state: ClientApp.State)
   {
@@ -78,11 +99,6 @@ export class Window extends Component
   // Executes when html document is resized.
   public onDocumentResize() {}
 
-  // --------------- Protected methods ------------------
-
-  protected onShow() {}
-  protected onHide() {}
-
   // ---------------- Private methods -------------------
 
   private hide()
@@ -90,9 +106,9 @@ export class Window extends Component
     if (this.hidden)
       return;
 
-    this.onHide();
-    this.$window.hide();
+    this.$element.hide();
     this.hidden = true;
+    this.onHide();
   }
 
   private show()
@@ -103,7 +119,7 @@ export class Window extends Component
     if (!this.hidden)
       return;
 
-    this.$window.show();
+    this.$element.show();
     this.hidden = false;
 
     // Note: onShow() must be called after this.$window.show()

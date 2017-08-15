@@ -29,10 +29,9 @@ export abstract class FormInput extends Component
 
   // ---------------- Protected data --------------------
 
-  protected $form: JQuery = null;
-  protected $submitButton: JQuery = null;
-  protected $errorLabel: JQuery = null;
-  protected $errorEmptyLine: JQuery = null;
+  protected $label: JQuery = null;
+  protected $input: JQuery = null;
+  protected $problem: JQuery = null;
 
   // ----------------- Private data ---------------------
 
