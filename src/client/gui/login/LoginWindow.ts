@@ -7,11 +7,10 @@
 'use strict';
 
 import {ClientApp} from '../../../client/lib/app/ClientApp';
-import {StandaloneFormWindow} from
-  '../../../client/gui/window/StandaloneFormWindow';
+import {StandaloneWindow} from '../../../client/gui/window/StandaloneWindow';
 import {LoginForm} from '../../../client/gui/login/LoginForm';
 
-export class LoginWindow extends StandaloneFormWindow
+export class LoginWindow extends StandaloneWindow
 {
   constructor()
   {
@@ -30,6 +29,10 @@ export class LoginWindow extends StandaloneFormWindow
   // ----------------- Private data ---------------------
 
   private $registerLink: JQuery = null;
+
+  // ----------------- Public data ---------------------- 
+
+  public form: LoginForm = null;
 
   // ---------------- Public methods --------------------
 

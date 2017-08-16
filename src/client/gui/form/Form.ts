@@ -37,10 +37,10 @@ export abstract class Form extends Component
     this.createErrorLabel();
   }
 
-  protected static get TEXT_S_CSS_CLASS()
+  public static get TEXT_S_CSS_CLASS()
     { return 'S_Form_Text'; }
-  protected static get INPUT_S_CSS_CLASS()
-    { return 'S_Form_Input'; }
+  // protected static get INPUT_S_CSS_CLASS()
+  //   { return 'S_Form_Input'; }
   protected static get CHECKBOX_S_CSS_CLASS()
     { return 'S_Form_Checkbox'; }
   protected static  get LEFT_BUTTON_S_CSS_CLASS()
@@ -102,113 +102,113 @@ export abstract class Form extends Component
   //   this.createErrorLabel();
   // }
 
-  protected createLabel(param: Component.LabelParam = {})
-  {
-    Utils.applyDefaults
-    (
-      param,
-      {
-        $parent: this.$element,
-        sCssClass: Form.TEXT_S_CSS_CLASS
-      }
-    );
+  // protected createLabel(param: Component.LabelParam = {})
+  // {
+  //   Utils.applyDefaults
+  //   (
+  //     param,
+  //     {
+  //       $parent: this.$element,
+  //       sCssClass: Form.TEXT_S_CSS_CLASS
+  //     }
+  //   );
 
-    return super.createLabel(param);
-  }
+  //   return super.createLabel(param);
+  // }
 
-  protected createTextInput(param: Component.TextInputParam = {})
-  {
-    Utils.applyDefaults
-    (
-      param,
-      {
-        $parent: this.$element,
-        sCssClass: Form.INPUT_S_CSS_CLASS,
-        autocorrect: Component.Autocorrect.OFF,
-        autocomplete: Component.Autocomplete.OFF,
-        spellcheck: false
-      }
-    );
+  // protected createTextInput(param: Component.TextInputParam = {})
+  // {
+  //   Utils.applyDefaults
+  //   (
+  //     param,
+  //     {
+  //       $parent: this.$element,
+  //       sCssClass: Form.INPUT_S_CSS_CLASS,
+  //       autocorrect: Component.Autocorrect.OFF,
+  //       autocomplete: Component.Autocomplete.OFF,
+  //       spellcheck: false
+  //     }
+  //   );
 
-    return super.createTextInput(param);
-  }
+  //   return super.createTextInput(param);
+  // }
 
-  protected createPasswordInput(param: Component.PasswordInputParam = {})
-  {
-    Utils.applyDefaults
-    (
-      param,
-      {
-        $parent: this.$element,
-        sCssClass: Form.INPUT_S_CSS_CLASS,
-        required: true,
-        autocorrect: Component.Autocorrect.OFF,
-        autocomplete: Component.Autocomplete.OFF,
-        spellcheck: false
-      }
-    );
+  // protected createPasswordInput(param: Component.PasswordInputParam = {})
+  // {
+  //   Utils.applyDefaults
+  //   (
+  //     param,
+  //     {
+  //       $parent: this.$element,
+  //       sCssClass: Form.INPUT_S_CSS_CLASS,
+  //       required: true,
+  //       autocorrect: Component.Autocorrect.OFF,
+  //       autocomplete: Component.Autocomplete.OFF,
+  //       spellcheck: false
+  //     }
+  //   );
 
-    return super.createPasswordInput(param);
-  }
+  //   return super.createPasswordInput(param);
+  // }
 
-  protected createEmailInput(param: Component.EmailInputParam = {})
-  {
-    Utils.applyDefaults
-    (
-      param,
-      {
-        $parent: this.$element,
-        sCssClass: Form.INPUT_S_CSS_CLASS,
-        required: true,
-        autocorrect: Component.Autocorrect.OFF,
-        // 'autocomplete' value could be 'email' but we have
-        // 'remember me' option so there is no need for it.
-        autocomplete: Component.Autocomplete.OFF,
-        spellcheck: false
-      }
-    );
+  // protected createEmailInput(param: Component.EmailInputParam = {})
+  // {
+  //   Utils.applyDefaults
+  //   (
+  //     param,
+  //     {
+  //       $parent: this.$element,
+  //       sCssClass: Form.INPUT_S_CSS_CLASS,
+  //       required: true,
+  //       autocorrect: Component.Autocorrect.OFF,
+  //       // 'autocomplete' value could be 'email' but we have
+  //       // 'remember me' option so there is no need for it.
+  //       autocomplete: Component.Autocomplete.OFF,
+  //       spellcheck: false
+  //     }
+  //   );
 
-    return super.createEmailInput(param);
-  }
+  //   return super.createEmailInput(param);
+  // }
 
-  // Checkbox is actualy a <label> containing a checkbox input element.
-  protected createCheckbox
-  (
-    {
-      labelParam,
-      checkboxParam
-    }
-    : Form.CheckboxParam = {}
-  )
-  : JQuery
-  {
-    Utils.applyDefaults
-    (
-      labelParam,
-      {
-        name: 'checkbox_label',
-        $parent: this.$element,
-        sCssClass: Form.TEXT_S_CSS_CLASS
-      }
-    );
+  // // Checkbox is actualy a <label> containing a checkbox input element.
+  // protected createCheckbox
+  // (
+  //   {
+  //     labelParam,
+  //     checkboxParam
+  //   }
+  //   : Form.CheckboxParam = {}
+  // )
+  // : JQuery
+  // {
+  //   Utils.applyDefaults
+  //   (
+  //     labelParam,
+  //     {
+  //       name: 'checkbox_label',
+  //       $parent: this.$element,
+  //       sCssClass: Form.TEXT_S_CSS_CLASS
+  //     }
+  //   );
 
-    let $label = this.createLabel(labelParam);
+  //   let $label = this.createLabel(labelParam);
 
-    Utils.applyDefaults
-    (
-      checkboxParam,
-      {
-        // Put checkbox inside a label so mouse clicks
-        // on label text will toggle the checkbox.
-        $parent: $label,
-        sCssClass: Form.CHECKBOX_S_CSS_CLASS,
-        // Place checkbox before the text.
-        insertMode: Component.InsertMode.PREPEND
-      }
-    );
+  //   Utils.applyDefaults
+  //   (
+  //     checkboxParam,
+  //     {
+  //       // Put checkbox inside a label so mouse clicks
+  //       // on label text will toggle the checkbox.
+  //       $parent: $label,
+  //       sCssClass: Form.CHECKBOX_S_CSS_CLASS,
+  //       // Place checkbox before the text.
+  //       insertMode: Component.InsertMode.PREPEND
+  //     }
+  //   );
 
-    return this.createCheckboxInput(checkboxParam);
-  }
+  //   return this.createCheckboxInput(checkboxParam);
+  // }
 
   protected createButtonContainer(param: Component.DivParam = {})
   {

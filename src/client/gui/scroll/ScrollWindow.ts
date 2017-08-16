@@ -133,7 +133,7 @@ export class ScrollWindow extends TitledWindow
     this.input = new ScrollWindowInput
     (
       this,
-      this.input.create({ $parent: this.$content })
+      { $parent: this.$content }
     );
   }
 
