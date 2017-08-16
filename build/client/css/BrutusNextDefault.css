@@ -273,7 +273,7 @@
 /* :: Enabled Text Selection :: */
 .S_ScrollWindowOutput,
 .S_ScrollWindowInput,
-.S_Form_Input,
+.S_FormInput,
 .S_TermsWindow_Terms
 {
   -khtml-user-select: text;
@@ -749,7 +749,7 @@ input:checked + .G_SelectablePlate
 /* ----------------- Form ---------------- */
 
 /* :: FormInput :: */
-.S_Form_Input
+.S_FormInput
 {
   width: 100%;
   padding-top: 0.3em;

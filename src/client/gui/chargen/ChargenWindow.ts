@@ -8,11 +8,10 @@
 
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Component} from '../../../client/gui/Component';
-import {StandaloneFormWindow} from
-  '../../../client/gui/window/StandaloneFormWindow';
+import {StandaloneWindow} from '../../../client/gui/window/StandaloneWindow';
 import {ChargenForm} from '../../../client/gui/chargen/ChargenForm';
 
-export class ChargenWindow extends StandaloneFormWindow
+export class ChargenWindow extends StandaloneWindow
 {
   constructor()
   {
@@ -24,6 +23,10 @@ export class ChargenWindow extends StandaloneFormWindow
     // Show this window when app is in this state.
     this.flags.set(ClientApp.State.CHARGEN);
   }
+
+  // ----------------- Public data ---------------------- 
+
+  public form: ChargenForm = null;
 
   // ---------------- Public methods --------------------
 

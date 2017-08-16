@@ -68,6 +68,11 @@ export abstract class Component
   protected static get HIDDEN_S_CSS_CLASS()
     { return 'S_Component_Hidden'; }
 
+  // ----------------- Private data --------------------- 
+
+  // This flag is set to 'true' when 'delete()' method is called.
+  private deleted = false;
+
   // ---------------- Protected data -------------------- 
 
   // JQuery container referencing html element representing
@@ -75,8 +80,16 @@ export abstract class Component
   protected $element: JQuery = null;
   protected children = new Set<Component>();
 
+  // --------------- Public accessors -------------------
+
+  public isDeleted() { return this.deleted; }
+
   // ---------------- Public methods --------------------
 
+  // Removes associated $element from DOM and removes component
+  // from it's parent's list of children. If someone else (or
+  // even the parent) has another reference to this component,
+  // the component will not be released from memory.
   public delete()
   {
     // Remove element from DOM
@@ -85,6 +98,8 @@ export abstract class Component
     this.$element.remove();
 
     this.parent.children.delete(this);
+
+    this.deleted = true;
   }
 
   // --------------- Protected methods ------------------
@@ -533,9 +548,12 @@ export module Component
 {
   export enum InsertMode
   {
-    APPEND,   // Default value.
+    // Insert as the last child (default).
+    APPEND,
+    // Insert as the first child.
     PREPEND,
-    REPLACE   // Html contents of $parent is cleared first.
+    // Html contents of $parent is cleared first.
+    REPLACE
   }
 
   // ------------- Non-attribute Parameters -------------
