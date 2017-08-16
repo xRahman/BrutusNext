@@ -163,7 +163,7 @@ export class ChargenForm extends Form
   {
     this.$characterNameProblem = this.createEmptyLine
     (
-      { name: 'name_problem_notice'}
+      { name: 'name_problem_notice' }
     );
   }
 

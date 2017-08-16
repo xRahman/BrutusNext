@@ -9,6 +9,8 @@ TODO: Různě po GUI mám podmínky jako:
     this.$form.hide();
 - Většinou by to měl bejt assert.
 
+TODO: Promazat zakomentovaný kód v GUI.
+
 --------------------------------------------------------------
 
 TODO: Vymyslet, kam vypisovat problém při otevírání connection.
@@ -72,13 +74,15 @@ I když... Pořád může uživatel kliknout jinam a focus oknu sebrat.
 Hodně ďábelská myšlenka:
 - udělat komponentu na inputy, která bude obsahovat imput a jeho
   label a problem label.
-(a možná by se dalo sloučit vyrábění komponent přes new() a volání
- create())
+
 
 TODO: Udělat si vlastní validování minLenghtu
 - jde tuším nějak komponentě nastavit problem message.
+Tohle není dobrej nápad, protože defaultní hlášky browseru jsou lokalizované.
+Spíš defaultní validaci vypnu.
 
 TODO: Udělat vlastní grafiku pro validation problem notice.
+- nebo tu defaultní vypnout
 
 TODO: Udělat vlastní grafiku pro checkbox (když už to umím ;-)).
   (Hmm, problém bude asi s jazykem - ostatní hlášky budou lokalizované).
@@ -92,31 +96,6 @@ Hmm, nakonec bude asi fakt nejlepší vypnout veškerou nativní validaci
 Nevýhoda je, že se to nevyhazuje v tooltip boxu (i když i to bych asi mohl
 zařídit, když bych o to stál).
 
-
-TODO: V Component udělat pole 'children', do kterého se budou vkládat
-  subkomponenty (možná spíš Set).
-  Důvod: Bude se jim automaticky provolávat onShow(), onHide() a podobně.
-- konstruktor komponet by měl mít jako parametr 'parent' a automaticky
-  se přidávat do jeho childů.
-  (otázka je, jak pořešit root komponentu (třeba window). Parametr
-  'parent' by ideálně neměl mít defaultní hodnotu, aby ho nešlo opomenout.
-  Tzn. při vytváření oken se do něj asi bude muset explicitně předávat 'null'.
-
-TODO: create() metody by měly být protected, ne public
-  (budou se volat automaticky v constructoru).
-
-TODO: Pokud bude přechod na 'children' fungovat, tak můžu zrušit
-  celé StandalonFormWindow property $form si budou holt muset
-  deklarovat konkrétní okna.
-  - nebo ho nechat jen kvůli deklaradi property $form...
-
-TODO: Metoda na rušení komponent. Možná delete()?
-  - komponenta by se v rámci delete() měla vyhodit z .children parenta.
-    (problém ale je, že se asi nevyhodí z pojmenované reference...)
-
-TODO: Korektní mazání charplatů z CharselectForm
-  (musej se mimo jiné vyhazovat z .children)
-[snad]
 
 --------------------------------------------------------------
 
@@ -209,6 +188,44 @@ TODO: Otestovat reconnect z jiného tabu.
   jinak to těžko odladím.
 
 --------------------------------------------------------------
+
+TODO: (a možná by se dalo sloučit vyrábění komponent přes new() a volání
+ create())
+[done]
+
+TODO: V Component udělat pole 'children', do kterého se budou vkládat
+  subkomponenty (možná spíš Set).
+  Důvod: Bude se jim automaticky provolávat onShow(), onHide() a podobně.
+- konstruktor komponet by měl mít jako parametr 'parent' a automaticky
+  se přidávat do jeho childů.
+  (otázka je, jak pořešit root komponentu (třeba window). Parametr
+  'parent' by ideálně neměl mít defaultní hodnotu, aby ho nešlo opomenout.
+  Tzn. při vytváření oken se do něj asi bude muset explicitně předávat 'null'.
+- je to v pohodě, 'null' se předává jedině v konstruktoru okna (super(null)).
+[done]
+
+TODO: create() metody by měly být protected, ne public
+  (budou se volat automaticky v constructoru).
+- jsou zrušené.
+[done]
+
+TODO: Pokud bude přechod na 'children' fungovat, tak můžu zrušit
+  celé StandalonFormWindow property $form si budou holt muset
+  deklarovat konkrétní okna.
+  - nebo ho nechat jen kvůli deklaradi property $form...
+Zrušeno, beztak jsem musel v každém okně deklarovat 'form' kvůli typu.
+[done]
+
+TODO: Metoda na rušení komponent. Možná delete()?
+  - komponenta by se v rámci delete() měla vyhodit z .children parenta.
+    (problém ale je, že se asi nevyhodí z pojmenované reference...
+     - to si musí zařídit ten, kdo komponentu maže)
+[done]
+
+TODO: Korektní mazání charplatů z CharselectForm
+  (musej se mimo jiné vyhazovat z .children)
+[snad]
+
 
 TODO: Za error hláškama v loginu a registeru by se asi hodila
   prázdná řádka (v chargenu je).
