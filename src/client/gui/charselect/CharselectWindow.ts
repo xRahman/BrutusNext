@@ -9,10 +9,9 @@
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Component} from '../../../client/gui/Component';
 import {CharselectForm} from '../../../client/gui/charselect/CharselectForm';
-import {StandaloneFormWindow} from
-  '../../../client/gui/window/StandaloneFormWindow';
+import {StandaloneWindow} from '../../../client/gui/window/StandaloneWindow';
 
-export class CharselectWindow extends StandaloneFormWindow
+export class CharselectWindow extends StandaloneWindow
 {
   constructor()
   {
@@ -31,6 +30,10 @@ export class CharselectWindow extends StandaloneFormWindow
   // ----------------- Private data ---------------------
 
   private $enterGameButton: JQuery = null;
+
+  // ----------------- Public data ---------------------- 
+
+  public form: CharselectForm = null;
 
   // ---------------- Public methods --------------------
 

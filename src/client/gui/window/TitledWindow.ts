@@ -79,12 +79,12 @@ export class TitledWindow extends Window
     titleParam: Component.TitleParam
   )
   {
-    this.applyDefaults
+    Utils.applyDefaults
     (
       titleBarParam,
       {
         name: 'title_bar',
-        $parent: this.$window,
+        $parent: this.$element,
         gCssClass: Component.TITLE_BAR_G_CSS_CLASS,
         sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS
       }
@@ -97,7 +97,7 @@ export class TitledWindow extends Window
 
   protected createWindowTitle(param: Component.TitleParam = {})
   {
-    this.applyDefaults
+    Utils.applyDefaults
     (
       param,
       {
@@ -113,12 +113,12 @@ export class TitledWindow extends Window
 
   protected createContent(param: Component.DivParam = {})
   {
-    this.applyDefaults
+    Utils.applyDefaults
     (
       param,
       {
         name: 'window_content',
-        $parent: this.$window,
+        $parent: this.$element,
         sCssClass: TitledWindow.CONTENT_S_CSS_CLASS
       }
     );
