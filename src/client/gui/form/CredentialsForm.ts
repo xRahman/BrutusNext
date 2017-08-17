@@ -21,6 +21,9 @@ import {Component} from '../../../client/gui/Component';
 import {LocalStorage} from '../../../client/lib/storage/LocalStorage';
 import {RegisterRequest} from '../../../shared/lib/protocol/RegisterRequest';
 import {Form} from '../../../client/gui/form/Form';
+import {EmailInput} from '../../../client/gui/form/EmailInput';
+import {PasswordInput} from '../../../client/gui/form/PasswordInput';
+import {CheckboxInput} from '../../../client/gui/form/CheckboxInput';
 
 export abstract class CredentialsForm extends Form
 {
@@ -35,11 +38,14 @@ export abstract class CredentialsForm extends Form
 
   // ---------------- Protected data --------------------
 
-  protected $emailInput: JQuery = null;
-  protected $emailProblem: JQuery = null;
-  protected $passwordInput: JQuery = null;
-  protected $passwordProblem: JQuery = null;
-  protected $rememberMeCheckbox = null;
+  protected emailInput: EmailInput = null;
+  protected passwordInput: PasswordInput = null;
+  protected rememberMeCheckbox: CheckboxInput = null;
+  // protected $emailInput: JQuery = null;
+  // protected $emailProblem: JQuery = null;
+  // protected $passwordInput: JQuery = null;
+  // protected $passwordProblem: JQuery = null;
+  // protected $rememberMeCheckbox = null;
 
   // ---------------- Public methods --------------------
 
@@ -61,12 +67,12 @@ export abstract class CredentialsForm extends Form
     if (!LocalStorage.isAvailable())
       return;
 
-    if (this.$rememberMeCheckbox.prop('checked'))
+    if (this.rememberMeCheckbox.isChecked())
     {
       LocalStorage.write
       (
         LocalStorage.EMAIL_ENTRY,
-        this.$emailInput.val()
+        this.emailInput.getValue()
       );
 
       /// TODO:
@@ -75,106 +81,167 @@ export abstract class CredentialsForm extends Form
       LocalStorage.write
       (
         LocalStorage.PASSWORD_ENTRY,
-        this.$passwordInput.val()
+        this.passwordInput.getValue()
       );
     }
   }
 
   // --------------- Protected methods ------------------
 
-  // ~ Overrides Form.createEmailInput().
   protected createEmailInput()
   {
-    this.$emailInput = super.createEmailInput
-    (
-      {
-        name: 'email_input',
-        placeholder: 'Enter E-mail Address'
-      }
-    );
+    if (this.emailInput)
+    {
+      ERROR("Component is not created because it already exists");
+      return;
+    }
 
-    return this.$emailInput;
+    this.emailInput = new EmailInput(this);
+
+    // this.emailInput = new EmailInput
+    // (
+    //   this,
+    //   {
+    //     inputParam:
+    //     {
+    //       placeholder: 'Enter E-mail Address'
+    //     }
+    //   }
+    // );
+
+    // this.$emailInput = super.createEmailInput
+    // (
+    //   {
+    //     name: 'email_input',
+    //     placeholder: 'Enter E-mail Address'
+    //   }
+    // );
+
+    // return this.$emailInput;
   }
 
-  protected createEmailProblemNotice()
-  {
-    this.$emailProblem = this.createEmptyLine
-    (
-      { name: 'email_problem_notice'}
-    );
+  // protected createEmailProblemNotice()
+  // {
+  //   this.$emailProblem = this.$createEmptyLine
+  //   (
+  //     { name: 'email_problem_notice'}
+  //   );
 
-    this.$emailProblem.hide();
-  }
+  //   this.$emailProblem.hide();
+  // }
 
   protected displayEmailProblem(problem: string)
   {
-    if (!this.$emailProblem)
+    // if (!this.emailInput)
+    // {
+    //   ERROR("Missing emailInput component. Problem is not displayed");
+    //   return;
+    // }
+
+    this.emailInput.displayProblem(problem);
+
+    // if (!this.$emailProblem)
+    // {
+    //   ERROR("Invalid $emailProblem element");
+    //   return;
+    // }
+
+    // this.$createText
+    // (
+    //   {
+    //     $parent: this.$emailProblem,
+    //     text: MudColors.PROBLEM_TEXT_COLOR + problem,
+    //     insertMode: Component.InsertMode.REPLACE
+    //   }
+    // );
+
+    // this.$emailProblem.show();
+    // this.focusEmailInput();
+  }
+
+  protected createPasswordInput()
+  {
+    if (this.passwordInput)
     {
-      ERROR("Invalid $emailProblem element");
+      ERROR("Component is not created because it already exists");
       return;
     }
 
-    this.createText
-    (
-      {
-        $parent: this.$emailProblem,
-        text: MudColors.PROBLEM_TEXT_COLOR + problem,
-        insertMode: Component.InsertMode.REPLACE
-      }
-    );
+    this.passwordInput = new PasswordInput(this);
 
-    this.$emailProblem.show();
-    this.focusEmailInput();
+    // this.passwordInput = new PasswordInput
+    // (
+    //   this,
+    //   {
+    //     inputParam:
+    //     {
+    //       placeholder: 'Enter Password',
+    //       /// We are not using automatic 'minLength' validation
+    //       /// because it doesn't work if value is set to the
+    //       /// input element by script.
+    //       ///minLength: RegisterRequest.MIN_PASSWORD_LENGTH,
+    //       maxLength: RegisterRequest.MAX_PASSWORD_LENGTH
+    //     }
+    //   }
+    // );
   }
 
-  // ~ Overrides Form.createPasswordInput().
-  protected createPasswordInput()
-  {
-    this.$passwordInput = super.createPasswordInput
-    (
-      {
-        name: 'password_input',
-        placeholder: 'Enter Password',
-        /// We are not using automatic 'minLength' validation
-        /// because it doesn't work if value is set to the
-        /// input element by script.
-        ///minLength: RegisterRequest.MIN_PASSWORD_LENGTH,
-        maxLength: RegisterRequest.MAX_PASSWORD_LENGTH
-      }
-    );
+  // // ~ Overrides Form.createPasswordInput().
+  // protected $createPasswordInput()
+  // {
+  //   this.$passwordInput = super.$createPasswordInput
+  //   (
+  //     {
+  //       name: 'password_input',
+  //       placeholder: 'Enter Password',
+  //       /// We are not using automatic 'minLength' validation
+  //       /// because it doesn't work if value is set to the
+  //       /// input element by script.
+  //       ///minLength: RegisterRequest.MIN_PASSWORD_LENGTH,
+  //       maxLength: RegisterRequest.MAX_PASSWORD_LENGTH
+  //     }
+  //   );
 
-    return this.$passwordInput;
-  }
+  //   return this.$passwordInput;
+  // }
 
-  protected createPasswordProblemNotice()
-  {
-    this.$passwordProblem = this.createEmptyLine
-    (
-      { name: 'password_problem_notice'}
-    );
+  // protected createPasswordProblemNotice()
+  // {
+  //   this.$passwordProblem = this.$createEmptyLine
+  //   (
+  //     { name: 'password_problem_notice'}
+  //   );
 
-    this.$passwordProblem.hide();
-  }
+  //   this.$passwordProblem.hide();
+  // }
 
   protected displayPasswordProblem(problem: string)
   {
-    if (!this.$passwordProblem)
-    {
-      ERROR("Invalid $passwordProblem element");
-      return;
-    }
+    // if (!this.passwordInput)
+    // {
+    //   ERROR("Missing passwordInput component. Problem is not displayed");
+    //   return;
+    // }
 
-    this.createText
-    (
-      {
-        $parent: this.$passwordProblem,
-        text: MudColors.PROBLEM_TEXT_COLOR + problem,
-        insertMode: Component.InsertMode.REPLACE
-      }
-    );
+    this.passwordInput.displayProblem(problem);
 
-    this.$passwordProblem.show();
-    this.focusPasswordInput();
+    // if (!this.$passwordProblem)
+    // {
+    //   ERROR("Invalid $passwordProblem element");
+    //   return;
+    // }
+
+    // this.$createText
+    // (
+    //   {
+    //     $parent: this.$passwordProblem,
+    //     text: MudColors.PROBLEM_TEXT_COLOR + problem,
+    //     insertMode: Component.InsertMode.REPLACE
+    //   }
+    // );
+
+    // this.$passwordProblem.show();
+    // this.focusPasswordInput();
   }
 
   protected createRememberMeCheckbox()
@@ -183,21 +250,38 @@ export abstract class CredentialsForm extends Form
     if (!LocalStorage.isAvailable())
       return;
 
-    this.$rememberMeCheckbox = super.createCheckbox
+    this.rememberMeCheckbox = new CheckboxInput
     (
+      this,
       {
-        checkboxParam:
+        labelParam:
+        {
+          text: 'Remember me'
+        },
+        inputParam:
         {
           name: 'remember_me_checkbox',
           checked: false,
           change: (event) => { this.onRememberMeChange(event); }
-        },
-        labelParam:
-        {
-          text: 'Remember me'
         }
       }
     );
+
+    // this.$rememberMeCheckbox = super.createCheckbox
+    // (
+    //   {
+    //     checkboxParam:
+    //     {
+    //       name: 'remember_me_checkbox',
+    //       checked: false,
+    //       change: (event) => { this.onRememberMeChange(event); }
+    //     },
+    //     labelParam:
+    //     {
+    //       text: 'Remember me'
+    //     }
+    //   }
+    // );
   }
 
   // ~ Overrides Form.hideProblems();
@@ -205,68 +289,92 @@ export abstract class CredentialsForm extends Form
   {
     super.hideProblems();
 
-    if (this.$emailProblem)
-    {
-      // this.createText
-      // (
-      //   {
-      //     $parent: this.$emailProblem,
-      //     text: Component.EMPTY_LINE_TEXT,
-      //     insertMode: Component.InsertMode.REPLACE
-      //   }
-      // );
+    this.emailInput.hideProblem();
+    this.emailInput.hideProblem();
 
-      this.$emailProblem.hide();
-    }
+    // if (this.$passwordInput)
+    // {
+    //   // this.createText
+    //   // (
+    //   //   {
+    //   //     $parent: this.$emailProblem,
+    //   //     text: Component.EMPTY_LINE_TEXT,
+    //   //     insertMode: Component.InsertMode.REPLACE
+    //   //   }
+    //   // );
 
-    if (this.$passwordProblem)
-    {
-      // this.createText
-      // (
-      //   {
-      //     $parent: this.$passwordProblem,
-      //     text: Component.EMPTY_LINE_TEXT,
-      //     insertMode: Component.InsertMode.REPLACE
-      //   }
-      // );
+    //   this.$emailProblem.hide();
+    // }
 
-      this.$passwordProblem.hide();
-    }
+    // if (this.$passwordProblem)
+    // {
+    //   // this.createText
+    //   // (
+    //   //   {
+    //   //     $parent: this.$passwordProblem,
+    //   //     text: Component.EMPTY_LINE_TEXT,
+    //   //     insertMode: Component.InsertMode.REPLACE
+    //   //   }
+    //   // );
+
+    //   this.$passwordProblem.hide();
+    // }
   }
 
   protected focusEmailInput()
   {
-    if (!this.$emailInput)
-    {
-      ERROR("$emailInput doesn't exist so it won't be focused");
-      return;
-    }
+    // if (!this.emailInput)
+    // {
+    //   ERROR("Component emailInput doesn't exist so it won't be focused");
+    //   return;
+    // }
 
-    this.$emailInput.focus();
+    this.emailInput.focus();
+
+    // if (!this.$emailInput)
+    // {
+    //   ERROR("$emailInput doesn't exist so it won't be focused");
+    //   return;
+    // }
+
+    // this.$emailInput.focus();
   }
 
   protected focusPasswordInput()
   {
-    if (!this.$passwordInput)
-    {
-      ERROR("$passwordInput doesn't exist so it won't be focused");
-      return;
-    }
+    // if (!this.passwordInput)
+    // {
+    //   ERROR("Component passwordInput doesn't exist so it won't be focused");
+    //   return;
+    // }
 
-    this.$passwordInput.focus();
+    this.passwordInput.focus();
+
+    // if (!this.$passwordInput)
+    // {
+    //   ERROR("$passwordInput doesn't exist so it won't be focused");
+    //   return;
+    // }
+
+    // this.$passwordInput.focus();
   }
 
   // ---------------- Private methods -------------------
 
   private setStoredRememberMeValue()
   {
-    let rememberMe = LocalStorage.read(LocalStorage.REMEMBER_ME_ENTRY);
+    let storedValue = LocalStorage.read(LocalStorage.REMEMBER_ME_ENTRY);
 
-    this.$rememberMeCheckbox.prop
+    this.rememberMeCheckbox.setChecked
     (
-      'checked',
-      rememberMe === LocalStorage.REMEMBER_ME_VALUE
+      storedValue === LocalStorage.REMEMBER_ME_VALUE
     );
+
+    // this.$rememberMeCheckbox.prop
+    // (
+    //   'checked',
+    //   rememberMe === LocalStorage.REMEMBER_ME_VALUE
+    // );
   }
 
   // ---------------- Event handlers --------------------
@@ -276,7 +384,7 @@ export abstract class CredentialsForm extends Form
     if (!LocalStorage.isAvailable())
       return;
 
-    if (this.$rememberMeCheckbox.prop('checked') === true)
+    if (this.rememberMeCheckbox.isChecked())
     {
       // When user checks 'remember me' checkbox,
       // save information that the checkbox should

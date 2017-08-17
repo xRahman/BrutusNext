@@ -80,7 +80,7 @@ export class TermsWindow extends StandaloneWindow
     /// TEST:
     let termsText = "Don't be a jerk, please.";
     
-    this.createDiv
+    this.$createDiv
     (
       {
         text: termsText,
@@ -92,7 +92,7 @@ export class TermsWindow extends StandaloneWindow
 
   private createAcceptButton()
   {
-    return this.createButton
+    return this.$createButton
     (
       {
         $parent: this.$content,

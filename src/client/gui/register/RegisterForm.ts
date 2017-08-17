@@ -14,6 +14,8 @@ import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Windows} from '../../../client/gui/window/Windows';
 import {Component} from '../../../client/gui/Component';
 import {Form} from '../../../client/gui/form/Form';
+import {EmailInput} from '../../../client/gui/form/EmailInput';
+import {PasswordInput} from '../../../client/gui/form/PasswordInput';
 import {CredentialsForm} from '../../../client/gui/form/CredentialsForm';
 import {RegisterRequest} from '../../../shared/lib/protocol/RegisterRequest';
 import {RegisterResponse} from '../../../shared/lib/protocol/RegisterResponse';
@@ -28,20 +30,23 @@ export class RegisterForm extends CredentialsForm
       Utils.applyDefaults(param, { name: 'register_form' })  
     );
 
-    super.createLabel({ text: 'Your E-mail Address' });
     this.createEmailInput();
-    this.createEmailProblemNotice();
+    // super.$createLabel({ text: 'Your E-mail Address' });
+    // this.$createEmailInput();
+    // this.createEmailProblemNotice();
 
-    this.createEmptyLine();
+    this.$createEmptyLine();
 
-    super.createLabel({ text: 'Your New Password' });
     this.createPasswordInput();
-    this.createPasswordProblemNotice();
+    // super.$createLabel({ text: 'Your New Password' });
+    // this.$createPasswordInput();
+    // this.createPasswordProblemNotice();
 
-    this.createEmptyLine();
+    this.$createEmptyLine();
 
     this.createInfoLabel();
-    this.createEmptyLine();
+
+    this.$createEmptyLine();
 
     this.createRememberMeCheckbox();
     this.createButtons();
@@ -127,8 +132,8 @@ export class RegisterForm extends CredentialsForm
 
     // Set value from login window e-mail input to our
     // email input so the user doesn't have to retype it
-    // (password still has to be enterer again).
-    this.$emailInput.val(email);
+    // (password still has to be entered again).
+    this.emailInput.setValue(email);
 
     if (!email)
       this.focusEmailInput();
@@ -138,8 +143,44 @@ export class RegisterForm extends CredentialsForm
 
   // --------------- Protected methods ------------------
 
+  // ~ Overrides CredentialsForm.createEmailInput().
+  protected createEmailInput()
+  {
+    if (this.emailInput)
+    {
+      ERROR("Component is not created because it already exists");
+      return;
+    }
+
+    this.emailInput = new EmailInput
+    (
+      this,
+      {
+        labelParam: { text: 'Your E-mail Address' }
+      }
+    );
+  }
+
+  // ~ Overrides CredentialsForm.createPasswordInput().
+  protected createPasswordInput()
+  {
+    if (this.passwordInput)
+    {
+      ERROR("Component is not created because it already exists");
+      return;
+    }
+
+    this.passwordInput = new PasswordInput
+    (
+      this,
+      {
+        labelParam: { text: 'Your New Password' }
+      }
+    );
+  }
+
   // ~ Overrides Form.createSubmitButton().
-  protected createSubmitButton(param: Component.SubmitButtonParam = {})
+  protected $createSubmitButton(param: Component.SubmitButtonParam = {})
   {
     Utils.applyDefaults
     (
@@ -150,7 +191,7 @@ export class RegisterForm extends CredentialsForm
       }
     );
 
-    return super.createSubmitButton(param);
+    return super.$createSubmitButton(param);
   }
 
   // ~ Overrides Form.createRequest().
@@ -158,8 +199,8 @@ export class RegisterForm extends CredentialsForm
   {
     let request = new RegisterRequest();
 
-    request.email = this.$emailInput.val();
-    request.password = this.$passwordInput.val();
+    request.email = this.emailInput.getValue();
+    request.password = this.passwordInput.getValue();
 
     return request;
   }
@@ -188,7 +229,7 @@ export class RegisterForm extends CredentialsForm
 
   private createInfoLabel()
   {
-    this.$infoLabel = super.createLabel
+    this.$infoLabel = super.$createLabel
     (
       { text: RegisterForm.RECOMMENDATION }
     );
@@ -198,7 +239,7 @@ export class RegisterForm extends CredentialsForm
   {
     let $parent = super.createButtonContainer();
 
-    this.createSubmitButton({ $parent });
+    this.$createSubmitButton({ $parent });
     this.createCancelButton({ $parent });
   }
 
@@ -214,7 +255,7 @@ export class RegisterForm extends CredentialsForm
       }
     );
 
-    return this.createButton(param);
+    return this.$createButton(param);
   }
 
   // ---------------- Event handlers --------------------

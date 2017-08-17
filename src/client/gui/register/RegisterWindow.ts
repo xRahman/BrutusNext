@@ -20,7 +20,7 @@ export class RegisterWindow extends StandaloneWindow
 
     this.createRegisterForm();
 
-    this.createEmptyLine();
+    this.$createEmptyLine();
     this.createTermsLink();
 
     // Show this window when app is in this state.
@@ -65,12 +65,12 @@ export class RegisterWindow extends StandaloneWindow
   {
     let $parent = this.createTextContainer();
 
-    this.createText
+    this.$createText
     (
       { $parent, text: "By creating an account you agree to our " }
     );
 
-    this.$termsLink = this.createTextLink
+    this.$termsLink = this.$createTextLink
     (
       {
         $parent,
@@ -79,7 +79,7 @@ export class RegisterWindow extends StandaloneWindow
       }
     );
 
-    this.createText({ $parent, text: "." });
+    this.$createText({ $parent, text: "." });
   }
 
   // ---------------- Event handlers --------------------

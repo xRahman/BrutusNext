@@ -30,7 +30,7 @@ export class Window extends Component
       }
     );
 
-    this.$element = this.createDiv(windowParam);
+    this.$element = this.$createDiv(windowParam);
 
     // Windows are created hidden.
     this.$element.hide();

@@ -11,7 +11,7 @@ import {Utils} from '../../../shared/lib/utils/Utils';
 import {Component} from '../../../client/gui/Component';
 import {FormInput} from '../../../client/gui/form/FormInput';
 
-export abstract class CheckboxInput extends FormInput
+export class CheckboxInput extends FormInput
 {
   constructor
   (
@@ -38,6 +38,35 @@ export abstract class CheckboxInput extends FormInput
     this.createProblemNotice(problemParam);
   }
 
+  protected static get S_CSS_CLASS()
+    { return 'S_CheckboxInput'; }
+
+  // ---------------- Public methods --------------------
+
+  public isChecked()
+  {
+    // if (!this.$input)
+    // {
+    //   ERROR("Unable to determine state of checkbox because"
+    //     + " respective element doesn't exist. Returning 'false'");
+    //   return false;
+    // }
+
+    return this.$input.prop('checked');
+  }
+
+  public setChecked(value: boolean)
+  {
+    // if (!this.$input)
+    // {
+    //   ERROR("Unable to set checked state of checkbox because"
+    //     + " respective element doesn't exist");
+    //   return false;
+    // }
+
+    this.$input.prop('checked', value);
+  }
+
   // ---------------- Private methods -------------------
 
   private createInput(param: Component.CheckboxInputParam = {})
@@ -48,13 +77,13 @@ export abstract class CheckboxInput extends FormInput
       {
         name: 'checkbox_input',
         $parent: this.$element,
-        sCssClass: FormInput.S_CSS_CLASS,
+        sCssClass: CheckboxInput.S_CSS_CLASS,
         // Place checkbox before the text.
         insertMode: Component.InsertMode.PREPEND
       }
     );
 
-    this.$input = this.createCheckboxInput(param);
+    this.$input = this.$createCheckboxInput(param);
   }
 }
 

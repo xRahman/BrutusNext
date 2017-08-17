@@ -10,8 +10,9 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {Component} from '../../../client/gui/Component';
 import {FormInput} from '../../../client/gui/form/FormInput';
+import {RegisterRequest} from '../../../shared/lib/protocol/RegisterRequest';
 
-export abstract class PasswordInput extends FormInput
+export class PasswordInput extends FormInput
 {
   constructor
   (
@@ -30,7 +31,10 @@ export abstract class PasswordInput extends FormInput
       Utils.applyDefaults
       (
         labelParam,
-        { name: 'password_input_label' }
+        {
+          name: 'password_input_label',
+          text: 'Password'
+        }
       )
     );
 
@@ -47,16 +51,18 @@ export abstract class PasswordInput extends FormInput
       param,
       {
         name: 'password_input',
+        placeholder: 'Enter Password',
         $parent: this.$element,
         sCssClass: FormInput.S_CSS_CLASS,
         // required: true,
         autocorrect: Component.Autocorrect.OFF,
         autocomplete: Component.Autocomplete.OFF,
-        spellcheck: false
+        spellcheck: false,
+        maxLength: RegisterRequest.MAX_PASSWORD_LENGTH
       }
     );
 
-    this.$input = this.createPasswordInput(param);
+    this.$input = this.$createPasswordInput(param);
   }
 }
 
