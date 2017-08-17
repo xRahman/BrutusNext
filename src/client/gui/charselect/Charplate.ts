@@ -127,7 +127,7 @@ export class Charplate extends Component
       }
     );
 
-    return this.createLabel(param);
+    return this.$createLabel(param);
   }
 
   private createRadio(param: Component.RadioInputParam)
@@ -150,7 +150,7 @@ export class Charplate extends Component
       }
     );
 
-    return this.createRadioInput(param);
+    return this.$createRadioInput(param);
   }
 
   private createCharplate(param: Component.DivParam = {})
@@ -171,7 +171,7 @@ export class Charplate extends Component
       }
     );
 
-    let $charplate = this.createDiv(param);
+    let $charplate = this.$createDiv(param);
 
     this.createPortrait({ $parent: $charplate });
     this.createPortraitLabels({ $parent: $charplate });
@@ -189,7 +189,7 @@ export class Charplate extends Component
       }
     );
 
-    this.createDiv(param);
+    this.$createDiv(param);
   }
 
   private createPortraitLabels(param: Component.DivParam = {})
@@ -200,7 +200,7 @@ export class Charplate extends Component
       { sCssClass: Charplate.LABELS_CONTAINER_S_CSS_CLASS }
     );
 
-    let $container = this.createDiv(param);
+    let $container = this.$createDiv(param);
 
     this.createNameLabel({ $parent: $container });
     this.createInfoLabel({ $parent: $container });
@@ -225,7 +225,7 @@ export class Charplate extends Component
 
     // Note: We can't use <label> element because
     // it would prevent clicks on the radiobutton.
-    this.createDiv(param);
+    this.$createDiv(param);
   }
 
   private createInfoLabel(param: Component.DivParam = {})
@@ -248,7 +248,7 @@ export class Charplate extends Component
 
     // Note: We can't use <label> element because
     // it would prevent clicks on the radiobutton.
-    this.createDiv(param);
+    this.$createDiv(param);
   }
 
   // ---------------- Event handlers --------------------

@@ -8,11 +8,13 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
-import {MudColors} from '../../../client/gui/MudColors';
+// import {MudColors} from '../../../client/gui/MudColors';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Connection} from '../../../client/lib/connection/Connection';
 import {Component} from '../../../client/gui/Component';
 import {Form} from '../../../client/gui/form/Form';
+import {CharacterNameInput} from
+  '../../../client/gui/chargen/CharacterNameInput';
 import {ChargenRequest} from '../../../shared/lib/protocol/ChargenRequest';
 import {ChargenResponse} from '../../../shared/lib/protocol/ChargenResponse';
 
@@ -26,19 +28,19 @@ export class ChargenForm extends Form
       Utils.applyDefaults(param, { name: 'chargen_form' })  
     );
 
-    this.createLabel({ text: 'Character Name' });
+    // this.createLabel({ text: 'Character Name' });
+    // this.createCharacterNameInput();
+    // this.createNameProblemNotice();
     this.createCharacterNameInput();
-    this.createNameProblemNotice();
-
-    this.createEmptyLine();
-
+    this.$createEmptyLine();
     this.createButtons();
   }
 
   // ----------------- Private data ---------------------
 
-  private $characterNameInput: JQuery = null;
-  private $characterNameProblem: JQuery = null;
+  // private $characterNameInput: JQuery = null;
+  // private $characterNameProblem: JQuery = null;
+  private characterNameInput: CharacterNameInput = null;
 
   // ---------------- Public methods --------------------
 
@@ -86,7 +88,7 @@ export class ChargenForm extends Form
     }
   }
 
-  // ~ Overrides Form.onShow().
+  // ~ Overrides Component.onShow().
   public onShow()
   {
     super.onShow();
@@ -100,7 +102,7 @@ export class ChargenForm extends Form
   // --------------- Protected methods ------------------
 
   // ~ Overrides Form.createSubmitButton().
-  protected createSubmitButton(param: Component.SubmitButtonParam = {})
+  protected $createSubmitButton(param: Component.SubmitButtonParam = {})
   {
     Utils.applyDefaults
     (
@@ -111,7 +113,7 @@ export class ChargenForm extends Form
       }
     );
 
-    return super.createSubmitButton(param);
+    return super.$createSubmitButton(param);
   }
 
   // ~ Overrides Form.createRequest().
@@ -119,7 +121,7 @@ export class ChargenForm extends Form
   {
     let request = new ChargenRequest();
 
-    request.characterName = this.$characterNameInput.val();
+    request.characterName = this.characterNameInput.getValue();
 
     return request;
   }
@@ -127,9 +129,9 @@ export class ChargenForm extends Form
   // ~ Overrides Form.isRequestValid().
   protected isRequestValid(request: ChargenRequest)
   {
-    let problem = null;
+    let problem = request.getCharacterNameProblem();
 
-    if (problem = request.getCharacterNameProblem())
+    if (problem)
     {
       this.displayCharacterNameProblem(problem);
       return false;
@@ -146,84 +148,119 @@ export class ChargenForm extends Form
     // if (this.$characterNameProblem)
     //   this.$characterNameProblem.hide();
 
-    if (this.$characterNameProblem)
-    {
-      this.createText
-      (
-        {
-          $parent: this.$characterNameProblem,
-          text: Component.EMPTY_LINE_TEXT,
-          insertMode: Component.InsertMode.REPLACE
-        }
-      );
-    }
+    if (this.characterNameInput)
+      this.characterNameInput.hideProblem();
+
+    // if (this.$characterNameProblem)
+    // {
+    //   this.createText
+    //   (
+    //     {
+    //       $parent: this.$characterNameProblem,
+    //       text: Component.EMPTY_LINE_TEXT,
+    //       insertMode: Component.InsertMode.REPLACE
+    //     }
+    //   );
+    // }
   }
 
-  protected createNameProblemNotice()
-  {
-    this.$characterNameProblem = this.createEmptyLine
-    (
-      { name: 'name_problem_notice' }
-    );
-  }
+  // protected createNameProblemNotice()
+  // {
+  //   this.$characterNameProblem = this.createEmptyLine
+  //   (
+  //     { name: 'name_problem_notice' }
+  //   );
+  // }
 
   protected displayCharacterNameProblem(problem: string)
   {
-    if (!this.$characterNameProblem)
-    {
-      ERROR("Invalid $characterNameProblem element");
-      return;
-    }
+    // if (!this.characterNameInput)
+    // {
+    //   ERROR("Component characterNameInput doesn't exist."
+    //     + " Character name problem is not displayed");
+    //   return;
+    // }
 
-    this.createText
-    (
-      {
-        $parent: this.$characterNameProblem,
-        text: MudColors.PROBLEM_TEXT_COLOR + problem,
-        insertMode: Component.InsertMode.REPLACE
-      }
-    );
+    this.characterNameInput.displayProblem(problem);
 
-    this.$characterNameProblem.show();
-    this.focusCharacterNameInput();
+    // this.createText
+    // (
+    //   {
+    //     $parent: this.$characterNameProblem,
+    //     text: MudColors.PROBLEM_TEXT_COLOR + problem,
+    //     insertMode: Component.InsertMode.REPLACE
+    //   }
+    // );
+
+    // this.$characterNameProblem.show();
+    // this.focusCharacterNameInput();
   }
 
   // ---------------- Private methods -------------------
 
   private focusCharacterNameInput()
   {
-    if (!this.$characterNameInput)
-    {
-      ERROR("$characterNameInput doesn't exist so it won't be focused");
-      return;
-    }
+    // if (!this.characterNameInput)
+    // {
+    //   ERROR("characterNameInput doesn't exist so it won't be focused");
+    //   return;
+    // }
 
-    this.$characterNameInput.focus();
+    this.characterNameInput.focus();
   }
 
   private createCharacterNameInput()
   {
-    this.$characterNameInput = super.createTextInput
-    (
-      {
-        name: 'character_name_input',
-        placeholder: 'Enter Character Name',
-        /// We are not letting browser to validate 'minLenght'
-        /// because 'minLength' validation does't work anyways
-        /// after setting value to the input element.
-        ///minLength: ChargenRequest.MIN_CHARACTER_NAME_LENGTH,
-        maxLength: ChargenRequest.MAX_CHARACTER_NAME_LENGTH,
-        required: true,
-        input: (event) => { this.onCharacterNameInput(event); }
-      }
-    );
+    this.characterNameInput = new CharacterNameInput(this);
+
+    // this.characterNameInput = new TextInput
+    // (
+    //   this,
+    //   {
+    //     labelParam:
+    //     {
+    //       text: 'Character Name'
+    //     },
+    //     inputParam:
+    //     {
+    //       name: 'character_name_input',
+    //       placeholder: 'Enter Character Name',
+    //       /// We are not letting browser to validate 'minLenght'
+    //       /// because 'minLength' validation does't work anyways
+    //       /// after setting value to the input element.
+    //       ///minLength: ChargenRequest.MIN_CHARACTER_NAME_LENGTH,
+    //       maxLength: ChargenRequest.MAX_CHARACTER_NAME_LENGTH,
+    //       /// Automatic form validation is no longer used.
+    //       ///required: true,
+    //       input: (event) => { this.onCharacterNameInput(event); }
+    //     }
+    //   }
+    // );
   }
+
+  // private createCharacterNameInput()
+  // {
+  //   this.$characterNameInput = super.createTextInput
+  //   (
+  //     {
+  //       name: 'character_name_input',
+  //       placeholder: 'Enter Character Name',
+  //       /// We are not letting browser to validate 'minLenght'
+  //       /// because 'minLength' validation does't work anyways
+  //       /// after setting value to the input element.
+  //       ///minLength: ChargenRequest.MIN_CHARACTER_NAME_LENGTH,
+  //       maxLength: ChargenRequest.MAX_CHARACTER_NAME_LENGTH,
+  //       required: true,
+  //       input: (event) => { this.onCharacterNameInput(event); }
+  //     }
+  //   );
+  // }
 
   private createButtons()
   {
     let $parent = super.createButtonContainer();
 
-    this.createSubmitButton({ $parent });
+    this.$createSubmitButton({ $parent });
     this.createCancelButton({ $parent });
   }
 
@@ -239,63 +276,10 @@ export class ChargenForm extends Form
       }
     );
 
-    return this.createButton(param);
-  }
-
-  // Note that this is also enforced in
-  // ChargenRequest.getInvalidCharacterProblem().
-  private removeInvalidCharacters($element: JQuery)
-  {
-    let oldValue = $element.val();
-    let newValue = "";
-    let regexp = ChargenRequest.VALID_CHARACTERS_REGEXP;
-
-    if (oldValue)
-      newValue = oldValue.replace(regexp, '');
-
-    $element.val(newValue);
-  }
-
-  private upperCaseFirstCharacter($element: JQuery)
-  {
-    let oldValue = $element.val();
-    let newValue = "";
-
-    if (oldValue)
-      newValue = Utils.upperCaseFirstCharacter(oldValue);
-
-    $element.val(newValue);
-
-    $element.attr('valid', 'invalid');
-
-    // let element = <any>$element[0];
-
-    // element.setCustomValidity("Name is too short");
+    return this.$createButton(param);
   }
 
   // ---------------- Event handlers --------------------
-
-  // This handler is called whenever user types into
-  // 'character name' input.
-  private onCharacterNameInput(event: JQueryEventObject)
-  {
-    // Remember original selection (and cursor) position.
-    let element = <HTMLInputElement>this.$characterNameInput[0];
-    let selectionStart = element.selectionStart;
-    let selectionEnd = element.selectionEnd;
-
-    // Note: Setting value to an input element breaks automatic
-    //   value validation on the browser (I didn't manage to find
-    //   a true solution so I disabled validating 'minLenght' as
-    //   a workaround).
-    this.removeInvalidCharacters(this.$characterNameInput);
-    this.upperCaseFirstCharacter(this.$characterNameInput);
-
-    // Restore original selection (and cursor) position.
-    element.setSelectionRange(selectionStart, selectionEnd);
-
-    return true;
-  }
 
   private onCancel(event: JQueryEventObject)
   {

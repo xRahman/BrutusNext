@@ -75,10 +75,12 @@ export abstract class Component
 
   // ---------------- Protected data -------------------- 
 
-  // JQuery container referencing html element representing
-  // this component in DOM.
-  protected $element: JQuery = null;
   protected children = new Set<Component>();
+
+  // ----------------- Public data ---------------------- 
+
+  // JQuery element representing this component in DOM.
+  public $element: JQuery = null;
 
   // --------------- Public accessors -------------------
 
@@ -117,18 +119,18 @@ export abstract class Component
   }
 
   // Creates text styled as link.
-  protected createTextLink(param: Component.TextParam = {}): JQuery
+  protected $createTextLink(param: Component.TextParam = {}): JQuery
   {
     Utils.applyDefaults(param, { gCssClass: Component.LINK_TEXT_G_CSS_CLASS });
 
-    return this.createText(param);
+    return this.$createText(param);
   }
 
   // Creates colored <spans> from 'text' and sets them to html
   // content of '$component' (in a way specified by param.insertMode).
   // (If 'text' contains mud color codes, they will be used. It it doesn't
   //  and no 'baseColor' is provided, text color of $component will be used)
-  protected createText(param: Component.TextParam = {}): JQuery
+  protected $createText(param: Component.TextParam = {}): JQuery
   {
     let $text = $(MudColors.htmlize(param.text, param.baseTextColor));
 
@@ -146,29 +148,29 @@ export abstract class Component
     return $text;
   }
 
-  protected createDiv(param: Component.DivParam = {}): JQuery
+  protected $createDiv(param: Component.DivParam = {}): JQuery
   {
-    return this.createElement('div', param);
+    return this.$createElement('div', param);
   }
 
-  protected createImg(param: Component.ImgParam = {}): JQuery
+  protected $createImg(param: Component.ImgParam = {}): JQuery
   {
-    return this.createElement('img', param);
+    return this.$createElement('img', param);
   }
 
-  protected createForm(param: Component.FormParam = {}): JQuery
+  protected $createForm(param: Component.FormParam = {}): JQuery
   {
     Utils.applyDefaults(param, { name: 'form' });
 
-    return this.createElement('form', param);
+    return this.$createElement('form', param);
   }
 
-  protected createTitle(param: Component.TitleParam = {}): JQuery
+  protected $createTitle(param: Component.TitleParam = {}): JQuery
   {
-    return this.createElement('title', param);
+    return this.$createElement('title', param);
   }
 
-  protected createTextInput(param: Component.TextInputParam = {}): JQuery
+  protected $createTextInput(param: Component.TextInputParam = {}): JQuery
   {
     Utils.applyDefaults
     (
@@ -182,7 +184,7 @@ export abstract class Component
     return this.createInputElement('text', param);
   }
 
-  protected createPasswordInput(param: Component.PasswordInputParam = {})
+  protected $createPasswordInput(param: Component.PasswordInputParam = {})
   : JQuery
   {
     Utils.applyDefaults
@@ -197,7 +199,7 @@ export abstract class Component
     return this.createInputElement('password', param);
   }
 
-  protected createEmailInput(param: Component.EmailInputParam = {}): JQuery
+  protected $createEmailInput(param: Component.EmailInputParam = {}): JQuery
   {
     Utils.applyDefaults
     (
@@ -211,7 +213,7 @@ export abstract class Component
     return this.createInputElement('email', param);
   }
 
-  protected createCheckboxInput(param: Component.CheckboxInputParam = {})
+  protected $createCheckboxInput(param: Component.CheckboxInputParam = {})
   : JQuery
   {
     Utils.applyDefaults(param, { name: 'checkbox_input' });
@@ -219,7 +221,7 @@ export abstract class Component
     return this.createInputElement('checkbox', param);
   }
 
-  protected createRadioInput(param: Component.RadioInputParam = {}): JQuery
+  protected $createRadioInput(param: Component.RadioInputParam = {}): JQuery
   {
     Utils.applyDefaults(param, { name: 'radiobutton_input' });
 
@@ -228,7 +230,7 @@ export abstract class Component
 
   // Creates a button which submits form data
   // (use createButton() to create a standalone button).
-  protected createSubmitButton(param: Component.SubmitButtonParam = {}): JQuery
+  protected $createSubmitButton(param: Component.SubmitButtonParam = {}): JQuery
   {
     Utils.applyDefaults
     (
@@ -239,7 +241,7 @@ export abstract class Component
       }
     );
 
-    let $element = this.createElement('button', param);
+    let $element = this.$createElement('button', param);
 
     // We use element <button> with 'type: "submit"' instead
     // of element <submit> with 'type: "button" because there
@@ -250,7 +252,7 @@ export abstract class Component
     return $element;
   }
 
-  protected createTextArea(param: Component.TextAreaParam = {}): JQuery
+  protected $createTextArea(param: Component.TextAreaParam = {}): JQuery
   {
     Utils.applyDefaults
     (
@@ -261,22 +263,22 @@ export abstract class Component
       }
     );
 
-    return this.createElement('textarea', param);
+    return this.$createElement('textarea', param);
   }
 
-  protected createLabel(param: Component.LabelParam = {}): JQuery
+  protected $createLabel(param: Component.LabelParam = {}): JQuery
   {
-    return this.createElement('label', param);
+    return this.$createElement('label', param);
   }
 
   // Creates a button which is not part of a form
   // (use createSubmitButton() to create a button
   //  that submits form data).
-  protected createButton(param: Component.ButtonParam = {}): JQuery
+  protected $createButton(param: Component.ButtonParam = {}): JQuery
   {
     Utils.applyDefaults(param, { gCssClass: Component.BUTTON_G_CSS_CLASS });
 
-    let $element = this.createElement('button', param);
+    let $element = this.$createElement('button', param);
 
     // Type must be set to ensure that the button click
     // doesn't submit the form.
@@ -285,7 +287,7 @@ export abstract class Component
     return $element;
   }
 
-  protected createEmptyLine(param: Component.DivParam = {}): JQuery
+  protected $createEmptyLine(param: Component.DivParam = {}): JQuery
   {
     Utils.applyDefaults
     (
@@ -297,7 +299,7 @@ export abstract class Component
       }
     );
 
-    return this.createDiv(param);
+    return this.$createDiv(param);
   }
 
   /// Zrušeno - volá se to v rámci super() callu v constructoru,
@@ -325,7 +327,7 @@ export abstract class Component
 
   // ---------------- Private methods -------------------
 
-  private createElement(type: string, param: Object): JQuery
+  private $createElement(type: string, param: Object): JQuery
   {
     let $element = $(document.createElement(type));
 
@@ -347,7 +349,7 @@ export abstract class Component
     baseTextColor: string
   )
   {
-    this.createText
+    this.$createText
     (
       {
         $parent: $element,
@@ -439,7 +441,7 @@ export abstract class Component
 
   private createInputElement(type: string, param: Object): JQuery
   {
-    let $element = this.createElement('input', param);
+    let $element = this.$createElement('input', param);
     
     $element.attr('type', type);
 

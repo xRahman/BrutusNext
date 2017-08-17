@@ -32,7 +32,7 @@ export abstract class Form extends Component
       }
     );
 
-    this.$element = this.createForm(param);
+    this.$element = this.$createForm(param);
 
     this.createErrorLabel();
   }
@@ -41,8 +41,8 @@ export abstract class Form extends Component
     { return 'S_Form_Text'; }
   // protected static get INPUT_S_CSS_CLASS()
   //   { return 'S_Form_Input'; }
-  protected static get CHECKBOX_S_CSS_CLASS()
-    { return 'S_Form_Checkbox'; }
+  // protected static get CHECKBOX_S_CSS_CLASS()
+  //   { return 'S_Form_Checkbox'; }
   protected static  get LEFT_BUTTON_S_CSS_CLASS()
     { return 'S_Form_LeftButton'; }
   protected static  get RIGHT_BUTTON_S_CSS_CLASS()
@@ -75,11 +75,11 @@ export abstract class Form extends Component
 
   public submit()
   {
-    if (!this.$element)
-    {
-      ERROR("Invalid this.$element. Form is not submitted");
-      return;
-    }
+    // if (!this.$element)
+    // {
+    //   ERROR("Invalid this.$element. Form is not submitted");
+    //   return;
+    // }
 
     this.$element.submit();
   }
@@ -222,10 +222,10 @@ export abstract class Form extends Component
       }
     );
 
-    return this.createDiv(param);
+    return this.$createDiv(param);
   }
 
-  protected createSubmitButton(param: Component.SubmitButtonParam = {}): JQuery
+  protected $createSubmitButton(param: Component.SubmitButtonParam = {}): JQuery
   {
     Utils.applyDefaults
     (
@@ -233,12 +233,12 @@ export abstract class Form extends Component
       { sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS }
     );
 
-    this.$submitButton = super.createSubmitButton(param);
+    this.$submitButton = super.$createSubmitButton(param);
 
     return this.$submitButton;
   }
 
-  protected createEmptyLine(param: Component.DivParam = {})
+  protected $createEmptyLine(param: Component.DivParam = {})
   {
     Utils.applyDefaults
     (
@@ -249,7 +249,7 @@ export abstract class Form extends Component
       }
     );
 
-    return super.createEmptyLine(param);
+    return super.$createEmptyLine(param);
   }
 
   protected disableSubmitButton()
@@ -264,18 +264,18 @@ export abstract class Form extends Component
 
   protected createErrorLabel()
   {
-    this.$errorLabel = this.createLabel({});
+    this.$errorLabel = this.$createLabel({});
     this.$errorLabel.hide();
 
     // Add an empty line after error problem label
     // to separate it from next component.
-    this.$errorEmptyLine = this.createEmptyLine();
+    this.$errorEmptyLine = this.$createEmptyLine();
     this.$errorEmptyLine.hide();
   }
 
   protected displayError(problem: string)
   {
-    this.createText
+    this.$createText
     (
       {
         $parent: this.$errorLabel,
@@ -284,19 +284,19 @@ export abstract class Form extends Component
       }
     );
 
-    if (!this.$errorLabel)
-    {
-      ERROR("Missing $errorLabel");
-      return;
-    }
+    // if (!this.$errorLabel)
+    // {
+    //   ERROR("Missing $errorLabel");
+    //   return;
+    // }
 
     this.$errorLabel.show();
 
-    if (!this.$errorEmptyLine)
-    {
-      ERROR("Missing $errorEmptyLine");
-      return;
-    }
+    // if (!this.$errorEmptyLine)
+    // {
+    //   ERROR("Missing $errorEmptyLine");
+    //   return;
+    // }
 
     // Also show additional empty line.
     this.$errorEmptyLine.show();
@@ -304,8 +304,8 @@ export abstract class Form extends Component
 
   protected hideProblems()
   {
-    if (this.$errorLabel)
-      this.$errorLabel.hide();
+    this.$errorLabel.hide();
+    this.$errorEmptyLine.hide();
   }
 
   protected abstract createRequest();
