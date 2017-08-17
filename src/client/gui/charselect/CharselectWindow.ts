@@ -63,7 +63,7 @@ export class CharselectWindow extends StandaloneWindow
 
   private createButtonNewCharacter()
   {
-    let $button = this.createButton
+    let $button = this.$createButton
     (
       {
         $parent: this.$content,
@@ -76,7 +76,7 @@ export class CharselectWindow extends StandaloneWindow
 
   private createButtonEnterGame()
   {
-    this.$enterGameButton = this.createButton
+    this.$enterGameButton = this.$createButton
     (
       {
         $parent: this.$content,

@@ -11,6 +11,20 @@ TODO: Různě po GUI mám podmínky jako:
 
 TODO: Promazat zakomentovaný kód v GUI.
 
+TODO: Asi bych se měl v klientu vykašlat na ruční ošetřování errorů typu
+  přístup na 'null' komponentu. Když to neošetřím, browser vyhodí výjimku
+  a nějak se s tím popere, takže efekt bude hodně podobnej jako můj vlastní
+  error (navíc momentálně s lepším stackem).
+TODO: Ale naopak když vyrábím komponentu přes 'new', tak bych měl otestovat,
+  že ještě neexistuje - opakované vytváření výjimku nehodí.
+
+TODO: Zabalit $errorLabel a $errorEmptyLine do jedné komponenty
+  (těžko říct, jestli na to dělat nový ts file...)
+
+TODO: Po vytvoření characteru automaticky enablovat button Enter Game.
+
+TODO: Spravit velikosti fontů ve form input componentách.
+
 --------------------------------------------------------------
 
 TODO: Vymyslet, kam vypisovat problém při otevírání connection.
@@ -74,7 +88,6 @@ I když... Pořád může uživatel kliknout jinam a focus oknu sebrat.
 Hodně ďábelská myšlenka:
 - udělat komponentu na inputy, která bude obsahovat imput a jeho
   label a problem label.
-
 
 TODO: Udělat si vlastní validování minLenghtu
 - jde tuším nějak komponentě nastavit problem message.

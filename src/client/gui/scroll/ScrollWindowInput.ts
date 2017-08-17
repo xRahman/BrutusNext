@@ -36,7 +36,7 @@ export class ScrollWindowInput extends Component
       }
     );
 
-    this.$element = this.createTextArea(param);
+    this.$element = this.$createTextArea(param);
   }
 
   private static get S_CSS_CLASS()

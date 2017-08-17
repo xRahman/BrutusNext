@@ -25,17 +25,21 @@ export class LoginForm extends CredentialsForm
       Utils.applyDefaults(param, { name: 'login_form' })  
     );
 
-    this.createLabel({ text: 'E-mail Address' });
     this.createEmailInput();
-    this.createEmailProblemNotice();
 
-    this.createEmptyLine();
+    // this.$createLabel({ text: 'E-mail Address' });
+    // this.$createEmailInput();
+    // this.createEmailProblemNotice();
 
-    this.createLabel({ text: 'Password' });
+    this.$createEmptyLine();
+
     this.createPasswordInput();
-    this.createPasswordProblemNotice();
 
-    this.createEmptyLine();
+    // this.$createLabel({ text: 'Password' });
+    // this.$createPasswordInput();
+    // this.createPasswordProblemNotice();
+
+    this.$createEmptyLine();
 
     this.createRememberMeCheckbox();
     this.createButtons();
@@ -114,26 +118,26 @@ export class LoginForm extends CredentialsForm
 
   public getEmailInputValue()
   {
-    return this.$emailInput.val();
+    return this.emailInput.getValue();
   }
 
   // --------------- Protected methods ------------------
 
-  // ~ Overrides Form.createSubmitButton().
-  protected createSubmitButton(param: Component.SubmitButtonParam = {})
-  {
-    Utils.applyDefaults(param, { text: 'Login' });
+  // // ~ Overrides Form.createSubmitButton().
+  // protected $createSubmitButton(param: Component.SubmitButtonParam = {})
+  // {
+  //   Utils.applyDefaults(param, { text: 'Login' });
 
-    return super.createSubmitButton(param);
-  }
+  //   return super.$createSubmitButton(param);
+  // }
 
   // ~ Overrides Form.createRequest().
   protected createRequest()
   {
     let request = new LoginRequest();
 
-    request.email = this.$emailInput.val();
-    request.password = this.$passwordInput.val();
+    request.email = this.emailInput.getValue();
+    request.password = this.passwordInput.getValue();
 
     return request;
   }
@@ -153,9 +157,12 @@ export class LoginForm extends CredentialsForm
 
   private createButtons()
   {
-    this.createSubmitButton
+    this.$createSubmitButton
     (
-      { $parent: this.createButtonContainer() }
+      {
+        text: 'Login',
+        $parent: this.createButtonContainer()
+      }
     );
   }
 
@@ -164,7 +171,7 @@ export class LoginForm extends CredentialsForm
     let savedEmail = LocalStorage.read(LocalStorage.EMAIL_ENTRY);
 
     if (savedEmail)
-      this.$emailInput.val(savedEmail);  
+      this.emailInput.setValue(savedEmail);
   }
 
   private setStoredPassword()
@@ -172,7 +179,7 @@ export class LoginForm extends CredentialsForm
     let savedPassword = LocalStorage.read(LocalStorage.PASSWORD_ENTRY);
 
     if (savedPassword)
-      this.$passwordInput.val(savedPassword);
+      this.passwordInput.setValue(savedPassword);
   }
 
   // ---------------- Event handlers --------------------

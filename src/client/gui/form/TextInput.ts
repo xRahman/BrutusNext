@@ -11,7 +11,7 @@ import {Utils} from '../../../shared/lib/utils/Utils';
 import {Component} from '../../../client/gui/Component';
 import {FormInput} from '../../../client/gui/form/FormInput';
 
-export abstract class TextInput extends FormInput
+export class TextInput extends FormInput
 {
   constructor
   (
@@ -55,7 +55,7 @@ export abstract class TextInput extends FormInput
       }
     );
 
-    this.$input = this.createTextInput(param);
+    this.$input = this.$createTextInput(param);
   }
 }
 
