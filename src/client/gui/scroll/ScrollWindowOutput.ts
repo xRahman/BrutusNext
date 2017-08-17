@@ -37,7 +37,7 @@ export class ScrollWindowOutput extends Component
       }
     );
 
-    this.$element = this.createDiv(param);
+    this.$element = this.$createDiv(param);
   }
 
   public static get S_CSS_CLASS()
@@ -88,7 +88,7 @@ export class ScrollWindowOutput extends Component
 
     // Create a new <div> element, set 'message' as it's
     // text content and append it to 'this.$element'.
-    this.createDiv
+    this.$createDiv
     (
       {
         $parent: this.$element,

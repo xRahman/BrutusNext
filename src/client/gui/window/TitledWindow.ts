@@ -61,7 +61,7 @@ export class TitledWindow extends Window
   // (accepts plain text or mud colored string).
   public setTitle(title: string)
   {
-    this.createText
+    this.$createText
     (
       {
         $parent: this.$title,
@@ -90,7 +90,7 @@ export class TitledWindow extends Window
       }
     );
 
-    this.$titleBar = this.createDiv(titleBarParam);
+    this.$titleBar = this.$createDiv(titleBarParam);
 
     this.createWindowTitle(titleParam);
   }
@@ -108,7 +108,7 @@ export class TitledWindow extends Window
       }
     );
 
-    this.$title = this.createTitle(param);
+    this.$title = this.$createTitle(param);
   }
 
   protected createContent(param: Component.DivParam = {})
@@ -123,7 +123,7 @@ export class TitledWindow extends Window
       }
     );
 
-    this.$content = this.createDiv(param);
+    this.$content = this.$createDiv(param);
   }
 
   // ---------------- Private methods -------------------

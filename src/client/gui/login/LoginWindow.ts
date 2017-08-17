@@ -19,7 +19,7 @@ export class LoginWindow extends StandaloneWindow
     this.setTitle("&gWelcome to &RBrutus&YNext");
 
     this.createLoginForm();
-    this.createEmptyLine();
+    this.$createEmptyLine();
     this.createRegisterLink();
 
     // Show this window when app is in this state.
@@ -61,9 +61,9 @@ export class LoginWindow extends StandaloneWindow
   {
     let $parent = super.createTextContainer();
 
-    this.createText({ $parent, text: "Don't have an account yet? " });
+    this.$createText({ $parent, text: "Don't have an account yet? " });
 
-    this.$registerLink = this.createTextLink
+    this.$registerLink = this.$createTextLink
     (
       {
         $parent,
@@ -72,7 +72,7 @@ export class LoginWindow extends StandaloneWindow
       }
     );
 
-    this.createText({ $parent, text: "." });
+    this.$createText({ $parent, text: "." });
   }
 
   // ---------------- Event handlers --------------------

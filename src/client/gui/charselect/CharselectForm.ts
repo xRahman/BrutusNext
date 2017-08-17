@@ -47,7 +47,7 @@ export class CharselectForm extends Form
 
   // ----------------- Private data ---------------------
 
-  // Key:   character id
+  // Key: character id
   // Value: charplate
   private charplates = new Map<string, Charplate>();
 
@@ -69,7 +69,7 @@ export class CharselectForm extends Form
   //   super.create(param);
   // }
 
-  // ~ Overrides Form.onShow().
+  // ~ Overrides Component.onShow().
   public onShow()
   {
     super.onShow();
@@ -102,7 +102,7 @@ export class CharselectForm extends Form
 
     if (!id)
     {
-      ERROR("Unable to read selected character id");
+      ERROR("Unable to find selected character id");
       return null;
     }
 

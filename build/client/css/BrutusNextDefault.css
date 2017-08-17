@@ -760,7 +760,7 @@ input:checked + .G_SelectablePlate
 
 /* TODO: Better checkbox graphics. */
 /* :: Form Checkbox :: */
-.S_Form_Checkbox
+.S_CheckboxInput
 {
   width: auto;
 }

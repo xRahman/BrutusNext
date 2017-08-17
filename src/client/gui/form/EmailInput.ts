@@ -6,12 +6,11 @@
 
 'use strict';
 
-import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {Component} from '../../../client/gui/Component';
 import {FormInput} from '../../../client/gui/form/FormInput';
 
-export abstract class EmailInput extends FormInput
+export class EmailInput extends FormInput
 {
   constructor
   (
@@ -30,7 +29,10 @@ export abstract class EmailInput extends FormInput
       Utils.applyDefaults
       (
         labelParam,
-        { name: 'text_input_label' }
+        {
+          name: 'email_input_label',
+          text: 'E-mail Address'
+        }
       )
     );
 
@@ -47,6 +49,7 @@ export abstract class EmailInput extends FormInput
       param,
       {
         name: 'email_input',
+        placeholder: 'Enter E-mail Address',
         $parent: this.$element,
         sCssClass: FormInput.S_CSS_CLASS,
         // required: true,
@@ -58,7 +61,7 @@ export abstract class EmailInput extends FormInput
       }
     );
 
-    this.$input = this.createEmailInput(param);
+    this.$input = this.$createEmailInput(param);
   }
 }
 

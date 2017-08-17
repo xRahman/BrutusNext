@@ -106,7 +106,7 @@ export class StandaloneWindow extends TitledWindow
 
   // --------------- Protected methods ------------------
 
-  protected createEmptyLine(param: Component.DivParam = {})
+  protected $createEmptyLine(param: Component.DivParam = {})
   {
     Utils.applyDefaults
     (
@@ -117,7 +117,7 @@ export class StandaloneWindow extends TitledWindow
       }
     );
 
-    return super.createEmptyLine(param);
+    return super.$createEmptyLine(param);
   }
 
   protected createTextContainer(param: Component.DivParam = {})
@@ -132,7 +132,7 @@ export class StandaloneWindow extends TitledWindow
       }
     );
 
-    return this.createDiv(param);
+    return this.$createDiv(param);
   }
 
   // ---------------- Private methods -------------------
