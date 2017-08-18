@@ -1,6 +1,20 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+TODO: StandaloneWindow asi přejmenovat na ModalWindow
+TODO: Modální okna obecně by neměla ztrácet focus
+  (nejen okna, ale i form)
+
+
+TODO: Vyrobit css classu pro input problem notice
+- dát jí větší font a margin-top.
+[done]
+
+TODO: Ještě jednou se zamyslet nad názvama css class formIntput elementů
+
+TODO: Zkontrolovat, že se dobře renderuje obecný error ve formu.
+
+
 TODO: Procesit (a možná i posílat) charselect request a response.
 - request se procesí (a na serveru to vyhodí chybu, páč se nezpracovává).
 
@@ -24,6 +38,14 @@ TODO: Zabalit $errorLabel a $errorEmptyLine do jedné komponenty
 TODO: Po vytvoření characteru automaticky enablovat button Enter Game.
 
 TODO: Spravit velikosti fontů ve form input componentách.
+
+
+TODO: Možná by nebylo od věci udělat všechny <HR> elementy v kódu
+   (jako např: // --------------- Protected methods ------------------ )
+přes celou řádku, tj. aby končily na 79. znaku.
+- jednak se to bude snáz dělat a současně to bude vodítko na limit délky
+  řádky...
+TODO: používat tag  // -------------- Static class data -------------------
 
 --------------------------------------------------------------
 
