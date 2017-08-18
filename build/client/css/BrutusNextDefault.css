@@ -508,9 +508,12 @@ input:checked + .G_SelectablePlate
 }
 
 /* :: Large Font Size :: */
-.S_Charplate_LabelBig
+.S_Charplate_LabelBig,
+.S_FormInput
 {
-  font-size: 1.2em;
+  /* Note that 'em' units are relative, so this means
+     1.25 times larger than parent's font size */
+  font-size: 1.25em;
 }
 
 /* ------------- Component --------------- */
@@ -524,7 +527,8 @@ input:checked + .G_SelectablePlate
 /* :: Full Width Block :: */
 .S_Component_FullWidthBlock,
 .S_StandaloneWindow_Text,
-.S_Form_Text
+.S_Form_Text,
+.S_FormInput_ProblemNotice
 {
   width: 100%;
   display: block;
@@ -748,23 +752,6 @@ input:checked + .G_SelectablePlate
 
 /* ----------------- Form ---------------- */
 
-/* :: FormInput :: */
-.S_FormInput
-{
-  width: 100%;
-  padding-top: 0.3em;
-  padding-bottom: 0.3em;
-  padding-left: 0.6em;
-  padding-right: 0.6em;
-}
-
-/* TODO: Better checkbox graphics. */
-/* :: Form Checkbox :: */
-.S_CheckboxInput
-{
-  width: auto;
-}
-
 /* :: Form Left Button :: */
 .S_Form_LeftButton
 {
@@ -776,6 +763,31 @@ input:checked + .G_SelectablePlate
 {
   width: 35%;
   margin-left: 5%;
+}
+
+/* --------------- FormInput ------------- */
+
+/* :: Form Input Element :: */
+.S_FormInput
+{
+  width: 100%;
+  padding-top: 0.3em;
+  padding-bottom: 0.3em;
+  padding-left: 0.6em;
+  padding-right: 0.6em;
+}
+
+/* :: Form Input Problem Notice :: */
+.S_FormInput_ProblemNotice
+{
+  margin-top: 0.1em;
+}
+
+/* TODO: Better checkbox graphics. */
+/* :: Checkbox Input :: */
+.S_CheckboxInput
+{
+  width: auto;
 }
 
 /***************************************************************/
