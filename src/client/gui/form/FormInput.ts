@@ -39,12 +39,14 @@ export abstract class FormInput extends Component
     this.$element = super.$createLabel(param);
   }
 
+  // -------------- Static class data -------------------
+
   // Default css class for input elements
   // (not for label element containing the input element).
   protected static get S_CSS_CLASS()
     { return 'S_FormInput'; }
-
-  // -------------- Static class data -------------------
+  protected static get PROBLEM_NOTICE_S_CSS_CLASS()
+    { return 'S_FormInput_ProblemNotice'; }
 
   // ---------------- Protected data --------------------
 
@@ -55,24 +57,12 @@ export abstract class FormInput extends Component
 
   public focus()
   {
-    // if (!this.$input)
-    // {
-    //   ERROR("$input doesn't exist so it won't be focused");
-    //   return;
-    // }
-
     this.$input.focus();
   }
 
   // -> Returns value of input element.
   public getValue()
   {
-    // if (!this.$input)
-    // {
-    //   ERROR("$input doesn't exist so its value cannot be read");
-    //   return;
-    // }
-
     return this.$input.val();
   }
 
@@ -83,13 +73,6 @@ export abstract class FormInput extends Component
 
   public displayProblem(problem: string)
   {
-    // if (!this.$problem)
-    // {
-    //   ERROR("Unable to display problem notice because component"
-    //     + " $problem doesn't exist");
-    //   return;
-    // }
-
     this.$createText
     (
       {
@@ -119,7 +102,7 @@ export abstract class FormInput extends Component
       param,
       {
         $parent: this.$element,
-        sCssClass: Form.TEXT_S_CSS_CLASS
+        sCssClass: FormInput.PROBLEM_NOTICE_S_CSS_CLASS
       }
     );
 
