@@ -48,7 +48,7 @@ export abstract class Form extends Component
 
   protected $submitButton: JQuery = null;
   protected $errorLabel: JQuery = null;
-  protected $errorEmptyLine: JQuery = null;
+  protected $errorLabelContainer: JQuery = null;
 
   // ----------------- Private data ---------------------
 
@@ -120,13 +120,21 @@ export abstract class Form extends Component
 
   protected createErrorLabel()
   {
-    this.$errorLabel = this.$createLabel({});
-    this.$errorLabel.hide();
+    this.$errorLabelContainer = this.$createDiv();
+
+    this.$errorLabel = this.$createLabel
+    (
+      { $parent: this.$errorLabelContainer }
+    );
 
     // Add an empty line after error problem label
     // to separate it from next component.
-    this.$errorEmptyLine = this.$createEmptyLine();
-    this.$errorEmptyLine.hide();
+    this.$createEmptyLine
+    (
+      { $parent: this.$errorLabelContainer }
+    );
+
+    this.$errorLabelContainer.hide();
   }
 
   protected displayError(problem: string)
@@ -140,28 +148,12 @@ export abstract class Form extends Component
       }
     );
 
-    // if (!this.$errorLabel)
-    // {
-    //   ERROR("Missing $errorLabel");
-    //   return;
-    // }
-
-    this.$errorLabel.show();
-
-    // if (!this.$errorEmptyLine)
-    // {
-    //   ERROR("Missing $errorEmptyLine");
-    //   return;
-    // }
-
-    // Also show additional empty line.
-    this.$errorEmptyLine.show();
+    this.$errorLabelContainer.show();
   }
 
   protected hideProblems()
   {
-    this.$errorLabel.hide();
-    this.$errorEmptyLine.hide();
+    this.$errorLabelContainer.hide();
   }
 
   protected abstract createRequest();
