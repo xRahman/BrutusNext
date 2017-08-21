@@ -14,7 +14,6 @@ TODO: Ještě jednou se zamyslet nad názvama css class formIntput elementů
 
 TODO: Zkontrolovat, že se dobře renderuje obecný error ve formu.
 
-
 TODO: Procesit (a možná i posílat) charselect request a response.
 - request se procesí (a na serveru to vyhodí chybu, páč se nezpracovává).
 
@@ -45,6 +44,8 @@ TODO: Možná by nebylo od věci udělat všechny <HR> elementy v kódu
 přes celou řádku, tj. aby končily na 79. znaku.
 - jednak se to bude snáz dělat a současně to bude vodítko na limit délky
   řádky...
+[kašlat na to, vypadá to divně]
+
 TODO: používat tag  // -------------- Static class data -------------------
 
 --------------------------------------------------------------

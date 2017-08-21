@@ -1,0 +1,52 @@
+Otázka je, jak to udělat, aby dialog obsahoval předdefinované volby a přitom
+působil přirozeně.
+
+Zapojit klíčová slova do náhodné (předskriptované) konverzace:
+
+  "I'm going to the city of Thalos tomorrow."
+  "Beware the _dragon_. I've heard is't quite aggresive lately."
+
+  Hráčská otázka obsahující "dragon" a "?" spustí nějakou další hlášku.
+
+  - Čili v podstatě to znamená návrat k původnímu konceptu dialogů na
+    Brutusu, ale se zvýrazněním klíčových slov. Na druhou stranu možná
+    ani to není vždycky nutné, mělo by se to prostě chovat jako extra
+    descriptiony.
+    (Pořád je tu otázka, jestli mají být extra descy klikatelné...)
+    - možná by i klíčová slova v dialozích mohla být klikatelná s tím,
+      že to pak udělá say za postavu. Pokud to budou jen neutrální otázky
+      typu "What do you know about the dragon?", které nebudou hráči
+      vnucovat chování postavy, tak by to mohlo být ok.
+        Výhoda by byla, že by dialog probíhal v plných větách (jinak
+      totiž hráč zaručeně napíše jen "say dragon?")
+        Může každopádně fungovat obojí.
+
+Potenciální nevýhoda čekání na random dialog je, že se ho hráč taky nemusí
+  dočkat (a neměl by jak zjistit, že takový dialog existuje). Tzn. měla by
+  to být spíš alternativa, vždycky by to mělo jít vynutit třeba přes "Ask
+  for gossip".
+
+Další možnost je nějaká "gossip" nebo "hail" option. Asi klidně klikatelná
+s tím, že to za postavu udělá adekvátní say.
+  Otázka je, jestli má mít hráč možnost si tyhle "hail" hlášky zeditovat
+  - možná jen do té míry, že si může vybrat jednu (nebo víc) z předdefinovaných
+    možností (s tím, že hráči mohou submitovat návrhy na konkrétní dialogy
+    a imm+ je pak přidají do nabídky).
+  (Schvalování samozřejmě proto, aby si hráči nedávali do dialogů kraviny)
+- Tohle by znamenalo, že "triggerovací" věty nebudou moci být úplně cokoliv
+  obsahujícího klíčové slovo, ale bude to výběr z nějakých možností ("Ask for
+  gossip", z nichž některé budou obecné a některé kontextové).
+
+Trigger response:
+- už jsem to rozmýšlel někde jinde. Obecně by NPCčka měla za určitých podmínek
+  něco říct, třeba když do místnosti vstupí hráč s nějakým (neschovaným)
+  předmětem (a zrovna se tam nebojuje - pokud se bojuje, trigger response
+  se hodí do bufferu a npc ji řekne, až k tomu bude vhodná příležitost).
+- Trigger response může (dokonce by měla) obsahovat nějaká další klíčová slova.
+
+Poznámky:
+- ono bude asi ok, když si hráč bude moct zapnout triggerování dialogu
+  přes klíčová slova v obecném sayi. Hráči, kteří by napsali prostě jen
+  "dragon?" si totiž zaručeně nechají zapnuté klikání na klíčová slova,
+  protože to je pohodlnější. Riziko, že si to někdo zapne a bude pak
+  říkat nesmysly, je asi hodně malé.
