@@ -32,6 +32,8 @@ export class TitledWindow extends Window
     this.createContent(contentParam);
   }
 
+  // -------------- Static class data -------------------
+
   protected static get TITLE_BAR_S_CSS_CLASS()
     { return 'S_TitledWindow_TitleBar'; }
   protected static get TITLE_S_CSS_CLASS()
@@ -39,21 +41,11 @@ export class TitledWindow extends Window
   protected static get CONTENT_S_CSS_CLASS()
     { return 'S_TitledWindow_Content'; }
 
-  // -------------- Static class data -------------------
-
   // ---------------- Protected data --------------------
 
   protected $title: JQuery = null;
   protected $titleBar: JQuery = null;
   protected $content: JQuery = null;
-
-  // ----------------- Private data ---------------------
-
-  // --------------- Static accessors -------------------
-
-  // ---------------- Static methods --------------------
-
-  // --------------- Public accessors -------------------
 
   // ---------------- Public methods --------------------
 
@@ -125,9 +117,6 @@ export class TitledWindow extends Window
 
     this.$content = this.$createDiv(param);
   }
-
-  // ---------------- Private methods -------------------
-
 }
 
 // ------------------ Type Declarations ----------------------

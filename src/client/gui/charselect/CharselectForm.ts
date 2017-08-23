@@ -12,7 +12,8 @@ import {Connection} from '../../../client/lib/connection/Connection';
 import {Component} from '../../../client/gui/Component';
 import {Form} from '../../../client/gui/form/Form';
 import {Charplate} from '../../../client/gui/charselect/Charplate';
-import {CharselectWindow} from '../../../client/gui/charselect/CharselectWindow';
+import {CharselectWindow} from
+  '../../../client/gui/charselect/CharselectWindow';
 import {CharselectRequest} from
   '../../../shared/lib/protocol/CharselectRequest';
 import {CharselectResponse} from
@@ -42,6 +43,8 @@ export class CharselectForm extends Form
     );
   }
 
+  // -------------- Static class data -------------------
+
   public static get S_CSS_CLASS()
     { return 'S_Charselect'; }
 
@@ -52,22 +55,6 @@ export class CharselectForm extends Form
   private charplates = new Map<string, Charplate>();
 
   // ---------------- Public methods --------------------
-
-  // // -> Returns created jquery element.
-  // public create(param: Component.DivParam = {})
-  // {
-  //   this.applyDefaults
-  //   (
-  //     param,
-  //     {
-  //       name: 'charselect_form',
-  //       gCssClass: Component.WINDOW_G_CSS_CLASS,
-  //       sCssClass: CharselectForm.S_CSS_CLASS
-  //     }
-  //   );
-
-  //   super.create(param);
-  // }
 
   // ~ Overrides Component.onShow().
   public onShow()
@@ -142,9 +129,6 @@ export class CharselectForm extends Form
       charplate.delete();
 
     this.charplates.clear();
-    
-    /// Tohle už by nemělo bejt potřeba, dělá se to v charplate.delete().
-    // this.$element.empty();
   }
 
   private populate()
@@ -155,37 +139,5 @@ export class CharselectForm extends Form
 
     for (let character of account.data.characters.values())
       this.createCharacterPlate(character);
-
-    // this.createCharacterPlate();
-    // this.createCharacterPlate();
-    ///this.createCharacterPlate();
-    /*
-    this.createCharacterPlate();
-    this.createCharacterPlate();
-    this.createCharacterPlate();
-    this.createCharacterPlate();
-    this.createCharacterPlate();
-    this.createCharacterPlate();
-    this.createCharacterPlate();
-    this.createCharacterPlate();
-    this.createCharacterPlate();
-    this.createCharacterPlate();
-    this.createCharacterPlate();
-    */
-
-    /// TODO.
   }
-
-  // ---------------- Event handlers --------------------
-
-  // // ~ Overrides Form.onSubmit().
-  // protected onSubmit(event: JQueryEventObject)
-  // {
-  //   // We will handle the form submit ourselves.
-  //   event.preventDefault();
-
-  //   ERROR("CharselectForm is not supposed to be submited."
-  //     + " CharselectWindow.enterGame() should be called"
-  //     + " instead");
-  // }
 }

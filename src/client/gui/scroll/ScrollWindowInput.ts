@@ -53,28 +53,6 @@ export class ScrollWindowInput extends Component
 
   // ---------------- Public methods --------------------
 
-  // // -> Returns created jquery element.
-  // public create(param: Component.TextAreaParam = {})
-  // {
-  //   this.applyDefaults
-  //   (
-  //     param,
-  //     {
-  //       name: 'scroll_window_input',
-  //       sCssClass: ScrollWindowInput.S_CSS_CLASS,
-  //       // Input element accepts multi-line text (its a 'textarea') but only
-  //       // shows one line (because user commands are usualy single-line).
-  //       rows: 1,
-  //       spellcheck: false,
-  //       autocorrect: Component.Autocorrect.OFF,
-  //       keypress: (event) => { this.onKeyPress(event); },
-  //       keydown: (event) => { this.onKeyDown(event); }
-  //     }
-  //   );
-
-  //   this.$element = this.createTextArea(param);
-  // }
-
   public focus()
   {
     this.$element.focus();

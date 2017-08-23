@@ -37,10 +37,12 @@ export abstract class Form extends Component
     this.createErrorLabel();
   }
 
+  // -------------- Static class data -------------------
+
   public static get TEXT_S_CSS_CLASS()
     { return 'S_Form_Text'; }
   public static get ERROR_TEXT_CONTAINER_S_CSS_CLASS()
-  { return 'S_Form_ErorTextContainer'; }
+    { return 'S_Form_ErorTextContainer'; }
   protected static  get LEFT_BUTTON_S_CSS_CLASS()
     { return 'S_Form_LeftButton'; }
   protected static  get RIGHT_BUTTON_S_CSS_CLASS()
@@ -96,7 +98,7 @@ export abstract class Form extends Component
     return this.$submitButton;
   }
 
-  protected $createEmptyLine(param: Component.DivParam = {})
+  protected createEmptyLine(param: Component.DivParam = {})
   {
     Utils.applyDefaults
     (
@@ -107,7 +109,7 @@ export abstract class Form extends Component
       }
     );
 
-    return super.$createEmptyLine(param);
+    this.$createEmptyLine(param);
   }
 
   protected disableSubmitButton()
@@ -146,7 +148,7 @@ export abstract class Form extends Component
 
     // Add an empty line after error problem label
     // to separate it from next component.
-    this.$createEmptyLine
+    this.createEmptyLine
     (
       { $parent: this.$errorLabelContainer }
     );

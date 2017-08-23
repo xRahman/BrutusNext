@@ -31,26 +31,16 @@ export class RegisterForm extends CredentialsForm
     );
 
     this.createEmailInput();
-    // super.$createLabel({ text: 'Your E-mail Address' });
-    // this.$createEmailInput();
-    // this.createEmailProblemNotice();
-
-    this.$createEmptyLine();
-
+    this.createEmptyLine();
     this.createPasswordInput();
-    // super.$createLabel({ text: 'Your New Password' });
-    // this.$createPasswordInput();
-    // this.createPasswordProblemNotice();
-
-    this.$createEmptyLine();
-
+    this.createEmptyLine();
     this.createInfoLabel();
-
-    this.$createEmptyLine();
-
+    this.createEmptyLine();
     this.createRememberMeCheckbox();
     this.createButtons();
   }
+
+  // -------------- Static class data -------------------
 
   private static get RECOMMENDATION()
   {
@@ -64,32 +54,6 @@ export class RegisterForm extends CredentialsForm
   private $infoLabel: JQuery = null;
 
   // ---------------- Public methods --------------------
-
-  // // ~ Overrides Form.create().
-  // public create(param: Component.FormParam = {})
-  // {
-  //   Utils.applyDefaults(param, { name: 'register_form' });
-
-  //   super.create(param);
-
-  //   super.createLabel({ text: 'Your E-mail Address' });
-  //   this.createEmailInput();
-  //   this.createEmailProblemNotice();
-
-  //   this.createEmptyLine();
-
-  //   super.createLabel({ text: 'Your New Password' });
-  //   this.createPasswordInput();
-  //   this.createPasswordProblemNotice();
-
-  //   this.createEmptyLine();
-
-  //   this.createInfoLabel();
-  //   this.createEmptyLine();
-
-  //   this.createRememberMeCheckbox();
-  //   this.createButtons();
-  // }
 
   public displayProblem(response: RegisterResponse)
   {
@@ -259,31 +223,6 @@ export class RegisterForm extends CredentialsForm
   }
 
   // ---------------- Event handlers --------------------
-
-  /// To be deleted.
-  /*
-  // ~ Overrides Form.onSubmit().
-  protected onSubmit(event: JQueryEventObject)
-  {
-    // We will handle the form submit ourselves.
-    event.preventDefault();
-
-    let request = this.createRequest();
-
-    // Thanks to the shared code we don't have to
-    // wait for server response to check for most
-    // problems (the check will be done again on
-    // the server of course to prevent exploits).
-    if (!this.isRequestValid(request))
-      return;
-
-    // Disable submit button to prevent click-spamming
-    // requests.
-    this.disableSubmitButton();
-
-    Connection.send(request);
-  }
-  */
 
   protected onCancel(event: JQueryEventObject)
   {

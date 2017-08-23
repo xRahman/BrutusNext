@@ -1,6 +1,10 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+TODO: Promazat zakomentovaný kód v GUI.
+TODO: používat tag  // -------------- Static class data -------------------
+
+
 TODO: StandaloneWindow asi přejmenovat na ModalWindow
 TODO: Modální okna obecně by neměla ztrácet focus
   (nejen okna, ale i form)
@@ -9,8 +13,6 @@ TODO: Modální okna obecně by neměla ztrácet focus
 TODO: Procesit (a možná i posílat) charselect request a response.
 - request se procesí (a na serveru to vyhodí chybu, páč se nezpracovává).
 
-TODO: Promazat zakomentovaný kód v GUI.
-
 TODO: Asi bych se měl v klientu vykašlat na ruční ošetřování errorů typu
   přístup na 'null' komponentu. Když to neošetřím, browser vyhodí výjimku
   a nějak se s tím popere, takže efekt bude hodně podobnej jako můj vlastní
@@ -18,15 +20,8 @@ TODO: Asi bych se měl v klientu vykašlat na ruční ošetřování errorů typ
 TODO: Ale naopak když vyrábím komponentu přes 'new', tak bych měl otestovat,
   že ještě neexistuje - opakované vytváření výjimku nehodí.
 
-TODO: Zabalit $errorLabel a $errorEmptyLine do jedné komponenty
-  (těžko říct, jestli na to dělat nový ts file...)
 
 TODO: Po vytvoření characteru automaticky enablovat button Enter Game.
-
-TODO: Spravit velikosti fontů ve form input componentách.
-
-
-TODO: používat tag  // -------------- Static class data -------------------
 
 --------------------------------------------------------------
 
@@ -41,6 +36,12 @@ TODO: Vymyslet, kam vypisovat problém při otevírání connection.
     - tohle teda trochu komplikuje to, že offline server znamená,
       že nejede ani http server - ale to se možná pořeší tím, že
       site bude statická stránka a mud poběží až na /mud.
+Šlo by to vypisovat do error textu v login formu
+(udělal jsem z něj docela výrazný rámeček a vzato kolem a kolem
+ to je druh error message.)
+- hmm tak asi nakonec ne. Při zkoušení reconnectu by asi neměla být
+  vidět login form, tzn. nedává smysl, aby se to vypisovalo
+  do login okna. Takže zpět k původnímu konceptu - samostatné okno.
 
 TODO: Automatický reconnect
 - momentálně to dělá Connection.sendCommand(), což asi není dobře.
@@ -183,6 +184,14 @@ TODO: Otestovat reconnect z jiného tabu.
   jinak to těžko odladím.
 
 --------------------------------------------------------------
+
+TODO: Zabalit $errorLabel a $errorEmptyLine do jedné komponenty
+  (těžko říct, jestli na to dělat nový ts file...)
+[done]
+
+  TODO: Spravit velikosti fontů ve form input componentách.
+[done]
+
 
 Hodně ďábelská myšlenka:
 - udělat komponentu na inputy, která bude obsahovat imput a jeho

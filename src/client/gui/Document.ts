@@ -32,20 +32,14 @@ export class Document
     )
   }
 
+  // ----------------- Private data ---------------------
+
   // Jquery <body> element.
   private $body = $('#body');
-
-  // ---------------- Protected data --------------------
-
-  // ----------------- Private data ---------------------
 
   // --------------- Static accessors -------------------
 
   public static get $body() { return ClientApp.document.$body; }
-
-  // ---------------- Static methods --------------------
-
-  // ---------------- Public methods --------------------
 
   // ---------------- Private methods -------------------
 
@@ -261,10 +255,5 @@ export class Document
         this.focusInput();
         break;
     }
-
-    /// Nevím, jestli to bylo k něčemu potřeba - pokud ne,
-    /// je lepší to tu nemít, protože není jasné, co ta return
-    /// value dělá (podporovaný způsob je event.preventDefault()).
-    ///return true;
   }
 }

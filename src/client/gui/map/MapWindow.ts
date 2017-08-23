@@ -63,27 +63,6 @@ export class MapWindow extends TitledWindow
 
   // ---------------- Public methods --------------------
 
-  // // ~ Overrides GameWindow.create().
-  // public create()
-  // {
-  //   super.create
-  //   (
-  //     {
-  //       windowParam:
-  //       {
-  //         name: 'map_window',
-  //         sCssClass: MapWindow.S_CSS_CLASS,
-  //         resize: (event) => { this.onResize(event); }
-  //       }
-  //     }
-  //   );
-
-  //   /// TEST
-  //   this.setTitle('Dragonhelm Mountains');
-
-  //   this.createSvgMap();
-  // }
-
   // ~ Overrides Window.onDocumentReady().
   //  (Executes when html document is fully loaded.)
   public onDocumentReady()

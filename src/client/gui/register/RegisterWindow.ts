@@ -19,8 +19,7 @@ export class RegisterWindow extends StandaloneWindow
     this.setTitle("Create New Account");
 
     this.createRegisterForm();
-
-    this.$createEmptyLine();
+    this.createEmptyLine();
     this.createTermsLink();
 
     // Show this window when app is in this state.
@@ -34,21 +33,6 @@ export class RegisterWindow extends StandaloneWindow
   // ----------------- Public data ---------------------- 
 
   public form: RegisterForm = null;
-
-  // ---------------- Public methods --------------------
-
-  // // ~ Overrides StandaloneWindow.create().
-  // public create()
-  // {
-  //   super.create({ windowParam: { name: 'register_window' }});
-
-  //   this.setTitle("Create New Account");
-
-  //   this.createRegisterForm();
-
-  //   this.createEmptyLine();
-  //   this.createTermsLink();
-  // }
 
   // ---------------- Private methods -------------------
 
