@@ -765,6 +765,12 @@ input:checked + .G_SelectablePlate
   margin-left: 5%;
 }
 
+/* :: Form Error Text Container :: */
+.S_Form_ErorTextContainer
+{
+  padding: 0.3em;
+}
+
 /* --------------- FormInput ------------- */
 
 /* :: Form Input Element :: */
