@@ -75,6 +75,11 @@ export class Document
   // Handles 'keydown' event.
   private onKeyDown(event: JQueryKeyEventObject)
   {
+    /// TODO: Tady volat jen:
+    ClientApp.onKeyDown(event);
+    // A zbytek přesunout nejspíš do ScrollWindow
+    // (Nebo do něčeho, co bude řešit ClientApp.State.IN_GAME).
+
     let key = event.which;
     let alt = event.altKey;
     let ctrl = event.ctrlKey;

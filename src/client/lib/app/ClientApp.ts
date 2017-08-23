@@ -128,12 +128,6 @@ export class ClientApp extends App
     await ClientApp.getInstance().run();
   }
 
-  // Executes when html document is fully loaded.
-  public static onDocumentReady()
-  {
-    ClientApp.getInstance().windows.onDocumentReady();
-  }
-
   // ------------ Protected static methods -------------- 
 
   // Creates an instance of a client. Client is a singleton,
@@ -270,6 +264,30 @@ export class ClientApp extends App
   }
 
   // ---------------- Event handlers --------------------
+
+  // Executes when html document is fully loaded.
+  public static onDocumentReady()
+  {
+    ClientApp.getInstance().windows.onDocumentReady();
+  }
+
+  // Handles 'keydown' event on html document.
+  public static onKeyDown(event: JQueryKeyEventObject)
+  {
+    switch (ClientApp.getInstance().state)
+    {
+      case ClientApp.State.LOGIN:
+      case ClientApp.State.REGISTER:
+      case ClientApp.State.TERMS:
+      case ClientApp.State.CHARSELECT:
+      case ClientApp.State.CHARGEN:
+        break;
+
+      case ClientApp.State.IN_GAME:
+        Windows.activeScrollWindow.onKeyDown(event);
+        break;
+    }
+  }
 
   private onBeforeUnload(event: BeforeUnloadEvent)
   {
