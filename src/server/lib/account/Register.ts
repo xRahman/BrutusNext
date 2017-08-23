@@ -123,7 +123,7 @@ export class Register
     }
 
     // 'null' means that an error occured.
-    if (account === undefined)
+    if (account === null)
     {
       this.reportCreationFailure(account, accountName, connection);
       return;

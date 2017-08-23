@@ -39,6 +39,8 @@ export abstract class Form extends Component
 
   public static get TEXT_S_CSS_CLASS()
     { return 'S_Form_Text'; }
+  public static get ERROR_TEXT_CONTAINER_S_CSS_CLASS()
+  { return 'S_Form_ErorTextContainer'; }
   protected static  get LEFT_BUTTON_S_CSS_CLASS()
     { return 'S_Form_LeftButton'; }
   protected static  get RIGHT_BUTTON_S_CSS_CLASS()
@@ -120,11 +122,26 @@ export abstract class Form extends Component
 
   protected createErrorLabel()
   {
-    this.$errorLabelContainer = this.$createDiv();
+    this.$errorLabelContainer = this.$createDiv
+    (
+      { $parent: this.$element }
+    );
+
+    let $textContainer = this.$createDiv
+    (
+      {
+        $parent: this.$errorLabelContainer,
+        sCssClass: Form.ERROR_TEXT_CONTAINER_S_CSS_CLASS,
+        gCssClass: Component.WINDOW_G_CSS_CLASS
+      }
+    )
 
     this.$errorLabel = this.$createLabel
     (
-      { $parent: this.$errorLabelContainer }
+      {
+        $parent: $textContainer,
+        sCssClass: Form.TEXT_S_CSS_CLASS
+      }
     );
 
     // Add an empty line after error problem label
@@ -139,6 +156,8 @@ export abstract class Form extends Component
 
   protected displayError(problem: string)
   {
+    console.log('displayError()');
+
     this.$createText
     (
       {
