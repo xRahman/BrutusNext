@@ -26,49 +26,14 @@ export class LoginForm extends CredentialsForm
     );
 
     this.createEmailInput();
-
-    // this.$createLabel({ text: 'E-mail Address' });
-    // this.$createEmailInput();
-    // this.createEmailProblemNotice();
-
-    this.$createEmptyLine();
-
+    this.createEmptyLine();
     this.createPasswordInput();
-
-    // this.$createLabel({ text: 'Password' });
-    // this.$createPasswordInput();
-    // this.createPasswordProblemNotice();
-
-    this.$createEmptyLine();
-
+    this.createEmptyLine();
     this.createRememberMeCheckbox();
     this.createButtons();
   }
 
   // ---------------- Public methods --------------------
-
-  // // ~ Overrides Form.create().
-  // public create(param: Component.FormParam = {})
-  // {
-  //   this.applyDefaults(param, { name: 'login_form' });
-
-  //   super.create(param);
-
-  //   super.createLabel({ text: 'E-mail Address' });
-  //   this.createEmailInput();
-  //   this.createEmailProblemNotice();
-
-  //   this.createEmptyLine();
-
-  //   super.createLabel({ text: 'Password' });
-  //   this.createPasswordInput();
-  //   this.createPasswordProblemNotice();
-
-  //   this.createEmptyLine();
-
-  //   this.createRememberMeCheckbox();
-  //   this.createButtons();
-  // }
 
   public displayProblem(response: LoginResponse)
   {
@@ -123,14 +88,6 @@ export class LoginForm extends CredentialsForm
 
   // --------------- Protected methods ------------------
 
-  // // ~ Overrides Form.createSubmitButton().
-  // protected $createSubmitButton(param: Component.SubmitButtonParam = {})
-  // {
-  //   Utils.applyDefaults(param, { text: 'Login' });
-
-  //   return super.$createSubmitButton(param);
-  // }
-
   // ~ Overrides Form.createRequest().
   protected createRequest()
   {
@@ -181,27 +138,4 @@ export class LoginForm extends CredentialsForm
     if (savedPassword)
       this.passwordInput.setValue(savedPassword);
   }
-
-  // ---------------- Event handlers --------------------
-
-  /// To be deleted.
-  /*
-  // ~ Overrides Form.onSubmit().
-  protected onSubmit(event: JQueryEventObject)
-  {
-    // We will handle the form submit ourselves.
-    event.preventDefault();
-
-    let request = new LoginRequest();
-
-    request.email = this.$emailInput.val();
-    request.password = this.$passwordInput.val();
-
-    // Disable submit button to prevent click-spamming
-    // requests.
-    this.disableSubmitButton();
-
-    Connection.send(request);
-  }
-  */
 }

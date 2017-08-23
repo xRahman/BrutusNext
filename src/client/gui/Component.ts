@@ -40,6 +40,8 @@ export abstract class Component
       parent.children.add(this);
   }
 
+  // -------------- Static class data -------------------
+
   // This is used to make an empty line of text.
   // (HTML <label> or <span> with no text is not drawn at all
   // because of zero height. Setting this text to it will fix it.)
@@ -301,17 +303,6 @@ export abstract class Component
 
     return this.$createDiv(param);
   }
-
-  /// Zrušeno - volá se to v rámci super() callu v constructoru,
-  /// kde nejde použít this, takže je to třeba volat přes Utils.
-  /// A když už to někde bude volané přes Utils, tak bude lepší
-  /// to tak dělat všude.
-  // // Copies properties of 'defaults' object to 'target' object
-  // // if they are not present in it.
-  // protected applyDefaults<T>(target: T, defaults: T)
-  // {
-  //   return Utils.applyDefaults(target, defaults);
-  // }
 
   protected disable($element: JQuery)
   {

@@ -53,6 +53,8 @@ export class Charplate extends Component
     this.createCharplate({ $parent: $label });
   }
 
+  // -------------- Static class data -------------------
+
   protected static get S_CSS_CLASS()
     { return 'S_Charplate'; }
   protected static get OUTER_LABEL_S_CSS_CLASS()
@@ -71,37 +73,6 @@ export class Charplate extends Component
   private $radio: JQuery = null;
 
   // ---------------- Public methods --------------------
-
-  // // -> Returns created jquery element.
-  // public create(param: Component.LabelParam = {})
-  // {
-  //   // Implementation note:
-  //   //   In order to style radiobutton with css, we need
-  //   // to hide the actual radiobutton and style the element
-  //   // right after it using 'input:checked + .class' css
-  //   // selector.
-  //   //   There are two ways to do it: Either we place a label
-  //   // right next to (hidden) radiobutton and set a 'for'
-  //   // attribute to it to bind it to the checkbox (so the
-  //   // checkbox is cliecked when the label is clicked, or we
-  //   // put a checkbox inside a label (which also makes it
-  //   // clicked anytime the label is clicked) and put another
-  //   // element inside the label which we will be able to style
-  //   // using the '+' css selector.
-  //   //   We use the second option because it allows us to style
-  //   // something else than <label> and we don't have to use
-  //   // 'for' attribute on label this way.
-
-  //   // Create a <label> element.
-  //   let $label = this.createLabelContainer(param);
-    
-  //   // Put a hidden radio input inside it.
-  //   this.$radio = this.createRadio({ $parent: $label });
-
-  //   // Put another element inside the label which will
-  //   // be styled using css.
-  //   this.createCharplate({ $parent: $label });
-  // }
 
   public select()
   {

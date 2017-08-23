@@ -52,27 +52,6 @@ export class ScrollWindow extends TitledWindow
 
   // ---------------- Public methods --------------------
 
-  // // ~ Overrides GameWindow.create().
-  // public create()
-  // {
-  //   super.create
-  //   (
-  //     {
-  //       windowParam:
-  //       {
-  //         name: 'scroll_window',
-  //         sCssClass: ScrollWindow.S_CSS_CLASS
-  //       }
-  //     }
-  //   );
-
-  //   /// TEST
-  //   this.setTitle('Rahman@BrutusNext');
-
-  //   this.createOutput();
-  //   this.createInput();
-  // }
-
   // Writes the command to the output and sends it to the connection.
   public sendCommand(command: string)
   {

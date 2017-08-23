@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Displays scrollable text.
+  Scrollable text.
 */
 
 'use strict';
@@ -40,34 +40,12 @@ export class ScrollWindowOutput extends Component
     this.$element = this.$createDiv(param);
   }
 
+  // -------------- Static class data -------------------
+
   public static get S_CSS_CLASS()
     { return 'S_ScrollWindowOutput'; }
 
   // ---------------- Public methods --------------------
-
-  // // -> Returns created jquery element.
-  // public create(param: Component.DivParam = {})
-  // {
-  //   this.applyDefaults
-  //   (
-  //     param,
-  //     {
-  //       name: 'scroll_window_output',
-  //       // Use NO_GRAPHICS_G_CSS_CLASS to disable default outline
-  //       // when selected.
-  //       gCssClass: Component.NO_GRAPHICS_G_CSS_CLASS,
-  //       sCssClass: ScrollWindowOutput.S_CSS_CLASS,
-  //       // In order to trigger keyboard events on <div> element,
-  //       // it must have focus. To give it a focus, it must have
-  //       // a 'tabindex' attribute set.
-  //       // ('tabindex: -1' means: focusable only by script, not by user)
-  //       tabindex: -1,
-  //       keydown: (event) => { this.onKeyDown(event); }
-  //     }
-  //   );
-
-  //   this.$output = this.createDiv(param);
-  // }
 
   public append
   (
