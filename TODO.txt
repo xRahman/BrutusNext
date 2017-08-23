@@ -1,13 +1,29 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
-TODO: Promazat zakomentovaný kód v GUI.
-TODO: používat tag  // -------------- Static class data -------------------
+Jak na zpracování kláves?
+- v Document.onKeyDown() mít asi jen switch podle app.state
+  (nebo možná ještě lépe zavolat app.onKeyDown(), která si to
+  switchne.
+- vlastní zpracování kláves přesunout do příslušných oken.
 
+TODO: Přesměrování kláves v Document.onKeyDown() dělat jen
+  ve hře (a checkovat, jestli vůbec activeScrollWindow existuje).
 
 TODO: StandaloneWindow asi přejmenovat na ModalWindow
 TODO: Modální okna obecně by neměla ztrácet focus
   (nejen okna, ale i form)
+
+TOFIX: V login window nefunguje enter.
+- aha, okno totiž nemá focus.
+  (tzn tohle se vyřeší, když budu dávat focus nějakému inputu)
+I když... Pořád může uživatel kliknout jinam a focus oknu sebrat.
+- Tzn. asi bych měl přetížit document.onKeyDown() a přesměrovávat ho
+  do viditelného okna (nebo to okno focusnout, nebo prostě zavolat
+  ten submit()).
+
+TODO: V TermsWindow zprovoznit escape a enter.
+
 
 
 TODO: Procesit (a možná i posílat) charselect request a response.
@@ -60,10 +76,6 @@ TODO: Savovat Admins (asi by to měla bejt entita).
 
 --------------------------------------------------------------
 
-TODO: V TermsWindow zprovoznit escape a enter.
-
-TODO: Přesměrování kláves v Document.onKeyDown() dělat jen
-  ve hře (a checkovat, jestli vůbec activeScrollWindow existuje).
 
 TODO (quality of life improvements):
 - Po vytvoření nového charu checknout příslušný charplate.
@@ -80,13 +92,6 @@ Register:
 TODO: V charselectu v onShow() selectnout naposledy lognutý character
   (takže asi jako v loginu - pamatovat si idčko v offline storage).
 
-TOFIX: V login window nefunguje enter.
-- aha, okno totiž nemá focus.
-  (tzn tohle se vyřeší, když budu dávat focus nějakému inputu)
-I když... Pořád může uživatel kliknout jinam a focus oknu sebrat.
-- Tzn. asi bych měl přetížit document.onKeyDown() a přesměrovávat ho
-  do viditelného okna (nebo to okno focusnout, nebo prostě zavolat
-  ten submit()).
 
 
 TODO: Udělat vlastní grafiku pro checkbox (když už to umím ;-)).
@@ -184,6 +189,11 @@ TODO: Otestovat reconnect z jiného tabu.
   jinak to těžko odladím.
 
 --------------------------------------------------------------
+
+TODO: Promazat zakomentovaný kód v GUI.
+[done]
+TODO: používat tag  // -------------- Static class data -------------------
+[done]
 
 TODO: Zabalit $errorLabel a $errorEmptyLine do jedné komponenty
   (těžko říct, jestli na to dělat nový ts file...)
