@@ -6,21 +6,8 @@ TODO: Modální okna obecně by neměla ztrácet focus
   (nejen okna, ale i form)
 
 
-TODO: Vyrobit css classu pro input problem notice
-- dát jí větší font a margin-top.
-[done]
-
-TODO: Ještě jednou se zamyslet nad názvama css class formIntput elementů
-
-TODO: Zkontrolovat, že se dobře renderuje obecný error ve formu.
-
 TODO: Procesit (a možná i posílat) charselect request a response.
 - request se procesí (a na serveru to vyhodí chybu, páč se nezpracovává).
-
-TODO: Různě po GUI mám podmínky jako:
-  if (this.$form)
-    this.$form.hide();
-- Většinou by to měl bejt assert.
 
 TODO: Promazat zakomentovaný kód v GUI.
 
@@ -38,13 +25,6 @@ TODO: Po vytvoření characteru automaticky enablovat button Enter Game.
 
 TODO: Spravit velikosti fontů ve form input componentách.
 
-
-TODO: Možná by nebylo od věci udělat všechny <HR> elementy v kódu
-   (jako např: // --------------- Protected methods ------------------ )
-přes celou řádku, tj. aby končily na 79. znaku.
-- jednak se to bude snáz dělat a současně to bude vodítko na limit délky
-  řádky...
-[kašlat na to, vypadá to divně]
 
 TODO: používat tag  // -------------- Static class data -------------------
 
@@ -108,29 +88,8 @@ I když... Pořád může uživatel kliknout jinam a focus oknu sebrat.
   ten submit()).
 
 
-Hodně ďábelská myšlenka:
-- udělat komponentu na inputy, která bude obsahovat imput a jeho
-  label a problem label.
-
-TODO: Udělat si vlastní validování minLenghtu
-- jde tuším nějak komponentě nastavit problem message.
-Tohle není dobrej nápad, protože defaultní hlášky browseru jsou lokalizované.
-Spíš defaultní validaci vypnu.
-
-TODO: Udělat vlastní grafiku pro validation problem notice.
-- nebo tu defaultní vypnout
-
 TODO: Udělat vlastní grafiku pro checkbox (když už to umím ;-)).
-  (Hmm, problém bude asi s jazykem - ostatní hlášky budou lokalizované).
 
-Hmm, nakonec bude asi fakt nejlepší vypnout veškerou nativní validaci
-  s výjimkou maxlength (protože to prostě omezí počet znaků, které
-  se dají do inputu napsat) a používat pouze vlastní.
-- vlastní validaci stejně musím mít (server-side).
-- díky shared kódu ji mohou z části volat rovnou na klientu
-  (a taky to dělám).
-Nevýhoda je, že se to nevyhazuje v tooltip boxu (i když i to bych asi mohl
-zařídit, když bych o to stál).
 
 
 --------------------------------------------------------------
@@ -224,6 +183,54 @@ TODO: Otestovat reconnect z jiného tabu.
   jinak to těžko odladím.
 
 --------------------------------------------------------------
+
+Hodně ďábelská myšlenka:
+- udělat komponentu na inputy, která bude obsahovat imput a jeho
+  label a problem label.
+[done]
+
+TODO: Udělat si vlastní validování minLenghtu
+- jde tuším nějak komponentě nastavit problem message.
+Tohle není dobrej nápad, protože defaultní hlášky browseru jsou lokalizované.
+Spíš defaultní validaci vypnu.
+[done - vypnuto]
+
+TODO: Udělat vlastní grafiku pro validation problem notice.
+- nebo tu defaultní vypnout
+[done - defaultní vypnuta]
+
+Hmm, nakonec bude asi fakt nejlepší vypnout veškerou nativní validaci
+  s výjimkou maxlength (protože to prostě omezí počet znaků, které
+  se dají do inputu napsat) a používat pouze vlastní.
+- vlastní validaci stejně musím mít (server-side).
+- díky shared kódu ji mohou z části volat rovnou na klientu
+  (a taky to dělám).
+Nevýhoda je, že se to nevyhazuje v tooltip boxu (i když i to bych asi mohl
+zařídit, když bych o to stál).
+[done (na tooltip box zatím kašlu)]
+
+TODO: Různě po GUI mám podmínky jako:
+  if (this.$form)
+    this.$form.hide();
+- Většinou by to měl bejt assert.
+[snad done]
+
+TODO: Možná by nebylo od věci udělat všechny <HR> elementy v kódu
+   (jako např: // --------------- Protected methods ------------------ )
+přes celou řádku, tj. aby končily na 79. znaku.
+- jednak se to bude snáz dělat a současně to bude vodítko na limit délky
+  řádky...
+[kašlat na to, vypadá to divně]
+
+TODO: Vyrobit css classu pro input problem notice
+- dát jí větší font a margin-top.
+[done]
+
+TODO: Ještě jednou se zamyslet nad názvama css class formIntput elementů.
+[asi ok]
+
+TODO: Zkontrolovat, že se dobře renderuje obecný error ve formu.
+[done]
 
 TODO: (a možná by se dalo sloučit vyrábění komponent přes new() a volání
  create())
