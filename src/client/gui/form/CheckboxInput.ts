@@ -38,6 +38,8 @@ export class CheckboxInput extends FormInput
     this.createProblemNotice(problemParam);
   }
 
+  // -------------- Static class data -------------------
+
   protected static get S_CSS_CLASS()
     { return 'S_CheckboxInput'; }
 
@@ -45,25 +47,11 @@ export class CheckboxInput extends FormInput
 
   public isChecked()
   {
-    // if (!this.$input)
-    // {
-    //   ERROR("Unable to determine state of checkbox because"
-    //     + " respective element doesn't exist. Returning 'false'");
-    //   return false;
-    // }
-
     return this.$input.prop('checked');
   }
 
   public setChecked(value: boolean)
   {
-    // if (!this.$input)
-    // {
-    //   ERROR("Unable to set checked state of checkbox because"
-    //     + " respective element doesn't exist");
-    //   return false;
-    // }
-
     this.$input.prop('checked', value);
   }
 

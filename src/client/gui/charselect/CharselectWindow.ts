@@ -37,18 +37,6 @@ export class CharselectWindow extends StandaloneWindow
 
   // ---------------- Public methods --------------------
 
-  // // ~ Overrides StandaloneWindow.create().
-  // public create()
-  // {
-  //   super.create({ windowParam: { name: 'charselect_window' }});
-
-  //   this.setTitle("Your Characters");
-
-  //   this.createButtonNewCharacter();
-  //   this.createCharselectForm();
-  //   this.createButtonEnterGame();
-  // }
-
   public onSelectionChange()
   {
     this.enable(this.$enterGameButton);

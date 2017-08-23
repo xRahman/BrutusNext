@@ -19,7 +19,7 @@ export class LoginWindow extends StandaloneWindow
     this.setTitle("&gWelcome to &RBrutus&YNext");
 
     this.createLoginForm();
-    this.$createEmptyLine();
+    this.createEmptyLine();
     this.createRegisterLink();
 
     // Show this window when app is in this state.
@@ -33,22 +33,6 @@ export class LoginWindow extends StandaloneWindow
   // ----------------- Public data ---------------------- 
 
   public form: LoginForm = null;
-
-  // ---------------- Public methods --------------------
-
-  // // ~ Overrides StandaloneWindow.create().
-  // public create()
-  // {
-  //   super.create({ windowParam: { name: 'login_window' }});
-
-  //   this.setTitle("&gWelcome to &RBrutus&YNext");
-
-  //   this.createLoginForm();
-
-  //   this.createEmptyLine();
-
-  //   this.createRegisterLink();
-  // }
 
   // ---------------- Private methods -------------------
 
