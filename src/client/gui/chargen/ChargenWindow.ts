@@ -28,18 +28,6 @@ export class ChargenWindow extends StandaloneWindow
 
   public form: ChargenForm = null;
 
-  // ---------------- Public methods --------------------
-
-  // // ~ Overrides StandaloneWindow.create().
-  // public create()
-  // {
-  //   super.create({ windowParam: { name: 'chargen_window' }});
-
-  //   this.setTitle("Character Creation");
-
-  //   this.createChargenForm();
-  // }
-
   // ---------------- Private methods -------------------
 
   private createChargenForm()

@@ -21,8 +21,6 @@ import {ClientApp} from '../../../client/lib/app/ClientApp';
 
 export class Windows
 {
-  // ---------------- Protected data --------------------
-
   // ----------------- Private data ---------------------
 
   // All created windows (hidden or not).

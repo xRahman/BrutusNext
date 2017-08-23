@@ -49,6 +49,8 @@ export class StandaloneWindow extends TitledWindow
     );
   }
 
+  // -------------- Static class data -------------------
+
   protected static get S_CSS_CLASS()
     { return 'S_StandaloneWindow'; }
   protected static get TITLE_S_CSS_CLASS()
@@ -58,55 +60,9 @@ export class StandaloneWindow extends TitledWindow
   protected static get TEXT_S_CSS_CLASS()
     { return 'S_StandaloneWindow_Text'; }
 
-  // ---------------- Public methods --------------------
-
-  // // ~ Overrides TitledWindow.create().
-  // public create
-  // (
-  //   {
-  //     windowParam = {},
-  //     titleBarParam = {},
-  //     titleParam = {},
-  //     contentParam = {}
-  //   }
-  //   : TitledWindow.Param = {}
-  // )
-  // {
-  //   Utils.applyDefaults
-  //   (
-  //     windowParam,
-  //     {
-  //       name: 'standalone_window',
-  //       sCssClass: StandaloneWindow.S_CSS_CLASS
-  //     }
-  //   );
-
-  //   Utils.applyDefaults
-  //   (
-  //     titleParam,
-  //     { sCssClass: StandaloneWindow.TITLE_S_CSS_CLASS }
-  //   );
-
-  //   Utils.applyDefaults
-  //   (
-  //     contentParam,
-  //     { sCssClass: StandaloneWindow.CONTENT_S_CSS_CLASS }
-  //   );
-
-  //   super.create
-  //   (
-  //     {
-  //       windowParam,
-  //       titleBarParam,
-  //       titleParam,
-  //       contentParam
-  //     }
-  //   );
-  // }
-
   // --------------- Protected methods ------------------
 
-  protected $createEmptyLine(param: Component.DivParam = {})
+  protected createEmptyLine(param: Component.DivParam = {})
   {
     Utils.applyDefaults
     (
@@ -117,7 +73,7 @@ export class StandaloneWindow extends TitledWindow
       }
     );
 
-    return super.$createEmptyLine(param);
+    this.$createEmptyLine(param);
   }
 
   protected createTextContainer(param: Component.DivParam = {})
@@ -134,9 +90,4 @@ export class StandaloneWindow extends TitledWindow
 
     return this.$createDiv(param);
   }
-
-  // ---------------- Private methods -------------------
-
-  // ---------------- Event handlers --------------------
-
 }

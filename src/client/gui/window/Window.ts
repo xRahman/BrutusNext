@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Window element.
+  Window component.
 */
 
 'use strict';
@@ -62,28 +62,6 @@ export class Window extends Component
   public getFlags() { return this.flags; }
 
   // ---------------- Public methods --------------------
-
-  // private create
-  // (
-  //   windowParam: Component.DivParam = {}
-  // )
-  // {
-  //   this.applyDefaults
-  //   (
-  //     windowParam,
-  //     {
-  //       name: 'window',
-  //       $parent: Document.$body,
-  //       gCssClass: Component.WINDOW_G_CSS_CLASS,
-  //       sCssClass: Window.S_CSS_CLASS
-  //     }
-  //   );
-
-  //   this.$window = this.createDiv(windowParam);
-
-  //   // Windows are created hidden.
-  //   this.$window.hide();
-  // }
 
   public showByState(state: ClientApp.State)
   {

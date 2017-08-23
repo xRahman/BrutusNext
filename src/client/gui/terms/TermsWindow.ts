@@ -40,38 +40,12 @@ export class TermsWindow extends StandaloneWindow
     this.flags.set(ClientApp.State.TERMS);
   }
 
+  // -------------- Static class data -------------------
+
   protected static get S_CSS_CLASS()
     { return 'S_TermsWindow'; }
   protected static get TERMS_S_CSS_CLASS()
     { return 'S_TermsWindow_Terms'; }
-
-  // ---------------- Public methods --------------------
-
-  // // ~ Overrides Window.create()
-  // public create()
-  // {
-  //   super.create
-  //   (
-  //     {
-  //       windowParam:
-  //       {
-  //         name: 'terms_window',
-  //         sCssClass: TermsWindow.S_CSS_CLASS
-  //       },
-  //       contentParam:
-  //       {
-  //         sCssClass: TitledWindow.CONTENT_S_CSS_CLASS
-  //       }
-  //     }
-  //   );
-
-  //   this.setTitle("Terms of Use");
-
-  //   this.createTermsText();
-  //   this.createAcceptButton();
-  // }
-
-  // --------------- Protected methods ------------------
 
   // ---------------- Private methods -------------------
 
