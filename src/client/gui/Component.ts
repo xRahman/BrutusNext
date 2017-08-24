@@ -106,6 +106,36 @@ export abstract class Component
     this.deleted = true;
   }
 
+  // Gives focus to the $element
+  // (note that this only works for elements like form inputs
+  //  or for elements that have 'tabindex' attribute set).
+  public focus()
+  {
+    this.$element.focus();
+  }
+
+  // -> Returns 'true' if $element or some of it's children has focus.
+  public hasFocus()
+  {
+    let hasFocus = this.$element.is(":focus");
+    let hasFocusedChild = this.$element.find(':focus').length > 0;
+
+    return hasFocus || hasFocusedChild;
+  }
+
+  // Sets focus to the $element and triggers 'event' on it
+  // (in order for any element to process keyboard events,
+  //  it must have focus).
+  public triggerKeyboardEvent(event)
+  {
+    // Note that to be able to give focus to a <div> element,
+    // it must have set a 'tabindex' attribute.
+    this.focus();
+
+    // Now we can trigger the keyboard event.
+    this.$element.trigger(event);
+  }
+
   // --------------- Protected methods ------------------
 
   protected onShow()

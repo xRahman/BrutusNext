@@ -7,10 +7,10 @@
 'use strict';
 
 import {ClientApp} from '../../../client/lib/app/ClientApp';
-import {StandaloneWindow} from '../../../client/gui/window/StandaloneWindow';
+import {FormWindow} from '../../../client/gui/window/FormWindow';
 import {RegisterForm} from '../../../client/gui/register/RegisterForm';
 
-export class RegisterWindow extends StandaloneWindow
+export class RegisterWindow extends FormWindow
 {
   constructor()
   {
@@ -32,7 +32,15 @@ export class RegisterWindow extends StandaloneWindow
 
   // ----------------- Public data ---------------------- 
 
+  // ~ Overrides FormWindow.form.
   public form: RegisterForm = null;
+
+  // ---------------- Public methods --------------------
+
+  public backToLogin()
+  {
+    ClientApp.setState(ClientApp.State.LOGIN);
+  }
 
   // ---------------- Private methods -------------------
 
@@ -71,5 +79,11 @@ export class RegisterWindow extends StandaloneWindow
   private onTermsClick(event: JQueryEventObject)
   {
     ClientApp.setState(ClientApp.State.TERMS);
+  }
+
+  // ~ Overrides FormWindow.onEscapePressed().
+  protected onEscapePressed()
+  {
+    this.backToLogin();
   }
 }

@@ -77,11 +77,32 @@ export class TermsWindow extends StandaloneWindow
     );
   }
 
+  private backToRegister()
+  {
+    ClientApp.setState(ClientApp.State.REGISTER);
+  }
+
   // ---------------- Event handlers --------------------
 
   private onAcceptClick(event: JQueryEventObject)
   {
-    console.log("Clicked on Accept button");
-    ClientApp.setState(ClientApp.State.REGISTER);
+    this.backToRegister();
+  }
+
+    // ~ Overrides StandaloneWindow.onKeyDown().
+  // Handles 'keydown' event fired on html document
+  // (it means that this handler runs even if this
+  //  window desn't have focus).
+  public onKeyDown(event: JQueryKeyEventObject)
+  {
+    let key = event.which;
+
+    switch (key)
+    {
+      case 13:  // 'Enter'
+      case 27:  // 'Escape'
+        this.backToRegister();
+        break;
+    }
   }
 }
