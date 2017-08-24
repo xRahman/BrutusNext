@@ -13,6 +13,7 @@ import {Connection} from '../../../client/lib/connection/Connection';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Windows} from '../../../client/gui/window/Windows';
 import {Component} from '../../../client/gui/Component';
+import {RegisterWindow} from '../../../client/gui/register/RegisterWindow';
 import {Form} from '../../../client/gui/form/Form';
 import {EmailInput} from '../../../client/gui/form/EmailInput';
 import {PasswordInput} from '../../../client/gui/form/PasswordInput';
@@ -22,7 +23,11 @@ import {RegisterResponse} from '../../../shared/lib/protocol/RegisterResponse';
 
 export class RegisterForm extends CredentialsForm
 {
-  constructor(parent: Component, param: Component.FormParam = {})
+  constructor
+  (
+    protected parent: RegisterWindow,
+    param: Component.FormParam = {}
+  )
   {
     super
     (
@@ -226,6 +231,6 @@ export class RegisterForm extends CredentialsForm
 
   protected onCancel(event: JQueryEventObject)
   {
-    ClientApp.setState(ClientApp.State.LOGIN);
+    this.parent.backToLogin();
   }
 }

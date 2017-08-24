@@ -63,12 +63,16 @@ export class Window extends Component
 
   // ---------------- Public methods --------------------
 
+  // -> Returns 'true' if window actually changes state
+  //    from 'hidden' to 'shown'.
   public showByState(state: ClientApp.State)
   {
     if (this.flags.isSet(state))
-      this.show();
-    else
-      this.hide();
+      return this.show();
+
+    this.hide();
+
+    return false;
   }
 
   // Executes when html document is fully loaded.
@@ -89,13 +93,15 @@ export class Window extends Component
     this.onHide();
   }
 
+  // -> Returns 'true' if window actually changes state
+  //    from 'hidden' to 'shown'.
   private show()
   {
     if (this.closed)
-      return;
+      return false;
 
     if (!this.hidden)
-      return;
+      return false;
 
     this.$element.show();
     this.hidden = false;
@@ -104,5 +110,7 @@ export class Window extends Component
     //   because hidden components can't be manipulated with
     //   (for example they can't be given focus).
     this.onShow();
+
+    return true;
   }
 }
