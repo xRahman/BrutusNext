@@ -51,13 +51,6 @@ export class ScrollWindowInput extends Component
     buffer: new Array<string>()
   }
 
-  // ---------------- Public methods --------------------
-
-  public focus()
-  {
-    this.$element.focus();
-  }
-
   // ---------------- Private methods -------------------
 
   private sendCommand()

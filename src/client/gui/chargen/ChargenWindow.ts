@@ -8,10 +8,10 @@
 
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Component} from '../../../client/gui/Component';
-import {StandaloneWindow} from '../../../client/gui/window/StandaloneWindow';
+import {FormWindow} from '../../../client/gui/window/FormWindow';
 import {ChargenForm} from '../../../client/gui/chargen/ChargenForm';
 
-export class ChargenWindow extends StandaloneWindow
+export class ChargenWindow extends FormWindow
 {
   constructor()
   {
@@ -26,6 +26,7 @@ export class ChargenWindow extends StandaloneWindow
 
   // ----------------- Public data ---------------------- 
 
+  // ~ Overrides FormWindow.form.
   public form: ChargenForm = null;
 
   // ---------------- Private methods -------------------

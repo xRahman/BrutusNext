@@ -16,6 +16,7 @@ import {CharselectWindow} from
   '../../../client/gui/charselect/CharselectWindow';
 import {ChargenWindow} from '../../../client/gui/chargen/ChargenWindow';
 import {ScrollWindow} from '../../../client/gui/scroll/ScrollWindow';
+import {StandaloneWindow} from '../../../client/gui/window/StandaloneWindow';
 import {MapWindow} from '../../../client/gui/map/MapWindow';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 
@@ -37,6 +38,7 @@ export class Windows
   private mapWindow: MapWindow = null;
 
   private activeScrollWindow: ScrollWindow = null;
+  private activeStandaloneWindow: StandaloneWindow = null;
 
   // --------------- Static accessors -------------------
 
@@ -75,6 +77,16 @@ export class Windows
     ClientApp.windows.activeScrollWindow = window;
   }
 
+  public static get activeStandaloneWindow()
+  {
+    return ClientApp.windows.activeStandaloneWindow;
+  }
+
+  public static set activeStandaloneWindow(window: StandaloneWindow)
+  {
+    ClientApp.windows.activeStandaloneWindow = window;
+  }
+
   // ---------------- Static methods --------------------
 
   // Executes when html document is resized.
@@ -90,6 +102,11 @@ export class Windows
   // shows those that should be visible.
   public onAppStateChange(state: ClientApp.State)
   {
+    // First reset our reference to active standalone window.
+    //   If another standalone window will be shown, the reference
+    // will be set in it's showByState() method.
+    this.activeStandaloneWindow = null;
+
     for (let window of this.windows)
       window.showByState(state);
   }

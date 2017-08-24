@@ -7,7 +7,9 @@
 'use strict';
 
 import {Utils} from '../../../shared/lib/utils/Utils';
+import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Component} from '../../../client/gui/Component';
+import {Windows} from '../../../client/gui/window/Windows';
 import {TitledWindow} from '../../../client/gui/window/TitledWindow';
 
 export class StandaloneWindow extends TitledWindow
@@ -60,6 +62,22 @@ export class StandaloneWindow extends TitledWindow
   protected static get TEXT_S_CSS_CLASS()
     { return 'S_StandaloneWindow_Text'; }
 
+  // ---------------- Public methods --------------------
+
+  // ~ Overrides Window.showByState().
+  public showByState(state: ClientApp.State)
+  {
+    // 'showByState()' returns 'true' if window actually
+    // changes state from 'hidden' to 'shown'.
+    if (super.showByState(state))
+    {
+      Windows.activeStandaloneWindow = this;
+      return true;
+    }
+    
+    return false;
+  }
+
   // --------------- Protected methods ------------------
 
   protected createEmptyLine(param: Component.DivParam = {})
@@ -89,5 +107,15 @@ export class StandaloneWindow extends TitledWindow
     );
 
     return this.$createDiv(param);
+  }
+
+  // ---------------- Event handlers --------------------
+
+  // Handles 'keydown' event fired on html document
+  // (it means that this handler runs even if this
+  //  window desn't have focus).
+  public onKeyDown(event: JQueryKeyEventObject)
+  {
+    // Nothing here (this method may be overriden).
   }
 }
