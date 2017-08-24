@@ -93,18 +93,6 @@ export class ScrollWindowOutput extends Component
     this.$element.scrollTop(this.$element.prop('scrollHeight'));
   }
 
-  public triggerKeyboardEvent(event)
-  {
-    // In order for <div> element to process keyboard events,
-    // it must have focus. To be able to give it a focus,
-    // it must have a 'tabindex' attribute set (that's done
-    // in ScrollWindowOutput.create()).
-    this.$element.focus();
-
-    // Now we can trigger the keyboard event.
-    this.$element.trigger(event);
-  }
-
   // ---------------- Private methods -------------------
 
   // Determines if output is scrolled up by user.

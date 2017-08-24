@@ -8,10 +8,10 @@
 
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Component} from '../../../client/gui/Component';
+import {FormWindow} from '../../../client/gui/window/FormWindow';
 import {CharselectForm} from '../../../client/gui/charselect/CharselectForm';
-import {StandaloneWindow} from '../../../client/gui/window/StandaloneWindow';
 
-export class CharselectWindow extends StandaloneWindow
+export class CharselectWindow extends FormWindow
 {
   constructor()
   {
@@ -29,6 +29,7 @@ export class CharselectWindow extends StandaloneWindow
 
   // ----------------- Private data ---------------------
 
+  // ~ Overrides FormWindow.form.
   private $enterGameButton: JQuery = null;
 
   // ----------------- Public data ---------------------- 

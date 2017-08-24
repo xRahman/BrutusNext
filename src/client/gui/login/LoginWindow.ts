@@ -7,10 +7,10 @@
 'use strict';
 
 import {ClientApp} from '../../../client/lib/app/ClientApp';
-import {StandaloneWindow} from '../../../client/gui/window/StandaloneWindow';
+import {FormWindow} from '../../../client/gui/window/FormWindow';
 import {LoginForm} from '../../../client/gui/login/LoginForm';
 
-export class LoginWindow extends StandaloneWindow
+export class LoginWindow extends FormWindow
 {
   constructor()
   {
@@ -32,6 +32,7 @@ export class LoginWindow extends StandaloneWindow
 
   // ----------------- Public data ---------------------- 
 
+  // ~ Overrides FormWindow.form.
   public form: LoginForm = null;
 
   // ---------------- Private methods -------------------

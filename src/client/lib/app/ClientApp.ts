@@ -93,6 +93,11 @@ export class ClientApp extends App
     return ClientApp.getInstance().connection;
   }
 
+  public static get state()
+  {
+    return ClientApp.getInstance().state;
+  }
+
   // ------------- Public static methods ----------------
 
   public static setState(state: ClientApp.State)
@@ -242,7 +247,7 @@ export class ClientApp extends App
     // Show login window, hide all others.
     ClientApp.setState(ClientApp.State.LOGIN);
     /// TEST:
-    //ClientApp.setState(ClientApp.State.CHARSELECT);
+    //ClientApp.setState(ClientApp.State.IN_GAME);
 
     /// TODO: Stáhnout viewport data ze serveru.
     /// I když možná nestačí connection.connect(), ještě se asi bude
@@ -269,24 +274,6 @@ export class ClientApp extends App
   public static onDocumentReady()
   {
     ClientApp.getInstance().windows.onDocumentReady();
-  }
-
-  // Handles 'keydown' event on html document.
-  public static onKeyDown(event: JQueryKeyEventObject)
-  {
-    switch (ClientApp.getInstance().state)
-    {
-      case ClientApp.State.LOGIN:
-      case ClientApp.State.REGISTER:
-      case ClientApp.State.TERMS:
-      case ClientApp.State.CHARSELECT:
-      case ClientApp.State.CHARGEN:
-        break;
-
-      case ClientApp.State.IN_GAME:
-        Windows.activeScrollWindow.onKeyDown(event);
-        break;
-    }
   }
 
   private onBeforeUnload(event: BeforeUnloadEvent)
