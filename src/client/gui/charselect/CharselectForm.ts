@@ -78,6 +78,11 @@ export class CharselectForm extends Form
     charplate.select();
   }
 
+  public scrollTo(charplate: Charplate)
+  {
+    this.$element.scrollTop(charplate.getScrollPosition());
+  }
+
   // --------------- Protected methods ------------------
 
   // ~ Overrides Form.createRequest().
@@ -111,10 +116,11 @@ export class CharselectForm extends Form
 
   // ---------------- Private methods -------------------
 
-  private createCharacterPlate(character: Character)
+  private createCharplate(character: Character)
   {
     let charplate = new Charplate
     (
+      this,
       this.parent,
       character,
       { $parent: this.$element }
@@ -126,7 +132,7 @@ export class CharselectForm extends Form
   private clear()
   {
     for (let charplate of this.charplates.values())
-      charplate.delete();
+      charplate.remove();
 
     this.charplates.clear();
   }
@@ -138,6 +144,6 @@ export class CharselectForm extends Form
     let account = Connection.account;
 
     for (let character of account.data.characters.values())
-      this.createCharacterPlate(character);
+      this.createCharplate(character);
   }
 }

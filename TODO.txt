@@ -13,7 +13,19 @@ TODO: Ale naopak když vyrábím komponentu přes 'new', tak bych měl otestovat
 
 
 TODO: Po vytvoření characteru automaticky enablovat button Enter Game.
+[done]
 
+TODO: Po vytvoření characteru nascrollovat na nově vytvořený
+  character (takže asi úplně na konec).
+[asi done]
+TODO: A asi bych mohl rovnou zprovoznit kurzorové šipky (nahoru a dolů),
+  když už budu umět nascrollovat na konkrétní charplate :-)
+
+TODO: V ChargenWindow zprovoznit enter (a asi i escape).
+  (samozřejmě jen když je enablovaný button enter game).
+
+TODO: Nejspíš by se hodil escape i v charselect window
+  (na druhou stranu nemám tam cancel button...)
 
 --------------------------------------------------------------
 
@@ -52,18 +64,6 @@ TODO: Savovat Admins (asi by to měla bejt entita).
 
 --------------------------------------------------------------
 
-
-TODO (quality of life improvements):
-- Po vytvoření nového charu checknout příslušný charplate.
-[done]
-- Dávat focus na email input a charname input, pokud ještě není
-  vyplněno.
-TODO: Focusovat input taky v případě, kdy přijde negativní response
-  (ideálně focusnout ten input, kterému patří error message).
-Chargen: [done]
-Charselect:
-Login:
-Register:
 
 TODO: V charselectu v onShow() selectnout naposledy lognutý character
   (takže asi jako v loginu - pamatovat si idčko v offline storage).
@@ -165,6 +165,22 @@ TODO: Otestovat reconnect z jiného tabu.
   jinak to těžko odladím.
 
 --------------------------------------------------------------
+
+TODO (quality of life improvements):
+- Po vytvoření nového charu checknout příslušný charplate.
+[done]
+- Dávat focus na email input a charname input, pokud ještě není
+  vyplněno.
+[done]
+TODO: Focusovat input taky v případě, kdy přijde negativní response
+  (ideálně focusnout ten input, kterému patří error message).
+[done]
+
+TODO: V charname inputu ošetřit copy&paste
+(on to sice zakáže server, ale i tak by asi bylo fajn odfiltrovat
+ nepovolené znaky rovnou).
+ [aha, ono mi to už funguje :-)]
+
 
 TODO: Vyhodit z ClientApp event handlery.
 - beforeUnload handler tam nechám.

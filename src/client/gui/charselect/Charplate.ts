@@ -10,6 +10,8 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {Component} from '../../../client/gui/Component';
+import {CharselectForm} from
+  '../../../client/gui/charselect/CharselectForm';
 import {CharselectWindow} from
   '../../../client/gui/charselect/CharselectWindow';
 import {Character} from '../../../client/game/character/Character';
@@ -18,7 +20,8 @@ export class Charplate extends Component
 {
   constructor
   (
-    protected parent: CharselectWindow,
+    protected parent: CharselectForm,
+    private charselectWindow: CharselectWindow,
     private character: Character,
     param: Component.LabelParam = {}
   )
@@ -42,15 +45,16 @@ export class Charplate extends Component
     // something else than <label> and we don't have to use
     // 'for' attribute on label this way.
 
-    // Create a <label> element.
-    let $label = this.createLabelContainer(param);
+    // Create a <label> element
+    // (it will also server as container element).
+    this.$element = this.createLabelContainer(param);
     
     // Put a hidden radio input inside it.
-    this.$radio = this.createRadio({ $parent: $label });
+    this.$radio = this.createRadio({ $parent: this.$element });
 
     // Put another element inside the label which will
     // be styled using css.
-    this.createCharplate({ $parent: $label });
+    this.createCharplate({ $parent: this.$element });
   }
 
   // -------------- Static class data -------------------
@@ -74,6 +78,11 @@ export class Charplate extends Component
 
   // ---------------- Public methods --------------------
 
+  public getScrollPosition()
+  {
+    return this.$element.position().top;
+  }
+
   public select()
   {
     if (!this.$radio)
@@ -83,6 +92,10 @@ export class Charplate extends Component
     }
 
     this.$radio.prop('checked', true);
+
+    this.parent.scrollTo(this);
+
+    this.charselectWindow.onSelectionChange();
   }
 
   // ---------------- Private methods -------------------
@@ -226,11 +239,11 @@ export class Charplate extends Component
 
   private onChange(event: JQueryEventObject)
   {
-    this.parent.onSelectionChange();
+    this.charselectWindow.onSelectionChange();
   }
 
   private onDoubleClick(event: JQueryEventObject)
   {
-    this.parent.form.submit();
+    this.parent.submit();
   }
 }
