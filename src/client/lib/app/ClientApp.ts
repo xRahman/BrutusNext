@@ -159,21 +159,6 @@ export class ClientApp extends App
     return <ClientApp>App.instance;
   }
 
-  // ---------------- Public methods --------------------
-
-  /// Deprecated
-  /*
-  public createConnection()
-  {
-    let socketDescriptor = this.webSocketClient.createSocketDescriptor();
-    let connection = new Connection(socketDescriptor);
-
-    this.connections.add(connection);
-
-    return connection;
-  }
-  */
-
   // --------------- Protected methods ------------------
 
   // ~ Overrides App.reportError().
@@ -269,12 +254,6 @@ export class ClientApp extends App
   }
 
   // ---------------- Event handlers --------------------
-
-  // Executes when html document is fully loaded.
-  public static onDocumentReady()
-  {
-    ClientApp.getInstance().windows.onDocumentReady();
-  }
 
   private onBeforeUnload(event: BeforeUnloadEvent)
   {

@@ -96,6 +96,13 @@ export class Windows
       window.onDocumentResize();
   }
 
+  // Runs when html document is fully loaded.
+  public static onDocumentReady()
+  {
+    for (let window of ClientApp.windows.windows)
+      window.onDocumentReady();
+  }
+
   // ---------------- Public methods --------------------
 
   // Hides windows that should be hiden in given 'state' and
@@ -135,13 +142,6 @@ export class Windows
     this.mapWindow = this.add(new MapWindow());
 
     return this.mapWindow;
-  }
-
-  // Executes when html document is fully loaded.
-  public onDocumentReady()
-  {
-    for (let window of this.windows)
-      window.onDocumentReady();
   }
 
   // ---------------- Private methods -------------------

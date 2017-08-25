@@ -130,26 +130,14 @@ export class ScrollWindow extends TitledWindow
     );
   }
 
-  // ---------------- Event handlers --------------------
-
-  // Handles 'keydown' event fired on html document
-  // (it means that this handler runs even if this
-  //  window desn't have focus).
-  public onKeyDown(event: JQueryKeyEventObject)
+  private redirectKeyDownEvent
+  (
+    key: number,
+    alt: boolean,
+    ctrl: boolean,
+    shift: boolean
+  )
   {
-    /*
-      Note:
-        The event is not really processed here, it is merely
-      redirected by giving focus to another element.
-    */
-
-    let key = event.which;
-    let alt = event.altKey;
-    let ctrl = event.ctrlKey;
-    let shift = event.shiftKey;
-
-    console.log('ScrollWindow.onKeyDown(): ' + key);
-
     /*
       Notes on shortcuts:
     
@@ -251,7 +239,6 @@ export class ScrollWindow extends TitledWindow
       //  to the input element).
       case 33:  // 'PgUp'
       case 34:  // 'PgDn'
-        ///this.output.triggerKeyboardEvent(event);
         this.output.focus();
         break;    
 
@@ -324,5 +311,38 @@ export class ScrollWindow extends TitledWindow
         this.focusInput();
         break;
     }
+  }
+
+  // ---------------- Event handlers --------------------
+
+  // Handles 'keydown' event fired on html document
+  // (it means that this handler runs even if this
+  //  window desn't have focus).
+  public onKeyDown(event: JQueryKeyEventObject)
+  {
+    let key = event.which;
+    let alt = event.altKey;
+    let ctrl = event.ctrlKey;
+    let shift = event.shiftKey;
+
+    /*
+      The event is not really processed here, it is just
+      redirected by giving focus to another element.
+
+      How it works:
+        'keydown' event is first fired on element which has
+      focus at the time. Then it bubbles (propagates) through
+      DOM hierarchy up to html Document. At that time,
+      Document.onKeyDown() is fired and from it this handler
+      is called. Document is top level so event won't bubble
+      anymore, but unless we call event.preventDefault(),
+      default event handler will then be called by the browser.
+        So if we give focus to another element here, default
+      handler will be run on it instead on the element which
+      originally fired the keydown event (in our case default
+      handler will append the character to the scrollViewOutput
+      text area).
+    */
+    this.redirectKeyDownEvent(key, alt, ctrl, shift);
   }
 }
