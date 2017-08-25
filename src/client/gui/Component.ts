@@ -94,7 +94,7 @@ export abstract class Component
   // from it's parent's list of children. If someone else (or
   // even the parent) has another reference to this component,
   // the component will not be released from memory.
-  public delete()
+  public remove()
   {
     // Remove element from DOM
     // (this also removes all children, all bound events
