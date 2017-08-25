@@ -47,15 +47,13 @@ export class Document
   // (This event is fired when web page is completely loaded.)
   private onDocumentReady()
   {
-    console.log('onDocumentReady() launched');
-
     // Attach handler for 'keydown' event.
     $(document).keydown
     (
       (event) => { this.onKeyDown(event); }
     );
 
-    ClientApp.onDocumentReady();
+    Windows.onDocumentReady();
   }
 
   private onDocumentResize()
@@ -63,7 +61,7 @@ export class Document
     Windows.onDocumentResize();
   }
 
-  // Handles 'keydown' event.
+  // Handles 'keydown' event on the document.
   private onKeyDown(event: JQueryKeyEventObject)
   {
     if (Windows.activeStandaloneWindow)
@@ -74,8 +72,5 @@ export class Document
 
     if (ClientApp.state === ClientApp.State.IN_GAME)
       Windows.activeScrollWindow.onKeyDown(event);
-
-    // TODO: zbytek přesunout nejspíš do ScrollWindow
-    // (Nebo do něčeho, co bude řešit ClientApp.State.IN_GAME).
   }
 }
