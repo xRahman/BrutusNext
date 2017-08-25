@@ -1,31 +1,6 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
-Jak na zpracování kláves?
-- v Document.onKeyDown() mít asi jen switch podle app.state
-  (nebo možná ještě lépe zavolat app.onKeyDown(), která si to
-  switchne.
-- vlastní zpracování kláves přesunout do příslušných oken.
-
-TODO: Přesměrování kláves v Document.onKeyDown() dělat jen
-  ve hře (a checkovat, jestli vůbec activeScrollWindow existuje).
-
-TODO: StandaloneWindow asi přejmenovat na ModalWindow
-TODO: Modální okna obecně by neměla ztrácet focus
-  (nejen okna, ale i form)
-
-TOFIX: V login window nefunguje enter.
-- aha, okno totiž nemá focus.
-  (tzn tohle se vyřeší, když budu dávat focus nějakému inputu)
-I když... Pořád může uživatel kliknout jinam a focus oknu sebrat.
-- Tzn. asi bych měl přetížit document.onKeyDown() a přesměrovávat ho
-  do viditelného okna (nebo to okno focusnout, nebo prostě zavolat
-  ten submit()).
-
-TODO: V TermsWindow zprovoznit escape a enter.
-
-
-
 TODO: Procesit (a možná i posílat) charselect request a response.
 - request se procesí (a na serveru to vyhodí chybu, páč se nezpracovává).
 
@@ -38,6 +13,7 @@ TODO: Ale naopak když vyrábím komponentu přes 'new', tak bych měl otestovat
 
 
 TODO: Po vytvoření characteru automaticky enablovat button Enter Game.
+
 
 --------------------------------------------------------------
 
@@ -189,6 +165,41 @@ TODO: Otestovat reconnect z jiného tabu.
   jinak to těžko odladím.
 
 --------------------------------------------------------------
+
+TODO: Vyhodit z ClientApp event handlery.
+- beforeUnload handler tam nechám.
+[done]
+
+Jak na zpracování kláves?
+- v Document.onKeyDown() mít asi jen switch podle app.state
+  (nebo možná ještě lépe zavolat app.onKeyDown(), která si to
+  switchne.
+- vlastní zpracování kláves přesunout do příslušných oken.
+[done]
+
+TODO: Přesměrování kláves v Document.onKeyDown() dělat jen
+  ve hře (a checkovat, jestli vůbec activeScrollWindow existuje).
+[done]
+
+TOFIX: V login window nefunguje enter.
+- aha, okno totiž nemá focus.
+  (tzn tohle se vyřeší, když budu dávat focus nějakému inputu)
+I když... Pořád může uživatel kliknout jinam a focus oknu sebrat.
+- Tzn. asi bych měl přetížit document.onKeyDown() a přesměrovávat ho
+  do viditelného okna (nebo to okno focusnout, nebo prostě zavolat
+  ten submit()).
+[done]
+
+TODO: V TermsWindow zprovoznit escape a enter.
+[done]
+
+TODO: StandaloneWindow asi přejmenovat na ModalWindow
+[na tohle zatím kašlat]
+TODO: Modální okna obecně by neměla ztrácet focus
+  (nejen okna, ale i form)
+- neztrácení focusu je problematické. Jednodušší (a asi lepší)
+  řešení je zpracovávat 'keydown' v Document.onKeyDown.
+[done - přes onKeyDown]
 
 TODO: Promazat zakomentovaný kód v GUI.
 [done]
