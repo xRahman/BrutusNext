@@ -296,7 +296,7 @@ export class ScrollWindow extends TitledWindow
       // to the input element.
       case 37:  // 'Left'
       case 38:  // 'Up'
-      case 39:  // 'Right'      
+      case 39:  // 'Right'
       case 40:  // 'Down'
       case 86:  // 'V'
         // We want even 'Ctrl + V' to redirect to input element,
