@@ -27,6 +27,10 @@ TODO: V ChargenWindow zprovoznit enter (a asi i escape).
 TODO: Nejspíš by se hodil escape i v charselect window
   (na druhou stranu nemám tam cancel button...)
 
+TODO: Button "Enter Game" by asi měl bejt uvnitř formu...
+- To znamená, že charlist nesmí být form, ale container uvnitř formu
+  (tuší dokonce existuje html element, ktej sdružuje víc submit elementů).
+
 --------------------------------------------------------------
 
 TODO: Vymyslet, kam vypisovat problém při otevírání connection.
