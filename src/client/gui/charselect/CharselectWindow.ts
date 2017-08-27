@@ -93,4 +93,27 @@ export class CharselectWindow extends FormWindow
   {
     this.form.submit();
   }
+
+  // ~ Overrides FormeWindow.onKeyDown().
+  // Handles 'keydown' event fired on html document
+  // (it means that this handler runs even if this
+  //  window desn't have focus).
+  public onKeyDown(event: JQueryKeyEventObject)
+  {
+    // Super call handles 'Enter' and 'Escape' keys.
+    super.onKeyDown(event);
+
+    let key = event.which;
+
+    switch (key)
+    {
+      case 38:  // 'Up'
+        this.form.selectAdjacentCharacter(-1);
+        break;
+
+      case 40:  // 'Down'
+        this.form.selectAdjacentCharacter(+1);
+        break;
+    }
+  }
 }
