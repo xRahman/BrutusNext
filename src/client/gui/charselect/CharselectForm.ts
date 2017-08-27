@@ -83,6 +83,52 @@ export class CharselectForm extends Form
     this.$element.scrollTop(charplate.getScrollPosition());
   }
 
+  public selectAdjacentCharacter(offset: number)
+  {
+    // If there are no characters in the list, there is nothing to select.
+    if (this.charplates.size === 0)
+      return;
+
+    if (offset !== -1 && offset !== 1)
+    {
+      ERROR("Invalid character position offset (" + offset + ")."
+        + " Expected '-1' or '1'. Character is not selected");
+      return;
+    }
+
+    // Position of character in this.charplates to be selected.
+    let newPos = 0;
+    // Id of currently selected character
+    // (or 'null' if no character is selected).
+    let id = this.getSelectedCharacterId();
+    // Convert map keys to array so we can get index of 'id'.
+    let characterIds = Array.from(this.charplates.keys());
+
+    if (id)
+    {
+      let currentPos = characterIds.indexOf(id);
+
+      if (currentPos !== -1)
+        newPos = currentPos + offset;
+
+      // If we are already at first or last character in the list, stay
+      // at it (but we will still select it, which will scroll to it).
+      newPos = this.charlistBoundsCheck(newPos, characterIds.length - 1);
+    }
+
+    let newId = characterIds[newPos];
+
+    if (!newId)
+    {
+      ERROR("Invalid character id in this.charlist"
+        + " at position " + newPos + ". Charplate"
+        + " is not selected");
+      return;
+    }
+
+    this.selectCharacter(newId);
+  }
+
   // --------------- Protected methods ------------------
 
   // ~ Overrides Form.createRequest().
@@ -90,7 +136,7 @@ export class CharselectForm extends Form
   {
     console.log('CharselectForm.createRequest()');
 
-    let id = this.$element.find(':checked').val();
+    let id = this.getSelectedCharacterId();
 
     if (!id)
     {
@@ -115,6 +161,18 @@ export class CharselectForm extends Form
   }
 
   // ---------------- Private methods -------------------
+
+  // -> Returns id of selected character,
+  //    Returns 'null' if no character is selected.
+  private getSelectedCharacterId()
+  {
+    let id = this.$element.find(':checked').val();
+
+    if (!id)
+      return null;
+
+    return id;
+  }
 
   private createCharplate(character: Character)
   {
@@ -145,5 +203,17 @@ export class CharselectForm extends Form
 
     for (let character of account.data.characters.values())
       this.createCharplate(character);
+  }
+
+  // Ensures that 'position' stays within <0, max> interval.
+  private charlistBoundsCheck(position: number, max: number)
+  {
+    if (position < 0)
+      return 0;
+
+    if (position > max)
+      return max;
+
+    return position;
   }
 }
