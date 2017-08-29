@@ -31,6 +31,9 @@ TODO: Button "Enter Game" by asi měl bejt uvnitř formu...
 - To znamená, že charlist nesmí být form, ale container uvnitř formu
   (tuší dokonce existuje html element, ktej sdružuje víc submit elementů).
 
+TODO: Přesměrovávat PgUp a PgDown do CharselectForm
+  (momentálně nic nedělají, pokud form nemá focus)
+
 --------------------------------------------------------------
 
 TODO: Vymyslet, kam vypisovat problém při otevírání connection.
