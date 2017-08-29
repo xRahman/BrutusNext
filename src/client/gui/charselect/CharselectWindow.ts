@@ -107,12 +107,27 @@ export class CharselectWindow extends FormWindow
 
     switch (key)
     {
+      case 33:  // 'PgUp'
+/// TODO: Tohle nefunguje, protože form nemůže dostat focus.
+        this.form.focus();
+        break;
+      case 34:  // 'PgDn'
+/// TODO: Tohle nefunguje, protože form nemůže dostat focus.
+        this.form.focus();
+        break;
+
       case 38:  // 'Up'
         this.form.selectAdjacentCharacter(-1);
+        // We don't want default event handler to scroll the contents
+        // after we scrolled to the selected element.
+        event.preventDefault();
         break;
 
       case 40:  // 'Down'
         this.form.selectAdjacentCharacter(+1);
+        // We don't want default event handler to scroll the contents
+        // after we scrolled to the selected element.
+        event.preventDefault();
         break;
     }
   }

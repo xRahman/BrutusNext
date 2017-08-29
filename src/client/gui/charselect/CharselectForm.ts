@@ -80,53 +80,43 @@ export class CharselectForm extends Form
 
   public scrollTo(charplate: Charplate)
   {
-    this.$element.scrollTop(charplate.getScrollPosition());
+    // Convert hashmap values to array.
+    let charplates = Array.from(this.charplates.values());
+
+    if (charplates.length === 0)
+    {
+      // If there are no charplates, just scroll to the top.
+      this.$element.scrollTop(0);
+      return;
+    }
+    
+    // Current position of the first charplate relative to the container.
+    let firstElementPos = charplates[0].$element.position().top;
+    // Current position of target charplate relative to the container.
+    let charplateScrollPos = charplate.$element.position().top;
+
+    // 'scrollTop()' sets number of pixels to be hidden by scrolling.
+    //   This number is equal to the distance between position of the
+    // first charplate and position of the charplate we want to select.
+    this.$element.scrollTop(charplateScrollPos - firstElementPos);
   }
 
-  public selectAdjacentCharacter(offset: number)
+  public selectAdjacentCharacter
+  (
+    // Valid values are '1' (for previous character)
+    // or '-1' (for next character).
+    offset: number
+  )
   {
     // If there are no characters in the list, there is nothing to select.
     if (this.charplates.size === 0)
       return;
 
-    if (offset !== -1 && offset !== 1)
-    {
-      ERROR("Invalid character position offset (" + offset + ")."
-        + " Expected '-1' or '1'. Character is not selected");
-      return;
-    }
-
-    // Position of character in this.charplates to be selected.
-    let newPos = 0;
-    // Id of currently selected character
-    // (or 'null' if no character is selected).
-    let id = this.getSelectedCharacterId();
-    // Convert map keys to array so we can get index of 'id'.
-    let characterIds = Array.from(this.charplates.keys());
+    let id = this.getAdjacentCharacterId(offset);
 
     if (id)
-    {
-      let currentPos = characterIds.indexOf(id);
-
-      if (currentPos !== -1)
-        newPos = currentPos + offset;
-
-      // If we are already at first or last character in the list, stay
-      // at it (but we will still select it, which will scroll to it).
-      newPos = this.charlistBoundsCheck(newPos, characterIds.length - 1);
-    }
-
-    let newId = characterIds[newPos];
-
-    if (!newId)
-    {
-      ERROR("Invalid character id in this.charlist"
-        + " at position " + newPos + ". Charplate"
-        + " is not selected");
-      return;
-    }
-
-    this.selectCharacter(newId);
+      // Selecting the character will also scroll the list to it.
+      this.selectCharacter(id);
   }
 
   // --------------- Protected methods ------------------
@@ -162,8 +152,84 @@ export class CharselectForm extends Form
 
   // ---------------- Private methods -------------------
 
-  // -> Returns id of selected character,
-  //    Returns 'null' if no character is selected.
+  // -> Returns 'null' on error.
+  private getOffsetPosition
+  (
+    characterIds: Array<string>,
+    currentPos: number,
+    offset: number
+  )
+  {
+    if (offset !== -1 && offset !== 1)
+    {
+      ERROR("Invalid character position offset (" + offset + ")."
+        + " Expected '-1' or '1'. Character is not selected");
+      return null;
+    }
+
+    // If we are already at first or last character in the list, stay
+    // at it (but we will still select it, which will scroll to it).
+    return this.charlistBoundsCheck
+    (
+      currentPos + offset,      // Requested new position.
+      characterIds.length - 1   // Maximum valid position.
+    );
+  }
+
+  // -> Returns 'null' on error.
+  private getAdjacentCharacterPosition
+  (
+    characterIds: Array<string>,
+    offset: number
+  )
+  {
+    // Id of currently selected character
+    // (or 'null' if no character is selected).
+    let id = this.getSelectedCharacterId();
+
+    if (!id)
+      // If no character is selected, pressing cursor 'up' or 'down' will
+      // select the first character (at position 0).
+      return 0;
+
+    let currentPos = characterIds.indexOf(id);
+
+    if (currentPos === -1)
+    {
+      ERROR("Unable to find id '" + id + "' in characterIds."
+        + " Adjacent character will not be selected");
+      return null;
+    }
+
+    return this.getOffsetPosition(characterIds, currentPos, offset);
+  }
+
+  // -> Returns 'null' on error.
+  private getAdjacentCharacterId(offset: number)
+  {
+    // Convert hashmap keys to array.
+    let characterIds = Array.from(this.charplates.keys());
+    // Position of character in this.charplates to be selected.
+    let newPos = this.getAdjacentCharacterPosition(characterIds, offset);
+
+    if (newPos === null)
+      return null;
+
+    // Id of character adjacent to currently selected one.
+    let id = characterIds[newPos];
+
+    if (!id)
+    {
+      ERROR("Invalid character id in this.charlist"
+        + " at position " + newPos + ". Charplate"
+        + " is not selected");
+      return null;
+    }
+
+    return id;
+  }
+
+  // -> Returns 'null' if no character is selected.
   private getSelectedCharacterId()
   {
     let id = this.$element.find(':checked').val();
