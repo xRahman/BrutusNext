@@ -21,7 +21,7 @@ export class CharselectWindow extends FormWindow
 
     this.createButtonNewCharacter();
     this.createCharselectForm();
-    this.createButtonEnterGame();
+    ///this.createButtonEnterGame();
 
     // Show this window when app is in this state.
     this.flags.set(ClientApp.State.CHARSELECT);
@@ -35,13 +35,6 @@ export class CharselectWindow extends FormWindow
   // ----------------- Public data ---------------------- 
 
   public form: CharselectForm = null;
-
-  // ---------------- Public methods --------------------
-
-  public onSelectionChange()
-  {
-    this.enable(this.$enterGameButton);
-  }
 
   // ---------------- Private methods -------------------
 
@@ -63,19 +56,20 @@ export class CharselectWindow extends FormWindow
     );
   }
 
-  private createButtonEnterGame()
-  {
-    this.$enterGameButton = this.$createButton
-    (
-      {
-        $parent: this.$content,
-        text: 'Enter Game',
-        sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS,
-        disabled: true,
-        click: (event) => { this.onEnterGameClick(event); }
-      }
-    );
-  }
+  /// Moved to CharselectForm.
+  // private createButtonEnterGame()
+  // {
+  //   this.$enterGameButton = this.$createButton
+  //   (
+  //     {
+  //       $parent: this.$content,
+  //       text: 'Enter Game',
+  //       sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS,
+  //       disabled: true,
+  //       click: (event) => { this.onEnterGameClick(event); }
+  //     }
+  //   );
+  // }
 
   private enterChargen()
   {
@@ -89,10 +83,11 @@ export class CharselectWindow extends FormWindow
     this.enterChargen();
   }
 
-  private onEnterGameClick(event: JQueryEventObject)
-  {
-    this.form.submit();
-  }
+  /// Deprecated.
+  // private onEnterGameClick(event: JQueryEventObject)
+  // {
+  //   this.form.submit();
+  // }
 
   // ~ Overrides FormeWindow.onKeyDown().
   // Handles 'keydown' event fired on html document
@@ -108,12 +103,11 @@ export class CharselectWindow extends FormWindow
     switch (key)
     {
       case 33:  // 'PgUp'
-/// TODO: Tohle nefunguje, protože form nemůže dostat focus.
-        this.form.focus();
+        this.form.focusCharlist();
         break;
+
       case 34:  // 'PgDn'
-/// TODO: Tohle nefunguje, protože form nemůže dostat focus.
-        this.form.focus();
+        this.form.focusCharlist();
         break;
 
       case 38:  // 'Up'
