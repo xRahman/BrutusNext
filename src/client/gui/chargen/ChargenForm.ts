@@ -14,12 +14,17 @@ import {Component} from '../../../client/gui/Component';
 import {Form} from '../../../client/gui/form/Form';
 import {CharacterNameInput} from
   '../../../client/gui/chargen/CharacterNameInput';
+import {ChargenWindow} from '../../../client/gui/chargen/ChargenWindow';
 import {ChargenRequest} from '../../../shared/lib/protocol/ChargenRequest';
 import {ChargenResponse} from '../../../shared/lib/protocol/ChargenResponse';
 
 export class ChargenForm extends Form
 {
-  constructor(parent: Component, param: Component.FormParam = {})
+  constructor
+  (
+    protected parent: ChargenWindow,
+    param: Component.FormParam = {}
+  )
   {
     super
     (
@@ -170,6 +175,6 @@ export class ChargenForm extends Form
 
   private onCancel(event: JQueryEventObject)
   {
-    ClientApp.setState(ClientApp.State.CHARSELECT);
+    this.parent.backToCharselect();
   }
 }
