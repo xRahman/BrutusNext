@@ -23,6 +23,7 @@ TODO: A asi bych mohl rovnou zprovoznit kurzorové šipky (nahoru a dolů),
 [done]
 
 TODO: V ChargenWindow zprovoznit enter (a asi i escape).
+[done]
 
 TODO: Nejspíš by se hodil escape i v charselect window
   (na druhou stranu nemám tam cancel button...)
@@ -45,7 +46,7 @@ TODO: Opravit enablování button "Enter Game".
 
 TODO: V charselectu v onShow() selectnout naposledy lognutý character
   (takže asi jako v loginu - pamatovat si idčko v offline storage).
-- tímhle pořeším i to, aby byl selectnutý nějaký char při show
+- tímhle pořeším i to, aby byl selectnutý nějaký char při vstupu do
   charselect okna.
 
 --------------------------------------------------------------
