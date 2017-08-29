@@ -20,19 +20,33 @@ TODO: Po vytvoření characteru nascrollovat na nově vytvořený
 [asi done]
 TODO: A asi bych mohl rovnou zprovoznit kurzorové šipky (nahoru a dolů),
   když už budu umět nascrollovat na konkrétní charplate :-)
+[done]
 
 TODO: V ChargenWindow zprovoznit enter (a asi i escape).
-  (samozřejmě jen když je enablovaný button enter game).
 
 TODO: Nejspíš by se hodil escape i v charselect window
   (na druhou stranu nemám tam cancel button...)
+- a taky není pořádně kam se vrátit. Leda do loginu, což jde udělat
+  i reloadem tabu.
+[kašlat na to]
 
 TODO: Button "Enter Game" by asi měl bejt uvnitř formu...
 - To znamená, že charlist nesmí být form, ale container uvnitř formu
   (tuší dokonce existuje html element, ktej sdružuje víc submit elementů).
+[done]
 
 TODO: Přesměrovávat PgUp a PgDown do CharselectForm
   (momentálně nic nedělají, pokud form nemá focus)
+[done]
+
+TODO: Opravit enablování button "Enter Game".
+[done]
+
+
+TODO: V charselectu v onShow() selectnout naposledy lognutý character
+  (takže asi jako v loginu - pamatovat si idčko v offline storage).
+- tímhle pořeším i to, aby byl selectnutý nějaký char při show
+  charselect okna.
 
 --------------------------------------------------------------
 
@@ -70,10 +84,6 @@ TODO: Savovat Admins (asi by to měla bejt entita).
 (Nebo se na to vykašlat a zapisovat adminLevel do entity)
 
 --------------------------------------------------------------
-
-
-TODO: V charselectu v onShow() selectnout naposledy lognutý character
-  (takže asi jako v loginu - pamatovat si idčko v offline storage).
 
 
 
