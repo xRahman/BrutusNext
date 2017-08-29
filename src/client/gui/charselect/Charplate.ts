@@ -78,10 +78,15 @@ export class Charplate extends Component
 
   // ---------------- Public methods --------------------
 
-  public getScrollPosition()
-  {
-    return this.$element.position().top;
-  }
+  /// Deprecated.
+  // public getScrollPosition()
+  // {
+  //   let marginTop = parseInt(this.$element.css('marginTop'));
+
+  //   // Subtract margin-top to space-out the charplate a little
+  //   // from the top of the charlist.
+  //   return this.$element.offset().top - marginTop;
+  // }
 
   public select()
   {
