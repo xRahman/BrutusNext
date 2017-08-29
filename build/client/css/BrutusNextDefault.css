@@ -610,7 +610,7 @@ input:checked + .G_SelectablePlate
 /* :: Scrollable Output :: */
 .S_ScrollWindowOutput,
 .S_TermsWindow_Terms,
-.S_Charselect
+.S_CharselectForm_Charlist
 {
   width: 100%;
   height: 100%;
@@ -684,10 +684,10 @@ input:checked + .G_SelectablePlate
 
 /* ------------- Charselect Window ------------- */
 
-/* ----------------- Charplate ----------------- */
+/* -------------- Charselect Form -------------- */
 
-/* :: Charselect Window Character List :: */
-.S_Charselect
+/* :: Charselect Form Character List :: */
+.S_CharselectForm_Charlist
 {
   margin-top: 0.5em;
   margin-bottom: 0.5em;

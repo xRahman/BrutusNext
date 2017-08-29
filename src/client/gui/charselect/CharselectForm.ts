@@ -31,30 +31,37 @@ export class CharselectForm extends Form
     super
     (
       parent,
-      Utils.applyDefaults
-      (
-        param,
-        {
-          name: 'charselect_form',
-          gCssClass: Component.WINDOW_G_CSS_CLASS,
-          sCssClass: CharselectForm.S_CSS_CLASS
-        }
-      )
+      Utils.applyDefaults(param, { name: 'charselect_form' })
     );
+
+    this.createCharlist();
+    this.createSubmitButton();
   }
 
   // -------------- Static class data -------------------
 
-  public static get S_CSS_CLASS()
-    { return 'S_Charselect'; }
+  public static get CHARLIST_S_CSS_CLASS()
+    { return 'S_CharselectForm_Charlist'; }
 
   // ----------------- Private data ---------------------
+
+  private $charlist: JQuery = null;
 
   // Key: character id
   // Value: charplate
   private charplates = new Map<string, Charplate>();
 
   // ---------------- Public methods --------------------
+
+  public onSelectionChange()
+  {
+    this.enable(this.$submitButton);
+  }
+
+  public focusCharlist()
+  {
+    this.$charlist.focus();
+  }
 
   // ~ Overrides Component.onShow().
   public onShow()
@@ -86,7 +93,7 @@ export class CharselectForm extends Form
     if (charplates.length === 0)
     {
       // If there are no charplates, just scroll to the top.
-      this.$element.scrollTop(0);
+      this.$charlist.scrollTop(0);
       return;
     }
     
@@ -98,7 +105,7 @@ export class CharselectForm extends Form
     // 'scrollTop()' sets number of pixels to be hidden by scrolling.
     //   This number is equal to the distance between position of the
     // first charplate and position of the charplate we want to select.
-    this.$element.scrollTop(charplateScrollPos - firstElementPos);
+    this.$charlist.scrollTop(charplateScrollPos - firstElementPos);
   }
 
   public selectAdjacentCharacter
@@ -151,6 +158,36 @@ export class CharselectForm extends Form
   }
 
   // ---------------- Private methods -------------------
+
+  private createCharlist()
+  {
+    this.$charlist = this.$createDiv
+    (
+      {
+        name: 'charlist',
+        $parent: this.$element,
+        gCssClass: Component.WINDOW_G_CSS_CLASS,
+        sCssClass: CharselectForm.CHARLIST_S_CSS_CLASS,
+        // We need to set 'tabindex' attribute so the charlist
+        // can be given focus. That is necessary for it to be able
+        // to process keyboard events.
+        tabindex: -1
+      }
+    );
+  }
+
+  private createSubmitButton()
+  {
+    this.$createSubmitButton
+    (
+      {
+        $parent: this.$element,
+        text: 'Enter Game',
+        sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS,
+        disabled: true
+      }
+    );
+  }
 
   // -> Returns 'null' on error.
   private getOffsetPosition
@@ -247,7 +284,7 @@ export class CharselectForm extends Form
       this,
       this.parent,
       character,
-      { $parent: this.$element }
+      { $parent: this.$charlist }
     );
 
     this.charplates.set(character.getId(), charplate);

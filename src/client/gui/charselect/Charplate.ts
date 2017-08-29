@@ -100,7 +100,7 @@ export class Charplate extends Component
 
     this.parent.scrollTo(this);
 
-    this.charselectWindow.onSelectionChange();
+    this.parent.onSelectionChange();
   }
 
   // ---------------- Private methods -------------------
@@ -244,7 +244,7 @@ export class Charplate extends Component
 
   private onChange(event: JQueryEventObject)
   {
-    this.charselectWindow.onSelectionChange();
+    this.parent.onSelectionChange();
   }
 
   private onDoubleClick(event: JQueryEventObject)
