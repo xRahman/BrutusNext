@@ -29,10 +29,25 @@ export class ChargenWindow extends FormWindow
   // ~ Overrides FormWindow.form.
   public form: ChargenForm = null;
 
+  // ---------------- Public methods --------------------
+
+  public backToCharselect()
+  {
+    ClientApp.setState(ClientApp.State.CHARSELECT);
+  }
+
   // ---------------- Private methods -------------------
 
   private createChargenForm()
   {
     this.form = new ChargenForm(this, { $parent: this.$content });
+  }
+
+  // ---------------- Event handlers --------------------
+
+  // ~ Overrides FormWindow.onEscapePressed().
+  protected onEscapePressed()
+  {
+    this.backToCharselect();
   }
 }
