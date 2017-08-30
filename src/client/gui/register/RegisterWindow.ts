@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {FormWindow} from '../../../client/gui/window/FormWindow';
 import {RegisterForm} from '../../../client/gui/register/RegisterForm';
@@ -46,6 +47,9 @@ export class RegisterWindow extends FormWindow
 
   private createRegisterForm()
   {
+    if (this.form !== null)
+      ERROR("Register form already exists");
+
     this.form = new RegisterForm
     (
       this,

@@ -100,6 +100,9 @@ export class Connection
   // Attempts to open the websocket connection.
   public connect()
   {
+    if (this.socket !== null)
+      ERROR("Socket already exists");
+
     this.socket = new ClientSocket(this);
     this.clientMessage('Opening websocket connection...');
     this.socket.connect();
