@@ -2,55 +2,23 @@ TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
 TODO: Nedržet standalone okna v paměti, když nejsou aktivní.
+- ani v DOM.
 
 
 TODO: Procesit (a možná i posílat) charselect request a response.
 - request se procesí (a na serveru to vyhodí chybu, páč se nezpracovává).
 
-TODO: Asi bych se měl v klientu vykašlat na ruční ošetřování errorů typu
-  přístup na 'null' komponentu. Když to neošetřím, browser vyhodí výjimku
-  a nějak se s tím popere, takže efekt bude hodně podobnej jako můj vlastní
-  error (navíc momentálně s lepším stackem).
-TODO: Ale naopak když vyrábím komponentu přes 'new', tak bych měl otestovat,
-  že ještě neexistuje - opakované vytváření výjimku nehodí.
-[done]
-
-TODO: Po vytvoření characteru automaticky enablovat button Enter Game.
-[done]
-
-TODO: Po vytvoření characteru nascrollovat na nově vytvořený
-  character (takže asi úplně na konec).
-[asi done]
-TODO: A asi bych mohl rovnou zprovoznit kurzorové šipky (nahoru a dolů),
-  když už budu umět nascrollovat na konkrétní charplate :-)
-[done]
-
-TODO: V ChargenWindow zprovoznit enter (a asi i escape).
-[done]
-
-TODO: Nejspíš by se hodil escape i v charselect window
-  (na druhou stranu nemám tam cancel button...)
-- a taky není pořádně kam se vrátit. Leda do loginu, což jde udělat
-  i reloadem tabu.
-[kašlat na to]
-
-TODO: Button "Enter Game" by asi měl bejt uvnitř formu...
-- To znamená, že charlist nesmí být form, ale container uvnitř formu
-  (tuší dokonce existuje html element, ktej sdružuje víc submit elementů).
-[done]
-
-TODO: Přesměrovávat PgUp a PgDown do CharselectForm
-  (momentálně nic nedělají, pokud form nemá focus)
-[done]
-
-TODO: Opravit enablování button "Enter Game".
-[done]
-
-
 TODO: V charselectu v onShow() selectnout naposledy lognutý character
   (takže asi jako v loginu - pamatovat si idčko v offline storage).
 - tímhle pořeším i to, aby byl selectnutý nějaký char při vstupu do
   charselect okna.
+Tohle bych si možná mohl pamatovat v acountu místo v local storagi browseru.
+- u loginu to nešlo, protože tam jsou ty informace potřeba před tím, než
+  se player vůbec naloguje...
+
+
+TODO: Udělat vlastní grafiku pro checkbox (když už to umím ;-)).
+[done]
 
 --------------------------------------------------------------
 
@@ -89,14 +57,6 @@ TODO: Savovat Admins (asi by to měla bejt entita).
 
 --------------------------------------------------------------
 
-
-
-TODO: Udělat vlastní grafiku pro checkbox (když už to umím ;-)).
-
-
-
---------------------------------------------------------------
-
 TODO: Pokud fakt bude fungovat object parametr bez uvádění typu
 (viz Account.loadCharacters()), tak to sakra používat, protože to
 je super!
@@ -121,7 +81,7 @@ TODO: Udělat základní kontrolu memoryleaků - při shutdownu
 --------------------------------------------------------------
 
 TODO: Vypadá to, že když v klientovi vyhodím výjimku, tak
-  stack vypíše v typecriptové soubory
+  stack vypíše typecriptové soubory
 - tzn. nepatlat si clientové error message sám, ale prostě hodit
   exception.
 
@@ -186,6 +146,46 @@ TODO: Otestovat reconnect z jiného tabu.
   jinak to těžko odladím.
 
 --------------------------------------------------------------
+
+TODO: Asi bych se měl v klientu vykašlat na ruční ošetřování errorů typu
+  přístup na 'null' komponentu. Když to neošetřím, browser vyhodí výjimku
+  a nějak se s tím popere, takže efekt bude hodně podobnej jako můj vlastní
+  error (navíc momentálně s lepším stackem).
+TODO: Ale naopak když vyrábím komponentu přes 'new', tak bych měl otestovat,
+  že ještě neexistuje - opakované vytváření výjimku nehodí.
+[done]
+
+TODO: Po vytvoření characteru automaticky enablovat button Enter Game.
+[done]
+
+TODO: Po vytvoření characteru nascrollovat na nově vytvořený
+  character (takže asi úplně na konec).
+[asi done]
+TODO: A asi bych mohl rovnou zprovoznit kurzorové šipky (nahoru a dolů),
+  když už budu umět nascrollovat na konkrétní charplate :-)
+[done]
+
+TODO: V ChargenWindow zprovoznit enter (a asi i escape).
+[done]
+
+TODO: Nejspíš by se hodil escape i v charselect window
+  (na druhou stranu nemám tam cancel button...)
+- a taky není pořádně kam se vrátit. Leda do loginu, což jde udělat
+  i reloadem tabu.
+[kašlat na to]
+
+TODO: Button "Enter Game" by asi měl bejt uvnitř formu...
+- To znamená, že charlist nesmí být form, ale container uvnitř formu
+  (tuší dokonce existuje html element, ktej sdružuje víc submit elementů).
+[done]
+
+TODO: Přesměrovávat PgUp a PgDown do CharselectForm
+  (momentálně nic nedělají, pokud form nemá focus)
+[done]
+
+TODO: Opravit enablování buttonu "Enter Game".
+[done]
+
 
 TODO (quality of life improvements):
 - Po vytvoření nového charu checknout příslušný charplate.
