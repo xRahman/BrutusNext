@@ -116,10 +116,7 @@ export class RegisterForm extends CredentialsForm
   protected createEmailInput()
   {
     if (this.emailInput)
-    {
-      ERROR("Component is not created because it already exists");
-      return;
-    }
+      ERROR("Email input already exists");
 
     this.emailInput = new EmailInput
     (
@@ -134,10 +131,7 @@ export class RegisterForm extends CredentialsForm
   protected createPasswordInput()
   {
     if (this.passwordInput)
-    {
-      ERROR("Component is not created because it already exists");
-      return;
-    }
+      ERROR("Password input already exists");
 
     this.passwordInput = new PasswordInput
     (

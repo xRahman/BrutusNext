@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {TitledWindow} from '../../../client/gui/window/TitledWindow';
 import {SvgMap} from '../../../client/gui/map/SvgMap';
@@ -99,6 +100,9 @@ export class MapWindow extends TitledWindow
 
   private createSvgMap()
   {
+    if (this.svgMap !== null)
+      ERROR("SVG map already exists");
+
     this.svgMap = new SvgMap(this, this.$content);
   }
 
