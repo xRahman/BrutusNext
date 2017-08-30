@@ -71,55 +71,102 @@ export class CharselectForm extends Form
     this.populate();
   }
 
-  public selectCharacter(id: string)
+  public selectCharacter
+  (
+    id: string,
+    // Default is 'PREVIOUS' - charlist will be scrolled
+    // such that selected character is first.
+    direction = CharselectForm.SelectDirection.PREVIOUS
+  )
   {
     let charplate = this.charplates.get(id);
 
     if (!charplate)
     {
       ERROR("Unable to find charplate for character id '" + id + "'."
-        + " Charplate will not be selected");
+        + " Charplate is not selected");
       return;
     }
 
-    charplate.select();
+    charplate.select(direction);
   }
 
-  public scrollTo(charplate: Charplate)
+  public scrollTo
+  (
+    charplate: Charplate,
+    direction: CharselectForm.SelectDirection
+  )
   {
-    // Convert hashmap values to array.
-    let charplates = Array.from(this.charplates.values());
-
-    if (charplates.length === 0)
+    if (this.charplates.size === 0)
     {
       // If there are no charplates, just scroll to the top.
       this.$charlist.scrollTop(0);
       return;
     }
-    
-    // Current position of the first charplate relative to the container.
-    let firstElementPos = charplates[0].$element.position().top;
-    // Current position of target charplate relative to the container.
-    let charplateScrollPos = charplate.$element.position().top;
 
-    // 'scrollTop()' sets number of pixels to be hidden by scrolling.
-    //   This number is equal to the distance between position of the
-    // first charplate and position of the charplate we want to select.
-    this.$charlist.scrollTop(charplateScrollPos - firstElementPos);
+    let topScrollPos = this.getTopScrollPos(charplate);
+    let bottomScrollPos = this.getBottomScrollPos(charplate);
+
+    // Do not change how charlist is scrolled if charplate already
+    // is fully visible.
+    if (this.isScrolledTo(charplate, topScrollPos, bottomScrollPos))
+      return;
+
+    switch (direction)
+    {
+      case CharselectForm.SelectDirection.NEXT:
+        this.$charlist.scrollTop(bottomScrollPos);
+        break;
+
+      case CharselectForm.SelectDirection.PREVIOUS:
+        this.$charlist.scrollTop(topScrollPos);
+        break;
+
+      default:
+        ERROR("Invalid select direction");
+        break;
+    }
   }
 
-  public selectAdjacentCharacter
-  (
-    // Valid values are '1' (for previous character)
-    // or '-1' (for next character).
-    offset: number
-  )
+  public selectPreviousCharacter()
   {
     // If there are no characters in the list, there is nothing to select.
     if (this.charplates.size === 0)
       return;
 
-    let id = this.getAdjacentCharacterId(offset);
+    let id = this.getAdjacentCharacterId
+    (
+      CharselectForm.SelectDirection.PREVIOUS
+    );
+
+    if (id)
+      // Selecting the character will also scroll the list to it.
+      this.selectCharacter(id, CharselectForm.SelectDirection.PREVIOUS);
+  }
+
+  public selectNextCharacter()
+  {
+    // If there are no characters in the list, there is nothing to select.
+    if (this.charplates.size === 0)
+      return;
+
+    let id = this.getAdjacentCharacterId
+    (
+      CharselectForm.SelectDirection.NEXT
+    );
+
+    if (id)
+      // Selecting the character will also scroll the list to it.
+      this.selectCharacter(id, CharselectForm.SelectDirection.NEXT);
+  }
+
+  public selectAdjacentCharacter(direction: CharselectForm.SelectDirection)
+  {
+    // If there are no characters in the list, there is nothing to select.
+    if (this.charplates.size === 0)
+      return;
+
+    let id = this.getAdjacentCharacterId(direction);
 
     if (id)
       // Selecting the character will also scroll the list to it.
@@ -159,6 +206,57 @@ export class CharselectForm extends Form
 
   // ---------------- Private methods -------------------
 
+  private isScrolledTo
+  (
+    charplate: Charplate,
+    topScrollPos: number,
+    bottomScrollPos: number
+  )
+  {
+    let scrollPos = this.$charlist.scrollTop();
+
+    // Note that 'bottomScrollPos' is always bigger than 'topScrollPoss'
+    // (they are the scroll positions that place the charplate to the
+    //  top or bottom of the charlist scroll area, not the positions
+    //  of charplate itself).
+    return scrollPos >= bottomScrollPos && scrollPos <= topScrollPos;
+  }
+
+  // -> Returns such 'scrollTop()' value of $charlist element
+  //    that 'charplate' is shown at the top of scrollable area.
+  private getTopScrollPos(charplate: Charplate)
+  {
+    // Convert hashmap values to array.
+    let charplates = Array.from(this.charplates.values());
+
+    if (charplates.length === 0)
+      return 0;
+
+    // Current position of the first charplate relative to the container.
+    let firstElementPos = charplates[0].$element.position().top;
+
+    // Current position of target charplate relative to the container.
+    let charplateScrollPos = charplate.$element.position().top;
+
+    return charplateScrollPos - firstElementPos;
+  }
+
+  // -> Returns such 'scrollTop()' value of $charlist element
+  //    that 'charplate' is shown at the bottom of scrollable area.
+  private getBottomScrollPos(charplate: Charplate)
+  {
+    // $charlist 'scrollTop()' position placing 'charplate' at the top.
+    let topScrollPos = this.getTopScrollPos(charplate);
+
+    // Height of scrollable area of $charlist element.
+    let charlistHeight = this.$charlist.height();
+
+    // Parameter means "include margin".
+    let charplateOuterHeight = charplate.$element.outerHeight(true);
+
+    return topScrollPos - charlistHeight + charplateOuterHeight;
+  }
+
   private createCharlist()
   {
     this.$charlist = this.$createDiv
@@ -190,34 +288,34 @@ export class CharselectForm extends Form
   }
 
   // -> Returns 'null' on error.
-  private getOffsetPosition
+  private getPositionInDirection
   (
     characterIds: Array<string>,
     currentPos: number,
-    offset: number
+    direction: CharselectForm.SelectDirection
   )
   {
-    if (offset !== -1 && offset !== 1)
-    {
-      ERROR("Invalid character position offset (" + offset + ")."
-        + " Expected '-1' or '1'. Character is not selected");
-      return null;
-    }
+    let maxPosition = characterIds.length - 1;
 
-    // If we are already at first or last character in the list, stay
-    // at it (but we will still select it, which will scroll to it).
-    return this.charlistBoundsCheck
-    (
-      currentPos + offset,      // Requested new position.
-      characterIds.length - 1   // Maximum valid position.
-    );
+    switch (direction)
+    {
+      case CharselectForm.SelectDirection.NEXT:
+        return this.charlistBoundsCheck(currentPos + 1, maxPosition);
+
+      case CharselectForm.SelectDirection.PREVIOUS:
+        return this.charlistBoundsCheck(currentPos - 1, maxPosition);
+
+      default:
+        ERROR("Invalid direction value");
+        break;
+    }
   }
 
   // -> Returns 'null' on error.
   private getAdjacentCharacterPosition
   (
     characterIds: Array<string>,
-    offset: number
+    direction: CharselectForm.SelectDirection
   )
   {
     // Id of currently selected character
@@ -238,16 +336,16 @@ export class CharselectForm extends Form
       return null;
     }
 
-    return this.getOffsetPosition(characterIds, currentPos, offset);
+    return this.getPositionInDirection(characterIds, currentPos, direction);
   }
 
   // -> Returns 'null' on error.
-  private getAdjacentCharacterId(offset: number)
+  private getAdjacentCharacterId(direction: CharselectForm.SelectDirection)
   {
     // Convert hashmap keys to array.
     let characterIds = Array.from(this.charplates.keys());
     // Position of character in this.charplates to be selected.
-    let newPos = this.getAdjacentCharacterPosition(characterIds, offset);
+    let newPos = this.getAdjacentCharacterPosition(characterIds, direction);
 
     if (newPos === null)
       return null;
@@ -318,5 +416,16 @@ export class CharselectForm extends Form
       return max;
 
     return position;
+  }
+}
+
+// ------------------ Type Declarations ----------------------
+
+export module CharselectForm
+{
+  export enum SelectDirection
+  {
+    PREVIOUS,
+    NEXT
   }
 }
