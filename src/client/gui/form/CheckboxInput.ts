@@ -59,14 +59,33 @@ export class CheckboxInput extends FormInput
 
   private createInput(param: Component.CheckboxInputParam = {})
   {
+    this.$createDiv
+    (
+      {
+        name: 'checkbox_input_graphics',
+        $parent: this.$element,
+        gCssClass: Component.CHECKBOX_G_CSS_CLASS,
+        sCssClass: CheckboxInput.S_CSS_CLASS,
+        // Place the checkbox graphics element before the text.
+        insertMode: Component.InsertMode.PREPEND
+      }
+    );
+
     Utils.applyDefaults
     (
       param,
       {
         name: 'checkbox_input',
         $parent: this.$element,
-        sCssClass: CheckboxInput.S_CSS_CLASS,
-        // Place checkbox before the text.
+        // Actuall checkbox will be hidden. This is because
+        // it's not possible to style checkbox using css
+        // so we have to hide the checkbox and style something
+        // else instead.
+        sCssClass: Component.HIDDEN_S_CSS_CLASS,
+        // Place checkbox before the text and before it's respective
+        // graphics element (this is important because we will be using
+        // css '+' selector to style element immediately following
+        // the checkbox input element).
         insertMode: Component.InsertMode.PREPEND
       }
     );
