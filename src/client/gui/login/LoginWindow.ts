@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {FormWindow} from '../../../client/gui/window/FormWindow';
 import {LoginForm} from '../../../client/gui/login/LoginForm';
@@ -39,6 +40,9 @@ export class LoginWindow extends FormWindow
 
   private createLoginForm()
   {
+    if (this.form !== null)
+      ERROR("Login form already exists");
+
     this.form = new LoginForm(this, { $parent: this.$content });
   }
 

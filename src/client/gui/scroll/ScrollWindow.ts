@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {ScrollWindowInput} from '../../../client/gui/scroll/ScrollWindowInput';
 import {ScrollWindowOutput} from
@@ -95,6 +96,9 @@ export class ScrollWindow extends TitledWindow
 
   private createOutput()
   {
+    if (this.output !== null)
+      ERROR("Scroll window output already exists");
+
     this.output = new ScrollWindowOutput
     (
       this,
@@ -104,6 +108,9 @@ export class ScrollWindow extends TitledWindow
 
   private createInput()
   {
+    if (this.input !== null)
+      ERROR("Scroll window input already exists");
+
     this.input = new ScrollWindowInput
     (
       this,
