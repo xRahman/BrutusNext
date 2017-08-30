@@ -135,6 +135,9 @@ export class ClientSocket
   // Attempt to open a web socket.
   public connect()
   {
+    if (this.socket !== null)
+      ERROR("Socket already exists");
+
     // (There is no point in error handling here, because
     //  opening a socket is asynchronnous. If an error occurs,
     //  'error' event is fired and onSocketError() is launched.)

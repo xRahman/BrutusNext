@@ -86,10 +86,7 @@ export abstract class CredentialsForm extends Form
   protected createEmailInput()
   {
     if (this.emailInput)
-    {
-      ERROR("Component is not created because it already exists");
-      return;
-    }
+      ERROR("Email input already exists");
 
     this.emailInput = new EmailInput(this);
   }
@@ -102,10 +99,7 @@ export abstract class CredentialsForm extends Form
   protected createPasswordInput()
   {
     if (this.passwordInput)
-    {
-      ERROR("Component is not created because it already exists");
-      return;
-    }
+      ERROR("Password input already exists");
 
     this.passwordInput = new PasswordInput(this);
   }
@@ -120,6 +114,9 @@ export abstract class CredentialsForm extends Form
     // Don't crete the checkbox if Html 5 local storage isn't available.
     if (!LocalStorage.isAvailable())
       return;
+
+    if (this.rememberMeCheckbox !== null)
+      ERROR("RememberMe checkbox already exists");
 
     this.rememberMeCheckbox = new CheckboxInput
     (

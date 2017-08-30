@@ -145,6 +145,9 @@ export class ChargenForm extends Form
 
   private createCharacterNameInput()
   {
+    if (this.characterNameInput !== null)
+      ERROR("Character name input already exists");
+
     this.characterNameInput = new CharacterNameInput(this);
   }
 

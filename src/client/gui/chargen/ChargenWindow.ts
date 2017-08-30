@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Component} from '../../../client/gui/Component';
 import {FormWindow} from '../../../client/gui/window/FormWindow';
@@ -40,6 +41,9 @@ export class ChargenWindow extends FormWindow
 
   private createChargenForm()
   {
+    if (this.form !== null)
+      ERROR("Chargen form already exists");
+
     this.form = new ChargenForm(this, { $parent: this.$content });
   }
 

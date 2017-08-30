@@ -1,6 +1,9 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+TODO: Nedržet standalone okna v paměti, když nejsou aktivní.
+
+
 TODO: Procesit (a možná i posílat) charselect request a response.
 - request se procesí (a na serveru to vyhodí chybu, páč se nezpracovává).
 
@@ -10,7 +13,7 @@ TODO: Asi bych se měl v klientu vykašlat na ruční ošetřování errorů typ
   error (navíc momentálně s lepším stackem).
 TODO: Ale naopak když vyrábím komponentu přes 'new', tak bych měl otestovat,
   že ještě neexistuje - opakované vytváření výjimku nehodí.
-
+[done]
 
 TODO: Po vytvoření characteru automaticky enablovat button Enter Game.
 [done]
