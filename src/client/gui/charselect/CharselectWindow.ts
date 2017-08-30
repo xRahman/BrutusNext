@@ -56,21 +56,6 @@ export class CharselectWindow extends FormWindow
     );
   }
 
-  /// Moved to CharselectForm.
-  // private createButtonEnterGame()
-  // {
-  //   this.$enterGameButton = this.$createButton
-  //   (
-  //     {
-  //       $parent: this.$content,
-  //       text: 'Enter Game',
-  //       sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS,
-  //       disabled: true,
-  //       click: (event) => { this.onEnterGameClick(event); }
-  //     }
-  //   );
-  // }
-
   private enterChargen()
   {
     ClientApp.setState(ClientApp.State.CHARGEN);
@@ -82,12 +67,6 @@ export class CharselectWindow extends FormWindow
   {
     this.enterChargen();
   }
-
-  /// Deprecated.
-  // private onEnterGameClick(event: JQueryEventObject)
-  // {
-  //   this.form.submit();
-  // }
 
   // ~ Overrides FormeWindow.onKeyDown().
   // Handles 'keydown' event fired on html document
@@ -103,22 +82,28 @@ export class CharselectWindow extends FormWindow
     switch (key)
     {
       case 33:  // 'PgUp'
+        // Set focus to 'charlist' component so it can
+        // process the event.
         this.form.focusCharlist();
         break;
 
       case 34:  // 'PgDn'
+        // Set focus to 'charlist' component so it can
+        // process the event.
         this.form.focusCharlist();
         break;
 
       case 38:  // 'Up'
-        this.form.selectAdjacentCharacter(-1);
+        this.form.selectPreviousCharacter();
+        ///this.form.selectAdjacentCharacter(-1);
         // We don't want default event handler to scroll the contents
         // after we scrolled to the selected element.
         event.preventDefault();
         break;
 
       case 40:  // 'Down'
-        this.form.selectAdjacentCharacter(+1);
+        this.form.selectNextCharacter();
+        ///this.form.selectAdjacentCharacter(+1);
         // We don't want default event handler to scroll the contents
         // after we scrolled to the selected element.
         event.preventDefault();
