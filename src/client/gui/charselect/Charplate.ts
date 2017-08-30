@@ -88,7 +88,7 @@ export class Charplate extends Component
   //   return this.$element.offset().top - marginTop;
   // }
 
-  public select()
+  public select(direction: CharselectForm.SelectDirection)
   {
     if (!this.$radio)
     {
@@ -98,7 +98,7 @@ export class Charplate extends Component
 
     this.$radio.prop('checked', true);
 
-    this.parent.scrollTo(this);
+    this.parent.scrollTo(this, direction);
 
     this.parent.onSelectionChange();
   }
