@@ -293,7 +293,6 @@
 /* :: No Border :: */
 .G_NoGraphics,
 .G_TitleBar,
-.G_Checkbox,
 .G_LinkText
 {
   border: 0;
@@ -307,6 +306,7 @@
 }
 
 /* :: Button Border :: */
+.G_Checkbox,
 .G_Button
 {
   border: 1px ridge rgba(210, 230, 250, 0.8);
@@ -361,6 +361,7 @@
 
 /* :: Input Background :: */
 .G_Input,
+.G_Checkbox,
 .G_SelectablePlate
 {
   /* Old browsers */
@@ -440,6 +441,19 @@
   background: linear-gradient(rgba(80, 80, 80, 0.6) 0%, rgba(110, 110, 110, 0.6) 5%, rgba(60, 60, 60, 0.6) 90%, rgba(30, 30, 30, 0.6) 100%);
 }
 
+/* Checkbox Checked Background */
+input:checked + .G_Checkbox
+{
+  /* Old browsers */
+  background: rgba(225, 225, 225, 0.8);
+  /* FF3.6-15 */
+  background: -moz-linear-gradient(top, rgba(250, 250, 250, 0.8), rgba(200, 200, 200, 0.8));
+  /* Chrome10-25,Safari5.1-6 */
+  background: -webkit-linear-gradient(top, rgba(250, 250, 250, 0.8), rgba(200, 200, 200, 0.8));
+  /* CSS3 compatible browsers*/
+  background: linear-gradient(rgba(250, 250, 250, 0.8), rgba(200, 200, 200, 0.8));
+}
+
 /* ------------- Box Shadow -------------- */
 
 /* :: Checked Selectable Plate :: */
@@ -451,7 +465,23 @@ input:checked + .G_SelectablePlate
 {
   -webkit-box-shadow:inset 0 0 0.8em 0.2em rgba(210, 230, 250, 1);
   -moz-box-shadow: inset 0 0 0.8em 0.2em rgba(210, 230, 250, 1);
-  box-shadow:inset 0 0 0.8em 0.2em rgba(210, 230, 250, 1);
+  box-shadow: inset 0 0 0.8em 0.2em rgba(210, 230, 250, 1);
+}
+
+/* :: Checked Checkbox :: */
+/*
+  This selector targets components with css class .G_SelectablePlate
+  that immediately follow a checked input element.
+*/
+/*
+  Note that shadow is dark so it actually hides the light background
+  leaving light 'blob' inside the checkbox.
+*/
+input:checked + .G_Checkbox
+{
+  -webkit-box-shadow:inset 0 0 0.1em 0.18em rgba(0, 0, 0, 0.8);
+  -moz-box-shadow: inset 0 0 0.1em 0.18em rgba(0, 0, 0, 0.8);
+  box-shadow: inset 0 0 0.1em 0.18em rgba(0, 0, 0, 0.8);
 }
 
 /* --------------- Outline --------------- */
@@ -793,7 +823,11 @@ input:checked + .G_SelectablePlate
 /* :: Checkbox Input :: */
 .S_CheckboxInput
 {
-  width: auto;
+  /*width: auto;*/
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  margin-right: 0.3em;
 }
 
 /***************************************************************/
