@@ -320,8 +320,26 @@ export class Connection
     Windows.chargenWindow.form.displayProblem(response);
   }
 
+  private acceptCharselectResponse(response: CharselectResponse)
+  {
+    ClientApp.setState(ClientApp.State.IN_GAME);
+  }
+
   private processCharselectResponse(response: CharselectResponse)
   {
-    /// TODO:
+    if (response.result === CharselectResponse.Result.UNDEFINED)
+    {
+      this.reportInvalidResponse('charselect');
+      return;
+    }
+
+    if (response.result === CharselectResponse.Result.OK)
+    {
+      this.acceptCharselectResponse(response);
+      return;
+    }
+
+    // Otherwise display to the user what the problem is.
+    Windows.charselectWindow.form.displayProblem(response);
   }
 }
