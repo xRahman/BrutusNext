@@ -8,6 +8,8 @@
 
 import {ERROR} from '../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../shared/lib/error/FATAL_ERROR';
+import {Syslog} from '../../shared/lib/log/Syslog';
+import {AdminLevel} from '../../shared/lib/admin/AdminLevel';
 import {Entity} from '../../shared/lib/entity/Entity';
 import {ServerEntities} from '../../server/lib/entity/ServerEntities';
 import {Prototypes} from '../../shared/lib/entity/Prototypes';
@@ -15,13 +17,18 @@ import {Prototypes} from '../../shared/lib/entity/Prototypes';
 import {NameList} from '../../shared/lib/entity/NameList';
 ///import {SaveableObject} from '../../server/lib/fs/SaveableObject';
 import {Message} from '../../server/lib/message/Message';
+import {MessageType} from '../../shared/lib/message/MessageType';
 import {ServerApp} from '../../server/lib/app/ServerApp';
-import {AdminLevel} from '../../shared/lib/admin/AdminLevel';
+import {Character} from '../../server/game/character/Character';
 import {Characters} from '../../server/game/character/Characters';
 import {World} from '../../server/game/world/World';
 import {Room} from '../../server/game/world/Room';
 ///import {RoomFlags} from '../../server/game/world/RoomFlags';
 import {AbbrevList} from '../../server/game/search/AbbrevList';
+import {Connection} from '../../server/lib/connection/Connection';
+import {CharselectRequest} from '../../shared/lib/protocol/CharselectRequest';
+import {CharselectResponse} from
+  '../../shared/lib/protocol/CharselectResponse';
 
 /// Asi docasne:
 import {Area} from '../game/world/Area';
@@ -59,6 +66,33 @@ export class Game
     return ServerApp.game.world;
   }
 
+  // ------------- Public static methods ----------------
+
+  // Player wants to enter game.
+  public static processCharselectRequest
+  (
+    request: CharselectRequest,
+    connection: Connection
+  )
+  {
+    let character =
+      ServerEntities.get(request.characterId).dynamicCast(Character);
+
+    /// TODO:
+
+    /*
+      Char už by měl bejt naloadovanej.
+
+      - Insertnout ho do roomy
+        (přidat ho do namelistů)
+
+      (Prozatím potřebuju hlavně vědět, ve které roomě je, abych
+       ji mohl zobrazit v mapperu).
+    */
+
+    this.acceptCharselectRequest(connection, character);
+  }
+
   // ---------------- Public methods --------------------
 
   // Creates and saves a new default world.
@@ -70,7 +104,7 @@ export class Game
       ERROR("World already exists");
       return;
     }
-    
+
     this.world = await ServerEntities.createInstanceEntity
     (
       World,      // Typecast.
@@ -134,6 +168,41 @@ export class Game
   protected world: World = null;
 
   // --------------- Protected methods ------------------
+
+
+  // ------------- Private static methods ---------------
+
+  private static acceptCharselectRequest
+  (
+    connection: Connection,
+    character: Character
+  )
+  {
+    let response = new CharselectResponse();
+    let account = connection.account;
+
+    if (!account)
+    {
+      ERROR("Invalid account on connection. Charselect request"
+        + " is not accepted");
+      return;
+    }
+
+    // Character will be selected when user enters charselect window.
+    account.data.lastActiveCharacter = character;
+
+    response.result = CharselectResponse.Result.OK;
+
+    Syslog.log
+    (
+      account.getUserInfo() + " has entered"
+        + " game as " + character.getName(),
+      MessageType.SYSTEM_INFO,
+      AdminLevel.IMMORTAL
+    );
+    
+    connection.send(response);
+  }
 
   // ---------------- Private methods -------------------
 }

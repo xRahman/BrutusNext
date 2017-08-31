@@ -443,6 +443,9 @@ export class Account extends ServerEntity
 
     this.data.characters.set(character.getId(), character);
 
+    // Character will be selected when user enters charselect window.
+    this.data.lastActiveCharacter = character;
+
     await Entities.save(this);
   }
 
