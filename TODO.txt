@@ -1,24 +1,15 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
-TODO: Nedržet standalone okna v paměti, když nejsou aktivní.
-- ani v DOM.
+TODO: Insertnout character do roomy.
 
+--------------------------------------------------------------
 
-TODO: Procesit (a možná i posílat) charselect request a response.
-- request se procesí (a na serveru to vyhodí chybu, páč se nezpracovává).
-
-TODO: V charselectu v onShow() selectnout naposledy lognutý character
-  (takže asi jako v loginu - pamatovat si idčko v offline storage).
-- tímhle pořeším i to, aby byl selectnutý nějaký char při vstupu do
-  charselect okna.
-Tohle bych si možná mohl pamatovat v acountu místo v local storagi browseru.
-- u loginu to nešlo, protože tam jsou ty informace potřeba před tím, než
-  se player vůbec naloguje...
-
-
-TODO: Udělat vlastní grafiku pro checkbox (když už to umím ;-)).
-[done]
+Hodně výhledové TODO:
+  Možná bych mohl dynamic casty vyhodit z metod v Entities
+  a volat entity.dynamicCast() tam, kde je potřeba
+  (jako v Game.processCharselectRequest()).
+- dost by se tím zjednodušil a zpřehlednil kód v Entities.
 
 --------------------------------------------------------------
 
@@ -146,6 +137,50 @@ TODO: Otestovat reconnect z jiného tabu.
   jinak to těžko odladím.
 
 --------------------------------------------------------------
+
+TODO: Procesit (a možná i posílat) charselect request a response.
+- request se procesí (a na serveru to vyhodí chybu, páč se nezpracovává).
+[done]
+TODO: Posílat charselect response.
+[done]
+TODO: Zpracovat ji na klientovi (vytvořit avatara, vyrobit a zobrazit
+  herní okna).
+[done]
+
+TODO: Do charselect requestu bych mohl dát rovnou referenci na character
+  (místo characterId).
+- nakonec to bude jendodušší přes ičko, vznikl tam problém s typama.
+  S idčkem to funguje taky.
+[kašlat na to]
+
+
+TODO: V charselectu v onShow() selectnout naposledy lognutý character
+  (takže asi jako v loginu - pamatovat si idčko v offline storage).
+- tímhle pořeším i to, aby byl selectnutý nějaký char při vstupu do
+  charselect okna.
+Tohle bych si možná mohl pamatovat v acountu místo v local storagi browseru.
+- u loginu to nešlo, protože tam jsou ty informace potřeba před tím, než
+  se player vůbec naloguje...
+Char nemusí být naposledy lognutý, stačí naposledy založený
+- Q: Bude mít přednost naposledy založený, nebo naposledy lognutý:
+  Asi podle toho, co se stalo naposled.
+  - Pokud hráč založí char a nelogne ho, zůstane v lastActive ten
+    naposledy založený.
+  - Když nějaký char logne, zůstane tam naposledy lognutý.
+TODO: Na serveru settovat account.data.lastActiveCharacter
+- při založení nového charu
+[done]
+- při loginu do hry (TODO).
+[done]
+
+TODO: Nedržet standalone okna v paměti, když nejsou aktivní.
+- ani v DOM.
+  To je blbost. Úspora paměti minimální, navíc na klientovi, kde mě
+  paměť nemusí trápit. Zesložitění kódu naopak dost výrazné.
+[kašlat na to]
+
+TODO: Udělat vlastní grafiku pro checkbox (když už to umím ;-)).
+[done]
 
 TODO: Asi bych se měl v klientu vykašlat na ruční ošetřování errorů typu
   přístup na 'null' komponentu. Když to neošetřím, browser vyhodí výjimku

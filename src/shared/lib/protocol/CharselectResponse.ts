@@ -36,7 +36,7 @@ export module CharselectResponse
   {
     UNDEFINED,
     OK,
-    FAILED_TO_LOAD_CHARACTER
+    ERROR
   }
 }
 

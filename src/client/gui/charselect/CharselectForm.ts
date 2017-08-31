@@ -69,6 +69,7 @@ export class CharselectForm extends Form
     super.onShow();
 
     this.populate();
+    this.selectLastActiveCharacter();
   }
 
   public selectCharacter
@@ -171,6 +172,30 @@ export class CharselectForm extends Form
     if (id)
       // Selecting the character will also scroll the list to it.
       this.selectCharacter(id);
+  }
+    
+  public displayProblem(response: CharselectResponse)
+  {
+    switch (response.result)
+    {
+      case CharselectResponse.Result.UNDEFINED:
+        ERROR("Received charselect response with unspecified result."
+          + " Someone problably forgot to set 'packet.result'"
+          + " when sending charselect response from the server");
+        break;
+
+      case CharselectResponse.Result.ERROR:
+        this.displayError(response.getProblem());
+        break;
+
+      case CharselectResponse.Result.OK:
+        ERROR("displayProblem() called with 'Result: OK'");
+        break;
+
+      default:
+        ERROR("Unknown register response result");
+        break;
+    }
   }
 
   // --------------- Protected methods ------------------
@@ -404,6 +429,24 @@ export class CharselectForm extends Form
 
     for (let character of account.data.characters.values())
       this.createCharplate(character);
+  }
+
+  private selectLastActiveCharacter()
+  {
+    let account = Connection.account;
+
+    if (!account)
+    {
+      ERROR("Invalid account. Last active character is not selected");
+      return;
+    }
+
+    let lastActiveCharacter = account.data.lastActiveCharacter;
+
+    // 'lastActiveCharacter' can be null if there is no character
+    // on the account yet.
+    if (lastActiveCharacter)
+      this.selectCharacter(lastActiveCharacter.getId());
   }
 
   // Ensures that 'position' stays within <0, max> interval.
