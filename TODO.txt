@@ -1,6 +1,44 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+ÚVAHA: Updaty entit a posílání diffů.
+
+Když například hráč pošle příkaz "north", v odpovědi od serveru
+nestačí poslat výpis další roomy (nebo "You can't go that way."),
+musí zároveň přijít updat entit, které se provedením příkazu
+změnily.
+  Přesněji ten look do další roomy ani posílat nemusím, ten už
+na klientovi je. Stačí poslat čistě tu změnu pozice.
+
+Response tudíž musí obsahovat:
+- změnu v původní roomě (ubyl z ní character)
+- změnu v nové roomě (přibyl do ní character)
+- změnu v hráčově characteru (změnila se mu location)
+
+Alternativně by se ten příkaz dal provést paralelně na klientu
+(tj. server by poslal jen "ano, můžeš se pohnout").
+- Výhoda tohohle řešení je, že hlášky by se řešily jen na klientu
+  (nemusely by se tudíž posílat).
+
+=> Asi jediná použitelná možnost je posílat jen ack/denied response
+   s tím, že změnu v datech si udělá klient i server (ideálně by to
+   mělo být v shared kódu). Klinet se pak postará o výpis hlášek.
+- problém je, že tohle možná povede ke složitému protokolovému kódu
+  (čemuž jsem se chtěl vyhout)
+- a taky může dojít k desyncu mezi klientem a serverem, když budu mít
+  chyby v kódu.
+
+Možná by šlo ještě posílat nějaké obecnější status updaty, třeba
+CharacterMoved
+- odkud (může být null)
+- kam (může být null)
+- jak (walk, teleport, atp).
+Potom by všechny transportní události (včetně vstupu do hry, teleportů,
+atd.) posílaly tenhle druh packetu.
+
+
+--------------------------------------------------------------
+
 TODO: Insertnout character do roomy.
 
 --------------------------------------------------------------
