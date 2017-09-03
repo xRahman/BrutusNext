@@ -31,7 +31,7 @@ export class Classes
 
   public static registerSerializableClass<T extends Serializable>
   (
-    Class: new() => T
+    Class: new(...args: any[]) => T
   )
   {
     this.serializables.set(Class.name, Class);
@@ -39,7 +39,7 @@ export class Classes
 
   public static registerEntityClass<T extends Entity>
   (
-    Class: new() => T
+    Class: new(...args: any[]) => T
   )
   {
     this.entities.set(Class.name, Class);
