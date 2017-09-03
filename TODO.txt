@@ -1,6 +1,32 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+TODO: Při zpracování CharselectResponse na klientu
+  zpracovat characterMove.
+
+TODO: Insertnout character do roomy.
+[done]
+
+TODO: Nastavovat loadLocation při založení charu.
+[done]
+TODO: Při vytváření characteru volat character.init().
+[done]
+
+TODO: V enterWorld() Vrazit character do loadLocationu.
+[done]
+TODO: V enterWorld() zařadit character do namelistů.
+
+TODO: Nastavovat Character.loadLocation při quitu.
+
+TODO: V Character.enterWorld() poslat packety s updatem všem, kdo
+  mají o vstupu charu do hry vědět
+  (neposílají se hlášky, ale EntityMovy, tj. reporty o zmeně stavu
+   - respektive v tomhle případě se asi budou posílat EntityData,
+   protože ostatní clienti tenhle char ještě nemají. I tak si ho
+   ale budou muset vložit do příslušné location entity).
+
+--------------------------------------------------------------
+
 ÚVAHA: Updaty entit a posílání diffů.
 
 Když například hráč pošle příkaz "north", v odpovědi od serveru
@@ -36,10 +62,6 @@ CharacterMoved
 Potom by všechny transportní události (včetně vstupu do hry, teleportů,
 atd.) posílaly tenhle druh packetu.
 
-
---------------------------------------------------------------
-
-TODO: Insertnout character do roomy.
 
 --------------------------------------------------------------
 

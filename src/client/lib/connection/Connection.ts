@@ -322,6 +322,15 @@ export class Connection
 
   private acceptCharselectResponse(response: CharselectResponse)
   {
+    let move = response.characterMove;
+    /// TODO:
+    /// - vyrobit avatar (z move.entityId)
+    ///   - vyrobit jeho scrollWindow.
+    /// - vypsat hlášku o vstupu charu do hry
+    ///   (ostatní klienti si ji vypíší sami na základě updatu,
+    ///    který dostanou od serveru).
+
+
     ClientApp.setState(ClientApp.State.IN_GAME);
   }
 

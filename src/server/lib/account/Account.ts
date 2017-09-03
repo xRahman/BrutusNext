@@ -224,6 +224,7 @@ export class Account extends ServerEntity
 
     character.atachConnection(this.connection);
     character.addToLists();
+    character.init();
 
     // Save the character to the disk.
     await ServerEntities.save(character);
