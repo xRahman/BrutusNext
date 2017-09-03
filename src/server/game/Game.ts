@@ -19,6 +19,7 @@ import {NameList} from '../../shared/lib/entity/NameList';
 import {Message} from '../../server/lib/message/Message';
 import {MessageType} from '../../shared/lib/message/MessageType';
 import {ServerApp} from '../../server/lib/app/ServerApp';
+import {Account} from '../../server/lib/account/Account';
 import {Character} from '../../server/game/character/Character';
 import {Characters} from '../../server/game/character/Characters';
 import {World} from '../../server/game/world/World';
@@ -26,6 +27,7 @@ import {Room} from '../../server/game/world/Room';
 ///import {RoomFlags} from '../../server/game/world/RoomFlags';
 import {AbbrevList} from '../../server/game/search/AbbrevList';
 import {Connection} from '../../server/lib/connection/Connection';
+import {EntityMove} from '../../shared/lib/protocol/EntityMove';
 import {CharselectRequest} from '../../shared/lib/protocol/CharselectRequest';
 import {CharselectResponse} from
   '../../shared/lib/protocol/CharselectResponse';
@@ -75,22 +77,35 @@ export class Game
     connection: Connection
   )
   {
-    let character =
+    // Character should already be loaded at this time
+    // (all characters are loaded when account is loaded)
+    // so we just request it from Entities.
+    let character: Character =
       ServerEntities.get(request.characterId).dynamicCast(Character);
 
-    /// TODO:
+    let account = connection.account;
+    
+    if (!account)
+    {
+      ERROR("Invalid account on connection. Charselect request"
+        + " is not accepted");
 
-    /*
-      Char už by měl bejt naloadovanej.
+      this.denyCharselectRequest
+      (
+        "[ERROR]: Invalid account.",
+        CharselectResponse.Result.ERROR,
+        connection
+      );
 
-      - Insertnout ho do roomy
-        (přidat ho do namelistů)
+      return;
+    }
 
-      (Prozatím potřebuju hlavně vědět, ve které roomě je, abych
-       ji mohl zobrazit v mapperu).
-    */
+    // Character will be selected when user enters charselect window.
+    account.data.lastActiveCharacter = character;
 
-    this.acceptCharselectRequest(connection, character);
+    let move = character.enterWorld();
+
+    this.acceptCharselectRequest(connection, account, character, move);
   }
 
   // ---------------- Public methods --------------------
@@ -172,26 +187,33 @@ export class Game
 
   // ------------- Private static methods ---------------
 
-  private static acceptCharselectRequest
+  private static denyCharselectRequest
   (
-    connection: Connection,
-    character: Character
+    problem: string,
+    result: CharselectResponse.Result,
+    connection: Connection
   )
   {
     let response = new CharselectResponse();
-    let account = connection.account;
+    
+    response.result = result;
+    response.setProblem(problem);
 
-    if (!account)
-    {
-      ERROR("Invalid account on connection. Charselect request"
-        + " is not accepted");
-      return;
-    }
+    connection.send(response);
+  }
 
-    // Character will be selected when user enters charselect window.
-    account.data.lastActiveCharacter = character;
+  private static acceptCharselectRequest
+  (
+    connection: Connection,
+    account: Account,
+    character: Character,
+    move: EntityMove
+  )
+  {
+    let response = new CharselectResponse();
 
     response.result = CharselectResponse.Result.OK;
+    response.characterMove = move;
 
     Syslog.log
     (

@@ -12,11 +12,13 @@ import {Account} from '../../../server/lib/account/Account';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Admins} from '../../../server/lib/admin/Admins';
 import {Game} from '../../../server/game/Game';
+import {Entity} from '../../../shared/lib/entity/Entity';
 import {GameEntity} from '../../../server/game/GameEntity';
 import {World} from '../../../server/game/world/World';
 import {CharacterData} from '../../../shared/game/character/CharacterData';
 import {Characters} from '../../../server/game/character/Characters';
 import {Classes} from '../../../shared/lib/class/Classes';
+import {EntityMove} from '../../../shared/lib/protocol/EntityMove';
 
 export class Character extends GameEntity
 {
@@ -36,18 +38,21 @@ export class Character extends GameEntity
     this.version = 0;
   }
 
+  // ----------------- Private data --------------------- 
+
+  // Character is placed into this entity when entering game.
+  private loadLocation: GameEntity = null;
+
   // ----------------- Public data ----------------------
 
   public data = new CharacterData();
 
   // --------------- Public accessors -------------------
 
-  /*
-  public static get SAVE_DIRECTORY()
+  public getLoadLocation()
   {
-    return "./data/characters/";
+    return this.loadLocation;
   }
-  */
 
   public getTimeOfCreation(): string
   {
@@ -69,21 +74,52 @@ export class Character extends GameEntity
   // ---------------- Public methods --------------------
 
   // Sets birthroom (initial location), CHAR_IMMORTALITY flag.
-  public init(account: Account)
+  public init()
   {
     if (this.getAdminLevel() > AdminLevel.MORTAL)
     {
-/// TODO: Možná by bylo lepší rovnou World.systemRoom.
       // Immortals enter game in System Room.
-      Game.world.systemRoom.insert(this);
+      this.loadLocation = Game.world.systemRoom;
       ///this.characterFlags.set(CharacterFlags.GOD_PROTECTION);
     }
     else
     {
-/// TODO: Možná by bylo lepší rovnou World.tutorialRoom.
       // Mortals enter game in Tutorial Room.
-      Game.world.tutorialRoom.insert(this);
+      this.loadLocation = Game.world.tutorialRoom;
     }
+
+    /// Tohle by tu asi být nemělo - do roomy se character
+    /// insertne až ve chvíli, kdy s ním player logne do hry.
+    ///this.loadlocation.insert(this);
+  }
+
+  // -> Returns EntityMove instance describing performed move action,
+  //    Returns 'null' on error.
+  public enterWorld(): EntityMove
+  {
+    if (this.getLocation() !== null)
+    {
+      ERROR("Attempt to enter game with character "
+        + this.getErrorIdString() + " which already"
+        + " has a location. Location is not changed");
+      return null;
+    }
+
+    let loadLocation = this.getLoadLocation();
+
+    if (!Entity.isValid(loadLocation))
+    {
+      ERROR("Invalid 'loadLocation' on character"
+        + " " + this.getErrorIdString() + "."
+        + " Character is not placed into the world");
+      return null;
+    }
+
+    // TODO: Zařadit char do namelistů, atd.
+    // (možná se to bude dělat v rámci insertu, uvidíme).
+    loadLocation.insert(this);
+
+    return new EntityMove(this.getId(), loadLocation.getId());
   }
 
   // Announce to the room that player is entering game as this character.
@@ -145,6 +181,8 @@ export class Character extends GameEntity
   {
     /// TODO
   }
+
+  // --------------- Private methods --------------------
 
   // ---------------- Command handlers ------------------
 

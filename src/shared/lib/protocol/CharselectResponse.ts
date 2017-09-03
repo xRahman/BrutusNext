@@ -7,6 +7,7 @@
 */
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {EntityMove} from '../../../shared/lib/protocol/EntityMove';
 import {Response} from '../../../shared/lib/protocol/Response';
 import {Classes} from '../../../shared/lib/class/Classes';
 
@@ -23,6 +24,9 @@ export class CharselectResponse extends Response
 
   // Is the request accepted?
   public result = CharselectResponse.Result.UNDEFINED;
+
+  // Where did the character entered game.
+  public characterMove: EntityMove = null;
 
   // // Serialized character data.
   // public character = new EntityData();
