@@ -37,7 +37,9 @@ export class Windows
   // When avatar is switched, content is redrawn.
   private mapWindow: MapWindow = null;
 
-  private activeScrollWindow: ScrollWindow = null;
+  /// To be deleted.
+  ///private activeScrollWindow: ScrollWindow = null;
+
   private activeStandaloneWindow: StandaloneWindow = null;
 
   // --------------- Static accessors -------------------
@@ -69,13 +71,14 @@ export class Windows
 
   public static get activeScrollWindow()
   {
-    return ClientApp.windows.activeScrollWindow;
+    return ClientApp.connection.activeAvatar.scrollWindow;
   }
 
-  public static set activeScrollWindow(window: ScrollWindow)
-  {
-    ClientApp.windows.activeScrollWindow = window;
-  }
+  /// To be deleted.
+  // public static set activeScrollWindow(window: ScrollWindow)
+  // {
+  //   ClientApp.windows.activeScrollWindow = window;
+  // }
 
   public static get activeStandaloneWindow()
   {
@@ -103,6 +106,11 @@ export class Windows
       window.onDocumentReady();
   }
 
+  public static createScrollWindow()
+  {
+    return ClientApp.windows.add(new ScrollWindow());
+  }
+
   // ---------------- Public methods --------------------
 
   // Hides windows that should be hiden in given 'state' and
@@ -125,12 +133,6 @@ export class Windows
     this.createTermsWindow();
     this.createCharlistWindow();
     this.createChargenWindow();
-  }
-
-  // Creates a 'ScrollWindow' and adds it to app_body.
-  public createScrollWindow()
-  {
-    return this.add(new ScrollWindow());
   }
 
   // Creates a 'Map' window and adds it to app_body.

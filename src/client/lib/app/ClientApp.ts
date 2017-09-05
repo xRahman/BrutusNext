@@ -215,17 +215,12 @@ export class ClientApp extends App
     // for root prototype entities.
     this.entities.createRootObjects();
 
-    /// TODO: Sloučit do this.windows.createStandaloneWindows().
     this.windows.createStandaloneWindows();
 
     /// Tohle by se asi mělo vytvářet až po přilogování.
+    /// - nakonec ne. Bude jen jedno map window na clientApp,
+    ///   jeho obsah se bude překreslovat podle aktivního charu.
     this.windows.createMapWindow();
-
-    /// Správně by se mělo scrollWindow a Avatar vytvořit po kliknutí
-    /// na jméno charu v MenuWindow (nebo možná LoginWindow).
-    let scrollWindow = this.windows.createScrollWindow();
-    Windows.activeScrollWindow = scrollWindow;
-    this.connection.activeAvatar = this.connection.createAvatar(scrollWindow);
 
     this.connection.connect();
 

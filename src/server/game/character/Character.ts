@@ -45,7 +45,7 @@ export class Character extends GameEntity
 
   // ----------------- Public data ----------------------
 
-  public data = new CharacterData();
+  public data = new CharacterData(this);
 
   // --------------- Public accessors -------------------
 
@@ -90,7 +90,7 @@ export class Character extends GameEntity
 
     /// Tohle by tu asi být nemělo - do roomy se character
     /// insertne až ve chvíli, kdy s ním player logne do hry.
-    ///this.loadlocation.insert(this);
+    //this.loadLocation.insert(this);
   }
 
   // -> Returns EntityMove instance describing performed move action,

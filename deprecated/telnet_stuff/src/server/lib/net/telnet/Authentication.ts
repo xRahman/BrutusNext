@@ -22,7 +22,7 @@
 
   Ted to kazdopadne resit nebudu.
 */
-
+/*
 'use strict';
 
 import {ERROR} from '../../../../shared/lib/error/ERROR';
@@ -579,3 +579,4 @@ export module Authentication
     MOTD
   }
 }
+*/

@@ -70,44 +70,6 @@ export class Game
 
   // ------------- Public static methods ----------------
 
-  // Player wants to enter game.
-  public static processCharselectRequest
-  (
-    request: CharselectRequest,
-    connection: Connection
-  )
-  {
-    // Character should already be loaded at this time
-    // (all characters are loaded when account is loaded)
-    // so we just request it from Entities.
-    let character: Character =
-      ServerEntities.get(request.characterId).dynamicCast(Character);
-
-    let account = connection.account;
-    
-    if (!account)
-    {
-      ERROR("Invalid account on connection. Charselect request"
-        + " is not accepted");
-
-      this.denyCharselectRequest
-      (
-        "[ERROR]: Invalid account.",
-        CharselectResponse.Result.ERROR,
-        connection
-      );
-
-      return;
-    }
-
-    // Character will be selected when user enters charselect window.
-    account.data.lastActiveCharacter = character;
-
-    let move = character.enterWorld();
-
-    this.acceptCharselectRequest(connection, account, character, move);
-  }
-
   // ---------------- Public methods --------------------
 
   // Creates and saves a new default world.
@@ -183,48 +145,6 @@ export class Game
   protected world: World = null;
 
   // --------------- Protected methods ------------------
-
-
-  // ------------- Private static methods ---------------
-
-  private static denyCharselectRequest
-  (
-    problem: string,
-    result: CharselectResponse.Result,
-    connection: Connection
-  )
-  {
-    let response = new CharselectResponse();
-    
-    response.result = result;
-    response.setProblem(problem);
-
-    connection.send(response);
-  }
-
-  private static acceptCharselectRequest
-  (
-    connection: Connection,
-    account: Account,
-    character: Character,
-    move: EntityMove
-  )
-  {
-    let response = new CharselectResponse();
-
-    response.result = CharselectResponse.Result.OK;
-    response.characterMove = move;
-
-    Syslog.log
-    (
-      account.getUserInfo() + " has entered"
-        + " game as " + character.getName(),
-      MessageType.SYSTEM_INFO,
-      AdminLevel.IMMORTAL
-    );
-    
-    connection.send(response);
-  }
 
   // ---------------- Private methods -------------------
 }

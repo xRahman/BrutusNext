@@ -522,7 +522,7 @@ export class Entity extends Serializable
   public async postSave() {}
   public async postLoad(loadContents = true) {}
 
-  public dynamicCast<T>(Class: { new (...args: any[]): T })
+  public dynamicCast<T>(Class: { new (...args: any[]): T }): T
   {
     // Dynamic type check - we make sure that entity is inherited from
     // requested class (or an instance of the class itself).

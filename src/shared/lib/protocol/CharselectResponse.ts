@@ -7,8 +7,11 @@
 */
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Entity} from '../../../shared/lib/entity/Entity';
+import {Serializable} from '../../../shared/lib/class/Serializable';
 import {EntityMove} from '../../../shared/lib/protocol/EntityMove';
 import {Response} from '../../../shared/lib/protocol/Response';
+import {EntityData} from '../../../shared/lib/protocol/EntityData';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 export class CharselectResponse extends Response
@@ -28,8 +31,21 @@ export class CharselectResponse extends Response
   // Where did the character entered game.
   public characterMove: EntityMove = null;
 
-  // // Serialized character data.
-  // public character = new EntityData();
+  // Serialized data of 'loadLocation' entity.
+  public loadLocation: EntityData = null;
+
+  // ---------------- Public methods --------------------
+
+  public setLoadLocation(loadLocation: Entity)
+  {
+    this.loadLocation = new EntityData();
+
+    this.loadLocation.serializeEntity
+    (
+      loadLocation,
+      Serializable.Mode.SEND_TO_CLIENT
+    );
+  }
 }
 
 // ------------------ Type declarations ----------------------
