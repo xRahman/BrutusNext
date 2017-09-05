@@ -45,7 +45,7 @@ export class Room extends GameEntity
     this.version = 0;
   }
 
-  public data = new RoomData();
+  public data = new RoomData(this);
 
   // --------------- Public accessors -------------------
 

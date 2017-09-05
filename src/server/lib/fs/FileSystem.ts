@@ -19,8 +19,6 @@ import * as fs from 'fs';
 let promisifiedFS = require('fs-promise');
 let extfs = require('extfs');
 
-
-
 export class FileSystem
 {
   public static get TEXT_FILE_ENCODING() { return 'utf8'; }

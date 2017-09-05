@@ -8,10 +8,9 @@
 'use strict';
 
 import {ERROR} from '../../shared/lib/error/ERROR';
-///import {Attributes} from '../../shared/lib/class/Attributes';
-import {Serializable} from '../../shared/lib/class/Serializable';
+import {ContainerData} from '../../shared/game/ContainerData';
 
-export class GameEntityData extends Serializable
+export class GameEntityData extends ContainerData
 {
   // ----------------- Public data ----------------------
 
