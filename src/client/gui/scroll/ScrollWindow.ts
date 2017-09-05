@@ -30,9 +30,6 @@ export class ScrollWindow extends TitledWindow
       }
     );
 
-     /// TEST
-    this.setTitle('Rahman@BrutusNext');
-
     this.createOutput();
     this.createInput();
 

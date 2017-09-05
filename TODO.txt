@@ -25,6 +25,44 @@ TODO: V Character.enterWorld() poslat packety s updatem všem, kdo
    protože ostatní clienti tenhle char ještě nemají. I tak si ho
    ale budou muset vložit do příslušné location entity).
 
+TODO: Character.loadLocation by se možná mohla jmenovat
+  Character.loginLocation
+
+TODO: Zrušit activeScrollWindow
+- musí se na to chodit přes connection.activeAvatar.scrollWindow,
+
+TODO: Vypsat jméno characteru do titlu scrollWindow.
+[done]
+
+
+TODO: Stuff z ContainerEntity budu asi muset přesunout do EntityData
+  (nějak to vhodně prodědit).
+
+TODO: Zjistit, proč se mi neposílá 'location'.
+- zjevně proto, že má jen zděděnou, defaultní hodnotu (není do ní zapsáno
+  na instanci).
+[done]
+
+TODO: Na klientu nejsou stažené žádné roomy, takže character není do čeho
+  vrazit.
+- při regulérním pohybu po mapě může klient do requestu přidat informaci
+  o tom, jestli má nebo nemá cílovou roomu (a tedy jestli ji server má
+  nebo nemá přibalit k response).
+- při vstupu do hry to klient nemůže vědět, protože neví, co má character
+  jako loadroom (nebo ví? Character přece má... Otázka je, jestli se
+  loadLocation posílá na klienta). Ono to je asi jedno, loadRooma se může
+  v rámci charselect response posílat vždycky.
+TODO: Posílat v rámci charselect response entitu loadLocation.
+
+TODO: Některé entity (třeba Area) nemají .data
+- zatím to nevadí, ale asi by je mít měly.
+
+TODO: Vyrobit classu Charselect a přesunout do ní věci z Game.
+
+TODO: Errory u processení requestů (register, login, chargen, charselect)
+  by asi měly posílat error response na klienta, ať player ví, že
+  se stalo něco neočekávaného.
+
 --------------------------------------------------------------
 
 ÚVAHA: Updaty entit a posílání diffů.

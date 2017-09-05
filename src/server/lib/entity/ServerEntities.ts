@@ -184,7 +184,7 @@ export class ServerEntities extends Entities
     prototypeName: string,
     // Entity name. Can't be unique for prototype entities.
     name: string
-  )
+  ): Promise<T>
   {
     let id = this.generateId();
 
@@ -193,7 +193,7 @@ export class ServerEntities extends Entities
       ERROR("Attempt to create a new prototype entity (id: " + id + ")"
         + " using prototype name '" + prototypeName + "' which is"
         + " already taken. Prototype entity is not created");
-      return false;
+      return null;
     }
 
     let entity = await ServerApp.entities.createNewEntity
