@@ -94,8 +94,8 @@ export class EntityList<T extends Entity> extends Serializable
   {
     if (!this.entities.has(entity))
     {
-      ERROR("Attempt to remove id '" + entity.getId() + "'"
-        + " from EntityList that is not present in it");
+      ERROR("Attempt to remove entity '" + entity.getErrorIdString() + "'"
+        + " from EntityList which is not present in it");
       return false;
     }
 

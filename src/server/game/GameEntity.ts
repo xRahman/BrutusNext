@@ -202,6 +202,30 @@ export class GameEntity extends ContainerEntity
     ///   přes message.isCommunication().
   }
 
+  // ~ Overrides Entity.postSave()
+  // When saving a a container entity, all contained
+  //  entities are saved as well.
+  public async postSave()
+  {
+    if (!this.data)
+      return;
+
+    await this.data.saveContents();
+  }
+
+  // If 'loadContents' is true, load all entities referenced in
+  // this.contentns. This is used to prevent situation when you
+  // e. g. load a conainer but it's contents is not available in
+  // the world.
+  public async postLoad(loadContents = true)
+  {
+    if (!this.data)
+      return;
+
+    if (loadContents)
+      await this.data.loadContents();
+  }
+
   // ----------------- Private data ---------------------
 
   // 'null' if no player is connected to this entity.

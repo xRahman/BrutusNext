@@ -7,13 +7,20 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Character} from '../../../client/game/character/Character';
+import {Windows} from '../../../client/gui/window/Windows';
 import {ScrollWindow} from '../../../client/gui/scroll/ScrollWindow';
 
 export class Avatar
 {
-  constructor(scrollWindow: ScrollWindow)
+  constructor
+  (
+    public character: Character
+  )
   {
-    this.scrollWindow = scrollWindow;
+    this.scrollWindow = Windows.createScrollWindow();
+
+    this.setScrollWindowTitle();
   }
 
   // -------------- Static class data -------------------
@@ -47,5 +54,12 @@ export class Avatar
   // ---------------- Event handlers --------------------
 
   // ---------------- Private methods -------------------
+
+  private setScrollWindowTitle()
+  {
+    let title = this.character.getName() + "@BrutusNext";
+
+    this.scrollWindow.setTitle(title);
+  }
 
 }

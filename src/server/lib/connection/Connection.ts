@@ -14,7 +14,6 @@ import {Message} from '../../../server/lib/message/Message';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {ServerSocket} from '../../../server/lib/net/ServerSocket';
 import {Account} from '../../../server/lib/account/Account';
-import {Game} from '../../../server/game/Game';
 import {GameEntity} from '../../../server/game/GameEntity';
 import {Classes} from '../../../shared/lib/class/Classes';
 import {Connections} from '../../../server/lib/connection/Connections';
@@ -28,6 +27,7 @@ import {Register} from '../../../server/lib/account/Register';
 import {RegisterRequest} from '../../../shared/lib/protocol/RegisterRequest';
 import {Chargen} from '../../../server/game/character/Chargen';
 import {ChargenRequest} from '../../../shared/lib/protocol/ChargenRequest';
+import {Charselect} from '../../../server/game/character/Charselect';
 import {CharselectRequest} from
   '../../../shared/lib/protocol/CharselectRequest';
 
@@ -210,7 +210,7 @@ export class Connection
         break;
 
       case CharselectRequest.name:
-        await Game.processCharselectRequest
+        await Charselect.processRequest
         (
           packet.dynamicCast(CharselectRequest),
           this

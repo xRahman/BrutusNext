@@ -340,7 +340,7 @@ export class Serializable extends Attributable
       // Also skip properties that are instantiated (because they are
       // nonprimitive) but are completely inherited from prototype.
       if (!this.hasOwnValue(sourceProperty))
-        continue
+        continue;
 
       // Check if property is to be serialized in this serialization mode.
       if (!this.isSerialized(propertyName, mode))
@@ -989,10 +989,28 @@ export class Serializable extends Attributable
         + " when deserializing property '" + param.propertyName + "'"
         + pathString + " because no such class is registered in Classes."
         + " Maybe you forgot to add 'Classes.registerSerializableClass("
-        + className + ");' to the end of " + className + ".ts file?");
+        + className + ");' to the end of " + className + ".ts file?"
+        + " Another possible reason is, that you haven't imported"
+        + " class {" + className + "} or you haven't used it so"
+        + " typescript only imported it as type, not as whole module"
+        + " (see shared/lib/connection/Connection for example how to"
+        + " force-import a module)");
     }
 
-    return new Class;
+    try
+    {
+      return new Class;
+    }
+    catch (error)
+    {
+      let pathString = this.composePathString(param.path);
+
+      FATAL_ERROR("Unable to create instance of class '" + className + "'"
+        + " when deserializing property '" + param.propertyName + "'"
+        + pathString);
+    }
+
+    return null;
   }
 
 //+

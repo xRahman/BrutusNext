@@ -9,9 +9,14 @@
 ///import {ERROR} from '../../shared/lib/error/ERROR';
 ///import {Attributes} from '../../shared/lib/class/Attributes';
 import {Entity} from '../../shared/lib/entity/Entity';
+import {GameEntityData} from '../../shared/game/GameEntityData';
 
 export class GameEntity extends Entity
 {
+  // ----------------- Public data ----------------------
+  
+  public data: GameEntityData = null;
+
   // ---------------- Protected data --------------------
 
   // ------------- Public static methods ----------------

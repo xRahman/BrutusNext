@@ -10,6 +10,8 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {ClientSocket} from '../../../client/lib/net/ClientSocket';
+import {Entity} from '../../../shared/lib/entity/Entity';
+import {ClientEntities} from '../../../client/lib/entity/ClientEntities';
 import {Windows} from '../../../client/gui/window/Windows';
 import {ScrollWindow} from '../../../client/gui/scroll/ScrollWindow';
 import {Avatar} from '../../../client/lib/connection/Avatar';
@@ -23,6 +25,11 @@ import {RegisterResponse} from '../../../shared/lib/protocol/RegisterResponse';
 import {ChargenResponse} from '../../../shared/lib/protocol/ChargenResponse';
 import {CharselectResponse} from
   '../../../shared/lib/protocol/CharselectResponse';
+
+// Force module import (so that the module code is assuredly executed
+// instead of typescript just importing a type). This ensures that
+// class constructor is added to Classes so it can be deserialized.
+import '../../../shared/lib/protocol/EntityMove';
 
 export class Connection
 {
@@ -88,11 +95,16 @@ export class Connection
 
   // ---------------- Public methods --------------------
 
-  public createAvatar(scrollWindow: ScrollWindow)
+  public createAvatar(character: Character)
   {
-    let avatar = new Avatar(scrollWindow);
+    let avatar = new Avatar(character);
 
     this.avatars.add(avatar);
+
+    // Newly created avatar is automaticaly set as active one
+    // (this should only happen when player logs in with a new
+    //  character).
+    this.activeAvatar = avatar;
 
     return avatar;
   }
@@ -320,16 +332,33 @@ export class Connection
     Windows.chargenWindow.form.displayProblem(response);
   }
 
+  private getSelectedCharacter(response: CharselectResponse)
+  {
+    let characterId = response.characterMove.entityId;
+
+    let character: Character =
+      ClientEntities.get(characterId).dynamicCast(Character);
+
+    if (!Entity.isValid(character))
+    {
+      ERROR("Invalid selected character (id: " + characterId + ")");
+      return null;
+    }
+
+    return character;
+  }
+
   private acceptCharselectResponse(response: CharselectResponse)
   {
-    let move = response.characterMove;
-    /// TODO:
-    /// - vyrobit avatar (z move.entityId)
-    ///   - vyrobit jeho scrollWindow.
-    /// - vypsat hlášku o vstupu charu do hry
-    ///   (ostatní klienti si ji vypíší sami na základě updatu,
-    ///    který dostanou od serveru).
+    let character = this.getSelectedCharacter(response);
 
+    if (!character)
+      return;
+
+    this.createAvatar(character);
+
+    if (!character.enterWorld(response.characterMove))
+      return;
 
     ClientApp.setState(ClientApp.State.IN_GAME);
   }
