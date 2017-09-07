@@ -31,9 +31,6 @@ export class Charselect
     connection: Connection
   )
   {
-    if (!this.isConnectionValid(connection))
-      return;
-
     let account = this.getAccountFromConnection(connection);
     let character = this.getRequestedCharacter(request, connection);
 
@@ -70,6 +67,9 @@ export class Charselect
 
   private static getAccountFromConnection(connection: Connection)
   {
+    if (!this.isConnectionValid(connection))
+      return null;
+
     let account = connection.account;
 
     if (account === null)
