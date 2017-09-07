@@ -30,6 +30,7 @@ import {CharselectResponse} from
 // instead of typescript just importing a type). This ensures that
 // class constructor is added to Classes so it can be deserialized.
 import '../../../shared/lib/protocol/EntityMove';
+import '../../../client/game/world/Room';
 
 export class Connection
 {
@@ -225,9 +226,17 @@ export class Connection
     }
   }
 
-  private extractRegisterResponseData(response: RegisterResponse)
+  private getAccountFromRegisterResponse(response: RegisterResponse)
   {
     this.account = response.account.deserializeEntity(Account);
+
+    if (!Entity.isValid(this.account))
+    {
+      ERROR("Invalid account in register response");
+      return false;
+    }
+
+    return true;
   }
 
   private processRegisterResponse(response: RegisterResponse)
@@ -242,7 +251,9 @@ export class Connection
 
     if (response.result === RegisterResponse.Result.OK)
     {
-      this.extractRegisterResponseData(response);
+      if (!this.getAccountFromRegisterResponse(response))
+        return;
+
       Windows.registerWindow.form.rememberCredentials();
       ClientApp.setState(ClientApp.State.CHARSELECT);
       return;
@@ -348,6 +359,21 @@ export class Connection
     return character;
   }
 
+  private getCharacterLoadLocation(response: CharselectResponse)
+  {
+    // 'loadLocation' entity is added to ClientEntities here as
+    // side effect. It can later be accessed using it's id.
+    let loadLocation = response.loadLocation.deserializeEntity(Entity);
+    
+    if (!Entity.isValid(loadLocation))
+    {
+      ERROR("Invalid load location in charselect response");
+      return false;
+    }
+
+    return true;
+  }
+
   private acceptCharselectResponse(response: CharselectResponse)
   {
     let character = this.getSelectedCharacter(response);
@@ -356,6 +382,12 @@ export class Connection
       return;
 
     this.createAvatar(character);
+
+    // Note: This must be done before character.enterWorld(),
+    // otherwise the room (or other entity the character loads
+    // into) might not exist on the client.
+    if (!this.getCharacterLoadLocation(response))
+      return;
 
     if (!character.enterWorld(response.characterMove))
       return;
