@@ -38,6 +38,14 @@ export class CharselectResponse extends Response
 
   public setLoadLocation(loadLocation: Entity)
   {
+    if (!Entity.isValid(loadLocation))
+    {
+      ERROR("Invalid loadLocation. Charselect response"
+        + "won't be valid");
+      this.loadLocation = null;
+      return;
+    }
+
     this.loadLocation = new EntityData();
 
     this.loadLocation.serializeEntity
