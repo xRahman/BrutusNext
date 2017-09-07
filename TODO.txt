@@ -58,10 +58,16 @@ TODO: Některé entity (třeba Area) nemají .data
 - zatím to nevadí, ale asi by je mít měly.
 
 TODO: Vyrobit classu Charselect a přesunout do ní věci z Game.
+[done]
 
 TODO: Errory u processení requestů (register, login, chargen, charselect)
   by asi měly posílat error response na klienta, ať player ví, že
   se stalo něco neočekávaného.
+
+TODO: Na klientu z charselectResponse přečíst loadLocation.
+[done]
+
+TODO: Pokud je loadLocation rooma, tak ji přidat do gridu.
 
 --------------------------------------------------------------
 
