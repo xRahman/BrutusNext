@@ -1,6 +1,20 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+MEGABIG TODO: Connection.receive() je fundamentálně špatně.
+  Switch podle typu vůbec nemá existovat, místo toho se má zavolat
+  pacet.process() a každý packet si své procesení implementuje sám
+  (To bude možná komplikovaný, protože packety jsou v shared a processení
+   je server respektive client code. Tzn. asi to povede k tomu, že budu
+   muset mít server a klient verze packetů...)
+
+Asi by to šlo udělat tak, že packety budou jen v shared, ale procesory
+(tj Login, Register atd.) budou mít shared, client a server verzi.
+Packet (třeba RegisterRespnse) pak zavolá Procesor.process (nebo receive()?),
+tj. v tomhle případě Register.receive(this).
+
+--------------------------------------------------------------
+
 TODO: Při zpracování CharselectResponse na klientu
   zpracovat characterMove.
 
