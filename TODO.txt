@@ -1,6 +1,11 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+UI:
+http://punchev.com/fui-gameart-gui/
+
+
+
 MEGABIG TODO: Connection.receive() je fundamentálně špatně.
   Switch podle typu vůbec nemá existovat, místo toho se má zavolat
   pacet.process() a každý packet si své procesení implementuje sám
