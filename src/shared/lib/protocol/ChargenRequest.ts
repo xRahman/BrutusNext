@@ -13,12 +13,12 @@ import {Classes} from '../../../shared/lib/class/Classes';
 
 export class ChargenRequest extends Packet
 {
-  constructor()
-  {
-    super();
+  // constructor()
+  // {
+  //   super();
 
-    this.version = 0;
-  }
+  //   this.version = 0;
+  // }
 
   public static get MIN_CHARACTER_NAME_LENGTH()
     { return  3;}
@@ -93,4 +93,5 @@ export class ChargenRequest extends Packet
   }
 }
 
-Classes.registerSerializableClass(ChargenRequest);
+/// This is now done in server version.
+///Classes.registerSerializableClass(ChargenRequest);

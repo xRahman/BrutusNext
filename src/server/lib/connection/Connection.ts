@@ -25,7 +25,7 @@ import {Login} from '../../../server/lib/account/Login';
 import {LoginRequest} from '../../../shared/lib/protocol/LoginRequest';
 import {Register} from '../../../server/lib/account/Register';
 import {RegisterRequest} from '../../../shared/lib/protocol/RegisterRequest';
-import {Chargen} from '../../../server/game/character/Chargen';
+///import {Chargen} from '../../../server/game/character/Chargen';
 import {ChargenRequest} from '../../../shared/lib/protocol/ChargenRequest';
 import {Charselect} from '../../../server/game/character/Charselect';
 import {CharselectRequest} from
@@ -139,10 +139,13 @@ export class Connection
   // Processes data received from the client.
   public async receiveData(data: string)
   {
-    let packet = Serializable.deserialize(data);
+    let packet = Serializable.deserialize(data).dynamicCast(Packet);
+
+    // if (packet !== null)
+    //   await this.receive(packet);
 
     if (packet !== null)
-      await this.receive(packet);
+      await packet.process(this);
   }
 
   // Sends 'packet' to web socket.
@@ -180,62 +183,63 @@ export class Connection
     this.socket = socket;
   }
 
-  // Processes received 'packet'.
-  private async receive(packet: Packet)
-  {
-    switch (packet.getClassName())
-    {
-      case RegisterRequest.name:
-        await Register.processRequest
-        (
-          packet.dynamicCast(RegisterRequest),
-          this
-        );
-        break;
+  /// To be deleted.
+  // // Processes received 'packet'.
+  // private async receive(packet: Packet)
+  // {
+  //   switch (packet.getClassName())
+  //   {
+  //     case RegisterRequest.name:
+  //       await Register.processRequest
+  //       (
+  //         packet.dynamicCast(RegisterRequest),
+  //         this
+  //       );
+  //       break;
 
-      case LoginRequest.name:
-        await Login.processRequest
-        (
-          packet.dynamicCast(LoginRequest),
-          this
-        );
-        break;
+  //     case LoginRequest.name:
+  //       await Login.processRequest
+  //       (
+  //         packet.dynamicCast(LoginRequest),
+  //         this
+  //       );
+  //       break;
 
-      case ChargenRequest.name:
-        await Chargen.processRequest
-        (
-          packet.dynamicCast(ChargenRequest),
-          this
-        );
-        break;
+  //     case ChargenRequest.name:
+  //       await Chargen.processRequest
+  //       (
+  //         packet.dynamicCast(ChargenRequest),
+  //         this
+  //       );
+  //       break;
 
-      case CharselectRequest.name:
-        await Charselect.processRequest
-        (
-          packet.dynamicCast(CharselectRequest),
-          this
-        );
-        break;
+  //     case CharselectRequest.name:
+  //       await Charselect.processRequest
+  //       (
+  //         packet.dynamicCast(CharselectRequest),
+  //         this
+  //       );
+  //       break;
 
-      case SystemMessage.name:
-        this.processSystemMessage
-        (
-          packet.dynamicCast(SystemMessage)
-        );
-        break;
+  //     case SystemMessage.name:
+  //       this.processSystemMessage
+  //       (
+  //         packet.dynamicCast(SystemMessage)
+  //       );
+  //       break;
 
-      case Command.name:
-        await this.processCommand
-        (
-          packet.dynamicCast(Command)
-        );
-        break;
+  //     case Command.name:
+  //       await this.processCommand
+  //       (
+  //         packet.dynamicCast(Command)
+  //       );
+  //       break;
 
-      default:
-        ERROR("Unknown packet type");
-        break;
-    }
-  }
+  //     default:
+  //       ERROR("Unknown packet type");
+  //       break;
+  //   }
+  // }
 
   private reportClientClosedBrowserTab()
   {
