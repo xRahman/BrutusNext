@@ -1,6 +1,8 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+TODO: Přejmenovat EntityData na SerializedEntity.
+
 UI:
 http://punchev.com/fui-gameart-gui/
 
