@@ -6,6 +6,8 @@
   Character selection request.
 */
 
+'use strict';
+
 import {Packet} from '../../../shared/lib/protocol/Packet';
 import {Classes} from '../../../shared/lib/class/Classes';
 

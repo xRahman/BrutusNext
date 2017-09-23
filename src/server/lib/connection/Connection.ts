@@ -7,6 +7,8 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Connection as SharedConnection} from
+  '../../../shared/lib/connection/Connection';
 import {Syslog} from '../../../shared/lib/log/Syslog';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Serializable} from '../../../shared/lib/class/Serializable';
@@ -21,17 +23,18 @@ import {Packet} from '../../../shared/lib/protocol/Packet';
 import {MudMessage} from '../../../shared/lib/protocol/MudMessage';
 import {SystemMessage} from '../../../shared/lib/protocol/SystemMessage';
 import {Command} from '../../../shared/lib/protocol/Command';
-import {Login} from '../../../server/lib/account/Login';
-import {LoginRequest} from '../../../shared/lib/protocol/LoginRequest';
-import {Register} from '../../../server/lib/account/Register';
-import {RegisterRequest} from '../../../shared/lib/protocol/RegisterRequest';
-///import {Chargen} from '../../../server/game/character/Chargen';
-import {ChargenRequest} from '../../../shared/lib/protocol/ChargenRequest';
-import {Charselect} from '../../../server/game/character/Charselect';
-import {CharselectRequest} from
-  '../../../shared/lib/protocol/CharselectRequest';
 
-export class Connection
+// import {Login} from '../../../server/lib/account/Login';
+// import {LoginRequest} from '../../../shared/lib/protocol/LoginRequest';
+// import {Register} from '../../../server/lib/account/Register';
+// import {RegisterRequest} from '../../../shared/lib/protocol/RegisterRequest';
+// ///import {Chargen} from '../../../server/game/character/Chargen';
+// import {ChargenRequest} from '../../../shared/lib/protocol/ChargenRequest';
+// import {Charselect} from '../../../server/game/character/Charselect';
+// import {CharselectRequest} from
+//   '../../../shared/lib/protocol/CharselectRequest';
+
+export class Connection implements SharedConnection
 {
   constructor(socket: WebSocket, ip: string, url: string)
   {

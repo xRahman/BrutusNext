@@ -6,6 +6,8 @@
   Server response to login request.
 */
 
+'use strict';
+
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {Entity} from '../../../shared/lib/entity/Entity';

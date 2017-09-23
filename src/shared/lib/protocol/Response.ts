@@ -6,6 +6,8 @@
   Ancestor of server response packets.
 */
 
+'use strict';
+
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Packet} from '../../../shared/lib/protocol/Packet';
 
@@ -42,5 +44,14 @@ export class Response extends Packet
   public getProblem()
   {
     return this.problem;
+  }
+
+  // -------------- Protected methods -------------------
+
+  protected reportInvalidResponse(action: string)
+  {
+    ERROR("Received " + action + " response with unspecified result."
+        + " Someone problably forgot to set 'packet.result' when"
+        + " sending " + action + " response from the server");
   }
 }

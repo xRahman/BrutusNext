@@ -17,7 +17,7 @@ import {CharselectWindow} from
 import {CharselectRequest} from
   '../../../shared/lib/protocol/CharselectRequest';
 import {CharselectResponse} from
-  '../../../shared/lib/protocol/CharselectResponse';
+  '../../../client/lib/protocol/CharselectResponse';
 import {Character} from '../../../client/game/character/Character';
 
 export class CharselectForm extends Form
