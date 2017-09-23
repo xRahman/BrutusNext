@@ -13,7 +13,7 @@ import {Connection} from '../../../client/lib/connection/Connection';
 import {Component} from '../../../client/gui/Component';
 import {CredentialsForm} from '../../../client/gui/form/CredentialsForm';
 import {LoginRequest} from '../../../shared/lib/protocol/LoginRequest';
-import {LoginResponse} from '../../../shared/lib/protocol/LoginResponse';
+import {LoginResponse} from '../../../client/lib/protocol/LoginResponse';
 
 export class LoginForm extends CredentialsForm
 {

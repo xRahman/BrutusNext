@@ -51,10 +51,6 @@ aby se mi deserializoval správný typ. Tj. předek v shared by se musel
 jmenovat jinak, asi LoginResponseAncestor, AbstractLoginResponse, nebo tak
 nějak (aby to šlo importnout do modulu stejného jména).
 
-Hmm. Je otázka, jestli vůbec potřebuju classy jako Chargen,
-když budu mít server-side packet classy jako ChargenRequest.
-Možná by ChargenRequest.process() mohlo rovnou dělat to, co dělá
-Chargen...
 
 Tak nakonec to řeší technika 'import {cosi as neco} from'. Díky tomu
 se /shared class a její potomek v /server můžou jmenovat stejně.
@@ -66,7 +62,28 @@ Hmm, ještě tu je jeden problém:
     Což znamená, že se tam na serveru přidá dvakrát...
   (na serveru se sice bude includovat server verze, ale ta includuje
    shared verzi...)
-=> Asi budu muset dědit i na klientovi...
+=> Asi budu muset dědit i na klientovi (což je pěkně naprd)...
+  - nebo někde na klientovi ručně zavolat přidání do Classes.
+A nebo ještě poslední možnost - v Classes přidat metodu, která přepíše
+předka.
+(Aha, tak ono se to asi přepisuje vždycky.)
+
+TODO: Udělat server-side classy i pro SystemMessage a Command.
+
+TODO: Zrušit classy jako Chargen a přesunout functionalitu do server nebo
+client-side rozšíření packetu.
+  Hmm. Je otázka, jestli vůbec potřebuju classy jako Chargen,
+  když budu mít server-side packet classy jako ChargenRequest.
+  Možná by ChargenRequest.process() mohlo rovnou dělat to, co dělá
+  Chargen...
+
+oops...
+- v Packet se nemůže importovat /server/Connection
+  (Asi budu muset vyrobit společného předka).
+[done]
+
+TODO: V shared/Connection pročistit importy (možná se tam bude muset
+  něco importovat kvůli přidání do Classes).
 
 
 --------------------------------------------------------------

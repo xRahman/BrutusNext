@@ -6,6 +6,8 @@
   Server response to register request.
 */
 
+'use strict';
+
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Response} from '../../../shared/lib/protocol/Response';
 import {EntityData} from '../../../shared/lib/protocol/EntityData';
