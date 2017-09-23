@@ -6,6 +6,8 @@
   Character creation request.
 */
 
+'use strict';
+
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {Packet} from '../../../shared/lib/protocol/Packet';
@@ -13,12 +15,12 @@ import {Classes} from '../../../shared/lib/class/Classes';
 
 export class ChargenRequest extends Packet
 {
-  // constructor()
-  // {
-  //   super();
+  constructor()
+  {
+    super();
 
-  //   this.version = 0;
-  // }
+    this.version = 0;
+  }
 
   public static get MIN_CHARACTER_NAME_LENGTH()
     { return  3;}
@@ -93,5 +95,4 @@ export class ChargenRequest extends Packet
   }
 }
 
-/// This is now done in server version.
-///Classes.registerSerializableClass(ChargenRequest);
+Classes.registerSerializableClass(ChargenRequest);

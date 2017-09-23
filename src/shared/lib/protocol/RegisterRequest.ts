@@ -6,6 +6,8 @@
   Request to register a new account.
 */
 
+'use strict';
+
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {Packet} from '../../../shared/lib/protocol/Packet';
