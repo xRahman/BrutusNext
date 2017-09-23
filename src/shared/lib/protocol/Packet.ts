@@ -9,7 +9,7 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Serializable} from '../../../shared/lib/class/Serializable';
-import {Connection} from '../../../server/lib/connection/Connection';
+import {Connection} from '../../../shared/lib/connection/Connection';
 
 export class Packet extends Serializable
 {

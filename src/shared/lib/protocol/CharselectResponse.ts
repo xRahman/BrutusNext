@@ -6,6 +6,8 @@
   Server response to character selection request.
 */
 
+'use strict';
+
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {Serializable} from '../../../shared/lib/class/Serializable';

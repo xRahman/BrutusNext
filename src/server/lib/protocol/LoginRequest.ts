@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Server-side functionality related to character creation request packet.
+  Server-side functionality related to login request packet.
 */
 
 /*
@@ -16,12 +16,12 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Connection} from '../../../server/lib/connection/Connection';
-import {Chargen} from '../../../server/game/character/Chargen';
-import {ChargenRequest as SharedChargenRequest} from
-  '../../../shared/lib/protocol/ChargenRequest';
+import {Login} from '../../../server/lib/account/Login';
+import {LoginRequest as SharedLoginRequest} from
+  '../../../shared/lib/protocol/LoginRequest';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class ChargenRequest extends SharedChargenRequest
+export class LoginRequest extends SharedLoginRequest
 {
   constructor()
   {
@@ -36,9 +36,9 @@ export class ChargenRequest extends SharedChargenRequest
 
   public async process(connection: Connection)
   {
-    Chargen.processRequest(this, connection);
+    Login.processRequest(this, connection);
   }
 }
 
 // This overwrites ancestor class.
-Classes.registerSerializableClass(ChargenRequest);
+Classes.registerSerializableClass(LoginRequest);

@@ -19,7 +19,7 @@ import {EmailInput} from '../../../client/gui/form/EmailInput';
 import {PasswordInput} from '../../../client/gui/form/PasswordInput';
 import {CredentialsForm} from '../../../client/gui/form/CredentialsForm';
 import {RegisterRequest} from '../../../shared/lib/protocol/RegisterRequest';
-import {RegisterResponse} from '../../../shared/lib/protocol/RegisterResponse';
+import {RegisterResponse} from '../../../client/lib/protocol/RegisterResponse';
 
 export class RegisterForm extends CredentialsForm
 {
