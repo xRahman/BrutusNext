@@ -36,7 +36,8 @@ export class CharselectResponse extends SharedCharselectResponse
 
   // ---------------- Public methods --------------------
 
-  public process(connection: Connection)
+  // ~ Overrides Packet.process().
+  public async process(connection: Connection)
   {
     if (this.result === CharselectResponse.Result.UNDEFINED)
     {

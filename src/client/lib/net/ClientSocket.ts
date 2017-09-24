@@ -305,11 +305,11 @@ export class ClientSocket
     /// To je asi zbytecny, server posle uvodni 'obrazovku'
   }
 
-  private onReceiveMessage(event: MessageEvent)
+  private async onReceiveMessage(event: MessageEvent)
   {
     console.log('Received message: ' + event.data);
 
-    Connection.receiveData(event.data);
+    await Connection.receiveData(event.data);
   }
 
   private onError(event: ErrorEvent)

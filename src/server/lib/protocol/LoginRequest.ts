@@ -30,10 +30,9 @@ export class LoginRequest extends SharedLoginRequest
     this.version = 0;
   }
 
-  // ----------------- Public data ----------------------
-
   // ---------------- Public methods --------------------
 
+  // ~ Overrides Packet.process().
   public async process(connection: Connection)
   {
     Login.processRequest(this, connection);

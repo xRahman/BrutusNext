@@ -22,17 +22,16 @@ import {Command} from '../../../shared/lib/protocol/Command';
 import {SystemMessage} from '../../../shared/lib/protocol/SystemMessage';
 import {Account} from '../../../client/lib/account/Account';
 import {Character} from '../../../client/game/character/Character';
-import {LoginResponse} from '../../../shared/lib/protocol/LoginResponse';
-import {RegisterResponse} from '../../../shared/lib/protocol/RegisterResponse';
-import {ChargenResponse} from '../../../shared/lib/protocol/ChargenResponse';
-import {CharselectResponse} from
-  '../../../shared/lib/protocol/CharselectResponse';
 
 // Force module import (so that the module code is assuredly executed
-// instead of typescript just importing a type). This ensures that
+// instead of typescript just registering a type). This ensures that
 // class constructor is added to Classes so it can be deserialized.
 import '../../../shared/lib/protocol/EntityMove';
 import '../../../client/game/world/Room';
+import '../../../client/lib/protocol/LoginResponse';
+import '../../../client/lib/protocol/RegisterResponse';
+import '../../../client/lib/protocol/ChargenResponse';
+import '../../../client/lib/protocol/CharselectResponse';
 
 export class Connection implements SharedConnection
 {
@@ -80,7 +79,7 @@ export class Connection implements SharedConnection
     connection.send(packet);
   }
 
-  public static receiveData(data: string)
+  public static async receiveData(data: string)
   {
     let connection = ClientApp.connection;
 
@@ -93,7 +92,7 @@ export class Connection implements SharedConnection
     let packet = Serializable.deserialize(data).dynamicCast(Packet);
 
     if (packet !== null)
-      packet.process();
+      await packet.process(connection);
 
     // if (packet !== null)
     //   connection.receive(packet);

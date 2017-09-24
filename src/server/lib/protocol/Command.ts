@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Server-side functionality related to character creation request packet.
+  Server-side functionality related to player command packet.
 */
 
 /*
@@ -16,12 +16,11 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Connection} from '../../../server/lib/connection/Connection';
-import {Chargen} from '../../../server/game/character/Chargen';
-import {ChargenRequest as SharedChargenRequest} from
-  '../../../shared/lib/protocol/ChargenRequest';
+import {Command as SharedCommand} from
+  '../../../shared/lib/protocol/Command';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class ChargenRequest extends SharedChargenRequest
+export class Command extends SharedCommand
 {
   constructor()
   {
@@ -30,16 +29,19 @@ export class ChargenRequest extends SharedChargenRequest
     this.version = 0;
   }
 
-  // ----------------- Public data ----------------------
-
   // ---------------- Public methods --------------------
 
   // ~ Overrides Packet.process().
   public async process(connection: Connection)
   {
-    Chargen.processRequest(this, connection);
+    console.log("Received command: " + this.command);
+
+    /// TODO:
+    //let command = Utils.normalizeCRLF(packet.command);
   }
+
+  // --------------- Private methods --------------------
 }
 
 // This overwrites ancestor class.
-Classes.registerSerializableClass(ChargenRequest);
+Classes.registerSerializableClass(Command);

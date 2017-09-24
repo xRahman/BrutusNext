@@ -35,7 +35,8 @@ export class LoginResponse extends SharedLoginResponse
 
   // ---------------- Public methods --------------------
 
-  public process(connection: Connection)
+  // ~ Overrides Packet.process().
+  public async process(connection: Connection)
   {
     Windows.loginWindow.form.onResponse();
     

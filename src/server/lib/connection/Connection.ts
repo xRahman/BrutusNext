@@ -21,18 +21,21 @@ import {Classes} from '../../../shared/lib/class/Classes';
 import {Connections} from '../../../server/lib/connection/Connections';
 import {Packet} from '../../../shared/lib/protocol/Packet';
 import {MudMessage} from '../../../shared/lib/protocol/MudMessage';
-import {SystemMessage} from '../../../shared/lib/protocol/SystemMessage';
-import {Command} from '../../../shared/lib/protocol/Command';
 
-// import {Login} from '../../../server/lib/account/Login';
-// import {LoginRequest} from '../../../shared/lib/protocol/LoginRequest';
-// import {Register} from '../../../server/lib/account/Register';
-// import {RegisterRequest} from '../../../shared/lib/protocol/RegisterRequest';
-// ///import {Chargen} from '../../../server/game/character/Chargen';
-// import {ChargenRequest} from '../../../shared/lib/protocol/ChargenRequest';
-// import {Charselect} from '../../../server/game/character/Charselect';
-// import {CharselectRequest} from
-//   '../../../shared/lib/protocol/CharselectRequest';
+///import {Login} from '../../../server/lib/account/Login';
+///import {Chargen} from '../../../server/game/character/Chargen';
+///import {Register} from '../../../server/lib/account/Register';
+///import {Charselect} from '../../../server/game/character/Charselect';
+
+// Force module import (so that the module code is assuredly executed
+// instead of typescript just registering a type). This ensures that
+// class constructor is added to Classes so it can be deserialized.
+import '../../../server/lib/protocol/Command';
+import '../../../server/lib/protocol/SystemMessage';
+import '../../../server/lib/protocol/LoginRequest';
+import '../../../server/lib/protocol/RegisterRequest';
+import '../../../server/lib/protocol/ChargenRequest';
+import '../../../server/lib/protocol/CharselectRequest';
 
 export class Connection implements SharedConnection
 {
@@ -244,44 +247,47 @@ export class Connection implements SharedConnection
   //   }
   // }
 
-  private reportClientClosedBrowserTab()
-  {
-    Syslog.log
-    (
-      this.getUserInfo() + " has disconnected by"
-        + " closing or reloading browser tab",
-      MessageType.CONNECTION_INFO,
-      AdminLevel.IMMORTAL
-    );
-  }
+  /// Moved to SystemMessage.
+  // private reportClientClosedBrowserTab()
+  // {
+  //   Syslog.log
+  //   (
+  //     this.getUserInfo() + " has disconnected by"
+  //       + " closing or reloading browser tab",
+  //     MessageType.CONNECTION_INFO,
+  //     AdminLevel.IMMORTAL
+  //   );
+  // }
 
-  private processSystemMessage(packet: SystemMessage)
-  {
-    switch (packet.type)
-    {
-      case SystemMessage.Type.UNDEFINED:
-        ERROR("Received system message with unspecified type."
-          + " Someone problably forgot to set 'packet.type'"
-          + " when sending system message from the client");
-        break;
+  /// Moved to SystemMessage.
+  // private processSystemMessage(packet: SystemMessage)
+  // {
+  //   switch (packet.type)
+  //   {
+  //     case SystemMessage.Type.UNDEFINED:
+  //       ERROR("Received system message with unspecified type."
+  //         + " Someone problably forgot to set 'packet.type'"
+  //         + " when sending system message from the client");
+  //       break;
 
-      case SystemMessage.Type.CLIENT_CLOSED_BROWSER_TAB:
-        this.reportClientClosedBrowserTab();
-        break;
+  //     case SystemMessage.Type.CLIENT_CLOSED_BROWSER_TAB:
+  //       this.reportClientClosedBrowserTab();
+  //       break;
 
-      default:
-        ERROR("Received system message of unknown type.");
-        break;
-    }
-  }
+  //     default:
+  //       ERROR("Received system message of unknown type.");
+  //       break;
+  //   }
+  // }
 
-  private async processCommand(packet: Command)
-  {
-    console.log("Received command: " + packet.command);
-    /// TODO:
+  /// Moved to Command.process().
+  // private async processCommand(packet: Command)
+  // {
+  //   console.log("Received command: " + packet.command);
+  //   /// TODO:
     
-    //let command = Utils.normalizeCRLF(packet.command);
-  }
+  //   //let command = Utils.normalizeCRLF(packet.command);
+  // }
 
   // ---------------- Event handlers --------------------
 
