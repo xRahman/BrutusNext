@@ -35,7 +35,8 @@ export class ChargenResponse extends SharedChargenResponse
 
   // ---------------- Public methods --------------------
 
-  public process(connection: Connection)
+  // ~ Overrides Packet.process().
+  public async process(connection: Connection)
   {
     Windows.chargenWindow.form.onResponse();
     

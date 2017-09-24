@@ -30,10 +30,9 @@ export class RegisterRequest extends SharedRegisterRequest
     this.version = 0;
   }
 
-  // ----------------- Public data ----------------------
-
   // ---------------- Public methods --------------------
 
+  // ~ Overrides Packet.process().
   public async process(connection: Connection)
   {
     Register.processRequest(this, connection);

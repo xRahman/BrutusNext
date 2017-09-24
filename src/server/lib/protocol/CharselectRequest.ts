@@ -34,6 +34,7 @@ export class CharselectRequest extends SharedCharselectRequest
 
   // ---------------- Public methods --------------------
 
+  // ~ Overrides Packet.process().
   public async process(connection: Connection)
   {
     Charselect.processRequest(this, connection);
