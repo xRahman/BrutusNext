@@ -69,6 +69,7 @@ předka.
 (Aha, tak ono se to asi přepisuje vždycky.)
 
 TODO: Udělat server-side classy i pro SystemMessage a Command.
+[done]
 
 TODO: Zrušit classy jako Chargen a přesunout functionalitu do server nebo
 client-side rozšíření packetu.
@@ -82,9 +83,23 @@ oops...
   (Asi budu muset vyrobit společného předka).
 [done]
 
-TODO: V shared/Connection pročistit importy (možná se tam bude muset
+TODO: V client/Connection pročistit importy (možná se tam bude muset
   něco importovat kvůli přidání do Classes).
+  (server/Connection asi pak taky, až zruším Login a spol.)
+[snad done]
 
+TODO: client-side MudMessage
+[done]
+
+
+TODO: metoda process() v client-side implementacích by asi měla bejt
+  async (a volat se v connection přes await), když už je zděděná
+  z async metody v Packetu.
+
+TOFIX: Error při logování do hry.
+
+TODO: Z loadLocation jsem udělal Room, takže je asi čas to
+  předělat zpět na loadRoom.
 
 --------------------------------------------------------------
 

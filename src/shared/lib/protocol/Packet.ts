@@ -44,7 +44,7 @@ export class Packet extends Serializable
   {
     // We can't use abstract class because it would prevent dynamic
     // typecasting to Packet (see Connection.receiveData()).
-    ERROR("Method needs to be overriden in ancestor and it isn't");
+    ERROR("Method has to be overriden in ancestor");
   }
 
   // public addMudMessage(message: string)
