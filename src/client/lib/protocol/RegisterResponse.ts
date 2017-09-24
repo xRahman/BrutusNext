@@ -35,7 +35,8 @@ export class RegisterResponse extends SharedRegisterResponse
 
   // ---------------- Public methods --------------------
 
-  public process(connection: Connection)
+  // ~ Overrides Packet.process().
+  public async process(connection: Connection)
   {
     Windows.registerWindow.form.onResponse();
     
