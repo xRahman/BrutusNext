@@ -97,6 +97,10 @@ TODO: metoda process() v client-side implementacích by asi měla bejt
   z async metody v Packetu.
 
 TOFIX: Error při logování do hry.
+(Když smažu server data tak nenastane)
+
+TOFIX: Error při zakládání charu (po smazání dat na serveru)
+- znovu se přiřazuje account do connection.
 
 TODO: Z loadLocation jsem udělal Room, takže je asi čas to
   předělat zpět na loadRoom.
