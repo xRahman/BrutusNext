@@ -32,6 +32,8 @@ export class ClientApp extends App
 {
   // -------------- Static class data -------------------
 
+  public static get APP_ERROR() { return 'Application Error'; }
+
   // ----------------- Public data ----------------------
 
   // ---------------- Protected data --------------------
@@ -167,11 +169,23 @@ export class ClientApp extends App
   //  from /shared/lib/error/ERROR).
   protected reportError(message: string)
   {
-    let errorMsg = message + "\n"
-      + Syslog.getTrimmedStackTrace(Syslog.TrimType.ERROR);
+    // We throw an error instead of reporting to the console
+    // because this way Chrome prints out stack trace using
+    // source maps (so in .ts files) rathen than in .js files
+    // (which is not so useful).
+    throw new Error('[ERROR]: ' + message);
 
-    // Just log the message to the console for now.
-    console.log('ERROR: ' + errorMsg);
+    // let error = new Error('[ERROR]: ' + message);
+
+    // error.name = ClientApp.APP_ERROR;
+
+    // throw error;
+
+    // let errorMsg = message + "\n"
+    //   + Syslog.getTrimmedStackTrace(Syslog.TrimType.ERROR);
+
+    // // Just log the message to the console for now.
+    // console.log('ERROR: ' + errorMsg);
   }
 
   // ~ Overrides App.reportFatalError().
@@ -180,12 +194,18 @@ export class ClientApp extends App
   //  from /shared/lib/error/ERROR).
   protected reportFatalError(message: string)
   {
-    let errorMsg = message + "\n"
-      + Syslog.getTrimmedStackTrace(Syslog.TrimType.ERROR);
+    // We throw an error instead of reporting to the console
+    // because this way Chrome prints out stack trace using
+    // source maps (so in .ts files) rathen than in .js files
+    // (which is not so useful).
+    throw new Error('[FATAL ERROR]: ' + message);
+
+    // let errorMsg = message + "\n"
+    //   + Syslog.getTrimmedStackTrace(Syslog.TrimType.ERROR);
       
-    // Just log the message to the console for now
-    // (terminating the client application is probably not necessary).
-    console.log('FATAL_ERROR: ' + errorMsg);
+    // // Just log the message to the console for now
+    // // (terminating the client application is probably not necessary).
+    // console.log('FATAL_ERROR: ' + errorMsg);
   }
 
   // ~ Overrides App.syslog().
