@@ -20,6 +20,8 @@ import * as ts from "typescript";
 
 export class Script extends Serializable
 {
+  public static get CANCELLED() { return 'Script cancelled'; }
+
   // Name of function that will be created on prototype.
   // (This needs to be the same as the name of the function inside the script.)
   public name: string = "";
@@ -301,7 +303,7 @@ export class Script extends Serializable
     if (script.internalFunctionChanged(compiledFunction))
     {
       let error = new Error();
-      error.name = "Script cancelled";
+      error.name = Script.CANCELLED;
       error.message =
         "Running script " + script.getFullName() + " has been cancelled"
         + " because it had been recompiled";
