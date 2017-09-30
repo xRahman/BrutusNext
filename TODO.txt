@@ -7,6 +7,10 @@ UI:
 http://punchev.com/fui-gameart-gui/
 
 
+TODO (výhledově): Někde v práci s entitama nějaká fce vrací jak 'undefined'
+  tak 'null'.
+- přepsat to bez toho, nebo tu návratovou hodnotu nahradit třeba enumem.
+
 
 MEGABIG TODO: Connection.receive() je fundamentálně špatně.
   Switch podle typu vůbec nemá existovat, místo toho se má zavolat
@@ -104,6 +108,10 @@ TOFIX: Error při zakládání charu (po smazání dat na serveru)
 
 TODO: Z loadLocation jsem udělal Room, takže je asi čas to
   předělat zpět na loadRoom.
+
+TODO: Promazat Connection.
+
+TODO: Zkusit na clientu reportovat errory výjimkou.
 
 --------------------------------------------------------------
 
