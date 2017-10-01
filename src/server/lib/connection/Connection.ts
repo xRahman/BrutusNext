@@ -22,11 +22,6 @@ import {Connections} from '../../../server/lib/connection/Connections';
 import {Packet} from '../../../shared/lib/protocol/Packet';
 import {MudMessage} from '../../../shared/lib/protocol/MudMessage';
 
-///import {Login} from '../../../server/lib/account/Login';
-///import {Chargen} from '../../../server/game/character/Chargen';
-///import {Register} from '../../../server/lib/account/Register';
-///import {Charselect} from '../../../server/game/character/Charselect';
-
 // Force module import (so that the module code is assuredly executed
 // instead of typescript just registering a type). This ensures that
 // class constructor is added to Classes so it can be deserialized.
@@ -87,6 +82,7 @@ export class Connection implements SharedConnection
       ERROR("Attempt to close connection that is still linked"
         + " to account (" + this.account.getErrorIdString() + ")."
         + " Connection is not closed");
+      return;
     }
 
     if (!this.socket)
@@ -147,9 +143,6 @@ export class Connection implements SharedConnection
   {
     let packet = Serializable.deserialize(data).dynamicCast(Packet);
 
-    // if (packet !== null)
-    //   await this.receive(packet);
-
     if (packet !== null)
       await packet.process(this);
   }
@@ -189,109 +182,10 @@ export class Connection implements SharedConnection
     this.socket = socket;
   }
 
-  /// To be deleted.
-  // // Processes received 'packet'.
-  // private async receive(packet: Packet)
-  // {
-  //   switch (packet.getClassName())
-  //   {
-  //     case RegisterRequest.name:
-  //       await Register.processRequest
-  //       (
-  //         packet.dynamicCast(RegisterRequest),
-  //         this
-  //       );
-  //       break;
-
-  //     case LoginRequest.name:
-  //       await Login.processRequest
-  //       (
-  //         packet.dynamicCast(LoginRequest),
-  //         this
-  //       );
-  //       break;
-
-  //     case ChargenRequest.name:
-  //       await Chargen.processRequest
-  //       (
-  //         packet.dynamicCast(ChargenRequest),
-  //         this
-  //       );
-  //       break;
-
-  //     case CharselectRequest.name:
-  //       await Charselect.processRequest
-  //       (
-  //         packet.dynamicCast(CharselectRequest),
-  //         this
-  //       );
-  //       break;
-
-  //     case SystemMessage.name:
-  //       this.processSystemMessage
-  //       (
-  //         packet.dynamicCast(SystemMessage)
-  //       );
-  //       break;
-
-  //     case Command.name:
-  //       await this.processCommand
-  //       (
-  //         packet.dynamicCast(Command)
-  //       );
-  //       break;
-
-  //     default:
-  //       ERROR("Unknown packet type");
-  //       break;
-  //   }
-  // }
-
-  /// Moved to SystemMessage.
-  // private reportClientClosedBrowserTab()
-  // {
-  //   Syslog.log
-  //   (
-  //     this.getUserInfo() + " has disconnected by"
-  //       + " closing or reloading browser tab",
-  //     MessageType.CONNECTION_INFO,
-  //     AdminLevel.IMMORTAL
-  //   );
-  // }
-
-  /// Moved to SystemMessage.
-  // private processSystemMessage(packet: SystemMessage)
-  // {
-  //   switch (packet.type)
-  //   {
-  //     case SystemMessage.Type.UNDEFINED:
-  //       ERROR("Received system message with unspecified type."
-  //         + " Someone problably forgot to set 'packet.type'"
-  //         + " when sending system message from the client");
-  //       break;
-
-  //     case SystemMessage.Type.CLIENT_CLOSED_BROWSER_TAB:
-  //       this.reportClientClosedBrowserTab();
-  //       break;
-
-  //     default:
-  //       ERROR("Received system message of unknown type.");
-  //       break;
-  //   }
-  // }
-
-  /// Moved to Command.process().
-  // private async processCommand(packet: Command)
-  // {
-  //   console.log("Received command: " + packet.command);
-  //   /// TODO:
-    
-  //   //let command = Utils.normalizeCRLF(packet.command);
-  // }
-
   // ---------------- Event handlers --------------------
 
-  // Should be called from 'onClose' event on socket.
+  // Releases the connection from memory
+  // (should be called from 'onClose' event on socket).
   public release()
   {
     // It's ok if account doesn't exist here, it happens
@@ -308,11 +202,3 @@ export class Connection implements SharedConnection
     Connections.release(this);
   }
 }
-
-// ------------------ Type declarations ----------------------
-
-// Module is exported so you can use enum type from outside this file.
-// It must be declared after the class because Typescript says so...
-// export module Connection
-// {
-// }
