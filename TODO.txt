@@ -18,25 +18,21 @@ MEGABIG TODO: Connection.receive() je fundamentálně špatně.
   (To bude možná komplikovaný, protože packety jsou v shared a processení
    je server respektive client code. Tzn. asi to povede k tomu, že budu
    muset mít server a klient verze packetů...)
-
 Asi by to šlo udělat tak, že packety budou jen v shared, ale procesory
 (tj Login, Register atd.) budou mít shared, client a server verzi.
 Packet (třeba RegisterRespnse) pak zavolá Procesor.process (nebo receive()?),
 tj. v tomhle případě Register.receive(this).
-
 Implementace:
 - LoginResponse zavolá PacketHandler.processLoginResponse(this);
 - PacketHandler bude shared classa instanciovaná v App.
 - server bude mít ServerPacketHandler, kde si přetíží příslušnou process
   metodu
 - client bude mít ClientPacketHandler
-
 Šlo by to bez PacketHandleru?
 - LoginResponse by pak měla volat přímo Login.processRequest()
   je to ovšem shared class, takže by musel existovat shared předek
   pro Login a na serveru by se to asi muselo jmenovat ServerLogin
   (a ServerRegister a ServerCharselect...)
-
 Hmm tak ještě jinak
 - Requesty se vždycky processej na serveru
 - Responsy se vždycky processej na clientovi
@@ -46,7 +42,6 @@ Takže možná RequestProcessor a ResponseProcessor?
 - takže Interface?
 I když ne, nemůže to bejt interface, protože je od toho třeba volat
 static metodu...
-
 Správně by asi bylo zdědit všechny packety (stačí na serveru zdědit ty,
 co se zpracovávají na serveru a stejně tak i na klientu).
   To je ale taky problém, protože pak by se asi musely jmenovat stejně
@@ -54,11 +49,8 @@ na klientu i na serveru (tj. server/LoginResponse a client/LoginResponse),
 aby se mi deserializoval správný typ. Tj. předek v shared by se musel
 jmenovat jinak, asi LoginResponseAncestor, AbstractLoginResponse, nebo tak
 nějak (aby to šlo importnout do modulu stejného jména).
-
-
-Tak nakonec to řeší technika 'import {cosi as neco} from'. Díky tomu
+  Tak nakonec to řeší technika 'import {cosi as neco} from'. Díky tomu
 se /shared class a její potomek v /server můžou jmenovat stejně.
-
 Hmm, ještě tu je jeden problém:
 - když by měl client používat /shared verzi a server /server verzi,
   tak by se pak classa musela přidávat do Classes jak v /shared, tak
@@ -71,6 +63,7 @@ Hmm, ještě tu je jeden problém:
 A nebo ještě poslední možnost - v Classes přidat metodu, která přepíše
 předka.
 (Aha, tak ono se to asi přepisuje vždycky.)
+[done]
 
 TODO: Udělat server-side classy i pro SystemMessage a Command.
 [done]
@@ -81,6 +74,7 @@ client-side rozšíření packetu.
   když budu mít server-side packet classy jako ChargenRequest.
   Možná by ChargenRequest.process() mohlo rovnou dělat to, co dělá
   Chargen...
+[done]
 
 oops...
 - v Packet se nemůže importovat /server/Connection
@@ -95,23 +89,33 @@ TODO: V client/Connection pročistit importy (možná se tam bude muset
 TODO: client-side MudMessage
 [done]
 
-
 TODO: metoda process() v client-side implementacích by asi měla bejt
   async (a volat se v connection přes await), když už je zděděná
   z async metody v Packetu.
+[done]
 
 TOFIX: Error při logování do hry.
 (Když smažu server data tak nenastane)
+[asi done]
 
 TOFIX: Error při zakládání charu (po smazání dat na serveru)
 - znovu se přiřazuje account do connection.
+[done]
 
 TODO: Z loadLocation jsem udělal Room, takže je asi čas to
   předělat zpět na loadRoom.
+- to si ještě musím promyslet...
+(možná by nebylo od věci mít obojí, loadRoom i loadLocation...
+ případně by se musel při charselectu posílat celej strom, tj. room,
+ v něm případně vložené containery a v containeru nebo roomu nakonec
+ character).
+
 
 TODO: Promazat Connection.
+[done]
 
 TODO: Zkusit na clientu reportovat errory výjimkou.
+[done]
 
 --------------------------------------------------------------
 

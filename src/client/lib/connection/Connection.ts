@@ -93,9 +93,6 @@ export class Connection implements SharedConnection
 
     if (packet !== null)
       await packet.process(connection);
-
-    // if (packet !== null)
-    //   connection.receive(packet);
   }
 
   public setAccount(account: Account)
@@ -116,6 +113,8 @@ export class Connection implements SharedConnection
 
     this.account = account;
   }
+
+  public getAccount() {  return this.account; }
 
   // ---------------- Public methods --------------------
 
@@ -156,7 +155,6 @@ export class Connection implements SharedConnection
     if (!this.socket.isOpen())
       this.socket.reConnect();
     else
-      ///this.socket.send(packet.serialize(Serializable.Mode.SEND_TO_SERVER));
       this.send(packet);
   }
 
@@ -214,239 +212,4 @@ export class Connection implements SharedConnection
       packet.serialize(Serializable.Mode.SEND_TO_SERVER)
     );
   }
-
-  /// Moved to shared/Response
-  // private reportInvalidResponse(action: string)
-  // {
-  //   ERROR("Received " + action + " response with unspecified result."
-  //       + " Someone problably forgot to set 'packet.result' when"
-  //       + " sending " + action + " response from the server");
-  // }
-
-  /// To be deleted.
-  // // Processes received 'packet'.
-  // private receive(packet: Packet)
-  // {
-  //   switch (packet.getClassName())
-  //   {
-  //     case RegisterResponse.name:
-  //       this.processRegisterResponse(packet.dynamicCast(RegisterResponse));
-  //       break;
-
-  //     case LoginResponse.name:
-  //       this.processLoginResponse(packet.dynamicCast(LoginResponse));
-  //       break;
-
-  //     case ChargenResponse.name:
-  //       this.processChargenResponse(packet.dynamicCast(ChargenResponse));
-  //       break;
-
-  //     case CharselectResponse.name:
-  //       this.processCharselectResponse(packet.dynamicCast(CharselectResponse));
-  //       break;
-
-  //     default:
-  //       ERROR("Unknown packet type");
-  //       break;
-  //   }
-  // }
-
-
-  /// Moved to RegisterResponse.
-  // private getAccountFromRegisterResponse(response: RegisterResponse)
-  // {
-  //   this.account = response.account.deserializeEntity(Account);
-
-  //   if (!Entity.isValid(this.account))
-  //   {
-  //     ERROR("Invalid account in register response");
-  //     return false;
-  //   }
-
-  //   return true;
-  // }
-
-  /// Moved to RegisterResponse.
-  // private processRegisterResponse(response: RegisterResponse)
-  // {
-  //   Windows.registerWindow.form.onResponse();
-    
-  //   if (response.result === RegisterResponse.Result.UNDEFINED)
-  //   {
-  //     this.reportInvalidResponse('register');
-  //     return;
-  //   }
-
-  //   if (response.result === RegisterResponse.Result.OK)
-  //   {
-  //     if (!this.getAccountFromRegisterResponse(response))
-  //       return;
-
-  //     Windows.registerWindow.form.rememberCredentials();
-  //     ClientApp.setState(ClientApp.State.CHARSELECT);
-  //     return;
-  //   }
-
-  //   // Otherwise display to the user what the problem is.
-  //   Windows.registerWindow.form.displayProblem(response);
-  // }
-
-  /// Moved to LoginResponse.
-  // private extractLoginResponseData(response: LoginResponse)
-  // {
-  //   this.account = response.account.deserializeEntity(Account);
-
-  //   // Also deserialize characters on the account. We will
-  //   // need them to populate character select window.
-  //   for (let characterData of response.characters)
-  //   {
-  //     let character: Character = characterData.deserializeEntity(Character);
-
-  //     this.account.data.updateCharacterReference(character);
-  //   }
-  // }
-
-  /// Moved to LoginResponse.
-  // private processLoginResponse(response: LoginResponse)
-  // {
-  //   Windows.loginWindow.form.onResponse();
-
-  //   if (response.result === LoginResponse.Result.UNDEFINED)
-  //   {
-  //     this.reportInvalidResponse('login');
-  //     return;
-  //   }
-
-  //   if (response.result === LoginResponse.Result.OK)
-  //   {
-  //     this.extractLoginResponseData(response);
-  //     Windows.loginWindow.form.rememberCredentials();
-  //     ClientApp.setState(ClientApp.State.CHARSELECT);
-  //     return;
-  //   }
-
-  //   // Otherwise display to the user what the problem is.
-  //   Windows.loginWindow.form.displayProblem(response);
-  // }
-
-  /// Moved to ChargenResponse.
-  // -> Returns extracted character.
-  // private extractChargenResponseData(response: ChargenResponse)
-  // {
-  //   this.account = response.account.deserializeEntity(Account);
-
-  //   let character = response.character.deserializeEntity(Character);
-
-  //   this.account.data.updateCharacterReference(character);
-
-  //   return character;
-  // }
-
-  /// Moved to ChargenResponse.
-  // private acceptChargenResponse(response: ChargenResponse)
-  // {
-  //   let character = this.extractChargenResponseData(response);
-
-  //   ClientApp.setState(ClientApp.State.CHARSELECT);
-
-  //   // Select newly added character
-  //   // (we can do it here because ClientApp.setState() called
-  //   //  charselectForm.onShow() which created the charplate).
-  //   Windows.charselectWindow.form.selectCharacter(character.getId());
-  // }
-
-  // /// Moved to ChargenResponse.process()
-  // private processChargenResponse(response: ChargenResponse)
-  // {
-  //   Windows.chargenWindow.form.onResponse();
-    
-  //   if (response.result === ChargenResponse.Result.UNDEFINED)
-  //   {
-  //     this.reportInvalidResponse('chargen');
-  //     return;
-  //   }
-
-  //   if (response.result === ChargenResponse.Result.OK)
-  //   {
-  //     this.acceptChargenResponse(response);
-  //     return;
-  //   }
-
-  //   // Otherwise display to the user what the problem is.
-  //   Windows.chargenWindow.form.displayProblem(response);
-  // }
-
-  /// Moved to CharselectResponse.
-  // private getSelectedCharacter(response: CharselectResponse)
-  // {
-  //   let characterId = response.characterMove.entityId;
-
-  //   let character: Character =
-  //     ClientEntities.get(characterId).dynamicCast(Character);
-
-  //   if (!Entity.isValid(character))
-  //   {
-  //     ERROR("Invalid selected character (id: " + characterId + ")");
-  //     return null;
-  //   }
-
-  //   return character;
-  // }
-
-  /// Moved to CharselectResponse.
-  // private getCharacterLoadLocation(response: CharselectResponse)
-  // {
-  //   // 'loadLocation' entity is added to ClientEntities here as
-  //   // side effect. It can later be accessed using it's id.
-  //   let loadLocation = response.loadLocation.deserializeEntity(Entity);
-    
-  //   if (!Entity.isValid(loadLocation))
-  //   {
-  //     ERROR("Invalid load location in charselect response");
-  //     return false;
-  //   }
-
-  //   return true;
-  // }
-
-  /// Moved to CharselectResponse.
-  // private acceptCharselectResponse(response: CharselectResponse)
-  // {
-  //   let character = this.getSelectedCharacter(response);
-
-  //   if (!character)
-  //     return;
-
-  //   this.createAvatar(character);
-
-  //   // Note: This must be done before character.enterWorld(),
-  //   // otherwise the room (or other entity the character loads
-  //   // into) might not exist on the client.
-  //   if (!this.getCharacterLoadLocation(response))
-  //     return;
-
-  //   if (!character.enterWorld(response.characterMove))
-  //     return;
-
-  //   ClientApp.setState(ClientApp.State.IN_GAME);
-  // }
-
-  /// Moved to CharselectResponse.process().
-  // private processCharselectResponse(response: CharselectResponse)
-  // {
-  //   if (response.result === CharselectResponse.Result.UNDEFINED)
-  //   {
-  //     this.reportInvalidResponse('charselect');
-  //     return;
-  //   }
-
-  //   if (response.result === CharselectResponse.Result.OK)
-  //   {
-  //     this.acceptCharselectResponse(response);
-  //     return;
-  //   }
-
-  //   // Otherwise display to the user what the problem is.
-  //   Windows.charselectWindow.form.displayProblem(response);
-  // }
 }
