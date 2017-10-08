@@ -1,6 +1,24 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+K úvaze:
+- Chargen možná přejmenovat CreateCharacter?
+  (CreateCharacterRequest, CreateCharacterResponse)
+  - tady asi spíš nechat Chargen.
+- Charselect na EnterGame?
+  (EnterGameRequest, EnterGameResponse, EnterGameWindow)
+  - určitě
+- EntityData na SerializedEntity
+  - určitě
+- EntityMove asi jen Move
+  - určitě
+- Register na CreateAccount?
+Hmm, co tím samým v gui?
+(jména adresářů by měla být malými písmeny a krátká...)
+ - možná je na čase povolit v názvech adresářů camelCase...
+
+--------------------------------------------------------------
+
 TODO: Přejmenovat EntityData na SerializedEntity.
 
 UI:
