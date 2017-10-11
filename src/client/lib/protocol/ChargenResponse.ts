@@ -81,7 +81,7 @@ export class ChargenResponse extends SharedChargenResponse
     // (we don't need to update connection.account because
     //  player had to log in before creating a character
     //  so that reference is already set).
-    let account = this.account.deserializeEntity(Account);
+    let account = this.serializedAccount.restore(Account);
 
     if (connection.getAccount().getId() !== account.getId())
     {
@@ -97,7 +97,7 @@ export class ChargenResponse extends SharedChargenResponse
       return null;
     }
 
-    let character = this.character.deserializeEntity(Character);
+    let character = this.serializedCharacter.restore(Character);
 
     account.data.updateCharacterReference(character);
 

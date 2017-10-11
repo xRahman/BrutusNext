@@ -98,7 +98,7 @@ export class EnterGameResponse extends SharedEnterGameResponse
   {
     // 'loadLocation' entity is added to ClientEntities here as
     // side effect. It can later be accessed using it's id.
-    let loadLocation = this.loadLocation.deserializeEntity(Entity);
+    let loadLocation = this.serializedLoadLocation.restore(Entity);
     
     if (!Entity.isValid(loadLocation))
     {

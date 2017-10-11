@@ -12,7 +12,7 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class EntityMove extends Serializable
+export class Move extends Serializable
 {
   constructor
   (
@@ -32,4 +32,4 @@ export class EntityMove extends Serializable
   // ---------------- Public methods --------------------
 }
 
-Classes.registerSerializableClass(EntityMove);
+Classes.registerSerializableClass(Move);
