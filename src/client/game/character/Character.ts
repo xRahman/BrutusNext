@@ -12,7 +12,7 @@ import {Entity} from '../../../shared/lib/entity/Entity';
 import {GameEntity} from '../../../client/game/GameEntity';
 import {ClientEntities} from '../../../client/lib/entity/ClientEntities';
 import {CharacterData} from '../../../shared/game/character/CharacterData';
-import {EntityMove} from '../../../shared/lib/protocol/EntityMove';
+import {Move} from '../../../shared/lib/protocol/Move';
 
 export class Character extends GameEntity
 {
@@ -32,7 +32,7 @@ export class Character extends GameEntity
   // ---------------- Public methods --------------------
 
   // -> Returns 'false' on error.
-  public enterWorld(move: EntityMove)
+  public enterWorld(move: Move)
   {
     if (this.data.getLocation() !== null)
     {

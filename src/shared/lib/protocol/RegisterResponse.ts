@@ -10,7 +10,7 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Response} from '../../../shared/lib/protocol/Response';
-import {EntityData} from '../../../shared/lib/protocol/EntityData';
+import {SerializedEntity} from '../../../shared/lib/protocol/SerializedEntity';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 export class RegisterResponse extends Response
@@ -28,7 +28,7 @@ export class RegisterResponse extends Response
   public result = RegisterResponse.Result.UNDEFINED;
 
   // Serialized account data.
-  public account = new EntityData();
+  public serializedAccount = new SerializedEntity();
 }
 
 // ------------------ Type declarations ----------------------

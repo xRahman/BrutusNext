@@ -7,14 +7,24 @@ K úvaze:
 - Charselect na EnterGame?
   (EnterGameRequest, EnterGameResponse, EnterGameWindow)
   - určitě
+[done]
 - EntityData na SerializedEntity
   - určitě
+[done]
 - EntityMove asi jen Move
   - určitě
+[done]
 - Register na AccountCreation?
 Hmm, co tím samým v gui?
 (jména adresářů by měla být malými písmeny a krátká...)
  - možná je na čase povolit v názvech adresářů camelCase...
+
+TODO: V packet classách mít: serializedAccount: SerializedEntity = null
+  a místo serializedAccount.store(account) používat konstruktor.
+  (takže public zbyde jen metoda restore()).
+
+TODO: pořešit tu loadLocation (i v packet classách). Pokud s tím bude
+  klient pracovat jako s roomem, měl bych tomu říkat loadRoom.
 
 --------------------------------------------------------------
 

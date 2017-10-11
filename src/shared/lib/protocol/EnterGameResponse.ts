@@ -11,9 +11,9 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {Serializable} from '../../../shared/lib/class/Serializable';
-import {EntityMove} from '../../../shared/lib/protocol/EntityMove';
+import {Move} from '../../../shared/lib/protocol/Move';
 import {Response} from '../../../shared/lib/protocol/Response';
-import {EntityData} from '../../../shared/lib/protocol/EntityData';
+import {SerializedEntity} from '../../../shared/lib/protocol/SerializedEntity';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 export class EnterGameResponse extends Response
@@ -31,10 +31,10 @@ export class EnterGameResponse extends Response
   public result = EnterGameResponse.Result.UNDEFINED;
 
   // Where did the character entered game.
-  public characterMove: EntityMove = null;
+  public characterMove: Move = null;
 
   // Serialized data of 'loadLocation' entity.
-  public loadLocation: EntityData = null;
+  public serializedLoadLocation: SerializedEntity = null;
 
   // ---------------- Public methods --------------------
 
@@ -44,13 +44,13 @@ export class EnterGameResponse extends Response
     {
       ERROR("Invalid loadLocation. Charselect response"
         + "won't be valid");
-      this.loadLocation = null;
+      this.serializedLoadLocation = null;
       return;
     }
 
-    this.loadLocation = new EntityData();
+    this.serializedLoadLocation = new SerializedEntity();
 
-    this.loadLocation.serializeEntity
+    this.serializedLoadLocation.store
     (
       loadLocation,
       Serializable.Mode.SEND_TO_CLIENT
