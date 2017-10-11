@@ -28,9 +28,9 @@ import {Room} from '../../server/game/world/Room';
 import {AbbrevList} from '../../server/game/search/AbbrevList';
 import {Connection} from '../../server/lib/connection/Connection';
 import {EntityMove} from '../../shared/lib/protocol/EntityMove';
-import {CharselectRequest} from '../../shared/lib/protocol/CharselectRequest';
-import {CharselectResponse} from
-  '../../shared/lib/protocol/CharselectResponse';
+import {EnterGameRequest} from '../../shared/lib/protocol/EnterGameRequest';
+import {EnterGameResponse} from
+  '../../shared/lib/protocol/EnterGameResponse';
 
 /// Asi docasne:
 import {Area} from '../game/world/Area';

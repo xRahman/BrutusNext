@@ -16,8 +16,10 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Syslog} from '../../../shared/lib/log/Syslog';
-import {CharselectRequest as SharedCharselectRequest} from
-  '../../../shared/lib/protocol/CharselectRequest';
+import {EnterGameRequest as SharedEnterGameRequest} from
+  '../../../shared/lib/protocol/EnterGameRequest';
+import {EnterGameResponse} from
+  '../../../shared/lib/protocol/EnterGameResponse';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
 import {Account} from '../../../server/lib/account/Account';
@@ -26,11 +28,9 @@ import {Entity} from '../../../shared/lib/entity/Entity';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Connection} from '../../../server/lib/connection/Connection';
 import {EntityMove} from '../../../shared/lib/protocol/EntityMove';
-import {CharselectResponse} from
-  '../../../shared/lib/protocol/CharselectResponse';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class CharselectRequest extends SharedCharselectRequest
+export class EnterGameRequest extends SharedEnterGameRequest
 {
   constructor()
   {
@@ -161,7 +161,7 @@ export class CharselectRequest extends SharedCharselectRequest
     this.denyRequest
     (
       problem,
-      CharselectResponse.Result.ERROR,
+      EnterGameResponse.Result.ERROR,
       connection
     );
   }
@@ -169,11 +169,11 @@ export class CharselectRequest extends SharedCharselectRequest
   private denyRequest
   (
     problem: string,
-    result: CharselectResponse.Result,
+    result: EnterGameResponse.Result,
     connection: Connection
   )
   {
-    let response = new CharselectResponse();
+    let response = new EnterGameResponse();
     
     response.result = result;
     response.setProblem(problem);
@@ -188,9 +188,9 @@ export class CharselectRequest extends SharedCharselectRequest
     move: EntityMove
   )
   {
-    let response = new CharselectResponse();
+    let response = new EnterGameResponse();
 
-    response.result = CharselectResponse.Result.OK;
+    response.result = EnterGameResponse.Result.OK;
     response.characterMove = move;
     response.setLoadLocation(character.getLoadLocation());
 
@@ -220,4 +220,4 @@ export class CharselectRequest extends SharedCharselectRequest
 }
 
 // This overwrites ancestor class.
-Classes.registerSerializableClass(CharselectRequest);
+Classes.registerSerializableClass(EnterGameRequest);
