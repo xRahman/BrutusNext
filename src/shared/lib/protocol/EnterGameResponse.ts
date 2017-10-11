@@ -16,7 +16,7 @@ import {Response} from '../../../shared/lib/protocol/Response';
 import {EntityData} from '../../../shared/lib/protocol/EntityData';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class CharselectResponse extends Response
+export class EnterGameResponse extends Response
 {
   constructor()
   {
@@ -28,7 +28,7 @@ export class CharselectResponse extends Response
   // ----------------- Public data ----------------------
 
   // Is the request accepted?
-  public result = CharselectResponse.Result.UNDEFINED;
+  public result = EnterGameResponse.Result.UNDEFINED;
 
   // Where did the character entered game.
   public characterMove: EntityMove = null;
@@ -60,7 +60,7 @@ export class CharselectResponse extends Response
 
 // ------------------ Type declarations ----------------------
 
-export module CharselectResponse
+export module EnterGameResponse
 {
   export enum Result
   {
@@ -70,4 +70,4 @@ export module CharselectResponse
   }
 }
 
-Classes.registerSerializableClass(CharselectResponse);
+Classes.registerSerializableClass(EnterGameResponse);
