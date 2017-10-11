@@ -18,7 +18,7 @@ import {World} from '../../../server/game/world/World';
 import {CharacterData} from '../../../shared/game/character/CharacterData';
 import {Characters} from '../../../server/game/character/Characters';
 import {Classes} from '../../../shared/lib/class/Classes';
-import {EntityMove} from '../../../shared/lib/protocol/EntityMove';
+import {Move} from '../../../shared/lib/protocol/Move';
 
 export class Character extends GameEntity
 {
@@ -93,9 +93,9 @@ export class Character extends GameEntity
     //this.loadLocation.insert(this);
   }
 
-  // -> Returns EntityMove instance describing performed move action,
+  // -> Returns Move instance describing performed move action,
   //    Returns 'null' on error.
-  public enterWorld(): EntityMove
+  public enterWorld(): Move
   {
     if (this.getLocation() !== null)
     {
@@ -119,7 +119,7 @@ export class Character extends GameEntity
     // (možná se to bude dělat v rámci insertu, uvidíme).
     loadLocation.insert(this);
 
-    return new EntityMove(this.getId(), loadLocation.getId());
+    return new Move(this.getId(), loadLocation.getId());
   }
 
   // Announce to the room that player is entering game as this character.

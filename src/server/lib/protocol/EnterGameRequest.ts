@@ -27,7 +27,7 @@ import {Character} from '../../../server/game/character/Character';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Connection} from '../../../server/lib/connection/Connection';
-import {EntityMove} from '../../../shared/lib/protocol/EntityMove';
+import {Move} from '../../../shared/lib/protocol/Move';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 export class EnterGameRequest extends SharedEnterGameRequest
@@ -185,7 +185,7 @@ export class EnterGameRequest extends SharedEnterGameRequest
   (
     account: Account,
     character: Character,
-    move: EntityMove
+    move: Move
   )
   {
     let response = new EnterGameResponse();
@@ -202,7 +202,7 @@ export class EnterGameRequest extends SharedEnterGameRequest
     connection: Connection,
     account: Account,
     character: Character,
-    move: EntityMove
+    move: Move
   )
   {
     let response = this.createOkResponse(account, character, move);

@@ -69,7 +69,7 @@ export class RegisterResponse extends SharedRegisterResponse
 
   private deserializeAccount(connection: Connection)
   {
-    let account = this.account.deserializeEntity(Account);
+    let account = this.serializedAccount.restore(Account);
 
     if (!Entity.isValid(account))
     {

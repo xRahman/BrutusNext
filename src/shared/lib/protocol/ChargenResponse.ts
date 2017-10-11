@@ -14,7 +14,7 @@ import {Entity} from '../../../shared/lib/entity/Entity';
 import {Account} from '../../../shared/lib/account/Account';
 import {Character} from '../../../shared/game/character/Character';
 import {Response} from '../../../shared/lib/protocol/Response';
-import {EntityData} from '../../../shared/lib/protocol/EntityData';
+import {SerializedEntity} from '../../../shared/lib/protocol/SerializedEntity';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 export class ChargenResponse extends Response
@@ -35,18 +35,18 @@ export class ChargenResponse extends Response
   // (We send account back to client, not the created character,
   //  because client will need updated account to display character
   //  select form).
-  public account: EntityData = null;
+  public serializedAccount: SerializedEntity = null;
 
   // Serialized data of newly added character.
-  public character: EntityData = null;
+  public serializedCharacter: SerializedEntity = null;
 
   // ---------------- Public methods --------------------
 
   public setAccount(account: Account)
   {
-    this.account = new EntityData();
+    this.serializedAccount = new SerializedEntity();
 
-    this.account.serializeEntity
+    this.serializedAccount.store
     (
       account,
       Serializable.Mode.SEND_TO_CLIENT
@@ -55,9 +55,9 @@ export class ChargenResponse extends Response
 
   public setCharacter(character: Character)
   {
-    this.character = new EntityData();
+    this.serializedCharacter = new SerializedEntity();
 
-    this.character.serializeEntity
+    this.serializedCharacter.store
     (
       character,
       Serializable.Mode.SEND_TO_CLIENT

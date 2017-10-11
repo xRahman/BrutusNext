@@ -14,7 +14,7 @@ import {Entity} from '../../../shared/lib/entity/Entity';
 import {Account} from '../../../shared/lib/account/Account';
 import {Character} from '../../../shared/game/character/Character';
 import {Response} from '../../../shared/lib/protocol/Response';
-import {EntityData} from '../../../shared/lib/protocol/EntityData';
+import {SerializedEntity} from '../../../shared/lib/protocol/SerializedEntity';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 export class LoginResponse extends Response
@@ -32,17 +32,17 @@ export class LoginResponse extends Response
   public result = LoginResponse.Result.UNDEFINED;
 
   // Serialized account data.
-  public account: EntityData = null;
+  public serializedAccount: SerializedEntity = null;
 
-  public characters = new Array<EntityData>();
+  public serializedCharacters = new Array<SerializedEntity>();
 
   // ---------------- Public methods --------------------
 
   public setAccount(account: Account)
   {
-    this.account = new EntityData();
+    this.serializedAccount = new SerializedEntity();
 
-    this.account.serializeEntity
+    this.serializedAccount.store
     (
       account,
       Serializable.Mode.SEND_TO_CLIENT
@@ -51,15 +51,15 @@ export class LoginResponse extends Response
 
   public addCharacter(character: Character)
   {
-    let characterData = new EntityData();
+    let characterData = new SerializedEntity();
 
-    characterData.serializeEntity
+    characterData.store
     (
       character,
       Serializable.Mode.SEND_TO_CLIENT
     );
 
-    this.characters.push(characterData);
+    this.serializedCharacters.push(characterData);
   }
 }
 

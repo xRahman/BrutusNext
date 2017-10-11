@@ -67,13 +67,13 @@ export class LoginResponse extends SharedLoginResponse
 
   private extractData(connection: Connection)
   {
-    let account = this.account.deserializeEntity(Account);
+    let account = this.serializedAccount.restore(Account);
     
     // Also deserialize characters on the account. We will
     // need them to populate character select window.
-    for (let characterData of this.characters)
+    for (let serializedCharacter of this.serializedCharacters)
     {
-      let character: Character = characterData.deserializeEntity(Character);
+      let character: Character = serializedCharacter.restore(Character);
 
       account.data.updateCharacterReference(character);
     }
