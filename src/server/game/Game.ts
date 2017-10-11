@@ -27,7 +27,7 @@ import {Room} from '../../server/game/world/Room';
 ///import {RoomFlags} from '../../server/game/world/RoomFlags';
 import {AbbrevList} from '../../server/game/search/AbbrevList';
 import {Connection} from '../../server/lib/connection/Connection';
-import {EntityMove} from '../../shared/lib/protocol/EntityMove';
+///import {Move} from '../../shared/lib/protocol/Move';
 import {EnterGameRequest} from '../../shared/lib/protocol/EnterGameRequest';
 import {EnterGameResponse} from
   '../../shared/lib/protocol/EnterGameResponse';

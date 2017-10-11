@@ -14,7 +14,7 @@ import {Entity} from '../../../shared/lib/entity/Entity';
 import {Entities} from '../../../shared/lib/entity/Entities';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class EntityData extends Serializable
+export class SerializedEntity extends Serializable
 {
   constructor()
   {
@@ -31,7 +31,7 @@ export class EntityData extends Serializable
 
   // ---------------- Public methods --------------------
 
-  public serializeEntity(entity: Entity, mode: Serializable.Mode)
+  public store(entity: Entity, mode: Serializable.Mode)
   {
     if (!Entity.isValid(entity))
     {
@@ -43,7 +43,7 @@ export class EntityData extends Serializable
     entity.serializeTree(this.data, mode);
   }
 
-  public deserializeEntity<T extends Entity>
+  public restore<T extends Entity>
   (
     typeCast: { new (...args: any[]): T }
   )
@@ -77,4 +77,4 @@ export class EntityData extends Serializable
   }
 }
 
-Classes.registerSerializableClass(EntityData);
+Classes.registerSerializableClass(SerializedEntity);
