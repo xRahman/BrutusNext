@@ -11,7 +11,7 @@
 import {Packet} from '../../../shared/lib/protocol/Packet';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class CharselectRequest extends Packet
+export class EnterGameRequest extends Packet
 {
   constructor()
   {
@@ -25,4 +25,4 @@ export class CharselectRequest extends Packet
   public characterId: string = null;
 }
 
-Classes.registerSerializableClass(CharselectRequest);
+Classes.registerSerializableClass(EnterGameRequest);

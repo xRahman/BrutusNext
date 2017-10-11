@@ -21,11 +21,11 @@ import {ClientEntities} from '../../../client/lib/entity/ClientEntities';
 import {Character} from '../../../client/game/character/Character';
 import {Windows} from '../../../client/gui/window/Windows';
 import {Connection} from '../../../client/lib/connection/Connection';
-import {CharselectResponse as SharedCharselectResponse} from
-  '../../../shared/lib/protocol/CharselectResponse';
+import {EnterGameResponse as SharedEnterGameResponse} from
+  '../../../shared/lib/protocol/EnterGameResponse';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class CharselectResponse extends SharedCharselectResponse
+export class EnterGameResponse extends SharedEnterGameResponse
 {
   constructor()
   {
@@ -39,13 +39,13 @@ export class CharselectResponse extends SharedCharselectResponse
   // ~ Overrides Packet.process().
   public async process(connection: Connection)
   {
-    if (this.result === CharselectResponse.Result.UNDEFINED)
+    if (this.result === EnterGameResponse.Result.UNDEFINED)
     {
       this.reportInvalidResponse('charselect');
       return;
     }
 
-    if (this.result === CharselectResponse.Result.OK)
+    if (this.result === EnterGameResponse.Result.OK)
     {
       this.acceptResponse(connection);
       return;
@@ -111,4 +111,4 @@ export class CharselectResponse extends SharedCharselectResponse
 }
 
 // This overwrites ancestor class.
-Classes.registerSerializableClass(CharselectResponse);
+Classes.registerSerializableClass(EnterGameResponse);

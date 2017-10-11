@@ -14,10 +14,10 @@ import {Form} from '../../../client/gui/form/Form';
 import {Charplate} from '../../../client/gui/charselect/Charplate';
 import {CharselectWindow} from
   '../../../client/gui/charselect/CharselectWindow';
-import {CharselectRequest} from
-  '../../../shared/lib/protocol/CharselectRequest';
-import {CharselectResponse} from
-  '../../../client/lib/protocol/CharselectResponse';
+import {EnterGameRequest} from
+  '../../../shared/lib/protocol/EnterGameRequest';
+import {EnterGameResponse} from
+  '../../../client/lib/protocol/EnterGameResponse';
 import {Character} from '../../../client/game/character/Character';
 
 export class CharselectForm extends Form
@@ -174,21 +174,21 @@ export class CharselectForm extends Form
       this.selectCharacter(id);
   }
     
-  public displayProblem(response: CharselectResponse)
+  public displayProblem(response: EnterGameResponse)
   {
     switch (response.result)
     {
-      case CharselectResponse.Result.UNDEFINED:
+      case EnterGameResponse.Result.UNDEFINED:
         ERROR("Received charselect response with unspecified result."
           + " Someone problably forgot to set 'packet.result'"
           + " when sending charselect response from the server");
         break;
 
-      case CharselectResponse.Result.ERROR:
+      case EnterGameResponse.Result.ERROR:
         this.displayError(response.getProblem());
         break;
 
-      case CharselectResponse.Result.OK:
+      case EnterGameResponse.Result.OK:
         ERROR("displayProblem() called with 'Result: OK'");
         break;
 
@@ -213,7 +213,7 @@ export class CharselectForm extends Form
       return null;
     }
 
-    let request = new CharselectRequest();
+    let request = new EnterGameRequest();
 
     request.characterId = id;
 
@@ -221,7 +221,7 @@ export class CharselectForm extends Form
   }
 
   // ~ Overrides Form.isRequestValid().
-  protected isRequestValid(request: CharselectRequest)
+  protected isRequestValid(request: EnterGameRequest)
   {
     if (!request)
       return false;
