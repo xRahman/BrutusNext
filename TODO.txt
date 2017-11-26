@@ -1,6 +1,10 @@
 TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+Autentifikace: http://www.passportjs.org/
+
+--------------------------------------------------------------
+
 K úvaze:
 - Chargen možná přejmenovat CharacterCreation?
   (CharacterCreationRequest, CharacterCreationResponse)
