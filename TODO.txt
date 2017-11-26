@@ -3,6 +3,9 @@ TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 
 Autentifikace: http://www.passportjs.org/
 Ukládání hesel: https://www.npmjs.com/package/bcryptjs
+          nebo: https://github.com/kelektiv/node.bcrypt.js
+Two-factor Authentication (whatever that is): https://github.com/speakeasyjs/speakeasy
+Free SSL certificates: https://letsencrypt.org/
 
 --------------------------------------------------------------
 
