@@ -2,6 +2,7 @@ TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
 Autentifikace: http://www.passportjs.org/
+Ukládání hesel: https://www.npmjs.com/package/bcryptjs
 
 --------------------------------------------------------------
 
