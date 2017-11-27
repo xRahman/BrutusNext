@@ -7,6 +7,8 @@ Ukládání hesel: https://www.npmjs.com/package/bcryptjs
 Two-factor Authentication (whatever that is): https://github.com/speakeasyjs/speakeasy
 Free SSL certificates: https://letsencrypt.org/
 
+Vulnerability v dependencích: https://snyk.io/
+
 --------------------------------------------------------------
 
 K úvaze:
