@@ -1,4 +1,35 @@
-TODO, TODO, TO DO TO DO TO DO, todotodooooooo.... todotodo...
+TO DO, TO DO, TODO TODO TODO, todotodooooooo.... todotodo...
+--------------------------------------------------------------
+
+Savování enumů
+---------------
+Určitě bych chtěl hodnoty enumů savovat stringem, je ale otázka, jestli
+to půjde udělat.
+  Důvody:
+  - Lepší čitelnost save filů a json packetů
+  - Snazší konverze na novější verze formátu
+    (mělo by pak jít reusnout starší hodnotu enumu)
+
+Savování flagů
+---------------
+To samé co enumu, tzn. savovat hodnoty stringem.
+
+  Obecná myšlenka je, že číselné hodnoty flagů nebo enumů by měly platit pouze
+  pro jednu instanci aplikace. Po rebootu se zkonstruují znovu ze stringů, což
+  zabrání konfliktům.
+  - problém bude s hot reloadem - když někdo změní string nějaké flagy,
+    stávající instance v paměti budou mít tuhle flagu pořád nastavenou.
+
+
+Dědičnost Setu a Mapy
+----------------------
+Asi by to šlo udělat přes vlastní classy, podobně jako Date -> Time.
+- set() by prostě zapsal do potomka.
+- get() by se podíval do potomka a když by to tam nenašel, tak ještě do předka
+- funkce pro práci s polem (.entities() a podobně) by vrátily pole vytažené
+  z potomka zděděné z pole vytaženého z předka (dědičnost u polí funguje
+  nativně, takže by to mělo být ok).
+
 --------------------------------------------------------------
 
 Autentifikace: http://www.passportjs.org/
