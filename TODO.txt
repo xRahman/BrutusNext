@@ -1,6 +1,23 @@
 TO DO, TO DO, TODO TODO TODO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+TODO: classa Move by se asi přece jen měla jmenovat EntityMove...
+     (a k ní pak EntityChange). Nebo opravdu jen Move a Change?
+
+Posílání updatů stavu entit
+----------------------------
+
+Setovací metody entit, třeba na ubrání hpček, setnou příslušnou property
+entity a zároveň zapíšou do stejně pojmenované property objektu "change".
+- Díky tomu půjde mimo jiné "nastřádat" kumulativní změny a poslat je najednou
+  (třeba na konci zpracování tiku).
+- Na klientovi se v příslušné entitě přepíšou properties obsažené v objektu
+  "change".
+Classa pro packet by se mohla jmenovat EntityChange.
+
+
+--------------------------------------------------------------
+
 Savování enumů
 ---------------
 Určitě bych chtěl hodnoty enumů savovat stringem, je ale otázka, jestli
@@ -12,7 +29,7 @@ to půjde udělat.
 
 Savování flagů
 ---------------
-To samé co enumu, tzn. savovat hodnoty stringem.
+To samé co enumy, tzn. savovat hodnoty stringem.
 
   Obecná myšlenka je, že číselné hodnoty flagů nebo enumů by měly platit pouze
   pro jednu instanci aplikace. Po rebootu se zkonstruují znovu ze stringů, což
