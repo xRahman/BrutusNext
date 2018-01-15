@@ -1,6 +1,12 @@
 TO DO, TO DO, TODO TODO TODO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+TOFIX: Scrollbar se zobrazuje když není potřeba.
+
+TOFIX: Enter v prázném CharselectWindow
+[done]
+
+
 TODO: Přejmenovat GameEntityData, nejspíš na EntityShared...
 (chtělo by to ještě lepší jméno, ale nic mě nenapadá).
   RoomShared, ExitShared...
