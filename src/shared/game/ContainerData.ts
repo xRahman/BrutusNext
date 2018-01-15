@@ -53,7 +53,7 @@ export class ContainerData extends Serializable
 
   // ---------------- Public methods --------------------
 
-  // ~ Overrides Entity.postSave()
+  // ~ Overrides Entity.postSave() - to je nějký divný, FIXME
   // When saving a a container entity, all contained
   //  entities are saved as well.
   public async saveContents()

@@ -26,12 +26,12 @@ import {Character} from '../../../client/game/character/Character';
 // Force module import (so that the module code is assuredly executed
 // instead of typescript just registering a type). This ensures that
 // class constructor is added to Classes so it can be deserialized.
-import '../../../shared/lib/protocol/EntityMove';
+import '../../../shared/lib/protocol/Move';
 import '../../../client/game/world/Room';
 import '../../../client/lib/protocol/LoginResponse';
 import '../../../client/lib/protocol/RegisterResponse';
 import '../../../client/lib/protocol/ChargenResponse';
-import '../../../client/lib/protocol/CharselectResponse';
+import '../../../client/lib/protocol/EnterGameResponse';
 
 export class Connection implements SharedConnection
 {
