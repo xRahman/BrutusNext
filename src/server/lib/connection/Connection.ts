@@ -30,7 +30,7 @@ import '../../../server/lib/protocol/SystemMessage';
 import '../../../server/lib/protocol/LoginRequest';
 import '../../../server/lib/protocol/RegisterRequest';
 import '../../../server/lib/protocol/ChargenRequest';
-import '../../../server/lib/protocol/CharselectRequest';
+import '../../../server/lib/protocol/EnterGameRequest';
 
 export class Connection implements SharedConnection
 {
