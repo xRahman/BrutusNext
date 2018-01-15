@@ -2,6 +2,11 @@ TO DO, TO DO, TODO TODO TODO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
 TOFIX: Scrollbar se zobrazuje když není potřeba.
+- Vypadá to na bug Chromu. Okno má 'height:auto;' a 'overflow:auto;', tzn.
+  nedává smysl, aby se zobrazoval scrollbar, pokud není výška okna limitovaná
+  výškou viewportu. Scrollbar se navíc objevuje a mizí při změně zoomu...
+Snad se to spraví s novou verzí Chromu.
+[won't fix]
 
 TOFIX: Enter v prázném CharselectWindow
 [done]
