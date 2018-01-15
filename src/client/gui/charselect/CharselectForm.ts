@@ -207,11 +207,10 @@ export class CharselectForm extends Form
 
     let id = this.getSelectedCharacterId();
 
+    // 'null' id means no character is selected.
+    // No request will be sent in that case.
     if (!id)
-    {
-      ERROR("Unable to find selected character id");
       return null;
-    }
 
     let request = new EnterGameRequest();
 
