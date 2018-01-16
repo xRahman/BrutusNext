@@ -1,6 +1,10 @@
 TO DO, TO DO, TODO TODO TODO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+TODO: /shared/ContainerEntity má property 'data', což nejspíš konfliktí
+s property 'data' typu GameEntityData.
+
+
 TOFIX: Scrollbar se zobrazuje když není potřeba.
 - Vypadá to na bug Chromu. Okno má 'height:auto;' a 'overflow:auto;', tzn.
   nedává smysl, aby se zobrazoval scrollbar, pokud není výška okna limitovaná
@@ -15,7 +19,8 @@ TOFIX: Enter v prázném CharselectWindow
 TODO: Přejmenovat GameEntityData, nejspíš na EntityShared...
 (chtělo by to ještě lepší jméno, ale nic mě nenapadá).
   RoomShared, ExitShared...
-- property by se pak jmenovala .shared
+- property by se pak jmenovala .shared nebo .sharedData?
+Možná ExitSharedData a property 'shared'? A předek SharedData
 
 TODO: classa Move by se asi přece jen měla jmenovat EntityMove...
      (a k ní pak EntityChange). Nebo opravdu jen Move a Change?
