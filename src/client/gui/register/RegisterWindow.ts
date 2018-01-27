@@ -29,12 +29,12 @@ export class RegisterWindow extends FormWindow
 
   // ----------------- Private data ---------------------
 
-  private $termsLink: JQuery | null = null;
+  private $termsLink: (JQuery | null) = null;
 
   // ----------------- Public data ---------------------- 
 
   // ~ Overrides FormWindow.form.
-  public form: RegisterForm = null;
+  public form: (RegisterForm | null) = null;
 
   // ---------------- Public methods --------------------
 

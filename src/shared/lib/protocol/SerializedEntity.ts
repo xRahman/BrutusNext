@@ -48,7 +48,7 @@ export class SerializedEntity extends Serializable
     typeCast: { new (...args: any[]): T }
   )
   {
-    let entity = null;
+    let entity: (Entity | null) = null;
 
     // 'this.data' is an array of json strings - each representing
     // one serialized entity (beginning with rootmost ancestor).

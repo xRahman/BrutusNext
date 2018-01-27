@@ -30,7 +30,7 @@ export class ServerEntities extends Entities
     this.idProvider = new IdProvider(timeOfBoot);
   }
 
-  private idProvider: IdProvider = null;
+  private idProvider: (IdProvider | null) = null;
 
   // ------------- Public static methods ----------------
 
@@ -76,7 +76,7 @@ export class ServerEntities extends Entities
     id: string,
     name: string,
     cathegory: Entity.NameCathegory,
-    passwordHash: string = null
+    passwordHash: (string | null) = null
   )
   {
     // Non-unique names are always available.
@@ -118,7 +118,7 @@ export class ServerEntities extends Entities
     name: string,
     // 'null' means that entity won't have unique name.
     cathegory: Entity.NameCathegory = null,
-    passwordHash = null
+    passwordHash: (string | null) = null
   )
   : Promise<T>
   {
@@ -224,7 +224,7 @@ export class ServerEntities extends Entities
     // Prototype entities can have a name, but it can't
     // be unique because it will be inherited by instances
     // and descendant prototypes.
-    name: string = null
+    name: (string | null) = null
   )
   : Promise<T>
   {

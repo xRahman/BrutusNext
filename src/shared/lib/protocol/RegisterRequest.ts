@@ -36,8 +36,8 @@ export class RegisterRequest extends Packet
 
   // ----------------- Public data ----------------------
 
-  public email: string = null;
-  public password: string = null;
+  public email: (string | null) = null;
+  public password: (string | null) = null;
 
   // ---------------- Public methods --------------------
 
@@ -45,7 +45,7 @@ export class RegisterRequest extends Packet
   //    othwrwise returns the first found reason why it's not.
   public getEmailProblem(): string
   {
-    let problem = null;
+    let problem: (string | null) = null;
 
     if (!this.email)
       return "E-mail address must not be empty.";

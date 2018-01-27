@@ -47,6 +47,12 @@ export class CheckboxInput extends FormInput
 
   public isChecked()
   {
+    if (!this.$input)
+    {
+      ERROR("Invalid $input element");
+      return;
+    }
+
     return this.$input.prop('checked');
   }
 

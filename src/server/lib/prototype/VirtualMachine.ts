@@ -102,7 +102,7 @@ export class VirtualMachine
   // Returns precompiled vmScript.
   public static compileVmScript(scriptName: string, code: string)
   {
-    let vmScript = null;
+    let vmScript: any = null;
 
     try
     {

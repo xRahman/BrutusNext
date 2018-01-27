@@ -22,7 +22,7 @@ export class GameEntity extends ContainerEntity
 {
   // ----------------- Public data ----------------------
 
-  public data: GameEntityData = null;
+  public data: (GameEntityData | null) = null;
     protected static data: Attributes =
     {
       // Entity shared data are sent to the client
@@ -119,7 +119,7 @@ export class GameEntity extends ContainerEntity
     msgType: MessageType,
     // 'sender' can be null if there is no appropriate sending entity
     // (for example when player is receiving output from using a command).
-    sender: GameEntity = null
+    sender: (GameEntity | null) = null
   )
   {
     let message = new Message(text, msgType);
@@ -229,7 +229,7 @@ export class GameEntity extends ContainerEntity
   // ----------------- Private data ---------------------
 
   // 'null' if no player is connected to this entity.
-  public connection: Connection = null;
+  public connection: (Connection | null) = null;
     private static connection: Attributes =
     {
       saved: false
@@ -263,7 +263,7 @@ export class GameEntity extends ContainerEntity
   // Entity this entity is contained in.
   // (Rooms are contained in Areas, characters may be in rooms or object,
   // objects may be in room or object, etc.)
-  ///protected location = null;
+  ///protected location: (GameEntity | null) = null;
 
   // ---------------- Command handlers ------------------
 

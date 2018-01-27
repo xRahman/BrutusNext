@@ -48,7 +48,8 @@ export class CharacterNameInput extends TextInput
   // ChargenRequest.getInvalidCharacterProblem().
   private removeInvalidCharacters()
   {
-    let oldValue = this.$input.val();
+    // Make sure that we work with a string.
+    let oldValue = "" + this.$input.val();
     let newValue = "";
     let regexp = ChargenRequest.VALID_CHARACTERS_REGEXP;
 

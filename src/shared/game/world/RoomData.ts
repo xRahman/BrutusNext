@@ -90,7 +90,7 @@ export class RoomData extends GameEntityData
   /// nebo tak něco (roomy mohou být v různých souřadných soustavách).
   /// - to by ale asi bylo vhodné doplnit přímo do Coords.
   // Absolute coordinates (in the world).
-  public coords: Coords = null;
+  public coords: (Coords | null) = null;
   
   // Hasmap indexed by shortened exit names ('n', 'sw', 'nwu', etc.).
   public exits = new Map<string, ExitData>();

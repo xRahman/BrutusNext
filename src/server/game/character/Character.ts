@@ -22,7 +22,7 @@ import {Move} from '../../../shared/lib/protocol/Move';
 
 export class Character extends GameEntity
 {
-  protected timeOfCreation = null;
+  protected timeOfCreation: (Time | null) = null;
 
 /// TODO: Tohle by asi nemělo být tady - admin levely jsou externě
 /// v Admins.
@@ -41,7 +41,7 @@ export class Character extends GameEntity
   // ----------------- Private data --------------------- 
 
   // Character is placed into this entity when entering game.
-  private loadLocation: GameEntity = null;
+  private loadLocation: (GameEntity | null) = null;
 
   // ----------------- Public data ----------------------
 

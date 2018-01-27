@@ -22,8 +22,8 @@ export class LoginRequest extends Packet
 
   // ----------------- Public data ----------------------
 
-  public email: string = null;
-  public password: string = null;
+  public email: (string | null) = null;
+  public password: (string | null) = null;
 }
 
 Classes.registerSerializableClass(LoginRequest);

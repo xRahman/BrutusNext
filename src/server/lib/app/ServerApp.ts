@@ -41,7 +41,7 @@ export class ServerApp extends App
   // ----------------- Private data ---------------------
 
   // 'null' means no message of the day is set at the moment.
-  private messageOfTheDay: string = null;
+  private messageOfTheDay: (string | null) = null;
 
   private admins = new Admins();
 

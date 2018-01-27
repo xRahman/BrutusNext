@@ -157,7 +157,8 @@ export class Serializable extends Attributable
 
   // Extracts data from plain javascript Object to this instance.
   // -> Returns 'null' on failure.
-  public deserialize(jsonObject: Object, path: string = null): Serializable
+  public deserialize(jsonObject: Object, path: (string | null) = null)
+  : Serializable
   {
     // Check version and input data validity.
     if (!this.deserializeCheck(jsonObject, path))
@@ -239,7 +240,8 @@ export class Serializable extends Attributable
   }
 
 //+
-  protected checkVersion(jsonObject: Object, path: string = null): boolean
+  protected checkVersion(jsonObject: Object, path: (string | null) = null)
+  : boolean
   {
     let version = jsonObject[Serializable.VERSION_PROPERTY];
 
@@ -662,7 +664,7 @@ export class Serializable extends Attributable
   private deserializeCheck
   (
     jsonObject: Object,
-    path: string = null
+    path: (string | null) = null
   )
   : boolean
   {
@@ -690,7 +692,8 @@ export class Serializable extends Attributable
 
 //+
   // Checks that 'jsonObject' contains property 'className'.
-  private checkClassName(jsonObject: Object, path: string = null): boolean
+  private checkClassName(jsonObject: Object, path: (string | null) = null)
+  : boolean
   {
     let jsonClassName = jsonObject[Serializable.CLASS_NAME_PROPERTY];
 

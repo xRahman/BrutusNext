@@ -234,10 +234,10 @@ export abstract class Entities
       jsonString,
       // Id needs to be provided when loading from file because
       // it's saved as file name rather than into the file.
-      id = null,
+      id = <string | null> null,
       // Path should be provide when loading from file. It's only
       // used in error messages.
-      path = null,
+      path = <string | null> = null,
       // Overwrite existing entity
       // (when overwrite is 'true', attempt to overwrite existing
       //  entity will log an error).
@@ -628,7 +628,7 @@ export abstract class Entities
     path: string
   )
   {
-    let prototypeId: string = null;
+    let prototypeId: (string | null) = null;
 
     if (prototypeEntity === null)
     {

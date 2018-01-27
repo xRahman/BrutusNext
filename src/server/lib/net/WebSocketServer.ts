@@ -51,7 +51,7 @@ export class WebSocketServer
 
   // ----------------- Private data ---------------------
 
-  private webSocketServer: WebSocket.Server = null;
+  private webSocketServer: (WebSocket.Server | null) = null;
 
   // ---------------- Public methods --------------------
 

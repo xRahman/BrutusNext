@@ -42,11 +42,11 @@ export class ScrollWindow extends TitledWindow
 
   // ----------------- Public data ----------------------
 
-  public output: ScrollWindowOutput = null;
+  public output: (ScrollWindowOutput | null) = null;
 
   // ----------------- Private data ---------------------
 
-  private input: ScrollWindowInput = null;
+  private input: (ScrollWindowInput | null) = null;
 
   // ---------------- Public methods --------------------
 

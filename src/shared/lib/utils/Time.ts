@@ -33,20 +33,21 @@ import {JsonObject} from '../../../shared/lib/json/JsonObject';
 export class Time extends Serializable
 {
   // Same parameters as for Date() can be used.
-  constructor(param: any = null)
+  constructor(param?: any)
   {
     super();
 
     this.version = 0;
 
-    let date;
+    let date: Date;
 
     // Whatever parameter we get, we use it to construct
     // a Date() object.
-    if (param === null)
-      date = new Date();
+    if (param)
+      date = new Date(param);
     else
-     date = new Date(param);
+      date = new Date();
+      
 
     // And read the number of miliseconds from it.
     this.time = date.getTime();

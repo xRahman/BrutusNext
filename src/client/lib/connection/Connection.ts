@@ -35,17 +35,17 @@ import '../../../client/lib/protocol/EnterGameResponse';
 
 export class Connection implements SharedConnection
 {
-  private socket: ClientSocket = null;
+  private socket: (ClientSocket | null) = null;
 
   // -------------- Static class data -------------------
 
   // ----------------- Public data ----------------------
 
-  public activeAvatar: Avatar = null;
+  public activeAvatar: (Avatar | null) = null;
 
   // ----------------- Private data ---------------------
 
-  private account: Account = null;
+  private account: (Account | null) = null;
 
   private avatars = new Set<Avatar>();
 
@@ -189,7 +189,7 @@ export class Connection implements SharedConnection
     this.sendSystemMessage(SystemMessage.Type.CLIENT_CLOSED_BROWSER_TAB, null);
   }
 
-  public close(reason: string = null)
+  public close(reason: (string | null) = null)
   {
     if (this.socket)
       this.socket.close(reason);

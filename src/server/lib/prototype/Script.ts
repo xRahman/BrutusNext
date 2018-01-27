@@ -27,14 +27,14 @@ export class Script extends Serializable
   public name: string = "";
 
   // Name of the prototype this script belongs to.
-  public prototype: string = null;
+  public prototype: (string | null) = null;
 
   // Code that will be be compiled into a function and assigned to a prototype.
-  public code: string = "";
+  public code = "";
 
   // Calling this function will execute compiled script code.
   // (Only after the script is compiled of course.)
-  public run = null;
+  public run: ((...args: any[]) => void | null) = null;
     private static run: Attributes =
     {
       saved: false
@@ -42,7 +42,7 @@ export class Script extends Serializable
 
   // When the scrit is compiled, this is the function that represents
   // the script.
-  private internalFunction = null;
+  private internalFunction: any = null;
     // Do not save variable internalFunction.
     private static internalFunction: Attributes =
     {
@@ -324,7 +324,7 @@ export class Script extends Serializable
   {
     // Adds'use strict';, function header and {} to the script code.
     let fullCode = this.getFullCode();
-    let transpiledCode = null;
+    let transpiledCode = "";
 
     try
     {

@@ -27,10 +27,10 @@ export class Avatar
 
   // ----------------- Public data ----------------------
 
-  public scrollWindow: ScrollWindow = null;
+  public scrollWindow: (ScrollWindow | null) = null;
 
   /// MapWindow bude jen jedno pro celou ClientApp.
-  ///public mapWindow: MapWindow = null;
+  ///public mapWindow: (MapWindow | null) = null;
 
   // ----------------- Private data ---------------------
 

@@ -32,7 +32,7 @@ export class ChargenRequest extends Packet
 
   // ----------------- Public data ----------------------
 
-  public characterName: string = null;
+  public characterName: (string | null) = null;
 
   // ---------------- Public methods --------------------
 
@@ -40,7 +40,7 @@ export class ChargenRequest extends Packet
   //    othwrwise returns the first found reason why it's not.
   public getCharacterNameProblem()
   {
-    let problem = null;
+    let problem: (string | null) = null;
 
     if (!this.characterName)
       return "Name must not be empty.";

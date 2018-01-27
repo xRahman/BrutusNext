@@ -200,7 +200,7 @@ export class AbbrevList<T extends GameEntity>
       return result;
 
     let firstKeywordEntityList = entityLists[0].getEntities();
-    let processedEntity = null;
+    let processedEntity: (T | null) = null;
     let match = true;
 
     // Go through entity list matching the first keyword.
@@ -323,7 +323,7 @@ export class AbbrevList<T extends GameEntity>
 
     // If any of abbreviations present in searchName wasn't found,
     // whole serch is a miss.
-    if (entityLists = null)
+    if (entityLists === null)
       return;
 
     // We have found lists of entities that listen to each of requested
@@ -339,7 +339,8 @@ export class AbbrevList<T extends GameEntity>
 
   // 'searchName' is something like 'orc_chieftain'
   // -> Returns array containing an entityList for each abbreviation
-  //    in searchName. Returns null if any of abbreviations is not found.
+  //    in searchName.
+  //    Returns null if any of abbreviations is not found.
   private gatherEntityLists(searchName: string): Array<EntityList<T>>
   {
     // Split searchName into parts separated by underscores.

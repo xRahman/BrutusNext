@@ -142,7 +142,7 @@ export class Game
   // --- Direct references ---
 
   // There is only one world in the game (at the moment).
-  protected world: World = null;
+  protected world: (World | null) = null;
 
   // --------------- Protected methods ------------------
 

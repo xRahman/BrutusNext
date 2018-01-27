@@ -56,7 +56,7 @@ export class RegisterForm extends CredentialsForm
 
   // ----------------- Private data ---------------------
 
-  private $infoLabel: JQuery = null;
+  private $infoLabel: (JQuery | null) = null;
 
   // ---------------- Public methods --------------------
 
@@ -171,7 +171,7 @@ export class RegisterForm extends CredentialsForm
   // ~ Overrides Form.isRequestValid().
   protected isRequestValid(request: RegisterRequest)
   {
-    let problem = null;
+    let problem: (string | null) = null;
 
     if (problem = request.getEmailProblem())
     {

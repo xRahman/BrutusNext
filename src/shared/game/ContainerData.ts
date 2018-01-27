@@ -43,7 +43,7 @@ export class ContainerData extends Serializable
   // ContainerEntity this entity is contained in.
   // (Rooms are contained in Areas, characters may be in rooms or object,
   //  objects may be in room or object, etc.)
-  private location: ContainerEntity = null;
+  private location: (ContainerEntity | null) = null;
 
   // --------------- Public accessors -------------------
 

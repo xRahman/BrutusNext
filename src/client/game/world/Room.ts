@@ -20,7 +20,7 @@ export class Room extends GameEntity
     this.version = 0;
   }
 
-  public data = new RoomData(this);
+  public data: RoomData = new RoomData(this);
 
   // 'true' if the room exists on the server
   // (nonexisting room placeholders are displayed in edit mode).

@@ -91,7 +91,7 @@ export abstract class CredentialsForm extends Form
     this.emailInput = new EmailInput(this);
   }
 
-  protected displayEmailProblem(problem: string)
+  protected displayEmailProblem(problem: string | null)
   {
     this.emailInput.displayProblem(problem);
   }

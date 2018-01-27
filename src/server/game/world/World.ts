@@ -29,11 +29,11 @@ export class World extends GameEntity
 
   // ----------------- Public data ----------------------
 
-  public systemRealm: Realm = null;
-  public systemArea: Area = null;
-  public systemRoom: Room = null;
+  public systemRealm: (Realm | null) = null;
+  public systemArea: (Area | null) = null;
+  public systemRoom: (Room | null) = null;
   // The room newly created player characters spawn to.
-  public tutorialRoom: Room = null;
+  public tutorialRoom: (Room | null) = null;
 
   // ---------------- Protected data --------------------
 

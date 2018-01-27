@@ -136,7 +136,7 @@ export abstract class MudColors
   private static openSpanIfClosed
   (
     parser: { html: string, spanOpen: boolean, activeColor: string },
-    color: string = null
+    color: (string | null) = null
   )
   {
     if (color === null)
@@ -158,7 +158,7 @@ export abstract class MudColors
   (
     parser: { html: string, spanOpen: boolean, activeColor: string },
     characters: string,
-    color: string = null
+    color: (string | null) = null
   )
   {
     this.openSpanIfClosed(parser, color);

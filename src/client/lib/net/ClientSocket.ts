@@ -44,10 +44,10 @@ export class ClientSocket
 
   // ----------------- Private data ---------------------
 
-  private socket: WebSocket = null;
+  private socket: (WebSocket | null) = null;
 
   // Here we remember event listeners so we can remove them
-  // when tho socket closes.
+  // when the socket closes.
   private listeners =
   {
     onopen: null,
@@ -72,7 +72,7 @@ export class ClientSocket
 
   // ----------------- Public data ----------------------
 
-  public connection: Connection = null;
+  public connection: (Connection | null) = null;
 
   // ---------------- Public methods --------------------
 
@@ -181,7 +181,7 @@ export class ClientSocket
   }
 
   // Closes the socket, ending the connection.
-  public close(reason: string = null)
+  public close(reason: (string | null) = null)
   {
     // Code '1000' means normal connection close.
     if (reason)

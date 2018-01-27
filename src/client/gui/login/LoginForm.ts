@@ -37,6 +37,11 @@ export class LoginForm extends CredentialsForm
 
   public displayProblem(response: LoginResponse)
   {
+    let problem = response.getProblem();
+
+    if (problem === null)
+      return;
+
     switch (response.result)
     {
       case LoginResponse.Result.UNDEFINED:

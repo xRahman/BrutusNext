@@ -16,7 +16,7 @@ export class Response extends Packet
   // ----------------- Private data ---------------------
 
   // Description of problem if the request is denied.
-  private problem: string = null;
+  private problem: (string | null) = null;
 
   // --------------- Public accessors -------------------
 

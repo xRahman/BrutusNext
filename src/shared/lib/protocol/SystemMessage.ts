@@ -24,7 +24,7 @@ export class SystemMessage extends Packet
 
   public type = SystemMessage.Type.UNDEFINED;
 
-  public message: string = null;
+  public message: (string | null) = null;
 }
 
 // ------------------ Type declarations ----------------------

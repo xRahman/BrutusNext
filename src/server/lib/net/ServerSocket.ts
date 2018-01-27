@@ -41,7 +41,7 @@ export class ServerSocket
 
   // ----------------- Public data ----------------------
 
-  public connection: Connection = null;
+  public connection: (Connection | null) = null;
 
   // --------------- Public accessors -------------------
 

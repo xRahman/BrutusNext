@@ -4,7 +4,16 @@ TO DO, TO DO, TODO TODO TODO, todotodooooooo.... todotodo...
 TODO: Aktivace "strict" módu v tsconfigu (striktní kontrola null a undefined).
 - Nepovinné parametry bych asi měl zapisovat typescriptově, tzn.
   bla(a?: string), nikoliv bla(a: string = null)
+  - asi nakonec ne (respektive ne nutně), protože do toho parametru někdo může
+    chtít passnout 'null' cíleně (například jako chybovou návratovou hodnotu
+    z jiné funkce.
+- TODO: V object literálech, kde se přiřazuje 'null' do nějaké property,
+  to dělat takhle:
+    var obj = { property: <string | null> null };
 
+TODO: Updatovat node moduly a zkontrolovat, že jsou správně zapsané
+  dependencies (ono to sice není tak podstatný vzhledem k tomu, že mám
+  všechny moduly v repository, ale i tak by to bylo lepší).
 
 --------------------------------------------------------------
 

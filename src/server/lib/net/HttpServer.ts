@@ -93,7 +93,7 @@ export class HttpServer
 
   private port = HttpServer.DEFAULT_PORT;
 
-  private httpServer: http.Server = null;
+  private httpServer: (http.Server | null) = null;
 
   // Websocket server runs inside a http server.
   private webSocketServer = new WebSocketServer();

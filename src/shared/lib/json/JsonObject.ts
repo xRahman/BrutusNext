@@ -37,7 +37,7 @@ export class JsonObject
   }
 
   // Same as JSON.parse() but with exception handling.
-  public static parse(jsonString: string, path: string = null): Object
+  public static parse(jsonString: string, path: (string | null) = null): Object
   {
     let jsonObject = {};
 

@@ -67,12 +67,12 @@ export class FileSystem
       reportErrors: true
     }
   )
-  : Promise<any>
+  : Promise<string>
   {
     if (!FileSystem.isPathRelative(path))
       return null;
 
-    let data = null;
+    let data: (string | null) = null;
     let encoding = param.binary ?
       FileSystem.BINARY_FILE_ENCODING : FileSystem.TEXT_FILE_ENCODING;
 
@@ -110,12 +110,12 @@ export class FileSystem
   }
 
   // -> Returns data read from file, 'null' if file could not be read.
-  public static readFileSync(path: string): any
+  public static readFileSync(path: string): (string | null)
   {
     if (!FileSystem.isPathRelative(path))
       return null;
 
-    let data = null;
+    let data: (string | null) = null;
 
     try
     {
@@ -284,7 +284,7 @@ export class FileSystem
     if (!FileSystem.isPathRelative(path))
       return null;
 
-    let fileNames = null;
+    let fileNames: (Array<string> | null) = null;
 
     try
     {
@@ -356,7 +356,7 @@ export class FileSystem
     if (!FileSystem.isPathRelative(path))
       return null;
 
-    let fileStats = null;
+    let fileStats: (fs.Stats | null) = null;
 
     try
     {

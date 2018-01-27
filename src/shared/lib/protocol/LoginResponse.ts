@@ -28,11 +28,9 @@ export class LoginResponse extends Response
 
   // ----------------- Public data ----------------------
 
-  // Is the request accepted?
   public result = LoginResponse.Result.UNDEFINED;
 
-  // Serialized account data.
-  public serializedAccount: SerializedEntity = null;
+  public serializedAccount: (SerializedEntity | null) = null;
 
   public serializedCharacters = new Array<SerializedEntity>();
 

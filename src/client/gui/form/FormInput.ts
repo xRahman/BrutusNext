@@ -73,6 +73,12 @@ export abstract class FormInput extends Component
 
   public displayProblem(problem: string)
   {
+    if (!this.$problem)
+    {
+      ERROR("Invalid $problem element");
+      return;
+    }
+
     this.$createText
     (
       {

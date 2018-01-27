@@ -35,12 +35,12 @@ export class Windows
 
   // There is just one map window per ClientApp.
   // When avatar is switched, content is redrawn.
-  private mapWindow: MapWindow = null;
+  private mapWindow: (MapWindow | null) = null;
 
   /// To be deleted.
-  ///private activeScrollWindow: ScrollWindow = null;
+  ///private activeScrollWindow: (ScrollWindow | null) = null;
 
-  private activeStandaloneWindow: StandaloneWindow = null;
+  private activeStandaloneWindow: (StandaloneWindow | null) = null;
 
   // --------------- Static accessors -------------------
 

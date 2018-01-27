@@ -15,12 +15,12 @@ export abstract class App
 {
   // -------------- Static class data -------------------
 
-  protected static instance: App = null;
+  protected static instance: (App | null) = null;
 
   // ---------------- Protected data --------------------
 
-  protected entities: Entities = null;
-  protected prototypes: Prototypes = null;
+  protected entities: (Entities | null) = null;
+  protected prototypes: (Prototypes | null) = null;
 
   // --------------- Static accessors -------------------
 

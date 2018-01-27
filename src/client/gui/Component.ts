@@ -583,7 +583,7 @@ export module Component
 
   interface CommonParameters
   {
-    $parent?: JQuery;
+    $parent?: JQuery | null;
     insertMode?: InsertMode;
     gCssClass?: string;
     sCssClass?: string;

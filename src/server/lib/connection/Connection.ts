@@ -43,12 +43,12 @@ export class Connection implements SharedConnection
 
   // ----------------- Public data ----------------------
 
-  public account: Account = null;
-  public ingameEntity: GameEntity = null;
+  public account: (Account | null) = null;
+  public ingameEntity: (GameEntity | null) = null;
 
   // ----------------- Private data ---------------------
 
-  protected socket: ServerSocket = null;
+  protected socket: (ServerSocket | null) = null;
 
   // --------------- Public accessors -------------------
 

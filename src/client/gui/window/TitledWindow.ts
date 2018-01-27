@@ -43,9 +43,9 @@ export class TitledWindow extends Window
 
   // ---------------- Protected data --------------------
 
-  protected $title: JQuery | null = null;
-  protected $titleBar: JQuery | null = null;
-  protected $content: JQuery | null = null;
+  protected $title: (JQuery | null) = null;
+  protected $titleBar: (JQuery | null) = null;
+  protected $content: (JQuery | null) = null;
 
   // ---------------- Public methods --------------------
 

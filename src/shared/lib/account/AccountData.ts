@@ -27,7 +27,7 @@ export class AccountData extends Serializable
 
   // Last logged or created character on this account
   // (this character is selected when used enters charselect window).
-  public lastActiveCharacter: Character = null;
+  public lastActiveCharacter: (Character | null) = null;
 
   // List (hashmap) of characters on this account.
   public characters = new Map<string, Character>();

@@ -60,9 +60,9 @@ export class Coords
 
   // ----------------- Public data ----------------------
 
-  public s = null;
-  public e = null;
-  public u = null;
+  public s: (number | null) = null;
+  public e: (number | null) = null;
+  public u: (number | null) = null;
 
   // --------------- Static accessors -------------------
 

@@ -54,7 +54,7 @@ export class MapWindow extends TitledWindow
 
   // Prevents map updating until MapWindow.RESIZE_UPDATE_DELAY
   // miliseconds after last 'window.resize' event.
-  private resizeTimeoutMilliseconds: (number | null) = null;
+  private resizeTimeout: (NodeJS.Timer | null) = null;
 
   // --------------- Static accessors -------------------
 
@@ -75,9 +75,9 @@ export class MapWindow extends TitledWindow
   //  (Executes when html document is resized.)
   public onDocumentResize()
   {
-    clearTimeout(this.resizeTimeoutMilliseconds);
+    clearTimeout(this.resizeTimeout);
 
-    this.resizeTimeoutMilliseconds = setTimeout
+    this.resizeTimeout = setTimeout
     (
       // 'updateMap()' will only be called MapWindow.RESIZE_UPDATE_DELAY
       // miliseconds after the last 'window.resize' event fired.

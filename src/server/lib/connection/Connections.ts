@@ -49,7 +49,7 @@ export class Connections
   // Sends a message to all connections.
   // If 'visibility' is not 'null', message is only sent to connections
   // with valid ingame entity with sufficient AdminLevel.
-  public static send(message: Message, visibility: AdminLevel = null)
+  public static send(message: Message, visibility: (AdminLevel | null) = null)
   {
     for (let connection of ServerApp.connections.connectionList)
     {

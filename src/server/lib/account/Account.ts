@@ -50,7 +50,7 @@ export class Account extends ServerEntity
 
   // ----------------- Private data ---------------------
 
-  private connection: Connection = null;
+  private connection: (Connection | null) = null;
     private static connection: Attributes =
     {
       saved: false,
@@ -69,10 +69,10 @@ export class Account extends ServerEntity
       sentToServer: false
     };
 
-  private timeOfCreation: Time = null;
+  private timeOfCreation: (Time | null) = null;
 
-  private lastLoginAddress: string = null;
-  private lastLoginTime: Time = null;
+  private lastLoginAddress: (string | null) = null;
+  private lastLoginTime: (Time | null) = null;
 
   // --------------- Public accessors -------------------
 

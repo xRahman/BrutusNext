@@ -31,10 +31,10 @@ export class EnterGameResponse extends Response
   public result = EnterGameResponse.Result.UNDEFINED;
 
   // Where did the character entered game.
-  public characterMove: Move = null;
+  public characterMove: (Move | null) = null;
 
   // Serialized data of 'loadLocation' entity.
-  public serializedLoadLocation: SerializedEntity = null;
+  public serializedLoadLocation: (SerializedEntity | null) = null;
 
   // ---------------- Public methods --------------------
 

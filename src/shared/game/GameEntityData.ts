@@ -20,7 +20,7 @@ export class GameEntityData extends ContainerData
   ///   z Entity se posílat budou (což je ok, client-side entity
   ///   je má určitě taky).
   /*
-  public name: string = null;
+  public name: (string | null) = null;
   */
 
   public description = "Unfinished entity.";

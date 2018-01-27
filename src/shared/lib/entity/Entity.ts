@@ -52,7 +52,7 @@ export class Entity extends Serializable
   // ----------------- Private data ----------------------
 
   // Entity name.
-  private name = null;
+  private name: (string | null) = null;
 
   // In what cathegory is the name unique (accounts, characters, world...).
   // 'null' means that name is not unique.
@@ -62,7 +62,7 @@ export class Entity extends Serializable
   //  of a prototype entity is inherited by it's instances and descendant
   //  prototypes so it woudn't really be unique even if we set a name
   //  cathegory to it.)
-  private nameCathegory: Entity.NameCathegory = null;
+  private nameCathegory: (Entity.NameCathegory | null) = null;
 
   // All prototypeNames have to be unique. This is enforced
   // by creating a name lock file in /data/names/prototypes
@@ -77,13 +77,13 @@ export class Entity extends Serializable
   //   Instance entities inherit this property from their
   // prototype entity so you can use it to quickly check
   // what prototype is the instance entity based on.
-  public prototypeName: string = null;
+  public prototypeName: (string | null) = null;
 
   // ------------------------------------------------- //
   //                   Unique entity id                //
   // ------------------------------------------------- //
 
-  private id: string = null;
+  private id: (string | null) = null;
     private static id: Attributes =
     {
       // Property 'id' is not saved to file, because it is saved
@@ -101,7 +101,7 @@ export class Entity extends Serializable
   // Reference to entity which serves as prototype object to this
   // entity. Only root prototype entities (created in Classes)
   // have 'null' value of 'prototypeEntity'.
-  private prototypeEntity: Entity = null;
+  private prototypeEntity: (Entity | null) = null;
     private static prototypeEntity: Attributes =
     {
       saved: true,
@@ -148,11 +148,11 @@ export class Entity extends Serializable
   // 'sLocation' entity (in other words: entity 'sLocation'
   // has a hasmap 'sNames' which maps 'sName' of this entity
   // to the reference to this entity).
-  private sName: string = null;
+  private sName: (string | null) = null;
 
   // Reference to the entity which can translate our 'sName'
   // to the reference to this entity.
-  private sLocation: Entity = null;
+  private sLocation: (Entity | null) = null;
 
   // Hasmap translating symbolic names of entities to respective
   // references.
@@ -176,7 +176,7 @@ export class Entity extends Serializable
   public async setName
   (
     name: string,
-    cathegory: Entity.NameCathegory = null,
+    cathegory: (Entity.NameCathegory | null) = null,
     // This should only be 'false' if you have created
     // a name lock file prior to calling setName().
     createNameLock = true

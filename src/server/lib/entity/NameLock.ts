@@ -41,7 +41,7 @@ export class NameLock
     id: string,
     name: string,
     cathegoryName: string,
-    passwordHash: string = null
+    passwordHash: (string | null) = null
   )
   {
     let fileContents = { id: id };

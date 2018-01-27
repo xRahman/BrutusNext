@@ -70,7 +70,10 @@ export class Document
       return;
     }
 
-    if (ClientApp.state === ClientApp.State.IN_GAME)
-      Windows.activeScrollWindow.onKeyDown(event);
+    if (Windows.activeScrollWindow)
+    {
+      if (ClientApp.state === ClientApp.State.IN_GAME)
+        Windows.activeScrollWindow.onKeyDown(event);
+    }
   }
 }

@@ -22,7 +22,7 @@ export class EnterGameRequest extends Packet
 
   // ----------------- Public data ----------------------
 
-  public characterId: string = null;
+  public characterId: (string | null) = null;
 }
 
 Classes.registerSerializableClass(EnterGameRequest);

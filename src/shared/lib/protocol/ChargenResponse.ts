@@ -35,10 +35,10 @@ export class ChargenResponse extends Response
   // (We send account back to client, not the created character,
   //  because client will need updated account to display character
   //  select form).
-  public serializedAccount: SerializedEntity = null;
+  public serializedAccount: (SerializedEntity | null) = null;
 
   // Serialized data of newly added character.
-  public serializedCharacter: SerializedEntity = null;
+  public serializedCharacter: (SerializedEntity | null) = null;
 
   // ---------------- Public methods --------------------
 

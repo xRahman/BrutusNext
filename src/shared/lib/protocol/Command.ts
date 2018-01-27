@@ -22,7 +22,7 @@ export class Command extends Packet
 
   // ----------------- Public data ----------------------
 
-  public command: string = null;
+  public command: (string | null) = null;
 }
 
 Classes.registerSerializableClass(Command);

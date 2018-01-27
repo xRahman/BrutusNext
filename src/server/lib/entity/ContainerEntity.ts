@@ -32,7 +32,7 @@ export class ContainerEntity extends ServerEntity
   // ContainerEntity this entity is contained in.
   // (Rooms are contained in Areas, characters may be in rooms or object,
   //  objects may be in room or object, etc.)
-  protected location: ContainerEntity = null;
+  protected location: (ContainerEntity | null) = null;
 
   // ----------------- Private data ---------------------
 
