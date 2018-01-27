@@ -31,11 +31,11 @@ export class CharselectWindow extends FormWindow
   // ----------------- Private data ---------------------
 
   // ~ Overrides FormWindow.form.
-  private $enterGameButton: JQuery = null;
+  private $enterGameButton: (JQuery | null) = null;
 
   // ----------------- Public data ---------------------- 
 
-  public form: CharselectForm = null;
+  public form: (CharselectForm | null) = null;
 
   // ---------------- Private methods -------------------
 

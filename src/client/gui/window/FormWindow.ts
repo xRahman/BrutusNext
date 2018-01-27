@@ -13,7 +13,7 @@ export class FormWindow extends StandaloneWindow
 {
   // ----------------- Public data ---------------------- 
 
-  public form: Form = null;
+  public form: Form | null = null;
 
   // ---------------- Event handlers --------------------
 

@@ -1,6 +1,13 @@
 TO DO, TO DO, TODO TODO TODO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+TODO: Aktivace "strict" módu v tsconfigu (striktní kontrola null a undefined).
+- Nepovinné parametry bych asi měl zapisovat typescriptově, tzn.
+  bla(a?: string), nikoliv bla(a: string = null)
+
+
+--------------------------------------------------------------
+
 TODO: /shared/ContainerEntity má property 'data', což nejspíš konfliktí
 s property 'data' typu GameEntityData.
 

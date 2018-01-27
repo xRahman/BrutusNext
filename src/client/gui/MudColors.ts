@@ -66,7 +66,7 @@ export abstract class MudColors
   // For colorless messages, no color is specified unless 'baseColor' is
   // provided. It means that text color or parent html element is used.
   // -> Returns html that creates the element.
-  public static htmlize(message: string, baseColor: string = null)
+  public static htmlize(message: string, baseColor: (string | null) = null)
   {
     if (this.hasNoColors(message))
       return this.htmlizeColorlessMessage(message, baseColor);

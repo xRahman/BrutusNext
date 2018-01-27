@@ -102,10 +102,10 @@ export class SvgMap extends Component
 
   // --- d3 elements ---
 
-  private d3Map = null;
-  private d3Rooms = null;
-  private d3Exits = null;
-  private d3Tags = null;
+  private d3Map: (d3Selection | null) = null;
+  private d3Rooms: (d3Selection | null) = null;
+  private d3Exits: (d3Selection | null) = null;
+  private d3Tags: (d3Selection | null) = null;
 
   // --------------- Static accessors -------------------
 

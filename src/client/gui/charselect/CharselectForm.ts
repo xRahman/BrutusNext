@@ -45,7 +45,7 @@ export class CharselectForm extends Form
 
   // ----------------- Private data ---------------------
 
-  private $charlist: JQuery = null;
+  private $charlist: (JQuery | null) = null;
 
   // Key: character id
   // Value: charplate

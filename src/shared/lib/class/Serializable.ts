@@ -157,7 +157,7 @@ export class Serializable extends Attributable
 
   // Extracts data from plain javascript Object to this instance.
   // -> Returns 'null' on failure.
-  public deserialize(jsonObject: Object, path: string = null)
+  public deserialize(jsonObject: Object, path: string = null): Serializable
   {
     // Check version and input data validity.
     if (!this.deserializeCheck(jsonObject, path))

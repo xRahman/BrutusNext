@@ -28,7 +28,7 @@ export class ChargenWindow extends FormWindow
   // ----------------- Public data ---------------------- 
 
   // ~ Overrides FormWindow.form.
-  public form: ChargenForm = null;
+  public form: (ChargenForm | null) = null;
 
   // ---------------- Public methods --------------------
 

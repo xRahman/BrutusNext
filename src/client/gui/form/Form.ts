@@ -50,9 +50,9 @@ export abstract class Form extends Component
 
   // ---------------- Protected data --------------------
 
-  protected $submitButton: JQuery = null;
-  protected $errorLabel: JQuery = null;
-  protected $errorLabelContainer: JQuery = null;
+  protected $submitButton: (JQuery | null) = null;
+  protected $errorLabel: (JQuery | null) = null;
+  protected $errorLabelContainer: (JQuery | null) = null;
 
   // ----------------- Private data ---------------------
 

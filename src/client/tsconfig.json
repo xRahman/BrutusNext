@@ -3,6 +3,7 @@
   {
     "target": "es6",
     "module": "amd",  // 'amd' is used by require.js module loader.
+    "strict": true,   // Enforce strict checking of 'null' and 'undefined'.
     "charset": "UTF-8",
     "moduleResolution": "node",
     "newLine": "LF",

@@ -82,7 +82,7 @@ export abstract class Component
   // ----------------- Public data ---------------------- 
 
   // JQuery element representing this component in DOM.
-  public $element: JQuery = null;
+  public $element: (JQuery | null) = null;
 
   // --------------- Public accessors -------------------
 

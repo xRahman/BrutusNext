@@ -39,7 +39,7 @@ export class ChargenForm extends Form
 
   // ----------------- Private data ---------------------
 
-  private characterNameInput: CharacterNameInput = null;
+  private characterNameInput: (CharacterNameInput | null) = null;
 
   // ---------------- Public methods --------------------
 

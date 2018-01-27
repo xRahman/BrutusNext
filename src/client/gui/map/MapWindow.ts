@@ -50,11 +50,11 @@ export class MapWindow extends TitledWindow
 
   // ----------------- Private data ---------------------
 
-  private svgMap: SvgMap = null;
+  private svgMap: (SvgMap | null) = null;
 
   // Prevents map updating until MapWindow.RESIZE_UPDATE_DELAY
   // miliseconds after last 'window.resize' event.
-  private resizeTimeout = null;
+  private resizeTimeoutMilliseconds: (number | null) = null;
 
   // --------------- Static accessors -------------------
 
@@ -75,9 +75,9 @@ export class MapWindow extends TitledWindow
   //  (Executes when html document is resized.)
   public onDocumentResize()
   {
-    clearTimeout(this.resizeTimeout);
+    clearTimeout(this.resizeTimeoutMilliseconds);
 
-    this.resizeTimeout = setTimeout
+    this.resizeTimeoutMilliseconds = setTimeout
     (
       // 'updateMap()' will only be called MapWindow.RESIZE_UPDATE_DELAY
       // miliseconds after the last 'window.resize' event fired.

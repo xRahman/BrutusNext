@@ -74,7 +74,7 @@ export class Charplate extends Component
 
   // ----------------- Private data ---------------------
 
-  private $radio: JQuery = null;
+  private $radio: (JQuery | null) = null;
 
   // ---------------- Public methods --------------------
 
