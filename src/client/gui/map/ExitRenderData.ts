@@ -25,7 +25,7 @@ export class ExitRenderData
   // // Client-side id created by concatenating of id's
   // // of connected rooms in alphabetical order.
   // // (It also serves as respective svg element id).
-  // private id: string = null;
+  // private id: (string | null) = null;
 
   // If the exit leads to unexplored room, it is considered
   // to be two-way until the room is explored (player doesn't

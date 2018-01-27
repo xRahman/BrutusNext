@@ -27,11 +27,11 @@ export class Windows
   // All created windows (hidden or not).
   private windows = new Set<Window>();
 
-  private loginWindow: LoginWindow = null;
-  private registerWindow: RegisterWindow = null;
-  private termsWindow: TermsWindow = null;
-  private charselectWindow: CharselectWindow = null;
-  private chargenWindow: ChargenWindow = null;
+  private loginWindow: (LoginWindow | null) = null;
+  private registerWindow: (RegisterWindow | null) = null;
+  private termsWindow: (TermsWindow | null) = null;
+  private charselectWindow: (CharselectWindow | null) = null;
+  private chargenWindow: (ChargenWindow | null) = null;
 
   // There is just one map window per ClientApp.
   // When avatar is switched, content is redrawn.

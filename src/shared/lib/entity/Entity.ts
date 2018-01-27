@@ -21,8 +21,8 @@
   (unlinke in javascript prototypal inheritance where
   nonprimitive properties of the instance are references
   to the matching properties on the prototype so writing
-  to them actually modify the prototype object instead of
-  creating own propety on the instance).
+  to them actually modifies the prototype object instead
+  of creating own propety on the instance).
 */
 
 'use strict';

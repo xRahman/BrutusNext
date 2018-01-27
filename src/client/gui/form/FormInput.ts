@@ -50,8 +50,8 @@ export abstract class FormInput extends Component
 
   // ---------------- Protected data --------------------
 
-  protected $input: JQuery = null;
-  protected $problem: JQuery = null;
+  protected $input: (JQuery | null) = null;
+  protected $problem: (JQuery | null) = null;
 
   // ---------------- Public methods --------------------
 

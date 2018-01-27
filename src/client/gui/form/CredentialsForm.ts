@@ -38,9 +38,9 @@ export abstract class CredentialsForm extends Form
 
   // ---------------- Protected data --------------------
 
-  protected emailInput: EmailInput = null;
-  protected passwordInput: PasswordInput = null;
-  protected rememberMeCheckbox: CheckboxInput = null;
+  protected emailInput: (EmailInput | null) = null;
+  protected passwordInput: (PasswordInput | null) = null;
+  protected rememberMeCheckbox: (CheckboxInput | null) = null;
 
   // ---------------- Public methods --------------------
 

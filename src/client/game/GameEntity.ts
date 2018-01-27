@@ -15,7 +15,7 @@ export class GameEntity extends Entity
 {
   // ----------------- Public data ----------------------
   
-  public data: GameEntityData = null;
+  public data: (GameEntityData | null) = null;
 
   // ---------------- Protected data --------------------
 

@@ -29,7 +29,7 @@ export class RegisterWindow extends FormWindow
 
   // ----------------- Private data ---------------------
 
-  private $termsLink: JQuery = null;
+  private $termsLink: JQuery | null = null;
 
   // ----------------- Public data ---------------------- 
 

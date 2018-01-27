@@ -22,17 +22,17 @@ export class Exit extends GameEntity
     this.version = 0;
   }
 
-  public data = new ExitData(this);
+  public dat = new ExitData(this);
 
   // Connected rooms. Order only matters if this is a one-way exit.
-  public from: Room = null;
-  public to: Room = null;
+  public from: (Room | null) = null;
+  public to: (Room | null) = null;
 
 /// Zkusím jako html id použít entity id.
   /*
   // Client-side id, not entity id.
   // (It is composed from room coordinates by MapData.composeRoomId()).
-  private renderId: string = null;
+  private renderId: (string | null) = null;
   */
 
   // --------------- Public accessors -------------------
