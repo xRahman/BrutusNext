@@ -1,20 +1,28 @@
-# get into the master branch
+How to move uncommited changes to a new branch and reset 'master' branch
+-------------------------------------------------------------------------
+
+# Get into the master branch.
 git checkout master
 
-# create a new branch for the changes and check it out
+# Create a new branch for the changes and check it out.
 git checkout -b dev_branch
 
-# stash the changes until we revert master
+# Stash the changes until we revert master.
 git stash
 
-# go back to master
+# Go back to master.
 git checkout master
 
-# reset to the last commit
+# Reset to the last commit.
 git reset --hard HEAD
 
-# go back to dev_branch
+# Go back to dev_branch.
 git checkout dev_branch
 
-# re-apply the stashed changes and you are good to go
+# Re-apply the stashed changes and you are good to go.
 git stash apply
+
+
+# Optional: Set remote origin to a new branch
+#  (so a 'git pull' and 'git push' will work on the new branch).
+git branch --set-upstream-to=origin/dev_branch dev_branch
