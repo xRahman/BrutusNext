@@ -55,7 +55,7 @@ export class Connections
     {
       if (visibility !== null)
       {
-        if (!Entity.isValid(connection.ingameEntity))
+        if (!connection.ingameEntity || !connection.ingameEntity.isValid())
           continue;
 
         // Skip game entities that don't have sufficient admin level

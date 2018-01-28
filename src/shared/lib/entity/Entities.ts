@@ -52,7 +52,7 @@ export abstract class Entities
   // be searched for.
   public static release(entity: Entity)
   {
-    if (!Entity.isValid(entity))
+    if (!entity || !entity.isValid())
     {
       ERROR("Attempt to release invalid entity " + entity.getErrorIdString()
         + " from Entities");
@@ -355,17 +355,16 @@ export abstract class Entities
   // -> Returns added entity or 'null' on failure.
   private add(entity: Entity)
   {
-    if (!Entity.isValid(entity))
+    if (!entity)
     {
-      if (entity)
-      {
-        ERROR("Attempt to addd invalid entity "
-          + entity.getErrorIdString() + " to Entities");
-      }
-      else
-      {
-        ERROR("Attempt to addd invalid entity to Entities");
-      }
+      ERROR("Attempt to addd invalid entity to Entities");
+      return null;
+    }
+
+    if (!entity.isValid())
+    {
+      ERROR("Attempt to add invalid entity " + entity.getErrorIdString()
+        + " to Entities");
       return null;
     }
 

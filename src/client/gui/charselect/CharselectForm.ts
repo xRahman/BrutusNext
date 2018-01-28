@@ -55,11 +55,23 @@ export class CharselectForm extends Form
 
   public onSelectionChange()
   {
+    if (!this.$submitButton)
+    {
+      ERROR("Missing $submitButton");
+      return;
+    }
+
     this.enable(this.$submitButton);
   }
 
   public focusCharlist()
   {
+    if (!this.$charlist)
+    {
+      ERROR("Missing $charlist");
+      return;
+    }
+
     this.$charlist.focus();
   }
 
@@ -98,6 +110,12 @@ export class CharselectForm extends Form
     direction: CharselectForm.SelectDirection
   )
   {
+    if (!this.$charlist)
+    {
+      ERROR("Missing $charlist");
+      return;
+    }
+
     if (this.charplates.size === 0)
     {
       // If there are no charplates, just scroll to the top.
@@ -237,6 +255,12 @@ export class CharselectForm extends Form
     bottomScrollPos: number
   )
   {
+    if (!this.$charlist)
+    {
+      ERROR("Missing $charlist. Returning 'false'");
+      return false;
+    }
+
     let scrollPos = this.$charlist.scrollTop();
 
     // Note that 'bottomScrollPos' is always bigger than 'topScrollPoss'
@@ -256,8 +280,22 @@ export class CharselectForm extends Form
     if (charplates.length === 0)
       return 0;
 
+    let $firstChaplate = charplates[0].$element;
+
+    if (!$firstChaplate)
+    {
+      ERROR("Missing $element on first charplate");
+      return 0;
+    }
+
+    if (!charplate.$element)
+    {
+      ERROR("Missing $element on target charplate");
+      return 0;
+    }
+
     // Current position of the first charplate relative to the container.
-    let firstElementPos = charplates[0].$element.position().top;
+    let firstElementPos = $firstChaplate.position().top;
 
     // Current position of target charplate relative to the container.
     let charplateScrollPos = charplate.$element.position().top;
@@ -272,8 +310,20 @@ export class CharselectForm extends Form
     // $charlist 'scrollTop()' position placing 'charplate' at the top.
     let topScrollPos = this.getTopScrollPos(charplate);
 
+    if (!this.$charlist)
+    {
+      ERROR("Missing $charlist");
+      return 0;
+    }
+
     // Height of scrollable area of $charlist element.
     let charlistHeight = this.$charlist.height();
+
+    if (!charplate.$element)
+    {
+      ERROR("Missing $element on charplate");
+      return 0;
+    }
 
     // Parameter means "include margin".
     let charplateOuterHeight = charplate.$element.outerHeight(true);
@@ -283,6 +333,12 @@ export class CharselectForm extends Form
 
   private createCharlist()
   {
+    if (!this.$element)
+    {
+      ERROR("Missing $element");
+      return;
+    }
+
     this.$charlist = this.$createDiv
     (
       {
@@ -300,6 +356,12 @@ export class CharselectForm extends Form
 
   private createSubmitButton()
   {
+    if (!this.$element)
+    {
+      ERROR("Missing $element");
+      return;
+    }
+
     this.$createSubmitButton
     (
       {
@@ -333,6 +395,8 @@ export class CharselectForm extends Form
         ERROR("Invalid direction value");
         break;
     }
+
+    return null;
   }
 
   // -> Returns 'null' on error.
@@ -391,6 +455,12 @@ export class CharselectForm extends Form
   // -> Returns 'null' if no character is selected.
   private getSelectedCharacterId()
   {
+    if (!this.$element)
+    {
+      ERROR("Missing $element");
+      return;
+    }
+
     let id = this.$element.find(':checked').val();
 
     if (!id)

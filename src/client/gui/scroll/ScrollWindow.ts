@@ -322,7 +322,7 @@ export class ScrollWindow extends TitledWindow
   // Handles 'keydown' event fired on html document
   // (it means that this handler runs even if this
   //  window desn't have focus).
-  public onKeyDown(event: JQueryKeyEventObject)
+  public onKeyDown(event: JQueryEventObject)
   {
     let key = event.which;
     let alt = event.altKey;

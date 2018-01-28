@@ -72,7 +72,7 @@ export class TermsWindow extends StandaloneWindow
         $parent: this.$content,
         sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS,
         text: 'Accept',
-        click: (event) => { this.onAcceptClick(event); }
+        click: (event: JQueryEventObject) => { this.onAcceptClick(event); }
       }
     );
   }
@@ -93,7 +93,7 @@ export class TermsWindow extends StandaloneWindow
   // Handles 'keydown' event fired on html document
   // (it means that this handler runs even if this
   //  window desn't have focus).
-  public onKeyDown(event: JQueryKeyEventObject)
+  public onKeyDown(event: JQueryEventObject)
   {
     let key = event.which;
 

@@ -71,7 +71,7 @@ export class RegisterResponse extends SharedRegisterResponse
   {
     let account = this.serializedAccount.restore(Account);
 
-    if (!Entity.isValid(account))
+    if (!account || !account.isValid())
     {
       ERROR("Invalid account in register response");
       return false;

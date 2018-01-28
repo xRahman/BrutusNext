@@ -36,11 +36,11 @@ export class RegisterForm extends CredentialsForm
     );
 
     this.createEmailInput();
-    this.createEmptyLine();
+    this.$createEmptyLine();
     this.createPasswordInput();
-    this.createEmptyLine();
+    this.$createEmptyLine();
     this.createInfoLabel();
-    this.createEmptyLine();
+    this.$createEmptyLine();
     this.createRememberMeCheckbox();
     this.createButtons();
   }
@@ -200,7 +200,7 @@ export class RegisterForm extends CredentialsForm
 
   private createButtons()
   {
-    let $parent = super.createButtonContainer();
+    let $parent = super.$createButtonContainer();
 
     this.$createSubmitButton({ $parent });
     this.createCancelButton({ $parent });
@@ -214,7 +214,7 @@ export class RegisterForm extends CredentialsForm
       {
         sCssClass: Form.RIGHT_BUTTON_S_CSS_CLASS,
         text: 'Cancel',
-        click: (event) => { this.onCancel(event); }
+        click: (event: JQueryEventObject) => { this.onCancel(event); }
       }
     );
 

@@ -57,7 +57,7 @@ export class LoginWindow extends FormWindow
       {
         $parent,
         text: "Register",
-        click: (event) => { this.onRegisterClick(event); }
+        click: (event: JQueryEventObject) => { this.onRegisterClick(event); }
       }
     );
 

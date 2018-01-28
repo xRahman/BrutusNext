@@ -42,7 +42,16 @@ export class ChargenWindow extends FormWindow
   private createChargenForm()
   {
     if (this.form !== null)
-      ERROR("Chargen form already exists");
+    {
+      ERROR("Chargen form already exists. Not creating it again");
+      return;
+    }
+
+    if (!this.$content)
+    {
+      ERROR("Missing $content element. Chargen form is not created");
+      return;
+    }
 
     this.form = new ChargenForm(this, { $parent: this.$content });
   }

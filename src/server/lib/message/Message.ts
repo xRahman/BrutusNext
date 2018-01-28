@@ -103,7 +103,7 @@ export class Message
   )
   {
     // Sender must be valid so we can find her location.
-    if (!Entity.isValid(sender))
+    if (!sender || !sender.isValid())
     {
       ERROR("Invalid sender. Message is not sent");
       return;

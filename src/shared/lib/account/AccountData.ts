@@ -41,7 +41,7 @@ export class AccountData extends Serializable
 
   public updateCharacterReference(character: Character)
   {
-    if (!Entity.isValid(character))
+    if (!character || !character.isValid())
     {
       ERROR("Attempt to update character reference on account"
         + " " + this.account.getErrorIdString() + " with"

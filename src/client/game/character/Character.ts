@@ -23,7 +23,7 @@ export class Character extends GameEntity
     this.version = 0;
   }
 
-  public data = new CharacterData(this);
+  public data: CharacterData = new CharacterData(this);
 
   // --------------- Public accessors -------------------
 
@@ -46,7 +46,7 @@ export class Character extends GameEntity
     let destination =
       ClientEntities.get(move.destinationId);
 
-    if (!Entity.isValid(destination))
+    if (!destination || !destination.isValid())
     {
       ERROR("Unable to enter world with character"
         + " " + this.getErrorIdString() + " because"
@@ -55,7 +55,15 @@ export class Character extends GameEntity
       return false;
     }
 
-    destination.dynamicCast(GameEntity).data.insert(this);
+    let entityData = destination.dynamicCast(GameEntity).data;
+
+    if (!entityData)
+    {
+      ERROR("Invalid entity data on entity " + destination.getErrorIdString());
+      return false;
+    }
+
+    entityData.insert(this);
 
     return true;
   }

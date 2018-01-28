@@ -33,14 +33,14 @@ export class SerializedEntity extends Serializable
 
   public store(entity: Entity, mode: Serializable.Mode)
   {
-    if (!Entity.isValid(entity))
+    if (!entity || !entity.isValid())
     {
       ERROR("Attempt to serialize invalid entity:"
         + " " + entity.getErrorIdString());
       return;
     }
 
-    entity.serializeTree(this.data, mode);
+    entity.serializeAncestorTree(this.data, mode);
   }
 
   public restore<T extends Entity>

@@ -32,11 +32,11 @@ export abstract class Component
 {
   constructor
   (
-    protected parent: Component
+    protected parent: Component | null
   )
   {
     // Root components (like windows) don't have parent.
-    if (parent !== null)
+    if (parent)
       parent.children.add(this);
   }
 
@@ -73,7 +73,7 @@ export abstract class Component
   // ----------------- Private data --------------------- 
 
   // This flag is set to 'true' when 'delete()' method is called.
-  private deleted = false;
+  ///private deleted = false;
 
   // ---------------- Protected data -------------------- 
 
@@ -86,7 +86,7 @@ export abstract class Component
 
   // --------------- Public accessors -------------------
 
-  public isDeleted() { return this.deleted; }
+  ///public isDeleted() { return this.deleted; }
 
   // ---------------- Public methods --------------------
 
@@ -99,24 +99,49 @@ export abstract class Component
     // Remove element from DOM
     // (this also removes all children, all bound events
     //  and all asociated JQuery data).
-    this.$element.remove();
+    if (this.$element)
+    {
+      this.$element.remove();
+    }
+    else
+    {
+      ERROR("Attempt to remove component from DOM which is not in DOM");
+    }
 
-    this.parent.children.delete(this);
+    // Remove ourselves from our parent's list of children
+    if (this.parent)
+      this.parent.removeChild(this);
 
-    this.deleted = true;
+    ///this.deleted = true;
   }
 
   // Gives focus to the $element
-  // (note that this only works for elements like form inputs
-  //  or for elements that have 'tabindex' attribute set).
+  //   Note that to be able to give focus to a <div> element,
+  // it must have set a 'tabindex' attribute
+  // (You don't have to set 'tabindex' to elements like form
+  //  input that are natively focusable).
   public focus()
   {
+    if (!this.$element)
+    {
+      ERROR("Attempt to focus a component which is not in DOM."
+        + " Component is not focused");
+      return;
+    }
+
     this.$element.focus();
   }
 
   // -> Returns 'true' if $element or some of it's children has focus.
   public hasFocus()
   {
+    if (!this.$element)
+    {
+      ERROR("Attempt to get focus state of a component which is not in DOM."
+        + " Returning 'false'");
+      return false;
+    }
+
     let hasFocus = this.$element.is(":focus");
     let hasFocusedChild = this.$element.find(':focus').length > 0;
 
@@ -126,8 +151,15 @@ export abstract class Component
   // Sets focus to the $element and triggers 'event' on it
   // (in order for any element to process keyboard events,
   //  it must have focus).
-  public triggerKeyboardEvent(event)
+  public triggerKeyboardEvent(event: JQueryEventObject)
   {
+    if (!this.$element)
+    {
+      ERROR("Attempt to trigger keyboard event on"
+        + " a component which is not in DOM");
+      return;
+    }
+
     // Note that to be able to give focus to a <div> element,
     // it must have set a 'tabindex' attribute.
     this.focus();
@@ -151,7 +183,11 @@ export abstract class Component
   }
 
   // Creates text styled as link.
-  protected $createTextLink(param: Component.TextParam = {}): JQuery
+  protected $createTextLink
+  (
+    param: Component.TextParam = {}
+  )
+  : JQuery | null
   {
     Utils.applyDefaults(param, { gCssClass: Component.LINK_TEXT_G_CSS_CLASS });
 
@@ -162,8 +198,15 @@ export abstract class Component
   // content of '$component' (in a way specified by param.insertMode).
   // (If 'text' contains mud color codes, they will be used. It it doesn't
   //  and no 'baseColor' is provided, text color of $component will be used)
-  protected $createText(param: Component.TextParam = {}): JQuery
+  protected $createText
+  (
+    param: Component.TextParam = {}
+  )
+  : JQuery | null
   {
+    if (!param.text)
+      return null;
+
     let $text = $(MudColors.htmlize(param.text, param.baseTextColor));
 
     // Reset 'param.text' to prevent recursively setting text to itself.
@@ -180,29 +223,49 @@ export abstract class Component
     return $text;
   }
 
-  protected $createDiv(param: Component.DivParam = {}): JQuery
+  protected $createDiv
+  (
+    param: Component.DivParam = {}
+  )
+  : JQuery | null
   {
     return this.$createElement('div', param);
   }
 
-  protected $createImg(param: Component.ImgParam = {}): JQuery
+  protected $createImg
+  (
+    param: Component.ImgParam = {}
+  )
+  : JQuery | null
   {
     return this.$createElement('img', param);
   }
 
-  protected $createForm(param: Component.FormParam = {}): JQuery
+  protected $createForm
+  (
+    param: Component.FormParam = {}
+  )
+  : JQuery | null
   {
     Utils.applyDefaults(param, { name: 'form' });
 
     return this.$createElement('form', param);
   }
 
-  protected $createTitle(param: Component.TitleParam = {}): JQuery
+  protected $createTitle
+  (
+    param: Component.TitleParam = {}
+  )
+  : JQuery | null
   {
     return this.$createElement('title', param);
   }
 
-  protected $createTextInput(param: Component.TextInputParam = {}): JQuery
+  protected $createTextInput
+  (
+    param: Component.TextInputParam = {}
+  )
+  : JQuery | null
   {
     Utils.applyDefaults
     (
@@ -216,8 +279,11 @@ export abstract class Component
     return this.createInputElement('text', param);
   }
 
-  protected $createPasswordInput(param: Component.PasswordInputParam = {})
-  : JQuery
+  protected $createPasswordInput
+  (
+    param: Component.PasswordInputParam = {}
+  )
+  : JQuery | null
   {
     Utils.applyDefaults
     (
@@ -231,7 +297,11 @@ export abstract class Component
     return this.createInputElement('password', param);
   }
 
-  protected $createEmailInput(param: Component.EmailInputParam = {}): JQuery
+  protected $createEmailInput
+  (
+    param: Component.EmailInputParam = {}
+  )
+  : JQuery | null
   {
     Utils.applyDefaults
     (
@@ -245,15 +315,22 @@ export abstract class Component
     return this.createInputElement('email', param);
   }
 
-  protected $createCheckboxInput(param: Component.CheckboxInputParam = {})
-  : JQuery
+  protected $createCheckboxInput
+  (
+    param: Component.CheckboxInputParam = {}
+  )
+  : JQuery | null
   {
     Utils.applyDefaults(param, { name: 'checkbox_input' });
 
     return this.createInputElement('checkbox', param);
   }
 
-  protected $createRadioInput(param: Component.RadioInputParam = {}): JQuery
+  protected $createRadioInput
+  (
+    param: Component.RadioInputParam = {}
+  )
+  : JQuery | null
   {
     Utils.applyDefaults(param, { name: 'radiobutton_input' });
 
@@ -262,7 +339,11 @@ export abstract class Component
 
   // Creates a button which submits form data
   // (use createButton() to create a standalone button).
-  protected $createSubmitButton(param: Component.SubmitButtonParam = {}): JQuery
+  protected $createSubmitButton
+  (
+    param: Component.SubmitButtonParam = {}
+  )
+  : JQuery | null
   {
     Utils.applyDefaults
     (
@@ -284,7 +365,11 @@ export abstract class Component
     return $element;
   }
 
-  protected $createTextArea(param: Component.TextAreaParam = {}): JQuery
+  protected $createTextArea
+  (
+    param: Component.TextAreaParam = {}
+  )
+  : JQuery | null
   {
     Utils.applyDefaults
     (
@@ -298,7 +383,11 @@ export abstract class Component
     return this.$createElement('textarea', param);
   }
 
-  protected $createLabel(param: Component.LabelParam = {}): JQuery
+  protected $createLabel
+  (
+    param: Component.LabelParam = {}
+  )
+  : JQuery | null
   {
     return this.$createElement('label', param);
   }
@@ -306,7 +395,11 @@ export abstract class Component
   // Creates a button which is not part of a form
   // (use createSubmitButton() to create a button
   //  that submits form data).
-  protected $createButton(param: Component.ButtonParam = {}): JQuery
+  protected $createButton
+  (
+    param: Component.ButtonParam = {}
+  )
+  : JQuery | null
   {
     Utils.applyDefaults(param, { gCssClass: Component.BUTTON_G_CSS_CLASS });
 
@@ -319,7 +412,11 @@ export abstract class Component
     return $element;
   }
 
-  protected $createEmptyLine(param: Component.DivParam = {}): JQuery
+  protected $createEmptyLine
+  (
+    param: Component.DivParam = {}
+  )
+  : JQuery | null
   {
     Utils.applyDefaults
     (
@@ -336,19 +433,22 @@ export abstract class Component
 
   protected disable($element: JQuery)
   {
-    if ($element)
-      $element.prop('disabled', true);
+    $element.prop('disabled', true);
   }
 
   protected enable($element: JQuery)
   {
-    if ($element)
-      $element.prop('disabled', false);
+    $element.prop('disabled', false);
   }
 
   // ---------------- Private methods -------------------
 
-  private $createElement(type: string, param: Object): JQuery
+  private removeChild(child: Component)
+  {
+    this.children.delete(child);
+  }
+
+  private $createElement(type: string, param: Object): JQuery | null
   {
     let $element = $(document.createElement(type));
 
@@ -418,10 +518,10 @@ export abstract class Component
     // Make 'APPEND' a default insert mode.
     Utils.applyDefaults(param, { insertMode: Component.InsertMode.APPEND });
 
-    if (param.text)
+    if (param.text && param.baseTextColor)
       this.applyTextParam($element, param.text, param.baseTextColor);
 
-    if (param.$parent)
+    if (param.$parent && param.insertMode)
       this.insertToParent($element, param.$parent, param.insertMode)
 
     if (param.gCssClass)
@@ -430,7 +530,7 @@ export abstract class Component
     if (param.sCssClass)
       $element.addClass(param.sCssClass);
 
-    // Attach event handlers if there are present in 'param'.
+    // Attach event handlers if they are present in 'param'.
 
     if (param.click)
       $element.click(param.click);
@@ -583,7 +683,7 @@ export module Component
 
   interface CommonParameters
   {
-    $parent?: JQuery | null;
+    $parent?: JQuery;
     insertMode?: InsertMode;
     gCssClass?: string;
     sCssClass?: string;

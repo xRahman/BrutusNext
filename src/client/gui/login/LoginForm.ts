@@ -26,9 +26,9 @@ export class LoginForm extends CredentialsForm
     );
 
     this.createEmailInput();
-    this.createEmptyLine();
+    this.$createEmptyLine();
     this.createPasswordInput();
-    this.createEmptyLine();
+    this.$createEmptyLine();
     this.createRememberMeCheckbox();
     this.createButtons();
   }
@@ -123,7 +123,7 @@ export class LoginForm extends CredentialsForm
     (
       {
         text: 'Login',
-        $parent: this.createButtonContainer()
+        $parent: this.$createButtonContainer()
       }
     );
   }

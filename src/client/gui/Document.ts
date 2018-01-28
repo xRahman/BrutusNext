@@ -50,7 +50,7 @@ export class Document
     // Attach handler for 'keydown' event.
     $(document).keydown
     (
-      (event) => { this.onKeyDown(event); }
+      (event: JQueryEventObject) => { this.onKeyDown(event); }
     );
 
     Windows.onDocumentReady();

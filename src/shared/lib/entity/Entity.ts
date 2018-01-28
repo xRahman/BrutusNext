@@ -162,12 +162,18 @@ export class Entity extends Serializable
 
   // ------------- Public static methods ----------------
 
-  public static isValid(entity: Entity)
+  /// This doesn't work well with typescript 'strict' checking.
+  /// Typescript won't know that this method filters out both 'null'
+  /// and 'undefined' values. Instead we will have to use:
+  ///   if (entity && entity.isValid()) ...
+  /*
+  public static isValid(entity: Entity | null | undefined)
   {
     return entity !== null
         && entity !== undefined
         && entity.isValid() === true;
   }
+  */
 
   // --------------- Public accessors -------------------
 
@@ -245,9 +251,7 @@ export class Entity extends Serializable
   //  and are not loaded automatically.)
   public setPrototypeEntity(prototypeEntity: Entity, isPrototype: boolean)
   {
-    // Note: We can't use Entity.isValid() here, because prototypeEntity
-    // is deproxified so isValid() can't be used on it.
-    if (prototypeEntity === null || prototypeEntity === undefined)
+    if (!prototypeEntity || !prototypeEntity.isValid())
     {
       ERROR("Attempt to set an invalid prototype to entity"
         + " " + this.getErrorIdString());
@@ -336,11 +340,11 @@ export class Entity extends Serializable
 
   // Serializes entity and all its ancestors. Writes
   // results to 'data' arrat, starting with root prototype.
-  public serializeTree(data: Array<string>, mode: Serializable.Mode)
+  public serializeAncestorTree(data: Array<string>, mode: Serializable.Mode)
   {
     if (this.prototypeEntity !== null)
     {
-      this.prototypeEntity.serializeTree(data, mode);
+      this.prototypeEntity.serializeAncestorTree(data, mode);
     }
 
     data.push(this.serialize(mode));

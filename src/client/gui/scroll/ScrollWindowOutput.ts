@@ -33,7 +33,7 @@ export class ScrollWindowOutput extends Component
         // a 'tabindex' attribute set.
         // ('tabindex: -1' means: focusable only by script, not by user)
         tabindex: -1,
-        keydown: (event) => { this.onKeyDown(event); }
+        keydown: (event: JQueryEventObject) => { this.onKeyDown(event); }
       }
     );
 

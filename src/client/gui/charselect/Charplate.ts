@@ -111,10 +111,10 @@ export class Charplate extends Component
 
   private createRadio(param: Component.RadioInputParam)
   {
-    if (!Entity.isValid(this.character))
+    if (!this.character || !this.character.isValid())
     {
       ERROR("Invalid 'character' on charplate. Radiobutton is not created");
-      return;
+      return null;
     }
 
     Utils.applyDefaults
@@ -125,7 +125,7 @@ export class Charplate extends Component
         // This value will be read to extract character 'id' when
         // 'enter game' button is pressed.
         value: this.character.getId(),
-        change: (event) => this.onChange(event)
+        change: (event: JQueryEventObject) => this.onChange(event)
       }
     );
 
@@ -146,7 +146,7 @@ export class Charplate extends Component
         // fire mouse events (other than 'change' which it
         // fires because it's inside a label that also
         // contains charplate).
-        dblclick: (event) => this.onDoubleClick(event)
+        dblclick: (event: JQueryEventObject) => this.onDoubleClick(event)
       }
     );
 
@@ -187,7 +187,7 @@ export class Charplate extends Component
 
   private createNameLabel(param: Component.DivParam = {})
   {
-    if (!Entity.isValid(this.character))
+    if (!this.character || !this.character.isValid())
     {
       ERROR("Invalid 'character' on charplate. Name label is not created");
       return;
@@ -209,7 +209,7 @@ export class Charplate extends Component
 
   private createInfoLabel(param: Component.DivParam = {})
   {
-    if (!Entity.isValid(this.character))
+    if (!this.character || !this.character.isValid())
     {
       ERROR("Invalid 'character' on charplate. Info label is not created");
       return;

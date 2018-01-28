@@ -55,7 +55,8 @@ export class CharselectWindow extends FormWindow
         $parent: this.$content,
         sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS,
         text: 'Create New Character',
-        click: (event) => { this.onCreateNewCharacterClick(event); }
+        click: (event: JQueryEventObject) =>
+          { this.onCreateNewCharacterClick(event); }
       }
     );
   }
@@ -76,7 +77,7 @@ export class CharselectWindow extends FormWindow
   // Handles 'keydown' event fired on html document
   // (it means that this handler runs even if this
   //  window desn't have focus).
-  public onKeyDown(event: JQueryKeyEventObject)
+  public onKeyDown(event: JQueryEventObject)
   {
     // Super call handles 'Enter' and 'Escape' keys.
     super.onKeyDown(event);

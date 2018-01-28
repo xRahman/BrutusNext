@@ -130,7 +130,8 @@ export abstract class CredentialsForm extends Form
         {
           name: 'remember_me_checkbox',
           checked: false,
-          change: (event) => { this.onRememberMeChange(event); }
+          change: (event: JQueryEventObject) =>
+            { this.onRememberMeChange(event); }
         }
       }
     );

@@ -94,7 +94,7 @@ export class ChargenRequest extends SharedChargenRequest
 
     let account = connection.account;
 
-    if (!Entity.isValid(account))
+    if (!account || !account.isValid())
     {
       ERROR("Invalid account, character is not created");
       return null;

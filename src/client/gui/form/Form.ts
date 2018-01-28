@@ -28,7 +28,7 @@ export abstract class Form extends Component
       param,
       {
         sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS,
-        submit: (event) => { this.onSubmit(event); }
+        submit: (event: JQueryEventObject) => { this.onSubmit(event); }
       }
     );
 
@@ -70,8 +70,18 @@ export abstract class Form extends Component
 
   // --------------- Protected methods ------------------
 
-  protected createButtonContainer(param: Component.DivParam = {})
+  protected $createButtonContainer
+  (
+    param: Component.DivParam = {}
+  )
+  : JQuery | null
   {
+    if (!this.$element)
+    {
+      ERROR("Invalid $element");
+      return null;
+    }
+
     Utils.applyDefaults
     (
       param,
@@ -85,7 +95,11 @@ export abstract class Form extends Component
     return this.$createDiv(param);
   }
 
-  protected $createSubmitButton(param: Component.SubmitButtonParam = {}): JQuery
+  protected $createSubmitButton
+  (
+    param: Component.SubmitButtonParam = {}
+  )
+  : JQuery | null
   {
     Utils.applyDefaults
     (
@@ -98,7 +112,12 @@ export abstract class Form extends Component
     return this.$submitButton;
   }
 
-  protected createEmptyLine(param: Component.DivParam = {})
+  // ~ Overrides Component.$createEmptyLine().
+  protected $createEmptyLine
+  (
+    param: Component.DivParam = {}
+  )
+  : JQuery | null
   {
     Utils.applyDefaults
     (
@@ -109,7 +128,7 @@ export abstract class Form extends Component
       }
     );
 
-    this.$createEmptyLine(param);
+    return super.$createEmptyLine(param);
   }
 
   protected disableSubmitButton()
@@ -148,7 +167,7 @@ export abstract class Form extends Component
 
     // Add an empty line after error problem label
     // to separate it from next component.
-    this.createEmptyLine
+    this.$createEmptyLine
     (
       { $parent: this.$errorLabelContainer }
     );
@@ -156,9 +175,10 @@ export abstract class Form extends Component
     this.$errorLabelContainer.hide();
   }
 
-  protected displayError(problem: string)
+  protected displayError(problem: string | null)
   {
-    console.log('displayError()');
+    if (!problem)
+      return;
 
     this.$createText
     (

@@ -71,7 +71,7 @@ export class RegisterWindow extends FormWindow
       {
         $parent,
         text: "Terms of Use",
-        click: (event) => { this.onTermsClick(event); }
+        click: (event: JQueryEventObject) => { this.onTermsClick(event); }
       }
     );
 

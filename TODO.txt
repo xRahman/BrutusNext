@@ -1,6 +1,10 @@
 TO DO, TO DO, TODO TODO TODO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+TODO: Consty.
+
+
+
 TODO: Aktivace "strict" módu v tsconfigu (striktní kontrola null a undefined).
 - Nepovinné parametry bych asi měl zapisovat typescriptově, tzn.
   bla(a?: string), nikoliv bla(a: string = null)
@@ -10,6 +14,7 @@ TODO: Aktivace "strict" módu v tsconfigu (striktní kontrola null a undefined).
 - TODO: V object literálech, kde se přiřazuje 'null' do nějaké property,
   to dělat takhle:
     var obj = { property: <string | null> null };
+- pozn. JQueryKeyEventObject měním na JQueryEventObject. Snad to bude fungovat.
 
 TODO: Updatovat node moduly a zkontrolovat, že jsou správně zapsané
   dependencies (ono to sice není tak podstatný vzhledem k tomu, že mám
@@ -5794,6 +5799,9 @@ implementovat nebudu - není to zásadní pro prvotní hratelnou verzi.
 
 TODO: Přibyla static metoda Entity.isValid(entity);
   - použít ji všude, kde dává smysl ji použít.
+  - tak nakonec ji použít nemůžu, protože si s ní nerozumí 'strict' checking
+    v typescriptu.
+[deprecated]
 
 TODO: Předělat všechny async fce, které by mohly vracet hodnotu, ale nevrací,
   protože jsem si myslel, že to nejde.

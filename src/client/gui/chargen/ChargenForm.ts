@@ -33,7 +33,7 @@ export class ChargenForm extends Form
     );
 
     this.createCharacterNameInput();
-    this.createEmptyLine();
+    this.$createEmptyLine();
     this.createButtons();
   }
 
@@ -100,11 +100,20 @@ export class ChargenForm extends Form
   }
 
   // ~ Overrides Form.createRequest().
+  // -> Returns 'null' if valid request couldn't be created.
   protected createRequest()
   {
+    if (!this.characterNameInput)
+      return null;
+
+    let characterName = this.characterNameInput.getValue();
+
+    if (!characterName)
+      return null;
+
     let request = new ChargenRequest();
 
-    request.characterName = this.characterNameInput.getValue();
+    request.characterName = characterName;
 
     return request;
   }
@@ -128,38 +137,66 @@ export class ChargenForm extends Form
   {
     super.hideProblems();
 
+    if (!this.characterNameInput)
+    {
+      ERROR("Missing component 'characterNameInput'");
+      return;
+    }
+
     this.characterNameInput.hideProblem();
   }
 
-  protected displayCharacterNameProblem(problem: string)
+  protected displayCharacterNameProblem(problem: string | null)
   {
-    this.characterNameInput.displayProblem(problem);
+    if (!this.characterNameInput)
+    {
+      ERROR("Missing component 'characterNameInput'");
+      return;
+    }
+
+    if (problem)
+      this.characterNameInput.displayProblem(problem);
   }
 
   // ---------------- Private methods -------------------
 
   private focusCharacterNameInput()
   {
+    if (!this.characterNameInput)
+    {
+      ERROR("Invalid component 'characterNameInput'");
+      return;
+    }
+
     this.characterNameInput.focus();
   }
 
   private createCharacterNameInput()
   {
-    if (this.characterNameInput !== null)
-      ERROR("Character name input already exists");
+    if (this.characterNameInput)
+    {
+      ERROR("Character name input already exists. Not creating it again");
+      return;
+    }
 
     this.characterNameInput = new CharacterNameInput(this);
   }
 
   private createButtons()
   {
-    let $parent = super.createButtonContainer();
+    let $parent = super.$createButtonContainer();
+
+    if (!$parent)
+    {
+      ERROR("Failed to create button container");
+      return;
+    }
 
     this.$createSubmitButton({ $parent });
-    this.createCancelButton({ $parent });
+    this.$createCancelButton({ $parent });
   }
 
-  private createCancelButton(param: Component.ButtonParam = {})
+  private $createCancelButton(param: Component.ButtonParam = {})
   {
     Utils.applyDefaults
     (
@@ -167,7 +204,7 @@ export class ChargenForm extends Form
       {
         sCssClass: Form.RIGHT_BUTTON_S_CSS_CLASS,
         text: 'Cancel',
-        click: (event) => { this.onCancel(event); }
+        click: (event: JQueryEventObject) => { this.onCancel(event); }
       }
     );
 

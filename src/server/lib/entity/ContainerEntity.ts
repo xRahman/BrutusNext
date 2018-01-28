@@ -70,15 +70,7 @@ export class ContainerEntity extends ServerEntity
   // Also removes it from it's previous location.
   public insert(entity: ContainerEntity)
   {
-    if (entity === null || entity === undefined)
-    {
-      ERROR("Attempt to insert invalid entity to"
-        + " contents of " + this.getErrorIdString()
-        + " Entity is not inserted.");
-      return;
-    }
-
-    if (!entity.isValid())
+    if (!entity || !entity.isValid())
     {
       ERROR("Attempt to insert invalid entity"
         + " " + entity.getErrorIdString() + " to"

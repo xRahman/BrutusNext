@@ -92,7 +92,7 @@ export class EnterGameRequest extends SharedEnterGameRequest
       return null;
     }
 
-    if (!Entity.isValid(account))
+    if (!account || !account.isValid())
     {
       ERROR("Invalid account on connection. Charselect request is not"
         + " processed");

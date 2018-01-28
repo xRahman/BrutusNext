@@ -97,7 +97,7 @@ export class Connection implements SharedConnection
 
   public setAccount(account: Account)
   {
-    if (!Entity.isValid(account))
+    if (!account || !account.isValid())
     {
       ERROR("Attempt to set invalid account to the connection."
         + " Account is not set.");

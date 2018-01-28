@@ -216,7 +216,7 @@ export class Account extends ServerEntity
       Entity.NameCathegory.CHARACTER
     );
 
-    if (!Entity.isValid(character))
+    if (!character || !character.isValid())
     {
       ERROR("Failed to create character '" + name + "'");
       return null;
@@ -300,7 +300,7 @@ export class Account extends ServerEntity
     // Release characters on this account from memory.
     for (let character of this.data.characters.values())
     {
-      if (Entity.isValid(character))
+      if (character && character.isValid())
         Entities.release(character);
     }
 

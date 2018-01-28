@@ -85,7 +85,7 @@ export class EnterGameResponse extends SharedEnterGameResponse
     let character: Character =
       ClientEntities.get(characterId).dynamicCast(Character);
 
-    if (!Entity.isValid(character))
+    if (!character || !character.isValid())
     {
       ERROR("Invalid selected character (id: " + characterId + ")");
       return null;
@@ -100,7 +100,7 @@ export class EnterGameResponse extends SharedEnterGameResponse
     // side effect. It can later be accessed using it's id.
     let loadLocation = this.serializedLoadLocation.restore(Entity);
     
-    if (!Entity.isValid(loadLocation))
+    if (!loadLocation || !loadLocation.isValid())
     {
       ERROR("Invalid load location in charselect response");
       return false;

@@ -31,8 +31,8 @@ export class ScrollWindowInput extends Component
         rows: 1,
         spellcheck: false,
         autocorrect: Component.Autocorrect.OFF,
-        keypress: (event) => { this.onKeyPress(event); },
-        keydown: (event) => { this.onKeyDown(event); }
+        keypress: (event: JQueryEventObject) => { this.onKeyPress(event); },
+        keydown: (event: JQueryEventObject) => { this.onKeyDown(event); }
       }
     );
 

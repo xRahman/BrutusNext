@@ -36,7 +36,7 @@ export class CharacterNameInput extends TextInput
           maxLength: ChargenRequest.MAX_CHARACTER_NAME_LENGTH,
           /// Automatic form validation is no longer used.
           ///required: true,
-          input: (event) => { this.onInput(event); }
+          input: (event: JQueryEventObject) => { this.onInput(event); }
         }
       }
     );
@@ -48,6 +48,12 @@ export class CharacterNameInput extends TextInput
   // ChargenRequest.getInvalidCharacterProblem().
   private removeInvalidCharacters()
   {
+    if (!this.$input)
+    {
+      ERROR("Invalid $input element");
+      return;
+    }
+
     // Make sure that we work with a string.
     let oldValue = "" + this.$input.val();
     let newValue = "";
@@ -63,6 +69,12 @@ export class CharacterNameInput extends TextInput
 
   private upperCaseFirstCharacter()
   {
+    if (!this.$input)
+    {
+      ERROR("Invalid $input element");
+      return;
+    }
+
     let oldValue = this.$input.val();
     let newValue = "";
 
@@ -78,6 +90,12 @@ export class CharacterNameInput extends TextInput
 
   private onInput(event: JQueryEventObject)
   {
+    if (!this.$input)
+    {
+      ERROR("Invalid $input element");
+      return;
+    }
+
     // Remember original selection (and cursor) position.
     let element = <HTMLInputElement>this.$input[0];
     let selectionStart = element.selectionStart;

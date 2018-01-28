@@ -23,7 +23,7 @@ export class MapWindow extends TitledWindow
         {
           name: 'map_window',
           sCssClass: MapWindow.S_CSS_CLASS,
-          resize: (event) => { this.onResize(event); }
+          resize: (event: JQueryEventObject) => { this.onResize(event); }
         }
       }
     );

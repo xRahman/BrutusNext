@@ -107,7 +107,7 @@ export class Character extends GameEntity
 
     let loadLocation = this.getLoadLocation();
 
-    if (!Entity.isValid(loadLocation))
+    if (!loadLocation || !loadLocation.isValid())
     {
       ERROR("Invalid 'loadLocation' on character"
         + " " + this.getErrorIdString() + "."
