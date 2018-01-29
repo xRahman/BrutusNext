@@ -8,10 +8,10 @@
 
 'use strict';
 
-import {Packet} from '../../../shared/lib/protocol/Packet';
+import {Request} from '../../../shared/lib/protocol/Request';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class EnterGameRequest extends Packet
+export class EnterGameRequest extends Request
 {
   constructor()
   {

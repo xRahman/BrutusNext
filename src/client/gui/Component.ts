@@ -356,6 +356,12 @@ export abstract class Component
 
     let $element = this.$createElement('button', param);
 
+    if (!$element)
+    {
+      ERROR("Failed to create submit button");
+      return null;
+    }
+
     // We use element <button> with 'type: "submit"' instead
     // of element <submit> with 'type: "button" because there
     // can be no html content inside a <submit> element so
@@ -405,6 +411,12 @@ export abstract class Component
 
     let $element = this.$createElement('button', param);
 
+    if (!$element)
+    {
+      ERROR("Failed to create button");
+      return null;
+    }
+
     // Type must be set to ensure that the button click
     // doesn't submit the form.
     $element.attr('type', 'button');
@@ -448,14 +460,15 @@ export abstract class Component
     this.children.delete(child);
   }
 
-  private $createElement(type: string, param: Object): JQuery | null
+  private $createElement(type: string, param: Component.Param): JQuery | null
   {
     let $element = $(document.createElement(type));
+    let name = param['name'];
 
     // Hack: Set 'name' attribute first so it's listed first
     //   in DOM inspector in browser.
-    if (param['name'] !== undefined)
-      $element.attr('name', param['name']);
+    if (name)
+      $element.attr('name', name);
 
     this.applyParameters($element, param);
     this.setAttributes($element, param);
@@ -560,9 +573,20 @@ export abstract class Component
       $element.resize(param.resize);
   }
 
-  private createInputElement(type: string, param: Object): JQuery
+  private createInputElement
+  (
+    type: string,
+    param: Component.Param
+  )
+  : JQuery | null
   {
     let $element = this.$createElement('input', param);
+
+    if (!$element)
+    {
+      ERROR("Failed to create input element");
+      return null;
+    }
     
     $element.attr('type', type);
 
@@ -978,6 +1002,17 @@ export module Component
     CommonParameters,
     TextParameters,
     CommonAttributes
+  {
+    // All properties are inherited.
+  }
+
+  // This inteface contains properties of all other component
+  // parameter interfaces (by extending them all). This way we can have
+  // just one method (setAttributes()) to set them for any
+  // component.
+  export interface Param extends
+    Attributes,
+    Parameters
   {
     // All properties are inherited.
   }

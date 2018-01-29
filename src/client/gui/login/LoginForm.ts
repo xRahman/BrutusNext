@@ -94,8 +94,24 @@ export class LoginForm extends CredentialsForm
   // --------------- Protected methods ------------------
 
   // ~ Overrides Form.createRequest().
-  protected createRequest()
+  // -> Returns 'null' if request couldn't be created
+  //    or there is nothing to request yet.
+  protected createRequest(): LoginRequest | null
   {
+    if (!this.emailInput)
+    {
+      ERROR("Failed to create request because 'emailInput'"
+        + " component is missing");
+      return null;
+    }
+
+    if (!this.passwordInput)
+    {
+      ERROR("Failed to create request because 'passwordInput'"
+        + " component is missing");
+      return null;
+    }
+
     let request = new LoginRequest();
 
     request.email = this.emailInput.getValue();

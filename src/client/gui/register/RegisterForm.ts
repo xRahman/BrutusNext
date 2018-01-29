@@ -158,8 +158,23 @@ export class RegisterForm extends CredentialsForm
   }
 
   // ~ Overrides Form.createRequest().
-  protected createRequest()
+  // -> Returns 'null' if valid request couldn't be created.
+  protected createRequest(): RegisterRequest | null
   {
+    if (!this.emailInput)
+    {
+      ERROR("Failed to create request because 'emailInput'"
+        + " component is missing");
+      return null;
+    }
+
+    if (!this.passwordInput)
+    {
+      ERROR("Failed to create request because 'passwordInput'"
+        + " component is missing");
+      return null;
+    }
+    
     let request = new RegisterRequest();
 
     request.email = this.emailInput.getValue();

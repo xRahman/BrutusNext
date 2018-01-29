@@ -10,13 +10,13 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
-import {Packet} from '../../../shared/lib/protocol/Packet';
+import {Request} from '../../../shared/lib/protocol/Request';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 const VALID_EMAIL_CHARACTERS = "abcdefghijklmnopqrstuvwxyz"
   + "@ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#$%&'*+-/=?^_`{|}~.";
 
-export class RegisterRequest extends Packet
+export class RegisterRequest extends Request
 {
   constructor()
   {

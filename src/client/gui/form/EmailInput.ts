@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {Component} from '../../../client/gui/Component';
 import {FormInput} from '../../../client/gui/form/FormInput';
@@ -44,6 +45,13 @@ export class EmailInput extends FormInput
 
   private createInput(param: Component.EmailInputParam = {})
   {
+    if (!this.$element)
+    {
+      ERROR("Attempt to create input element on email input which"
+        + " doesn't have a corresponding element in DOM");
+      return;
+    }
+
     Utils.applyDefaults
     (
       param,

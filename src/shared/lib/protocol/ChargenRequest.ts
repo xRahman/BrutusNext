@@ -10,10 +10,10 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
-import {Packet} from '../../../shared/lib/protocol/Packet';
+import {Request} from '../../../shared/lib/protocol/Request';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class ChargenRequest extends Packet
+export class ChargenRequest extends Request
 {
   constructor()
   {

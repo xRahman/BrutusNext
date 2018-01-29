@@ -62,6 +62,24 @@ export abstract class CredentialsForm extends Form
     if (!LocalStorage.isAvailable())
       return;
 
+    if (!this.rememberMeCheckbox)
+    {
+      ERROR("Missing 'Remember Me' checkbox component");
+      return;
+    }
+
+    if (!this.emailInput)
+    {
+      ERROR("Missing email input component");
+      return;
+    }
+
+    if (!this.passwordInput)
+    {
+      ERROR("Missing password input component");
+      return;
+    }
+
     if (this.rememberMeCheckbox.isChecked())
     {
       LocalStorage.write
@@ -86,26 +104,44 @@ export abstract class CredentialsForm extends Form
   protected createEmailInput()
   {
     if (this.emailInput)
-      ERROR("Email input already exists");
+    {
+      ERROR("Email input already exists. Not creating it again");
+      return;
+    }
 
     this.emailInput = new EmailInput(this);
   }
 
-  protected displayEmailProblem(problem: string | null)
+  protected displayEmailProblem(problem: string)
   {
+    if (!this.emailInput)
+    {
+      ERROR("Missing email input component");
+      return;
+    }
+
     this.emailInput.displayProblem(problem);
   }
 
   protected createPasswordInput()
   {
     if (this.passwordInput)
-      ERROR("Password input already exists");
+    {
+      ERROR("Password input already exists. Not creating it again");
+      return;
+    }
 
     this.passwordInput = new PasswordInput(this);
   }
 
   protected displayPasswordProblem(problem: string)
   {
+    if (!this.passwordInput)
+    {
+      ERROR("Missing password input component");
+      return;
+    }
+
     this.passwordInput.displayProblem(problem);
   }
 
@@ -142,17 +178,42 @@ export abstract class CredentialsForm extends Form
   {
     super.hideProblems();
 
+    if (!this.emailInput)
+    {
+      ERROR("Missing email input component");
+      return;
+    }
+
     this.emailInput.hideProblem();
-    this.emailInput.hideProblem();
+
+    if (!this.passwordInput)
+    {
+      ERROR("Missing password input component");
+      return;
+    }
+
+    this.passwordInput.hideProblem();
   }
 
   protected focusEmailInput()
   {
+    if (!this.emailInput)
+    {
+      ERROR("Missing email input component");
+      return;
+    }
+
     this.emailInput.focus();
   }
 
   protected focusPasswordInput()
   {
+    if (!this.passwordInput)
+    {
+      ERROR("Missing password input component");
+      return;
+    }
+
     this.passwordInput.focus();
   }
 
@@ -160,6 +221,12 @@ export abstract class CredentialsForm extends Form
 
   private setStoredRememberMeValue()
   {
+    if (!this.rememberMeCheckbox)
+    {
+      ERROR("Missing 'Remember Me' checkbox component");
+      return;
+    }
+
     let storedValue = LocalStorage.read(LocalStorage.REMEMBER_ME_ENTRY);
 
     this.rememberMeCheckbox.setChecked
@@ -174,6 +241,12 @@ export abstract class CredentialsForm extends Form
   {
     if (!LocalStorage.isAvailable())
       return;
+
+    if (!this.rememberMeCheckbox)
+    {
+      ERROR("Missing 'Remember Me' checkbox component");
+      return;
+    }
 
     if (this.rememberMeCheckbox.isChecked())
     {

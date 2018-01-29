@@ -11,7 +11,7 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {Connection} from '../../../shared/lib/connection/Connection';
 
-export class Packet extends Serializable
+export abstract class Packet extends Serializable
 {
   /*
   constructor()
@@ -40,12 +40,17 @@ export class Packet extends Serializable
 
   // ---------------- Public methods --------------------
 
+  public abstract process(connection: Connection): void;
+
+  /// Converted abstract method.
+  /*
   public process(connection: Connection)
   {
     // We can't use abstract class because it would prevent dynamic
     // typecasting to Packet (see Connection.receiveData()).
     ERROR("Method has to be overriden in ancestor");
   }
+  */
 
   // public addMudMessage(message: string)
   // {

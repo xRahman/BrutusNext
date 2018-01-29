@@ -15,6 +15,7 @@ import {Form} from '../../../client/gui/form/Form';
 import {CharacterNameInput} from
   '../../../client/gui/chargen/CharacterNameInput';
 import {ChargenWindow} from '../../../client/gui/chargen/ChargenWindow';
+import {Request} from '../../../shared/lib/protocol/Request';
 import {ChargenRequest} from '../../../shared/lib/protocol/ChargenRequest';
 import {ChargenResponse} from '../../../client/lib/protocol/ChargenResponse';
 
@@ -100,11 +101,16 @@ export class ChargenForm extends Form
   }
 
   // ~ Overrides Form.createRequest().
-  // -> Returns 'null' if valid request couldn't be created.
-  protected createRequest()
+  // -> Returns 'null' if request couldn't be created
+  //    or there is nothing to request yet.
+  protected createRequest(): Request | null
   {
     if (!this.characterNameInput)
+    {
+      ERROR("Failed to create request because 'characterNameInput'"
+        + " component is missing");
       return null;
+    }
 
     let characterName = this.characterNameInput.getValue();
 
@@ -125,6 +131,7 @@ export class ChargenForm extends Form
 
     if (problem)
     {
+      /// FIXME: Hnusný side effect, tohle tu nemá co dělat.
       this.displayCharacterNameProblem(problem);
       return false;
     }

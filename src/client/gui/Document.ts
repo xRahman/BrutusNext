@@ -62,7 +62,7 @@ export class Document
   }
 
   // Handles 'keydown' event on the document.
-  private onKeyDown(event: JQueryKeyEventObject)
+  private onKeyDown(event: JQueryEventObject)
   {
     if (Windows.activeStandaloneWindow)
     {

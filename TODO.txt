@@ -20,6 +20,20 @@ TODO: Updatovat node moduly a zkontrolovat, že jsou správně zapsané
   dependencies (ono to sice není tak podstatný vzhledem k tomu, že mám
   všechny moduly v repository, ale i tak by to bylo lepší).
 
+
+TODO: Zrušit metodu isRequestValid
+- buď ji přesunout do requestu (tzn. se bude volat if (request.isValid()),
+  nebo ji zrušit úplně - testy se mohou dělat už v createRequest()).
+- Když se nepodaří vytvořit request, tak by se to asi taky měl dozvědět
+  uživatel (tzn. hodit to asi do obecného erroru).
+- hmm, asi bych mohl rovnou předělat Response, aby se posílaly všechny
+  problémy (asi jako object, ať můžu pojmenovat jednotlivé druhy problémů
+  a matchovat je pak na správné komponenty), ne jen první detekovaný.
+  - Request by pak mohl taky generovat objekt s problémama a formy by měly
+    jen jednu metodu na jejich zobrazení (displayProblems()).
+  (hmm, tohle mimochodem znamená, že asi nebudu potřebovat result u responzů
+   - buď budou problems 'null' nebo ne).
+
 --------------------------------------------------------------
 
 TODO: /shared/ContainerEntity má property 'data', což nejspíš konfliktí

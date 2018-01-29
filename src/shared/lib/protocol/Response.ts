@@ -11,7 +11,7 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Packet} from '../../../shared/lib/protocol/Packet';
 
-export class Response extends Packet
+export abstract class Response extends Packet
 {
   // ----------------- Private data ---------------------
 

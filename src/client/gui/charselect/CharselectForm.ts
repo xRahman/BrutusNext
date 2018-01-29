@@ -219,7 +219,9 @@ export class CharselectForm extends Form
   // --------------- Protected methods ------------------
 
   // ~ Overrides Form.createRequest().
-  protected createRequest()
+  // -> Returns 'null' if request couldn't be created
+  //    or there is nothing to request yet.
+  protected createRequest(): EnterGameRequest | null
   {
     console.log('CharselectForm.createRequest()');
 
@@ -237,14 +239,15 @@ export class CharselectForm extends Form
     return request;
   }
 
-  // ~ Overrides Form.isRequestValid().
-  protected isRequestValid(request: EnterGameRequest)
-  {
-    if (!request)
-      return false;
+  /// To be deleted.
+  // // ~ Overrides Form.isRequestValid().
+  // protected isRequestValid(request: EnterGameRequest)
+  // {
+  //   if (!request)
+  //     return false;
 
-    return true;
-  }
+  //   return true;
+  // }
 
   // ---------------- Private methods -------------------
 
