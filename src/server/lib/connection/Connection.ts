@@ -34,23 +34,34 @@ import '../../../server/lib/protocol/EnterGameRequest';
 
 export class Connection implements SharedConnection
 {
-  constructor(socket: WebSocket, ip: string, url: string)
+  constructor(webSocket: WebSocket, ip: string, url: string)
   {
-    let serverSocket = new ServerSocket(socket, ip, url);
-
-    this.setSocket(serverSocket);
+    this.socket = new ServerSocket(this, webSocket, ip, url);
   }
 
   // ----------------- Public data ----------------------
 
-  public account: (Account | null) = null;
   public ingameEntity: (GameEntity | null) = null;
+
+  // ---------------- Protected data --------------------
+
+  protected socket: ServerSocket; /// (ServerSocket | null) = null;
 
   // ----------------- Private data ---------------------
 
-  protected socket: (ServerSocket | null) = null;
+  private account: (Account | null) = null;
 
   // --------------- Public accessors -------------------
+
+  public setAccount(account: Account)
+  {
+    this.account = account;
+  }
+
+  public getAccount(): Account | null
+  {
+    return this.account;
+  }
 
   public getIpAddress() { return this.socket.getIpAddress(); }
 
@@ -169,18 +180,6 @@ export class Connection implements SharedConnection
   }
 
   // --------------- Private methods --------------------
-
-  private setSocket(socket: ServerSocket)
-  {
-    if (socket === null || socket === undefined)
-    {
-      ERROR("Invalid socket");
-      return;
-    } 
-
-    socket.connection = this;
-    this.socket = socket;
-  }
 
   // ---------------- Event handlers --------------------
 

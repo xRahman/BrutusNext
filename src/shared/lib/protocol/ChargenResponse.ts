@@ -65,6 +65,8 @@ export class ChargenResponse extends Response
   }
 }
 
+/// To be deleted.
+/*
 // ------------------ Type declarations ----------------------
 
 export module ChargenResponse
@@ -77,5 +79,6 @@ export module ChargenResponse
     FAILED_TO_CREATE_CHARACTER
   }
 }
+*/
 
 Classes.registerSerializableClass(ChargenResponse);

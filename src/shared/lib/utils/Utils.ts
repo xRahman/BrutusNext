@@ -156,8 +156,7 @@ export module Utils
     return str.replace(/\s+$/,"");
   }
 
-  // Makes the first character of 'str' uppercase and the rest lowercase.
-  export function upperCaseFirstCharacter(str: string)
+  export function uppercaseFirstLowercaseRest(str: string): string
   {
     return str[0].toUpperCase()
       + str.toLowerCase().substr(1);

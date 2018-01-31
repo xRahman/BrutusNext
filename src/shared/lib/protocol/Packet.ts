@@ -40,7 +40,8 @@ export abstract class Packet extends Serializable
 
   // ---------------- Public methods --------------------
 
-  public abstract process(connection: Connection): void;
+  // -> Returns 'true' on success.
+  public abstract async process(connection: Connection): Promise<boolean>;
 
   /// Converted abstract method.
   /*

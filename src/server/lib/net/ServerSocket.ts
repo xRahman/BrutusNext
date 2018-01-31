@@ -25,6 +25,7 @@ export class ServerSocket
 {
   constructor
   (
+    public connection: Connection,
     private webSocket: WebSocket,
     // Remote ip address.
     private ip: string,
@@ -41,7 +42,7 @@ export class ServerSocket
 
   // ----------------- Public data ----------------------
 
-  public connection: (Connection | null) = null;
+  ///public connection: (Connection | null) = null;
 
   // --------------- Public accessors -------------------
 

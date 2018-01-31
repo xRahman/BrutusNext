@@ -34,6 +34,29 @@ TODO: Zrušit metodu isRequestValid
   (hmm, tohle mimochodem znamená, že asi nebudu potřebovat result u responzů
    - buď budou problems 'null' nebo ne).
 
+TODO: metody Packet.process() by měly vracet 'false' při chybě
+TODO: Return value checkovat a něco s tím udělat.
+- i když ono je to asi taky zbytečný, stejně s tím výsledkem nemám co udělat
+  (chybu je třeba reportovat už ve vnořených funkcích)
+- na druhou stranu to, že s návratovou hodnotou nic neudělám teď, ještě
+  neznamená, že se to nebude hodit časem. Ignorovat návratovou hodnotu můžu
+  vždycky. Takže vracet bool.
+TODO: Přejmenování metod (getXXXProblem na checkXXX) viz ChargenRequest.
+- metoda checkProblems(). - nebo možná checkRequest()? checkForProblems()?
+  - checkForProblems() je asi nejlepší.
+
+TODO: Pokud se mají procesit jen některé packety, tak by asi metoda process()
+  neměla být v abstraktním Packetu ale až tam, kde se fakt volá
+  (tím bych si měl zajistit kontrolu bez nutnosti házet errory).
+- to je asi blbost, přestal by mi fungovat polymorfismus.
+
+
+TODO: Zvážit, jeslti by nešly sloučit classy Connection a ServerSocket
+  (respektive ClientSocket).
+  - koncepčně mi to zní jako stejná věc, tzn. classa obalující webSocket.
+  - je otázka, jestli to půjde na clientu, kde je jen jedna connection
+    (asi by zůstávala a při reconnectu by se v ní měnil websocket)
+
 --------------------------------------------------------------
 
 TODO: /shared/ContainerEntity má property 'data', což nejspíš konfliktí

@@ -86,8 +86,12 @@ export class LoginForm extends CredentialsForm
     this.focusEmailInput();
   }
 
+  // -> Returns 'null' if email input value cannot be read.
   public getEmailInputValue()
   {
+    if (!this.emailInput)
+      return null;
+
     return this.emailInput.getValue();
   }
 
@@ -135,17 +139,32 @@ export class LoginForm extends CredentialsForm
 
   private createButtons()
   {
+    let $buttonContainer = this.$createButtonContainer();
+
+    if (!$buttonContainer)
+    {
+      ERROR("Failed to create buttons in login form");
+      return;
+    }
+
     this.$createSubmitButton
     (
       {
         text: 'Login',
-        $parent: this.$createButtonContainer()
+        $parent: $buttonContainer
       }
     );
   }
 
   private setStoredEmailAddress()
   {
+    if (!this.emailInput)
+    {
+      ERROR("Failed to set stored email address because"
+        + " email input component doesn't exist");
+      return;
+    }
+
     let savedEmail = LocalStorage.read(LocalStorage.EMAIL_ENTRY);
 
     if (savedEmail)

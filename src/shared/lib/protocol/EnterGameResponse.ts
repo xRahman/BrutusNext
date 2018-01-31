@@ -27,8 +27,10 @@ export class EnterGameResponse extends Response
 
   // ----------------- Public data ----------------------
 
+  /*
   // Is the request accepted?
   public result = EnterGameResponse.Result.UNDEFINED;
+  */
 
   // Where did the character entered game.
   public characterMove: (Move | null) = null;
@@ -58,6 +60,7 @@ export class EnterGameResponse extends Response
   }
 }
 
+/*
 // ------------------ Type declarations ----------------------
 
 export module EnterGameResponse
@@ -69,5 +72,6 @@ export module EnterGameResponse
     ERROR
   }
 }
+*/
 
 Classes.registerSerializableClass(EnterGameResponse);

@@ -338,8 +338,13 @@ export class Entity extends Serializable
     }
   }
 
+/// TODO: Nemělo by se tu zapisovat do parametru 'data' jako side effect,
+/// místo toho by se mělo pole vytvořit uvnitř metody a vrátit jako návratová
+/// hodnota (je teda otázka, jestli to tak půjde udělat rekurzivně).
+/// - nebo by se minimálně mělo to změněné pole vracet, pokud se do něj bude
+///   postupně přidávat.
   // Serializes entity and all its ancestors. Writes
-  // results to 'data' arrat, starting with root prototype.
+  // results to 'data' array, starting with root prototype.
   public serializeAncestorTree(data: Array<string>, mode: Serializable.Mode)
   {
     if (this.prototypeEntity !== null)

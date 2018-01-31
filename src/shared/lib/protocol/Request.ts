@@ -18,5 +18,4 @@ export abstract class Request extends Packet
   // --------------- Public accessors -------------------
 
   // -------------- Protected methods -------------------
-
 }

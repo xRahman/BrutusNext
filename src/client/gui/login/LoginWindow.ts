@@ -41,7 +41,17 @@ export class LoginWindow extends FormWindow
   private createLoginForm()
   {
     if (this.form !== null)
-      ERROR("Login form already exists");
+    {
+      ERROR("Login form already exists. Not creating it again");
+      return;
+    }
+
+    if (!this.$content)
+    {
+      ERROR("Failed to create form component in login window"
+        + " because $content element is missing");
+      return;
+    }
 
     this.form = new LoginForm(this, { $parent: this.$content });
   }
@@ -49,6 +59,14 @@ export class LoginWindow extends FormWindow
   private createRegisterLink()
   {
     let $parent = super.createTextContainer();
+
+    if (!$parent)
+    {
+      ERROR("Failed to create text container element."
+        + " It also means that $registerLink element"
+        + " won't be created");
+      return;
+    }
 
     this.$createText({ $parent, text: "Don't have an account yet? " });
 

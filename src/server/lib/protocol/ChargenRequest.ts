@@ -15,6 +15,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {Syslog} from '../../../shared/lib/log/Syslog';
 import {ChargenRequest as SharedChargenRequest} from
   '../../../shared/lib/protocol/ChargenRequest';
@@ -42,20 +43,27 @@ export class ChargenRequest extends SharedChargenRequest
   // ---------------- Public methods --------------------
 
   // ~ Overrides Packet.process().
+  // -> Returns 'true' on success.
   public async process(connection: Connection)
   {
-    this.normalizeCharacterName();
+    if (!this.characterName)
+    {
+      ERROR("Failed to process chargen request: Invalid character name");
+      return false;
+    }
+
+    this.characterName = Utils.uppercaseFirstLowercaseRest(this.characterName);
     
     if (!this.isConnectionValid(connection))
-      return;
+      return false;
 
     if (!this.isRequestValid(connection))
-      return;
+      return false;
 
     if (!await this.isNameAvailable(connection))
-      return;
+      return false;
 
-    await this.processCharacterCreation(connection);
+    return await this.processCharacterCreation(connection);
   }
 
   // --------------- Private methods --------------------
@@ -73,7 +81,7 @@ export class ChargenRequest extends SharedChargenRequest
         ChargenResponse.Result.FAILED_TO_CREATE_CHARACTER,
         connection
       );
-      return;
+      return false;
     }
 
     // Promote character to the highest admin level if there
@@ -82,6 +90,8 @@ export class ChargenRequest extends SharedChargenRequest
     Admins.onCharacterCreation(character);
 
     this.acceptRequest(character, connection);
+
+    return true;
   }
 
   private async createCharacter(connection: Connection)
@@ -92,11 +102,17 @@ export class ChargenRequest extends SharedChargenRequest
       return null;
     }
 
-    let account = connection.account;
+    let account = connection.getAccount();
 
     if (!account || !account.isValid())
     {
       ERROR("Invalid account, character is not created");
+      return null;
+    }
+
+    if (!this.characterName)
+    {
+      ERROR("Invalid characterName, character is not created");
       return null;
     }
 
@@ -146,7 +162,7 @@ export class ChargenRequest extends SharedChargenRequest
 
   private isCharacterNameValid(connection: Connection): boolean
   {
-    let problem = this.getCharacterNameProblem();
+    let problem = this.checkCharacterName();
 
     if (!problem)
       return true;

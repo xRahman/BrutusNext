@@ -22,6 +22,13 @@ export abstract class FormInput extends Component
   {
     super(parent);
 
+    if (!parent.$element)
+    {
+      ERROR("Unable to create form input element because parent"
+        + " component doesn't have a valid $element");
+      return;
+    }
+
     Utils.applyDefaults
     (
       param,
@@ -57,17 +64,38 @@ export abstract class FormInput extends Component
 
   public focus()
   {
+    if (!this.$input)
+    {
+      ERROR("Unable to focus form input because"
+        + " $input element is missing");
+      return;
+    }
+
     this.$input.focus();
   }
 
   // -> Returns value of input element.
   public getValue()
   {
+    if (!this.$input)
+    {
+      ERROR("Unable to read value of form input because"
+        + " $input element is missing");
+      return;
+    }
+
     return this.$input.val();
   }
 
   public setValue(value: string | number)
   {
+    if (!this.$input)
+    {
+      ERROR("Unable to set value to form input because"
+        + " $input element is missing");
+      return;
+    }
+
     this.$input.val(value);
   }
 
@@ -96,6 +124,13 @@ export abstract class FormInput extends Component
 
   public hideProblem()
   {
+    if (!this.$problem)
+    {
+      ERROR("Unable to hide problems on form input because"
+        + " $problem element is missing");
+      return;
+    }
+
     this.$problem.hide();
   }
 
@@ -103,6 +138,14 @@ export abstract class FormInput extends Component
 
   protected createProblemNotice(param: Component.DivParam = {})
   {
+    if (!this.$element)
+    {
+      ERROR("Unable to create $problem element in form input"
+        + " component because form input component doesn't"
+        + " have a valid $element");
+      return;
+    }
+
     Utils.applyDefaults
     (
       param,

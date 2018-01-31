@@ -9,8 +9,8 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {Utils} from '../../../shared/lib/utils/Utils';
 import {Request} from '../../../shared/lib/protocol/Request';
+import {Connection} from '../../../shared/lib/connection/Connection';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 export class ChargenRequest extends Request
@@ -22,9 +22,12 @@ export class ChargenRequest extends Request
     this.version = 0;
   }
 
-  public static get MIN_CHARACTER_NAME_LENGTH()
+  private static get MISSING_CHARACTER_NAME_MESSAGE()
+    { return "Please enter character name."; }
+
+  public static get MIN_NAME_LENGTH_CHARACTERS()
     { return  3;}
-  public static get MAX_CHARACTER_NAME_LENGTH()
+  public static get MAX_NAME_LENGTH_CHARACTERS()
     { return  12;}
 
   public static get VALID_CHARACTERS_REGEXP()
@@ -36,62 +39,105 @@ export class ChargenRequest extends Request
 
   // ---------------- Public methods --------------------
 
-  // -> Returns 'null' if character name is ok,
-  //    othwrwise returns the first found reason why it's not.
-  public getCharacterNameProblem()
+  // -> Returns 'null' if no problem is found.
+  public checkForProblems(): ChargenRequest.Problems | null
   {
-    let problem: (string | null) = null;
+    let characterNameProblem = this.checkCharacterName();
 
-    if (!this.characterName)
-      return "Name must not be empty.";
+    if (characterNameProblem)
+    {
+      let problems: ChargenRequest.Problems =
+      {
+        characterNameProblem: characterNameProblem
+      };
 
-    if (problem = this.getInvalidCharacterProblem())
-      return problem;
-
-    if (problem = this.getNameLengthProblem())
-      return problem;
+      return problems;
+    }
 
     return null;
   }
 
-  public normalizeCharacterName()
+  // ~ Overrides Packet.process().
+  // -> Returns 'true' on success.
+  public async process(connection: Connection)
   {
-    // Uppercase the first character of 'characterName',
-    // lowercase the rest.
-    this.characterName = Utils.upperCaseFirstCharacter(this.characterName);
+    ERROR("Attempt to call /shared/protocol/ChargenRequest.process()."
+      + " That's not supposed to happen, only /server/protocol/ChargenRequest"
+      + " can be processed");
+
+    return false;
   }
 
   // ---------------- Private methods -------------------
 
-  // Note that this is also enforced in
-  // ChargenForm.removeInvalidCharacters().
-  private getInvalidCharacterProblem()
+  // -> Returns 'null' if character name is ok,
+  //    or the first found reason why it's not.
+  private checkCharacterName()
   {
-    let regExp = ChargenRequest.VALID_CHARACTERS_REGEXP;
+    let problem: (string | null) = null;
 
-    if (regExp.test(this.characterName))
-      return "Name can only contain english letters.";
+    if (!this.characterName)
+      return ChargenRequest.MISSING_CHARACTER_NAME_MESSAGE;
+
+    if (problem = this.checkInvalidCharacters())
+      return problem;
+
+    if (problem = this.checkNameLength())
+      return problem;
 
     return null;
   }
 
-  private getNameLengthProblem()
+  // Note that this is also enforced in
+  // ChargenForm.removeInvalidCharacters().
+  // -> Returns problem description if there is a problem,
+  //    Returns 'null' if no problem is found.
+  private checkInvalidCharacters(): string | null
   {
-    if (this.characterName.length < ChargenRequest.MIN_CHARACTER_NAME_LENGTH)
+    const regExp = ChargenRequest.VALID_CHARACTERS_REGEXP;
+
+    if (!this.characterName)
+      return ChargenRequest.MISSING_CHARACTER_NAME_MESSAGE;
+
+    if (regExp.test(this.characterName))
+      return "Character name can only contain english letters.";
+
+    return null;
+  }
+
+  // -> Returns problem description if there is a problem,
+  //    Returns 'null' if no problem is found.
+  private checkNameLength(): string | null
+  {
+    if (!this.characterName)
+      return ChargenRequest.MISSING_CHARACTER_NAME_MESSAGE;
+
+    if (this.characterName.length < ChargenRequest.MIN_NAME_LENGTH_CHARACTERS)
     {
       return "Name must be at least"
-        + " " + ChargenRequest.MIN_CHARACTER_NAME_LENGTH
+        + " " + ChargenRequest.MIN_NAME_LENGTH_CHARACTERS
         + " characters long.";
     }
 
-    if (this.characterName.length > ChargenRequest.MAX_CHARACTER_NAME_LENGTH)
+    if (this.characterName.length > ChargenRequest.MAX_NAME_LENGTH_CHARACTERS)
     {
       return "Name cannot be longer than"
-        + " " + ChargenRequest.MAX_CHARACTER_NAME_LENGTH
+        + " " + ChargenRequest.MAX_NAME_LENGTH_CHARACTERS
         + " characters.";
     }
 
     return null;
+  }
+}
+
+// ------------------ Type declarations ----------------------
+
+export module ChargenRequest
+{
+  export interface Problems
+  {
+    characterNameProblem?: string;
+    error?: string;
   }
 }
 

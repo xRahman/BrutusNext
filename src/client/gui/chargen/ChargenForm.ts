@@ -127,7 +127,7 @@ export class ChargenForm extends Form
   // ~ Overrides Form.isRequestValid().
   protected isRequestValid(request: ChargenRequest)
   {
-    let problem = request.getCharacterNameProblem();
+    let problem = request.checkCharacterName();
 
     if (problem)
     {

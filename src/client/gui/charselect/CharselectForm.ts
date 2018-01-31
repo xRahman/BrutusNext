@@ -227,14 +227,16 @@ export class CharselectForm extends Form
 
     let id = this.getSelectedCharacterId();
 
-    // 'null' id means no character is selected.
-    // No request will be sent in that case.
+    // 'null' id means no character is selected. No request will be sent.
     if (!id)
       return null;
 
     let request = new EnterGameRequest();
 
     request.characterId = id;
+
+    if (this.displayRequestProblems(request))
+      return null;
 
     return request;
   }
@@ -250,6 +252,12 @@ export class CharselectForm extends Form
   // }
 
   // ---------------- Private methods -------------------
+
+  // -> Returns 'false' if there were no problems with request.
+  private displayRequestProblems(request: EnterGameRequest): boolean
+  {
+    let problems = request.checkForProblems();
+  }
 
   private isScrolledTo
   (
@@ -474,6 +482,23 @@ export class CharselectForm extends Form
 
   private createCharplate(character: Character)
   {
+    if (!this.$charlist)
+    {
+      ERROR("Failed to create charplate component because"
+        + " $charlist element is missing");
+      return;
+    }
+
+    let characterId = character.getId();
+
+    if (!characterId)
+    {
+      ERROR("Failed to create charplate component because"
+        + " character " + character.getErrorIdString()
+        + " doesn't have a valid id");
+      return;
+    }
+
     let charplate = new Charplate
     (
       this,
@@ -482,7 +507,7 @@ export class CharselectForm extends Form
       { $parent: this.$charlist }
     );
 
-    this.charplates.set(character.getId(), charplate);
+    this.charplates.set(characterId, charplate);
   }
 
   private clear()
@@ -498,6 +523,12 @@ export class CharselectForm extends Form
     this.clear();
 
     let account = Connection.account;
+
+    if (!account)
+    {
+      ERROR("Invalid account. Charselect form will not be populated");
+      return;
+    }
 
     for (let character of account.data.characters.values())
       this.createCharplate(character);

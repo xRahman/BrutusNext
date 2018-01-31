@@ -303,8 +303,9 @@ export abstract class Form extends Component
     if (!request)
       return;
 
+    /*
     // Array of strings 
-    let problems = request.getProblems();
+    let problems = request.checkForProblems();
     
     if (problems)
     {
@@ -319,6 +320,7 @@ export abstract class Form extends Component
     // the server of course to prevent exploits).
     if (!request || !this.isRequestValid(request))
       return;
+    */
 
     // Disable submit button to prevent click-spamming
     // requests.

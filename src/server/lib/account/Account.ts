@@ -37,7 +37,7 @@ export class Account extends ServerEntity
 
   // ----------------- Public data ----------------------
 
-  public data = new AccountData(this);
+  public data: AccountData = new AccountData(this);
     private static data: Attributes =
     {
       saved: true,
@@ -110,7 +110,7 @@ export class Account extends ServerEntity
       return;
     }
 
-    connection.account = this;
+    connection.setAccount(this);
     this.connection = connection;
   }
 

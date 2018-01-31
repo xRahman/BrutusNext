@@ -32,8 +32,8 @@ export class CharacterNameInput extends TextInput
           /// We are not letting browser to validate 'minLenght'
           /// because 'minLength' validation does't work anyways
           /// after setting value to the input element.
-          ///minLength: ChargenRequest.MIN_CHARACTER_NAME_LENGTH,
-          maxLength: ChargenRequest.MAX_CHARACTER_NAME_LENGTH,
+          ///minLength: ChargenRequest.MIN_NAME_LENGTH_CHARACTERS,
+          maxLength: ChargenRequest.MAX_NAME_LENGTH_CHARACTERS,
           /// Automatic form validation is no longer used.
           ///required: true,
           input: (event: JQueryEventObject) => { this.onInput(event); }
@@ -79,7 +79,7 @@ export class CharacterNameInput extends TextInput
     let newValue = "";
 
     if (oldValue)
-      newValue = Utils.upperCaseFirstCharacter(oldValue);
+      newValue = Utils.uppercaseFirstCharacter(oldValue);
 
     // Note: Setting value to an input element breaks automatic
     //   value validation on the browser.

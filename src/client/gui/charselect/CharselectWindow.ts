@@ -42,14 +42,31 @@ export class CharselectWindow extends FormWindow
   private createCharselectForm()
   {
     if (this.form !== null)
-      ERROR("Charselect form already exists");
+    {
+      ERROR("Charselect form already exists. Not creating it again");
+      return;
+    }
+
+    if (!this.$content)
+    {
+      ERROR("Failed to create form component in charselect window"
+        + " because $content element is missing");
+      return;
+    }
 
     this.form = new CharselectForm(this, { $parent: this.$content });
   }
 
   private createButtonNewCharacter()
   {
-    let $button = this.$createButton
+    if (!this.$content)
+    {
+      ERROR("Failed to create 'new character' $button in charselect"
+        + " window because $content element is missing");
+      return;
+    }
+
+    this.$createButton
     (
       {
         $parent: this.$content,
@@ -81,6 +98,12 @@ export class CharselectWindow extends FormWindow
   {
     // Super call handles 'Enter' and 'Escape' keys.
     super.onKeyDown(event);
+
+    if (!this.form)
+    {
+      ERROR("Invalid form component");
+      return;
+    }
 
     let key = event.which;
 

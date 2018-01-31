@@ -48,6 +48,13 @@ export class Charplate extends Component
     // Create a <label> element
     // (it will also server as container element).
     this.$element = this.createLabelContainer(param);
+
+    if (!this.$element)
+    {
+      ERROR("Failed to create label container in charplate."
+        + " Charplate won't be created as well");
+      return;
+    }
     
     // Put a hidden radio input inside it.
     this.$radio = this.createRadio({ $parent: this.$element });
@@ -117,6 +124,16 @@ export class Charplate extends Component
       return null;
     }
 
+    let characterId = this.character.getId();
+
+    if (!characterId)
+    {
+      ERROR("Failed to create radiobutton in charplate"
+        + " because character " + this.character.getErrorIdString()
+        + " assigned to charplate doesn't have a valid id");
+      return null;
+    }
+
     Utils.applyDefaults
     (
       param,
@@ -124,7 +141,7 @@ export class Charplate extends Component
         sCssClass: Component.HIDDEN_S_CSS_CLASS,
         // This value will be read to extract character 'id' when
         // 'enter game' button is pressed.
-        value: this.character.getId(),
+        value: characterId,
         change: (event: JQueryEventObject) => this.onChange(event)
       }
     );
@@ -151,6 +168,12 @@ export class Charplate extends Component
     );
 
     let $charplate = this.$createDiv(param);
+
+    if (!$charplate)
+    {
+      ERROR("Failed to create $charplate element");
+      return;
+    }
 
     this.createPortrait({ $parent: $charplate });
     this.createPortraitLabels({ $parent: $charplate });
@@ -181,6 +204,12 @@ export class Charplate extends Component
 
     let $container = this.$createDiv(param);
 
+    if (!$container)
+    {
+      ERROR("Failed to create $container element");
+      return;
+    }
+
     this.createNameLabel({ $parent: $container });
     this.createInfoLabel({ $parent: $container });
   }
@@ -193,12 +222,21 @@ export class Charplate extends Component
       return;
     }
 
+    let characterName = this.character.getName();
+
+    if (characterName === null)
+    {
+      ERROR("Invalid character name on character"
+        + " " + this.character.getErrorIdString());
+      characterName = "";
+    }
+
     Utils.applyDefaults
     (
       param,
       {
         sCssClass: Charplate.LABEL_BIG_S_CSS_CLASS,
-        text: this.character.getName()
+        text: characterName
       }
     );
 

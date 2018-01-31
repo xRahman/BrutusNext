@@ -58,6 +58,12 @@ export class CheckboxInput extends FormInput
 
   public setChecked(value: boolean)
   {
+    if (!this.$input)
+    {
+      ERROR("Invalid $input element");
+      return;
+    }
+
     this.$input.prop('checked', value);
   }
 
@@ -65,6 +71,14 @@ export class CheckboxInput extends FormInput
 
   private createInput(param: Component.CheckboxInputParam = {})
   {
+    if (!this.$element)
+    {
+      ERROR("Unable to create $input element in checkbox"
+        + " input component because checkbox input component"
+        + " doesn't have a valid $element");
+      return;
+    }
+
     this.$createDiv
     (
       {
