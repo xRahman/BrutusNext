@@ -19,3 +19,14 @@ export abstract class Request extends Packet
 
   // -------------- Protected methods -------------------
 }
+
+// ------------------ Type declarations ----------------------
+
+export module Request
+{
+  export interface Problems
+  {
+    // Any number of optional string properties
+    [key: string]: string | undefined
+  }
+}

@@ -134,10 +134,10 @@ export class ChargenRequest extends Request
 
 export module ChargenRequest
 {
-  export interface Problems
+  export interface Problems extends Request.Problems
   {
     characterNameProblem?: string;
-    error?: string;
+    characterCreationError?: string;
   }
 }
 

@@ -44,90 +44,96 @@ export class ChargenRequest extends SharedChargenRequest
 
   // ~ Overrides Packet.process().
   // -> Returns 'true' on success.
-  public async process(connection: Connection)
+  public async process(connection: Connection): Promise<boolean>
   {
-    if (!this.characterName)
-    {
-      ERROR("Failed to process chargen request: Invalid character name");
-      return false;
-    }
+    let characterName = this.normalizeCharacterName(connection);
 
-    this.characterName = Utils.uppercaseFirstLowercaseRest(this.characterName);
-    
-    if (!this.isConnectionValid(connection))
+    if (!characterName)
       return false;
 
     if (!this.isRequestValid(connection))
       return false;
 
-    if (!await this.isNameAvailable(connection))
+    if (!await this.isNameAvailable(characterName, connection))
       return false;
 
-    return await this.processCharacterCreation(connection);
+    return await this.createCharacter(characterName, connection);
   }
 
   // --------------- Private methods --------------------
 
-  private async processCharacterCreation(connection: Connection)
+  // -> Returns 'null' on failure.
+  private normalizeCharacterName(connection: Connection): string | null
   {
-    let character = await this.createCharacter(connection);
+    if (!this.characterName)
+    {
+      ERROR("Missing character name in chargen request");
+      this.sendFailureResponse(connection);
+      return null;
+    }
+
+    return Utils.uppercaseFirstLowercaseRest(this.characterName);
+  }
+
+  private sendFailureResponse(connection: Connection)
+  {
+    const problems: SharedChargenRequest.Problems =
+    {
+      characterCreationError:
+        "[ERROR]: Failed to create character.\n\n"
+          + Message.ADMINS_WILL_FIX_IT
+    };
+    
+    this.denyRequest(problems, connection);
+  }
+
+  private async createCharacter(characterName: string, connection: Connection)
+  {
+    let account = connection.getAccount();
+
+    if (!account)
+    {
+      ERROR("Failed to process chargen request:"
+        + " No account is attached to connection");
+      this.sendFailureResponse(connection);
+      return false;
+    }
+
+    let character = await account.createCharacter(characterName);
 
     if (!character)
     {
-      this.denyRequest
-      (
-        "[ERROR]: Failed to create character.\n\n"
-          + Message.ADMINS_WILL_FIX_IT,
-        ChargenResponse.Result.FAILED_TO_CREATE_CHARACTER,
-        connection
-      );
+      this.sendFailureResponse(connection);
       return false;
     }
 
-    // Promote character to the highest admin level if there
-    // are no admins yet (the first character created on fresh
-    // server automaticaly becomes admin).
     Admins.onCharacterCreation(character);
 
-    this.acceptRequest(character, connection);
+    this.acceptRequest(character, connection, account);
 
     return true;
   }
 
-  private async createCharacter(connection: Connection)
-  {
-    if (!connection)
-    {
-      ERROR("Invalid connection, character is not created");
-      return null;
-    }
-
-    let account = connection.getAccount();
-
-    if (!account || !account.isValid())
-    {
-      ERROR("Invalid account, character is not created");
-      return null;
-    }
-
-    if (!this.characterName)
-    {
-      ERROR("Invalid characterName, character is not created");
-      return null;
-    }
-
-    return await account.createCharacter(this.characterName);
-  }
-
+  // -> Returns 'false' on failure.
   private isRequestValid(connection: Connection): boolean
   {
-    if (!this.isCharacterNameValid(connection))
+    let problems = this.checkForProblems();
+
+    if (problems)
+    {
+      this.denyRequest(problems, connection);
       return false;
+    }
 
     return true;
   }
 
-  private async isNameAvailable(connection: Connection): Promise<boolean>
+  private async isNameAvailable
+  (
+    characterName: string,
+    connection: Connection
+  )
+  : Promise<boolean>
   {
     /// TODO: Časem asi nějaké přísnější testy - například nepovolit jméno,
     ///   když existuje jeho hodně blízký prefix.
@@ -136,12 +142,11 @@ export class ChargenRequest extends SharedChargenRequest
     ///  do name.length - 1).
     /// Asi taky nepovolit slovníková jména.
 
-    if (await Characters.isTaken(this.characterName))
+    if (await Characters.isTaken(characterName))
     {
       this.denyRequest
       (
-        "Sorry, this name is not available.",
-        ChargenResponse.Result.CHARACTER_NAME_PROBLEM,
+        { characterNameProblem: "Sorry, this name is not available." },
         connection
       );
 
@@ -160,51 +165,21 @@ export class ChargenRequest extends SharedChargenRequest
     return true;
   }
 
-  private isCharacterNameValid(connection: Connection): boolean
-  {
-    let problem = this.checkCharacterName();
-
-    if (!problem)
-      return true;
-
-    this.denyRequest
-    (
-      problem,
-      ChargenResponse.Result.CHARACTER_NAME_PROBLEM,
-      connection
-    );
-
-    /// This is probably too trival to log.
-    // Syslog.log
-    // (
-    //   "Attempt to create character with invalid name"
-    //     + " (" + this.characterName + ")."
-    //     + " Problem: " + problem,
-    //   MessageType.CONNECTION_INFO,
-    //   AdminLevel.IMMORTAL
-    // );
-    
-    return false;
-  }
-
-  private createOkResponse(account: Account, character: Character)
+  private acceptRequest
+  (
+    character: Character,
+    connection: Connection,
+    account: Account
+  )
   {
     let response = new ChargenResponse();
 
-    response.result = ChargenResponse.Result.OK;
     response.setAccount(account);
     response.setCharacter(character);
 
-    return response;
-  }
-
-  private acceptRequest(character: Character, connection: Connection)
-  {
-    let response = this.createOkResponse(connection.account, character);
-
     Syslog.log
     (
-      "Player " + connection.account.getEmail() + " has created"
+      "Player " + account.getEmail() + " has created"
         + " a new character: " + character.getName(),
       MessageType.SYSTEM_INFO,
       AdminLevel.IMMORTAL
@@ -215,32 +190,14 @@ export class ChargenRequest extends SharedChargenRequest
 
   private denyRequest
   (
-    problem: string,
-    result: ChargenResponse.Result,
+    problems: SharedChargenRequest.Problems,
     connection: Connection
   )
   {
     let response = new ChargenResponse();
 
-    response.result = result;
-    response.setProblem(problem);
-
+    response.setProblems(problems);
     connection.send(response);
-  }
-
-  private isConnectionValid(connection: Connection)
-  {
-    if (!connection)
-      return false;
-
-    if (connection.account === null)
-    {
-      ERROR("Chargen request is triggered on connection that has"
-        + " no account attached to it. Request is not processed");
-      return false;
-    }
-
-    return true;
   }
 }
 

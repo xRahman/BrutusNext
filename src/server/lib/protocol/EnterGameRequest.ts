@@ -176,7 +176,7 @@ export class EnterGameRequest extends SharedEnterGameRequest
     let response = new EnterGameResponse();
     
     response.result = result;
-    response.setProblem(problem);
+    response.setProblems(problem);
 
     connection.send(response);
   }

@@ -136,7 +136,7 @@ export class LoginRequest extends SharedLoginRequest
     let response = new LoginResponse();
 
     response.result = result;
-    response.setProblem(problem);
+    response.setProblems(problem);
 
     connection.send(response);
   }

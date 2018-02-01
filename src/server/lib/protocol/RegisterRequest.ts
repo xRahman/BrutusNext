@@ -184,7 +184,7 @@ export class RegisterRequest extends SharedRegisterRequest
     let response = new RegisterResponse();
 
     response.result = result;
-    response.setProblem(problem);
+    response.setProblems(problem);
 
     connection.send(response);
   }

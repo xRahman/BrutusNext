@@ -92,12 +92,12 @@ export class Admins
     // na Server.admins, aby přes ni mohl promotovat, demotovat a tak.
   }
 
-  public static getAdminLevel(entity: GameEntity): AdminLevel
+  public static getAdminLevel(entity: GameEntity): AdminLevel | null
   {
     if (entity === null || entity === undefined)
     {
       ERROR("Invalid entity");
-      return;
+      return null;
     }
 
     let adminLevels = ServerApp.admins.adminLevels;

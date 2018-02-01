@@ -10,40 +10,57 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Packet} from '../../../shared/lib/protocol/Packet';
+import {Request} from '../../../shared/lib/protocol/Request';
 
 export abstract class Response extends Packet
 {
   // ----------------- Private data ---------------------
 
-  // Description of problem if the request is denied.
-  private problem: (string | null) = null;
+  // Description of problems found in request or related to it's processing.
+  private problems: (Request.Problems | null) = null;
 
   // --------------- Public accessors -------------------
 
-  public setProblem(problem: string)
+  public setProblems(problems: Request.Problems)
   {
-    if (problem === "")
+    if (problems !== null && this.problems !== null)
+    {
+      ERROR("Attempt to set 'problems' object to response"
+        + " packet that already has 'problems' object."
+        + " Problems are not set");
+      return;
+    }
+
+    this.problems = problems;
+
+    /// TODO: Vymyslet, kam dát kontrolu tečky na konci problem
+    /// stringů. Tady by to sice šlo, ale nestačí to, protože
+    /// 'problems' se vypisují už na klientu bez toho, že by se
+    /// setovaly do response packetu.
+    /*
+    if (problems === "")
     {
       ERROR("Attempt to set empty string to this.problem."
         + "Setting 'null' instead");
-      this.problem = null;
+      this.problems = null;
       return;
     }
 
     // Make sure that 'problem' string ends with period.
-    if (problem.slice(-1) !== '.')
+    if (problems.slice(-1) !== '.')
     {
       ERROR("Missing '.' at the end of problem string. Adding"
         + " it automatically (but you should fix it anyways)");
-      problem += '.';
+      problems += '.';
     }
 
-    this.problem = problem;
+    this.problems = problems;
+    */
   }
 
   public getProblem()
   {
-    return this.problem;
+    return this.problems;
   }
 
   // -------------- Protected methods -------------------
