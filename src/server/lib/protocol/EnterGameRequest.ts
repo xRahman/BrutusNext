@@ -33,9 +33,9 @@ import {Classes} from '../../../shared/lib/class/Classes';
 
 export class EnterGameRequest extends SharedEnterGameRequest
 {
-  constructor()
+  constructor(characterId: string)
   {
-    super();
+    super(characterId);
 
     this.version = 0;
   }
@@ -83,18 +83,10 @@ export class EnterGameRequest extends SharedEnterGameRequest
 
   private obtainCharacter(connection: Connection): Character | null
   {
-    let characterId = this.characterId;
-
-    if (!characterId)
-    {
-      ERROR("Failed to process enter game request: Invalid 'characterId'");
-      return null;
-    }
-
     // Character should already be loaded at this time
     // (all characters are loaded when account is loaded)
     // so we just request it from Entities.
-    let character = ServerEntities.get(characterId);
+    let character = ServerEntities.get(this.characterId);
 
     if (!character || !character.isValid())
     {

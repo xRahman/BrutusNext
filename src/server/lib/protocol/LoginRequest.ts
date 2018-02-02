@@ -35,9 +35,9 @@ import {Classes} from '../../../shared/lib/class/Classes';
 
 export class LoginRequest extends SharedLoginRequest
 {
-  constructor()
+  constructor(email: string, password: string)
   {
-    super();
+    super(email, password);
 
     this.version = 0;
   }
@@ -45,12 +45,9 @@ export class LoginRequest extends SharedLoginRequest
   // ---------------- Public methods --------------------
 
   // ~ Overrides Packet.process().
-  public async process(connection: Connection)
+  // -> Returns 'true' on success.
+  public async process(connection: Connection): Promise<boolean>
   {
-    let email = this.email;
-    // // E-mail address is used as account name but it needs
-    // // to be encoded first so it can be used as file name.
-    // let accountName = Utils.encodeEmail(email);
     let passwordHash = ServerUtils.md5hash(this.password);
 
     // If player has already been connected prior to this
@@ -59,12 +56,11 @@ export class LoginRequest extends SharedLoginRequest
     // the old location), her Account is still loaded in memory
     // (because it is kept there as long as connection stays open).
     //   In such case, we don't need to load account from disk
-    // (because it's already loaded) but we need to close the
-    // old connection and socket (if it's still open) and also
-    // possibly let the player know that her connection has been
-    // usurped.
-    if (await this.reconnectToAccount(email, passwordHash, connection))
-      return;
+    // but we need to close the old connection and socket and also
+    // possibly let the player know that her connection has just
+    // been usurped.
+    if (await this.reconnectToAccount(passwordHash, connection))
+      return true;
 
     // If account 'doesn't exist in memory, we need to
     // load it from disk and connect to it.
@@ -73,7 +69,7 @@ export class LoginRequest extends SharedLoginRequest
     // in such case so at the time user logs back in
     // server has already dealocated old account, connection
     // and socket.
-    await this.connectToAccount(email, passwordHash, connection);
+    await this.connectToAccount(passwordHash, connection);
   }
 
   // --------------- Private methods --------------------
@@ -197,19 +193,20 @@ export class LoginRequest extends SharedLoginRequest
     return true;
   }
 
-  private isAccountValid(account: Account)
-  {
-    if (!account)
-      return false;
+  /// To be deleted.
+  // private isAccountValid(account: Account)
+  // {
+  //   if (!account)
+  //     return false;
 
-    if (!account.getConnection())
-    {
-      ERROR("Invalid connection on account " + account.getErrorIdString());
-      return false;
-    }
+  //   if (!account.getConnection())
+  //   {
+  //     ERROR("Invalid connection on account " + account.getErrorIdString());
+  //     return false;
+  //   }
 
-    return true;
-  }
+  //   return true;
+  // }
 
   private reportIncorrectPassword
   (
@@ -251,16 +248,21 @@ export class LoginRequest extends SharedLoginRequest
 
   private async reconnectToAccount
   (
-    email: string,
     passwordHash: string,
     connection: Connection
   )
   {
     // Check if account is already loaded in memory.
-    let account = Accounts.get(email);
+    let account = Accounts.get(this.email);
 
-    if (!this.isAccountValid(account))
+    if (!account)
       return false;
+
+    if (!account.isValid())
+    {
+      ERROR("Invalid account (" + this.email + ")");
+      return false;
+    }
 
     if (!account.validatePassword(passwordHash))
     {
@@ -394,7 +396,7 @@ export class LoginRequest extends SharedLoginRequest
       Account,  // Typecast.
     );
 
-    if (!account)
+    if (!account || !account.isValid())
     {
       this.reportAccountLoadFailure(email, connection);
       return null;
@@ -438,22 +440,21 @@ export class LoginRequest extends SharedLoginRequest
 
   private async connectToAccount
   (
-    email: string,
     passwordHash: string,
     connection: Connection
   )
   {
-    let nameLock = await this.loadNameLock(email, connection);
+    let nameLock = await this.loadNameLock(this.email, connection);
 
     if (!nameLock)
       return;
 
-    if (!this.authenticate(nameLock, email, passwordHash, connection))
+    if (!this.authenticate(nameLock, this.email, passwordHash, connection))
       return;
 
-    let account = await this.loadAccount(nameLock, email, connection);
+    let account = await this.loadAccount(nameLock, this.email, connection);
 
-    if (!account)
+    if (!account || !account.isValid())
       return;
 
     account.attachConnection(connection);

@@ -8,12 +8,18 @@
 
 'use strict';
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Request} from '../../../shared/lib/protocol/Request';
+import {Connection} from '../../../shared/lib/connection/Connection';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 export class LoginRequest extends Request
 {
-  constructor()
+  constructor
+  (
+    public email: string,
+    public password: string
+  )
   {
     super();
 
@@ -22,8 +28,28 @@ export class LoginRequest extends Request
 
   // ----------------- Public data ----------------------
 
-  public email: (string | null) = null;
-  public password: (string | null) = null;
+  // ---------------- Public methods --------------------
+
+  // ~ Overrides Packet.process().
+  // -> Returns 'true' on success.
+  public async process(connection: Connection)
+  {
+    ERROR("Attempt to call /shared/protocol/LoginRequest.process(). That's"
+      + " not supposed to happen, only /server/protocol/LoginRequest can"
+      + " be processed");
+
+    return false;
+  }
+}
+
+// ------------------ Type declarations ----------------------
+
+export module LoginRequest
+{
+  export interface Problems extends Request.Problems
+  {
+    error?: string;
+  }
 }
 
 Classes.registerSerializableClass(LoginRequest);

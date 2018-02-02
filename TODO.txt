@@ -1,6 +1,9 @@
 TO DO, TO DO, TODO TODO TODO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+-mark-: hrabu se v LoginRequestu.
+
+
 TODO: Consty.
 
 

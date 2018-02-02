@@ -15,7 +15,10 @@ import {Classes} from '../../../shared/lib/class/Classes';
 
 export class ChargenRequest extends Request
 {
-  constructor()
+  constructor
+  (
+    public characterName: string
+  )
   {
     super();
 
@@ -34,8 +37,6 @@ export class ChargenRequest extends Request
     { return /[^A-Za-z]/gi; }
 
   // ----------------- Public data ----------------------
-
-  public characterName: (string | null) = null;
 
   // ---------------- Public methods --------------------
 

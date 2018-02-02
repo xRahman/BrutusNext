@@ -67,7 +67,7 @@ export class NameList<T extends Entity>
   }
 
   // -> Returns 'undefined' if entity 'name' isn't in the list.
-  public get(name: string): T
+  public get(name: string): T | undefined
   {
     return this.names.get(name);
   }

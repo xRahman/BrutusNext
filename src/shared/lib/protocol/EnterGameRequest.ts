@@ -15,7 +15,10 @@ import {Classes} from '../../../shared/lib/class/Classes';
 
 export class EnterGameRequest extends Request
 {
-  constructor()
+  constructor
+  (
+    public characterId: string
+  )
   {
     super();
 
@@ -23,8 +26,6 @@ export class EnterGameRequest extends Request
   }
 
   // ----------------- Public data ----------------------
-
-  public characterId: (string | null) = null;
 
   // ---------------- Public methods --------------------
 

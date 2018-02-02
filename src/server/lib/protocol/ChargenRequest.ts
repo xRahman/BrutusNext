@@ -33,9 +33,9 @@ import {Classes} from '../../../shared/lib/class/Classes';
 
 export class ChargenRequest extends SharedChargenRequest
 {
-  constructor()
+  constructor(characterName: string)
   {
-    super();
+    super(characterName);
 
     this.version = 0;
   }
@@ -95,12 +95,6 @@ export class ChargenRequest extends SharedChargenRequest
 
   private normalizeCharacterName(connection: Connection)
   {
-    if (!this.characterName)
-    {
-      ERROR("Missing character name in chargen request");
-      return;
-    }
-
     this.characterName = Utils.uppercaseFirstLowercaseRest(this.characterName);
   }
 

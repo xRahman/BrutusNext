@@ -116,10 +116,9 @@ export class LoginForm extends CredentialsForm
       return null;
     }
 
-    let request = new LoginRequest();
-
-    request.email = this.emailInput.getValue();
-    request.password = this.passwordInput.getValue();
+    let email = this.emailInput.getValue();
+    let password = this.passwordInput.getValue();
+    let request = new LoginRequest(email, password);
 
     return request;
   }

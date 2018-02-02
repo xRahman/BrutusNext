@@ -209,34 +209,6 @@ export module Utils
     return getByteLength(encodedStr) <= MAX_FILENAME_BYTE_LENGTH;
   }
 
-  /// Not used anymore. All file names are encoded now.
-  // // Encodes email address so it can be used as file name.
-  // export function encodeEmail(email: string)
-  // {
-  //   for (let [key, value] of EMAIL_ENCODED_CHARACTERS.entries())
-  //   {
-  //     // We don't use javascript replace() so we don't have to
-  //     // escape special regexp characters.
-  //     email = email.split(key).join(value);
-  //   }
-
-  //   return email;
-  // }
-
-  /// Not used anymore. All file names are encoded now.
-  // Decodes string encoded with Utils.encodeEmail() back to original.
-  // export function decodeEmail(email: string)
-  // {
-  //   for (let [key, value] of EMAIL_ENCODED_CHARACTERS.entries())
-  //   {
-  //     // We don't use javascript replace() so we don't have to
-  //     // escape special regexp characters.
-  //     email = email.split(value).join(key);
-  //   }
-
-  //   return email;
-  // }
-
   // Copies properties of 'defaults' object to 'target' object
   // if they are not present in it. This is even done recursively
   // so you can default only some sub-properties.

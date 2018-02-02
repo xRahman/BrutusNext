@@ -75,16 +75,16 @@ export abstract class FormInput extends Component
   }
 
   // -> Returns value of input element.
-  public getValue()
+  public getValue(): string
   {
     if (!this.$input)
     {
       ERROR("Unable to read value of form input because"
         + " $input element is missing");
-      return;
+      return "";
     }
 
-    return this.$input.val();
+    return <string>this.$input.val();
   }
 
   public setValue(value: string | number)

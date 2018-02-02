@@ -225,15 +225,13 @@ export class CharselectForm extends Form
   {
     console.log('CharselectForm.createRequest()');
 
-    let id = this.getSelectedCharacterId();
+    let characterId = this.getSelectedCharacterId();
 
     // 'null' id means no character is selected. No request will be sent.
-    if (!id)
+    if (!characterId)
       return null;
 
-    let request = new EnterGameRequest();
-
-    request.characterId = id;
+    let request = new EnterGameRequest(characterId);
 
     if (this.displayRequestProblems(request))
       return null;

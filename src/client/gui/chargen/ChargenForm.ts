@@ -117,9 +117,7 @@ export class ChargenForm extends Form
     if (!characterName)
       return null;
 
-    let request = new ChargenRequest();
-
-    request.characterName = characterName;
+    let request = new ChargenRequest(characterName);
 
     return request;
   }

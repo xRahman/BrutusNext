@@ -35,7 +35,7 @@ export class Accounts
   }
 
   // -> Returns 'undefined' if entity 'name' isn't in the list.
-  public static get(name: string)
+  public static get(name: string): Account | undefined
   {
     return ServerApp.accounts.names.get(name);
   }
