@@ -206,7 +206,7 @@ export class Account extends ServerEntity
   }
   */
 
-  public async createCharacter(name: string): Promise<Character>
+  public async createCharacter(name: string): Promise<Character | null>
   {
     let character = await ServerEntities.createInstanceEntity
     (

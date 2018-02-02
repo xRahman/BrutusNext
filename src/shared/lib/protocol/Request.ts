@@ -26,7 +26,7 @@ export module Request
 {
   export interface Problems
   {
-    // Any number of optional string properties
+    // Any number of optional string properties.
     [key: string]: string | undefined
   }
 }

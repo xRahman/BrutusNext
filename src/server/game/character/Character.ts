@@ -95,7 +95,7 @@ export class Character extends GameEntity
 
   // -> Returns Move instance describing performed move action,
   //    Returns 'null' on error.
-  public enterWorld(): Move
+  public enterWorld(): Move | null
   {
     if (this.getLocation() !== null)
     {

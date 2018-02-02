@@ -42,9 +42,9 @@ export class EnterGameResponse extends Response
 
   public setLoadLocation(loadLocation: Entity)
   {
-    if (!loadLocation || !loadLocation.isValid())
+    if (!loadLocation.isValid())
     {
-      ERROR("Invalid loadLocation. Charselect response"
+      ERROR("Invalid loadLocation. Enter game response"
         + " won't be valid");
       this.serializedLoadLocation = null;
       return;

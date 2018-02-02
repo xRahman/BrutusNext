@@ -8,7 +8,9 @@
 
 'use strict';
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Request} from '../../../shared/lib/protocol/Request';
+import {Connection} from '../../../shared/lib/connection/Connection';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 export class EnterGameRequest extends Request
@@ -23,6 +25,29 @@ export class EnterGameRequest extends Request
   // ----------------- Public data ----------------------
 
   public characterId: (string | null) = null;
+
+  // ---------------- Public methods --------------------
+
+  // ~ Overrides Packet.process().
+  // -> Returns 'true' on success.
+  public async process(connection: Connection)
+  {
+    ERROR("Attempt to call /shared/protocol/EnterGameRequest.process(). That's"
+      + " not supposed to happen, only /server/protocol/EnterGameRequest can"
+      + " be processed");
+
+    return false;
+  }
+}
+
+// ------------------ Type declarations ----------------------
+
+export module EnterGameRequest
+{
+  export interface Problems extends Request.Problems
+  {
+    error?: string;
+  }
 }
 
 Classes.registerSerializableClass(EnterGameRequest);

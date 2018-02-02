@@ -137,7 +137,7 @@ export module ChargenRequest
   export interface Problems extends Request.Problems
   {
     characterNameProblem?: string;
-    characterCreationError?: string;
+    error?: string;
   }
 }
 

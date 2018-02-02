@@ -16,6 +16,7 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Syslog} from '../../../shared/lib/log/Syslog';
+import {Message} from '../../../server/lib/message/Message';
 import {EnterGameRequest as SharedEnterGameRequest} from
   '../../../shared/lib/protocol/EnterGameRequest';
 import {EnterGameResponse} from
@@ -24,7 +25,7 @@ import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
 import {Account} from '../../../server/lib/account/Account';
 import {Character} from '../../../server/game/character/Character';
-import {Entity} from '../../../shared/lib/entity/Entity';
+import {GameEntity} from '../../../server/game/GameEntity';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Connection} from '../../../server/lib/connection/Connection';
 import {Move} from '../../../shared/lib/protocol/Move';
@@ -42,180 +43,151 @@ export class EnterGameRequest extends SharedEnterGameRequest
   // ---------------- Public methods --------------------
 
   // ~ Overrides Packet.process().
-  public async process(connection: Connection)
+  // -> Returns 'true' on success.
+  public async process(connection: Connection): Promise<boolean>
   {
-    let account = this.getAccountFromConnection(connection);
-    let character = this.getRequestedCharacter(connection);
+    let account = this.obtainAccount(connection);
+    let character = this.obtainCharacter(connection);
+    let characterMove = this.enterWorld(character);
+    let loadLocation = this.obtainLoadLocation(character, connection);
 
-    if (!character || !account)
-      return;
+    if (!account || !character || !characterMove || !loadLocation)
+    {
+      this.sendErrorResponse(connection);
+      return false;
+    }
 
     // Character will be selected when user enters charselect window.
     account.data.lastActiveCharacter = character;
-    
-    let move = character.enterWorld();
 
-    this.acceptRequest(connection, account, character, move);
-  }
-
-  // --------------- Private methods --------------------
-
-  private isConnectionValid(connection: Connection)
-  {
-    if (!connection)
-    {
-      ERROR("Invalid connection. Charselect request is not processed");
-
-      this.sendErrorResponse
-      (
-        "[ERROR]: Invalid connection.",
-        connection
-      );
-
-      return false;
-    }
+    this.acceptRequest(loadLocation, characterMove, connection);
+    this.logSuccess(character, account);
 
     return true;
   }
 
-  private getAccountFromConnection(connection: Connection)
+  // --------------- Private methods --------------------
+
+  private obtainAccount(connection: Connection): Account | null
   {
-    if (!this.isConnectionValid(connection))
-      return null;
-
-    let account = connection.account;
-
-    if (account === null)
-    {
-      ERROR("Charselect request is triggered on connection that has"
-        + " no account attached to it. Request is not processed");
-      return null;
-    }
+    let account = connection.getAccount();
 
     if (!account || !account.isValid())
     {
-      ERROR("Invalid account on connection. Charselect request is not"
-        + " processed");
+      ERROR("Failed to process enter game request: Invalid account");
       return null;
     }
 
     return account;
   }
 
-  private getRequestedCharacterId(connection: Connection)
+  private obtainCharacter(connection: Connection): Character | null
   {
-    let id = this.characterId;
-    
-    if (!id)
+    let characterId = this.characterId;
+
+    if (!characterId)
     {
-      ERROR("Invalid character id in charselect request."
-        + " Request is not processed");
-
-      this.sendErrorResponse
-      (
-        "[ERROR]: Invalid character id.",
-        connection
-      );
-
+      ERROR("Failed to process enter game request: Invalid 'characterId'");
       return null;
     }
-
-    return id;
-  }
-
-  private getRequestedCharacter(connection: Connection)
-  {
-    let id = this.getRequestedCharacterId(connection);
-
-    if (!id)
-      return;
 
     // Character should already be loaded at this time
     // (all characters are loaded when account is loaded)
     // so we just request it from Entities.
-    let character = ServerEntities.get(id);
+    let character = ServerEntities.get(characterId);
 
-    if (!character)
+    if (!character || !character.isValid())
     {
-      ERROR("Invalid character requested by id " + id + "."
-        + " Request is not processed");
-
-      this.sendErrorResponse
-      (
-        "[ERROR]: Invalid character.",
-        connection
-      );
-
+      ERROR("Failed to process enter game request: Invalid 'character'");
       return null;
     }
-    
+
     return character.dynamicCast(Character);
   }
 
-  private sendErrorResponse
+  private enterWorld(character: Character | null): Move | null
+  {
+    if (!character)
+      return null;
+
+    let characterMove = character.enterWorld();
+
+    if (!characterMove)
+    {
+      ERROR("Failed to process enter game request: Invalid 'characterMove'");
+      return null;
+    }
+
+    return characterMove;
+  }
+
+  private obtainLoadLocation
   (
-    problem: string,
+    character: Character | null,
     connection: Connection
   )
+  : GameEntity | null
   {
-    this.denyRequest
-    (
-      problem,
-      EnterGameResponse.Result.ERROR,
-      connection
-    );
+    if (!character)
+      return null;
+
+    let loadLocation = character.getLoadLocation();
+
+    if (!loadLocation || !loadLocation.isValid())
+    {
+      ERROR("Failed to process enter game request: Invalid 'loadLocation'");
+      return null;
+    }
+
+    return loadLocation;
+  }
+
+  private sendErrorResponse(connection: Connection)
+  {
+    const problems: SharedEnterGameRequest.Problems =
+    {
+      error: "[ERROR]: Failed to enter game.\n\n" + Message.ADMINS_WILL_FIX_IT
+    };
+    
+    this.denyRequest(problems, connection);
   }
 
   private denyRequest
   (
-    problem: string,
-    result: EnterGameResponse.Result,
+    problems: SharedEnterGameRequest.Problems,
     connection: Connection
   )
   {
     let response = new EnterGameResponse();
-    
-    response.result = result;
-    response.setProblems(problem);
 
+    response.setProblems(problems);
     connection.send(response);
-  }
-
-  private createOkResponse
-  (
-    account: Account,
-    character: Character,
-    move: Move
-  )
-  {
-    let response = new EnterGameResponse();
-
-    response.result = EnterGameResponse.Result.OK;
-    response.characterMove = move;
-    response.setLoadLocation(character.getLoadLocation());
-
-    return response;
   }
 
   private acceptRequest
   (
-    connection: Connection,
-    account: Account,
-    character: Character,
-    move: Move
+    loadLocation: GameEntity,
+    characterMove: Move,
+    connection: Connection
   )
   {
-    let response = this.createOkResponse(account, character, move);
+    let response = new EnterGameResponse();
 
+    response.characterMove = characterMove;
+    response.setLoadLocation(loadLocation);
+
+    connection.send(response);
+  }
+
+  private logSuccess(character: Character, account: Account)
+  {
     Syslog.log
     (
-      account.getUserInfo() + " has entered"
+      "Player " + account.getEmail() + " has entered"
         + " game as " + character.getName(),
       MessageType.SYSTEM_INFO,
       AdminLevel.IMMORTAL
     );
-    
-    connection.send(response);
   }
 }
 
