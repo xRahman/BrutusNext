@@ -126,7 +126,7 @@ export class Account extends ServerEntity
       return null;
     }
 
-    connection.account = null;
+    connection.setAccount(null);
     this.connection = null;
 
     return connection;
@@ -194,7 +194,7 @@ export class Account extends ServerEntity
     this.passwordHash = passwordHash;
   }
 
-  public validatePassword(passwordHash: string): boolean
+  public isPasswordCorrect(passwordHash: string): boolean
   {
     return this.passwordHash === passwordHash;
   }

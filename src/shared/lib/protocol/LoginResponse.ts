@@ -36,7 +36,8 @@ export class LoginResponse extends Response
 
   // ---------------- Public methods --------------------
 
-  public setAccount(account: Account)
+  // -> Returns 'false' on error.
+  public setAccount(account: Account): boolean
   {
     this.serializedAccount = new SerializedEntity();
 
@@ -45,9 +46,32 @@ export class LoginResponse extends Response
       account,
       Serializable.Mode.SEND_TO_CLIENT
     );
+
+    return this.addCharacters(account);
   }
 
-  public addCharacter(character: Character)
+  // --------------- Private methods --------------------
+
+  // -> Returns 'false' on error.
+  private addCharacters(account: Account): boolean
+  {
+    for (let character of account.data.characters.values())
+    {
+      if (!character.isValid())
+      {
+        ERROR("Invalid character (" + character.getErrorIdString + ")"
+          + " on account " + account.getErrorIdString() + ". Character"
+          + " is not added to login response");
+        return false;
+      }
+
+      this.addCharacter(character);
+    }
+
+    return true;
+  }
+
+  private addCharacter(character: Character)
   {
     let characterData = new SerializedEntity();
 

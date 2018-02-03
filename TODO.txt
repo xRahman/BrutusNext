@@ -3,8 +3,15 @@ TO DO, TO DO, TODO TODO TODO, todotodooooooo.... todotodo...
 
 -mark-: hrabu se v LoginRequestu.
 
+TODO: Použít i v ostatních Request classách trik, že sendFailureResponse()
+  volá až nadřazená metoda, do které se vrátím přes return false;
 
-TODO: Consty.
+TODO: NameLockRecord by měl mít typ.
+
+
+
+
+TODO: Consty (všude).
 
 
 
@@ -59,6 +66,10 @@ TODO: Zvážit, jeslti by nešly sloučit classy Connection a ServerSocket
   - koncepčně mi to zní jako stejná věc, tzn. classa obalující webSocket.
   - je otázka, jestli to půjde na clientu, kde je jen jedna connection
     (asi by zůstávala a při reconnectu by se v ní měnil websocket)
+
+TODO: Udělat server-side classy pro Response packety a client-side classy
+  pro Request packety. Budou sice prázdné, ale jejich shared předci
+  se budou moct jmenovat SharedXXXResponse/Request a budou moci být abstract.
 
 --------------------------------------------------------------
 

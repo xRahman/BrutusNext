@@ -30,7 +30,7 @@ export class NameLock
     // './data/names/accounts/Rahman.json'.
     // It's existence means that account name
     // 'Rahman' is already used.
-    let path = this.getPath(name, cathegoryName);
+    let path = this.composePath(name, cathegoryName);
 
     return await FileSystem.exists(path);
   }
@@ -73,7 +73,7 @@ export class NameLock
     reportNotFoundError: boolean = true
   )
   {
-    let path = this.getPath(name, cathegoryName);
+    let path = this.composePath(name, cathegoryName);
     let jsonString = await FileSystem.readFile
     (
       path,
@@ -123,13 +123,13 @@ export class NameLock
   {
     await FileSystem.deleteFile
     (
-      this.getPath(name, cathegoryName)
+      this.composePath(name, cathegoryName)
     );
   }
 
   // ------------- Private static methods ---------------
 
-  private static getPath
+  private static composePath
   (
     name: string,
     directory: string,

@@ -53,7 +53,7 @@ export class Connection implements SharedConnection
 
   // --------------- Public accessors -------------------
 
-  public setAccount(account: Account)
+  public setAccount(account: Account | null)
   {
     this.account = account;
   }

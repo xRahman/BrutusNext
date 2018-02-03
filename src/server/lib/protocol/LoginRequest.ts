@@ -52,15 +52,17 @@ export class LoginRequest extends SharedLoginRequest
 
     // If player has already been connected prior to this
     // login request (for example if she logs in from different
-    // computer or browser tab while still being logged-in from
+    // computer or browser tab while still being logged in from
     // the old location), her Account is still loaded in memory
     // (because it is kept there as long as connection stays open).
-    //   In such case, we don't need to load account from disk
-    // but we need to close the old connection and socket and also
+    let account = this.findAccountInMemory();
+
+    // In such case, we don't need to load account from disk but
+    // we need to close the old connection and socket and also
     // possibly let the player know that her connection has just
     // been usurped.
-    if (await this.reconnectToAccount(passwordHash, connection))
-      return true;
+    if (account)
+      return await this.attemptToReconnect(passwordHash, account, connection);
 
     // If account 'doesn't exist in memory, we need to
     // load it from disk and connect to it.
@@ -69,59 +71,132 @@ export class LoginRequest extends SharedLoginRequest
     // in such case so at the time user logs back in
     // server has already dealocated old account, connection
     // and socket.
-    await this.connectToAccount(passwordHash, connection);
+    return await this.attemptToLogin(passwordHash, connection);
   }
 
   // --------------- Private methods --------------------
 
-  private async createOkResponse(account: Account)
+  // Note that this should not be used to send anything to
+  // user because it may may return an error string that
+  // includes account entity id.
+  private obtainUserInfo(account: Account): string
   {
-    let response = new LoginResponse();
-    response.result = LoginResponse.Result.OK;
+    let userInfo = account.getUserInfo();
 
-    response.setAccount(account);
+    if (!userInfo)
+      return account.getErrorIdString();
 
-    // Do not load referenced entities (like inventory contents)
-    // yet. Right now we need just basic character data to display
-    // them in character selection window.
-    await account.loadCharacters({ loadContents: false });
-
-    // Add characters on the account to the response.
-    for (let character of account.data.characters.values())
-    {
-      if (!character.isValid())
-      {
-        ERROR("Invalid character (" + character.getErrorIdString + ")"
-          + " on account " + account.getErrorIdString() + ". Character"
-          + " is not added to login response");
-        continue;
-      }
-
-      response.addCharacter(character);
-    }
-
-    return response;
+    return userInfo;
   }
 
-  private async acceptRequest
-  (
-    account: Account,
-    connection: Connection,
-    action: string
-  )
-  {
-    let response = await this.createOkResponse(account);
+  /// To be deleted.
+  // private async createOkResponse(account: Account)
+  // {
+  //   let response = new LoginResponse();
+  //   response.result = LoginResponse.Result.OK;
 
+  //   response.setAccount(account);
+
+  //   // Do not load referenced entities (like inventory contents)
+  //   // yet. Right now we need just basic character data to display
+  //   // them in character selection window.
+  //   await account.loadCharacters({ loadContents: false });
+
+  //   // Add characters on the account to the response.
+  //   for (let character of account.data.characters.values())
+  //   {
+  //     if (!character.isValid())
+  //     {
+  //       ERROR("Invalid character (" + character.getErrorIdString + ")"
+  //         + " on account " + account.getErrorIdString() + ". Character"
+  //         + " is not added to login response");
+  //       continue;
+  //     }
+
+  //     response.addCharacter(character);
+  //   }
+
+  //   return response;
+  // }
+
+  private logReconnectSuccess(account: Account)
+  {
     Syslog.log
     (
-      account.getUserInfo() + " " + action,
+      this.obtainUserInfo(account) + " has re-logged from different location",
       MessageType.CONNECTION_INFO,
       AdminLevel.IMMORTAL
     );
+  }
+
+  private logLoginSuccess(account: Account)
+  {
+    Syslog.log
+    (
+      this.obtainUserInfo(account) + " has logged in",
+      MessageType.CONNECTION_INFO,
+      AdminLevel.IMMORTAL
+    );
+  }
+
+  private sendErrorResponse(connection: Connection)
+  {
+    const problems: SharedLoginRequest.Problems =
+    {
+      error: "[ERROR]: Failed to log in.\n\n"
+              + Message.ADMINS_WILL_FIX_IT
+    };
+    
+    this.denyRequest(problems, connection);
+  }
+
+  // -> Returns 'false' on error.
+  private async acceptRequest
+  (
+    account: Account,
+    connection: Connection
+  )
+  : Promise<boolean>
+  {
+    let response = new LoginResponse();
+
+    if (!response.setAccount(account))
+      return false;
+
+    /// TODO: Tohle dělat jen při tvrdém loginu, ne při reconnectu.
+    // // Do not load referenced entities (like inventory contents)
+    // // yet. Right now we need just basic character data to display
+    // // them in character selection window.
+    // await account.loadCharacters({ loadContents: false });
+
+    connection.send(response);
+
+    return true;
+  }
+
+  /*
+  private async acceptRequest(connection: Connection)
+  {
+    let response = await this.createOkResponse(account);
 
     connection.send(response);
   }
+  */
 
+  private denyRequest
+  (
+    problems: SharedLoginRequest.Problems,
+    connection: Connection
+  )
+  {
+    let response = new LoginResponse();
+
+    response.setProblems(problems);
+    connection.send(response);
+  }
+
+  /// To be deleted.
+  /*
   private denyRequest
   (
     problem: string,
@@ -136,6 +211,7 @@ export class LoginRequest extends SharedLoginRequest
 
     connection.send(response);
   }
+  */
 
   private reportMissingIdProperty
   (
@@ -208,76 +284,140 @@ export class LoginRequest extends SharedLoginRequest
   //   return true;
   // }
 
-  private reportIncorrectPassword
+  /// To be deleted.
+  // private reportIncorrectPassword
+  // (
+  //   userInfo: string,
+  //   connection: Connection
+  // )
+  // {
+  //   this.denyRequest
+  //   (
+  //     "Incorrect password.",
+  //     LoginResponse.Result.INCORRECT_PASSWORD,
+  //     connection
+  //   );
+
+  //   Syslog.log
+  //   (
+  //     "Bad PW: " + userInfo,
+  //     MessageType.CONNECTION_INFO,
+  //     AdminLevel.IMMORTAL
+  //   );
+  // }
+
+  // -> Returns 'false' if error occurs.
+  private attachNewConnection
   (
-    userInfo: string,
-    connection: Connection
+    account: Account,
+    newConnection: Connection
   )
+  : boolean
+  {
+    if (!newConnection || !account || !account.isValid())
+      return false;
+
+    let oldConnection = account.getConnection();
+
+    if (!oldConnection)
+    {
+      ERROR("Invalid connection attached to account "
+        + account.getErrorIdString());
+      return false;
+    }
+
+    // Let the old connection know that is has been usurped.
+    //   We don't have to worry about not sending this message
+    // when player just reloads her broswer tab, because in
+    // that case browser closes the old connection before
+    // opening a new one so it will be handled as login, not
+    // as reconnect.
+    oldConnection.announceReconnect();
+
+    oldConnection = account.detachConnection();
+
+    if (!oldConnection)
+      return false;
+
+    oldConnection.close();
+    account.attachConnection(newConnection);
+
+    return true;
+  }
+
+  private findAccountInMemory(): Account | null
+  {
+    let account = Accounts.get(this.email);
+    
+    if (!account)
+      return null;
+
+    return account;
+  }
+
+  private sendWrongPasswordResponse(connection: Connection)
   {
     this.denyRequest
     (
-      "Incorrect password.",
-      LoginResponse.Result.INCORRECT_PASSWORD,
+      { loginDenied: "Incorrect password." },
       connection
     );
+  }
 
+  private logWrongPasswordAttempt(account: Account)
+  {
     Syslog.log
     (
-      "Bad PW: " + userInfo,
+      "Bad PW: " + this.obtainUserInfo(account),
       MessageType.CONNECTION_INFO,
       AdminLevel.IMMORTAL
     );
   }
 
-  private attachNewConnection
+  // -> Returns 'false' if error occurs.
+  private async attemptToReconnect
   (
+    passwordHash: string,
     account: Account,
     connection: Connection
   )
+  : Promise<boolean>
   {
-    // Let the old connection know that is has been usurped
-    // (we don't have to worry about not sending this message
-    //  when player just reloads her broswer tab, because in
-    //  that case browser closes the old connection so the serves
-    //  has already dealocated the account so connectToAccount()
-    //  has been called rather than reconnectToAccount().
-    account.getConnection().announceReconnect();
-    account.detachConnection().close();
-    account.attachConnection(connection);
+    if (!account.isPasswordCorrect(passwordHash))
+    {
+      this.sendWrongPasswordResponse(connection);
+      this.logWrongPasswordAttempt(account);
+      return false;
+    }
+
+    if (!await this.reconnectToAccount(passwordHash, account, connection))
+    {
+      this.sendErrorResponse(connection);
+      return false;
+    }
+
+    if (!await this.acceptRequest(account, connection))
+      return false;
+
+    this.logReconnectSuccess(account);
+
+    return true;
   }
 
+  // -> Returns 'false' if error occurs.
   private async reconnectToAccount
   (
     passwordHash: string,
+    account: Account,
     connection: Connection
   )
+  : Promise<boolean>
   {
-    // Check if account is already loaded in memory.
-    let account = Accounts.get(this.email);
-
-    if (!account)
-      return false;
-
     if (!account.isValid())
-    {
-      ERROR("Invalid account (" + this.email + ")");
       return false;
-    }
 
-    if (!account.validatePassword(passwordHash))
-    {
-      this.reportIncorrectPassword(account.getUserInfo(), connection);
+    if (!this.attachNewConnection(account, connection))
       return false;
-    }
-
-    this.attachNewConnection(account, connection);
-
-    await this.acceptRequest
-    (
-      account,
-      connection,
-      "has re-logged from different location"
-    );
 
     return true;
   }
@@ -330,7 +470,7 @@ export class LoginRequest extends SharedLoginRequest
   }
 
   // -> Returns 'null' on failure.
-  private async loadNameLock
+  private async loadNameLockRecord
   (
     email: string,
     connection: Connection
@@ -431,41 +571,126 @@ export class LoginRequest extends SharedLoginRequest
     {
       let userInfo = email + " " + connection.getOrigin();
 
-      this.reportIncorrectPassword(userInfo, connection);
+      this.sendWrongPasswordResponse(connection);
+      this.logWrongPasswordAttempt(account);
+      ///this.reportIncorrectPassword(userInfo, connection);
       return false;
     }
 
     return true;
   }
 
+  // -> Returns 'true' if error occurs.
+  private async attemptToLogin
+  (
+    passwordHash: string,
+    connection: Connection
+  )
+  : Promise<boolean>
+  {
+    TODO
+
+    /// Ještě je tu možnost, aby tady funkce vrátila rovnou všechna data,
+    /// která budu potřebovat (AccountDescription?) nebo null (v případě chyby).
+    ///   Respektive...
+    /// On to asi může bejt nameLockRecord, páč ten nejspíš přesně tohle
+    /// obsahuje... I tak by ale v téhle fci měly bejt kontroly, že v něm
+    /// jsou všechny požadované properties. A dál by se mělo pracovat s typem,
+    /// kterej má všechny properties !null.
+    let accountInfo = await this.loadAccountInfo(this.email, connection);
+
+    if (!accountInfo)
+    {
+      this.sendErrorResponse(connection);
+      return false;
+    }
+
+    /// Tohle nemůže hodit error, ale může být špatně heslo.
+    if (!this.authenticate(passwordHash))
+    {
+      this.sendWrongPasswordResponse(connection);
+      this.logWrongPasswordAttempt(account);
+      return false;      
+    }
+
+    // Tohle opět může hodit error.
+    if (!await this.connectToAccount(passwordHash, account, connection))
+    {
+      this.sendErrorResponse(connection);
+      return false;
+    }
+
+    if (!await this.acceptRequest(account, connection))
+      return false;
+
+    this.logLoginSuccess(account);
+
+    return true;
+
+    
+
+
+    // let nameLockRecord = await this.loadNameLockRecord(this.email, connection);
+
+    // if (!nameLockRecord)
+    //   return false;
+
+    // if (!this.authenticate(nameLockRecord, this.email, passwordHash, connection))
+    //   return;
+
+    // let account = await this.loadAccount(nameLockRecord, this.email, connection);
+
+    // if (!account || !account.isValid())
+    //   return;
+
+    // account.attachConnection(connection);
+
+    // await this.acceptRequest
+    // (
+    //   account,
+    //   connection,
+    //   "has logged in"
+    // );
+  }
+
+  // -> Returns 'true' if error occurs.
   private async connectToAccount
   (
     passwordHash: string,
     connection: Connection
   )
+  : Promise<boolean>
   {
-    let nameLock = await this.loadNameLock(this.email, connection);
+    // let nameLockRecord = await this.loadNameLockRecord(this.email, connection);
 
-    if (!nameLock)
-      return;
+    // if (!nameLockRecord)
+    //   return;
 
-    if (!this.authenticate(nameLock, this.email, passwordHash, connection))
-      return;
+    // if (!this.authenticate(nameLockRecord, this.email, passwordHash, connection))
+    //   return;
 
-    let account = await this.loadAccount(nameLock, this.email, connection);
+    // let account = await this.loadAccount(nameLockRecord, this.email, connection);
 
-    if (!account || !account.isValid())
-      return;
+    // if (!account || !account.isValid())
+    //   return;
 
-    account.attachConnection(connection);
+    // account.attachConnection(connection);
 
-    await this.acceptRequest
-    (
-      account,
-      connection,
-      "has logged in"
-    );
+    // await this.acceptRequest
+    // (
+    //   account,
+    //   connection,
+    //   "has logged in"
+    // );
   }
+}
+
+// ------------------ Type declarations ----------------------
+
+/// Tohle asi nakonec nepoužiju - bude snad stačit nameLockRecord.
+interface LoginInfo
+{
+
 }
 
 // This overwrites ancestor class.

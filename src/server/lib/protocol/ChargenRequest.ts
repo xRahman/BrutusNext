@@ -58,7 +58,7 @@ export class ChargenRequest extends SharedChargenRequest
 
     if (!await this.isNameAvailable())
     {
-      this.sendNameIsNotAvailable(connection);
+      this.sendNameIsNotAvailableResponse(connection);
       this.logNameIsNotAvailable(connection);
       return false;
     }
@@ -148,7 +148,7 @@ export class ChargenRequest extends SharedChargenRequest
     return true;
   }
 
-  private sendNameIsNotAvailable(connection: Connection)
+  private sendNameIsNotAvailableResponse(connection: Connection)
   {
     this.denyRequest
     (
