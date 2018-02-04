@@ -9,14 +9,19 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
+import {Serializable} from '../../../shared/lib/class/Serializable';
 import {JsonObject} from '../../../shared/lib/json/JsonObject';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
 import {ServerApp} from '../../../server/lib/app/ServerApp';
 
-export class NameLock
+export class NameLock extends Serializable
 {
-  public static get PASSWORD_HASH_PROPERTY() { return 'passwordHash'; }
+  ///public static get PASSWORD_HASH_PROPERTY() { return 'passwordHash'; }
+
+  // ----------------- Public data ----------------------
+
+  id: string | null = null;
 
   // ------------- Public static methods ----------------
 
@@ -35,6 +40,8 @@ export class NameLock
     return await FileSystem.exists(path);
   }
 
+  /// To be deleted.
+  /*
   // -> Returns 'true' on success.
   public static async save
   (
@@ -63,6 +70,7 @@ export class NameLock
     
     return await FileSystem.writeFile(directory, fileName, jsonString);
   }
+  */
 
   // -> Returns 'undefined' if name lock file doesn't exist.
   // -> Returns 'null' on error.
@@ -72,7 +80,9 @@ export class NameLock
     cathegoryName: string,
     reportNotFoundError: boolean = true
   )
+  : Promise<NameLock | null | NameLock.OpenFileResult>
   {
+    /*
     let path = this.composePath(name, cathegoryName);
     let jsonString = await FileSystem.readFile
     (
@@ -92,6 +102,10 @@ export class NameLock
       return null;
 
     return jsonObject;
+    */
+    TODO
+    /// Mělo by to vrátit instanci classy NameLock naloadovanou ze souboru.
+    return new NameLock();
   }
 
   // -> Returns 'undefined' if name lock file doesn't exist.
@@ -125,6 +139,25 @@ export class NameLock
     (
       this.composePath(name, cathegoryName)
     );
+  }
+
+  // ---------------- Public methods --------------------
+
+  public async save(cathegoryName: string)
+  {
+    let jsonString = this.serialize(Serializable.Mode.SAVE_TO_FILE);
+
+    // Name lock directory is something like './data/names/accounts/'.
+    let directory = NameLock.getDirectory(cathegoryName);
+
+    // Directory might not yet exist, so we better make sure it does.
+    if (await FileSystem.ensureDirectoryExists(directory) === false)
+      return false;
+
+    // Name lock file name is something like 'Rahman.json'.
+    let fileName = NameLock.getFileName(name);
+    
+    return await FileSystem.writeFile(directory, fileName, jsonString);    
   }
 
   // ------------- Private static methods ---------------
@@ -166,5 +199,15 @@ export class NameLock
       directory = directory + '/';
 
     return ServerApp.DATA_DIRECTORY + 'names' + directory.toLowerCase();
+  }
+}
+
+// ------------------ Type declarations ----------------------
+
+export module NameLock
+{
+  export enum OpenFileResult
+  {
+    FILE_DOES_NOT_EXIST = "File doesn't exist"
   }
 }

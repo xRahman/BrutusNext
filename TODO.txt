@@ -7,6 +7,10 @@ TODO: Použít i v ostatních Request classách trik, že sendFailureResponse()
   volá až nadřazená metoda, do které se vrátím přes return false;
 
 TODO: NameLockRecord by měl mít typ.
+TODO - ještě lépe:
+- NameLock by asi měla být Serializable classa a měla by se savovat jako
+  cokoliv jiného
+- Account Info zdědit z NameLocku, protože má property navíc (password hash).
 
 
 
@@ -70,6 +74,33 @@ TODO: Zvážit, jeslti by nešly sloučit classy Connection a ServerSocket
 TODO: Udělat server-side classy pro Response packety a client-side classy
   pro Request packety. Budou sice prázdné, ale jejich shared předci
   se budou moct jmenovat SharedXXXResponse/Request a budou moci být abstract.
+
+
+--------------------------------------------------------------
+
+Úvaha o error handlingu a návratových hodnotách
+------------------------------------------------
+
+- Typescript umožňuje používat složené typy,
+  např. (NameLock | null | "File doesn't exist").
+- Oproti výjimkám to má výhodu, že je jasné, že je danou možnost
+  třeba ošetřit (jinak bude řvát compiler).
+  - Nebude to možná fungovat u funkcí, které vracejí string
+
+Asi by dávala smysl konvence, že:
+- když funkce vrátí 'null', tak je příslušný error reportnutý
+  (pokud ho bylo třeba reportnout).
+- když vrátí string, tak to reportnuté není.
+
+- Funkce, které čtou ze souborů, by asi defaultně neměly reportovat,
+  že soubor neexistuje. Místo toho by měly vracet "File doesn't exist".
+  - díky tomu odpadne potřeba předávat parametr "ReportNotFoundError".
+
+Tak ještě trochu jinak: Místo stringu vracet enum.
+- Ten má výhodu v tom, že spojuje typ a hodnotu
+  (takže se dá použít jako návratová hodnota a současně se na něj dá testovat).
+- Kromě toho může mít víc hodnot (takže možná ani ten 'null' nebude potřeba).
+- Půjde taky použít i v kombinaci se stringovou návratovou hodnotou.
 
 --------------------------------------------------------------
 

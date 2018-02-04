@@ -237,7 +237,7 @@ export abstract class Entities
       id = <string | null> null,
       // Path should be provide when loading from file. It's only
       // used in error messages.
-      path = <string | null> = null,
+      path = <string | null> null,
       // Overwrite existing entity
       // (when overwrite is 'true', attempt to overwrite existing
       //  entity will log an error).

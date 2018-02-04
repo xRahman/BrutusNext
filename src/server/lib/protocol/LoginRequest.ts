@@ -22,6 +22,7 @@ import {Syslog} from '../../../shared/lib/log/Syslog';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {NameLock} from '../../../server/lib/entity/NameLock';
+import {AccountNameLock} from '../../../server/lib/account/AccountNameLock';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
 import {Character} from '../../../server/game/character/Character';
@@ -213,61 +214,64 @@ export class LoginRequest extends SharedLoginRequest
   }
   */
 
-  private reportMissingIdProperty
-  (
-    email: string,
-    connection: Connection
-  )
-  {
-    this.denyRequest
-    (
-      "[ERROR]: Failed to read account data.\n"
-        + Message.ADMINS_WILL_FIX_IT,
-      LoginResponse.Result.UNKNOWN_EMAIL,
-      connection
-    );
+  /// To be deleted.
+  // private reportMissingIdProperty
+  // (
+  //   email: string,
+  //   connection: Connection
+  // )
+  // {
+  //   this.denyRequest
+  //   (
+  //     "[ERROR]: Failed to read account data.\n"
+  //       + Message.ADMINS_WILL_FIX_IT,
+  //     LoginResponse.Result.UNKNOWN_EMAIL,
+  //     connection
+  //   );
 
-    ERROR("Missing or invalid '" + Entity.ID_PROPERTY + "'"
-      + " property in name lock file of account " + email + " "
-      + connection.getOrigin());
-  }
+  //   ERROR("Missing or invalid '" + Entity.ID_PROPERTY + "'"
+  //     + " property in name lock file of account " + email + " "
+  //     + connection.getOrigin());
+  // }
 
-  private reportMissingPasswordProperty
-  (
-    email: string,
-    connection: Connection
-  )
-  {
-    this.denyRequest
-    (
-      "[ERROR]: Failed to read account data.\n"
-        + Message.ADMINS_WILL_FIX_IT,
-      LoginResponse.Result.UNKNOWN_EMAIL,
-      connection
-    );
+  /// To be deleted.
+  // private reportMissingPasswordProperty
+  // (
+  //   email: string,
+  //   connection: Connection
+  // )
+  // {
+  //   this.denyRequest
+  //   (
+  //     "[ERROR]: Failed to read account data.\n"
+  //       + Message.ADMINS_WILL_FIX_IT,
+  //     LoginResponse.Result.UNKNOWN_EMAIL,
+  //     connection
+  //   );
 
-    ERROR("Missing or invalid '" + NameLock.PASSWORD_HASH_PROPERTY + "'"
-      + " property in name lock file of account " + email + " "
-      + connection.getOrigin());
-  }
+  //   ERROR("Missing or invalid '" + NameLock.PASSWORD_HASH_PROPERTY + "'"
+  //     + " property in name lock file of account " + email + " "
+  //     + connection.getOrigin());
+  // }
 
-  private isConnectionValid(connection: Connection)
-  {
-    if (!connection)
-      return false;
+  /// To be deleted.
+  // private isConnectionValid(connection: Connection)
+  // {
+  //   if (!connection)
+  //     return false;
 
-    if (connection.account !== null)
-    {
-      ERROR("Login request is triggered on connection that has"
-        + " account (" + connection.account.getErrorIdString() + ")"
-        + " attached to it. Login request can only be processed"
-        + " on connection with no account attached yet. Request"
-        + " is not processed");
-      return false;
-    }
+  //   if (connection.account !== null)
+  //   {
+  //     ERROR("Login request is triggered on connection that has"
+  //       + " account (" + connection.account.getErrorIdString() + ")"
+  //       + " attached to it. Login request can only be processed"
+  //       + " on connection with no account attached yet. Request"
+  //       + " is not processed");
+  //     return false;
+  //   }
 
-    return true;
-  }
+  //   return true;
+  // }
 
   /// To be deleted.
   // private isAccountValid(account: Account)
@@ -580,6 +584,24 @@ export class LoginRequest extends SharedLoginRequest
     return true;
   }
 
+  private async loadAccountNameLock()
+  : Promise<AccountNameLock | null | NameLock.FileDoesNotExist>
+  {
+    let accountNameLock = await AccountNameLock.load
+    (
+      this.email,    // Use 'email' as account name.
+      Entity.NameCathegory[Entity.NameCathegory.ACCOUNT],
+      false     // Do not report 'not found' error.
+    );
+
+    if (accountNameLock === undefined)
+    {
+      return null;
+    }
+
+    return accountNameLock;
+  }
+
   // -> Returns 'true' if error occurs.
   private async attemptToLogin
   (
@@ -597,9 +619,15 @@ export class LoginRequest extends SharedLoginRequest
     /// obsahuje... I tak by ale v téhle fci měly bejt kontroly, že v něm
     /// jsou všechny požadované properties. A dál by se mělo pracovat s typem,
     /// kterej má všechny properties !null.
-    let accountInfo = await this.loadAccountInfo(this.email, connection);
+    let accountNameLock = await this.loadAccountNameLock();
 
-    if (!accountInfo)
+    if (accountNameLock === NameLock.OpenFileResult.FILE_DOES_NOT_EXIST)
+    {
+      ///TODO
+      return false;
+    }
+
+    if (!accountNameLock)
     {
       this.sendErrorResponse(connection);
       return false;
