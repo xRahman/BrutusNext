@@ -13,6 +13,8 @@ TODO - ještě lépe:
 - Account Info zdědit z NameLocku, protože má property navíc (password hash).
 
 
+TODO: Problems v paketech by asi šly taky udělat přes union type indexovaný
+enumem, podobně jako NameLock.LoadResult.
 
 
 TODO: Consty (všude).
