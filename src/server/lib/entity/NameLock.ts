@@ -80,7 +80,7 @@ export class NameLock extends Serializable
     cathegoryName: string,
     reportNotFoundError: boolean = true
   )
-  : Promise<NameLock | null | NameLock.OpenFileResult>
+  : Promise<NameLock.LoadResult>
   {
     /*
     let path = this.composePath(name, cathegoryName);
@@ -104,8 +104,15 @@ export class NameLock extends Serializable
     return jsonObject;
     */
     TODO
+
+    let result: NameLock.LoadResult =
+    {
+      outcome: NameLock.OpenFileOutcome.SUCCESS,
+      nameLock: new NameLock()
+    }
+
     /// Mělo by to vrátit instanci classy NameLock naloadovanou ze souboru.
-    return new NameLock();
+    return result;
   }
 
   // -> Returns 'undefined' if name lock file doesn't exist.
@@ -206,8 +213,28 @@ export class NameLock extends Serializable
 
 export module NameLock
 {
-  export enum OpenFileResult
+  export enum OpenFileOutcome
   {
-    FILE_DOES_NOT_EXIST = "File doesn't exist"
+    SUCCESS,
+    RUNTIME_ERROR,
+    FILE_DOES_NOT_EXIST
   }
+
+  export interface LoadOk
+  {
+    outcome: OpenFileOutcome.SUCCESS;
+    nameLock: NameLock;
+  }
+
+  export interface FileDoesNotExist
+  {
+    outcome: OpenFileOutcome.FILE_DOES_NOT_EXIST
+  }
+
+  export interface RuntimeError
+  {
+    outcome: OpenFileOutcome.RUNTIME_ERROR
+  }
+
+  export type LoadResult = LoadOk | FileDoesNotExist | RuntimeError
 }

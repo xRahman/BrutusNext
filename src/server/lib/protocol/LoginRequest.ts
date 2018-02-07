@@ -52,7 +52,7 @@ export class LoginRequest extends SharedLoginRequest
     let passwordHash = ServerUtils.md5hash(this.password);
 
     // If player has already been connected prior to this
-    // login request (for example if she logs in from different
+    // login request (for example if she is logs in from different
     // computer or browser tab while still being logged in from
     // the old location), her Account is still loaded in memory
     // (because it is kept there as long as connection stays open).
@@ -69,7 +69,7 @@ export class LoginRequest extends SharedLoginRequest
     // load it from disk and connect to it.
     //   This also handles situation when user reloads
     // browser tab - browser closes the old connection
-    // in such case so at the time user logs back in
+    // in such case so at the time user logs back the
     // server has already dealocated old account, connection
     // and socket.
     return await this.attemptToLogin(passwordHash, connection);
@@ -441,15 +441,17 @@ export class LoginRequest extends SharedLoginRequest
     );
   }
 
-  private reportMissingNameLock(email: string, connection: Connection)
+  private sendNoSuchAccountResponse(connection: Connection)
   {
     this.denyRequest
     (
-      "No account is registered for this e-mail address.",
-      LoginResponse.Result.UNKNOWN_EMAIL,
+      { loginDenied: "No account is registered for this e-mail address." },
       connection
     );
+  }
 
+  private logNoSuchAccount(email: string, connection: Connection)
+  {
     Syslog.log
     (
       "Unregistered player (" + email + ") attempted to log in"
@@ -458,6 +460,25 @@ export class LoginRequest extends SharedLoginRequest
       AdminLevel.IMMORTAL
     );
   }
+
+  /// To be deleted.
+  // private reportMissingNameLock(email: string, connection: Connection)
+  // {
+  //   this.denyRequest
+  //   (
+  //     "No account is registered for this e-mail address.",
+  //     LoginResponse.Result.UNKNOWN_EMAIL,
+  //     connection
+  //   );
+
+  //   Syslog.log
+  //   (
+  //     "Unregistered player (" + email + ") attempted to log in"
+  //       + " from " + connection.getOrigin(),
+  //     MessageType.CONNECTION_INFO,
+  //     AdminLevel.IMMORTAL
+  //   );
+  // }
 
   private reportNameLockReadError(email: string, connection: Connection)
   {
@@ -584,22 +605,14 @@ export class LoginRequest extends SharedLoginRequest
     return true;
   }
 
-  private async loadAccountNameLock()
-  : Promise<AccountNameLock | null | NameLock.FileDoesNotExist>
+  private async loadAccountNameLock(): Promise<AccountNameLock.LoadResult>
   {
-    let accountNameLock = await AccountNameLock.load
+    return await AccountNameLock.load
     (
       this.email,    // Use 'email' as account name.
       Entity.NameCathegory[Entity.NameCathegory.ACCOUNT],
       false     // Do not report 'not found' error.
     );
-
-    if (accountNameLock === undefined)
-    {
-      return null;
-    }
-
-    return accountNameLock;
   }
 
   // -> Returns 'true' if error occurs.
@@ -619,13 +632,31 @@ export class LoginRequest extends SharedLoginRequest
     /// obsahuje... I tak by ale v téhle fci měly bejt kontroly, že v něm
     /// jsou všechny požadované properties. A dál by se mělo pracovat s typem,
     /// kterej má všechny properties !null.
-    let accountNameLock = await this.loadAccountNameLock();
 
-    if (accountNameLock === NameLock.OpenFileResult.FILE_DOES_NOT_EXIST)
+    let accountNameLock: AccountNameLock;
+    let loadResult = await this.loadAccountNameLock();
+
+    switch (loadResult.outcome)
     {
-      ///TODO
-      return false;
+      case NameLock.OpenFileOutcome.FILE_DOES_NOT_EXIST:
+        this.sendNoSuchAccountResponse(connection);
+        this.logNoSuchAccount(this.email, connection);
+        return false;
+
+      case NameLock.OpenFileOutcome.RUNTIME_ERROR:
+        this.sendErrorResponse(connection);
+        return false;
+
+      case NameLock.OpenFileOutcome.SUCCESS:
+        accountNameLock = loadResult.accountNameLock;
+        break;
+
+      default:
+        ERROR("Unhandled enum value");
+        this.sendErrorResponse(connection);
+        return false;
     }
+
 
     if (!accountNameLock)
     {

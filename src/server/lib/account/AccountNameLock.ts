@@ -36,13 +36,33 @@ export class AccountNameLock extends NameLock
     cathegoryName: string,
     reportNotFoundError: boolean = true
   )
-  : Promise<AccountNameLock | null | NameLock.OpenFileResult>
+  : Promise<AccountNameLock.LoadResult>
   {
     TODO
-    /// Mělo by to vrátit instanci classy NameLock naloadovanou ze souboru.
-    return new AccountNameLock();
+
+    let result: AccountNameLock.LoadResult =
+    {
+      outcome: AccountNameLock.OpenFileOutcome.SUCCESS,
+      accountNameLock: new AccountNameLock()
+    }
+
+    /// Mělo by to vrátit instanci classy AccountNameLock naloadovanou
+    /// ze souboru.
+    return result;
   }
 
   // ------------- Private static methods ---------------
 
+}
+
+export module AccountNameLock
+{
+  export interface LoadOk
+  {
+    outcome: NameLock.OpenFileOutcome.SUCCESS;
+    accountNameLock: AccountNameLock;
+  }
+
+  export type LoadResult =
+    AccountNameLock.LoadOk | NameLock.FileDoesNotExist | NameLock.RuntimeError
 }
