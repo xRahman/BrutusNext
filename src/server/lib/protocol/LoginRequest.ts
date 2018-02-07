@@ -648,7 +648,7 @@ export class LoginRequest extends SharedLoginRequest
         return false;
 
       case NameLock.OpenFileOutcome.SUCCESS:
-        accountNameLock = loadResult.accountNameLock;
+        accountNameLock = loadResult.nameLock;
         break;
 
       default:

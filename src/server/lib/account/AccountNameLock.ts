@@ -36,14 +36,14 @@ export class AccountNameLock extends NameLock
     cathegoryName: string,
     reportNotFoundError: boolean = true
   )
-  : Promise<AccountNameLock.LoadResult>
+  : Promise<NameLock.LoadResult>
   {
     TODO
 
     let result: AccountNameLock.LoadResult =
     {
       outcome: AccountNameLock.OpenFileOutcome.SUCCESS,
-      accountNameLock: new AccountNameLock()
+      nameLock: new AccountNameLock()
     }
 
     /// Mělo by to vrátit instanci classy AccountNameLock naloadovanou
@@ -60,7 +60,7 @@ export module AccountNameLock
   export interface LoadOk
   {
     outcome: NameLock.OpenFileOutcome.SUCCESS;
-    accountNameLock: AccountNameLock;
+    nameLock: AccountNameLock;
   }
 
   export type LoadResult =
