@@ -1,6 +1,24 @@
 TO DO, TO DO, TODO TODO TODO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+Pozn.:
+denyRequest() by asi mělo být jen pro "měkké" zamínutí - třeba
+  když hráč zadá špatně heslo.
+sendErrorResponse() by mělo zamítnout request kvůli tomu, že nastala
+  chyba - a nemělo by to volat denyRequest().
+  - zapisuje do { error: "" }
+Ok tak ne, mám to dobře.
+- denyRequest() by měla být obecná metoda s parametrem 'problems'.
+  A to z toho důvodu, že některé packety vrací víc problémů naráz.
+- nad ním by měly být metody na denyování do specifických polí
+  na input formu. Tzn. něco jako:
+    sendErrorResponse()
+    sendNameProblemResponse()
+
+TODO: Property v Problems nazývat ve stylu "loginProblem".
+- bude to líp sedět k příslušným elementům ve formu.
+
+
 -mark-: hrabu se v LoginRequestu.
 
 TODO: Použít i v ostatních Request classách trik, že sendFailureResponse()

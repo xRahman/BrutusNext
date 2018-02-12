@@ -36,7 +36,7 @@ export class AccountNameLock extends NameLock
     cathegoryName: string,
     reportNotFoundError: boolean = true
   )
-  : Promise<NameLock.LoadResult>
+  : Promise<AccountNameLock.LoadResult>
   {
     TODO
 

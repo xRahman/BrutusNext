@@ -15,18 +15,15 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
-import {Syslog} from '../../../shared/lib/log/Syslog';
 import {Message} from '../../../server/lib/message/Message';
 import {EnterGameRequest as SharedEnterGameRequest} from
   '../../../shared/lib/protocol/EnterGameRequest';
 import {EnterGameResponse} from
   '../../../shared/lib/protocol/EnterGameResponse';
-import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
 import {Account} from '../../../server/lib/account/Account';
 import {Character} from '../../../server/game/character/Character';
 import {GameEntity} from '../../../server/game/GameEntity';
-import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Connection} from '../../../server/lib/connection/Connection';
 import {Move} from '../../../shared/lib/protocol/Move';
 import {Classes} from '../../../shared/lib/class/Classes';
@@ -48,10 +45,17 @@ export class EnterGameRequest extends SharedEnterGameRequest
   {
     let account = this.obtainAccount(connection);
     let character = this.obtainCharacter(connection);
+
+    if (!account || !character)
+    {
+      this.sendErrorResponse(connection);
+      return false;
+    }
+
     let characterMove = this.enterWorld(character);
     let loadLocation = this.obtainLoadLocation(character, connection);
 
-    if (!account || !character || !characterMove || !loadLocation)
+    if (!characterMove || !loadLocation)
     {
       this.sendErrorResponse(connection);
       return false;
@@ -97,11 +101,8 @@ export class EnterGameRequest extends SharedEnterGameRequest
     return character.dynamicCast(Character);
   }
 
-  private enterWorld(character: Character | null): Move | null
+  private enterWorld(character: Character): Move | null
   {
-    if (!character)
-      return null;
-
     let characterMove = character.enterWorld();
 
     if (!characterMove)
@@ -173,12 +174,10 @@ export class EnterGameRequest extends SharedEnterGameRequest
 
   private logSuccess(character: Character, account: Account)
   {
-    Syslog.log
+    this.logSystemInfo
     (
       "Player " + account.getEmail() + " has entered"
-        + " game as " + character.getName(),
-      MessageType.SYSTEM_INFO,
-      AdminLevel.IMMORTAL
+        + " game as " + character.getName()
     );
   }
 }

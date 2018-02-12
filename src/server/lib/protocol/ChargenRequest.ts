@@ -20,13 +20,11 @@ import {Syslog} from '../../../shared/lib/log/Syslog';
 import {ChargenRequest as SharedChargenRequest} from
   '../../../shared/lib/protocol/ChargenRequest';
 import {Entity} from '../../../shared/lib/entity/Entity';
-import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Admins} from '../../../server/lib/admin/Admins';
 import {Account} from '../../../server/lib/account/Account';
 import {Character} from '../../../server/game/character/Character';
 import {Characters} from '../../../server/game/character/Characters';
 import {Message} from '../../../server/lib/message/Message';
-import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Connection} from '../../../server/lib/connection/Connection';
 import {ChargenResponse} from '../../../shared/lib/protocol/ChargenResponse';
 import {Classes} from '../../../shared/lib/class/Classes';
@@ -64,15 +62,27 @@ export class ChargenRequest extends SharedChargenRequest
     }
 
     let account = this.obtainAccount(connection);
-    let character = await this.createCharacter(account, connection);
 
-    if (!account || !character)
+    if (!account)
     {
       this.sendErrorResponse(connection);
       return false;
     }
 
-    this.acceptRequest(character, account, connection);
+    let character = await this.createCharacter(account, connection);
+
+    if (!character)
+    {
+      this.sendErrorResponse(connection);
+      return false;
+    }
+
+    if (!this.acceptRequest(character, account, connection))
+    {
+      this.sendErrorResponse(connection);
+      return false;
+    }
+
     this.logSuccess(character, account);
 
     return true;
@@ -112,13 +122,16 @@ export class ChargenRequest extends SharedChargenRequest
   // -> Returns 'null' on failure.
   private async createCharacter
   (
-    account: Account | null,
+    account: Account,
     connection: Connection
   )
   : Promise<Character | null>
   {
-    if (!this.characterName || !account)
+    if (!this.characterName)
+    {
+      ERROR("Invalid 'characterName' in chargen request");
       return null;
+    }
 
     let character = await account.createCharacter(this.characterName);
 
@@ -148,6 +161,15 @@ export class ChargenRequest extends SharedChargenRequest
     return true;
   }
 
+  private sendCharacterNameProblemResponse
+  (
+    problem: string,
+    connection: Connection
+  )
+  {
+    this.denyRequest({ characterNameProblem: problem }, connection);
+  }
+
   private sendNameIsNotAvailableResponse(connection: Connection)
   {
     this.denyRequest
@@ -159,16 +181,15 @@ export class ChargenRequest extends SharedChargenRequest
 
   private logNameIsNotAvailable(connection: Connection)
   {
-    Syslog.log
+    this.logConnectionInfo
     (
       "User " + connection.getUserInfo() + " has attempted"
         + " to create new character using existing name"
-        + " (" + this.characterName + ")",
-      MessageType.CONNECTION_INFO,
-      AdminLevel.IMMORTAL
+        + " (" + this.characterName + ")"
     );
   }
 
+  // -> Returns 'true' on success.
   private acceptRequest
   (
     character: Character,
@@ -178,20 +199,23 @@ export class ChargenRequest extends SharedChargenRequest
   {
     let response = new ChargenResponse();
 
-    response.setAccount(account);
-    response.setCharacter(character);
+    if (!response.setAccount(account))
+      return false;
+
+    if (!response.setCharacter(character))
+      return false;
 
     connection.send(response);
+
+    return true;
   }
 
   private logSuccess(character: Character, account: Account)
   {
-    Syslog.log
+    this.logSystemInfo
     (
       "Player " + account.getEmail() + " has created"
-        + " a new character: " + character.getName(),
-      MessageType.SYSTEM_INFO,
-      AdminLevel.IMMORTAL
+        + " a new character: " + character.getName()
     );
   }
 

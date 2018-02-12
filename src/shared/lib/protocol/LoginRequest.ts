@@ -48,7 +48,7 @@ export module LoginRequest
 {
   export interface Problems extends Request.Problems
   {
-    loginDenied?: string;
+    loginProblem?: string;
     error?: string;
   }
 }

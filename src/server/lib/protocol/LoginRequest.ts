@@ -18,8 +18,6 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {LoginRequest as SharedLoginRequest} from
   '../../../shared/lib/protocol/LoginRequest';
 import {ServerUtils} from '../../../server/lib/utils/ServerUtils';
-import {Syslog} from '../../../shared/lib/log/Syslog';
-import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {NameLock} from '../../../server/lib/entity/NameLock';
 import {AccountNameLock} from '../../../server/lib/account/AccountNameLock';
@@ -27,7 +25,6 @@ import {Entity} from '../../../shared/lib/entity/Entity';
 import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
 import {Character} from '../../../server/game/character/Character';
 import {Message} from '../../../server/lib/message/Message';
-import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Account} from '../../../server/lib/account/Account';
 import {Accounts} from '../../../server/lib/account/Accounts';
 import {Connection} from '../../../server/lib/connection/Connection';
@@ -77,9 +74,8 @@ export class LoginRequest extends SharedLoginRequest
 
   // --------------- Private methods --------------------
 
-  // Note that this should not be used to send anything to
-  // user because it may may return an error string that
-  // includes account entity id.
+  // This should not be sent to user because it may may
+  // return an error string that includes account entity id.
   private obtainUserInfo(account: Account): string
   {
     let userInfo = account.getUserInfo();
@@ -122,22 +118,15 @@ export class LoginRequest extends SharedLoginRequest
 
   private logReconnectSuccess(account: Account)
   {
-    Syslog.log
+    this.logConnectionInfo
     (
-      this.obtainUserInfo(account) + " has re-logged from different location",
-      MessageType.CONNECTION_INFO,
-      AdminLevel.IMMORTAL
+      this.obtainUserInfo(account) + " has re-logged from different location"
     );
   }
 
   private logLoginSuccess(account: Account)
   {
-    Syslog.log
-    (
-      this.obtainUserInfo(account) + " has logged in",
-      MessageType.CONNECTION_INFO,
-      AdminLevel.IMMORTAL
-    );
+    this.logConnectionInfo(this.obtainUserInfo(account) + " has logged in");
   }
 
   private sendErrorResponse(connection: Connection)
@@ -164,25 +153,10 @@ export class LoginRequest extends SharedLoginRequest
     if (!response.setAccount(account))
       return false;
 
-    /// TODO: Tohle dělat jen při tvrdém loginu, ne při reconnectu.
-    // // Do not load referenced entities (like inventory contents)
-    // // yet. Right now we need just basic character data to display
-    // // them in character selection window.
-    // await account.loadCharacters({ loadContents: false });
-
     connection.send(response);
 
     return true;
   }
-
-  /*
-  private async acceptRequest(connection: Connection)
-  {
-    let response = await this.createOkResponse(account);
-
-    connection.send(response);
-  }
-  */
 
   private denyRequest
   (
@@ -349,6 +323,7 @@ export class LoginRequest extends SharedLoginRequest
     return true;
   }
 
+  // -> Returns 'null' if account isn't loaded in memory.
   private findAccountInMemory(): Account | null
   {
     let account = Accounts.get(this.email);
@@ -361,21 +336,21 @@ export class LoginRequest extends SharedLoginRequest
 
   private sendWrongPasswordResponse(connection: Connection)
   {
+    this.sendLoginProblemResponse("Incorrect password.", connection);
+  }
+
+  private sendLoginProblemResponse(problem: string, connection: Connection)
+  {
     this.denyRequest
     (
-      { loginDenied: "Incorrect password." },
+      { loginProblem: problem },
       connection
     );
   }
 
-  private logWrongPasswordAttempt(account: Account)
+  private logWrongPasswordAttempt(userInfo: string)
   {
-    Syslog.log
-    (
-      "Bad PW: " + this.obtainUserInfo(account),
-      MessageType.CONNECTION_INFO,
-      AdminLevel.IMMORTAL
-    );
+   this.logConnectionInfo("Bad PW: " + userInfo);
   }
 
   // -> Returns 'false' if error occurs.
@@ -390,7 +365,7 @@ export class LoginRequest extends SharedLoginRequest
     if (!account.isPasswordCorrect(passwordHash))
     {
       this.sendWrongPasswordResponse(connection);
-      this.logWrongPasswordAttempt(account);
+      this.logWrongPasswordAttempt(this.obtainUserInfo(account));
       return false;
     }
 
@@ -401,7 +376,10 @@ export class LoginRequest extends SharedLoginRequest
     }
 
     if (!await this.acceptRequest(account, connection))
+    {
+      this.sendErrorResponse(connection);
       return false;
+    }
 
     this.logReconnectSuccess(account);
 
@@ -426,38 +404,37 @@ export class LoginRequest extends SharedLoginRequest
     return true;
   }
 
-  private reportAccountLoadFailure
-  (
-    email: string,
-    connection: Connection
-  )
-  {
-    this.denyRequest
-    (
-      "[ERROR]: Failed to load account.\n"
-        + Message.ADMINS_WILL_FIX_IT,
-      LoginResponse.Result.FAILED_TO_LOAD_ACCOUNT,
-      connection
-    );
-  }
+  /// To be deleted.
+  // private reportAccountLoadFailure
+  // (
+  //   email: string,
+  //   connection: Connection
+  // )
+  // {
+  //   this.denyRequest
+  //   (
+  //     "[ERROR]: Failed to load account.\n"
+  //       + Message.ADMINS_WILL_FIX_IT,
+  //     LoginResponse.Result.FAILED_TO_LOAD_ACCOUNT,
+  //     connection
+  //   );
+  // }
 
   private sendNoSuchAccountResponse(connection: Connection)
   {
-    this.denyRequest
+    this.sendLoginProblemResponse
     (
-      { loginDenied: "No account is registered for this e-mail address." },
+      "No account is registered for this e-mail address.",
       connection
     );
   }
 
   private logNoSuchAccount(email: string, connection: Connection)
   {
-    Syslog.log
+    this.logConnectionInfo
     (
       "Unregistered player (" + email + ") attempted to log in"
-        + " from " + connection.getOrigin(),
-      MessageType.CONNECTION_INFO,
-      AdminLevel.IMMORTAL
+        + " from " + connection.getOrigin()
     );
   }
 
@@ -480,78 +457,79 @@ export class LoginRequest extends SharedLoginRequest
   //   );
   // }
 
-  private reportNameLockReadError(email: string, connection: Connection)
-  {
-    this.denyRequest
-    (
-      "[ERROR]: Failed to read account data.\n"
-        + Message.ADMINS_WILL_FIX_IT,
-      LoginResponse.Result.UNKNOWN_EMAIL,
-      connection
-    );
+  /// To be deleted.
+  // private reportNameLockReadError(email: string, connection: Connection)
+  // {
+  //   this.denyRequest
+  //   (
+  //     "[ERROR]: Failed to read account data.\n"
+  //       + Message.ADMINS_WILL_FIX_IT,
+  //     LoginResponse.Result.UNKNOWN_EMAIL,
+  //     connection
+  //   );
 
-    ERROR("Failed to read name lock file for account"
-      + " " + email + " " + connection.getOrigin());
-  }
+  //   ERROR("Failed to read name lock file for account"
+  //     + " " + email + " " + connection.getOrigin());
+  // }
 
-  // -> Returns 'null' on failure.
-  private async loadNameLockRecord
-  (
-    email: string,
-    connection: Connection
-  )
-  : Promise<Object>
-  {
-    let nameLock = await NameLock.load
-    (
-      email,    // Use 'email' as account name.
-      Entity.NameCathegory[Entity.NameCathegory.ACCOUNT],
-      false     // Do not report 'not found' error.
-    );
+  /// To be deleted.
+  // // -> Returns 'null' on failure.
+  // private async loadNameLockRecord
+  // (
+  //   email: string,
+  //   connection: Connection
+  // )
+  // : Promise<Object>
+  // {
+  //   let nameLock = await NameLock.load
+  //   (
+  //     email,    // Use 'email' as account name.
+  //     Entity.NameCathegory[Entity.NameCathegory.ACCOUNT],
+  //     false     // Do not report 'not found' error.
+  //   );
 
-    if (nameLock === undefined)
-    {
-      this.reportMissingNameLock(email, connection);
-      return null;
-    }
+  //   if (nameLock === undefined)
+  //   {
+  //     this.reportMissingNameLock(email, connection);
+  //     return null;
+  //   }
 
-    if (nameLock === null)
-    {
-      this.reportNameLockReadError(email, connection);
-      return null;
-    }
+  //   if (nameLock === null)
+  //   {
+  //     this.reportNameLockReadError(email, connection);
+  //     return null;
+  //   }
 
-    return nameLock;
-  }
+  //   return nameLock;
+  // }
 
-  private isNameLockValid(nameLock: Object): boolean
-  {
-    if (!nameLock)
-    {
-      ERROR("Invalid 'nameLock'");
-      return false;
-    }
+  /// To be deleted.
+  // private isNameLockValid(nameLock: Object): boolean
+  // {
+  //   if (!nameLock)
+  //   {
+  //     ERROR("Invalid 'nameLock'");
+  //     return false;
+  //   }
 
-    return true;
-  }
+  //   return true;
+  // }
 
   // -> Returns 'null' on failure.
   private async loadAccount
   (
-    nameLock: Object,
-    email: string,
+    accountNameLock: AccountNameLock,
     connection: Connection
   )
-  : Promise<Account>
+  : Promise<Account | null>
   {
-    if (!this.isNameLockValid(nameLock))
-      return null;
-
-    let id = nameLock[Entity.ID_PROPERTY];
+    let id = accountNameLock.id;
 
     if (!id)
     {
-      this.reportMissingIdProperty(email, connection);
+      ERROR("Missing or invalid '" + Entity.ID_PROPERTY + "'"
+         + " property in name lock file of account " + this.email + " "
+         + connection.getOrigin());
       return null;
     }
 
@@ -562,47 +540,40 @@ export class LoginRequest extends SharedLoginRequest
     );
 
     if (!account || !account.isValid())
-    {
-      this.reportAccountLoadFailure(email, connection);
       return null;
-    }
 
     account.addToLists();
 
     return account;
   }
 
+  // -> Returns 'false' if
   private authenticate
   (
-    nameLock: Object,
-    email: string,
-    passwordHash: string,
-    connection: Connection
+    accountNameLock: AccountNameLock,
+    passwordHash: string
   )
   : boolean
   {
-    if (!this.isNameLockValid(nameLock))
-      return false;
+    return passwordHash === accountNameLock.passwordHash;
 
-    let savedPasswordHash = nameLock[NameLock.PASSWORD_HASH_PROPERTY];
+    // if (!savedPasswordHash)
+    // {
+    //   this.reportMissingPasswordProperty(email, connection);
+    //   return false;
+    // }
 
-    if (!savedPasswordHash)
-    {
-      this.reportMissingPasswordProperty(email, connection);
-      return false;
-    }
+    // if (passwordHash !== savedPasswordHash)
+    // {
+    //   let userInfo = this.email + " " + connection.getOrigin();
 
-    if (passwordHash !== nameLock[NameLock.PASSWORD_HASH_PROPERTY])
-    {
-      let userInfo = email + " " + connection.getOrigin();
+    //   this.sendWrongPasswordResponse(connection);
+    //   this.logWrongPasswordAttempt(account);
+    //   ///this.reportIncorrectPassword(userInfo, connection);
+    //   return false;
+    // }
 
-      this.sendWrongPasswordResponse(connection);
-      this.logWrongPasswordAttempt(account);
-      ///this.reportIncorrectPassword(userInfo, connection);
-      return false;
-    }
-
-    return true;
+    // return true;
   }
 
   private async loadAccountNameLock(): Promise<AccountNameLock.LoadResult>
@@ -623,20 +594,9 @@ export class LoginRequest extends SharedLoginRequest
   )
   : Promise<boolean>
   {
-    TODO
+    let nameLockLoadResult = await this.loadAccountNameLock();
 
-    /// Ještě je tu možnost, aby tady funkce vrátila rovnou všechna data,
-    /// která budu potřebovat (AccountDescription?) nebo null (v případě chyby).
-    ///   Respektive...
-    /// On to asi může bejt nameLockRecord, páč ten nejspíš přesně tohle
-    /// obsahuje... I tak by ale v téhle fci měly bejt kontroly, že v něm
-    /// jsou všechny požadované properties. A dál by se mělo pracovat s typem,
-    /// kterej má všechny properties !null.
-
-    let accountNameLock: AccountNameLock;
-    let loadResult = await this.loadAccountNameLock();
-
-    switch (loadResult.outcome)
+    switch (nameLockLoadResult.outcome)
     {
       case NameLock.OpenFileOutcome.FILE_DOES_NOT_EXIST:
         this.sendNoSuchAccountResponse(connection);
@@ -648,7 +608,6 @@ export class LoginRequest extends SharedLoginRequest
         return false;
 
       case NameLock.OpenFileOutcome.SUCCESS:
-        accountNameLock = loadResult.nameLock;
         break;
 
       default:
@@ -657,83 +616,57 @@ export class LoginRequest extends SharedLoginRequest
         return false;
     }
 
+    let accountNameLock = nameLockLoadResult.nameLock;
 
-    if (!accountNameLock)
-    {
-      this.sendErrorResponse(connection);
-      return false;
-    }
-
-    /// Tohle nemůže hodit error, ale může být špatně heslo.
-    if (!this.authenticate(passwordHash))
+    if (!this.authenticate(accountNameLock, passwordHash))
     {
       this.sendWrongPasswordResponse(connection);
-      this.logWrongPasswordAttempt(account);
+      this.logWrongPasswordAttempt(this.email);
       return false;      
     }
 
-    // Tohle opět může hodit error.
-    if (!await this.connectToAccount(passwordHash, account, connection))
+    let account = await this.connectToAccount(accountNameLock, connection);
+
+    if (!account)
     {
       this.sendErrorResponse(connection);
       return false;
     }
 
+    // Load characters on account to memory so they will be
+    // included in response. But don't load their contents
+    // (items etc.) yet because user will only enter game with
+    // one of them so we don't need keep this information in
+    // memory for all of them.
+    await account.loadCharacters({ loadContents: false });
+
     if (!await this.acceptRequest(account, connection))
+    {
+      this.sendErrorResponse(connection);
       return false;
+    }
 
     this.logLoginSuccess(account);
 
     return true;
-
-    
-
-
-    // let nameLockRecord = await this.loadNameLockRecord(this.email, connection);
-
-    // if (!nameLockRecord)
-    //   return false;
-
-    // if (!this.authenticate(nameLockRecord, this.email, passwordHash, connection))
-    //   return;
-
-    // let account = await this.loadAccount(nameLockRecord, this.email, connection);
-
-    // if (!account || !account.isValid())
-    //   return;
-
-    // account.attachConnection(connection);
-
-    // await this.acceptRequest
-    // (
-    //   account,
-    //   connection,
-    //   "has logged in"
-    // );
   }
 
-  // -> Returns 'true' if error occurs.
+  // -> Returns 'null' on error.
   private async connectToAccount
   (
-    passwordHash: string,
+    accountNameLock: AccountNameLock,
     connection: Connection
   )
-  : Promise<boolean>
+  : Promise<Account | null>
   {
-    // let nameLockRecord = await this.loadNameLockRecord(this.email, connection);
+    let account = await this.loadAccount(accountNameLock, connection);
 
-    // if (!nameLockRecord)
-    //   return;
+    if (!account || !account.isValid())
+      return null;
 
-    // if (!this.authenticate(nameLockRecord, this.email, passwordHash, connection))
-    //   return;
+    account.attachConnection(connection);
 
-    // let account = await this.loadAccount(nameLockRecord, this.email, connection);
-
-    // if (!account || !account.isValid())
-    //   return;
-
-    // account.attachConnection(connection);
+    return account;
 
     // await this.acceptRequest
     // (
@@ -742,14 +675,6 @@ export class LoginRequest extends SharedLoginRequest
     //   "has logged in"
     // );
   }
-}
-
-// ------------------ Type declarations ----------------------
-
-/// Tohle asi nakonec nepoužiju - bude snad stačit nameLockRecord.
-interface LoginInfo
-{
-
 }
 
 // This overwrites ancestor class.
