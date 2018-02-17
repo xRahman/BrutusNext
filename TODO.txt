@@ -1,6 +1,12 @@
 TO DO, TO DO, TODO TODO TODO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+TODO: Návratové hodnoty z funkcí s více možnými negativními
+  výsledky (např. file not found, error) řešit union typem
+  např.: (Account | "FILE_NOT_FOUND" | "ERROR");
+viz LoginReuqest
+
+
 Pozn.:
 denyRequest() by asi mělo být jen pro "měkké" zamínutí - třeba
   když hráč zadá špatně heslo.

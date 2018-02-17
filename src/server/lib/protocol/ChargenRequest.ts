@@ -199,10 +199,10 @@ export class ChargenRequest extends SharedChargenRequest
   {
     let response = new ChargenResponse();
 
-    if (!response.setAccount(account))
+    if (!response.serializeAccount(account))
       return false;
 
-    if (!response.setCharacter(character))
+    if (!response.serializeCharacter(character))
       return false;
 
     connection.send(response);

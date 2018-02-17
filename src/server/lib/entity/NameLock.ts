@@ -105,14 +105,17 @@ export class NameLock extends Serializable
     */
     TODO
 
-    let result: NameLock.LoadResult =
-    {
-      outcome: NameLock.OpenFileOutcome.SUCCESS,
-      nameLock: new NameLock()
-    }
+    let nameLock = new NameLock();
 
-    /// Mělo by to vrátit instanci classy NameLock naloadovanou ze souboru.
-    return result;
+    if (!(1))
+      return "ERROR";
+
+    if (!(2))
+      return "FILE_DOES_NOT_EXIST";
+
+    /// Mělo by to vrátit instanci classy NameLock naloadovanou
+    /// ze souboru.
+    return nameLock;
   }
 
   // -> Returns 'undefined' if name lock file doesn't exist.
@@ -213,6 +216,8 @@ export class NameLock extends Serializable
 
 export module NameLock
 {
+  /// To be deleted
+  /*
   export enum OpenFileOutcome
   {
     SUCCESS,
@@ -237,4 +242,7 @@ export module NameLock
   }
 
   export type LoadResult = LoadOk | FileDoesNotExist | RuntimeError
+  */
+
+ export type LoadResult = NameLock | "ERROR" | "FILE_DOES_NOT_EXIST";
 }

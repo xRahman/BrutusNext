@@ -32,7 +32,7 @@ export class SerializedEntity extends Serializable
   // ---------------- Public methods --------------------
 
   // -> Returns 'true' on success.
-  public store(entity: Entity, mode: Serializable.Mode)
+  public serialize(entity: Entity, mode: Serializable.Mode)
   {
     if (!entity || !entity.isValid())
     {
@@ -46,7 +46,7 @@ export class SerializedEntity extends Serializable
     return true;
   }
 
-  public restore<T extends Entity>
+  public deserialize<T extends Entity>
   (
     typeCast: { new (...args: any[]): T }
   )

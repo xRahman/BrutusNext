@@ -37,23 +37,23 @@ export class LoginResponse extends Response
   // ---------------- Public methods --------------------
 
   // -> Returns 'false' on error.
-  public setAccount(account: Account): boolean
+  public serializeAccount(account: Account): boolean
   {
     this.serializedAccount = new SerializedEntity();
 
-    this.serializedAccount.store
+    this.serializedAccount.serialize
     (
       account,
       Serializable.Mode.SEND_TO_CLIENT
     );
 
-    return this.addCharacters(account);
+    return this.serializeCharacters(account);
   }
 
   // --------------- Private methods --------------------
 
   // -> Returns 'false' on error.
-  private addCharacters(account: Account): boolean
+  private serializeCharacters(account: Account): boolean
   {
     for (let character of account.data.characters.values())
     {
@@ -65,23 +65,23 @@ export class LoginResponse extends Response
         return false;
       }
 
-      this.addCharacter(character);
+      this.serializeCharacter(character);
     }
 
     return true;
   }
 
-  private addCharacter(character: Character)
+  private serializeCharacter(character: Character)
   {
-    let characterData = new SerializedEntity();
+    let serializedCharacter = new SerializedEntity();
 
-    characterData.store
+    serializedCharacter.serialize
     (
       character,
       Serializable.Mode.SEND_TO_CLIENT
     );
 
-    this.serializedCharacters.push(characterData);
+    this.serializedCharacters.push(serializedCharacter);
   }
 }
 

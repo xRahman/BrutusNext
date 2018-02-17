@@ -158,7 +158,7 @@ export class RegisterRequest extends SharedRegisterRequest
     response.result = RegisterResponse.Result.OK;
     
     // Add newly created account to the response.
-    response.serializedAccount.store
+    response.serializedAccount.serialize
     (
       account,
       Serializable.Mode.SEND_TO_CLIENT

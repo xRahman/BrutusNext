@@ -167,7 +167,7 @@ export class EnterGameRequest extends SharedEnterGameRequest
     let response = new EnterGameResponse();
 
     response.characterMove = characterMove;
-    response.setLoadLocation(loadLocation);
+    response.serializeLoadLocation(loadLocation);
 
     connection.send(response);
   }

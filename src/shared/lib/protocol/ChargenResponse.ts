@@ -43,11 +43,11 @@ export class ChargenResponse extends Response
   // ---------------- Public methods --------------------
 
   // -> Returns 'true' on success.
-  public setAccount(account: Account)
+  public serializeAccount(account: Account)
   {
     this.serializedAccount = new SerializedEntity();
 
-    return this.serializedAccount.store
+    return this.serializedAccount.serialize
     (
       account,
       Serializable.Mode.SEND_TO_CLIENT
@@ -55,11 +55,11 @@ export class ChargenResponse extends Response
   }
 
   // -> Returns 'true' on success.
-  public setCharacter(character: Character)
+  public serializeCharacter(character: Character)
   {
     this.serializedCharacter = new SerializedEntity();
 
-    return this.serializedCharacter.store
+    return this.serializedCharacter.serialize
     (
       character,
       Serializable.Mode.SEND_TO_CLIENT

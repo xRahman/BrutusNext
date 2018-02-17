@@ -40,7 +40,7 @@ export class EnterGameResponse extends Response
 
   // ---------------- Public methods --------------------
 
-  public setLoadLocation(loadLocation: Entity)
+  public serializeLoadLocation(loadLocation: Entity)
   {
     if (!loadLocation.isValid())
     {
@@ -52,7 +52,7 @@ export class EnterGameResponse extends Response
 
     this.serializedLoadLocation = new SerializedEntity();
 
-    this.serializedLoadLocation.store
+    this.serializedLoadLocation.serialize
     (
       loadLocation,
       Serializable.Mode.SEND_TO_CLIENT

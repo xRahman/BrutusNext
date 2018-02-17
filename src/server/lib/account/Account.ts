@@ -114,11 +114,13 @@ export class Account extends ServerEntity
     this.connection = connection;
   }
 
-  public detachConnection()
+  // -> Returns detached connection,
+  //    Returns 'null' on failure.
+  public detachConnection(): Connection | null
   {
-    let connection = this.connection;
+    let oldConnection = this.connection;
 
-    if (!connection)
+    if (!oldConnection)
     {
       ERROR("Attempt to detach connection from account"
         + " " + this.getErrorIdString() + " which has"
@@ -126,10 +128,10 @@ export class Account extends ServerEntity
       return null;
     }
 
-    connection.setAccount(null);
+    oldConnection.setAccount(null);
     this.connection = null;
 
-    return connection;
+    return oldConnection;
   }
 
   public getTimeOfCreation(): string

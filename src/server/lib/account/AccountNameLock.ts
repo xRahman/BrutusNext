@@ -40,15 +40,18 @@ export class AccountNameLock extends NameLock
   {
     TODO
 
-    let result: AccountNameLock.LoadResult =
-    {
-      outcome: AccountNameLock.OpenFileOutcome.SUCCESS,
-      nameLock: new AccountNameLock()
-    }
+    let accountNameLock = new AccountNameLock();
+
+    if (!(1))
+      return "ERROR";
+
+    if (!(2))
+      return "FILE_DOES_NOT_EXIST";
+
 
     /// Mělo by to vrátit instanci classy AccountNameLock naloadovanou
     /// ze souboru.
-    return result;
+    return accountNameLock;
   }
 
   // ------------- Private static methods ---------------
@@ -57,6 +60,8 @@ export class AccountNameLock extends NameLock
 
 export module AccountNameLock
 {
+  /// To be deleted
+  /*
   export interface LoadOk
   {
     outcome: NameLock.OpenFileOutcome.SUCCESS;
@@ -65,4 +70,7 @@ export module AccountNameLock
 
   export type LoadResult =
     AccountNameLock.LoadOk | NameLock.FileDoesNotExist | NameLock.RuntimeError
+  */
+
+  export type LoadResult = AccountNameLock | "ERROR" | "FILE_DOES_NOT_EXIST";
 }
