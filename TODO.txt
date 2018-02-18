@@ -5,7 +5,12 @@ TODO: Návratové hodnoty z funkcí s více možnými negativními
   výsledky (např. file not found, error) řešit union typem
   např.: (Account | "FILE_NOT_FOUND" | "ERROR");
 viz LoginReuqest
-
+- Výhledově zvážit, jestli by se errory nedaly vždycky vracet takhle
+ (místo null, false, atd.)
+ - principielně to nejde, pokud funkce vrací string, tam by se holt dál
+   vracel null.
+Každopádně by pak nebylo třeba komentovat návratové hodnoty funkcí,
+bylo by to self-documented.
 
 Pozn.:
 denyRequest() by asi mělo být jen pro "měkké" zamínutí - třeba

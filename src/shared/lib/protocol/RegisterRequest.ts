@@ -18,7 +18,11 @@ const VALID_EMAIL_CHARACTERS = "abcdefghijklmnopqrstuvwxyz"
 
 export class RegisterRequest extends Request
 {
-  constructor()
+  constructor
+  (
+    public email: string,
+    public password: string
+  )
   {
     super();
 
@@ -36,8 +40,9 @@ export class RegisterRequest extends Request
 
   // ----------------- Public data ----------------------
 
-  public email: (string | null) = null;
-  public password: (string | null) = null;
+  /// Moved to constructor
+  // public email: (string | null) = null;
+  // public password: (string | null) = null;
 
   // ---------------- Public methods --------------------
 

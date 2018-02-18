@@ -34,9 +34,9 @@ import {Classes} from '../../../shared/lib/class/Classes';
 
 export class RegisterRequest extends SharedRegisterRequest
 {
-  constructor()
+  constructor(email: string, password: string)
   {
-    super();
+    super(email, password);
 
     this.version = 0;
   }
@@ -44,12 +44,13 @@ export class RegisterRequest extends SharedRegisterRequest
   // ---------------- Public methods --------------------
 
   // ~ Overrides Packet.process().
-  public async process(connection: Connection)
+  // -> Returns 'true' on success.
+  public async process(connection: Connection): Promise<boolean>
   {
     if (!this.isRequestValid(connection))
-      return;
+      return false;
 
-    await this.createAccount
+    return await this.createAccount
     (
       // Email is used as account name.
       this.email,
@@ -115,9 +116,10 @@ export class RegisterRequest extends SharedRegisterRequest
     passwordHash: string,
     connection: Connection
   )
+  : Promise<boolean>
   {
     if (await this.accountAlreadyExists(accountName, connection))
-      return;
+      return false;
 
     let account = await ServerEntities.createInstanceEntity
     (
@@ -131,12 +133,14 @@ export class RegisterRequest extends SharedRegisterRequest
     if (account === null)
     {
       this.reportAccountCreationFailure(account, accountName, connection);
-      return;
+      return false;
     }
 
     this.initAccount(account, passwordHash, connection);
     await ServerEntities.save(account);
     this.acceptRequest(account, connection);
+
+    return true;
   }
 
   private initAccount
