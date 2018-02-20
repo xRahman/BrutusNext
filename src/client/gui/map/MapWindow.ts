@@ -75,6 +75,12 @@ export class MapWindow extends TitledWindow
   //  (Executes when html document is resized.)
   public onDocumentResize()
   {
+    if (this.resizeTimeout === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     clearTimeout(this.resizeTimeout);
 
     this.resizeTimeout = setTimeout
@@ -86,13 +92,27 @@ export class MapWindow extends TitledWindow
     );
   }
 
+  // -> Returns 0 on error.
   public getContentWidth()
   {
+    if (this.$content === null)
+    {
+      ERROR("Unexpected 'null' value. Using zero content width");
+      return 0;
+    }
+
     return this.$content.width();
   }
 
+  // -> Returns 0 on error.
   public getContentHeight()
   {
+    if (this.$content === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return 0;
+    }
+
     return this.$content.height();
   }
 
@@ -103,6 +123,12 @@ export class MapWindow extends TitledWindow
     if (this.svgMap !== null)
       ERROR("SVG map already exists");
 
+    if (this.$content === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     this.svgMap = new SvgMap(this, this.$content);
   }
 
@@ -110,6 +136,12 @@ export class MapWindow extends TitledWindow
   // changes in bound data.
   private updateMap()
   {
+    if (this.svgMap === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     this.svgMap.render();
   }
 

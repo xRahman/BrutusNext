@@ -45,7 +45,7 @@ export class Character extends GameEntity
 
   // ----------------- Public data ----------------------
 
-  public data = new CharacterData(this);
+  public data: CharacterData = new CharacterData(this);
 
   // --------------- Public accessors -------------------
 
@@ -76,7 +76,21 @@ export class Character extends GameEntity
   // Sets birthroom (initial location), CHAR_IMMORTALITY flag.
   public init()
   {
-    if (this.getAdminLevel() > AdminLevel.MORTAL)
+    let myAdminLevel = this.getAdminLevel();
+
+    if (myAdminLevel === null)
+    {
+      ERROR("'null' admin level");
+      return;
+    }
+
+    if (Game.world === null)
+    {
+      ERROR("'null' Game.world");
+      return;
+    }
+
+    if (myAdminLevel > AdminLevel.MORTAL)
     {
       // Immortals enter game in System Room.
       this.loadLocation = Game.world.systemRoom;
@@ -115,11 +129,26 @@ export class Character extends GameEntity
       return null;
     }
 
+    let myId = this.getId();
+    let loadLocationId = loadLocation.getId()
+
+    if (myId === null)
+    {
+      ERROR("'null' id");
+      return null;
+    }
+
+    if (loadLocationId === null)
+    {
+      ERROR("'null' loadLocationId");
+      return null;
+    }
+
     // TODO: Zařadit char do namelistů, atd.
     // (možná se to bude dělat v rámci insertu, uvidíme).
     loadLocation.insert(this);
 
-    return new Move(this.getId(), loadLocation.getId());
+    return new Move(myId, loadLocationId);
   }
 
   // Announce to the room that player is entering game as this character.

@@ -54,8 +54,16 @@ export class MapData
     // Make sure that 'room' will be flagged as 'explored'.
     room.explored = true;
 
+    let roomCoords = room.data.coords;
+
+    if (roomCoords === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     // Set the room to the grid.
-    this.grid.set(room.data.coords, room);
+    this.grid.set(roomCoords, room);
 
     // Update it in render data.
     this.setToRenderData(room);
@@ -202,8 +210,16 @@ export class MapData
     /// TODO: Check, jestli je room v aktualni rendering area.
     if (true)
     {
+      let roomId = room.getId();
+
+      if (roomId === null)
+      {
+        ERROR("Unexpected 'null' value");
+        return;
+      }
+
       // Add the room to room render data.
-      this.rooms.set(room.getId(), room);
+      this.rooms.set(roomId, room);
 
       this.setRoomExitsToRenderData(room);
     }

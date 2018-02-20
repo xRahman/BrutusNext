@@ -42,12 +42,24 @@ export class Avatar
 
   public receiveMessage(message: string)
   {
+    if (this.scrollWindow === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     this.scrollWindow.receiveMessage(message);
   }
 
   // Outputs a client system message.
   public clientMessage(message: string)
   {
+    if (this.scrollWindow === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     this.scrollWindow.clientMessage(message);
   }
 
@@ -58,6 +70,12 @@ export class Avatar
   private setScrollWindowTitle()
   {
     let title = this.character.getName() + "@BrutusNext";
+
+    if (this.scrollWindow === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
 
     this.scrollWindow.setTitle(title);
   }

@@ -79,7 +79,7 @@ export class CharacterNameInput extends TextInput
     let newValue = "";
 
     if (oldValue)
-      newValue = Utils.uppercaseFirstCharacter(oldValue);
+      newValue = Utils.uppercaseFirstLowercaseRest(oldValue);
 
     // Note: Setting value to an input element breaks automatic
     //   value validation on the browser.

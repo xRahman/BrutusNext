@@ -97,7 +97,19 @@ export class RegisterForm extends CredentialsForm
   {
     super.onShow();
 
+    if (Windows.loginWindow === null || Windows.loginWindow.form === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     let email = Windows.loginWindow.form.getEmailInputValue();
+
+    if (email === null || this.emailInput === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
 
     // Set value from login window e-mail input to our
     // email input so the user doesn't have to retype it
@@ -175,10 +187,11 @@ export class RegisterForm extends CredentialsForm
       return null;
     }
     
-    let request = new RegisterRequest();
-
-    request.email = this.emailInput.getValue();
-    request.password = this.passwordInput.getValue();
+    let request = new RegisterRequest
+    (
+      this.emailInput.getValue(),
+      this.passwordInput.getValue()
+    );
 
     return request;
   }
@@ -216,6 +229,12 @@ export class RegisterForm extends CredentialsForm
   private createButtons()
   {
     let $parent = super.$createButtonContainer();
+
+    if ($parent === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
 
     this.$createSubmitButton({ $parent });
     this.createCancelButton({ $parent });

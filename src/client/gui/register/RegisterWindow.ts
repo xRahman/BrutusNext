@@ -50,6 +50,12 @@ export class RegisterWindow extends FormWindow
     if (this.form !== null)
       ERROR("Register form already exists");
 
+    if (this.$content === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     this.form = new RegisterForm
     (
       this,
@@ -60,6 +66,12 @@ export class RegisterWindow extends FormWindow
   private createTermsLink()
   {
     let $parent = this.createTextContainer();
+
+    if ($parent === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
 
     this.$createText
     (

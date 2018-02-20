@@ -7,6 +7,7 @@
 
 'use strict';
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Coords} from '../../../shared/lib/utils/Coords';
 import {Component} from '../../../client/gui/Component';
 import {MapWindow} from '../../../client/gui/map/MapWindow';
@@ -19,7 +20,7 @@ import {Room} from '../../../client/game/world/Room';
 import {Packet} from '../../../shared/lib/protocol/Packet';
 
 import d3 = require('d3');
-type d3Selection = d3.Selection<any, any, HTMLElement, any>;
+type d3Selection = d3.Selection<any, any, HTMLElement | null, any>;
 
 export class SvgMap extends Component
 {
@@ -92,7 +93,7 @@ export class SvgMap extends Component
   // when dragging of a room starts.
   private roomDragData =
   {
-    origCoords: null/*,
+    origCoords: <Coords | null>null/*,
     origMouseX: null,
     origMouseY: null*/
   }
@@ -259,6 +260,12 @@ export class SvgMap extends Component
   // Creates a <defs> element and appends it to 'this.d3MapSvg'.
   private createDefs()
   {
+    if (this.d3Map === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     // Append a <defs> element to svg map element.
     let defs = this.d3Map.append('defs');
 
@@ -269,6 +276,12 @@ export class SvgMap extends Component
   // Creates container <g> elements and apppends them to 'this.d3MapSvg'.
   private createGs()
   {
+    if (this.d3Map === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     // Order of creating of following elements is important!
     //   Mouse events will prioritize the last inserted
     // one, so 'this.d3RoomsSvg' must come last or the
@@ -587,6 +600,12 @@ export class SvgMap extends Component
 //.
   private renderRooms()
   {
+    if (this.d3Rooms === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     // We are going to manupulate all <g> elements inside
     // this.d3RoomsSvg.
     let d3RoomElements = this.d3Rooms.selectAll('g');
@@ -610,6 +629,12 @@ export class SvgMap extends Component
 //.
   private renderExits()
   {
+    if (this.d3Exits === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     // We are going to manupulate all <path> elements inside
     // this.d3ExitsSvg.
     let d3ExitElements = this.d3Exits.selectAll('line');
@@ -720,6 +745,12 @@ export class SvgMap extends Component
 //.
   private getRoomXPos(d: Room)
   {
+    if (d.data.coords === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     return this.getXPos(d.data.coords);
   }
 
@@ -740,30 +771,60 @@ export class SvgMap extends Component
 //.
   private getRoomYPos(d: Room)
   {
+    if (d.data.coords === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     return this.getYPos(d.data.coords);
   }
 
 //.
   private getFromXPos(d: Exit)
   {
+    if (d.from === null || d.from.data.coords === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return 0;
+    }
+
     return this.getXPos(d.from.data.coords);
   }
 
 //.
   private getFromYPos(d: Exit)
   {
+    if (d.from === null || d.from.data.coords === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return 0;
+    }
+
     return this.getYPos(d.from.data.coords);
   }
 
 //.
   private getToXPos(d: Exit)
   {
+    if (d.to === null || d.to.data.coords === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return 0;
+    }
+
     return this.getXPos(d.to.data.coords);
   }
 
 //.
   private getToYPos(d: Exit)
   {
+    if (d.to === null || d.to.data.coords === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return 0;
+    }
+
     return this.getYPos(d.to.data.coords);
   }
 
@@ -849,8 +910,9 @@ export class SvgMap extends Component
       ///this.createRoom(d);
     }
 
-    if (this.roomDragData.origCoords !== null)
+    if (this.roomDragData.origCoords !== null && d.data.coords !== null)
     {
+      
       this.mapData.connect(this.roomDragData.origCoords, d.data.coords);
       this.renderExits();
     }

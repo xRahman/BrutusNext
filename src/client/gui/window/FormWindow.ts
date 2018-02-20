@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {StandaloneWindow} from '../../../client/gui/window/StandaloneWindow';
 import {Form} from '../../../client/gui/form/Form';
 
@@ -19,6 +20,12 @@ export class FormWindow extends StandaloneWindow
 
   protected onEnterPressed()
   {
+    if (this.form === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return false;
+    }
+
     this.form.submit();
   }
 

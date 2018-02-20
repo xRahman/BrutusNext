@@ -8,7 +8,7 @@
 'use strict';
 
 /// Color test: &kA&KB&rC&RD&gE&GF&yG&YH&bI&BJ&mK&ML&cM&CN&wO&WP
-const Colors =
+const Colors: { [key: string]: string} =
 {
   '&k': 'rgb(48,48,48)',	  // black
   '&K':	'rgb(102,102,102)', // bright black
@@ -71,16 +71,22 @@ export abstract class MudColors
     if (this.hasNoColors(message))
       return this.htmlizeColorlessMessage(message, baseColor);
 
-    let baseColorParseResult =
-    {
-      offset: 0,
-      baseColor: baseColor
-    };
+    let baseColorParseResult: { offset: number, baseColor: string };
 
     // If 'baseColor' isn't provided, read it from
     // the beginning of the message.
-    if (baseColor)
+    if (baseColor === null)
+    {
       baseColorParseResult = this.parseBaseColor(message);
+    }
+    else
+    {
+      baseColorParseResult =
+      {
+        offset: 0,
+        baseColor: baseColor
+      };
+    }
     
     // Skip the characters we have already parsed.
     if (baseColorParseResult.offset !== 0)
@@ -88,7 +94,7 @@ export abstract class MudColors
     
     // Encapsulate the result in one more <span> element so it
     // behaves as a single html element.
-    return "<span>" + this.parseMudColors(message, baseColor) + "</span>";
+    return "<span>" + this.parseMudColors(message, baseColorParseResult.baseColor) + "</span>";
 
     // // If 'baseColor' is provided, use it.
     // if (baseColor !== null)
@@ -348,7 +354,11 @@ export abstract class MudColors
   }
 
   // -> Returns <span> element containing 'message'.
-  private static htmlizeColorlessMessage(message: string, baseColor: string)
+  private static htmlizeColorlessMessage
+  (
+    message: string,
+    baseColor: (string | null) = null
+  )
   {
     // Treat 'undefined' or 'null' value as ""
     // (to prevent outputing words 'undefined' or 'null').
