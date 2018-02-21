@@ -42,9 +42,9 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {Classes} from '../../../shared/lib/class/Classes';
+import {Constructor} from '../../../shared/lib/class/Classes';
 import {JsonObject} from '../../../shared/lib/json/JsonObject';
 import {Attributable} from '../../../shared/lib/class/Attributable';
-
 import {App} from '../../../shared/lib/app/App';
 
 // 3rd party modules.
@@ -121,7 +121,7 @@ export class Serializable extends Attributable
 
   // ---------------- Public methods --------------------
 
-  public dynamicCast<T>(Class: { new (...args: any[]): T })
+  public dynamicCast<T>(Class: Constructor<T>)
   {
     // Dynamic type check - we make sure that entity is inherited from
     // requested class (or an instance of the class itself).

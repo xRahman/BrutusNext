@@ -1,6 +1,8 @@
 TO DO, TO DO, TODO TODO TODO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+TODO: Proč se mi sakra něco buildí do /build/client/js/server?
+
 TODO: Návratové hodnoty z funkcí s více možnými negativními
   výsledky (např. file not found, error) řešit union typem
   např.: (Account | "FILE_NOT_FOUND" | "ERROR");
