@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {Component} from '../../../client/gui/Component';
 import {Window} from '../../../client/gui/window/Window';
@@ -53,6 +54,12 @@ export class TitledWindow extends Window
   // (accepts plain text or mud colored string).
   public setTitle(title: string)
   {
+    if (this.$title === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     this.$createText
     (
       {
@@ -71,6 +78,12 @@ export class TitledWindow extends Window
     titleParam: Component.TitleParam
   )
   {
+    if (this.$element === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     Utils.applyDefaults
     (
       titleBarParam,
@@ -89,6 +102,12 @@ export class TitledWindow extends Window
 
   protected createWindowTitle(param: Component.TitleParam = {})
   {
+    if (this.$titleBar === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     Utils.applyDefaults
     (
       param,
@@ -105,6 +124,12 @@ export class TitledWindow extends Window
 
   protected createContent(param: Component.DivParam = {})
   {
+    if (this.$element === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+    
     Utils.applyDefaults
     (
       param,

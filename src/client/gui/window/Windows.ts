@@ -71,6 +71,12 @@ export class Windows
 
   public static get activeScrollWindow()
   {
+    if (ClientApp.connection.activeAvatar === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     return ClientApp.connection.activeAvatar.scrollWindow;
   }
 
@@ -80,12 +86,12 @@ export class Windows
   //   ClientApp.windows.activeScrollWindow = window;
   // }
 
-  public static get activeStandaloneWindow()
+  public static get activeStandaloneWindow(): StandaloneWindow | null
   {
     return ClientApp.windows.activeStandaloneWindow;
   }
 
-  public static set activeStandaloneWindow(window: StandaloneWindow)
+  public static set activeStandaloneWindow(window: StandaloneWindow | null)
   {
     ClientApp.windows.activeStandaloneWindow = window;
   }
@@ -198,7 +204,7 @@ export class Windows
     return this.chargenWindow;
   }
 
-  private alreadyExists(window: Window, wndName: string)
+  private alreadyExists(window: Window | null, wndName: string)
   {
     if (window !== null)
     {

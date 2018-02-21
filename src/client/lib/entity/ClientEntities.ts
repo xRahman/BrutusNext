@@ -16,7 +16,7 @@ export class ClientEntities extends Entities
   // --------------- Protected methods ------------------
 
   // ~ Overrides Entities.saveEntity().
-  protected async saveEntity(entity: Entity)
+  protected async saveEntity(entity: Entity): Promise<void>
   {
     // (It is possible that HTML5 Local Storage will be
     //  used in the future, however.)
@@ -26,7 +26,7 @@ export class ClientEntities extends Entities
   }
 
   // ~ Overrides Entities.loadEntityById().
-  protected async loadEntityById(id: string): Promise<Entity>
+  protected async loadEntityById(id: string): Promise<Entity | null>
   {
     // (It is possible that HTML5 Local Storage will be
     //  used in the future, however.)
@@ -43,7 +43,7 @@ export class ClientEntities extends Entities
     name: string,
     cathegory: Entity.NameCathegory
   )
-  : Promise<Entity>
+  : Promise<Entity | null>
   {
     // (It is possible that HTML5 Local Storage will be
     //  used in the future, however.)

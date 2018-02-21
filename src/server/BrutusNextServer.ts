@@ -48,19 +48,19 @@ let packageDotJson = require('../../../../package.json');
 process.on
 (
   'unhandledRejection',
-  err =>
+  (error: Error) =>
   {
-    if (err.name === Script.CANCELLED)
+    if (error.name === Script.CANCELLED)
     {
       // Running scripts are cancelled by rejecting the Promise, which
       // throws an exception. It is not an error to be reported though.
 
       /// This was used for debugging:
-      console.log(err.message);
+      console.log(error.message);
     }
     else
     {
-      ServerUtils.reportException(err);
+      ServerUtils.reportException(error);
       process.exit(1);
 
       /*
@@ -77,9 +77,9 @@ process.on
 process.on
 (
   'uncaughtException',
-  err =>
+  (error: Error) =>
   {
-    ServerUtils.reportException(err);
+    ServerUtils.reportException(error);
     process.exit(1);
 
     /*
@@ -103,7 +103,7 @@ process.on
     }
     */
 
-    throw err;
+    throw error;
   }
 )
 

@@ -26,10 +26,12 @@ export class ClientSocket
   {
     if (typeof WebSocket === 'undefined')
     {
+      let MozWebSocket = (window as any)['MozWebSocket'];
+
       // Use 'MozWebSocket' if it's available.
-      if ('MozWebSocket' in window)
+      if (MozWebSocket)
       {
-        WebSocket = window['MozWebSocket'];
+        WebSocket = MozWebSocket;
         return true;
       }
 
@@ -50,10 +52,10 @@ export class ClientSocket
   // when the socket closes.
   private listeners =
   {
-    onopen: null,
-    onmessage: null,
-    onerror: null,
-    onclose: null
+    onopen: <((event: any) => void) | null>null,
+    onmessage: <((event: any) => void) | null>null,
+    onerror: <((event: any) => void) | null>null,
+    onclose: <((event: any) => void) | null>null
   }
 
   // We still need this even though WebSocket keeps it's status
@@ -171,6 +173,12 @@ export class ClientSocket
       /// TODO: Asi by to chtelo dát message playerovi a ideálně
       /// pustit auto-reconnect, pokud ještě neběží.
       return;
+
+    if (this.connection === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
     
     this.connection.clientMessage
     (
@@ -183,6 +191,12 @@ export class ClientSocket
   // Closes the socket, ending the connection.
   public close(reason: (string | null) = null)
   {
+    if (this.socket === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     // Code '1000' means normal connection close.
     if (reason)
       this.socket.close(1000, reason);
@@ -194,6 +208,12 @@ export class ClientSocket
 
   private reportConnectionFailure()
   {
+    if (this.connection === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     // Test is user device is online.
     if (navigator.onLine)
     {
@@ -232,6 +252,12 @@ export class ClientSocket
 
   private reportNormalDisconnect()
   {
+    if (this.connection === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     this.connection.clientMessage
     (
       'Connection closed.'
@@ -240,6 +266,12 @@ export class ClientSocket
 
   private reportAbnormalDisconnect()
   {
+    if (this.connection === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     // Test if user is online.
     if (navigator.onLine)
     {
@@ -267,8 +299,14 @@ export class ClientSocket
     this.listeners.onerror = (event) => { this.onError(event); };
     this.listeners.onclose = (event) => { this.onClose(event); };
 
+    if (this.socket === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     // Assign them to the socket.
-    this.socket.onopen =  this.listeners.onopen;
+    this.socket.onopen = this.listeners.onopen;
     this.socket.onmessage = this.listeners.onmessage;
     this.socket.onerror = this.listeners.onerror;
     this.socket.onclose = this.listeners.onclose;
@@ -277,6 +315,12 @@ export class ClientSocket
   // Removes event handlers from this.socket.
   private deinit()
   {
+    if (this.socket === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+    
     if (this.listeners.onopen)
       this.socket.removeEventListener('open', this.listeners.onopen);
 

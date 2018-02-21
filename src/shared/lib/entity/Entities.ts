@@ -192,14 +192,14 @@ export abstract class Entities
 
   // --------------- Protected methods ------------------
 
-  protected abstract async saveEntity(entity: Entity);
+  protected abstract async saveEntity(entity: Entity): Promise<void>;
 
   protected abstract async loadEntityById
   (
     id: string,
     loadContents: boolean
   )
-  : Promise<Entity>;
+  : Promise<Entity | null>;
 
   protected abstract async loadEntityByName
   (
@@ -207,7 +207,7 @@ export abstract class Entities
     cathegory: Entity.NameCathegory,
     reportNotFoundError: boolean
   )
-  : Promise<Entity>;
+  : Promise<Entity | null>;
 
   protected loadEntityFromJsonObject
   (

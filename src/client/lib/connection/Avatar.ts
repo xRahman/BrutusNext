@@ -79,5 +79,4 @@ export class Avatar
 
     this.scrollWindow.setTitle(title);
   }
-
 }

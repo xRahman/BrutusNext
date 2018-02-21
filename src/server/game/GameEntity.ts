@@ -316,7 +316,7 @@ export class GameEntity extends ContainerEntity
   // --------------- Command handlers ------------------
 
   /// TEST:
-  public description: String;
+  public description: String = "";
 
   // Sends a text describing room contents to the player connection.
   protected showContainerContents()

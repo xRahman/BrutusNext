@@ -179,7 +179,7 @@ export class Message
     connection.sendMudMessage(this);
   }
 
-  public sendToGameEntity(target: GameEntity, sender: GameEntity = null)
+  public sendToGameEntity(target: GameEntity, sender: GameEntity | null = null)
   {
     if (target === null || !target.isValid())
     {
