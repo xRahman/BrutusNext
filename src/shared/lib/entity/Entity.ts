@@ -30,6 +30,7 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
+import {AnyClass} from '../../../shared/lib/class/Classes';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {Attributes} from '../../../shared/lib/class/Attributes';
 import {Entities} from '../../../shared/lib/entity/Entities';
@@ -531,7 +532,8 @@ export class Entity extends Serializable
   public async postSave() {}
   public async postLoad(loadContents = true) {}
 
-  public dynamicCast<T>(Class: { new (...args: any[]): T }): T
+  // ~ Overrides Serializable.dynamicCast().
+  public dynamicCast<T>(Class: AnyClass<T>)
   {
     // Dynamic type check - we make sure that entity is inherited from
     // requested class (or an instance of the class itself).

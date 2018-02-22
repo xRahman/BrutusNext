@@ -28,8 +28,11 @@ import {Entities} from '../../../shared/lib/entity/Entities';
 // instantiated. So the type of an abstract class is a Function with
 // a prototype with no constructor.
 //   TLDR: this type describes both abstract and nonabstract classes.
-export type Constructor<T> =
+export type AnyClass<T> =
   (Function & { prototype: T }) | { new (...args: any[]): T };
+
+// Nonabstract class in javascript is it's constructor function.
+export type NonabstractClass<T> = { new (...args: any[]): T };
 
 export class Classes
 {
@@ -46,7 +49,7 @@ export class Classes
 
   public static registerSerializableClass<T extends Serializable>
   (
-    Class: new(...args: any[]) => T
+    Class: NonabstractClass<T>
   )
   {
     this.serializables.set(Class.name, Class);
@@ -54,7 +57,7 @@ export class Classes
 
   public static registerEntityClass<T extends Entity>
   (
-    Class: new(...args: any[]) => T
+    Class: NonabstractClass<T>
   )
   {
     this.entities.set(Class.name, Class);

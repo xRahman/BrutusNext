@@ -58,7 +58,7 @@ export class Syslog
   // Reads stack trace from Error() object.
   // -> Returns string containing stack trace with first few lines
   //    trimmed accoding to 'trimType' parameter.
-  public static getTrimmedStackTrace(trimType: Syslog.TrimType): string
+  public static getTrimmedStackTrace(trimType: Syslog.TrimType): string | null
   {
     let trimValue = 0;
 
@@ -82,6 +82,11 @@ export class Syslog
 
     // Create a temporary error object to construct stack trace for us.
     let tmpErr = new Error();
+
+    /// TODO: Asi spíš exception. Error object vyrábím přímo tady, takže
+    /// stack trace by měl bejt k dispozici vždycky.
+    if (!tmpErr)
+      return null;
 
     // Break stack trace string into an array of lines.
     let stackTraceLines = tmpErr.stack.split('\n');

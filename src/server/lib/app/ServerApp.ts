@@ -197,8 +197,12 @@ export class ServerApp extends App
   //  from /shared/lib/error/ERROR).
   protected reportError(message: string)
   {
-    let errorMsg = message + "\n"
-      + Syslog.getTrimmedStackTrace(Syslog.TrimType.ERROR);
+    let stackTrace = Syslog.getTrimmedStackTrace(Syslog.TrimType.ERROR);
+
+    let errorMsg = message;
+    
+    if (stackTrace)
+      errorMsg += "\n" + Syslog.getTrimmedStackTrace(Syslog.TrimType.ERROR);
 
     Syslog.log(errorMsg, MessageType.RUNTIME_ERROR, AdminLevel.ELDER_GOD);
   }
