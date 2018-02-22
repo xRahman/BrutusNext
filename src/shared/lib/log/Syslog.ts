@@ -35,6 +35,26 @@ export class Syslog
     App.syslog(text, msgType, adminLevel);
   }
 
+  public static logConnectionInfo(message: string)
+  {
+    this.log
+    (
+      message,
+      MessageType.CONNECTION_INFO,
+      AdminLevel.IMMORTAL
+    );
+  }
+
+  public static logSystemInfo(message: string)
+  {
+    this.log
+    (
+      message,
+      MessageType.SYSTEM_INFO,
+      AdminLevel.IMMORTAL
+    );
+  }
+
   // Reads stack trace from Error() object.
   // -> Returns string containing stack trace with first few lines
   //    trimmed accoding to 'trimType' parameter.

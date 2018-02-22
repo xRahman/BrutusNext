@@ -15,6 +15,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Syslog} from '../../../shared/lib/log/Syslog';
 import {LoginRequest as SharedLoginRequest} from
   '../../../shared/lib/protocol/LoginRequest';
 import {ServerUtils} from '../../../server/lib/utils/ServerUtils';
@@ -88,7 +89,7 @@ export class LoginRequest extends SharedLoginRequest
 
   private logReconnectSuccess(account: Account)
   {
-    this.logConnectionInfo
+    Syslog.logConnectionInfo
     (
       this.obtainUserInfo(account) + " has re-logged from different location"
     );
@@ -96,7 +97,7 @@ export class LoginRequest extends SharedLoginRequest
 
   private logLoginSuccess(account: Account)
   {
-    this.logConnectionInfo(this.obtainUserInfo(account) + " has logged in");
+    Syslog.logConnectionInfo(this.obtainUserInfo(account) + " has logged in");
   }
 
   private sendErrorResponse(connection: Connection)
@@ -167,7 +168,7 @@ export class LoginRequest extends SharedLoginRequest
 
   private logWrongPasswordAttempt(userInfo: string)
   {
-    this.logConnectionInfo("Bad PW: " + userInfo);
+    Syslog.logConnectionInfo("Bad PW: " + userInfo);
   }
 
   // -> Returns 'false' if error occurs.
@@ -238,7 +239,7 @@ export class LoginRequest extends SharedLoginRequest
 
   private logNoSuchAccountExists(email: string, connection: Connection)
   {
-    this.logConnectionInfo
+    Syslog.logConnectionInfo
     (
       "Unregistered player (" + email + ") attempted to log in"
         + " from " + connection.getOrigin()

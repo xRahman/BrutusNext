@@ -181,7 +181,7 @@ export class ChargenRequest extends SharedChargenRequest
 
   private logNameIsNotAvailable(connection: Connection)
   {
-    this.logConnectionInfo
+    Syslog.logConnectionInfo
     (
       "User " + connection.getUserInfo() + " has attempted"
         + " to create new character using existing name"
@@ -212,7 +212,7 @@ export class ChargenRequest extends SharedChargenRequest
 
   private logSuccess(character: Character, account: Account)
   {
-    this.logSystemInfo
+    Syslog.logSystemInfo
     (
       "Player " + account.getEmail() + " has created"
         + " a new character: " + character.getName()

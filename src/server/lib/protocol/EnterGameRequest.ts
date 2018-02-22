@@ -15,6 +15,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Syslog} from '../../../shared/lib/log/Syslog';
 import {Message} from '../../../server/lib/message/Message';
 import {EnterGameRequest as SharedEnterGameRequest} from
   '../../../shared/lib/protocol/EnterGameRequest';
@@ -174,7 +175,7 @@ export class EnterGameRequest extends SharedEnterGameRequest
 
   private logSuccess(character: Character, account: Account)
   {
-    this.logSystemInfo
+    Syslog.logSystemInfo
     (
       "Player " + account.getEmail() + " has entered"
         + " game as " + character.getName()

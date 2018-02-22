@@ -14,7 +14,6 @@
     "rootDir": "../",
     "sourceMap": true,
     "sourceRoot": "../"
-    ///"sourceRoot": "src"
     // 'compileOnSave' actually works in vs code if --watch parameter
     //  is passed to 'tsc', but the same functionality is turned on by
     // '"isWatching": true' in tasks.json. We do it there.

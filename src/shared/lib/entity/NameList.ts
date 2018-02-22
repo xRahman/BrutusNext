@@ -9,7 +9,6 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {Entities} from '../../../shared/lib/entity/Entities';
-import {ServerApp} from '../../../server/lib/app/ServerApp';
 
 export class NameList<T extends Entity>
 {
