@@ -224,6 +224,12 @@ export class Account extends ServerEntity
       return null;
     }
 
+    if (!this.connection)
+    {
+      ERROR("Unexpected 'null' value");
+      return null;
+    }
+
     character.atachConnection(this.connection);
     character.addToLists();
     character.init();
@@ -277,6 +283,12 @@ export class Account extends ServerEntity
 
   public logout()
   {
+    if (!this.connection)
+    {
+      ERROR("Unexpected 'null' value");
+      return null;
+    }
+
     let accountName = this.getName();
     let ipAddress = this.connection.getIpAddress();
 
@@ -434,7 +446,15 @@ export class Account extends ServerEntity
       return;
     }
 
-    if (this.data.characters.has(character.getId()))
+    let characterId = character.getId();
+
+    if (!characterId)
+    {
+      ERROR("Unexpected 'null' value");
+      return null;
+    }
+
+    if (this.data.characters.has(characterId))
     {
       ERROR("Attempt to add character " + character.getErrorIdString()
         + " to account " + this.getErrorIdString() + " which is already"
@@ -444,7 +464,7 @@ export class Account extends ServerEntity
 
     console.log('Adding character ' + character.getName());
 
-    this.data.characters.set(character.getId(), character);
+    this.data.characters.set(characterId, character);
 
     // Character will be selected when user enters charselect window.
     this.data.lastActiveCharacter = character;

@@ -75,7 +75,7 @@ export class ServerEntities extends Entities
   (
     id: string,
     name: string,
-    cathegory: Entity.NameCathegory,
+    cathegory: Entity.NameCathegory | null,
     passwordHash: (string | null) = null
   )
   {
@@ -117,10 +117,10 @@ export class ServerEntities extends Entities
     prototypeName: string,
     name: string,
     // 'null' means that entity won't have unique name.
-    cathegory: Entity.NameCathegory = null,
+    cathegory: (Entity.NameCathegory | null) = null,
     passwordHash: (string | null) = null
   )
-  : Promise<T>
+  : Promise<T | null | undefined>
   {
     let prototype = Prototypes.get(prototypeName);
 
@@ -298,7 +298,7 @@ export class ServerEntities extends Entities
   // --------------- Protected methods ------------------
 
   // ~ Overrides Entities.saveEntity().
-  protected async saveEntity(entity: Entity)
+  protected async saveEntity(entity: Entity): Promise<boolean>
   {
     // Note: Name lock file is saved when the name is set
     // to the entity so we don't have to save it here.
@@ -317,6 +317,8 @@ export class ServerEntities extends Entities
     await FileSystem.writeFile(directory, fileName, jsonString);
 
     await entity.postSave();
+
+    return true;
   }
 
   // ~ Overrides Entities.loadEntityById().
@@ -356,6 +358,7 @@ export class ServerEntities extends Entities
     cathegory: Entity.NameCathegory,
     reportNotFoundError: boolean = true
   )
+  : Promise<Entity | null | undefined>
   {
     let id = await NameLock.readId
     (

@@ -121,7 +121,7 @@ export class Serializable extends Attributable
 
   // ---------------- Public methods --------------------
 
-  public dynamicCast<T>(Class: AnyClass<T>)
+  public dynamicCast<T>(Class: AnyClass<T>): T | null
   {
     // Dynamic type check - we make sure that entity is inherited from
     // requested class (or an instance of the class itself).

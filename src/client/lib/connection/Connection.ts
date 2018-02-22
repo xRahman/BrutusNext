@@ -79,6 +79,8 @@ export class Connection implements SharedConnection
     connection.send(packet);
   }
 
+  /// TODO: Na serveru je prakticky stejná fce, asi by to chtělo sloučit
+  /// do společného předka v /shared
   public static async receiveData(data: string)
   {
     let connection = ClientApp.connection;
@@ -89,7 +91,15 @@ export class Connection implements SharedConnection
       return;
     }
 
-    let packet = Serializable.deserialize(data).dynamicCast(Packet);
+    /// TODO: deserialize() by mělo házet exception místo return null,
+    /// takže pak půjde zavolat:
+    ///   let packet = Serializable.deserialize(data).dynamicCast(Packet);
+    let deserializedPacket = Serializable.deserialize(data);
+    
+    if (!deserializedPacket)
+      return;
+    
+    let packet = deserializedPacket.dynamicCast(Packet);
 
     if (packet !== null)
       await packet.process(connection);
@@ -150,6 +160,12 @@ export class Connection implements SharedConnection
 
     packet.command = command;
 
+    if (!this.socket)
+    {
+      ERROR("Unexpected 'null' value");
+      return
+    }
+
     // If the connection is closed, any user command
     // (even an empty one) triggers reconnect attempt.
     if (!this.socket.isOpen())
@@ -159,7 +175,7 @@ export class Connection implements SharedConnection
   }
 
   // Sends system message to the connection.
-  public sendSystemMessage(type: SystemMessage.Type, message: string)
+  public sendSystemMessage(type: SystemMessage.Type, message: string | null)
   {
     let packet = new SystemMessage();
 
@@ -201,6 +217,12 @@ export class Connection implements SharedConnection
 
   private send(packet: Packet)
   {
+    if (!this.socket)
+    {
+      ERROR("Unexpected 'null' value");
+      return
+    }
+    
     if (!this.socket.isOpen())
     {
       ERROR("Attempt to send packet to the closed connection");

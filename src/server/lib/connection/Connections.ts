@@ -58,9 +58,17 @@ export class Connections
         if (!connection.ingameEntity || !connection.ingameEntity.isValid())
           continue;
 
+        const adminLevel = Admins.getAdminLevel(connection.ingameEntity);
+
+        if (adminLevel === null)
+        {
+          ERROR("Unexpected 'null' value");
+          continue;
+        }
+
         // Skip game entities that don't have sufficient admin level
         // to see this message.
-        if (Admins.getAdminLevel(connection.ingameEntity) < visibility)
+        if (adminLevel < visibility)
           continue;
       }
 

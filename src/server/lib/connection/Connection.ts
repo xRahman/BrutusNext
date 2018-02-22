@@ -123,12 +123,24 @@ export class Connection implements SharedConnection
 
   public detachFromGameEntity()
   {
+    if (this.account === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     if (this.ingameEntity === null)
     {
       ERROR("Attempt to detach ingame entity"
         + " from " + this.account.getName() + "'s"
         + " player connection when there is"
         + " no ingame entity attached to it");
+    }
+
+    if (this.ingameEntity === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
     }
 
     this.ingameEntity.detachConnection();
@@ -152,10 +164,23 @@ export class Connection implements SharedConnection
   // Processes data received from the client.
   public async receiveData(data: string)
   {
-    let packet = Serializable.deserialize(data).dynamicCast(Packet);
+    // let packet = Serializable.deserialize(data).dynamicCast(Packet);
+
+    // if (packet !== null)
+    //   await packet.process(this);
+
+    /// TODO: deserialize() by mělo házet exception místo return null,
+    /// takže pak půjde zavolat:
+    ///   let packet = Serializable.deserialize(data).dynamicCast(Packet);
+    let deserializedPacket = Serializable.deserialize(data);
+    
+    if (!deserializedPacket)
+      return;
+    
+    let packet = deserializedPacket.dynamicCast(Packet);
 
     if (packet !== null)
-      await packet.process(this);
+      await packet.process(connection);
   }
 
   // Sends 'packet' to web socket.

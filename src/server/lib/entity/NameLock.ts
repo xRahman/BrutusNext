@@ -137,10 +137,12 @@ export class NameLock extends Serializable
     if (!jsonObject)
       return jsonObject;
 
-    if (!jsonObject[Entity.ID_PROPERTY])
+    let id = (jsonObject as any)[Entity.ID_PROPERTY];
+
+    if (!id)
       return null;
 
-    return jsonObject[Entity.ID_PROPERTY];
+    return id;
   }
 
   public static async delete(name: string, cathegoryName: string)

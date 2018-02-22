@@ -37,6 +37,12 @@ export abstract class Entities
   // -> Returns 'true' if enity is available.
   public static has(id: string)
   {
+    if (App.entities === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return false;
+    }
+
     return App.entities.entityList.has(id);
   }
 
@@ -89,8 +95,14 @@ export abstract class Entities
     typeCast: { new (...args: any[]): T },
     loadContents = true
   )
-  : Promise<T>
+  : Promise<T | null>
   {
+    if (App.entities === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return null;
+    }
+
     let entity = await App.entities.loadEntityById(id, loadContents);
 
     if (!entity)
@@ -192,7 +204,7 @@ export abstract class Entities
 
   // --------------- Protected methods ------------------
 
-  protected abstract async saveEntity(entity: Entity): Promise<void>;
+  protected abstract async saveEntity(entity: Entity): Promise<boolean>;
 
   protected abstract async loadEntityById
   (
@@ -207,7 +219,7 @@ export abstract class Entities
     cathegory: Entity.NameCathegory,
     reportNotFoundError: boolean
   )
-  : Promise<Entity | null>;
+  : Promise<Entity | null | undefined>;
 
   protected loadEntityFromJsonObject
   (

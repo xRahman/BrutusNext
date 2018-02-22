@@ -1,6 +1,27 @@
 TO DO, TO DO, TODO TODO TODO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+TODO: Ha, ony už nejspíš jdou deklarovat statický stringový properties:
+  class Blah
+  {
+    static message = "Hello";
+    // A dokonce i constove:
+    protected static readonly TEST = "Test";
+  }
+
+BIIIIIIIG TOOODOOOOOOO:
+[16:20] Rahman: hmm, k tomu nacitani dat z disku me tak napada, ze bych
+                mozna mohl povolit loadnout 'null' pouze do property,
+                ktera ma hodnotu 'null'
+[16:21] Rahman: loaduje se do instance classy a ta instance je nejak
+                nainicializovana pri vytvoreni
+[16:21] Rahman: treba class Frlf { public x: number | null = null; }
+[16:22] Rahman: tzn. kdyz tam pri loadovani ze souboru je 'null', tak
+                se tam musel dostat nejakou validni cestou a tudiz mam
+                jistotu, ze ten typ je (neco | null)
+- a asi bych měl stejně ošetřit i případ, kdy je savnuta hodnota 'undefined'.
+
+
 TODO: Proč se mi sakra něco buildí do /build/client/js/server?
 
 TODO: Návratové hodnoty z funkcí s více možnými negativními
