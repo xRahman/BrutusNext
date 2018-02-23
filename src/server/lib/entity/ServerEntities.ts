@@ -54,6 +54,10 @@ export class ServerEntities extends Entities
   {
     let path = this.getEntityPath(id);
     let jsonString = await FileSystem.readFile(path);
+
+    if (jsonString === null)
+      return null;
+
     let jsonObject = JsonObject.parse(jsonString);
 
     if (jsonObject === null)
@@ -133,6 +137,9 @@ export class ServerEntities extends Entities
 
     let id = ServerEntities.generateId();
 
+    if (id === null)
+      return null;
+
     // If 'name' isn't available, we have just wasted an id.
     // (It's unavoidable because id is written to the name lock
     //  file so we need to generate it prior to writing the file.
@@ -183,10 +190,14 @@ export class ServerEntities extends Entities
     prototype: Entity,
     prototypeName: string,
     // Entity name. Can't be unique for prototype entities.
-    name: string
-  ): Promise<T>
+    name: string | null
+  )
+  : Promise<T | null>
   {
     let id = this.generateId();
+
+    if (id === null)
+      return null;
 
     if (!await this.requestPrototypeName(id, prototypeName))
     {
@@ -226,7 +237,7 @@ export class ServerEntities extends Entities
     // and descendant prototypes.
     name: (string | null) = null
   )
-  : Promise<T>
+  : Promise<T | null>
   {
     let ancestor = Prototypes.get(ancestorName);
 
@@ -248,7 +259,11 @@ export class ServerEntities extends Entities
 
   // Creates a new prototype entity with a new id.
   // -> Returns 'null' on failure.
-  public static async createRootPrototype(className: string): Promise<Entity>
+  public static async createRootPrototype
+  (
+    className: string
+  )
+  : Promise<Entity | null>
   {
     let prototype = ServerApp.entities.getRootPrototypeObject(className);
 
@@ -303,7 +318,15 @@ export class ServerEntities extends Entities
     // Note: Name lock file is saved when the name is set
     // to the entity so we don't have to save it here.
 
-    let fileName = ServerEntities.getEntityFileName(entity.getId());
+    let entityId = entity.getId();
+
+    if (entityId === null)
+    {
+      ERROR("Invalid entity id");
+      return false;
+    }
+
+    let fileName = ServerEntities.getEntityFileName(entityId);
     let directory = ServerEntities.getEntityDirectory();
 
     directory = ServerEntities.enforceTrailingSlash(directory);
@@ -328,10 +351,14 @@ export class ServerEntities extends Entities
     id: string,
     loadContents = true
   )
-  : Promise<Entity>
+  : Promise<Entity | null>
   {
     let path = ServerEntities.getEntityPath(id);
     let jsonString = await FileSystem.readFile(path);
+
+    if (jsonString === null)
+      return null;
+
     let entity = await this.loadEntityFromJsonString
     (
       {
@@ -380,6 +407,12 @@ export class ServerEntities extends Entities
 
   private static generateId()
   {
+    if (ServerApp.entities.idProvider === null)
+    {
+      ERROR("Invalid id provider");
+      return null;
+    }
+
     return ServerApp.entities.idProvider.generateId();
   }
 
@@ -480,8 +513,8 @@ export class ServerEntities extends Entities
   (
     id: string,
     prototype: Entity,
-    name: string,
-    cathegory: Entity.NameCathegory,
+    name: string | null,
+    cathegory: Entity.NameCathegory | null,
     isPrototype: boolean
   )
   {
@@ -503,7 +536,7 @@ export class ServerEntities extends Entities
     // Don't change 'null' value of 'prototypeEntity' if 'prototype'
     // is a root object (which have 'null' value of 'id' property),
     // because root prototype objects are not true entities.
-    if (prototype[Entity.ID_PROPERTY] !== null)
+    if ((prototype as any)[Entity.ID_PROPERTY] !== null)
     {
       // Even though prototype object is already set using
       // Object.create() when creating a new entity, we still

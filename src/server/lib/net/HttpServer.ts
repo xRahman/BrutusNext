@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Syslog} from '../../../shared/lib/log/Syslog';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
@@ -18,7 +19,7 @@ import * as url from 'url';  // Import namespace 'url' from node.js.
 // 'nodePath' to prevent conflicts with variable 'path'.
 import * as nodePath from 'path';  // Import namespace 'path' from node.js.
 
-const MIME_TYPE =
+const MIME_TYPE: { [key: string]: string } =
 {
   '.ico' : 'image/x-icon',
   '.html': 'text/html',
@@ -103,6 +104,12 @@ export class HttpServer
   // Runs when server is ready and listening.
   private onStartListening()
   {
+    if (this.httpServer === null)
+    {
+      ERROR("Invalid 'httpServer'");
+      return;
+    }
+
     Syslog.log
     (
       "Http server is up and listening",
@@ -117,8 +124,18 @@ export class HttpServer
   }
 
   // Handles http requests.
-  private async onRequest(request, response)
+  private async onRequest
+  (
+    request: http.IncomingMessage,
+    response: http.ServerResponse
+  )
   {
+    if (!request.url)
+    {
+      ERROR("Missing 'url' on http request");
+      return;
+    }
+
     // Parse URL.
     const parsedUrl = url.parse(request.url);
     // Extract URL path.
@@ -156,7 +173,7 @@ export class HttpServer
     response.end(data, FileSystem.BINARY_FILE_ENCODING);
   }
 
-  private onError(error)
+  private onError(error: Error)
   {
     Syslog.log
     (

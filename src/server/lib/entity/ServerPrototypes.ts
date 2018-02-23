@@ -79,6 +79,12 @@ export class ServerPrototypes extends Prototypes
     {
       let prototype = this.prototypeList.get(className);
 
+      if (!prototype)
+      {
+        ERROR("Prototype '" + className + "' doesn't exist");
+        continue;
+      }
+
       await this.loadDescendants(prototype);
     }
   }
@@ -103,6 +109,12 @@ export class ServerPrototypes extends Prototypes
       if (descendant === null)
       {
         ERROR("Failed to load prototype entity '" + descendantId + "'");
+        continue;
+      }
+
+      if (descendant.prototypeName === null)
+      {
+        ERROR("Invalid 'prototypeName' on 'descendant'");
         continue;
       }
 

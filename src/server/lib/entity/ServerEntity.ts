@@ -9,7 +9,7 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {Attributes} from '../../../shared/lib/class/Attributes';
-import {NameLock} from '../../../server/lib/entity/NameLock';
+import {AccountNameLock} from '../../../server/lib/account/AccountNameLock';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
 
@@ -45,65 +45,77 @@ export class ServerEntity extends Entity
     // a name lock file prior to calling setName().
     createNameLock = true
   )
+  : Promise<boolean>
   {
-    if (cathegory !== null && this.isPrototypeEntity())
-    {
-      ERROR("Attempt to set unique name '" + name + "' in cathegory"
-        + " '" + Entity.NameCathegory[cathegory] + "' to a prototype"
-        + " entity " + this.getErrorIdString() + ". That's not allowed"
-        + " - name will be inherited (and thus duplicated) when an"
-        + " instance or a descendant prototype is created from this"
-        + " prototype entity so it's not possible to ensure that it"
-        + " will stay unique. Name is not set");
-      return false;
-    }
-
-    if (cathegory !== null && !Utils.hasValidByteLengthAsFileName(name))
-    {
-      ERROR("Attempt to set unique name '" + name + "' in cathegory"
-        + " '" + Entity.NameCathegory[cathegory] + "' to entity"
-        + " " + this.getErrorIdString() + " which is longer than"
-        + " " + Utils.MAX_FILENAME_BYTE_LENGTH + " bytes when escaped"
-        + " to be useable as file name. That's not allowed because"
-        + " unique entity names are used as file names (to know that"
-        + " the name is taken) and there is a limit of file name length"
-        + " (in bytes) on most Unix file systems. Name is not set");
-      return false;
-    }
-
     let oldName = this.getName();
     let oldCathegory = this.getNameCathegory();
 
-    if (createNameLock)
+    if (cathegory !== null)
     {
-      let id = this.getId();
-      let passwordHash = this.readPasswordHashProperty();
-
-      if
-      (
-        !await ServerEntities.requestEntityName
-        (
-          id,
-          name,
-          cathegory,
-          passwordHash
-        )
-      )
+      if (this.isPrototypeEntity())
       {
-        ERROR("Attempt to set unique name '" + name + "' in"
-          + " cathegory '" + Entity.NameCathegory[cathegory] + "'"
-          + " to entity " + this.getErrorIdString() + " which"
-          + " is already taken. Name is not changed");
+        ERROR("Attempt to set unique name '" + name + "' in cathegory"
+          + " '" + Entity.NameCathegory[cathegory] + "' to a prototype"
+          + " entity " + this.getErrorIdString() + ". That's not allowed"
+          + " - name will be inherited (and thus duplicated) when an"
+          + " instance or a descendant prototype is created from this"
+          + " prototype entity so it's not possible to ensure that it"
+          + " will stay unique. Name is not set");
         return false;
       }
-    }
 
-    if (oldName && oldCathegory)
-    {
-      this.removeFromNameLists();
+      if (!Utils.hasValidByteLengthAsFileName(name))
+      {
+        ERROR("Attempt to set unique name '" + name + "' in cathegory"
+          + " '" + Entity.NameCathegory[cathegory] + "' to entity"
+          + " " + this.getErrorIdString() + " which is longer than"
+          + " " + Utils.MAX_FILENAME_BYTE_LENGTH + " bytes when escaped"
+          + " to be useable as file name. That's not allowed because"
+          + " unique entity names are used as file names (to know that"
+          + " the name is taken) and there is a limit of file name length"
+          + " (in bytes) on most Unix file systems. Name is not set");
+        return false;
+      }
 
-      // Make the old name available again.
-      await ServerEntities.releaseName(oldName, oldCathegory);
+      if (createNameLock)
+      {
+        let id = this.getId();
+
+        /// TODO: Předělat!
+        let passwordHash = this.readPasswordHashProperty();
+
+        if (id === null)
+        {
+          ERROR("Unexpected 'null' value");
+          return false;
+        }
+
+        if
+        (
+          !await ServerEntities.requestEntityName
+          (
+            id,
+            name,
+            cathegory,
+            passwordHash
+          )
+        )
+        {
+          ERROR("Attempt to set unique name '" + name + "' in"
+            + " cathegory '" + Entity.NameCathegory[cathegory] + "'"
+            + " to entity " + this.getErrorIdString() + " which"
+            + " is already taken. Name is not changed");
+          return false;
+        }
+      }
+
+      if (oldName && oldCathegory)
+      {
+        this.removeFromNameLists();
+
+        // Make the old name available again.
+        await ServerEntities.releaseName(oldName, oldCathegory);
+      }
     }
 
     super.setName(name, cathegory, createNameLock);
@@ -121,7 +133,12 @@ export class ServerEntity extends Entity
   // 
   private readPasswordHashProperty()
   {
-    let passwordHash = this[NameLock.PASSWORD_HASH_PROPERTY];
+    /// TODO: Argh, tohle je hodně špatně. Zřejmě se tu zkouší, jestli
+    /// náhodou nejsme Account (který má property 'passwordHash').
+    /// Mělo by to samozřejmě bejt tak, že Account si přetíží příslušnou
+    /// metodu a savne se, jak potřebuje.
+
+    let passwordHash = (this as any)['passwordHash'];
 
     if (!passwordHash)
       return null;

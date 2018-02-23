@@ -188,6 +188,7 @@ export class Entity extends Serializable
     // a name lock file prior to calling setName().
     createNameLock = true
   )
+  : Promise<boolean>
   {
     this.name = name;
     this.nameCathegory = cathegory;

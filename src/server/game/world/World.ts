@@ -7,6 +7,7 @@
 
 'use strict';
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
 ///import {SaveableObject} from '../../../server/lib/fs/SaveableObject';
@@ -51,7 +52,9 @@ export class World extends GameEntity
 
   public async createSystemRealm()
   {
-    this.systemRealm = await ServerEntities.createInstanceEntity
+    // TODO: Tohle je zjevně potřeba přepsat.
+
+    let systemRealmCreationResult = await ServerEntities.createInstanceEntity
     (
       Realm,      // Typecast.
       Realm.name, // Prototype name.
@@ -59,13 +62,27 @@ export class World extends GameEntity
       Entity.NameCathegory.WORLD
     );
 
+    if (systemRealmCreationResult === undefined)
+    {
+      ERROR("Failed to create system realm because it already exists");
+      return;
+    }
+
+    if (systemRealmCreationResult === null)
+    {
+      ERROR("Error occured while creating system realm");
+      return;
+    }
+
+    this.systemRealm = systemRealmCreationResult;
+
     // Even though we keep direct reference to systemRealm, we stil
     // need to add it to our contents so it's correctly saved, etc.
     this.insert(this.systemRealm);
 
     // --- System Area ---
-
-    this.systemArea = await ServerEntities.createInstanceEntity
+    
+    let systemAreaCreationResult = await ServerEntities.createInstanceEntity
     (
       Area,      // Typecast.
       Area.name, // Prototype name.
@@ -73,12 +90,26 @@ export class World extends GameEntity
       Entity.NameCathegory.WORLD
     );
 
+    if (systemAreaCreationResult === undefined)
+    {
+      ERROR("Failed to create system area because it already exists");
+      return;
+    }
+
+    if (systemAreaCreationResult === null)
+    {
+      ERROR("Error occured while creating system area");
+      return;
+    }
+
+    this.systemArea = systemAreaCreationResult;
+
     // Add System Area to contents of System Realm.
     this.systemRealm.insert(this.systemArea);
 
     // --- System Room ---
 
-    this.systemRoom = await ServerEntities.createInstanceEntity
+    let systemRoomCreationResult = await ServerEntities.createInstanceEntity
     (
       Room,      // Typecast.
       Room.name, // Prototype name.
@@ -86,18 +117,46 @@ export class World extends GameEntity
       Entity.NameCathegory.WORLD
     );
 
+    if (systemRoomCreationResult === undefined)
+    {
+      ERROR("Failed to create system room because it already exists");
+      return;
+    }
+
+    if (systemRoomCreationResult === null)
+    {
+      ERROR("Error occured while creating system room");
+      return;
+    }
+
+    this.systemRoom = systemRoomCreationResult;
+
     // Add System Room to contents of System Area.
     this.systemArea.insert(this.systemRoom);
 
     // --- Tutorial Room ---
 
-    this.tutorialRoom = await ServerEntities.createInstanceEntity
+    let tutorialRoomCreationResult = await ServerEntities.createInstanceEntity
     (
       Room,      // Typecast.
       Room.name, // Prototype name.
       'Tutorial Room',
       Entity.NameCathegory.WORLD
     );
+
+    if (tutorialRoomCreationResult === undefined)
+    {
+      ERROR("Failed to create tutorial room because it already exists");
+      return;
+    }
+
+    if (tutorialRoomCreationResult === null)
+    {
+      ERROR("Error occured while creating tutorial room");
+      return;
+    }
+
+    this.tutorialRoom = tutorialRoomCreationResult;
 
     // Add Tutorial Room to contents of System Area.
     this.systemArea.insert(this.tutorialRoom);

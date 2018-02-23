@@ -17,7 +17,7 @@ export class MessageColors
   }
 
   // Base message colors for each Message.Type.
-  private static baseColors =
+  private static baseColors: { [key: string]: string } =
   {
     // -------------------- Communication ------------------------
     

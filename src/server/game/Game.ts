@@ -82,7 +82,7 @@ export class Game
       return;
     }
 
-    this.world = await ServerEntities.createInstanceEntity
+    let worldCreationResult = await ServerEntities.createInstanceEntity
     (
       World,      // Typecast.
       World.name, // Prototype name.
@@ -90,11 +90,20 @@ export class Game
       Entity.NameCathegory.WORLD
     );
 
-    if (this.world === null)
+    if (worldCreationResult === undefined)
     {
-      ERROR("Failed to create default world");
+      ERROR("Failed to create default world because it already exists");
       return;
     }
+
+    if (worldCreationResult === null)
+    {
+      ERROR("Error occured while creating default world");
+      return;
+    }
+
+    this.world = worldCreationResult;
+
 
     // Create system realm (and it's contents).
     await this.world.createSystemRealm();

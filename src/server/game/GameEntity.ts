@@ -191,7 +191,7 @@ export class GameEntity extends ContainerEntity
   }
   */
 
-  public addOfflineMessage(sender: GameEntity, message: Message)
+  public addOfflineMessage(sender: GameEntity | null, message: Message)
   {
     /// TODO
     /// (Přidávání offline zpráv do fronty, výpis offline zpráv

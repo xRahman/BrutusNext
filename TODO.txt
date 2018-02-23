@@ -1,6 +1,16 @@
 TO DO, TO DO, TODO TODO TODO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+TODO: Z WebSocketu byla zrušena property 'upgradeReq'. Místo toho
+se teď předává parametrem při vytoření socketu:
+  Thing.prototype.onWebSocketOpen = function onWebSocketOpen(ws, req)
+  {
+    ws.upgradeReq = req;
+    // ...
+  }
+- remote url naparsovat už při otevírání socketu a zapamatovat si ho v Socket.
+
+
 TODO: Ha, ony už nejspíš jdou deklarovat statický stringový properties:
   class Blah
   {
