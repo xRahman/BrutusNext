@@ -1,6 +1,9 @@
 TO DO, TO DO, TODO TODO TODO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+TODO: Zvážit, jestli Connection a ServerSocket musí být dvě různé classy
+  (možná by dávalo větší smysl, kdyby to byla jedna classa).
+
 TODO: Z WebSocketu byla zrušena property 'upgradeReq'. Místo toho
 se teď předává parametrem při vytoření socketu:
   Thing.prototype.onWebSocketOpen = function onWebSocketOpen(ws, req)

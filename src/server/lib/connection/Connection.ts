@@ -159,7 +159,12 @@ export class Connection implements SharedConnection
 
     let packet = new MudMessage();
 
-    packet.message = message.compose();
+    let composedMessage = message.compose()
+
+    if (composedMessage === null)
+      return;
+
+    packet.message = composedMessage;
 
     this.send(packet);
   }

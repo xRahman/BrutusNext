@@ -164,18 +164,19 @@ export class ServerSocket
       return;
     }
 
-    this.webSocket.on
-    (
-      'message',
-      (data, flags) => { this.onReceivedData(data, flags); }
-    );
-
-    this.webSocket.onopen = (event: Event) => { this.onOpen(); };
-    this.webSocket.onerror = (event: ErrorEvent) => { this.onError(event); };
-    this.webSocket.onclose = (event: CloseEvent) => { this.onClose(event); };
+    this.webSocket.onmessage = (event) => { this.onMessage(event); };
+    this.webSocket.onopen = (event) => { this.onOpen(event); };
+    this.webSocket.onerror = (event) => { this.onError(event); };
+    this.webSocket.onclose = (event) => { this.onClose(event); };
   }
 
-  private reportSocketClosingError(event: CloseEvent)
+  private reportSocketClosingError
+  (
+    event:
+    {
+      wasClean: boolean, code: number, reason: string, target: WebSocket
+    }
+  )
   {
     let message = "Socket " + this.getOrigin() + " closed"
         + " because of error.";
@@ -194,7 +195,13 @@ export class ServerSocket
     );
   }
 
-  private reportSocketClosing(event: CloseEvent)
+  private reportSocketClosing
+  (
+    event:
+    {
+      wasClean: boolean, code: number, reason: string, target: WebSocket
+    }
+  )
   {
     // Error code 1000 means that the connection was closed normally.
     // 'event.reason' is checked because for some reason Chrome sometimes
@@ -218,51 +225,72 @@ export class ServerSocket
 
   // ---------------- Event handlers --------------------
 
-  private async onReceivedData(data: any, flags: { binary: boolean })
+  private async onMessage
+  (
+    event: { data: WebSocket.Data, type: string, target: WebSocket }
+  )
   {
-    if (flags.binary === true)
+    // if (flags.binary === true)
+    // {
+    //   // Data is supposed to be sent in text mode.
+    //   // (This is a client error, we can't really do
+    //   //  anything about it - so we just log it.)
+    //   Syslog.log
+    //   (
+    //     "Client ERROR: Received binary data from connection"
+    //       + " " + this.getOrigin() + ". Data is not processed",
+    //     MessageType.WEBSOCKET_SERVER,
+    //     AdminLevel.IMMORTAL
+    //   );
+    //   return;
+    // }
+
+    if (typeof event.data !== 'string')
     {
-      // Data is supposed to be sent in text mode.
-      // (This is a client error, we can't really do
-      //  anything about it - so we just log it.)
-      Syslog.log
-      (
-        "Client ERROR: Received binary data from connection"
-          + " " + this.getOrigin() + ". Data is not processed",
-        MessageType.WEBSOCKET_SERVER,
-        AdminLevel.IMMORTAL
-      );
+      ERROR("Websocket " + this.getOrigin() + " received"
+        + " a non-string data. Message will not be processed"
+        + " because we can only process string data");
       return;
     }
 
     /// DEBUG:
-    console.log('(ws) received message: ' + data);
+    console.log('(ws) received message: ' + event.data);
 
-    await this.connection.receiveData(data);
+    await this.connection.receiveData(event.data);
   }
 
-  private onOpen()
+  private onOpen(event: { target: WebSocket })
   {
     // No action.
   }
 
-  private onError(event: ErrorEvent)
+  private onError
+  (
+    event: { error: any, message: string, type: string, target: WebSocket }
+  )
   {
     Syslog.log
     (
-      "Websocket ERROR: Error occured on socket " + this.getOrigin(),
+      "Websocket ERROR: Error occured on websocket " + this.getOrigin()
+        + " :" + event.message,
       MessageType.WEBSOCKET_SERVER,
       AdminLevel.IMMORTAL
     );
   }
 
-  private onClose(event: CloseEvent)
+  private onClose
+  (
+    event:
+    {
+      wasClean: boolean, code: number, reason: string, target: WebSocket
+    }
+  )
   {
     this.reportSocketClosing(event);
 
     if (!this.connection)
     {
-      ERROR("Missing connection reference on socket."
+      ERROR("Missing connection reference on websocket."
         + " Account and connection won't be released"
         + " from memory");
       return;

@@ -50,6 +50,12 @@ export module Utils
     return false;
   }
 
+  // -> Returns 'true' if 'variable' is of type string.
+  export function isString(variable: any): boolean
+  {
+    return typeof variable === 'string';
+  }
+
   // -> Returns 'true' if 'variable' is of type 'FastBitSet'.
   export function isBitvector(variable: any)
   {
