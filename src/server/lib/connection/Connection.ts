@@ -22,6 +22,9 @@ import {Connections} from '../../../server/lib/connection/Connections';
 import {Packet} from '../../../shared/lib/protocol/Packet';
 import {MudMessage} from '../../../shared/lib/protocol/MudMessage';
 
+// 3rd party modules.
+import * as WebSocket from 'ws';
+
 // Force module import (so that the module code is assuredly executed
 // instead of typescript just registering a type). This ensures that
 // class constructor is added to Classes so it can be deserialized.

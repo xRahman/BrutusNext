@@ -58,61 +58,63 @@ export class ServerSocket
 
   // ---------------- Public methods --------------------
 
-  public static parseRemoteUrl(webSocket: WebSocket)
-  {
-    if (webSocket === null || webSocket === undefined)
-    {
-      ERROR('Attempt to read ulr from an invalid websocket');
-      return null;
-    }
+  /// To be deleted.
+  // public static parseRemoteUrl(webSocket: WebSocket)
+  // {
+  //   if (webSocket === null || webSocket === undefined)
+  //   {
+  //     ERROR('Attempt to read ulr from an invalid websocket');
+  //     return null;
+  //   }
 
-    if (webSocket.upgradeReq === null || webSocket.upgradeReq === undefined)
-    {
-      ERROR('Failed to read url from websocket');
-      return;
-    }
+  //   if (webSocket.upgradeReq === null || webSocket.upgradeReq === undefined)
+  //   {
+  //     ERROR('Failed to read url from websocket');
+  //     return;
+  //   }
 
-    if (webSocket.upgradeReq.url === undefined)
-    {
-      ERROR("Missing url on websocket");
+  //   if (webSocket.upgradeReq.url === undefined)
+  //   {
+  //     ERROR("Missing url on websocket");
 
-      return null;
-    }
+  //     return null;
+  //   }
 
-    return webSocket.upgradeReq.url;
-  }
+  //   return webSocket.upgradeReq.url;
+  // }
 
-  // -> Returns remote ip adress read from 'socket'
-  //    or 'null' if it doesn't exist on it.
-  public static parseRemoteAddress(webSocket: WebSocket)
-  {
-    if (webSocket === null || webSocket === undefined)
-    {
-      ERROR('Attempt to read address from an invalid websocket');
-      return null;
-    }
+  /// To be deleted.
+  // // -> Returns remote ip adress read from 'socket'
+  // //    or 'null' if it doesn't exist on it.
+  // public static parseRemoteAddress(webSocket: WebSocket)
+  // {
+  //   if (webSocket === null || webSocket === undefined)
+  //   {
+  //     ERROR('Attempt to read address from an invalid websocket');
+  //     return null;
+  //   }
 
-    if
-    (
-      webSocket.upgradeReq === null
-      || webSocket.upgradeReq === undefined
-      || webSocket.upgradeReq.connection === null
-      || webSocket.upgradeReq.connection === undefined
-    )
-    {
-      ERROR('Failed to read address from websocket');
-      return;
-    }
+  //   if
+  //   (
+  //     webSocket.upgradeReq === null
+  //     || webSocket.upgradeReq === undefined
+  //     || webSocket.upgradeReq.connection === null
+  //     || webSocket.upgradeReq.connection === undefined
+  //   )
+  //   {
+  //     ERROR('Failed to read address from websocket');
+  //     return;
+  //   }
 
-    if (webSocket.upgradeReq.connection.remoteAddress === undefined)
-    {
-      ERROR("Missing address on websocket");
+  //   if (webSocket.upgradeReq.connection.remoteAddress === undefined)
+  //   {
+  //     ERROR("Missing address on websocket");
 
-      return null;
-    }
+  //     return null;
+  //   }
 
-    return webSocket.upgradeReq.connection.remoteAddress;
-  }
+  //   return webSocket.upgradeReq.connection.remoteAddress;
+  // }
 
   // Sends packet to the client.
   public send(data: string)
@@ -199,7 +201,7 @@ export class ServerSocket
     // closes webSocket with code 1006 when the tab is closed even though
     // we close() the socket manually in onBeforeUnload() handler (see
     // ClientApp.onBeforeUnload() for more details).
-    if (event.code === 1000 || event.reason === WebSocketEvent.REASON_CLOSE)
+    if (event.code === 1000 || event.reason === WebSocketEvent.TAB_CLOSED)
     {
       Syslog.log
       (

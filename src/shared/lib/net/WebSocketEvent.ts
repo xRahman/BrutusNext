@@ -6,7 +6,7 @@
 
 export module WebSocketEvent
 {
-  export const REASON_CLOSE = "Browser tab has been closed.";
+  export const TAB_CLOSED = "Browser tab has been closed.";
 
   export function description(code: number)
   {

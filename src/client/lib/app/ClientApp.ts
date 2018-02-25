@@ -282,7 +282,7 @@ export class ClientApp extends App
     // but sometimes code will be 1006 instead of 1000. To circumvent
     // this, we send WebSocketEvent.REASON_CLOSE when socket is closed
     // from onBeforeUnload() and we check for it in ServerSocket.onClose().
-    this.connection.close(WebSocketEvent.REASON_CLOSE);
+    this.connection.close(WebSocketEvent.TAB_CLOSED);
   }
 }
 
