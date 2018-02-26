@@ -10,6 +10,11 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 
+// Types used for constructs like 'new Promise((resolve, reject) => { ... })'.
+export type ResolveFunction<T> = (value?: T | PromiseLike<T>) => void;
+export type RejectFunction = (reason?: any) => void;
+
+
 export module Utils
 {
   // Most Unix filesystems have this limit on file name length.

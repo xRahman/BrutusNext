@@ -8,7 +8,7 @@
 
 import {ERROR} from '../../shared/lib/error/ERROR';
 import {Attributes} from '../../shared/lib/class/Attributes';
-import {Script} from '../../server/lib/prototype/Script';
+///import {Script} from '../../server/lib/prototype/Script';
 import {ServerApp} from '../../server/lib/app/ServerApp';
 import {Entities} from '../../shared/lib/entity/Entities';
 import {Message} from '../../server/lib/message/Message';
