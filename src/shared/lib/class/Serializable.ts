@@ -158,7 +158,7 @@ export class Serializable extends Attributable
   // Extracts data from plain javascript Object to this instance.
   // -> Returns 'null' on failure.
   public deserialize(jsonObject: Object, path: (string | null) = null)
-  : Serializable
+  : Serializable | null
   {
     // Check version and input data validity.
     if (!this.deserializeCheck(jsonObject, path))
@@ -194,28 +194,28 @@ export class Serializable extends Attributable
       let customValue = this.customDeserializeProperty
       (
         propertyName,
-        jsonObject[propertyName]
+        (jsonObject as any)[propertyName]
       );
       if (customValue !== undefined)
       {
-        this[propertyName] = customValue;
+        (this as any)[propertyName] = customValue;
         continue;
       }
 
       let param: DeserializeParam =
       {
         propertyName: propertyName,
-        targetProperty: this[propertyName],
-        sourceProperty: jsonObject[propertyName],
+        targetProperty: (this as any)[propertyName],
+        sourceProperty: (jsonObject as any)[propertyName],
         path: path
-      }
+      };
 
       // We are cycling over properties in JSON object, not in Serializable
       // that is being loaded. It means that properties that are not present
       // in the save will not get overwritten with 'undefined'. This allows
       // adding new properties to existing classes without the need to
       // convert all save files.
-      this[propertyName] = this.deserializeProperty(param);
+      (this as any)[propertyName] = this.deserializeProperty(param);
     }
 
     return this;
@@ -243,7 +243,7 @@ export class Serializable extends Attributable
   protected checkVersion(jsonObject: Object, path: (string | null) = null)
   : boolean
   {
-    let version = jsonObject[Serializable.VERSION_PROPERTY];
+    let version = (jsonObject as any)[Serializable.VERSION_PROPERTY];
 
     // Note: '0' is a valid 'version'.
     if (version === undefined)
@@ -260,7 +260,7 @@ export class Serializable extends Attributable
       let pathString = this.composePathString(path);
 
       ERROR("Version of JSON data"
-        + " (" + jsonObject[Serializable.VERSION_PROPERTY] + ")"
+        + " (" + (jsonObject as any)[Serializable.VERSION_PROPERTY] + ")"
         + pathString + " doesn't match required version"
         + " (" + this.version + ")");
       return false;
@@ -277,7 +277,7 @@ export class Serializable extends Attributable
 
   private writeVersion(jsonObject: Object)
   {
-    let version = this[Serializable.VERSION_PROPERTY];
+    let version = (this as any)[Serializable.VERSION_PROPERTY];
 
     // Note: '0' is a valid 'version'.
     if (version === undefined)
@@ -285,7 +285,7 @@ export class Serializable extends Attributable
       ERROR("Missing '" + Serializable.VERSION_PROPERTY + "' property"
         + " in " + this.getErrorIdString());
 
-      jsonObject[Serializable.VERSION_PROPERTY] = '<missing version>';
+      (jsonObject as any)[Serializable.VERSION_PROPERTY] = '<missing version>';
       return;
     }
 
@@ -294,7 +294,7 @@ export class Serializable extends Attributable
     //  to enable custom loading code when data structure
     //  chances. It is not loaded, only checked against
     // current version.)
-    jsonObject[Serializable.VERSION_PROPERTY] = version;
+    (jsonObject as any)[Serializable.VERSION_PROPERTY] = version;
   }
 
 //+
@@ -314,13 +314,13 @@ export class Serializable extends Attributable
     // (Only if it's own property though - if we are inheriting it,
     //  we can't save it.)
     if (this.hasOwnProperty('name'))
-      jsonObject['name'] = this['name'];
+      (jsonObject as any)['name'] = (this as any)['name'];
 
     // Another hack for 'version' property.
     this.writeVersion(jsonObject);
 
     // Anoter readability hack - serialize 'className'.
-    jsonObject[Serializable.CLASS_NAME_PROPERTY] = this.getClassName();
+    (jsonObject as any)[Serializable.CLASS_NAME_PROPERTY] = this.getClassName();
 
     // Cycle through all properties in source object.
     for (let propertyName in this)
@@ -352,7 +352,7 @@ export class Serializable extends Attributable
       let customValue = this.customSerializeProperty(propertyName);
       if (customValue !== undefined)
       {
-        jsonObject[<string>propertyName] = customValue;
+        (jsonObject as any)[<string>propertyName] = customValue;
         continue;
       }
 
@@ -362,9 +362,9 @@ export class Serializable extends Attributable
         description: propertyName,
         className: this.getClassName(),
         mode: mode
-      }
+      };
       
-      jsonObject[<string>propertyName] =
+      (jsonObject as any)[<string>propertyName] =
         this.serializeProperty(serializeParam);
     }
 
@@ -1577,7 +1577,7 @@ export class Serializable extends Attributable
 //+
   // -> Returns string informing about file location or empty string
   //    if 'path' is not available.
-  private composePathString(path: string)
+  private composePathString(path: string | null)
   {
     if (path === null)
       return "";
@@ -1602,7 +1602,7 @@ interface DeserializeParam
   propertyName: string,
   targetProperty: any,
   sourceProperty: any,
-  path: string
+  path: string | null
 }
 
 // Used as parameter of serialization methodse.

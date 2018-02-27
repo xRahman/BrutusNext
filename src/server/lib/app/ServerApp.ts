@@ -118,7 +118,7 @@ export class ServerApp extends App
   // if there is no ./data directory).
   public static async run(/*telnetPort: number*/)
   {
-    if (!this.instanceExists())
+    if (!this.instance)
     {
       ERROR("Instance of ServerApp doesn't exist yet."
         + " Use ServerApp.createInstance() before you"
@@ -195,7 +195,7 @@ export class ServerApp extends App
   // Reports error message and stack trace.
   // (Don't call this method directly, use ERROR()
   //  from /shared/lib/error/ERROR).
-  protected reportError(message: string)
+  protected reportError(message: string): void
   {
     let stackTrace = Syslog.getTrimmedStackTrace(Syslog.TrimType.ERROR);
 
@@ -211,7 +211,7 @@ export class ServerApp extends App
   // Reports error message and stack trace and terminates the program.
   // (Don't call this method directly, use FATAL_ERROR()
   //  from /shared/lib/error/ERROR).
-  protected reportFatalError(message: string)
+  protected reportFatalError(message: string): void
   {
     let errorMsg = message + "\n"
       + Syslog.getTrimmedStackTrace(Syslog.TrimType.ERROR);
@@ -239,8 +239,9 @@ export class ServerApp extends App
     msgType: MessageType,
     adminLevel: AdminLevel
   )
+  : void
   {
-    return ServerSyslog.log(message, msgType, adminLevel);
+    ServerSyslog.log(message, msgType, adminLevel);
   }
 
   // --------------- Private methods --------------------

@@ -49,7 +49,15 @@ export class AccountData extends Serializable
       return;
     }
 
-    if (!this.characters.has(character.getId()))
+    let characterId = character.getId();
+
+    if (characterId === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return null;
+    }
+
+    if (!this.characters.has(characterId))
     {
       ERROR("Failed to update reference to character"
         + " " + character.getErrorIdString() + " on"
@@ -59,7 +67,7 @@ export class AccountData extends Serializable
       return;
     }
 
-    this.characters.set(character.getId(), character);
+    this.characters.set(characterId, character);
   }
 }
 

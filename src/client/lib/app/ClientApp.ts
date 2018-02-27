@@ -167,7 +167,7 @@ export class ClientApp extends App
   // Reports error message and stack trace.
   // (Don't call this method directly, use ERROR()
   //  from /shared/lib/error/ERROR).
-  protected reportError(message: string)
+  protected reportError(message: string): void
   {
     // We throw an error instead of reporting to the console
     // because this way Chrome prints out stack trace using
@@ -192,7 +192,7 @@ export class ClientApp extends App
   // Reports error message and stack trace and terminates the program.
   // (Don't call this method directly, use FATAL_ERROR()
   //  from /shared/lib/error/ERROR).
-  protected reportFatalError(message: string)
+  protected reportFatalError(message: string): void
   {
     // We throw an error instead of reporting to the console
     // because this way Chrome prints out stack trace using
@@ -209,14 +209,14 @@ export class ClientApp extends App
   }
 
   // ~ Overrides App.syslog().
-  protected syslog
+  protected syslog: void
   (
     message: string,
     msgType: MessageType,
     adminLevel: AdminLevel
   )
   {
-    return ClientSyslog.log(message, msgType, adminLevel);
+    ClientSyslog.log(message, msgType, adminLevel);
   }
 
   // ---------------- Private methods -------------------

@@ -8,7 +8,7 @@
 'use strict';
 
 /// Color test: &kA&KB&rC&RD&gE&GF&yG&YH&bI&BJ&mK&ML&cM&CN&wO&WP
-const Colors: { [key: string]: string} =
+const Colors: { [key: string]: string } =
 {
   '&k': 'rgb(48,48,48)',	  // black
   '&K':	'rgb(102,102,102)', // bright black

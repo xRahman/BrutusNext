@@ -36,19 +36,14 @@ export abstract class App
 
   // ------------- Public static methods ---------------- 
 
-  public static instanceExists()
-  {
-    return App.instance !== null && App.instance !== undefined;
-  }
-
   // Reports runtime error.
   // (Don't call this directly, use ERROR() instead.)
-  public static reportError(message: string)
+  public static reportError(message: string): void
   {
     // If ERROR() is called from within an initialization
     // of App instance, the instance of App doesn't exist
     // yet so we can only report it directly.
-    if (!App.instanceExists())
+    if (!this.instance)
     {
       throw new Error
       (
@@ -63,12 +58,12 @@ export abstract class App
 
   // Reports fatal runtime error.
   // (Don't call this directly, use FATAL_ERROR() instead.)
-  public static reportFatalError(message: string)
+  public static reportFatalError(message: string): void
   {
     // If FATAL_ERROR() is called from within an initialization
     // of App instance, the instance of App doesn't exist yet so
     // we can only report it directly.  
-    if (!App.instanceExists())
+    if (!this.instance)
     {
       throw new Error
       (
@@ -89,8 +84,9 @@ export abstract class App
     msgType: MessageType,
     adminLevel: AdminLevel
   )
+  : void
   {
-    return App.getInstance().syslog(text, msgType, adminLevel);
+    App.getInstance().syslog(text, msgType, adminLevel);
   }
 
   // ------------ Protected static methods --------------
@@ -100,7 +96,7 @@ export abstract class App
   //    and in client code, it's an instance of ClientApp.
   protected static getInstance(): App
   {
-    if (!App.instanceExists())
+    if (!this.instance)
     {
       // We can't use ERROR() here because ERROR() is handled by App
       // which doesn't exist here.
@@ -113,14 +109,15 @@ export abstract class App
   // --------------- Protected methods ------------------
 
   // Reports runtime error.
-  protected abstract reportError(message: string);
+  protected abstract reportError(message: string): void;
   // Reports fatal runtime error.
-  protected abstract reportFatalError(message: string);
+  protected abstract reportFatalError(message: string): void;
 
   protected abstract syslog
   (
     message: string,
     msgType: MessageType,
     adminLevel: AdminLevel
-  );
+  )
+  : void;
 }
