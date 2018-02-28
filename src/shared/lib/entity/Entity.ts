@@ -260,6 +260,14 @@ export class Entity extends Serializable
       return;
     }
 
+    let id = this.getId();
+
+    if (id === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     // When a new entity is created, it doesn't have
     // own 'prototypeEntity' property so there is no
     // need to update it.
@@ -270,13 +278,13 @@ export class Entity extends Serializable
       // Remove 'this.id' from the old prototype's
       // 'instanceIds' or 'descendantIds' depending
       // on where it is present.
-      this.prototypeEntity.removeChildId(this.getId());
+      this.prototypeEntity.removeChildId(id);
     }
 
     if (isPrototype)
-      prototypeEntity.addDescendantId(this.getId());
+      prototypeEntity.addDescendantId(id);
     else
-      prototypeEntity.addInstanceId(this.getId());
+      prototypeEntity.addInstanceId(id);
 
     this.prototypeEntity = prototypeEntity;
 
@@ -333,7 +341,7 @@ export class Entity extends Serializable
     // Also trigger event on instance.data.
     if (instance === this)
     {
-      let data = instance[Entity.DATA_PROPERTY];
+      let data = (instance as any)[Entity.DATA_PROPERTY];
 
       if (data && data['triggerEvent'])
         data.triggerEvent(eventHandler);
@@ -410,9 +418,9 @@ export class Entity extends Serializable
     {
       // Only invalidate own properties.
       if (object.hasOwnProperty(propertyName))
-        this.invalidateProperty(object[propertyName]);
+        this.invalidateProperty((object as any)[propertyName]);
 
-      delete object[propertyName];
+      delete (object as any)[propertyName];
     }
 
     // Set 'null' to the prototype of 'object'.
@@ -498,7 +506,15 @@ export class Entity extends Serializable
 
   public hasDescendant(entity: Entity)
   {
-    return this.descendantIds.has(entity.getId());
+    let id = entity.getId();
+
+    if (!id)
+    {
+      ERROR("Unexpected 'null' value");
+      return false;
+    }
+
+    return this.descendantIds.has(id);
   }
 
   /// Nevím, jestli to bude k něčemu potřeba, ale když už to tu mám...

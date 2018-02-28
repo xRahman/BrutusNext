@@ -411,7 +411,7 @@ export class Serializable extends Attributable
 
   // Writes a single property to a corresponding JSON object.
   // -> Returns JSON Object representing 'param.sourceProperty'. 
-  private serializeProperty(param: SerializeParam)
+  private serializeProperty(param: SerializeParam): any
   {
     let property = param.sourceProperty;
     let mode = param.mode;
@@ -554,7 +554,7 @@ export class Serializable extends Attributable
   // is to determine if some of them are SaveableObjects so they need
   // to be saved using their saveToJsonObject() method.
   // (this check is done within this.saveVariable() call)
-  private serializePlainObject(param: SerializeParam): Object
+  private serializePlainObject(param: SerializeParam): Object | null
   {
     let sourceObject = param.sourceProperty;
 
@@ -580,9 +580,9 @@ export class Serializable extends Attributable
         description: propertyName,
         className: 'Object',
         mode: param.mode
-      }
+      };
       
-      jsonObject[propertyName] = this.serializeProperty(serializeParam);
+      (jsonObject as any)[propertyName] = this.serializeProperty(serializeParam);
     }
 
     return jsonObject;
@@ -695,7 +695,7 @@ export class Serializable extends Attributable
   private checkClassName(jsonObject: Object, path: (string | null) = null)
   : boolean
   {
-    let jsonClassName = jsonObject[Serializable.CLASS_NAME_PROPERTY];
+    let jsonClassName = (jsonObject as any)[Serializable.CLASS_NAME_PROPERTY];
 
     if (jsonClassName === undefined)
     {
@@ -711,7 +711,7 @@ export class Serializable extends Attributable
       let pathString = this.composePathString(path);
 
       ERROR("Attempt to load JSON data of class"
-        + " (" + jsonObject[Serializable.CLASS_NAME_PROPERTY] + ")"
+        + " (" + (jsonObject as any)[Serializable.CLASS_NAME_PROPERTY] + ")"
         + pathString + " into instance of different"
         + " class (" + this.getClassName() + ")");
       return false;
@@ -1074,7 +1074,7 @@ export class Serializable extends Attributable
 
     // Is there a 'className' property in JSON object
     // with value 'Bitvector'?
-    if (jsonObject[Serializable.CLASS_NAME_PROPERTY]
+    if ((jsonObject as any)[Serializable.CLASS_NAME_PROPERTY]
         === Serializable.BITVECTOR_CLASS_NAME)
       return true;
 
@@ -1107,7 +1107,7 @@ export class Serializable extends Attributable
 
     // Is there a 'className' property in JSON object
     // with value 'Set'?
-    if (jsonObject[Serializable.CLASS_NAME_PROPERTY]
+    if ((jsonObject as any)[Serializable.CLASS_NAME_PROPERTY]
         === Serializable.SET_CLASS_NAME)
       return true;
 
@@ -1123,7 +1123,7 @@ export class Serializable extends Attributable
 
     // Is there a 'className' property in JSON object
     // with value 'Map'?
-    if (jsonObject[Serializable.CLASS_NAME_PROPERTY]
+    if ((jsonObject as any)[Serializable.CLASS_NAME_PROPERTY]
         === Serializable.MAP_CLASS_NAME)
       return true;
 
@@ -1140,7 +1140,7 @@ export class Serializable extends Attributable
 
     // Is there a 'className' property in JSON object with value
     // 'Reference'?
-    if (jsonObject[Serializable.CLASS_NAME_PROPERTY]
+    if ((jsonObject as any)[Serializable.CLASS_NAME_PROPERTY]
         === Serializable.REFERENCE_CLASS_NAME)
       return true;
 
@@ -1180,7 +1180,7 @@ export class Serializable extends Attributable
   // }
 
   // Converts 'param.sourceProperty' to a Set object.
-  private readSet(param: DeserializeParam): Set<any>
+  private readSet(param: DeserializeParam): Set<any> | null
   {
     let sourceRecord = this.readSourceRecord(param, Serializable.SET_PROPERTY);
 
@@ -1205,13 +1205,16 @@ export class Serializable extends Attributable
     // (readArray() will handle correct loading for us).
     let loadedArray = this.readArray(deserializeParam);
 
+    if (loadedArray === null)
+      return null;
+
     // And let the constructor of class Set to convert it to Set object.
     return new Set(loadedArray);
   }
 
 //+
   // Converts 'param.sourceProperty' to a Map object.
-  private readMap(param: DeserializeParam): Map<any, any>
+  private readMap(param: DeserializeParam): Map<any, any> | null
   {
     let sourceRecord = this.readSourceRecord(param, Serializable.MAP_PROPERTY);
 
@@ -1236,6 +1239,9 @@ export class Serializable extends Attributable
     // (readArray() will handle correct loading for us).
     let loadedArray = this.readArray(deserializeParam);
 
+    if (loadedArray === null)
+      return null;
+
     // And let the constructor of class Map to convert it to Map object.
     return new Map(loadedArray);
   }
@@ -1256,13 +1262,19 @@ export class Serializable extends Attributable
     if (!sourceProperty)
       return null;
     
-    let id = sourceProperty[Serializable.ID_PROPERTY];
+    let id = (sourceProperty as any)[Serializable.ID_PROPERTY];
 
     if (id === undefined || id === null)
     {
       ERROR("Missing or invalid '" + Serializable.ID_PROPERTY + "'"
         + " property when loading entity reference '" + propertyName + "'"
         + pathString);
+    }
+
+    if (!App.entities)
+    {
+      ERROR("Unexpected 'null' value");
+      return null;
     }
 
     // Note: We have to access entities using App.entities rather than
@@ -1273,7 +1285,7 @@ export class Serializable extends Attributable
 
 //+
   // Converts 'param.sourceProperty' to Array.
-  private readArray(param: DeserializeParam): Array<any>
+  private readArray(param: DeserializeParam): Array<any> | null
   {
     // Note:
     //   Array doesn't have a serialized record, because it's
@@ -1307,7 +1319,7 @@ export class Serializable extends Attributable
 
 //+
   // Deserializes contents of an Array property.
-  private readArrayContents(sourceArray: Array<any>, path: string)
+  private readArrayContents(sourceArray: Array<any>, path: string | null)
   {
     let newArray = [];
 
@@ -1324,7 +1336,7 @@ export class Serializable extends Attributable
 //+
   // Deserializes contents of a single Array item
   // ('index' and 'path' are used only for error messages).
-  private readArrayItem(item: any, index: number, path: string)
+  private readArrayItem(item: any, index: number, path: string | null)
   {
     // Setup a new deserialize param.
     let deserializeParam: DeserializeParam =
@@ -1418,13 +1430,13 @@ export class Serializable extends Attributable
     if (set === null)
     {
       FATAL_ERROR("Null set");
-      return;
+      return new Serializable();  // Never happens, FATAL_ERROR stops the app.
     }
 
     let saver = Serializable.createSaver(Serializable.SET_CLASS_NAME);
 
     // Set is saved as it's Array representation to property 'set'.
-    saver[Serializable.SET_PROPERTY] = this.saveSetToArray(set);
+    (saver as any)[Serializable.SET_PROPERTY] = this.saveSetToArray(set);
 
     return saver;
   }
@@ -1438,13 +1450,13 @@ export class Serializable extends Attributable
     if (map === null)
     {
       FATAL_ERROR("Null map");
-      return;
+      return new Serializable();  // Never happens, FATAL_ERROR stops the app.
     }
 
     let saver = Serializable.createSaver(Serializable.MAP_CLASS_NAME);
 
     // Map is saved as it's Array representation to property 'map'.
-    saver[Serializable.MAP_PROPERTY] = this.saveMapToArray(map);
+    (saver as any)[Serializable.MAP_PROPERTY] = this.saveMapToArray(map);
 
     return saver;
   }
@@ -1458,14 +1470,14 @@ export class Serializable extends Attributable
     if (bitvector === null)
     {
       FATAL_ERROR("Null bitvector");
-      return;
+      return new Serializable();  // Never happens, FATAL_ERROR stops the app.
     }
 
     let saver = Serializable.createSaver(Serializable.BITVECTOR_CLASS_NAME);
 
     // Bitvector is saved as it's JSON string representation to
     // property 'bitvector'.
-    saver[Serializable.BITVECTOR_PROPERTY] = bitvector.toJSON();
+    (saver as any)[Serializable.BITVECTOR_PROPERTY] = bitvector.toJSON();
 
     return saver;
   }
@@ -1500,21 +1512,21 @@ export class Serializable extends Attributable
     if (entity === null)
     {
       FATAL_ERROR("Null entity");
-      return;
+      return new Serializable();  // Never happens, FATAL_ERROR stops the app.
     }
 
-    let id = entity[Serializable.ID_PROPERTY];
+    let id = (entity as any)[Serializable.ID_PROPERTY];
 
     if (!id)
     {
       FATAL_ERROR("Attempt to serialize an entity with an invalid id");
-      return;
+      return new Serializable();  // Never happens, FATAL_ERROR stops the app.
     }
 
     let saver = Serializable.createSaver(Serializable.REFERENCE_CLASS_NAME);
 
     // Entity is saved as it's string id to property 'id'.
-    saver[Serializable.ID_PROPERTY] = id;
+    (saver as any)[Serializable.ID_PROPERTY] = id;
 
     return saver;
   }

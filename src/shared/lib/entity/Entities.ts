@@ -49,6 +49,12 @@ export abstract class Entities
   // -> Returns 'undefined' if entity isn't found.
   public static get(id: string)
   {
+    if (App.entities === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return false;
+    }
+    
     return App.entities.entityList.get(id);
   }
 
