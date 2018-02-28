@@ -180,11 +180,14 @@ export module Utils
 
   // Converts string to integer number.
   // -> Returns null if string is not an integer number.
-  export function atoi(input: string): number
+  export function atoi(input: string): number | null
   {
     // First convert input to float
     // (meaning that result can contain decimals).
     let result = Utils.atof(input);
+
+    if (result === null)
+      return null;
 
     // Check that result doesn't have any decimal part. 
     if (result % 1 !== 0)
@@ -195,7 +198,7 @@ export module Utils
 
   // Converts string to float (number that can contain decimal point).
   // -> Returns null if 'input' is not a number.
-  export function atof(input: string): number
+  export function atof(input: string): number | null
   {
     // 'trim()' cuts off leating and trailing white spaces and newlines.
     // Typecast to 'any' is necessary to appease typescript.
@@ -319,6 +322,8 @@ function getByteLength(str: string)
 
   FATAL_ERROR("Unable to compute byte length of a string because"
     + " neither 'Blob' object nor 'Buffer' object is supported.");
+
+  return 0; // Never happens, FATAL_ERROR exits the app.
 }
 
 function reportTruncation

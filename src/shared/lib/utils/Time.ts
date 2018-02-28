@@ -65,7 +65,7 @@ export class Time extends Serializable
 
   // ~ Overrides Serializable.customSerializeProperty().
   // -> Returns 'undefined' if property is not customly serialized.
-  protected customSerializeProperty(propertyName: string)
+  protected customSerializeProperty(propertyName: string): any
   {
     if (propertyName === Time.TIME_PROPERTY)
     {

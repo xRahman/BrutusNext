@@ -9,7 +9,7 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 
 // Maps exit names to opposite directions.
-const REVERSE_DIRS =
+const REVERSE_DIRS: { [key: string]: string} =
 {
   'n':   's',
   'nw':  'se',

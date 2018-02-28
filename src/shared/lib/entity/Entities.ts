@@ -7,6 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {JsonObject} from '../../../shared/lib/json/JsonObject';
 import {App} from '../../../shared/lib/app/App';
@@ -74,9 +75,28 @@ export abstract class Entities
     // Remove entity from entity lists so it can no longer be searched for.
     entity.removeFromLists();
 
-    // Remove the record from hashmap.
-    if (!App.entities.entityList.delete(entity.getId()))
+    if (!App.entities)
     {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
+    let id = entity.getId();
+
+    if (!id)
+    {
+      ERROR("Invalid entity id");
+      return;
+    }
+
+
+    // Remove the record from hashmap.
+    if (!App.entities.entityList.delete(id))
+    {
+      /// TODO: Tahle hláška je nejspíš blbost. Entitu by měly
+      /// vyrábět pouze Entities a rovnou si ji přidat do seznamu.
+      /// (I tak je na místě ošetřit tenhle případ, jen ta error
+      ///  hláška by měla bejt jinak)
       ERROR("Attempt to remove entity " + entity.getErrorIdString()
         + " from Entities which is not there. Maybe you forgot to"
         + " call addToLists() wen you created it?");
@@ -91,6 +111,12 @@ export abstract class Entities
 
   public static async save(entity: Entity)
   {
+    if (!App.entities)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     return await App.entities.saveEntity(entity);
   }
 
@@ -128,8 +154,14 @@ export abstract class Entities
     cathegory: Entity.NameCathegory,
     reportNotFoundError: boolean = true
   )
-  : Promise<T>
+  : Promise<T | null | undefined>
   {
+    if (!App.entities)
+    {
+      ERROR("Unexpected 'null' value");
+      return null;
+    }
+
     let entity = await App.entities.loadEntityByName
     (
       name,
@@ -165,8 +197,14 @@ export abstract class Entities
     typeCast: { new (...args: any[]): T },
     overwrite = false
   )
-  : T
+  : T | null
   {
+    if (!App.entities)
+    {
+      ERROR("Unexpected 'null' value");
+      return null;
+    }
+
     let entity = App.entities.loadEntityFromJsonString
     (
       {
@@ -192,6 +230,12 @@ export abstract class Entities
   //    Returns invalid reference if entity with such 'id' isn't there.
   public getReference(id: string): Entity
   {
+    if (!App.entities)
+    {
+      FATAL_ERROR("Unexpected 'null' value");
+      return this.createInvalidReference(id); // This is never called.
+    }
+
     let entity = App.entities.entityList.get(id);
     
     if (entity)
@@ -620,11 +664,17 @@ export abstract class Entities
     return id;
   }
 
-  private reportMisssingPrototypeEntityProperty(id: string, path: string)
+  private reportMisssingPrototypeEntityProperty
+  (
+    id: string,
+    path: string | null
+  )
   {
+    let pathstring = (path !== null) ? (" from file " + path) : ("");
+
     ERROR("Missing or invalid '" + Entity.PROTOTYPE_ENTITY_PROPERTY + "'"
       + " property in JSON when deserializing an entity (id '" + id + "')"
-      + " from file " + path + ". Entity is not created");
+      + pathstring + ". Entity is not created");
   }
 
   private reportMissingPrototypeIdProperty(id: string)
@@ -668,11 +718,11 @@ export abstract class Entities
   (
     jsonObject: Object,
     id: string,
-    path: string
+    path: string | null
   )
   {
     // Check if there is a 'prototypeEntity' property in json Object.
-    let prototypeEntity = jsonObject[Entity.PROTOTYPE_ENTITY_PROPERTY];
+    let prototypeEntity = (jsonObject as any)[Entity.PROTOTYPE_ENTITY_PROPERTY];
 
     // Note: 'null' is a valid value of 'prototypeEntity'
     //   for root prototype entities.
@@ -752,8 +802,8 @@ export abstract class Entities
   private createEntityFromJsonObject
   (
     jsonObject: Object,
-    id: string,
-    path: string,
+    id: string | null,
+    path: string | null,
     overwrite: boolean
   )
   {

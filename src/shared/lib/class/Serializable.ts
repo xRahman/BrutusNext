@@ -224,7 +224,7 @@ export class Serializable extends Attributable
   // -------------- Protected methods -------------------
 
   // -> Returns 'undefined' if property is not customly serialized.
-  protected customSerializeProperty(propertyName: string)
+  protected customSerializeProperty(propertyName: string): any
   {
     return undefined;
   }
