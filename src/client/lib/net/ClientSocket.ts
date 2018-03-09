@@ -14,7 +14,10 @@ import {Connection} from '../../../client/lib/connection/Connection';
 
 export class ClientSocket
 {
-  constructor(connection: Connection)
+  constructor
+  (
+    public connection: Connection
+  )
   {
     this.connection = connection;
   }
@@ -73,7 +76,7 @@ export class ClientSocket
 
   // ----------------- Public data ----------------------
 
-  public connection: (Connection | null) = null;
+  //public connection: (Connection | null) = null;
 
   // ---------------- Public methods --------------------
 
@@ -173,11 +176,12 @@ export class ClientSocket
       /// pustit auto-reconnect, pokud ještě neběží.
       return;
 
-    if (this.connection === null)
-    {
-      ERROR("Unexpected 'null' value");
-      return;
-    }
+    /// To be deleted.
+    // if (this.connection === null)
+    // {
+    //   ERROR("Unexpected 'null' value");
+    //   return;
+    // }
     
     this.connection.clientMessage
     (
@@ -207,11 +211,12 @@ export class ClientSocket
 
   private reportConnectionFailure()
   {
-    if (this.connection === null)
-    {
-      ERROR("Unexpected 'null' value");
-      return;
-    }
+    /// To be deleted.
+    // if (this.connection === null)
+    // {
+    //   ERROR("Unexpected 'null' value");
+    //   return;
+    // }
 
     // Test is user device is online.
     if (navigator.onLine)
@@ -251,11 +256,12 @@ export class ClientSocket
 
   private reportNormalDisconnect()
   {
-    if (this.connection === null)
-    {
-      ERROR("Unexpected 'null' value");
-      return;
-    }
+    /// To be deleted.
+    // if (this.connection === null)
+    // {
+    //   ERROR("Unexpected 'null' value");
+    //   return;
+    // }
 
     this.connection.clientMessage
     (
@@ -265,11 +271,12 @@ export class ClientSocket
 
   private reportAbnormalDisconnect()
   {
-    if (this.connection === null)
-    {
-      ERROR("Unexpected 'null' value");
-      return;
-    }
+    /// To be deleted.
+    // if (this.connection === null)
+    // {
+    //   ERROR("Unexpected 'null' value");
+    //   return;
+    // }
 
     // Test if user is online.
     if (navigator.onLine)
@@ -352,7 +359,7 @@ export class ClientSocket
   {
     console.log('Received message: ' + event.data);
 
-    await Connection.receiveData(event.data);
+    await this.connection.receiveData(event.data);
   }
 
   private onError(event: ErrorEvent)

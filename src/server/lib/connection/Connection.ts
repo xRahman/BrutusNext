@@ -188,7 +188,7 @@ export class Connection implements SharedConnection
     let packet = deserializedPacket.dynamicCast(Packet);
 
     if (packet !== null)
-      await packet.process(connection);
+      await packet.process(this);
   }
 
   // Sends 'packet' to web socket.

@@ -79,32 +79,6 @@ export class Connection implements SharedConnection
     connection.send(packet);
   }
 
-  /// TODO: Na serveru je prakticky stejná fce, asi by to chtělo sloučit
-  /// do společného předka v /shared
-  public static async receiveData(data: string)
-  {
-    let connection = ClientApp.connection;
-
-    if (!connection)
-    {
-      ERROR("Missing or invalid connection. Packet is not processed");
-      return;
-    }
-
-    /// TODO: deserialize() by mělo házet exception místo return null,
-    /// takže pak půjde zavolat:
-    ///   let packet = Serializable.deserialize(data).dynamicCast(Packet);
-    let deserializedPacket = Serializable.deserialize(data);
-    
-    if (!deserializedPacket)
-      return;
-    
-    let packet = deserializedPacket.dynamicCast(Packet);
-
-    if (packet !== null)
-      await packet.process(connection);
-  }
-
   public setAccount(account: Account)
   {
     if (!account || !account.isValid())
@@ -127,6 +101,33 @@ export class Connection implements SharedConnection
   public getAccount() {  return this.account; }
 
   // ---------------- Public methods --------------------
+
+    /// TODO: Na serveru je prakticky stejná fce, asi by to chtělo sloučit
+  /// do společného předka v /shared
+  public async receiveData(data: string)
+  {
+    /// To be deleted.
+    // let connection = ClientApp.connection;
+
+    // if (!connection)
+    // {
+    //   ERROR("Missing or invalid connection. Packet is not processed");
+    //   return;
+    // }
+
+    /// TODO: deserialize() by mělo házet exception místo return null,
+    /// takže pak půjde zavolat:
+    ///   let packet = Serializable.deserialize(data).dynamicCast(Packet);
+    let deserializedPacket = Serializable.deserialize(data);
+    
+    if (!deserializedPacket)
+      return;
+    
+    let packet = deserializedPacket.dynamicCast(Packet);
+
+    if (packet !== null)
+      await packet.process(this);
+  }
 
   public createAvatar(character: Character)
   {

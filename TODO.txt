@@ -1,6 +1,32 @@
 TO DO, TO DO, TODO TODO TODO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+TODO: Zvážit, jestli by se nehodilo, aby se server-side a client-side
+  classy mohly jmenovat jinak (tzn. musel bych v nich mít nějakou statickou
+  proměnnou, kam by se psalo, na co se to má deserializovat na druhé straně).
+Teď mám např. App, ClientApp a ServerApp - což dává smysl.
+  Nemůžu to ale takhle udělat třeba s LoginResponse, protože ta se na klientu
+  a serveru musí jmenovat stejně. Tzn. musím mít předka SharedLoginResponse.
+  (navíc by to bylo matoucí, ClientLoginResponse by znělo, jako že to posílá
+   klient, což není pravda).
+
+SharedLoginResponse
+ClientLoginResponse
+ServerLoginResponse
+
+
+SharedCharacter
+    public description = "Unfinished character.";
+- ClientCharacter
+- ServerCharacter
+
+SharedOrc extends SharedCharacter
+    public description = "Ugly gray orc.";
+- ClientOrc
+- ServerOrc
+
+
+
 TODO: v ServerApp a ClientApp asi u server-specific a client-specific
   properties nemusím držet nonstatic verze se static accessorem, protože
   se k nim stejně přistupuje vždycky ve stylu ServerApp.entities.
@@ -21,6 +47,7 @@ se teď předává parametrem při vytoření socketu:
     // ...
   }
 - remote url naparsovat už při otevírání socketu a zapamatovat si ho v Socket.
+[asi done]
 
 
 TODO: Ha, ony už nejspíš jdou deklarovat statický stringový properties:
@@ -45,6 +72,8 @@ BIIIIIIIG TOOODOOOOOOO:
 
 
 TODO: Proč se mi sakra něco buildí do /build/client/js/server?
+- protože jsem v shared kódu includoval server classu.
+[done]
 
 TODO: Návratové hodnoty z funkcí s více možnými negativními
   výsledky (např. file not found, error) řešit union typem
@@ -74,8 +103,6 @@ Ok tak ne, mám to dobře.
 TODO: Property v Problems nazývat ve stylu "loginProblem".
 - bude to líp sedět k příslušným elementům ve formu.
 
-
--mark-: hrabu se v LoginRequestu.
 
 TODO: Použít i v ostatních Request classách trik, že sendFailureResponse()
   volá až nadřazená metoda, do které se vrátím přes return false;
@@ -150,6 +177,8 @@ TODO: Zvážit, jeslti by nešly sloučit classy Connection a ServerSocket
 TODO: Udělat server-side classy pro Response packety a client-side classy
   pro Request packety. Budou sice prázdné, ale jejich shared předci
   se budou moct jmenovat SharedXXXResponse/Request a budou moci být abstract.
+- teď totiž instancuju (a přidávám do Classes) shared předky, kteří by měli
+  být abstraktní - a nemohou být právě proto, že je instancuju.
 
 
 --------------------------------------------------------------
