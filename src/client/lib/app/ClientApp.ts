@@ -34,27 +34,22 @@ export class ClientApp extends App
 
   public static get APP_ERROR() { return 'Application Error'; }
 
+  // ~ Overrides App.instance.
+  protected static instance = new ClientApp();
+
   // ----------------- Public data ----------------------
 
   // ---------------- Protected data --------------------
 
-  // ~ Overrides App.entityManager.
+  // ~ Overrides App.entities.
   // Contains all entities (accounts, characters, rooms, etc.).
   protected entities = new ClientEntities();
 
-  // ~ Overrides App.prototypeManager.
+  // ~ Overrides App.prototypes.
   // Manages prototype entities.
   protected prototypes = new ClientPrototypes();
 
   // ----------------- Private data ---------------------
-
-  // --- websocket communication ---
-
-  /// Deprecated
-  /*
-  // Class handling websocket communication.
-  private webSocketClient = new WebSocketClient();
-  */
 
   // There is only one connection per client application
   // (it means one connection per browser tab if you
@@ -65,11 +60,6 @@ export class ClientApp extends App
 
   // Html document.
   private document = new Document();
-
-  /*
-  // Html <body> element.
-  private body = new Body();
-  */
 
   // All windows should be here.
   private windows = new Windows();
@@ -82,22 +72,22 @@ export class ClientApp extends App
 
   public static get document()
   {
-    return ClientApp.getInstance().document;
+    return this.instance.document;
   }
 
   public static get windows()
   {
-    return ClientApp.getInstance().windows;
+    return this.instance.windows;
   }
 
   public static get connection()
   {
-    return ClientApp.getInstance().connection;
+    return this.instance.connection;
   }
 
   public static get state()
   {
-    return ClientApp.getInstance().state;
+    return this.instance.state;
   }
 
   // ------------- Public static methods ----------------
@@ -111,16 +101,16 @@ export class ClientApp extends App
       return;
     }
 
-    let app = ClientApp.getInstance();
+    this.instance.state = state;
 
-    app.state = state;
-
-    app.windows.onAppStateChange(state);
+    this.instance.windows.onAppChangedState(state);
   }
 
   // Creates and runs an instance of ClientApp.
   public static async run()
   {
+    /// To be deleted.
+    /*
     if (this.instanceExists())
     {
       ERROR("Instance of ClientApp already exists."
@@ -130,13 +120,16 @@ export class ClientApp extends App
 
     // Create the singleton instance of ClientApp.
     this.createInstance();
+    */
 
     // Run client application.
-    await ClientApp.getInstance().run();
+    await this.instance.run();
   }
 
   // ------------ Protected static methods -------------- 
 
+  /// To be deleted.
+  /*
   // Creates an instance of a client. Client is a singleton,
   // so it must not already exist.
   protected static createInstance()
@@ -149,16 +142,22 @@ export class ClientApp extends App
 
     App.instance = new ClientApp();
   }
+  */
 
   // -> Returns the ClientApp singleton instance.
   protected static getInstance(): ClientApp
   {
-    if (ClientApp.instance === null || ClientApp.instance === undefined)
+    if (this.instance === null || this.instance === undefined)
+    {
       FATAL_ERROR("Instance of client doesn't exist yet");
+      // This is never called, FATAL_ERROR exits the app.
+      throw new Error("Missing client app instance");
+    }
 
     // We can safely typecast here, because ClientApp.createInstance()
     // assigns an instance of ClientApp to App.instance.
-    return <ClientApp>App.instance;
+    ///return <ClientApp>this.instance;
+    return this.instance;
   }
 
   // --------------- Protected methods ------------------
@@ -209,12 +208,13 @@ export class ClientApp extends App
   }
 
   // ~ Overrides App.syslog().
-  protected syslog: void
+  protected syslog
   (
     message: string,
     msgType: MessageType,
     adminLevel: AdminLevel
   )
+  : void
   {
     ClientSyslog.log(message, msgType, adminLevel);
   }
@@ -224,28 +224,19 @@ export class ClientApp extends App
   // Starts the client application.
   private async run()
   {
-    // Reports the problem to the user if websockets aren't available.
-    if (!ClientSocket.checkWebSocketsSupport())
+    if (this.isAlreadyRunning())
       return;
 
-    this.registerBeforeUnloadHandler();
+    if (!ClientSocket.browserSupportsWebSockets())
+      return;
 
-    // Create an instance of each entity class registered in
-    // Classes so they can be used as prototype objects
-    // for root prototype entities.
-    this.entities.createRootObjects();
-
-    this.windows.createStandaloneWindows();
-
-    /// Tohle by se asi mělo vytvářet až po přilogování.
-    /// - nakonec ne. Bude jen jedno map window na clientApp,
-    ///   jeho obsah se bude překreslovat podle aktivního charu.
-    this.windows.createMapWindow();
+    this.initClasses();
+    this.initGUI();
 
     this.connection.connect();
 
-    // Show login window, hide all others.
-    ClientApp.setState(ClientApp.State.LOGIN);
+    this.showLoginWindow();
+    
     /// TEST:
     //ClientApp.setState(ClientApp.State.IN_GAME);
 
@@ -266,6 +257,23 @@ export class ClientApp extends App
   {
     window.onbeforeunload =
       (event: BeforeUnloadEvent) => { this.onBeforeUnload(event); }
+  }
+
+  private initGUI()
+  {
+    this.registerBeforeUnloadHandler();
+
+    this.windows.createStandaloneWindows();
+
+    /// Tohle by se asi mělo vytvářet až po přilogování.
+    /// - nakonec ne. Bude jen jedno map window na clientApp,
+    ///   jeho obsah se bude překreslovat podle aktivního charu.
+    this.windows.createMapWindow();
+  }
+
+  private showLoginWindow()
+  {
+    ClientApp.setState(ClientApp.State.LOGIN);
   }
 
   // ---------------- Event handlers --------------------

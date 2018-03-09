@@ -116,17 +116,22 @@ export class Game
   public async load()
   {
     // Load current state of world from file.
-    this.world = await ServerEntities.loadEntityByName
+    let world = await ServerEntities.loadEntityByName
     (
       World, // Dynamic typecast.
       Game.DEFAULT_WORLD_NAME,
       Entity.NameCathegory.WORLD
     );
 
-    if (!this.world)
+    if (!world)
+    {
       FATAL_ERROR("Failed to load game world. Perhaps"
         + " directory" + ServerApp.DATA_DIRECTORY
         + " exists but it is empty?");
+      return; // This is never called, fatal error exits the app.
+    }
+
+    this.world = world;
   }
 
   // ---------------- Protected data --------------------

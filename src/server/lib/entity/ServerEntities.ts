@@ -65,6 +65,9 @@ export class ServerEntities extends Entities
 
     let entity = ServerEntities.initRootPrototypeEntity(id, className);
 
+    if (entity === null)
+      return null;
+
     return ServerApp.entities.loadEntityFromJsonObject
     (
       entity,
@@ -215,6 +218,9 @@ export class ServerEntities extends Entities
       null,   // 'nameCathegory' - entity name of prototype can't be unique.
       true    // 'isPrototype'
     );
+
+    if (entity === null)
+      return null;
 
     await ServerEntities.save(entity);
 
@@ -531,7 +537,7 @@ export class ServerEntities extends Entities
     // using Object.create(). We replace it with 'null' so that
     // setPrototypeEntity() won't try to remove it from it's ancestor's
     // descendantIds (that wouldn't work because we have just created it).
-    entity[Entity.PROTOTYPE_ENTITY_PROPERTY] = null;
+    (entity as any)[Entity.PROTOTYPE_ENTITY_PROPERTY] = null;
 
     // Don't change 'null' value of 'prototypeEntity' if 'prototype'
     // is a root object (which have 'null' value of 'id' property),

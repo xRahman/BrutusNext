@@ -127,8 +127,9 @@ process.on
 // It's called main() to sound familiar to C programmers ;)
 async function main()
 {
-  // Create instance of ServerApp first so we can use Syslog.
-  ServerApp.createInstance();
+  /// To be deleted.
+  // // Create instance of ServerApp first so we can use Syslog.
+  // ServerApp.createInstance();
 
   // Log our name and version.
   Syslog.log

@@ -47,7 +47,7 @@ export class Grid<T>
 
   // Reads from position [s, e, u].
   // -> Returns 'undefined' if item isn't in the array.
-  public get(coords: Coords): T
+  public get(coords: Coords): T | undefined
   {
     // Two-dimensional associative sub-map (in 'east-up' direction).
     let euArray = this.data.get(coords.s);

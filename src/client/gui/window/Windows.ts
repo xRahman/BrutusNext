@@ -121,7 +121,7 @@ export class Windows
 
   // Hides windows that should be hiden in given 'state' and
   // shows those that should be visible.
-  public onAppStateChange(state: ClientApp.State)
+  public onAppChangedState(state: ClientApp.State)
   {
     // First reset our reference to active standalone window.
     //   If another standalone window will be shown, the reference

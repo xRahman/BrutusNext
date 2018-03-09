@@ -48,12 +48,12 @@ export abstract class Entities
   }
 
   // -> Returns 'undefined' if entity isn't found.
-  public static get(id: string)
+  public static get(id: string): Entity | undefined
   {
     if (App.entities === null)
     {
       ERROR("Unexpected 'null' value");
-      return false;
+      return undefined;
     }
     
     return App.entities.entityList.get(id);
@@ -275,7 +275,7 @@ export abstract class Entities
   (
     entity: Entity,
     jsonObject: Object,
-    path: string
+    path: string | null
   )
   {
     if (!entity)
@@ -329,6 +329,9 @@ export abstract class Entities
       overwrite
     );
 
+    if (entity === null)
+      return null;
+
     return this.loadEntityFromJsonObject(entity, jsonObject, path);
   }
 
@@ -364,6 +367,9 @@ export abstract class Entities
     // Create new entity based on the prototype.
     let entity = this.instantiate(prototype);
 
+    if (entity === null)
+      return null;
+
     if (!entity.setId(id))
       return null;
 
@@ -376,7 +382,8 @@ export abstract class Entities
   protected getPrototypeObject(prototypeId: string)
   {
     // First check if 'prototypeId' is a name of a hardcoded class.
-    let prototype = this.getRootPrototypeObject(prototypeId);
+    let prototype: (Entity | undefined | null) =
+      this.getRootPrototypeObject(prototypeId);
 
     if (prototype)
       return prototype;
@@ -404,7 +411,7 @@ export abstract class Entities
     prototypeId: string,
     id: string
   )
-  : Entity
+  : Entity | null
   {
     let prototype = this.getPrototypeObject(prototypeId);
 
@@ -431,6 +438,13 @@ export abstract class Entities
     }
 
     let id = entity.getId();
+
+    if (id === null)
+    {
+      ERROR("Invalid entity id");
+      return null;
+    }
+
     let existingEntity = this.entityList.get(id);
 
     if (existingEntity !== undefined)
@@ -535,7 +549,7 @@ export abstract class Entities
       return;
     }
 
-    let prototypeProperty = prototype[propertyName];
+    let prototypeProperty = (prototype as any)[propertyName];
 
     // There is no point of instantating properties that don't exist
     // on prototype object or have 'null' value on it.
@@ -546,12 +560,12 @@ export abstract class Entities
     // Primitive properties (numbers, strings, etc) don't have to
     // be instantiated because Javascript prototype inheritance
     // handles them correctly.
-    if (typeof object[propertyName] !== 'object')
+    if (typeof (object as any)[propertyName] !== 'object')
       return;
 
     // Do not recursively instantiate propeties of other entities
     // (that could lead to infinite recursion among other things).
-    if (object[propertyName] instanceof Entity)
+    if ((object as any)[propertyName] instanceof Entity)
       return;
 
     // This check allows re-instantiating of properties of existing
@@ -569,13 +583,13 @@ export abstract class Entities
       //  writing to it's instance.
       if (Utils.isMap(prototypeProperty))
       {
-        object[propertyName] = new Map();
+        (object as any)[propertyName] = new Map();
         return;
       }
       
       if (Utils.isSet(prototypeProperty))
       {
-        object[propertyName] = new Set();  
+        (object as any)[propertyName] = new Set();  
         return;
       }
 
@@ -584,13 +598,13 @@ export abstract class Entities
         ERROR("Attempt to instantiate property of type Date."
           + " Don't use Date, use Time instead. Property is"
           + " not instantiated");
-        object[propertyName] = null;
+        (object as any)[propertyName] = null;
         return;
       }
 
       // Object.create() will create a new {}, which will have
       // 'prototypeProperty' as it's prototype object.
-      object[propertyName] = Object.create(prototypeProperty);
+      (object as any)[propertyName] = Object.create(prototypeProperty);
     }
 
     // Property we have just instantiated may have it's own
@@ -598,7 +612,11 @@ export abstract class Entities
     //   Note that recursive call is done even for properties that
     // have already been instantiated on 'object', because there
     // still may be some changes deeper in the structure).
-    this.instantiateProperties(object[propertyName], prototype[propertyName]);
+    this.instantiateProperties
+    (
+      (object as any)[propertyName],
+      (prototype as any)[propertyName]
+    );
   }
 
   // Creates an invalid entity reference.
@@ -627,7 +645,7 @@ export abstract class Entities
   (
     prototypeReference: Object,
     id: string,
-    path: string
+    path: string | null
   )
   {
     if (prototypeReference === null || prototypeReference === undefined)
@@ -637,7 +655,7 @@ export abstract class Entities
       return null;
     }
 
-    let prototypeId = prototypeReference[Entity.ID_PROPERTY];
+    let prototypeId = (prototypeReference as any)[Entity.ID_PROPERTY];
 
     if (prototypeId === null || prototypeId === undefined)
     {
@@ -652,7 +670,7 @@ export abstract class Entities
   // -> Returns 'null' if there is no valid 'id' property in 'jsonObject'.
   private readIdFromJsonObject(jsonObject: Object)
   {
-    let id = jsonObject[Entity.ID_PROPERTY];
+    let id = (jsonObject as any)[Entity.ID_PROPERTY];
 
     if (!id)
     {
@@ -692,7 +710,7 @@ export abstract class Entities
     prototypeEntity: Entity,
     jsonObject: Object,
     id: string,
-    path: string
+    path: string | null
   )
   {
     let prototypeId: (string | null) = null;
@@ -703,12 +721,17 @@ export abstract class Entities
       // a root prototype entity (which doesn't have a prototype entity of
       // course). In that case we use 'className' as a prototypeId (it will
       // point to a root prototype object instead of an entity).
-      prototypeId = jsonObject[Entity.CLASS_NAME_PROPERTY];
+      prototypeId = (jsonObject as any)[Entity.CLASS_NAME_PROPERTY];
     }
     else
     {
       // If there was a 'prototypeEntity' record, read 'id' from it.
-      prototypeId = this.readPrototypeIdFromPrototypeEntity(prototypeEntity, id, path);
+      prototypeId = this.readPrototypeIdFromPrototypeEntity
+      (
+        prototypeEntity,
+        id,
+        path
+      );
     }
 
     return prototypeId;
@@ -757,6 +780,7 @@ export abstract class Entities
     id: string,
     prototypeId: string
   )
+  : Entity | undefined | null
   {
     let existingEntity = Entities.get(id);
 

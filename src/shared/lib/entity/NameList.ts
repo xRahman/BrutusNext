@@ -40,7 +40,14 @@ export class NameList<T extends Entity>
     {
       ERROR("Entity " + entity.getErrorIdString()
         + " has invalid or empty name. It is not"
-        + " added to NameList");
+        + " added to name list");
+      return false;
+    }
+
+    if (cathegory === null)
+    {
+      ERROR("Entity " + entity.getErrorIdString() + " cannot be aded"
+        + " to name list because it doesn't have a name cathegory");
       return false;
     }
 
@@ -49,7 +56,7 @@ export class NameList<T extends Entity>
       ERROR("Entity " + entity.getErrorIdString() + " has cathegory"
         + " " + Entity.NameCathegory[cathegory] + " which doesn't"
         + " match cathegory " + Entity.NameCathegory[this.cathegory]
-        + " required by NameList. Entity is not added");
+        + " required by name list. Entity is not added");
       return false;
     }
 
@@ -78,10 +85,17 @@ export class NameList<T extends Entity>
     let name = entity.getName();
     let cathegory = entity.getNameCathegory();
 
+    if (name === null)
+    {
+      ERROR("Cannot remove entity " + entity.getErrorIdString()
+       + " from name list because it doesn't have a name");
+      return false;
+    }
+
     if (!this.names.has(name))
     {
       ERROR("Attempt to remove entity " + entity.getErrorIdString()
-       + " from NameList which is not there");
+       + " from name list which is not there");
       return false;
     }
 
@@ -89,11 +103,20 @@ export class NameList<T extends Entity>
     {
       ERROR("Entity " + entity.getErrorIdString()
         + " has invalid or empty name. It is not"
-        + " removed from NameList");
+        + " removed from name list");
       return false;
     }
 
-    if (cathegory !== this.cathegory)
+    if (cathegory === null)
+    {
+      // We will report the error but remove the entity from the list
+      // anyways.
+      ERROR("Attempt to remove entity " + entity.getErrorIdString()
+        + " which doesn't have a name cathegory from a name list."
+        + " This probably means that someone has changed the cathegory"
+        + " of this entity but didn't remove it from this list");
+    }
+    else if (cathegory !== this.cathegory)
     {
       // We will report the error but remove the entity from the list
       // anyways.
@@ -106,6 +129,8 @@ export class NameList<T extends Entity>
     }
 
     this.names.delete(name);
+
+    return true;
   }
 
   public has(name: string): boolean

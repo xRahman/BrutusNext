@@ -21,8 +21,7 @@ export class ClientSocket
 
   // ---------------- Static methods --------------------
 
-  // Checks if browser supports web sockets.
-  public static checkWebSocketsSupport()
+  public static browserSupportsWebSockets(): boolean
   {
     if (typeof WebSocket === 'undefined')
     {

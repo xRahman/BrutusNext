@@ -88,8 +88,11 @@ export class Syslog
     if (!tmpErr)
       return null;
 
+    let stackTrace =
+      tmpErr.stack ? tmpErr.stack : "Stack trace is not available.";
+
     // Break stack trace string into an array of lines.
-    let stackTraceLines = tmpErr.stack.split('\n');
+    let stackTraceLines = stackTrace.split('\n');
     
     // Remove number of lines equal to 'trimValue', starting at index 0.
     stackTraceLines.splice(0, trimValue);

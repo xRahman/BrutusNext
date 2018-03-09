@@ -618,7 +618,7 @@ export class Entity extends Serializable
   {
     if (this.hasOwnProperty(trigger))
     {
-      let triggerFunction = this[trigger];
+      let triggerFunction = (this as any)[trigger];
 
       if (typeof triggerFunction !== 'function')
       {

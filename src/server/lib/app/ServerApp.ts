@@ -33,10 +33,15 @@ import {HttpServer} from '../../../server/lib/net/HttpServer';
 
 export class ServerApp extends App
 {
+  // -------------- Static class data -------------------
+
   public static get DATA_DIRECTORY()
   {
     return './server/data/';
   }
+
+  // ~ Overrides App.instance.
+  protected static instance = new ServerApp();
 
   // ----------------- Private data ---------------------
 
@@ -68,48 +73,51 @@ export class ServerApp extends App
   // ~ Overrides App.entities().
   public static get entities()
   {
-    return ServerApp.getInstance().entities;
+    return this.instance.entities;
   }
 
   // ~ Overrides App.prototypes().
   public static get prototypes()
   {
-    return ServerApp.getInstance().prototypes;
+    return this.instance.prototypes;
   }
 
   public static get timeOfBoot()
   {
-    if (ServerApp.getInstance().timeOfBoot === null)
+    /// To be deleted.
+    /*
+    if (this.instance.timeOfBoot === null)
     {
       ERROR("Time of boot is not initialized yet");
     }
+    */
 
-    return ServerApp.getInstance().timeOfBoot;
+    return this.instance.timeOfBoot;
   }
 
   public static get game()
   {
-    return ServerApp.getInstance().game;
+    return this.instance.game;
   }
 
   public static get accounts()
   {
-    return ServerApp.getInstance().accounts;
+    return this.instance.accounts;
   }
 
   public static get connections()
   {
-    return ServerApp.getInstance().connections;
+    return this.instance.connections;
   }
 
   public static get admins()
   {
-    return ServerApp.getInstance().admins;
+    return this.instance.admins;
   }
 
   // public static get telnetServer()
   // {
-  //   return ServerApp.getInstance().telnetServer;
+  //   return this.instance.telnetServer;
   // }
 
   // ------------- Public static methods ----------------
@@ -118,6 +126,8 @@ export class ServerApp extends App
   // if there is no ./data directory).
   public static async run(/*telnetPort: number*/)
   {
+    /// To be deleted.
+    /*
     if (!this.instance)
     {
       ERROR("Instance of ServerApp doesn't exist yet."
@@ -125,9 +135,10 @@ export class ServerApp extends App
         + " call ServerApp.run()");
       return;
     }
+    */
 
     // Run server application.
-    await ServerApp.getInstance().run(/*telnetPort*/);
+    await this.instance.run(/*telnetPort*/);
   }
 
   /// Moved to Admins as static method.
@@ -136,14 +147,14 @@ export class ServerApp extends App
   // // the mud is 'freshly installed' gets maximum admin rights).
   // public static onCharacterCreation(character: GameEntity)
   // {
-  //   ServerApp.getInstance().admins.onCharacterCreation(character);
+  //   this.instance.admins.onCharacterCreation(character);
   // }
 
   /// Moved to Admins as static method.
   // /// TODO: Přesunout do Admins jako statickou metodu.
   // public static getAdminLevel(entity: GameEntity)
   // {
-  //   return ServerApp.getInstance().admins.getAdminLevel(entity);
+  //   return this.instance.admins.getAdminLevel(entity);
   // }
 
   // -> Returns null if no message of the day is set at the moment.
@@ -151,7 +162,7 @@ export class ServerApp extends App
   {
     /// TODO: motd by se mělo savovat na disk - tj. ideálně by to
     /// měla být property nejaké entity (třeba config).
-    let motd = ServerApp.getInstance().messageOfTheDay;
+    let motd = this.instance.messageOfTheDay;
 
     if (motd === null)
       return "There is no message of the day at this time.";
@@ -159,6 +170,8 @@ export class ServerApp extends App
     return "&gMessage of the day:\n&_" + motd;
   }
 
+  /// To be deleted.
+  /*
   // Creates an instance of a server. Server is a singleton,
   // so it must not already exist.
   public static createInstance()
@@ -171,9 +184,12 @@ export class ServerApp extends App
 
     App.instance = new ServerApp();
   }
+  */
 
   // ------------ Protected static methods --------------
 
+  /// To be deleted.
+  /*
   // -> Returns the ServerApp singleton instance.
   protected static getInstance(): ServerApp
   {
@@ -186,6 +202,7 @@ export class ServerApp extends App
     // assigns an instance of ServerApp to App.instance.
     return <ServerApp>App.instance;
   }
+  */
 
   // ---------------- Public methods --------------------
 
@@ -249,12 +266,12 @@ export class ServerApp extends App
   // Loads or reates the data and starts the server application.
   private async run(/*telnetPort: number*/)
   {
+    if (this.isAlreadyRunning())
+      return;
+
     ///test();
 
-    // Create an instance of each entity class registered in
-    // Classes so they can be used as prototype objects
-    // for root prototype entities.
-    this.entities.createRootObjects();
+    this.initClasses();
 
     // We need to check if './data/' directory exists before
     // initPrototypes() is called, because it will be created

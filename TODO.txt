@@ -1,6 +1,15 @@
 TO DO, TO DO, TODO TODO TODO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+TODO: v ServerApp a ClientApp asi u server-specific a client-specific
+  properties nemusím držet nonstatic verze se static accessorem, protože
+  se k nim stejně přistupuje vždycky ve stylu ServerApp.entities.
+  Tzn. úplně stačí:
+    public static entities = new ServerEntities();
+- Bez nonstatic properties se neobejdu pouze v případě, že na ně přistupuje
+  nějaký shared kód, tzn. potřebuju polymorfismus.
+
+
 TODO: Zvážit, jestli Connection a ServerSocket musí být dvě různé classy
   (možná by dávalo větší smysl, kdyby to byla jedna classa).
 

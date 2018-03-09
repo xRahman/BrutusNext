@@ -60,13 +60,21 @@ export class EntityList<T extends Entity> extends Serializable
         // Remove the invalid reference from the set.
         this.entities.delete(entity);
 
+        let id = entity.getId();
+
+        if (id === null)
+        {
+          ERROR("Invalid entity id. Entity is not loaded");
+          return;
+        }
+
         // Load the entity from disk.
 /// TODO: Tohle se mi vůbec nelíbí - typová kontrola na baterky ;\
 /// (Asi by šlo do konstruktoru EntityListu dát jako parametr Class, vůči
 ///  které se pak bude provádět dynamicTypeCheck)
         entity = <T>await Entities.loadEntityById
         (
-          entity.getId(),
+          id,
           Entity
         );
         

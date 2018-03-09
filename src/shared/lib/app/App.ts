@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Entities} from '../../../shared/lib/entity/Entities';
@@ -15,23 +16,25 @@ export abstract class App
 {
   // -------------- Static class data -------------------
 
-  protected static instance: (App | null) = null;
+  protected static instance: App;
 
   // ---------------- Protected data --------------------
 
-  protected entities: (Entities | null) = null;
-  protected prototypes: (Prototypes | null) = null;
+  protected isRunning = false;
+
+  protected abstract entities: Entities;
+  protected abstract prototypes: Prototypes;
 
   // --------------- Static accessors -------------------
 
   public static get entities()
   {
-    return App.getInstance().entities;
+    return this.instance.entities;
   }
 
   public static get prototypes()
   {
-    return App.getInstance().prototypes;
+    return this.instance.prototypes;
   }
 
   // ------------- Public static methods ---------------- 
@@ -40,6 +43,8 @@ export abstract class App
   // (Don't call this directly, use ERROR() instead.)
   public static reportError(message: string): void
   {
+    /// Změna: Instance vždycky existuje.
+    /*
     // If ERROR() is called from within an initialization
     // of App instance, the instance of App doesn't exist
     // yet so we can only report it directly.
@@ -52,14 +57,19 @@ export abstract class App
     }
     else
     {
-      App.getInstance().reportError(message);
+      this.instance.reportError(message);
     }
+    */
+
+    this.instance.reportError(message);
   }
 
   // Reports fatal runtime error.
   // (Don't call this directly, use FATAL_ERROR() instead.)
   public static reportFatalError(message: string): void
   {
+    /// Změna: Instance vždycky existuje.
+    /*
     // If FATAL_ERROR() is called from within an initialization
     // of App instance, the instance of App doesn't exist yet so
     // we can only report it directly.  
@@ -72,8 +82,11 @@ export abstract class App
     }
     else
     {
-      App.getInstance().reportFatalError(message);
+      this.instance.reportFatalError(message);
     }
+    */
+
+    this.instance.reportFatalError(message);
   }
 
   // Sends message to syslog.
@@ -86,13 +99,15 @@ export abstract class App
   )
   : void
   {
-    App.getInstance().syslog(text, msgType, adminLevel);
+    this.instance.syslog(text, msgType, adminLevel);
   }
 
   // ------------ Protected static methods --------------
 
+  /// To be deleted.
+  /*
   // -> Returns ServerApp or ClientApp. In the server code,
-  //    App.getInstance() is actually an instance of ServerApp
+  //    this.instance is actually an instance of ServerApp
   //    and in client code, it's an instance of ClientApp.
   protected static getInstance(): App
   {
@@ -105,6 +120,7 @@ export abstract class App
 
     return this.instance;
   }
+  */
 
   // --------------- Protected methods ------------------
 
@@ -120,4 +136,27 @@ export abstract class App
     adminLevel: AdminLevel
   )
   : void;
+
+  protected isAlreadyRunning(): boolean
+  {
+    if (this.isRunning)
+    {
+      // 'this.constructor.name' is the name of the class.
+      ERROR("Attempt to run " + this.constructor.name
+        + " which is already running");
+      return true;
+    }
+
+    this.isRunning = true;
+
+    return false;
+  }
+
+  protected initClasses()
+  {
+    // Create an instance of each entity class registered in
+    // Classes so they can be used as prototype objects
+    // for root prototype entities.
+    this.entities.createRootObjects();
+  }
 }
