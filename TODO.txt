@@ -1,6 +1,150 @@
 TO DO, TO DO, TODO TODO TODO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+
+--------------------------------------------------------------
+
+Logování a errory
+------------------
+
+- Asi budu potřebovat logovat Error objecty.
+- Asi by stálo za to při logování logických errorů volat
+  něco jako: log(new Error("Hp out of valid range"));
+  protože díky tomu bude správně stack trace a nebudu ho muset
+  upižlávat. Na druhou stranu...
+
+Taky můžu udělat chytrou fci ERROR, která bude detekovat typ parametru.
+- to zní dobře
+
+function ERROR(error: any)
+{
+  if (isString(ERROR))
+  {
+    ...
+  }
+  else if (error instanceof Error)
+  {
+    ...
+  }
+  else
+  {
+    // Nepovolený typ erroru.
+  }
+}
+
+
+--------------------------------------------------------------
+
+Packety a spol
+---------------
+
+- Packet.process() by asi neměl vracet bool, měl by všechno
+  potřebné ošetřit. Respektive můžu volání celé hodit do try-catch
+  bloku.
+Respektive try-catchovat bych asi měl na nejvyšší možné úrovni,
+  což je nejspíš někde v receiveData handleru na socketu. Ale v zásadě
+  asi můžu i níž.
+
+Vytvoření client-side i server-side verze packet class sice umožní
+  udělat shared classy abstraktní, ale nepořeší to, že LoginRequest.process()
+  se volá jen na serveru, takže client-side verze by byla prázdná (a nejspíš
+  by logovala error)
+- správně by Request.process() mělo být pouze u server-side packetů.
+
+/shared/Packet
+- /shared/Request
+  - /shared/LoginRequest
+- /shared/Response
+
+  - /client/Request
+  - /client/LoginRequest
+
+  - /server/Request
+    .Processs
+  - /server/LoginRequest
+    .Processs
+
+- v classe Packet je jen metoda request() (která tam být nemá)
+- v classe Request není vůbec nic (v modulu Request je interface Problems)
+- class Response má property .problems a pár metod na práci s nimi.
+
+- v /server/Connection se volá packet.process();
+  Měl by to být packet typu /server/Request
+
+- v /client/Connection se volá packet.process();
+  Neprocesej se jen server responsy, ale taky server eventy
+
+čili bych asi měl mít:
+ClientRequest (client ho sestavuje, server ho procesí)
+ServerResponse (server ho sestavuje, client ho procesí)
+ServerEvent (server ho sestavuje, client ho procesí)
+
+Obecně
+- Request je cokoliv, co posílá client v důsledku inputu od hráče.
+- Response je odpověď na Request
+- Event posílá server, aniž by dostal Request.
+
+/shared/Packet (Tohle možná vůbec nepotřebuju)
+- /client/IncommingPacket
+  .process()
+-   /client/Response (procesí se)
+-   /client/Event (procesí se)
+- /client/OutgoingPacket
+-   /client/Request (vytváří se)
+
+- /server/OutgoingPacket
+-   /server/Response (vytváří se)
+-   /server/Event (vytváří se)
+- /server/IncommingPacket
+  .process()
+-   /server/Request (procesí se)
+
+Tohle je celý hezký, ale zrada je v tom, že např. LoginRequest musí mít
+  stejné properties na client i na serveru. Podle téhle hierarchie by byl
+  na clientu zděděnej z /client/OutgoingPacket/Request a na serveru
+  z /server/IncommingPacket/Request.
+- což jde jen vícenásobou dědičností, tzn. by asi /shared/LoginRequest
+  musel být interface a server a client verze by dědily z něj a z příslušného
+  incomming/outgoing packetu.
+  (což by šlo, až na to, že pak budou muset zopakovat deklarace propeties.
+   ale tak co už. I když vlastně pak bude jiná inicializace na serveru
+   a na klientu, což asi není úplně dobře...)
+Teď je to tak, že společné properties jsou v /shared/LoginRequest
+(což dává smysl)
+- problém je v tom, že z toho potřebuju mít zděděnou procesitelnou
+  a neprocesitelnou variantu...
+  - Na druhou stranu tohle by ale asi ten interface fakt vyřešil.
+    Na to, abych mohl na parametru polymorfně zavolat metodu, totiž nutně
+    nepotřebuju mít classovou hierarchii - stačí, když ten parametr bude
+    vyhovovat interfacu s touto metodou.
+
+Tzn.:
+  /client/LoginRequest by byl zděděnej z /shared/LoginRequest
+    (kde jsou sdílené properties) a z interface OutgoinPacket
+    (to vlastně ani není potřeba, protože outgoing packet nic nedělá).
+  /client/LoginRequest by byl zděděnej z /shared/LoginRequest
+    a z interface IncommingPacket.
+
+    interface IncommingPacket
+    {
+      process(): void;
+    }
+
+- Metodu process() si pak musí naimplementovat, ale to by musel stejně,
+  když by si ji přetěžoval.
+- Rozdíl oproti dědičnosti je, že v metodě process() se nemůže volat super().
+
+
+
+Asi řeším píčoviny. Zdědit metodu z interfacu sice jde, ale nepomůžu si tím.
+- nepůjde pak dynamicky kontrolovat typ (protože procházet po jedné všechny
+  properties je fakt pitomost). A stejně nakonec někde bude muset bejt
+  exception, když ten typ nebude sedět.
+- mít v Packetu metodu process() { ERROR("Musi se pretizit"); } nebrani
+  tomu, aby byl Packet abstract.
+
+--------------------------------------------------------------
+
 TODO: Zvážit, jestli by se nehodilo, aby se server-side a client-side
   classy mohly jmenovat jinak (tzn. musel bych v nich mít nějakou statickou
   proměnnou, kam by se psalo, na co se to má deserializovat na druhé straně).
@@ -24,6 +168,33 @@ SharedOrc extends SharedCharacter
     public description = "Ugly gray orc.";
 - ClientOrc
 - ServerOrc
+
+Možná to XXXData fakt nebudu potřebovat...
+
+Entity
+=> /shared/Character
+  .exits
+  .flags
+  => /client/Character
+     => /client/Orc
+  => /server/Character
+     .serverFlags
+     => /server/Orc
+
+Do /client/Orc ani /server/Orc teď už nemůžu přímo přidat nějakou shared
+  property, ale můžu na ně navěsit konkrétní modul (tzn. nikoliv obecná
+  CharacterData, ale třeba Affects).
+- a můžu ho k tomu dokonce přidědit, aniž by byl v /shared/Character, a to tak,
+  že jak /client/Orc tak /server/Orc zdědím z interfacu.
+  (To jsem sice nechtěl udělat úplně se všema properties, ale na přidání něčeho
+   hluboko ve stromu dědičnosti je to asi ok).
+
+Entity asi budu pojmenovávat stejně v /shared, /client i /server. Sice si budu
+  muset dávat pozor, do čeho zrovna hrabu, ale to by neměl bejt až takovej
+  problém.
+
+
+--------------------------------------------------------------
 
 
 

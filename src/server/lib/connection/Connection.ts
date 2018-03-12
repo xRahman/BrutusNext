@@ -20,6 +20,7 @@ import {GameEntity} from '../../../server/game/GameEntity';
 import {Classes} from '../../../shared/lib/class/Classes';
 import {Connections} from '../../../server/lib/connection/Connections';
 import {Packet} from '../../../shared/lib/protocol/Packet';
+import {IncommingPacket} from '../../../shared/lib/protocol/IncommingPacket';
 import {MudMessage} from '../../../shared/lib/protocol/MudMessage';
 
 // 3rd party modules.
@@ -172,23 +173,26 @@ export class Connection implements SharedConnection
   // Processes data received from the client.
   public async receiveData(data: string)
   {
-    // let packet = Serializable.deserialize(data).dynamicCast(Packet);
-
-    // if (packet !== null)
-    //   await packet.process(this);
-
-    /// TODO: deserialize() by mělo házet exception místo return null,
-    /// takže pak půjde zavolat:
-    ///   let packet = Serializable.deserialize(data).dynamicCast(Packet);
     let deserializedPacket = Serializable.deserialize(data);
     
     if (!deserializedPacket)
       return;
-    
-    let packet = deserializedPacket.dynamicCast(Packet);
 
-    if (packet !== null)
+    //let packet = deserializedPacket.dynamicCast(Packet);
+    let packet = IncommingPacket.dynamicCast(deserializedPacket);
+
+    if (packet === null)
+      return;
+
+    try
+    {
       await packet.process(this);
+    }
+    catch (error)
+    {
+      LOG_EXCEPTION(error);
+      /// TODO;
+    }
   }
 
   // Sends 'packet' to web socket.

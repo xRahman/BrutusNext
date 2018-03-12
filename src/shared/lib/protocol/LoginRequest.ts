@@ -30,16 +30,17 @@ export class LoginRequest extends Request
 
   // ---------------- Public methods --------------------
 
-  // ~ Overrides Packet.process().
-  // -> Returns 'true' on success.
-  public async process(connection: Connection)
-  {
-    ERROR("Attempt to call /shared/protocol/LoginRequest.process(). That's"
-      + " not supposed to happen, only /server/protocol/LoginRequest can"
-      + " be processed");
+  /// To be deleted.
+  // // ~ Overrides Packet.process().
+  // // -> Returns 'true' on success.
+  // public async process(connection: Connection)
+  // {
+  //   ERROR("Attempt to call /shared/protocol/LoginRequest.process(). That's"
+  //     + " not supposed to happen, only /server/protocol/LoginRequest can"
+  //     + " be processed");
 
-    return false;
-  }
+  //   return false;
+  // }
 }
 
 // ------------------ Type declarations ----------------------

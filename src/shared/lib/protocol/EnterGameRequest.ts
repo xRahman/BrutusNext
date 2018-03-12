@@ -29,16 +29,17 @@ export class EnterGameRequest extends Request
 
   // ---------------- Public methods --------------------
 
-  // ~ Overrides Packet.process().
-  // -> Returns 'true' on success.
-  public async process(connection: Connection)
-  {
-    ERROR("Attempt to call /shared/protocol/EnterGameRequest.process(). That's"
-      + " not supposed to happen, only /server/protocol/EnterGameRequest can"
-      + " be processed");
+  /// To be deleted.
+  // // ~ Overrides Packet.process().
+  // // -> Returns 'true' on success.
+  // public async process(connection: Connection)
+  // {
+  //   ERROR("Attempt to call /shared/protocol/EnterGameRequest.process(). That's"
+  //     + " not supposed to happen, only /server/protocol/EnterGameRequest can"
+  //     + " be processed");
 
-    return false;
-  }
+  //   return false;
+  // }
 }
 
 // ------------------ Type declarations ----------------------

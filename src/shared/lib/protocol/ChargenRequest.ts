@@ -58,16 +58,17 @@ export class ChargenRequest extends Request
     return null;
   }
 
-  // ~ Overrides Packet.process().
-  // -> Returns 'true' on success.
-  public async process(connection: Connection)
-  {
-    ERROR("Attempt to call /shared/protocol/ChargenRequest.process()."
-      + " That's not supposed to happen, only /server/protocol/ChargenRequest"
-      + " can be processed");
+  /// To be deleted.
+  // // ~ Overrides Packet.process().
+  // // -> Returns 'true' on success.
+  // public async process(connection: Connection)
+  // {
+  //   ERROR("Attempt to call /shared/protocol/ChargenRequest.process()."
+  //     + " That's not supposed to happen, only /server/protocol/ChargenRequest"
+  //     + " can be processed");
 
-    return false;
-  }
+  //   return false;
+  // }
 
   // ---------------- Private methods -------------------
 

@@ -17,6 +17,7 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {Syslog} from '../../../shared/lib/log/Syslog';
+import {IncommingPacket} from '../../../shared/lib/protocol/IncommingPacket';
 import {ChargenRequest as SharedChargenRequest} from
   '../../../shared/lib/protocol/ChargenRequest';
 import {Entity} from '../../../shared/lib/entity/Entity';
@@ -29,7 +30,9 @@ import {Connection} from '../../../server/lib/connection/Connection';
 import {ChargenResponse} from '../../../shared/lib/protocol/ChargenResponse';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class ChargenRequest extends SharedChargenRequest
+export class ChargenRequest
+  extends SharedChargenRequest
+  implements IncommingPacket
 {
   constructor(characterName: string)
   {
@@ -42,7 +45,7 @@ export class ChargenRequest extends SharedChargenRequest
 
   // ~ Overrides Packet.process().
   // -> Returns 'true' on success.
-  public async process(connection: Connection): Promise<boolean>
+  public async process(connection: Connection): Promise<void>
   {
     this.normalizeCharacterName(connection);
 
@@ -51,14 +54,14 @@ export class ChargenRequest extends SharedChargenRequest
     if (problems)
     {
       this.denyRequest(problems, connection);
-      return false;
+      return;
     }
 
     if (!await this.isNameAvailable())
     {
       this.sendNameIsNotAvailableResponse(connection);
       this.logNameIsNotAvailable(connection);
-      return false;
+      return;
     }
 
     let account = this.obtainAccount(connection);
@@ -66,7 +69,7 @@ export class ChargenRequest extends SharedChargenRequest
     if (!account)
     {
       this.sendErrorResponse(connection);
-      return false;
+      return;
     }
 
     let character = await this.createCharacter(account, connection);
@@ -74,18 +77,18 @@ export class ChargenRequest extends SharedChargenRequest
     if (!character)
     {
       this.sendErrorResponse(connection);
-      return false;
+      return;
     }
 
     if (!this.acceptRequest(character, account, connection))
     {
       this.sendErrorResponse(connection);
-      return false;
+      return;
     }
 
     this.logSuccess(character, account);
 
-    return true;
+    return;
   }
 
   // --------------- Private methods --------------------
