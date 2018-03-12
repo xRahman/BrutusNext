@@ -17,7 +17,6 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {Syslog} from '../../../shared/lib/log/Syslog';
-import {IncommingPacket} from '../../../shared/lib/protocol/IncommingPacket';
 import {ChargenRequest as SharedChargenRequest} from
   '../../../shared/lib/protocol/ChargenRequest';
 import {Entity} from '../../../shared/lib/entity/Entity';
@@ -30,9 +29,7 @@ import {Connection} from '../../../server/lib/connection/Connection';
 import {ChargenResponse} from '../../../shared/lib/protocol/ChargenResponse';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class ChargenRequest
-  extends SharedChargenRequest
-  implements IncommingPacket
+export class ChargenRequest  extends SharedChargenRequest
 {
   constructor(characterName: string)
   {

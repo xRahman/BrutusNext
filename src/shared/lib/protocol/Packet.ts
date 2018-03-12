@@ -14,5 +14,9 @@ import {Connection} from '../../../shared/lib/connection/Connection';
 /// TODO: Společný předek možná nakone vůbec nebude potřeba.
 export abstract class Packet extends Serializable
 {
-  // Nothing for now.
+  public async process(connection: Connection): Promise<void>
+  {
+    ERROR("Attempt to process() a packet which is"
+      + " not supposed to be processed");
+  }
 }
