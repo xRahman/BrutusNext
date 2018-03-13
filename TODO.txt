@@ -15,6 +15,10 @@ Logování a errory
 
 Taky můžu udělat chytrou fci ERROR, která bude detekovat typ parametru.
 - to zní dobře
+- Potenciální problém je, že někdo může udělat:
+    throw "Chyba bez new Error()"
+  což se mi pak detekuje jako string a logne se to jako standardní ERROR().
+  Správně by to mělo sprostě nadávat, že se má házet Error object.
 
 function ERROR(error: any)
 {
