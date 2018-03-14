@@ -1,6 +1,17 @@
 TO DO, TO DO, TODO TODO TODO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+TODO: Top-level odchytávání výjímek
+  (viz ClientSocket.onReceiveMessage())
+
+
+
+TODO: funkce process() v packetech by měly chytat svoje výjimky.
+V connection.receiveData() se to dělat nebude, tam to vůbec probublat
+nemá (tam už je pozdě na korektní error handling). Chytit bych to měl
+pak až úplně na top levelu, což je nejspíš někde ve zpracování data eventu na
+socketu.
+
 
 --------------------------------------------------------------
 
@@ -36,6 +47,11 @@ function ERROR(error: any)
   }
 }
 
+TODO: funkce REPORT(error);
+[done]
+
+TODO: '[ERROR]: ' by se mělo k hlášce přidávat už ve fci ERROR().
+[done]
 
 --------------------------------------------------------------
 
@@ -213,6 +229,7 @@ TODO: v ServerApp a ClientApp asi u server-specific a client-specific
 
 TODO: Zvážit, jestli Connection a ServerSocket musí být dvě různé classy
   (možná by dávalo větší smysl, kdyby to byla jedna classa).
+- možná by Connection mohla dědit z WebSocketu.
 
 TODO: Z WebSocketu byla zrušena property 'upgradeReq'. Místo toho
 se teď předává parametrem při vytoření socketu:

@@ -33,6 +33,7 @@ export class MessageColors
 
     // --------------------- Syslog messages ---------------------
 
+    RUNTIME_EXCEPTION:     '&w',
     RUNTIME_ERROR:         '&w',
     FATAL_RUNTIME_ERROR:   '&R',
     SYSTEM_INFO:           '&g',

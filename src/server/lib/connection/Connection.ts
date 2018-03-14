@@ -182,15 +182,7 @@ export class Connection implements SharedConnection
     if (packet === null)
       return;
 
-    try
-    {
-      await packet.process(this);
-    }
-    catch (error)
-    {
-      LOG_EXCEPTION(error);
-      /// TODO;
-    }
+    await packet.process(this);
   }
 
   // Sends 'packet' to web socket.

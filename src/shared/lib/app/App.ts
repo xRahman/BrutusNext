@@ -16,6 +16,7 @@ export abstract class App
 {
   // -------------- Static class data -------------------
 
+  // This needs to be inicialized in descendants.
   protected static instance: App;
 
   // ---------------- Protected data --------------------
@@ -27,71 +28,32 @@ export abstract class App
 
   // --------------- Static accessors -------------------
 
-  public static get entities()
+  public static get entities() { return this.instance.entities; }
+  public static get prototypes() { return this.instance.prototypes; }
+
+  // ------------- Public static methods ----------------
+
+  // Don't call this directly, use ERROR() instead.
+  public static reportException(error: Error)
   {
-    return this.instance.entities;
+    this.instance.reportException(error);
   }
 
-  public static get prototypes()
-  {
-    return this.instance.prototypes;
-  }
-
-  // ------------- Public static methods ---------------- 
-
-  // Reports runtime error.
-  // (Don't call this directly, use ERROR() instead.)
+  // Don't call this directly, use ERROR() instead.
   public static reportError(message: string): void
   {
-    /// Změna: Instance vždycky existuje.
-    /*
-    // If ERROR() is called from within an initialization
-    // of App instance, the instance of App doesn't exist
-    // yet so we can only report it directly.
-    if (!this.instance)
-    {
-      throw new Error
-      (
-        '[ERROR triggered prior to App.createInstance()]: ' + message
-      );
-    }
-    else
-    {
-      this.instance.reportError(message);
-    }
-    */
-
     this.instance.reportError(message);
   }
 
-  // Reports fatal runtime error.
-  // (Don't call this directly, use FATAL_ERROR() instead.)
+  // Don't call this directly, use ERROR() instead.
   public static reportFatalError(message: string): void
   {
-    /// Změna: Instance vždycky existuje.
-    /*
-    // If FATAL_ERROR() is called from within an initialization
-    // of App instance, the instance of App doesn't exist yet so
-    // we can only report it directly.  
-    if (!this.instance)
-    {
-      throw new Error
-      (
-        '[ERROR triggered prior to App.createInstance()]: ' + message
-      );
-    }
-    else
-    {
-      this.instance.reportFatalError(message);
-    }
-    */
-
     this.instance.reportFatalError(message);
   }
 
   // Sends message to syslog.
   // (Don't call this directly, use Syslog.log() instead.)
-  public static syslog
+  public static log
   (
     text: string,
     msgType: MessageType,
@@ -99,37 +61,16 @@ export abstract class App
   )
   : void
   {
-    this.instance.syslog(text, msgType, adminLevel);
+    this.instance.log(text, msgType, adminLevel);
   }
-
-  // ------------ Protected static methods --------------
-
-  /// To be deleted.
-  /*
-  // -> Returns ServerApp or ClientApp. In the server code,
-  //    this.instance is actually an instance of ServerApp
-  //    and in client code, it's an instance of ClientApp.
-  protected static getInstance(): App
-  {
-    if (!this.instance)
-    {
-      // We can't use ERROR() here because ERROR() is handled by App
-      // which doesn't exist here.
-      throw new Error("Instance of App doesn't exist yet");
-    }
-
-    return this.instance;
-  }
-  */
 
   // --------------- Protected methods ------------------
 
-  // Reports runtime error.
+  protected abstract reportException(error: Error): void;
   protected abstract reportError(message: string): void;
-  // Reports fatal runtime error.
   protected abstract reportFatalError(message: string): void;
 
-  protected abstract syslog
+  protected abstract log
   (
     message: string,
     msgType: MessageType,

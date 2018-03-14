@@ -4,8 +4,9 @@
   Manages an instance of web client application.
 
   Usage:
-    import {Client} from './Client';
-    Client.create(); // Creates an instance.
+    import {ClientApp} from '../client/lib/app/ClientApp';
+    const CLIENT_APP_VERSION = "0.0";
+    ClientApp.run(CLIENT_APP_VERSION);
 */
 
 'use strict';
@@ -21,8 +22,6 @@ import {App} from '../../../shared/lib/app/App';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {ClientEntities} from '../../../client/lib/entity/ClientEntities';
 import {ClientPrototypes} from '../../../client/lib/entity/ClientPrototypes';
-///import {Body} from '../../../client/gui/component/Body';
-///import {ScrollWindow} from '../../../client/gui/scroll/ScrollWindow';
 import {Document} from '../../../client/gui/Document';
 import {Connection} from '../../../client/lib/connection/Connection';
 import {ClientSocket} from '../../../client/lib/net/ClientSocket';
@@ -30,14 +29,21 @@ import {Windows} from '../../../client/gui/window/Windows';
 
 export class ClientApp extends App
 {
-  // -------------- Static class data -------------------
+  // -------------- Static constants --------------------
 
-  public static get APP_ERROR() { return 'Application Error'; }
+  public static readonly APP_ERROR = "Application Error";
+
+  // --------------- Static accessors -------------------
+
+  public static get document() { return this.instance.document; }
+  public static get windows() { return this.instance.windows; }
+  public static get connection() { return this.instance.connection; }
+  public static get state() { return this.instance.state; }
+
+  // -------------- Static class data -------------------
 
   // ~ Overrides App.instance.
   protected static instance = new ClientApp();
-
-  // ----------------- Public data ----------------------
 
   // ---------------- Protected data --------------------
 
@@ -46,7 +52,6 @@ export class ClientApp extends App
   protected entities = new ClientEntities();
 
   // ~ Overrides App.prototypes.
-  // Manages prototype entities.
   protected prototypes = new ClientPrototypes();
 
   // ----------------- Private data ---------------------
@@ -56,39 +61,13 @@ export class ClientApp extends App
   //  open the client in multiple tabs).
   private connection = new Connection();
 
-  // --- components ---
-
   // Html document.
   private document = new Document();
 
-  // All windows should be here.
   private windows = new Windows();
 
-  // Client application state
-  // (determines which windows are visible).
+  // Application state determines which windows are visible.
   private state = ClientApp.State.INITIAL;
-
-  // --------------- Static accessors -------------------
-
-  public static get document()
-  {
-    return this.instance.document;
-  }
-
-  public static get windows()
-  {
-    return this.instance.windows;
-  }
-
-  public static get connection()
-  {
-    return this.instance.connection;
-  }
-
-  public static get state()
-  {
-    return this.instance.state;
-  }
 
   // ------------- Public static methods ----------------
 
@@ -103,139 +82,34 @@ export class ClientApp extends App
 
     this.instance.state = state;
 
-    this.instance.windows.onAppChangedState(state);
+    this.windows.onAppChangedState(state);
   }
 
   // Creates and runs an instance of ClientApp.
-  public static async run()
+  public static async run(version: string)
   {
-    /// To be deleted.
-    /*
-    if (this.instanceExists())
-    {
-      ERROR("Instance of ClientApp already exists."
-        + "ClientApp.run() can only be called once");
-      return;
-    }
+    let clientApp = this.instance;
 
-    // Create the singleton instance of ClientApp.
-    this.createInstance();
-    */
-
-    // Run client application.
-    await this.instance.run();
-  }
-
-  // ------------ Protected static methods -------------- 
-
-  /// To be deleted.
-  /*
-  // Creates an instance of a client. Client is a singleton,
-  // so it must not already exist.
-  protected static createInstance()
-  {
-    if (App.instance !== null)
-    {
-      ERROR("Client already exists, not creating it");
-      return;
-    }
-
-    App.instance = new ClientApp();
-  }
-  */
-
-  // -> Returns the ClientApp singleton instance.
-  protected static getInstance(): ClientApp
-  {
-    if (this.instance === null || this.instance === undefined)
-    {
-      FATAL_ERROR("Instance of client doesn't exist yet");
-      // This is never called, FATAL_ERROR exits the app.
-      throw new Error("Missing client app instance");
-    }
-
-    // We can safely typecast here, because ClientApp.createInstance()
-    // assigns an instance of ClientApp to App.instance.
-    ///return <ClientApp>this.instance;
-    return this.instance;
-  }
-
-  // --------------- Protected methods ------------------
-
-  // ~ Overrides App.reportError().
-  // Reports error message and stack trace.
-  // (Don't call this method directly, use ERROR()
-  //  from /shared/lib/error/ERROR).
-  protected reportError(message: string): void
-  {
-    // We throw an error instead of reporting to the console
-    // because this way Chrome prints out stack trace using
-    // source maps (so in .ts files) rathen than in .js files
-    // (which is not so useful).
-    throw new Error('[ERROR]: ' + message);
-
-    // let error = new Error('[ERROR]: ' + message);
-
-    // error.name = ClientApp.APP_ERROR;
-
-    // throw error;
-
-    // let errorMsg = message + "\n"
-    //   + Syslog.getTrimmedStackTrace(Syslog.TrimType.ERROR);
-
-    // // Just log the message to the console for now.
-    // console.log('ERROR: ' + errorMsg);
-  }
-
-  // ~ Overrides App.reportFatalError().
-  // Reports error message and stack trace and terminates the program.
-  // (Don't call this method directly, use FATAL_ERROR()
-  //  from /shared/lib/error/ERROR).
-  protected reportFatalError(message: string): void
-  {
-    // We throw an error instead of reporting to the console
-    // because this way Chrome prints out stack trace using
-    // source maps (so in .ts files) rathen than in .js files
-    // (which is not so useful).
-    throw new Error('[FATAL ERROR]: ' + message);
-
-    // let errorMsg = message + "\n"
-    //   + Syslog.getTrimmedStackTrace(Syslog.TrimType.ERROR);
-      
-    // // Just log the message to the console for now
-    // // (terminating the client application is probably not necessary).
-    // console.log('FATAL_ERROR: ' + errorMsg);
-  }
-
-  // ~ Overrides App.syslog().
-  protected syslog
-  (
-    message: string,
-    msgType: MessageType,
-    adminLevel: AdminLevel
-  )
-  : void
-  {
-    ClientSyslog.log(message, msgType, adminLevel);
-  }
-
-  // ---------------- Private methods -------------------
-
-  // Starts the client application.
-  private async run()
-  {
-    if (this.isAlreadyRunning())
+    if (clientApp.isAlreadyRunning())
       return;
 
-    if (!ClientSocket.browserSupportsWebSockets())
+    // Log our name and version.
+    Syslog.log
+    (
+      "BrutusNext client v. " + version,
+      MessageType.SYSTEM_INFO,
+      AdminLevel.IMMORTAL
+    );
+
+    if (!ClientSocket.checkWebSocketSupport())
       return;
 
-    this.initClasses();
-    this.initGUI();
+    clientApp.initClasses();
+    clientApp.initGUI();
 
-    this.connection.connect();
+    clientApp.connection.connect();
 
-    this.showLoginWindow();
+    clientApp.showLoginWindow();
     
     /// TEST:
     //ClientApp.setState(ClientApp.State.IN_GAME);
@@ -251,6 +125,51 @@ export class ClientApp extends App
 
     /// Jinak asi fakt budu muset udělat logovací komponenty, protože
     /// z telnet-style loginu v clientu nepoznám, že se hráč nalogoval do hry.
+  }
+
+  // --------------- Protected methods ------------------
+
+  // ~ Overrides App.reportException().
+  protected reportException(error: Error): void
+  {
+    this.report(error);
+  }
+
+  // ~ Overrides App.reportError().
+  protected reportError(message: string): void
+  {
+    this.report(new Error(message));
+  }
+
+  // ~ Overrides App.reportFatalError().
+  protected reportFatalError(message: string): void
+  {
+    // There is no point in 'crashing' client app, it's just
+    // a web page.
+    this.report(new Error(message));
+  }
+
+  // ~ Overrides App.log().
+  protected log
+  (
+    message: string,
+    msgType: MessageType,
+    adminLevel: AdminLevel
+  )
+  : void
+  {
+    ClientSyslog.log(message, msgType, adminLevel);
+  }
+
+  // ---------------- Private methods -------------------
+
+  protected report(error: Error): void
+  {
+    // Throw an error instead of reporting to the console
+    // because this way Chrome prints out stack trace using
+    // source maps (so in .ts files) rathen than in .js files
+    // (which is not so useful).
+    throw error;
   }
 
   private registerBeforeUnloadHandler()

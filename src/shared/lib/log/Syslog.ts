@@ -25,6 +25,9 @@ import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 
 export class Syslog
 {
+  public static readonly STACK_IS_NOT_AVAILABLE =
+    "Stack trace is not available."
+
   public static log
   (
     text: string,
@@ -32,7 +35,7 @@ export class Syslog
     adminLevel: AdminLevel
   )
   {
-    App.syslog(text, msgType, adminLevel);
+    App.log(text, msgType, adminLevel);
   }
 
   public static logConnectionInfo(message: string)
@@ -56,61 +59,26 @@ export class Syslog
   }
 
   // Reads stack trace from Error() object.
-  // -> Returns string containing stack trace with first few lines
-  //    trimmed accoding to 'trimType' parameter.
-  public static getTrimmedStackTrace(trimType: Syslog.TrimType): string | null
+  // -> Returns string containing stack trace with first two lines trimmed.
+  public static getTrimmedStackTrace(): string
   {
-    let trimValue = 0;
-
-    // Cut off first few lines from tmpErr.stack string so
-    // it starts at the line where error actually occured.
-    switch (trimType)
-    {
-      case Syslog.TrimType.ERROR:
-        
-        trimValue = 5;
-        break;
-
-      case Syslog.TrimType.PROXY_HANDLER:
-        trimValue = 6;
-        break;
-
-      case Syslog.TrimType.PROXY_HANDLER_PLUS_ONE:
-        trimValue = 7;
-        break;
-    }
+    const TRIM_VALUE = 5;
 
     // Create a temporary error object to construct stack trace for us.
     let tmpErr = new Error();
 
-    /// TODO: Asi spíš exception. Error object vyrábím přímo tady, takže
-    /// stack trace by měl bejt k dispozici vždycky.
-    if (!tmpErr)
-      return null;
-
-    let stackTrace =
-      tmpErr.stack ? tmpErr.stack : "Stack trace is not available.";
+    if (!tmpErr || !tmpErr.stack)
+      return Syslog.STACK_IS_NOT_AVAILABLE;
 
     // Break stack trace string into an array of lines.
-    let stackTraceLines = stackTrace.split('\n');
+    let stackTrace = tmpErr.stack.split('\n');
     
-    // Remove number of lines equal to 'trimValue', starting at index 0.
-    stackTraceLines.splice(0, trimValue);
+    // Remove number of lines equal to 'trimValue' from the top of the
+    // stack to ensure that stack starts at the line where error actually
+    // occured.
+    stackTrace.splice(0, TRIM_VALUE);
 
-    // Join the array back to a single string.
-    return stackTraceLines.join('\n');
-  }
-}
-
-
-// ------------------ Type declarations ----------------------
-
-export module Syslog
-{
-  export enum TrimType
-  {
-    ERROR,
-    PROXY_HANDLER,
-    PROXY_HANDLER_PLUS_ONE
+    // Join the array back to a single multi-line string.
+    return stackTrace.join('\n');
   }
 }

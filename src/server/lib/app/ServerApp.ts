@@ -33,12 +33,29 @@ import {HttpServer} from '../../../server/lib/net/HttpServer';
 
 export class ServerApp extends App
 {
-  // -------------- Static class data -------------------
+  // -------------- Static constants --------------------
 
-  public static get DATA_DIRECTORY()
-  {
-    return './server/data/';
-  }
+  public static readonly DATA_DIRECTORY = './server/data/';
+
+  // --------------- Static accessors -------------------
+
+  public static get timeOfBoot() { return this.instance.timeOfBoot; }
+  public static get game() { return this.instance.game; }
+  public static get accounts() { return this.instance.accounts; }
+  public static get connections() { return this.instance.connections; }
+  public static get admins() { return this.instance.admins; }
+
+  // --------------- Static accessors -------------------
+
+  // ~ Overrides App.entities()
+  // (Override exists in order to return type be ServerEntities.)
+  public static get entities() { return this.instance.entities; }
+
+  // ~ Overrides App.prototypes()
+  // (Override exists in order to return type be ServerPrototypes.)
+  public static get prototypes() { return this.instance.prototypes; }
+
+  // -------------- Static class data -------------------
 
   // ~ Overrides App.instance.
   protected static instance = new ServerApp();
@@ -54,13 +71,13 @@ export class ServerApp extends App
 
   private game = new Game();
 
-  ///private telnetServer = new TelnetServer();
-
   /// Http server also runs a websocket server inside it.
   private httpServer = new HttpServer();
 
   private connections = new Connections();
   private accounts = new Accounts();
+
+  // ---------------- Protected data --------------------
 
   // ~ Overrides App.entities.
   protected entities = new ServerEntities(this.timeOfBoot);
@@ -68,94 +85,48 @@ export class ServerApp extends App
   // ~ Overrides App.prototypes.
   protected prototypes = new ServerPrototypes();
 
-  // --------------- Static accessors -------------------
-
-  // ~ Overrides App.entities().
-  public static get entities()
-  {
-    return this.instance.entities;
-  }
-
-  // ~ Overrides App.prototypes().
-  public static get prototypes()
-  {
-    return this.instance.prototypes;
-  }
-
-  public static get timeOfBoot()
-  {
-    /// To be deleted.
-    /*
-    if (this.instance.timeOfBoot === null)
-    {
-      ERROR("Time of boot is not initialized yet");
-    }
-    */
-
-    return this.instance.timeOfBoot;
-  }
-
-  public static get game()
-  {
-    return this.instance.game;
-  }
-
-  public static get accounts()
-  {
-    return this.instance.accounts;
-  }
-
-  public static get connections()
-  {
-    return this.instance.connections;
-  }
-
-  public static get admins()
-  {
-    return this.instance.admins;
-  }
-
-  // public static get telnetServer()
-  // {
-  //   return this.instance.telnetServer;
-  // }
-
   // ------------- Public static methods ----------------
 
   // Loads the game (or creates a new default one
   // if there is no ./data directory).
-  public static async run(/*telnetPort: number*/)
+  public static async run(appName: string, version: string)
   {
-    /// To be deleted.
-    /*
-    if (!this.instance)
-    {
-      ERROR("Instance of ServerApp doesn't exist yet."
-        + " Use ServerApp.createInstance() before you"
-        + " call ServerApp.run()");
+    let serverApp = this.instance;
+
+    if (serverApp.isAlreadyRunning())
       return;
-    }
-    */
 
-    // Run server application.
-    await this.instance.run(/*telnetPort*/);
+    // Log our name and version.
+    Syslog.log
+    (
+      appName + " server v. " + version,
+      MessageType.SYSTEM_INFO,
+      AdminLevel.IMMORTAL
+    );
+
+    ///test();
+
+    serverApp.initClasses();
+
+    // We need to check if './data/' directory exists before
+    // initPrototypes() is called, because it will be created
+    // there it doesn't exist.
+    let dataExists = await FileSystem.exists(ServerApp.DATA_DIRECTORY);
+
+    // Create root prototype entities if they don't exist yet or load
+    // them from disk. Then recursively load all prototype entities
+    // inherited from them.
+    await this.prototypes.init();
+
+    // If /server/data/ directory didn't exist, create and save a new world.
+    if (!dataExists)
+      await serverApp.createDefaultData();
+    else
+      await serverApp.loadData();
+    
+    // Http server also starts a websocket server inside it.
+    serverApp.startHttpServer();
   }
-
-  /// Moved to Admins as static method.
-  // // If there are no admins yet, sets the highest possible admin rights
-  // // to the character (in other words, the first character created when
-  // // the mud is 'freshly installed' gets maximum admin rights).
-  // public static onCharacterCreation(character: GameEntity)
-  // {
-  //   this.instance.admins.onCharacterCreation(character);
-  // }
-
-  /// Moved to Admins as static method.
-  // /// TODO: Přesunout do Admins jako statickou metodu.
-  // public static getAdminLevel(entity: GameEntity)
-  // {
-  //   return this.instance.admins.getAdminLevel(entity);
-  // }
 
   // -> Returns null if no message of the day is set at the moment.
   public static getMotd(): string
@@ -170,56 +141,30 @@ export class ServerApp extends App
     return "&gMessage of the day:\n&_" + motd;
   }
 
-  /// To be deleted.
-  /*
-  // Creates an instance of a server. Server is a singleton,
-  // so it must not already exist.
-  public static createInstance()
-  {
-    if (App.instance !== null)
-    {
-      ERROR("Server already exists, not creating it");
-      return;
-    }
-
-    App.instance = new ServerApp();
-  }
-  */
-
-  // ------------ Protected static methods --------------
-
-  /// To be deleted.
-  /*
-  // -> Returns the ServerApp singleton instance.
-  protected static getInstance(): ServerApp
-  {
-    if (ServerApp.instance === null || ServerApp.instance === undefined)
-    {
-      FATAL_ERROR("Instance of server doesn't exist yet");
-    }
-
-    // We can safely typecast here, because ServerApp.createInstance()
-    // assigns an instance of ServerApp to App.instance.
-    return <ServerApp>App.instance;
-  }
-  */
-
-  // ---------------- Public methods --------------------
-
   // --------------- Protected methods ------------------
 
+  // ~ Overrides App.reportException().
+  protected reportException(error: Error): void
+  {
+    let errorMsg = error.message + "\n";
+
+    if (error.stack)
+      errorMsg += error.stack;
+    else
+      errorMsg += Syslog.STACK_IS_NOT_AVAILABLE;
+
+    Syslog.log(errorMsg, MessageType.RUNTIME_EXCEPTION, AdminLevel.ELDER_GOD);
+  }
+
   // ~ Overrides App.reportError().
-  // Reports error message and stack trace.
-  // (Don't call this method directly, use ERROR()
-  //  from /shared/lib/error/ERROR).
   protected reportError(message: string): void
   {
-    let stackTrace = Syslog.getTrimmedStackTrace(Syslog.TrimType.ERROR);
+    let stackTrace = Syslog.getTrimmedStackTrace();
 
     let errorMsg = message;
     
     if (stackTrace)
-      errorMsg += "\n" + Syslog.getTrimmedStackTrace(Syslog.TrimType.ERROR);
+      errorMsg += "\n" + Syslog.getTrimmedStackTrace();
 
     Syslog.log(errorMsg, MessageType.RUNTIME_ERROR, AdminLevel.ELDER_GOD);
   }
@@ -231,7 +176,7 @@ export class ServerApp extends App
   protected reportFatalError(message: string): void
   {
     let errorMsg = message + "\n"
-      + Syslog.getTrimmedStackTrace(Syslog.TrimType.ERROR);
+      + Syslog.getTrimmedStackTrace();
 
     Syslog.log
     (
@@ -247,10 +192,10 @@ export class ServerApp extends App
     process.exit(1);
   }
 
-  // ~ Overrides App.syslog().
+  // ~ Overrides App.log().
   // Logs the message and sends it to all online
   // admins with sufficient 'adminLevel'.
-  protected syslog
+  protected log
   (
     message: string,
     msgType: MessageType,
@@ -262,49 +207,6 @@ export class ServerApp extends App
   }
 
   // --------------- Private methods --------------------
-
-  // Loads or reates the data and starts the server application.
-  private async run(/*telnetPort: number*/)
-  {
-    if (this.isAlreadyRunning())
-      return;
-
-    ///test();
-
-    this.initClasses();
-
-    // We need to check if './data/' directory exists before
-    // initPrototypes() is called, because it will be created
-    // there it doesn't exist.
-    let dataExists = await FileSystem.exists(ServerApp.DATA_DIRECTORY);
-
-    // Create root prototype entities if they don't exist yet or load
-    // them from disk. Then recursively load all prototype entities
-    // inherited from them.
-    await this.prototypes.init();
-
-    // If /server/data/ directory didn't exist, create and save a new world.
-    if (!dataExists)
-      await this.createDefaultData();
-    else
-      await this.loadData();
-
-    ///this.startTelnetServer(telnetPort);
-    
-    // Http server also starts a websocket server inside it.
-    this.startHttpServer();
-  }
-
-  // private startTelnetServer(telnetPort: number)
-  // {
-  //   if (this.telnetServer.isOpen())
-  //   {
-  //     ERROR("Telnet server is already running");
-  //     return;
-  //   }
-
-  //   this.telnetServer.start();
-  // }
 
   private startHttpServer()
   {
@@ -328,66 +230,3 @@ export class ServerApp extends App
     await this.game.load();
   }
 }
-
-
-
-///////////////////////////////////////////////
-
-/*
-/// Test pojmenovaných parametrů s defaultní hodnotou.
-function createForm
-(
-  {
-    $container = null,
-    name,
-    gCssClass = 'G_NoGraphics',
-    sCssClass,
-  }:
-  {
-    $container?: JQuery,
-    name: string
-    gCssClass?: string,
-    sCssClass: string,
-  }
-)
-{
-  console.log('-----------------------------');
-  console.log('Container: ' + $container);
-  console.log('name: ' + name);
-  console.log('gCssClass: ' + gCssClass);
-  console.log('sCssClass: ' + sCssClass);
-  console.log('-----------------------------');
-}
-
-function create
-(
-  {
-    $container = null,
-    name,
-    gCssClass,
-    sCssClass = 'S_Form'
-  }:
-  {
-    $container?: JQuery,
-    name: string,
-    gCssClass?: string,
-    sCssClass?: string
-  }
-)
-{
-  createForm
-  (
-    {
-      $container,
-      gCssClass,
-      sCssClass,
-      name
-    }
-  );
-}
-
-function test()
-{
-  create({ name: 'account_name_input' });
-}
-*/

@@ -164,7 +164,7 @@ export class ServerSocket
       return;
     }
 
-    this.webSocket.onmessage = (event) => { this.onMessage(event); };
+    this.webSocket.onmessage = (event) => { this.onReceiveMessage(event); };
     this.webSocket.onopen = (event) => { this.onOpen(event); };
     this.webSocket.onerror = (event) => { this.onError(event); };
     this.webSocket.onclose = (event) => { this.onClose(event); };
@@ -225,7 +225,7 @@ export class ServerSocket
 
   // ---------------- Event handlers --------------------
 
-  private async onMessage
+  private async onReceiveMessage
   (
     event: { data: WebSocket.Data, type: string, target: WebSocket }
   )
@@ -245,10 +245,10 @@ export class ServerSocket
     //   return;
     // }
 
-    if (typeof event.data !== 'string')
+    if (!Utils.isString(event.data))
     {
       ERROR("Websocket " + this.getOrigin() + " received"
-        + " a non-string data. Message will not be processed"
+        + " non-string data. Message will not be processed"
         + " because we can only process string data");
       return;
     }
@@ -256,7 +256,14 @@ export class ServerSocket
     /// DEBUG:
     console.log('(ws) received message: ' + event.data);
 
-    await this.connection.receiveData(event.data);
+    try
+    {
+      await this.connection.receiveData(event.data);
+    }
+    catch (error)
+    {
+      Utils.reportUncaughtException(error);
+    }
   }
 
   private onOpen(event: { target: WebSocket })

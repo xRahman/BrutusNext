@@ -14,6 +14,8 @@
 
 import {ClientApp} from '../client/lib/app/ClientApp';
 
+const CLIENT_APP_VERSION = "0.0";
+
 /// Tohle je asi zbytečný. Sice to funguje, ale udělá to jen to, že
 /// chrome místo 'Uncaught (in promise) Error: [ERROR]: ...' vypíše
 /// 'Uncaught Error: [ERROR]: ...'. To už je asi lepší nechat tam to
@@ -38,18 +40,4 @@ import {ClientApp} from '../client/lib/app/ClientApp';
 //   }
 // );
 
-// Program entry point.
-// It's called main() to sound familiar to C programmers ;)
-async function main()
-{
-  console.log('BrutusNext client is running!');
-
-  // Create and run an instance of ClientApp.
-  // (It will handle the creation of all html elements
-  //  inside our application, handle events, etc.)
-  ClientApp.run();
-}
-
-// Run the main() function.
-// (it's not done automatically in JavaScript)
-main();
+ClientApp.run(CLIENT_APP_VERSION);

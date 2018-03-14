@@ -17,7 +17,7 @@
 */
 
 'use strict';
-
+import {ERROR} from '../shared/lib/error/ERROR';
 import {ServerUtils} from '../server/lib/utils/ServerUtils';
 import {ServerApp} from '../server/lib/app/ServerApp';
 ///import {TelnetServer} from '../server/lib/net/telnet/TelnetServer';
@@ -127,22 +127,10 @@ process.on
 // It's called main() to sound familiar to C programmers ;)
 async function main()
 {
-  /// To be deleted.
-  // // Create instance of ServerApp first so we can use Syslog.
-  // ServerApp.createInstance();
-
-  // Log our name and version.
-  Syslog.log
-  (
-    packageDotJson.name + " server v. " + packageDotJson.version,
-    MessageType.SYSTEM_INFO,
-    AdminLevel.IMMORTAL
-  );
-
   ///let cmdline = parseCmdlineParams();
 
   ///await ServerApp.run(cmdline.port);
-  await ServerApp.run();
+  await ServerApp.run(packageDotJson.name, packageDotJson.version);
 }
 
 // Run the main() function.

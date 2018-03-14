@@ -7,6 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {WebSocketEvent} from '../../../shared/lib/net/WebSocketEvent';
 import {JsonObject} from '../../../shared/lib/json/JsonObject';
 import {Packet} from '../../../shared/lib/protocol/Packet';
@@ -24,7 +25,7 @@ export class ClientSocket
 
   // ---------------- Static methods --------------------
 
-  public static browserSupportsWebSockets(): boolean
+  public static checkWebSocketSupport(): boolean
   {
     if (typeof WebSocket === 'undefined')
     {
@@ -359,7 +360,22 @@ export class ClientSocket
   {
     console.log('Received message: ' + event.data);
 
-    await this.connection.receiveData(event.data);
+    if (!Utils.isString(event.data))
+    {
+      ERROR("Websocket received non-string data."
+        + " Message will not be processed because"
+        + " we can only process string data");
+      return;
+    }
+
+    try
+    {
+      await this.connection.receiveData(event.data);
+    }
+    catch (error)
+    {
+      Utils.reportUncaughtException(error);
+    }
   }
 
   private onError(event: ErrorEvent)
