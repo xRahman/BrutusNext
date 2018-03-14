@@ -8,7 +8,6 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
-import {REPORT} from '../../../shared/lib/error/REPORT';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 
 // Types used for constructs like 'new Promise((resolve, reject) => { ... })'.
@@ -256,27 +255,6 @@ export module Utils
     }
 
     return target;
-  }
-
-  export function reportUncaughtException(error: any)
-  {
-    const additionalMessage = "(ADDITIONAL ERROR: An exception"
-      + " has propagated to top-level function. It needs to be"
-      + " caught much deeper where the error can be properly"
-      + " recovered from.)"
-
-    if (error instanceof Error)
-    {
-      error.message = error.message + '\n' + additionalMessage;
-      REPORT(error);
-    }
-    else
-    {
-      // If 'error' is not an instance of Error object,
-      // it will be converted to string and prepended
-      // as a message.
-      REPORT(error + '\n' + additionalMessage);
-    }
   }
 }
 

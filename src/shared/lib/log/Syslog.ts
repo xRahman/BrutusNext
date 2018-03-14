@@ -19,6 +19,7 @@
 
 'use strict';
 
+import {REPORT} from '../../../shared/lib/error/REPORT';
 import {App} from '../../../shared/lib/app/App';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
@@ -80,5 +81,23 @@ export class Syslog
 
     // Join the array back to a single multi-line string.
     return stackTrace.join('\n');
+  }
+
+  public static reportUncaughtException(error: any)
+  {
+    const additionalMessage = "(ADDITIONAL ERROR: An exception"
+      + " has propagated to top-level function. It needs to be"
+      + " caught much deeper where the error can be properly"
+      + " recovered from.)"
+
+    if (error instanceof Error)
+    {
+      error.message = error.message + '\n' + additionalMessage;
+      REPORT(error);
+    }
+    else
+    {
+      REPORT(error + '\n' + additionalMessage);
+    }
   }
 }

@@ -25,23 +25,19 @@ export class ChargenRequest extends Request
     this.version = 0;
   }
 
-  private static get MISSING_CHARACTER_NAME_MESSAGE()
-    { return "Please enter character name."; }
+  private static readonly ENTER_CHARACTER_NAME =
+    "Please enter character name.";
 
-  public static get MIN_NAME_LENGTH_CHARACTERS()
-    { return  3;}
-  public static get MAX_NAME_LENGTH_CHARACTERS()
-    { return  12;}
+  public static readonly MIN_NAME_LENGTH_CHARACTERS = 3;
+  public static readonly MAX_NAME_LENGTH_CHARACTERS = 12;
 
-  public static get VALID_CHARACTERS_REGEXP()
-    { return /[^A-Za-z]/gi; }
+  public static readonly VALID_CHARACTERS_REGEXP = /[^A-Za-z]/gi;
 
   // ----------------- Public data ----------------------
 
   // ---------------- Public methods --------------------
 
-  // -> Returns 'null' if no problem is found.
-  public checkForProblems(): ChargenRequest.Problems | null
+  public checkForProblems(): ChargenRequest.Problems
   {
     let characterNameProblem = this.checkCharacterName();
 
@@ -79,7 +75,7 @@ export class ChargenRequest extends Request
     let problem: (string | null) = null;
 
     if (!this.characterName)
-      return ChargenRequest.MISSING_CHARACTER_NAME_MESSAGE;
+      return ChargenRequest.ENTER_CHARACTER_NAME;
 
     if (problem = this.checkInvalidCharacters())
       return problem;
@@ -99,7 +95,7 @@ export class ChargenRequest extends Request
     const regExp = ChargenRequest.VALID_CHARACTERS_REGEXP;
 
     if (!this.characterName)
-      return ChargenRequest.MISSING_CHARACTER_NAME_MESSAGE;
+      return ChargenRequest.ENTER_CHARACTER_NAME;
 
     if (regExp.test(this.characterName))
       return "Character name can only contain english letters.";
@@ -112,7 +108,7 @@ export class ChargenRequest extends Request
   private checkNameLength(): string | null
   {
     if (!this.characterName)
-      return ChargenRequest.MISSING_CHARACTER_NAME_MESSAGE;
+      return ChargenRequest.ENTER_CHARACTER_NAME;
 
     if (this.characterName.length < ChargenRequest.MIN_NAME_LENGTH_CHARACTERS)
     {
@@ -136,11 +132,28 @@ export class ChargenRequest extends Request
 
 export module ChargenRequest
 {
-  export interface Problems extends Request.Problems
+  export type Problems =
   {
-    characterNameProblem?: string;
-    error?: string;
+    characterNameProblem: string;
   }
+
+  export type Result = Request.Accepted | Request.Error | Problems;
+
+  // export type CharacterNameProblem =
+  // {
+  //   result: "CHARACTER NAME PROBLEM";
+  //   problem: string;
+  // }
+
+  // export type Problems =
+  //   Request.Accepted | Request.Error | CharacterNameProblem;
+
+
+  // export interface Problems extends Request.Problems
+  // {
+  //   characterNameProblem?: string;
+  //   error?: string;
+  // }
 }
 
 Classes.registerSerializableClass(ChargenRequest);

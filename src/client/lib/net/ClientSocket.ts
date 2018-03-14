@@ -7,6 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Syslog} from '../../../shared/lib/log/Syslog';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {WebSocketEvent} from '../../../shared/lib/net/WebSocketEvent';
 import {JsonObject} from '../../../shared/lib/json/JsonObject';
@@ -360,7 +361,7 @@ export class ClientSocket
   {
     console.log('Received message: ' + event.data);
 
-    if (!Utils.isString(event.data))
+    if (typeof event.data !== 'string')
     {
       ERROR("Websocket received non-string data."
         + " Message will not be processed because"
@@ -374,7 +375,7 @@ export class ClientSocket
     }
     catch (error)
     {
-      Utils.reportUncaughtException(error);
+      Syslog.reportUncaughtException(error);
     }
   }
 

@@ -1,9 +1,12 @@
 TO DO, TO DO, TODO TODO TODO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+TODO: Nastudovat mixins:
+  https://blog.mariusschulz.com/2017/05/26/typescript-2-2-mixin-classes
+
+
 TODO: Top-level odchytávání výjímek
   (viz ClientSocket.onReceiveMessage())
-
 
 
 TODO: funkce process() v packetech by měly chytat svoje výjimky.
@@ -11,6 +14,12 @@ V connection.receiveData() se to dělat nebude, tam to vůbec probublat
 nemá (tam už je pozdě na korektní error handling). Chytit bych to měl
 pak až úplně na top levelu, což je nejspíš někde ve zpracování data eventu na
 socketu.
+
+TODO: Hmm, když už mám funkce ERROR() a REPORT(), tak by asi dávala smysl
+  i funkce LOG(). Když nic jinýho, je to kratší než Syslog.log().
+- na druhou stranu mám tam teď specifické logovací fce, což by s jedinou
+  funkcí nešlo...
+[kašlat na to]
 
 
 --------------------------------------------------------------
@@ -52,6 +61,10 @@ TODO: funkce REPORT(error);
 
 TODO: '[ERROR]: ' by se mělo k hlášce přidávat už ve fci ERROR().
 [done]
+
+TODO: Otestovat 'throw "Error"'
+
+TODO: Otestovat neodchycenou výjimku.
 
 --------------------------------------------------------------
 

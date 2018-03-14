@@ -184,4 +184,39 @@ export class RegisterRequest extends Request
   }
 }
 
+// ------------------ Type declarations ----------------------
+
+export module RegisterRequest
+{
+  export type Problems =
+  {
+    emailProblem?: string;
+    passwordProblem?: string;
+  }
+
+  export type Result = Request.Accepted | Request.Error | Problems;
+
+  // export type EmailProblem =
+  // {
+  //   result: "EMAIL PROBLEM";
+  //   problem: string;
+  // }
+
+  // export type PasswordProblem =
+  // {
+  //   result: "EMAIL PROBLEM";
+  //   problem: string;
+  // }
+
+  // export type Problems =
+  //   Request.Accepted | Request.Error | CharacterNameProblem;
+
+
+  // export interface Problems extends Request.Problems
+  // {
+  //   characterNameProblem?: string;
+  //   error?: string;
+  // }
+}
+
 Classes.registerSerializableClass(RegisterRequest);

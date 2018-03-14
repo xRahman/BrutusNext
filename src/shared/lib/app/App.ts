@@ -4,6 +4,25 @@
   Abstract ancestor for ClientApp and ServerApp.
 */
 
+/*
+  App is a singleton. We could implement it by using
+  only static methods and data so we wouln't need to
+  ensure that there is only one instance. We can't do
+  that, though, because we need polymorphism in order
+  to call server or client version of some methods from
+  shared code (by calling App.method()). So we need a
+  singleton instance after all.
+
+  The good new is that we don't need stuff like
+  'createInstance()' - all we need is an initialized
+  static property 'instance'. It can only exist once
+  because it is static and it is only assigned once
+  because static properties are only inicialized once.
+  This way we also don't need to ensure that an instance
+  exists every time we want to use it, because when you
+  import and App module, initializer is certainly executed.
+*/
+
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
@@ -82,7 +101,8 @@ export abstract class App
   {
     if (this.isRunning)
     {
-      // 'this.constructor.name' is the name of the class.
+      // 'this.constructor.name' is the name of the class
+      // (ClientApp or ServerApp).
       ERROR("Attempt to run " + this.constructor.name
         + " which is already running");
       return true;

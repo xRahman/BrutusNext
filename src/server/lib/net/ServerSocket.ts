@@ -245,7 +245,7 @@ export class ServerSocket
     //   return;
     // }
 
-    if (!Utils.isString(event.data))
+    if (typeof event.data !== 'string')
     {
       ERROR("Websocket " + this.getOrigin() + " received"
         + " non-string data. Message will not be processed"
@@ -262,7 +262,7 @@ export class ServerSocket
     }
     catch (error)
     {
-      Utils.reportUncaughtException(error);
+      Syslog.reportUncaughtException(error);
     }
   }
 

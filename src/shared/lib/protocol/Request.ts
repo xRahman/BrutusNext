@@ -24,9 +24,22 @@ export abstract class Request extends Packet
 
 export module Request
 {
-  export interface Problems
+  /// Result je: Accepted | Error | Problems
+
+  export type Accepted =
   {
-    // Any number of optional string properties.
-    [key: string]: string | undefined
-  }
+    result: "ACCEPTED";
+  };
+
+  export type Error =
+  {
+    result: "ERROR";
+    problem: string;
+  };
+
+  // export interface Problems
+  // {
+  //   // Any number of optional string properties.
+  //   [key: string]: string | undefined
+  // };
 }
