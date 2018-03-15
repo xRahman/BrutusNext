@@ -188,6 +188,17 @@ export class RegisterRequest extends Request
 
 export module RegisterRequest
 {
+  /// Ještě možná jinak: Buď jsou tam nějaké problémy či errory
+  /// (tzn. asi existuje aspoň jedna property), nebo je to ok.
+  /// - takže by to vlastně byl jeden objekt s několika nepovinnejma
+  ///   propertama.
+  /// Otázka jen je, jak kontrolovat, že jsem checknul všechny
+  /// (tzn. když přidám "problémovou" property, že to na klientovi
+  ///  nebude zobrazovat "všechno v pořádku").
+  /// ... Ehm - stačí checknout, jeslti to je prázdný objekt - i když,
+  /// to vlastně asi jednoduše nejde...
+  /// Šlo by použít: 'if (Object.keys(obj).length === 0)'
+
   export type Problems =
   {
     emailProblem?: string;
