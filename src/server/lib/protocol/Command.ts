@@ -16,8 +16,7 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Connection} from '../../../server/lib/connection/Connection';
-import {Command as SharedCommand} from
-  '../../../shared/lib/protocol/Command';
+import {Command as SharedCommand} from '../../../shared/lib/protocol/Command';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 export class Command extends SharedCommand
@@ -43,5 +42,4 @@ export class Command extends SharedCommand
   // --------------- Private methods --------------------
 }
 
-// This overwrites ancestor class.
 Classes.registerSerializableClass(Command);

@@ -39,5 +39,3 @@ export module SystemMessage
     CLIENT_CLOSED_BROWSER_TAB
   }
 }
-
-Classes.registerSerializableClass(SystemMessage);

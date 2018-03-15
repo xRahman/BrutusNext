@@ -171,5 +171,3 @@ export module ChargenRequest
   //   error?: string;
   // }
 }
-
-Classes.registerSerializableClass(ChargenRequest);

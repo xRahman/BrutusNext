@@ -19,7 +19,7 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {MudColors} from '../../../client/gui/MudColors';
 import {Component} from '../../../client/gui/Component';
 import {LocalStorage} from '../../../client/lib/storage/LocalStorage';
-import {RegisterRequest} from '../../../shared/lib/protocol/RegisterRequest';
+import {RegisterRequest} from '../../../client/lib/protocol/RegisterRequest';
 import {Form} from '../../../client/gui/form/Form';
 import {EmailInput} from '../../../client/gui/form/EmailInput';
 import {PasswordInput} from '../../../client/gui/form/PasswordInput';

@@ -69,5 +69,3 @@ export module LoginRequest
   //   error?: string;
   // }
 }
-
-Classes.registerSerializableClass(LoginRequest);

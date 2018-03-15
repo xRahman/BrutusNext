@@ -10,7 +10,7 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {Component} from '../../../client/gui/Component';
 import {TextInput} from '../../../client/gui/form/TextInput';
-import {ChargenRequest} from '../../../shared/lib/protocol/ChargenRequest';
+import {ChargenRequest} from '../../../client/lib/protocol/ChargenRequest';
 
 export class CharacterNameInput extends TextInput
 {

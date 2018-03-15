@@ -24,5 +24,3 @@ export class Command extends Packet
 
   public command: (string | null) = null;
 }
-
-Classes.registerSerializableClass(Command);

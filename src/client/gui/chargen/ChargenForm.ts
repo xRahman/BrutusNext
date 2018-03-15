@@ -16,7 +16,7 @@ import {CharacterNameInput} from
   '../../../client/gui/chargen/CharacterNameInput';
 import {ChargenWindow} from '../../../client/gui/chargen/ChargenWindow';
 import {Request} from '../../../shared/lib/protocol/Request';
-import {ChargenRequest} from '../../../shared/lib/protocol/ChargenRequest';
+import {ChargenRequest} from '../../../client/lib/protocol/ChargenRequest';
 import {ChargenResponse} from '../../../client/lib/protocol/ChargenResponse';
 
 export class ChargenForm extends Form

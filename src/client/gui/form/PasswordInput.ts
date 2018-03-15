@@ -10,7 +10,7 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {Component} from '../../../client/gui/Component';
 import {FormInput} from '../../../client/gui/form/FormInput';
-import {RegisterRequest} from '../../../shared/lib/protocol/RegisterRequest';
+import {RegisterRequest} from '../../../client/lib/protocol/RegisterRequest';
 
 export class PasswordInput extends FormInput
 {

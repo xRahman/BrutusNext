@@ -1,6 +1,20 @@
 TO DO, TO DO, TODO TODO TODO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+TODO: Vyrobi server verze Packetů, které měly jen client verzi.
+TODO: Udělat shared Packet classy abstraktní.
+
+TODO: S typescriptovým strict módem už asi není třeba všude psát 'use strict';
+
+TODO: Až to zas půjde přeložit a pustit, tak vyzkoušet, jesli se při
+  loadování Serializable z JSONu volá konstruktor a případně čím se
+  to nainicializuje (nejspíš se nevolá, takže by parametry asi měly
+  belt něco | undefined, abych je důsledně ošetřoval před přístupem).
+- zatím v Packetech tu inicializaci v konstruktoru nechám.
+- souvisí s tím taky .version property. Možná by neměla být inicializovaná
+  v konstruktoru, ale prostě v class body.
+
+
 TODO: Přejmenovat checkovací metody na checkForCharacterNameProblem() etc.
 TODO: Návratová hodnota by měla být "OK" | string
   (nikoliv 'null' | string)

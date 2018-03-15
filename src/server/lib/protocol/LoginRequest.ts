@@ -400,5 +400,4 @@ export module LoginRequest
   export type LoginResult = Account | "ERROR" | "NO_SUCH_ACCOUNT";
 }
 
-// This overwrites ancestor class.
 Classes.registerSerializableClass(LoginRequest);

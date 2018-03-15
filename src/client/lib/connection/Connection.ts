@@ -18,8 +18,8 @@ import {Windows} from '../../../client/gui/window/Windows';
 import {ScrollWindow} from '../../../client/gui/scroll/ScrollWindow';
 import {Avatar} from '../../../client/lib/connection/Avatar';
 import {Packet} from '../../../shared/lib/protocol/Packet';
-import {Command} from '../../../shared/lib/protocol/Command';
-import {SystemMessage} from '../../../shared/lib/protocol/SystemMessage';
+import {Command} from '../../../client/lib/protocol/Command';
+import {SystemMessage} from '../../../client/lib/protocol/SystemMessage';
 import {Account} from '../../../client/lib/account/Account';
 import {Character} from '../../../client/game/character/Character';
 

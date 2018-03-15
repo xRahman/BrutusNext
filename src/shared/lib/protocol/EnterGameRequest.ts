@@ -3,7 +3,7 @@
 
   Part of client-server communication protocol.
 
-  Character selection request.
+  Enter game request.
 */
 
 'use strict';
@@ -61,5 +61,3 @@ export module EnterGameRequest
 
   export type Result = Request.Accepted | Problems;
 }
-
-Classes.registerSerializableClass(EnterGameRequest);

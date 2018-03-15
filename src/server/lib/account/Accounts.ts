@@ -14,7 +14,6 @@ import {Entity} from '../../../shared/lib/entity/Entity';
 import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
 import {Account} from '../../../server/lib/account/Account';
 import {Connection} from '../../../server/lib/connection/Connection';
-import {RegisterRequest} from '../../../shared/lib/protocol/RegisterRequest';
 
 export class Accounts
 {

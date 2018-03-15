@@ -246,5 +246,3 @@ export module RegisterRequest
   //   error?: string;
   // }
 }
-
-Classes.registerSerializableClass(RegisterRequest);

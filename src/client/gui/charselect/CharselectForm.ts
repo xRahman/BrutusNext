@@ -15,7 +15,7 @@ import {Charplate} from '../../../client/gui/charselect/Charplate';
 import {CharselectWindow} from
   '../../../client/gui/charselect/CharselectWindow';
 import {EnterGameRequest} from
-  '../../../shared/lib/protocol/EnterGameRequest';
+  '../../../client/lib/protocol/EnterGameRequest';
 import {EnterGameResponse} from
   '../../../client/lib/protocol/EnterGameResponse';
 import {Character} from '../../../client/game/character/Character';

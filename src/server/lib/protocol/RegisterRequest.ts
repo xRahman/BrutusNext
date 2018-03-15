@@ -256,5 +256,4 @@ export class RegisterRequest extends SharedRegisterRequest
   }
 }
 
-// This overwrites ancestor class.
 Classes.registerSerializableClass(RegisterRequest);

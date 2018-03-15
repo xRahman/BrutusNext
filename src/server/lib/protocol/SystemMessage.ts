@@ -69,5 +69,4 @@ export class SystemMessage extends SharedSystemMessage
   }
 }
 
-// This overwrites ancestor class.
 Classes.registerSerializableClass(SystemMessage);

@@ -31,6 +31,9 @@ import {Classes} from '../../../shared/lib/class/Classes';
 
 export class ChargenRequest  extends SharedChargenRequest
 {
+  /// Problém - kostruktor se nevolá, když se packet loaduje z JSON stringu.
+  /// nebo aspoň ne s parametrama.
+  /// - Potřeboval bych to vyzkoušet, safra. A to teď nemůžu...
   constructor(characterName: string)
   {
     super(characterName);
@@ -232,5 +235,4 @@ export class ChargenRequest  extends SharedChargenRequest
   }
 }
 
-// This overwrites ancestor class.
 Classes.registerSerializableClass(ChargenRequest);
