@@ -1,6 +1,16 @@
 TO DO, TO DO, TODO TODO TODO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+TODO: Přejmenovat checkovací metody na checkForCharacterNameProblem() etc.
+TODO: Návratová hodnota by měla být "OK" | string
+  (nikoliv 'null' | string)
+TODO: Problems by mělo být pole [{ type: Type.ERROR, problem: "je to rozbitý" }]
+- půjde zkontrolovat, že pole není prázdné
+'type' by měl být enum
+- půjde switchnout
+- půjde zkontrolovat, že tam není neošetřená hodnota
+
+
 TODO: Nastudovat mixins:
   https://blog.mariusschulz.com/2017/05/26/typescript-2-2-mixin-classes
 
