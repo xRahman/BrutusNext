@@ -23,7 +23,20 @@ export class SystemMessage extends SharedSystemMessage
     super();
 
     this.version = 0;
+
   }
+}
+
+// ------------------ Type declarations ----------------------
+
+// Module is exported so you can use enum type from outside this file.
+// It must be declared after the class because Typescript says so...
+export module SystemMessage
+{
+  // Here we are just reexporting enum Type declared in our ancestor
+  // (because enums must be declared outside of the class and so aren't
+  //  inherited along with the class).
+  export type Type = SharedSystemMessage.Type;
 }
 
 Classes.registerSerializableClass(SystemMessage);
