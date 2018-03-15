@@ -188,6 +188,23 @@ export class RegisterRequest extends Request
 
 export module RegisterRequest
 {
+  export enum ProblemType
+  {
+    EMAIL_PROBLEM,
+    PASSWORD_PROBLEM,
+    ERROR
+  };
+
+  export type Problem =
+  {
+    type: ProblemType;
+    problem: string;
+  };
+
+  export type Problems = Array<Problem>;
+
+  export type Result = Request.Accepted | Problems;
+
   /// Ještě možná jinak: Buď jsou tam nějaké problémy či errory
   /// (tzn. asi existuje aspoň jedna property), nebo je to ok.
   /// - takže by to vlastně byl jeden objekt s několika nepovinnejma
@@ -199,13 +216,13 @@ export module RegisterRequest
   /// to vlastně asi jednoduše nejde...
   /// Šlo by použít: 'if (Object.keys(obj).length === 0)'
 
-  export type Problems =
-  {
-    emailProblem?: string;
-    passwordProblem?: string;
-  }
+  // export type Problems =
+  // {
+  //   emailProblem?: string;
+  //   passwordProblem?: string;
+  // }
 
-  export type Result = Request.Accepted | Request.Error | Problems;
+  // export type Result = Request.Accepted | Request.Error | Problems;
 
   // export type EmailProblem =
   // {

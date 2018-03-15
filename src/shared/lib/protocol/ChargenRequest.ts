@@ -132,12 +132,28 @@ export class ChargenRequest extends Request
 
 export module ChargenRequest
 {
-  export type Problems =
+  export enum ProblemType
   {
-    characterNameProblem: string;
-  }
+    CHARACTER_NAME_PROBLEM,
+    ERROR
+  };
 
-  export type Result = Request.Accepted | Request.Error | Problems;
+  export type Problem =
+  {
+    type: ProblemType;
+    problem: string;
+  };
+
+  export type Problems = Array<Problem>;
+
+  export type Result = Request.Accepted | Problems;
+
+  // export type Problems =
+  // {
+  //   characterNameProblem: string;
+  // }
+
+  // export type Result = Request.Accepted | Request.Error | Problems;
 
   // export type CharacterNameProblem =
   // {

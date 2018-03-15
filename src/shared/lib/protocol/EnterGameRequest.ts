@@ -46,10 +46,20 @@ export class EnterGameRequest extends Request
 
 export module EnterGameRequest
 {
-  export interface Problems extends Request.Problems
+  export enum ProblemType
   {
-    error?: string;
-  }
+    ERROR
+  };
+
+  export type Problem =
+  {
+    type: ProblemType;
+    problem: string;
+  };
+
+  export type Problems = Array<Problem>;
+
+  export type Result = Request.Accepted | Problems;
 }
 
 Classes.registerSerializableClass(EnterGameRequest);

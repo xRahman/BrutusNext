@@ -47,11 +47,27 @@ export class LoginRequest extends Request
 
 export module LoginRequest
 {
-  export interface Problems extends Request.Problems
+  export enum ProblemType
   {
-    loginProblem?: string;
-    error?: string;
-  }
+    LOGIN_PROBLEM,
+    ERROR
+  };
+
+  export type Problem =
+  {
+    type: ProblemType;
+    problem: string;
+  };
+
+  export type Problems = Array<Problem>;
+
+  export type Result = Request.Accepted | Problems;
+
+  // export interface Problems extends Request.Problems
+  // {
+  //   loginProblem?: string;
+  //   error?: string;
+  // }
 }
 
 Classes.registerSerializableClass(LoginRequest);

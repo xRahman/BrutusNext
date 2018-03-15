@@ -24,18 +24,12 @@ export abstract class Request extends Packet
 
 export module Request
 {
+  export type Accepted = "OK";
+
+  // export type Result = Accepted | Problems;
+
   /// Result je: Accepted | Error | Problems
 
-  export type Accepted =
-  {
-    result: "ACCEPTED";
-  };
-
-  export type Error =
-  {
-    result: "ERROR";
-    problem: string;
-  };
 
   // export interface Problems
   // {
