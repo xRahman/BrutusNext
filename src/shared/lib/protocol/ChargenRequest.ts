@@ -13,7 +13,7 @@ import {Request} from '../../../shared/lib/protocol/Request';
 import {Connection} from '../../../shared/lib/connection/Connection';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class ChargenRequest extends Request
+export abstract class ChargenRequest extends Request
 {
   constructor
   (

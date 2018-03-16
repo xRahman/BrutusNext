@@ -13,7 +13,7 @@ import {Response} from '../../../shared/lib/protocol/Response';
 import {SerializedEntity} from '../../../shared/lib/protocol/SerializedEntity';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class RegisterResponse extends Response
+export abstract class RegisterResponse extends Response
 {
   constructor()
   {
@@ -44,5 +44,3 @@ export module RegisterResponse
     FAILED_TO_CREATE_ACCOUNT
   }
 }
-
-Classes.registerSerializableClass(RegisterResponse);

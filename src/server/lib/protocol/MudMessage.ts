@@ -1,15 +1,16 @@
 /*
   Part of BrutusNEXT
 
-  Client-side version of player command packet.
+  Server-side version of mud message packet.
 */
 
 'use strict';
 
 import {Classes} from '../../../shared/lib/class/Classes';
-import {Command as SharedCommand} from '../../../shared/lib/protocol/Command';
+import {MudMessage as SharedMudMessage} from
+  '../../../shared/lib/protocol/MudMessage';
 
-export class Command extends SharedCommand
+export class MudMessage extends SharedMudMessage
 {
   constructor()
   {
@@ -25,4 +26,4 @@ export class Command extends SharedCommand
   */
 }
 
-Classes.registerSerializableClass(Command);
+Classes.registerSerializableClass(MudMessage);

@@ -11,7 +11,7 @@
 import {Packet} from '../../../shared/lib/protocol/Packet';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class SystemMessage extends Packet
+export abstract class SystemMessage extends Packet
 {
   constructor()
   {

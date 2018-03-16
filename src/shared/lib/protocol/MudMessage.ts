@@ -11,7 +11,7 @@
 import {Packet} from '../../../shared/lib/protocol/Packet';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class MudMessage extends Packet
+export abstract class MudMessage extends Packet
 {
   constructor()
   {
@@ -24,5 +24,3 @@ export class MudMessage extends Packet
 
   public message: string;
 }
-
-Classes.registerSerializableClass(MudMessage);

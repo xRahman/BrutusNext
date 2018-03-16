@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Client-side functionality related to register request packet.
+  Client-side functionality related to register response packet.
 */
 
 /*
@@ -83,5 +83,4 @@ export class RegisterResponse extends SharedRegisterResponse
   }
 }
 
-// This overwrites ancestor class.
 Classes.registerSerializableClass(RegisterResponse);

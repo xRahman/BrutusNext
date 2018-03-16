@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Client-side functionality related to character selection request packet.
+  Client-side functionality related to enter game request packet.
 */
 
 /*
@@ -110,5 +110,4 @@ export class EnterGameResponse extends SharedEnterGameResponse
   }
 }
 
-// This overwrites ancestor class.
 Classes.registerSerializableClass(EnterGameResponse);

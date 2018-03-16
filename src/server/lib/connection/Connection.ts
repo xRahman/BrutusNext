@@ -20,7 +20,7 @@ import {GameEntity} from '../../../server/game/GameEntity';
 import {Classes} from '../../../shared/lib/class/Classes';
 import {Connections} from '../../../server/lib/connection/Connections';
 import {Packet} from '../../../shared/lib/protocol/Packet';
-import {MudMessage} from '../../../shared/lib/protocol/MudMessage';
+import {MudMessage} from '../../../server/lib/protocol/MudMessage';
 
 // 3rd party modules.
 import * as WebSocket from 'ws';

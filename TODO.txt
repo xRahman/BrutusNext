@@ -1,10 +1,25 @@
 TO DO, TO DO, TODO TODO TODO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
-TODO: Vyrobi server verze Packetů, které měly jen client verzi.
-TODO: Udělat shared Packet classy abstraktní.
+Úpravy záhlaví souborů
+-----------------------
+TODO: Asi bych mohl projít úvodní commenty všech souborů a smazat
+zbytečné informace (LoginRequest implements login request.)
 
 TODO: S typescriptovým strict módem už asi není třeba všude psát 'use strict';
+
+--------------------------------------------------------------
+
+TODO: Tohle už není pravda:
+  "This class needs to use the same name as it's ancestor in /shared"
+- asi to prostě odmazat.
+
+
+TODO: Vyrobit server verze Packetů, které měly jen client verzi.
+[done]
+TODO: Udělat shared Packet classy abstraktní.
+[done]
+
 
 TODO: Až to zas půjde přeložit a pustit, tak vyzkoušet, jesli se při
   loadování Serializable z JSONu volá konstruktor a případně čím se

@@ -1,15 +1,16 @@
 /*
   Part of BrutusNEXT
 
-  Client-side version of player command packet.
+  Server-side version of register response packet.
 */
 
 'use strict';
 
 import {Classes} from '../../../shared/lib/class/Classes';
-import {Command as SharedCommand} from '../../../shared/lib/protocol/Command';
+import {RegisterResponse as SharedRegisterResponse} from
+  '../../../shared/lib/protocol/RegisterResponse';
 
-export class Command extends SharedCommand
+export class RegisterResponse extends SharedRegisterResponse
 {
   constructor()
   {
@@ -25,4 +26,4 @@ export class Command extends SharedCommand
   */
 }
 
-Classes.registerSerializableClass(Command);
+Classes.registerSerializableClass(RegisterResponse);

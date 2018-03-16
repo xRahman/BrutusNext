@@ -17,7 +17,7 @@ import {Response} from '../../../shared/lib/protocol/Response';
 import {SerializedEntity} from '../../../shared/lib/protocol/SerializedEntity';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class ChargenResponse extends Response
+export abstract class ChargenResponse extends Response
 {
   constructor()
   {
@@ -82,5 +82,3 @@ export module ChargenResponse
   }
 }
 */
-
-Classes.registerSerializableClass(ChargenResponse);

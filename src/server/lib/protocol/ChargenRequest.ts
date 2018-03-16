@@ -26,12 +26,13 @@ import {Character} from '../../../server/game/character/Character';
 import {Characters} from '../../../server/game/character/Characters';
 import {Message} from '../../../server/lib/message/Message';
 import {Connection} from '../../../server/lib/connection/Connection';
-import {ChargenResponse} from '../../../shared/lib/protocol/ChargenResponse';
+import {ChargenResponse} from '../../../server/lib/protocol/ChargenResponse';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 export class ChargenRequest  extends SharedChargenRequest
 {
-  /// Problém - kostruktor se nevolá, když se packet loaduje z JSON stringu.
+  /// TODO:
+  //    Problém - kostruktor se nevolá, když se packet loaduje z JSON stringu.
   /// nebo aspoň ne s parametrama.
   /// - Potřeboval bych to vyzkoušet, safra. A to teď nemůžu...
   constructor(characterName: string)

@@ -105,5 +105,4 @@ export class ChargenResponse extends SharedChargenResponse
   }
 }
 
-// This overwrites ancestor class.
 Classes.registerSerializableClass(ChargenResponse);

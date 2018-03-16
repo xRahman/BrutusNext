@@ -82,5 +82,4 @@ export class LoginResponse extends SharedLoginResponse
   }
 }
 
-// This overwrites ancestor class.
 Classes.registerSerializableClass(LoginResponse);

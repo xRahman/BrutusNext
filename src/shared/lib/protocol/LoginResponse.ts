@@ -17,7 +17,7 @@ import {Response} from '../../../shared/lib/protocol/Response';
 import {SerializedEntity} from '../../../shared/lib/protocol/SerializedEntity';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class LoginResponse extends Response
+export abstract class LoginResponse extends Response
 {
   constructor()
   {
@@ -98,5 +98,3 @@ export module LoginResponse
     FAILED_TO_LOAD_ACCOUNT
   }
 }
-
-Classes.registerSerializableClass(LoginResponse);

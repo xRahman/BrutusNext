@@ -29,7 +29,7 @@ import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
 import {Account} from '../../../server/lib/account/Account';
 import {Accounts} from '../../../server/lib/account/Accounts';
 import {Connection} from '../../../server/lib/connection/Connection';
-import {RegisterResponse} from '../../../shared/lib/protocol/RegisterResponse';
+import {RegisterResponse} from '../../../server/lib/protocol/RegisterResponse';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 export class RegisterRequest extends SharedRegisterRequest

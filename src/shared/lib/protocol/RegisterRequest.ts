@@ -16,7 +16,7 @@ import {Classes} from '../../../shared/lib/class/Classes';
 const VALID_EMAIL_CHARACTERS = "abcdefghijklmnopqrstuvwxyz"
   + "@ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#$%&'*+-/=?^_`{|}~.";
 
-export class RegisterRequest extends Request
+export abstract class RegisterRequest extends Request
 {
   constructor
   (

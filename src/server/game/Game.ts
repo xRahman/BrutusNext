@@ -30,7 +30,7 @@ import {Connection} from '../../server/lib/connection/Connection';
 ///import {Move} from '../../shared/lib/protocol/Move';
 import {EnterGameRequest} from '../../shared/lib/protocol/EnterGameRequest';
 import {EnterGameResponse} from
-  '../../shared/lib/protocol/EnterGameResponse';
+  '../../server/lib/protocol/EnterGameResponse';
 
 /// Asi docasne:
 import {Area} from '../game/world/Area';

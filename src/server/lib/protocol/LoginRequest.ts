@@ -29,7 +29,7 @@ import {Message} from '../../../server/lib/message/Message';
 import {Account} from '../../../server/lib/account/Account';
 import {Accounts} from '../../../server/lib/account/Accounts';
 import {Connection} from '../../../server/lib/connection/Connection';
-import {LoginResponse} from '../../../shared/lib/protocol/LoginResponse';
+import {LoginResponse} from '../../../server/lib/protocol/LoginResponse';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 export class LoginRequest extends SharedLoginRequest

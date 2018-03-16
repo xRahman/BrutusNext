@@ -40,8 +40,6 @@ export class MudMessage extends SharedMudMessage
   {
     connection.receiveMudMessage(this.message);
   }
-
 }
 
-// This overwrites ancestor class.
 Classes.registerSerializableClass(MudMessage);

@@ -4,12 +4,6 @@
   Client-side version of system message packet.
 */
 
-/*
-  This class is empty, all functionality is inherited from
-  ancestor. It only exists so it can be added to Classes to
-  be able to be dynamically instantiated.
-*/
-
 'use strict';
 
 import {Classes} from '../../../shared/lib/class/Classes';
@@ -23,8 +17,13 @@ export class SystemMessage extends SharedSystemMessage
     super();
 
     this.version = 0;
-
   }
+
+  /*
+    This class is empty, all functionality is inherited from
+    ancestor. It only exists so it can be added to Classes to
+    be able to be dynamically instantiated.
+  */
 }
 
 // ------------------ Type declarations ----------------------

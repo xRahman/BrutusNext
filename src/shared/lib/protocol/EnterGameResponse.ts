@@ -16,7 +16,7 @@ import {Response} from '../../../shared/lib/protocol/Response';
 import {SerializedEntity} from '../../../shared/lib/protocol/SerializedEntity';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class EnterGameResponse extends Response
+export abstract class EnterGameResponse extends Response
 {
   constructor()
   {
@@ -73,5 +73,3 @@ export module EnterGameResponse
   }
 }
 */
-
-Classes.registerSerializableClass(EnterGameResponse);
