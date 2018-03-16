@@ -10,9 +10,18 @@ TODO: S typescriptovým strict módem už asi není třeba všude psát 'use str
 
 --------------------------------------------------------------
 
+TODO: Při odesílání responsí kontrolovat, že result !=== "UNDEFINED"
+
+TODO: EnterGameRequest vyhazuje výjimky, které by asi měly vznikat
+  někde hlouběji (kód by se tím pročistil).
+
+
+TODO: Vymyslet, kam dát kontrolu tečky na konci problem stringů.
+
 TODO: Tohle už není pravda:
   "This class needs to use the same name as it's ancestor in /shared"
 - asi to prostě odmazat.
+[done]
 
 
 TODO: Vyrobit server verze Packetů, které měly jen client verzi.

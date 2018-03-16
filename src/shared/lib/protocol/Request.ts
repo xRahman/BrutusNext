@@ -24,7 +24,7 @@ export abstract class Request extends Packet
 
 export module Request
 {
-  export type Accepted = "REQUEST ACCEPTED";
+  // export type Accepted = "REQUEST ACCEPTED";
 
   // export type Result = Accepted | Problems;
 

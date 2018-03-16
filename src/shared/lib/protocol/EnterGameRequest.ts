@@ -46,6 +46,10 @@ export abstract class EnterGameRequest extends Request
 
 export module EnterGameRequest
 {
+  /// TODO: V případě acceptu chci asi do accept typu zahrnout
+  /// pripadna pribalena data (v pripade rejectu tam byt nemusi)
+  /// - a mozna tohle cele presunout spis do Response...
+
   export enum ProblemType
   {
     ERROR
@@ -54,10 +58,8 @@ export module EnterGameRequest
   export type Problem =
   {
     type: ProblemType;
-    problem: string;
+    message: string;
   };
 
   export type Problems = Array<Problem>;
-
-  export type Result = Request.Accepted | Problems;
 }

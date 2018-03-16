@@ -107,42 +107,38 @@ export class Character extends GameEntity
     //this.loadLocation.insert(this);
   }
 
-  // -> Returns Move instance describing performed move action,
-  //    Returns 'null' on error.
-  public enterWorld(): Move | null
+  public enterWorld(): Move
   {
     if (this.getLocation() !== null)
     {
-      ERROR("Attempt to enter game with character "
+      throw new Error
+      (
+        "Attempt to enter game with character "
         + this.getErrorIdString() + " which already"
-        + " has a location. Location is not changed");
-      return null;
+        + " has a location. Location is not changed"
+      );
     }
 
     let loadLocation = this.getLoadLocation();
 
     if (!loadLocation || !loadLocation.isValid())
     {
-      ERROR("Invalid 'loadLocation' on character"
+      throw new Error
+      (
+        "Invalid 'loadLocation' on character"
         + " " + this.getErrorIdString() + "."
-        + " Character is not placed into the world");
-      return null;
+        + " Character is not placed into the world"
+      );
     }
 
     let myId = this.getId();
     let loadLocationId = loadLocation.getId()
 
     if (myId === null)
-    {
-      ERROR("'null' id");
-      return null;
-    }
+      throw new Error("Invalid 'myId'");
 
     if (loadLocationId === null)
-    {
-      ERROR("'null' loadLocationId");
-      return null;
-    }
+      throw new Error("Invalid 'loadLocationId'");
 
     // TODO: Zařadit char do namelistů, atd.
     // (možná se to bude dělat v rámci insertu, uvidíme).
