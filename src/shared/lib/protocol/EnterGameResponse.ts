@@ -10,7 +10,6 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Entity} from '../../../shared/lib/entity/Entity';
-import {Serializable} from '../../../shared/lib/class/Serializable';
 import {Move} from '../../../shared/lib/protocol/Move';
 import {Request} from '../../../shared/lib/protocol/Request';
 import {Response} from '../../../shared/lib/protocol/Response';
@@ -20,7 +19,10 @@ import {Classes} from '../../../shared/lib/class/Classes';
 
 export abstract class EnterGameResponse extends Response
 {
-  constructor()
+  constructor
+  (
+    protected result: EnterGameResponse.Result
+  )
   {
     super();
 
@@ -29,93 +31,13 @@ export abstract class EnterGameResponse extends Response
 
   // --------------- Public accessors -------------------
 
-  public getResult() { return this.result; }
-
-  // ----------------- Public data ----------------------
-
-  /*
-  // Is the request accepted?
-  public result = EnterGameResponse.Result.UNDEFINED;
-  */
-
-  // // Where did the character entered game.
-  // public characterMove: (Move | null) = null;
-
-  // // Serialized data of 'loadLocation' entity.
-  // public serializedLoadLocation: (SerializedEntity | null) = null;
-
-  // ---------------- Protected data --------------------
-
-  // ----------------- Private data --------------------- 
-
-  private result: EnterGameResponse.Result = "UNDEFINED";
-
-  // ---------------- Public methods --------------------
-
-  public addProblem(problem: EnterGameRequest.Problem)
-  {
-    if (this.result === "UNDEFINED")
-    {
-      this.result = { status: "REJECTED", problems: [ problem ] };
-      return;
-    }
-
-    if (this.result.status === "ACCEPTED")
-    {
-      throw new Error
-      (
-        "Attempt to add problem to response"
-        + " which has already been accepted."
-        + " Response will not be sent"
-      );
-    }
-
-    // Even if the response already is "REJECTED",
-    // we can still add more problems to it.
-    this.result.problems.push(problem);
-  }
-
-  public accept(loadLocation: Entity, characterMove: Move)
-  {
-    if (this.result !== "UNDEFINED")
-    {
-      throw new Error
-      (
-        "Attempt to accept response which has"
-        + " already been accepted or rejected."
-        + " Response will not be sent"
-      );
-    }
-
-    this.result =
-    {
-      status: "ACCEPTED",
-      characterMove: characterMove,
-      serializedLoadLocation: this.serializeLoadLocation(loadLocation);
-    };
-  }
-
-  public serializeLoadLocation(loadLocation: Entity): SerializedEntity
-  {
-    if (!loadLocation.isValid())
-      throw new Error("Invalid 'loadLocation'. Response will not be sent");
-
-    let serializedLoadLocation = new SerializedEntity();
-
-    serializedLoadLocation.serialize
-    (
-      loadLocation,
-      Serializable.Mode.SEND_TO_CLIENT
-    );
-  }
+  ///public getResult() { return this.result; }
 }
 
 // ------------------ Type declarations ----------------------
 
 export module EnterGameResponse
 {
-  export type Undefined = "UNDEFINED";
-
   export type Accepted =
   {
     status: "ACCEPTED";
@@ -126,8 +48,8 @@ export module EnterGameResponse
   export type Rejected =
   {
     status: "REJECTED";
-    problems: EnterGameRequest.Problems;
+    message: string;
   }
 
-  export type Result = Undefined | Accepted | Rejected;
+  export type Result = Accepted | Rejected;
 }

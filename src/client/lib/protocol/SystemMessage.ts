@@ -21,8 +21,8 @@ export class SystemMessage extends SharedSystemMessage
 
   /*
     This class is empty, all functionality is inherited from
-    ancestor. It only exists so it can be added to Classes to
-    be able to be dynamically instantiated.
+    ancestor. It only exists to be added to Classes so it can
+    be be dynamically instantiated.
   */
 }
 
@@ -32,9 +32,8 @@ export class SystemMessage extends SharedSystemMessage
 // It must be declared after the class because Typescript says so...
 export module SystemMessage
 {
-  // Here we are just reexporting enum Type declared in our ancestor
-  // (because enums must be declared outside of the class and so aren't
-  //  inherited along with the class).
+  // Here we are just reexporting the same declared in our ancestor
+  // (because types declared in module aren't inherited along with the class).
   export type Type = SharedSystemMessage.Type;
 }
 

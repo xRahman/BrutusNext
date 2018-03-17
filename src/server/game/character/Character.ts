@@ -8,7 +8,7 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Time} from '../../../shared/lib/utils/Time';
-import {Account} from '../../../server/lib/account/Account';
+///import {Account} from '../../../server/lib/account/Account';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Admins} from '../../../server/lib/admin/Admins';
 import {Game} from '../../../server/game/Game';
@@ -49,8 +49,18 @@ export class Character extends GameEntity
 
   // --------------- Public accessors -------------------
 
+  // # Throws an exception on error.
   public getLoadLocation()
   {
+    if (!this.loadLocation || !this.loadLocation.isValid())
+    {
+      throw new Error
+      (
+        "Attempt to access invalid load location on character"
+        + " " + this.getErrorIdString()
+      );
+    }
+
     return this.loadLocation;
   }
 

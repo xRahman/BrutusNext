@@ -27,14 +27,25 @@ export class RegisterWindow extends FormWindow
     this.flags.set(ClientApp.State.REGISTER);
   }
 
+  // --------------- Public accessors -------------------
+
+  // # Throws an exception on error.
+  public getForm(): RegisterForm
+  {
+    if (!this.form)
+      throw new Error("Register form doesn't exist");
+
+    return this.form;
+  }
+
   // ----------------- Private data ---------------------
 
   private $termsLink: (JQuery | null) = null;
 
-  // ----------------- Public data ---------------------- 
+  // ---------------- Protected data --------------------
 
   // ~ Overrides FormWindow.form.
-  public form: (RegisterForm | null) = null;
+  protected form: (RegisterForm | null) = null;
 
   // ---------------- Public methods --------------------
 

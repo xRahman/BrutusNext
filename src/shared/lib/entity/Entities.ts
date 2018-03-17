@@ -281,7 +281,7 @@ export abstract class Entities
     if (!entity)
       return null;
 
-    entity.deserialize(jsonObject, path);
+    entity.recreateEntity(jsonObject, path);
 
     if (!entity)
       return null;

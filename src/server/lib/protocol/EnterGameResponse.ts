@@ -12,18 +12,27 @@ import {EnterGameResponse as SharedEnterGameResponse} from
 
 export class EnterGameResponse extends SharedEnterGameResponse
 {
-  constructor()
+  constructor(result: SharedEnterGameResponse.Result)
   {
-    super();
+    super(result);
 
     this.version = 0;
   }
 
   /*
     This class is empty, all functionality is inherited from
-    ancestor. It only exists so it can be added to Classes to
-    be able to be dynamically instantiated.
+    ancestor. It only exists to be added to Classes so it can
+    be be dynamically instantiated.
   */
+}
+
+// ------------------ Type declarations ----------------------
+
+export module EnterGameResponse
+{
+  // Here we are just reexporting the same declared in our ancestor
+  // (because types declared in module aren't inherited along with the class).
+  export type Result = SharedEnterGameResponse.Result;
 }
 
 Classes.registerSerializableClass(EnterGameResponse);

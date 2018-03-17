@@ -35,12 +35,32 @@ export abstract class RegisterResponse extends Response
 
 export module RegisterResponse
 {
-  export enum Result
+  export type Undefined = "UNDEFINED";
+
+  export type Accepted =
   {
-    UNDEFINED,
-    OK,
-    EMAIL_PROBLEM,
-    PASSWORD_PROBLEM,
-    FAILED_TO_CREATE_ACCOUNT
+    status: "ACCEPTED";
+    characterMove: Move;
+    serializedLoadLocation: SerializedEntity;
   }
+
+  export type Rejected =
+  {
+    status: "REJECTED";
+    problems: RegisterRequest.Problems;
+  }
+
+  export type Result = Undefined | Accepted | Rejected;
 }
+
+// export module RegisterResponse
+// {
+//   export enum Result
+//   {
+//     UNDEFINED,
+//     OK,
+//     EMAIL_PROBLEM,
+//     PASSWORD_PROBLEM,
+//     FAILED_TO_CREATE_ACCOUNT
+//   }
+// }

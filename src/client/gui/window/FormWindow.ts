@@ -12,9 +12,9 @@ import {Form} from '../../../client/gui/form/Form';
 
 export class FormWindow extends StandaloneWindow
 {
-  // ----------------- Public data ---------------------- 
+  // ---------------- Protected data --------------------
 
-  public form: (Form | null) = null;
+  protected form: (Form | null) = null;
 
   // ---------------- Event handlers --------------------
 

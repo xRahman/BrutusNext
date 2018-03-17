@@ -8,12 +8,42 @@ zbytečné informace (LoginRequest implements login request.)
 
 TODO: S typescriptovým strict módem už asi není třeba všude psát 'use strict';
 
+IMPORTANT TODO: Asi bych SerializedEntity neměl serializovat dopředu, ale až
+  když serializuju to, do čeho je vnořená. Důvod je, že teď na dvou
+  místech předávám parametr 'mode' a může se mi tudíž stát, že nebude
+  stejnej.
+- asi bych měl předefinovat metodu na serializaci a deserializaci, takže
+  se prostě zavolá automaticky
+Pak je tu ještě jedna varianta: Můžu celou classu SerializedEntity zrušit
+a upravit Entity tak, že když je mode "SEND_TO_CLIENT", tak se automatcky
+serializuje celej strom.
+- to zní jako nejlepší varianta.
+NOTE: Stávající stav mi asi nebrání v tom, abych přepsal funování
+packetů a udělal z toho zase přeložitelnou věc. Takže do tohohle se zatím
+pouštět nebudu.
+
 --------------------------------------------------------------
 
-TODO: Při odesílání responsí kontrolovat, že result !=== "UNDEFINED"
+
+
+TODO: "UNDEFINED" result responsy možná vůbec nepotřebuju,
+  můžu jí stav říct rovnou v konstruktoru.
+  (a ideálně mu passnout i data, ať nemusím řešit, jak se mají jmenovat
+   setovací metody ;-) A taky nebudu muset ověřovat, že jsou data
+   setnuta)
+
+TODO: SerializedEntity by se taky mohla serializovat rovnou
+  v konstruktoru z parametru.
+[done]
+
+TODO: Používám zbytečně velkej kanón. EnterGameRequest/Resonse může
+  jen hodit error, tzn. vůbec nepotřebuje pole Problems a nepotřebuje
+  ani rozlišovat typ erroru/problému.
+
 
 TODO: EnterGameRequest vyhazuje výjimky, které by asi měly vznikat
   někde hlouběji (kód by se tím pročistil).
+[done]
 
 
 TODO: Vymyslet, kam dát kontrolu tečky na konci problem stringů.
@@ -55,6 +85,10 @@ TODO: Nastudovat mixins:
 
 TODO: Top-level odchytávání výjímek
   (viz ClientSocket.onReceiveMessage())
+IMPORTANT TODO:
+  Na klientovi bych v top level catchích bych asi měl pouštět dál výjimky
+  vyhozené ve fcích ERROR() a REPORT(), aby se mi dostaly do konzole v
+  původním stavu.
 
 
 TODO: funkce process() v packetech by měly chytat svoje výjimky.

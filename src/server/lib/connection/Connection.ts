@@ -7,6 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {REPORT} from '../../../shared/lib/error/REPORT';
 import {Connection as SharedConnection} from
   '../../../shared/lib/connection/Connection';
 import {Syslog} from '../../../shared/lib/log/Syslog';
@@ -61,8 +62,12 @@ export class Connection implements SharedConnection
     this.account = account;
   }
 
-  public getAccount(): Account | null
+  // # Throws an exception on error.
+  public getAccount(): Account
   {
+    if (!this.account || !this.account.isValid())
+      throw new Error("Attempt to access invalid account on connection");
+
     return this.account;
   }
 
@@ -188,10 +193,19 @@ export class Connection implements SharedConnection
   // Sends 'packet' to web socket.
   public send(packet: Packet)
   {
-    this.socket.send
-    (
-      packet.serialize(Serializable.Mode.SEND_TO_CLIENT)
-    );
+    /// TODO: packet.serialize() sice zatím nevyhazuje výjimky,
+    /// ale časem bude.
+    try
+    {
+      this.socket.send
+      (
+        packet.serialize(Serializable.Mode.SEND_TO_CLIENT)
+      );
+    }
+    catch (error)
+    {
+      REPORT(error, "Packet is not sent");
+    }
   }
 
   public announceReconnect()

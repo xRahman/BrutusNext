@@ -348,21 +348,21 @@ export class Entity extends Serializable
     }
   }
 
-/// TODO: Nemělo by se tu zapisovat do parametru 'data' jako side effect,
-/// místo toho by se mělo pole vytvořit uvnitř metody a vrátit jako návratová
-/// hodnota (je teda otázka, jestli to tak půjde udělat rekurzivně).
-/// - nebo by se minimálně mělo to změněné pole vracet, pokud se do něj bude
-///   postupně přidávat.
-  // Serializes entity and all its ancestors. Writes
-  // results to 'data' array, starting with root prototype.
-  public serializeAncestorTree(data: Array<string>, mode: Serializable.Mode)
+  // Serializes entity and all its ancestors.
+  // -> Returns result as array of JSON strings representing
+  //    each serialized entity, starting with root prototype.
+  public serializeAncestorTree(mode: Serializable.Mode): Array<string>
   {
-    if (this.prototypeEntity !== null)
-    {
-      this.prototypeEntity.serializeAncestorTree(data, mode);
-    }
+    let serializedEntities: Array<string>;
 
-    data.push(this.serialize(mode));
+    if (this.prototypeEntity !== null)
+      serializedEntities = this.prototypeEntity.serializeAncestorTree(mode);
+    else
+      serializedEntities = new Array<string>();
+
+    serializedEntities.push(this.serialize(mode));
+
+    return serializedEntities;
   }
 
   private invalidateProperty(property: any)
@@ -550,16 +550,18 @@ export class Entity extends Serializable
   public async postLoad(loadContents = true) {}
 
   // ~ Overrides Serializable.dynamicCast().
+  // # Throws an exception on error.
   public dynamicCast<T>(Class: AnyClass<T>)
   {
     // Dynamic type check - we make sure that entity is inherited from
     // requested class (or an instance of the class itself).
     if (!(this instanceof Class))
     {
-      FATAL_ERROR("Type cast error: entity " + this.getErrorIdString()
-        + " is not an instance of requested type (" + Class.name + ")");
-
-      return null;
+      throw new TypeError
+      (
+        "(type cast error): entity " + this.getErrorIdString()
+        + " is not an instance of requested type (" + Class.name + ")"
+      );
     }
 
     return <any>this;

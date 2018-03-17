@@ -56,16 +56,33 @@ export module LoginRequest
   export type Problem =
   {
     type: ProblemType;
-    problem: string;
+    message: string;
   };
 
   export type Problems = Array<Problem>;
-
-  export type Result = Request.Accepted | Problems;
-
-  // export interface Problems extends Request.Problems
-  // {
-  //   loginProblem?: string;
-  //   error?: string;
-  // }
 }
+
+// export module LoginRequest
+// {
+//   export enum ProblemType
+//   {
+//     LOGIN_PROBLEM,
+//     ERROR
+//   };
+
+//   export type Problem =
+//   {
+//     type: ProblemType;
+//     problem: string;
+//   };
+
+//   export type Problems = Array<Problem>;
+
+//   export type Result = Request.Accepted | Problems;
+
+//   // export interface Problems extends Request.Problems
+//   // {
+//   //   loginProblem?: string;
+//   //   error?: string;
+//   // }
+// }

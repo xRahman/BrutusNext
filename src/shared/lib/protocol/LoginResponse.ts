@@ -89,12 +89,32 @@ export abstract class LoginResponse extends Response
 
 export module LoginResponse
 {
-  export enum Result
+  export type Undefined = "UNDEFINED";
+
+  export type Accepted =
   {
-    UNDEFINED,
-    OK,
-    UNKNOWN_EMAIL,
-    INCORRECT_PASSWORD,
-    FAILED_TO_LOAD_ACCOUNT
+    status: "ACCEPTED";
+    characterMove: Move;
+    serializedLoadLocation: SerializedEntity;
   }
+
+  export type Rejected =
+  {
+    status: "REJECTED";
+    problems: LoginRequest.Problems;
+  }
+
+  export type Result = Undefined | Accepted | Rejected;
 }
+
+// export module LoginResponse
+// {
+//   export enum Result
+//   {
+//     UNDEFINED,
+//     OK,
+//     UNKNOWN_EMAIL,
+//     INCORRECT_PASSWORD,
+//     FAILED_TO_LOAD_ACCOUNT
+//   }
+// }

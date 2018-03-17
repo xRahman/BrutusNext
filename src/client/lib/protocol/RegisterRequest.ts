@@ -21,8 +21,8 @@ export class RegisterRequest extends SharedRegisterRequest
 
   /*
     This class is empty, all functionality is inherited from
-    ancestor. It only exists so it can be added to Classes to
-    be able to be dynamically instantiated.
+    ancestor. It only exists to be added to Classes so it can
+    be be dynamically instantiated.
   */
 }
 

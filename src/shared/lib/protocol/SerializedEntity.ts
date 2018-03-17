@@ -6,6 +6,12 @@
   Handles transmitting of entities.
 */
 
+/*
+  Entity is serialized along with all of it's ancestor prototypes
+  so the whole prototype chain can be reconstructer when it is
+  deserialized.
+*/
+
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
@@ -16,46 +22,58 @@ import {Classes} from '../../../shared/lib/class/Classes';
 
 export class SerializedEntity extends Serializable
 {
-  constructor()
+  constructor(entity: Entity, mode: Serializable.Mode)
   {
     super();
 
     this.version = 0;
+
+    if (!entity || !entity.isValid())
+    {
+      throw new Error
+      (
+        "Attempt to serialize invalid entity:"
+        + " " + entity.getErrorIdString()
+      );
+    }
+
+    this.serializedTree = entity.serializeAncestorTree(mode);
   }
 
   // ----------------- Public data ----------------------
 
   // Contains serialized entity and all it's ancestor
   // entities starting with root ancestor.
-  public data = new Array<string>();
+  public serializedTree;
 
   // ---------------- Public methods --------------------
 
-  // -> Returns 'true' on success.
-  public serialize(entity: Entity, mode: Serializable.Mode)
-  {
-    if (!entity || !entity.isValid())
-    {
-      ERROR("Attempt to serialize invalid entity:"
-        + " " + entity.getErrorIdString());
-      return false;
-    }
+  /// To be deleted.
+  // // -> Returns 'true' on success.
+  // public serialize(entity: Entity, mode: Serializable.Mode)
+  // {
+  //   if (!entity || !entity.isValid())
+  //   {
+  //     ERROR("Attempt to serialize invalid entity:"
+  //       + " " + entity.getErrorIdString());
+  //     return false;
+  //   }
 
-    entity.serializeAncestorTree(this.data, mode);
+  //   this.data = entity.serializeAncestorTree(this.data, mode);
+  // }
 
-    return true;
-  }
-
-  public deserialize<T extends Entity>
+  /// TODO: Mohlo by se to jmenovat spíš "recreateEntity()"
+  public recreateEntity<T extends Entity>
   (
     typeCast: { new (...args: any[]): T }
   )
   {
     let entity: (Entity | null) = null;
 
-    // 'this.data' is an array of json strings - each representing
-    // one serialized entity (beginning with rootmost ancestor).
-    for (let jsonString of this.data)
+    // 'this.serializedTree' is an array of json strings
+    // each representing one serialized entity (beginning
+    // with root ancestor).
+    for (let jsonString of this.serializedTree)
     {
       // Load entity and all of its ancestor entities, starting
       // with it's root prototype entity.

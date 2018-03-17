@@ -28,14 +28,29 @@ export class CharselectWindow extends FormWindow
     this.flags.set(ClientApp.State.CHARSELECT);
   }
 
+  // --------------- Public accessors -------------------
+
+  // # Throws an exception on error.
+  public getForm(): CharselectForm
+  {
+    if (!this.form)
+      throw new Error("Charselect form doesn't exist");
+
+    return this.form;
+  }
+
+  // ----------------- Public data ----------------------
+
+  // ---------------- Protected data --------------------
+
+  // ~ Overrides FormWindow.form.
+  protected form: (CharselectForm | null) = null;
+
   // ----------------- Private data ---------------------
 
   // ~ Overrides FormWindow.form.
   private $enterGameButton: (JQuery | null) = null;
 
-  // ----------------- Public data ---------------------- 
-
-  public form: (CharselectForm | null) = null;
 
   // ---------------- Private methods -------------------
 

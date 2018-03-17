@@ -198,51 +198,70 @@ export module RegisterRequest
   export type Problem =
   {
     type: ProblemType;
-    problem: string;
+    message: string;
   };
 
   export type Problems = Array<Problem>;
-
-  export type Result = Request.Accepted | Problems;
-
-  /// Ještě možná jinak: Buď jsou tam nějaké problémy či errory
-  /// (tzn. asi existuje aspoň jedna property), nebo je to ok.
-  /// - takže by to vlastně byl jeden objekt s několika nepovinnejma
-  ///   propertama.
-  /// Otázka jen je, jak kontrolovat, že jsem checknul všechny
-  /// (tzn. když přidám "problémovou" property, že to na klientovi
-  ///  nebude zobrazovat "všechno v pořádku").
-  /// ... Ehm - stačí checknout, jeslti to je prázdný objekt - i když,
-  /// to vlastně asi jednoduše nejde...
-  /// Šlo by použít: 'if (Object.keys(obj).length === 0)'
-
-  // export type Problems =
-  // {
-  //   emailProblem?: string;
-  //   passwordProblem?: string;
-  // }
-
-  // export type Result = Request.Accepted | Request.Error | Problems;
-
-  // export type EmailProblem =
-  // {
-  //   result: "EMAIL PROBLEM";
-  //   problem: string;
-  // }
-
-  // export type PasswordProblem =
-  // {
-  //   result: "EMAIL PROBLEM";
-  //   problem: string;
-  // }
-
-  // export type Problems =
-  //   Request.Accepted | Request.Error | CharacterNameProblem;
-
-
-  // export interface Problems extends Request.Problems
-  // {
-  //   characterNameProblem?: string;
-  //   error?: string;
-  // }
 }
+
+
+// export module RegisterRequest
+// {
+//   export enum ProblemType
+//   {
+//     EMAIL_PROBLEM,
+//     PASSWORD_PROBLEM,
+//     ERROR
+//   };
+
+//   export type Problem =
+//   {
+//     type: ProblemType;
+//     problem: string;
+//   };
+
+//   export type Problems = Array<Problem>;
+
+//   export type Result = Request.Accepted | Problems;
+
+//   /// Ještě možná jinak: Buď jsou tam nějaké problémy či errory
+//   /// (tzn. asi existuje aspoň jedna property), nebo je to ok.
+//   /// - takže by to vlastně byl jeden objekt s několika nepovinnejma
+//   ///   propertama.
+//   /// Otázka jen je, jak kontrolovat, že jsem checknul všechny
+//   /// (tzn. když přidám "problémovou" property, že to na klientovi
+//   ///  nebude zobrazovat "všechno v pořádku").
+//   /// ... Ehm - stačí checknout, jeslti to je prázdný objekt - i když,
+//   /// to vlastně asi jednoduše nejde...
+//   /// Šlo by použít: 'if (Object.keys(obj).length === 0)'
+
+//   // export type Problems =
+//   // {
+//   //   emailProblem?: string;
+//   //   passwordProblem?: string;
+//   // }
+
+//   // export type Result = Request.Accepted | Request.Error | Problems;
+
+//   // export type EmailProblem =
+//   // {
+//   //   result: "EMAIL PROBLEM";
+//   //   problem: string;
+//   // }
+
+//   // export type PasswordProblem =
+//   // {
+//   //   result: "EMAIL PROBLEM";
+//   //   problem: string;
+//   // }
+
+//   // export type Problems =
+//   //   Request.Accepted | Request.Error | CharacterNameProblem;
+
+
+//   // export interface Problems extends Request.Problems
+//   // {
+//   //   characterNameProblem?: string;
+//   //   error?: string;
+//   // }
+// }

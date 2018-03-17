@@ -27,14 +27,25 @@ export class LoginWindow extends FormWindow
     this.flags.set(ClientApp.State.LOGIN);
   }
 
+  // --------------- Public accessors -------------------
+
+  // # Throws an exception on error.
+  public getForm(): LoginForm
+  {
+    if (!this.form)
+      throw new Error("Login form doesn't exist");
+
+    return this.form;
+  }
+
   // ----------------- Private data ---------------------
 
   private $registerLink: (JQuery | null) = null;
 
-  // ----------------- Public data ---------------------- 
+  // ---------------- Protected data --------------------
 
   // ~ Overrides FormWindow.form.
-  public form: (LoginForm | null) = null;
+  protected form: (LoginForm | null) = null;
 
   // ---------------- Private methods -------------------
 

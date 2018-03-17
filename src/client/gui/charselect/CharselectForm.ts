@@ -192,28 +192,9 @@ export class CharselectForm extends Form
       this.selectCharacter(id);
   }
     
-  public displayProblem(response: EnterGameResponse)
+  public displayProblem(message: string)
   {
-    switch (response.result)
-    {
-      case EnterGameResponse.Result.UNDEFINED:
-        ERROR("Received charselect response with unspecified result."
-          + " Someone problably forgot to set 'packet.result'"
-          + " when sending charselect response from the server");
-        break;
-
-      case EnterGameResponse.Result.ERROR:
-        this.displayError(response.getProblem());
-        break;
-
-      case EnterGameResponse.Result.OK:
-        ERROR("displayProblem() called with 'Result: OK'");
-        break;
-
-      default:
-        ERROR("Unknown register response result");
-        break;
-    }
+    this.displayError(message);
   }
 
   // --------------- Protected methods ------------------

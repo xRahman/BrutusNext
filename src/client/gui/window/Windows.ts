@@ -44,38 +44,56 @@ export class Windows
 
   // --------------- Static accessors -------------------
 
-  public static get loginWindow()
+  // # Throws an exception on error.
+  public static get loginWindow(): LoginWindow
   {
+    if (!ClientApp.windows.loginWindow)
+      throw new Error("Login window doesn't exist");
+
     return ClientApp.windows.loginWindow;
   }
 
-  public static get registerWindow()
+  // # Throws an exception on error.
+  public static get registerWindow(): RegisterWindow
   {
+    if (!ClientApp.windows.registerWindow)
+      throw new Error("Register window doesn't exist");
+
     return ClientApp.windows.registerWindow;
   }
 
-  public static get chargenWindow()
+  // # Throws an exception on error.
+  public static get chargenWindow(): ChargenWindow
   {
+    if (!ClientApp.windows.chargenWindow)
+      throw new Error("Chargen window doesn't exist");
+
     return ClientApp.windows.chargenWindow;
   }
 
-  public static get charselectWindow()
+  // # Throws an exception on error.
+  public static get charselectWindow(): CharselectWindow
   {
+    if (!ClientApp.windows.charselectWindow)
+      throw new Error("Charselect window doesn't exist");
+
     return ClientApp.windows.charselectWindow;
   }
 
-  public static get mapWindow()
+  // # Throws an exception on error.
+  public static get mapWindow(): MapWindow
   {
+    if (!ClientApp.windows.mapWindow)
+      throw new Error("Map window doesn't exist");
+
     return ClientApp.windows.mapWindow;
   }
 
+  // # Throws an exception on error.
   public static get activeScrollWindow()
   {
     if (ClientApp.connection.activeAvatar === null)
-    {
-      ERROR("Unexpected 'null' value");
-      return;
-    }
+      throw new Error("Invalid 'active Avatar'");
 
     return ClientApp.connection.activeAvatar.scrollWindow;
   }

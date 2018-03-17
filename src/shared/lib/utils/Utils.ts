@@ -256,6 +256,20 @@ export module Utils
 
     return target;
   }
+
+  // Note: 'str' is trimmed from the right before the dot
+  // is added so you don't end up with a dot on the new line,
+  // after a space or a tab, etc.
+  // -> Returns a new string which ends with a dot.
+  export function ensureDotAtTheEnd(str: string): string
+  {
+    str = trimRight(str);
+
+    if (str.slice(-1) !== '.')
+      return str + '.';
+
+    return str;
+  }
 }
 
 // ----------------- Private Module Stuff --------------------

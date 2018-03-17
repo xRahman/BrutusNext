@@ -19,9 +19,9 @@ import {Classes} from '../../../shared/lib/class/Classes';
 
 export class EnterGameResponse extends SharedEnterGameResponse
 {
-  constructor()
+  constructor(result: EnterGameResponse.Result)
   {
-    super();
+    super(result);
 
     this.version = 0;
   }
@@ -29,27 +29,32 @@ export class EnterGameResponse extends SharedEnterGameResponse
   // ---------------- Public methods --------------------
 
   // ~ Overrides Packet.process().
-  public async process(connection: Connection)
+  public async process(connection: Connection): Promise<void>
   {
-    if (this.result === EnterGameResponse.Result.UNDEFINED)
+    if (this.result.status === "REJECTED")
     {
-      this.reportInvalidResponse('charselect');
+      Windows.charselectWindow.getForm().displayProblem(this.result.message);
       return;
     }
 
-    if (this.result === EnterGameResponse.Result.OK)
-    {
-      this.acceptResponse(connection);
-      return;
-    }
-
-    // Otherwise display to the user what the problem is.
-    Windows.charselectWindow.form.displayProblem(this);
+    this.enterGame
+    (
+      connection,
+      this.result.characterMove,
+      /// TODO: Tohle bych asi mohl predat rovnou deserializovane
+      /// (casem se to bude beztak deserializovat rovnou s packetem)
+      this.result.serializedLoadLocation
+    );
   }
 
   // --------------- Private methods --------------------
 
-  private acceptResponse(connection: Connection)
+  private enterGame
+  (
+    connection: Connection,
+    characterMove: Move,
+    loadLocation: Entity
+  )
   {
     let character = this.getSelectedCharacter();
     
@@ -64,7 +69,7 @@ export class EnterGameResponse extends SharedEnterGameResponse
     if (!this.deserializeLoadLocation())
       return;
 
-    if (!character.enterWorld(this.characterMove))
+    if (!character.enterWorld(characterMove))
       return;
 
     ClientApp.setState(ClientApp.State.IN_GAME);
@@ -100,6 +105,15 @@ export class EnterGameResponse extends SharedEnterGameResponse
 
     return true;
   }
+}
+
+// ------------------ Type declarations ----------------------
+
+export module EnterGameResponse
+{
+  // Here we are just reexporting the same declared in our ancestor
+  // (because types declared in module aren't inherited along with the class).
+  export type Result = SharedEnterGameResponse.Result;
 }
 
 Classes.registerSerializableClass(EnterGameResponse);

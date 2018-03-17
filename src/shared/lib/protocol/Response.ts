@@ -64,10 +64,11 @@ export abstract class Response extends Packet
 
   // -------------- Protected methods -------------------
 
-  protected reportInvalidResponse(action: string)
-  {
-    ERROR("Received " + action + " response with unspecified result."
-        + " Someone problably forgot to set 'packet.result' when"
-        + " sending " + action + " response from the server");
-  }
+  /// To be deleted (this should not be needed anymore).
+  // protected reportInvalidResponse(action: string)
+  // {
+  //   ERROR("Received " + action + " response with unspecified result."
+  //       + " Someone problably forgot to set 'packet.result' when"
+  //       + " sending " + action + " response from the server");
+  // }
 }

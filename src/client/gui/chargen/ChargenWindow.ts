@@ -25,10 +25,21 @@ export class ChargenWindow extends FormWindow
     this.flags.set(ClientApp.State.CHARGEN);
   }
 
-  // ----------------- Public data ---------------------- 
+  // --------------- Public accessors -------------------
+
+  // # Throws an exception on error.
+  public getForm(): ChargenForm
+  {
+    if (!this.form)
+      throw new Error("Chargen form doesn't exist");
+
+    return this.form;
+  }
+
+  // ---------------- Protected data --------------------
 
   // ~ Overrides FormWindow.form.
-  public form: (ChargenForm | null) = null;
+  protected form: (ChargenForm | null) = null;
 
   // ---------------- Public methods --------------------
 
