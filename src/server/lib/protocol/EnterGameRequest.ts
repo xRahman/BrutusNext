@@ -57,7 +57,7 @@ export class EnterGameRequest extends SharedEnterGameRequest
 
   // --------------- Private methods --------------------
 
-  // # Throws an exception on error.
+  // ! Throws an exception on error.
   private async enterGame(connection: Connection): Promise<EnterGameResponse>
   {
     let character = Characters.get(this.characterId);
@@ -84,7 +84,7 @@ export class EnterGameRequest extends SharedEnterGameRequest
     account.data.lastActiveCharacter = character;
   }
 
-  // # Throws an exception on error.
+  // ! Throws an exception on error.
   private createAcceptResponse
   (
     loadLocation: GameEntity,
@@ -115,7 +115,7 @@ export class EnterGameRequest extends SharedEnterGameRequest
     return new EnterGameResponse(result);
   }
 
-  // # Throws an exception on error.
+  // ! Throws an exception on error.
   private serializeLoadLocation(loadLocation: GameEntity): SerializedEntity
   {
     if (!loadLocation.isValid())

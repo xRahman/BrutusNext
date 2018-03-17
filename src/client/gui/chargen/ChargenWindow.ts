@@ -27,7 +27,7 @@ export class ChargenWindow extends FormWindow
 
   // --------------- Public accessors -------------------
 
-  // # Throws an exception on error.
+  // ! Throws an exception on error.
   public getForm(): ChargenForm
   {
     if (!this.form)
@@ -45,7 +45,7 @@ export class ChargenWindow extends FormWindow
 
   public backToCharselect()
   {
-    ClientApp.setState(ClientApp.State.CHARSELECT);
+    ClientApp.switchToState(ClientApp.State.CHARSELECT);
   }
 
   // ---------------- Private methods -------------------

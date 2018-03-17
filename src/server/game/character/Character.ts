@@ -49,7 +49,7 @@ export class Character extends GameEntity
 
   // --------------- Public accessors -------------------
 
-  // # Throws an exception on error.
+  // ! Throws an exception on error.
   public getLoadLocation()
   {
     if (!this.loadLocation || !this.loadLocation.isValid())

@@ -194,6 +194,7 @@ export class CharselectForm extends Form
     
   public displayProblem(message: string)
   {
+    /// TODO: Proč se jen provolá další funkce? Má to nějakej hlubší smysl?
     this.displayError(message);
   }
 

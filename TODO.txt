@@ -1,6 +1,15 @@
 TO DO, TO DO, TODO TODO TODO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+IMPORTANT TODO: Konvence hledacích a accesorových funkcí:
+- get() používají javascriptové classy, takže by se mělo chovat
+  vždycky stejně (vracet Value | undefined). Ještě lepší ale bude
+  to nepoužívat pro vlastní funkce.
+- find() by mělo vracet (Value | "NOT FOUND")
+- getCosi() by mělo vracet (Value) a hodit výjimku, když neexistuje.
+  Důvod: Tahle pojmenovávám accessory.
+
+
 Úpravy záhlaví souborů
 -----------------------
 TODO: Asi bych mohl projít úvodní commenty všech souborů a smazat

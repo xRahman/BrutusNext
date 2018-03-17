@@ -29,7 +29,7 @@ export class RegisterWindow extends FormWindow
 
   // --------------- Public accessors -------------------
 
-  // # Throws an exception on error.
+  // ! Throws an exception on error.
   public getForm(): RegisterForm
   {
     if (!this.form)
@@ -51,7 +51,7 @@ export class RegisterWindow extends FormWindow
 
   public backToLogin()
   {
-    ClientApp.setState(ClientApp.State.LOGIN);
+    ClientApp.switchToState(ClientApp.State.LOGIN);
   }
 
   // ---------------- Private methods -------------------
@@ -105,7 +105,7 @@ export class RegisterWindow extends FormWindow
 
   private onTermsClick(event: JQueryEventObject)
   {
-    ClientApp.setState(ClientApp.State.TERMS);
+    ClientApp.switchToState(ClientApp.State.TERMS);
   }
 
   // ~ Overrides FormWindow.onEscapePressed().

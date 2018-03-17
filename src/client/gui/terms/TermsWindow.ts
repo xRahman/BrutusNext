@@ -92,7 +92,7 @@ export class TermsWindow extends StandaloneWindow
 
   private backToRegister()
   {
-    ClientApp.setState(ClientApp.State.REGISTER);
+    ClientApp.switchToState(ClientApp.State.REGISTER);
   }
 
   // ---------------- Event handlers --------------------

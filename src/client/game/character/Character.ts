@@ -31,32 +31,28 @@ export class Character extends GameEntity
 
   // ---------------- Public methods --------------------
 
+  // ! Throws an exception on error.
   // -> Returns 'false' on error.
   public enterWorld(move: Move)
   {
     if (this.data.getLocation() !== null)
     {
-      ERROR("Attempt to enter world with character"
+      throw new Error
+      (
+        "Attempt to enter world with character"
         + " " + this.getErrorIdString() + " which"
         + " already has a location. Location is not"
-        + " changed");
-      return false;
+        + " changed"
+      );
     }
 
-    let destination =
-      ClientEntities.get(move.destinationId);
+    /// TODO: Tohle už je podruhé co hledám char s tím, že musí existovat.
+    /// Asi bych na to měl vyrobit fci přímo v Entities.
 
-    if (!destination || !destination.isValid())
-    {
-      ERROR("Unable to enter world with character"
-        + " " + this.getErrorIdString() + " because"
-        + " destination entity (id: " + move.destinationId + ")"
-        + " isn't valid");
-      return false;
-    }
-
+    let destination = ClientEntities.getEntity(move.destinationId);
     let entityData = destination.dynamicCast(GameEntity).data;
 
+    /// TODO: Co je sakra 'entityData'?
     if (!entityData)
     {
       ERROR("Invalid entity data on entity " + destination.getErrorIdString());

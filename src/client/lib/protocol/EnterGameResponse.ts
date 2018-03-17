@@ -7,12 +7,14 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {REPORT} from '../../../shared/lib/error/REPORT';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {ClientEntities} from '../../../client/lib/entity/ClientEntities';
 import {Character} from '../../../client/game/character/Character';
 import {Windows} from '../../../client/gui/window/Windows';
 import {Connection} from '../../../client/lib/connection/Connection';
+import {Move} from '../../../shared/lib/protocol/Move';
 import {EnterGameResponse as SharedEnterGameResponse} from
   '../../../shared/lib/protocol/EnterGameResponse';
 import {Classes} from '../../../shared/lib/class/Classes';
@@ -37,82 +39,95 @@ export class EnterGameResponse extends SharedEnterGameResponse
       return;
     }
 
-    this.enterGame
-    (
-      connection,
-      this.result.characterMove,
-      /// TODO: Tohle bych asi mohl predat rovnou deserializovane
-      /// (casem se to bude beztak deserializovat rovnou s packetem)
-      this.result.serializedLoadLocation
-    );
+    try
+    {
+      this.enterGame(connection, this.result.data);
+    }
+    catch (error)
+    {
+      /// TODO: We have failed to enter the game, we should probably
+      /// let the user know and possibly reconnect (or just ask her
+      /// to do so).
+      REPORT(error, "Failed to enter game");
+    }
   }
 
   // --------------- Private methods --------------------
 
+  // ! Throws an exception on error.
   private enterGame
   (
     connection: Connection,
-    characterMove: Move,
-    loadLocation: Entity
+    data: EnterGameResponse.Data
   )
   {
-    let character = this.getSelectedCharacter();
-    
-    if (!character)
-      return;
+    let loadLocation = data.serializedLoadLocation.recreateEntity(Entity);
+
+    let character = this.findSelectedCharacter(data.characterMove.entityId);
 
     connection.createAvatar(character);
 
-    // Note: This must be done before character.enterWorld(),
-    // otherwise the room (or other entity the character loads
-    // into) might not exist on the client.
-    if (!this.deserializeLoadLocation())
+    /// TODO: returnovat by asi měla exception.
+    if (!character.enterWorld(data.characterMove))
       return;
 
-    if (!character.enterWorld(characterMove))
-      return;
-
-    ClientApp.setState(ClientApp.State.IN_GAME);
+    ClientApp.switchToState(ClientApp.State.IN_GAME);
   }
 
-  private getSelectedCharacter()
+  // ! Throws an exception on error.
+  private findSelectedCharacter(characterId: string)
   {
-    let characterId = this.characterMove.entityId;
+    let searchResult = ClientEntities.getEntity(characterId);
 
-    let character: Character =
-      ClientEntities.get(characterId).dynamicCast(Character);
-
-    if (!character || !character.isValid())
+    if (searchResult === "NOT FOUND")
     {
-      ERROR("Invalid selected character (id: " + characterId + ")");
-      return null;
+      throw new Error
+      (
+        "Unable to enter game as character with"
+        + " id '" + characterId + "' because that"
+        + " character is not in client Entities"
+      );
+    }
+    
+    let character = searchResult.dynamicCast(Character);
+
+    if (!character.isValid())
+    {
+      throw new Error
+      (
+        "Unable to enter game as character with"
+        + " id '" + characterId + "' because that"
+        + " character is not valid"
+      );
     }
 
     return character;
   }
 
-  private deserializeLoadLocation()
-  {
-    // 'loadLocation' entity is added to ClientEntities here as
-    // side effect. It can later be accessed using it's id.
-    let loadLocation = this.serializedLoadLocation.restore(Entity);
+  /// To be deleted.
+  // private deserializeLoadLocation()
+  // {
+  //   // 'loadLocation' entity is added to ClientEntities here as
+  //   // side effect. It can later be accessed using it's id.
+  //   let loadLocation = this.serializedLoadLocation.restore(Entity);
     
-    if (!loadLocation || !loadLocation.isValid())
-    {
-      ERROR("Invalid load location in charselect response");
-      return false;
-    }
+  //   if (!loadLocation || !loadLocation.isValid())
+  //   {
+  //     ERROR("Invalid load location in charselect response");
+  //     return false;
+  //   }
 
-    return true;
-  }
+  //   return true;
+  // }
 }
 
 // ------------------ Type declarations ----------------------
 
 export module EnterGameResponse
 {
-  // Here we are just reexporting the same declared in our ancestor
-  // (because types declared in module aren't inherited along with the class).
+  // Here we are just reexporting types declared in our ancestor
+  // (because they aren't inherited along with the class).
+  export type Data = SharedEnterGameResponse.Data;
   export type Result = SharedEnterGameResponse.Result;
 }
 

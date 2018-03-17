@@ -54,7 +54,7 @@ export class LoginResponse extends SharedLoginResponse
   {
     this.extractData(connection);
     Windows.loginWindow.form.rememberCredentials();
-    ClientApp.setState(ClientApp.State.CHARSELECT);
+    ClientApp.switchToState(ClientApp.State.CHARSELECT);
   }
 
   private extractData(connection: Connection)

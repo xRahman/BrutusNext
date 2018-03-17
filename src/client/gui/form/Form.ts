@@ -231,6 +231,7 @@ export abstract class Form extends Component
 
   protected displayError(problem: string | null)
   {
+    /// TODO: Proč? Zrušit, pokud to půjde.
     if (!problem)
       return;
 

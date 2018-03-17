@@ -29,7 +29,7 @@ export class LoginWindow extends FormWindow
 
   // --------------- Public accessors -------------------
 
-  // # Throws an exception on error.
+  // ! Throws an exception on error.
   public getForm(): LoginForm
   {
     if (!this.form)
@@ -97,6 +97,6 @@ export class LoginWindow extends FormWindow
 
   private onRegisterClick(event: JQueryEventObject)
   {
-    ClientApp.setState(ClientApp.State.REGISTER);
+    ClientApp.switchToState(ClientApp.State.REGISTER);
   }
 }

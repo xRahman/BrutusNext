@@ -58,7 +58,7 @@ export class ChargenResponse extends SharedChargenResponse
     if (!character)
       return;
 
-    ClientApp.setState(ClientApp.State.CHARSELECT);
+    ClientApp.switchToState(ClientApp.State.CHARSELECT);
 
     // Select newly added character
     // (we can do it here because ClientApp.setState() called

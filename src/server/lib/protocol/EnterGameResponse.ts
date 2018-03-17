@@ -30,8 +30,8 @@ export class EnterGameResponse extends SharedEnterGameResponse
 
 export module EnterGameResponse
 {
-  // Here we are just reexporting the same declared in our ancestor
-  // (because types declared in module aren't inherited along with the class).
+  // Here we are just reexporting types declared in our ancestor
+  // (because they aren't inherited along with the class).
   export type Result = SharedEnterGameResponse.Result;
 }
 

@@ -71,7 +71,7 @@ export class ClientApp extends App
 
   // ------------- Public static methods ----------------
 
-  public static setState(state: ClientApp.State)
+  public static switchToState(state: ClientApp.State)
   {
     if (state === ClientApp.State.INITIAL)
     {
@@ -192,7 +192,7 @@ export class ClientApp extends App
 
   private showLoginWindow()
   {
-    ClientApp.setState(ClientApp.State.LOGIN);
+    ClientApp.switchToState(ClientApp.State.LOGIN);
   }
 
   // ---------------- Event handlers --------------------

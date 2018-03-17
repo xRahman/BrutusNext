@@ -412,7 +412,7 @@ export class Account extends ServerEntity
 
   private characterToLoadAlreadyExists(id: string)
   {
-    let character = ServerEntities.get(id);
+    let character = ServerEntities.getEntity(id);
 
     if (character)
     {

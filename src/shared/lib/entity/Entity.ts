@@ -550,11 +550,11 @@ export class Entity extends Serializable
   public async postLoad(loadContents = true) {}
 
   // ~ Overrides Serializable.dynamicCast().
-  // # Throws an exception on error.
-  public dynamicCast<T>(Class: AnyClass<T>)
+  // ! Throws an exception on error.
+  public dynamicCast<T>(Class: AnyClass<T>): T
   {
-    // Dynamic type check - we make sure that entity is inherited from
-    // requested class (or an instance of the class itself).
+    // Dynamic type check - we make sure that entity is inherited
+    // from requested class or is an instance of that class.
     if (!(this instanceof Class))
     {
       throw new TypeError
@@ -572,17 +572,24 @@ export class Entity extends Serializable
   // (indended for use in error messages).
   public getErrorIdString()
   {
+    let id: string;
     // Access 'this.id' directly (not using this.getId()) because
     // it would trigger another ERROR() which would precede logging
     // of the ERROR when getErrorIdString() is called. That would
     // give confusing information about the actual error.
-    let id = this.id;
 
     if (this.id === undefined)
+    {
       id = "undefined";
-
-    if (this.id === null)
+    }
+    else if (this.id === null)
+    {
       id = "null";
+    }
+    else
+    {
+      id = this.id;
+    }
 
     return "{ className: " + this.getClassName() + ","
       + " name: " + this.name + ", id: " + id + " }";

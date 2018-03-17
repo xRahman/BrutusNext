@@ -34,10 +34,10 @@ export class Characters
     return Game.characters.names.add(character);
   }
 
-  // # Throws an exception on error.
+  // ! Throws an exception on error.
   public static get(characterId: string): Character
   {
-    let character = ServerEntities.get(characterId);
+    let character = ServerEntities.getEntity(characterId);
 
     if (!character || !character.isValid())
       throw new Error("Attempt to get an invalid character");

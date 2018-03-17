@@ -62,7 +62,7 @@ export class Connection implements SharedConnection
     this.account = account;
   }
 
-  // # Throws an exception on error.
+  // ! Throws an exception on error.
   public getAccount(): Account
   {
     if (!this.account || !this.account.isValid())

@@ -47,16 +47,41 @@ export abstract class Entities
     return App.entities.entityList.has(id);
   }
 
+  
+  // ! Throws an exception on error.
   // -> Returns 'undefined' if entity isn't found.
-  public static get(id: string): Entity | undefined
+  public static getEntity(id: string): Entity
   {
     if (App.entities === null)
     {
-      ERROR("Unexpected 'null' value");
-      return undefined;
+      throw new Error
+      (
+        "Unable to get entity (id '" + id + "')"
+        + " because App.entities is not valid"
+      );
+    }
+
+    let entity = App.entities.entityList.get(id);
+
+    if (entity === undefined)
+    {
+      throw new Error
+      (
+        "Unable to get entity (id '" + id + "')"
+        + " because it is not in Entities"
+      );
+    }
+
+    if (!entity.isValid())
+    {
+      throw new Error
+      (
+        "Unable to get entity (id '" + id + "')"
+        + " because it is not valid"
+      );
     }
     
-    return App.entities.entityList.get(id);
+    return entity;
   }
 
   // Removes entity from memory but doesn't delete it from disk
@@ -782,7 +807,7 @@ export abstract class Entities
   )
   : Entity | undefined | null
   {
-    let existingEntity = Entities.get(id);
+    let existingEntity = Entities.getEntity(id);
 
     if (existingEntity === undefined)
       return undefined;

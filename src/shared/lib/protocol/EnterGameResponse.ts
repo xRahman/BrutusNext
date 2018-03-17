@@ -38,11 +38,17 @@ export abstract class EnterGameResponse extends Response
 
 export module EnterGameResponse
 {
+  // Data attached to the response in case the request is accepted.
+  export type Data =
+  {
+    characterMove: Move;
+    serializedLoadLocation: SerializedEntity;
+  }
+
   export type Accepted =
   {
     status: "ACCEPTED";
-    characterMove: Move;
-    serializedLoadLocation: SerializedEntity;
+    data: EnterGameResponse.Data;
   }
 
   export type Rejected =

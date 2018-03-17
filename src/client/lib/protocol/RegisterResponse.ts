@@ -56,7 +56,7 @@ export class RegisterResponse extends SharedRegisterResponse
       return;
 
     Windows.registerWindow.form.rememberCredentials();
-    ClientApp.setState(ClientApp.State.CHARSELECT);
+    ClientApp.switchToState(ClientApp.State.CHARSELECT);
   }
 
   private deserializeAccount(connection: Connection)

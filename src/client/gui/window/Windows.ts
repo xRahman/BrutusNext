@@ -44,7 +44,7 @@ export class Windows
 
   // --------------- Static accessors -------------------
 
-  // # Throws an exception on error.
+  // ! Throws an exception on error.
   public static get loginWindow(): LoginWindow
   {
     if (!ClientApp.windows.loginWindow)
@@ -53,7 +53,7 @@ export class Windows
     return ClientApp.windows.loginWindow;
   }
 
-  // # Throws an exception on error.
+  // ! Throws an exception on error.
   public static get registerWindow(): RegisterWindow
   {
     if (!ClientApp.windows.registerWindow)
@@ -62,7 +62,7 @@ export class Windows
     return ClientApp.windows.registerWindow;
   }
 
-  // # Throws an exception on error.
+  // ! Throws an exception on error.
   public static get chargenWindow(): ChargenWindow
   {
     if (!ClientApp.windows.chargenWindow)
@@ -71,7 +71,7 @@ export class Windows
     return ClientApp.windows.chargenWindow;
   }
 
-  // # Throws an exception on error.
+  // ! Throws an exception on error.
   public static get charselectWindow(): CharselectWindow
   {
     if (!ClientApp.windows.charselectWindow)
@@ -80,7 +80,7 @@ export class Windows
     return ClientApp.windows.charselectWindow;
   }
 
-  // # Throws an exception on error.
+  // ! Throws an exception on error.
   public static get mapWindow(): MapWindow
   {
     if (!ClientApp.windows.mapWindow)
@@ -89,7 +89,7 @@ export class Windows
     return ClientApp.windows.mapWindow;
   }
 
-  // # Throws an exception on error.
+  // ! Throws an exception on error.
   public static get activeScrollWindow()
   {
     if (ClientApp.connection.activeAvatar === null)

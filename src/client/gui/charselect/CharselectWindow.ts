@@ -30,7 +30,7 @@ export class CharselectWindow extends FormWindow
 
   // --------------- Public accessors -------------------
 
-  // # Throws an exception on error.
+  // ! Throws an exception on error.
   public getForm(): CharselectForm
   {
     if (!this.form)
@@ -95,7 +95,7 @@ export class CharselectWindow extends FormWindow
 
   private enterChargen()
   {
-    ClientApp.setState(ClientApp.State.CHARGEN);
+    ClientApp.switchToState(ClientApp.State.CHARGEN);
   }
 
   // ---------------- Event handlers --------------------
