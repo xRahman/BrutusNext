@@ -196,6 +196,59 @@ function toCelsius(fahrenheit)
 // (it is another reason for returning a named variable instead of long
 // expression)
 
+
+Update:
+  Specify return type of a function unless it's a simple one-line getter.
+Even though the type will be automatically infered from return values
+by typescript, there are two reasons to do it manually:
+
+- Code will be self-commented: It will be easy to see what the function
+  returns.
+
+- It will help you catch mistakes - typescript won't let you return
+  something that is not of correct type. You would probably find out
+  when you called your function somewhere, but it still helps a little
+  bit.
+
+Verbose union types in return values:
+  Don't return 'undefined' or 'null', return a string literal type
+  instead. For example:
+
+public find(id: string): Entity | "NOT FOUND"
+{
+  ...
+}
+
+There are two reasons:
+
+- Code will be self-commented: It will be easy to see what is the meaning
+  of return value even without an extra comment.
+
+- Usage of this function will also be self-documented.
+
+Exmple:
+{
+  let searchResult = this.find(id);
+
+  if (searchResult === "NOT FOUND")
+  {
+    doSomething();
+    return;
+  }
+
+  // Here we are exploiting typescript control flow analysis.
+  // The type of 'searchResult' is (Entity | "NOT FOUND") but
+  // we have narrowed it in the first if clause. Because we
+  // have specified that the type of 'entity' is 'Entity',
+  // typescript will only allow us to assign 'searchResult'
+  // to 'entity' if we have handled all other cases of original
+  // union type and the only remaining variant is of type 'Entity'.
+  //   It means that this code is not only self-documented but it
+  // also ensures that all possibilities are handled.
+  let entity: Entity = searchResult;
+}
+
+
 Conditions
 -----------
 
@@ -294,8 +347,79 @@ if (x === undefined)
   txt = "x is not initialized";
 }
 
-// However, I usualy try to inicialize each variable and if I need a variable
-// with value of 'undefined', I do it explicitly like this and add a comment:
+Update:
+  With typescript strict checking and control flow analysis, it is now
+perectly ok to do something like this:
 
-// Assigning 'undefined' on purpose. We will test for it later.
-let x = undefined;
+{
+  let message: String;
+
+  if (something)
+    message = "Some message";
+  else
+    message = "Other message";
+}
+
+If you specify the type of your variable, typescript won't let
+you let it undefined - the code won't compile.
+
+
+
+Naming conventions
+===================
+
+Getters and finders
+--------------------
+
+1) Don't ever declare methods named get() or set().
+
+These are used in built-in typescript classes and get()
+usually returns 'undefined' if an item isn't found.
+  
+We don't do that, we return named union type instead
+(like (Entity | "NOT FOUND") so we shouldn't name our
+functions 'get()' because readed would expect standard
+javascript behaviour.
+
+2) getters should always return exactly the expected type
+   and throw an exception if it's not possible.
+
+(By getters we mean both javascript getters like
+ 'public get something() {}' and c-style getters
+ like 'public getSomething()'.)
+
+Example:
+
+class Blah
+{
+  private component: Component | null;
+
+  // ! Throws an exception on error.
+  public getComponent(): Component
+  {
+    if (!this.component)
+      throw new Error("Attempt to get an invalid 'component'");
+
+    return this.component;
+  }
+}
+
+In this example, property 'component' can be 'null' (probably
+because it cannot be passed to this class when it is instantiated
+and needs to be assigned later) but method getComponent() is only
+supposed to be called when'component' exists.
+  Note that return value of getComponent() is (Component), not
+(Component | null). This way whoever is using it doesn't have
+to check for null value and can use it directly like.
+
+let componentSize = this.getComponent().size;
+
+Possible exception still needs to be handled somewhere of course.
+
+3) findSomething() functions.
+
+If you want to test for existence of something (usually an element
+of the list) and return it if it exists in one function call, name
+the function findXxx().
+
+Such function should return union type like (Something | "NOT FOUND").

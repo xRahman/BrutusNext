@@ -41,84 +41,52 @@ export class EnterGameResponse extends SharedEnterGameResponse
 
     try
     {
-      this.enterGame(connection, this.result.data);
+      this.switchToGame(connection, this.result.data);
     }
     catch (error)
     {
-      /// TODO: We have failed to enter the game, we should probably
-      /// let the user know and possibly reconnect (or just ask her
-      /// to do so).
       REPORT(error, "Failed to enter game");
+      this.reportToPlayer("");
+      this.switchToLogin();
+
+      /// TODO: Možná není po erroru úplně dobře uklizeno,
+      /// Na connection mohl například zůstat vytvořený avatar.
     }
   }
 
   // --------------- Private methods --------------------
 
   // ! Throws an exception on error.
-  private enterGame
+  private switchToGame
   (
     connection: Connection,
     data: EnterGameResponse.Data
   )
   {
     let loadLocation = data.serializedLoadLocation.recreateEntity(Entity);
-
     let character = this.findSelectedCharacter(data.characterMove.entityId);
 
     connection.createAvatar(character);
-
-    /// TODO: returnovat by asi měla exception.
-    if (!character.enterWorld(data.characterMove))
-      return;
+    character.enterWorld(data.characterMove);
 
     ClientApp.switchToState(ClientApp.State.IN_GAME);
   }
 
   // ! Throws an exception on error.
-  private findSelectedCharacter(characterId: string)
+  private findSelectedCharacter(characterId: string): Character
   {
-    let searchResult = ClientEntities.getEntity(characterId);
-
-    if (searchResult === "NOT FOUND")
-    {
-      throw new Error
-      (
-        "Unable to enter game as character with"
-        + " id '" + characterId + "' because that"
-        + " character is not in client Entities"
-      );
-    }
-    
-    let character = searchResult.dynamicCast(Character);
-
-    if (!character.isValid())
-    {
-      throw new Error
-      (
-        "Unable to enter game as character with"
-        + " id '" + characterId + "' because that"
-        + " character is not valid"
-      );
-    }
-
-    return character;
+    return ClientEntities.getEntity(characterId).dynamicCast(Character);
   }
 
-  /// To be deleted.
-  // private deserializeLoadLocation()
-  // {
-  //   // 'loadLocation' entity is added to ClientEntities here as
-  //   // side effect. It can later be accessed using it's id.
-  //   let loadLocation = this.serializedLoadLocation.restore(Entity);
-    
-  //   if (!loadLocation || !loadLocation.isValid())
-  //   {
-  //     ERROR("Invalid load location in charselect response");
-  //     return false;
-  //   }
+  private reportToPlayer(message: string)
+  {
+    alert(message);
+  }
 
-  //   return true;
-  // }
+  private switchToLogin()
+  {
+    ClientApp.switchToState(ClientApp.State.LOGIN);
+  }
 }
 
 // ------------------ Type declarations ----------------------

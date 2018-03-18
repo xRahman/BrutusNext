@@ -49,7 +49,6 @@ export abstract class Entities
 
   
   // ! Throws an exception on error.
-  // -> Returns 'undefined' if entity isn't found.
   public static getEntity(id: string): Entity
   {
     if (App.entities === null)
@@ -215,19 +214,22 @@ export abstract class Entities
     return entity.dynamicCast(typeCast);
   }
 
-  // -> Returns 'null' on failure.
+  // ! Throws an exception on error.
   public static loadEntityFromJsonString<T extends Entity>
   (
     jsonString: string,
     typeCast: { new (...args: any[]): T },
     overwrite = false
   )
-  : T | null
+  : T
   {
     if (!App.entities)
     {
-      ERROR("Unexpected 'null' value");
-      return null;
+      throw new Error
+      (
+        "Unable to get load entity from jsonString"
+        + " because App.entities is not valid"
+      );
     }
 
     let entity = App.entities.loadEntityFromJsonString
@@ -238,11 +240,8 @@ export abstract class Entities
       }
     );
 
-    if (!entity)
-    {
-      ERROR("Failed to load entity from json string");
-      return null;
-    }
+    if (!entity || !entity.isValid())
+      throw new Error("Failed to load entity from json string");
 
     // Dynamically check that entity is an
     // instance of type T and typecast to it.

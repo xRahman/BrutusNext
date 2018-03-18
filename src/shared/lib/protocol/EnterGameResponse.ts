@@ -48,6 +48,8 @@ export module EnterGameResponse
   export type Accepted =
   {
     status: "ACCEPTED";
+    // Separate type is used here because it is passed
+    // as parameter when processing the packet on client.
     data: EnterGameResponse.Data;
   }
 

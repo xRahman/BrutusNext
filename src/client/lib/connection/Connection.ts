@@ -129,15 +129,15 @@ export class Connection implements SharedConnection
       await packet.process(this);
   }
 
-  public createAvatar(character: Character)
+  public createAvatar(character: Character): Avatar
   {
     let avatar = new Avatar(character);
 
     this.avatars.add(avatar);
 
-    // Newly created avatar is automaticaly set as active one
-    // (this should only happen when player logs in with a new
-    //  character).
+    // Newly created avatar is automaticaly set as active
+    // (this should only happen when player logs in with
+    //  a new character).
     this.activeAvatar = avatar;
 
     return avatar;

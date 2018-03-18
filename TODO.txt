@@ -1,13 +1,15 @@
 TO DO, TO DO, TODO TODO TODO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
-IMPORTANT TODO: Konvence hledacích a accesorových funkcí:
+IMPORTANT: Konvence hledacích a accesorových funkcí:
 - get() používají javascriptové classy, takže by se mělo chovat
   vždycky stejně (vracet Value | undefined). Ještě lepší ale bude
   to nepoužívat pro vlastní funkce.
 - find() by mělo vracet (Value | "NOT FOUND")
 - getCosi() by mělo vracet (Value) a hodit výjimku, když neexistuje.
   Důvod: Tahle pojmenovávám accessory.
+TODO: Napsat to do dokumentace.
+[done]
 
 
 Úpravy záhlaví souborů
@@ -33,6 +35,16 @@ pouštět nebudu.
 
 --------------------------------------------------------------
 
+TODO: Zkusit zrušit EntityData
+- u rootových class udělat /shared, /client a /server verze jako u packetů.
+- data potomků (UglyGrayOrc apod.) možná budou stačit na serveru a když ne,
+  tak je dát do vložených balíků - např. Affects.
+(Herní staty na to stejně asi budu chtít navěsit jako balík, abych je mohl
+ sdílet mezi různými typy entity (aby šly poškozovat roomy, itemy atd. stejně
+ jako charactery)).
+
+TODO: Posílat klientové errory a exceptiony na server a tam je zalogovat.
+ (samozřejmě jen pokud je ještě funkční websocket.)
 
 
 TODO: "UNDEFINED" result responsy možná vůbec nepotřebuju,

@@ -44,25 +44,11 @@ export class SerializedEntity extends Serializable
 
   // Contains serialized entity and all it's ancestor
   // entities starting with root ancestor.
-  public serializedTree;
+  public serializedTree: Array<string>;
 
   // ---------------- Public methods --------------------
 
-  /// To be deleted.
-  // // -> Returns 'true' on success.
-  // public serialize(entity: Entity, mode: Serializable.Mode)
-  // {
-  //   if (!entity || !entity.isValid())
-  //   {
-  //     ERROR("Attempt to serialize invalid entity:"
-  //       + " " + entity.getErrorIdString());
-  //     return false;
-  //   }
-
-  //   this.data = entity.serializeAncestorTree(this.data, mode);
-  // }
-
-  /// TODO: Mohlo by se to jmenovat spíš "recreateEntity()"
+  // ! Throws an exception on error.
   public recreateEntity<T extends Entity>
   (
     typeCast: { new (...args: any[]): T }
@@ -70,13 +56,16 @@ export class SerializedEntity extends Serializable
   {
     let entity: (Entity | null) = null;
 
-    // 'this.serializedTree' is an array of json strings
-    // each representing one serialized entity (beginning
-    // with root ancestor).
+    // Load entity and all of its ancestor entities, starting
+    // with it's root prototype entity.
+    // ('this.serializedTree' is an array of json strings
+    //  each representing one serialized entity beginning
+    //  with root ancestor).
     for (let jsonString of this.serializedTree)
     {
-      // Load entity and all of its ancestor entities, starting
-      // with it's root prototype entity.
+      // 'entity' variable will be overwritten in each
+      // cycle so at the end it will contain the last
+      // loaded entity.
       entity = Entities.loadEntityFromJsonString
       (
         jsonString,
@@ -88,6 +77,15 @@ export class SerializedEntity extends Serializable
         // have to deserialize (update) all it's ancestors which
         // most probably already exist on the client.
         true
+      );
+    }
+
+    if (!entity)
+    {
+      throw new Error
+      (
+        "Failed to recreate serialized entity because there"
+          + " were no entities stored in serialized tree"
       );
     }
 

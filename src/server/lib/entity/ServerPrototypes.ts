@@ -25,7 +25,7 @@ export class ServerPrototypes extends Prototypes
   // Creates root prototype entities if they don't exist on
   // the disk or loads them if they do. Then recursively loads
   // all prototype entities inherited from them.
-  public async init()
+  public async init(): Promise<void>
   {
     await this.initRootPrototypes();
     await this.loadDescendantPrototypes();
