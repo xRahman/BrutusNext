@@ -19,11 +19,9 @@ export class ChargenRequest  extends SharedChargenRequest
     this.version = 0;
   }
 
-  /*
-    This class is empty, all functionality is inherited from
-    ancestor. It only exists to be added to Classes so it can
-    be be dynamically instantiated.
-  */
+  // This class is empty, all functionality is inherited from
+  // ancestor. It only exists to be added to Classes so it can
+  // be be dynamically instantiated.
 }
 
 // This overwrites ancestor class.

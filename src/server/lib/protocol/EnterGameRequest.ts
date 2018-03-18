@@ -16,7 +16,6 @@ import {EnterGameRequest as SharedEnterGameRequest} from
   '../../../shared/lib/protocol/EnterGameRequest';
 import {EnterGameResponse} from
   '../../../server/lib/protocol/EnterGameResponse';
-import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
 import {Account} from '../../../server/lib/account/Account';
 import {Character} from '../../../server/game/character/Character';
 import {Characters} from '../../../server/game/character/Characters';
@@ -60,7 +59,7 @@ export class EnterGameRequest extends SharedEnterGameRequest
   // ! Throws an exception on error.
   private async enterGame(connection: Connection): Promise<EnterGameResponse>
   {
-    let character = Characters.get(this.characterId);
+    let character = Characters.getCharacter(this.characterId);
     let account = connection.getAccount();
 
     // Character will be selected when user enters charselect window.
@@ -97,8 +96,11 @@ export class EnterGameRequest extends SharedEnterGameRequest
     let result: EnterGameResponse.Result =
     {
       status: "ACCEPTED",
-      characterMove: characterMove,
-      serializedLoadLocation: serializedLoadLocation
+      data:
+      {
+        characterMove: characterMove,
+        serializedLoadLocation: serializedLoadLocation
+      }
     }
 
     return new EnterGameResponse(result);

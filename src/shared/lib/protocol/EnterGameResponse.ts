@@ -28,10 +28,6 @@ export abstract class EnterGameResponse extends Response
 
     this.version = 0;
   }
-
-  // --------------- Public accessors -------------------
-
-  ///public getResult() { return this.result; }
 }
 
 // ------------------ Type declarations ----------------------

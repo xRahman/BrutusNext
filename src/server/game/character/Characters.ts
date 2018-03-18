@@ -35,14 +35,9 @@ export class Characters
   }
 
   // ! Throws an exception on error.
-  public static get(characterId: string): Character
+  public static getCharacter(characterId: string): Character
   {
-    let character = ServerEntities.getEntity(characterId);
-
-    if (!character || !character.isValid())
-      throw new Error("Attempt to get an invalid character");
-
-    return character.dynamicCast(Character);
+    return ServerEntities.getEntity(characterId).dynamicCast(Character);
   }
 
   // -> Returns 'undefined' if entity 'name' isn't in the list.
