@@ -83,6 +83,9 @@ export class ClientApp extends App
     this.instance.state = state;
 
     this.windows.onAppChangedState(state);
+
+    if (state === ClientApp.State.ERROR)
+      alert("An error occured. Please reload the browser tab to log back in.");
   }
 
   // Creates and runs an instance of ClientApp.
@@ -227,6 +230,7 @@ export module ClientApp
     TERMS,
     CHARSELECT,
     CHARGEN,
-    IN_GAME
+    IN_GAME,
+    ERROR   // Player is asked to reload browser tab to recover.
   }
 }

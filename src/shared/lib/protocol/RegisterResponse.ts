@@ -10,57 +10,38 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Response} from '../../../shared/lib/protocol/Response';
+import {RegisterRequest} from '../../../shared/lib/protocol/RegisterRequest';
 import {SerializedEntity} from '../../../shared/lib/protocol/SerializedEntity';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 export abstract class RegisterResponse extends Response
 {
-  constructor()
+  constructor
+  (
+    protected result: RegisterResponse.Result
+  )
   {
     super();
 
     this.version = 0;
   }
-
-  // ----------------- Public data ----------------------
-
-  // Is the request accepted?
-  public result = RegisterResponse.Result.UNDEFINED;
-
-  // Serialized account data.
-  public serializedAccount = new SerializedEntity();
 }
 
 // ------------------ Type declarations ----------------------
 
 export module RegisterResponse
 {
-  export type Undefined = "UNDEFINED";
-
   export type Accepted =
   {
     status: "ACCEPTED";
-    characterMove: Move;
-    serializedLoadLocation: SerializedEntity;
+    serializedAccount: SerializedEntity;
   }
 
   export type Rejected =
   {
     status: "REJECTED";
-    problems: RegisterRequest.Problems;
+    problems: Array<RegisterRequest.Problem>;
   }
 
-  export type Result = Undefined | Accepted | Rejected;
+  export type Result = Accepted | Rejected;
 }
-
-// export module RegisterResponse
-// {
-//   export enum Result
-//   {
-//     UNDEFINED,
-//     OK,
-//     EMAIL_PROBLEM,
-//     PASSWORD_PROBLEM,
-//     FAILED_TO_CREATE_ACCOUNT
-//   }
-// }

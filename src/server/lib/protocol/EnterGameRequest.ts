@@ -111,7 +111,8 @@ export class EnterGameRequest extends SharedEnterGameRequest
     let result: EnterGameResponse.Result =
     {
       status: "REJECTED",
-      message: "Failed to enter game.\n\n" + Message.ADMINS_WILL_FIX_IT
+      message: "An error occured preventing you from entering game.\n\n"
+                + Message.ADMINS_WILL_FIX_IT
     };
 
     return new EnterGameResponse(result);

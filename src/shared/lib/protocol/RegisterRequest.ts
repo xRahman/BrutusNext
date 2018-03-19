@@ -29,74 +29,55 @@ export abstract class RegisterRequest extends Request
     this.version = 0;
   }
 
-  public static get MIN_EMAIL_LENGTH()
-    { return  3;}
-  public static get MAX_EMAIL_LENGTH()
-    { return  254;}
-  public static get MIN_PASSWORD_LENGTH()
-    { return  4;}
-  public static get MAX_PASSWORD_LENGTH()
-    { return  50;}
-
-  // ----------------- Public data ----------------------
-
-  /// Moved to constructor
-  // public email: (string | null) = null;
-  // public password: (string | null) = null;
+  public static readonly MIN_EMAIL_LENGTH = 3;
+  public static readonly MAX_EMAIL_LENGTH = 254;
+  public static readonly MIN_PASSWORD_LENGTH = 4;
+  public static readonly MAX_PASSWORD_LENGTH = 50;
 
   // ---------------- Public methods --------------------
 
-  // -> Returns 'null' if email is ok,
-  //    othwrwise returns the first found reason why it's not.
-  public getEmailProblem(): string
+  public checkEmail(): (RegisterRequest.Problem | "NO PROBLEM")
   {
-    let problem: (string | null) = null;
+    let checkResult: string;
 
-    if (!this.email)
-      return "E-mail address must not be empty.";
+    if ((checkResult = this.checkEmailLength()) !== "NO PROBLEM")
+      return this.composeEmailProblem(checkResult);
 
-    if (problem = this.getEmailLengthProblem())
-      return problem;
+    if ((checkResult = this.checkEmailByteLength()) !== "NO PROBLEM")
+      return this.composeEmailProblem(checkResult);
 
-    if (problem = this.getEmailByteLengthProblem())
-      return problem;
+    if ((checkResult = this.checkAmpersand()) !== "NO PROBLEM")
+      return this.composeEmailProblem(checkResult);
 
-    if (problem = this.getAmpersandProblem())
-      return problem;
+    if ((checkResult = this.checkForInvalidCharacters()) !== "NO PROBLEM")
+      return this.composeEmailProblem(checkResult);
 
-    if (problem = this.getInvalidCharacterProblem())
-      return problem;
-
-    return null;  // No problem found.
+    return "NO PROBLEM";
   }
 
-  // -> Returns 'null' if password is ok,
-  //    othwrwise returns the first found reason why it's not.
-  public getPasswordProblem(): string
+  public checkPassword(): (RegisterRequest.Problem | "NO PROBLEM")
   {
-    if (!this.password)
-      return "Password must not be empty.";
+    let checkResult: string;
 
-    if (this.password.length < RegisterRequest.MIN_PASSWORD_LENGTH)
-    {
-      return "Password must be at least"
-        + " " + RegisterRequest.MIN_PASSWORD_LENGTH
-        + " characters long.";
-    }
+    if ((checkResult = this.checkPasswordLength()) !== "NO PROBLEM")
+      return this.composePasswordProblem(checkResult);
 
-    if (this.password.length > RegisterRequest.MAX_PASSWORD_LENGTH)
-    {
-      return "Password cannot be longer than"
-        + " " + RegisterRequest.MAX_PASSWORD_LENGTH
-        + " characters.";
-    }
-
-    return null;
+    return "NO PROBLEM";
   }
 
   // ---------------- Private methods -------------------
 
-  private getEmailLengthProblem()
+  private composeEmailProblem(message: string): RegisterRequest.Problem
+  {
+    return { type: RegisterRequest.ProblemType.EMAIL_PROBLEM, message };
+  }
+
+  private composePasswordProblem(message: string): RegisterRequest.Problem
+  {
+    return { type: RegisterRequest.ProblemType.PASSWORD_PROBLEM, message };
+  }
+
+  private checkEmailLength(): (string | "NO PROBLEM")
   {
     if (this.email.length < RegisterRequest.MIN_EMAIL_LENGTH)
     {
@@ -112,10 +93,10 @@ export abstract class RegisterRequest extends Request
         + " characters.";
     }
 
-    return null;
+    return "NO PROBLEM";
   }
 
-  private getEmailByteLengthProblem()
+  private checkEmailByteLength(): (string | "NO PROBLEM")
   {
     // There is a limit of 255 bytes to the length of file
     // name on most Unix file systems. It matters because we
@@ -139,10 +120,10 @@ export abstract class RegisterRequest extends Request
         + " that is up to 64 characters long).";
     }
 
-    return null;
+    return "NO PROBLEM";
   }
 
-  private getAmpersandProblem()
+  private checkAmpersand(): (string | "NO PROBLEM")
   {
     let splitArray = this.email.split('@');
 
@@ -164,10 +145,10 @@ export abstract class RegisterRequest extends Request
         + " after '@' in an e-mail address.";
     }
 
-    return null;
+    return "NO PROBLEM";
   }
 
-  private getInvalidCharacterProblem()
+  private checkForInvalidCharacters(): (string | "NO PROBLEM")
   {
     // Check for invalid characters.
     for (let i = 0; i < this.email.length; i++)
@@ -180,8 +161,27 @@ export abstract class RegisterRequest extends Request
       }
     }
 
-    return null;
+    return "NO PROBLEM";
   }
+
+  private checkPasswordLength(): (string | "NO PROBLEM")
+  {
+    if (this.password.length < RegisterRequest.MIN_PASSWORD_LENGTH)
+    {
+      return "Password must be at least"
+        + " " + RegisterRequest.MIN_PASSWORD_LENGTH
+        + " characters long.";
+    }
+
+    if (this.password.length > RegisterRequest.MAX_PASSWORD_LENGTH)
+    {
+      return "Password cannot be longer than"
+        + " " + RegisterRequest.MAX_PASSWORD_LENGTH
+        + " characters.";
+    }
+
+    return "NO PROBLEM"
+  } 
 }
 
 // ------------------ Type declarations ----------------------
@@ -193,75 +193,11 @@ export module RegisterRequest
     EMAIL_PROBLEM,
     PASSWORD_PROBLEM,
     ERROR
-  };
+  }
 
   export type Problem =
   {
     type: ProblemType;
     message: string;
-  };
-
-  export type Problems = Array<Problem>;
+  }
 }
-
-
-// export module RegisterRequest
-// {
-//   export enum ProblemType
-//   {
-//     EMAIL_PROBLEM,
-//     PASSWORD_PROBLEM,
-//     ERROR
-//   };
-
-//   export type Problem =
-//   {
-//     type: ProblemType;
-//     problem: string;
-//   };
-
-//   export type Problems = Array<Problem>;
-
-//   export type Result = Request.Accepted | Problems;
-
-//   /// Ještě možná jinak: Buď jsou tam nějaké problémy či errory
-//   /// (tzn. asi existuje aspoň jedna property), nebo je to ok.
-//   /// - takže by to vlastně byl jeden objekt s několika nepovinnejma
-//   ///   propertama.
-//   /// Otázka jen je, jak kontrolovat, že jsem checknul všechny
-//   /// (tzn. když přidám "problémovou" property, že to na klientovi
-//   ///  nebude zobrazovat "všechno v pořádku").
-//   /// ... Ehm - stačí checknout, jeslti to je prázdný objekt - i když,
-//   /// to vlastně asi jednoduše nejde...
-//   /// Šlo by použít: 'if (Object.keys(obj).length === 0)'
-
-//   // export type Problems =
-//   // {
-//   //   emailProblem?: string;
-//   //   passwordProblem?: string;
-//   // }
-
-//   // export type Result = Request.Accepted | Request.Error | Problems;
-
-//   // export type EmailProblem =
-//   // {
-//   //   result: "EMAIL PROBLEM";
-//   //   problem: string;
-//   // }
-
-//   // export type PasswordProblem =
-//   // {
-//   //   result: "EMAIL PROBLEM";
-//   //   problem: string;
-//   // }
-
-//   // export type Problems =
-//   //   Request.Accepted | Request.Error | CharacterNameProblem;
-
-
-//   // export interface Problems extends Request.Problems
-//   // {
-//   //   characterNameProblem?: string;
-//   //   error?: string;
-//   // }
-// }

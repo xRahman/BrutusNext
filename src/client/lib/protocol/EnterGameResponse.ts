@@ -46,11 +46,7 @@ export class EnterGameResponse extends SharedEnterGameResponse
     catch (error)
     {
       REPORT(error, "Failed to enter game");
-      this.reportToPlayer("");
-      this.switchToLogin();
-
-      /// TODO: Možná není po erroru úplně dobře uklizeno,
-      /// Na connection mohl například zůstat vytvořený avatar.
+      ClientApp.switchToState(ClientApp.State.ERROR);
     }
   }
 
@@ -81,11 +77,6 @@ export class EnterGameResponse extends SharedEnterGameResponse
   private reportToPlayer(message: string)
   {
     alert(message);
-  }
-
-  private switchToLogin()
-  {
-    ClientApp.switchToState(ClientApp.State.LOGIN);
   }
 }
 

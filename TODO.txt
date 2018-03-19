@@ -125,6 +125,19 @@ TODO: Hmm, když už mám funkce ERROR() a REPORT(), tak by asi dávala smysl
 [kašlat na to]
 
 
+Hmm...
+- problém nedědění typů bych ještě mohl vyřešit tak, že
+  /shared předky nazvu SharedXXX a budu je importovat a typy brát z nich...
+  (šlo by to sice i bez přejmenování, ale byl by to docela zmatek).
+Jo, to asi zní dobře. Sice pořád zůstanou stejný classy na clientu a na
+serveru, to se aspoň nikdy nepřekládá dohromady. A navíc to má důvod
+(určení co se na co překlápí při komunikaci mezi klientem a serverem).
+
+TODO: Error responsům sem sebral prefix '[ERROR]:', měl bych ho tam
+  zase přidat (asi na klientovi).
+  - a nebo to formulvoat nějak ve stylu "An error occured while registering
+    your account".
+
 --------------------------------------------------------------
 
 Logování a errory

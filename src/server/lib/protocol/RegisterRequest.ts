@@ -7,6 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {REPORT} from '../../../shared/lib/error/REPORT';
 import {RegisterRequest as SharedRegisterRequest} from
 '../../../shared/lib/protocol/RegisterRequest';
 import {Utils} from '../../../shared/lib/utils/Utils';
@@ -36,20 +37,21 @@ export class RegisterRequest extends SharedRegisterRequest
   // ---------------- Public methods --------------------
 
   // ~ Overrides Packet.process().
-  // -> Returns 'true' on success.
-  public async process(connection: Connection): Promise<boolean>
+  public async process(connection: Connection): Promise<void>
   {
-    if (!this.isRequestValid(connection))
-      return false;
+    let response: RegisterResponse;
 
-    return await this.createAccount
-    (
-      // Email is used as account name.
-      this.email,
-      // Only hash is stored, not original password.
-      ServerUtils.md5hash(this.password),
-      connection
-    );
+    try
+    {
+      response = await this.registerAccount(connection);
+    }
+    catch (error)
+    {
+      REPORT(error);
+      response = this.createErrorResponse();
+    }
+
+    connection.send(response);
   }
 
   // --------------- Private methods --------------------
@@ -102,24 +104,41 @@ export class RegisterRequest extends SharedRegisterRequest
     return false;
   }
 
-  private async createAccount
+  private async registerAccount
   (
-    accountName: string,
-    passwordHash: string,
     connection: Connection
   )
-  : Promise<boolean>
+  : Promise<RegisterResponse>
   {
+    let checkResult = this.checkForProblems(connection);
+
+    if (checkResult !== "NO PROBLEM")
+      return this.createProblemResponse(checkResult);
+
+    return await this.createAccount(connection);
+  }
+
+  private async createAccount
+  (
+    connection: Connection
+  )
+  : Promise<RegisterResponse>
+  {
+    // Email is used as account name.
+    let accountName = this.email;
+
     if (await this.accountAlreadyExists(accountName, connection))
       return false;
 
     let account = await ServerEntities.createInstanceEntity
     (
       Account,
-      Account.name,   // Prototype name.
+      // Prototype name.
+      Account.name,
       accountName,
       Entity.NameCathegory.ACCOUNT,
-      passwordHash
+      // Only hash is stored, not original password.
+      ServerUtils.md5hash(this.password)
     );
 
     if (account === null)
@@ -130,9 +149,18 @@ export class RegisterRequest extends SharedRegisterRequest
 
     this.initAccount(account, passwordHash, connection);
     await ServerEntities.save(account);
-    this.acceptRequest(account, connection);
+    ///this.acceptRequest(account, connection);
 
-    return true;
+    let response = this.createAcceptResponse(loadLocation, characterMove);
+
+    Syslog.log
+    (
+      "New player: " + account.getUserInfo(),
+      MessageType.SYSTEM_INFO,
+      AdminLevel.IMMORTAL
+    );
+
+    return response;
   }
 
   private initAccount
@@ -148,104 +176,190 @@ export class RegisterRequest extends SharedRegisterRequest
     account.attachConnection(connection);
   }
 
-  private acceptRequest(account: Account, connection: Connection)
-  {
-    let response = new RegisterResponse();
-    response.result = RegisterResponse.Result.OK;
+  /// To be deleted.
+  // private acceptRequest(account: Account, connection: Connection)
+  // {
+  //   let response = new RegisterResponse();
+  //   response.result = RegisterResponse.Result.OK;
     
-    // Add newly created account to the response.
-    response.serializedAccount.serialize
-    (
-      account,
-      Serializable.Mode.SEND_TO_CLIENT
-    );
+  //   // Add newly created account to the response.
+  //   response.serializedAccount.serialize
+  //   (
+  //     account,
+  //     Serializable.Mode.SEND_TO_CLIENT
+  //   );
 
-    Syslog.log
-    (
-      "New player: " + account.getUserInfo(),
-      MessageType.SYSTEM_INFO,
-      AdminLevel.IMMORTAL
-    );
+  //   Syslog.log
+  //   (
+  //     "New player: " + account.getUserInfo(),
+  //     MessageType.SYSTEM_INFO,
+  //     AdminLevel.IMMORTAL
+  //   );
     
-    connection.send(response);
-  }
+  //   connection.send(response);
+  // }
 
-  private denyRequest
-  (
-    problem: string,
-    result: RegisterResponse.Result,
-    connection: Connection
-  )
+  /// To be deleted.
+  // private denyRequest
+  // (
+  //   problem: string,
+  //   result: RegisterResponse.Result,
+  //   connection: Connection
+  // )
+  // {
+  //   let response = new RegisterResponse();
+
+  //   response.result = result;
+  //   response.setProblems(problem);
+
+  //   connection.send(response);
+  // }
+
+  /// To be deleted.
+  // private isEmailValid(connection: Connection): boolean
+  // {
+  //   let problem = this.getEmailProblem();
+
+  //   if (!problem)
+  //     return true;
+
+  //   this.denyRequest
+  //   (
+  //     problem,
+  //     RegisterResponse.Result.EMAIL_PROBLEM,
+  //     connection
+  //   );
+
+  //   Syslog.log
+  //   (
+  //     "Attempt to register invalid e-mail address " + this.email + "."
+  //       + " Problem: " + problem,
+  //     MessageType.CONNECTION_INFO,
+  //     AdminLevel.IMMORTAL
+  //   );
+    
+  //   return false;
+  // }
+
+  /// To be deleted.
+  // private isPasswordValid(connection: Connection): boolean
+  // {
+  //   let problem = this.getEmailProblem();
+
+  //   if (!problem)
+  //     return true;
+
+  //   this.denyRequest
+  //   (
+  //     problem,
+  //     RegisterResponse.Result.PASSWORD_PROBLEM,
+  //     connection
+  //   );
+
+  //   Syslog.log
+  //   (
+  //     "Attempt to register account " + this.email
+  //       + " " + connection.getOrigin() + " using"
+  //       + " invalid password. Problem: " + problem,
+  //     MessageType.CONNECTION_INFO,
+  //     AdminLevel.IMMORTAL
+  //   );
+
+  //   return false;
+  // }
+
+  private logEmailProblem(message: string)
   {
-    let response = new RegisterResponse();
-
-    response.result = result;
-    response.setProblems(problem);
-
-    connection.send(response);
-  }
-
-  private isEmailValid(connection: Connection): boolean
-  {
-    let problem = this.getEmailProblem();
-
-    if (!problem)
-      return true;
-
-    this.denyRequest
-    (
-      problem,
-      RegisterResponse.Result.EMAIL_PROBLEM,
-      connection
-    );
-
     Syslog.log
     (
       "Attempt to register invalid e-mail address " + this.email + "."
-        + " Problem: " + problem,
+        + " Problem: " + message,
       MessageType.CONNECTION_INFO,
       AdminLevel.IMMORTAL
     );
-    
-    return false;
   }
 
-  private isPasswordValid(connection: Connection): boolean
+  private logPasswordProblem(message: string, connection: Connection)
   {
-    let problem = this.getEmailProblem();
-
-    if (!problem)
-      return true;
-
-    this.denyRequest
-    (
-      problem,
-      RegisterResponse.Result.PASSWORD_PROBLEM,
-      connection
-    );
-
     Syslog.log
     (
       "Attempt to register account " + this.email
         + " " + connection.getOrigin() + " using"
-        + " invalid password. Problem: " + problem,
+        + " invalid password. Problem: " + message,
       MessageType.CONNECTION_INFO,
       AdminLevel.IMMORTAL
     );
-
-    return false;
   }
 
-  private isRequestValid(connection: Connection): boolean
+  private checkForProblems
+  (
+    connection: Connection
+  )
+  : (Array<RegisterRequest.Problem> | "NO PROBLEM")
   {
-    if (!this.isEmailValid(connection))
-      return false;
+    let checkResult: (RegisterRequest.Problem | "NO PROBLEM");
+    let problems: Array<RegisterRequest.Problem> = [];
 
-    if (!this.isPasswordValid(connection))
-      return false;
+    if ((checkResult = this.checkEmail()) !== "NO PROBLEM")
+    {
+      this.logEmailProblem(checkResult.message);
+      problems.push(checkResult);
+    }
 
-    return true;
+    if ((checkResult = this.checkPassword()) !== "NO PROBLEM")
+    {
+      this.logPasswordProblem(checkResult.message, connection)
+      problems.push(checkResult);
+    }
+
+    if (problems.length === 0)
+      return "NO PROBLEM";
+    else
+      return problems;
   }
+
+  private createProblemResponse
+  (
+    problems: Array<RegisterRequest.Problem>
+  )
+  : RegisterResponse
+  {
+    let result: RegisterResponse.Result =
+    {
+      status: "REJECTED",
+      problems: problems
+    };
+
+    return new RegisterResponse(result);
+  }
+
+  private createErrorResponse(): RegisterResponse
+  {
+    let problem: RegisterRequest.Problem =
+    {
+      type: RegisterRequest.ProblemType.ERROR,
+      message: "An error occured while creating your account.\n\n"
+                + Message.ADMINS_WILL_FIX_IT
+    };
+
+    let result: RegisterResponse.Result =
+    {
+      status: "REJECTED",
+      problems: [ problem ]
+    };
+
+    return new RegisterResponse(result);
+  }
+}
+
+// ------------------ Type declarations ----------------------
+
+export module RegisterRequest
+{
+  // Here we are just reexporting types declared in our ancestor
+  // (because they aren't inherited along with the class).
+  export type ProblemType = SharedRegisterRequest.ProblemType;
+  export type Problem = SharedRegisterRequest.Problem;
 }
 
 Classes.registerSerializableClass(RegisterRequest);
