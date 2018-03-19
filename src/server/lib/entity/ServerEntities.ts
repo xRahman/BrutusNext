@@ -76,31 +76,36 @@ export class ServerEntities extends Entities
     );
   }
   
-  // Attempts to create a name lock file.
-  // -> Returns 'false' if name change isn't allowed.
-  public static async requestEntityName
-  (
-    id: string,
-    name: string,
-    cathegory: Entity.NameCathegory | null,
-    passwordHash: (string | null) = null
-  )
-  {
-    // Non-unique names are always available.
-    if (cathegory === null)
-      return true;
+  /// This should not be used anymore - check for name existence should
+  /// be done prior to generating of id.
+  // // Attempts to create a name lock file.
+  // // -> Returns 'false' if name change isn't allowed.
+  // public static async requestEntityName
+  // (
+  //   id: string,
+  //   name: string,
+  //   cathegory: Entity.NameCathegory | null,
+  //   passwordHash: (string | null) = null
+  // )
+  // {
+  //   // Non-unique names are always available.
+  //   if (cathegory === null)
+  //     return true;
 
-    if (await ServerEntities.isEntityNameTaken(name, cathegory))
-      return false;
+  //   /// Pozn.: Tohle kontroluju už v ServerEntities.createInstanceEntity().
+  //   /// TODO: NameLock.save() by asi měl házet výjimku, pokud už name lock
+  //   ///   existuje.
+  //   // if (await ServerEntities.isEntityNameTaken(name, cathegory))
+  //   //   return false;
 
-    return await NameLock.save
-    (
-      id,
-      name,
-      Entity.NameCathegory[cathegory],
-      passwordHash
-    );
-  }
+  //   return await NameLock.save
+  //   (
+  //     id,
+  //     name,
+  //     Entity.NameCathegory[cathegory],
+  //     passwordHash
+  //   );
+  // }
 
   public static async releaseName
   (
@@ -115,6 +120,7 @@ export class ServerEntities extends Entities
     );
   }
 
+  // ! Throws an exception on error.
   // Creates a new instance entity with a new id (can't be used as prototype).
   // -> Returns 'null' on failure.
   // -> Returns 'undefined' if requested unique name is already taken.
@@ -127,45 +133,61 @@ export class ServerEntities extends Entities
     cathegory: (Entity.NameCathegory | null) = null,
     passwordHash: (string | null) = null
   )
-  : Promise<T | null | undefined>
+  : Promise<T | "NAME IS ALREADY TAKEN">
   {
+    // If 'cathegory' is 'null', it means that we are requesting
+    // a non-unique name so there is no need to test if it is
+    // available.
+    if (cathegory !== null)
+    {
+      if (await ServerEntities.isEntityNameTaken(name, cathegory))
+        return "NAME IS ALREADY TAKEN";
+    }
+
     let prototype = Prototypes.get(prototypeName);
 
     if (!prototype)
     {
-      ERROR("Unable to create instance entity because prototype"
-        + " '" + prototypeName + "' doesn't exist");
-      return null;
+      throw new Error
+      (
+        "Unable to create instance entity because prototype"
+        + " '" + prototypeName + "' doesn't exist"
+      );
     }
 
     let id = ServerEntities.generateId();
 
+    /// TODO: Tuhle výjimku by mělo házet už generateId().
     if (id === null)
-      return null;
+      throw new Error("Failed to generate entity id");
 
-    // If 'name' isn't available, we have just wasted an id.
-    // (It's unavoidable because id is written to the name lock
-    //  file so we need to generate it prior to writing the file.
-    //    We could first test if the name lock file exists of
-    //  course, but it would add a disk read operation even when
-    //  the name is available, which is by far the most common
-    //  scenario.)
-    if
-    (
-      !await ServerEntities.requestEntityName
+    /// Replaced with code below.
+    // if
+    // (
+    //   !await ServerEntities.requestEntityName
+    //   (
+    //     id,
+    //     name,
+    //     cathegory,
+    //     passwordHash
+    //   )
+    // )
+    // {
+    //   return "NAME IS ALREADY TAKEN";
+    // }
+    if (cathegory !== null)
+    {
+      await NameLock.save
       (
         id,
         name,
-        cathegory,
+        Entity.NameCathegory[cathegory],
         passwordHash
-      )
-    )
-    {
-      // ERROR("Attempt to create unique entity '" + name + "'"
-      //   + " in cathegory '" + Entity.NameCathegory[cathegory] + "'"
-      //   + " which already exists. Entity is not created");
-      return undefined;
+      );
     }
+
+    /// TODO: Asi bych měl něco udělat s locknutým jménem, pokud se mi
+    // nepovede entitu vytvořit (nejspíš smazat name lock).
 
     let entity = await ServerApp.entities.createNewEntity
     (
@@ -176,11 +198,9 @@ export class ServerEntities extends Entities
       false   // 'isPrototype'
     );
 
+    /// TODO: Tuhle výjimku by měla házet už createNewEntity().
     if (!entity)
-    {
-      ERROR("Failed to create new instance entity (id: " + id + ")");
-      return null;
-    }
+      throw new Error("Failed to create new instance entity (id: " + id + ")");
 
     // Dynamically check that entity is an
     // instance of type T and typecast to it.

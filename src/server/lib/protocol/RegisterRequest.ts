@@ -104,6 +104,7 @@ export class RegisterRequest extends SharedRegisterRequest
     return false;
   }
 
+  // ! Throws an exception on error.
   private async registerAccount
   (
     connection: Connection
@@ -113,11 +114,12 @@ export class RegisterRequest extends SharedRegisterRequest
     let checkResult = this.checkForProblems(connection);
 
     if (checkResult !== "NO PROBLEM")
-      return this.createProblemResponse(checkResult);
+      return this.createProblemsResponse(checkResult);
 
     return await this.createAccount(connection);
   }
 
+  // ! Throws an exception on error.
   private async createAccount
   (
     connection: Connection
@@ -126,26 +128,46 @@ export class RegisterRequest extends SharedRegisterRequest
   {
     // Email is used as account name.
     let accountName = this.email;
+    // Only hash is stored, not original password.
+    let passwordHash = ServerUtils.md5hash(this.password)
+
+    /*
+      Kurnik, tohle budu muset celý předělat...
+        Teď se existence jména (tzn. name lock souboru) checkuje dvakrát.
+
+      - mělo by to bejt tak, že uvnitř createInstanceEntity() se nejdřív
+        checkne, že je jméno volné, pak se vygeneruje idčko a až pak se
+        savne name lock file.
+          Nemělo by se tedy nejdřív vygenerovat idčko, pak checknout existence
+        name locku a pak name lock savnout.
+
+
+    */
 
     if (await this.accountAlreadyExists(accountName, connection))
       return false;
 
-    let account = await ServerEntities.createInstanceEntity
+    let accountCreationResult = await ServerEntities.createInstanceEntity
     (
       Account,
       // Prototype name.
       Account.name,
       accountName,
       Entity.NameCathegory.ACCOUNT,
-      // Only hash is stored, not original password.
-      ServerUtils.md5hash(this.password)
+      passwordHash
     );
 
-    if (account === null)
+    if (accountCreationResult === "NAME IS ALREADY TAKEN")
     {
-      this.reportAccountCreationFailure(account, accountName, connection);
-      return false;
+      // this.reportAccountCreationFailure(account, accountName, connection);
+      // return false;
+      return this.createEmailProblemResponse
+      (
+        "An account is already registered to this e-mail address."
+      );
     }
+
+    let account: Account = accountCreationResult;
 
     this.initAccount(account, passwordHash, connection);
     await ServerEntities.save(account);
@@ -318,7 +340,18 @@ export class RegisterRequest extends SharedRegisterRequest
       return problems;
   }
 
-  private createProblemResponse
+  private createEmailProblemResponse(message: string): RegisterResponse
+  {
+    let problem: RegisterRequest.Problem =
+    {
+      type: RegisterRequest.ProblemType.EMAIL_PROBLEM,
+      message: message
+    };
+
+    return this.createProblemsResponse([ problem ]);
+  }
+
+  private createProblemsResponse
   (
     problems: Array<RegisterRequest.Problem>
   )
