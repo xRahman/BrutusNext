@@ -7,8 +7,8 @@
 'use strict';
 
 import {Classes} from '../../../shared/lib/class/Classes';
-import {SystemMessage as SharedSystemMessage} from
-  '../../../shared/lib/protocol/SystemMessage';
+import {SharedSystemMessage} from
+  '../../../shared/lib/protocol/SharedSystemMessage';
 
 export class SystemMessage extends SharedSystemMessage
 {
@@ -22,17 +22,6 @@ export class SystemMessage extends SharedSystemMessage
   // This class is empty, all functionality is inherited from
   // ancestor. It only exists to be added to Classes so it can
   // be be dynamically instantiated.
-}
-
-// ------------------ Type declarations ----------------------
-
-// Module is exported so you can use enum type from outside this file.
-// It must be declared after the class because Typescript says so...
-export module SystemMessage
-{
-  // Here we are just reexporting types declared in our ancestor
-  // (because they aren't inherited along with the class).
-  export type Type = SharedSystemMessage.Type;
 }
 
 Classes.registerSerializableClass(SystemMessage);

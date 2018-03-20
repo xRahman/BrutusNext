@@ -9,8 +9,8 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {Syslog} from '../../../shared/lib/log/Syslog';
-import {ChargenRequest as SharedChargenRequest} from
-  '../../../shared/lib/protocol/ChargenRequest';
+import {SharedChargenRequest} from
+  '../../../shared/lib/protocol/SharedChargenRequest';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {Admins} from '../../../server/lib/admin/Admins';
 import {Account} from '../../../server/lib/account/Account';

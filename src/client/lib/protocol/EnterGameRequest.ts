@@ -7,8 +7,8 @@
 'use strict';
 
 import {Classes} from '../../../shared/lib/class/Classes';
-import {EnterGameRequest as SharedEnterGameRequest} from
-  '../../../shared/lib/protocol/EnterGameRequest';
+import {SharedEnterGameRequest} from
+  '../../../shared/lib/protocol/SharedEnterGameRequest';
 
 export class EnterGameRequest extends SharedEnterGameRequest
 {

@@ -7,8 +7,8 @@
 'use strict';
 
 import {Classes} from '../../../shared/lib/class/Classes';
-import {RegisterResponse as SharedRegisterResponse} from
-  '../../../shared/lib/protocol/RegisterResponse';
+import {SharedRegisterResponse} from
+  '../../../shared/lib/protocol/SharedRegisterResponse';
 
 export class RegisterResponse extends SharedRegisterResponse
 {
@@ -22,15 +22,6 @@ export class RegisterResponse extends SharedRegisterResponse
   // This class is empty, all functionality is inherited from
   // ancestor. It only exists to be added to Classes so it can
   // be be dynamically instantiated.
-}
-
-// ------------------ Type declarations ----------------------
-
-export module RegisterResponse
-{
-  // Here we are just reexporting types declared in our ancestor
-  // (because they aren't inherited along with the class).
-  export type Result = SharedRegisterResponse.Result;
 }
 
 Classes.registerSerializableClass(RegisterResponse);

@@ -8,8 +8,8 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {REPORT} from '../../../shared/lib/error/REPORT';
-import {RegisterRequest as SharedRegisterRequest} from
-'../../../shared/lib/protocol/RegisterRequest';
+import {SharedRegisterRequest} from
+  '../../../shared/lib/protocol/SharedRegisterRequest';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {ServerUtils} from '../../../server/lib/utils/ServerUtils';
 import {Syslog} from '../../../shared/lib/log/Syslog';
@@ -295,10 +295,10 @@ export class RegisterRequest extends SharedRegisterRequest
   (
     connection: Connection
   )
-  : (Array<RegisterRequest.Problem> | "NO PROBLEM")
+  : Array<SharedRegisterRequest.Problem> | "NO PROBLEM"
   {
-    let checkResult: (RegisterRequest.Problem | "NO PROBLEM");
-    let problems: Array<RegisterRequest.Problem> = [];
+    let checkResult: (SharedRegisterRequest.Problem | "NO PROBLEM");
+    let problems: Array<SharedRegisterRequest.Problem> = [];
 
     if ((checkResult = this.checkEmail()) !== "NO PROBLEM")
     {
@@ -340,7 +340,7 @@ export class RegisterRequest extends SharedRegisterRequest
 
   private createAccountAlreadyExistsResponse(): RegisterResponse
   {
-    let problem: RegisterRequest.Problem =
+    let problem: SharedRegisterRequest.Problem =
     {
       type: RegisterRequest.ProblemType.EMAIL_PROBLEM,
       message: "An account is already registered to this e-mail address."
@@ -351,7 +351,7 @@ export class RegisterRequest extends SharedRegisterRequest
 
   private createProblemsResponse
   (
-    problems: Array<RegisterRequest.Problem>
+    problems: Array<SharedRegisterRequest.Problem>
   )
   : RegisterResponse
   {
@@ -366,7 +366,7 @@ export class RegisterRequest extends SharedRegisterRequest
 
   private createErrorResponse(): RegisterResponse
   {
-    let problem: RegisterRequest.Problem =
+    let problem: SharedRegisterRequest.Problem =
     {
       type: RegisterRequest.ProblemType.ERROR,
       message: "An error occured while creating your account.\n\n"
@@ -416,16 +416,6 @@ export class RegisterRequest extends SharedRegisterRequest
       Serializable.Mode.SEND_TO_CLIENT
     );
   }
-}
-
-// ------------------ Type declarations ----------------------
-
-export module RegisterRequest
-{
-  // Here we are just reexporting types declared in our ancestor
-  // (because they aren't inherited along with the class).
-  export type ProblemType = SharedRegisterRequest.ProblemType;
-  export type Problem = SharedRegisterRequest.Problem;
 }
 
 Classes.registerSerializableClass(RegisterRequest);

@@ -17,7 +17,7 @@ import {Response} from '../../../shared/lib/protocol/Response';
 import {SerializedEntity} from '../../../shared/lib/protocol/SerializedEntity';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export abstract class ChargenResponse extends Response
+export abstract class SharedChargenResponse extends Response
 {
   constructor()
   {
@@ -29,7 +29,7 @@ export abstract class ChargenResponse extends Response
   // ----------------- Public data ----------------------
 
   // Is the request accepted?
-  public result = ChargenResponse.Result.UNDEFINED;
+  public result = SharedChargenResponse.Result.UNDEFINED;
 
   // Serialized account data.
   // (We send account back to client, not the created character,

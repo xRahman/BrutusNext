@@ -15,8 +15,8 @@ import {Character} from '../../../client/game/character/Character';
 import {Windows} from '../../../client/gui/window/Windows';
 import {Connection} from '../../../client/lib/connection/Connection';
 import {Move} from '../../../shared/lib/protocol/Move';
-import {EnterGameResponse as SharedEnterGameResponse} from
-  '../../../shared/lib/protocol/EnterGameResponse';
+import {SharedEnterGameResponse} from
+  '../../../shared/lib/protocol/SharedEnterGameResponse';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 export class EnterGameResponse extends SharedEnterGameResponse

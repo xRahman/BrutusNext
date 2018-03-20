@@ -12,8 +12,8 @@ import {Character} from '../../../client/game/character/Character';
 import {Account} from '../../../client/lib/account/Account';
 import {Windows} from '../../../client/gui/window/Windows';
 import {Connection} from '../../../client/lib/connection/Connection';
-import {LoginResponse as SharedLoginResponse} from
-  '../../../shared/lib/protocol/LoginResponse';
+import {SharedLoginResponse} from
+  '../../../shared/lib/protocol/SharedLoginResponse';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 export class LoginResponse extends SharedLoginResponse

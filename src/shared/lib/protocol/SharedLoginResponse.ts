@@ -17,7 +17,7 @@ import {Response} from '../../../shared/lib/protocol/Response';
 import {SerializedEntity} from '../../../shared/lib/protocol/SerializedEntity';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export abstract class LoginResponse extends Response
+export abstract class SharedLoginResponse extends Response
 {
   constructor()
   {
@@ -28,7 +28,7 @@ export abstract class LoginResponse extends Response
 
   // ----------------- Public data ----------------------
 
-  public result = LoginResponse.Result.UNDEFINED;
+  public result = SharedLoginResponse.Result.UNDEFINED;
 
   public serializedAccount: (SerializedEntity | null) = null;
 

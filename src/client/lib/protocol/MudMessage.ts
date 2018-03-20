@@ -12,8 +12,8 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 // import {Account} from '../../../client/lib/account/Account';
 // import {Windows} from '../../../client/gui/window/Windows';
 import {Connection} from '../../../client/lib/connection/Connection';
-import {MudMessage as SharedMudMessage} from
-  '../../../shared/lib/protocol/MudMessage';
+import {SharedMudMessage} from
+  '../../../shared/lib/protocol/SharedMudMessage';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 export class MudMessage extends SharedMudMessage

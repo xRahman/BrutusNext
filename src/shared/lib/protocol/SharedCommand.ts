@@ -3,7 +3,7 @@
 
   Part of client-server communication protocol.
 
-  Mud message.
+  Command sent by player.
 */
 
 'use strict';
@@ -11,7 +11,7 @@
 import {Packet} from '../../../shared/lib/protocol/Packet';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export abstract class MudMessage extends Packet
+export abstract class SharedCommand extends Packet
 {
   constructor()
   {
@@ -22,5 +22,5 @@ export abstract class MudMessage extends Packet
 
   // ----------------- Public data ----------------------
 
-  public message: string;
+  public command: (string | null) = null;
 }

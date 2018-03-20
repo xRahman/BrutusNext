@@ -14,13 +14,13 @@ import {Account} from '../../../client/lib/account/Account';
 import {Windows} from '../../../client/gui/window/Windows';
 import {Connection} from '../../../client/lib/connection/Connection';
 import {SerializedEntity} from '../../../shared/lib/protocol/SerializedEntity';
-import {RegisterResponse as SharedRegisterResponse} from
-  '../../../shared/lib/protocol/RegisterResponse';
+import {SharedRegisterResponse} from
+  '../../../shared/lib/protocol/SharedRegisterResponse';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 export class RegisterResponse extends SharedRegisterResponse
 {
-  constructor(result: RegisterResponse.Result)
+  constructor(result: SharedRegisterResponse.Result)
   {
     super(result);
 
@@ -64,7 +64,7 @@ export class RegisterResponse extends SharedRegisterResponse
   private switchToCharselect
   (
     connection: Connection,
-    data: RegisterResponse.Data
+    data: SharedRegisterResponse.Data
   )
   {
     let account = this.deserializeAccount(data.serializedAccount);
@@ -85,16 +85,6 @@ export class RegisterResponse extends SharedRegisterResponse
 
     return account;
   }
-}
-
-// ------------------ Type declarations ----------------------
-
-export module RegisterResponse
-{
-  // Here we are just reexporting types declared in our ancestor
-  // (because they aren't inherited along with the class).
-  export type Data = SharedRegisterResponse.Data;
-  export type Result = SharedRegisterResponse.Result;
 }
 
 Classes.registerSerializableClass(RegisterResponse);

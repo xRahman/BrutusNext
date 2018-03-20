@@ -16,7 +16,7 @@ import {Classes} from '../../../shared/lib/class/Classes';
 const VALID_EMAIL_CHARACTERS = "abcdefghijklmnopqrstuvwxyz"
   + "@ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#$%&'*+-/=?^_`{|}~.";
 
-export abstract class RegisterRequest extends Request
+export abstract class SharedRegisterRequest extends Request
 {
   constructor
   (
@@ -36,7 +36,7 @@ export abstract class RegisterRequest extends Request
 
   // ---------------- Public methods --------------------
 
-  public checkEmail(): (RegisterRequest.Problem | "NO PROBLEM")
+  public checkEmail(): (SharedRegisterRequest.Problem | "NO PROBLEM")
   {
     let checkResult: string;
 
@@ -55,7 +55,7 @@ export abstract class RegisterRequest extends Request
     return "NO PROBLEM";
   }
 
-  public checkPassword(): (RegisterRequest.Problem | "NO PROBLEM")
+  public checkPassword(): (SharedRegisterRequest.Problem | "NO PROBLEM")
   {
     let checkResult: string;
 
@@ -67,29 +67,29 @@ export abstract class RegisterRequest extends Request
 
   // ---------------- Private methods -------------------
 
-  private composeEmailProblem(message: string): RegisterRequest.Problem
+  private composeEmailProblem(message: string): SharedRegisterRequest.Problem
   {
-    return { type: RegisterRequest.ProblemType.EMAIL_PROBLEM, message };
+    return { type: SharedRegisterRequest.ProblemType.EMAIL_PROBLEM, message };
   }
 
-  private composePasswordProblem(message: string): RegisterRequest.Problem
+  private composePasswordProblem(message: string): SharedRegisterRequest.Problem
   {
-    return { type: RegisterRequest.ProblemType.PASSWORD_PROBLEM, message };
+    return { type: SharedRegisterRequest.ProblemType.PASSWORD_PROBLEM, message };
   }
 
   private checkEmailLength(): (string | "NO PROBLEM")
   {
-    if (this.email.length < RegisterRequest.MIN_EMAIL_LENGTH)
+    if (this.email.length < SharedRegisterRequest.MIN_EMAIL_LENGTH)
     {
       return "E-mail address must be at least"
-        + " " + RegisterRequest.MIN_EMAIL_LENGTH
+        + " " + SharedRegisterRequest.MIN_EMAIL_LENGTH
         + " characters long.";
     }
 
-    if (this.email.length > RegisterRequest.MAX_EMAIL_LENGTH)
+    if (this.email.length > SharedRegisterRequest.MAX_EMAIL_LENGTH)
     {
       return "E-mail address cannot be longer than"
-        + " " + RegisterRequest.MAX_EMAIL_LENGTH
+        + " " + SharedRegisterRequest.MAX_EMAIL_LENGTH
         + " characters.";
     }
 
@@ -166,17 +166,17 @@ export abstract class RegisterRequest extends Request
 
   private checkPasswordLength(): (string | "NO PROBLEM")
   {
-    if (this.password.length < RegisterRequest.MIN_PASSWORD_LENGTH)
+    if (this.password.length < SharedRegisterRequest.MIN_PASSWORD_LENGTH)
     {
       return "Password must be at least"
-        + " " + RegisterRequest.MIN_PASSWORD_LENGTH
+        + " " + SharedRegisterRequest.MIN_PASSWORD_LENGTH
         + " characters long.";
     }
 
-    if (this.password.length > RegisterRequest.MAX_PASSWORD_LENGTH)
+    if (this.password.length > SharedRegisterRequest.MAX_PASSWORD_LENGTH)
     {
       return "Password cannot be longer than"
-        + " " + RegisterRequest.MAX_PASSWORD_LENGTH
+        + " " + SharedRegisterRequest.MAX_PASSWORD_LENGTH
         + " characters.";
     }
 
@@ -186,7 +186,7 @@ export abstract class RegisterRequest extends Request
 
 // ------------------ Type declarations ----------------------
 
-export module RegisterRequest
+export module SharedRegisterRequest
 {
   export enum ProblemType
   {

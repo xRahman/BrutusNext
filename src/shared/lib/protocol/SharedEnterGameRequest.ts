@@ -13,7 +13,7 @@ import {Request} from '../../../shared/lib/protocol/Request';
 import {Connection} from '../../../shared/lib/connection/Connection';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export abstract class EnterGameRequest extends Request
+export abstract class SharedEnterGameRequest extends Request
 {
   constructor
   (

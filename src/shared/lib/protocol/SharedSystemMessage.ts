@@ -11,7 +11,7 @@
 import {Packet} from '../../../shared/lib/protocol/Packet';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export abstract class SystemMessage extends Packet
+export abstract class SharedSystemMessage extends Packet
 {
   constructor()
   {
@@ -22,7 +22,7 @@ export abstract class SystemMessage extends Packet
 
   // ----------------- Public data ----------------------
 
-  public type = SystemMessage.Type.UNDEFINED;
+  public type = SharedSystemMessage.Type.UNDEFINED;
 
   public message: (string | null) = null;
 }
@@ -31,7 +31,7 @@ export abstract class SystemMessage extends Packet
 
 // Module is exported so you can use enum type from outside this file.
 // It must be declared after the class because Typescript says so...
-export module SystemMessage
+export module SharedSystemMessage
 {
   export enum Type
   {

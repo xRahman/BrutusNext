@@ -7,8 +7,8 @@
 'use strict';
 
 import {Classes} from '../../../shared/lib/class/Classes';
-import {MudMessage as SharedMudMessage} from
-  '../../../shared/lib/protocol/MudMessage';
+import {SharedMudMessage} from
+  '../../../shared/lib/protocol/SharedMudMessage';
 
 export class MudMessage extends SharedMudMessage
 {

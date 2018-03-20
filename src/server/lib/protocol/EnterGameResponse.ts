@@ -7,8 +7,8 @@
 'use strict';
 
 import {Classes} from '../../../shared/lib/class/Classes';
-import {EnterGameResponse as SharedEnterGameResponse} from
-  '../../../shared/lib/protocol/EnterGameResponse';
+import {SharedEnterGameResponse} from
+  '../../../shared/lib/protocol/SharedEnterGameResponse';
 
 export class EnterGameResponse extends SharedEnterGameResponse
 {
@@ -22,15 +22,6 @@ export class EnterGameResponse extends SharedEnterGameResponse
   // This class is empty, all functionality is inherited from
   // ancestor. It only exists to be added to Classes so it can
   // be be dynamically instantiated.
-}
-
-// ------------------ Type declarations ----------------------
-
-export module EnterGameResponse
-{
-  // Here we are just reexporting types declared in our ancestor
-  // (because they aren't inherited along with the class).
-  export type Result = SharedEnterGameResponse.Result;
 }
 
 Classes.registerSerializableClass(EnterGameResponse);

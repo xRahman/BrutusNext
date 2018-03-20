@@ -7,7 +7,7 @@
 'use strict';
 
 import {Classes} from '../../../shared/lib/class/Classes';
-import {Command as SharedCommand} from '../../../shared/lib/protocol/Command';
+import {SharedCommand} from '../../../shared/lib/protocol/SharedCommand';
 
 export class Command extends SharedCommand
 {

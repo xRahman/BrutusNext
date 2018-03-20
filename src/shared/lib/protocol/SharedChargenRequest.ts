@@ -13,7 +13,7 @@ import {Request} from '../../../shared/lib/protocol/Request';
 import {Connection} from '../../../shared/lib/connection/Connection';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export abstract class ChargenRequest extends Request
+export abstract class SharedChargenRequest extends Request
 {
   constructor
   (
@@ -37,13 +37,13 @@ export abstract class ChargenRequest extends Request
 
   // ---------------- Public methods --------------------
 
-  public checkForProblems(): ChargenRequest.Problems
+  public checkForProblems(): SharedChargenRequest.Problems
   {
     let characterNameProblem = this.checkCharacterName();
 
     if (characterNameProblem)
     {
-      let problems: ChargenRequest.Problems =
+      let problems: SharedChargenRequest.Problems =
       {
         characterNameProblem: characterNameProblem
       };
@@ -75,7 +75,7 @@ export abstract class ChargenRequest extends Request
     let problem: (string | null) = null;
 
     if (!this.characterName)
-      return ChargenRequest.ENTER_CHARACTER_NAME;
+      return SharedChargenRequest.ENTER_CHARACTER_NAME;
 
     if (problem = this.checkInvalidCharacters())
       return problem;
@@ -92,10 +92,10 @@ export abstract class ChargenRequest extends Request
   //    Returns 'null' if no problem is found.
   private checkInvalidCharacters(): string | null
   {
-    const regExp = ChargenRequest.VALID_CHARACTERS_REGEXP;
+    const regExp = SharedChargenRequest.VALID_CHARACTERS_REGEXP;
 
     if (!this.characterName)
-      return ChargenRequest.ENTER_CHARACTER_NAME;
+      return SharedChargenRequest.ENTER_CHARACTER_NAME;
 
     if (regExp.test(this.characterName))
       return "Character name can only contain english letters.";
@@ -108,19 +108,19 @@ export abstract class ChargenRequest extends Request
   private checkNameLength(): string | null
   {
     if (!this.characterName)
-      return ChargenRequest.ENTER_CHARACTER_NAME;
+      return SharedChargenRequest.ENTER_CHARACTER_NAME;
 
-    if (this.characterName.length < ChargenRequest.MIN_NAME_LENGTH_CHARACTERS)
+    if (this.characterName.length < SharedChargenRequest.MIN_NAME_LENGTH_CHARACTERS)
     {
       return "Name must be at least"
-        + " " + ChargenRequest.MIN_NAME_LENGTH_CHARACTERS
+        + " " + SharedChargenRequest.MIN_NAME_LENGTH_CHARACTERS
         + " characters long.";
     }
 
-    if (this.characterName.length > ChargenRequest.MAX_NAME_LENGTH_CHARACTERS)
+    if (this.characterName.length > SharedChargenRequest.MAX_NAME_LENGTH_CHARACTERS)
     {
       return "Name cannot be longer than"
-        + " " + ChargenRequest.MAX_NAME_LENGTH_CHARACTERS
+        + " " + SharedChargenRequest.MAX_NAME_LENGTH_CHARACTERS
         + " characters.";
     }
 
@@ -130,7 +130,7 @@ export abstract class ChargenRequest extends Request
 
 // ------------------ Type declarations ----------------------
 
-export module ChargenRequest
+export module SharedChargenRequest
 {
   export enum ProblemType
   {

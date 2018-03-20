@@ -18,8 +18,8 @@ import {Form} from '../../../client/gui/form/Form';
 import {EmailInput} from '../../../client/gui/form/EmailInput';
 import {PasswordInput} from '../../../client/gui/form/PasswordInput';
 import {CredentialsForm} from '../../../client/gui/form/CredentialsForm';
-import {RegisterRequest as SharedRegisterRequest} from
-  '../../../shared/lib/protocol/RegisterRequest';
+import {SharedRegisterRequest} from
+  '../../../shared/lib/protocol/SharedRegisterRequest';
 import {RegisterRequest} from '../../../client/lib/protocol/RegisterRequest';
 import {RegisterResponse} from '../../../client/lib/protocol/RegisterResponse';
 

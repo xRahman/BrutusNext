@@ -7,8 +7,8 @@
 'use strict';
 
 import {Classes} from '../../../shared/lib/class/Classes';
-import {ChargenResponse as SharedChargenResponse} from
-  '../../../shared/lib/protocol/ChargenResponse';
+import {SharedChargenResponse} from
+  '../../../shared/lib/protocol/SharedChargenResponse';
 
 export class ChargenResponse extends SharedChargenResponse
 {

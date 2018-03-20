@@ -8,8 +8,8 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Syslog} from '../../../shared/lib/log/Syslog';
-import {LoginRequest as SharedLoginRequest} from
-  '../../../shared/lib/protocol/LoginRequest';
+import {SharedLoginRequest} from
+  '../../../shared/lib/protocol/SharedLoginRequest';
 import {ServerUtils} from '../../../server/lib/utils/ServerUtils';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {NameLock} from '../../../server/lib/entity/NameLock';

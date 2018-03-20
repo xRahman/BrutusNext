@@ -13,15 +13,14 @@ import {Entity} from '../../../shared/lib/entity/Entity';
 import {Move} from '../../../shared/lib/protocol/Move';
 import {Request} from '../../../shared/lib/protocol/Request';
 import {Response} from '../../../shared/lib/protocol/Response';
-import {EnterGameRequest} from '../../../shared/lib/protocol/EnterGameRequest';
 import {SerializedEntity} from '../../../shared/lib/protocol/SerializedEntity';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export abstract class EnterGameResponse extends Response
+export abstract class SharedEnterGameResponse extends Response
 {
   constructor
   (
-    protected result: EnterGameResponse.Result
+    protected result: SharedEnterGameResponse.Result
   )
   {
     super();
@@ -32,7 +31,7 @@ export abstract class EnterGameResponse extends Response
 
 // ------------------ Type declarations ----------------------
 
-export module EnterGameResponse
+export module SharedEnterGameResponse
 {
   // Data attached to the response in case the request is accepted.
   export type Data =
@@ -46,7 +45,7 @@ export module EnterGameResponse
     status: "ACCEPTED";
     // Separate type is used here because it is passed
     // as parameter when processing the packet on client.
-    data: EnterGameResponse.Data;
+    data: SharedEnterGameResponse.Data;
   }
 
   export type Rejected =

@@ -8,7 +8,7 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Connection} from '../../../server/lib/connection/Connection';
-import {Command as SharedCommand} from '../../../shared/lib/protocol/Command';
+import {SharedCommand} from '../../../shared/lib/protocol/SharedCommand';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 export class Command extends SharedCommand

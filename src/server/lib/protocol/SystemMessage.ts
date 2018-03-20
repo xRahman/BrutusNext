@@ -11,8 +11,8 @@ import {Syslog} from '../../../shared/lib/log/Syslog';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Connection} from '../../../server/lib/connection/Connection';
-import {SystemMessage as SharedSystemMessage} from
-  '../../../shared/lib/protocol/SystemMessage';
+import {SharedSystemMessage} from
+  '../../../shared/lib/protocol/SharedSystemMessage';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 export class SystemMessage extends SharedSystemMessage

@@ -12,10 +12,12 @@ import {Syslog} from '../../../shared/lib/log/Syslog';
 import {Message} from '../../../server/lib/message/Message';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {SerializedEntity} from '../../../shared/lib/protocol/SerializedEntity';
-import {EnterGameRequest as SharedEnterGameRequest} from
-  '../../../shared/lib/protocol/EnterGameRequest';
+import {SharedEnterGameRequest} from
+  '../../../shared/lib/protocol/SharedEnterGameRequest';
 import {EnterGameResponse} from
   '../../../server/lib/protocol/EnterGameResponse';
+import {SharedEnterGameResponse} from
+  '../../../shared/lib/protocol/SharedEnterGameResponse';
 import {Account} from '../../../server/lib/account/Account';
 import {Character} from '../../../server/game/character/Character';
 import {Characters} from '../../../server/game/character/Characters';
@@ -39,7 +41,7 @@ export class EnterGameRequest extends SharedEnterGameRequest
   // -> Returns 'true' on success.
   public async process(connection: Connection): Promise<void>
   {
-    let response: EnterGameResponse;
+    let response: SharedEnterGameResponse;
 
     try
     {
@@ -57,7 +59,11 @@ export class EnterGameRequest extends SharedEnterGameRequest
   // --------------- Private methods --------------------
 
   // ! Throws an exception on error.
-  private async enterGame(connection: Connection): Promise<EnterGameResponse>
+  private async enterGame
+  (
+    connection: Connection
+  )
+  : Promise<SharedEnterGameResponse>
   {
     let character = Characters.getCharacter(this.characterId);
     let account = connection.getAccount();
@@ -97,11 +103,11 @@ export class EnterGameRequest extends SharedEnterGameRequest
     loadLocation: GameEntity,
     characterMove: Move
   )
-  : EnterGameResponse
+  : SharedEnterGameResponse
   {
     let serializedLoadLocation = this.serializeLoadLocation(loadLocation);
 
-    let result: EnterGameResponse.Result =
+    let result: SharedEnterGameResponse.Result =
     {
       status: "ACCEPTED",
       data:
@@ -116,7 +122,7 @@ export class EnterGameRequest extends SharedEnterGameRequest
 
   private createErrorResponse(): EnterGameResponse
   {
-    let result: EnterGameResponse.Result =
+    let result: SharedEnterGameResponse.Result =
     {
       status: "REJECTED",
       message: "An error occured preventing you from entering game.\n\n"
