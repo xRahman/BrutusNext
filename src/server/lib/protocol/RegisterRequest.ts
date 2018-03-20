@@ -19,6 +19,7 @@ import {Message} from '../../../server/lib/message/Message';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
+import {SerializedEntity} from '../../../shared/lib/protocol/SerializedEntity';
 import {Account} from '../../../server/lib/account/Account';
 import {Accounts} from '../../../server/lib/account/Accounts';
 import {Connection} from '../../../server/lib/connection/Connection';
@@ -56,53 +57,55 @@ export class RegisterRequest extends SharedRegisterRequest
 
   // --------------- Private methods --------------------
 
-  private reportAccountCreationFailure
-  (
-    account: Account,
-    accountName,
-    connection: Connection
-  )
-  {
-    this.denyRequest
-    (
-      "[ERROR]: Failed to create account.\n\n"
-        + Message.ADMINS_WILL_FIX_IT,
-      RegisterResponse.Result.FAILED_TO_CREATE_ACCOUNT,
-      connection
-    );
+  /// To be deleted.
+  // private reportAccountCreationFailure
+  // (
+  //   account: Account,
+  //   accountName,
+  //   connection: Connection
+  // )
+  // {
+  //   this.denyRequest
+  //   (
+  //     "[ERROR]: Failed to create account.\n\n"
+  //       + Message.ADMINS_WILL_FIX_IT,
+  //     RegisterResponse.Result.FAILED_TO_CREATE_ACCOUNT,
+  //     connection
+  //   );
 
-    ERROR("Failed to create account '" + accountName + "'");
-  }
+  //   ERROR("Failed to create account '" + accountName + "'");
+  // }
 
-  private async accountAlreadyExists
-  (
-    accountName: string,
-    connection: Connection
-  )
-  : Promise<boolean>
-  {
-    if (await Accounts.isTaken(accountName))
-    {
-      this.denyRequest
-      (
-        "An account is already registered to this e-mail address.",
-        RegisterResponse.Result.EMAIL_PROBLEM,
-        connection
-      );
+  /// To be deleted.
+  // private async accountAlreadyExists
+  // (
+  //   accountName: string,
+  //   connection: Connection
+  // )
+  // : Promise<boolean>
+  // {
+  //   if (await Accounts.isTaken(accountName))
+  //   {
+  //     this.denyRequest
+  //     (
+  //       "An account is already registered to this e-mail address.",
+  //       RegisterResponse.Result.EMAIL_PROBLEM,
+  //       connection
+  //     );
   
-      Syslog.log
-      (
-        "Attempt to register account " + accountName
-          + " from " + connection.getOrigin() + " which"
-          + " is already registered",
-        MessageType.CONNECTION_INFO,
-        AdminLevel.IMMORTAL
-      );   
-      return true;
-    }
+  //     Syslog.log
+  //     (
+  //       "Attempt to register account " + accountName
+  //         + " from " + connection.getOrigin() + " which"
+  //         + " is already registered",
+  //       MessageType.CONNECTION_INFO,
+  //       AdminLevel.IMMORTAL
+  //     );   
+  //     return true;
+  //   }
 
-    return false;
-  }
+  //   return false;
+  // }
 
   // ! Throws an exception on error.
   private async registerAccount
@@ -116,38 +119,41 @@ export class RegisterRequest extends SharedRegisterRequest
     if (checkResult !== "NO PROBLEM")
       return this.createProblemsResponse(checkResult);
 
-    return await this.createAccount(connection);
-  }
-
-  // ! Throws an exception on error.
-  private async createAccount
-  (
-    connection: Connection
-  )
-  : Promise<RegisterResponse>
-  {
     // Email is used as account name.
     let accountName = this.email;
     // Only hash is stored, not original password.
     let passwordHash = ServerUtils.md5hash(this.password)
 
-    /*
-      Kurnik, tohle budu muset celý předělat...
-        Teď se existence jména (tzn. name lock souboru) checkuje dvakrát.
+    let createResult = await this.createAccount(accountName, passwordHash);
 
-      - mělo by to bejt tak, že uvnitř createInstanceEntity() se nejdřív
-        checkne, že je jméno volné, pak se vygeneruje idčko a až pak se
-        savne name lock file.
-          Nemělo by se tedy nejdřív vygenerovat idčko, pak checknout existence
-        name locku a pak name lock savnout.
+    if (createResult === "NAME IS ALREADY TAKEN")
+    {
+      this.logAccountAlreadyExists(accountName, connection);
+      return this.createAccountAlreadyExistsResponse();
+    }
 
+    let account: Account = createResult;
 
-    */
+    account.attachConnection(connection);
 
-    if (await this.accountAlreadyExists(accountName, connection))
-      return false;
+    // We need to create response before logging
+    // success because it may throw an exception.
+    let response = this.createAcceptResponse(account);
 
-    let accountCreationResult = await ServerEntities.createInstanceEntity
+    this.logSuccess(account);
+
+    return response;
+  }
+
+  // ! Throws an exception on error.
+  private async createAccount
+  (
+    accountName: string,
+    passwordHash: string
+  )
+  : Promise<Account | "NAME IS ALREADY TAKEN">
+  {
+    let createResult = await ServerEntities.createInstanceEntity
     (
       Account,
       // Prototype name.
@@ -157,45 +163,17 @@ export class RegisterRequest extends SharedRegisterRequest
       passwordHash
     );
 
-    if (accountCreationResult === "NAME IS ALREADY TAKEN")
-    {
-      // this.reportAccountCreationFailure(account, accountName, connection);
-      // return false;
-      return this.createEmailProblemResponse
-      (
-        "An account is already registered to this e-mail address."
-      );
-    }
+    if (createResult === "NAME IS ALREADY TAKEN")
+      return "NAME IS ALREADY TAKEN";
 
-    let account: Account = accountCreationResult;
+    let account: Account = createResult;
 
-    this.initAccount(account, passwordHash, connection);
-    await ServerEntities.save(account);
-    ///this.acceptRequest(account, connection);
-
-    let response = this.createAcceptResponse(loadLocation, characterMove);
-
-    Syslog.log
-    (
-      "New player: " + account.getUserInfo(),
-      MessageType.SYSTEM_INFO,
-      AdminLevel.IMMORTAL
-    );
-
-    return response;
-  }
-
-  private initAccount
-  (
-    account: Account,
-    passwordHash: string,
-    connection: Connection
-  )
-  {
     account.setPasswordHash(passwordHash);
     account.addToLists();
 
-    account.attachConnection(connection);
+    await ServerEntities.save(account);
+
+    return account;
   }
 
   /// To be deleted.
@@ -340,12 +318,32 @@ export class RegisterRequest extends SharedRegisterRequest
       return problems;
   }
 
-  private createEmailProblemResponse(message: string): RegisterResponse
+  private logAccountAlreadyExists(accountName: string, connection: Connection)
+  {
+    Syslog.logConnectionInfo
+    (
+      "Attempt to register account " + accountName
+        + " from " + connection.getOrigin() + " which"
+        + " is already registered"
+    );
+  }
+
+  private logSuccess(account: Account)
+  {
+    Syslog.log
+    (
+      "New player: " + account.getUserInfo(),
+      MessageType.SYSTEM_INFO,
+      AdminLevel.IMMORTAL
+    );
+  }
+
+  private createAccountAlreadyExistsResponse(): RegisterResponse
   {
     let problem: RegisterRequest.Problem =
     {
       type: RegisterRequest.ProblemType.EMAIL_PROBLEM,
-      message: message
+      message: "An account is already registered to this e-mail address."
     };
 
     return this.createProblemsResponse([ problem ]);
@@ -382,6 +380,41 @@ export class RegisterRequest extends SharedRegisterRequest
     };
 
     return new RegisterResponse(result);
+  }
+
+  // ! Throws an exception on error.
+  private createAcceptResponse(account: Account): RegisterResponse
+  {
+    let serializedAccount = this.serializeAccount(account);
+
+    let result: RegisterResponse.Result =
+    {
+      status: "ACCEPTED",
+      data: { serializedAccount: serializedAccount }
+    };
+
+    return new RegisterResponse(result);
+  }
+
+  // ! Throws an exception on error.
+  private serializeAccount(account: Account): SerializedEntity
+  {
+    if (!account.isValid())
+    {
+      throw new Error
+      (
+        "Unable to serialize 'account'"
+        + " " + account.getErrorIdString()
+        + " because it is not a valid entity."
+        + " Register response will not be sent"
+      );
+    }
+
+    return new SerializedEntity
+    (
+      account,
+      Serializable.Mode.SEND_TO_CLIENT
+    );
   }
 }
 

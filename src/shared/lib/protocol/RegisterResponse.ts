@@ -31,10 +31,16 @@ export abstract class RegisterResponse extends Response
 
 export module RegisterResponse
 {
+  // Data attached to the response in case the request is accepted.
+  export type Data =
+  {
+    serializedAccount: SerializedEntity;
+  }
+
   export type Accepted =
   {
     status: "ACCEPTED";
-    serializedAccount: SerializedEntity;
+    data: RegisterResponse.Data;
   }
 
   export type Rejected =

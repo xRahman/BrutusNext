@@ -33,15 +33,9 @@ export class EnterGameResponse extends SharedEnterGameResponse
   // ~ Overrides Packet.process().
   public async process(connection: Connection): Promise<void>
   {
-    if (this.result.status === "REJECTED")
-    {
-      Windows.charselectWindow.getForm().displayProblem(this.result.message);
-      return;
-    }
-
     try
     {
-      this.switchToGame(connection, this.result.data);
+      this.processResponse(connection);
     }
     catch (error)
     {
@@ -51,6 +45,19 @@ export class EnterGameResponse extends SharedEnterGameResponse
   }
 
   // --------------- Private methods --------------------
+
+  // ! Throws an exception on error.
+  private processResponse(connection: Connection)
+  {
+    if (this.result.status === "ACCEPTED")
+    {
+      this.switchToGame(connection, this.result.data);
+    }
+    else
+    {
+      Windows.charselectWindow.getForm().displayProblem(this.result.message);
+    }
+  }
 
   // ! Throws an exception on error.
   private switchToGame

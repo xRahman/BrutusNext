@@ -67,15 +67,23 @@ export class EnterGameRequest extends SharedEnterGameRequest
 
     let characterMove = character.enterWorld();
     let loadLocation = character.getLoadLocation();
+
+    // We need to create response before logging
+    // success because it may throw an exception.
     let response = this.createAcceptResponse(loadLocation, characterMove);
 
+    this.logSuccess(account, character);
+
+    return response;
+  }
+
+  private logSuccess(account: Account, character: Character)
+  {
     Syslog.logSystemInfo
     (
       "Player " + account.getEmail() + " has entered"
         + " game as " + character.getName()
     );
-
-    return response;
   }
 
   private setLastActiveCharacter(account: Account, character: Character)
@@ -101,7 +109,7 @@ export class EnterGameRequest extends SharedEnterGameRequest
         characterMove: characterMove,
         serializedLoadLocation: serializedLoadLocation
       }
-    }
+    };
 
     return new EnterGameResponse(result);
   }

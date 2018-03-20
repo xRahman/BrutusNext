@@ -18,6 +18,8 @@ import {Form} from '../../../client/gui/form/Form';
 import {EmailInput} from '../../../client/gui/form/EmailInput';
 import {PasswordInput} from '../../../client/gui/form/PasswordInput';
 import {CredentialsForm} from '../../../client/gui/form/CredentialsForm';
+import {RegisterRequest as SharedRegisterRequest} from
+  '../../../shared/lib/protocol/RegisterRequest';
 import {RegisterRequest} from '../../../client/lib/protocol/RegisterRequest';
 import {RegisterResponse} from '../../../client/lib/protocol/RegisterResponse';
 
@@ -60,36 +62,11 @@ export class RegisterForm extends CredentialsForm
 
   // ---------------- Public methods --------------------
 
-  public displayProblem(response: RegisterResponse)
+  // ! Throws an exception on error.
+  public displayProblems(problems: Array<SharedRegisterRequest.Problem>)
   {
-    switch (response.result)
-    {
-      case RegisterResponse.Result.UNDEFINED:
-        ERROR("Received register response with unspecified result."
-          + " Someone problably forgot to set 'packet.result'"
-          + " when sending register response from the server");
-        break;
-
-      case RegisterResponse.Result.EMAIL_PROBLEM:
-        this.displayEmailProblem(response.getProblem());
-        break;
-
-      case RegisterResponse.Result.PASSWORD_PROBLEM:
-        this.displayPasswordProblem(response.getProblem());
-        break;
-
-      case RegisterResponse.Result.FAILED_TO_CREATE_ACCOUNT:
-        this.displayError(response.getProblem());
-        break;
-
-      case RegisterResponse.Result.OK:
-        ERROR("displayProblem() called with 'Result: OK'");
-        break;
-
-      default:
-        ERROR("Unknown register response result");
-        break;
-    }
+    for (let problem of problems)
+      this.displayProblem(problem);
   }
 
   // ~ Overrides CredentialsForm.onShow().
@@ -103,7 +80,7 @@ export class RegisterForm extends CredentialsForm
       return;
     }
 
-    let email = Windows.loginWindow.form.getEmailInputValue();
+    let email = Windows.loginWindow.getForm().getEmailInputValue();
 
     if (email === null || this.emailInput === null)
     {
@@ -196,20 +173,22 @@ export class RegisterForm extends CredentialsForm
     return request;
   }
 
+  /// TODO: Tohle by nemělo mít side effect, safra
+  /// (nebo by se to mělo jmenovat jinak).
   // ~ Overrides Form.isRequestValid().
   protected isRequestValid(request: RegisterRequest)
   {
-    let problem: (string | null) = null;
+    let problem: SharedRegisterRequest.Problem | "NO PROBLEM";
 
-    if (problem = request.getEmailProblem())
+    if ((problem = request.checkEmail()) !== "NO PROBLEM")
     {
-      this.displayEmailProblem(problem);
+      this.displayEmailProblem(problem.message);
       return false;
     }
 
-    if (problem = request.getPasswordProblem())
+    if ((problem = request.checkPassword()) !== "NO PROBLEM")
     {
-      this.displayPasswordProblem(problem);
+      this.displayPasswordProblem(problem.message);
       return false;
     }
 
@@ -253,6 +232,28 @@ export class RegisterForm extends CredentialsForm
     );
 
     return this.$createButton(param);
+  }
+
+    // ! Throws an exception on error.
+  private displayProblem(problem: SharedRegisterRequest.Problem)
+  {
+    switch (problem.type)
+    {
+      case SharedRegisterRequest.ProblemType.EMAIL_PROBLEM:
+        this.displayEmailProblem(problem.message);
+        break;
+
+      case SharedRegisterRequest.ProblemType.PASSWORD_PROBLEM:
+        this.displayPasswordProblem(problem.message);
+        break;
+
+      case SharedRegisterRequest.ProblemType.ERROR:
+        this.displayError(problem.message);
+        break;
+
+      default:
+        throw new Error("Unhandled enum value");
+    }
   }
 
   // ---------------- Event handlers --------------------
