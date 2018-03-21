@@ -38,7 +38,7 @@ export abstract class SharedRegisterRequest extends Request
 
   public checkEmail(): (SharedRegisterRequest.Problem | "NO PROBLEM")
   {
-    let checkResult: string;
+    let checkResult: string | "NO PROBLEM";
 
     if ((checkResult = this.checkEmailLength()) !== "NO PROBLEM")
       return this.composeEmailProblem(checkResult);
@@ -69,12 +69,28 @@ export abstract class SharedRegisterRequest extends Request
 
   private composeEmailProblem(message: string): SharedRegisterRequest.Problem
   {
-    return { type: SharedRegisterRequest.ProblemType.EMAIL_PROBLEM, message };
+    let problem =
+    {
+      type: SharedRegisterRequest.ProblemType.EMAIL_PROBLEM,
+      message: message
+    };
+
+    return problem;
   }
 
-  private composePasswordProblem(message: string): SharedRegisterRequest.Problem
+  private composePasswordProblem
+  (
+    message: string
+  )
+  : SharedRegisterRequest.Problem
   {
-    return { type: SharedRegisterRequest.ProblemType.PASSWORD_PROBLEM, message };
+    let problem =
+    {
+      type: SharedRegisterRequest.ProblemType.PASSWORD_PROBLEM,
+      message: message
+    };
+
+    return problem;
   }
 
   private checkEmailLength(): (string | "NO PROBLEM")

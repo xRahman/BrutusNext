@@ -10,9 +10,11 @@ import {Classes} from '../../../shared/lib/class/Classes';
 import {SharedEnterGameResponse} from
   '../../../shared/lib/protocol/SharedEnterGameResponse';
 
+type Result = SharedEnterGameResponse.Result;
+
 export class EnterGameResponse extends SharedEnterGameResponse
 {
-  constructor(result: SharedEnterGameResponse.Result)
+  constructor(result: Result)
   {
     super(result);
 

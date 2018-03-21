@@ -12,9 +12,9 @@ import {SharedChargenResponse} from
 
 export class ChargenResponse extends SharedChargenResponse
 {
-  constructor()
+  constructor(result: SharedChargenResponse.Result)
   {
-    super();
+    super(result);
 
     this.version = 0;
   }

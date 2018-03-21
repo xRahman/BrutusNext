@@ -7,6 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {REPORT} from '../../../shared/lib/error/REPORT';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {Syslog} from '../../../shared/lib/log/Syslog';
 import {SharedChargenRequest} from
@@ -18,15 +19,13 @@ import {Character} from '../../../server/game/character/Character';
 import {Characters} from '../../../server/game/character/Characters';
 import {Message} from '../../../server/lib/message/Message';
 import {Connection} from '../../../server/lib/connection/Connection';
+import {SharedChargenResponse} from
+  '../../../shared/lib/protocol/SharedChargenResponse';
 import {ChargenResponse} from '../../../server/lib/protocol/ChargenResponse';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class ChargenRequest  extends SharedChargenRequest
+export class ChargenRequest extends SharedChargenRequest
 {
-  /// TODO:
-  //    Problém - kostruktor se nevolá, když se packet loaduje z JSON stringu.
-  /// nebo aspoň ne s parametrama.
-  /// - Potřeboval bych to vyzkoušet, safra. A to teď nemůžu...
   constructor(characterName: string)
   {
     super(characterName);
@@ -40,15 +39,87 @@ export class ChargenRequest  extends SharedChargenRequest
   // -> Returns 'true' on success.
   public async process(connection: Connection): Promise<void>
   {
+    let response: ChargenResponse;
+
+    try
+    {
+      response = await this.processChargen(connection);
+    }
+    catch (error)
+    {
+      REPORT(error);
+      response = this.createErrorResponse();
+    }
+
+    connection.send(response);
+
+
+    // this.normalizeCharacterName(connection);
+
+    // let problems = this.checkForProblems();
+
+    // if (problems)
+    // {
+    //   this.denyRequest(problems, connection);
+    //   return;
+    // }
+
+    // if (!await this.isNameAvailable())
+    // {
+    //   this.sendNameIsNotAvailableResponse(connection);
+    //   this.logNameIsNotAvailable(connection);
+    //   return;
+    // }
+
+    // let account = this.obtainAccount(connection);
+
+    // if (!account)
+    // {
+    //   this.sendErrorResponse(connection);
+    //   return;
+    // }
+
+    // let character = await this.createCharacter(account, connection);
+
+    // if (!character)
+    // {
+    //   this.sendErrorResponse(connection);
+    //   return;
+    // }
+
+    // if (!this.acceptRequest(character, account, connection))
+    // {
+    //   this.sendErrorResponse(connection);
+    //   return;
+    // }
+
+    // this.logSuccess(character, account);
+
+    // return;
+  }
+
+  // --------------- Private methods --------------------
+
+  private processChargen
+  (
+    connection: Connection
+  )
+  : Promise<ChargenResponse>
+  {
     this.normalizeCharacterName(connection);
 
-    let problems = this.checkForProblems();
+    let checkResult = this.checkForProblems();
 
-    if (problems)
-    {
-      this.denyRequest(problems, connection);
-      return;
-    }
+    if (checkResult !== "NO PROBLEM")
+      return this.createProblemsResponse(checkResult);
+
+    // let problems = this.checkForProblems();
+
+    // if (problems)
+    // {
+    //   this.denyRequest(problems, connection);
+    //   return;
+    // }
 
     if (!await this.isNameAvailable())
     {
@@ -80,11 +151,7 @@ export class ChargenRequest  extends SharedChargenRequest
     }
 
     this.logSuccess(character, account);
-
-    return;
   }
-
-  // --------------- Private methods --------------------
 
   private obtainAccount(connection: Connection): Account | null
   {
@@ -157,14 +224,14 @@ export class ChargenRequest  extends SharedChargenRequest
     return true;
   }
 
-  private sendCharacterNameProblemResponse
-  (
-    problem: string,
-    connection: Connection
-  )
-  {
-    this.denyRequest({ characterNameProblem: problem }, connection);
-  }
+  // private sendCharacterNameProblemResponse
+  // (
+  //   problem: string,
+  //   connection: Connection
+  // )
+  // {
+  //   this.denyRequest({ characterNameProblem: problem }, connection);
+  // }
 
   private sendNameIsNotAvailableResponse(connection: Connection)
   {
@@ -185,26 +252,26 @@ export class ChargenRequest  extends SharedChargenRequest
     );
   }
 
-  // -> Returns 'true' on success.
-  private acceptRequest
-  (
-    character: Character,
-    account: Account,
-    connection: Connection
-  )
-  {
-    let response = new ChargenResponse();
+  // // -> Returns 'true' on success.
+  // private acceptRequest
+  // (
+  //   character: Character,
+  //   account: Account,
+  //   connection: Connection
+  // )
+  // {
+  //   let response = new ChargenResponse();
 
-    if (!response.serializeAccount(account))
-      return false;
+  //   if (!response.serializeAccount(account))
+  //     return false;
 
-    if (!response.serializeCharacter(character))
-      return false;
+  //   if (!response.serializeCharacter(character))
+  //     return false;
 
-    connection.send(response);
+  //   connection.send(response);
 
-    return true;
-  }
+  //   return true;
+  // }
 
   private logSuccess(character: Character, account: Account)
   {
@@ -215,16 +282,49 @@ export class ChargenRequest  extends SharedChargenRequest
     );
   }
 
-  private denyRequest
-  (
-    problems: SharedChargenRequest.Problems,
-    connection: Connection
-  )
-  {
-    let response = new ChargenResponse();
+  // private denyRequest
+  // (
+  //   problems: SharedChargenRequest.Problems,
+  //   connection: Connection
+  // )
+  // {
+  //   let response = new ChargenResponse();
 
-    response.setProblems(problems);
-    connection.send(response);
+  //   response.setProblems(problems);
+  //   connection.send(response);
+  // }
+
+  private createErrorResponse(): ChargenResponse
+  {
+    let problem: SharedChargenRequest.Problem =
+    {
+      type: SharedChargenRequest.ProblemType.ERROR,
+      message: "An error occured while creating your character.\n\n"
+                + Message.ADMINS_WILL_FIX_IT
+    };
+
+    let result: SharedChargenResponse.Result =
+    {
+      status: "REJECTED",
+      problems: [ problem ]
+    };
+
+    return new ChargenResponse(result);
+  }
+
+  private createProblemsResponse
+  (
+    problems: Array<SharedChargenRequest.Problem>
+  )
+  : ChargenResponse
+  {
+    let result: SharedChargenResponse.Result =
+    {
+      status: "REJECTED",
+      problems: problems
+    };
+
+    return new ChargenResponse(result);
   }
 }
 

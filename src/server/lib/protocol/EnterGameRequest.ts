@@ -26,6 +26,8 @@ import {Connection} from '../../../server/lib/connection/Connection';
 import {Move} from '../../../shared/lib/protocol/Move';
 import {Classes} from '../../../shared/lib/class/Classes';
 
+type Result = SharedEnterGameResponse.Result;
+
 export class EnterGameRequest extends SharedEnterGameRequest
 {
   constructor(characterId: string)
@@ -41,7 +43,7 @@ export class EnterGameRequest extends SharedEnterGameRequest
   // -> Returns 'true' on success.
   public async process(connection: Connection): Promise<void>
   {
-    let response: SharedEnterGameResponse;
+    let response: EnterGameResponse;
 
     try
     {
@@ -63,7 +65,7 @@ export class EnterGameRequest extends SharedEnterGameRequest
   (
     connection: Connection
   )
-  : Promise<SharedEnterGameResponse>
+  : Promise<EnterGameResponse>
   {
     let character = Characters.getCharacter(this.characterId);
     let account = connection.getAccount();
@@ -103,11 +105,11 @@ export class EnterGameRequest extends SharedEnterGameRequest
     loadLocation: GameEntity,
     characterMove: Move
   )
-  : SharedEnterGameResponse
+  : EnterGameResponse
   {
     let serializedLoadLocation = this.serializeLoadLocation(loadLocation);
 
-    let result: SharedEnterGameResponse.Result =
+    let result: Result =
     {
       status: "ACCEPTED",
       data:
@@ -122,7 +124,7 @@ export class EnterGameRequest extends SharedEnterGameRequest
 
   private createErrorResponse(): EnterGameResponse
   {
-    let result: SharedEnterGameResponse.Result =
+    let result: Result =
     {
       status: "REJECTED",
       message: "An error occured preventing you from entering game.\n\n"

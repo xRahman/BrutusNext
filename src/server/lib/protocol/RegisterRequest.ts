@@ -24,6 +24,8 @@ import {Account} from '../../../server/lib/account/Account';
 import {Accounts} from '../../../server/lib/account/Accounts';
 import {Connection} from '../../../server/lib/connection/Connection';
 import {RegisterResponse} from '../../../server/lib/protocol/RegisterResponse';
+import {SharedRegisterResponse} from
+  '../../../shared/lib/protocol/SharedRegisterResponse';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 export class RegisterRequest extends SharedRegisterRequest
@@ -56,56 +58,6 @@ export class RegisterRequest extends SharedRegisterRequest
   }
 
   // --------------- Private methods --------------------
-
-  /// To be deleted.
-  // private reportAccountCreationFailure
-  // (
-  //   account: Account,
-  //   accountName,
-  //   connection: Connection
-  // )
-  // {
-  //   this.denyRequest
-  //   (
-  //     "[ERROR]: Failed to create account.\n\n"
-  //       + Message.ADMINS_WILL_FIX_IT,
-  //     RegisterResponse.Result.FAILED_TO_CREATE_ACCOUNT,
-  //     connection
-  //   );
-
-  //   ERROR("Failed to create account '" + accountName + "'");
-  // }
-
-  /// To be deleted.
-  // private async accountAlreadyExists
-  // (
-  //   accountName: string,
-  //   connection: Connection
-  // )
-  // : Promise<boolean>
-  // {
-  //   if (await Accounts.isTaken(accountName))
-  //   {
-  //     this.denyRequest
-  //     (
-  //       "An account is already registered to this e-mail address.",
-  //       RegisterResponse.Result.EMAIL_PROBLEM,
-  //       connection
-  //     );
-  
-  //     Syslog.log
-  //     (
-  //       "Attempt to register account " + accountName
-  //         + " from " + connection.getOrigin() + " which"
-  //         + " is already registered",
-  //       MessageType.CONNECTION_INFO,
-  //       AdminLevel.IMMORTAL
-  //     );   
-  //     return true;
-  //   }
-
-  //   return false;
-  // }
 
   // ! Throws an exception on error.
   private async registerAccount
@@ -176,98 +128,6 @@ export class RegisterRequest extends SharedRegisterRequest
     return account;
   }
 
-  /// To be deleted.
-  // private acceptRequest(account: Account, connection: Connection)
-  // {
-  //   let response = new RegisterResponse();
-  //   response.result = RegisterResponse.Result.OK;
-    
-  //   // Add newly created account to the response.
-  //   response.serializedAccount.serialize
-  //   (
-  //     account,
-  //     Serializable.Mode.SEND_TO_CLIENT
-  //   );
-
-  //   Syslog.log
-  //   (
-  //     "New player: " + account.getUserInfo(),
-  //     MessageType.SYSTEM_INFO,
-  //     AdminLevel.IMMORTAL
-  //   );
-    
-  //   connection.send(response);
-  // }
-
-  /// To be deleted.
-  // private denyRequest
-  // (
-  //   problem: string,
-  //   result: RegisterResponse.Result,
-  //   connection: Connection
-  // )
-  // {
-  //   let response = new RegisterResponse();
-
-  //   response.result = result;
-  //   response.setProblems(problem);
-
-  //   connection.send(response);
-  // }
-
-  /// To be deleted.
-  // private isEmailValid(connection: Connection): boolean
-  // {
-  //   let problem = this.getEmailProblem();
-
-  //   if (!problem)
-  //     return true;
-
-  //   this.denyRequest
-  //   (
-  //     problem,
-  //     RegisterResponse.Result.EMAIL_PROBLEM,
-  //     connection
-  //   );
-
-  //   Syslog.log
-  //   (
-  //     "Attempt to register invalid e-mail address " + this.email + "."
-  //       + " Problem: " + problem,
-  //     MessageType.CONNECTION_INFO,
-  //     AdminLevel.IMMORTAL
-  //   );
-    
-  //   return false;
-  // }
-
-  /// To be deleted.
-  // private isPasswordValid(connection: Connection): boolean
-  // {
-  //   let problem = this.getEmailProblem();
-
-  //   if (!problem)
-  //     return true;
-
-  //   this.denyRequest
-  //   (
-  //     problem,
-  //     RegisterResponse.Result.PASSWORD_PROBLEM,
-  //     connection
-  //   );
-
-  //   Syslog.log
-  //   (
-  //     "Attempt to register account " + this.email
-  //       + " " + connection.getOrigin() + " using"
-  //       + " invalid password. Problem: " + problem,
-  //     MessageType.CONNECTION_INFO,
-  //     AdminLevel.IMMORTAL
-  //   );
-
-  //   return false;
-  // }
-
   private logEmailProblem(message: string)
   {
     Syslog.log
@@ -297,8 +157,8 @@ export class RegisterRequest extends SharedRegisterRequest
   )
   : Array<SharedRegisterRequest.Problem> | "NO PROBLEM"
   {
-    let checkResult: (SharedRegisterRequest.Problem | "NO PROBLEM");
     let problems: Array<SharedRegisterRequest.Problem> = [];
+    let checkResult: (SharedRegisterRequest.Problem | "NO PROBLEM");
 
     if ((checkResult = this.checkEmail()) !== "NO PROBLEM")
     {
@@ -342,7 +202,7 @@ export class RegisterRequest extends SharedRegisterRequest
   {
     let problem: SharedRegisterRequest.Problem =
     {
-      type: RegisterRequest.ProblemType.EMAIL_PROBLEM,
+      type: SharedRegisterRequest.ProblemType.EMAIL_PROBLEM,
       message: "An account is already registered to this e-mail address."
     };
 
@@ -355,7 +215,7 @@ export class RegisterRequest extends SharedRegisterRequest
   )
   : RegisterResponse
   {
-    let result: RegisterResponse.Result =
+    let result: SharedRegisterResponse.Result =
     {
       status: "REJECTED",
       problems: problems
@@ -373,7 +233,7 @@ export class RegisterRequest extends SharedRegisterRequest
                 + Message.ADMINS_WILL_FIX_IT
     };
 
-    let result: RegisterResponse.Result =
+    let result: SharedRegisterResponse.Result =
     {
       status: "REJECTED",
       problems: [ problem ]
@@ -387,7 +247,7 @@ export class RegisterRequest extends SharedRegisterRequest
   {
     let serializedAccount = this.serializeAccount(account);
 
-    let result: RegisterResponse.Result =
+    let result: SharedRegisterResponse.Result =
     {
       status: "ACCEPTED",
       data: { serializedAccount: serializedAccount }

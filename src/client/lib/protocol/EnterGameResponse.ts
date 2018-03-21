@@ -21,7 +21,7 @@ import {Classes} from '../../../shared/lib/class/Classes';
 
 export class EnterGameResponse extends SharedEnterGameResponse
 {
-  constructor(result: EnterGameResponse.Result)
+  constructor(result: SharedEnterGameResponse.Result)
   {
     super(result);
 
@@ -63,7 +63,7 @@ export class EnterGameResponse extends SharedEnterGameResponse
   private switchToGame
   (
     connection: Connection,
-    data: EnterGameResponse.Data
+    data: SharedEnterGameResponse.Data
   )
   {
     let loadLocation = data.serializedLoadLocation.recreateEntity(Entity);
@@ -85,16 +85,6 @@ export class EnterGameResponse extends SharedEnterGameResponse
   {
     alert(message);
   }
-}
-
-// ------------------ Type declarations ----------------------
-
-export module EnterGameResponse
-{
-  // Here we are just reexporting types declared in our ancestor
-  // (because they aren't inherited along with the class).
-  export type Data = SharedEnterGameResponse.Data;
-  export type Result = SharedEnterGameResponse.Result;
 }
 
 Classes.registerSerializableClass(EnterGameResponse);

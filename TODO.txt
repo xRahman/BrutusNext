@@ -138,6 +138,8 @@ TODO: Error responsům sem sebral prefix '[ERROR]:', měl bych ho tam
   - a nebo to formulvoat nějak ve stylu "An error occured while registering
     your account".
 
+TODO: Při kontrole Requestu by se asi nemuselo hned logovat.
+
 --------------------------------------------------------------
 
 Logování a errory
