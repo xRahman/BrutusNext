@@ -7,8 +7,8 @@
 'use strict';
 
 import {Classes} from '../../../shared/lib/class/Classes';
-import {SharedSystemMessage} from
-  '../../../shared/lib/protocol/SharedSystemMessage';
+import {SystemMessage as SharedSystemMessage} from
+  '../../../shared/lib/protocol/SystemMessage';
 
 export class SystemMessage extends SharedSystemMessage
 {

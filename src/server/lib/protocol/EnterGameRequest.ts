@@ -12,12 +12,10 @@ import {Syslog} from '../../../shared/lib/log/Syslog';
 import {Message} from '../../../server/lib/message/Message';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {SerializedEntity} from '../../../shared/lib/protocol/SerializedEntity';
-import {SharedEnterGameRequest} from
-  '../../../shared/lib/protocol/SharedEnterGameRequest';
+import {EnterGameRequest as SharedEnterGameRequest} from
+  '../../../shared/lib/protocol/EnterGameRequest';
 import {EnterGameResponse} from
   '../../../server/lib/protocol/EnterGameResponse';
-import {SharedEnterGameResponse} from
-  '../../../shared/lib/protocol/SharedEnterGameResponse';
 import {Account} from '../../../server/lib/account/Account';
 import {Character} from '../../../server/game/character/Character';
 import {Characters} from '../../../server/game/character/Characters';
@@ -25,8 +23,6 @@ import {GameEntity} from '../../../server/game/GameEntity';
 import {Connection} from '../../../server/lib/connection/Connection';
 import {Move} from '../../../shared/lib/protocol/Move';
 import {Classes} from '../../../shared/lib/class/Classes';
-
-type Result = SharedEnterGameResponse.Result;
 
 export class EnterGameRequest extends SharedEnterGameRequest
 {
@@ -109,7 +105,7 @@ export class EnterGameRequest extends SharedEnterGameRequest
   {
     let serializedLoadLocation = this.serializeLoadLocation(loadLocation);
 
-    let result: Result =
+    let result: EnterGameResponse.Result =
     {
       status: "ACCEPTED",
       data:
@@ -124,7 +120,7 @@ export class EnterGameRequest extends SharedEnterGameRequest
 
   private createErrorResponse(): EnterGameResponse
   {
-    let result: Result =
+    let result: EnterGameResponse.Result =
     {
       status: "REJECTED",
       message: "An error occured preventing you from entering game.\n\n"

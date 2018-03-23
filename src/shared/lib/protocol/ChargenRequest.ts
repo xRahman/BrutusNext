@@ -13,7 +13,7 @@ import {Request} from '../../../shared/lib/protocol/Request';
 import {Connection} from '../../../shared/lib/connection/Connection';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export abstract class SharedChargenRequest extends Request
+export abstract class ChargenRequest extends Request
 {
   constructor
   (
@@ -37,10 +37,10 @@ export abstract class SharedChargenRequest extends Request
 
   // ---------------- Public methods --------------------
 
-  public checkForProblems(): Array<SharedChargenRequest.Problem> | "NO PROBLEM"
+  public checkForProblems(): Array<ChargenRequest.Problem> | "NO PROBLEM"
   {
-    let problems: Array<SharedChargenRequest.Problem> = [];
-    let checkResult: (SharedChargenRequest.Problem | "NO PROBLEM");
+    let problems: Array<ChargenRequest.Problem> = [];
+    let checkResult: (ChargenRequest.Problem | "NO PROBLEM");
 
     if ((checkResult = this.checkCharacterName()) !== "NO PROBLEM")
     {
@@ -60,18 +60,18 @@ export abstract class SharedChargenRequest extends Request
   (
     message: string
   )
-  : SharedChargenRequest.Problem
+  : ChargenRequest.Problem
   {
     let problem =
     {
-      type: SharedChargenRequest.ProblemType.CHARACTER_NAME_PROBLEM,
+      type: ChargenRequest.ProblemType.CHARACTER_NAME_PROBLEM,
       message: message
     };
 
     return problem;
   }
 
-  private checkCharacterName(): (SharedChargenRequest.Problem | "NO PROBLEM")
+  private checkCharacterName(): (ChargenRequest.Problem | "NO PROBLEM")
   {
     let checkResult: string | "NO PROBLEM";
 
@@ -79,7 +79,7 @@ export abstract class SharedChargenRequest extends Request
     {
       return this.composeCharacterNameProblem
       (
-        SharedChargenRequest.ENTER_CHARACTER_NAME
+        ChargenRequest.ENTER_CHARACTER_NAME
       );
     }
 
@@ -96,10 +96,10 @@ export abstract class SharedChargenRequest extends Request
   // ChargenForm.removeInvalidCharacters().
   private checkForInvalidCharacters(): (string | "NO PROBLEM")
   {
-    const regExp = SharedChargenRequest.VALID_CHARACTERS_REGEXP;
+    const regExp = ChargenRequest.VALID_CHARACTERS_REGEXP;
 
     if (!this.characterName)
-      return SharedChargenRequest.ENTER_CHARACTER_NAME;
+      return ChargenRequest.ENTER_CHARACTER_NAME;
 
     if (regExp.test(this.characterName))
       return "Character name can only contain english letters.";
@@ -110,21 +110,21 @@ export abstract class SharedChargenRequest extends Request
   private checkNameLength(): (string  | "NO PROBLEM")
   {
     if (!this.characterName)
-      return SharedChargenRequest.ENTER_CHARACTER_NAME;
+      return ChargenRequest.ENTER_CHARACTER_NAME;
 
     let nameLength = this.characterName.length;
 
-    if (nameLength < SharedChargenRequest.MIN_NAME_LENGTH_CHARACTERS)
+    if (nameLength < ChargenRequest.MIN_NAME_LENGTH_CHARACTERS)
     {
       return "Name must be at least"
-        + " " + SharedChargenRequest.MIN_NAME_LENGTH_CHARACTERS
+        + " " + ChargenRequest.MIN_NAME_LENGTH_CHARACTERS
         + " characters long.";
     }
 
-    if (nameLength > SharedChargenRequest.MAX_NAME_LENGTH_CHARACTERS)
+    if (nameLength > ChargenRequest.MAX_NAME_LENGTH_CHARACTERS)
     {
       return "Name cannot be longer than"
-        + " " + SharedChargenRequest.MAX_NAME_LENGTH_CHARACTERS
+        + " " + ChargenRequest.MAX_NAME_LENGTH_CHARACTERS
         + " characters.";
     }
 
@@ -134,7 +134,7 @@ export abstract class SharedChargenRequest extends Request
 
 // ------------------ Type declarations ----------------------
 
-export module SharedChargenRequest
+export module ChargenRequest
 {
   export enum ProblemType
   {

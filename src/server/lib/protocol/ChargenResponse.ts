@@ -7,12 +7,12 @@
 'use strict';
 
 import {Classes} from '../../../shared/lib/class/Classes';
-import {SharedChargenResponse} from
-  '../../../shared/lib/protocol/SharedChargenResponse';
+import {ChargenResponse as SharedChargenResponse} from
+  '../../../shared/lib/protocol/ChargenResponse';
 
 export class ChargenResponse extends SharedChargenResponse
 {
-  constructor(result: SharedChargenResponse.Result)
+  constructor(result: ChargenResponse.Result)
   {
     super(result);
 
@@ -22,6 +22,14 @@ export class ChargenResponse extends SharedChargenResponse
   // This class is empty, all functionality is inherited from
   // ancestor. It only exists to be added to Classes so it can
   // be be dynamically instantiated.
+}
+
+// ------------------ Type declarations ----------------------
+
+export module ChargenResponse
+{
+  // Reexport ancestor types becuase they are not inherited automatically.
+  export type Result = SharedChargenResponse.Result;
 }
 
 Classes.registerSerializableClass(ChargenResponse);

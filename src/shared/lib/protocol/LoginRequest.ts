@@ -13,7 +13,7 @@ import {Request} from '../../../shared/lib/protocol/Request';
 import {Connection} from '../../../shared/lib/connection/Connection';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export abstract class SharedLoginRequest extends Request
+export abstract class LoginRequest extends Request
 {
   constructor
   (
@@ -45,7 +45,7 @@ export abstract class SharedLoginRequest extends Request
 
 // ------------------ Type declarations ----------------------
 
-export module SharedLoginRequest
+export module LoginRequest
 {
   export enum ProblemType
   {

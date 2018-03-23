@@ -132,6 +132,24 @@ Hmm...
 Jo, to asi zní dobře. Sice pořád zůstanou stejný classy na clientu a na
 serveru, to se aspoň nikdy nepřekládá dohromady. A navíc to má důvod
 (určení co se na co překlápí při komunikaci mezi klientem a serverem).
+...
+- Tohle se mi nelíbilo, vracím to zpět.
+Ještě bych ale mohl zvážit sjednocení na styl:
+  Entity
+  - ClientEntity
+  - ServerEntity
+V tom případě bych asi buď musel do entit přidat property, která bude říkat,
+jak se jmenuje odpovídající classa na druhé straně, respektive na co se to
+matchuje
+(což může asi být automatické:
+ public static protocolClassName = this.constructor.name;),
+nebo to dělat při posílání packetu automaticky (tzn. že ClientXXX se
+automaticky matchne na ServerXXX a naopak). Property bude asi lepší, protože
+classy jako Orc nejspíš nebudou mít client-side variantu a budou se tudíž
+serializovat jako Character.
+
+
+
 
 TODO: Error responsům sem sebral prefix '[ERROR]:', měl bych ho tam
   zase přidat (asi na klientovi).

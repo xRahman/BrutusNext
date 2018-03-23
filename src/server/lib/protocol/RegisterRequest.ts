@@ -8,8 +8,8 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {REPORT} from '../../../shared/lib/error/REPORT';
-import {SharedRegisterRequest} from
-  '../../../shared/lib/protocol/SharedRegisterRequest';
+import {RegisterRequest as SharedRegisterRequest} from
+  '../../../shared/lib/protocol/RegisterRequest';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {ServerUtils} from '../../../server/lib/utils/ServerUtils';
 import {Syslog} from '../../../shared/lib/log/Syslog';
@@ -24,8 +24,6 @@ import {Account} from '../../../server/lib/account/Account';
 import {Accounts} from '../../../server/lib/account/Accounts';
 import {Connection} from '../../../server/lib/connection/Connection';
 import {RegisterResponse} from '../../../server/lib/protocol/RegisterResponse';
-import {SharedRegisterResponse} from
-  '../../../shared/lib/protocol/SharedRegisterResponse';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 export class RegisterRequest extends SharedRegisterRequest
@@ -155,10 +153,10 @@ export class RegisterRequest extends SharedRegisterRequest
   (
     connection: Connection
   )
-  : Array<SharedRegisterRequest.Problem> | "NO PROBLEM"
+  : Array<RegisterRequest.Problem> | "NO PROBLEM"
   {
-    let problems: Array<SharedRegisterRequest.Problem> = [];
-    let checkResult: (SharedRegisterRequest.Problem | "NO PROBLEM");
+    let problems: Array<RegisterRequest.Problem> = [];
+    let checkResult: (RegisterRequest.Problem | "NO PROBLEM");
 
     if ((checkResult = this.checkEmail()) !== "NO PROBLEM")
     {
@@ -200,9 +198,9 @@ export class RegisterRequest extends SharedRegisterRequest
 
   private createAccountAlreadyExistsResponse(): RegisterResponse
   {
-    let problem: SharedRegisterRequest.Problem =
+    let problem: RegisterRequest.Problem =
     {
-      type: SharedRegisterRequest.ProblemType.EMAIL_PROBLEM,
+      type: RegisterRequest.ProblemType.EMAIL_PROBLEM,
       message: "An account is already registered to this e-mail address."
     };
 
@@ -211,11 +209,11 @@ export class RegisterRequest extends SharedRegisterRequest
 
   private createProblemsResponse
   (
-    problems: Array<SharedRegisterRequest.Problem>
+    problems: Array<RegisterRequest.Problem>
   )
   : RegisterResponse
   {
-    let result: SharedRegisterResponse.Result =
+    let result: RegisterResponse.Result =
     {
       status: "REJECTED",
       problems: problems
@@ -226,14 +224,14 @@ export class RegisterRequest extends SharedRegisterRequest
 
   private createErrorResponse(): RegisterResponse
   {
-    let problem: SharedRegisterRequest.Problem =
+    let problem: RegisterRequest.Problem =
     {
       type: RegisterRequest.ProblemType.ERROR,
       message: "An error occured while creating your account.\n\n"
                 + Message.ADMINS_WILL_FIX_IT
     };
 
-    let result: SharedRegisterResponse.Result =
+    let result: RegisterResponse.Result =
     {
       status: "REJECTED",
       problems: [ problem ]
@@ -247,7 +245,7 @@ export class RegisterRequest extends SharedRegisterRequest
   {
     let serializedAccount = this.serializeAccount(account);
 
-    let result: SharedRegisterResponse.Result =
+    let result: RegisterResponse.Result =
     {
       status: "ACCEPTED",
       data: { serializedAccount: serializedAccount }
@@ -276,6 +274,14 @@ export class RegisterRequest extends SharedRegisterRequest
       Serializable.Mode.SEND_TO_CLIENT
     );
   }
+}
+
+// ------------------ Type declarations ----------------------
+
+export module RegisterRequest
+{
+  // Reexport ancestor types becuase they are not inherited automatically.
+  export type Problem = SharedRegisterRequest.Problem;
 }
 
 Classes.registerSerializableClass(RegisterRequest);

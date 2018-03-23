@@ -7,8 +7,8 @@
 'use strict';
 
 import {Classes} from '../../../shared/lib/class/Classes';
-import {SharedLoginResponse} from
-  '../../../shared/lib/protocol/SharedLoginResponse';
+import {LoginResponse as SharedLoginResponse} from
+  '../../../shared/lib/protocol/LoginResponse';
 
 export class LoginResponse extends SharedLoginResponse
 {

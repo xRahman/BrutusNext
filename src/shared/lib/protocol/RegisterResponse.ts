@@ -10,16 +10,15 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Response} from '../../../shared/lib/protocol/Response';
-import {SharedRegisterRequest} from
-  '../../../shared/lib/protocol/SharedRegisterRequest';
+import {RegisterRequest} from '../../../shared/lib/protocol/RegisterRequest';
 import {SerializedEntity} from '../../../shared/lib/protocol/SerializedEntity';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export abstract class SharedRegisterResponse extends Response
+export abstract class RegisterResponse extends Response
 {
   constructor
   (
-    protected result: SharedRegisterResponse.Result
+    protected result: RegisterResponse.Result
   )
   {
     super();
@@ -30,7 +29,7 @@ export abstract class SharedRegisterResponse extends Response
 
 // ------------------ Type declarations ----------------------
 
-export module SharedRegisterResponse
+export module RegisterResponse
 {
   // Data attached to the response in case the request is accepted.
   export type Data =
@@ -41,13 +40,13 @@ export module SharedRegisterResponse
   export type Accepted =
   {
     status: "ACCEPTED";
-    data: SharedRegisterResponse.Data;
+    data: RegisterResponse.Data;
   }
 
   export type Rejected =
   {
     status: "REJECTED";
-    problems: Array<SharedRegisterRequest.Problem>;
+    problems: Array<RegisterRequest.Problem>;
   }
 
   export type Result = Accepted | Rejected;

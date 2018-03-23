@@ -11,7 +11,7 @@
 import {Packet} from '../../../shared/lib/protocol/Packet';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export abstract class SharedCommand extends Packet
+export abstract class Command extends Packet
 {
   constructor()
   {

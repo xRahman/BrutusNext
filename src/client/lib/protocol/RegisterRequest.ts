@@ -7,8 +7,8 @@
 'use strict';
 
 import {Classes} from '../../../shared/lib/class/Classes';
-import {SharedRegisterRequest} from
-  '../../../shared/lib/protocol/SharedRegisterRequest';
+import {RegisterRequest as SharedRegisterRequest} from
+  '../../../shared/lib/protocol/RegisterRequest';
 
 export class RegisterRequest extends SharedRegisterRequest
 {

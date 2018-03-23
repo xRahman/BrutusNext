@@ -10,8 +10,8 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {REPORT} from '../../../shared/lib/error/REPORT';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {Syslog} from '../../../shared/lib/log/Syslog';
-import {SharedChargenRequest} from
-  '../../../shared/lib/protocol/SharedChargenRequest';
+import {ChargenRequest as SharedChargenRequest} from
+  '../../../shared/lib/protocol/ChargenRequest';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {Admins} from '../../../server/lib/admin/Admins';
 import {Account} from '../../../server/lib/account/Account';
@@ -19,8 +19,6 @@ import {Character} from '../../../server/game/character/Character';
 import {Characters} from '../../../server/game/character/Characters';
 import {Message} from '../../../server/lib/message/Message';
 import {Connection} from '../../../server/lib/connection/Connection';
-import {SharedChargenResponse} from
-  '../../../shared/lib/protocol/SharedChargenResponse';
 import {ChargenResponse} from '../../../server/lib/protocol/ChargenResponse';
 import {Classes} from '../../../shared/lib/class/Classes';
 
@@ -173,7 +171,7 @@ export class ChargenRequest extends SharedChargenRequest
 
   private sendErrorResponse(connection: Connection)
   {
-    const problems: SharedChargenRequest.Problems =
+    const problems: ChargenRequest.Problems =
     {
       error: "[ERROR]: Failed to create character.\n\n"
               + Message.ADMINS_WILL_FIX_IT
@@ -284,7 +282,7 @@ export class ChargenRequest extends SharedChargenRequest
 
   // private denyRequest
   // (
-  //   problems: SharedChargenRequest.Problems,
+  //   problems: ChargenRequest.Problems,
   //   connection: Connection
   // )
   // {
@@ -296,14 +294,14 @@ export class ChargenRequest extends SharedChargenRequest
 
   private createErrorResponse(): ChargenResponse
   {
-    let problem: SharedChargenRequest.Problem =
+    let problem: ChargenRequest.Problem =
     {
-      type: SharedChargenRequest.ProblemType.ERROR,
+      type: ChargenRequest.ProblemType.ERROR,
       message: "An error occured while creating your character.\n\n"
                 + Message.ADMINS_WILL_FIX_IT
     };
 
-    let result: SharedChargenResponse.Result =
+    let result: ChargenResponse.Result =
     {
       status: "REJECTED",
       problems: [ problem ]
@@ -314,11 +312,11 @@ export class ChargenRequest extends SharedChargenRequest
 
   private createProblemsResponse
   (
-    problems: Array<SharedChargenRequest.Problem>
+    problems: Array<ChargenRequest.Problem>
   )
   : ChargenResponse
   {
-    let result: SharedChargenResponse.Result =
+    let result: ChargenResponse.Result =
     {
       status: "REJECTED",
       problems: problems
@@ -326,6 +324,14 @@ export class ChargenRequest extends SharedChargenRequest
 
     return new ChargenResponse(result);
   }
+}
+
+// ------------------ Type declarations ----------------------
+
+export module ChargenRequest
+{
+  // Reexport ancestor types becuase they are not inherited automatically.
+  export type Problem = SharedChargenRequest.Problem;
 }
 
 Classes.registerSerializableClass(ChargenRequest);

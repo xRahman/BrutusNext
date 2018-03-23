@@ -13,15 +13,15 @@ import {Account} from '../../../client/lib/account/Account';
 import {Character} from '../../../client/game/character/Character';
 import {Windows} from '../../../client/gui/window/Windows';
 import {Connection} from '../../../client/lib/connection/Connection';
-import {SharedChargenResponse} from
-  '../../../shared/lib/protocol/SharedChargenResponse';
+import {ChargenResponse as SharedChargenResponse} from
+  '../../../shared/lib/protocol/ChargenResponse';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 export class ChargenResponse extends SharedChargenResponse
 {
-  constructor()
+  constructor(result: ChargenResponse.Result)
   {
-    super();
+    super(result);
 
     this.version = 0;
   }
@@ -95,6 +95,14 @@ export class ChargenResponse extends SharedChargenResponse
 
     return character;
   }
+}
+
+// ------------------ Type declarations ----------------------
+
+export module ChargenResponse
+{
+  // Reexport ancestor types becuase they are not inherited automatically.
+  export type Result = SharedChargenResponse.Result;
 }
 
 Classes.registerSerializableClass(ChargenResponse);

@@ -8,8 +8,8 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Syslog} from '../../../shared/lib/log/Syslog';
-import {SharedLoginRequest} from
-  '../../../shared/lib/protocol/SharedLoginRequest';
+import {LoginRequest as SharedLoginRequest} from
+  '../../../shared/lib/protocol/LoginRequest';
 import {ServerUtils} from '../../../server/lib/utils/ServerUtils';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {NameLock} from '../../../server/lib/entity/NameLock';
@@ -123,7 +123,7 @@ export class LoginRequest extends SharedLoginRequest
 
   private denyRequest
   (
-    problems: SharedLoginRequest.Problems,
+    problems: LoginRequest.Problems,
     connection: Connection
   )
   {

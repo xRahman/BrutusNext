@@ -15,13 +15,13 @@ import {Character} from '../../../client/game/character/Character';
 import {Windows} from '../../../client/gui/window/Windows';
 import {Connection} from '../../../client/lib/connection/Connection';
 import {Move} from '../../../shared/lib/protocol/Move';
-import {SharedEnterGameResponse} from
-  '../../../shared/lib/protocol/SharedEnterGameResponse';
+import {EnterGameResponse as SharedEnterGameResponse} from
+  '../../../shared/lib/protocol/EnterGameResponse';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 export class EnterGameResponse extends SharedEnterGameResponse
 {
-  constructor(result: SharedEnterGameResponse.Result)
+  constructor(result: EnterGameResponse.Result)
   {
     super(result);
 
@@ -63,7 +63,7 @@ export class EnterGameResponse extends SharedEnterGameResponse
   private switchToGame
   (
     connection: Connection,
-    data: SharedEnterGameResponse.Data
+    data: EnterGameResponse.Data
   )
   {
     let loadLocation = data.serializedLoadLocation.recreateEntity(Entity);
@@ -85,6 +85,15 @@ export class EnterGameResponse extends SharedEnterGameResponse
   {
     alert(message);
   }
+}
+
+// ------------------ Type declarations ----------------------
+
+export module EnterGameResponse
+{
+  // Reexport ancestor types becuase they are not inherited automatically.
+  export type Data = SharedEnterGameResponse.Data;
+  export type Result = SharedEnterGameResponse.Result;
 }
 
 Classes.registerSerializableClass(EnterGameResponse);

@@ -18,7 +18,7 @@ import {Form} from '../../../client/gui/form/Form';
 import {EmailInput} from '../../../client/gui/form/EmailInput';
 import {PasswordInput} from '../../../client/gui/form/PasswordInput';
 import {CredentialsForm} from '../../../client/gui/form/CredentialsForm';
-import {SharedRegisterRequest} from
+import {RegisterRequest} from
   '../../../shared/lib/protocol/SharedRegisterRequest';
 import {RegisterRequest} from '../../../client/lib/protocol/RegisterRequest';
 import {RegisterResponse} from '../../../client/lib/protocol/RegisterResponse';
@@ -63,7 +63,7 @@ export class RegisterForm extends CredentialsForm
   // ---------------- Public methods --------------------
 
   // ! Throws an exception on error.
-  public displayProblems(problems: Array<SharedRegisterRequest.Problem>)
+  public displayProblems(problems: Array<RegisterRequest.Problem>)
   {
     for (let problem of problems)
       this.displayProblem(problem);
@@ -178,7 +178,7 @@ export class RegisterForm extends CredentialsForm
   // ~ Overrides Form.isRequestValid().
   protected isRequestValid(request: RegisterRequest)
   {
-    let problem: SharedRegisterRequest.Problem | "NO PROBLEM";
+    let problem: RegisterRequest.Problem | "NO PROBLEM";
 
     if ((problem = request.checkEmail()) !== "NO PROBLEM")
     {
@@ -235,19 +235,19 @@ export class RegisterForm extends CredentialsForm
   }
 
     // ! Throws an exception on error.
-  private displayProblem(problem: SharedRegisterRequest.Problem)
+  private displayProblem(problem: RegisterRequest.Problem)
   {
     switch (problem.type)
     {
-      case SharedRegisterRequest.ProblemType.EMAIL_PROBLEM:
+      case RegisterRequest.ProblemType.EMAIL_PROBLEM:
         this.displayEmailProblem(problem.message);
         break;
 
-      case SharedRegisterRequest.ProblemType.PASSWORD_PROBLEM:
+      case RegisterRequest.ProblemType.PASSWORD_PROBLEM:
         this.displayPasswordProblem(problem.message);
         break;
 
-      case SharedRegisterRequest.ProblemType.ERROR:
+      case RegisterRequest.ProblemType.ERROR:
         this.displayError(problem.message);
         break;
 

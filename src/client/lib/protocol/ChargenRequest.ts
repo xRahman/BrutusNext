@@ -7,8 +7,8 @@
 'use strict';
 
 import {Classes} from '../../../shared/lib/class/Classes';
-import {SharedChargenRequest} from
-  '../../../shared/lib/protocol/SharedChargenRequest';
+import {ChargenRequest as SharedChargenRequest} from
+  '../../../shared/lib/protocol/ChargenRequest';
 
 export class ChargenRequest  extends SharedChargenRequest
 {
