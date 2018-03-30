@@ -29,43 +29,6 @@ export abstract class ChargenResponse extends Response
 
     this.version = 0;
   }
-
-  // ----------------- Public data ----------------------
-
-  // // Serialized account data.
-  // // (We send account back to client, not the created character,
-  // //  because client will need updated account to display character
-  // //  select form).
-  // public serializedAccount: (SerializedEntity | null) = null;
-
-  // // Serialized data of newly added character.
-  // public serializedCharacter: (SerializedEntity | null) = null;
-
-  // ---------------- Public methods --------------------
-
-  // // -> Returns 'true' on success.
-  // public serializeAccount(account: Account)
-  // {
-  //   this.serializedAccount = new SerializedEntity();
-
-  //   return this.serializedAccount.serialize
-  //   (
-  //     account,
-  //     Serializable.Mode.SEND_TO_CLIENT
-  //   );
-  // }
-
-  // // -> Returns 'true' on success.
-  // public serializeCharacter(character: Character)
-  // {
-  //   this.serializedCharacter = new SerializedEntity();
-
-  //   return this.serializedCharacter.serialize
-  //   (
-  //     character,
-  //     Serializable.Mode.SEND_TO_CLIENT
-  //   );
-  // }
 }
 
 // ------------------ Type declarations ----------------------
@@ -76,7 +39,7 @@ export module ChargenResponse
   export type Data =
   {
     // Serialized account data.
-    // (Client will use this to display updated character select form).
+    // (Client will use this to update character select form).
     serializedAccount: SerializedEntity;
     // Serialized data of newly added character.
     serializedCharacter: SerializedEntity;
@@ -85,8 +48,6 @@ export module ChargenResponse
   export type Accepted =
   {
     status: "ACCEPTED";
-    // Separate type is used here because it is passed
-    // as parameter when processing the packet on client.
     data: ChargenResponse.Data;
   }
 

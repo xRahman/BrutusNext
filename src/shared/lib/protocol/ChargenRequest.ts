@@ -9,6 +9,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Syslog} from '../../../shared/lib/log/Syslog';
 import {Request} from '../../../shared/lib/protocol/Request';
 import {Connection} from '../../../shared/lib/connection/Connection';
 import {Classes} from '../../../shared/lib/class/Classes';
@@ -25,9 +26,6 @@ export abstract class ChargenRequest extends Request
     this.version = 0;
   }
 
-  private static readonly ENTER_CHARACTER_NAME =
-    "Please enter character name.";
-
   public static readonly MIN_NAME_LENGTH_CHARACTERS = 3;
   public static readonly MAX_NAME_LENGTH_CHARACTERS = 12;
 
@@ -39,28 +37,79 @@ export abstract class ChargenRequest extends Request
 
   public checkForProblems(): Array<ChargenRequest.Problem> | "NO PROBLEM"
   {
-    let problems: Array<ChargenRequest.Problem> = [];
-    let checkResult: (ChargenRequest.Problem | "NO PROBLEM");
-
-    if ((checkResult = this.checkCharacterName()) !== "NO PROBLEM")
-    {
-      this.logCharacterNameProblem(checkResult.message);
-      problems.push(checkResult);
-    }
-
-    if (problems.length === 0)
+    let checkResult = this.checkCharacterName();
+  
+    if (checkResult === "NO PROBLEM")
       return "NO PROBLEM";
-    else
-      return problems;
+
+    // There can only be one type of chargen requst problem
+    // now so we can create 'problems' array like this.
+    return [ checkResult ];
   }
 
   // ---------------- Private methods -------------------
 
-  private composeCharacterNameProblem
-  (
-    message: string
-  )
-  : ChargenRequest.Problem
+  private checkCharacterName(): (ChargenRequest.Problem | "NO PROBLEM")
+  {
+    let checkResult: ChargenRequest.Problem | "NO PROBLEM";
+
+    if ((checkResult = this.checkNameLength()) !== "NO PROBLEM")
+      return checkResult;
+
+    if ((checkResult = this.checkForInvalidCharacters()) !== "NO PROBLEM")
+      return checkResult;
+
+    return "NO PROBLEM";
+  }
+
+  // Note that this is also enforced in
+  // ChargenForm.removeInvalidCharacters().
+  private checkForInvalidCharacters(): (ChargenRequest.Problem | "NO PROBLEM")
+  {
+    const regExp = ChargenRequest.VALID_CHARACTERS_REGEXP;
+
+    if (regExp.test(this.characterName))
+    {
+      return this.nameProblem
+      (
+        "Character name can only contain english letters."
+      );
+    }
+
+    return "NO PROBLEM";
+  }
+
+  private checkNameLength(): (ChargenRequest.Problem | "NO PROBLEM")
+  {
+    if (!this.characterName)
+      return this.nameProblem("Please enter character name.");
+
+    let nameLength = this.characterName.length;
+
+    if (nameLength < ChargenRequest.MIN_NAME_LENGTH_CHARACTERS)
+    {
+      return this.nameProblem
+      (
+        "Name must be at least"
+        + " " + ChargenRequest.MIN_NAME_LENGTH_CHARACTERS
+        + " characters long."
+      );
+    }
+
+    if (nameLength > ChargenRequest.MAX_NAME_LENGTH_CHARACTERS)
+    {
+      return this.nameProblem
+      (
+        "Name cannot be longer than"
+        + " " + ChargenRequest.MAX_NAME_LENGTH_CHARACTERS
+        + " characters."
+      );
+    }
+
+    return "NO PROBLEM";
+  }
+
+  private nameProblem(message: string): ChargenRequest.Problem
   {
     let problem =
     {
@@ -69,66 +118,6 @@ export abstract class ChargenRequest extends Request
     };
 
     return problem;
-  }
-
-  private checkCharacterName(): (ChargenRequest.Problem | "NO PROBLEM")
-  {
-    let checkResult: string | "NO PROBLEM";
-
-    if (!this.characterName)
-    {
-      return this.composeCharacterNameProblem
-      (
-        ChargenRequest.ENTER_CHARACTER_NAME
-      );
-    }
-
-    if ((checkResult = this.checkForInvalidCharacters()) !== "NO PROBLEM")
-      return this.composeCharacterNameProblem(checkResult);
-
-    if ((checkResult = this.checkNameLength()) !== "NO PROBLEM")
-      return this.composeCharacterNameProblem(checkResult);
-
-    return "NO PROBLEM";
-  }
-
-  // Note that this is also enforced in
-  // ChargenForm.removeInvalidCharacters().
-  private checkForInvalidCharacters(): (string | "NO PROBLEM")
-  {
-    const regExp = ChargenRequest.VALID_CHARACTERS_REGEXP;
-
-    if (!this.characterName)
-      return ChargenRequest.ENTER_CHARACTER_NAME;
-
-    if (regExp.test(this.characterName))
-      return "Character name can only contain english letters.";
-
-    return "NO PROBLEM";
-  }
-
-  private checkNameLength(): (string  | "NO PROBLEM")
-  {
-    if (!this.characterName)
-      return ChargenRequest.ENTER_CHARACTER_NAME;
-
-    let nameLength = this.characterName.length;
-
-    if (nameLength < ChargenRequest.MIN_NAME_LENGTH_CHARACTERS)
-    {
-      return "Name must be at least"
-        + " " + ChargenRequest.MIN_NAME_LENGTH_CHARACTERS
-        + " characters long.";
-    }
-
-    if (nameLength > ChargenRequest.MAX_NAME_LENGTH_CHARACTERS)
-    {
-      return "Name cannot be longer than"
-        + " " + ChargenRequest.MAX_NAME_LENGTH_CHARACTERS
-        + " characters.";
-    }
-
-    return "NO PROBLEM";
   }
 }
 
