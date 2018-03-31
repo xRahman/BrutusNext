@@ -46,122 +46,54 @@ export class ChargenRequest extends SharedChargenRequest
     catch (error)
     {
       REPORT(error);
-      response = this.createErrorResponse();
+      response = this.errorResponse();
     }
 
     connection.send(response);
-
-
-    // this.normalizeCharacterName(connection);
-
-    // let problems = this.checkForProblems();
-
-    // if (problems)
-    // {
-    //   this.denyRequest(problems, connection);
-    //   return;
-    // }
-
-    // if (!await this.isNameAvailable())
-    // {
-    //   this.sendNameIsNotAvailableResponse(connection);
-    //   this.logNameIsNotAvailable(connection);
-    //   return;
-    // }
-
-    // let account = this.obtainAccount(connection);
-
-    // if (!account)
-    // {
-    //   this.sendErrorResponse(connection);
-    //   return;
-    // }
-
-    // let character = await this.createCharacter(account, connection);
-
-    // if (!character)
-    // {
-    //   this.sendErrorResponse(connection);
-    //   return;
-    // }
-
-    // if (!this.acceptRequest(character, account, connection))
-    // {
-    //   this.sendErrorResponse(connection);
-    //   return;
-    // }
-
-    // this.logSuccess(character, account);
-
-    // return;
   }
 
   // --------------- Private methods --------------------
 
-  private processChargen
+  // ! Throws an exception on error.
+  private async processChargen
   (
     connection: Connection
   )
   : Promise<ChargenResponse>
   {
+    /// TODO: Tohle bude asi ještě potřeba zkrátit a zpřehlednit.
+    let account: Account = connection.getAccount();
+
     this.normalizeCharacterName(connection);
 
     let checkResult = this.checkForProblems();
 
     if (checkResult !== "NO PROBLEM")
-      return this.createProblemsResponse(checkResult);
+      return this.problemsResponse(checkResult);
 
-    // let problems = this.checkForProblems();
-
-    // if (problems)
-    // {
-    //   this.denyRequest(problems, connection);
-    //   return;
-    // }
-
-    if (!await this.isNameAvailable())
+    if (!await this.isNameValid())
     {
-      this.sendNameIsNotAvailableResponse(connection);
-      this.logNameIsNotAvailable(connection);
-      return;
+      this.logInvalidName(connection);
+      return this.nameNotAvailableResponse();
     }
 
-    let account = this.obtainAccount(connection);
+    let createResult = await this.createCharacter(account, connection);
 
-    if (!account)
+    if (createResult === "NAME IS ALREADY TAKEN")
     {
-      this.sendErrorResponse(connection);
-      return;
+      this.logNameAlreadyTaken(connection);
+      return this.nameNotAvailableResponse();
     }
 
-    let character = await this.createCharacter(account, connection);
+    let character: Character = createResult;
 
-    if (!character)
-    {
-      this.sendErrorResponse(connection);
-      return;
-    }
-
-    if (!this.acceptRequest(character, account, connection))
-    {
-      this.sendErrorResponse(connection);
-      return;
-    }
+    // We need to create response before logging success
+    // because creating it may throw an exception.
+    let response = this.successResponse(character, account);
 
     this.logSuccess(character, account);
-  }
 
-  private obtainAccount(connection: Connection): Account | null
-  {
-    let account = connection.getAccount();
-
-    if (!account || !account.isValid())
-    {
-      ERROR("Failed to process chargen request: Invalid account");
-      return null;
-    }
-
-    return account;
+    return response;
   }
 
   private normalizeCharacterName(connection: Connection)
@@ -169,42 +101,30 @@ export class ChargenRequest extends SharedChargenRequest
     this.characterName = Utils.uppercaseFirstLowercaseRest(this.characterName);
   }
 
-  private sendErrorResponse(connection: Connection)
-  {
-    const problems: ChargenRequest.Problems =
-    {
-      error: "[ERROR]: Failed to create character.\n\n"
-              + Message.ADMINS_WILL_FIX_IT
-    };
-    
-    this.denyRequest(problems, connection);
-  }
-
-  // -> Returns 'null' on failure.
+  // ! Throws an exception on error.
   private async createCharacter
   (
     account: Account,
     connection: Connection
   )
-  : Promise<Character | null>
+  : Promise<Character | "NAME IS ALREADY TAKEN">
   {
     if (!this.characterName)
-    {
-      ERROR("Invalid 'characterName' in chargen request");
-      return null;
-    }
+      throw new Error("Invalid 'characterName' in chargen request");
 
-    let character = await account.createCharacter(this.characterName);
+    let createResult = await account.createCharacter(this.characterName);
 
-    if (!character || !character.isValid())
-      return null;
+    if (createResult === "NAME IS ALREADY TAKEN")
+      return "NAME IS ALREADY TAKEN";
+
+    let character: Character = createResult;
 
     Admins.onCharacterCreation(character);
 
     return character;
   }
 
-  private async isNameAvailable(): Promise<boolean>
+  private async isNameValid(): Promise<boolean>
   {
     if (!this.characterName)
       return false;
@@ -216,60 +136,33 @@ export class ChargenRequest extends SharedChargenRequest
     ///  do name.length - 1).
     /// Asi taky nepovolit slovníková jména.
 
-    if (await Characters.isTaken(this.characterName))
-      return false;
+    /// This will be checked inside character creation attempt.
+    // if (await Characters.isTaken(this.characterName))
+    //   return false;
 
     return true;
   }
 
-  // private sendCharacterNameProblemResponse
-  // (
-  //   problem: string,
-  //   connection: Connection
-  // )
-  // {
-  //   this.denyRequest({ characterNameProblem: problem }, connection);
-  // }
-
-  private sendNameIsNotAvailableResponse(connection: Connection)
-  {
-    this.denyRequest
-    (
-      { characterNameProblem: "Sorry, this name is not available." },
-      connection
-    );
-  }
-
-  private logNameIsNotAvailable(connection: Connection)
+  private logInvalidName(connection: Connection)
   {
     Syslog.logConnectionInfo
     (
-      "User " + connection.getUserInfo() + " has attempted"
-        + " to create new character using existing name"
+      "Player " + connection.getUserInfo() + " has attempted"
+        + " to create new character using invalid name"
         + " (" + this.characterName + ")"
     );
   }
 
-  // // -> Returns 'true' on success.
-  // private acceptRequest
-  // (
-  //   character: Character,
-  //   account: Account,
-  //   connection: Connection
-  // )
-  // {
-  //   let response = new ChargenResponse();
-
-  //   if (!response.serializeAccount(account))
-  //     return false;
-
-  //   if (!response.serializeCharacter(character))
-  //     return false;
-
-  //   connection.send(response);
-
-  //   return true;
-  // }
+  private logNameAlreadyTaken(connection: Connection)
+  {
+    Syslog.logConnectionInfo
+    (
+      "Player " + connection.getUserInfo() + " has attempted"
+        + " to create new character using name"
+        + " (" + this.characterName + ") that is"
+        + " already taken"
+    );
+  }
 
   private logSuccess(character: Character, account: Account)
   {
@@ -280,19 +173,14 @@ export class ChargenRequest extends SharedChargenRequest
     );
   }
 
-  // private denyRequest
-  // (
-  //   problems: ChargenRequest.Problems,
-  //   connection: Connection
-  // )
-  // {
-  //   let response = new ChargenResponse();
+  private nameNotAvailableResponse()
+  {
+    let problem = this.nameProblem("Sorry, this name is not available.");
 
-  //   response.setProblems(problems);
-  //   connection.send(response);
-  // }
+    return this.problemsResponse([ problem ]);
+  }
 
-  private createErrorResponse(): ChargenResponse
+  private errorResponse(): ChargenResponse
   {
     let problem: ChargenRequest.Problem =
     {
@@ -310,7 +198,7 @@ export class ChargenRequest extends SharedChargenRequest
     return new ChargenResponse(result);
   }
 
-  private createProblemsResponse
+  private problemsResponse
   (
     problems: Array<ChargenRequest.Problem>
   )
@@ -320,6 +208,26 @@ export class ChargenRequest extends SharedChargenRequest
     {
       status: "REJECTED",
       problems: problems
+    };
+
+    return new ChargenResponse(result);
+  }
+
+  // ! Throws an exception on error.
+  private successResponse
+  (
+    character: Character,
+    account: Account
+  )
+  : ChargenResponse
+  {
+    let serializedAccount = this.serializeEntity(account);
+    let serializedCharacter = this.serializeEntity(character);
+
+    let result: ChargenResponse.Result =
+    {
+      status: "ACCEPTED",
+      data: { serializedAccount, serializedCharacter }
     };
 
     return new ChargenResponse(result);

@@ -49,7 +49,7 @@ export class RegisterRequest extends SharedRegisterRequest
     catch (error)
     {
       REPORT(error);
-      response = this.createErrorResponse();
+      response = this.errorResponse();
     }
 
     connection.send(response);
@@ -67,7 +67,7 @@ export class RegisterRequest extends SharedRegisterRequest
     let checkResult = this.checkForProblems(connection);
 
     if (checkResult !== "NO PROBLEM")
-      return this.createProblemsResponse(checkResult);
+      return this.problemsResponse(checkResult);
 
     // Email is used as account name.
     let accountName = this.email;
@@ -79,7 +79,7 @@ export class RegisterRequest extends SharedRegisterRequest
     if (createResult === "NAME IS ALREADY TAKEN")
     {
       this.logAccountAlreadyExists(accountName, connection);
-      return this.createAccountAlreadyExistsResponse();
+      return this.accountAlreadyExistsResponse();
     }
 
     let account: Account = createResult;
@@ -88,7 +88,7 @@ export class RegisterRequest extends SharedRegisterRequest
 
     // We need to create response before logging
     // success because it may throw an exception.
-    let response = this.createAcceptResponse(account);
+    let response = this.successResponse(account);
 
     this.logSuccess(account);
 
@@ -196,7 +196,7 @@ export class RegisterRequest extends SharedRegisterRequest
     );
   }
 
-  private createAccountAlreadyExistsResponse(): RegisterResponse
+  private accountAlreadyExistsResponse(): RegisterResponse
   {
     let problem: RegisterRequest.Problem =
     {
@@ -204,10 +204,10 @@ export class RegisterRequest extends SharedRegisterRequest
       message: "An account is already registered to this e-mail address."
     };
 
-    return this.createProblemsResponse([ problem ]);
+    return this.problemsResponse([ problem ]);
   }
 
-  private createProblemsResponse
+  private problemsResponse
   (
     problems: Array<RegisterRequest.Problem>
   )
@@ -222,7 +222,7 @@ export class RegisterRequest extends SharedRegisterRequest
     return new RegisterResponse(result);
   }
 
-  private createErrorResponse(): RegisterResponse
+  private errorResponse(): RegisterResponse
   {
     let problem: RegisterRequest.Problem =
     {
@@ -241,38 +241,17 @@ export class RegisterRequest extends SharedRegisterRequest
   }
 
   // ! Throws an exception on error.
-  private createAcceptResponse(account: Account): RegisterResponse
+  private successResponse(account: Account): RegisterResponse
   {
-    let serializedAccount = this.serializeAccount(account);
+    let serializedAccount = this.serializeEntity(account);
 
     let result: RegisterResponse.Result =
     {
       status: "ACCEPTED",
-      data: { serializedAccount: serializedAccount }
+      data: { serializedAccount }
     };
 
     return new RegisterResponse(result);
-  }
-
-  // ! Throws an exception on error.
-  private serializeAccount(account: Account): SerializedEntity
-  {
-    if (!account.isValid())
-    {
-      throw new Error
-      (
-        "Unable to serialize 'account'"
-        + " " + account.getErrorIdString()
-        + " because it is not a valid entity."
-        + " Register response will not be sent"
-      );
-    }
-
-    return new SerializedEntity
-    (
-      account,
-      Serializable.Mode.SEND_TO_CLIENT
-    );
   }
 }
 

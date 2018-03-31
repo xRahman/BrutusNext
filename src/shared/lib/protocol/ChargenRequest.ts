@@ -37,14 +37,29 @@ export abstract class ChargenRequest extends Request
 
   public checkForProblems(): Array<ChargenRequest.Problem> | "NO PROBLEM"
   {
-    let checkResult = this.checkCharacterName();
+    let problems: Array<ChargenRequest.Problem> = [];
+    let checkResult: ChargenRequest.Problem | "NO PROBLEM";
   
-    if (checkResult === "NO PROBLEM")
-      return "NO PROBLEM";
+    if ((checkResult = this.checkCharacterName()) !== "NO PROBLEM")
+      problems.push(checkResult);
 
-    // There can only be one type of chargen requst problem
-    // now so we can create 'problems' array like this.
-    return [ checkResult ];
+    if (problems.length !== 0)
+      return problems;
+
+    return "NO PROBLEM";
+  }
+
+  // --------------- Protected methods ------------------
+
+  protected nameProblem(message: string): ChargenRequest.Problem
+  {
+    let problem =
+    {
+      type: ChargenRequest.ProblemType.CHARACTER_NAME_PROBLEM,
+      message: message
+    };
+
+    return problem;
   }
 
   // ---------------- Private methods -------------------
@@ -107,17 +122,6 @@ export abstract class ChargenRequest extends Request
     }
 
     return "NO PROBLEM";
-  }
-
-  private nameProblem(message: string): ChargenRequest.Problem
-  {
-    let problem =
-    {
-      type: ChargenRequest.ProblemType.CHARACTER_NAME_PROBLEM,
-      message: message
-    };
-
-    return problem;
   }
 }
 

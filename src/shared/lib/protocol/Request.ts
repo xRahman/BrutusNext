@@ -9,6 +9,9 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Serializable} from '../../../shared/lib/class/Serializable';
+import {Entity} from '../../../shared/lib/entity/Entity';
+import {SerializedEntity} from '../../../shared/lib/protocol/SerializedEntity';
 import {Packet} from '../../../shared/lib/protocol/Packet';
 
 export abstract class Request extends Packet
@@ -18,6 +21,16 @@ export abstract class Request extends Packet
   // --------------- Public accessors -------------------
 
   // -------------- Protected methods -------------------
+
+  // ! Throws an exception on error.
+  protected serializeEntity(entity: Entity)
+  {
+    return new SerializedEntity
+    (
+      entity,
+      Serializable.Mode.SEND_TO_CLIENT
+    );
+  }
 }
 
 // ------------------ Type declarations ----------------------

@@ -208,9 +208,23 @@ export class Account extends ServerEntity
   }
   */
 
-  public async createCharacter(name: string): Promise<Character | null>
+  // ! Throws an exception on error.
+  public async createCharacter
+  (
+    name: string
+  )
+  : Promise<Character | "NAME IS ALREADY TAKEN">
   {
-    let character = await ServerEntities.createInstanceEntity
+    if (!this.connection)
+    {
+      throw new Error
+      (
+        "Invalid connection on account " + this.getErrorIdString()
+        + " when creating character '" + name + "'"
+      );
+    }
+
+    let createResult = await ServerEntities.createInstanceEntity
     (
       Character,
       Character.name,
@@ -218,23 +232,16 @@ export class Account extends ServerEntity
       Entity.NameCathegory.CHARACTER
     );
 
-    if (!character || !character.isValid())
-    {
-      ERROR("Failed to create character '" + name + "'");
-      return null;
-    }
+    if (createResult === "NAME IS ALREADY TAKEN")
+      return "NAME IS ALREADY TAKEN";
 
-    if (!this.connection)
-    {
-      ERROR("Unexpected 'null' value");
-      return null;
-    }
+    let character: Character = createResult;
 
     character.atachConnection(this.connection);
     character.addToLists();
     character.init();
 
-    // Save the character to the disk.
+    // Save the character to disk.
     await ServerEntities.save(character);
 
     await this.addCharacter(character);

@@ -22,6 +22,7 @@ import {Classes} from '../../../shared/lib/class/Classes';
 
 export class SerializedEntity extends Serializable
 {
+  // ! Throws an exception on error.
   constructor(entity: Entity, mode: Serializable.Mode)
   {
     super();

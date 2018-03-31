@@ -48,7 +48,7 @@ export class EnterGameRequest extends SharedEnterGameRequest
     catch (error)
     {
       REPORT(error);
-      response = this.createErrorResponse();
+      response = this.errorResponse();
     }
 
     connection.send(response);
@@ -72,9 +72,9 @@ export class EnterGameRequest extends SharedEnterGameRequest
     let characterMove = character.enterWorld();
     let loadLocation = character.getLoadLocation();
 
-    // We need to create response before logging
-    // success because it may throw an exception.
-    let response = this.createAcceptResponse(loadLocation, characterMove);
+    // We need to create response before logging success
+    // because creating it may throw an exception.
+    let response = this.successResponse(loadLocation, characterMove);
 
     this.logSuccess(account, character);
 
@@ -96,29 +96,29 @@ export class EnterGameRequest extends SharedEnterGameRequest
   }
 
   // ! Throws an exception on error.
-  private createAcceptResponse
+  private successResponse
   (
     loadLocation: GameEntity,
     characterMove: Move
   )
   : EnterGameResponse
   {
-    let serializedLoadLocation = this.serializeLoadLocation(loadLocation);
+    let serializedLoadLocation = this.serializeEntity(loadLocation);
 
     let result: EnterGameResponse.Result =
     {
       status: "ACCEPTED",
       data:
       {
-        characterMove: characterMove,
-        serializedLoadLocation: serializedLoadLocation
+        characterMove,
+        serializedLoadLocation
       }
     };
 
     return new EnterGameResponse(result);
   }
 
-  private createErrorResponse(): EnterGameResponse
+  private errorResponse(): EnterGameResponse
   {
     let result: EnterGameResponse.Result =
     {
@@ -128,27 +128,6 @@ export class EnterGameRequest extends SharedEnterGameRequest
     };
 
     return new EnterGameResponse(result);
-  }
-
-  // ! Throws an exception on error.
-  private serializeLoadLocation(loadLocation: GameEntity): SerializedEntity
-  {
-    if (!loadLocation.isValid())
-    {
-      throw new Error
-      (
-        "Unable to serialize 'loadLocation'"
-        + " " + loadLocation.getErrorIdString()
-        + " because it is not a valid entity."
-        + " Enter game response will not be sent"
-      );
-    }
-
-    return new SerializedEntity
-    (
-      loadLocation,
-      Serializable.Mode.SEND_TO_CLIENT
-    );
   }
 }
 

@@ -122,8 +122,6 @@ export class ServerEntities extends Entities
 
   // ! Throws an exception on error.
   // Creates a new instance entity with a new id (can't be used as prototype).
-  // -> Returns 'null' on failure.
-  // -> Returns 'undefined' if requested unique name is already taken.
   public static async createInstanceEntity<T extends Entity>
   (
     typeCast: { new (...args: any[]): T },
