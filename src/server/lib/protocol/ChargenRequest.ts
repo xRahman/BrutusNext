@@ -41,7 +41,7 @@ export class ChargenRequest extends SharedChargenRequest
 
     try
     {
-      response = await this.processChargen(connection);
+      response = await this.generateCharacter(connection);
     }
     catch (error)
     {
@@ -52,31 +52,40 @@ export class ChargenRequest extends SharedChargenRequest
     connection.send(response);
   }
 
+  // This method is overriden so we don't need to send list of forbiden
+  // names to the client and only check for them on the server.
+  // ~ Overrides ChargenRequest.checkForProblems().
+  public checkForProblems(): Array<ChargenRequest.Problem> | "NO PROBLEM"
+  {
+    if (this.isNameValid())
+      return super.checkForProblems();
+
+    let problem = this.nameNotAvailableProblem();
+    let problems = super.checkForProblems();
+
+    if (problems === "NO PROBLEM")
+      return [ problem ];
+
+    problems.push(problem);
+
+    return problems;
+  }
+
   // --------------- Private methods --------------------
 
   // ! Throws an exception on error.
-  private async processChargen
+  private async generateCharacter
   (
     connection: Connection
   )
   : Promise<ChargenResponse>
   {
-    /// TODO: Tohle bude asi ještě potřeba zkrátit a zpřehlednit.
-    let account: Account = connection.getAccount();
+    let checkResult: Array<ChargenRequest.Problem> | "NO PROBLEM";
 
-    this.normalizeCharacterName(connection);
-
-    let checkResult = this.checkForProblems();
-
-    if (checkResult !== "NO PROBLEM")
+    if ((checkResult = this.checkForProblems()) !== "NO PROBLEM")
       return this.problemsResponse(checkResult);
 
-    if (!await this.isNameValid())
-    {
-      this.logInvalidName(connection);
-      return this.nameNotAvailableResponse();
-    }
-
+    let account: Account = connection.getAccount();
     let createResult = await this.createCharacter(account, connection);
 
     if (createResult === "NAME IS ALREADY TAKEN")
@@ -87,18 +96,9 @@ export class ChargenRequest extends SharedChargenRequest
 
     let character: Character = createResult;
 
-    // We need to create response before logging success
-    // because creating it may throw an exception.
-    let response = this.successResponse(character, account);
-
     this.logSuccess(character, account);
 
-    return response;
-  }
-
-  private normalizeCharacterName(connection: Connection)
-  {
-    this.characterName = Utils.uppercaseFirstLowercaseRest(this.characterName);
+    return this.successResponse(character, account);
   }
 
   // ! Throws an exception on error.
@@ -112,7 +112,9 @@ export class ChargenRequest extends SharedChargenRequest
     if (!this.characterName)
       throw new Error("Invalid 'characterName' in chargen request");
 
-    let createResult = await account.createCharacter(this.characterName);
+    let characterName = Utils.uppercaseFirstLowercaseRest(this.characterName);
+
+    let createResult = await account.createCharacter(characterName);
 
     if (createResult === "NAME IS ALREADY TAKEN")
       return "NAME IS ALREADY TAKEN";
@@ -143,21 +145,11 @@ export class ChargenRequest extends SharedChargenRequest
     return true;
   }
 
-  private logInvalidName(connection: Connection)
-  {
-    Syslog.logConnectionInfo
-    (
-      "Player " + connection.getUserInfo() + " has attempted"
-        + " to create new character using invalid name"
-        + " (" + this.characterName + ")"
-    );
-  }
-
   private logNameAlreadyTaken(connection: Connection)
   {
     Syslog.logConnectionInfo
     (
-      "Player " + connection.getUserInfo() + " has attempted"
+      "Player " + connection.getUserInfo() + " attempts"
         + " to create new character using name"
         + " (" + this.characterName + ") that is"
         + " already taken"
@@ -173,11 +165,14 @@ export class ChargenRequest extends SharedChargenRequest
     );
   }
 
+  private nameNotAvailableProblem(): ChargenRequest.Problem
+  {
+    return this.nameProblem("Sorry, this name is not available.");
+  }
+
   private nameNotAvailableResponse()
   {
-    let problem = this.nameProblem("Sorry, this name is not available.");
-
-    return this.problemsResponse([ problem ]);
+    return this.problemsResponse([ this.nameNotAvailableProblem() ]);
   }
 
   private errorResponse(): ChargenResponse

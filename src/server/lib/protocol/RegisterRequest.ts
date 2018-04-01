@@ -86,13 +86,9 @@ export class RegisterRequest extends SharedRegisterRequest
 
     account.attachConnection(connection);
 
-    // We need to create response before logging
-    // success because it may throw an exception.
-    let response = this.successResponse(account);
-
     this.logSuccess(account);
 
-    return response;
+    return this.successResponse(account);
   }
 
   // ! Throws an exception on error.

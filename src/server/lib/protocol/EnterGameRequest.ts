@@ -72,13 +72,9 @@ export class EnterGameRequest extends SharedEnterGameRequest
     let characterMove = character.enterWorld();
     let loadLocation = character.getLoadLocation();
 
-    // We need to create response before logging success
-    // because creating it may throw an exception.
-    let response = this.successResponse(loadLocation, characterMove);
-
     this.logSuccess(account, character);
 
-    return response;
+    return this.successResponse(loadLocation, characterMove);
   }
 
   private logSuccess(account: Account, character: Character)
