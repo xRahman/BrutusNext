@@ -10,7 +10,7 @@ import {Prototypes} from '../../../shared/lib/entity/Prototypes';
 
 export class ClientPrototypes extends Prototypes
 {
-  public async init(entityClasses: Array<string>)
+  public async init(entityClasses: Array<string>): Promise<void>
   {
     // There is nothing to be done on the client, all prototype
     // entities are sent along with other entities.

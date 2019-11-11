@@ -9,14 +9,19 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
+import {Serializable} from '../../../shared/lib/class/Serializable';
 import {JsonObject} from '../../../shared/lib/json/JsonObject';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {FileSystem} from '../../../server/lib/fs/FileSystem';
 import {ServerApp} from '../../../server/lib/app/ServerApp';
 
-export class NameLock
+export class NameLock extends Serializable
 {
-  public static get PASSWORD_HASH_PROPERTY() { return 'passwordHash'; }
+  ///public static get PASSWORD_HASH_PROPERTY() { return 'passwordHash'; }
+
+  // ----------------- Public data ----------------------
+
+  id: string | null = null;
 
   // ------------- Public static methods ----------------
 
@@ -30,18 +35,20 @@ export class NameLock
     // './data/names/accounts/Rahman.json'.
     // It's existence means that account name
     // 'Rahman' is already used.
-    let path = this.getPath(name, cathegoryName);
+    let path = this.composePath(name, cathegoryName);
 
     return await FileSystem.exists(path);
   }
 
+  /// To be deleted.
+  /*
   // -> Returns 'true' on success.
   public static async save
   (
     id: string,
     name: string,
     cathegoryName: string,
-    passwordHash: string = null
+    passwordHash: (string | null) = null
   )
   {
     let fileContents = { id: id };
@@ -63,6 +70,7 @@ export class NameLock
     
     return await FileSystem.writeFile(directory, fileName, jsonString);
   }
+  */
 
   // -> Returns 'undefined' if name lock file doesn't exist.
   // -> Returns 'null' on error.
@@ -72,8 +80,10 @@ export class NameLock
     cathegoryName: string,
     reportNotFoundError: boolean = true
   )
+  : Promise<NameLock.LoadResult>
   {
-    let path = this.getPath(name, cathegoryName);
+    /*
+    let path = this.composePath(name, cathegoryName);
     let jsonString = await FileSystem.readFile
     (
       path,
@@ -92,6 +102,20 @@ export class NameLock
       return null;
 
     return jsonObject;
+    */
+    TODO
+
+    let nameLock = new NameLock();
+
+    if (!(1))
+      return "ERROR";
+
+    if (!(2))
+      return "FILE_DOES_NOT_EXIST";
+
+    /// Mělo by to vrátit instanci classy NameLock naloadovanou
+    /// ze souboru.
+    return nameLock;
   }
 
   // -> Returns 'undefined' if name lock file doesn't exist.
@@ -113,23 +137,44 @@ export class NameLock
     if (!jsonObject)
       return jsonObject;
 
-    if (!jsonObject[Entity.ID_PROPERTY])
+    let id = (jsonObject as any)[Entity.ID_PROPERTY];
+
+    if (!id)
       return null;
 
-    return jsonObject[Entity.ID_PROPERTY];
+    return id;
   }
 
   public static async delete(name: string, cathegoryName: string)
   {
     await FileSystem.deleteFile
     (
-      this.getPath(name, cathegoryName)
+      this.composePath(name, cathegoryName)
     );
+  }
+
+  // ---------------- Public methods --------------------
+
+  public async save(cathegoryName: string)
+  {
+    let jsonString = this.serialize(Serializable.Mode.SAVE_TO_FILE);
+
+    // Name lock directory is something like './data/names/accounts/'.
+    let directory = NameLock.getDirectory(cathegoryName);
+
+    // Directory might not yet exist, so we better make sure it does.
+    if (await FileSystem.ensureDirectoryExists(directory) === false)
+      return false;
+
+    // Name lock file name is something like 'Rahman.json'.
+    let fileName = NameLock.getFileName(name);
+    
+    return await FileSystem.writeFile(directory, fileName, jsonString);    
   }
 
   // ------------- Private static methods ---------------
 
-  private static getPath
+  private static composePath
   (
     name: string,
     directory: string,
@@ -167,4 +212,39 @@ export class NameLock
 
     return ServerApp.DATA_DIRECTORY + 'names' + directory.toLowerCase();
   }
+}
+
+// ------------------ Type declarations ----------------------
+
+export module NameLock
+{
+  /// To be deleted
+  /*
+  export enum OpenFileOutcome
+  {
+    SUCCESS,
+    RUNTIME_ERROR,
+    FILE_DOES_NOT_EXIST
+  }
+
+  export interface LoadOk
+  {
+    outcome: OpenFileOutcome.SUCCESS;
+    nameLock: NameLock;
+  }
+
+  export interface FileDoesNotExist
+  {
+    outcome: OpenFileOutcome.FILE_DOES_NOT_EXIST
+  }
+
+  export interface RuntimeError
+  {
+    outcome: OpenFileOutcome.RUNTIME_ERROR
+  }
+
+  export type LoadResult = LoadOk | FileDoesNotExist | RuntimeError
+  */
+
+ export type LoadResult = NameLock | "ERROR" | "FILE_DOES_NOT_EXIST";
 }

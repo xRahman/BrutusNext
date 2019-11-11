@@ -42,11 +42,11 @@ export class ScrollWindow extends TitledWindow
 
   // ----------------- Public data ----------------------
 
-  public output: ScrollWindowOutput = null;
+  public output: (ScrollWindowOutput | null) = null;
 
   // ----------------- Private data ---------------------
 
-  private input: ScrollWindowInput = null;
+  private input: (ScrollWindowInput | null) = null;
 
   // ---------------- Public methods --------------------
 
@@ -55,6 +55,12 @@ export class ScrollWindow extends TitledWindow
   {
     // Local echo (append the command to the output element).
     this.echoCommand(command);
+
+    if (this.output === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
 
     this.output.scrollToBottom();
 
@@ -66,7 +72,13 @@ export class ScrollWindow extends TitledWindow
   public clientMessage(message: string)
   {
     if (!message)
-      return;    
+      return;
+
+    if (this.output === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
 
     this.output.append
     (
@@ -80,6 +92,12 @@ export class ScrollWindow extends TitledWindow
   
   public receiveMessage(message: string)
   {
+    if (this.output === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     this.output.append(message);
   }
 
@@ -88,6 +106,12 @@ export class ScrollWindow extends TitledWindow
   // Sets focus to the 'input' element.
   private focusInput()
   {
+    if (this.input === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     this.input.focus();
   }
 
@@ -95,6 +119,12 @@ export class ScrollWindow extends TitledWindow
   {
     if (this.output !== null)
       ERROR("Scroll window output already exists");
+
+    if (this.$content === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
 
     this.output = new ScrollWindowOutput
     (
@@ -107,6 +137,12 @@ export class ScrollWindow extends TitledWindow
   {
     if (this.input !== null)
       ERROR("Scroll window input already exists");
+
+    if (this.$content === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
 
     this.input = new ScrollWindowInput
     (
@@ -123,6 +159,12 @@ export class ScrollWindow extends TitledWindow
     // informative and it wouldn't look good.
     if (command === "")
       return;
+
+    if (this.output === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
 
     this.output.append
     (
@@ -142,6 +184,12 @@ export class ScrollWindow extends TitledWindow
     shift: boolean
   )
   {
+    if (this.output === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     /*
       Notes on shortcuts:
     
@@ -322,7 +370,7 @@ export class ScrollWindow extends TitledWindow
   // Handles 'keydown' event fired on html document
   // (it means that this handler runs even if this
   //  window desn't have focus).
-  public onKeyDown(event: JQueryKeyEventObject)
+  public onKeyDown(event: JQueryEventObject)
   {
     let key = event.which;
     let alt = event.altKey;

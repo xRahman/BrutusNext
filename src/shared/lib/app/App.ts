@@ -4,8 +4,28 @@
   Abstract ancestor for ClientApp and ServerApp.
 */
 
+/*
+  App is a singleton. We could implement it by using
+  only static methods and data so we wouln't need to
+  ensure that there is only one instance. We can't do
+  that, though, because we need polymorphism in order
+  to call server or client version of some methods from
+  shared code (by calling App.method()). So we need a
+  singleton instance after all.
+
+  The good new is that we don't need stuff like
+  'createInstance()' - all we need is an initialized
+  static property 'instance'. It can only exist once
+  because it is static and it is only assigned once
+  because static properties are only inicialized once.
+  This way we also don't need to ensure that an instance
+  exists every time we want to use it, because when you
+  import and App module, initializer is certainly executed.
+*/
+
 'use strict';
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Entities} from '../../../shared/lib/entity/Entities';
@@ -15,112 +35,89 @@ export abstract class App
 {
   // -------------- Static class data -------------------
 
-  protected static instance: App = null;
+  // This needs to be inicialized in descendants.
+  protected static instance: App;
 
   // ---------------- Protected data --------------------
 
-  protected entities: Entities = null;
-  protected prototypes: Prototypes = null;
+  protected isRunning = false;
+
+  protected abstract entities: Entities;
+  protected abstract prototypes: Prototypes;
 
   // --------------- Static accessors -------------------
 
-  public static get entities()
+  public static get entities() { return this.instance.entities; }
+  public static get prototypes() { return this.instance.prototypes; }
+
+  // ------------- Public static methods ----------------
+
+  // Don't call this directly, use ERROR() instead.
+  public static reportException(error: Error)
   {
-    return App.getInstance().entities;
+    this.instance.reportException(error);
   }
 
-  public static get prototypes()
+  // Don't call this directly, use ERROR() instead.
+  public static reportError(message: string): void
   {
-    return App.getInstance().prototypes;
+    this.instance.reportError(message);
   }
 
-  // ------------- Public static methods ---------------- 
-
-  public static instanceExists()
+  // Don't call this directly, use ERROR() instead.
+  public static reportFatalError(message: string): void
   {
-    return App.instance !== null && App.instance !== undefined;
-  }
-
-  // Reports runtime error.
-  // (Don't call this directly, use ERROR() instead.)
-  public static reportError(message: string)
-  {
-    // If ERROR() is called from within an initialization
-    // of App instance, the instance of App doesn't exist
-    // yet so we can only report it directly.
-    if (!App.instanceExists())
-    {
-      throw new Error
-      (
-        '[ERROR triggered prior to App.createInstance()]: ' + message
-      );
-    }
-    else
-    {
-      App.getInstance().reportError(message);
-    }
-  }
-
-  // Reports fatal runtime error.
-  // (Don't call this directly, use FATAL_ERROR() instead.)
-  public static reportFatalError(message: string)
-  {
-    // If FATAL_ERROR() is called from within an initialization
-    // of App instance, the instance of App doesn't exist yet so
-    // we can only report it directly.  
-    if (!App.instanceExists())
-    {
-      throw new Error
-      (
-        '[ERROR triggered prior to App.createInstance()]: ' + message
-      );
-    }
-    else
-    {
-      App.getInstance().reportFatalError(message);
-    }
+    this.instance.reportFatalError(message);
   }
 
   // Sends message to syslog.
   // (Don't call this directly, use Syslog.log() instead.)
-  public static syslog
+  public static log
   (
     text: string,
     msgType: MessageType,
     adminLevel: AdminLevel
   )
+  : void
   {
-    return App.getInstance().syslog(text, msgType, adminLevel);
-  }
-
-  // ------------ Protected static methods --------------
-
-  // -> Returns ServerApp or ClientApp. In the server code,
-  //    App.getInstance() is actually an instance of ServerApp
-  //    and in client code, it's an instance of ClientApp.
-  protected static getInstance(): App
-  {
-    if (!App.instanceExists())
-    {
-      // We can't use ERROR() here because ERROR() is handled by App
-      // which doesn't exist here.
-      throw new Error("Instance of App doesn't exist yet");
-    }
-
-    return this.instance;
+    this.instance.log(text, msgType, adminLevel);
   }
 
   // --------------- Protected methods ------------------
 
-  // Reports runtime error.
-  protected abstract reportError(message: string);
-  // Reports fatal runtime error.
-  protected abstract reportFatalError(message: string);
+  protected abstract reportException(error: Error): void;
+  protected abstract reportError(message: string): void;
+  protected abstract reportFatalError(message: string): void;
 
-  protected abstract syslog
+  protected abstract log
   (
     message: string,
     msgType: MessageType,
     adminLevel: AdminLevel
-  );
+  )
+  : void;
+
+  protected isAlreadyRunning(): boolean
+  {
+    if (this.isRunning)
+    {
+      // 'this.constructor.name' is the name of the class
+      // (ClientApp or ServerApp).
+      ERROR("Attempt to run " + this.constructor.name
+        + " which is already running");
+      return true;
+    }
+
+    this.isRunning = true;
+
+    return false;
+  }
+
+  protected initClasses()
+  {
+    // Create an instance of each entity class registered in
+    // Classes so they can be used as prototype objects
+    // for root prototype entities.
+    this.entities.createRootObjects();
+  }
 }

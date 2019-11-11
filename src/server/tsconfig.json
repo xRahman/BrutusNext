@@ -3,6 +3,7 @@
   {
     "target": "es6",
     "module": "commonjs",
+    "strict": true,   // Enforce strict checking of 'null' and 'undefined'.
     "charset": "UTF-8",
     "moduleResolution": "node",
     "newLine": "LF",
@@ -13,7 +14,6 @@
     "rootDir": "../",
     "sourceMap": true,
     "sourceRoot": "../"
-    ///"sourceRoot": "src"
     // 'compileOnSave' actually works in vs code if --watch parameter
     //  is passed to 'tsc', but the same functionality is turned on by
     // '"isWatching": true' in tasks.json. We do it there.

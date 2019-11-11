@@ -15,7 +15,7 @@ import {Charplate} from '../../../client/gui/charselect/Charplate';
 import {CharselectWindow} from
   '../../../client/gui/charselect/CharselectWindow';
 import {EnterGameRequest} from
-  '../../../shared/lib/protocol/EnterGameRequest';
+  '../../../client/lib/protocol/EnterGameRequest';
 import {EnterGameResponse} from
   '../../../client/lib/protocol/EnterGameResponse';
 import {Character} from '../../../client/game/character/Character';
@@ -45,7 +45,7 @@ export class CharselectForm extends Form
 
   // ----------------- Private data ---------------------
 
-  private $charlist: JQuery = null;
+  private $charlist: (JQuery | null) = null;
 
   // Key: character id
   // Value: charplate
@@ -55,11 +55,23 @@ export class CharselectForm extends Form
 
   public onSelectionChange()
   {
+    if (!this.$submitButton)
+    {
+      ERROR("Missing $submitButton");
+      return;
+    }
+
     this.enable(this.$submitButton);
   }
 
   public focusCharlist()
   {
+    if (!this.$charlist)
+    {
+      ERROR("Missing $charlist");
+      return;
+    }
+
     this.$charlist.focus();
   }
 
@@ -98,6 +110,12 @@ export class CharselectForm extends Form
     direction: CharselectForm.SelectDirection
   )
   {
+    if (!this.$charlist)
+    {
+      ERROR("Missing $charlist");
+      return;
+    }
+
     if (this.charplates.size === 0)
     {
       // If there are no charplates, just scroll to the top.
@@ -174,61 +192,52 @@ export class CharselectForm extends Form
       this.selectCharacter(id);
   }
     
-  public displayProblem(response: EnterGameResponse)
+  public displayProblem(message: string)
   {
-    switch (response.result)
-    {
-      case EnterGameResponse.Result.UNDEFINED:
-        ERROR("Received charselect response with unspecified result."
-          + " Someone problably forgot to set 'packet.result'"
-          + " when sending charselect response from the server");
-        break;
-
-      case EnterGameResponse.Result.ERROR:
-        this.displayError(response.getProblem());
-        break;
-
-      case EnterGameResponse.Result.OK:
-        ERROR("displayProblem() called with 'Result: OK'");
-        break;
-
-      default:
-        ERROR("Unknown register response result");
-        break;
-    }
+    /// TODO: Proč se jen provolá další funkce? Má to nějakej hlubší smysl?
+    this.displayError(message);
   }
 
   // --------------- Protected methods ------------------
 
   // ~ Overrides Form.createRequest().
-  protected createRequest()
+  // -> Returns 'null' if request couldn't be created
+  //    or there is nothing to request yet.
+  protected createRequest(): EnterGameRequest | null
   {
     console.log('CharselectForm.createRequest()');
 
-    let id = this.getSelectedCharacterId();
+    let characterId = this.getSelectedCharacterId();
 
-    // 'null' id means no character is selected.
-    // No request will be sent in that case.
-    if (!id)
+    // 'null' id means no character is selected. No request will be sent.
+    if (!characterId)
       return null;
 
-    let request = new EnterGameRequest();
+    let request = new EnterGameRequest(characterId);
 
-    request.characterId = id;
+    if (this.displayRequestProblems(request))
+      return null;
 
     return request;
   }
 
-  // ~ Overrides Form.isRequestValid().
-  protected isRequestValid(request: EnterGameRequest)
-  {
-    if (!request)
-      return false;
+  /// To be deleted.
+  // // ~ Overrides Form.isRequestValid().
+  // protected isRequestValid(request: EnterGameRequest)
+  // {
+  //   if (!request)
+  //     return false;
 
-    return true;
-  }
+  //   return true;
+  // }
 
   // ---------------- Private methods -------------------
+
+  // -> Returns 'false' if there were no problems with request.
+  private displayRequestProblems(request: EnterGameRequest): boolean
+  {
+    let problems = request.checkForProblems();
+  }
 
   private isScrolledTo
   (
@@ -237,6 +246,12 @@ export class CharselectForm extends Form
     bottomScrollPos: number
   )
   {
+    if (!this.$charlist)
+    {
+      ERROR("Missing $charlist. Returning 'false'");
+      return false;
+    }
+
     let scrollPos = this.$charlist.scrollTop();
 
     // Note that 'bottomScrollPos' is always bigger than 'topScrollPoss'
@@ -256,8 +271,22 @@ export class CharselectForm extends Form
     if (charplates.length === 0)
       return 0;
 
+    let $firstChaplate = charplates[0].$element;
+
+    if (!$firstChaplate)
+    {
+      ERROR("Missing $element on first charplate");
+      return 0;
+    }
+
+    if (!charplate.$element)
+    {
+      ERROR("Missing $element on target charplate");
+      return 0;
+    }
+
     // Current position of the first charplate relative to the container.
-    let firstElementPos = charplates[0].$element.position().top;
+    let firstElementPos = $firstChaplate.position().top;
 
     // Current position of target charplate relative to the container.
     let charplateScrollPos = charplate.$element.position().top;
@@ -272,8 +301,20 @@ export class CharselectForm extends Form
     // $charlist 'scrollTop()' position placing 'charplate' at the top.
     let topScrollPos = this.getTopScrollPos(charplate);
 
+    if (!this.$charlist)
+    {
+      ERROR("Missing $charlist");
+      return 0;
+    }
+
     // Height of scrollable area of $charlist element.
     let charlistHeight = this.$charlist.height();
+
+    if (!charplate.$element)
+    {
+      ERROR("Missing $element on charplate");
+      return 0;
+    }
 
     // Parameter means "include margin".
     let charplateOuterHeight = charplate.$element.outerHeight(true);
@@ -283,6 +324,12 @@ export class CharselectForm extends Form
 
   private createCharlist()
   {
+    if (!this.$element)
+    {
+      ERROR("Missing $element");
+      return;
+    }
+
     this.$charlist = this.$createDiv
     (
       {
@@ -300,6 +347,12 @@ export class CharselectForm extends Form
 
   private createSubmitButton()
   {
+    if (!this.$element)
+    {
+      ERROR("Missing $element");
+      return;
+    }
+
     this.$createSubmitButton
     (
       {
@@ -333,6 +386,8 @@ export class CharselectForm extends Form
         ERROR("Invalid direction value");
         break;
     }
+
+    return null;
   }
 
   // -> Returns 'null' on error.
@@ -391,6 +446,12 @@ export class CharselectForm extends Form
   // -> Returns 'null' if no character is selected.
   private getSelectedCharacterId()
   {
+    if (!this.$element)
+    {
+      ERROR("Missing $element");
+      return;
+    }
+
     let id = this.$element.find(':checked').val();
 
     if (!id)
@@ -401,6 +462,23 @@ export class CharselectForm extends Form
 
   private createCharplate(character: Character)
   {
+    if (!this.$charlist)
+    {
+      ERROR("Failed to create charplate component because"
+        + " $charlist element is missing");
+      return;
+    }
+
+    let characterId = character.getId();
+
+    if (!characterId)
+    {
+      ERROR("Failed to create charplate component because"
+        + " character " + character.getErrorIdString()
+        + " doesn't have a valid id");
+      return;
+    }
+
     let charplate = new Charplate
     (
       this,
@@ -409,7 +487,7 @@ export class CharselectForm extends Form
       { $parent: this.$charlist }
     );
 
-    this.charplates.set(character.getId(), charplate);
+    this.charplates.set(characterId, charplate);
   }
 
   private clear()
@@ -425,6 +503,12 @@ export class CharselectForm extends Form
     this.clear();
 
     let account = Connection.account;
+
+    if (!account)
+    {
+      ERROR("Invalid account. Charselect form will not be populated");
+      return;
+    }
 
     for (let character of account.data.characters.values())
       this.createCharplate(character);

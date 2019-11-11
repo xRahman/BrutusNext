@@ -32,7 +32,7 @@ export class ContainerEntity extends ServerEntity
   // ContainerEntity this entity is contained in.
   // (Rooms are contained in Areas, characters may be in rooms or object,
   //  objects may be in room or object, etc.)
-  protected location: ContainerEntity = null;
+  protected location: (ContainerEntity | null) = null;
 
   // ----------------- Private data ---------------------
 
@@ -70,15 +70,7 @@ export class ContainerEntity extends ServerEntity
   // Also removes it from it's previous location.
   public insert(entity: ContainerEntity)
   {
-    if (entity === null || entity === undefined)
-    {
-      ERROR("Attempt to insert invalid entity to"
-        + " contents of " + this.getErrorIdString()
-        + " Entity is not inserted.");
-      return;
-    }
-
-    if (!entity.isValid())
+    if (!entity || !entity.isValid())
     {
       ERROR("Attempt to insert invalid entity"
         + " " + entity.getErrorIdString() + " to"

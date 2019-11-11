@@ -18,7 +18,9 @@ import {Form} from '../../../client/gui/form/Form';
 import {EmailInput} from '../../../client/gui/form/EmailInput';
 import {PasswordInput} from '../../../client/gui/form/PasswordInput';
 import {CredentialsForm} from '../../../client/gui/form/CredentialsForm';
-import {RegisterRequest} from '../../../shared/lib/protocol/RegisterRequest';
+import {RegisterRequest} from
+  '../../../shared/lib/protocol/SharedRegisterRequest';
+import {RegisterRequest} from '../../../client/lib/protocol/RegisterRequest';
 import {RegisterResponse} from '../../../client/lib/protocol/RegisterResponse';
 
 export class RegisterForm extends CredentialsForm
@@ -36,11 +38,11 @@ export class RegisterForm extends CredentialsForm
     );
 
     this.createEmailInput();
-    this.createEmptyLine();
+    this.$createEmptyLine();
     this.createPasswordInput();
-    this.createEmptyLine();
+    this.$createEmptyLine();
     this.createInfoLabel();
-    this.createEmptyLine();
+    this.$createEmptyLine();
     this.createRememberMeCheckbox();
     this.createButtons();
   }
@@ -56,40 +58,15 @@ export class RegisterForm extends CredentialsForm
 
   // ----------------- Private data ---------------------
 
-  private $infoLabel: JQuery = null;
+  private $infoLabel: (JQuery | null) = null;
 
   // ---------------- Public methods --------------------
 
-  public displayProblem(response: RegisterResponse)
+  // ! Throws an exception on error.
+  public displayProblems(problems: Array<RegisterRequest.Problem>)
   {
-    switch (response.result)
-    {
-      case RegisterResponse.Result.UNDEFINED:
-        ERROR("Received register response with unspecified result."
-          + " Someone problably forgot to set 'packet.result'"
-          + " when sending register response from the server");
-        break;
-
-      case RegisterResponse.Result.EMAIL_PROBLEM:
-        this.displayEmailProblem(response.getProblem());
-        break;
-
-      case RegisterResponse.Result.PASSWORD_PROBLEM:
-        this.displayPasswordProblem(response.getProblem());
-        break;
-
-      case RegisterResponse.Result.FAILED_TO_CREATE_ACCOUNT:
-        this.displayError(response.getProblem());
-        break;
-
-      case RegisterResponse.Result.OK:
-        ERROR("displayProblem() called with 'Result: OK'");
-        break;
-
-      default:
-        ERROR("Unknown register response result");
-        break;
-    }
+    for (let problem of problems)
+      this.displayProblem(problem);
   }
 
   // ~ Overrides CredentialsForm.onShow().
@@ -97,7 +74,19 @@ export class RegisterForm extends CredentialsForm
   {
     super.onShow();
 
-    let email = Windows.loginWindow.form.getEmailInputValue();
+    if (Windows.loginWindow === null || Windows.loginWindow.form === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
+    let email = Windows.loginWindow.getForm().getEmailInputValue();
+
+    if (email === null || this.emailInput === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
 
     // Set value from login window e-mail input to our
     // email input so the user doesn't have to retype it
@@ -158,30 +147,48 @@ export class RegisterForm extends CredentialsForm
   }
 
   // ~ Overrides Form.createRequest().
-  protected createRequest()
+  // -> Returns 'null' if valid request couldn't be created.
+  protected createRequest(): RegisterRequest | null
   {
-    let request = new RegisterRequest();
+    if (!this.emailInput)
+    {
+      ERROR("Failed to create request because 'emailInput'"
+        + " component is missing");
+      return null;
+    }
 
-    request.email = this.emailInput.getValue();
-    request.password = this.passwordInput.getValue();
+    if (!this.passwordInput)
+    {
+      ERROR("Failed to create request because 'passwordInput'"
+        + " component is missing");
+      return null;
+    }
+    
+    let request = new RegisterRequest
+    (
+      this.emailInput.getValue(),
+      this.passwordInput.getValue()
+    );
 
     return request;
   }
 
+  /// TODO: Tohle by nemělo mít side effect, safra
+  /// (nebo by se to mělo jmenovat jinak).
   // ~ Overrides Form.isRequestValid().
   protected isRequestValid(request: RegisterRequest)
   {
-    let problem = null;
+    let problem: RegisterRequest.Problem | "NO PROBLEM";
 
-    if (problem = request.getEmailProblem())
+    if ((problem = request.checkEmail()) !== "NO PROBLEM")
     {
-      this.displayEmailProblem(problem);
+      this.displayEmailProblem(problem.message);
       return false;
     }
 
-    if (problem = request.getPasswordProblem())
+    if ((problem = request.checkPassword()) !== "NO PROBLEM")
     {
-      this.displayPasswordProblem(problem);
+      this.displayPasswordProblem(problem.message);
       return false;
     }
 
@@ -200,7 +207,13 @@ export class RegisterForm extends CredentialsForm
 
   private createButtons()
   {
-    let $parent = super.createButtonContainer();
+    let $parent = super.$createButtonContainer();
+
+    if ($parent === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
 
     this.$createSubmitButton({ $parent });
     this.createCancelButton({ $parent });
@@ -214,11 +227,33 @@ export class RegisterForm extends CredentialsForm
       {
         sCssClass: Form.RIGHT_BUTTON_S_CSS_CLASS,
         text: 'Cancel',
-        click: (event) => { this.onCancel(event); }
+        click: (event: JQueryEventObject) => { this.onCancel(event); }
       }
     );
 
     return this.$createButton(param);
+  }
+
+    // ! Throws an exception on error.
+  private displayProblem(problem: RegisterRequest.Problem)
+  {
+    switch (problem.type)
+    {
+      case RegisterRequest.ProblemType.EMAIL_PROBLEM:
+        this.displayEmailProblem(problem.message);
+        break;
+
+      case RegisterRequest.ProblemType.PASSWORD_PROBLEM:
+        this.displayPasswordProblem(problem.message);
+        break;
+
+      case RegisterRequest.ProblemType.ERROR:
+        this.displayError(problem.message);
+        break;
+
+      default:
+        throw new Error("Unhandled enum value");
+    }
   }
 
   // ---------------- Event handlers --------------------

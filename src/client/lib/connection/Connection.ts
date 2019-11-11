@@ -18,8 +18,8 @@ import {Windows} from '../../../client/gui/window/Windows';
 import {ScrollWindow} from '../../../client/gui/scroll/ScrollWindow';
 import {Avatar} from '../../../client/lib/connection/Avatar';
 import {Packet} from '../../../shared/lib/protocol/Packet';
-import {Command} from '../../../shared/lib/protocol/Command';
-import {SystemMessage} from '../../../shared/lib/protocol/SystemMessage';
+import {Command} from '../../../client/lib/protocol/Command';
+import {SystemMessage} from '../../../client/lib/protocol/SystemMessage';
 import {Account} from '../../../client/lib/account/Account';
 import {Character} from '../../../client/game/character/Character';
 
@@ -35,17 +35,17 @@ import '../../../client/lib/protocol/EnterGameResponse';
 
 export class Connection implements SharedConnection
 {
-  private socket: ClientSocket = null;
+  private socket: (ClientSocket | null) = null;
 
   // -------------- Static class data -------------------
 
   // ----------------- Public data ----------------------
 
-  public activeAvatar: Avatar = null;
+  public activeAvatar: (Avatar | null) = null;
 
   // ----------------- Private data ---------------------
 
-  private account: Account = null;
+  private account: (Account | null) = null;
 
   private avatars = new Set<Avatar>();
 
@@ -79,25 +79,9 @@ export class Connection implements SharedConnection
     connection.send(packet);
   }
 
-  public static async receiveData(data: string)
-  {
-    let connection = ClientApp.connection;
-
-    if (!connection)
-    {
-      ERROR("Missing or invalid connection. Packet is not processed");
-      return;
-    }
-
-    let packet = Serializable.deserialize(data).dynamicCast(Packet);
-
-    if (packet !== null)
-      await packet.process(connection);
-  }
-
   public setAccount(account: Account)
   {
-    if (!Entity.isValid(account))
+    if (!account || !account.isValid())
     {
       ERROR("Attempt to set invalid account to the connection."
         + " Account is not set.");
@@ -118,15 +102,42 @@ export class Connection implements SharedConnection
 
   // ---------------- Public methods --------------------
 
-  public createAvatar(character: Character)
+    /// TODO: Na serveru je prakticky stejná fce, asi by to chtělo sloučit
+  /// do společného předka v /shared
+  public async receiveData(data: string)
+  {
+    /// To be deleted.
+    // let connection = ClientApp.connection;
+
+    // if (!connection)
+    // {
+    //   ERROR("Missing or invalid connection. Packet is not processed");
+    //   return;
+    // }
+
+    /// TODO: deserialize() by mělo házet exception místo return null,
+    /// takže pak půjde zavolat:
+    ///   let packet = Serializable.deserialize(data).dynamicCast(Packet);
+    let deserializedPacket = Serializable.deserialize(data);
+    
+    if (!deserializedPacket)
+      return;
+    
+    let packet = deserializedPacket.dynamicCast(Packet);
+
+    if (packet !== null)
+      await packet.process(this);
+  }
+
+  public createAvatar(character: Character): Avatar
   {
     let avatar = new Avatar(character);
 
     this.avatars.add(avatar);
 
-    // Newly created avatar is automaticaly set as active one
-    // (this should only happen when player logs in with a new
-    //  character).
+    // Newly created avatar is automaticaly set as active
+    // (this should only happen when player logs in with
+    //  a new character).
     this.activeAvatar = avatar;
 
     return avatar;
@@ -150,6 +161,12 @@ export class Connection implements SharedConnection
 
     packet.command = command;
 
+    if (!this.socket)
+    {
+      ERROR("Unexpected 'null' value");
+      return
+    }
+
     // If the connection is closed, any user command
     // (even an empty one) triggers reconnect attempt.
     if (!this.socket.isOpen())
@@ -159,7 +176,7 @@ export class Connection implements SharedConnection
   }
 
   // Sends system message to the connection.
-  public sendSystemMessage(type: SystemMessage.Type, message: string)
+  public sendSystemMessage(type: SystemMessage.Type, message: string | null)
   {
     let packet = new SystemMessage();
 
@@ -189,7 +206,7 @@ export class Connection implements SharedConnection
     this.sendSystemMessage(SystemMessage.Type.CLIENT_CLOSED_BROWSER_TAB, null);
   }
 
-  public close(reason: string = null)
+  public close(reason: (string | null) = null)
   {
     if (this.socket)
       this.socket.close(reason);
@@ -201,6 +218,12 @@ export class Connection implements SharedConnection
 
   private send(packet: Packet)
   {
+    if (!this.socket)
+    {
+      ERROR("Unexpected 'null' value");
+      return
+    }
+    
     if (!this.socket.isOpen())
     {
       ERROR("Attempt to send packet to the closed connection");

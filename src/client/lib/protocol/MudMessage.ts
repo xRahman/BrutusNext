@@ -4,14 +4,6 @@
   Client-side functionality related to mud message packet.
 */
 
-/*
-  Note:
-    This class needs to use the same name as it's ancestor in /shared,
-  because class name of the /shared version of the class is written to
-  serialized data on the server and is used to create /client version
-  of the class when deserializing the packet.
-*/
-
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
@@ -20,8 +12,8 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 // import {Account} from '../../../client/lib/account/Account';
 // import {Windows} from '../../../client/gui/window/Windows';
 import {Connection} from '../../../client/lib/connection/Connection';
-import {MudMessage as SharedMudMessage} from
-  '../../../shared/lib/protocol/MudMessage';
+import {SharedMudMessage} from
+  '../../../shared/lib/protocol/SharedMudMessage';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 export class MudMessage extends SharedMudMessage
@@ -40,8 +32,6 @@ export class MudMessage extends SharedMudMessage
   {
     connection.receiveMudMessage(this.message);
   }
-
 }
 
-// This overwrites ancestor class.
 Classes.registerSerializableClass(MudMessage);

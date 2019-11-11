@@ -20,7 +20,7 @@ export class GameEntityData extends ContainerData
   ///   z Entity se posílat budou (což je ok, client-side entity
   ///   je má určitě taky).
   /*
-  public name: string = null;
+  public name: (string | null) = null;
   */
 
   public description = "Unfinished entity.";
@@ -64,7 +64,7 @@ export class GameEntityData extends ContainerData
   {
     if (this.hasOwnProperty(trigger))
     {
-      let triggerFunction = this[trigger];
+      let triggerFunction = (this as any)[trigger];
 
       if (typeof triggerFunction !== 'function')
       {

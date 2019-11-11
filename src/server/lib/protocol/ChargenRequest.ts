@@ -4,37 +4,29 @@
   Server-side functionality related to character creation request packet.
 */
 
-/*
-  Note:
-    This class needs to use the same name as it's ancestor in /shared,
-  because class name of the /shared version of the class is written to
-  serialized data on the client and is used to create /server version
-  of the class when deserializing the packet.
-*/
-
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {REPORT} from '../../../shared/lib/error/REPORT';
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {Syslog} from '../../../shared/lib/log/Syslog';
 import {ChargenRequest as SharedChargenRequest} from
   '../../../shared/lib/protocol/ChargenRequest';
 import {Entity} from '../../../shared/lib/entity/Entity';
-import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Admins} from '../../../server/lib/admin/Admins';
 import {Account} from '../../../server/lib/account/Account';
 import {Character} from '../../../server/game/character/Character';
 import {Characters} from '../../../server/game/character/Characters';
 import {Message} from '../../../server/lib/message/Message';
-import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Connection} from '../../../server/lib/connection/Connection';
-import {ChargenResponse} from '../../../shared/lib/protocol/ChargenResponse';
+import {ChargenResponse} from '../../../server/lib/protocol/ChargenResponse';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 export class ChargenRequest extends SharedChargenRequest
 {
-  constructor()
+  constructor(characterName: string)
   {
-    super();
+    super(characterName);
 
     this.version = 0;
   }
@@ -42,77 +34,103 @@ export class ChargenRequest extends SharedChargenRequest
   // ---------------- Public methods --------------------
 
   // ~ Overrides Packet.process().
-  public async process(connection: Connection)
+  // -> Returns 'true' on success.
+  public async process(connection: Connection): Promise<void>
   {
-    this.normalizeCharacterName();
-    
-    if (!this.isConnectionValid(connection))
-      return;
+    let response: ChargenResponse;
 
-    if (!this.isRequestValid(connection))
-      return;
+    try
+    {
+      response = await this.generateCharacter(connection);
+    }
+    catch (error)
+    {
+      REPORT(error);
+      response = this.errorResponse();
+    }
 
-    if (!await this.isNameAvailable(connection))
-      return;
+    connection.send(response);
+  }
 
-    await this.processCharacterCreation(connection);
+  // This method is overriden so we don't need to send list of forbiden
+  // names to the client and only check for them on the server.
+  // ~ Overrides ChargenRequest.checkForProblems().
+  public checkForProblems(): Array<ChargenRequest.Problem> | "NO PROBLEM"
+  {
+    if (this.isNameValid())
+      return super.checkForProblems();
+
+    let problem = this.nameNotAvailableProblem();
+    let problems = super.checkForProblems();
+
+    if (problems === "NO PROBLEM")
+      return [ problem ];
+
+    problems.push(problem);
+
+    return problems;
   }
 
   // --------------- Private methods --------------------
 
-  private async processCharacterCreation(connection: Connection)
+  // ! Throws an exception on error.
+  private async generateCharacter
+  (
+    connection: Connection
+  )
+  : Promise<ChargenResponse>
   {
-    let character = await this.createCharacter(connection);
+    let checkResult: Array<ChargenRequest.Problem> | "NO PROBLEM";
 
-    if (!character)
+    if ((checkResult = this.checkForProblems()) !== "NO PROBLEM")
+      return this.problemsResponse(checkResult);
+
+    let account: Account = connection.getAccount();
+    let createResult = await this.createCharacter(account, connection);
+
+    if (createResult === "NAME IS ALREADY TAKEN")
     {
-      this.denyRequest
-      (
-        "[ERROR]: Failed to create character.\n\n"
-          + Message.ADMINS_WILL_FIX_IT,
-        ChargenResponse.Result.FAILED_TO_CREATE_CHARACTER,
-        connection
-      );
-      return;
+      this.logNameAlreadyTaken(connection);
+      return this.nameNotAvailableResponse();
     }
 
-    // Promote character to the highest admin level if there
-    // are no admins yet (the first character created on fresh
-    // server automaticaly becomes admin).
+    let character: Character = createResult;
+
+    this.logSuccess(character, account);
+
+    return this.successResponse(character, account);
+  }
+
+  // ! Throws an exception on error.
+  private async createCharacter
+  (
+    account: Account,
+    connection: Connection
+  )
+  : Promise<Character | "NAME IS ALREADY TAKEN">
+  {
+    if (!this.characterName)
+      throw new Error("Invalid 'characterName' in chargen request");
+
+    let characterName = Utils.uppercaseFirstLowercaseRest(this.characterName);
+
+    let createResult = await account.createCharacter(characterName);
+
+    if (createResult === "NAME IS ALREADY TAKEN")
+      return "NAME IS ALREADY TAKEN";
+
+    let character: Character = createResult;
+
     Admins.onCharacterCreation(character);
 
-    this.acceptRequest(character, connection);
+    return character;
   }
 
-  private async createCharacter(connection: Connection)
+  private async isNameValid(): Promise<boolean>
   {
-    if (!connection)
-    {
-      ERROR("Invalid connection, character is not created");
-      return null;
-    }
-
-    let account = connection.account;
-
-    if (!Entity.isValid(account))
-    {
-      ERROR("Invalid account, character is not created");
-      return null;
-    }
-
-    return await account.createCharacter(this.characterName);
-  }
-
-  private isRequestValid(connection: Connection): boolean
-  {
-    if (!this.isCharacterNameValid(connection))
+    if (!this.characterName)
       return false;
 
-    return true;
-  }
-
-  private async isNameAvailable(connection: Connection): Promise<boolean>
-  {
     /// TODO: Časem asi nějaké přísnější testy - například nepovolit jméno,
     ///   když existuje jeho hodně blízký prefix.
     /// (tzn otestovat abbreviations od
@@ -120,113 +138,103 @@ export class ChargenRequest extends SharedChargenRequest
     ///  do name.length - 1).
     /// Asi taky nepovolit slovníková jména.
 
-    if (await Characters.isTaken(this.characterName))
-    {
-      this.denyRequest
-      (
-        "Sorry, this name is not available.",
-        ChargenResponse.Result.CHARACTER_NAME_PROBLEM,
-        connection
-      );
-
-      Syslog.log
-      (
-        "User " + connection.getUserInfo() + " has attempted"
-          + " to create new character using existing name"
-          + " (" + this.characterName + ")",
-        MessageType.CONNECTION_INFO,
-        AdminLevel.IMMORTAL
-      );
-
-      return false;
-    }
+    /// This will be checked inside character creation attempt.
+    // if (await Characters.isTaken(this.characterName))
+    //   return false;
 
     return true;
   }
 
-  private isCharacterNameValid(connection: Connection): boolean
+  private logNameAlreadyTaken(connection: Connection)
   {
-    let problem = this.getCharacterNameProblem();
-
-    if (!problem)
-      return true;
-
-    this.denyRequest
+    Syslog.logConnectionInfo
     (
-      problem,
-      ChargenResponse.Result.CHARACTER_NAME_PROBLEM,
-      connection
+      "Player " + connection.getUserInfo() + " attempts"
+        + " to create new character using name"
+        + " (" + this.characterName + ") that is"
+        + " already taken"
     );
-
-    /// This is probably too trival to log.
-    // Syslog.log
-    // (
-    //   "Attempt to create character with invalid name"
-    //     + " (" + this.characterName + ")."
-    //     + " Problem: " + problem,
-    //   MessageType.CONNECTION_INFO,
-    //   AdminLevel.IMMORTAL
-    // );
-    
-    return false;
   }
 
-  private createOkResponse(account: Account, character: Character)
+  private logSuccess(character: Character, account: Account)
   {
-    let response = new ChargenResponse();
-
-    response.result = ChargenResponse.Result.OK;
-    response.setAccount(account);
-    response.setCharacter(character);
-
-    return response;
-  }
-
-  private acceptRequest(character: Character, connection: Connection)
-  {
-    let response = this.createOkResponse(connection.account, character);
-
-    Syslog.log
+    Syslog.logSystemInfo
     (
-      "Player " + connection.account.getEmail() + " has created"
-        + " a new character: " + character.getName(),
-      MessageType.SYSTEM_INFO,
-      AdminLevel.IMMORTAL
+      "Player " + account.getEmail() + " has created"
+        + " a new character: " + character.getName()
     );
-
-    connection.send(response);
   }
 
-  private denyRequest
+  private nameNotAvailableProblem(): ChargenRequest.Problem
+  {
+    return this.nameProblem("Sorry, this name is not available.");
+  }
+
+  private nameNotAvailableResponse()
+  {
+    return this.problemsResponse([ this.nameNotAvailableProblem() ]);
+  }
+
+  private errorResponse(): ChargenResponse
+  {
+    let problem: ChargenRequest.Problem =
+    {
+      type: ChargenRequest.ProblemType.ERROR,
+      message: "An error occured while creating your character.\n\n"
+                + Message.ADMINS_WILL_FIX_IT
+    };
+
+    let result: ChargenResponse.Result =
+    {
+      status: "REJECTED",
+      problems: [ problem ]
+    };
+
+    return new ChargenResponse(result);
+  }
+
+  private problemsResponse
   (
-    problem: string,
-    result: ChargenResponse.Result,
-    connection: Connection
+    problems: Array<ChargenRequest.Problem>
   )
+  : ChargenResponse
   {
-    let response = new ChargenResponse();
+    let result: ChargenResponse.Result =
+    {
+      status: "REJECTED",
+      problems: problems
+    };
 
-    response.result = result;
-    response.setProblem(problem);
-
-    connection.send(response);
+    return new ChargenResponse(result);
   }
 
-  private isConnectionValid(connection: Connection)
+  // ! Throws an exception on error.
+  private successResponse
+  (
+    character: Character,
+    account: Account
+  )
+  : ChargenResponse
   {
-    if (!connection)
-      return false;
+    let serializedAccount = this.serializeEntity(account);
+    let serializedCharacter = this.serializeEntity(character);
 
-    if (connection.account === null)
+    let result: ChargenResponse.Result =
     {
-      ERROR("Chargen request is triggered on connection that has"
-        + " no account attached to it. Request is not processed");
-      return false;
-    }
+      status: "ACCEPTED",
+      data: { serializedAccount, serializedCharacter }
+    };
 
-    return true;
+    return new ChargenResponse(result);
   }
 }
 
-// This overwrites ancestor class.
+// ------------------ Type declarations ----------------------
+
+export module ChargenRequest
+{
+  // Reexport ancestor types becuase they are not inherited automatically.
+  export type Problem = SharedChargenRequest.Problem;
+}
+
 Classes.registerSerializableClass(ChargenRequest);

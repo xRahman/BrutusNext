@@ -28,9 +28,9 @@ import {Room} from '../../server/game/world/Room';
 import {AbbrevList} from '../../server/game/search/AbbrevList';
 import {Connection} from '../../server/lib/connection/Connection';
 ///import {Move} from '../../shared/lib/protocol/Move';
-import {EnterGameRequest} from '../../shared/lib/protocol/EnterGameRequest';
-import {EnterGameResponse} from
-  '../../shared/lib/protocol/EnterGameResponse';
+// import {EnterGameRequest} from '../../shared/lib/protocol/EnterGameRequest';
+// import {EnterGameResponse} from
+//   '../../server/lib/protocol/EnterGameResponse';
 
 /// Asi docasne:
 import {Area} from '../game/world/Area';
@@ -82,7 +82,7 @@ export class Game
       return;
     }
 
-    this.world = await ServerEntities.createInstanceEntity
+    let worldCreationResult = await ServerEntities.createInstanceEntity
     (
       World,      // Typecast.
       World.name, // Prototype name.
@@ -90,11 +90,20 @@ export class Game
       Entity.NameCathegory.WORLD
     );
 
-    if (this.world === null)
+    if (worldCreationResult === undefined)
     {
-      ERROR("Failed to create default world");
+      ERROR("Failed to create default world because it already exists");
       return;
     }
+
+    if (worldCreationResult === null)
+    {
+      ERROR("Error occured while creating default world");
+      return;
+    }
+
+    this.world = worldCreationResult;
+
 
     // Create system realm (and it's contents).
     await this.world.createSystemRealm();
@@ -107,17 +116,22 @@ export class Game
   public async load()
   {
     // Load current state of world from file.
-    this.world = await ServerEntities.loadEntityByName
+    let world = await ServerEntities.loadEntityByName
     (
       World, // Dynamic typecast.
       Game.DEFAULT_WORLD_NAME,
       Entity.NameCathegory.WORLD
     );
 
-    if (!this.world)
+    if (!world)
+    {
       FATAL_ERROR("Failed to load game world. Perhaps"
         + " directory" + ServerApp.DATA_DIRECTORY
         + " exists but it is empty?");
+      return; // This is never called, fatal error exits the app.
+    }
+
+    this.world = world;
   }
 
   // ---------------- Protected data --------------------
@@ -142,7 +156,7 @@ export class Game
   // --- Direct references ---
 
   // There is only one world in the game (at the moment).
-  protected world: World = null;
+  protected world: (World | null) = null;
 
   // --------------- Protected methods ------------------
 

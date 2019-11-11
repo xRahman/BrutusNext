@@ -10,51 +10,22 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Entity} from '../../../shared/lib/entity/Entity';
-import {Serializable} from '../../../shared/lib/class/Serializable';
 import {Move} from '../../../shared/lib/protocol/Move';
+import {Request} from '../../../shared/lib/protocol/Request';
 import {Response} from '../../../shared/lib/protocol/Response';
 import {SerializedEntity} from '../../../shared/lib/protocol/SerializedEntity';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class EnterGameResponse extends Response
+export abstract class EnterGameResponse extends Response
 {
-  constructor()
+  constructor
+  (
+    protected result: EnterGameResponse.Result
+  )
   {
     super();
 
     this.version = 0;
-  }
-
-  // ----------------- Public data ----------------------
-
-  // Is the request accepted?
-  public result = EnterGameResponse.Result.UNDEFINED;
-
-  // Where did the character entered game.
-  public characterMove: Move = null;
-
-  // Serialized data of 'loadLocation' entity.
-  public serializedLoadLocation: SerializedEntity = null;
-
-  // ---------------- Public methods --------------------
-
-  public setLoadLocation(loadLocation: Entity)
-  {
-    if (!Entity.isValid(loadLocation))
-    {
-      ERROR("Invalid loadLocation. Charselect response"
-        + " won't be valid");
-      this.serializedLoadLocation = null;
-      return;
-    }
-
-    this.serializedLoadLocation = new SerializedEntity();
-
-    this.serializedLoadLocation.store
-    (
-      loadLocation,
-      Serializable.Mode.SEND_TO_CLIENT
-    );
   }
 }
 
@@ -62,12 +33,26 @@ export class EnterGameResponse extends Response
 
 export module EnterGameResponse
 {
-  export enum Result
+  // Data attached to the response in case the request is accepted.
+  export type Data =
   {
-    UNDEFINED,
-    OK,
-    ERROR
+    characterMove: Move;
+    serializedLoadLocation: SerializedEntity;
   }
-}
 
-Classes.registerSerializableClass(EnterGameResponse);
+  export type Accepted =
+  {
+    status: "ACCEPTED";
+    // Separate type is used here because it is passed
+    // as parameter when processing the packet on client.
+    data: EnterGameResponse.Data;
+  }
+
+  export type Rejected =
+  {
+    status: "REJECTED";
+    message: string;
+  }
+
+  export type Result = Accepted | Rejected;
+}

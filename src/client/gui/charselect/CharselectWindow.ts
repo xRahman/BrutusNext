@@ -28,41 +28,74 @@ export class CharselectWindow extends FormWindow
     this.flags.set(ClientApp.State.CHARSELECT);
   }
 
+  // --------------- Public accessors -------------------
+
+  // ! Throws an exception on error.
+  public getForm(): CharselectForm
+  {
+    if (!this.form)
+      throw new Error("Charselect form doesn't exist");
+
+    return this.form;
+  }
+
+  // ----------------- Public data ----------------------
+
+  // ---------------- Protected data --------------------
+
+  // ~ Overrides FormWindow.form.
+  protected form: (CharselectForm | null) = null;
+
   // ----------------- Private data ---------------------
 
   // ~ Overrides FormWindow.form.
-  private $enterGameButton: JQuery = null;
+  private $enterGameButton: (JQuery | null) = null;
 
-  // ----------------- Public data ---------------------- 
-
-  public form: CharselectForm = null;
 
   // ---------------- Private methods -------------------
 
   private createCharselectForm()
   {
     if (this.form !== null)
-      ERROR("Charselect form already exists");
+    {
+      ERROR("Charselect form already exists. Not creating it again");
+      return;
+    }
+
+    if (!this.$content)
+    {
+      ERROR("Failed to create form component in charselect window"
+        + " because $content element is missing");
+      return;
+    }
 
     this.form = new CharselectForm(this, { $parent: this.$content });
   }
 
   private createButtonNewCharacter()
   {
-    let $button = this.$createButton
+    if (!this.$content)
+    {
+      ERROR("Failed to create 'new character' $button in charselect"
+        + " window because $content element is missing");
+      return;
+    }
+
+    this.$createButton
     (
       {
         $parent: this.$content,
         sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS,
         text: 'Create New Character',
-        click: (event) => { this.onCreateNewCharacterClick(event); }
+        click: (event: JQueryEventObject) =>
+          { this.onCreateNewCharacterClick(event); }
       }
     );
   }
 
   private enterChargen()
   {
-    ClientApp.setState(ClientApp.State.CHARGEN);
+    ClientApp.switchToState(ClientApp.State.CHARGEN);
   }
 
   // ---------------- Event handlers --------------------
@@ -76,10 +109,16 @@ export class CharselectWindow extends FormWindow
   // Handles 'keydown' event fired on html document
   // (it means that this handler runs even if this
   //  window desn't have focus).
-  public onKeyDown(event: JQueryKeyEventObject)
+  public onKeyDown(event: JQueryEventObject)
   {
     // Super call handles 'Enter' and 'Escape' keys.
     super.onKeyDown(event);
+
+    if (!this.form)
+    {
+      ERROR("Invalid form component");
+      return;
+    }
 
     let key = event.which;
 

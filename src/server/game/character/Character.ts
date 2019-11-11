@@ -8,7 +8,7 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Time} from '../../../shared/lib/utils/Time';
-import {Account} from '../../../server/lib/account/Account';
+///import {Account} from '../../../server/lib/account/Account';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {Admins} from '../../../server/lib/admin/Admins';
 import {Game} from '../../../server/game/Game';
@@ -22,7 +22,7 @@ import {Move} from '../../../shared/lib/protocol/Move';
 
 export class Character extends GameEntity
 {
-  protected timeOfCreation = null;
+  protected timeOfCreation: (Time | null) = null;
 
 /// TODO: Tohle by asi nemělo být tady - admin levely jsou externě
 /// v Admins.
@@ -41,16 +41,26 @@ export class Character extends GameEntity
   // ----------------- Private data --------------------- 
 
   // Character is placed into this entity when entering game.
-  private loadLocation: GameEntity = null;
+  private loadLocation: (GameEntity | null) = null;
 
   // ----------------- Public data ----------------------
 
-  public data = new CharacterData(this);
+  public data: CharacterData = new CharacterData(this);
 
   // --------------- Public accessors -------------------
 
+  // ! Throws an exception on error.
   public getLoadLocation()
   {
+    if (!this.loadLocation || !this.loadLocation.isValid())
+    {
+      throw new Error
+      (
+        "Attempt to access invalid load location on character"
+        + " " + this.getErrorIdString()
+      );
+    }
+
     return this.loadLocation;
   }
 
@@ -76,7 +86,21 @@ export class Character extends GameEntity
   // Sets birthroom (initial location), CHAR_IMMORTALITY flag.
   public init()
   {
-    if (this.getAdminLevel() > AdminLevel.MORTAL)
+    let myAdminLevel = this.getAdminLevel();
+
+    if (myAdminLevel === null)
+    {
+      ERROR("'null' admin level");
+      return;
+    }
+
+    if (Game.world === null)
+    {
+      ERROR("'null' Game.world");
+      return;
+    }
+
+    if (myAdminLevel > AdminLevel.MORTAL)
     {
       // Immortals enter game in System Room.
       this.loadLocation = Game.world.systemRoom;
@@ -93,33 +117,44 @@ export class Character extends GameEntity
     //this.loadLocation.insert(this);
   }
 
-  // -> Returns Move instance describing performed move action,
-  //    Returns 'null' on error.
   public enterWorld(): Move
   {
     if (this.getLocation() !== null)
     {
-      ERROR("Attempt to enter game with character "
+      throw new Error
+      (
+        "Attempt to enter game with character "
         + this.getErrorIdString() + " which already"
-        + " has a location. Location is not changed");
-      return null;
+        + " has a location. Location is not changed"
+      );
     }
 
     let loadLocation = this.getLoadLocation();
 
-    if (!Entity.isValid(loadLocation))
+    if (!loadLocation || !loadLocation.isValid())
     {
-      ERROR("Invalid 'loadLocation' on character"
+      throw new Error
+      (
+        "Invalid 'loadLocation' on character"
         + " " + this.getErrorIdString() + "."
-        + " Character is not placed into the world");
-      return null;
+        + " Character is not placed into the world"
+      );
     }
+
+    let myId = this.getId();
+    let loadLocationId = loadLocation.getId()
+
+    if (myId === null)
+      throw new Error("Invalid 'myId'");
+
+    if (loadLocationId === null)
+      throw new Error("Invalid 'loadLocationId'");
 
     // TODO: Zařadit char do namelistů, atd.
     // (možná se to bude dělat v rámci insertu, uvidíme).
     loadLocation.insert(this);
 
-    return new Move(this.getId(), loadLocation.getId());
+    return new Move(myId, loadLocationId);
   }
 
   // Announce to the room that player is entering game as this character.

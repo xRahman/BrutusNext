@@ -55,9 +55,9 @@ export class Message
   // ----------------- Private data ---------------------
 
   // 'sender' can be null (for example for syslog messages, global infos, etc.) 
-  private sender: GameEntity = null;
-  private type: MessageType = null;
-  private text: string = null;
+  private sender: GameEntity | null = null;
+  private type: MessageType | null = null;
+  private text: string | null = null;
 
   // --------------- Static accessors -------------------
 
@@ -85,7 +85,7 @@ export class Message
     text: string,
     msgType: MessageType,
     target: GameEntity,
-    sender: GameEntity = null
+    sender: GameEntity | null = null
   )
   {
     let message = new Message(text, msgType);
@@ -103,7 +103,7 @@ export class Message
   )
   {
     // Sender must be valid so we can find her location.
-    if (!Entity.isValid(sender))
+    if (!sender || !sender.isValid())
     {
       ERROR("Invalid sender. Message is not sent");
       return;
@@ -144,7 +144,8 @@ export class Message
     text: string,
     msgType: MessageType,
     visibility: AdminLevel,
-    sender: GameEntity = null)
+    sender: GameEntity | null = null
+  )
   {
     let message = new Message(text, msgType);
 
@@ -179,7 +180,7 @@ export class Message
     connection.sendMudMessage(this);
   }
 
-  public sendToGameEntity(target: GameEntity, sender: GameEntity = null)
+  public sendToGameEntity(target: GameEntity, sender: GameEntity | null = null)
   {
     if (target === null || !target.isValid())
     {
@@ -200,7 +201,7 @@ export class Message
     }
   }
 
-  public sendToSay(sender: GameEntity = null)
+  public sendToSay(sender: GameEntity | null = null)
   {
     // Sender must be valid so we can find her location.
     if (sender === null || sender.isValid() === false)
@@ -214,7 +215,7 @@ export class Message
     // TODO
   }
 
-  public sendToShout(sender: GameEntity = null)
+  public sendToShout(sender: GameEntity | null = null)
   {
     // Sender must be valid so we can find her location.
     if (sender === null || sender.isValid() === false)
@@ -237,7 +238,7 @@ export class Message
   public sendToAllIngameConnections
   (
     visibility: AdminLevel,
-    sender: GameEntity = null
+    sender: GameEntity | null = null
   )
   {
     this.sender = sender;
@@ -248,7 +249,7 @@ export class Message
 
   // Sends message even to players in menu, entering password, etc.
   // (Used for messages like shutdown countdown.)
-  public sendToAllConnections(sender: GameEntity = null)
+  public sendToAllConnections(sender: GameEntity | null = null)
   {
     this.sender = sender;
 
@@ -286,8 +287,14 @@ export class Message
 
   // Composes the full message text
   // (adds base color, adds prompt, adds a space to separate user input).
-  public compose(): string
+  public compose(): string | null
   {
+    if (this.text === null)
+    {
+      ERROR("Invalid 'text'");
+      return null;
+    }
+
     // Remove all white spaces (including tabs and newlines)
     // from the end of the string.
     let data = Utils.trimRight(this.text);
@@ -409,6 +416,15 @@ export class Message
     // There is no point in formatting an empty string.
     if (str.length === 0)
       return str;
+
+    if (this.type === null)
+    {
+      ERROR("Invalid message type");
+      /// TODO: Vracet 'str' bez color kódu asi není moc ok,
+      /// ale error handling chce beztak celej přepsat, takže
+      /// to teď nebudu řešit.
+      return str;
+    }
 
     let baseColor = MessageColors.getBaseColor(this.type);
 

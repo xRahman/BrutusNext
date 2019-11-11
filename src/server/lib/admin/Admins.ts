@@ -92,12 +92,12 @@ export class Admins
     // na Server.admins, aby přes ni mohl promotovat, demotovat a tak.
   }
 
-  public static getAdminLevel(entity: GameEntity): AdminLevel
+  public static getAdminLevel(entity: GameEntity): AdminLevel | null
   {
     if (entity === null || entity === undefined)
     {
       ERROR("Invalid entity");
-      return;
+      return null;
     }
 
     let adminLevels = ServerApp.admins.adminLevels;
@@ -141,6 +141,17 @@ export class Admins
       return;
     }
 
+    if (actorAdminLevel === null || targetAdminLevel === null)
+    {
+      ERROR("Unexpected 'null' value");
+      actor.receive
+      (
+        "An error occured while processing your command.",
+        MessageType.COMMAND
+      );
+      return;
+    }
+
     if (actorAdminLevel <= targetAdminLevel)
     {
       actor.receive("You can't promote " + target.getName() +
@@ -163,6 +174,17 @@ export class Admins
 
     let actorAdminLevel = this.getAdminLevel(target);
     let targetAdminLevel = this.getAdminLevel(target);
+
+    if (actorAdminLevel === null || targetAdminLevel === null)
+    {
+      ERROR("Unexpected 'null' value");
+      actor.receive
+      (
+        "An error occured while processing your command.",
+        MessageType.COMMAND
+      );
+      return;
+    }
 
     if (actorAdminLevel <= targetAdminLevel)
     {

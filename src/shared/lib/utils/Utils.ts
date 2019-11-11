@@ -10,6 +10,11 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 
+// Types used for constructs like 'new Promise((resolve, reject) => { ... })'.
+export type ResolveFunction<T> = (value?: T | PromiseLike<T>) => void;
+export type RejectFunction = (reason?: any) => void;
+
+
 export module Utils
 {
   // Most Unix filesystems have this limit on file name length.
@@ -48,6 +53,12 @@ export module Utils
     }
 
     return false;
+  }
+
+  // -> Returns 'true' if 'variable' is of type string.
+  export function isString(variable: any): boolean
+  {
+    return typeof variable === 'string';
   }
 
   // -> Returns 'true' if 'variable' is of type 'FastBitSet'.
@@ -156,8 +167,7 @@ export module Utils
     return str.replace(/\s+$/,"");
   }
 
-  // Makes the first character of 'str' uppercase and the rest lowercase.
-  export function upperCaseFirstCharacter(str: string)
+  export function uppercaseFirstLowercaseRest(str: string): string
   {
     return str[0].toUpperCase()
       + str.toLowerCase().substr(1);
@@ -170,11 +180,14 @@ export module Utils
 
   // Converts string to integer number.
   // -> Returns null if string is not an integer number.
-  export function atoi(input: string): number
+  export function atoi(input: string): number | null
   {
     // First convert input to float
     // (meaning that result can contain decimals).
     let result = Utils.atof(input);
+
+    if (result === null)
+      return null;
 
     // Check that result doesn't have any decimal part. 
     if (result % 1 !== 0)
@@ -185,7 +198,7 @@ export module Utils
 
   // Converts string to float (number that can contain decimal point).
   // -> Returns null if 'input' is not a number.
-  export function atof(input: string): number
+  export function atof(input: string): number | null
   {
     // 'trim()' cuts off leating and trailing white spaces and newlines.
     // Typecast to 'any' is necessary to appease typescript.
@@ -209,34 +222,6 @@ export module Utils
 
     return getByteLength(encodedStr) <= MAX_FILENAME_BYTE_LENGTH;
   }
-
-  /// Not used anymore. All file names are encoded now.
-  // // Encodes email address so it can be used as file name.
-  // export function encodeEmail(email: string)
-  // {
-  //   for (let [key, value] of EMAIL_ENCODED_CHARACTERS.entries())
-  //   {
-  //     // We don't use javascript replace() so we don't have to
-  //     // escape special regexp characters.
-  //     email = email.split(key).join(value);
-  //   }
-
-  //   return email;
-  // }
-
-  /// Not used anymore. All file names are encoded now.
-  // Decodes string encoded with Utils.encodeEmail() back to original.
-  // export function decodeEmail(email: string)
-  // {
-  //   for (let [key, value] of EMAIL_ENCODED_CHARACTERS.entries())
-  //   {
-  //     // We don't use javascript replace() so we don't have to
-  //     // escape special regexp characters.
-  //     email = email.split(value).join(key);
-  //   }
-
-  //   return email;
-  // }
 
   // Copies properties of 'defaults' object to 'target' object
   // if they are not present in it. This is even done recursively
@@ -270,6 +255,20 @@ export module Utils
     }
 
     return target;
+  }
+
+  // Note: 'str' is trimmed from the right before the dot
+  // is added so you don't end up with a dot on the new line,
+  // after a space or a tab, etc.
+  // -> Returns a new string which ends with a dot.
+  export function ensureDotAtTheEnd(str: string): string
+  {
+    str = trimRight(str);
+
+    if (str.slice(-1) !== '.')
+      return str + '.';
+
+    return str;
   }
 }
 
@@ -337,6 +336,8 @@ function getByteLength(str: string)
 
   FATAL_ERROR("Unable to compute byte length of a string because"
     + " neither 'Blob' object nor 'Buffer' object is supported.");
+
+  return 0; // Never happens, FATAL_ERROR exits the app.
 }
 
 function reportTruncation

@@ -67,12 +67,12 @@ export class FileSystem
       reportErrors: true
     }
   )
-  : Promise<any>
+  : Promise<string | null>
   {
     if (!FileSystem.isPathRelative(path))
       return null;
 
-    let data = null;
+    let data: (string | null) = null;
     let encoding = param.binary ?
       FileSystem.BINARY_FILE_ENCODING : FileSystem.TEXT_FILE_ENCODING;
 
@@ -110,12 +110,12 @@ export class FileSystem
   }
 
   // -> Returns data read from file, 'null' if file could not be read.
-  public static readFileSync(path: string): any
+  public static readFileSync(path: string): (string | null)
   {
     if (!FileSystem.isPathRelative(path))
       return null;
 
-    let data = null;
+    let data: (string | null) = null;
 
     try
     {
@@ -279,12 +279,12 @@ export class FileSystem
   //    subdirectories, excluding '.' and '..'.
   //    Returns 'null' on error.
   public static async readDirectoryContents(path: string)
-  : Promise<Array<string>>
+  : Promise<Array<string> | null>
   {
     if (!FileSystem.isPathRelative(path))
       return null;
 
-    let fileNames = null;
+    let fileNames: (Array<string> | null) = null;
 
     try
     {
@@ -351,12 +351,12 @@ export class FileSystem
 
   // -> Returns 'fs.Stats' object describing specified file.
   //    Returns 'null' on error.
-  private static async statFile(path: string): Promise<fs.Stats>
+  private static async statFile(path: string): Promise<fs.Stats | null>
   {
     if (!FileSystem.isPathRelative(path))
       return null;
 
-    let fileStats = null;
+    let fileStats: (fs.Stats | null) = null;
 
     try
     {
@@ -422,7 +422,7 @@ export class FileSystem
   //      the caller needs to wait (using the returned Promise).
   // -> Returns null if this file isn't beeing saved right now
   //      so it is possible to start saving right away.
-  private static requestSaving(path: string): Promise<{}>
+  private static requestSaving(path: string): Promise<{}> | null
   {
     let queue = this.savingQueues.get(path);
 

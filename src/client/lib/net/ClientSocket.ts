@@ -7,6 +7,8 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Syslog} from '../../../shared/lib/log/Syslog';
+import {Utils} from '../../../shared/lib/utils/Utils';
 import {WebSocketEvent} from '../../../shared/lib/net/WebSocketEvent';
 import {JsonObject} from '../../../shared/lib/json/JsonObject';
 import {Packet} from '../../../shared/lib/protocol/Packet';
@@ -14,22 +16,26 @@ import {Connection} from '../../../client/lib/connection/Connection';
 
 export class ClientSocket
 {
-  constructor(connection: Connection)
+  constructor
+  (
+    public connection: Connection
+  )
   {
     this.connection = connection;
   }
 
   // ---------------- Static methods --------------------
 
-  // Checks if browser supports web sockets.
-  public static checkWebSocketsSupport()
+  public static checkWebSocketSupport(): boolean
   {
     if (typeof WebSocket === 'undefined')
     {
+      let MozWebSocket = (window as any)['MozWebSocket'];
+
       // Use 'MozWebSocket' if it's available.
-      if ('MozWebSocket' in window)
+      if (MozWebSocket)
       {
-        WebSocket = window['MozWebSocket'];
+        WebSocket = MozWebSocket;
         return true;
       }
 
@@ -44,16 +50,16 @@ export class ClientSocket
 
   // ----------------- Private data ---------------------
 
-  private socket: WebSocket = null;
+  private socket: (WebSocket | null) = null;
 
   // Here we remember event listeners so we can remove them
-  // when tho socket closes.
+  // when the socket closes.
   private listeners =
   {
-    onopen: null,
-    onmessage: null,
-    onerror: null,
-    onclose: null
+    onopen: <((event: any) => void) | null>null,
+    onmessage: <((event: any) => void) | null>null,
+    onerror: <((event: any) => void) | null>null,
+    onclose: <((event: any) => void) | null>null
   }
 
   // We still need this even though WebSocket keeps it's status
@@ -72,7 +78,7 @@ export class ClientSocket
 
   // ----------------- Public data ----------------------
 
-  public connection: Connection = null;
+  //public connection: (Connection | null) = null;
 
   // ---------------- Public methods --------------------
 
@@ -171,6 +177,13 @@ export class ClientSocket
       /// TODO: Asi by to chtelo dát message playerovi a ideálně
       /// pustit auto-reconnect, pokud ještě neběží.
       return;
+
+    /// To be deleted.
+    // if (this.connection === null)
+    // {
+    //   ERROR("Unexpected 'null' value");
+    //   return;
+    // }
     
     this.connection.clientMessage
     (
@@ -181,8 +194,14 @@ export class ClientSocket
   }
 
   // Closes the socket, ending the connection.
-  public close(reason: string = null)
+  public close(reason: (string | null) = null)
   {
+    if (this.socket === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     // Code '1000' means normal connection close.
     if (reason)
       this.socket.close(1000, reason);
@@ -194,6 +213,13 @@ export class ClientSocket
 
   private reportConnectionFailure()
   {
+    /// To be deleted.
+    // if (this.connection === null)
+    // {
+    //   ERROR("Unexpected 'null' value");
+    //   return;
+    // }
+
     // Test is user device is online.
     if (navigator.onLine)
     {
@@ -232,6 +258,13 @@ export class ClientSocket
 
   private reportNormalDisconnect()
   {
+    /// To be deleted.
+    // if (this.connection === null)
+    // {
+    //   ERROR("Unexpected 'null' value");
+    //   return;
+    // }
+
     this.connection.clientMessage
     (
       'Connection closed.'
@@ -240,6 +273,13 @@ export class ClientSocket
 
   private reportAbnormalDisconnect()
   {
+    /// To be deleted.
+    // if (this.connection === null)
+    // {
+    //   ERROR("Unexpected 'null' value");
+    //   return;
+    // }
+
     // Test if user is online.
     if (navigator.onLine)
     {
@@ -267,8 +307,14 @@ export class ClientSocket
     this.listeners.onerror = (event) => { this.onError(event); };
     this.listeners.onclose = (event) => { this.onClose(event); };
 
+    if (this.socket === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     // Assign them to the socket.
-    this.socket.onopen =  this.listeners.onopen;
+    this.socket.onopen = this.listeners.onopen;
     this.socket.onmessage = this.listeners.onmessage;
     this.socket.onerror = this.listeners.onerror;
     this.socket.onclose = this.listeners.onclose;
@@ -277,6 +323,12 @@ export class ClientSocket
   // Removes event handlers from this.socket.
   private deinit()
   {
+    if (this.socket === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+    
     if (this.listeners.onopen)
       this.socket.removeEventListener('open', this.listeners.onopen);
 
@@ -309,7 +361,22 @@ export class ClientSocket
   {
     console.log('Received message: ' + event.data);
 
-    await Connection.receiveData(event.data);
+    if (typeof event.data !== 'string')
+    {
+      ERROR("Websocket received non-string data."
+        + " Message will not be processed because"
+        + " we can only process string data");
+      return;
+    }
+
+    try
+    {
+      await this.connection.receiveData(event.data);
+    }
+    catch (error)
+    {
+      Syslog.reportUncaughtException(error);
+    }
   }
 
   private onError(event: ErrorEvent)

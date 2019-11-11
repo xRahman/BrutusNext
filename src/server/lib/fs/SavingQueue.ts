@@ -20,12 +20,14 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 // 3rd party modules.
 let FastPriorityQueue = require('fastpriorityqueue');
 
+type ResolveCallback = (value?: {} | PromiseLike<{}>) => void;
+
 export class SavingQueue
 {
   // ----------------- Private data ---------------------
 
   // FastPriorityQueue of resolve callbacks.
-  private requests = null;
+  private requestQueue = new FastPriorityQueue();
 
   // ---------------- Public methods --------------------
 
@@ -35,7 +37,7 @@ export class SavingQueue
   {
     // Callback function used to finish waiting before processing
     // next saving request.
-    let resolveCallback = null;
+    let resolveCallback: (ResolveCallback | null) = null;
 
     // First we are going to create a new Promise object and
     // remember it's 'resolve' callback so we can later resolve
@@ -55,10 +57,7 @@ export class SavingQueue
     );
 
     // Now we can add 'resolveCallback' to the queue.  
-    if (this.requests === null)
-      this.requests = new FastPriorityQueue();
-
-    this.requests.add(resolveCallback);
+    this.requestQueue.add(resolveCallback);
 
     return promise;
   }
@@ -71,14 +70,11 @@ export class SavingQueue
       return undefined;
 
     // Removes one item from the srat of the queue.
-    return this.requests.poll();
+    return this.requestQueue.poll();
   }
 
   private hasMoreRequests(): boolean
   {
-    if (this.requests === null)
-      return false;
-
-    return this.requests.isEmpty() === false;
+    return !this.requestQueue.isEmpty();
   }
 }

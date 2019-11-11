@@ -25,6 +25,7 @@
 
 'use strict';
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 import {Syslog} from '../../../shared/lib/log/Syslog';
 import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
@@ -35,6 +36,7 @@ import {Connections} from '../../../server/lib/connection/Connections';
 import {HttpServer} from '../../../server/lib/net/HttpServer';
 import {ServerSocket} from '../../../server/lib/net/ServerSocket';
 
+// 3rd party modules.
 import * as WebSocket from 'ws';
 
 // Built-in node.js modules.
@@ -51,7 +53,7 @@ export class WebSocketServer
 
   // ----------------- Private data ---------------------
 
-  private webSocketServer: WebSocket.Server = null;
+  private webSocketServer: (WebSocket.Server | null) = null;
 
   // ---------------- Public methods --------------------
 
@@ -74,7 +76,7 @@ export class WebSocketServer
     this.webSocketServer.on
     (
       'connection',
-      (socket) => { this.onNewConnection(socket); }
+      (socket, request) => { this.onNewConnection(socket, request); }
     );
 
     // Unlike telnet server, websocket server is up immediately,
@@ -95,15 +97,41 @@ export class WebSocketServer
 
   // ---------------- Event handlers --------------------
 
-  private async onNewConnection(socket: WebSocket)
+  private async onNewConnection
+  (
+    webSocket: WebSocket,
+    request: http.IncomingMessage
+  )
   {
-    let ip = ServerSocket.parseRemoteAddress(socket);
-    let url = ServerSocket.parseRemoteUrl(socket);
+    let ip = request.connection.remoteAddress;
+    ///let ip = ServerSocket.parseRemoteAddress(socket);
 
-    if (this.connectionDenied(socket, ip, url))
+    // Request.url is only valid for request obtained from http.Server.
+    if (!request.url)
+    {
+      ERROR("Invalid 'request.url'. This probably means that you are using"
+        + " websocket server outside of http server. Connection is denied");
+      this.denyConnection(webSocket, "Invalid request.url", ip);
       return;
+    }
 
-    let connection = new Connection(socket, ip, url);
+    let url = request.url;
+    //let url = ServerSocket.parseRemoteUrl(socket);
+
+    if (this.open === false)
+    {
+      this.denyConnection(webSocket, "Server is closed", ip, url);
+      return;
+    }
+
+    this.acceptConnection(webSocket, ip, url);
+  }
+
+  // ---------------- Private methods --------------------
+
+  private acceptConnection(webSocket: WebSocket, ip: string, url: string)
+  {
+    let connection = new Connection(webSocket, ip, url);
 
     Connections.add(connection)
 
@@ -115,25 +143,28 @@ export class WebSocketServer
     );
   }
 
-  // ---------------- Private methods --------------------
-
-  private connectionDenied(socket: WebSocket, ip: string, url: string)
+  private denyConnection
+  (
+    socket: WebSocket,
+    reason: string,
+    ip: string,
+    url?: string
+  )
   {
-    if (this.open === false)
-    {
-      Syslog.log
-      (
-        "Denying connection (" + url + "[" + ip + "]):"
-        + " Server is closed",
-        MessageType.WEBSOCKET_SERVER,
-        AdminLevel.IMMORTAL
-      );
+    let address: string;
+    
+    if (url)
+      address = "(" + url + "[" + ip + "])";
+    else
+      address = "[" + ip + "]";
 
-      socket.close();
+    Syslog.log
+    (
+      "Denying connection " + address + ": " + reason,
+      MessageType.WEBSOCKET_SERVER,
+      AdminLevel.IMMORTAL
+    );
 
-      return true;
-    }
-
-    return false;
+    socket.close();
   }
 }

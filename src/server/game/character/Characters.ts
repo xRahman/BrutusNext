@@ -34,8 +34,14 @@ export class Characters
     return Game.characters.names.add(character);
   }
 
+  // ! Throws an exception on error.
+  public static getCharacter(characterId: string): Character
+  {
+    return ServerEntities.getEntity(characterId).dynamicCast(Character);
+  }
+
   // -> Returns 'undefined' if entity 'name' isn't in the list.
-  public static get(name: string)
+  public static find(name: string)
   {
     return Game.characters.names.get(name);
   }

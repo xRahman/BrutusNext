@@ -1,40 +1,34 @@
 /*
   Part of BrutusNEXT
 
-  Server-side functionality related to character selection request packet.
-*/
-
-/*
-  Note:
-    This class needs to use the same name as it's ancestor in /shared,
-  because class name of the /shared version of the class is written to
-  serialized data on the client and is used to create /server version
-  of the class when deserializing the packet.
+  Server-side functionality related to enter game request packet.
 */
 
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {REPORT} from '../../../shared/lib/error/REPORT';
 import {Syslog} from '../../../shared/lib/log/Syslog';
+import {Message} from '../../../server/lib/message/Message';
+import {Serializable} from '../../../shared/lib/class/Serializable';
+import {SerializedEntity} from '../../../shared/lib/protocol/SerializedEntity';
 import {EnterGameRequest as SharedEnterGameRequest} from
   '../../../shared/lib/protocol/EnterGameRequest';
 import {EnterGameResponse} from
-  '../../../shared/lib/protocol/EnterGameResponse';
-import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
-import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
+  '../../../server/lib/protocol/EnterGameResponse';
 import {Account} from '../../../server/lib/account/Account';
 import {Character} from '../../../server/game/character/Character';
-import {Entity} from '../../../shared/lib/entity/Entity';
-import {MessageType} from '../../../shared/lib/message/MessageType';
+import {Characters} from '../../../server/game/character/Characters';
+import {GameEntity} from '../../../server/game/GameEntity';
 import {Connection} from '../../../server/lib/connection/Connection';
 import {Move} from '../../../shared/lib/protocol/Move';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 export class EnterGameRequest extends SharedEnterGameRequest
 {
-  constructor()
+  constructor(characterId: string)
   {
-    super();
+    super(characterId);
 
     this.version = 0;
   }
@@ -42,182 +36,95 @@ export class EnterGameRequest extends SharedEnterGameRequest
   // ---------------- Public methods --------------------
 
   // ~ Overrides Packet.process().
-  public async process(connection: Connection)
+  // -> Returns 'true' on success.
+  public async process(connection: Connection): Promise<void>
   {
-    let account = this.getAccountFromConnection(connection);
-    let character = this.getRequestedCharacter(connection);
+    let response: EnterGameResponse;
 
-    if (!character || !account)
-      return;
+    try
+    {
+      response = await this.enterGame(connection);
+    }
+    catch (error)
+    {
+      REPORT(error);
+      response = this.errorResponse();
+    }
 
-    // Character will be selected when user enters charselect window.
-    account.data.lastActiveCharacter = character;
-    
-    let move = character.enterWorld();
-
-    this.acceptRequest(connection, account, character, move);
+    connection.send(response);
   }
 
   // --------------- Private methods --------------------
 
-  private isConnectionValid(connection: Connection)
-  {
-    if (!connection)
-    {
-      ERROR("Invalid connection. Charselect request is not processed");
-
-      this.sendErrorResponse
-      (
-        "[ERROR]: Invalid connection.",
-        connection
-      );
-
-      return false;
-    }
-
-    return true;
-  }
-
-  private getAccountFromConnection(connection: Connection)
-  {
-    if (!this.isConnectionValid(connection))
-      return null;
-
-    let account = connection.account;
-
-    if (account === null)
-    {
-      ERROR("Charselect request is triggered on connection that has"
-        + " no account attached to it. Request is not processed");
-      return null;
-    }
-
-    if (!Entity.isValid(account))
-    {
-      ERROR("Invalid account on connection. Charselect request is not"
-        + " processed");
-      return null;
-    }
-
-    return account;
-  }
-
-  private getRequestedCharacterId(connection: Connection)
-  {
-    let id = this.characterId;
-    
-    if (!id)
-    {
-      ERROR("Invalid character id in charselect request."
-        + " Request is not processed");
-
-      this.sendErrorResponse
-      (
-        "[ERROR]: Invalid character id.",
-        connection
-      );
-
-      return null;
-    }
-
-    return id;
-  }
-
-  private getRequestedCharacter(connection: Connection)
-  {
-    let id = this.getRequestedCharacterId(connection);
-
-    if (!id)
-      return;
-
-    // Character should already be loaded at this time
-    // (all characters are loaded when account is loaded)
-    // so we just request it from Entities.
-    let character = ServerEntities.get(id);
-
-    if (!character)
-    {
-      ERROR("Invalid character requested by id " + id + "."
-        + " Request is not processed");
-
-      this.sendErrorResponse
-      (
-        "[ERROR]: Invalid character.",
-        connection
-      );
-
-      return null;
-    }
-    
-    return character.dynamicCast(Character);
-  }
-
-  private sendErrorResponse
+  // ! Throws an exception on error.
+  private async enterGame
   (
-    problem: string,
     connection: Connection
   )
+  : Promise<EnterGameResponse>
   {
-    this.denyRequest
+    let character = Characters.getCharacter(this.characterId);
+    let account = connection.getAccount();
+
+    // Character will be selected when user enters charselect window.
+    this.setLastActiveCharacter(account, character);
+
+    let characterMove = character.enterWorld();
+    let loadLocation = character.getLoadLocation();
+
+    this.logSuccess(account, character);
+
+    return this.successResponse(loadLocation, characterMove);
+  }
+
+  private logSuccess(account: Account, character: Character)
+  {
+    Syslog.logSystemInfo
     (
-      problem,
-      EnterGameResponse.Result.ERROR,
-      connection
+      "Player " + account.getEmail() + " has entered"
+        + " game as " + character.getName()
     );
   }
 
-  private denyRequest
-  (
-    problem: string,
-    result: EnterGameResponse.Result,
-    connection: Connection
-  )
+  private setLastActiveCharacter(account: Account, character: Character)
   {
-    let response = new EnterGameResponse();
-    
-    response.result = result;
-    response.setProblem(problem);
-
-    connection.send(response);
+    account.data.lastActiveCharacter = character;
   }
 
-  private createOkResponse
+  // ! Throws an exception on error.
+  private successResponse
   (
-    account: Account,
-    character: Character,
-    move: Move
+    loadLocation: GameEntity,
+    characterMove: Move
   )
+  : EnterGameResponse
   {
-    let response = new EnterGameResponse();
+    let serializedLoadLocation = this.serializeEntity(loadLocation);
 
-    response.result = EnterGameResponse.Result.OK;
-    response.characterMove = move;
-    response.setLoadLocation(character.getLoadLocation());
+    let result: EnterGameResponse.Result =
+    {
+      status: "ACCEPTED",
+      data:
+      {
+        characterMove,
+        serializedLoadLocation
+      }
+    };
 
-    return response;
+    return new EnterGameResponse(result);
   }
 
-  private acceptRequest
-  (
-    connection: Connection,
-    account: Account,
-    character: Character,
-    move: Move
-  )
+  private errorResponse(): EnterGameResponse
   {
-    let response = this.createOkResponse(account, character, move);
+    let result: EnterGameResponse.Result =
+    {
+      status: "REJECTED",
+      message: "An error occured preventing you from entering game.\n\n"
+                + Message.ADMINS_WILL_FIX_IT
+    };
 
-    Syslog.log
-    (
-      account.getUserInfo() + " has entered"
-        + " game as " + character.getName(),
-      MessageType.SYSTEM_INFO,
-      AdminLevel.IMMORTAL
-    );
-    
-    connection.send(response);
+    return new EnterGameResponse(result);
   }
 }
 
-// This overwrites ancestor class.
 Classes.registerSerializableClass(EnterGameRequest);

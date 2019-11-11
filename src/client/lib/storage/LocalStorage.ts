@@ -25,7 +25,7 @@ export class LocalStorage
 
   // ---------------- Public methods --------------------
 
-  public static read(entry: string): string
+  public static read(entry: string): string | null
   {
     return localStorage.getItem(entry)
   }

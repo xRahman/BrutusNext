@@ -1,35 +1,29 @@
 /*
   Part of BrutusNEXT
 
-  Client-side functionality related to character selection request packet.
-*/
-
-/*
-  Note:
-    This class needs to use the same name as it's ancestor in /shared,
-  because class name of the /shared version of the class is written to
-  serialized data on the server and is used to create /client version
-  of the class when deserializing the packet.
+  Client-side functionality related to enter game request packet.
 */
 
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {REPORT} from '../../../shared/lib/error/REPORT';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {ClientEntities} from '../../../client/lib/entity/ClientEntities';
 import {Character} from '../../../client/game/character/Character';
 import {Windows} from '../../../client/gui/window/Windows';
 import {Connection} from '../../../client/lib/connection/Connection';
+import {Move} from '../../../shared/lib/protocol/Move';
 import {EnterGameResponse as SharedEnterGameResponse} from
   '../../../shared/lib/protocol/EnterGameResponse';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 export class EnterGameResponse extends SharedEnterGameResponse
 {
-  constructor()
+  constructor(result: EnterGameResponse.Result)
   {
-    super();
+    super(result);
 
     this.version = 0;
   }
@@ -37,78 +31,69 @@ export class EnterGameResponse extends SharedEnterGameResponse
   // ---------------- Public methods --------------------
 
   // ~ Overrides Packet.process().
-  public async process(connection: Connection)
+  public async process(connection: Connection): Promise<void>
   {
-    if (this.result === EnterGameResponse.Result.UNDEFINED)
+    try
     {
-      this.reportInvalidResponse('charselect');
-      return;
+      this.processResponse(connection);
     }
-
-    if (this.result === EnterGameResponse.Result.OK)
+    catch (error)
     {
-      this.acceptResponse(connection);
-      return;
+      REPORT(error, "Failed to enter game");
+      ClientApp.switchToState(ClientApp.State.ERROR);
     }
-
-    // Otherwise display to the user what the problem is.
-    Windows.charselectWindow.form.displayProblem(this);
   }
 
   // --------------- Private methods --------------------
 
-  private acceptResponse(connection: Connection)
+  // ! Throws an exception on error.
+  private processResponse(connection: Connection)
   {
-    let character = this.getSelectedCharacter();
-    
-    if (!character)
-      return;
+    if (this.result.status === "ACCEPTED")
+    {
+      this.switchToGame(connection, this.result.data);
+    }
+    else
+    {
+      Windows.charselectWindow.getForm().displayProblem(this.result.message);
+    }
+  }
+
+  // ! Throws an exception on error.
+  private switchToGame
+  (
+    connection: Connection,
+    data: EnterGameResponse.Data
+  )
+  {
+    let loadLocation = data.serializedLoadLocation.recreateEntity(Entity);
+    let character = this.findSelectedCharacter(data.characterMove.entityId);
 
     connection.createAvatar(character);
+    character.enterWorld(data.characterMove);
 
-    // Note: This must be done before character.enterWorld(),
-    // otherwise the room (or other entity the character loads
-    // into) might not exist on the client.
-    if (!this.deserializeLoadLocation())
-      return;
-
-    if (!character.enterWorld(this.characterMove))
-      return;
-
-    ClientApp.setState(ClientApp.State.IN_GAME);
+    ClientApp.switchToState(ClientApp.State.IN_GAME);
   }
 
-  private getSelectedCharacter()
+  // ! Throws an exception on error.
+  private findSelectedCharacter(characterId: string): Character
   {
-    let characterId = this.characterMove.entityId;
-
-    let character: Character =
-      ClientEntities.get(characterId).dynamicCast(Character);
-
-    if (!Entity.isValid(character))
-    {
-      ERROR("Invalid selected character (id: " + characterId + ")");
-      return null;
-    }
-
-    return character;
+    return ClientEntities.getEntity(characterId).dynamicCast(Character);
   }
 
-  private deserializeLoadLocation()
+  private reportToPlayer(message: string)
   {
-    // 'loadLocation' entity is added to ClientEntities here as
-    // side effect. It can later be accessed using it's id.
-    let loadLocation = this.serializedLoadLocation.restore(Entity);
-    
-    if (!Entity.isValid(loadLocation))
-    {
-      ERROR("Invalid load location in charselect response");
-      return false;
-    }
-
-    return true;
+    alert(message);
   }
 }
 
-// This overwrites ancestor class.
+// ------------------ Type declarations ----------------------
+
+export module EnterGameResponse
+{
+  // Reexport ancestor types becuase they are not inherited automatically.
+  export type Data = SharedEnterGameResponse.Data;
+  export type Result = SharedEnterGameResponse.Result;
+}
+
 Classes.registerSerializableClass(EnterGameResponse);

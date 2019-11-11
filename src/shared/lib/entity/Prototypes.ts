@@ -28,5 +28,5 @@ export abstract class Prototypes
     return App.prototypes.prototypeList.has(prototypeName);
   }
 
-  public abstract async init(entityClasses: Array<string>);
+  public abstract async init(entityClasses: Array<string>): Promise<void>;
 }

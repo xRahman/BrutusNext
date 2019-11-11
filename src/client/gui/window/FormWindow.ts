@@ -6,19 +6,26 @@
 
 'use strict';
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {StandaloneWindow} from '../../../client/gui/window/StandaloneWindow';
 import {Form} from '../../../client/gui/form/Form';
 
 export class FormWindow extends StandaloneWindow
 {
-  // ----------------- Public data ---------------------- 
+  // ---------------- Protected data --------------------
 
-  public form: Form = null;
+  protected form: (Form | null) = null;
 
   // ---------------- Event handlers --------------------
 
   protected onEnterPressed()
   {
+    if (this.form === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return false;
+    }
+
     this.form.submit();
   }
 
@@ -31,7 +38,7 @@ export class FormWindow extends StandaloneWindow
   // Handles 'keydown' event fired on html document
   // (it means that this handler runs even if this
   //  window desn't have focus).
-  public onKeyDown(event: JQueryKeyEventObject)
+  public onKeyDown(event: JQueryEventObject)
   {
     let key = event.which;
 

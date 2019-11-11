@@ -31,7 +31,8 @@ import {AdminLevel} from '../../../shared/lib/admin/AdminLevel';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 
 // Built-in node.js modules.
-const vm = require('vm');
+//const vm = require('vm');
+import * as vm from 'vm';
 
 export class VirtualMachine
 {
@@ -43,7 +44,7 @@ export class VirtualMachine
     //   'delay' is supposed to be a function. It will be set prior
     //            to running the vm script.
  /// TEST: console je tu docasne, ve finale ji skripty nebudou potrebovat
- /// (a ani by ji nemeli vydet, console umoznuje savovat na disk a tak).
+ /// (a ani by ji nemely videt, console umoznuje savovat na disk a tak).
     return { console: console, result: null /*, delay: null*/ };
   }
 
@@ -100,9 +101,14 @@ export class VirtualMachine
   // Compiles javascript code on node.js virtual machine.
   // (check node.js 'vm' module documentation)
   // Returns precompiled vmScript.
-  public static compileVmScript(scriptName: string, code: string)
+  public static compileVmScript
+  (
+    scriptName: string,
+    code: string
+  )
+  : vm.Script | null
   {
-    let vmScript = null;
+    let vmScript: any = null;
 
     try
     {
@@ -128,7 +134,12 @@ export class VirtualMachine
   // Executes precompiled vmScript withing contextified sandbox (vmContext).
   // (The types should be vm.Script and vm.Context, but it doesn't work for
   //  some reason even though they are exported in /headers/node.d.ts)
-  public static executeVmScript(scriptName, vmScript, vmContext)
+  public static executeVmScript
+  (
+    scriptName: string,
+    vmScript: vm.Script,
+    vmContext: vm.Context
+  )
   {
     if (vmContext === null)
     {

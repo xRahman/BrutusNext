@@ -15,7 +15,8 @@ import {Form} from '../../../client/gui/form/Form';
 import {CharacterNameInput} from
   '../../../client/gui/chargen/CharacterNameInput';
 import {ChargenWindow} from '../../../client/gui/chargen/ChargenWindow';
-import {ChargenRequest} from '../../../shared/lib/protocol/ChargenRequest';
+import {Request} from '../../../shared/lib/protocol/Request';
+import {ChargenRequest} from '../../../client/lib/protocol/ChargenRequest';
 import {ChargenResponse} from '../../../client/lib/protocol/ChargenResponse';
 
 export class ChargenForm extends Form
@@ -33,13 +34,13 @@ export class ChargenForm extends Form
     );
 
     this.createCharacterNameInput();
-    this.createEmptyLine();
+    this.$createEmptyLine();
     this.createButtons();
   }
 
   // ----------------- Private data ---------------------
 
-  private characterNameInput: CharacterNameInput = null;
+  private characterNameInput: (CharacterNameInput | null) = null;
 
   // ---------------- Public methods --------------------
 
@@ -100,11 +101,23 @@ export class ChargenForm extends Form
   }
 
   // ~ Overrides Form.createRequest().
-  protected createRequest()
+  // -> Returns 'null' if request couldn't be created
+  //    or there is nothing to request yet.
+  protected createRequest(): Request | null
   {
-    let request = new ChargenRequest();
+    if (!this.characterNameInput)
+    {
+      ERROR("Failed to create request because 'characterNameInput'"
+        + " component is missing");
+      return null;
+    }
 
-    request.characterName = this.characterNameInput.getValue();
+    let characterName = this.characterNameInput.getValue();
+
+    if (!characterName)
+      return null;
+
+    let request = new ChargenRequest(characterName);
 
     return request;
   }
@@ -112,10 +125,11 @@ export class ChargenForm extends Form
   // ~ Overrides Form.isRequestValid().
   protected isRequestValid(request: ChargenRequest)
   {
-    let problem = request.getCharacterNameProblem();
+    let problem = request.checkCharacterName();
 
     if (problem)
     {
+      /// FIXME: Hnusný side effect, tohle tu nemá co dělat.
       this.displayCharacterNameProblem(problem);
       return false;
     }
@@ -128,38 +142,66 @@ export class ChargenForm extends Form
   {
     super.hideProblems();
 
+    if (!this.characterNameInput)
+    {
+      ERROR("Missing component 'characterNameInput'");
+      return;
+    }
+
     this.characterNameInput.hideProblem();
   }
 
-  protected displayCharacterNameProblem(problem: string)
+  protected displayCharacterNameProblem(problem: string | null)
   {
-    this.characterNameInput.displayProblem(problem);
+    if (!this.characterNameInput)
+    {
+      ERROR("Missing component 'characterNameInput'");
+      return;
+    }
+
+    if (problem)
+      this.characterNameInput.displayProblem(problem);
   }
 
   // ---------------- Private methods -------------------
 
   private focusCharacterNameInput()
   {
+    if (!this.characterNameInput)
+    {
+      ERROR("Invalid component 'characterNameInput'");
+      return;
+    }
+
     this.characterNameInput.focus();
   }
 
   private createCharacterNameInput()
   {
-    if (this.characterNameInput !== null)
-      ERROR("Character name input already exists");
+    if (this.characterNameInput)
+    {
+      ERROR("Character name input already exists. Not creating it again");
+      return;
+    }
 
     this.characterNameInput = new CharacterNameInput(this);
   }
 
   private createButtons()
   {
-    let $parent = super.createButtonContainer();
+    let $parent = super.$createButtonContainer();
+
+    if (!$parent)
+    {
+      ERROR("Failed to create button container");
+      return;
+    }
 
     this.$createSubmitButton({ $parent });
-    this.createCancelButton({ $parent });
+    this.$createCancelButton({ $parent });
   }
 
-  private createCancelButton(param: Component.ButtonParam = {})
+  private $createCancelButton(param: Component.ButtonParam = {})
   {
     Utils.applyDefaults
     (
@@ -167,7 +209,7 @@ export class ChargenForm extends Form
       {
         sCssClass: Form.RIGHT_BUTTON_S_CSS_CLASS,
         text: 'Cancel',
-        click: (event) => { this.onCancel(event); }
+        click: (event: JQueryEventObject) => { this.onCancel(event); }
       }
     );
 

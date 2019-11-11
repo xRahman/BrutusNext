@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {Component} from '../../../client/gui/Component';
 import {ScrollWindow} from '../../../client/gui/scroll/ScrollWindow';
@@ -31,8 +32,8 @@ export class ScrollWindowInput extends Component
         rows: 1,
         spellcheck: false,
         autocorrect: Component.Autocorrect.OFF,
-        keypress: (event) => { this.onKeyPress(event); },
-        keydown: (event) => { this.onKeyDown(event); }
+        keypress: (event: JQueryEventObject) => { this.onKeyPress(event); },
+        keydown: (event: JQueryEventObject) => { this.onKeyDown(event); }
       }
     );
 
@@ -55,6 +56,12 @@ export class ScrollWindowInput extends Component
 
   private sendCommand()
   {
+    if (this.$element === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     let command = this.$element.val();
 
     this.bufferCommand(command);
@@ -136,6 +143,12 @@ export class ScrollWindowInput extends Component
   //    value instead of recalling next or previous command.
   private isEditingMultilineCommand(offset: number): boolean
   {
+    if (this.$element === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return false;
+    }
+
     let currentValue = this.$element.val();
 
     // Is there a multi-line command in the input box?
@@ -162,6 +175,12 @@ export class ScrollWindowInput extends Component
     endpos: number
   )
   {
+    if (!this.$element)
+    {
+      ERROR("Unexpected 'null value");
+      return;
+    }
+    
     let oldValue = this.$element.val();
     let cursorPosition = endpos;
 
@@ -214,6 +233,12 @@ export class ScrollWindowInput extends Component
 
     if (index < this.commands.buffer.length)
       recalledCommand = this.commands.buffer[index];
+
+    if (!this.$element)
+    {
+      ERROR("Unexpected 'null value");
+      return;
+    }
 
     this.$element.val(recalledCommand);
     this.commands.active = index;

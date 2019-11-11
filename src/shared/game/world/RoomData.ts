@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
 ///import {Attributes} from '../../../shared/lib/class/Attributes';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {Flags} from '../../../shared/lib/utils/Flags';
@@ -14,7 +15,7 @@ import {GameEntityData} from '../../../shared/game/GameEntityData';
 import {ExitData} from '../../../shared/game/world/ExitData';
 
 // Maps exit names to respective offsets in grid.
-const EXIT_SHIFTS =
+const EXIT_SHIFTS: { [key: string]: Coords } =
 {
   'n':   new Coords(-1,  0,  0),
   'nw':  new Coords(-1, -1,  0),
@@ -90,7 +91,7 @@ export class RoomData extends GameEntityData
   /// nebo tak něco (roomy mohou být v různých souřadných soustavách).
   /// - to by ale asi bylo vhodné doplnit přímo do Coords.
   // Absolute coordinates (in the world).
-  public coords: Coords = null;
+  public coords: (Coords | null) = null;
   
   // Hasmap indexed by shortened exit names ('n', 'sw', 'nwu', etc.).
   public exits = new Map<string, ExitData>();
@@ -122,6 +123,12 @@ export class RoomData extends GameEntityData
     if (!shift)
       return null;
 
+    if (!this.coords)
+    {
+      ERROR("Unexpected 'null' value");
+      return null;
+    }
+
     return Coords.sum(this.coords, shift);
   }
 
@@ -129,6 +136,12 @@ export class RoomData extends GameEntityData
   //    Returns 'null' if 'to' aren't coordinates of an adjacent room.
   public getDirection(to: Coords)
   {
+    if (!this.coords)
+    {
+      ERROR("Unexpected 'null' value");
+      return null;
+    }
+    
     for (let direction in EXIT_SHIFTS)
     {
       let coordsInDirection = Coords.sum(this.coords, EXIT_SHIFTS[direction]);

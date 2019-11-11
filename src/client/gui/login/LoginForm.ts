@@ -12,7 +12,7 @@ import {LocalStorage} from '../../../client/lib/storage/LocalStorage';
 import {Connection} from '../../../client/lib/connection/Connection';
 import {Component} from '../../../client/gui/Component';
 import {CredentialsForm} from '../../../client/gui/form/CredentialsForm';
-import {LoginRequest} from '../../../shared/lib/protocol/LoginRequest';
+import {LoginRequest} from '../../../client/lib/protocol/LoginRequest';
 import {LoginResponse} from '../../../client/lib/protocol/LoginResponse';
 
 export class LoginForm extends CredentialsForm
@@ -26,9 +26,9 @@ export class LoginForm extends CredentialsForm
     );
 
     this.createEmailInput();
-    this.createEmptyLine();
+    this.$createEmptyLine();
     this.createPasswordInput();
-    this.createEmptyLine();
+    this.$createEmptyLine();
     this.createRememberMeCheckbox();
     this.createButtons();
   }
@@ -37,6 +37,11 @@ export class LoginForm extends CredentialsForm
 
   public displayProblem(response: LoginResponse)
   {
+    let problem = response.getProblem();
+
+    if (problem === null)
+      return;
+
     switch (response.result)
     {
       case LoginResponse.Result.UNDEFINED:
@@ -81,20 +86,39 @@ export class LoginForm extends CredentialsForm
     this.focusEmailInput();
   }
 
+  // -> Returns 'null' if email input value cannot be read.
   public getEmailInputValue()
   {
+    if (!this.emailInput)
+      return null;
+
     return this.emailInput.getValue();
   }
 
   // --------------- Protected methods ------------------
 
   // ~ Overrides Form.createRequest().
-  protected createRequest()
+  // -> Returns 'null' if request couldn't be created
+  //    or there is nothing to request yet.
+  protected createRequest(): LoginRequest | null
   {
-    let request = new LoginRequest();
+    if (!this.emailInput)
+    {
+      ERROR("Failed to create request because 'emailInput'"
+        + " component is missing");
+      return null;
+    }
 
-    request.email = this.emailInput.getValue();
-    request.password = this.passwordInput.getValue();
+    if (!this.passwordInput)
+    {
+      ERROR("Failed to create request because 'passwordInput'"
+        + " component is missing");
+      return null;
+    }
+
+    let email = this.emailInput.getValue();
+    let password = this.passwordInput.getValue();
+    let request = new LoginRequest(email, password);
 
     return request;
   }
@@ -114,17 +138,32 @@ export class LoginForm extends CredentialsForm
 
   private createButtons()
   {
+    let $buttonContainer = this.$createButtonContainer();
+
+    if (!$buttonContainer)
+    {
+      ERROR("Failed to create buttons in login form");
+      return;
+    }
+
     this.$createSubmitButton
     (
       {
         text: 'Login',
-        $parent: this.createButtonContainer()
+        $parent: $buttonContainer
       }
     );
   }
 
   private setStoredEmailAddress()
   {
+    if (!this.emailInput)
+    {
+      ERROR("Failed to set stored email address because"
+        + " email input component doesn't exist");
+      return;
+    }
+
     let savedEmail = LocalStorage.read(LocalStorage.EMAIL_ENTRY);
 
     if (savedEmail)

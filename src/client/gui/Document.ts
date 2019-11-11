@@ -50,7 +50,7 @@ export class Document
     // Attach handler for 'keydown' event.
     $(document).keydown
     (
-      (event) => { this.onKeyDown(event); }
+      (event: JQueryEventObject) => { this.onKeyDown(event); }
     );
 
     Windows.onDocumentReady();
@@ -62,7 +62,7 @@ export class Document
   }
 
   // Handles 'keydown' event on the document.
-  private onKeyDown(event: JQueryKeyEventObject)
+  private onKeyDown(event: JQueryEventObject)
   {
     if (Windows.activeStandaloneWindow)
     {
@@ -70,7 +70,10 @@ export class Document
       return;
     }
 
-    if (ClientApp.state === ClientApp.State.IN_GAME)
-      Windows.activeScrollWindow.onKeyDown(event);
+    if (Windows.activeScrollWindow)
+    {
+      if (ClientApp.state === ClientApp.State.IN_GAME)
+        Windows.activeScrollWindow.onKeyDown(event);
+    }
   }
 }

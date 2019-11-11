@@ -11,7 +11,7 @@
 import {Packet} from '../../../shared/lib/protocol/Packet';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class SystemMessage extends Packet
+export abstract class SystemMessage extends Packet
 {
   constructor()
   {
@@ -24,7 +24,7 @@ export class SystemMessage extends Packet
 
   public type = SystemMessage.Type.UNDEFINED;
 
-  public message: string = null;
+  public message: (string | null) = null;
 }
 
 // ------------------ Type declarations ----------------------
@@ -39,5 +39,3 @@ export module SystemMessage
     CLIENT_CLOSED_BROWSER_TAB
   }
 }
-
-Classes.registerSerializableClass(SystemMessage);

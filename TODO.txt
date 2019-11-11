@@ -1,6 +1,583 @@
 TO DO, TO DO, TODO TODO TODO, todotodooooooo.... todotodo...
 --------------------------------------------------------------
 
+(https://www.typescriptlang.org/docs/handbook/compiler-options.html)
+----------------------------------------------------------------------
+
+TODO: Prozkoumat tsc flag '--baseUrl' (mohlo by to zkrátit importy modulů)
+  (případně ještě '--paths')
+
+TODO: Prozkoumat tsc flag '--inlineSourceMap'
+
+TODO: Prozkoumat '--suppressImplicitAnyIndexErrors'
+
+TODO: Zvážit přidání následujících flagů do tscofigů (pro client a pro server).
+
+// Report error when not all code paths in function return a value.
+noImplicitReturns
+
+// Report errors for fallthrough cases in switch statement.
+noFallthroughCasesInSwitch
+
+// Disallow inconsistently-cased references to the same file.
+forceConsistentCasingInFileNames
+
+// Report errors on unused local variables.
+noUnusedLocals
+
+// Report errors on unused parameters.
+noUnusedParameters
+
+
+IMPORTANT: Konvence hledacích a accesorových funkcí:
+- get() používají javascriptové classy, takže by se mělo chovat
+  vždycky stejně (vracet Value | undefined). Ještě lepší ale bude
+  to nepoužívat pro vlastní funkce.
+- find() by mělo vracet (Value | "NOT FOUND")
+- getCosi() by mělo vracet (Value) a hodit výjimku, když neexistuje.
+  Důvod: Tahle pojmenovávám accessory.
+TODO: Napsat to do dokumentace.
+[done]
+
+
+Úpravy záhlaví souborů
+-----------------------
+TODO: Asi bych mohl projít úvodní commenty všech souborů a smazat
+zbytečné informace (LoginRequest implements login request.)
+
+TODO: S typescriptovým strict módem už asi není třeba všude psát 'use strict';
+
+IMPORTANT TODO: Asi bych SerializedEntity neměl serializovat dopředu, ale až
+  když serializuju to, do čeho je vnořená. Důvod je, že teď na dvou
+  místech předávám parametr 'mode' a může se mi tudíž stát, že nebude
+  stejnej.
+- asi bych měl předefinovat metodu na serializaci a deserializaci, takže
+  se prostě zavolá automaticky
+Pak je tu ještě jedna varianta: Můžu celou classu SerializedEntity zrušit
+a upravit Entity tak, že když je mode "SEND_TO_CLIENT", tak se automatcky
+serializuje celej strom.
+- to zní jako nejlepší varianta.
+NOTE: Stávající stav mi asi nebrání v tom, abych přepsal funování
+packetů a udělal z toho zase přeložitelnou věc. Takže do tohohle se zatím
+pouštět nebudu.
+
+--------------------------------------------------------------
+
+TODO: Zkusit zrušit EntityData
+- u rootových class udělat /shared, /client a /server verze jako u packetů.
+- data potomků (UglyGrayOrc apod.) možná budou stačit na serveru a když ne,
+  tak je dát do vložených balíků - např. Affects.
+(Herní staty na to stejně asi budu chtít navěsit jako balík, abych je mohl
+ sdílet mezi různými typy entity (aby šly poškozovat roomy, itemy atd. stejně
+ jako charactery)).
+
+TODO: Posílat klientové errory a exceptiony na server a tam je zalogovat.
+ (samozřejmě jen pokud je ještě funkční websocket.)
+
+
+TODO: "UNDEFINED" result responsy možná vůbec nepotřebuju,
+  můžu jí stav říct rovnou v konstruktoru.
+  (a ideálně mu passnout i data, ať nemusím řešit, jak se mají jmenovat
+   setovací metody ;-) A taky nebudu muset ověřovat, že jsou data
+   setnuta)
+
+TODO: SerializedEntity by se taky mohla serializovat rovnou
+  v konstruktoru z parametru.
+[done]
+
+TODO: Používám zbytečně velkej kanón. EnterGameRequest/Resonse může
+  jen hodit error, tzn. vůbec nepotřebuje pole Problems a nepotřebuje
+  ani rozlišovat typ erroru/problému.
+
+
+TODO: EnterGameRequest vyhazuje výjimky, které by asi měly vznikat
+  někde hlouběji (kód by se tím pročistil).
+[done]
+
+
+TODO: Vymyslet, kam dát kontrolu tečky na konci problem stringů.
+
+TODO: Tohle už není pravda:
+  "This class needs to use the same name as it's ancestor in /shared"
+- asi to prostě odmazat.
+[done]
+
+
+TODO: Vyrobit server verze Packetů, které měly jen client verzi.
+[done]
+TODO: Udělat shared Packet classy abstraktní.
+[done]
+
+
+TODO: Až to zas půjde přeložit a pustit, tak vyzkoušet, jesli se při
+  loadování Serializable z JSONu volá konstruktor a případně čím se
+  to nainicializuje (nejspíš se nevolá, takže by parametry asi měly
+  belt něco | undefined, abych je důsledně ošetřoval před přístupem).
+- zatím v Packetech tu inicializaci v konstruktoru nechám.
+- souvisí s tím taky .version property. Možná by neměla být inicializovaná
+  v konstruktoru, ale prostě v class body.
+
+
+TODO: Přejmenovat checkovací metody na checkForCharacterNameProblem() etc.
+TODO: Návratová hodnota by měla být "OK" | string
+  (nikoliv 'null' | string)
+TODO: Problems by mělo být pole [{ type: Type.ERROR, problem: "je to rozbitý" }]
+- půjde zkontrolovat, že pole není prázdné
+'type' by měl být enum
+- půjde switchnout
+- půjde zkontrolovat, že tam není neošetřená hodnota
+
+
+TODO: Nastudovat mixins:
+  https://blog.mariusschulz.com/2017/05/26/typescript-2-2-mixin-classes
+
+
+TODO: Top-level odchytávání výjímek
+  (viz ClientSocket.onReceiveMessage())
+IMPORTANT TODO:
+  Na klientovi bych v top level catchích bych asi měl pouštět dál výjimky
+  vyhozené ve fcích ERROR() a REPORT(), aby se mi dostaly do konzole v
+  původním stavu.
+
+
+TODO: funkce process() v packetech by měly chytat svoje výjimky.
+V connection.receiveData() se to dělat nebude, tam to vůbec probublat
+nemá (tam už je pozdě na korektní error handling). Chytit bych to měl
+pak až úplně na top levelu, což je nejspíš někde ve zpracování data eventu na
+socketu.
+
+TODO: Hmm, když už mám funkce ERROR() a REPORT(), tak by asi dávala smysl
+  i funkce LOG(). Když nic jinýho, je to kratší než Syslog.log().
+- na druhou stranu mám tam teď specifické logovací fce, což by s jedinou
+  funkcí nešlo...
+[kašlat na to]
+
+
+Hmm...
+- problém nedědění typů bych ještě mohl vyřešit tak, že
+  /shared předky nazvu SharedXXX a budu je importovat a typy brát z nich...
+  (šlo by to sice i bez přejmenování, ale byl by to docela zmatek).
+Jo, to asi zní dobře. Sice pořád zůstanou stejný classy na clientu a na
+serveru, to se aspoň nikdy nepřekládá dohromady. A navíc to má důvod
+(určení co se na co překlápí při komunikaci mezi klientem a serverem).
+...
+- Tohle se mi nelíbilo, vracím to zpět.
+Ještě bych ale mohl zvážit sjednocení na styl:
+  Entity
+  - ClientEntity
+  - ServerEntity
+V tom případě bych asi buď musel do entit přidat property, která bude říkat,
+jak se jmenuje odpovídající classa na druhé straně, respektive na co se to
+matchuje
+(což může asi být automatické:
+ public static protocolClassName = this.constructor.name;),
+nebo to dělat při posílání packetu automaticky (tzn. že ClientXXX se
+automaticky matchne na ServerXXX a naopak). Property bude asi lepší, protože
+classy jako Orc nejspíš nebudou mít client-side variantu a budou se tudíž
+serializovat jako Character.
+
+
+
+
+TODO: Error responsům sem sebral prefix '[ERROR]:', měl bych ho tam
+  zase přidat (asi na klientovi).
+  - a nebo to formulvoat nějak ve stylu "An error occured while registering
+    your account".
+
+TODO: Při kontrole Requestu by se asi nemuselo hned logovat.
+
+--------------------------------------------------------------
+
+Logování a errory
+------------------
+
+- Asi budu potřebovat logovat Error objecty.
+- Asi by stálo za to při logování logických errorů volat
+  něco jako: log(new Error("Hp out of valid range"));
+  protože díky tomu bude správně stack trace a nebudu ho muset
+  upižlávat. Na druhou stranu...
+
+Taky můžu udělat chytrou fci ERROR, která bude detekovat typ parametru.
+- to zní dobře
+- Potenciální problém je, že někdo může udělat:
+    throw "Chyba bez new Error()"
+  což se mi pak detekuje jako string a logne se to jako standardní ERROR().
+  Správně by to mělo sprostě nadávat, že se má házet Error object.
+
+function ERROR(error: any)
+{
+  if (isString(ERROR))
+  {
+    ...
+  }
+  else if (error instanceof Error)
+  {
+    ...
+  }
+  else
+  {
+    // Nepovolený typ erroru.
+  }
+}
+
+TODO: funkce REPORT(error);
+[done]
+
+TODO: '[ERROR]: ' by se mělo k hlášce přidávat už ve fci ERROR().
+[done]
+
+TODO: Otestovat 'throw "Error"'
+
+TODO: Otestovat neodchycenou výjimku.
+
+--------------------------------------------------------------
+
+Packety a spol
+---------------
+
+- Packet.process() by asi neměl vracet bool, měl by všechno
+  potřebné ošetřit. Respektive můžu volání celé hodit do try-catch
+  bloku.
+Respektive try-catchovat bych asi měl na nejvyšší možné úrovni,
+  což je nejspíš někde v receiveData handleru na socketu. Ale v zásadě
+  asi můžu i níž.
+
+Vytvoření client-side i server-side verze packet class sice umožní
+  udělat shared classy abstraktní, ale nepořeší to, že LoginRequest.process()
+  se volá jen na serveru, takže client-side verze by byla prázdná (a nejspíš
+  by logovala error)
+- správně by Request.process() mělo být pouze u server-side packetů.
+
+/shared/Packet
+- /shared/Request
+  - /shared/LoginRequest
+- /shared/Response
+
+  - /client/Request
+  - /client/LoginRequest
+
+  - /server/Request
+    .Processs
+  - /server/LoginRequest
+    .Processs
+
+- v classe Packet je jen metoda request() (která tam být nemá)
+- v classe Request není vůbec nic (v modulu Request je interface Problems)
+- class Response má property .problems a pár metod na práci s nimi.
+
+- v /server/Connection se volá packet.process();
+  Měl by to být packet typu /server/Request
+
+- v /client/Connection se volá packet.process();
+  Neprocesej se jen server responsy, ale taky server eventy
+
+čili bych asi měl mít:
+ClientRequest (client ho sestavuje, server ho procesí)
+ServerResponse (server ho sestavuje, client ho procesí)
+ServerEvent (server ho sestavuje, client ho procesí)
+
+Obecně
+- Request je cokoliv, co posílá client v důsledku inputu od hráče.
+- Response je odpověď na Request
+- Event posílá server, aniž by dostal Request.
+
+/shared/Packet (Tohle možná vůbec nepotřebuju)
+- /client/IncommingPacket
+  .process()
+-   /client/Response (procesí se)
+-   /client/Event (procesí se)
+- /client/OutgoingPacket
+-   /client/Request (vytváří se)
+
+- /server/OutgoingPacket
+-   /server/Response (vytváří se)
+-   /server/Event (vytváří se)
+- /server/IncommingPacket
+  .process()
+-   /server/Request (procesí se)
+
+Tohle je celý hezký, ale zrada je v tom, že např. LoginRequest musí mít
+  stejné properties na client i na serveru. Podle téhle hierarchie by byl
+  na clientu zděděnej z /client/OutgoingPacket/Request a na serveru
+  z /server/IncommingPacket/Request.
+- což jde jen vícenásobou dědičností, tzn. by asi /shared/LoginRequest
+  musel být interface a server a client verze by dědily z něj a z příslušného
+  incomming/outgoing packetu.
+  (což by šlo, až na to, že pak budou muset zopakovat deklarace propeties.
+   ale tak co už. I když vlastně pak bude jiná inicializace na serveru
+   a na klientu, což asi není úplně dobře...)
+Teď je to tak, že společné properties jsou v /shared/LoginRequest
+(což dává smysl)
+- problém je v tom, že z toho potřebuju mít zděděnou procesitelnou
+  a neprocesitelnou variantu...
+  - Na druhou stranu tohle by ale asi ten interface fakt vyřešil.
+    Na to, abych mohl na parametru polymorfně zavolat metodu, totiž nutně
+    nepotřebuju mít classovou hierarchii - stačí, když ten parametr bude
+    vyhovovat interfacu s touto metodou.
+
+Tzn.:
+  /client/LoginRequest by byl zděděnej z /shared/LoginRequest
+    (kde jsou sdílené properties) a z interface OutgoinPacket
+    (to vlastně ani není potřeba, protože outgoing packet nic nedělá).
+  /client/LoginRequest by byl zděděnej z /shared/LoginRequest
+    a z interface IncommingPacket.
+
+    interface IncommingPacket
+    {
+      process(): void;
+    }
+
+- Metodu process() si pak musí naimplementovat, ale to by musel stejně,
+  když by si ji přetěžoval.
+- Rozdíl oproti dědičnosti je, že v metodě process() se nemůže volat super().
+
+
+
+Asi řeším píčoviny. Zdědit metodu z interfacu sice jde, ale nepomůžu si tím.
+- nepůjde pak dynamicky kontrolovat typ (protože procházet po jedné všechny
+  properties je fakt pitomost). A stejně nakonec někde bude muset bejt
+  exception, když ten typ nebude sedět.
+- mít v Packetu metodu process() { ERROR("Musi se pretizit"); } nebrani
+  tomu, aby byl Packet abstract.
+
+--------------------------------------------------------------
+
+TODO: Zvážit, jestli by se nehodilo, aby se server-side a client-side
+  classy mohly jmenovat jinak (tzn. musel bych v nich mít nějakou statickou
+  proměnnou, kam by se psalo, na co se to má deserializovat na druhé straně).
+Teď mám např. App, ClientApp a ServerApp - což dává smysl.
+  Nemůžu to ale takhle udělat třeba s LoginResponse, protože ta se na klientu
+  a serveru musí jmenovat stejně. Tzn. musím mít předka SharedLoginResponse.
+  (navíc by to bylo matoucí, ClientLoginResponse by znělo, jako že to posílá
+   klient, což není pravda).
+
+SharedLoginResponse
+ClientLoginResponse
+ServerLoginResponse
+
+
+SharedCharacter
+    public description = "Unfinished character.";
+- ClientCharacter
+- ServerCharacter
+
+SharedOrc extends SharedCharacter
+    public description = "Ugly gray orc.";
+- ClientOrc
+- ServerOrc
+
+Možná to XXXData fakt nebudu potřebovat...
+
+Entity
+=> /shared/Character
+  .exits
+  .flags
+  => /client/Character
+     => /client/Orc
+  => /server/Character
+     .serverFlags
+     => /server/Orc
+
+Do /client/Orc ani /server/Orc teď už nemůžu přímo přidat nějakou shared
+  property, ale můžu na ně navěsit konkrétní modul (tzn. nikoliv obecná
+  CharacterData, ale třeba Affects).
+- a můžu ho k tomu dokonce přidědit, aniž by byl v /shared/Character, a to tak,
+  že jak /client/Orc tak /server/Orc zdědím z interfacu.
+  (To jsem sice nechtěl udělat úplně se všema properties, ale na přidání něčeho
+   hluboko ve stromu dědičnosti je to asi ok).
+
+Entity asi budu pojmenovávat stejně v /shared, /client i /server. Sice si budu
+  muset dávat pozor, do čeho zrovna hrabu, ale to by neměl bejt až takovej
+  problém.
+
+
+--------------------------------------------------------------
+
+
+
+TODO: v ServerApp a ClientApp asi u server-specific a client-specific
+  properties nemusím držet nonstatic verze se static accessorem, protože
+  se k nim stejně přistupuje vždycky ve stylu ServerApp.entities.
+  Tzn. úplně stačí:
+    public static entities = new ServerEntities();
+- Bez nonstatic properties se neobejdu pouze v případě, že na ně přistupuje
+  nějaký shared kód, tzn. potřebuju polymorfismus.
+
+
+TODO: Zvážit, jestli Connection a ServerSocket musí být dvě různé classy
+  (možná by dávalo větší smysl, kdyby to byla jedna classa).
+- možná by Connection mohla dědit z WebSocketu.
+
+TODO: Z WebSocketu byla zrušena property 'upgradeReq'. Místo toho
+se teď předává parametrem při vytoření socketu:
+  Thing.prototype.onWebSocketOpen = function onWebSocketOpen(ws, req)
+  {
+    ws.upgradeReq = req;
+    // ...
+  }
+- remote url naparsovat už při otevírání socketu a zapamatovat si ho v Socket.
+[asi done]
+
+
+TODO: Ha, ony už nejspíš jdou deklarovat statický stringový properties:
+  class Blah
+  {
+    static message = "Hello";
+    // A dokonce i constove:
+    protected static readonly TEST = "Test";
+  }
+
+BIIIIIIIG TOOODOOOOOOO:
+[16:20] Rahman: hmm, k tomu nacitani dat z disku me tak napada, ze bych
+                mozna mohl povolit loadnout 'null' pouze do property,
+                ktera ma hodnotu 'null'
+[16:21] Rahman: loaduje se do instance classy a ta instance je nejak
+                nainicializovana pri vytvoreni
+[16:21] Rahman: treba class Frlf { public x: number | null = null; }
+[16:22] Rahman: tzn. kdyz tam pri loadovani ze souboru je 'null', tak
+                se tam musel dostat nejakou validni cestou a tudiz mam
+                jistotu, ze ten typ je (neco | null)
+- a asi bych měl stejně ošetřit i případ, kdy je savnuta hodnota 'undefined'.
+
+
+TODO: Proč se mi sakra něco buildí do /build/client/js/server?
+- protože jsem v shared kódu includoval server classu.
+[done]
+
+TODO: Návratové hodnoty z funkcí s více možnými negativními
+  výsledky (např. file not found, error) řešit union typem
+  např.: (Account | "FILE_NOT_FOUND" | "ERROR");
+viz LoginReuqest
+- Výhledově zvážit, jestli by se errory nedaly vždycky vracet takhle
+ (místo null, false, atd.)
+ - principielně to nejde, pokud funkce vrací string, tam by se holt dál
+   vracel null.
+Každopádně by pak nebylo třeba komentovat návratové hodnoty funkcí,
+bylo by to self-documented.
+
+Pozn.:
+denyRequest() by asi mělo být jen pro "měkké" zamínutí - třeba
+  když hráč zadá špatně heslo.
+sendErrorResponse() by mělo zamítnout request kvůli tomu, že nastala
+  chyba - a nemělo by to volat denyRequest().
+  - zapisuje do { error: "" }
+Ok tak ne, mám to dobře.
+- denyRequest() by měla být obecná metoda s parametrem 'problems'.
+  A to z toho důvodu, že některé packety vrací víc problémů naráz.
+- nad ním by měly být metody na denyování do specifických polí
+  na input formu. Tzn. něco jako:
+    sendErrorResponse()
+    sendNameProblemResponse()
+
+TODO: Property v Problems nazývat ve stylu "loginProblem".
+- bude to líp sedět k příslušným elementům ve formu.
+
+
+TODO: Použít i v ostatních Request classách trik, že sendFailureResponse()
+  volá až nadřazená metoda, do které se vrátím přes return false;
+
+TODO: NameLockRecord by měl mít typ.
+TODO - ještě lépe:
+- NameLock by asi měla být Serializable classa a měla by se savovat jako
+  cokoliv jiného
+- Account Info zdědit z NameLocku, protože má property navíc (password hash).
+
+
+TODO: Problems v paketech by asi šly taky udělat přes union type indexovaný
+enumem, podobně jako NameLock.LoadResult.
+
+
+TODO: Consty (všude).
+
+
+
+TODO: Aktivace "strict" módu v tsconfigu (striktní kontrola null a undefined).
+- Nepovinné parametry bych asi měl zapisovat typescriptově, tzn.
+  bla(a?: string), nikoliv bla(a: string = null)
+  - asi nakonec ne (respektive ne nutně), protože do toho parametru někdo může
+    chtít passnout 'null' cíleně (například jako chybovou návratovou hodnotu
+    z jiné funkce.
+- TODO: V object literálech, kde se přiřazuje 'null' do nějaké property,
+  to dělat takhle:
+    var obj = { property: <string | null> null };
+- pozn. JQueryKeyEventObject měním na JQueryEventObject. Snad to bude fungovat.
+
+TODO: Updatovat node moduly a zkontrolovat, že jsou správně zapsané
+  dependencies (ono to sice není tak podstatný vzhledem k tomu, že mám
+  všechny moduly v repository, ale i tak by to bylo lepší).
+
+
+TODO: Zrušit metodu isRequestValid
+- buď ji přesunout do requestu (tzn. se bude volat if (request.isValid()),
+  nebo ji zrušit úplně - testy se mohou dělat už v createRequest()).
+- Když se nepodaří vytvořit request, tak by se to asi taky měl dozvědět
+  uživatel (tzn. hodit to asi do obecného erroru).
+- hmm, asi bych mohl rovnou předělat Response, aby se posílaly všechny
+  problémy (asi jako object, ať můžu pojmenovat jednotlivé druhy problémů
+  a matchovat je pak na správné komponenty), ne jen první detekovaný.
+  - Request by pak mohl taky generovat objekt s problémama a formy by měly
+    jen jednu metodu na jejich zobrazení (displayProblems()).
+  (hmm, tohle mimochodem znamená, že asi nebudu potřebovat result u responzů
+   - buď budou problems 'null' nebo ne).
+
+TODO: metody Packet.process() by měly vracet 'false' při chybě
+TODO: Return value checkovat a něco s tím udělat.
+- i když ono je to asi taky zbytečný, stejně s tím výsledkem nemám co udělat
+  (chybu je třeba reportovat už ve vnořených funkcích)
+- na druhou stranu to, že s návratovou hodnotou nic neudělám teď, ještě
+  neznamená, že se to nebude hodit časem. Ignorovat návratovou hodnotu můžu
+  vždycky. Takže vracet bool.
+TODO: Přejmenování metod (getXXXProblem na checkXXX) viz ChargenRequest.
+- metoda checkProblems(). - nebo možná checkRequest()? checkForProblems()?
+  - checkForProblems() je asi nejlepší.
+
+TODO: Pokud se mají procesit jen některé packety, tak by asi metoda process()
+  neměla být v abstraktním Packetu ale až tam, kde se fakt volá
+  (tím bych si měl zajistit kontrolu bez nutnosti házet errory).
+- to je asi blbost, přestal by mi fungovat polymorfismus.
+
+
+TODO: Zvážit, jeslti by nešly sloučit classy Connection a ServerSocket
+  (respektive ClientSocket).
+  - koncepčně mi to zní jako stejná věc, tzn. classa obalující webSocket.
+  - je otázka, jestli to půjde na clientu, kde je jen jedna connection
+    (asi by zůstávala a při reconnectu by se v ní měnil websocket)
+
+TODO: Udělat server-side classy pro Response packety a client-side classy
+  pro Request packety. Budou sice prázdné, ale jejich shared předci
+  se budou moct jmenovat SharedXXXResponse/Request a budou moci být abstract.
+- teď totiž instancuju (a přidávám do Classes) shared předky, kteří by měli
+  být abstraktní - a nemohou být právě proto, že je instancuju.
+
+
+--------------------------------------------------------------
+
+Úvaha o error handlingu a návratových hodnotách
+------------------------------------------------
+
+- Typescript umožňuje používat složené typy,
+  např. (NameLock | null | "File doesn't exist").
+- Oproti výjimkám to má výhodu, že je jasné, že je danou možnost
+  třeba ošetřit (jinak bude řvát compiler).
+  - Nebude to možná fungovat u funkcí, které vracejí string
+
+Asi by dávala smysl konvence, že:
+- když funkce vrátí 'null', tak je příslušný error reportnutý
+  (pokud ho bylo třeba reportnout).
+- když vrátí string, tak to reportnuté není.
+
+- Funkce, které čtou ze souborů, by asi defaultně neměly reportovat,
+  že soubor neexistuje. Místo toho by měly vracet "File doesn't exist".
+  - díky tomu odpadne potřeba předávat parametr "ReportNotFoundError".
+
+Tak ještě trochu jinak: Místo stringu vracet enum.
+- Ten má výhodu v tom, že spojuje typ a hodnotu
+  (takže se dá použít jako návratová hodnota a současně se na něj dá testovat).
+- Kromě toho může mít víc hodnot (takže možná ani ten 'null' nebude potřeba).
+- Půjde taky použít i v kombinaci se stringovou návratovou hodnotou.
+
+--------------------------------------------------------------
+
 TODO: /shared/ContainerEntity má property 'data', což nejspíš konfliktí
 s property 'data' typu GameEntityData.
 
@@ -5778,6 +6355,9 @@ implementovat nebudu - není to zásadní pro prvotní hratelnou verzi.
 
 TODO: Přibyla static metoda Entity.isValid(entity);
   - použít ji všude, kde dává smysl ji použít.
+  - tak nakonec ji použít nemůžu, protože si s ní nerozumí 'strict' checking
+    v typescriptu.
+[deprecated]
 
 TODO: Předělat všechny async fce, které by mohly vracet hodnotu, ale nevrací,
   protože jsem si myslel, že to nejde.

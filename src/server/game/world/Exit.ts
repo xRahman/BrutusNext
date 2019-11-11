@@ -22,11 +22,11 @@ export class Exit extends GameEntity
     this.version = 0;
   }
 
-  public data = new ExitData(this);
+  public data: ExitData = new ExitData(this);
 
   // Connected rooms. Order only matters if this is a one-way exit.
-  public from: Room = null;
-  public to: Room = null;
+  public from: (Room | null) = null;
+  public to: (Room | null) = null;
 
   // --------------- Public accessors -------------------
 

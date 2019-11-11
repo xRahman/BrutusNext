@@ -26,7 +26,7 @@ export class ClientGameEntity extends Entity
   public async setName
   (
     name: string,
-    cathegory: Entity.NameCathegory = null,
+    cathegory: (Entity.NameCathegory | null) = null,
     // This should only be 'false' if you have created
     // a name lock file prior to calling setName().
     createNameLock = true

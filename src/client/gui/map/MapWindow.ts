@@ -23,7 +23,7 @@ export class MapWindow extends TitledWindow
         {
           name: 'map_window',
           sCssClass: MapWindow.S_CSS_CLASS,
-          resize: (event) => { this.onResize(event); }
+          resize: (event: JQueryEventObject) => { this.onResize(event); }
         }
       }
     );
@@ -50,11 +50,11 @@ export class MapWindow extends TitledWindow
 
   // ----------------- Private data ---------------------
 
-  private svgMap: SvgMap = null;
+  private svgMap: (SvgMap | null) = null;
 
   // Prevents map updating until MapWindow.RESIZE_UPDATE_DELAY
   // miliseconds after last 'window.resize' event.
-  private resizeTimeout = null;
+  private resizeTimeout: (NodeJS.Timer | null) = null;
 
   // --------------- Static accessors -------------------
 
@@ -75,6 +75,12 @@ export class MapWindow extends TitledWindow
   //  (Executes when html document is resized.)
   public onDocumentResize()
   {
+    if (this.resizeTimeout === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     clearTimeout(this.resizeTimeout);
 
     this.resizeTimeout = setTimeout
@@ -86,13 +92,27 @@ export class MapWindow extends TitledWindow
     );
   }
 
+  // -> Returns 0 on error.
   public getContentWidth()
   {
+    if (this.$content === null)
+    {
+      ERROR("Unexpected 'null' value. Using zero content width");
+      return 0;
+    }
+
     return this.$content.width();
   }
 
+  // -> Returns 0 on error.
   public getContentHeight()
   {
+    if (this.$content === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return 0;
+    }
+
     return this.$content.height();
   }
 
@@ -103,6 +123,12 @@ export class MapWindow extends TitledWindow
     if (this.svgMap !== null)
       ERROR("SVG map already exists");
 
+    if (this.$content === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     this.svgMap = new SvgMap(this, this.$content);
   }
 
@@ -110,6 +136,12 @@ export class MapWindow extends TitledWindow
   // changes in bound data.
   private updateMap()
   {
+    if (this.svgMap === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     this.svgMap.render();
   }
 

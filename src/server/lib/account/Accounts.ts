@@ -14,7 +14,6 @@ import {Entity} from '../../../shared/lib/entity/Entity';
 import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
 import {Account} from '../../../server/lib/account/Account';
 import {Connection} from '../../../server/lib/connection/Connection';
-import {RegisterRequest} from '../../../shared/lib/protocol/RegisterRequest';
 
 export class Accounts
 {
@@ -35,7 +34,7 @@ export class Accounts
   }
 
   // -> Returns 'undefined' if entity 'name' isn't in the list.
-  public static get(name: string)
+  public static get(name: string): Account | undefined
   {
     return ServerApp.accounts.names.get(name);
   }

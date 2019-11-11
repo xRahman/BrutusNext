@@ -23,7 +23,7 @@ export class Grid<T>
 
   // ----------------- Private data ---------------------
 
-  private data = null;
+  private data = new Map<number, Map<number, Map<number, T>>>();
 
   // Point in array with smallest 's', 'e' and 'u'
   private min = new Coords();
@@ -47,7 +47,7 @@ export class Grid<T>
 
   // Reads from position [s, e, u].
   // -> Returns 'undefined' if item isn't in the array.
-  public get(coords: Coords): T
+  public get(coords: Coords): T | undefined
   {
     // Two-dimensional associative sub-map (in 'east-up' direction).
     let euArray = this.data.get(coords.s);
@@ -67,15 +67,12 @@ export class Grid<T>
   // Sets 'item' at position [s, e, u].
   public set(coords: Coords, item: T)
   {
-    if (!this.data)
-      this.data = new Map<number, any>();
-
     // Two-dimensional associative sub-map (in 'east-up' direction).
     let euArray = this.data.get(coords.s);
 
     if (!euArray)
     {
-      euArray = new Map<number, any>();
+      euArray = new Map<number, Map<number, T>>();
 
       this.data.set(coords.s, euArray);
     }

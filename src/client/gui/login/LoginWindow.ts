@@ -27,21 +27,42 @@ export class LoginWindow extends FormWindow
     this.flags.set(ClientApp.State.LOGIN);
   }
 
+  // --------------- Public accessors -------------------
+
+  // ! Throws an exception on error.
+  public getForm(): LoginForm
+  {
+    if (!this.form)
+      throw new Error("Login form doesn't exist");
+
+    return this.form;
+  }
+
   // ----------------- Private data ---------------------
 
-  private $registerLink: JQuery = null;
+  private $registerLink: (JQuery | null) = null;
 
-  // ----------------- Public data ---------------------- 
+  // ---------------- Protected data --------------------
 
   // ~ Overrides FormWindow.form.
-  public form: LoginForm = null;
+  protected form: (LoginForm | null) = null;
 
   // ---------------- Private methods -------------------
 
   private createLoginForm()
   {
     if (this.form !== null)
-      ERROR("Login form already exists");
+    {
+      ERROR("Login form already exists. Not creating it again");
+      return;
+    }
+
+    if (!this.$content)
+    {
+      ERROR("Failed to create form component in login window"
+        + " because $content element is missing");
+      return;
+    }
 
     this.form = new LoginForm(this, { $parent: this.$content });
   }
@@ -50,6 +71,14 @@ export class LoginWindow extends FormWindow
   {
     let $parent = super.createTextContainer();
 
+    if (!$parent)
+    {
+      ERROR("Failed to create text container element."
+        + " It also means that $registerLink element"
+        + " won't be created");
+      return;
+    }
+
     this.$createText({ $parent, text: "Don't have an account yet? " });
 
     this.$registerLink = this.$createTextLink
@@ -57,7 +86,7 @@ export class LoginWindow extends FormWindow
       {
         $parent,
         text: "Register",
-        click: (event) => { this.onRegisterClick(event); }
+        click: (event: JQueryEventObject) => { this.onRegisterClick(event); }
       }
     );
 
@@ -68,6 +97,6 @@ export class LoginWindow extends FormWindow
 
   private onRegisterClick(event: JQueryEventObject)
   {
-    ClientApp.setState(ClientApp.State.REGISTER);
+    ClientApp.switchToState(ClientApp.State.REGISTER);
   }
 }

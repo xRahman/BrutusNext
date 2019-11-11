@@ -3,26 +3,25 @@
 
   Part of client-server communication protocol.
 
-  Character selection request.
+  Enter game request.
 */
 
 'use strict';
 
-import {Packet} from '../../../shared/lib/protocol/Packet';
+import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Request} from '../../../shared/lib/protocol/Request';
+import {Connection} from '../../../shared/lib/connection/Connection';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class EnterGameRequest extends Packet
+export abstract class EnterGameRequest extends Request
 {
-  constructor()
+  constructor
+  (
+    protected characterId: string
+  )
   {
     super();
 
     this.version = 0;
   }
-
-  // ----------------- Public data ----------------------
-
-  public characterId: string = null;
 }
-
-Classes.registerSerializableClass(EnterGameRequest);

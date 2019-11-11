@@ -10,7 +10,7 @@ import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {Component} from '../../../client/gui/Component';
 import {FormInput} from '../../../client/gui/form/FormInput';
-import {RegisterRequest} from '../../../shared/lib/protocol/RegisterRequest';
+import {RegisterRequest} from '../../../client/lib/protocol/RegisterRequest';
 
 export class PasswordInput extends FormInput
 {
@@ -46,6 +46,14 @@ export class PasswordInput extends FormInput
 
   private createInput(param: Component.PasswordInputParam = {})
   {
+    if (!this.$element)
+    {
+      ERROR("Unable to create $input element in password"
+        + " input component because password input component"
+        + " doesn't have a valid $element");
+      return;
+    }
+
     Utils.applyDefaults
     (
       param,

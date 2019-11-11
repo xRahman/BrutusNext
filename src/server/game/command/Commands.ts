@@ -83,7 +83,7 @@ export abstract class Commands /* extends ScriptableEntity*/
 
   // This method should send message to the connected player that command is
   // not recognized.
-  protected abstract unknownCommand();
+  protected abstract unknownCommand(): void;
 
   // ---------------- Private methods -------------------
 
@@ -142,7 +142,7 @@ export abstract class Commands /* extends ScriptableEntity*/
 
       // We have matched the command, so it's time to call respective
       // command handler.
-      this[commandHandler](argument);
+      (this as any)[commandHandler](argument);
 
       return true;
     }

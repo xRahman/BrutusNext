@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Component} from '../../../client/gui/Component';
@@ -82,6 +83,12 @@ export class StandaloneWindow extends TitledWindow
 
   protected createEmptyLine(param: Component.DivParam = {})
   {
+    if (this.$content === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return null;
+    }
+
     Utils.applyDefaults
     (
       param,
@@ -96,6 +103,12 @@ export class StandaloneWindow extends TitledWindow
 
   protected createTextContainer(param: Component.DivParam = {})
   {
+    if (this.$content === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return null;
+    }
+    
     Utils.applyDefaults
     (
       param,

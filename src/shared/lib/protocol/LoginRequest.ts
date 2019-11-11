@@ -8,12 +8,18 @@
 
 'use strict';
 
-import {Packet} from '../../../shared/lib/protocol/Packet';
+import {ERROR} from '../../../shared/lib/error/ERROR';
+import {Request} from '../../../shared/lib/protocol/Request';
+import {Connection} from '../../../shared/lib/connection/Connection';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class LoginRequest extends Packet
+export abstract class LoginRequest extends Request
 {
-  constructor()
+  constructor
+  (
+    public email: string,
+    public password: string
+  )
   {
     super();
 
@@ -22,8 +28,61 @@ export class LoginRequest extends Packet
 
   // ----------------- Public data ----------------------
 
-  public email: string = null;
-  public password: string = null;
+  // ---------------- Public methods --------------------
+
+  /// To be deleted.
+  // // ~ Overrides Packet.process().
+  // // -> Returns 'true' on success.
+  // public async process(connection: Connection)
+  // {
+  //   ERROR("Attempt to call /shared/protocol/LoginRequest.process(). That's"
+  //     + " not supposed to happen, only /server/protocol/LoginRequest can"
+  //     + " be processed");
+
+  //   return false;
+  // }
 }
 
-Classes.registerSerializableClass(LoginRequest);
+// ------------------ Type declarations ----------------------
+
+export module LoginRequest
+{
+  export enum ProblemType
+  {
+    LOGIN_PROBLEM,
+    ERROR
+  };
+
+  export type Problem =
+  {
+    type: ProblemType;
+    message: string;
+  };
+
+  export type Problems = Array<Problem>;
+}
+
+// export module LoginRequest
+// {
+//   export enum ProblemType
+//   {
+//     LOGIN_PROBLEM,
+//     ERROR
+//   };
+
+//   export type Problem =
+//   {
+//     type: ProblemType;
+//     problem: string;
+//   };
+
+//   export type Problems = Array<Problem>;
+
+//   export type Result = Request.Accepted | Problems;
+
+//   // export interface Problems extends Request.Problems
+//   // {
+//   //   loginProblem?: string;
+//   //   error?: string;
+//   // }
+// }

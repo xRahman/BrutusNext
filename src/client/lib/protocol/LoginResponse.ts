@@ -4,14 +4,6 @@
   Client-side functionality related to login response packet.
 */
 
-/*
-  Note:
-    This class needs to use the same name as it's ancestor in /shared,
-  because class name of the /shared version of the class is written to
-  serialized data on the server and is used to create /client version
-  of the class when deserializing the packet.
-*/
-
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
@@ -62,7 +54,7 @@ export class LoginResponse extends SharedLoginResponse
   {
     this.extractData(connection);
     Windows.loginWindow.form.rememberCredentials();
-    ClientApp.setState(ClientApp.State.CHARSELECT);
+    ClientApp.switchToState(ClientApp.State.CHARSELECT);
   }
 
   private extractData(connection: Connection)
@@ -82,5 +74,4 @@ export class LoginResponse extends SharedLoginResponse
   }
 }
 
-// This overwrites ancestor class.
 Classes.registerSerializableClass(LoginResponse);

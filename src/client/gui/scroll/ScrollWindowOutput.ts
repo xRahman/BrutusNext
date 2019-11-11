@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {Component} from '../../../client/gui/Component';
 
@@ -33,7 +34,7 @@ export class ScrollWindowOutput extends Component
         // a 'tabindex' attribute set.
         // ('tabindex: -1' means: focusable only by script, not by user)
         tabindex: -1,
-        keydown: (event) => { this.onKeyDown(event); }
+        keydown: (event: JQueryEventObject) => { this.onKeyDown(event); }
       }
     );
 
@@ -51,7 +52,7 @@ export class ScrollWindowOutput extends Component
   (
     message: string,
     {
-      baseTextColor = null,
+      baseTextColor = undefined,
       forceScroll = false
     }
     : ScrollWindowOutput.AppendParam = {}
@@ -63,6 +64,12 @@ export class ScrollWindowOutput extends Component
     // (there is no need to do it if 'forceScroll' is true).
     if (!forceScroll)
       userScrolled = this.isUserScrolled();
+
+    if (this.$element === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
 
     // Create a new <div> element, set 'message' as it's
     // text content and append it to 'this.$element'.
@@ -85,11 +92,23 @@ export class ScrollWindowOutput extends Component
 
   public scrollToTop()
   {
+    if (this.$element === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     this.$element.scrollTop(0);
   }
 
   public scrollToBottom()
   {
+    if (this.$element === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     this.$element.scrollTop(this.$element.prop('scrollHeight'));
   }
 
@@ -98,6 +117,12 @@ export class ScrollWindowOutput extends Component
   // Determines if output is scrolled up by user.
   private isUserScrolled()
   {
+    if (this.$element === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return false;
+    }
+
     // Size of the scrollable range (in pixels).
     let range =
       this.$element.prop('scrollHeight') - this.$element.prop('clientHeight');

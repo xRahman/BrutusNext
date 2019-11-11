@@ -3,22 +3,25 @@
   {
     "target": "es6",
     "module": "amd",  // 'amd' is used by require.js module loader.
+    "strict": true,   // Enforce strict checking of 'null' and 'undefined'.
     "charset": "UTF-8",
     "moduleResolution": "node",
     "newLine": "LF",
     "noEmitOnError": true,
-    ///"outDir": "../../client/js/build",
     "outDir": "../../build/client/js",
     //"outFile": "../../client/js/build/BrutusNextClient.js",
     ///"rootDir": ".",
     "rootDir": "../",
     "sourceMap": true,
-    ///"sourceRoot": "."
-    "sourceRoot": "../"
-    // 'compileOnSave' actually works in vs code if --watch parameter
-    //  is passed to 'tsc', but the same functionality is turned on by
-    // '"isWatching": true' in tasks.json. We do it there.
-    /* "compileOnSave": true*/
+    "sourceRoot": "../",
+    // // Print names of generated files part of the compilation.
+    // "listFiles": true,
+    // // Report module resolution log messages.
+    // "traceResolution": true
+    // // 'compileOnSave' actually works in vs code if --watch parameter
+    // //  is passed to 'tsc', but the same functionality is turned on by
+    // // '"isWatching": true' in tasks.json. We do it there.
+    // "compileOnSave": true
   }//,
   /*"files":
   [

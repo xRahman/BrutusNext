@@ -42,6 +42,14 @@ export class TextInput extends FormInput
 
   private createInput(param: Component.TextInputParam = {})
   {
+    if (!this.$element)
+    {
+      ERROR("Unable to create $input element in text"
+        + " input component because text input component"
+        + " doesn't have a valid $element");
+      return;
+    }
+
     Utils.applyDefaults
     (
       param,

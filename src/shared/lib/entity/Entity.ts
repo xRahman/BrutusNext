@@ -21,8 +21,8 @@
   (unlinke in javascript prototypal inheritance where
   nonprimitive properties of the instance are references
   to the matching properties on the prototype so writing
-  to them actually modify the prototype object instead of
-  creating own propety on the instance).
+  to them actually modifies the prototype object instead
+  of creating own propety on the instance).
 */
 
 'use strict';
@@ -30,6 +30,7 @@
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {FATAL_ERROR} from '../../../shared/lib/error/FATAL_ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
+import {AnyClass} from '../../../shared/lib/class/Classes';
 import {Serializable} from '../../../shared/lib/class/Serializable';
 import {Attributes} from '../../../shared/lib/class/Attributes';
 import {Entities} from '../../../shared/lib/entity/Entities';
@@ -52,7 +53,7 @@ export class Entity extends Serializable
   // ----------------- Private data ----------------------
 
   // Entity name.
-  private name = null;
+  private name: (string | null) = null;
 
   // In what cathegory is the name unique (accounts, characters, world...).
   // 'null' means that name is not unique.
@@ -62,7 +63,7 @@ export class Entity extends Serializable
   //  of a prototype entity is inherited by it's instances and descendant
   //  prototypes so it woudn't really be unique even if we set a name
   //  cathegory to it.)
-  private nameCathegory: Entity.NameCathegory = null;
+  private nameCathegory: (Entity.NameCathegory | null) = null;
 
   // All prototypeNames have to be unique. This is enforced
   // by creating a name lock file in /data/names/prototypes
@@ -77,13 +78,13 @@ export class Entity extends Serializable
   //   Instance entities inherit this property from their
   // prototype entity so you can use it to quickly check
   // what prototype is the instance entity based on.
-  public prototypeName: string = null;
+  public prototypeName: (string | null) = null;
 
   // ------------------------------------------------- //
   //                   Unique entity id                //
   // ------------------------------------------------- //
 
-  private id: string = null;
+  private id: (string | null) = null;
     private static id: Attributes =
     {
       // Property 'id' is not saved to file, because it is saved
@@ -101,7 +102,7 @@ export class Entity extends Serializable
   // Reference to entity which serves as prototype object to this
   // entity. Only root prototype entities (created in Classes)
   // have 'null' value of 'prototypeEntity'.
-  private prototypeEntity: Entity = null;
+  private prototypeEntity: (Entity | null) = null;
     private static prototypeEntity: Attributes =
     {
       saved: true,
@@ -148,11 +149,11 @@ export class Entity extends Serializable
   // 'sLocation' entity (in other words: entity 'sLocation'
   // has a hasmap 'sNames' which maps 'sName' of this entity
   // to the reference to this entity).
-  private sName: string = null;
+  private sName: (string | null) = null;
 
   // Reference to the entity which can translate our 'sName'
   // to the reference to this entity.
-  private sLocation: Entity = null;
+  private sLocation: (Entity | null) = null;
 
   // Hasmap translating symbolic names of entities to respective
   // references.
@@ -162,12 +163,18 @@ export class Entity extends Serializable
 
   // ------------- Public static methods ----------------
 
-  public static isValid(entity: Entity)
+  /// This doesn't work well with typescript 'strict' checking.
+  /// Typescript won't know that this method filters out both 'null'
+  /// and 'undefined' values. Instead we will have to use:
+  ///   if (entity && entity.isValid()) ...
+  /*
+  public static isValid(entity: Entity | null | undefined)
   {
     return entity !== null
         && entity !== undefined
         && entity.isValid() === true;
   }
+  */
 
   // --------------- Public accessors -------------------
 
@@ -176,11 +183,12 @@ export class Entity extends Serializable
   public async setName
   (
     name: string,
-    cathegory: Entity.NameCathegory = null,
+    cathegory: (Entity.NameCathegory | null) = null,
     // This should only be 'false' if you have created
     // a name lock file prior to calling setName().
     createNameLock = true
   )
+  : Promise<boolean>
   {
     this.name = name;
     this.nameCathegory = cathegory;
@@ -245,12 +253,18 @@ export class Entity extends Serializable
   //  and are not loaded automatically.)
   public setPrototypeEntity(prototypeEntity: Entity, isPrototype: boolean)
   {
-    // Note: We can't use Entity.isValid() here, because prototypeEntity
-    // is deproxified so isValid() can't be used on it.
-    if (prototypeEntity === null || prototypeEntity === undefined)
+    if (!prototypeEntity || !prototypeEntity.isValid())
     {
       ERROR("Attempt to set an invalid prototype to entity"
         + " " + this.getErrorIdString());
+      return;
+    }
+
+    let id = this.getId();
+
+    if (id === null)
+    {
+      ERROR("Unexpected 'null' value");
       return;
     }
 
@@ -264,13 +278,13 @@ export class Entity extends Serializable
       // Remove 'this.id' from the old prototype's
       // 'instanceIds' or 'descendantIds' depending
       // on where it is present.
-      this.prototypeEntity.removeChildId(this.getId());
+      this.prototypeEntity.removeChildId(id);
     }
 
     if (isPrototype)
-      prototypeEntity.addDescendantId(this.getId());
+      prototypeEntity.addDescendantId(id);
     else
-      prototypeEntity.addInstanceId(this.getId());
+      prototypeEntity.addInstanceId(id);
 
     this.prototypeEntity = prototypeEntity;
 
@@ -327,23 +341,28 @@ export class Entity extends Serializable
     // Also trigger event on instance.data.
     if (instance === this)
     {
-      let data = instance[Entity.DATA_PROPERTY];
+      let data = (instance as any)[Entity.DATA_PROPERTY];
 
       if (data && data['triggerEvent'])
         data.triggerEvent(eventHandler);
     }
   }
 
-  // Serializes entity and all its ancestors. Writes
-  // results to 'data' arrat, starting with root prototype.
-  public serializeTree(data: Array<string>, mode: Serializable.Mode)
+  // Serializes entity and all its ancestors.
+  // -> Returns result as array of JSON strings representing
+  //    each serialized entity, starting with root prototype.
+  public serializeAncestorTree(mode: Serializable.Mode): Array<string>
   {
-    if (this.prototypeEntity !== null)
-    {
-      this.prototypeEntity.serializeTree(data, mode);
-    }
+    let serializedEntities: Array<string>;
 
-    data.push(this.serialize(mode));
+    if (this.prototypeEntity !== null)
+      serializedEntities = this.prototypeEntity.serializeAncestorTree(mode);
+    else
+      serializedEntities = new Array<string>();
+
+    serializedEntities.push(this.serialize(mode));
+
+    return serializedEntities;
   }
 
   private invalidateProperty(property: any)
@@ -399,9 +418,9 @@ export class Entity extends Serializable
     {
       // Only invalidate own properties.
       if (object.hasOwnProperty(propertyName))
-        this.invalidateProperty(object[propertyName]);
+        this.invalidateProperty((object as any)[propertyName]);
 
-      delete object[propertyName];
+      delete (object as any)[propertyName];
     }
 
     // Set 'null' to the prototype of 'object'.
@@ -487,7 +506,15 @@ export class Entity extends Serializable
 
   public hasDescendant(entity: Entity)
   {
-    return this.descendantIds.has(entity.getId());
+    let id = entity.getId();
+
+    if (!id)
+    {
+      ERROR("Unexpected 'null' value");
+      return false;
+    }
+
+    return this.descendantIds.has(id);
   }
 
   /// Nevím, jestli to bude k něčemu potřeba, ale když už to tu mám...
@@ -522,16 +549,19 @@ export class Entity extends Serializable
   public async postSave() {}
   public async postLoad(loadContents = true) {}
 
-  public dynamicCast<T>(Class: { new (...args: any[]): T }): T
+  // ~ Overrides Serializable.dynamicCast().
+  // ! Throws an exception on error.
+  public dynamicCast<T>(Class: AnyClass<T>): T
   {
-    // Dynamic type check - we make sure that entity is inherited from
-    // requested class (or an instance of the class itself).
+    // Dynamic type check - we make sure that entity is inherited
+    // from requested class or is an instance of that class.
     if (!(this instanceof Class))
     {
-      FATAL_ERROR("Type cast error: entity " + this.getErrorIdString()
-        + " is not an instance of requested type (" + Class.name + ")");
-
-      return null;
+      throw new TypeError
+      (
+        "(type cast error): entity " + this.getErrorIdString()
+        + " is not an instance of requested type (" + Class.name + ")"
+      );
     }
 
     return <any>this;
@@ -542,17 +572,24 @@ export class Entity extends Serializable
   // (indended for use in error messages).
   public getErrorIdString()
   {
+    let id: string;
     // Access 'this.id' directly (not using this.getId()) because
     // it would trigger another ERROR() which would precede logging
     // of the ERROR when getErrorIdString() is called. That would
     // give confusing information about the actual error.
-    let id = this.id;
 
     if (this.id === undefined)
+    {
       id = "undefined";
-
-    if (this.id === null)
+    }
+    else if (this.id === null)
+    {
       id = "null";
+    }
+    else
+    {
+      id = this.id;
+    }
 
     return "{ className: " + this.getClassName() + ","
       + " name: " + this.name + ", id: " + id + " }";
@@ -590,7 +627,7 @@ export class Entity extends Serializable
   {
     if (this.hasOwnProperty(trigger))
     {
-      let triggerFunction = this[trigger];
+      let triggerFunction = (this as any)[trigger];
 
       if (typeof triggerFunction !== 'function')
       {

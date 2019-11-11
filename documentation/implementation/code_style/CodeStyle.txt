@@ -169,7 +169,7 @@ var person =
     break;
 
 
-Return values of functions
+Function return values
 ---------------------------
 
 // If you are returning complex expression, put it in a local variable
@@ -196,19 +196,145 @@ function toCelsius(fahrenheit)
 // (it is another reason for returning a named variable instead of long
 // expression)
 
+
+Update:
+  Specify return type of a function unless it's a simple one-line getter.
+Even though the type will be automatically infered from return values
+by typescript, there are two reasons to do it manually:
+
+- Code will be self-commented: It will be easy to see what the function
+  returns.
+
+- It will help you catch mistakes - typescript won't let you return
+  something that is not of correct type. You would probably find out
+  when you called your function somewhere, but it still helps a little
+  bit.
+
+Verbose union types in return values:
+  Don't return 'undefined' or 'null', return a string literal type
+  instead. For example:
+
+public find(id: string): Entity | "NOT FOUND"
+{
+  ...
+}
+
+There are two reasons:
+
+- Code will be self-commented: It will be easy to see what is the meaning
+  of return value even without an extra comment.
+
+- Usage of this function will also be self-documented.
+
+Exmple:
+{
+  let searchResult = this.find(id);
+
+  if (searchResult === "NOT FOUND")
+  {
+    doSomething();
+    return;
+  }
+
+  // Here we are exploiting typescript control flow analysis.
+  // The type of 'searchResult' is (Entity | "NOT FOUND") but
+  // we have narrowed it in the first if clause. Because we
+  // have specified that the type of 'entity' is 'Entity',
+  // typescript will only allow us to assign 'searchResult'
+  // to 'entity' if we have handled all other cases of original
+  // union type and the only remaining variant is of type 'Entity'.
+  //   It means that this code is not only self-documented but it
+  // also ensures that all possibilities are handled.
+  let entity: Entity = searchResult;
+}
+
+Function comments
+------------------
+
+Always comment functions (and variables) that override something and
+functions that throw an exception. Otherwise it's better when the
+function name is self-explaining and so doesn't require a comment.
+  You might, however, comment function that implements some not so
+obvious alorithm or explain the logic why the function exists.
+
+Override comment:
+
+// ~ Overrides Entity.find().
+
+  Specify what the function (or variable) overrides even though
+  it might get out of sync due to refactoring. When it does, there
+  is a chance that someone will notice the discrepancy and investigate
+  it - it might only be wrong comment but it might also be an error so
+  it's probably worth doing.
+
+
+Exception comment:
+
+// ! Throws an exception on error.
+
+  Writing this comment will help when someone will want to call your
+  function. It's because the exception might be thrown somewhere deep
+  in the call chain so it's not obvious from your function body that
+  an exception might occur.
+
+Return value comment:
+
+// -> Returns 'null' when the value isn't found.
+
+  I used to write these comments for all functions but stopped doing
+  so when typescript introduced union types. It's much better to declare
+  function like this:
+
+  function find(): Element | "NOT FOUND"
+  {
+  }
+
+  Such functions don't need a return value comment but you might still
+  want to comment the return value when it's not this obvious.
+
+
 Conditions
 -----------
 
-// If you are evaluating complex condition, put it in a local variable and
-// evaluate that variable. You should also do it to split really crazy
-// conditions to more readable ones.
+IMPORTANT: Don't write multiline 'if ()' clauses.
+  If condition won't fit one line, refactor it using a boolean variable
+or function call:
 
 var isValueValid = value >= 0 && value < 100 && value != 13;
 
-if (isValueValid)
+Example:
 {
-  // ...
+  if (isValueValid)
+  {
+  }
 }
+
+Or:
+
+Example:
+{
+  if (isSomethingComplicatedTrue())
+  {
+  }
+}
+
+You should also split complicated conditions to more readable ones.
+
+Example:
+{
+  // Instead of: 'if ((A || !B) && (C || D))' write:
+
+  // Note: 'something' and 'somethingElse' should have some
+  // undesntandable meaning.
+  let something = A || !B;
+  let somethingElse = C || D;
+
+  if (something || somethingElse)
+  {
+  }
+}
+
+
 
 // Insert single space in between if and '('.
 // Insert single space in between identifiers and operators:
@@ -230,6 +356,7 @@ if (isNight)
   
 // not like this: if (isNight) visibility = 0;
 
+
 Identifiers
 ------------
 
@@ -248,6 +375,8 @@ Use PascalCase (starting with uppercase letter) for constructors and TODO
 Closures as function params
 ----------------------------
 
+// Huh - I don't think that I use this anywhere... But I might be wrong.
+
 function doSomething
 (
   firstParam,
@@ -261,7 +390,7 @@ function doSomething
 }
 
 
-Variables declaration
+Variable declaration
 ----------------------
 
 // Declare each variable with separate 'let' and put it on a separate line.
@@ -294,8 +423,149 @@ if (x === undefined)
   txt = "x is not initialized";
 }
 
-// However, I usualy try to inicialize each variable and if I need a variable
-// with value of 'undefined', I do it explicitly like this and add a comment:
+Update:
+  With typescript strict checking and control flow analysis, it is now
+perectly ok to do something like this:
 
-// Assigning 'undefined' on purpose. We will test for it later.
-let x = undefined;
+{
+  let message: String;
+
+  if (something)
+    message = "Some message";
+  else
+    message = "Other message";
+}
+
+If you specify the type of your variable, typescript won't let
+you let it undefined - the code won't compile.
+
+
+Throwing exceptions
+--------------------
+
+- Always throw an Error object, never just a string.
+
+Example:
+{
+  if (element === null)
+    throw new Error("'element' is not supposed to be null");
+}
+
+Note: I usually put variable or parameter names to apostrophes. The same
+is true for simple values like 'null', 'undefined', 'true', etc. It
+underlines that it is an identifier, not just a generic element.
+
+- When an error message extends one line, put whole 'throw' statement in
+block. Also put round bracers on new lines (it's a regular function call
+after all).
+
+Example:
+
+Example:
+{
+  if (element === null)
+  {
+    throw new Error
+    (
+      "'element' is not supposed to be null."
+      + " Someone probably forget co call create()"
+    );
+  }
+}
+
+Catching exceptions
+--------------------
+
+General try-catch pattern looks like this:
+
+try
+{
+  something();
+}
+catch (error)
+{
+  REPORT(error, "Something is not going to happen."
+    + " And it requires additional line to describe");
+}
+
+Note that REPORT() function can have second parameter explaining
+the consequences of the error or anything else related to where
+the error has been caught (unlike message passed to Error object
+which relates to where the error occured).
+
+
+
+Using of ERROR() or REPORT()
+-----------------------------
+
+When passing multiline message to ERROR() or REPORT() function,
+it's ok not to put round bracers on new lines.
+
+Example:
+{
+  ERROR("This is a really, really, I mean"
+    + " really long error message").
+}
+
+Why this exception from general rule of calling functions? I don't know,
+it just feels natural. Maybe it's because it's just one parameter (even
+though it's multi-line) and the function name is short and special.
+
+Naming conventions
+===================
+
+Getters and Dinders
+--------------------
+
+1) Don't ever declare methods named get() or set().
+
+These are used in built-in typescript classes and get()
+usually returns 'undefined' if an item isn't found.
+  
+We don't do that, we return named union type instead
+(like (Entity | "NOT FOUND") so we shouldn't name our
+functions 'get()' because readed would expect standard
+javascript behaviour.
+
+2) getters should always return exactly the expected type
+   and throw an exception if it's not possible.
+
+(By getters we mean both javascript getters like
+ 'public get something() {}' and c-style getters
+ like 'public getSomething()'.)
+
+Example:
+
+class Blah
+{
+  private component: Component | null;
+
+  // ! Throws an exception on error.
+  public getComponent(): Component
+  {
+    if (!this.component)
+      throw new Error("Attempt to get an invalid 'component'");
+
+    return this.component;
+  }
+}
+
+In this example, property 'component' can be 'null' (probably
+because it cannot be passed to this class when it is instantiated
+and needs to be assigned later) but method getComponent() is only
+supposed to be called when'component' exists.
+  Note that return value of getComponent() is (Component), not
+(Component | null). This way whoever is using it doesn't have
+to check for null value and can use it directly like.
+
+let componentSize = this.getComponent().size;
+
+Possible exception still needs to be handled somewhere of course.
+
+3) findSomething() functions.
+
+If you want to test for existence of something (usually an element
+of the list) and return it if it exists in one function call, name
+the function findXxx().
+
+Such function should return union type like (Something | "NOT FOUND").

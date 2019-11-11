@@ -27,50 +27,74 @@ export class Windows
   // All created windows (hidden or not).
   private windows = new Set<Window>();
 
-  private loginWindow: LoginWindow = null;
-  private registerWindow: RegisterWindow = null;
-  private termsWindow: TermsWindow = null;
-  private charselectWindow: CharselectWindow = null;
-  private chargenWindow: ChargenWindow = null;
+  private loginWindow: (LoginWindow | null) = null;
+  private registerWindow: (RegisterWindow | null) = null;
+  private termsWindow: (TermsWindow | null) = null;
+  private charselectWindow: (CharselectWindow | null) = null;
+  private chargenWindow: (ChargenWindow | null) = null;
 
   // There is just one map window per ClientApp.
   // When avatar is switched, content is redrawn.
-  private mapWindow: MapWindow = null;
+  private mapWindow: (MapWindow | null) = null;
 
   /// To be deleted.
-  ///private activeScrollWindow: ScrollWindow = null;
+  ///private activeScrollWindow: (ScrollWindow | null) = null;
 
-  private activeStandaloneWindow: StandaloneWindow = null;
+  private activeStandaloneWindow: (StandaloneWindow | null) = null;
 
   // --------------- Static accessors -------------------
 
-  public static get loginWindow()
+  // ! Throws an exception on error.
+  public static get loginWindow(): LoginWindow
   {
+    if (!ClientApp.windows.loginWindow)
+      throw new Error("Login window doesn't exist");
+
     return ClientApp.windows.loginWindow;
   }
 
-  public static get registerWindow()
+  // ! Throws an exception on error.
+  public static get registerWindow(): RegisterWindow
   {
+    if (!ClientApp.windows.registerWindow)
+      throw new Error("Register window doesn't exist");
+
     return ClientApp.windows.registerWindow;
   }
 
-  public static get chargenWindow()
+  // ! Throws an exception on error.
+  public static get chargenWindow(): ChargenWindow
   {
+    if (!ClientApp.windows.chargenWindow)
+      throw new Error("Chargen window doesn't exist");
+
     return ClientApp.windows.chargenWindow;
   }
 
-  public static get charselectWindow()
+  // ! Throws an exception on error.
+  public static get charselectWindow(): CharselectWindow
   {
+    if (!ClientApp.windows.charselectWindow)
+      throw new Error("Charselect window doesn't exist");
+
     return ClientApp.windows.charselectWindow;
   }
 
-  public static get mapWindow()
+  // ! Throws an exception on error.
+  public static get mapWindow(): MapWindow
   {
+    if (!ClientApp.windows.mapWindow)
+      throw new Error("Map window doesn't exist");
+
     return ClientApp.windows.mapWindow;
   }
 
+  // ! Throws an exception on error.
   public static get activeScrollWindow()
   {
+    if (ClientApp.connection.activeAvatar === null)
+      throw new Error("Invalid 'active Avatar'");
+
     return ClientApp.connection.activeAvatar.scrollWindow;
   }
 
@@ -80,12 +104,12 @@ export class Windows
   //   ClientApp.windows.activeScrollWindow = window;
   // }
 
-  public static get activeStandaloneWindow()
+  public static get activeStandaloneWindow(): StandaloneWindow | null
   {
     return ClientApp.windows.activeStandaloneWindow;
   }
 
-  public static set activeStandaloneWindow(window: StandaloneWindow)
+  public static set activeStandaloneWindow(window: StandaloneWindow | null)
   {
     ClientApp.windows.activeStandaloneWindow = window;
   }
@@ -115,7 +139,7 @@ export class Windows
 
   // Hides windows that should be hiden in given 'state' and
   // shows those that should be visible.
-  public onAppStateChange(state: ClientApp.State)
+  public onAppChangedState(state: ClientApp.State)
   {
     // First reset our reference to active standalone window.
     //   If another standalone window will be shown, the reference
@@ -198,7 +222,7 @@ export class Windows
     return this.chargenWindow;
   }
 
-  private alreadyExists(window: Window, wndName: string)
+  private alreadyExists(window: Window | null, wndName: string)
   {
     if (window !== null)
     {

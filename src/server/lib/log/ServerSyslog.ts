@@ -29,6 +29,8 @@ export class ServerSyslog
   {
     let entry = "[" + MessageType[msgType] + "] " + text;
 
+    /// To be deleted - app instance now always exists.
+    /*
     // We need to check if instance of ServerApp exists, because syslog
     // messages can be sent even before it is is created.
     if (App.instanceExists())
@@ -40,6 +42,14 @@ export class ServerSyslog
       // parameter is null).
       message.sendToAllIngameConnections(adminLevel);
     }
+    */
+
+    let message = new Message(entry, msgType);
+
+    // Send log entry to all online characters that have appropriate
+    // admin level. Syslog messages don't have sender ('sender'
+    // parameter is null).
+    message.sendToAllIngameConnections(adminLevel);
 
     // Output to stdout.
     console.log(entry);

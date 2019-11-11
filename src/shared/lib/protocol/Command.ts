@@ -11,7 +11,7 @@
 import {Packet} from '../../../shared/lib/protocol/Packet';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class Command extends Packet
+export abstract class Command extends Packet
 {
   constructor()
   {
@@ -22,7 +22,5 @@ export class Command extends Packet
 
   // ----------------- Public data ----------------------
 
-  public command: string = null;
+  public command: (string | null) = null;
 }
-
-Classes.registerSerializableClass(Command);

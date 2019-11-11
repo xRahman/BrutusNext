@@ -48,6 +48,13 @@ export class Charplate extends Component
     // Create a <label> element
     // (it will also server as container element).
     this.$element = this.createLabelContainer(param);
+
+    if (!this.$element)
+    {
+      ERROR("Failed to create label container in charplate."
+        + " Charplate won't be created as well");
+      return;
+    }
     
     // Put a hidden radio input inside it.
     this.$radio = this.createRadio({ $parent: this.$element });
@@ -74,7 +81,7 @@ export class Charplate extends Component
 
   // ----------------- Private data ---------------------
 
-  private $radio: JQuery = null;
+  private $radio: (JQuery | null) = null;
 
   // ---------------- Public methods --------------------
 
@@ -111,10 +118,20 @@ export class Charplate extends Component
 
   private createRadio(param: Component.RadioInputParam)
   {
-    if (!Entity.isValid(this.character))
+    if (!this.character || !this.character.isValid())
     {
       ERROR("Invalid 'character' on charplate. Radiobutton is not created");
-      return;
+      return null;
+    }
+
+    let characterId = this.character.getId();
+
+    if (!characterId)
+    {
+      ERROR("Failed to create radiobutton in charplate"
+        + " because character " + this.character.getErrorIdString()
+        + " assigned to charplate doesn't have a valid id");
+      return null;
     }
 
     Utils.applyDefaults
@@ -124,8 +141,8 @@ export class Charplate extends Component
         sCssClass: Component.HIDDEN_S_CSS_CLASS,
         // This value will be read to extract character 'id' when
         // 'enter game' button is pressed.
-        value: this.character.getId(),
-        change: (event) => this.onChange(event)
+        value: characterId,
+        change: (event: JQueryEventObject) => this.onChange(event)
       }
     );
 
@@ -146,11 +163,17 @@ export class Charplate extends Component
         // fire mouse events (other than 'change' which it
         // fires because it's inside a label that also
         // contains charplate).
-        dblclick: (event) => this.onDoubleClick(event)
+        dblclick: (event: JQueryEventObject) => this.onDoubleClick(event)
       }
     );
 
     let $charplate = this.$createDiv(param);
+
+    if (!$charplate)
+    {
+      ERROR("Failed to create $charplate element");
+      return;
+    }
 
     this.createPortrait({ $parent: $charplate });
     this.createPortraitLabels({ $parent: $charplate });
@@ -181,16 +204,31 @@ export class Charplate extends Component
 
     let $container = this.$createDiv(param);
 
+    if (!$container)
+    {
+      ERROR("Failed to create $container element");
+      return;
+    }
+
     this.createNameLabel({ $parent: $container });
     this.createInfoLabel({ $parent: $container });
   }
 
   private createNameLabel(param: Component.DivParam = {})
   {
-    if (!Entity.isValid(this.character))
+    if (!this.character || !this.character.isValid())
     {
       ERROR("Invalid 'character' on charplate. Name label is not created");
       return;
+    }
+
+    let characterName = this.character.getName();
+
+    if (characterName === null)
+    {
+      ERROR("Invalid character name on character"
+        + " " + this.character.getErrorIdString());
+      characterName = "";
     }
 
     Utils.applyDefaults
@@ -198,7 +236,7 @@ export class Charplate extends Component
       param,
       {
         sCssClass: Charplate.LABEL_BIG_S_CSS_CLASS,
-        text: this.character.getName()
+        text: characterName
       }
     );
 
@@ -209,7 +247,7 @@ export class Charplate extends Component
 
   private createInfoLabel(param: Component.DivParam = {})
   {
-    if (!Entity.isValid(this.character))
+    if (!this.character || !this.character.isValid())
     {
       ERROR("Invalid 'character' on charplate. Info label is not created");
       return;

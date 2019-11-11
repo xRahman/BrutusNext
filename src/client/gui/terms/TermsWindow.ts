@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
 import {Component} from '../../../client/gui/Component';
@@ -53,6 +54,12 @@ export class TermsWindow extends StandaloneWindow
   {
     /// TEST:
     let termsText = "Don't be a jerk, please.";
+
+    if (this.$content === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return false;
+    }
     
     this.$createDiv
     (
@@ -66,20 +73,26 @@ export class TermsWindow extends StandaloneWindow
 
   private createAcceptButton()
   {
+    if (this.$content === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return null;
+    }
+
     return this.$createButton
     (
       {
         $parent: this.$content,
         sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS,
         text: 'Accept',
-        click: (event) => { this.onAcceptClick(event); }
+        click: (event: JQueryEventObject) => { this.onAcceptClick(event); }
       }
     );
   }
 
   private backToRegister()
   {
-    ClientApp.setState(ClientApp.State.REGISTER);
+    ClientApp.switchToState(ClientApp.State.REGISTER);
   }
 
   // ---------------- Event handlers --------------------
@@ -93,7 +106,7 @@ export class TermsWindow extends StandaloneWindow
   // Handles 'keydown' event fired on html document
   // (it means that this handler runs even if this
   //  window desn't have focus).
-  public onKeyDown(event: JQueryKeyEventObject)
+  public onKeyDown(event: JQueryEventObject)
   {
     let key = event.which;
 

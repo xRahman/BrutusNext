@@ -4,6 +4,12 @@
   Data from which script functions are created.
 */
 
+/// Tahle class implementovala skripty napsane v typescriptu, ktere se
+/// transpiluji do javascriptu a nasledne pousti ve virtualni masine
+/// pod node.js. Momentálně to nepoužívám, ale nechám si to tu, kdyby
+/// zase na interně kompilované skripty došlo.
+
+/*
 'use strict';
 
 import {Attributes} from '../../../shared/lib/class/Attributes';
@@ -14,6 +20,12 @@ import {Syslog} from '../../../shared/lib/log/Syslog';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {GameEntity} from '../../../server/game/GameEntity';
 import {Classes} from '../../../shared/lib/class/Classes';
+
+import {ResolveFunction} from '../../../shared/lib/utils/Utils';
+import {RejectFunction} from '../../../shared/lib/utils/Utils';
+
+// Built-in node.js modules.
+import * as vm from 'vm';
 
 // 3rd party modules.
 import * as ts from "typescript";
@@ -27,14 +39,14 @@ export class Script extends Serializable
   public name: string = "";
 
   // Name of the prototype this script belongs to.
-  public prototype: string = null;
+  public prototype: (string | null) = null;
 
   // Code that will be be compiled into a function and assigned to a prototype.
-  public code: string = "";
+  public code = "";
 
   // Calling this function will execute compiled script code.
   // (Only after the script is compiled of course.)
-  public run = null;
+  public run: ((...args: any[]) => void) | null = null;
     private static run: Attributes =
     {
       saved: false
@@ -42,7 +54,7 @@ export class Script extends Serializable
 
   // When the scrit is compiled, this is the function that represents
   // the script.
-  private internalFunction = null;
+  private internalFunction: any = null;
     // Do not save variable internalFunction.
     private static internalFunction: Attributes =
     {
@@ -53,48 +65,44 @@ export class Script extends Serializable
   {
     super();
 
-    /*
-      The following code uses quite a bit of dark magic so let me explain.
+    // The following code uses quite a bit of dark magic so let me explain.
 
-      General idea is to allow instances of game entities (like 'evilMob')
-      to be assigned a function, which is created by compiling the script.
-      Easiest way to do it is: evilMob['functionName'] = scriptFunction;
-      This solution, however, wouldn't allow for the scriptFunction body to be
-      changed in runtime (for example when builder changes and recompiles the
-      script), because evilMob.functionName() would still be the old, unchanged
-      function.
+    // General idea is to allow instances of game entities (like 'evilMob')
+    // to be assigned a function, which is created by compiling the script.
+    // Easiest way to do it is: evilMob['functionName'] = scriptFunction;
+    // This solution, however, wouldn't allow for the scriptFunction body to be
+    // changed in runtime (for example when builder changes and recompiles the
+    // script), because evilMob.functionName() would still be the old, unchanged
+    // function.
 
-      In order to allow changing scriptFunction in body runtime, we need to
-      set 'evilMob' a function, that calls our scriptFunction (let's call our
-      function 'internalFunction'), so when we change internalFunction,
-      evilMob.scriptFunction will call our new internalFunction.
+    // In order to allow changing scriptFunction in body runtime, we need to
+    // set 'evilMob' a function, that calls our scriptFunction (let's call our
+    // function 'internalFunction'), so when we change internalFunction,
+    // evilMob.scriptFunction will call our new internalFunction.
 
-      Implementation:
-        First we need an instance of Script class, let's call it 'script'.
-      when we do evilmob['scriptFunction'] = script.scriptFunction;, calling
-      evilMob.scriptFunction will set 'this' for scriptFunction to evilMob
-      (even though scriptFunction is a method of Script class) - and that is
-      fine, because we want to be able to access evilMob's properties from
-      the script.
-        That, however, means that this.internalFunction() call inside
-      Script::scriptFunction() won't work, because this is an evilMob, not
-      script. So we need to rememeber 'script' somewhere and that somewhere
-      is a closure of constructor of Script class (yes, that's where we are
-      right now). When a new Script() is called, constructor of Script launches
-      and this points to 'script' at that time (because we are inside of
-      constructor of Script). So here we remember 'script' - that's
-      what following line does:
-    */
+    // Implementation:
+    //   First we need an instance of Script class, let's call it 'script'.
+    // when we do evilmob['scriptFunction'] = script.scriptFunction;, calling
+    // evilMob.scriptFunction will set 'this' for scriptFunction to evilMob
+    // (even though scriptFunction is a method of Script class) - and that is
+    // fine, because we want to be able to access evilMob's properties from
+    // the script.
+    //   That, however, means that this.internalFunction() call inside
+    // Script::scriptFunction() won't work, because this is an evilMob, not
+    // script. So we need to rememeber 'script' somewhere and that somewhere
+    // is a closure of constructor of Script class (yes, that's where we are
+    // right now). When a new Script() is called, constructor of Script launches
+    // and this points to 'script' at that time (because we are inside of
+    // constructor of Script). So here we remember 'script' - that's
+    // what following line does:
 
     let script = this;
 
-    /*
-      Now we declare Script::scriptFunction. We do it inside constructor
-      in order for it to see the 'script' within closure of the constructor.
-      But we assign it to this.scriptFunction (remember this means 'script'
-      here) so it will be accessible from the outside even thought it's inside
-      the closure.
-    */
+    // Now we declare Script::scriptFunction. We do it inside constructor
+    // in order for it to see the 'script' within closure of the constructor.
+    // But we assign it to this.scriptFunction (remember this means 'script'
+    // here) so it will be accessible from the outside even thought it's inside
+    // the closure.
 
     this.run = async function(...args: any[])
     {
@@ -140,16 +148,14 @@ export class Script extends Serializable
       }
 
 
-      /*
-        Now we just call our insideFunction() on remembered 'script'.
-        It's not that easy, however, because we need script to have
-        'evilMob' as this (because we need to be able to access evilMob's
-        properties from the script).
+      // Now we just call our insideFunction() on remembered 'script'.
+      // It's not that easy, however, because we need script to have
+      // 'evilMob' as this (because we need to be able to access evilMob's
+      // properties from the script).
 
-        To to it, we use call() method of Function() object, which allows
-        us to call a function with specified 'this' (which is the entity
-        on which the script was triggered, like 'evilMob').
-      */
+      // To to it, we use call() method of Function() object, which allows
+      // us to call a function with specified 'this' (which is the entity
+      // on which the script was triggered, like 'evilMob').
 
       script.internalFunction.call
       (
@@ -183,42 +189,40 @@ export class Script extends Serializable
     // Declare local variable to store 'this.scriptname' in a closure.
     let scriptName = this.getFullName();
 
-    /*
-    // Declare local variable to store 'this' in a closure.
-    // (so we can call this.scriptChanged() from funcion delay())
-    let script = this;
+    // // Declare local variable to store 'this' in a closure.
+    // // (so we can call this.scriptChanged() from funcion delay())
+    // let script = this;
     
-    // Declare local variable to store 'compiledFunction' in a closure.
-    // (compiedFunction will be assigned only after the script is compiled,
-    //  because it will be created by the compilation of the script. But
-    //  it's ok, because delay() from withing the script will definitely
-    //  be run even later - definitely not before the script get's compiled.)
-    let compiledFunction = null;
+    // // Declare local variable to store 'compiledFunction' in a closure.
+    // // (compiedFunction will be assigned only after the script is compiled,
+    // //  because it will be created by the compilation of the script. But
+    // //  it's ok, because delay() from withing the script will definitely
+    // //  be run even later - definitely not before the script get's compiled.)
+    // let compiledFunction = null;
     
-    // Declare delay() function in a closure (locally) so it can
-    // access local variable scriptName.
-    let delay = async function(miliseconds: number)
-    {
-      console.log(this.getId().getStringId());
+    // // Declare delay() function in a closure (locally) so it can
+    // // access local variable scriptName.
+    // let delay = async function(miliseconds: number)
+    // {
+    //   console.log(this.getId().getStringId());
 
-      // Variable script is from the closure (it's a local variable
-      // of Script.compile).
-      await script.internalDelay(miliseconds, compiledFunction, scriptName);
-    }
+    //   // Variable script is from the closure (it's a local variable
+    //   // of Script.compile).
+    //   await script.internalDelay(miliseconds, compiledFunction, scriptName);
+    // }
     
-    // Sandbox is stored in a static variable - it's reused for
-    // compiling all mud scripts (because contextifying a sandbox
-    // takes quite a long time).
-    let sandbox = VirtualMachine.contextifiedScriptCompilationSandbox;
+    // // Sandbox is stored in a static variable - it's reused for
+    // // compiling all mud scripts (because contextifying a sandbox
+    // // takes quite a long time).
+    // let sandbox = VirtualMachine.contextifiedScriptCompilationSandbox;
 
-    // Assign localy declared delay() function to the sandbox, so
-    // the script will be able to call it.
-    sandbox.delay = delay;
+    // // Assign localy declared delay() function to the sandbox, so
+    // // the script will be able to call it.
+    // sandbox.delay = delay;
     
-    //// calling delay() from within the script will set 'this' to
-    //// sandbox 'this, which is an entity that the script is running on.
-    //sandbox.delay = delay.call(sandbox.me);
-    */
+    // //// calling delay() from within the script will set 'this' to
+    // //// sandbox 'this, which is an entity that the script is running on.
+    // //sandbox.delay = delay.call(sandbox.me);
 
     let vmScript = this.compileVmScript(scriptName);
 
@@ -229,19 +233,19 @@ export class Script extends Serializable
     // Sandbox is stored in a static variable - it's reused for
     // compiling all mud scripts (because contextifying a sandbox
     // takes quite a long time).
-    let sandbox = VirtualMachine.contextifiedScriptCompilationSandbox;
+    let sandbox: vm.Context = VirtualMachine.contextifiedScriptCompilationSandbox;
 
     // Run the compiled code within our sandbox object.
     VirtualMachine.executeVmScript(scriptName, vmScript, sandbox);
 
     // Assign compiled function to a class variable.
+/// Typescript tvrdi, ze Context nema property 'result'. Tezko rict, proc mi
+/// to pred tim fungovalo.
     this.internalFunction = sandbox.result;
 
-    /*
-    // And also store it in a local variable of this method so it's
-    // awailable from within a closure function delay().
-    compiledFunction = this.internalFunction;
-    */
+    // // And also store it in a local variable of this method so it's
+    // // awailable from within a closure function delay().
+    // compiledFunction = this.internalFunction;
   }
 
   // Checks if internal function changed against the one
@@ -283,11 +287,11 @@ export class Script extends Serializable
     return fullCode;
   }
 
-  private resumeScript
+  private resumeScript<T>
   (
     script: Script,
-    resolve,
-    reject,
+    resolve: ResolveFunction<T>,
+    reject: RejectFunction,
     entity: GameEntity,
     compiledFunction: Function
   )
@@ -320,11 +324,11 @@ export class Script extends Serializable
     }
   }
 
-  private compileVmScript(scriptName: string)
+  private compileVmScript(scriptName: string): vm.Script | null
   {
     // Adds'use strict';, function header and {} to the script code.
     let fullCode = this.getFullCode();
-    let transpiledCode = null;
+    let transpiledCode = "";
 
     try
     {
@@ -395,3 +399,4 @@ export class Script extends Serializable
 }
 
 Classes.registerSerializableClass(Script);
+*/

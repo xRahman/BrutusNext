@@ -49,18 +49,26 @@ export class Connections
   // Sends a message to all connections.
   // If 'visibility' is not 'null', message is only sent to connections
   // with valid ingame entity with sufficient AdminLevel.
-  public static send(message: Message, visibility: AdminLevel = null)
+  public static send(message: Message, visibility: (AdminLevel | null) = null)
   {
     for (let connection of ServerApp.connections.connectionList)
     {
       if (visibility !== null)
       {
-        if (!Entity.isValid(connection.ingameEntity))
+        if (!connection.ingameEntity || !connection.ingameEntity.isValid())
           continue;
+
+        const adminLevel = Admins.getAdminLevel(connection.ingameEntity);
+
+        if (adminLevel === null)
+        {
+          ERROR("Unexpected 'null' value");
+          continue;
+        }
 
         // Skip game entities that don't have sufficient admin level
         // to see this message.
-        if (Admins.getAdminLevel(connection.ingameEntity) < visibility)
+        if (adminLevel < visibility)
           continue;
       }
 

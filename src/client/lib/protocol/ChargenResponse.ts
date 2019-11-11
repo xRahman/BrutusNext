@@ -4,14 +4,6 @@
   Client-side functionality related to character creation request packet.
 */
 
-/*
-  Note:
-    This class needs to use the same name as it's ancestor in /shared,
-  because class name of the /shared version of the class is written to
-  serialized data on the server and is used to create /client version
-  of the class when deserializing the packet.
-*/
-
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
@@ -27,9 +19,9 @@ import {Classes} from '../../../shared/lib/class/Classes';
 
 export class ChargenResponse extends SharedChargenResponse
 {
-  constructor()
+  constructor(result: ChargenResponse.Result)
   {
-    super();
+    super(result);
 
     this.version = 0;
   }
@@ -66,7 +58,7 @@ export class ChargenResponse extends SharedChargenResponse
     if (!character)
       return;
 
-    ClientApp.setState(ClientApp.State.CHARSELECT);
+    ClientApp.switchToState(ClientApp.State.CHARSELECT);
 
     // Select newly added character
     // (we can do it here because ClientApp.setState() called
@@ -105,5 +97,12 @@ export class ChargenResponse extends SharedChargenResponse
   }
 }
 
-// This overwrites ancestor class.
+// ------------------ Type declarations ----------------------
+
+export module ChargenResponse
+{
+  // Reexport ancestor types becuase they are not inherited automatically.
+  export type Result = SharedChargenResponse.Result;
+}
+
 Classes.registerSerializableClass(ChargenResponse);

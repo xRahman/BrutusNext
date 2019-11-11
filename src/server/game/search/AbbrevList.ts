@@ -56,9 +56,9 @@ export class AbbrevList<T extends GameEntity>
 
   // ---------------- Public methods --------------------
 
-  // Returns null if no such entity exists.
+  // -> Returns null if no such entity exists.
   // (search string should be something like "3.mob.orc_chief")
-  public search(searchString: string): GameEntity
+  public search(searchString: string): GameEntity | null
   {
     let parseResult = this.parseSearchString(searchString);
     let cathegory = this.parseSearchCathegory(parseResult.cathegory);
@@ -165,7 +165,8 @@ export class AbbrevList<T extends GameEntity>
     let lowerCaseAbbrev = abbrev.toLocaleLowerCase();
 
     // get() Returns 'undefined' if item is not in hashmap.
-    let entityList: EntityList<T> = this.abbrevData.get(lowerCaseAbbrev);
+    let entityList: EntityList<T> | undefined =
+      this.abbrevData.get(lowerCaseAbbrev);
 
     // If record with such key wasn't found in this.abbrevList, 
     // a new EntityList will be created.
@@ -200,7 +201,7 @@ export class AbbrevList<T extends GameEntity>
       return result;
 
     let firstKeywordEntityList = entityLists[0].getEntities();
-    let processedEntity = null;
+    let processedEntity: (T | null) = null;
     let match = true;
 
     // Go through entity list matching the first keyword.
@@ -280,7 +281,7 @@ export class AbbrevList<T extends GameEntity>
     searchIndex: number,
     cathegory: number
   )
-  : GameEntity
+  : GameEntity | null
   {
     // This test it not necessary, it just saves going through the list
     // of candidates it there is less of them then requested index.
@@ -309,7 +310,7 @@ export class AbbrevList<T extends GameEntity>
     searchIndex: number,
     cathegory: number
   )
-  : GameEntity
+  : GameEntity | null
   {
 
     // Nothing can possibly match an empty, null or undefined searchName.
@@ -323,8 +324,8 @@ export class AbbrevList<T extends GameEntity>
 
     // If any of abbreviations present in searchName wasn't found,
     // whole serch is a miss.
-    if (entityLists = null)
-      return;
+    if (entityLists === null)
+      return null;
 
     // We have found lists of entities that listen to each of requested
     // keywords (like 'orc' and 'chieftain' in 'orc_chieftain').
@@ -339,8 +340,9 @@ export class AbbrevList<T extends GameEntity>
 
   // 'searchName' is something like 'orc_chieftain'
   // -> Returns array containing an entityList for each abbreviation
-  //    in searchName. Returns null if any of abbreviations is not found.
-  private gatherEntityLists(searchName: string): Array<EntityList<T>>
+  //    in searchName.
+  //    Returns null if any of abbreviations is not found.
+  private gatherEntityLists(searchName: string): Array<EntityList<T>> | null
   {
     // Split searchName into parts separated by underscores.
     // (If searchName is something like 'ug_gra_orc',

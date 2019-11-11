@@ -27,10 +27,10 @@ export class Avatar
 
   // ----------------- Public data ----------------------
 
-  public scrollWindow: ScrollWindow = null;
+  public scrollWindow: (ScrollWindow | null) = null;
 
   /// MapWindow bude jen jedno pro celou ClientApp.
-  ///public mapWindow: MapWindow = null;
+  ///public mapWindow: (MapWindow | null) = null;
 
   // ----------------- Private data ---------------------
 
@@ -42,12 +42,24 @@ export class Avatar
 
   public receiveMessage(message: string)
   {
+    if (this.scrollWindow === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     this.scrollWindow.receiveMessage(message);
   }
 
   // Outputs a client system message.
   public clientMessage(message: string)
   {
+    if (this.scrollWindow === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     this.scrollWindow.clientMessage(message);
   }
 
@@ -59,7 +71,12 @@ export class Avatar
   {
     let title = this.character.getName() + "@BrutusNext";
 
+    if (this.scrollWindow === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     this.scrollWindow.setTitle(title);
   }
-
 }

@@ -22,9 +22,11 @@ export enum MessageType
 
   // --------------------- Syslog messages ---------------------
 
-  // Sent when ERROR() triggered somewhere in code.
+  // Sent when REPORT(error) is called somewhere in code.
+  RUNTIME_EXCEPTION,
+  // Sent when ERROR() is called somewhere in code.
   RUNTIME_ERROR,
-  // Sent when FATAL_ERROR() triggers somewhere in code.
+  // Sent when FATAL_ERROR() is called somewhere in code.
   FATAL_RUNTIME_ERROR,
   // System reports that something is ok (game is successfuly loaded, etc.).
   SYSTEM_INFO,

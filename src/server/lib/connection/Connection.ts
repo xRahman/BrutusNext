@@ -7,6 +7,7 @@
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {REPORT} from '../../../shared/lib/error/REPORT';
 import {Connection as SharedConnection} from
   '../../../shared/lib/connection/Connection';
 import {Syslog} from '../../../shared/lib/log/Syslog';
@@ -20,7 +21,10 @@ import {GameEntity} from '../../../server/game/GameEntity';
 import {Classes} from '../../../shared/lib/class/Classes';
 import {Connections} from '../../../server/lib/connection/Connections';
 import {Packet} from '../../../shared/lib/protocol/Packet';
-import {MudMessage} from '../../../shared/lib/protocol/MudMessage';
+import {MudMessage} from '../../../server/lib/protocol/MudMessage';
+
+// 3rd party modules.
+import * as WebSocket from 'ws';
 
 // Force module import (so that the module code is assuredly executed
 // instead of typescript just registering a type). This ensures that
@@ -34,23 +38,38 @@ import '../../../server/lib/protocol/EnterGameRequest';
 
 export class Connection implements SharedConnection
 {
-  constructor(socket: WebSocket, ip: string, url: string)
+  constructor(webSocket: WebSocket, ip: string, url: string)
   {
-    let serverSocket = new ServerSocket(socket, ip, url);
-
-    this.setSocket(serverSocket);
+    this.socket = new ServerSocket(this, webSocket, ip, url);
   }
 
   // ----------------- Public data ----------------------
 
-  public account: Account = null;
-  public ingameEntity: GameEntity = null;
+  public ingameEntity: (GameEntity | null) = null;
+
+  // ---------------- Protected data --------------------
+
+  protected socket: ServerSocket; /// (ServerSocket | null) = null;
 
   // ----------------- Private data ---------------------
 
-  protected socket: ServerSocket = null;
+  private account: (Account | null) = null;
 
   // --------------- Public accessors -------------------
+
+  public setAccount(account: Account | null)
+  {
+    this.account = account;
+  }
+
+  // ! Throws an exception on error.
+  public getAccount(): Account
+  {
+    if (!this.account || !this.account.isValid())
+      throw new Error("Attempt to access invalid account on connection");
+
+    return this.account;
+  }
 
   public getIpAddress() { return this.socket.getIpAddress(); }
 
@@ -112,12 +131,24 @@ export class Connection implements SharedConnection
 
   public detachFromGameEntity()
   {
+    if (this.account === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     if (this.ingameEntity === null)
     {
       ERROR("Attempt to detach ingame entity"
         + " from " + this.account.getName() + "'s"
         + " player connection when there is"
         + " no ingame entity attached to it");
+    }
+
+    if (this.ingameEntity === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
     }
 
     this.ingameEntity.detachConnection();
@@ -133,7 +164,12 @@ export class Connection implements SharedConnection
 
     let packet = new MudMessage();
 
-    packet.message = message.compose();
+    let composedMessage = message.compose()
+
+    if (composedMessage === null)
+      return;
+
+    packet.message = composedMessage;
 
     this.send(packet);
   }
@@ -141,19 +177,35 @@ export class Connection implements SharedConnection
   // Processes data received from the client.
   public async receiveData(data: string)
   {
-    let packet = Serializable.deserialize(data).dynamicCast(Packet);
+    let deserializedPacket = Serializable.deserialize(data);
+    
+    if (!deserializedPacket)
+      return;
 
-    if (packet !== null)
-      await packet.process(this);
+    let packet = deserializedPacket.dynamicCast(Packet);
+
+    if (packet === null)
+      return;
+
+    await packet.process(this);
   }
 
   // Sends 'packet' to web socket.
   public send(packet: Packet)
   {
-    this.socket.send
-    (
-      packet.serialize(Serializable.Mode.SEND_TO_CLIENT)
-    );
+    /// TODO: packet.serialize() sice zatím nevyhazuje výjimky,
+    /// ale časem bude.
+    try
+    {
+      this.socket.send
+      (
+        packet.serialize(Serializable.Mode.SEND_TO_CLIENT)
+      );
+    }
+    catch (error)
+    {
+      REPORT(error, "Packet is not sent");
+    }
   }
 
   public announceReconnect()
@@ -169,18 +221,6 @@ export class Connection implements SharedConnection
   }
 
   // --------------- Private methods --------------------
-
-  private setSocket(socket: ServerSocket)
-  {
-    if (socket === null || socket === undefined)
-    {
-      ERROR("Invalid socket");
-      return;
-    } 
-
-    socket.connection = this;
-    this.socket = socket;
-  }
 
   // ---------------- Event handlers --------------------
 

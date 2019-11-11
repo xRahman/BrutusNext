@@ -6,6 +6,7 @@
 
 'use strict';
 
+import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {Flags} from '../../../shared/lib/utils/Flags';
 import {ClientApp} from '../../../client/lib/app/ClientApp';
@@ -31,6 +32,12 @@ export class Window extends Component
     );
 
     this.$element = this.$createDiv(windowParam);
+    
+    if (this.$element === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
 
     // Windows are created hidden.
     this.$element.hide();
@@ -88,6 +95,12 @@ export class Window extends Component
     if (this.hidden)
       return;
 
+    if (this.$element === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     this.$element.hide();
     this.hidden = true;
     this.onHide();
@@ -102,6 +115,12 @@ export class Window extends Component
 
     if (!this.hidden)
       return false;
+
+    if (this.$element === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
 
     this.$element.show();
     this.hidden = false;

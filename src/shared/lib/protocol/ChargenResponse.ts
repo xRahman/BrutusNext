@@ -15,53 +15,19 @@ import {Account} from '../../../shared/lib/account/Account';
 import {Character} from '../../../shared/game/character/Character';
 import {Response} from '../../../shared/lib/protocol/Response';
 import {SerializedEntity} from '../../../shared/lib/protocol/SerializedEntity';
+import {ChargenRequest} from '../../../shared/lib/protocol/ChargenRequest';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class ChargenResponse extends Response
+export abstract class ChargenResponse extends Response
 {
-  constructor()
+  constructor
+  (
+    protected result: ChargenResponse.Result
+  )
   {
     super();
 
     this.version = 0;
-  }
-
-  // ----------------- Public data ----------------------
-
-  // Is the request accepted?
-  public result = ChargenResponse.Result.UNDEFINED;
-
-  // Serialized account data.
-  // (We send account back to client, not the created character,
-  //  because client will need updated account to display character
-  //  select form).
-  public serializedAccount: SerializedEntity = null;
-
-  // Serialized data of newly added character.
-  public serializedCharacter: SerializedEntity = null;
-
-  // ---------------- Public methods --------------------
-
-  public setAccount(account: Account)
-  {
-    this.serializedAccount = new SerializedEntity();
-
-    this.serializedAccount.store
-    (
-      account,
-      Serializable.Mode.SEND_TO_CLIENT
-    );
-  }
-
-  public setCharacter(character: Character)
-  {
-    this.serializedCharacter = new SerializedEntity();
-
-    this.serializedCharacter.store
-    (
-      character,
-      Serializable.Mode.SEND_TO_CLIENT
-    );
   }
 }
 
@@ -69,13 +35,27 @@ export class ChargenResponse extends Response
 
 export module ChargenResponse
 {
-  export enum Result
+  // Data attached to the response in case the request is accepted.
+  export type Data =
   {
-    UNDEFINED,
-    OK,
-    CHARACTER_NAME_PROBLEM,
-    FAILED_TO_CREATE_CHARACTER
+    // Serialized account data.
+    // (Client will use this to update character select form).
+    serializedAccount: SerializedEntity;
+    // Serialized data of newly added character.
+    serializedCharacter: SerializedEntity;
   }
-}
 
-Classes.registerSerializableClass(ChargenResponse);
+  export type Accepted =
+  {
+    status: "ACCEPTED";
+    data: ChargenResponse.Data;
+  }
+
+  export type Rejected =
+  {
+    status: "REJECTED";
+    problems: Array<ChargenRequest.Problem>;
+  }
+
+  export type Result = Accepted | Rejected;
+}

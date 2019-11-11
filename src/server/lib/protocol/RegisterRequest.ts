@@ -4,19 +4,12 @@
   Server-side functionality related to account creation request packet.
 */
 
-/*
-  Note:
-    This class needs to use the same name as it's ancestor in /shared,
-  because class name of the /shared version of the class is written to
-  serialized data on the client and is used to create /server version
-  of the class when deserializing the packet.
-*/
-
 'use strict';
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
+import {REPORT} from '../../../shared/lib/error/REPORT';
 import {RegisterRequest as SharedRegisterRequest} from
-'../../../shared/lib/protocol/RegisterRequest';
+  '../../../shared/lib/protocol/RegisterRequest';
 import {Utils} from '../../../shared/lib/utils/Utils';
 import {ServerUtils} from '../../../server/lib/utils/ServerUtils';
 import {Syslog} from '../../../shared/lib/log/Syslog';
@@ -26,17 +19,18 @@ import {Message} from '../../../server/lib/message/Message';
 import {MessageType} from '../../../shared/lib/message/MessageType';
 import {Entity} from '../../../shared/lib/entity/Entity';
 import {ServerEntities} from '../../../server/lib/entity/ServerEntities';
+import {SerializedEntity} from '../../../shared/lib/protocol/SerializedEntity';
 import {Account} from '../../../server/lib/account/Account';
 import {Accounts} from '../../../server/lib/account/Accounts';
 import {Connection} from '../../../server/lib/connection/Connection';
-import {RegisterResponse} from '../../../shared/lib/protocol/RegisterResponse';
+import {RegisterResponse} from '../../../server/lib/protocol/RegisterResponse';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 export class RegisterRequest extends SharedRegisterRequest
 {
-  constructor()
+  constructor(email: string, password: string)
   {
-    super();
+    super(email, password);
 
     this.version = 0;
   }
@@ -44,213 +38,225 @@ export class RegisterRequest extends SharedRegisterRequest
   // ---------------- Public methods --------------------
 
   // ~ Overrides Packet.process().
-  public async process(connection: Connection)
+  public async process(connection: Connection): Promise<void>
   {
-    if (!this.isRequestValid(connection))
-      return;
+    let response: RegisterResponse;
 
-    await this.createAccount
-    (
-      // Email is used as account name.
-      this.email,
-      // Only hash is stored, not original password.
-      ServerUtils.md5hash(this.password),
-      connection
-    );
+    try
+    {
+      response = await this.registerAccount(connection);
+    }
+    catch (error)
+    {
+      REPORT(error);
+      response = this.errorResponse();
+    }
+
+    connection.send(response);
   }
 
   // --------------- Private methods --------------------
 
-  private reportAccountCreationFailure
+  // ! Throws an exception on error.
+  private async registerAccount
   (
-    account: Account,
-    accountName,
     connection: Connection
   )
+  : Promise<RegisterResponse>
   {
-    this.denyRequest
-    (
-      "[ERROR]: Failed to create account.\n\n"
-        + Message.ADMINS_WILL_FIX_IT,
-      RegisterResponse.Result.FAILED_TO_CREATE_ACCOUNT,
-      connection
-    );
+    let checkResult = this.checkForProblems(connection);
 
-    ERROR("Failed to create account '" + accountName + "'");
-  }
+    if (checkResult !== "NO PROBLEM")
+      return this.problemsResponse(checkResult);
 
-  private async accountAlreadyExists
-  (
-    accountName: string,
-    connection: Connection
-  )
-  : Promise<boolean>
-  {
-    if (await Accounts.isTaken(accountName))
+    // Email is used as account name.
+    let accountName = this.email;
+    // Only hash is stored, not original password.
+    let passwordHash = ServerUtils.md5hash(this.password)
+
+    let createResult = await this.createAccount(accountName, passwordHash);
+
+    if (createResult === "NAME IS ALREADY TAKEN")
     {
-      this.denyRequest
-      (
-        "An account is already registered to this e-mail address.",
-        RegisterResponse.Result.EMAIL_PROBLEM,
-        connection
-      );
-  
-      Syslog.log
-      (
-        "Attempt to register account " + accountName
-          + " from " + connection.getOrigin() + " which"
-          + " is already registered",
-        MessageType.CONNECTION_INFO,
-        AdminLevel.IMMORTAL
-      );   
-      return true;
+      this.logAccountAlreadyExists(accountName, connection);
+      return this.accountAlreadyExistsResponse();
     }
 
-    return false;
+    let account: Account = createResult;
+
+    account.attachConnection(connection);
+
+    this.logSuccess(account);
+
+    return this.successResponse(account);
   }
 
+  // ! Throws an exception on error.
   private async createAccount
   (
     accountName: string,
-    passwordHash: string,
-    connection: Connection
+    passwordHash: string
   )
+  : Promise<Account | "NAME IS ALREADY TAKEN">
   {
-    if (await this.accountAlreadyExists(accountName, connection))
-      return;
-
-    let account = await ServerEntities.createInstanceEntity
+    let createResult = await ServerEntities.createInstanceEntity
     (
       Account,
-      Account.name,   // Prototype name.
+      // Prototype name.
+      Account.name,
       accountName,
       Entity.NameCathegory.ACCOUNT,
       passwordHash
     );
 
-    if (account === null)
-    {
-      this.reportAccountCreationFailure(account, accountName, connection);
-      return;
-    }
+    if (createResult === "NAME IS ALREADY TAKEN")
+      return "NAME IS ALREADY TAKEN";
 
-    this.initAccount(account, passwordHash, connection);
-    await ServerEntities.save(account);
-    this.acceptRequest(account, connection);
-  }
+    let account: Account = createResult;
 
-  private initAccount
-  (
-    account: Account,
-    passwordHash: string,
-    connection: Connection
-  )
-  {
     account.setPasswordHash(passwordHash);
     account.addToLists();
 
-    account.attachConnection(connection);
+    await ServerEntities.save(account);
+
+    return account;
   }
 
-  private acceptRequest(account: Account, connection: Connection)
+  private logEmailProblem(message: string)
   {
-    let response = new RegisterResponse();
-    response.result = RegisterResponse.Result.OK;
-    
-    // Add newly created account to the response.
-    response.serializedAccount.store
+    Syslog.log
     (
-      account,
-      Serializable.Mode.SEND_TO_CLIENT
+      "Attempt to register invalid e-mail address " + this.email + "."
+        + " Problem: " + message,
+      MessageType.CONNECTION_INFO,
+      AdminLevel.IMMORTAL
     );
+  }
 
+  private logPasswordProblem(message: string, connection: Connection)
+  {
+    Syslog.log
+    (
+      "Attempt to register account " + this.email
+        + " " + connection.getOrigin() + " using"
+        + " invalid password. Problem: " + message,
+      MessageType.CONNECTION_INFO,
+      AdminLevel.IMMORTAL
+    );
+  }
+
+  private checkForProblems
+  (
+    connection: Connection
+  )
+  : Array<RegisterRequest.Problem> | "NO PROBLEM"
+  {
+    let problems: Array<RegisterRequest.Problem> = [];
+    let checkResult: (RegisterRequest.Problem | "NO PROBLEM");
+
+    if ((checkResult = this.checkEmail()) !== "NO PROBLEM")
+    {
+      this.logEmailProblem(checkResult.message);
+      problems.push(checkResult);
+    }
+
+    if ((checkResult = this.checkPassword()) !== "NO PROBLEM")
+    {
+      this.logPasswordProblem(checkResult.message, connection)
+      problems.push(checkResult);
+    }
+
+    if (problems.length === 0)
+      return "NO PROBLEM";
+    else
+      return problems;
+  }
+
+  private logAccountAlreadyExists(accountName: string, connection: Connection)
+  {
+    Syslog.logConnectionInfo
+    (
+      "Attempt to register account " + accountName
+        + " from " + connection.getOrigin() + " which"
+        + " is already registered"
+    );
+  }
+
+  private logSuccess(account: Account)
+  {
     Syslog.log
     (
       "New player: " + account.getUserInfo(),
       MessageType.SYSTEM_INFO,
       AdminLevel.IMMORTAL
     );
-    
-    connection.send(response);
   }
 
-  private denyRequest
+  private accountAlreadyExistsResponse(): RegisterResponse
+  {
+    let problem: RegisterRequest.Problem =
+    {
+      type: RegisterRequest.ProblemType.EMAIL_PROBLEM,
+      message: "An account is already registered to this e-mail address."
+    };
+
+    return this.problemsResponse([ problem ]);
+  }
+
+  private problemsResponse
   (
-    problem: string,
-    result: RegisterResponse.Result,
-    connection: Connection
+    problems: Array<RegisterRequest.Problem>
   )
+  : RegisterResponse
   {
-    let response = new RegisterResponse();
+    let result: RegisterResponse.Result =
+    {
+      status: "REJECTED",
+      problems: problems
+    };
 
-    response.result = result;
-    response.setProblem(problem);
-
-    connection.send(response);
+    return new RegisterResponse(result);
   }
 
-  private isEmailValid(connection: Connection): boolean
+  private errorResponse(): RegisterResponse
   {
-    let problem = this.getEmailProblem();
+    let problem: RegisterRequest.Problem =
+    {
+      type: RegisterRequest.ProblemType.ERROR,
+      message: "An error occured while creating your account.\n\n"
+                + Message.ADMINS_WILL_FIX_IT
+    };
 
-    if (!problem)
-      return true;
+    let result: RegisterResponse.Result =
+    {
+      status: "REJECTED",
+      problems: [ problem ]
+    };
 
-    this.denyRequest
-    (
-      problem,
-      RegisterResponse.Result.EMAIL_PROBLEM,
-      connection
-    );
-
-    Syslog.log
-    (
-      "Attempt to register invalid e-mail address " + this.email + "."
-        + " Problem: " + problem,
-      MessageType.CONNECTION_INFO,
-      AdminLevel.IMMORTAL
-    );
-    
-    return false;
+    return new RegisterResponse(result);
   }
 
-  private isPasswordValid(connection: Connection): boolean
+  // ! Throws an exception on error.
+  private successResponse(account: Account): RegisterResponse
   {
-    let problem = this.getEmailProblem();
+    let serializedAccount = this.serializeEntity(account);
 
-    if (!problem)
-      return true;
+    let result: RegisterResponse.Result =
+    {
+      status: "ACCEPTED",
+      data: { serializedAccount }
+    };
 
-    this.denyRequest
-    (
-      problem,
-      RegisterResponse.Result.PASSWORD_PROBLEM,
-      connection
-    );
-
-    Syslog.log
-    (
-      "Attempt to register account " + this.email
-        + " " + connection.getOrigin() + " using"
-        + " invalid password. Problem: " + problem,
-      MessageType.CONNECTION_INFO,
-      AdminLevel.IMMORTAL
-    );
-
-    return false;
-  }
-
-  private isRequestValid(connection: Connection): boolean
-  {
-    if (!this.isEmailValid(connection))
-      return false;
-
-    if (!this.isPasswordValid(connection))
-      return false;
-
-    return true;
+    return new RegisterResponse(result);
   }
 }
 
-// This overwrites ancestor class.
+// ------------------ Type declarations ----------------------
+
+export module RegisterRequest
+{
+  // Reexport ancestor types becuase they are not inherited automatically.
+  export type Problem = SharedRegisterRequest.Problem;
+}
+
 Classes.registerSerializableClass(RegisterRequest);

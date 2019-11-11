@@ -25,16 +25,27 @@ export class ChargenWindow extends FormWindow
     this.flags.set(ClientApp.State.CHARGEN);
   }
 
-  // ----------------- Public data ---------------------- 
+  // --------------- Public accessors -------------------
+
+  // ! Throws an exception on error.
+  public getForm(): ChargenForm
+  {
+    if (!this.form)
+      throw new Error("Chargen form doesn't exist");
+
+    return this.form;
+  }
+
+  // ---------------- Protected data --------------------
 
   // ~ Overrides FormWindow.form.
-  public form: ChargenForm = null;
+  protected form: (ChargenForm | null) = null;
 
   // ---------------- Public methods --------------------
 
   public backToCharselect()
   {
-    ClientApp.setState(ClientApp.State.CHARSELECT);
+    ClientApp.switchToState(ClientApp.State.CHARSELECT);
   }
 
   // ---------------- Private methods -------------------
@@ -42,7 +53,16 @@ export class ChargenWindow extends FormWindow
   private createChargenForm()
   {
     if (this.form !== null)
-      ERROR("Chargen form already exists");
+    {
+      ERROR("Chargen form already exists. Not creating it again");
+      return;
+    }
+
+    if (!this.$content)
+    {
+      ERROR("Missing $content element. Chargen form is not created");
+      return;
+    }
 
     this.form = new ChargenForm(this, { $parent: this.$content });
   }

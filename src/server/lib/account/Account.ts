@@ -37,7 +37,7 @@ export class Account extends ServerEntity
 
   // ----------------- Public data ----------------------
 
-  public data = new AccountData(this);
+  public data: AccountData = new AccountData(this);
     private static data: Attributes =
     {
       saved: true,
@@ -50,7 +50,7 @@ export class Account extends ServerEntity
 
   // ----------------- Private data ---------------------
 
-  private connection: Connection = null;
+  private connection: (Connection | null) = null;
     private static connection: Attributes =
     {
       saved: false,
@@ -69,10 +69,10 @@ export class Account extends ServerEntity
       sentToServer: false
     };
 
-  private timeOfCreation: Time = null;
+  private timeOfCreation: (Time | null) = null;
 
-  private lastLoginAddress: string = null;
-  private lastLoginTime: Time = null;
+  private lastLoginAddress: (string | null) = null;
+  private lastLoginTime: (Time | null) = null;
 
   // --------------- Public accessors -------------------
 
@@ -110,15 +110,17 @@ export class Account extends ServerEntity
       return;
     }
 
-    connection.account = this;
+    connection.setAccount(this);
     this.connection = connection;
   }
 
-  public detachConnection()
+  // -> Returns detached connection,
+  //    Returns 'null' on failure.
+  public detachConnection(): Connection | null
   {
-    let connection = this.connection;
+    let oldConnection = this.connection;
 
-    if (!connection)
+    if (!oldConnection)
     {
       ERROR("Attempt to detach connection from account"
         + " " + this.getErrorIdString() + " which has"
@@ -126,10 +128,10 @@ export class Account extends ServerEntity
       return null;
     }
 
-    connection.account = null;
+    oldConnection.setAccount(null);
     this.connection = null;
 
-    return connection;
+    return oldConnection;
   }
 
   public getTimeOfCreation(): string
@@ -194,7 +196,7 @@ export class Account extends ServerEntity
     this.passwordHash = passwordHash;
   }
 
-  public validatePassword(passwordHash: string): boolean
+  public isPasswordCorrect(passwordHash: string): boolean
   {
     return this.passwordHash === passwordHash;
   }
@@ -206,9 +208,23 @@ export class Account extends ServerEntity
   }
   */
 
-  public async createCharacter(name: string): Promise<Character>
+  // ! Throws an exception on error.
+  public async createCharacter
+  (
+    name: string
+  )
+  : Promise<Character | "NAME IS ALREADY TAKEN">
   {
-    let character = await ServerEntities.createInstanceEntity
+    if (!this.connection)
+    {
+      throw new Error
+      (
+        "Invalid connection on account " + this.getErrorIdString()
+        + " when creating character '" + name + "'"
+      );
+    }
+
+    let createResult = await ServerEntities.createInstanceEntity
     (
       Character,
       Character.name,
@@ -216,17 +232,16 @@ export class Account extends ServerEntity
       Entity.NameCathegory.CHARACTER
     );
 
-    if (!Entity.isValid(character))
-    {
-      ERROR("Failed to create character '" + name + "'");
-      return null;
-    }
+    if (createResult === "NAME IS ALREADY TAKEN")
+      return "NAME IS ALREADY TAKEN";
+
+    let character: Character = createResult;
 
     character.atachConnection(this.connection);
     character.addToLists();
     character.init();
 
-    // Save the character to the disk.
+    // Save the character to disk.
     await ServerEntities.save(character);
 
     await this.addCharacter(character);
@@ -275,6 +290,12 @@ export class Account extends ServerEntity
 
   public logout()
   {
+    if (!this.connection)
+    {
+      ERROR("Unexpected 'null' value");
+      return null;
+    }
+
     let accountName = this.getName();
     let ipAddress = this.connection.getIpAddress();
 
@@ -300,7 +321,7 @@ export class Account extends ServerEntity
     // Release characters on this account from memory.
     for (let character of this.data.characters.values())
     {
-      if (Entity.isValid(character))
+      if (character && character.isValid())
         Entities.release(character);
     }
 
@@ -398,7 +419,7 @@ export class Account extends ServerEntity
 
   private characterToLoadAlreadyExists(id: string)
   {
-    let character = ServerEntities.get(id);
+    let character = ServerEntities.getEntity(id);
 
     if (character)
     {
@@ -432,7 +453,15 @@ export class Account extends ServerEntity
       return;
     }
 
-    if (this.data.characters.has(character.getId()))
+    let characterId = character.getId();
+
+    if (!characterId)
+    {
+      ERROR("Unexpected 'null' value");
+      return null;
+    }
+
+    if (this.data.characters.has(characterId))
     {
       ERROR("Attempt to add character " + character.getErrorIdString()
         + " to account " + this.getErrorIdString() + " which is already"
@@ -442,7 +471,7 @@ export class Account extends ServerEntity
 
     console.log('Adding character ' + character.getName());
 
-    this.data.characters.set(character.getId(), character);
+    this.data.characters.set(characterId, character);
 
     // Character will be selected when user enters charselect window.
     this.data.lastActiveCharacter = character;

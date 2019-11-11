@@ -10,88 +10,90 @@
 
 import {ERROR} from '../../../shared/lib/error/ERROR';
 import {Utils} from '../../../shared/lib/utils/Utils';
-import {Packet} from '../../../shared/lib/protocol/Packet';
+import {Request} from '../../../shared/lib/protocol/Request';
 import {Classes} from '../../../shared/lib/class/Classes';
 
 const VALID_EMAIL_CHARACTERS = "abcdefghijklmnopqrstuvwxyz"
   + "@ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#$%&'*+-/=?^_`{|}~.";
 
-export class RegisterRequest extends Packet
+export abstract class RegisterRequest extends Request
 {
-  constructor()
+  constructor
+  (
+    public email: string,
+    public password: string
+  )
   {
     super();
 
     this.version = 0;
   }
 
-  public static get MIN_EMAIL_LENGTH()
-    { return  3;}
-  public static get MAX_EMAIL_LENGTH()
-    { return  254;}
-  public static get MIN_PASSWORD_LENGTH()
-    { return  4;}
-  public static get MAX_PASSWORD_LENGTH()
-    { return  50;}
-
-  // ----------------- Public data ----------------------
-
-  public email: string = null;
-  public password: string = null;
+  public static readonly MIN_EMAIL_LENGTH = 3;
+  public static readonly MAX_EMAIL_LENGTH = 254;
+  public static readonly MIN_PASSWORD_LENGTH = 4;
+  public static readonly MAX_PASSWORD_LENGTH = 50;
 
   // ---------------- Public methods --------------------
 
-  // -> Returns 'null' if email is ok,
-  //    othwrwise returns the first found reason why it's not.
-  public getEmailProblem(): string
+  public checkEmail(): (RegisterRequest.Problem | "NO PROBLEM")
   {
-    let problem = null;
+    let checkResult: string | "NO PROBLEM";
 
-    if (!this.email)
-      return "E-mail address must not be empty.";
+    if ((checkResult = this.checkEmailLength()) !== "NO PROBLEM")
+      return this.composeEmailProblem(checkResult);
 
-    if (problem = this.getEmailLengthProblem())
-      return problem;
+    if ((checkResult = this.checkEmailByteLength()) !== "NO PROBLEM")
+      return this.composeEmailProblem(checkResult);
 
-    if (problem = this.getEmailByteLengthProblem())
-      return problem;
+    if ((checkResult = this.checkAmpersand()) !== "NO PROBLEM")
+      return this.composeEmailProblem(checkResult);
 
-    if (problem = this.getAmpersandProblem())
-      return problem;
+    if ((checkResult = this.checkForInvalidCharacters()) !== "NO PROBLEM")
+      return this.composeEmailProblem(checkResult);
 
-    if (problem = this.getInvalidCharacterProblem())
-      return problem;
-
-    return null;  // No problem found.
+    return "NO PROBLEM";
   }
 
-  // -> Returns 'null' if password is ok,
-  //    othwrwise returns the first found reason why it's not.
-  public getPasswordProblem(): string
+  public checkPassword(): (RegisterRequest.Problem | "NO PROBLEM")
   {
-    if (!this.password)
-      return "Password must not be empty.";
+    let checkResult: string;
 
-    if (this.password.length < RegisterRequest.MIN_PASSWORD_LENGTH)
-    {
-      return "Password must be at least"
-        + " " + RegisterRequest.MIN_PASSWORD_LENGTH
-        + " characters long.";
-    }
+    if ((checkResult = this.checkPasswordLength()) !== "NO PROBLEM")
+      return this.composePasswordProblem(checkResult);
 
-    if (this.password.length > RegisterRequest.MAX_PASSWORD_LENGTH)
-    {
-      return "Password cannot be longer than"
-        + " " + RegisterRequest.MAX_PASSWORD_LENGTH
-        + " characters.";
-    }
-
-    return null;
+    return "NO PROBLEM";
   }
 
   // ---------------- Private methods -------------------
 
-  private getEmailLengthProblem()
+  private composeEmailProblem(message: string): RegisterRequest.Problem
+  {
+    let problem =
+    {
+      type: RegisterRequest.ProblemType.EMAIL_PROBLEM,
+      message: message
+    };
+
+    return problem;
+  }
+
+  private composePasswordProblem
+  (
+    message: string
+  )
+  : RegisterRequest.Problem
+  {
+    let problem =
+    {
+      type: RegisterRequest.ProblemType.PASSWORD_PROBLEM,
+      message: message
+    };
+
+    return problem;
+  }
+
+  private checkEmailLength(): (string | "NO PROBLEM")
   {
     if (this.email.length < RegisterRequest.MIN_EMAIL_LENGTH)
     {
@@ -107,10 +109,10 @@ export class RegisterRequest extends Packet
         + " characters.";
     }
 
-    return null;
+    return "NO PROBLEM";
   }
 
-  private getEmailByteLengthProblem()
+  private checkEmailByteLength(): (string | "NO PROBLEM")
   {
     // There is a limit of 255 bytes to the length of file
     // name on most Unix file systems. It matters because we
@@ -134,10 +136,10 @@ export class RegisterRequest extends Packet
         + " that is up to 64 characters long).";
     }
 
-    return null;
+    return "NO PROBLEM";
   }
 
-  private getAmpersandProblem()
+  private checkAmpersand(): (string | "NO PROBLEM")
   {
     let splitArray = this.email.split('@');
 
@@ -159,10 +161,10 @@ export class RegisterRequest extends Packet
         + " after '@' in an e-mail address.";
     }
 
-    return null;
+    return "NO PROBLEM";
   }
 
-  private getInvalidCharacterProblem()
+  private checkForInvalidCharacters(): (string | "NO PROBLEM")
   {
     // Check for invalid characters.
     for (let i = 0; i < this.email.length; i++)
@@ -175,8 +177,43 @@ export class RegisterRequest extends Packet
       }
     }
 
-    return null;
+    return "NO PROBLEM";
   }
+
+  private checkPasswordLength(): (string | "NO PROBLEM")
+  {
+    if (this.password.length < RegisterRequest.MIN_PASSWORD_LENGTH)
+    {
+      return "Password must be at least"
+        + " " + RegisterRequest.MIN_PASSWORD_LENGTH
+        + " characters long.";
+    }
+
+    if (this.password.length > RegisterRequest.MAX_PASSWORD_LENGTH)
+    {
+      return "Password cannot be longer than"
+        + " " + RegisterRequest.MAX_PASSWORD_LENGTH
+        + " characters.";
+    }
+
+    return "NO PROBLEM"
+  } 
 }
 
-Classes.registerSerializableClass(RegisterRequest);
+// ------------------ Type declarations ----------------------
+
+export module RegisterRequest
+{
+  export enum ProblemType
+  {
+    EMAIL_PROBLEM,
+    PASSWORD_PROBLEM,
+    ERROR
+  }
+
+  export type Problem =
+  {
+    type: ProblemType;
+    message: string;
+  }
+}

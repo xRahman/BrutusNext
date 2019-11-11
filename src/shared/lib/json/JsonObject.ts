@@ -37,7 +37,12 @@ export class JsonObject
   }
 
   // Same as JSON.parse() but with exception handling.
-  public static parse(jsonString: string, path: string = null): Object
+  public static parse
+  (
+    jsonString: string,
+    path: (string | null) = null
+  )
+  : Object | null
   {
     let jsonObject = {};
 
@@ -61,7 +66,7 @@ export class JsonObject
   // Auxiliary function used for error reporting.
   // -> Returns string informing about file location or empty string
   //    if 'path' is not available.
-  private static composePathString(path: string)
+  private static composePathString(path: string | null)
   {
     if (path === null)
       return "";

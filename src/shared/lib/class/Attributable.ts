@@ -60,10 +60,10 @@ export class Attributable
     let attributes: Attributes;
     // Use default attributes declared at the same object as property.
     ///let defaultAttributes = propertyThis.constructor['defaultAttributes'];
-    let defaultAttributes = this.constructor['defaultAttributes'];
+    let defaultAttributes = (this.constructor as any)['defaultAttributes'];
     // These are attributes declared as a static property with the same
     // name as non-static property.
-    let propertyAttributes = this.constructor[propertyName];
+    let propertyAttributes = (this.constructor as any)[propertyName];
 
     // This trick will 'copy' all properties from 'propertyAttributes'
     // to a new object by creating a new {} and setting 'propertyAttributes'
@@ -78,7 +78,7 @@ export class Attributable
     for (let attribute in defaultAttributes)
     {
       if (!propertyAttributes || propertyAttributes[attribute] === undefined)
-        attributes[attribute] = defaultAttributes[attribute];
+        (attributes as any)[attribute] = defaultAttributes[attribute];
     }
 
     // Do one more defaulting - against 'defaltAttributes' declared
@@ -86,8 +86,11 @@ export class Attributable
     // descendatns don't have to list all existing attributes.
     for (let attribute in Attributable.defaultAttributes)
     {
-      if (!attributes || attributes[attribute] === undefined)
-        attributes[attribute] = Attributable.defaultAttributes[attribute];
+      if (!attributes || (attributes as any)[attribute] === undefined)
+      {
+        (attributes as any)[attribute] =
+          (Attributable.defaultAttributes as any)[attribute];
+      }
     }
 
     return attributes;

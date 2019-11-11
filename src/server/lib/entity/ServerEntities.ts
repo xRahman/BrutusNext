@@ -30,7 +30,7 @@ export class ServerEntities extends Entities
     this.idProvider = new IdProvider(timeOfBoot);
   }
 
-  private idProvider: IdProvider = null;
+  private idProvider: (IdProvider | null) = null;
 
   // ------------- Public static methods ----------------
 
@@ -54,12 +54,19 @@ export class ServerEntities extends Entities
   {
     let path = this.getEntityPath(id);
     let jsonString = await FileSystem.readFile(path);
+
+    if (jsonString === null)
+      return null;
+
     let jsonObject = JsonObject.parse(jsonString);
 
     if (jsonObject === null)
       return null;
 
     let entity = ServerEntities.initRootPrototypeEntity(id, className);
+
+    if (entity === null)
+      return null;
 
     return ServerApp.entities.loadEntityFromJsonObject
     (
@@ -69,31 +76,36 @@ export class ServerEntities extends Entities
     );
   }
   
-  // Attempts to create a name lock file.
-  // -> Returns 'false' if name change isn't allowed.
-  public static async requestEntityName
-  (
-    id: string,
-    name: string,
-    cathegory: Entity.NameCathegory,
-    passwordHash: string = null
-  )
-  {
-    // Non-unique names are always available.
-    if (cathegory === null)
-      return true;
+  /// This should not be used anymore - check for name existence should
+  /// be done prior to generating of id.
+  // // Attempts to create a name lock file.
+  // // -> Returns 'false' if name change isn't allowed.
+  // public static async requestEntityName
+  // (
+  //   id: string,
+  //   name: string,
+  //   cathegory: Entity.NameCathegory | null,
+  //   passwordHash: (string | null) = null
+  // )
+  // {
+  //   // Non-unique names are always available.
+  //   if (cathegory === null)
+  //     return true;
 
-    if (await ServerEntities.isEntityNameTaken(name, cathegory))
-      return false;
+  //   /// Pozn.: Tohle kontroluju už v ServerEntities.createInstanceEntity().
+  //   /// TODO: NameLock.save() by asi měl házet výjimku, pokud už name lock
+  //   ///   existuje.
+  //   // if (await ServerEntities.isEntityNameTaken(name, cathegory))
+  //   //   return false;
 
-    return await NameLock.save
-    (
-      id,
-      name,
-      Entity.NameCathegory[cathegory],
-      passwordHash
-    );
-  }
+  //   return await NameLock.save
+  //   (
+  //     id,
+  //     name,
+  //     Entity.NameCathegory[cathegory],
+  //     passwordHash
+  //   );
+  // }
 
   public static async releaseName
   (
@@ -108,54 +120,72 @@ export class ServerEntities extends Entities
     );
   }
 
+  // ! Throws an exception on error.
   // Creates a new instance entity with a new id (can't be used as prototype).
-  // -> Returns 'null' on failure.
-  // -> Returns 'undefined' if requested unique name is already taken.
   public static async createInstanceEntity<T extends Entity>
   (
     typeCast: { new (...args: any[]): T },
     prototypeName: string,
     name: string,
     // 'null' means that entity won't have unique name.
-    cathegory: Entity.NameCathegory = null,
-    passwordHash = null
+    cathegory: (Entity.NameCathegory | null) = null,
+    passwordHash: (string | null) = null
   )
-  : Promise<T>
+  : Promise<T | "NAME IS ALREADY TAKEN">
   {
+    // If 'cathegory' is 'null', it means that we are requesting
+    // a non-unique name so there is no need to test if it is
+    // available.
+    if (cathegory !== null)
+    {
+      if (await ServerEntities.isEntityNameTaken(name, cathegory))
+        return "NAME IS ALREADY TAKEN";
+    }
+
     let prototype = Prototypes.get(prototypeName);
 
     if (!prototype)
     {
-      ERROR("Unable to create instance entity because prototype"
-        + " '" + prototypeName + "' doesn't exist");
-      return null;
+      throw new Error
+      (
+        "Unable to create instance entity because prototype"
+        + " '" + prototypeName + "' doesn't exist"
+      );
     }
 
     let id = ServerEntities.generateId();
 
-    // If 'name' isn't available, we have just wasted an id.
-    // (It's unavoidable because id is written to the name lock
-    //  file so we need to generate it prior to writing the file.
-    //    We could first test if the name lock file exists of
-    //  course, but it would add a disk read operation even when
-    //  the name is available, which is by far the most common
-    //  scenario.)
-    if
-    (
-      !await ServerEntities.requestEntityName
+    /// TODO: Tuhle výjimku by mělo házet už generateId().
+    if (id === null)
+      throw new Error("Failed to generate entity id");
+
+    /// Replaced with code below.
+    // if
+    // (
+    //   !await ServerEntities.requestEntityName
+    //   (
+    //     id,
+    //     name,
+    //     cathegory,
+    //     passwordHash
+    //   )
+    // )
+    // {
+    //   return "NAME IS ALREADY TAKEN";
+    // }
+    if (cathegory !== null)
+    {
+      await NameLock.save
       (
         id,
         name,
-        cathegory,
+        Entity.NameCathegory[cathegory],
         passwordHash
-      )
-    )
-    {
-      // ERROR("Attempt to create unique entity '" + name + "'"
-      //   + " in cathegory '" + Entity.NameCathegory[cathegory] + "'"
-      //   + " which already exists. Entity is not created");
-      return undefined;
+      );
     }
+
+    /// TODO: Asi bych měl něco udělat s locknutým jménem, pokud se mi
+    // nepovede entitu vytvořit (nejspíš smazat name lock).
 
     let entity = await ServerApp.entities.createNewEntity
     (
@@ -166,11 +196,9 @@ export class ServerEntities extends Entities
       false   // 'isPrototype'
     );
 
+    /// TODO: Tuhle výjimku by měla házet už createNewEntity().
     if (!entity)
-    {
-      ERROR("Failed to create new instance entity (id: " + id + ")");
-      return null;
-    }
+      throw new Error("Failed to create new instance entity (id: " + id + ")");
 
     // Dynamically check that entity is an
     // instance of type T and typecast to it.
@@ -183,10 +211,14 @@ export class ServerEntities extends Entities
     prototype: Entity,
     prototypeName: string,
     // Entity name. Can't be unique for prototype entities.
-    name: string
-  ): Promise<T>
+    name: string | null
+  )
+  : Promise<T | null>
   {
     let id = this.generateId();
+
+    if (id === null)
+      return null;
 
     if (!await this.requestPrototypeName(id, prototypeName))
     {
@@ -204,6 +236,9 @@ export class ServerEntities extends Entities
       null,   // 'nameCathegory' - entity name of prototype can't be unique.
       true    // 'isPrototype'
     );
+
+    if (entity === null)
+      return null;
 
     await ServerEntities.save(entity);
 
@@ -224,9 +259,9 @@ export class ServerEntities extends Entities
     // Prototype entities can have a name, but it can't
     // be unique because it will be inherited by instances
     // and descendant prototypes.
-    name: string = null
+    name: (string | null) = null
   )
-  : Promise<T>
+  : Promise<T | null>
   {
     let ancestor = Prototypes.get(ancestorName);
 
@@ -248,7 +283,11 @@ export class ServerEntities extends Entities
 
   // Creates a new prototype entity with a new id.
   // -> Returns 'null' on failure.
-  public static async createRootPrototype(className: string): Promise<Entity>
+  public static async createRootPrototype
+  (
+    className: string
+  )
+  : Promise<Entity | null>
   {
     let prototype = ServerApp.entities.getRootPrototypeObject(className);
 
@@ -298,12 +337,20 @@ export class ServerEntities extends Entities
   // --------------- Protected methods ------------------
 
   // ~ Overrides Entities.saveEntity().
-  protected async saveEntity(entity: Entity)
+  protected async saveEntity(entity: Entity): Promise<boolean>
   {
     // Note: Name lock file is saved when the name is set
     // to the entity so we don't have to save it here.
 
-    let fileName = ServerEntities.getEntityFileName(entity.getId());
+    let entityId = entity.getId();
+
+    if (entityId === null)
+    {
+      ERROR("Invalid entity id");
+      return false;
+    }
+
+    let fileName = ServerEntities.getEntityFileName(entityId);
     let directory = ServerEntities.getEntityDirectory();
 
     directory = ServerEntities.enforceTrailingSlash(directory);
@@ -317,6 +364,8 @@ export class ServerEntities extends Entities
     await FileSystem.writeFile(directory, fileName, jsonString);
 
     await entity.postSave();
+
+    return true;
   }
 
   // ~ Overrides Entities.loadEntityById().
@@ -326,10 +375,14 @@ export class ServerEntities extends Entities
     id: string,
     loadContents = true
   )
-  : Promise<Entity>
+  : Promise<Entity | null>
   {
     let path = ServerEntities.getEntityPath(id);
     let jsonString = await FileSystem.readFile(path);
+
+    if (jsonString === null)
+      return null;
+
     let entity = await this.loadEntityFromJsonString
     (
       {
@@ -356,6 +409,7 @@ export class ServerEntities extends Entities
     cathegory: Entity.NameCathegory,
     reportNotFoundError: boolean = true
   )
+  : Promise<Entity | null | undefined>
   {
     let id = await NameLock.readId
     (
@@ -377,6 +431,12 @@ export class ServerEntities extends Entities
 
   private static generateId()
   {
+    if (ServerApp.entities.idProvider === null)
+    {
+      ERROR("Invalid id provider");
+      return null;
+    }
+
     return ServerApp.entities.idProvider.generateId();
   }
 
@@ -477,8 +537,8 @@ export class ServerEntities extends Entities
   (
     id: string,
     prototype: Entity,
-    name: string,
-    cathegory: Entity.NameCathegory,
+    name: string | null,
+    cathegory: Entity.NameCathegory | null,
     isPrototype: boolean
   )
   {
@@ -495,12 +555,12 @@ export class ServerEntities extends Entities
     // using Object.create(). We replace it with 'null' so that
     // setPrototypeEntity() won't try to remove it from it's ancestor's
     // descendantIds (that wouldn't work because we have just created it).
-    entity[Entity.PROTOTYPE_ENTITY_PROPERTY] = null;
+    (entity as any)[Entity.PROTOTYPE_ENTITY_PROPERTY] = null;
 
     // Don't change 'null' value of 'prototypeEntity' if 'prototype'
     // is a root object (which have 'null' value of 'id' property),
     // because root prototype objects are not true entities.
-    if (prototype[Entity.ID_PROPERTY] !== null)
+    if ((prototype as any)[Entity.ID_PROPERTY] !== null)
     {
       // Even though prototype object is already set using
       // Object.create() when creating a new entity, we still

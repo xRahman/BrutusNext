@@ -27,20 +27,31 @@ export class RegisterWindow extends FormWindow
     this.flags.set(ClientApp.State.REGISTER);
   }
 
+  // --------------- Public accessors -------------------
+
+  // ! Throws an exception on error.
+  public getForm(): RegisterForm
+  {
+    if (!this.form)
+      throw new Error("Register form doesn't exist");
+
+    return this.form;
+  }
+
   // ----------------- Private data ---------------------
 
-  private $termsLink: JQuery = null;
+  private $termsLink: (JQuery | null) = null;
 
-  // ----------------- Public data ---------------------- 
+  // ---------------- Protected data --------------------
 
   // ~ Overrides FormWindow.form.
-  public form: RegisterForm = null;
+  protected form: (RegisterForm | null) = null;
 
   // ---------------- Public methods --------------------
 
   public backToLogin()
   {
-    ClientApp.setState(ClientApp.State.LOGIN);
+    ClientApp.switchToState(ClientApp.State.LOGIN);
   }
 
   // ---------------- Private methods -------------------
@@ -49,6 +60,12 @@ export class RegisterWindow extends FormWindow
   {
     if (this.form !== null)
       ERROR("Register form already exists");
+
+    if (this.$content === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
 
     this.form = new RegisterForm
     (
@@ -61,6 +78,12 @@ export class RegisterWindow extends FormWindow
   {
     let $parent = this.createTextContainer();
 
+    if ($parent === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return;
+    }
+
     this.$createText
     (
       { $parent, text: "By creating an account you agree to our " }
@@ -71,7 +94,7 @@ export class RegisterWindow extends FormWindow
       {
         $parent,
         text: "Terms of Use",
-        click: (event) => { this.onTermsClick(event); }
+        click: (event: JQueryEventObject) => { this.onTermsClick(event); }
       }
     );
 
@@ -82,7 +105,7 @@ export class RegisterWindow extends FormWindow
 
   private onTermsClick(event: JQueryEventObject)
   {
-    ClientApp.setState(ClientApp.State.TERMS);
+    ClientApp.switchToState(ClientApp.State.TERMS);
   }
 
   // ~ Overrides FormWindow.onEscapePressed().

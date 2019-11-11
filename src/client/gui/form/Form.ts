@@ -11,7 +11,7 @@ import {Utils} from '../../../shared/lib/utils/Utils';
 import {Connection} from '../../../client/lib/connection/Connection';
 import {MudColors} from '../../../client/gui/MudColors';
 import {Component} from '../../../client/gui/Component';
-import {Packet} from '../../../shared/lib/protocol/Packet';
+import {Request} from '../../../shared/lib/protocol/Request';
 
 export abstract class Form extends Component
 {
@@ -28,7 +28,7 @@ export abstract class Form extends Component
       param,
       {
         sCssClass: Component.FULL_WIDTH_BLOCK_S_CSS_CLASS,
-        submit: (event) => { this.onSubmit(event); }
+        submit: (event: JQueryEventObject) => { this.onSubmit(event); }
       }
     );
 
@@ -50,14 +50,21 @@ export abstract class Form extends Component
 
   // ---------------- Protected data --------------------
 
-  protected $submitButton: JQuery = null;
-  protected $errorLabel: JQuery = null;
-  protected $errorLabelContainer: JQuery = null;
+  protected $submitButton: (JQuery | null) = null;
+  protected $errorLabel: (JQuery | null) = null;
+  protected $errorLabelContainer: (JQuery | null) = null;
 
   // ----------------- Private data ---------------------
 
   public reset()
   {
+    if (!this.$element)
+    {
+      ERROR("Unable to reset form because it does't have"
+        + " a corresponding element in DOM");
+      return;
+    }
+
     let form = <HTMLFormElement>this.$element[0];
 
     form.reset();
@@ -65,13 +72,30 @@ export abstract class Form extends Component
 
   public submit()
   {
+    if (!this.$element)
+    {
+      ERROR("Unable to submit form because it does't have"
+        + " a corresponding element in DOM");
+      return;
+    }
+
     this.$element.submit();
   }
 
   // --------------- Protected methods ------------------
 
-  protected createButtonContainer(param: Component.DivParam = {})
+  protected $createButtonContainer
+  (
+    param: Component.DivParam = {}
+  )
+  : JQuery | null
   {
+    if (!this.$element)
+    {
+      ERROR("Invalid $element");
+      return null;
+    }
+
     Utils.applyDefaults
     (
       param,
@@ -85,7 +109,11 @@ export abstract class Form extends Component
     return this.$createDiv(param);
   }
 
-  protected $createSubmitButton(param: Component.SubmitButtonParam = {}): JQuery
+  protected $createSubmitButton
+  (
+    param: Component.SubmitButtonParam = {}
+  )
+  : JQuery | null
   {
     Utils.applyDefaults
     (
@@ -98,8 +126,20 @@ export abstract class Form extends Component
     return this.$submitButton;
   }
 
-  protected createEmptyLine(param: Component.DivParam = {})
+  // ~ Overrides Component.$createEmptyLine().
+  protected $createEmptyLine
+  (
+    param: Component.DivParam = {}
+  )
+  : JQuery | null
   {
+    if (!this.$element)
+    {
+      ERROR("Unable to create empty line in form because the"
+        + " form does't have a corresponding element in DOM");
+      return null;
+    }
+
     Utils.applyDefaults
     (
       param,
@@ -109,25 +149,52 @@ export abstract class Form extends Component
       }
     );
 
-    this.$createEmptyLine(param);
+    return super.$createEmptyLine(param);
   }
 
   protected disableSubmitButton()
   {
-     this.disable(this.$submitButton);
+    if (!this.$submitButton)
+    {
+      ERROR("Unable to disable submit button because"
+        + " it doesn't exist in DOM");
+      return;
+    }
+
+    this.disable(this.$submitButton);
   }
 
   protected enableSubmitButton()
   {
+    if (!this.$submitButton)
+    {
+      ERROR("Unable to enable submit button because"
+        + " it doesn't exist in DOM");
+      return;
+    }
+
     this.enable(this.$submitButton);
   }
 
   protected createErrorLabel()
   {
+    if (!this.$element)
+    {
+      ERROR("Unable to create error label in form because the"
+        + " form does't have a corresponding element in DOM");
+      return null;
+    }
+
     this.$errorLabelContainer = this.$createDiv
     (
       { $parent: this.$element }
     );
+
+    if (!this.$errorLabelContainer)
+    {
+      ERROR("Failed to create $errorLabelContainer element in form");
+      return null;
+    }
 
     let $textContainer = this.$createDiv
     (
@@ -136,7 +203,13 @@ export abstract class Form extends Component
         sCssClass: Form.ERROR_TEXT_CONTAINER_S_CSS_CLASS,
         gCssClass: Component.WINDOW_G_CSS_CLASS
       }
-    )
+    );
+
+    if (!$textContainer)
+    {
+      ERROR("Failed to create $textContainer element in form");
+      return null;
+    }
 
     this.$errorLabel = this.$createLabel
     (
@@ -148,7 +221,7 @@ export abstract class Form extends Component
 
     // Add an empty line after error problem label
     // to separate it from next component.
-    this.createEmptyLine
+    this.$createEmptyLine
     (
       { $parent: this.$errorLabelContainer }
     );
@@ -156,9 +229,18 @@ export abstract class Form extends Component
     this.$errorLabelContainer.hide();
   }
 
-  protected displayError(problem: string)
+  protected displayError(problem: string | null)
   {
-    console.log('displayError()');
+    /// TODO: Proč? Zrušit, pokud to půjde.
+    if (!problem)
+      return;
+
+    if (!this.$errorLabel)
+    {
+      ERROR("Failed to display error because"
+        + " there is no $errorLabel element");
+      return null;
+    }
 
     this.$createText
     (
@@ -169,17 +251,34 @@ export abstract class Form extends Component
       }
     );
 
+    if (!this.$errorLabelContainer)
+    {
+      ERROR("Failed to display error because there"
+        + " is no $errorLabelContainer element");
+      return null;
+    }
+
     this.$errorLabelContainer.show();
   }
 
-  protected hideProblems()
+  protected hideProblems(): void
   {
+    if (!this.$errorLabelContainer)
+    {
+      ERROR("Failed to hide problems because there"
+        + " is no $errorLabelContainer element");
+      return;
+    }
+
     this.$errorLabelContainer.hide();
   }
 
-  protected abstract createRequest();
+  // -> Returns 'null' if request couldn't be created
+  //    or there is nothing to request yet.
+  protected abstract createRequest(): Request | null;
 
-  protected abstract isRequestValid(request: Packet);
+  /// To be deleted.
+  ///protected abstract isRequestValid(request: Request): boolean;
 
   // ---------------- Event handlers --------------------
 
@@ -198,12 +297,31 @@ export abstract class Form extends Component
 
     let request = this.createRequest();
 
+    // 'null' request is not necessarily an error,
+    // it can mean that there is nothing to request
+    // yet (character name is not filled in, no
+    // character is created yet, etc.).
+    if (!request)
+      return;
+
+    /*
+    // Array of strings 
+    let problems = request.checkForProblems();
+    
+    if (problems)
+    {
+      this.displayRequestProblems(problems);
+      return;
+    }
+
+/// TODO: Předělat.
     // Thanks to the shared code we don't have to
     // wait for server response to check for most
     // problems (the check will be done again on
     // the server of course to prevent exploits).
-    if (!this.isRequestValid(request))
+    if (!request || !this.isRequestValid(request))
       return;
+    */
 
     // Disable submit button to prevent click-spamming
     // requests.

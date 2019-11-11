@@ -25,7 +25,7 @@ export class ServerPrototypes extends Prototypes
   // Creates root prototype entities if they don't exist on
   // the disk or loads them if they do. Then recursively loads
   // all prototype entities inherited from them.
-  public async init()
+  public async init(): Promise<void>
   {
     await this.initRootPrototypes();
     await this.loadDescendantPrototypes();
@@ -79,6 +79,12 @@ export class ServerPrototypes extends Prototypes
     {
       let prototype = this.prototypeList.get(className);
 
+      if (!prototype)
+      {
+        ERROR("Prototype '" + className + "' doesn't exist");
+        continue;
+      }
+
       await this.loadDescendants(prototype);
     }
   }
@@ -103,6 +109,12 @@ export class ServerPrototypes extends Prototypes
       if (descendant === null)
       {
         ERROR("Failed to load prototype entity '" + descendantId + "'");
+        continue;
+      }
+
+      if (descendant.prototypeName === null)
+      {
+        ERROR("Invalid 'prototypeName' on 'descendant'");
         continue;
       }
 

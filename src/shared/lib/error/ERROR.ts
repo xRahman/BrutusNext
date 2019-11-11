@@ -55,5 +55,5 @@ import {App} from '../../../shared/lib/app/App';
 
 export function ERROR(message: string)
 {
-  App.reportError(message);
+  App.reportError('[ERROR]: ' + message);
 }

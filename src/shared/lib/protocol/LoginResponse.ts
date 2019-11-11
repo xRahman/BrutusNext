@@ -17,7 +17,7 @@ import {Response} from '../../../shared/lib/protocol/Response';
 import {SerializedEntity} from '../../../shared/lib/protocol/SerializedEntity';
 import {Classes} from '../../../shared/lib/class/Classes';
 
-export class LoginResponse extends Response
+export abstract class LoginResponse extends Response
 {
   constructor()
   {
@@ -28,38 +28,60 @@ export class LoginResponse extends Response
 
   // ----------------- Public data ----------------------
 
-  // Is the request accepted?
   public result = LoginResponse.Result.UNDEFINED;
 
-  // Serialized account data.
-  public serializedAccount: SerializedEntity = null;
+  public serializedAccount: (SerializedEntity | null) = null;
 
   public serializedCharacters = new Array<SerializedEntity>();
 
   // ---------------- Public methods --------------------
 
-  public setAccount(account: Account)
+  // -> Returns 'false' on error.
+  public serializeAccount(account: Account): boolean
   {
     this.serializedAccount = new SerializedEntity();
 
-    this.serializedAccount.store
+    this.serializedAccount.serialize
     (
       account,
       Serializable.Mode.SEND_TO_CLIENT
     );
+
+    return this.serializeCharacters(account);
   }
 
-  public addCharacter(character: Character)
-  {
-    let characterData = new SerializedEntity();
+  // --------------- Private methods --------------------
 
-    characterData.store
+  // -> Returns 'false' on error.
+  private serializeCharacters(account: Account): boolean
+  {
+    for (let character of account.data.characters.values())
+    {
+      if (!character.isValid())
+      {
+        ERROR("Invalid character (" + character.getErrorIdString + ")"
+          + " on account " + account.getErrorIdString() + ". Character"
+          + " is not added to login response");
+        return false;
+      }
+
+      this.serializeCharacter(character);
+    }
+
+    return true;
+  }
+
+  private serializeCharacter(character: Character)
+  {
+    let serializedCharacter = new SerializedEntity();
+
+    serializedCharacter.serialize
     (
       character,
       Serializable.Mode.SEND_TO_CLIENT
     );
 
-    this.serializedCharacters.push(characterData);
+    this.serializedCharacters.push(serializedCharacter);
   }
 }
 
@@ -67,14 +89,32 @@ export class LoginResponse extends Response
 
 export module LoginResponse
 {
-  export enum Result
+  export type Undefined = "UNDEFINED";
+
+  export type Accepted =
   {
-    UNDEFINED,
-    OK,
-    UNKNOWN_EMAIL,
-    INCORRECT_PASSWORD,
-    FAILED_TO_LOAD_ACCOUNT
+    status: "ACCEPTED";
+    characterMove: Move;
+    serializedLoadLocation: SerializedEntity;
   }
+
+  export type Rejected =
+  {
+    status: "REJECTED";
+    problems: LoginRequest.Problems;
+  }
+
+  export type Result = Undefined | Accepted | Rejected;
 }
 
-Classes.registerSerializableClass(LoginResponse);
+// export module LoginResponse
+// {
+//   export enum Result
+//   {
+//     UNDEFINED,
+//     OK,
+//     UNKNOWN_EMAIL,
+//     INCORRECT_PASSWORD,
+//     FAILED_TO_LOAD_ACCOUNT
+//   }
+// }

@@ -27,7 +27,7 @@ export class AccountData extends Serializable
 
   // Last logged or created character on this account
   // (this character is selected when used enters charselect window).
-  public lastActiveCharacter: Character = null;
+  public lastActiveCharacter: (Character | null) = null;
 
   // List (hashmap) of characters on this account.
   public characters = new Map<string, Character>();
@@ -41,7 +41,7 @@ export class AccountData extends Serializable
 
   public updateCharacterReference(character: Character)
   {
-    if (!Entity.isValid(character))
+    if (!character || !character.isValid())
     {
       ERROR("Attempt to update character reference on account"
         + " " + this.account.getErrorIdString() + " with"
@@ -49,7 +49,15 @@ export class AccountData extends Serializable
       return;
     }
 
-    if (!this.characters.has(character.getId()))
+    let characterId = character.getId();
+
+    if (characterId === null)
+    {
+      ERROR("Unexpected 'null' value");
+      return null;
+    }
+
+    if (!this.characters.has(characterId))
     {
       ERROR("Failed to update reference to character"
         + " " + character.getErrorIdString() + " on"
@@ -59,7 +67,7 @@ export class AccountData extends Serializable
       return;
     }
 
-    this.characters.set(character.getId(), character);
+    this.characters.set(characterId, character);
   }
 }
 
