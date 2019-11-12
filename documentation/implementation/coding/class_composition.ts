@@ -3,7 +3,7 @@ namespace Form
 {
     // This function can be "inherited" by any class containing a 'state'
     // object property with a 'counter' property inside it.
-    export function increaseCounter
+    export function increaseCounterBy
     (
         // Here we define interface which passed 'state' object must
         // conform to. Note that we only specify properties we are
@@ -39,14 +39,14 @@ class LoginForm
 
     // This is an "inherited" function. It doesn't contain
     // any logic, only the call of actual "inherited" function.
-    public increaseCounter(value: number)
+    public increaseCounterBy(value: number)
     {
         // Here we call an "inherited" function which contains
         // the actual implementation. Note that 'this.state' is
         // always passed to inherited functions along with original
         // parameters (by convention 'state' parameter should always
         // be listed first).
-        Form.increaseCounter(this.state, value);
+        Form.increaseCounterBy(this.state, value);
     }
 }
 
@@ -54,6 +54,6 @@ const loginForm = new LoginForm();
 
 console.log(loginForm.getCounter());
 
-loginForm.increaseCounter(3);
+loginForm.increaseCounterBy(3);
 
 console.log(loginForm.getCounter());
