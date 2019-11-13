@@ -1,3 +1,16 @@
+New idea: put private and protected data inside an object
+
+class Class
+{
+    private data = { counter: 0 };
+
+    pubic get counter() { return this.data.counter; }
+}
+
+// This way you can use the same name for variable and it's accessor.
+
+------------------------------------------------------------------
+
 Use getSomething() and setSomething() methods instead of accessors.
 
 Reason: If you wanted a public accessor for a private class variable, you would
