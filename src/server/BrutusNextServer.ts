@@ -14,7 +14,6 @@ import { Syslog } from "../Server/Log/Syslog";
 // import { HttpsServer } from "../Server/Net/HttpsServer";
 // import { Game } from "../Server/Game/Game";
 // import { Engine } from "../Server/Engine/Engine";
-import { Test } from "../Server/Test";
 
 export const timeOfBoot = new Date();
 
@@ -26,15 +25,11 @@ SourceMapSupport.install();
 
 async function start()
 {
-  Syslog.log("[INFO]", `Starting BrutusNext server...`);
+  Syslog.log("[INFO]", `Starting BrutusNext server`);
 
   try
   {
-    /// TEST:
-    // Syslog.log("[INFO]", "b");
-    // REPORT(new Error("test error"));
-    Test.test();
-
+  // TODO:
   // await HttpsServer.startServers();
   // await Game.load();
     /// Tohle si tu nechám kvůli budoucí teminologii. Na klientu
