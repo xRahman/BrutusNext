@@ -3,33 +3,41 @@
   // Configure glob patterns for excluding files and folders.
   "files.exclude":
   {
-      ".git/": true,
-      "node_modules/": true,
-      //"**/*.js": { "when": "$(basename).ts"},
-      //"build/": true,
-      "**/build/client/icons/**": true,
-      "**/build/client/images/**": true,
-      "**/build/client/fonts/**": true,
-      // Tohle neni idealni, chtelo by to schovat i podadresare, ale co uz.
-      "**/build/client/js/*/*": true,
-      "**/build/server/**": true,
-      //"documentation/": true,
-      "**/documentation/design/^bak": true,
-      "**/documentation/**/*.odt": true,
-      "resources/": true,
-      "deprecated/": true,
-      ".gitattributes": true,
-      ".gitignore": true,
-      "**/*.bat": true
+    "_Resources/": true,
+    ".git/": true,
+    ".gitattributes": true,
+    ".gitignore": true,
+    ".vscode/": true,
+    "^old": true,
+    "**/*.bat": true,
+    "**/documentation/**/*.odt": true,
+    "**/documentation/design/^bak": true,
+    "amend": true,
+    "Build/": true,
+    "commit": true,
+    "Keys/": true,
+    "node_modules/": true,
+    "RawData/": true
   },
   "search.exclude":
   {
-      ".git/": true,
-      "node_modules/": true,
-      "documentation/": true,
-      "deprecated/": true,
-      "build/": true,
-      "**/*.bat": true
+    "_Resources": true,
+    ".git/": true,
+    ".gitattributes": true,
+    ".gitignore": true,
+    ".vscode/": true,
+    "^old": true,
+    "**/*.bat": true,
+    "**/*.d.ts": true,
+    "**/*.json": true,
+    "**/Src/Shared/Box2D/**": true,
+    "amend": true,
+    "Build/": true,
+    "Client/": true,
+    "commit": true,
+    "Documentation/": true,
+    "Keys/": true,
+    "node_modules/": true
   },
 
   "editor.rulers": [80],
@@ -40,5 +48,7 @@
   "editor.detectIndentation": false,
 
   // The default end of line character.
-  "files.eol": "\n"
+  "files.eol": "\n",
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "editor.acceptSuggestionOnCommitCharacter": false
 }

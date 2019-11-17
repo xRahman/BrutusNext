@@ -1,0 +1,32 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch BrutusNextServer",
+            // IMPORTANT: "node2" is an experimental node debugger.
+            // Default is: "type": "node"
+            //"type": "node2", // experimental, can debug Proxy Objects
+            "type": "node", // default
+            "request": "launch",
+            "protocol": "inspector",
+            "program": "${workspaceRoot}/src/server/BrutusNextServer.ts",
+            "stopOnEntry": false,
+            "args": [],
+            ///"cwd": "${workspaceRoot}/build/server",
+            "cwd": "${workspaceRoot}/build",
+            "preLaunchTask": null,
+            "runtimeExecutable": null,
+            "runtimeArgs": [
+                "--nolazy"/*,
+                "--harmony_rest_parameters",
+                "--harmony_proxies"*/
+            ],
+            "env": {
+                "NODE_ENV": "development"
+            },
+            "console": "externalTerminal",
+            "sourceMaps": true,
+            "outFiles": [ "${workspaceRoot}/build/server/js/**/*.js" ]
+        }
+    ]
+}

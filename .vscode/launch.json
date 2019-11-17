@@ -1,32 +1,35 @@
 {
     "version": "0.2.0",
-    "configurations": [
+    "configurations":
+    [
         {
-            "name": "Launch BrutusNextServer",
-            // IMPORTANT: "node2" is an experimental node debugger.
-            // Default is: "type": "node"
-            //"type": "node2", // experimental, can debug Proxy Objects
+            "name": "Launch BrutusNext Server",
             "type": "node", // default
             "request": "launch",
             "protocol": "inspector",
-            "program": "${workspaceRoot}/src/server/BrutusNextServer.ts",
+            "program": "${workspaceRoot}/Src/Server/BrutusNextServer.ts",
             "stopOnEntry": false,
             "args": [],
-            ///"cwd": "${workspaceRoot}/build/server",
-            "cwd": "${workspaceRoot}/build",
+            "cwd": "${workspaceRoot}",
             "preLaunchTask": null,
             "runtimeExecutable": null,
-            "runtimeArgs": [
+            "runtimeArgs":
+            [
                 "--nolazy"/*,
                 "--harmony_rest_parameters",
                 "--harmony_proxies"*/
             ],
-            "env": {
+            "env":
+            {
                 "NODE_ENV": "development"
+                // This is needed so we don't have to use '../../' in imports
+                // ('baseUrl' does this on the client).
+                // "NODE_PATH": "${cwd}/Build/js"
             },
             "console": "externalTerminal",
             "sourceMaps": true,
-            "outFiles": [ "${workspaceRoot}/build/server/js/**/*.js" ]
+            // "trace": true, // Enables logging.
+            "outFiles": [ "${workspaceRoot}/Build/js/**/*.js" ]
         }
     ]
 }

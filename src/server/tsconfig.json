@@ -1,3 +1,5 @@
+/* --- Part of BrutusNext --- */
+
 {
   "compilerOptions":
   {
@@ -6,34 +8,22 @@
     "strict": true,   // Enforce strict checking of 'null' and 'undefined'.
     "charset": "UTF-8",
     "moduleResolution": "node",
+    // "traceResolution": true, // Print module resolution to terminal.
     "newLine": "LF",
     "noEmitOnError": true,
-    "outDir": "../../build/server/js",
-    ///"outDir": "build/server/js",
-    ///"rootDir": "../",
+    "outDir": "../../Build/js",
+    // 'rootDir' points to Src directory.
     "rootDir": "../",
+    // Unfortunaly this doesn't work very well in vs code.
+    // 'baseUrl' points to Src so we don't have to use '../../..' in imports.
+    // "baseUrl": "../",
     "sourceMap": true,
-    "sourceRoot": "../"
+    // Allow importing of .json files.
+    "resolveJsonModule": true
     // 'compileOnSave' actually works in vs code if --watch parameter
     //  is passed to 'tsc', but the same functionality is turned on by
     // '"isWatching": true' in tasks.json. We do it there.
-    /* "compileOnSave": true*/
-  }//,
-  /*"files":
-  [
-    "./src/headers/node.d.ts",
-    "./src/game/DynamicClasses.ts",
-    "./src/BrutusNext.ts"
-  ],*/
-  /*
-  "exclude": [
-        ".git",
-        ".vscode",
-        "documentation",
-        "node_modules",
-        "client",
-        "server",
-        "tiny web server"
-    ]
-  */
+    // "compileOnSave": true
+    // "plugins": [{ "name": "typescript-lit-html-plugin" }]
+  }
 }

@@ -1,0 +1,19 @@
+// Place your settings in this file to overwrite the default settings
+{
+   // Controls if suggestions should be accepted 'Enter' - in addition to 'Tab'. Helps to avoid ambiguity between inserting new lines or accepting suggestions.
+  "editor.acceptSuggestionOnEnter": true,
+
+  // Controls if the editor should automatically close brackets after opening them
+  "editor.autoClosingBrackets": false,
+
+  "editor.minimap.enabled": false,
+
+  // Controls the font size.
+  "editor.fontSize": 20,
+
+  "window.zoomLevel": -0.2,
+  "workbench.colorTheme": "Visual Studio Light",
+
+  // Whether auto fetching is enabled.
+  "git.autofetch": false
+}

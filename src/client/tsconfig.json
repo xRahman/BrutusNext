@@ -1,20 +1,27 @@
+/* --- Part of BrutusNext --- */
+
 {
   "compilerOptions":
   {
     "target": "es6",
+    //"target": "es2018",   // require('js-beautify') doesn't work with es2018.
+    // "module": "es2015",  // 'es2015' to use ES6 modules.
     "module": "amd",  // 'amd' is used by require.js module loader.
     "strict": true,   // Enforce strict checking of 'null' and 'undefined'.
     "charset": "UTF-8",
     "moduleResolution": "node",
+    // "traceResolution": true, // Print module resolution to terminal.
     "newLine": "LF",
     "noEmitOnError": true,
-    "outDir": "../../build/client/js",
-    //"outFile": "../../client/js/build/BrutusNextClient.js",
-    ///"rootDir": ".",
+    "outDir": "../../Client/js",
+    // 'rootDir' points to Src directory.
     "rootDir": "../",
-    "sourceMap": true,
-    "sourceRoot": "../",
-    // // Print names of generated files part of the compilation.
+    // Unfortunaly this doesn't work very well in vs code.
+    // 'baseUrl' points to Src so we don't have to use '../../..' in imports.
+    // "baseUrl": "../",
+    "sourceMap": true
+    // "sourceRoot": "../",
+    // // Print names of generated files during the compilation.
     // "listFiles": true,
     // // Report module resolution log messages.
     // "traceResolution": true
@@ -22,22 +29,15 @@
     // //  is passed to 'tsc', but the same functionality is turned on by
     // // '"isWatching": true' in tasks.json. We do it there.
     // "compileOnSave": true
+    // "plugins": [{ "name": "typescript-lit-html-plugin" }]
   }//,
-  /*"files":
-  [
-    "./src/headers/node.d.ts",
-    "./src/game/DynamicClasses.ts",
-    "./src/BrutusNext.ts"
-  ],*/
-  /*
-  "exclude": [
-        ".git",
-        ".vscode",
-        "documentation",
-        "node_modules",
-        "client",
-        "server",
-        "tiny web server"
-    ]
-  */
+  // Not listing "files" means that every file in directory structure
+  // beginning with tsconfig.json will be compiled, including all .d.ts
+  // files.
+  //
+  // "files":
+  // [
+  //   // Typescript definition file for phaser.
+  //   "./Phaser/phaser.d.ts"
+  // ]
 }

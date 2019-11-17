@@ -1,0 +1,950 @@
+==================================================================
+
+Class factory instancování přes new:
+------------------------------------
+
+/*
+  Idea je, že první zavolané new vyrobí root prototyp a další ho pak budou
+  používat. Tím odpadne potřeba registrovat classy do ClassFactory
+  (registraci automaticky provede první zavolané new).
+*/
+
+
+let prototype: A | undefined = undefined;
+
+class A
+{
+    public x = undefined;
+
+    constructor()
+    {
+        /// Tohle by delala class factory.
+        if (prototype === undefined)
+        {
+            console.log(this);
+            prototype = this;
+        }
+
+        const instance = Object.create(prototype);
+
+        /// tady by se daly setovat defaultni hodnoty do instance.
+        instance.x = 12;
+
+        return instance;
+    }
+}
+
+const a = new A();
+
+console.log(a.x);
+
+==================================================================
+
+
+Budu player ship savovat do zóny?
+- pokud je v zóně, tak asi jo
+  (představuju si save zóny třeba před rebootem - savne se do ní úplně
+   všechno. Pak sice bude po bootu loď bez hráče, tj. neovládaná, ale
+   bude tam).
+- pokud se hráčova loď nemá savnout do zóny, tak se musí přemístit někam
+  jinam (třeba do hráčovy soukromé home dimenze, což je fakticky taky zóna).
+
+Proteď to znamená: Savovat do zóny všechno, co v ní je.
+- player shipy asi nechám v zóně.
+
+-----------------------------------------------------------------------
+
+Wrapper classy
+----------------
+
+Instance wrapper class se nevyrábí přímo přes new WrapperClass, ale přes
+  wrapper classu objektu, který vyrábí wrapované objekty.
+
+Příklad:
+  Sprite (class wrapující Phaser.Sprite) se vyrábí přes Scene.createSprite(),
+  kde je return new Sprite() (Scene wrapuje Phaser.Scene).
+
+  Scene.createSprite() předá konstruktoru Sprite() phaser scénu a kostruktor
+  Sprite() pak do ní přidá nový Phaser.Sprite.
+
+- Stejně funguje třeba PhysicsBody (vyrábí ho PhysicsWorld).
+
+-----------------------------------------------------------------------
+
+Factory functions
+-------------------
+
+https://medium.com/javascript-scene/javascript-factory-functions-vs-constructor-functions-vs-classes-2f22ceddf33e
+
+-----------------------------------------------------------------------
+
+Renderování v Phaseru
+----------------------
+
+- UI, ve smyslu fixního layeru nad hrou, by mělo bejt v samostatné scéně,
+  nebo prostě jako html (to skoro dává větší smysl).
+
+- debugovací vykreslování physics geometrie, rychlostí a tak - to je otázka.
+  - Layery v Phaseru 3 nejsou a Containery nejsou moc doporučené (vlastně není
+    moc důvod container použít).
+  - zato existuje Zindex, takže bych prostě asi mohl vykreslovat s určitým
+    z indexem...
+    - to samý platí pro případné in-world ui (healthbary u lodí, damage
+      numbers a podobně).
+Zorder se dělá přes: image.setDepth(depth);
+
+
+
+
+Kreslení čar v Phaseru:
+------------------------
+
+Scene.create()
+{
+  graphics = this.add.graphics(0, 0);
+}
+
+Scene.update()
+{
+  graphics.clear();
+  graphics.lineStyle(1, 0x00ff00, 0.4);
+
+  graphics.beginPath();
+
+  drawLine(x1, y1, x2, y2);
+  drawLine(x1, y1, x2, y2);
+
+  graphics.closePath();
+  graphics.strokePath();
+}
+
+function drawLine (x0, y0, x1, y1)
+{
+  graphics.moveTo(x0, y0);
+  graphics.lineTo(x1, y1);
+}
+
+- Je na to class Server/Phaser/Graphics
+
+
+Problém se souřadným systémem
+------------------------------
+
+IDEA: Používat na klientu i na serveru (v mém kódu) stejný souřadný systém.
+- asi bych musel vyrobit wrapper classy pro Phaser entity:
+  Graphics (tu už mám),
+  Container
+  Sprite
+  Mouse (to už mám).
+a flipovat to v nich.
+
+To zní asi jako nejlepší řešení, protože:
+- mít na serveru a na klientu různé souřadnice je na pěst.
+- většina počítání se děje na serveru v Box2D, takže dává smysl
+  primárně používat souřadnice v Box2D
+- flipovat to někde v komunikačním protokolu by bylo dost na pěst,
+  při přidání každé nové packet classy bych na to musel myslet.
+
+Texture animace v Phaseru
+--------------------------
+
+Export/import animation to/from json.
+https://phaser.io/phaser3/devlog/76
+
+- zatím se na to vykašlu, animace se specifikuje dvěma číslama
+  (počet framů a framerate), což klidně můžu zatím někam dávat
+  ručně.
+  - základ je každopádně dělat to přes texture atlas, což dělám.
+
+
+-----------------------------------------------------------------------
+
+Serializable vektory
+---------------------
+
+Otázka je, jestli je dobrej nápad mít extra overhead na Vectorech.
+- možná by bylo lepší mít typ Position, což by bylo Serializable
+  a Vectory nechat čistě na počítání.
+(i když, možná si budu chtít pamatovat i síly a tak a na to se typ Position
+ nehodí).
+
+- Alternativa je nedědit Vector ze Serializable, ale upravit Serializable,
+  aby umělo Vectory nativně.
+To je asi lepší, udělám to tak.
+
+
+Static version v Serializable
+------------------------------
+
+Mohla by bejt version static?
+- jakej je důvod, aby nebyla?
+    Jasně, zapisuje se do serializované verze, aby se pak mohla zkontrolovat,
+  ale to by asi šlo i se static propertou.
+
+
+-----------------------------------------------------------------------
+
+Ovládání lodi (ship handling)
+------------------------------
+
+- ovládat loď čistě myší (asi follow při stisknutém myšítku, close při
+  button-up) by mělo výhodu v tom, že by byla klávesnice volná na
+  mačkání abilit.
+- blbě by se ale strafovalo (leda si k tomu něco přimačknout).
+  - třeba LMB = follow, RMB = strafe? (nebo jakkoliv si to user nabinduje)
+
+- Pomalé otáčení nebudu asi muset moc řešit, protože vesmírné lodě se mohou
+  kolem těžiště točit celkem svižně.
+  - možná to bude přece jen chtít omezit kvůli fakt velkým lodím, ale
+    nemusím to přehánět.
+  "sluggishness" bude dána tím, že je ta věc pomalu akceleruje.
+
+Ovládání klávesnicí:
+- vypne se seek behavior.
+- klávesy točí lodí
+- 'W' akceleruje, 'S' decceleruje.
+
+TODO: Brždění bez otočení lodě
+  (dozadu by měla bejt síla o dost menší).
+- čili budu mít vlastně dvě "approach" funkce:
+  - "agresivní" s otočením lodě.
+     - tady asi bude muset bejt "reakční vzdálenost" rovna součtu
+       bezdné vzdálenosti (čukámek pryč) a vzálenosti, kterou loď uletí,
+       než se celá otočí.
+  - "pohodová" s bržděním.
+
+Strafování:
+- boční trysky s malým thrustem
+- to by asi nemuselo vypínat steering.
+
+TODO: Časem by to chtělo zohlednit možnost strafování ve steering funkcích.
+- v zásadě asi nějak tak, že se síla složí s forward thrustu a strafe thrustu
+  (což může být v součtu víc než čistě forward thrust).
+- asi jen tam, kde to dává smysl. Tzn. ne když pronásleduju cíl, ale
+jo když se chci vyhnout překážce.
+
+Steering behaviors
+-------------------
+
+Obstacle avoidance
+
+- Při vyhýbání se překážkám asi stačí brát v úvahu nejbližší vertex
+  (od něj se snažit být na safe vzdálenost).
+
+- Při vyhýbání se překážkám asi není třeba řešit přesnej tvar lodi,
+  stačí k "safe vzdálenosti" přičíst poloměr bounding circlu.
+  (Tohle teda nebude úplně fungovat u dlouhých úzkých lodí a úzkých
+   šterbin, ale to si můžu nechat jako specialitku).
+  - V zásadě dokud si nechám dostatečnou rezervu (včetně poloměru lodi)
+    vůči nejbližšímu vertexu nejbližší překážky, tak bych měl bejt
+    safe a do ničeho nevrazit.
+
+Steering tutorial:
+  https://gamedevelopment.tutsplus.com/tutorials/understanding-steering-behaviors-flee-and-arrival--gamedev-1303
+
+
+-----------------------------------------------------------------------
+
+Box2d
+========
+
+Coordinates and measures
+-------------------------
+
+Vzdálenosti
+
+Na klientu jsou měřítkem pixely, a to proto, že lodě a jiné objekty mají
+  délku danou počtem pixelů (defaultní zobrazení je 1:1 vůči pixelům na
+  obrazovce).
+
+- i když teda je otázka, jestli by viewport (aspoň jeho delší rozměn) neměl
+  zobrazovat všude stejně "prostoru" ve hře. Pak bych asi musel scénu
+  scalovat tak, aby tohle vyšlo.
+  - pořád je ale dálka lodě daná počtem pixelů a když se má na obrazovku vejít
+    dejme tomu 10 100 pixelových lodí, tak šířka obrazovky je 1000 pixelů
+    (které se pak mohou přescalovat třeba na 640 pixelů - nebo taky ne,
+     na desktopu asi nechci, aby se mi okno scalovalo, když ho resiznu.
+     Každopádně to zařídí nějaké scalování na klientu, základ jsou prostě
+     pixely.)
+TODO: Takže musím říct, kolik pixelů je jeden metr (nebo kolik metrů je pixel).
+  A taky jestli 1 jednotka v Box2D je opravdu metr (nebo třeba kilák).
+
+IDEA: 1 pixel = 1 metr,
+  ale 1 Box2d unit = 1 kilometr
+  (takže scale je 0.001).
+Hmm. Ono nakonec 1:1 bude asi docela fajn.
+- přinejhorším to můžu kdykoliv změnit.
+
+
+Tahák s fyzikálníma properties materiálů:
+  http://box2d.org/forum/viewtopic.php?t=3333
+
+
+Koordináty
+- chci mít [0, 0] vlevo nahoře? Asi jo, bude lepší přemýšlet v normální
+  souřadné soustavě a na klientu to flipnout až před vykreslením...
+Transformaci zobrazení bude dělat až Phaser.
+
+Jak řešit, když fyzika nestíhá:
+  https://gafferongames.com/post/fix_your_timestep/
+
+
+Bug v Box2d 
+------------
+
+(špatně se počítá rychlost při malé akceleraci)
+
+TODO: Ve stávajícím nastavení (s density 1) v Box2d nefunguje akcelerace
+  menší než 0.02
+    (a = F / m), takže je třeba určitá minimální velikost síly
+  při dané hmotnosti.
+- Udělat na to check.
+  (respektive spíš budu muset pužít fyziku, která ten bug nemá...)
+.
+Bug s malou akcelerací je popsanej tady:
+  http://discuss.cocos2d-x.org/t/cocos2d-x-3-17-physicsbody-applyforce-still-works-wrong/42631
+  https://discuss.cocos2d-x.org/t/cocos2d-x-3-16-physicsworld-weird/39518
+- možná zkusit Planck.js?
+.
+Note: Nakonec jsem to udělal tak, že se malá akcelerace nikdy nepoužije,
+  takže mě ten bug v zásadě netrápí.
+
+Moje issue v typescript Box2d: https://github.com/flyover/box2d.ts/issues/50
+
+
+-----------------------------------------------------------------------
+
+Kolize a zásahy
+----------------
+
+IDEA: Nemusím řešit rozdělení lodi na víc physics bodies, stačí spočítat
+  úhel zásahu (zepředu, z boku, zezadu).
+- Otázka je, co s ničením zbraní
+
+-----------------------------------------------------------------------
+
+GUI
+-----
+
+- class Gui by mohla v sobě mít instance (a vyrábět je, když už dělá init()).
+
+- když to budou dělat přímo classy, tak to může v importu classy házet
+  exceptiony. Což asi úplně nechci, protože ty není jak odchytit...
+  
+Canvas nemůže bejt komplet static, protože bude uvnitř CanvasWindow,
+  které se bude vyrábět dynamicky v initu.
+
+- classu Canvas nejspíš vůbec nepotřebuju.
+
+- problém je, že když vyrábím PhaserEngine, tak mu dávám velikost canvasDivu.
+  A ten v té době ještě nemusí existovat (určitě nebude, až to bude okno).
+  => DisplayEngine (Renderer) se musí vyrábět až když mám příslušné okno.
+
+Základní otázka tudíž je, kdo bude vlastnit Renderer a kdy se bude vyrábět.
+- vyrábět se logicky bude poté, co se vyrobí okno.
+- momentálně je to singleton. Což nemůže být, protože nemůže existovat
+  od začátku.
+- není to očividně Gui komponenta, takže by ho nemělo vlastnit Gui.
+- možná by fakt měl vlastnit sám sebe (nebo to případně může bejt class
+  Renderer, která bude obsahovat PhaserEngine.
+
+Čili:
+- zavolat Gui.init()
+- zavolat Renderer.init()
+  - ten si vyrobí PhaserEngine a passne mu údaje z CanvasWindow.
+
+-----------------------------------------------------------------------
+
+Disconnecty a reconnecty na klientu
+------------------------------------
+
+- zastavit simulaci
+  (asi není nutný hned dealokovat scénu a tak).
+  - momentálně se mi simulace zastaví prostě tím, že přestanou přicházet
+    SceneUpdaty ze serveru.
+    - takže to teď asi řešit nemusím.
+- ukázat userovi okno s informací o disconnectu a reconnectu.
+- zastavit keyboard eventy.
+  (to by v zásadě mohlo zařídit to, že okno se scénou přestane bejt aktivní)
+
+Problém je, že na tohle bych měl zresuscitovat okna a to je dost práce...
+(Windows, stavy, udělat okno pro hru, udělat okno pro výpis
+ disconnectu/reconnectu - asi ConsoleWindow).
+ - to všechno mě bude odvádět od práce na vizuálu.
+ - na druhou stranu teď to mám jakž takž v hlavě...
+
+=> Chtělo by to asi nějaké provizorní řešení uička. Reconnecty se dají
+   vypisovat do divu.
+
+Ehm... Nastavit display = "none" zjevně nevypne keyboard eventy zaregistrované
+  phaserem.
+Asi bude fakt nejlepší to prostě do vypnuté connectiony neposílat.
+
+-----------------------------------------------------------------------
+
+Sockety a connectiony
+----------------------
+
+- getIpAddress(), getUrl() a getOrigin() na klientu nemá význam
+  (server je jen jeden).
+
+
+- Server.Connection (a tedy i Server.Socket) dostane webSocked
+  od WebSocketServeru.
+- Server.Connection (a tedy i Client.Socket) si ji vyrábí.
+Může ji klient taky dostávat?
+- V zásadě jo, .connect() by mohla bejt někde jinde
+  (třeba Connection.connect()).
+- potom ale zas bude connection žít jinak než socket (na klientu).
+- vlastně by se i na klientu dala celá connection vyrobit až při connectu
+  (byla by to static property Connection.connection);
+Prozatím závěr: webSocket bude vyrábět někdo zvenku a Socket ho dostane
+  jako parametr (to je fajn, nemusí se testovat, jestli existuje).
+
+Hmm, že by dědičnost byla:
+  Shared.Connection -> Shared.Socket -> Client.Socket -> Client.Connection
+                                     -> Server.Socket -> Server.Connection
+- je to poněkud nestandardní, ale možná to bude fungovat.
+
+-----------------------------------------------------------------------
+
+Logování
+---------
+
+Každej záznam v syslogu začíná tagem [MESSAGE_TYPE], kterej se bere
+  z enumu MESSAGE_TYPE.
+- Z toho plyne, že nikde jinde v kódu bych neměl mít explicitně [COSI], protože
+  to pak vede ke zdvojeným tagům.
+
+
+-----------------------------------------------------------------------
+
+Error handling u socketů
+-------------------------
+
+Když socket není open, vracet true/false, nebo prostě jen házet exceptiony?
+- true/false jde zapomenout ošetřit, neošetřená exception se o sebe přihlásí.
+- Testovat uvnitř connection.send(), nebo dokonce socket.send(), jestli je
+  socet open, už je pozdě - tu informaci potřebuje ten, kdo send() zavolal.
+    Zjistit ji přes návratovou hodnotu send() by sice šlo, ale lepší je,
+  zavolat před tím ručně isOpen() a podle toho se ošetřit.
+=> send() bude čistě házet exceptiony.
+
+
+-----------------------------------------------------------------------
+
+Singletony (Game na serveru, Connection na clientu, etc.) by asi mohly
+být komplet static classy, ať nemusím chodit přes Server.game...
+
+-----------------------------------------------------------------------
+
+TODO: Na clientu nejspíš prohodit proces connectění
+- nejdřív se vytvoří web socket, pak new Connection(webSocket).
+Otázka ale je, jestli to půjde dohromady s reconnectama.
+- Tvoří se tam novej socket?
+  Hmm, tvoří. Takže Connection může existovat bez socketu, tudíž
+  socket musí být typu Něco | null...
+  (Na serveru to tak asi není, zajímavé...)
+  - leda bych tvořil celou novou Connection...
+
+-----------------------------------------------------------------------
+
+Úvahy k dědičnosti Ship classy
+---------------------------------
+
+Na rozdíl od packetů to asi zatím nemusím komplikovat,
+  prostě můžu mít SharedShip (nebo ShipClass), v ní přímo property
+  .position a zdědit z ní Client/Ship a Server/Ship.
+- asi budu muset říct, které properties se nemají posílat.
+
+Ono je vůbec otázka, jestli posílat celé classy. Myšlenka, že sdílená data
+  jsou zabalená jako ShipData, je docela fajn. V tom případě by Ship
+  vůbec nemusela být Serializable (respektive možná na Serveru kvůli savování).
+    A taky bych nemusel řešit, aby /Server/Ship a Client/Ship měly stejného
+  předka.
+
+U packetů to ale jinak nepůjde, ty se posílají celé.
+
+Na druhou stranu výhoda posílání celých class je, že pak funguje dědičnost.
+
+No nic, kašlat na to, zatím dědičnost nepotřebuju.
+
+
+
+-----------------------------------------------------------------------
+
+Matter.js na serveru
+---------------------
+
+npm install --save @types/matter-js
+
+
+Note that Matter.Runner is not yet supported in nodejs, so you'll need your own game loop.
+
+      var Matter = require('matter-js/build/matter.js');
+
+      var engine = Matter.Engine.create();
+
+      var boxA = Matter.Bodies.rectangle(400, 200, 80, 80);
+      var boxB = Matter.Bodies.rectangle(450, 50, 80, 80);
+      var ground = Matter.Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
+
+      Matter.World.add(engine.world, [boxA, boxB, ground]);
+
+      console.log('boxA', boxA.position);
+      console.log('boxB', boxB.position);
+
+      for (var i = 0; i < 100; i++) {
+          Matter.Events.trigger(engine, 'tick', { timestamp: engine.timing.timestamp });
+          Matter.Engine.update(engine, engine.timing.delta);
+          Matter.Events.trigger(engine, 'afterTick', { timestamp: engine.timing.timestamp });
+      }
+
+      console.log('boxA', boxA.position);
+      console.log('boxB', boxB.position);
+
+
+
+-----------------------------------------------------------------------
+
+Enumy vs stringové typy
+------------------------
+
+TODO: Zamyslet se, jestli by se nedaly enumy nahradit stringama
+- na druhou stranu by se pak posílalo o dost víc dat po síti, což
+  asi nechci. Takže v případě paketů zůstanu raději u enumů.
+  (Na druhou stranu u stringových typů šlo nějak zajistit, že jsem
+   vyčerpal všechny možnosti - to je fajn.)
+- otázka je, jestli by nešlo tu kontrolu intelisensem dělat i u enumů
+  (TODO: Nastudovat to a vyzkoušet).
+  - zřejmě nešlo.
+
+-----------------------------------------------------------------------
+
+Packety
+--------
+
+TODO: Zvážit, jestli nějak nerozlišit incoming a outgoing packety
+  (asi různé adresáře na klientu a na serveru).
+Anser: Nepotřebuju víc adresářů, řeší to dědičnost.
+
+  shared/packet
+  client/incomingPacket
+  client/outgoingPacket
+  server/incomingPacket
+  server/outgoingPacket
+
+  nebo
+
+  client/packet/in
+  client/packet/out
+
+  client/packet/incoming
+  client/packet/outgoing
+
+Respektive jinak: Možná to není otázka adresářů, ale dědičnosti.
+  - outgoing packety například asi nepotřebují metodu process().
+    Aha, jasně, na BNextu jsem to měl zděděné z Reuqest a Response.
+    Ale Packet měl metodu process s error messagem v body, což
+    asi není dobře - měl jsem zpracovávat Requesty a posílat Responsy.
+  - možná rootovej Packet vůbec není potřeba.
+
+Takže otázka zní: Pojmenovat ancestory Request a Response, nebo IncommingPacket
+  a OutgointPacket?
+  - incoming/outgoing mění význam podle toho, jestli jsem na serveru nebo
+    na klientu. To by mohlo mást...
+  - na druhou stranu třeba SceneUpdate není ani Request, ani Response. Na nic
+    totiž neresponduje, server ho posílá automaticky.
+- incoming/outgoing je asi dobrý v tom, že je jasný, že incoming má mít metodu
+  process a outgoing ne.
+- Response by asi šla zdědit z outgoingPacketu - hmm, vlastně nešla, protože
+  na serveru je outgoing a na clientu incoming. To bude možná problém...
+
+TODO: Upravit dědičnost packetů (nejspíš zrušit Packet a nahradit ho dvojicí
+  IncomingPacket/OutgointPacket).
+  - hmm, možná tady byl problém s křížovým děděním, Response/Request mají
+    taky nějaké sdílené vlastnosti a nedají se jednoduše zdědit
+    z Incoming/Outgoing packetu. Možná to vyřešit propertou:
+    RegisterRequest by byl například zděděnej z OutgoingPacketu a měl property
+    requestData: RegisterRequestData.
+
+Hmm, ono to možná vůbec nepůjde.
+  Pokud mám třeba SharedPlayerInput, v něm něco, co chci zdědit, a z toho
+  zdědím /Client/PlayerInput a /Server/PlayerInput, tak na clientu
+  je to outgoing packet a na serveru incomming.
+- což jsem zas u toho, že by všecha sdílená data toho packetu musela být
+  pověšená pod IncomingPacket/OutgoingPacket coby .data: PlayerInputData.
+
+Je fakt, že když bych měl PlayerInputData, tak bych k tomu nemusel dělat
+  client a server verzi (všechna data v packetu jsou shared).
+  Na druhou stranu by mi ale nic neohlídalo, že v client i server verzi
+  packetu mám property data: PlayerInputData - na to bych ty packety
+  musel dědit z nějakého interfacu (což bych ale asi mohl).
+
+Takže bych měl:
+  /Shared/IncomingPacket
+  /Shared/OutgoingPacket
+  /Shared/PlayerInputData
+  /Shared/PlayerInputInterface
+
+  a k tomu:
+
+  /Client/PlayerInput
+    class PlayerInput extends OutgoingPacket implements PlayerInputInterface
+    {
+    }
+
+  a na serveru obdobu.
+
+- Problém to úplně neřeší, protože pořád můžu zapomenout napsat to
+  'implements PlayerInputInterface' a tudíž mě nic neohlídá, ale
+  asi je to lepší než nic...
+
+Otázka je, jestli k něčemu vůbec potřebuju ty interfacy...
+- asi je tady používám k neintuitivnímu účelu.
+
+"Dědění" přes interfacy je naprd, protože v interfacu mohou být jen
+  public properties.
+- obejít to přes classu (zdědit z ní interface a ten pak implementovat) nejde,
+  protože výsledná classa pak není potomkem zdrojové classy, takže nemůže
+  mít z ní zdědění protected properties. Private by možná fungovaly, ale
+  to zas nedává smysl (private se nedědí, so to speak).
+Takže asi fakt jedině typescriptové mixiny, pokud chci nějakou formu
+  vícenásobné dědičnosti.
+
+IDEA: Můžu v zásadě říct, že všechny packety musí mít .data: PacketData.
+- tím sice nezajistím, že SceneUpdate na Clientu a na Serveru bude mít
+  stejné PacketData, ale aspoň něco...
+
+Ještě zpět k otázce, jestli packety mají být dynamické classy.
+- taky by mohla být prostě jen classa Packet a zpracování packetu by
+  mělo switch...
+    Pak by teda zas mělo být dynamické PacketData, protože to předhazuju
+  switchem na zpracování, takže bych si asi moc nepomohlo...
+
+Packety se komplikují tím, že je dělím na incoming a outgoing - přitom
+  samy o sobě obsahují jen nějaká data. Jasně, logicky sice dává smysl
+  metody na opracovávání těch dat dát do stejné classy, ale to stejně nedělám:
+  data jsou v .data a opracovává je .process(), čili je vlastně čte externě.
+
+IDEA: Packety by měly být čistě shared classy.
+- díky tomu odpadne problém s pojmenováváním potomků na klientu a na serveru.
+- a zjednoduší se práce.
+Musí být samozřejmě Serializable a zaregistrované v Classes.
+- ale jelikož budou jen shared, tak mohou být includnuté přímo z Classes.
+Obslužný kód bude čistě na serveru a klientu.
+- bude dostávat Packet jako parametr.
+- asi bude muset obsahovat switch...
+  - podle className?
+  Abych mohl typescriptem zajistit, že jsou všechny casy zpracované, tak bych
+  musel mít union stringový typ (nebo možná ne nutně stringový?)
+  - Jenže kdo zajistí, že jsou nové packety přidané do toho typu?
+    Asi nikdo, tudíž to nemá smysl a můžu rovnou udělat switch na class name.
+
+
+-----------------------------------------------------------------------
+
+Dilema s pojmeováváním class:
+------------------------------
+
+/Shared/SharedClass
+/Client/Class
+/ServerClass
+
+nebo
+
+/Shared/Class
+/Client/ClientClass
+/Server/ServerClass
+
+- První varianta může být trochu matoucí při find-in-files (jsem na serveru
+  nebo na klientu?)
+- ale dává smysl při posílání mezi klientem a serverem
+  (classy by se jmenují stejně, tudíž se vzájemně serializují/deserializují).
+- Navíc SharedCosi zní jako "sdílená část čehosi", což je intuitivní význam.
+
+RESULT: Zatím používám Class extends Shared.Class {}
+
+-----------------------------------------------------------------------
+
+TODO: Zvážit, jestli se na ERROR() nevyprdnout úplně.
+- v browseru stejně nakonec skončím vyhozením výjimky.
+- stejně chci nakonec logovat i exceptiony.
+- throw Error() má správně stack a není třeba nic uřezávat.
+Vlastně jediné použití ERRORU() co mě napadá, je, když chci něco
+  jen zalogovat a pokračovat dál ve fci (throw je jako return);
+ZÁVĚR: Zkusím co nejvíc používat throw Error().
+
+-----------------------------------------------------------------------
+
+Renderování backgroundu
+------------------------
+
+Nehybnost backgroundu by šla kromě scrollFactoru 0 vyřešit
+ještě tím, že by se renderoval do samostatné scény. Viz sceneManager.
+(Pokud budu mít ui, tak na to asi stejně dojde).
+
+Mrknout taky na:
+https://codepen.io/samme/pen/paOjMO
+http://www.html5gamedevs.com/topic/33206-scalemanagershow_all/
+
+-----------------------------------------------------------------------
+
+Úvaha o referencích na entity:
+
+- reference by se získávaly přes:
+    Entities.getReference(whoAsks, whatDoesHeWant, whereIsReferenceWritten);
+
+- Entities by si zapamatovaly toho, kdo si o referenci žádá (do seznamu
+  žadatelů) a odkazovanou entitu (do seznamu odkazovaných entit), případně
+  by to mohly mít entity poznamenané u sebe (seznam koho referencují a kdo
+  je referencuje).
+    Když se entita maže, tak musí tyhle seznamy projít a vyhodit se z nich,
+  plus odkazovaná entita zapíše do všech referencí na sebe 'null';
+
+- getReference bude vracet typ Entity | null. Díky tomu typescript vynutí
+  kontroly na null při každé manipulaci s referencí.
+
+Downside: Pořád nebude zaručeno, že si někdo nesavne referenci přímo,
+  místo aby si ji vzal přes Entities.getReference(). Tudíž je otázka,
+  jestli celé tohle cvičení má smysl.
+- na druhou stranu když si vzpomenu vzít si referenci správně, tak mě
+  pak typescript donutí všude psát null checky, když s ní budu manipulovat.
+
+Problém s implementací by mohl být, jak předat, kam se reference zapisuje.
+  Když předám getReference(this.badPlayer), tak se předá hodnota, tj.
+  nejspíš 'null' nebo co zrovna v té property bude. Musel bych předat
+  getReference(this, 'badPlayer') - což je problém, protože nemám string
+  s názvem proměnné.
+
+- Předávání referencí by vyřešilo, kdyby entita nebyla pověšená přímo
+  v property (třeba .ch), ale až v .ch.ref. Ta by navíc asi mohla bejt
+  skrytá za Proxy, takže by se to používalo normálně. Když bych pak chtěl
+  tuhle referenci vynulovat, tak bych zapsal ch.ref = null.
+
+Otázka je, jestli tohle všechno má vůbec smysl. Zresetování properties
+  mazané entity sice nezajistí kontrolu ze strany typescriptu (to by musely
+  všechny properties všech entit být typu (Cosi | null)), abych vždycky musel
+  kontrolovat, že nepřistupuju na neexistující property, ale vyhodí výjimku,
+  takže se to v runtimu dozvím.
+- fakt teda je, že kontrola už v compile timu je výrazně lepší - odhalí
+  i případné chyby se vzácným výskytem.
+
+-----------------------------------------------------------------------
+
+Mixiny (vícenásobná dědičnost)
+--------------------------------
+
+
+TODO: Vyzkoušet npm/mixin
+- asi nebrat, typescript si s tím nerozumí.
+
+Typescriptové mixiny fungují tak, že je možné funkcí přidat properties
+  na libovolnou classu - to by teoreticky mohlo fungovat taky, až na to, že
+  ty přidávané properties nemohou mít vlastní strom dědičnosti, a že to má
+  dost divnou syntaxi...
+
+http://justinfagnani.com/2015/12/21/real-mixins-with-javascript-classes/
+- class MyClass extends mix(MyBaseClass).with(Mixin1, Mixin2) {  
+  /* ... */
+}
+
+Tohle by mohlo být zajímavé:
+(viz https://github.com/Microsoft/TypeScript/pull/13743#issuecomment-414547593)
+
+// Helper code:
+/// Odtud by se brala funkce Mixin()...
+
+export type Constructor<T = {}> = new (...args: any[]) => T;
+
+/* turns A | B | C into A & B & C */
+type UnionToIntersection<U> =
+	(U extends any ? (k: U) => void : never) extends ((k: infer I) => void) ? I : never
+
+/* merges constructor types - self explanitory */
+type MergeConstructorTypes<T extends Array<Constructor<any>>> =
+	UnionToIntersection<InstanceType<T[number]>>;
+
+export function Mixin<T extends Array<Constructor<any>>>(constructors: T): Constructor<MergeConstructorTypes<T>> {
+	const cls = class {
+		state = {
+		}
+		constructor() {
+			constructors.forEach((c: any) => {
+				const oldState = this.state;
+				c.apply(this);
+				this.state = Object.assign({}, this.state, oldState);
+			});
+		}
+	} as any;
+	constructors.forEach((c: any) => {
+		Object.assign(cls.prototype, c.prototype);
+	});
+	return cls as any;
+}
+
+/// And the implementation.....
+
+
+export class FooMixin {
+	state = {
+		value: ""
+	}
+	getBlah() {
+		return "Blah"
+	}
+}
+
+export class BarMixin {
+	state = {
+		othervalue: "merge together"
+	}
+	getBar() {
+		return "Bar"
+	}
+}
+
+export class FooBar extends Mixin([FooMixin, BarMixin]) {
+	constructor() {
+		super();
+		this.getBlah = this.getBlah.bind(this);
+		this.getBar = this.getBar.bind(this);
+	}
+
+	test() {
+		this.state.value  // here on the typings good :)
+		this.state.othervalue // here on the typings good :) this proves the merge strategy for state
+		this.getBar(); // here :)
+		this.getBlah(); // here :)
+	}
+}
+
+- Vypadá to moc hezky, ale nefunguje to, protože na constructoru se nedá
+  zavolat apply ani call.
+    Tzn. řádka:
+      c.apply(this);
+    hodí exception.
+
+RESULT: Mixiny jsou clumsy, kód je pak složitej a nepřehlednej. Asi se raději
+zkusím obejít bez vícenásobné dědičnosti.
+
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+
+Test animovancýh tilesů
+------------------------
+
+ShipGraphics.ts
+----------------
+
+class ShipGraphics
+{
+  constructor
+  (
+    private readonly scene: FlightScene,
+    shape: PhysicsBody.Shape,
+  )
+  {
+    this.container = new Container(scene, 0, 0);
+    this.container.setDepth(FlightScene.Z_ORDER_SHIPS);
+
+    // /// TileMaps test.
+    // const map = scene.make.tilemap({ key: SHIP_ROGUE });
+    // console.log(map);
+    // const tilesetRogue = map.addTilesetImage("rogue", IMAGE_ROGUE);
+    // const shipLayer = map.createStaticLayer
+    // (
+    //   "graphics", tilesetRogue, -190, -190
+    // );
+    // this.container.addLayer(shipLayer);
+    // const tilesetTest = map.addTilesetImage
+    // (
+    //   /// Tohle je jméno tilesetu v tiled editoru.
+    //   "exhaust",
+    //   "test_animation_texture"
+    // );
+    // const testLayer = map.createDynamicLayer
+    // (
+    //   "animation_test", tilesetTest, 200, 200
+    // );
+    // // this.container.addLayer(testLayer);
+    // // const thrusterLayer =
+    // //   map.createStaticLayer("thrusters", tileset, -190, -190);
+
+    // if (scene.animatedTilesPlugin !== "Not loaded")
+    // {
+    //   scene.animatedTilesPlugin.init(map);
+    //   // console.log(scene.animatedTilesPlugin);
+    // }
+
+    // const rearRightThrusters = map.createFromObjects
+    // (
+    //   /// Jméno object layeru.
+    //   "thrusters",
+    //   /// Jméno objektu v tiled editoru.
+    //   "rearRightThruster",
+    //   /// Tohle je id textury, která se má použít.
+    //   { key: EXHAUST_SPRITE_ID }
+    // );
+    // // console.log(rearRightThrusters);
+    // for (const thruster of rearRightThrusters)
+    // {
+    //   /// Origin spritu v Phaseru je uprostřed, ale v Tiled vlevo nahoře.
+    //   /// TODO: Vymyslet, odkud ta čísla brát
+    //   ///   (jsou to asi půlky rozměrů ship layeru)
+    //   thruster.setX(thruster.x - 190);
+    //   thruster.setY(thruster.y - 190);
+    //   this.container.addSprite(thruster);
+    // }
+
+    this.shipSprite = createShipSprite(scene, this.container);
+    this.shapeGraphics = new ShapeGraphics(scene, shape, this.container);
+    // this.exhaustSprites = createExhaustSprites(scene, this.container);
+
+    this.vectors = new VectorGraphics(scene);
+
+    // // layer.setRotation(Math.PI / 6);
+    // const tmpSprite = scene.add.sprite(0, 0, SHIP_SPRITE_ID);
+    // this.tmp = scene.add.container(0, 0);
+    // this.tmp.add(layer);
+    // this.tmp.add(tmpSprite);
+
+    // layer.rotation = Math.PI / 6;
+    // layer.x = 200;
+    // layer.
+  }
+
+  public static preload(scene: Phaser.Scene)
+  {
+    /// TileMaps test.
+    scene.load.tilemapTiledJSON
+    (
+      SHIP_ROGUE,
+      "TileMaps/Ships/rogue.json"
+    );
+    scene.load.image(IMAGE_ROGUE, "Textures/Ships/rogue.png");
+    scene.load.image
+    (
+      "test_animation_texture",
+      "Textures/Effects/Exhausts/ExhaustYellowRectangular.png"
+    );
+    scene.load.image
+    (
+      EXHAUST_SPRITE_ID,
+      "Textures/Effects/Exhausts/ExhaustYellowRectangular/001.png");
+  }
+}
+
+FlightScene.ts
+---------------
+
+interface AnimatedTilesPlugin
+{
+  init(map: Phaser.Tilemaps.Tilemap): void;
+}
+
+class FlightScene
+{
+  public animatedTilesPlugin: AnimatedTilesPlugin | "Not loaded" =
+    "Not loaded";
+}

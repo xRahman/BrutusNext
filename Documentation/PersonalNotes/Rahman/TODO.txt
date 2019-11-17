@@ -1,0 +1,26 @@
+Syslog
+-------
+
+- Přespání metody static classy zjevně funguje. Šlo by to i bez classy?
+- Přepsat metoda přímo v interfacu nejde
+
+Další možnosti:
+- hodit ty přepisovací metody do objektu (a ten exportnout).
+Ha, ono to zjevně funguje i přímo v namespacu, jen jsem ho špatně importoval.
+
+Tzn. asi to půjde přes namepacy, ale nebudu mít protected metody...
+- možná ze Shared/Syslog exportovat dva namespacy s tím, že v tom druhém budou pomocné metody?
+
+
+Ještě to udělám jinak:
+ - SyslogUtils bude samostatnej file a v Syslog.ts bude pouze funkce log()
+   a typ Syslog.MessageType
+
+------------------------------------------------------------------------------
+
+Zákaz spouštění package skriptů v npm:
+---------------------------------------
+
+npm config set ignore-scripts true
+
+

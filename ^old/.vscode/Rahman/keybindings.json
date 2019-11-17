@@ -1,0 +1,12 @@
+// Place your key bindings in this file to overwrite the defaults
+[
+  { "key": "ctrl+f2",       "command": "bookmarks.toggle",
+                                     "when": "editorTextFocus" },
+  { "key": "f2",            "command": "bookmarks.jumpToNext",
+                                     "when": "editorTextFocus" },
+  // Terminate build task.
+  { "key": "ctrl+t",        "command": "workbench.action.tasks.terminate" }
+  // Remap 'ctrl+shift+b' so instead of running
+  // the build taks, it asks what task to run.
+  // { "key": "ctrl+shift+b",  "command": "workbench.action.tasks.runTask" }
+]

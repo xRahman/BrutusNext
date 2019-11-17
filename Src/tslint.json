@@ -1,0 +1,264 @@
+/* Part of BrutusNext */
+
+{
+  "extends": [ "tslint:all", "tslint-eslint-rules"],
+  "rules":
+  {
+    "no-debugger": false,
+    "newline-before-return": false,
+    "no-parameter-properties": false,
+    "cyclomatic-complexity": false,
+    "completed-docs": false,
+    "no-empty-interface": false,
+    "no-import-side-effect": false,
+    "no-any": false,
+    // This would be nice but it's too strict to be useful.
+    "no-magic-numbers": false,
+    // This would be nice but it's not realistic atm.
+    "no-require-imports": false,
+    // "import-spacing" doesn't allow newlines in import spacing
+    // so it cannot be used with line length limit because
+    // some imports are doomed to be longer.
+    "import-spacing": false,
+    "ban": false,
+    "prefer-conditional-expression": false,
+    "binary-expression-operand-order": false,
+    // This doesn't work with 'baseUrl' in tsconfig.json.
+    "no-implicit-dependencies": true,
+    // This doesn't work with 'baseUrl' in tsconfig.json.
+    "no-submodule-imports": true,
+    "comment-format": [ true, "check-space" ],
+    "member-access": true,
+    "arrow-return-shorthand": false,
+    "only-arrow-functions":
+    [
+        true,
+        "allow-declarations",
+        "allow-named-functions"
+    ],
+    "no-parameter-reassignment": true,
+    "no-non-null-assertion": true,
+    // This is worth trying
+    "no-null-keyword": true,
+    "prefer-function-over-method": false,
+    "triple-equals": true,
+    "typedef":
+    [
+      true,
+      // Checks type specifier of function parameters for non-arrow functions.
+      // "parameter",
+      // Checks type specifier of function parameters for arrow functions.
+      // "arrow-parameter",
+      // Checks return types of interface properties.
+      "property-declaration",
+      // Checks non-binding variable declarations.
+      // "variable-declaration",
+      // Checks member variable declarations.
+      // "member-variable-declaration",
+      // Checks object destructuring declarations.
+      "object-destructuring",
+      // Checks array destructuring declarations.
+      "array-destructuring"
+    ],
+    "ban-types":
+    {
+      "options":
+      [
+        ["Object", "Avoid using the `Object` type. Did you mean `object`?"],
+        // ["Function", "Avoid using the `Function` type. Prefer a specific
+        //   function type, like `() => void`."],
+        ["Boolean", "Avoid using the `Boolean` type. Did you mean `boolean`?"],
+        // ["Number", "Avoid using the `Number` type. Did you mean `number`?"],
+        ["String", "Avoid using the `String` type. Did you mean `string`?"],
+        ["Symbol", "Avoid using the `Symbol` type. Did you mean `symbol`?"]
+      ]
+    },
+    "file-name-casing":
+    [
+      true,
+      // File names like: 'PacketHandler.ts'.
+      "pascal-case"
+    ],
+    "whitespace":
+    [
+      true,
+      // if (...).
+      "check-branch",
+      // Whitespace around operator tokens.
+      "check-operator",
+      // Whitespace in import & export statements.
+      "check-module",
+      // Whitespace after comma: (something, somethign else).
+      "check-separator",
+      // No whitespace after rest/spread operator: (...).
+      "check-rest-spread",
+      // Whitespace before a variable type specification.
+      "check-type",
+      // Whitespace between a typecast and its target.
+      "check-typecast"
+    ],
+    // All strings must be "double quoted".
+    "quotemark": [ true, "double"],
+    // Do not enforce alphabetic order of imports.
+    "ordered-imports": false,
+    // Allow namespaces.
+    "no-namespace": false,
+    // Do not force brackets to be on the same line as what preceeds them.
+    "one-line": false,
+    // Disallow trailing commas like: [ a, b, c, ].
+    "trailing-comma": false,
+    // Do not force object keys to be sorted alphabetically.
+    "object-literal-sort-keys": false,
+    // Do not force files to end with a newline.
+    "eofline": false,
+    // There is no option for what is needed :<
+    "space-before-function-paren": false,
+    // Enforce a break (or return) after the last 'case' in the switch
+    // (it prevents error when cases are reordered - including 'default').
+    "switch-final-break": [ true, "always"],
+    // There is no option for what is needed :<
+    "curly": false,
+    "array-type": false,
+    // Allow 'type' keyword because it is intuitive.
+    "interface-over-type-literal": false,
+    // Do not required interface names to start with 'I'.
+    "interface-name": false,
+    // This migth be useful.
+    // "file-header": [true,
+    //   "Copyright \\d{4} Palantir Technologies, Inc."
+    // ],
+    "max-classes-per-file": [true, 1],
+    "max-line-length": [true, 79],
+    "max-file-line-count": [true, 2000],
+    // Allow chained calls on a single line.
+    "newline-per-chained-call": false,
+    // Console functions are way too useful to ban them.
+    "no-console": false,
+    "no-switch-case-fall-through": true,
+    "switch-default": false,
+    "variable-name":
+    [
+      true,
+      // Banned keywords are: [ any, Number, number, String, string, Boolean,
+      // boolean, Undefined, undefined ].
+      "ban-keywords",
+      "check-format",
+      // "allow-leading-underscore",
+      // ""allow-trailing-underscore"",
+      // Variables can hold class constructors which are PascalCased.
+      "allow-pascal-case"
+      // "allow-snake-case"
+    ],
+    "linebreak-style": [true, "LF"],
+    "no-consecutive-blank-lines": true,
+    "no-var-keyword": true,
+
+    // ----------------------------------------------------------------
+    //           Following rules require type information.
+    // ----------------------------------------------------------------
+
+    "member-ordering":
+    [
+      true,
+      {
+        "order":
+        [
+          "public-static-field",
+          // "protected-static-field",
+          // "private-static-field",
+          "public-instance-field",
+          "protected-instance-field",
+          "private-instance-field",
+          "public-constructor",
+          "protected-constructor",
+          "private-constructor",
+          "public-static-method",
+          "protected-static-method",
+          "private-static-method",
+          // "public-instance-method",
+          // "protected-instance-method",
+          // "private-instance-method"
+          // Don't enforce method order so we can group methods by
+          // type (e. g. event handlers) regardless of access.
+          "instance-method"
+        ]
+      }
+    ],
+    "prefer-readonly": true,
+    "promise-function-async": true,
+    "await-promise": true,
+    // 'no-floating-promises' is very important - it prevents
+    // forgetting to await an async function.
+    "no-floating-promises": true,
+    "no-for-in-array": true,
+    "no-inferred-empty-object-type": true,
+    // "no-unsafe-any": true,
+    "no-unsafe-any": false,
+    "no-unused-variable": false,  // This is deprecated so we can't use it.
+    "restrict-plus-operands": true,
+    // "strict-boolean-expressions":
+    // [
+    //   true,
+    //   "allow-string",
+    //   "allow-boolean-or-undefined"
+    // ],
+    "strict-boolean-expressions": false,
+    "use-default-type-parameter": true,
+    "deprecation": true,
+    "match-default-export-name": true,
+    "no-boolean-literal-compare": true,
+    "no-unnecessary-type-assertion": true,
+    "return-undefined": true,
+    "no-void-expression": true,
+    // This would probably be useful
+    // (it is, but it prevents us from checking 'null' or 'undefined'
+    //  if typescript thinks that a variable can't ever get those
+    //  values - which is not always true when deserializing data).
+    // "strict-type-predicates": true,
+    "strict-type-predicates": false,
+    // This would proably be useful.
+    "no-unbound-method": true,
+    // This would proably be useful.
+    "no-unnecessary-qualifier": true,
+
+    /// This disables all rules requiring type information.
+    // "member-ordering": false,
+    // "prefer-readonly": false,
+    // "promise-function-async": false,
+    // "await-promise": false,
+    // "no-floating-promises": false,
+    // "no-for-in-array": false,
+    // "no-inferred-empty-object-type": false,
+    // "no-unsafe-any": false,
+    // "no-unused-variable": false,
+    // "restrict-plus-operands": false,
+    // // "strict-boolean-expressions": [true, "allow-boolean-or-undefined"],
+    // "strict-boolean-expressions": false,
+    // "use-default-type-parameter": false,
+    // "deprecation": false,
+    // "match-default-export-name": false,
+    // "no-boolean-literal-compare": false,
+    // "no-unnecessary-type-assertion": false,
+    // "return-undefined": false,
+    // "no-void-expression": false,
+    // // This would probably be useful.
+    // "strict-type-predicates": false,
+    // // This would proably be useful.
+    // "no-unbound-method": false,
+    // // This would proably be useful.
+    // "no-unnecessary-qualifier": false,
+
+    // ------------ Rules enabled by tslint-eslint module -------------
+
+    "brace-style":
+    [
+      true,
+      // Enforce opening brace on the next line.
+      "allman",
+      {
+        // Allow single-line functions like getBox() { return this.box; }.
+        "allowSingleLine": true
+      }
+    ]
+  }
+}

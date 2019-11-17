@@ -1,178 +1,124 @@
 /*
-  Part of BrutusNEXT
+  Part of Kosmud
 
   Tasks definition for vs code.
-
-  Note:
-    Because we need to build two projects (client and server)
-  and there can only be one build task active in vs code, we
-  use an external script (located at ./.vscode/Build.js) run
-  under node.js to launch two external tsc processes.
 */
 
 {
-  // See https://go.microsoft.com/fwlink/?LinkId=733558
-  // for the documentation about the tasks.json format
-  "version": "0.1.0",
-  "command": "node",
-  "isShellCommand": true,
-  "echoCommand": true, // Task runner will output what it is trying to do.
-  "suppressTaskName": true, // Do not add 'taskName' as parameter to 'tsc'.
-  "showOutput": "always",   // Output tsc messages.
+  "version": "2.0.0",
   "tasks":
   [
     {
-      "taskName": "Build",
+      "label": "Remove Old Build",
+      "presentation" : { "panel": "shared" },
+      "command": "node",
+      "type": "process",
+      "isBackground": false,
+      "args": [ "./.vscode/RemoveOldBuild.js" ]
+    },
+    {
+      "label": "Lint Client",
+      "presentation" : { "panel": "shared" },
+      "command": "node",
+      "type": "process",
+      "isBackground": false,
       "args":
       [
-        "./.vscode/Build.js"
+        "./node_modules/tslint/bin/tslint",
+        "--project", "./Src/Client/tsconfig.json"
+        // "--exclude", "**/Src/Shared/Box2D/**/*.*"
       ],
-      "problemMatcher": "$tsc",
-      // Watch file changes ('--watch' must be passed to tsc for this to work).
+      "problemMatcher": [ "$tslint5" ],
+      // "problemMatcher":
+      // {
+      //   "owner": "tslint",
+      //   "source": "tslint",
+      //   "fileLocation": "absolute",
+      //   "applyTo": "closedDocuments",
+			// 	"severity": "warning",
+      //   "pattern":
+      //   {
+			// 		"regexp": "^(WARNING|ERROR):(\\s+\\(\\S*\\))?\\s+(\\S.*)\\[(\\d+), (\\d+)\\]:\\s+(.*)$",
+      //     "severity": 1,
+      //     "file": 3,
+      //     "line": 4,
+      //     "column": 5,
+      //     "message": 6
+			// 	}
+			// },
+      "dependsOn": [ "Remove Old Build" ]
+    },
+    {
+      "label": "Transpile Client",
+      "presentation" : { "panel": "shared" },
+      "command": "node",
+      "type": "process",
       "isBackground": true,
-      // Run this task on "Ctrl+Shift+B".
-      "isBuildCommand": true
+      "args":
+      [
+        "./node_modules/typescript/lib/tsc.js",
+        "--watch",
+        "--project", "./Src/Client"
+      ],
+      "problemMatcher": [ "$tsc" ],
+      "dependsOn": [ "Lint Client" ]
+    },
+    {
+      "label": "Lint Server",
+      "presentation" : { "panel": "shared" },
+      "command": "node",
+      "type": "process",
+      "isBackground": false,
+      "args":
+      [
+        "./node_modules/tslint/bin/tslint",
+        "--project", "./Src/Server/tsconfig.json"
+        // "--exclude", "**/Src/Shared/Box2D/**/*.*"
+      ],
+      "problemMatcher": [ "$tslint5" ],
+      // "problemMatcher":
+      // {
+      //   "owner": "tslint",
+      //   "source": "tslint",
+      //   "fileLocation": "absolute",
+      //   "applyTo": "closedDocuments",
+			// 	"severity": "warning",
+      //   "pattern":
+      //   {
+			// 		"regexp": "^(WARNING|ERROR):(\\s+\\(\\S*\\))?\\s+(\\S.*)\\[(\\d+), (\\d+)\\]:\\s+(.*)$",
+      //     "severity": 1,
+      //     "file": 3,
+      //     "line": 4,
+      //     "column": 5,
+      //     "message": 6
+			// 	}
+			// },
+      "dependsOn": [ "Remove Old Build" ]
+    },
+    {
+      "label": "Transpile Server",
+      "presentation" : { "panel": "shared" },
+      "command": "node",
+      "type": "process",
+      "isBackground": true,
+      "args":
+      [
+        "./node_modules/typescript/lib/tsc.js",
+        "--watch",
+        "--project", "./Src/Server"
+      ],
+      "problemMatcher": [ "$tsc" ],
+      "dependsOn": [ "Lint Server" ]
+    },
+    {
+      "label": "Build",
+      "presentation" : { "panel": "shared" },
+      "dependsOn": [ "Transpile Client", "Transpile Server" ],
+      "group":
+      {
+        "kind": "build",
+        "isDefault": true
+      }
     }
   ]
 }
-
-/// Obsolete variant - this is no longer used.
-/*
-  Because we have two projects to build (/src/client/tsconfig.json and
-  /src/server/tsconfig.json), we need two tasks.
-  
-  In order to be able to run more than one build taks, you should
-  remap 'ctrl+shift+b' to offer what task to run instad of running
-  only one build task.
-  Add this to your keybindings.json (located somewhere like:
-  c:\Users\York\AppData\Roaming\Code\User\keybindings.json)
-  { "key": "ctrl+shift+b",  "command": "workbench.action.tasks.runTask" }
-
-  Also note that both task run in watch mode, so they recompile the code
-  and then continue to run, watch for file changes and recompile them.
-  incrementally.
-*/
-// {
-//   // See https://go.microsoft.com/fwlink/?LinkId=733558
-//   // for the documentation about the tasks.json format
-//   "version": "0.1.0",
-//   "command": "node",
-//   "isShellCommand": true,
-//   "echoCommand": true, // Task runner will output what it is trying to do.
-//   "suppressTaskName": true, // Do not add 'taskName' as parameter to 'tsc'.
-//   "showOutput": "always",   // Output tsc messages.
-//   "tasks":
-//   [
-//     {
-//       // This task build server, then keeps running and watching
-//       // for file changes to incrementally compile them.
-//       "taskName": "Build Server",
-//       "args":
-//       [
-//         // Use locally installed typescript (in node_modules).
-//         "./node_modules/typescript/lib/tsc.js",
-//         // Watch for file changes.
-//         "--watch",
-//         "--project", "./src/server"
-//       ],
-//       "problemMatcher": "$tsc",
-//       // Watch file changes ('--watch' must be passed to tsc for this to work).
-//       "isBackground": true
-//       // This trick could be used so you could map two task directly.
-//       // We don't use this though, instead we remap 'ctrl+shift+b' to
-//       // ask what task to run.
-
-//       // // Run this task on "Ctrl+Shift+B".
-//       // "isBuildCommand": true,
-//       // // Do not run on "Ctrl+Shift+T".
-//       // "isTestCommand": false
-//     },
-//     {
-//       // This task build client, then keeps running and watching
-//       // for file changes to incrementally compile them.
-//       "taskName": "Build Clinet",
-//       "args":
-//       [
-//         // We use locally installed typescript (in node_modules).
-//         "./node_modules/typescript/lib/tsc.js",
-//         // Watch for file changes.
-//         "--watch",
-//         "--project", "./src/client"
-//       ],
-//       "problemMatcher": "$tsc",
-//       // Watch file changes ('--watch' must be passed to tsc for this to work).
-//       "isBackground": true
-//       // This trick could be used so you could map two task directly.
-//       // We don't use this though, instead we remap 'ctrl+shift+b' to
-//       // ask what task to run.
-
-//       // // Do not Run on "Ctrl+Shift+B".
-//       // "isBuildCommand": false,
-//       // // Run this task on "Ctrl+Shift+T".
-//       // "isTestCommand": true
-//     }
-//   ]
-// }
-
-
-
-/// Another obsolete variant (with globaly installed 'tsc'):
-// {
-//   // See https://go.microsoft.com/fwlink/?LinkId=733558
-//   // for the documentation about the tasks.json format
-//   "version": "0.1.0",
-//   "command": "tsc",
-//   "isShellCommand": true,
-//   "echoCommand": true, // Task runner will output what it is trying to do.
-//   "suppressTaskName": true, // Do not add 'taskName' as parameter to 'tsc'.
-//   "showOutput": "always",   // Output tsc messages.
-//   "tasks":
-//   [
-//     {
-//       // This task build server, then keeps running and watching
-//       // for file changes to incrementally compile them.
-//       "taskName": "Build server",
-//       "args":
-//       [
-//         // Watch for file changes.
-//         "--watch",
-//         "--project", "./src/server"
-//       ],
-//       "problemMatcher": "$tsc",
-//       // Watch file changes ('--watch' must be passed to tsc for this to work).
-//       "isWatching": true
-//       // This trick could be used so you could map two task directly.
-//       // We don't use this though, instead we remap 'ctrl+shift+b' to
-//       // ask what task to run.
-//       /*
-//       // Run this task on "Ctrl+Shift+B".
-//       "isBuildCommand": true,
-//       // Do not run on "Ctrl+Shift+T".
-//       "isTestCommand": false
-//       */
-//     },
-//     {
-//       // This task build client, then keeps running and watching
-//       // for file changes to incrementally compile them.
-//       "taskName": "Build clinet",
-//       "args":
-//       [
-//         // Watch for file changes.
-//         "--watch",
-//         "--project", "./src/client"
-//       ],
-//       "problemMatcher": "$tsc",
-//       // Watch file changes ('--watch' must be passed to tsc for this to work).
-//       "isWatching": true
-//       // This trick could be used so you could map two task directly.
-//       // We don't use this though, instead we remap 'ctrl+shift+b' to
-//       // ask what task to run.
-//       /*
-//       // Do not Run on "Ctrl+Shift+B".
-//       "isBuildCommand": false,
-//       // Run this task on "Ctrl+Shift+T".
-//       "isTestCommand": true
-//       */
-//     }
-//   ]
-// }

@@ -6,38 +6,36 @@
          | |_) | |  | |_| | |_| |_| \__ \ | |\  | |___ / . \  | |
          |____/|_|   \__,_|\__|\__,_|___/ |_| \_|_____/_/ \_\ |_|
 
-                        Client program entry point
-
+                          Client application
 */
 
-'use strict';
+import { REPORT } from "../Shared/Log/REPORT";
+import { Syslog } from "../Client/Log/Syslog";
+// import { Gui } from "../Client/Gui/Gui";
+// import { Renderer } from "../Client/Engine/Renderer";
+// import { Connection } from "../Client/Net/Connection";
 
-import {ClientApp} from '../client/lib/app/ClientApp';
+/// HACK: Neregistrovala se mi root prototype entita.
+import "../Client/Game/Zone";
+import "../Client/Asset/TextureAsset";
+import "../Client/Asset/TextureAtlasAsset";
 
-const CLIENT_APP_VERSION = "0.0";
+// async function start()
+// {
+//   Syslog.log("[INFO]", "Starting Kosmud client...");
 
-/// Tohle je asi zbytečný. Sice to funguje, ale udělá to jen to, že
-/// chrome místo 'Uncaught (in promise) Error: [ERROR]: ...' vypíše
-/// 'Uncaught Error: [ERROR]: ...'. To už je asi lepší nechat tam to
-/// info, že error nastal v async funkci.
-///
-/// Also unlike in node.js, Chrome doesn't silently eat exceptions
-/// occuring inside promises so we don't really need to re-throw
-/// then on client.
-///
-// This handler catches exceptions thrown from withing async (promisified)
-// functions.
-// window.addEventListener
-// (
-//   'unhandledrejection',
-//   (event: PromiseRejectionEvent) =>
+//   try
 //   {
-//     if (event.reason.name === ClientApp.APP_ERROR)
-//     {
-//       event.preventDefault();
-//       throw event.reason;
-//     }
+//     Gui.init();
+//     await Renderer.init();
+//     Connection.connect();
 //   }
-// );
+//   catch (error)
+//   {
+//     REPORT(error, "Failed to start the client");
+//     alert(`Failed to start`);
+//   }
+// }
 
-ClientApp.run(CLIENT_APP_VERSION);
+// // tslint:disable-next-line:no-floating-promises
+// start();
