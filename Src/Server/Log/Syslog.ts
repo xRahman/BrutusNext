@@ -24,6 +24,11 @@ Syslog.log = (messageType: Syslog.MessageType, message: string) =>
   // logToFile(entry);
 };
 
+Syslog.reportUncaughtException = (error: Error) =>
+{
+  Syslog.log("[UNCAUGHT_EXCEPTION]", getStackTrace(error));
+};
+
 SyslogUtils.reportError = (message: string) =>
 {
   // Error message will contain stack trace beginning with
@@ -38,11 +43,6 @@ SyslogUtils.reportError = (message: string) =>
 SyslogUtils.reportException = (error: Error) =>
 {
   Syslog.log("[EXCEPTION]", getStackTrace(error));
-};
-
-SyslogUtils.reportUncaughtException = (error: Error) =>
-{
-  Syslog.log("[UNCAUGHT_EXCEPTION]", getStackTrace(error));
 };
 
 export { Syslog, SyslogUtils };

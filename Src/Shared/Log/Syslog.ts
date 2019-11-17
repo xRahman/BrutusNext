@@ -41,6 +41,12 @@ export namespace Syslog
   {
     throw Error(SyslogUtils.THIS_SHOULD_NEVER_BE_CALLED);
   }
+
+  // ! This function needs to be overwritten on the client and server.
+  export function reportUncaughtException(error: Error)
+  {
+    throw Error(SyslogUtils.THIS_SHOULD_NEVER_BE_CALLED);
+  }
 }
 
 /*

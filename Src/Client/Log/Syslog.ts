@@ -21,6 +21,14 @@ Syslog.log = (messageType: Syslog.MessageType, message: string) =>
   console.log(SyslogUtils.createLogEntry(messageType, message));
 };
 
+Syslog.reportUncaughtException = (error: Error) =>
+{
+  error.message =
+    SyslogUtils.createLogEntry("[UNCAUGHT_EXCEPTION]", error.message);
+
+  logError(error);
+};
+
 SyslogUtils.reportError = (message: string) =>
 {
   const logEntry = SyslogUtils.createLogEntry("[ERROR]", message);
@@ -34,14 +42,6 @@ SyslogUtils.reportError = (message: string) =>
 SyslogUtils.reportException = (error: Error) =>
 {
   error.message = SyslogUtils.createLogEntry("[EXCEPTION]", error.message);
-
-  logError(error);
-};
-
-SyslogUtils.reportUncaughtException = (error: Error) =>
-{
-  error.message =
-    SyslogUtils.createLogEntry("[UNCAUGHT_EXCEPTION]", error.message);
 
   logError(error);
 };
