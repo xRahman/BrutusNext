@@ -1,3 +1,11 @@
+TODO: Zmigrovat tslint na typescript-eslint
+
+https://github.com/palantir/tslint/issues/4534
+
+tool na migraci: https://github.com/typescript-eslint/tslint-to-eslint-config
+
+------------------------------------------------------------------------------
+
 Syslog
 -------
 
