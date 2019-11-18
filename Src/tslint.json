@@ -194,7 +194,6 @@
     "no-inferred-empty-object-type": true,
     // "no-unsafe-any": true,
     "no-unsafe-any": false,
-    "no-unused-variable": false,  // This is deprecated so we can't use it.
     "restrict-plus-operands": true,
     // "strict-boolean-expressions":
     // [
@@ -230,7 +229,6 @@
     // "no-for-in-array": false,
     // "no-inferred-empty-object-type": false,
     // "no-unsafe-any": false,
-    // "no-unused-variable": false,
     // "restrict-plus-operands": false,
     // // "strict-boolean-expressions": [true, "allow-boolean-or-undefined"],
     // "strict-boolean-expressions": false,
