@@ -25,7 +25,7 @@ SourceMapSupport.install();
 
 async function start()
 {
-  Syslog.log("[INFO]", `Starting BrutusNext server`);
+  Syslog.log("[INFO]", "Starting BrutusNext server");
 
   try
   {
@@ -44,7 +44,7 @@ async function start()
 
 // await Engine.loop();
 
-  Syslog.log("[INFO]", `BrutusNext server has stopped normally`);
+  Syslog.log("[INFO]", "BrutusNext server has stopped normally");
 }
 
 // tslint:disable-next-line:no-floating-promises

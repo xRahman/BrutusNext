@@ -50,5 +50,21 @@
   // The default end of line character.
   "files.eol": "\n",
   "typescript.tsdk": "node_modules/typescript/lib",
-  "editor.acceptSuggestionOnCommitCharacter": false
+  "editor.acceptSuggestionOnCommitCharacter": false,
+  "git.ignoreLimitWarning": true,
+
+  "eslint.validate": [
+    "javascript",
+    "typescript"
+  ],
+  "eslint.workingDirectories": [
+    {
+      "directory": "./Src/Client",
+      "changeProcessCWD": true
+    },
+    {
+      "directory": "./Src/Server",
+      "changeProcessCWD": true
+    }
+  ]
 }

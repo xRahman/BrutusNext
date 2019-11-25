@@ -1,0 +1,32 @@
+Error: multiple output @typescript-eslint/consistent-type-assertions ESLint rule options were generated, but tslint-to-eslint-config doesn't have "merger" logic to deal with this.
+Please file an issue at https://github.com/typescript-eslint/tslint-to-eslint-config/issues/new?template=missing_merger.md 🙏Error: multiple output @typescript-eslint/member-delimiter-style ESLint rule options were generated, but tslint-to-eslint-config doesn't have "merger" logic to deal with this.
+Please file an issue at https://github.com/typescript-eslint/tslint-to-eslint-config/issues/new?template=missing_merger.md 🙏brace-style does not yet have an ESLint equivalent.
+comment-type does not yet have an ESLint equivalent.
+encoding does not yet have an ESLint equivalent.
+invalid-void does not yet have an ESLint equivalent.
+jsdoc-format does not yet have an ESLint equivalent.
+match-default-export-name does not yet have an ESLint equivalent.
+no-boolean-literal-compare does not yet have an ESLint equivalent.
+no-default-import does not yet have an ESLint equivalent.
+no-dynamic-delete does not yet have an ESLint equivalent.
+no-inferred-empty-object-type does not yet have an ESLint equivalent.
+no-mergeable-namespace does not yet have an ESLint equivalent.
+no-null-undefined-union does not yet have an ESLint equivalent.
+no-promise-as-boolean does not yet have an ESLint equivalent.
+no-redundant-jsdoc does not yet have an ESLint equivalent.
+no-reference-import does not yet have an ESLint equivalent.
+no-restricted-globals does not yet have an ESLint equivalent.
+no-tautology-expression does not yet have an ESLint equivalent.
+no-unnecessary-callback-wrapper does not yet have an ESLint equivalent.
+number-literal-format does not yet have an ESLint equivalent.
+prefer-method-signature does not yet have an ESLint equivalent.
+prefer-switch does not yet have an ESLint equivalent.
+prefer-while does not yet have an ESLint equivalent.
+return-undefined does not yet have an ESLint equivalent.
+static-this does not yet have an ESLint equivalent.
+strict-comparisons does not yet have an ESLint equivalent.
+strict-string-expressions does not yet have an ESLint equivalent.
+switch-final-break does not yet have an ESLint equivalent.
+typedef does not yet have an ESLint equivalent.
+unnecessary-else does not yet have an ESLint equivalent.
+whitespace does not yet have an ESLint equivalent.

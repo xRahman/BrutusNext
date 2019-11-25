@@ -22,10 +22,11 @@
     "@types/source-map-support": "^0.5.0",
     "fs-extra": "^8.1.0",
     "source-map-support": "^0.5.16",
-    "tslint": "^5.20.1",
     "typescript": "^3.7.2"
   },
   "devDependencies": {
-    "tslint-eslint-rules": "^5.4.0"
+    "@typescript-eslint/eslint-plugin": "^2.9.0",
+    "@typescript-eslint/parser": "^2.9.0",
+    "eslint": "^6.7.1"
   }
 }

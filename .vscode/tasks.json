@@ -16,38 +16,38 @@
       "isBackground": false,
       "args": [ "./.vscode/RemoveOldBuild.js" ]
     },
-    {
-      "label": "Lint Client",
-      "presentation" : { "panel": "shared" },
-      "command": "node",
-      "type": "process",
-      "isBackground": false,
-      "args":
-      [
-        "./node_modules/tslint/bin/tslint",
-        "--project", "./Src/Client/tsconfig.json"
-        // "--exclude", "**/Src/Shared/Box2D/**/*.*"
-      ],
-      "problemMatcher": [ "$tslint5" ],
-      // "problemMatcher":
-      // {
-      //   "owner": "tslint",
-      //   "source": "tslint",
-      //   "fileLocation": "absolute",
-      //   "applyTo": "closedDocuments",
-			// 	"severity": "warning",
-      //   "pattern":
-      //   {
-			// 		"regexp": "^(WARNING|ERROR):(\\s+\\(\\S*\\))?\\s+(\\S.*)\\[(\\d+), (\\d+)\\]:\\s+(.*)$",
-      //     "severity": 1,
-      //     "file": 3,
-      //     "line": 4,
-      //     "column": 5,
-      //     "message": 6
-			// 	}
-			// },
-      "dependsOn": [ "Remove Old Build" ]
-    },
+    // {
+    //   "label": "Lint Client",
+    //   "presentation" : { "panel": "shared" },
+    //   "command": "node",
+    //   "type": "process",
+    //   "isBackground": false,
+    //   "args":
+    //   [
+    //     "./node_modules/tslint/bin/tslint",
+    //     "--project", "./Src/Client/tsconfig.json"
+    //     // "--exclude", "**/Src/Shared/Box2D/**/*.*"
+    //   ],
+    //   "problemMatcher": [ "$tslint5" ],
+    //   // "problemMatcher":
+    //   // {
+    //   //   "owner": "tslint",
+    //   //   "source": "tslint",
+    //   //   "fileLocation": "absolute",
+    //   //   "applyTo": "closedDocuments",
+		// 	// 	"severity": "warning",
+    //   //   "pattern":
+    //   //   {
+		// 	// 		"regexp": "^(WARNING|ERROR):(\\s+\\(\\S*\\))?\\s+(\\S.*)\\[(\\d+), (\\d+)\\]:\\s+(.*)$",
+    //   //     "severity": 1,
+    //   //     "file": 3,
+    //   //     "line": 4,
+    //   //     "column": 5,
+    //   //     "message": 6
+		// 	// 	}
+		// 	// },
+    //   "dependsOn": [ "Remove Old Build" ]
+    // },
     {
       "label": "Transpile Client",
       "presentation" : { "panel": "shared" },
@@ -61,40 +61,41 @@
         "--project", "./Src/Client"
       ],
       "problemMatcher": [ "$tsc" ],
-      "dependsOn": [ "Lint Client" ]
-    },
-    {
-      "label": "Lint Server",
-      "presentation" : { "panel": "shared" },
-      "command": "node",
-      "type": "process",
-      "isBackground": false,
-      "args":
-      [
-        "./node_modules/tslint/bin/tslint",
-        "--project", "./Src/Server/tsconfig.json"
-        // "--exclude", "**/Src/Shared/Box2D/**/*.*"
-      ],
-      "problemMatcher": [ "$tslint5" ],
-      // "problemMatcher":
-      // {
-      //   "owner": "tslint",
-      //   "source": "tslint",
-      //   "fileLocation": "absolute",
-      //   "applyTo": "closedDocuments",
-			// 	"severity": "warning",
-      //   "pattern":
-      //   {
-			// 		"regexp": "^(WARNING|ERROR):(\\s+\\(\\S*\\))?\\s+(\\S.*)\\[(\\d+), (\\d+)\\]:\\s+(.*)$",
-      //     "severity": 1,
-      //     "file": 3,
-      //     "line": 4,
-      //     "column": 5,
-      //     "message": 6
-			// 	}
-			// },
+      // "dependsOn": [ "Lint Client" ]
       "dependsOn": [ "Remove Old Build" ]
     },
+    // {
+    //   "label": "Lint Server",
+    //   "presentation" : { "panel": "shared" },
+    //   "command": "node",
+    //   "type": "process",
+    //   "isBackground": false,
+    //   "args":
+    //   [
+    //     "./node_modules/tslint/bin/tslint",
+    //     "--project", "./Src/Server/tsconfig.json"
+    //     // "--exclude", "**/Src/Shared/Box2D/**/*.*"
+    //   ],
+    //   "problemMatcher": [ "$tslint5" ],
+    //   // "problemMatcher":
+    //   // {
+    //   //   "owner": "tslint",
+    //   //   "source": "tslint",
+    //   //   "fileLocation": "absolute",
+    //   //   "applyTo": "closedDocuments",
+		// 	// 	"severity": "warning",
+    //   //   "pattern":
+    //   //   {
+		// 	// 		"regexp": "^(WARNING|ERROR):(\\s+\\(\\S*\\))?\\s+(\\S.*)\\[(\\d+), (\\d+)\\]:\\s+(.*)$",
+    //   //     "severity": 1,
+    //   //     "file": 3,
+    //   //     "line": 4,
+    //   //     "column": 5,
+    //   //     "message": 6
+		// 	// 	}
+		// 	// },
+    //   "dependsOn": [ "Remove Old Build" ]
+    // },
     {
       "label": "Transpile Server",
       "presentation" : { "panel": "shared" },
@@ -108,7 +109,8 @@
         "--project", "./Src/Server"
       ],
       "problemMatcher": [ "$tsc" ],
-      "dependsOn": [ "Lint Server" ]
+      // "dependsOn": [ "Lint Server" ]
+      "dependsOn": [ "Remove Old Build" ]
     },
     {
       "label": "Build",
