@@ -50,7 +50,7 @@ export { Syslog, SyslogUtils };
 
 // ----------------- Auxiliary Functions ---------------------
 
-function logError(error: Error)
+function logError(error: Error): void
 {
   // Use 'console.error()' instead of 'console.log()' because
   // it better displays stack trace (at least in Chrome).

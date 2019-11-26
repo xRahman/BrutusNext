@@ -23,7 +23,7 @@ export const timeOfBoot = new Date();
 import * as SourceMapSupport from "source-map-support";
 SourceMapSupport.install();
 
-async function start()
+async function start(): Promise<void>
 {
   Syslog.log("[INFO]", "Starting BrutusNext server");
 

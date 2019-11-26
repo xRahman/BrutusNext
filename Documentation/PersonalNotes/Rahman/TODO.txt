@@ -45,6 +45,8 @@ Ještě to udělám jinak:
  - SyslogUtils bude samostatnej file a v Syslog.ts bude pouze funkce log()
    a typ Syslog.MessageType
 
+Rules: https://github.com/typescript-eslint/typescript-eslint/tree/master/packages/eslint-plugin
+
 ------------------------------------------------------------------------------
 
 Zákaz spouštění package skriptů v npm:

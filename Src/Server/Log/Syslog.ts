@@ -93,12 +93,12 @@ export { Syslog, SyslogUtils };
 
 // ----------------- Auxiliary Functions ---------------------
 
-function logToStdout(entry: string)
+function logToStdout(entry: string): void
 {
   console.log(entry);
 }
 
-function getStackTrace(error: Error)
+function getStackTrace(error: Error): string
 {
   return `${error.message}\n${SyslogUtils.removeErrorMessage(error.stack)}`;
 }
