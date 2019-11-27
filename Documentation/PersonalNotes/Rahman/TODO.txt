@@ -1,3 +1,12 @@
+TODO: Nastavit pravidla pro eslint.
+- až budou, smazat tslint.json
+
+TODO: Zvážit použití prettify
+
+TODO: Vyřešit lintování celého kódu (extension zřejme lintuje jen otevřené
+  soubory).
+
+
 TODO: Zmigrovat tslint na typescript-eslint
 
 https://github.com/palantir/tslint/issues/4534
@@ -24,6 +33,8 @@ Do package.json se prej má přidat:
     "lint:ts": "eslint --ext=jsx,ts,tsx src"
   },
 ale nic to nedělá.
+
+Pravidla: https://github.com/typescript-eslint/typescript-eslint/tree/master/packages/eslint-plugin
 
 ------------------------------------------------------------------------------
 

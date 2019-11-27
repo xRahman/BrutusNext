@@ -27,6 +27,14 @@ async function start(): Promise<void>
 {
   Syslog.log("[INFO]", "Starting BrutusNext server");
 
+  const x = 3;
+
+  switch (1)
+  {
+    case 1:
+      break;
+  }
+
   try
   {
   // TODO:
@@ -42,7 +50,7 @@ async function start(): Promise<void>
     return;
   }
 
-// await Engine.loop();
+  // await Engine.loop();
 
   Syslog.log("[INFO]", "BrutusNext server has stopped normally");
 }
