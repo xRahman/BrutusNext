@@ -22,13 +22,13 @@ export namespace SyslogUtils
     + " Syslog is imported before shared Syslog";
 
   // ! This function needs to be overwritten on the client and server.
-  export function reportError(message: string)
+  export function reportError(message: string): void
   {
     throw Error(THIS_SHOULD_NEVER_BE_CALLED);
   }
 
   // ! This function needs to be overwritten on the client and server.
-  export function reportException(error: Error)
+  export function reportException(error: Error): void
   {
     throw Error(THIS_SHOULD_NEVER_BE_CALLED);
   }
@@ -38,11 +38,12 @@ export namespace SyslogUtils
     messageType: Syslog.MessageType,
     message: string
   )
+  : string
   {
     return `${messageType} ${message}`;
   }
 
-  export function removeErrorMessage(stackTrace?: string)
+  export function removeErrorMessage(stackTrace?: string): string
   {
     if (!stackTrace)
       return "Stack trace is not available.";
@@ -56,7 +57,11 @@ export namespace SyslogUtils
   }
 
   // Returns stack trace beginning with function 'stackTop'.
-  export function getTrimmedStackTrace(stackTop: Function): string
+  export function getTrimmedStackTrace
+  (
+    stackTop: (message: string) => void
+  )
+  : string
   {
     const tmpErr = trimStackTrace(new Error(), stackTop);
 
@@ -65,7 +70,12 @@ export namespace SyslogUtils
 
   // Modifies 'stack' property of Error object 'error' so
   // it starts with function 'stackTop'.
-  export function trimStackTrace(error: Error, stackTop: Function)
+  export function trimStackTrace
+  (
+    error: Error,
+    stackTop: (message: string) => void
+  )
+  : Error
   {
     if (Error.captureStackTrace)
       Error.captureStackTrace(error, stackTop);
@@ -78,7 +88,7 @@ export namespace SyslogUtils
 
 // Removes lines from the start of the string 'str' that don't
 // start with 'prefix'. Lines need to be separated by '\n'.
-function removeLinesWithoutPrefix(str: string, prefix: string)
+function removeLinesWithoutPrefix(str: string, prefix: string): string
 {
   // Break 'str' into an array of lines.
   const lines = str.split("\n");

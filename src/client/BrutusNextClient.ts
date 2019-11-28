@@ -20,8 +20,6 @@ import "../Client/Game/Zone";
 import "../Client/Asset/TextureAsset";
 import "../Client/Asset/TextureAtlasAsset";
 
- const x_y = 0;
-
 // async function start()
 // {
 //   Syslog.log("[INFO]", "Starting Kosmud client...");

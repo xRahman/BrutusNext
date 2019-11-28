@@ -1,4 +1,8 @@
-module.exports =
+// This is the master eslint config file that contains actual
+// linting rules used for whole project. There must, however,
+// be separate .eslintrc.json files in both ./Src/Server and
+// ./Src/Clint to specify paths to respective tsconfig.json
+// files.
 {
   "env":
   {
@@ -6,12 +10,20 @@ module.exports =
     "es6": true
   },
   "parser": "@typescript-eslint/parser",
-  // "parserOptions":
-  // {
-  //   "project": "./Src/Server/tsconfig.json",
-  //   // "tsconfigRootDir": __dirname,
-  //   "sourceType": "module"
-  // },
+  "parserOptions":
+  {
+    // There must be a typecript 'project' specified
+    // for eslint to work correcly. We use .eslintrc.json
+    // files in /Src/1Server and /Src/Client to do it
+    // for client and server code but eslint fails to
+    // lint shared code because it's ouside of both client
+    // and server file structure. To work around that,
+    // we specify a tsconfig.json here in master eslint
+    // config file even (server is chosen randomly, client
+    // tsconfig.json would work just as well).
+    "project": "./Src/Server/tsconfig.json",
+    "sourceType": "module"
+  },
   "plugins":
   [
     "@typescript-eslint",
@@ -120,6 +132,8 @@ module.exports =
       // Enforces naming of generic type variables.
       // (We don't enforce prefix for type variables so leave this off.)
       "@typescript-eslint/generic-type-naming": "off",
+      // Disable the base rule as it can report incorrect errors.
+      "indent": "off",
       // Enforce consistent indentation.
       "@typescript-eslint/indent":
       [
@@ -138,14 +152,16 @@ module.exports =
           "outerIIFEBody": 1,
           // Enforces indentation level for multi-line property chains.
           "MemberExpression": 1,
-          // Enforces indentation level for arguments in a call expression.
           // Enforces indentation level for parameters in a function
           // declaration.
           "FunctionDeclaration":
           {
             // All arguments of the expression must be aligned with the
             // first argument.
-            "parameters": "first"
+            "parameters": "first",
+            // Enforces indentation level for the body of a function
+            // expression.
+            "body": 1
           },
           // Enforces indentation level for parameters in a function
           // expression.
@@ -155,6 +171,7 @@ module.exports =
             // first argument.
             "parameters": "first"
           },
+          // Enforces indentation level for arguments in a call expression.
           "CallExpression":
           {
             // All arguments of the expression must be aligned with the
@@ -462,4 +479,4 @@ module.exports =
       }
     }
   ]
-};
+}
