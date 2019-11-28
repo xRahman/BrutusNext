@@ -34,7 +34,7 @@
 
 import { SyslogUtils } from "../../Shared/Log/SyslogUtils";
 
-export function ERROR(message: string)
+export function ERROR(message: string): void
 {
   SyslogUtils.reportError(message);
 }

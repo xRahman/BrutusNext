@@ -57,14 +57,14 @@
     "javascript",
     "typescript"
   ],
-  "eslint.workingDirectories": [
-    {
-      "directory": "./Src/Client",
-      "changeProcessCWD": true
-    },
-    {
-      "directory": "./Src/Server",
-      "changeProcessCWD": true
-    }
-  ]
+  // "eslint.workingDirectories": [
+  //   {
+  //     "directory": "./Src/Client",
+  //     "changeProcessCWD": true
+  //   },
+  //   {
+  //     "directory": "./Src/Server",
+  //     "changeProcessCWD": true
+  //   }
+  // ]
 }

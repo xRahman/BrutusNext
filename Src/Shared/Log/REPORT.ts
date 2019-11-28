@@ -32,7 +32,7 @@ import { SyslogUtils } from "../../Shared/Log/SyslogUtils";
 //   an error, typescript has no way of knowing it's type. You still
 //   need to throw instances of Error object, however - you will get
 //   an error message if you don't.
-export function REPORT(error: any, catchMessage?: string)
+export function REPORT(error: any, catchMessage?: string): void
 {
   let exception = error;
 
