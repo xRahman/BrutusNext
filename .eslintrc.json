@@ -192,22 +192,68 @@
           "ImportDeclaration": "first"
         }
       ],
-      // "@typescript-eslint/interface-name-prefix": "off",
-      // "@typescript-eslint/member-delimiter-style": [
-      //     "error",
-      //     "error",
-      //     {
-      //         "multiline": {
-      //             "delimiter": "semi",
-      //             "requireLast": true
-      //         },
-      //         "singleline": {
-      //             "delimiter": "semi",
-      //             "requireLast": false
-      //         }
-      //     }
-      // ],
-      // "@typescript-eslint/member-ordering": "error",
+      // Require that interface names should or should not be
+      // prefixed with 'I'.
+      "@typescript-eslint/interface-name-prefix": "off",
+      // Require a specific member delimiter style for interfaces
+      // and type literals (should there be ',', ';' or nothing
+      // after each member of an interface or type).
+      "@typescript-eslint/member-delimiter-style":
+      [
+        "error",
+        {
+          // Typescript default is ';' but we use ','
+          // to make it consistent with object literals
+          // (it's easier to remember one style that rules
+          //  them all.)
+          // There must not be a ',' after the last member
+          // because it looks really ugly and unfinished.
+          "multiline":
+          {
+            "delimiter": "comma",
+            "requireLast": false
+          },
+          "singleline":
+          {
+            "delimiter": "comma",
+            "requireLast": false
+          }
+        }
+      ],
+      // Enforces naming conventions for class members by visibility
+      // (should the private and protected member names be prefixed
+      //  with something like '_'?).
+      // (No, don't prefix with '_'.)
+      "@typescript-eslint/member-naming": "off",
+      // Require a consistent member declaration order.
+      "@typescript-eslint/member-ordering":
+      [
+        "error",
+        {
+          "default":
+          [
+            // https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules/member-ordering.md
+            "public-static-field",
+            // "protected-static-field",
+            // "private-static-field",
+            "public-instance-field",
+            "protected-instance-field",
+            "private-instance-field",
+            "public-constructor",
+            "protected-constructor",
+            "private-constructor",
+            "public-static-method",
+            "protected-static-method",
+            "private-static-method",
+            // "public-instance-method",
+            // "protected-instance-method",
+            // "private-instance-method"
+            // Don't enforce method order so we can group methods by
+            // type (e. g. event handlers) regardless of access.
+            "instance-method" 
+          ]
+        }
+      ],
       // "@typescript-eslint/no-empty-function": "error",
       // "@typescript-eslint/no-empty-interface": "off",
       // "@typescript-eslint/no-explicit-any": "off",

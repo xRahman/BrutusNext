@@ -1,5 +1,5 @@
 // This eselint config only specifies path to server
-// tsconfig.json file, actuall eselint settings are
+// tsconfig.json file, actual eselint settings are
 // taken from .eslintrc.json file located in BrutusNext
 // directory.
 {
