@@ -58,6 +58,8 @@ Ještě to udělám jinak:
 
 Rules: https://github.com/typescript-eslint/typescript-eslint/tree/master/packages/eslint-plugin
 
+Eslint rules: https://eslint.org/docs/rules/
+
 ------------------------------------------------------------------------------
 
 Zákaz spouštění package skriptů v npm:

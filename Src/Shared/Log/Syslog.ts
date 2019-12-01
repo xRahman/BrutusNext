@@ -36,13 +36,13 @@ export namespace Syslog
   | "[CONNECTION_INFO]";
 
   // ! This function needs to be overwritten on the client and server.
-  export function log(messageType: MessageType, message: string)
+  export function log(messageType: MessageType, message: string): void
   {
     throw Error(SyslogUtils.THIS_SHOULD_NEVER_BE_CALLED);
   }
 
   // ! This function needs to be overwritten on the client and server.
-  export function reportUncaughtException(error: Error)
+  export function reportUncaughtException(error: Error): void
   {
     throw Error(SyslogUtils.THIS_SHOULD_NEVER_BE_CALLED);
   }

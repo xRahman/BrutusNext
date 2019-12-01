@@ -32,7 +32,6 @@
   "rules":
   {
       // Require that member overloads be consecutive.
-      // (Not sure what this does.)
       "@typescript-eslint/adjacent-overload-signatures": "error",
       // Requires using either T[] or Array<T> for arrays.
       // (I like to use both so turn this off.)
@@ -103,7 +102,9 @@
           "genericType": "always"
         }
       ],
+      // Require PascalCased class and interface names.
       "@typescript-eslint/class-name-casing": "error",
+      // Enforces consistent usage of type assertions.
       "@typescript-eslint/consistent-type-assertions":
       [
         "error",
@@ -112,7 +113,7 @@
           "objectLiteralTypeAssertions": "never"
         }
       ],
-      // Consistent with type definition either 'interface' or 'type'.
+      // Allow only use of either 'interface' or 'type'.
       // (Both have their uses so turn this off.)
       "@typescript-eslint/consistent-type-definitions": "off",
       // Disable the rule for all files. If will be enabled specifically
@@ -232,19 +233,20 @@
         {
           "default":
           [
-            // https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules/member-ordering.md
+            // Static part first.
             "public-static-field",
-            // "protected-static-field",
-            // "private-static-field",
+            "protected-static-field",
+            "private-static-field",
+            "public-static-method",
+            "protected-static-method",
+            "private-static-method",
+            // Intance part second.
             "public-instance-field",
             "protected-instance-field",
             "private-instance-field",
             "public-constructor",
             "protected-constructor",
             "private-constructor",
-            "public-static-method",
-            "protected-static-method",
-            "private-static-method",
             // "public-instance-method",
             // "protected-instance-method",
             // "private-instance-method"
@@ -254,48 +256,266 @@
           ]
         }
       ],
-      // "@typescript-eslint/no-empty-function": "error",
-      // "@typescript-eslint/no-empty-interface": "off",
-      // "@typescript-eslint/no-explicit-any": "off",
-      // "@typescript-eslint/no-extraneous-class": "error",
-      // "@typescript-eslint/no-floating-promises": "error",
-      // "@typescript-eslint/no-for-in-array": "error",
-      // "@typescript-eslint/no-inferrable-types": "error",
-      // "@typescript-eslint/no-misused-new": "error",
-      // "@typescript-eslint/no-namespace": "off",
-      // "@typescript-eslint/no-non-null-assertion": "error",
-      // "@typescript-eslint/no-param-reassign": "error",
-      // "@typescript-eslint/no-parameter-properties": "off",
-      // "@typescript-eslint/no-require-imports": "off",
-      // "@typescript-eslint/no-this-alias": "error",
-      // "@typescript-eslint/no-unnecessary-qualifier": "error",
-      // "@typescript-eslint/no-unnecessary-type-arguments": "error",
-      // "@typescript-eslint/no-unnecessary-type-assertion": "error",
-      // "@typescript-eslint/no-use-before-declare": "error",
-      // "@typescript-eslint/no-var-requires": "error",
-      // "@typescript-eslint/prefer-for-of": "error",
-      // "@typescript-eslint/prefer-function-type": "error",
-      // "@typescript-eslint/prefer-namespace-keyword": "error",
-      // "@typescript-eslint/promise-function-async": "error",
-      // "@typescript-eslint/quotes": [
-      //     "error",
-      //     "double"
-      // ],
-      // "@typescript-eslint/require-await": "error",
-      // "@typescript-eslint/restrict-plus-operands": "error",
-      // "@typescript-eslint/semi": [
-      //     "error",
-      //     "always"
-      // ],
-      // "@typescript-eslint/space-within-parens": [
-      //     "error",
-      //     "always"
-      // ],
-      // "@typescript-eslint/strict-boolean-expressions": "off",
-      // "@typescript-eslint/triple-slash-reference": "error",
-      // "@typescript-eslint/type-annotation-spacing": "error",
-      // "@typescript-eslint/unbound-method": "error",
-      // "@typescript-eslint/unified-signatures": "error",
+      // Disallow generic Array constructors.
+      "@typescript-eslint/no-array-constructor": "error",
+      // Bans usage of the delete operator with computed key expressions.
+      "@typescript-eslint/no-dynamic-delete": "error",
+      // Disable the base rule as it can report incorrect errors.
+      "no-empty-function": "off",
+      // Disallow empty functions.
+      "@typescript-eslint/no-empty-function": "error",
+      // Disallow the declaration of empty interfaces.
+      "@typescript-eslint/no-empty-interface": "error",
+      // Disallow usage of the any type.
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-extra-non-null-assertion": "error",
+      // Disable the base rule as it can report incorrect errors.
+      "no-extra-parens": "off",
+      // Disallow unnecessary parentheses.
+      "@typescript-eslint/no-extra-parens": "error",
+      // Forbids the use of classes as namespaces.
+      "@typescript-eslint/no-extraneous-class": "error",
+      // Requires Promise-like values to be handled appropriately.
+      "@typescript-eslint/no-floating-promises": "error",
+      // Disallow iterating over an array with a for-in loop.
+      "@typescript-eslint/no-for-in-array": "error",
+      // Disallows explicit type declarations for variables or
+      // parameters initialized to a number, string, or boolean.
+      "@typescript-eslint/no-inferrable-types": "error",
+      // Require use of const variables for explicit values.
+      "@typescript-eslint/no-magic-numbers":
+      [
+        "error",
+        {
+          // Except for readonly class properties.
+          "ignoreReadonlyClassProperties": true,
+          // Except for enum values.
+          "ignoreEnums": true,
+          // Except for array indexes.
+          "ignoreArrayIndexes": true,
+          // Numbers can only be assigned to 'const' variables.
+          "enforceConst": true
+        }
+      ],
+      // Enforce valid definition of 'new' and 'constructor'.
+      "@typescript-eslint/no-misused-new": "error",
+      // Avoid using promises in places not designed to handle them
+      "@typescript-eslint/no-misused-promises": "error",
+      // Disallow the use of TypeScript modules and namespaces.
+      "@typescript-eslint/no-namespace": "off",
+      // Disallows non-null assertions using the ! postfix operator.
+      // (Using non-null assertions cancels the benefits of the strict
+      //  null-checking mode.)
+      "@typescript-eslint/no-non-null-assertion": "error",
+      // Disallow the use of parameter properties in class constructors.
+      "@typescript-eslint/no-parameter-properties": "off",
+      // Disallows invocation of require().
+      // (require is still needed for some 3rd party modules.)
+      "@typescript-eslint/no-require-imports": "off",
+      // Disallow aliasing of 'this'.
+      // (Use arrow functions instead to capture 'this'.)
+      "@typescript-eslint/no-this-alias": "error",
+      // Disallow the use of type aliases.
+      // (Type definitions are useful so leave this off.)
+      "@typescript-eslint/no-type-alias": "off",
+      // Prevents conditionals where the type is always truthy or always falsy.
+      "@typescript-eslint/no-unnecessary-condition": "error",
+      // Warns when a namespace qualifier is unnecessary.
+      "@typescript-eslint/no-unnecessary-qualifier": "error",
+      // Warns if an explicitly specified type argument is the
+      // default for that type parameter.
+      "@typescript-eslint/no-unnecessary-type-arguments": "error",
+      // Warns if a type assertion does not change the type of an expression.
+      "@typescript-eslint/no-unnecessary-type-assertion": "error",
+      // Requires that all public method arguments and return type will be
+      // explicitly typed.
+      "@typescript-eslint/no-untyped-public-signature": "error",
+      // Disable the base rule as it can report incorrect errors.
+      "no-unused-expressions": "off",
+      // Disallow unused expressions.
+      "@typescript-eslint/no-unused-expressions": "error",
+      // Disable the base rule as it can report incorrect errors.
+      "no-unused-vars": "off",
+      // Disallow unused variables.
+      "@typescript-eslint/no-unused-vars": "error",
+      // Disallow the use of variables before they are defined.
+      "@typescript-eslint/no-use-before-define": "error",
+      // Disable the base rule as it can report incorrect errors.
+      "no-useless-constructor": "off",
+      // Disallow unnecessary constructor.
+      "@typescript-eslint/no-useless-constructor": "error",
+      // Disallows the use of require statements except in import statements.
+      "@typescript-eslint/no-var-requires": "error",
+      // Prefer a ‘for-of’ loop over a standard ‘for’ loop if the index
+      // is only used to access the array being iterated.
+      "@typescript-eslint/prefer-for-of": "error",
+      // Use function types instead of interfaces with call signatures.
+      "@typescript-eslint/prefer-function-type": "error",
+      // Enforce includes method over indexOf method.
+      "@typescript-eslint/prefer-includes": "error",
+      // Require the use of the 'namespace' keyword instead of the 'module'
+      // keyword to declare custom TypeScript modules.
+      "@typescript-eslint/prefer-namespace-keyword": "error",
+      // Enforce the usage of the nullish coalescing operator instead of
+      // logical chaining.
+      "@typescript-eslint/prefer-nullish-coalescing": "error",
+      // Prefer using concise optional chain expressions instead of
+      // chained logical ands.
+      "@typescript-eslint/prefer-optional-chain": "error",
+      // Requires that private members are marked as readonly if they are
+      // never modified outside of the constructor.
+      "@typescript-eslint/prefer-readonly": "error",
+      // Prefer RegExp.exec() over String.match() if no global flag
+      // is provided.
+      "@typescript-eslint/prefer-regexp-exec": "error",
+      // Enforce the use of String.startsWith and String.endsWith
+      // instead of other equivalent methods of checking substrings.
+      "@typescript-eslint/prefer-string-starts-ends-with": "error",
+      // Requires any function or method that returns a Promise to
+      // be marked async.
+      "@typescript-eslint/promise-function-async": "error",
+      // Disable the base rule as it can report incorrect errors.
+      "quotes": "off",
+      // Enforce the consistent use of either backticks, double,
+      // or single quotes.
+      "@typescript-eslint/quotes":
+      [
+          "error",
+          "double"
+      ],
+      // Enforce giving 'compare' argument to Array.sort.
+      "@typescript-eslint/require-array-sort-compare": "error",
+      // Disable the base rule as it can report incorrect errors
+      "require-await": "off",
+      // Disallow async functions which have no 'await' expression.
+      "@typescript-eslint/require-await": "error",
+      // When adding two variables, operands must both be of type number
+      // or of type string.
+      "@typescript-eslint/restrict-plus-operands": "error",
+      // Enforce template literal expressions to be of string type.
+      "@typescript-eslint/restrict-template-expressions":
+      [
+        "error",
+        {
+          "allowNumber": true
+        }
+      ],
+      // By default, the rule requires awaiting a returned promise in
+      // a try-catch-finally block and disallows returning an awaited
+      // promise in any other context.
+      "@typescript-eslint/return-await": "error",
+      // Disable the base rule as it can report incorrect errors.
+      "semi": "off",
+      // Requires semicolons at the end of statements.
+      "@typescript-eslint/semi": "error",
+      // Disable the base rule as it can report incorrect errors
+      "space-before-function-paren": "off",
+      // Enforces consistent spacing before function definition
+      // opening parenthesis.
+      "@typescript-eslint/space-before-function-paren":
+      [
+        "error",
+        "never"
+      ],
+      // Restricts the types allowed in boolean expressions.
+      "@typescript-eslint/strict-boolean-expressions": "error",
+      // Sets preference level for triple slash directives versus
+      // ES6-style import declarations.
+      "@typescript-eslint/triple-slash-reference": "error",
+      // Require consistent spacing around type annotations.
+      "@typescript-eslint/type-annotation-spacing": "error",
+      // Requires type annotations to exist even if they are unnecessary.
+      "@typescript-eslint/typedef": "off",
+      // Enforces unbound methods are called with their expected scope.
+      "@typescript-eslint/unbound-method": "error",
+      // Warns for any two overloads that could be unified into one by
+      // using a union or an optional/rest parameter.
+      "@typescript-eslint/unified-signatures": "error",
+
+      // Enforce 'for' loop update clause moving the counter in the
+      // right direction.
+      "for-direction": "error",
+      // Enforce 'return' statements in getters.
+      "getter-return": "error",
+      // Disallow using an async function as a Promise executor.
+      "no-async-promise-executor": "error",
+      // Disallow 'await' inside of loops.
+      "no-await-in-loop": "error",
+      // Disallow comparing against -0.
+      "no-compare-neg-zero":  "error",
+      // Disallow assignment operators in conditional expressions.
+      "no-cond-assign": "error",
+      // Disallow the use of 'console'.
+      "no-console": "off",
+      // Disallow constant expressions in conditions.
+      "no-constant-condition": "error",
+      // Disallow control characters in regular expressions.
+      "no-control-regex": "error",
+      // Disallow the use of 'debugger'.
+      "no-debugger": "error",
+      // Disallow duplicate arguments in 'function' definitions.
+      "no-dupe-args": "error",
+      // Disallow duplicate conditions in if-else-if chains.
+      "no-dupe-else-if": "error",
+      // Disallow duplicate keys in object literals.
+      "no-dupe-keys": "error",
+      // Disallow duplicate case labels.
+      "no-duplicate-case": "error",
+      // Disallow empty block statements.
+      "no-empty": "error",
+      // Disallow empty character classes in regular expressions.
+      "no-empty-character-class": "error",
+      // Disallow reassigning exceptions in 'catch' clauses.
+      "no-ex-assign": "error",
+      // Disallow unnecessary boolean casts.
+      "no-extra-boolean-cast": "error",
+      // Disallow unnecessary semicolons.
+      "no-extra-semi": "error",
+      // Disallow reassigning 'function' declarations.
+      "no-func-assign": "error",
+      // Disallow assigning to imported bindings.
+      "no-import-assign": "error",
+      // Disallow variable or 'function' declarations in nested blocks.
+      "no-inner-declarations": "error",
+      // Disallow invalid regular expression strings in 'RegExp' constructors.
+      "no-invalid-regexp": "error",
+      // Disallow irregular whitespace.
+      "no-irregular-whitespace": "error",
+      // Disallow characters which are made with multiple code points
+      // in character class syntax.
+      "no-misleading-character-class": "error",
+      // Disallow calling global object properties as functions.
+      "no-obj-calls": "error",
+      // Disallow calling some 'Object.prototype' methods directly on objects.
+      "no-prototype-builtins": "error",
+      // Disallow multiple spaces in regular expressions.
+      "no-regex-spaces": "error",
+      // Disallow returning values from setters.
+      "no-setter-return": "error",
+      // Disallow sparse arrays.
+      "no-sparse-arrays": "error",
+      // Disallow template literal placeholder syntax in regular strings.
+      "no-template-curly-in-string": "error",
+      // Disallow confusing multiline expressions.
+      "no-unexpected-multiline": "error",
+      
+      // Disallow unreachable code after 'return', 'throw', 'continue',
+      // and 'break' statements.
+      "no-unreachable": "error",
+      // Disallow control flow statements in 'finally' blocks.
+      "no-unsafe-finally": "error",
+      // Disallow negating the left operand of relational operators.
+      "no-unsafe-negation": "error",
+      // Disallow assignments that can lead to race conditions due
+      // to usage of 'await' or 'yield'.
+      "require-atomic-updates": "error",
+      // Require calls to 'isNaN()'' when checking for 'NaN'.
+      "use-isnan": "error",
+      // Enforce comparing 'typeof' expressions against valid strings.
+      "valid-typeof": "error",
+
+
+
       "arrow-body-style": "off",
       "arrow-parens": [
           "error",
@@ -356,16 +576,10 @@
       "newline-per-chained-call": "off",
       "no-bitwise": "error",
       "no-caller": "error",
-      "no-cond-assign": "error",
-      "no-console": "off",
-      "no-debugger": "off",
-      "no-duplicate-case": "error",
       "no-duplicate-imports": "error",
-      "no-empty": "error",
       "no-eval": "error",
       "no-extra-bind": "error",
       "no-fallthrough": "error",
-      "no-irregular-whitespace": "error",
       "no-magic-numbers": "off",
       "no-multiple-empty-lines": "error",
       "no-new-func": "error",
@@ -390,16 +604,11 @@
               "hoist": "all"
           }
       ],
-      "no-sparse-arrays": "error",
-      "no-template-curly-in-string": "error",
       "no-throw-literal": "error",
       "no-trailing-spaces": "error",
       "no-undef-init": "error",
       "no-underscore-dangle": "error",
-      "no-unsafe-finally": "error",
-      "no-unused-expressions": "error",
       "no-unused-labels": "error",
-      "no-useless-constructor": "error",
       "no-var": "error",
       "no-void": "error",
       "object-shorthand": "error",
@@ -426,10 +635,8 @@
           "consistent-as-needed"
       ],
       "radix": "error",
-      "space-before-function-paren": "off",
       // "spaced-comment": "error",
       // "unicorn/filename-case": "error",
-      "use-isnan": "error",
       "yoda": "off"//,
       // "@typescript-eslint/tslint/config":
       // [
@@ -521,7 +728,18 @@
         ],
         // Require explicit accessibility modifiers on class properties
         // and methods.
-        "@typescript-eslint/explicit-member-accessibility": "error"
+        "@typescript-eslint/explicit-member-accessibility":
+        [
+          "error",
+          {
+            "overrides":
+            {
+              // Disallow 'public constructor' because vast majority of
+              // constructors are public so it would only add clutter.
+              "constructors": "no-public"
+            }
+          }
+        ]
       }
     }
   ]

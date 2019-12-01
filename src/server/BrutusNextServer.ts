@@ -17,21 +17,27 @@ import { Syslog } from "../Server/Log/Syslog";
 
 class Test
 {
-  public static a: number = 1;
+  public static readonly a = 1;
+
+  protected static readonly b = 3;
+
+  private static readonly c = 9;
+
+  public static getA(): number { return Test.a; }
 
   public a: number;
   protected b: number;
   private c: number;
 
   // U konstruktoru asi není třeba psát 'public'...
-  public constructor()
+  constructor()
   {
     this.a = 1;
     this.b = 2;
     this.c = 3;
   }
 
-  public static getA(): number { return this.a; }
+  // public static getA(): number { return this.a; }
 
 }
 
@@ -43,15 +49,16 @@ export const timeOfBoot = new Date();
 import * as SourceMapSupport from "source-map-support";
 SourceMapSupport.install();
 
+
 async function start(): Promise<void>
 {
   Syslog.log("[INFO]", "Starting BrutusNext server");
 
   const x = 3;
 
-  switch (1)
+  switch (x)
   {
-    case 1:
+    case 3:
       break;
   }
 
@@ -75,5 +82,6 @@ async function start(): Promise<void>
   Syslog.log("[INFO]", "BrutusNext server has stopped normally");
 }
 
-// tslint:disable-next-line:no-floating-promises
-start();
+// The .catch() clause is not necessary, it is here only to
+// satisfy eslint rule @typescript-eslint/no-floating-promises.
+start().catch(() => { console.log("BrutusNext server failed to start") });
