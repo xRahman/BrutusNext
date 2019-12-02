@@ -126,10 +126,12 @@
       "func-call-spacing": "off",
       // Require or disallow spacing between function identifiers and
       // their invocations.
-      // (This rule doesn't allow opening brace on new line, which
-      //  is used to call functions with long parameter list, so we
-      //  can't use it.)
-      "@typescript-eslint/func-call-spacing": "off",
+      "@typescript-eslint/func-call-spacing":
+      [
+        "error",
+        "always",
+        { "allowNewlines": true }
+      ],
       // Enforces naming of generic type variables.
       // (We don't enforce prefix for type variables so leave this off.)
       "@typescript-eslint/generic-type-naming": "off",
@@ -539,11 +541,11 @@
       // Enforce consistent newlines before and after dots.
       "dot-location": "error",
       // Enforce dot notation whenever possible.
-      "dot-notation": ["error", "property"],
+      "dot-notation": [ "error", "property" ],
       // Require the use of '===' and '!=='.
       "eqeqeq": "error",
       // Require grouped accessor pairs in object literals and classes.
-      "grouped-accessor-pairs": ["error", "getBeforeSet"],
+      "grouped-accessor-pairs": [ "error", "getBeforeSet" ],
       // Require 'for-in' loops to include an 'if' statement.
       "guard-for-in": "error",
       // Enforce a maximum number of classes per file.
@@ -650,7 +652,7 @@
       // Disallow 'void' operators.
       "no-void": "error",
       // Disallow specified warning terms in comments.
-      "no-warning-comments":[ "warn", { "terms": ["todo", "fixme"] }],
+      "no-warning-comments": [ "warn", { "terms": [ "todo", "fixme" ] } ],
       // Disallow 'with' statements.
       "no-with": "error",
       // Enforce using named capture group in regular expression.
@@ -692,33 +694,267 @@
       [
         "error",
         {
-          "builtinGlobals": "true"
+          "builtinGlobals": "true",
+          "hoist": "functions"
         }
       ],
-<mark>
       // Disallow identifiers from shadowing restricted names.
       "no-shadow-restricted-names": "error",
       // Disallow the use of undeclared variables unless mentioned in
       // '/* global */' comments.
-      "no-undef": "error",
+      "no-undef": "off",
       // Disallow initializing variables to 'undefined'.
       "no-undef-init": "error",
       // Disallow the use of 'undefined' as an identifier.
+      // (We do want to use 'undefined', so leave this off.)
       "no-undefined": "error",
-      // Disallow unused variables.
-      "no-unused-vars": "error",
       // Disallow the use of variables before they are defined.
-      "no-use-before-define": "error",    
+      // (We use "no-var" rule instead.)
+      "no-use-before-define": "off",
+
+      // Require 'return' statements after callbacks.
+      "callback-return": "error",
+      // Require 'require()' calls to be placed at top-level module scope.
+      "global-require": "error",
+      // Require error handling in callbacks.
+      "handle-callback-err": "error",
+      // Disallow use of the 'Buffer()' constructor.
+      "no-buffer-constructor": "error",
+      // Disallow 'require' calls to be mixed with regular variable declarations.
+      "no-mixed-requires": "error",
+      // Disallow 'new' operators with calls to 'require'.
+      "no-new-require": "error",
+      // Disallow string concatenation with '__dirname' and '__filename'.
+      "no-path-concat": "error",
+      // Disallow the use of 'process.env'.
+      "no-process-env": "error",
+      // Disallow the use of 'process.exit()'.
+      "no-process-exit": "error",
+      // Disallow specified modules when loaded by 'require'.
+      "no-restricted-modules": "off",
+      // Disallow synchronous methods.
+      "no-sync": "error",
+
+      // Enforce linebreaks after opening and before closing array brackets.
+      "array-bracket-newline":
+      [
+        "error",
+        {
+          "multiline": true,
+          "minItems": 2
+        }
+      ],
+      // Enforce consistent spacing inside array brackets.
+      "array-bracket-spacing": [ "error", "always" ],
+      // Enforce line breaks after each array element.
+      "array-element-newline": [ "error", { "multiline": true } ],
+      // Disallow or enforce spaces inside of blocks after opening block
+      // and before closing block.
+      "block-spacing": [ "error", "always" ],
+      // Enforce or disallow capitalization of the first letter of a comment.
+      "capitalized-comments":
+      [
+        "error",
+        "always",
+        {
+          "line":
+          {
+            "ignoreConsecutiveComments": true
+          }
+        }
+      ],
+      // Require or disallow trailing commas.
+      "comma-dangle": "error",
+      // Enforce consistent spacing before and after commas.
+      "comma-spacing": "error",
+      // Enforce consistent comma style.
+      "comma-style": [ "error", "last" ],
+      // Enforce consistent spacing inside computed property brackets.
+      "computed-property-spacing": [ "error", "never" ],
+      // Enforce consistent naming when capturing the current execution
+      // context.
+      // (Prefer capturing this using arrow functions.)
+      "consistent-this": "off",
+      // Require or disallow newline at the end of files.
+      "eol-last": [ "error", "never" ],
+
+      // Require function names to match the name of the variable or property
+      // to which they are assigned.
+      "func-name-matching": "error",
+      // Require or disallow named 'function' expressions.
+      "func-names": [ "error", "as-needed" ],
+      // Enforce the consistent use of either 'function' declarations or
+      // expressions.
+<mark>
+      "func-style": "error",
+      // Enforce line breaks between arguments of a function call.
+      "function-call-argument-newline": "error",
+      // Enforce consistent line breaks inside function parentheses.
+      "function-paren-newline": "error",
+      // Disallow specified identifiers.
+      "id-blacklist": "error",
+      // Enforce minimum and maximum identifier lengths.
+      "id-length": "error",
+      // Require identifiers to match a specified regular expression.
+      "id-match": "error",
+      // Enforce the location of arrow function bodies.
+      "implicit-arrow-linebreak": "error",
+      // Enforce consistent indentation.
+      "indent": "error",
+      // Enforce the consistent use of either double or single quotes
+      // in JSX attributes.
+      "jsx-quotes": "error",
+      // Enforce consistent spacing between keys and values in object
+      // literal properties.
+      "key-spacing": "error",
+      // Enforce consistent spacing before and after keywords.
+      "keyword-spacing": "error",
+      // Enforce position of line comments.
+      "line-comment-position": "error",
+      // Enforce consistent linebreak style.
+      "linebreak-style": "error",
+      // Require empty lines around comments.
+      "lines-around-comment": "error",
+      // Require or disallow an empty line between class members.
+      "lines-between-class-members": "error",
+      // Enforce a maximum depth that blocks can be nested.
+      "max-depth": "error",
+      // Enforce a maximum line length.
+      "max-len": "error",
+      // Enforce a maximum number of lines per file.
+      "max-lines": "error",
+      // Enforce a maximum number of line of code in a function.
+      "max-lines-per-function": "error",
+      // Enforce a maximum depth that callbacks can be nested.
+      "max-nested-callbacks": "error",
+      // Enforce a maximum number of parameters in function definitions.
+      "max-params": "error",
+      // Enforce a maximum number of statements allowed in function blocks.
+      "max-statements": "error",
+      // Enforce a maximum number of statements allowed per line.
+      "max-statements-per-line": "error",
+      // Enforce a particular style for multiline comments.
+      "multiline-comment-style": "error",
+      // Enforce newlines between operands of ternary expressions.
+      "multiline-ternary": "error",
+      // Require constructor names to begin with a capital letter.
+      "new-cap": "error",
+      // Enforce or disallow parentheses when invoking a constructor
+      // with no arguments.
+      "new-parens": "error",
+      // Require a newline after each call in a method chain.
+      "newline-per-chained-call": "error",
+      // Disallow 'Array' constructors.
+      "no-array-constructor": "error",
+      // Disallow bitwise operators.
+      "no-bitwise": "error",
+      // Disallow 'continue' statements.
+      "no-continue": "error",
+      // Disallow inline comments after code.
+      "no-inline-comments": "error",
+      // Disallow 'if' statements as the only statement in 'else' blocks.
+      "no-lonely-if": "error",
+      // Disallow mixed binary operators.
+      "no-mixed-operators": "error",
+      // Disallow mixed spaces and tabs for indentation.
+      "no-mixed-spaces-and-tabs": "error",
+      // Disallow use of chained assignment expressions.
+      "no-multi-assign": "error",
+      // Disallow multiple empty lines.
+      "no-multiple-empty-lines": "error",
+      // Disallow negated conditions.
+      "no-negated-condition": "error",
+      // Disallow nested ternary expressions.
+      "no-nested-ternary": "error",
+      // Disallow 'Object' constructors.
+      "no-new-object": "error",
+      // Disallow the unary operators '++' and '--'.
+      "no-plusplus": "error",
+      // Disallow specified syntax.
+      "no-restricted-syntax": "error",
+      // Disallow all tabs.
+      "no-tabs": "error",
+      // Disallow ternary operators.
+      "no-ternary": "error",
+      // Disallow trailing whitespace at the end of lines.
+      "no-trailing-spaces": "error",
+      // Disallow dangling underscores in identifiers.
+      "no-underscore-dangle": "error",
+      // Disallow ternary operators when simpler alternatives exist.
+      "no-unneeded-ternary": "error",
+      // Disallow whitespace before properties.
+      "no-whitespace-before-property": "error",
+      // Enforce the location of single-line statements.
+      "nonblock-statement-body-position": "error",
+      // Enforce consistent line breaks inside braces.
+      "object-curly-newline": "error",
+      // Enforce consistent spacing inside braces.
+      "object-curly-spacing": "error",
+      // Enforce placing object properties on separate lines.
+      "object-property-newline": "error",
+      // Enforce variables to be declared either together or separately
+      // in functions.
+      "one-var": "error",
+      // Require or disallow newlines around variable declarations.
+      "one-var-declaration-per-line": "error",
+      // Require or disallow assignment operator shorthand where possible.
+      "operator-assignment": "error",
+      // Enforce consistent linebreak style for operators.
+      "operator-linebreak": "error",
+      // Require or disallow padding within blocks.
+      "padded-blocks": "error",
+      // Require or disallow padding lines between statements.
+      "padding-line-between-statements": "error",
+      // Disallow the use of 'Math.pow' in favor of the '**' operator.
+      "prefer-exponentiation-operator": "error",
+      // Disallow using Object.assign with an object literal as the first
+      // argument and prefer the use of object spread instead..
+      "prefer-object-spread": "error",
+      // Require quotes around object literal property names.
+      "quote-props": "error",
+      // Enforce the consistent use of either backticks, double, or single
+      // quotes.
+      "quotes": "error",
+      // Require or disallow semicolons instead of ASI.
+      "semi": "error",
+      // Enforce consistent spacing before and after semicolons.
+      "semi-spacing": "error",
+      // Enforce location of semicolons.
+      "semi-style": "error",
+      // Require object keys to be sorted.
+      "sort-keys": "error",
+      // Require variables within the same declaration block to be sorted.
+      "sort-vars": "error",
+      // Enforce consistent spacing before blocks.
+      "space-before-blocks": "error",
+      // Enforce consistent spacing before 'function' definition opening
+      // parenthesis.
+      "space-before-function-paren": "error",
+      // Enforce consistent spacing inside parentheses.
+      "space-in-parens": "error",
+      // Require spacing around infix operators.
+      "space-infix-ops": "error",
+      // Enforce consistent spacing before or after unary operators.
+      "space-unary-ops": "error",
+      // Enforce consistent spacing after the '//' or '/*' in a comment.
+      "spaced-comment": "error",
+      // Enforce spacing around colons of switch statements.
+      "switch-colon-spacing": "error",
+      // Require or disallow spacing between template tags and their literals.
+      "template-tag-spacing": "error",
+      // Require or disallow Unicode byte order mark (BOM).
+      "unicode-bom": "error",
+      // Require parenthesis around regex literals.
+      "wrap-regex": "error",
+
+
 
       "arrow-body-style": "off",
       "arrow-parens": [
           "error",
           "as-needed"
       ],
-      // "capitalized-comments": "error",
-      "comma-dangle": "off",
       "constructor-super": "error",
-      "eol-last": "off",
       "id-blacklist": [
           "error",
           "any",
@@ -768,14 +1004,7 @@
           "error",
           "ForInStatement"
       ],
-      "no-shadow": [
-          "error",
-          {
-              "hoist": "all"
-          }
-      ],
       "no-trailing-spaces": "error",
-      "no-undef-init": "error",
       "no-underscore-dangle": "error",
       "no-var": "error",
       "object-shorthand": "error",
@@ -808,13 +1037,6 @@
       //     "error",
       //     {
       //         "rules": {
-      //             "brace-style": [
-      //                 true,
-      //                 "allman",
-      //                 {
-      //                     "allowSingleLine": true
-      //                 }
-      //             ],
       //             "comment-type": [
       //                 true,
       //                 "singleline",
