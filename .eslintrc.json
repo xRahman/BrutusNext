@@ -51,28 +51,28 @@
           {
             "Object":
             {
-              "message": "Avoid using the `Object` type. Did you mean `object`?",
+              "message": "Avoid using the 'Object' type. Did you mean 'object'?",
               "fixWith": "object"
             },
             "Boolean":
             {
-              "message": "Avoid using the `Boolean` type. Did you mean `boolean`?",
+              "message": "Avoid using the 'Boolean' type. Did you mean 'boolean'?",
               "fixWith": "boolean"
             },
-            "Function": "Avoid using the `Function` type. Prefer a specific function type, like `() => void`.",
+            "Function": "Avoid using the 'Function' type. Prefer a specific function type, like '() => void'.",
             "Number":
             {
-              "message": "Avoid using the `Number` type. Did you mean `number`?",
+              "message": "Avoid using the 'Number' type. Did you mean 'number'?",
               "fixWith": "number"
             },
             "String":
             {
-              "message": "Avoid using the `String` type. Did you mean `string`?",
+              "message": "Avoid using the 'String' type. Did you mean 'string'?",
               "fixWith": "string"
             },
             "Symbol":
             {
-              "message": "Avoid using the `Symbol` type. Did you mean `symbol`?",
+              "message": "Avoid using the 'Symbol' type. Did you mean 'symbol'?",
               "fixWith": "symbol"
             }
           }
@@ -141,7 +141,7 @@
       "@typescript-eslint/indent":
       [
         "error",
-        // Always indent with 2 spaces.
+        // Indent with 2 spaces.
         2,
         {
           // Enforces indentation level for case clauses in switch statements.
@@ -258,6 +258,8 @@
           ]
         }
       ],
+      // Disable the base rule as it can report incorrect errors.
+      "no-array-constructor": "off",
       // Disallow generic Array constructors.
       "@typescript-eslint/no-array-constructor": "error",
       // Bans usage of the delete operator with computed key expressions.
@@ -541,7 +543,7 @@
       // Enforce consistent newlines before and after dots.
       "dot-location": "error",
       // Enforce dot notation whenever possible.
-      "dot-notation": [ "error", "property" ],
+      "dot-notation": "error",
       // Require the use of '===' and '!=='.
       "eqeqeq": "error",
       // Require grouped accessor pairs in object literals and classes.
@@ -694,7 +696,7 @@
       [
         "error",
         {
-          "builtinGlobals": "true",
+          "builtinGlobals": true,
           "hoist": "functions"
         }
       ],
@@ -785,58 +787,100 @@
       "func-names": [ "error", "as-needed" ],
       // Enforce the consistent use of either 'function' declarations or
       // expressions.
-<mark>
-      "func-style": "error",
+      "func-style": [ "error", "declaration" ],
       // Enforce line breaks between arguments of a function call.
-      "function-call-argument-newline": "error",
+      "function-call-argument-newline": [ "error", "consistent" ],
       // Enforce consistent line breaks inside function parentheses.
-      "function-paren-newline": "error",
+      "function-paren-newline": [ "error", "multiline" ],
       // Disallow specified identifiers.
-      "id-blacklist": "error",
+      "id-blacklist": "off",
       // Enforce minimum and maximum identifier lengths.
-      "id-length": "error",
+      // (I'm probably guilty as charged with too long identifiers,
+      //  so let's limit this somewhat.)
+      "id-length": [ "error", { "max": 25 } ],
       // Require identifiers to match a specified regular expression.
-      "id-match": "error",
+      "id-match": "off",
       // Enforce the location of arrow function bodies.
-      "implicit-arrow-linebreak": "error",
-      // Enforce consistent indentation.
-      "indent": "error",
+      "implicit-arrow-linebreak": "off",
       // Enforce the consistent use of either double or single quotes
       // in JSX attributes.
-      "jsx-quotes": "error",
+      "jsx-quotes": [ "error", "prefer-double" ],
       // Enforce consistent spacing between keys and values in object
       // literal properties.
-      "key-spacing": "error",
+      "key-spacing":
+      [
+        "error",
+        {
+          "beforeColon": false,
+          "afterColon": true,
+          "mode": "strict"
+        }
+      ],
       // Enforce consistent spacing before and after keywords.
       "keyword-spacing": "error",
       // Enforce position of line comments.
-      "line-comment-position": "error",
+      "line-comment-position": "off",
       // Enforce consistent linebreak style.
-      "linebreak-style": "error",
+      "linebreak-style": [ "error", "unix" ],
       // Require empty lines around comments.
-      "lines-around-comment": "error",
+      "lines-around-comment":
+      [
+        "error",
+        {
+          "beforeBlockComment": true,
+          "afterBlockComment": true,
+          "beforeLineComment": true,
+          "allowBlockStart": true,
+          "allowBlockEnd": true,
+          "allowClassStart": true,
+          "allowClassEnd": true
+        }
+      ],
       // Require or disallow an empty line between class members.
-      "lines-between-class-members": "error",
+      "lines-between-class-members":
+      [
+        "error",
+        "always",
+        {
+          "exceptAfterSingleLine": true
+        }
+      ],
       // Enforce a maximum depth that blocks can be nested.
-      "max-depth": "error",
+      "max-depth": [ "error", 4 ],
       // Enforce a maximum line length.
-      "max-len": "error",
+      "max-len":
+      [
+        "error",
+        {
+          "code": 79,
+          "comments": 79
+        }
+      ],
       // Enforce a maximum number of lines per file.
-      "max-lines": "error",
+      "max-lines": [ "warn", 2000 ],
       // Enforce a maximum number of line of code in a function.
-      "max-lines-per-function": "error",
+      "max-lines-per-function":
+      [
+        "warn",
+        {
+          "max": 20,
+          "skipBlankLines": true,
+          "skipComments": true
+        }
+      ],
       // Enforce a maximum depth that callbacks can be nested.
-      "max-nested-callbacks": "error",
+      "max-nested-callbacks": [ "error", { "max": 1 } ],
       // Enforce a maximum number of parameters in function definitions.
-      "max-params": "error",
+      "max-params": [ "error", { "max": 3 } ],
       // Enforce a maximum number of statements allowed in function blocks.
-      "max-statements": "error",
+      "max-statements": [ "error", { "max": 10 } ],
       // Enforce a maximum number of statements allowed per line.
-      "max-statements-per-line": "error",
+      "max-statements-per-line": [ "error", { "max": 1 } ],
       // Enforce a particular style for multiline comments.
-      "multiline-comment-style": "error",
+      // (None of the options is useful.)
+      "multiline-comment-style": "off",
       // Enforce newlines between operands of ternary expressions.
-      "multiline-ternary": "error",
+      "multiline-ternary": [ "error", "always-multiline" ],
       // Require constructor names to begin with a capital letter.
       "new-cap": "error",
       // Enforce or disallow parentheses when invoking a constructor
@@ -844,8 +888,6 @@
       "new-parens": "error",
       // Require a newline after each call in a method chain.
       "newline-per-chained-call": "error",
-      // Disallow 'Array' constructors.
-      "no-array-constructor": "error",
       // Disallow bitwise operators.
       "no-bitwise": "error",
       // Disallow 'continue' statements.
@@ -861,7 +903,7 @@
       // Disallow use of chained assignment expressions.
       "no-multi-assign": "error",
       // Disallow multiple empty lines.
-      "no-multiple-empty-lines": "error",
+      "no-multiple-empty-lines": "warn",
       // Disallow negated conditions.
       "no-negated-condition": "error",
       // Disallow nested ternary expressions.
@@ -869,13 +911,13 @@
       // Disallow 'Object' constructors.
       "no-new-object": "error",
       // Disallow the unary operators '++' and '--'.
-      "no-plusplus": "error",
+      "no-plusplus": "off",
       // Disallow specified syntax.
-      "no-restricted-syntax": "error",
+      "no-restricted-syntax": "off",
       // Disallow all tabs.
       "no-tabs": "error",
       // Disallow ternary operators.
-      "no-ternary": "error",
+      "no-ternary": "off",
       // Disallow trailing whitespace at the end of lines.
       "no-trailing-spaces": "error",
       // Disallow dangling underscores in identifiers.
@@ -885,151 +927,203 @@
       // Disallow whitespace before properties.
       "no-whitespace-before-property": "error",
       // Enforce the location of single-line statements.
-      "nonblock-statement-body-position": "error",
+      "nonblock-statement-body-position": [ "error", "below" ],
       // Enforce consistent line breaks inside braces.
-      "object-curly-newline": "error",
+      "object-curly-newline": [ "error", { "multiline": true } ],
       // Enforce consistent spacing inside braces.
-      "object-curly-spacing": "error",
+      "object-curly-spacing": [ "error", "always" ],
       // Enforce placing object properties on separate lines.
-      "object-property-newline": "error",
+      "object-property-newline":
+      [
+        "error",
+        {
+          "allowAllPropertiesOnSameLine": true
+        }
+      ],
       // Enforce variables to be declared either together or separately
       // in functions.
-      "one-var": "error",
+      "one-var": [ "error", "never" ],
       // Require or disallow newlines around variable declarations.
-      "one-var-declaration-per-line": "error",
+      "one-var-declaration-per-line": [ "error", "always" ],
       // Require or disallow assignment operator shorthand where possible.
       "operator-assignment": "error",
       // Enforce consistent linebreak style for operators.
-      "operator-linebreak": "error",
+      "operator-linebreak":
+      [
+        "error",
+        "before",
+        {
+          "overrides": { "?": "after", "=": "after" }
+        }
+      ],
       // Require or disallow padding within blocks.
-      "padded-blocks": "error",
+      "padded-blocks": [ "error", "never" ],
       // Require or disallow padding lines between statements.
-      "padding-line-between-statements": "error",
+      "padding-line-between-statements":
+      [
+        "error",
+        {
+          // Require empty lne after 'let', 'const' or 'var'.
+          "blankLine": "always",
+          "prev": [ "const", "let", "var" ],
+          "next": "*"
+        },
+        {
+          // Unless another 'let', 'const' or 'var' follows
+          "blankLine": "any",
+          "prev": [ "const", "let", "var" ],
+          "next": [ "const", "let", "var" ]
+        },
+        {
+          // Require empty line after 'break' if 'case' or 'default' follows.
+          "blankLine": "always",
+          "prev": "break",
+          "next": [ "case", "default" ]
+        }
+      ],
       // Disallow the use of 'Math.pow' in favor of the '**' operator.
       "prefer-exponentiation-operator": "error",
       // Disallow using Object.assign with an object literal as the first
       // argument and prefer the use of object spread instead..
       "prefer-object-spread": "error",
       // Require quotes around object literal property names.
-      "quote-props": "error",
-      // Enforce the consistent use of either backticks, double, or single
-      // quotes.
-      "quotes": "error",
-      // Require or disallow semicolons instead of ASI.
-      "semi": "error",
+      "quote-props":
+      [
+        "error",
+        "consistent-as-needed",
+        {
+          "numbers": true
+        }
+      ],
       // Enforce consistent spacing before and after semicolons.
-      "semi-spacing": "error",
+      "semi-spacing":
+      [
+        "error",
+        {
+          "before": false,
+          "after": true
+        }
+      ],
       // Enforce location of semicolons.
-      "semi-style": "error",
+      "semi-style": [ "error", "last" ],
       // Require object keys to be sorted.
-      "sort-keys": "error",
+      "sort-keys": "off",
       // Require variables within the same declaration block to be sorted.
-      "sort-vars": "error",
+      "sort-vars": "off",
       // Enforce consistent spacing before blocks.
-      "space-before-blocks": "error",
+      "space-before-blocks": [ "error", "always" ],
       // Enforce consistent spacing before 'function' definition opening
       // parenthesis.
-      "space-before-function-paren": "error",
-      // Enforce consistent spacing inside parentheses.
-      "space-in-parens": "error",
+      "space-in-parens": [ "error", "never" ],
       // Require spacing around infix operators.
       "space-infix-ops": "error",
       // Enforce consistent spacing before or after unary operators.
-      "space-unary-ops": "error",
+      "space-unary-ops":
+      [
+        "error",
+        {
+          "words": true,
+          "nonwords": false
+        }
+      ],
       // Enforce consistent spacing after the '//' or '/*' in a comment.
-      "spaced-comment": "error",
+      "spaced-comment": [ "error", "always" ],
       // Enforce spacing around colons of switch statements.
-      "switch-colon-spacing": "error",
+      "switch-colon-spacing": [ "error", { "after": true, "before": false } ],
       // Require or disallow spacing between template tags and their literals.
-      "template-tag-spacing": "error",
+      "template-tag-spacing": [ "error", "always" ],
       // Require or disallow Unicode byte order mark (BOM).
-      "unicode-bom": "error",
+      "unicode-bom": [ "error", "never" ],
       // Require parenthesis around regex literals.
       "wrap-regex": "error",
 
 
-
-      "arrow-body-style": "off",
-      "arrow-parens": [
-          "error",
-          "as-needed"
-      ],
+      // Require braces around arrow function bodies.
+      "arrow-body-style": [ "error", "always" ],
+      // Require parentheses around arrow function arguments.
+      "arrow-parens": [ "error", "always" ],
+      // Enforce consistent spacing before and after the arrow in arrow
+      // functions.
+      "arrow-spacing": "error",
+      // Require 'super()' calls in constructors.
       "constructor-super": "error",
-      "id-blacklist": [
-          "error",
-          "any",
-          "Number",
-          "number",
-          "String",
-          "string",
-          "Boolean",
-          "boolean",
-          "Undefined",
-          "undefined"
-      ],
-      "id-match": "error",
+      // Enforce consistent spacing around '*' operators in generator
+      // functions.
+      "generator-star-spacing": [ "error", "before" ],
+      // Disallow reassigning class members.
+      "no-class-assign": "error",
+      // Disallow arrow functions where they could be confused with
+      // comparisons.
+      "no-confusing-arrow": "error",
+      // Disallow reassigning 'const' variables.
+      "no-const-assign": "error",
+      // Disallow duplicate class members.
+      "no-dupe-class-members": "error",
+      // Disallow duplicate module imports.
+      "no-duplicate-imports": "error",
+<mark>
+      // Disallow 'new' operators with the 'Symbol' object.
+      "no-new-symbol": "error",
+      // Disallow specified modules when loaded by 'import'.
+      "no-restricted-imports": "error",
+      // Disallow 'this'/'super' before calling 'super()' in constructors.
+      "no-this-before-super": "error",
+      // Disallow unnecessary computed property keys in objects and classes.
+      "no-useless-computed-key": "error",
+      // Disallow unnecessary constructors.
+      "no-useless-constructor": "error",
+      // Require 'let' or 'const' instead of 'var'.
+      "no-useless-rename": "error",
+      // Require 'let' or 'const' instead of 'var'.
+      "no-var": "error",
+      // Require or disallow method and property shorthand syntax for object
+      // literals.
+      "object-shorthand": "error",
+      // Require using arrow functions for callbacks.
+      "prefer-arrow-callback": "error",
+      // Require 'const' declarations for variables that are never reassigned
+      // after declared.
+      "prefer-const": "error",
+      // Require destructuring from arrays and/or objects.
+      "prefer-destructuring": "error",
+      // Disallow 'parseInt()' and 'Number.parseInt()' in favor of binary,
+      // octal, and hexadecimal literals.
+      "prefer-numeric-literals": "error",
+      // Require rest parameters instead of 'arguments'.
+      "prefer-rest-params": "error",
+      // Require spread operators instead of '.apply()'.
+      "prefer-spread": "error",
+      // Require template literals instead of string concatenation.
+      "prefer-template": "error",
+      // Require generator functions to contain 'yield'.
+      "require-yield": "error",
+      // Enforce spacing between rest and spread operators and their
+      // expressions.
+      "rest-spread-spacing": "error",
+      // Enforce sorted import declarations within modules.
+      "sort-imports": "error",
+      // Require symbol descriptions.
+      "symbol-description": "error",
+      // Require or disallow spacing around embedded expressions of template
+      // strings.
+      "template-curly-spacing": "error",
+      // Require or disallow spacing around the '*' in 'yield*' expressions.
+      "yield-star-spacing": "error",
+
+
       // "import/no-default-export": "error",
       // "import/no-deprecated": "error",
       // "import/no-extraneous-dependencies": "error",
       // "import/no-internal-modules": "error",
       // "import/no-unassigned-import": "off",
       "import/order": "off",
-      "linebreak-style": [
-          "error",
-          "unix"
-      ],
-      "max-len": [
-          "error",
-          {
-              "code": 79
-          }
-      ],
-      "max-lines": [
-          "error",
-          2000
-      ],
-      "new-parens": "error",
-      "newline-per-chained-call": "off",
-      "no-bitwise": "error",
-      "no-duplicate-imports": "error",
-      "no-multiple-empty-lines": "error",
       // "no-null/no-null": "error",
-      "no-plusplus": [
-          "error",
-          {
-              "allowForLoopAfterthoughts": true
-          }
-      ],
-      "no-restricted-syntax": [
-          "error",
-          "ForInStatement"
-      ],
-      "no-trailing-spaces": "error",
-      "no-underscore-dangle": "error",
       "no-var": "error",
       "object-shorthand": "error",
-      "one-var": [
-          "error",
-          "never"
-      ],
-      "padding-line-between-statements": [
-          "off",
-          "error",
-          {
-              "blankLine": "always",
-              "prev": "*",
-              "next": "return"
-          }
-      ],
       // "prefer-arrow/prefer-arrow-functions": "error",
       "prefer-const": "error",
-      "prefer-object-spread": "error",
       // "prefer-readonly": "error",
-      "prefer-template": "error",
-      "quote-props": [
-          "error",
-          "consistent-as-needed"
-      ]
+      "prefer-template": "error"
       // "spaced-comment": "error",
       // "unicorn/filename-case": "error",
       // "@typescript-eslint/tslint/config":

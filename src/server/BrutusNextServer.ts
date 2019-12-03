@@ -59,7 +59,7 @@ async function start(): Promise<void>
   switch (x)
   {
     case 3:
-      break;
+ break;
   }
 
   try
