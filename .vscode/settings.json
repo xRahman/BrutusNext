@@ -57,15 +57,7 @@
     "javascript",
     "typescript"
   ],
-  "eslint.trace.server": "messages"
-  // "eslint.workingDirectories": [
-  //   {
-  //     "directory": "./Src/Client",
-  //     "changeProcessCWD": true
-  //   },
-  //   {
-  //     "directory": "./Src/Server",
-  //     "changeProcessCWD": true
-  //   }
-  // ]
+  // This option makes eslint log available by clicking
+  // on 'eslint' tag on the bottom status bar.
+  // "eslint.trace.server": "messages"
 }
