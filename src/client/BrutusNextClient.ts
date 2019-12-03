@@ -9,8 +9,8 @@
                           Client application
 */
 
-import { REPORT } from "../Shared/Log/REPORT";
-import { Syslog } from "../Client/Log/Syslog";
+// import { REPORT } from "../Shared/Log/REPORT";
+// import { Syslog } from "../Client/Log/Syslog";
 // import { Gui } from "../Client/Gui/Gui";
 // import { Renderer } from "../Client/Engine/Renderer";
 // import { Connection } from "../Client/Net/Connection";

@@ -27,7 +27,7 @@ class Test
 
   public a: number;
   protected b: number;
-  private c: number;
+  private readonly c: number;
 
   // U konstruktoru asi není třeba psát 'public'...
   constructor()
@@ -38,7 +38,6 @@ class Test
   }
 
   // public static getA(): number { return this.a; }
-
 }
 
 export const timeOfBoot = new Date();
@@ -53,14 +52,6 @@ SourceMapSupport.install();
 async function start(): Promise<void>
 {
   Syslog.log("[INFO]", "Starting BrutusNext server");
-
-  const x = 3;
-
-  switch (x)
-  {
-    case 3:
- break;
-  }
 
   try
   {
@@ -84,4 +75,7 @@ async function start(): Promise<void>
 
 // The .catch() clause is not necessary, it is here only to
 // satisfy eslint rule @typescript-eslint/no-floating-promises.
-start().catch(() => { console.log("BrutusNext server failed to start") });
+start().catch
+(
+  () => { console.log("BrutusNext server failed to start"); }
+);

@@ -15,7 +15,7 @@ import { Syslog } from "../../Shared/Log/Syslog";
 
 export namespace SyslogUtils
 {
-  export const THIS_SHOULD_NEVER_BE_CALLED = "This"
+  export const SHOULD_NEVER_BE_CALLED = "This"
     + " method should never be called. Make sure that"
     + " it is overwritten in both Server/Log/Syslog"
     + " and Client/Log/Syslog and that client or server"
@@ -24,13 +24,13 @@ export namespace SyslogUtils
   // ! This function needs to be overwritten on the client and server.
   export function reportError(message: string): void
   {
-    throw Error(THIS_SHOULD_NEVER_BE_CALLED);
+    throw Error(SHOULD_NEVER_BE_CALLED);
   }
 
   // ! This function needs to be overwritten on the client and server.
   export function reportException(error: Error): void
   {
-    throw Error(THIS_SHOULD_NEVER_BE_CALLED);
+    throw Error(SHOULD_NEVER_BE_CALLED);
   }
 
   export function createLogEntry
@@ -77,8 +77,7 @@ export namespace SyslogUtils
   )
   : Error
   {
-    if (Error.captureStackTrace)
-      Error.captureStackTrace(error, stackTop);
+    Error.captureStackTrace(error, stackTop);
 
     return error;
   }

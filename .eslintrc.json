@@ -126,19 +126,16 @@
       "func-call-spacing": "off",
       // Require or disallow spacing between function identifiers and
       // their invocations.
-      "@typescript-eslint/func-call-spacing":
-      [
-        "error",
-        "always",
-        { "allowNewlines": true }
-      ],
+      "@typescript-eslint/func-call-spacing": "off",
       // Enforces naming of generic type variables.
       // (We don't enforce prefix for type variables so leave this off.)
       "@typescript-eslint/generic-type-naming": "off",
       // Disable the base rule as it can report incorrect errors.
       "indent": "off",
       // Enforce consistent indentation.
-      "@typescript-eslint/indent":
+      // (Can't use it now because indetation of function return type
+      //  cannot be configured.)
+      "@typescript-eslint/indent":// "off",
       [
         "error",
         // Indent with 2 spaces.
@@ -159,20 +156,21 @@
           // declaration.
           "FunctionDeclaration":
           {
-            // All arguments of the expression must be aligned with the
-            // first argument.
-            "parameters": "first",
-            // Enforces indentation level for the body of a function
-            // expression.
+            "parameters": 1,
             "body": 1
           },
+          // (Disable checking of indent for function declaration
+          //  because function return type indentation cannot be
+          //  configured.)
+          "ignoredNodes": [ "FunctionDeclaration" ],
           // Enforces indentation level for parameters in a function
           // expression.
           "FunctionExpression":
           {
             // All arguments of the expression must be aligned with the
             // first argument.
-            "parameters": "first"
+            "parameters": 1,
+            "body": 1
           },
           // Enforces indentation level for arguments in a call expression.
           "CallExpression":
@@ -289,20 +287,22 @@
       // Disable the base rule as it can report incorrect errors.
       "no-magic-numbers": "off",
       // Require use of const variables for explicit values.
-      "@typescript-eslint/no-magic-numbers":
-      [
-        "error",
-        {
-          // Except for readonly class properties.
-          "ignoreReadonlyClassProperties": true,
-          // Except for enum values.
-          "ignoreEnums": true,
-          // Except for array indexes.
-          "ignoreArrayIndexes": true,
-          // Numbers can only be assigned to 'const' variables.
-          "enforceConst": true
-        }
-      ],
+      // (This would be nice but it doesn't allow constants in
+      //  switch cases so it's too restrictive.)
+      "@typescript-eslint/no-magic-numbers": "off",
+      // [
+      //   "error",
+      //   {
+      //     // Except for readonly class properties.
+      //     "ignoreReadonlyClassProperties": true,
+      //     // Except for enum values.
+      //     "ignoreEnums": true,
+      //     // Except for array indexes.
+      //     "ignoreArrayIndexes": true,
+      //     // Numbers can only be assigned to 'const' variables.
+      //     "enforceConst": true
+      //   }
+      // ],
       // Enforce valid definition of 'new' and 'constructor'.
       "@typescript-eslint/no-misused-new": "error",
       // Avoid using promises in places not designed to handle them
@@ -343,9 +343,24 @@
       // Disable the base rule as it can report incorrect errors.
       "no-unused-vars": "off",
       // Disallow unused variables.
-      "@typescript-eslint/no-unused-vars": "error",
+      "@typescript-eslint/no-unused-vars":
+      [
+        "error",
+        {
+          // Allow unused arguments to be able to override functions
+          // with some arguments but empty body.
+          "args": "none"
+        }
+      ],
       // Disallow the use of variables before they are defined.
-      "@typescript-eslint/no-use-before-define": "error",
+      "@typescript-eslint/no-use-before-define":
+      [
+        "error",
+        {
+          "functions": false,
+          "classes": true
+        }
+      ],
       // Disable the base rule as it can report incorrect errors.
       "no-useless-constructor": "off",
       // Disallow unnecessary constructor.
@@ -386,8 +401,11 @@
       // or single quotes.
       "@typescript-eslint/quotes":
       [
-          "error",
-          "double"
+        "error",
+        "double",
+        {
+          "allowTemplateLiterals": true
+        }
       ],
       // Enforce giving 'compare' argument to Array.sort.
       "@typescript-eslint/require-array-sort-compare": "error",
@@ -418,19 +436,19 @@
       "space-before-function-paren": "off",
       // Enforces consistent spacing before function definition
       // opening parenthesis.
-      "@typescript-eslint/space-before-function-paren":
-      [
-        "error",
-        "never"
-      ],
+      // (This doesn't allow opening brace on the new line so leave it off.)
+      "@typescript-eslint/space-before-function-paren": "off",
       // Restricts the types allowed in boolean expressions.
-      "@typescript-eslint/strict-boolean-expressions": "error",
+      // ()
+      "@typescript-eslint/strict-boolean-expressions": "off",
       // Sets preference level for triple slash directives versus
       // ES6-style import declarations.
       "@typescript-eslint/triple-slash-reference": "error",
       // Require consistent spacing around type annotations.
-      "@typescript-eslint/type-annotation-spacing": "error",
+      "@typescript-eslint/type-annotation-spacing": "off",
       // Requires type annotations to exist even if they are unnecessary.
+      // (This would prevent placing functions return type on
+      //  the new line so leave it off.)
       "@typescript-eslint/typedef": "off",
       // Enforces unbound methods are called with their expected scope.
       "@typescript-eslint/unbound-method": "error",
@@ -482,7 +500,8 @@
       // Disallow assigning to imported bindings.
       "no-import-assign": "error",
       // Disallow variable or 'function' declarations in nested blocks.
-      "no-inner-declarations": "error",
+      // (This forbids declaring functions in namespaces so leave it off.)
+      "no-inner-declarations": "off",
       // Disallow invalid regular expression strings in 'RegExp' constructors.
       "no-invalid-regexp": "error",
       // Disallow irregular whitespace.
@@ -503,7 +522,7 @@
       // Disallow template literal placeholder syntax in regular strings.
       "no-template-curly-in-string": "error",
       // Disallow confusing multiline expressions.
-      "no-unexpected-multiline": "error",
+      "no-unexpected-multiline": "off",
       
       // Disallow unreachable code after 'return', 'throw', 'continue',
       // and 'break' statements.
@@ -541,7 +560,7 @@
       // Enforce default parameters to be last.
       "default-param-last": "error",
       // Enforce consistent newlines before and after dots.
-      "dot-location": "error",
+      "dot-location": [ "error", "property" ],
       // Enforce dot notation whenever possible.
       "dot-notation": "error",
       // Require the use of '===' and '!=='.
@@ -709,7 +728,7 @@
       "no-undef-init": "error",
       // Disallow the use of 'undefined' as an identifier.
       // (We do want to use 'undefined', so leave this off.)
-      "no-undefined": "error",
+      "no-undefined": "off",
       // Disallow the use of variables before they are defined.
       // (We use "no-var" rule instead.)
       "no-use-before-define": "off",
@@ -754,17 +773,18 @@
       // and before closing block.
       "block-spacing": [ "error", "always" ],
       // Enforce or disallow capitalization of the first letter of a comment.
-      "capitalized-comments":
-      [
-        "error",
-        "always",
-        {
-          "line":
-          {
-            "ignoreConsecutiveComments": true
-          }
-        }
-      ],
+      // (This would prevent commenting-out code so leave it off.)
+      "capitalized-comments": "off",
+      // [
+      //   "error",
+      //   "always",
+      //   {
+      //     "line":
+      //     {
+      //       "ignoreConsecutiveComments": true
+      //     }
+      //   }
+      // ],
       // Require or disallow trailing commas.
       "comma-dangle": "error",
       // Enforce consistent spacing before and after commas.
@@ -791,13 +811,13 @@
       // Enforce line breaks between arguments of a function call.
       "function-call-argument-newline": [ "error", "consistent" ],
       // Enforce consistent line breaks inside function parentheses.
-      "function-paren-newline": [ "error", "multiline" ],
+      "function-paren-newline": [ "error", "multiline-arguments" ],
       // Disallow specified identifiers.
       "id-blacklist": "off",
       // Enforce minimum and maximum identifier lengths.
       // (I'm probably guilty as charged with too long identifiers,
       //  so let's limit this somewhat.)
-      "id-length": [ "error", { "max": 25 } ],
+      "id-length": [ "error", { "min": 1, "max": 25 } ],
       // Require identifiers to match a specified regular expression.
       "id-match": "off",
       // Enforce the location of arrow function bodies.
@@ -823,19 +843,20 @@
       // Enforce consistent linebreak style.
       "linebreak-style": [ "error", "unix" ],
       // Require empty lines around comments.
-      "lines-around-comment":
-      [
-        "error",
-        {
-          "beforeBlockComment": true,
-          "afterBlockComment": true,
-          "beforeLineComment": true,
-          "allowBlockStart": true,
-          "allowBlockEnd": true,
-          "allowClassStart": true,
-          "allowClassEnd": true
-        }
-      ],
+      // (This would prevent commenting-out code so leave it off.)
+      "lines-around-comment": "off",
+      // [
+      //   "error",
+      //   {
+      //     "beforeBlockComment": true,
+      //     "afterBlockComment": true,
+      //     "beforeLineComment": true,
+      //     "allowBlockStart": true,
+      //     "allowBlockEnd": true,
+      //     "allowClassStart": true,
+      //     "allowClassEnd": true
+      //   }
+      // ],
       // Require or disallow an empty line between class members.
       "lines-between-class-members":
       [
@@ -863,7 +884,7 @@
       [
         "warn",
         {
-          "max": 20,
+          "max": 50,
           "skipBlankLines": true,
           "skipComments": true
         }
@@ -882,7 +903,14 @@
       // Enforce newlines between operands of ternary expressions.
       "multiline-ternary": [ "error", "always-multiline" ],
       // Require constructor names to begin with a capital letter.
-      "new-cap": "error",
+      "new-cap":
+      [
+        "error",
+        {
+          "newIsCapExceptionPattern": "^ERROR|REPORT$",
+          "capIsNewExceptionPattern": "^ERROR|REPORT$"
+        }
+      ],
       // Enforce or disallow parentheses when invoking a constructor
       // with no arguments.
       "new-parens": "error",
@@ -1027,7 +1055,14 @@
         }
       ],
       // Enforce consistent spacing after the '//' or '/*' in a comment.
-      "spaced-comment": [ "error", "always" ],
+      "spaced-comment":
+      [
+        "error",
+        "always",
+        {
+          "markers": ["/"]
+        }
+      ],
       // Enforce spacing around colons of switch statements.
       "switch-colon-spacing": [ "error", { "after": true, "before": false } ],
       // Require or disallow spacing between template tags and their literals.
@@ -1061,17 +1096,14 @@
       "no-dupe-class-members": "error",
       // Disallow duplicate module imports.
       "no-duplicate-imports": "error",
-<mark>
       // Disallow 'new' operators with the 'Symbol' object.
       "no-new-symbol": "error",
       // Disallow specified modules when loaded by 'import'.
-      "no-restricted-imports": "error",
+      "no-restricted-imports": "off",
       // Disallow 'this'/'super' before calling 'super()' in constructors.
       "no-this-before-super": "error",
       // Disallow unnecessary computed property keys in objects and classes.
       "no-useless-computed-key": "error",
-      // Disallow unnecessary constructors.
-      "no-useless-constructor": "error",
       // Require 'let' or 'const' instead of 'var'.
       "no-useless-rename": "error",
       // Require 'let' or 'const' instead of 'var'.
@@ -1101,94 +1133,14 @@
       // expressions.
       "rest-spread-spacing": "error",
       // Enforce sorted import declarations within modules.
-      "sort-imports": "error",
+      "sort-imports": "off",
       // Require symbol descriptions.
       "symbol-description": "error",
       // Require or disallow spacing around embedded expressions of template
       // strings.
       "template-curly-spacing": "error",
       // Require or disallow spacing around the '*' in 'yield*' expressions.
-      "yield-star-spacing": "error",
-
-
-      // "import/no-default-export": "error",
-      // "import/no-deprecated": "error",
-      // "import/no-extraneous-dependencies": "error",
-      // "import/no-internal-modules": "error",
-      // "import/no-unassigned-import": "off",
-      "import/order": "off",
-      // "no-null/no-null": "error",
-      "no-var": "error",
-      "object-shorthand": "error",
-      // "prefer-arrow/prefer-arrow-functions": "error",
-      "prefer-const": "error",
-      // "prefer-readonly": "error",
-      "prefer-template": "error"
-      // "spaced-comment": "error",
-      // "unicorn/filename-case": "error",
-      // "@typescript-eslint/tslint/config":
-      // [
-      //     "error",
-      //     {
-      //         "rules": {
-      //             "comment-type": [
-      //                 true,
-      //                 "singleline",
-      //                 "multiline",
-      //                 "doc",
-      //                 "directive"
-      //             ],
-      //             "encoding": true,
-      //             "invalid-void": true,
-      //             "jsdoc-format": [
-      //                 true,
-      //                 "check-multiline-start"
-      //             ],
-      //             "match-default-export-name": true,
-      //             "no-boolean-literal-compare": true,
-      //             "no-default-import": true,
-      //             "no-dynamic-delete": true,
-      //             "no-inferred-empty-object-type": true,
-      //             "no-mergeable-namespace": true,
-      //             "no-null-undefined-union": true,
-      //             "no-promise-as-boolean": true,
-      //             "no-redundant-jsdoc": true,
-      //             "no-reference-import": true,
-      //             "no-restricted-globals": true,
-      //             "no-tautology-expression": true,
-      //             "no-unnecessary-callback-wrapper": true,
-      //             "number-literal-format": true,
-      //             "prefer-method-signature": true,
-      //             "prefer-switch": true,
-      //             "prefer-while": true,
-      //             "return-undefined": true,
-      //             "static-this": true,
-      //             "strict-comparisons": true,
-      //             "strict-string-expressions": true,
-      //             "switch-final-break": [
-      //                 true,
-      //                 "always"
-      //             ],
-      //             "typedef": [
-      //                 true,
-      //                 "property-declaration",
-      //                 "object-destructuring",
-      //                 "array-destructuring"
-      //             ],
-      //             "unnecessary-else": true,
-      //             "whitespace": [
-      //                 true,
-      //                 "check-branch",
-      //                 "check-operator",
-      //                 "check-module",
-      //                 "check-separator",
-      //                 "check-rest-spread",
-      //                 "check-type",
-      //                 "check-typecast"
-      //             ]
-      //         }
-      //     }
-      // ]
+      "yield-star-spacing": [ "error", "before" ]
   },
   "overrides":
   [
