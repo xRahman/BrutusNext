@@ -345,7 +345,7 @@
       // Disallow unused variables.
       "@typescript-eslint/no-unused-vars":
       [
-        "error",
+        "warn",
         {
           // Allow unused arguments to be able to override functions
           // with some arguments but empty body.
@@ -1167,8 +1167,9 @@
           {
             "overrides":
             {
-              // Disallow 'public constructor' because vast majority of
-              // constructors are public so it would only add clutter.
+              // Do not require 'public' in front of 'constructor' because
+              // vast majority of constructors are public so it would only
+              // add clutter.
               "constructors": "no-public"
             }
           }

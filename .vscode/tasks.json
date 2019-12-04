@@ -14,7 +14,8 @@
       "command": "node",
       "type": "process",
       "isBackground": false,
-      "args": [ "./.vscode/RemoveOldBuild.js" ]
+      "args": [ "./.vscode/RemoveOldBuild.js" ],
+      "dependsOn": [ "eslint: lint whole folder" ]
     },
     // {
     //   "label": "Lint Client",
