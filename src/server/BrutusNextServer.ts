@@ -23,36 +23,59 @@ export const timeOfBoot = new Date();
 import * as SourceMapSupport from "source-map-support";
 SourceMapSupport.install();
 
-// async function start(): Promise<void>
-// {
-//   Syslog.log("[INFO]", "Starting BrutusNext server");
+async function test(): Promise<void>
+{
+  const promise = new Promise
+  (
+    (resolve, reject) =>
+    {
+      setTimeout
+      (
+        () => { resolve("done!"); },
+        1000
+      );
+    }
+  );
 
-//   try
-//   {
-//   // TODO:
-//   // await HttpsServer.startServers();
-//   // await Game.load();
-//     /// Tohle si tu nechám kvůli budoucí teminologii. Na klientu
-//     /// by to mělo bejt stejně.
-//     // await Game.init();
-//   }
-//   catch (error)
-//   {
-//     REPORT(error, "Failed to start");
-//     return;
-//   }
+  await promise;
+}
 
-//   // await Engine.loop();
+async function start(): Promise<void>
+{
+  Syslog.log("[INFO]", "Starting BrutusNext server");
 
-//   Syslog.log("[INFO]", "BrutusNext server has stopped normally");
-// }
+  try
+  {
+    // TODO:
+    console.log("Launching await test");
+    await test();
+    console.log("Test passed");
+    // await HttpsServer.startServers();
+    // await Game.load();
+    /// Tohle si tu nechám kvůli budoucí teminologii. Na klientu
+    /// by to mělo bejt stejně.
+    // await Game.init();
+  }
+  catch (error)
+  {
+    REPORT(error, "Failed to start");
+    return;
+  }
 
-// // The .catch() clause is not necessary, it is here only to
-// // satisfy eslint rule @typescript-eslint/no-floating-promises.
-// start().catch
-// (
-//   // TODO: Vyzkoušet, co sem vlastně může spadnout, a reportovat
-//   // to nějak líp.
-//   // + taky mi zřejmě chybí odchytávání unhandled rejection promisů.
-//   () => { console.log("BrutusNext server failed to start"); }
-// );
+  // await Engine.loop();
+
+  Syslog.log("[INFO]", "BrutusNext server has stopped normally");
+}
+
+// The .catch() clause is not necessary, it is here only to
+// satisfy eslint rule @typescript-eslint/no-floating-promises.
+start().catch
+(
+  // TODO: Vyzkoušet, co sem vlastně může spadnout, a reportovat
+  // to nějak líp.
+  // + taky mi zřejmě chybí odchytávání unhandled rejection promisů.
+  (reason: any) =>
+  {
+    console.log(`BrutusNext server failed to start (${String(reason)})`);
+  }
+);
