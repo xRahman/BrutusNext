@@ -12,16 +12,11 @@
   "parser": "@typescript-eslint/parser",
   "parserOptions":
   {
-    // There must be a typecript 'project' specified
-    // for eslint to work correcly. We use .eslintrc.json
-    // files in /Src/1Server and /Src/Client to do it
-    // for client and server code but eslint fails to
-    // lint shared code because it's ouside of both client
-    // and server file structure. To work around that,
-    // we specify a tsconfig.json here in master eslint
-    // config file even (server is chosen randomly, client
-    // tsconfig.json would work just as well).
-    "project": "./Src/Server/tsconfig.json",
+    "project":
+    [
+      "./Src/Server/tsconfig.json",
+      "./Src/Client/tsconfig.json"
+    ],
     "sourceType": "module"
   },
   "plugins":
