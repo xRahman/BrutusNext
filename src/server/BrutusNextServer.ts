@@ -40,7 +40,7 @@ async function test(): Promise<void>
   await promise;
 }
 
-async function start(): Promise<void>
+async function startBrutusNextServer(): Promise<void>
 {
   Syslog.log("[INFO]", "Starting BrutusNext server");
 
@@ -58,7 +58,7 @@ async function start(): Promise<void>
   }
   catch (error)
   {
-    REPORT(error, "Failed to start");
+    REPORT(error, "Failed to start BrutusNext server");
     return;
   }
 
@@ -69,13 +69,11 @@ async function start(): Promise<void>
 
 // The .catch() clause is not necessary, it is here only to
 // satisfy eslint rule @typescript-eslint/no-floating-promises.
-start().catch
+startBrutusNextServer().catch
 (
-  // TODO: Vyzkoušet, co sem vlastně může spadnout, a reportovat
-  // to nějak líp.
-  // + taky mi zřejmě chybí odchytávání unhandled rejection promisů.
   (reason: any) =>
   {
-    console.log(`BrutusNext server failed to start (${String(reason)})`);
+    console.log(`BrutusNext server encountered an unhandled`
+      + ` error (${String(reason)})`);
   }
 );
