@@ -19,21 +19,21 @@ export namespace Syslog
     "[EXCEPTION]"
     // Sent when exeption propagates to the top-level function
     // (which shouldn't happen).
-    | "[UNCAUGHT_EXCEPTION]"
+  | "[UNCAUGHT_EXCEPTION]"
     // Sent when ERROR() is called.
-    | "[ERROR]"
+  | "[ERROR]"
     // Something is ok (game is successfuly loaded]" | etc.).
-    | "[INFO]"
+  | "[INFO]"
     // Messages from http server.
-    | "[HTTP_SERVER]"
+  | "[HTTP_SERVER]"
     // Messages from https server.
-    | "[HTTPS_SERVER]"
+  | "[HTTPS_SERVER]"
     // Messages from websocket communication.
-    | "[WEBSOCKET]"
+  | "[WEBSOCKET]"
     // Messages from websocket server.
-    | "[WEBSOCKET_SERVER]"
+  | "[WEBSOCKET_SERVER]"
     // Player has connected etc.
-    | "[CONNECTION_INFO]";
+  | "[CONNECTION_INFO]";
 
   // ! This function needs to be overwritten on the client and server.
   export function log(messageType: MessageType, message: string): void

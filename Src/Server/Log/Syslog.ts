@@ -32,7 +32,7 @@ Syslog.reportUncaughtException = (error: Error) =>
 SyslogUtils.reportError = (message: string) =>
 {
   // Error message will contain stack trace beginning with
-  // function 'ERROR' so the user see where the error
+  // function 'ERROR' so the user sees where the error
   // originated rather than where the stack trace has been
   // captured.
   const errorMsg = `${message}\n${SyslogUtils.getTrimmedStackTrace(ERROR)}`;
@@ -46,50 +46,6 @@ SyslogUtils.reportException = (error: Error) =>
 };
 
 export { Syslog, SyslogUtils };
-
-// export class Syslog extends Shared.Syslog
-// {
-//   /*
-//   // -------------- Static class data -------------------
-
-//   // Here we also assign Syslog instance to Syslog.instance property
-//   // so it will be accessible from shared code. Without this, functions
-//   // like ERROR() would not work because Syslog.instance would be
-//   // 'null'.
-//   protected static instance = Shared.Syslog.instance = new Syslog();
-
-//   // --------------- Protected methods ------------------
-
-//   // ~ Overrides Shared.Syslog.log().
-//   protected log(messageType: Shared.Syslog.MessageType, message: string)
-//   {
-//     const entry = Syslog.createLogEntry(messageType, message);
-
-//     logToStdout(entry);
-//     // TODO:
-//     // logToFile(entry);
-//   }
-
-//   // ~ Overrides Shared.Syslog.reportException().
-//   protected reportException(error: Error, isCaught: boolean): void
-//   {
-//     let message = error.message;
-
-//     message += `\n${Syslog.removeErrorMessage(error.stack)}`;
-
-//     this.log(Syslog.exceptionMessageType(isCaught), message);
-//   }
-
-//   // ~ Overrides Shared.Syslog.reportError().
-//   protected reportError(message: string): void
-//   {
-//     const stackTrace = Shared.Syslog.createTrimmedStackTrace(ERROR);
-//     const errorMsg = `${message}\n${stackTrace}`;
-
-//     this.log("[ERROR]", errorMsg);
-//   }
-//   */
-// }
 
 // ----------------- Auxiliary Functions ---------------------
 

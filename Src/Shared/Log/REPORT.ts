@@ -41,7 +41,7 @@ export function REPORT(error: Error, catchMessage?: string): void
     ERROR(`'error' parameter passed to function REPORT() isn't`
       + ` an istance of Error object. Someone probably incorrectly`
       + ` used 'throw "message" instead of 'throw Error("message")'.`
-      + ` Fix it so the stack trace can show where the error occured`
+      + ` Fix it so the stack trace shows where the error occured`
       + ` rather than where it has been caught`);
 
     exception = new Error(`${String(error)}`);
