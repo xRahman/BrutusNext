@@ -128,66 +128,66 @@
       // Disable the base rule as it can report incorrect errors.
       "indent": "off",
       // Enforce consistent indentation.
-      // (Can't use it now because indetation of function return type
+      // (Can't use this now because some indetation rules we use
       //  cannot be configured.)
-      "@typescript-eslint/indent":// "off",
-      [
-        "error",
-        // Indent with 2 spaces.
-        2,
-        {
-          // Enforces indentation level for case clauses in switch statements.
-          "SwitchCase": 1,
-          // Enforces indentation level for 'var', 'let' and 'const'
-          // declarators.
-          // (Each variable needs to have it's own declarator so indenting
-          //  is not allowed.)
-          "VariableDeclarator": "off",
-          // Enforces indentation level for file-level IIFEs.
-          "outerIIFEBody": 1,
-          // Enforces indentation level for multi-line property chains.
-          "MemberExpression": 1,
-          // Enforces indentation level for parameters in a function
-          // declaration.
-          "FunctionDeclaration":
-          {
-            "parameters": 1,
-            "body": 1
-          },
-          // (Disable checking of indent for function declaration
-          //  because function return type indentation cannot be
-          //  configured.)
-          "ignoredNodes": [ "FunctionDeclaration" ],
-          // Enforces indentation level for parameters in a function
-          // expression.
-          "FunctionExpression":
-          {
-            // All arguments of the expression must be aligned with the
-            // first argument.
-            "parameters": 1,
-            "body": 1
-          },
-          // Enforces indentation level for arguments in a call expression.
-          "CallExpression":
-          {
-            // All arguments of the expression must be aligned with the
-            // first argument.
-            "arguments": "first"
-          },
-          // Enforces indentation level for elements in arrays.
-          // (All arguments of the expression must be aligned with the
-          //  first argument.)
-          "ArrayExpression": "first",
-          // Enforces indentation level for properties in objects.
-          // (All arguments of the expression must be aligned with the
-          //  first argument.)
-          "ObjectExpression": "first",
-          // Enforces indentation level for import statements.
-          // (All imported members from a module should be aligned
-          //  with the first member in the list.)
-          "ImportDeclaration": "first"
-        }
-      ],
+      "@typescript-eslint/indent": "off",
+      // [
+      //   "error",
+      //   // Indent with 2 spaces.
+      //   2,
+      //   {
+      //     // Enforces indentation level for case clauses in switch statements.
+      //     "SwitchCase": 1,
+      //     // Enforces indentation level for 'var', 'let' and 'const'
+      //     // declarators.
+      //     // (Each variable needs to have it's own declarator so indenting
+      //     //  is not allowed.)
+      //     "VariableDeclarator": "off",
+      //     // Enforces indentation level for file-level IIFEs.
+      //     "outerIIFEBody": 1,
+      //     // Enforces indentation level for multi-line property chains.
+      //     "MemberExpression": 1,
+      //     // Enforces indentation level for parameters in a function
+      //     // declaration.
+      //     "FunctionDeclaration":
+      //     {
+      //       "parameters": 1,
+      //       "body": 1
+      //     },
+      //     // Enforces indentation level for parameters in a function
+      //     // expression.
+      //     "FunctionExpression":
+      //     {
+      //       // All arguments of the expression must be aligned with the
+      //       // first argument.
+      //       "parameters": 1,
+      //       "body": 1
+      //     },
+      //     // Enforces indentation level for arguments in a call expression.
+      //     "CallExpression":
+      //     {
+      //       // All arguments of the expression must be aligned with the
+      //       // first argument.
+      //       "arguments": 1
+      //     },
+      //     // Enforces indentation level for elements in arrays.
+      //     // (All arguments of the expression must be aligned with the
+      //     //  first argument.)
+      //     "ArrayExpression": 1,
+      //     // Enforces indentation level for properties in objects.
+      //     // (All arguments of the expression must be aligned with the
+      //     //  first argument.)
+      //     "ObjectExpression": 1,
+      //     // Enforces indentation level for import statements.
+      //     // (All imported members from a module should be aligned
+      //     //  with the first member in the list.)
+      //     "ImportDeclaration": 1
+      //     // (Disable checking of indent for function declaration
+      //     //  because function return type indentation cannot be
+      //     //  configured.)
+      //     // "ignoredNodes": [ "FunctionDeclaration" ]
+      //   }
+      // ],
       // Require that interface names should or should not be
       // prefixed with 'I'.
       "@typescript-eslint/interface-name-prefix": "off",
@@ -422,7 +422,7 @@
       // By default, the rule requires awaiting a returned promise in
       // a try-catch-finally block and disallows returning an awaited
       // promise in any other context.
-      "@typescript-eslint/return-await": "error",
+      "@typescript-eslint/return-await": "off",
       // Disable the base rule as it can report incorrect errors.
       "semi": "off",
       // Requires semicolons at the end of statements.
@@ -889,7 +889,7 @@
       // Enforce a maximum number of parameters in function definitions.
       "max-params": [ "error", { "max": 3 } ],
       // Enforce a maximum number of statements allowed in function blocks.
-      "max-statements": [ "error", { "max": 10 } ],
+      "max-statements": [ "error", { "max": 15 } ],
       // Enforce a maximum number of statements allowed per line.
       "max-statements-per-line": [ "error", { "max": 1 } ],
       // Enforce a particular style for multiline comments.
@@ -910,7 +910,7 @@
       // with no arguments.
       "new-parens": "error",
       // Require a newline after each call in a method chain.
-      "newline-per-chained-call": "error",
+      "newline-per-chained-call": "off",
       // Disallow bitwise operators.
       "no-bitwise": "error",
       // Disallow 'continue' statements.
@@ -960,7 +960,14 @@
       // Enforce the location of single-line statements.
       "nonblock-statement-body-position": [ "error", "below" ],
       // Enforce consistent line breaks inside braces.
-      "object-curly-newline": [ "error", { "multiline": true } ],
+      // (This rule doesn't work well for default values so leave it off.)
+      "object-curly-newline": "off",
+      // [
+      //   "error",
+      //   {
+      //     "multiline": true
+      //   }
+      // ],
       // Enforce consistent spacing inside braces.
       "object-curly-spacing": [ "error", "always" ],
       // Enforce placing object properties on separate lines.
