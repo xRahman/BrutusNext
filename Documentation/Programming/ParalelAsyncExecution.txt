@@ -1,0 +1,31 @@
+// This example demonstrates that paralel execution of async functions
+// using Promise.all() preserves order of results.
+
+function timeout(ms: number)
+{
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function processCommand(command: string)
+{
+  await timeout(Math.random() * 1000);
+  return `Processed command "${command}"`;
+}
+
+async function processCommands()
+{
+  const commands = ["a", "b", "c", "d", "e"];
+
+  const promises = [];
+
+  for (const command of commands)
+    promises.push(processCommand(command));
+
+  const results = await Promise.all(promises);
+
+  console.log(results);
+
+  return results;
+}
+
+processCommands();
