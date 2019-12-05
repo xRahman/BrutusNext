@@ -6,7 +6,7 @@
          | |_) | |  | |_| | |_| |_| \__ \ | |\  | |___ / . \  | |
          |____/|_|   \__,_|\__|\__,_|___/ |_| \_|_____/_/ \_\ |_|
 
-                           Server application
+                          Server application
 */
 
 import { REPORT } from "../Shared/Log/REPORT";

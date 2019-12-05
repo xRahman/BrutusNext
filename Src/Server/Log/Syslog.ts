@@ -1,4 +1,4 @@
-/* --- Part of BrutusNext --- */
+/* Part of BrutusNext */
 
 /*
   Server side logging.
