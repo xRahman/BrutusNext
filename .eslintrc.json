@@ -636,7 +636,10 @@
       // Disallow the use of the '__proto__' property.
       "no-proto": "error",
       // Disallow variable redeclaration.
-      "no-redeclare": "error",
+      // (This unfortunately also prevents declaring namespace with the same
+      //  name as class which is used to declare types within class so it must
+      //  be turned off).
+      "no-redeclare": "off",
       // Disallow certain properties on certain objects.
       "no-restricted-properties": "off",
       // Disallow assignment operators in 'return' statements.
