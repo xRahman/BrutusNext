@@ -1,5 +1,8 @@
 ------------------------------------------------------------------------------
 
+Eslint
+------
+
 TODO: Nastavit pravidla pro eslint [done]
 - až budou, smazat tslint.json [done]
 
@@ -36,6 +39,39 @@ TODO: Vyřešit lintování celého kódu (extension zřejme lintuje jen otevře
     },
   ale nic to nedělá.
 
-  Pravidla: https://github.com/typescript-eslint/typescript-eslint/tree/master/packages/eslint-plugin
+  
+  Rules: https://github.com/typescript-eslint/typescript-eslint/tree/master/packages/eslint-plugin
+
+  Eslint rules: https://eslint.org/docs/rules/
 
   ------------------------------------------------------------------------------
+
+  Syslog [done]
+-------------
+
+  - Přespání metody static classy zjevně funguje. Šlo by to i bez classy?
+  - Přepsat metoda přímo v interfacu nejde
+
+  Další možnosti:
+  - hodit ty přepisovací metody do objektu (a ten exportnout).
+  Ha, ono to zjevně funguje i přímo v namespacu, jen jsem ho špatně importoval.
+
+  Tzn. asi to půjde přes namepacy, ale nebudu mít protected metody...
+  - možná ze Shared/Syslog exportovat dva namespacy s tím, že v tom druhém
+  budou pomocné metody?
+
+  Ještě to udělám jinak:
+   - SyslogUtils bude samostatnej file a v Syslog.ts bude pouze funkce log()
+     a typ Syslog.MessageType
+
+  Ok, takže nakonec ještě jinak:
+  ------------------------------
+  - Shared verze Syslogu exportuje prázdné metody
+  - Client a server verze importnou shared Syslog, předefinujou tyhle
+    metody a zase exportnou Syslog.
+  - Protected metody Syslogu jsou v modulu SyslogUtils, který Syslog importuje.
+    Tím je zajištěno, že ten, kdo si importne Syslog, uvidí jen "public" metody
+    Syslogu.
+  
+
+------------------------------------------------------------------------------
