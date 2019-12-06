@@ -1,3 +1,9 @@
+TODO: Možná rozdělit typ Syslog.messageType na ok message a error message.
+
+TODO: Zavést Syslog.logError(), aby se logoval do stderr.
+- nebo možná switchovat interně podle messageType?
+  Pak by bylo potřeba zavést něco jako "[HTTPS_SERVER_ERROR]"...
+
 ------------------------------------------------------------------------------
 
 Juju mapper:
