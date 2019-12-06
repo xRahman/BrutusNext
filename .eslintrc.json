@@ -757,18 +757,11 @@
       "no-sync": "error",
 
       // Enforce linebreaks after opening and before closing array brackets.
-      "array-bracket-newline":
-      [
-        "error",
-        {
-          "multiline": true,
-          "minItems": 2
-        }
-      ],
+      "array-bracket-newline": [ "error", "consistent" ],
       // Enforce consistent spacing inside array brackets.
       "array-bracket-spacing": [ "error", "always" ],
       // Enforce line breaks after each array element.
-      "array-element-newline": [ "error", { "multiline": true } ],
+      "array-element-newline": [ "error", "consistent" ],
       // Disallow or enforce spaces inside of blocks after opening block
       // and before closing block.
       "block-spacing": [ "error", "always" ],
