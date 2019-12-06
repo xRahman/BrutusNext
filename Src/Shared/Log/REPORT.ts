@@ -28,10 +28,6 @@
 import { ERROR } from "../../Shared/Log/ERROR";
 import { SyslogUtils } from "../../Shared/Log/SyslogUtils";
 
-// Note: 'error' parameter has type 'any' because when you catch
-//   an error, typescript has no way of knowing it's type. You still
-//   need to throw instances of Error object, however - you will get
-//   an error message if you don't.
 export function REPORT(error: Error, catchMessage?: string): void
 {
   let exception = error;

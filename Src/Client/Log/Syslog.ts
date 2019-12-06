@@ -6,13 +6,11 @@
   Notes:
     Here we redefine logging functions in Shared/Log/Syslog
     and Shared/Log/SyslogUtils modules and then reexport
-    those modified modules.
-      This trick allows server-side logging functions to
-    be called from shared code.
+    those modified modules. This allows server-side logging
+    functions to be called from shared code.
 */
 
 import { ERROR } from "../../Shared/Log/ERROR";
-
 import { Syslog } from "../../Shared/Log/Syslog";
 import { SyslogUtils } from "../../Shared/Log/SyslogUtils";
 

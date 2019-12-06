@@ -42,7 +42,7 @@ async function test(): Promise<void>
 
 async function startBrutusNextServer(): Promise<void>
 {
-  Syslog.log("[INFO]", "Starting BrutusNext server");
+  Syslog.log("[SERVER]", "Starting BrutusNext server");
 
   try
   {
@@ -64,7 +64,7 @@ async function startBrutusNextServer(): Promise<void>
 
   // await Engine.loop();
 
-  Syslog.log("[INFO]", "BrutusNext server has stopped normally");
+  Syslog.log("[SERVER]", "BrutusNext server has stopped normally");
 }
 
 // The .catch() clause is not necessary, it is here only to

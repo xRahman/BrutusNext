@@ -7,7 +7,7 @@
     Logging is done differently on the client and on
     the server but logging function need to be useable
     from shared code. To make it possible, they need
-    to be overwritten in both Client/Log/SyslogUtils
+    to be overridden in both Client/Log/SyslogUtils
     andServer/Log/SyslogUtils.
 */
 
@@ -17,7 +17,7 @@ export namespace SyslogUtils
 {
   export const SHOULD_NEVER_BE_CALLED = "This"
     + " method should never be called. Make sure that"
-    + " it is overwritten in both Server/Log/Syslog"
+    + " it is overridden in both Server/Log/Syslog"
     + " and Client/Log/Syslog and that client or server"
     + " Syslog is imported before shared Syslog";
 
@@ -49,10 +49,10 @@ export namespace SyslogUtils
       return "Stack trace is not available.";
 
     // Stack trace in Error object starts with error message
-    // prefixed with 'Error' which would be confusing in our log.
+    // prefixed with 'Error' which would be confusing in the log.
     //   To remove it, we trim lines not starting with '    at '.
-    // That's because error message can be multi-line so removing
-    // just 1 line would not always be enough.
+    // (Error message can be multi-line so removing just 1 line
+    //  would not always be enough.)
     return removeLinesWithoutPrefix(stackTrace, "    at ");
   }
 
@@ -85,12 +85,12 @@ export namespace SyslogUtils
 
 // ----------------- Auxiliary Functions ---------------------
 
-// Removes lines from the start of the string 'str' that don't
-// start with 'prefix'. Lines need to be separated by '\n'.
+// Removes lines from the start of multiline string 'str' that
+// don't start with 'prefix'. Lines need to be separated by '\n'.
 function removeLinesWithoutPrefix(str: string, prefix: string): string
 {
-  // Break 'str' into an array of lines.
-  const lines = str.split("\n");
+  const LINE_BREAK = "\n";
+  const lines = str.split(LINE_BREAK);
 
   while (lines[0].startsWith(prefix))
   {
@@ -98,5 +98,5 @@ function removeLinesWithoutPrefix(str: string, prefix: string): string
   }
 
   // Join 'lines' back to a single multi-line string.
-  return lines.join("\n");
+  return lines.join(LINE_BREAK);
 }

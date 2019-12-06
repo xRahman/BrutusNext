@@ -10,7 +10,7 @@
 
   Usage example:
 
-    import {ERROR} from 'Shared/Log/ERROR';
+    import { ERROR } from 'Shared/Log/ERROR';
 
     if (damage > MAX_DAMAGE)
     {

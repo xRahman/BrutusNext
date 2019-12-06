@@ -6,9 +6,8 @@
   Notes:
     We redefine logging functions in Shared/Log/Syslog
     and Shared/Log/SyslogUtils modules and then reexport
-    those modified modules.
-      This trick allows server-side logging functions to
-    be called from shared code.
+    those modified modules. This allows server-side
+    logging functions to be called from shared code.
 */
 
 import { ERROR } from "../../Shared/Log/ERROR";
@@ -26,7 +25,7 @@ Syslog.log = (messageType: Syslog.MessageType, message: string) =>
 
 Syslog.reportUncaughtException = (error: Error) =>
 {
-  Syslog.log("[UNCAUGHT_EXCEPTION]", getStackTrace(error));
+  logError("[UNCAUGHT_EXCEPTION]", getStackTrace(error));
 };
 
 SyslogUtils.reportError = (message: string) =>
@@ -35,26 +34,40 @@ SyslogUtils.reportError = (message: string) =>
   // function 'ERROR' so the user sees where the error
   // originated rather than where the stack trace has been
   // captured.
-  const errorMsg = `${message}\n${SyslogUtils.getTrimmedStackTrace(ERROR)}`;
+  const stackTrace = SyslogUtils.getTrimmedStackTrace(ERROR);
 
-  Syslog.log("[ERROR]", errorMsg);
+  logError("[ERROR]", `${message}\n${stackTrace}`);
 };
 
 SyslogUtils.reportException = (error: Error) =>
 {
-  Syslog.log("[EXCEPTION]", getStackTrace(error));
+  logError("[EXCEPTION]", getStackTrace(error));
 };
 
 export { Syslog, SyslogUtils };
 
 // ----------------- Auxiliary Functions ---------------------
 
+function getStackTrace(error: Error): string
+{
+  return `${error.message}\n${SyslogUtils.removeErrorMessage(error.stack)}`;
+}
+
+function logError(messageType: Syslog.MessageType, message: string): void
+{
+  const entry = SyslogUtils.createLogEntry(messageType, message);
+
+  logToStderr(entry);
+  /// TODO:
+  // logToErrorFile(entry);
+}
+
 function logToStdout(entry: string): void
 {
   console.log(entry);
 }
 
-function getStackTrace(error: Error): string
+function logToStderr(entry: string): void
 {
-  return `${error.message}\n${SyslogUtils.removeErrorMessage(error.stack)}`;
+  console.error(entry);
 }

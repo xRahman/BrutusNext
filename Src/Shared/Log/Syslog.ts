@@ -5,9 +5,9 @@
 
   Notes:
     Logging is done differently on the client and on the
-    server but Syslog.log() needs to be useable from shared
-    code. To make it possible, Syslog.log functions are
-    overwritten in both Client/Log/Syslog and Server/Log/Syslog.
+    server but it needs to be useable from shared code.
+    To make it possible, Syslog functions are overriden
+    in both Client/Log/Syslog and Server/Log/Syslog.
 */
 
 import { SyslogUtils } from "../../Shared/Log/SyslogUtils";
@@ -22,8 +22,10 @@ export namespace Syslog
   | "[UNCAUGHT_EXCEPTION]"
     // Sent when ERROR() is called.
   | "[ERROR]"
-    // Something is ok (game is successfuly loaded]" | etc.).
-  | "[INFO]"
+    // Client messages.
+  | "[CLIENT]"
+    // Server messages.
+  | "[SERVER]"
     // Messages from http server.
   | "[HTTP_SERVER]"
     // Messages from https server.

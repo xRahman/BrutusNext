@@ -16,13 +16,13 @@
 // import { Connection } from "../Client/Net/Connection";
 
 /// HACK: Neregistrovala se mi root prototype entita.
-import "../Client/Game/Zone";
-import "../Client/Asset/TextureAsset";
-import "../Client/Asset/TextureAtlasAsset";
+// import "../Client/Game/Zone";
+// import "../Client/Asset/TextureAsset";
+// import "../Client/Asset/TextureAtlasAsset";
 
 // async function start()
 // {
-//   Syslog.log("[INFO]", "Starting Kosmud client...");
+//   Syslog.log("[CLIENT]", "Starting Kosmud client...");
 
 //   try
 //   {
