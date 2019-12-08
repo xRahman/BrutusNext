@@ -11,7 +11,7 @@
 
 import { REPORT } from "../Shared/Log/REPORT";
 import { Syslog } from "../Server/Log/Syslog";
-// import { HttpsServer } from "../Server/Net/HttpsServer";
+import { HttpsServer } from "../Server/Net/HttpsServer";
 // import { Game } from "../Server/Game/Game";
 // import { Engine } from "../Server/Engine/Engine";
 
@@ -23,34 +23,13 @@ export const timeOfBoot = new Date();
 import * as SourceMapSupport from "source-map-support";
 SourceMapSupport.install();
 
-async function test(): Promise<void>
-{
-  const promise = new Promise
-  (
-    (resolve, reject) =>
-    {
-      setTimeout
-      (
-        () => { resolve("done!"); },
-        1000
-      );
-    }
-  );
-
-  await promise;
-}
-
 async function startBrutusNextServer(): Promise<void>
 {
   Syslog.log("[SERVER]", "Starting BrutusNext server");
 
   try
   {
-    // TODO:
-    console.log("Launching await test");
-    await test();
-    console.log("Test passed");
-    // await HttpsServer.startServers();
+    await HttpsServer.startServers();
     // await Game.load();
     /// Tohle si tu nechám kvůli budoucí teminologii. Na klientu
     /// by to mělo bejt stejně.
@@ -67,8 +46,6 @@ async function startBrutusNextServer(): Promise<void>
   Syslog.log("[SERVER]", "BrutusNext server has stopped normally");
 }
 
-// The .catch() clause is not necessary, it is here only to
-// satisfy eslint rule @typescript-eslint/no-floating-promises.
 startBrutusNextServer().catch
 (
   (reason: any) =>

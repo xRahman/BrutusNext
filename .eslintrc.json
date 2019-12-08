@@ -711,14 +711,15 @@
       "no-restricted-globals": "off",
       // Disallow variable declarations from shadowing variables declared
       // in the outer scope.
-      "no-shadow":
-      [
-        "error",
-        {
-          "builtinGlobals": true,
-          "hoist": "functions"
-        }
-      ],
+      // (Variables like 'WebSocket' need to be shadowed so leave this off.)
+      "no-shadow": "off",
+      // [
+      //   "error",
+      //   {
+      //     "builtinGlobals": true,
+      //     "hoist": "functions"
+      //   }
+      // ],
       // Disallow identifiers from shadowing restricted names.
       "no-shadow-restricted-names": "error",
       // Disallow the use of undeclared variables unless mentioned in
@@ -810,7 +811,7 @@
       // Enforce minimum and maximum identifier lengths.
       // (I'm probably guilty as charged with too long identifiers,
       //  so let's limit this somewhat.)
-      "id-length": [ "error", { "min": 1, "max": 25 } ],
+      "id-length": [ "error", { "min": 1, "max": 30 } ],
       // Require identifiers to match a specified regular expression.
       "id-match": "off",
       // Enforce the location of arrow function bodies.
