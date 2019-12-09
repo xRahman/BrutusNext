@@ -4,29 +4,25 @@
   Filesystem I/O operations.
 */
 
-import "../../Shared/Utils/String";
 import { Types } from "../../Shared/Utils/Types";
 import { SavingQueue } from "../../Server/FileSystem/SavingQueue";
 
-// Built-in node.js modules.
-import * as FS from "fs-extra";
+// Node.js modules.
+import * as NodePath from "path";
 
 // 3rd party modules.
-/// Module is removed for now but function isEmpty() used
-/// to use it so it might be needed again.
-// let extfs = require('extfs');
+import * as FS from "fs-extra";
 
-const UTF8 = "utf8";
-const BINARY = "binary";
-// const JSON = "json";
+type FileEncoding = "utf8" | "binary";
 
-// Most Unix filesystems have this limit on file name length.
+// Most Unix filesystems have limit of 255 bytes on file name length.
 const MAX_FILENAME_LENGTH_BYTES = 255;
 
+// This map is used to encode strings as useable file names.
+// '~' is used as escape character.
 const RESERVED_FILENAME_CHARACTERS = new Map
 (
   [
-    // Escape character.
     [ "~", "~~" ],
     [ "<", "~LT~" ],
     [ ">", "~GT~" ],
@@ -40,6 +36,8 @@ const RESERVED_FILENAME_CHARACTERS = new Map
   ]
 );
 
+// This map is used to encode strings as useable file names.
+// '~' is used as escape character.
 const RESERVED_FILENAMES = new Map
 (
   [
@@ -60,38 +58,62 @@ export namespace FileSystem
 {
   // ---------------- Public methods --------------------
 
-  // -> Returns true if 'str' is a valid filename
-  //    on both Windows and Linux.
-  export function isValidFileName(str: string)
+  // Checks if 'fileName' is valid both on Windows and Linux.
+  export function validateFileName
+  (
+    fileName: string
+  )
+  : "File name is valid" | { problem: string }
   {
-    if (str.length === 0 || str.length > 255)
-      return false;
+    if (fileName.length === 0)
+    {
+      return { problem: "File name is empty" };
+    }
+
+    if (getByteLength(fileName) > MAX_FILENAME_LENGTH_BYTES)
+    {
+      const problem = `File name exceeds ${MAX_FILENAME_LENGTH_BYTES} bytes`;
+
+      return { problem };
+    }
 
     // Disallow characters < > : " / \ | ? *
-    if ((/[<>:"\/\\|?*\x00-\x1F]/g).test(str))
-      return false;
+    if ((/[<>:"/\\|?*\x00-\x1F]/ug).test(fileName))
+    {
+      const problem = `File name contains invalid charcters(s)`
+        + ` (< > : " / \\ | ? *)`;
+
+        return { problem };
+    }
 
     // Disallow names reserved on Windows.
-    if ((/^(con|prn|aux|nul|com[0-9]|lpt[0-9])$/i).test(str))
-      return false;
+    if ((/^(?<suffix>con|prn|aux|nul|com[0-9]|lpt[0-9])$/ui).test(fileName))
+    {
+      return { problem: "File name is reserved on Windows" };
+    }
 
     // Disallow '.' and '..'.
-    if (/^\.\.?$/.test(str))
-      return false;
+    if ((/^\.\.?$/u).test(fileName))
+    {
+      return { problem: "'.' and '..' cannot be used as file name" };
+    }
 
-    return true;
+    return "File name is valid";
   }
 
   // ! Throws exception on error.
-  export async function readExistingFile(path: string): Promise<string>
+  export async function readExistingFile
+  (
+    path: string,
+    encoding: FileEncoding = "utf8"
+  )
+  : Promise<string>
   {
     // ! Throws exception on error.
-    const readResult = await readFile(path, true);
+    const readResult = await readFile(path, encoding);
 
     if (readResult === "File doesn't exist")
-    {
       throw Error(`File "${path}" doesn't exist`);
-    }
 
     return readResult.data;
   }
@@ -100,26 +122,21 @@ export namespace FileSystem
   export async function readFile
   (
     path: string,
-    binary = false
+    encoding: FileEncoding = "utf8"
   )
-  // Return value is {} because 'string' would conflict with other value(s).
   : Promise<{ data: string } | "File doesn't exist">
   {
     // ! Throws exception on error.
-    checkPathValidity(path);
-
-    let data = "";
-    const encoding = binary ? BINARY : UTF8;
+    mustBeRelative(path);
 
     try
     {
-      data = await FS.readFile(path, encoding);
+      const data = await FS.readFile(path, encoding);
+
+      return { data };
     }
     catch (error)
     {
-      if (!error)
-        throw Error("Invalid error object");
-
       const errorCode = getErrorCode(error);
 
       if (errorCode === "ENOENT")
@@ -127,33 +144,32 @@ export namespace FileSystem
 
       throw Error(`Unable to read file '${path}': ${errorCode}`);
     }
-
-    return { data };
   }
 
   // ! Throws exception on error.
   export async function writeFile
   (
-    directory: string,
-    fileName: string,
-    data: string
+    path: string,
+    data: string,
+    encoding: FileEncoding = "utf8"
   )
   : Promise<void>
   {
-    const path = composePath(directory, fileName);
+    const fileName = NodePath.basename(path);
+    const validationResult = validateFileName(fileName);
 
-    if (!isValidFileName(fileName))
+    if (validationResult !== "File name is valid")
     {
-      throw Error(`Failed to write file because path "${path}"`
-        + ` doesn't contain a valid file name`);
+      throw Error(`Failed to write file because "${fileName}"`
+        + ` is not a valid file name (${validationResult.problem})`);
     }
 
-    // Following code is addresing feature of node.js file saving
+    // Following code is addressing feature of node.js file saving
     // functions which says that we must not attempt saving the same
     // file until any previous saving finishes (otherwise it is not
     // guaranteed that file will be saved correctly).
-    //   To ensure this, we register all saving to each file and queue
-    // saving requests if necessary.
+    //   To ensure this, we register saving requests to each file and
+    // queue them if necessary.
     const result = requestSaving(path);
 
     if (result !== "Saving is possible right now")
@@ -164,7 +180,7 @@ export namespace FileSystem
     // Now it's our turn so we can save ourselves.
     try
     {
-      await write(path, data);
+      await writeData(path, data, encoding);
     }
     catch (error)
     {
@@ -183,7 +199,7 @@ export namespace FileSystem
   export async function deleteFile(path: string): Promise<void>
   {
     // ! Throws exception on error.
-    checkPathValidity(path);
+    mustBeRelative(path);
 
     try
     {
@@ -191,6 +207,9 @@ export namespace FileSystem
     }
     catch (error)
     {
+      // TODO: Je k něčemu error code?
+      // Neměl by se případně překládat na string?
+      // viz https://github.com/nodejs/node-v0.x-archive/blob/3d3d48d4b78d48e9b002660fc045ba8bb4a96af2/deps/uv/include/uv.h#L65
       const errorCode = getErrorCode(error);
 
       throw Error(`Failed to delete file "${path}": ${errorCode}`);
@@ -201,16 +220,16 @@ export namespace FileSystem
   export async function exists(path: string): Promise<boolean>
   {
     // ! Throws exception on error.
-    checkPathValidity(path);
+    mustBeRelative(path);
 
     return FS.pathExists(path);
   }
 
   // ! Throws exception on error.
-  export async function ensureDirectoryExists(directory: string): void
+  export async function ensureDirectoryExists(directory: string): Promise<void>
   {
     // ! Throws exception on error.
-    checkPathValidity(directory);
+    mustBeRelative(directory);
 
     try
     {
@@ -225,20 +244,6 @@ export namespace FileSystem
     }
   }
 
-  /// This function used 'extfs' module which I removed as (almost)
-  /// unnecessary. If this function is needed, it needs to be implemented
-  /// differently or 'extfs' needs to be added again.
-  // // ! Throws exception on error.
-  // //  Directory is empty if it doesn't exist or there are no files in it.
-  // //  File is empty if it doesn't exist or it has zero size.
-  // public static async isEmpty(path: string): Promise<boolean>
-  // {
-  //   // ! Throws exception on error.
-  //   checkPathValidity(path);
-
-  //   return await FS.isEmpty(path);
-  // }
-
   // ! Throws exception on error.
   // -> Returns array of file names in directory, including
   //    subdirectories, excluding '.' and '..'.
@@ -249,7 +254,7 @@ export namespace FileSystem
   : Promise<Array<string>>
   {
     // ! Throws exception on error.
-    checkPathValidity(path);
+    mustBeRelative(path);
 
     try
     {
@@ -268,7 +273,7 @@ export namespace FileSystem
   export async function isDirectory(path: string): Promise<boolean>
   {
     // ! Throws exception on error.
-    checkPathValidity(path);
+    mustBeRelative(path);
 
     // ! Throws exception on error.
     return (await statFile(path)).isDirectory();
@@ -278,7 +283,7 @@ export namespace FileSystem
   export async function isFile(path: string): Promise<boolean>
   {
     // ! Throws exception on error.
-    checkPathValidity(path);
+    mustBeRelative(path);
 
     // ! Throws exception on error.
     return (await statFile(path)).isFile();
@@ -380,44 +385,39 @@ function finishSaving(path: string): void
 }
 
 // ! Throws exception on error.
-function checkPathValidity(path: string)
+function mustBeRelative(path: string): void
 {
-  if (!isRelative(path))
+  if (!path.startsWith("./"))
   {
     throw Error(`File path "${path}" is not relative.`
-    + ` Ensure that it starts with './'`);
+    + ` Make sure that it starts with './'`);
   }
 
-  if (containsDoubleDot(path))
+  // Double dot can be used to traverse out of working directory
+  // so we need to prevent it as well.
+  if (path.includes(".."))
   {
     throw Error(`File path "${path}" is not valid.`
     + ` Ensure that it doesn't contain '..'`);
   }
 }
 
-function isRelative(path: string): boolean
-{
-  if (path.substr(0, 2) !== "./")
-    return false;
-
-  return true;
-}
-
-function containsDoubleDot(path: string): boolean
-{
-  return path.indexOf("..") !== -1;
-}
-
 // ! Throws exception on error.
-async function write(path: string, data: string)
+async function writeData
+(
+  path: string,
+  data: string,
+  encoding: FileEncoding = "utf8"
+)
+: Promise<void>
 {
   // ! Throws exception on error.
-  checkPathValidity(path);
+  mustBeRelative(path);
 
   try
   {
     // 'FS.outputFile()' creates the directory if it doesn't exist.
-    await FS.outputFile(path, data, UTF8);
+    await FS.outputFile(path, data, "utf8");
   }
   catch (error)
   {
@@ -432,7 +432,7 @@ async function write(path: string, data: string)
 // (This only makes sense if you also store resolve callback
 //  of the promise so you can call it to finish this awaiter.
 //  See SavingQueue.addRequest() for example how is it done.)
-async function saveAwaiter(promise: Promise<void>)
+async function saveAwaiter(promise: Promise<void>): Promise<void>
 {
   return promise;
 }
@@ -441,7 +441,7 @@ async function saveAwaiter(promise: Promise<void>)
 async function statFile(path: string): Promise<FS.Stats>
 {
   // ! Throws exception on error.
-  checkPathValidity(path);
+  mustBeRelative(path);
 
   try
   {
@@ -456,13 +456,13 @@ async function statFile(path: string): Promise<FS.Stats>
 }
 
 // ! Throws exception on error.
-function getByteLength(str: string)
+function getByteLength(str: string): number
 {
   // This should work on node.js.
   if (typeof (Buffer as any) === "undefined")
   {
-    throw Error("Unable to compute byte length of"
-    + " a string because 'Buffer' object is supported.");
+    throw Error(`Unable to compute byte length of string`
+    + ` "${str}" because 'Buffer' object is supported`);
   }
 
   return Buffer.byteLength(str, "utf8");
@@ -471,7 +471,7 @@ function getByteLength(str: string)
 // ! Throws exception on error.
 // -> Returns string encoded to be safely used as filename
 //    and truncated to 'maxByteLength' bytes of length.
-function truncateByteLength(str: string, maxByteLength: number)
+function truncateByteLength(str: string, maxByteLength: number): string
 {
   if (maxByteLength < 1)
   {
@@ -509,7 +509,7 @@ function truncateByteLength(str: string, maxByteLength: number)
   return encodedStr;
 }
 
-function replaceControlCharacter(str: string, charCode: number)
+function replaceControlCharacter(str: string, charCode: number): string
 {
   // Create string from integer charcode value.
   const key = String.fromCharCode(charCode);
@@ -518,19 +518,19 @@ function replaceControlCharacter(str: string, charCode: number)
   return str.split(key).join(value);
 }
 
-function escapeReservedCharacters(str: string)
+function escapeReservedCharacters(str: string): string
 {
   let result = str;
 
-  for (const [key, value] of RESERVED_FILENAME_CHARACTERS.entries())
+  for (const [ key, value ] of RESERVED_FILENAME_CHARACTERS.entries())
     result = result.split(key).join(value);
 
   return result;
 }
 
-function escapeReservedFilenames(str: string)
+function escapeReservedFilenames(str: string): string
 {
-  for (const [key, value] of RESERVED_FILENAMES.entries())
+  for (const [ key, value ] of RESERVED_FILENAMES.entries())
   {
     if (str === key)
       return value;
@@ -550,7 +550,7 @@ function escapeReservedFilenames(str: string)
   return str;
 }
 
-function escapeControlCharacters(str: string)
+function escapeControlCharacters(str: string): string
 {
   let result = str;
 
@@ -565,15 +565,15 @@ function escapeControlCharacters(str: string)
   return result;
 }
 
-function escapeTrailingCharacter(str: string, character: string)
+function escapeTrailingCharacter(str: string, character: string): string
 {
-  if (str.slice(-1) === character)
+  if (str.endsWith(character))
     return `${str.slice(0, -1)}~${character}~`;
 
   return str;
 }
 
-function encodeStringAsFileName(str: string)
+function encodeStringAsFileName(str: string): string
 {
   let result = str.toLowerCase();
 
@@ -587,15 +587,16 @@ function encodeStringAsFileName(str: string)
 }
 
 // ! Throws exception on error.
-function getErrorCode(error: any)
+function getErrorCode(error: Error): string
 {
-  if (!error)
-    throw Error("Invalid error object");
-
-  const code = (error as NodeJS.ErrnoException).code;
+  const { code } = error as NodeJS.ErrnoException;
 
   if (code === undefined)
-    throw Error("Missing 'code' property on error object");
+  {
+    throw Error("Missing 'code' property on error object."
+      + " It probably means that 'error' is not a Node.js"
+      + " error object. Maybe you are not runing under Node.js?");
+  }
 
   return code;
 }
