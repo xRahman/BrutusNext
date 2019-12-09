@@ -886,7 +886,7 @@
       // Enforce a maximum depth that callbacks can be nested.
       "max-nested-callbacks": [ "error", { "max": 1 } ],
       // Enforce a maximum number of parameters in function definitions.
-      "max-params": [ "error", { "max": 3 } ],
+      "max-params": [ "error", { "max": 5 } ],
       // Enforce a maximum number of statements allowed in function blocks.
       "max-statements": [ "error", { "max": 15 } ],
       // Enforce a maximum number of statements allowed per line.
