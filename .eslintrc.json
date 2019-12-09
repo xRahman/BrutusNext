@@ -471,7 +471,7 @@
       // Disallow constant expressions in conditions.
       "no-constant-condition": "error",
       // Disallow control characters in regular expressions.
-      "no-control-regex": "error",
+      "no-control-regex": "off",
       // Disallow the use of 'debugger'.
       "no-debugger": "error",
       // Disallow duplicate arguments in 'function' definitions.
