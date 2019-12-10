@@ -14,9 +14,7 @@ export class SavingQueue
 
   // ---------------- Public methods --------------------
 
-  // Whoever initiated saving request needs to wait using
-  // 'await saveAwaiter(promise)'. See FileSystem.saveAwaiter().
-  public async addRequest(): Promise<void>
+  public async addNewRequest(): Promise<void>
   {
     return new Promise<void>
     (
@@ -24,7 +22,7 @@ export class SavingQueue
     );
   }
 
-  public getNextRequest()
+  public pullNextRequest()
   : { startSaving: Types.ResolveFunction<void> } | "Queue is empty"
   {
     const nextRequestCallback = this.requestQueue.shift();

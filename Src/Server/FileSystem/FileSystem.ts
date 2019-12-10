@@ -169,32 +169,23 @@ export namespace FileSystem
     // functions which says that we must not attempt saving the same
     // file until any previous saving finishes (otherwise it is not
     // guaranteed that file will be saved correctly).
-    //   To ensure this, we register saving requests to each file and
-    // queue them if necessary.
-    const result = requestSaving(path);
+    //   To ensure this, we queue saving requests to each file and
+    // process them one by one.
+    const ourTurn = queueSavingRequest(path);
 
-    if (result !== "Saving is possible right now")
-    {
-      // Wait for our turn.
-      await saveAwaiter(result);
-    }
+    await ourTurn;
 
-    // Now it's our turn so we can save ourselves.
     try
     {
+      // ! Throws exception on error.
       await writeData(path, data, encoding);
+      startNextSaving(path);
     }
     catch (error)
     {
-      // We must finish saving even if error occured
-      // to not to block the saving queue.
-      finishSaving(path);
+      startNextSaving(path);
       throw error;
     }
-
-    // Remove the lock and resolve saveAwaiter()
-    // of whoever is waiting after us.
-    finishSaving(path);
   }
 
   // ! Throws exception on error.
@@ -348,26 +339,24 @@ export namespace FileSystem
 
 // ----------------- Auxiliary Functions ---------------------
 
-// If a promise is returned, whoever is requesting saving
-// must wait using saveAwaiter(promise).
-function requestSaving
-(
-  path: string
-)
-: Promise<void> | "Saving is possible right now"
+async function queueSavingRequest(path: string): Promise<void>
 {
   const queue = savingQueues.get(path);
 
-  if (queue !== undefined)
-    return queue.addRequest();
+  if (queue === undefined)
+  {
+    savingQueues.set(path, new SavingQueue());
 
-  savingQueues.set(path, new SavingQueue());
+    // If the queue was empty, saving is possible right now
+    // so we return an already resolved promise.
+    return Promise.resolve();
+  }
 
-  return "Saving is possible right now";
+  return queue.addNewRequest();
 }
 
 // ! Throws exception on error.
-function finishSaving(path: string): void
+function startNextSaving(path: string): void
 {
   const queue = savingQueues.get(path);
 
@@ -377,7 +366,7 @@ function finishSaving(path: string): void
       + ` which is not registered as being saved`);
   }
 
-  const nextRequest = queue.getNextRequest();
+  const nextRequest = queue.pullNextRequest();
 
   if (nextRequest === "Queue is empty")
   {
@@ -427,16 +416,6 @@ async function writeData
     throw Error (`Failed to save file "${path}": ${String(error.message)}.`
         + ` Error code: ${errorCode}`);
   }
-}
-
-// This is just a generic async function that will finish
-// when 'promise' parameter gets resolved.
-// (This only makes sense if you also store resolve callback
-//  of the promise so you can call it to finish this awaiter.
-//  See SavingQueue.addRequest() for example how is it done.)
-async function saveAwaiter(promise: Promise<void>): Promise<void>
-{
-  return promise;
 }
 
 // ! Throws exception on error.
