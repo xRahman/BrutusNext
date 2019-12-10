@@ -1,10 +1,8 @@
 /* Part of BrutusNext */
 
-// This is the master eslint config file that contains actual
-// linting rules used for whole project. There must, however,
-// be separate .eslintrc.json files in both ./Src/Server and
-// ./Src/Clint to specify paths to respective tsconfig.json
-// files.
+/*
+  Eslint config file.
+*/
 {
   "env":
   {
