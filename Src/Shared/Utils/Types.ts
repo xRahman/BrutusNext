@@ -1,13 +1,13 @@
-/*
-  Part of Kosmud
+/* Part of BrutusNext */
 
-  Types and associated utility functions.
+/*
+  Types and type-associated utility functions.
 */
 
-import { Serializable } from "../../Shared/Class/Serializable";
+// import { Serializable } from "../../Shared/Class/Serializable";
 
-// Use 'isomorphic-ws' to use the same code on both client and server.
-import * as WebSocket from "isomorphic-ws";
+// // Use 'isomorphic-ws' to use the same code on both client and server.
+// import * as WebSocket from "isomorphic-ws";
 
 export namespace Types
 {

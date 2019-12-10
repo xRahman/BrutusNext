@@ -25,10 +25,10 @@ export class WebSocketServer
 
   // ---------------- Public methods --------------------
 
-  public isOpen() { return this.open; }
+  public isOpen(): boolean { return this.open; }
 
   // ! Throws exception on error.
-  public startInsideHttpsServer(httpsServer: https.Server)
+  public startInsideHttpsServer(httpsServer: https.Server): void
   {
     if (this.webSocketServer !== "Not running")
     {
@@ -36,16 +36,16 @@ export class WebSocketServer
         + " because it's already running");
     }
 
-    Syslog.log("[INFO]", "Starting websocket server");
+    Syslog.log("[WEBSOCKET_SERVER]", "Starting websocket server");
 
     this.webSocketServer = new WebSocket.Server({ server: httpsServer });
 
     this.webSocketServer.on
     (
       "connection",
-      async (socket, request) =>
+      (socket, request) =>
       {
-        await this.onNewConnection(socket, request);
+        this.onNewConnection(socket, request);
       }
     );
 
@@ -62,14 +62,15 @@ export class WebSocketServer
 
   // ---------------- Event handlers --------------------
 
-  private async onNewConnection
+  private onNewConnection
   (
     webSocket: WebSocket,
     request: http.IncomingMessage
   )
+  : void
   {
     const ip = parseAddress(request);
-    const url = request.url;
+    const { url } = request;
 
     // Request.url is only valid for requests obtained from http.Server
     // (which should be our case).
@@ -102,7 +103,7 @@ export class WebSocketServer
 
 // ----------------- Auxiliary Functions ---------------------
 
-function parseAddress(request: http.IncomingMessage)
+function parseAddress(request: http.IncomingMessage): string
 {
   if (request.connection.remoteAddress === undefined)
     return "Unknown ip address";
@@ -110,22 +111,19 @@ function parseAddress(request: http.IncomingMessage)
   return request.connection.remoteAddress;
 }
 
-function acceptConnection(webSocket: WebSocket, ip: string, url: string)
+function acceptConnection(webSocket: WebSocket, ip: string, url: string): void
 {
-  let connection: Connection;
-
   try
   {
-    connection = Connections.newConnection(webSocket, ip, url);
+    const connection = Connections.newConnection(webSocket, ip, url);
+
+    Syslog.log("[WEBSOCKET_SERVER]", `Accepting`
+      + ` connection ${connection.getOrigin()}`);
   }
   catch (error)
   {
     REPORT(error, "Failed to accept connection");
-    return;
   }
-
-  Syslog.log("[WEBSOCKET_SERVER]", `Accepting`
-    + ` connection ${connection.getOrigin()}`);
 }
 
 function denyConnection
