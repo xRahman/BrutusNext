@@ -24,14 +24,14 @@ export class SavingQueue
     );
   }
 
-  // Removes and returns one item from the start of the queue.
-  public pollRequest(): Types.ResolveFunction<void> | "Queue is empty"
+  public getNextRequest()
+  : { startSaving: Types.ResolveFunction<void> } | "Queue is empty"
   {
-    const firstElement = this.requestQueue.shift();
+    const nextRequestCallback = this.requestQueue.shift();
 
-    if (firstElement === undefined)
+    if (nextRequestCallback === undefined)
       return "Queue is empty";
 
-    return firstElement;
+    return { startSaving: nextRequestCallback };
   }
 }

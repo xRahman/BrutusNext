@@ -4,7 +4,6 @@
   Filesystem I/O operations.
 */
 
-import { Types } from "../../Shared/Utils/Types";
 import { SavingQueue } from "../../Server/FileSystem/SavingQueue";
 
 // Node.js modules.
@@ -70,7 +69,7 @@ export namespace FileSystem
       return { problem: "File name is empty" };
     }
 
-    if (getByteLength(fileName) > MAX_FILENAME_LENGTH_BYTES)
+    if (byteLengthOf(fileName) > MAX_FILENAME_LENGTH_BYTES)
     {
       const problem = `File name exceeds ${MAX_FILENAME_LENGTH_BYTES} bytes`;
 
@@ -137,12 +136,14 @@ export namespace FileSystem
     }
     catch (error)
     {
+      // ! Throws exception on error.
       const errorCode = getErrorCode(error);
 
       if (errorCode === "ENOENT")
         return "File doesn't exist";
 
-      throw Error(`Unable to read file '${path}': ${errorCode}`);
+      throw Error(`Unable to read file '${path}': ${String(error.message)}.`
+        + ` Error code: ${errorCode}`);
     }
   }
 
@@ -174,6 +175,7 @@ export namespace FileSystem
 
     if (result !== "Saving is possible right now")
     {
+      // Wait for our turn.
       await saveAwaiter(result);
     }
 
@@ -207,12 +209,11 @@ export namespace FileSystem
     }
     catch (error)
     {
-      // TODO: Je k něčemu error code?
-      // Neměl by se případně překládat na string?
-      // viz https://github.com/nodejs/node-v0.x-archive/blob/3d3d48d4b78d48e9b002660fc045ba8bb4a96af2/deps/uv/include/uv.h#L65
+      // ! Throws exception on error.
       const errorCode = getErrorCode(error);
 
-      throw Error(`Failed to delete file "${path}": ${errorCode}`);
+      throw Error(`Failed to delete file "${path}": ${String(error.message)}.`
+        + ` Error code: ${errorCode}`);
     }
   }
 
@@ -237,10 +238,12 @@ export namespace FileSystem
     }
     catch (error)
     {
+      // ! Throws exception on error.
       const errorCode = getErrorCode(error);
 
       throw Error(`Unable to ensure existence of`
-        + ` directory "${directory}": ${errorCode}`);
+        + ` directory "${directory}": ${String(error.message)}.`
+        + ` Error code: ${errorCode}`);
     }
   }
 
@@ -249,23 +252,24 @@ export namespace FileSystem
   //    subdirectories, excluding '.' and '..'.
   export async function readDirectoryContents
   (
-    path: string
+    directory: string
   )
   : Promise<Array<string>>
   {
     // ! Throws exception on error.
-    mustBeRelative(path);
+    mustBeRelative(directory);
 
     try
     {
-      return await FS.readdir(path);
+      return await FS.readdir(directory);
     }
     catch (error)
     {
       const errorCode = getErrorCode(error);
 
       throw Error(`Unable to read contents of directory`
-        + ` "${path}": ${errorCode}`);
+        + ` "${directory}": ${String(error.message)}.`
+        + ` Error code: ${errorCode}`);
     }
   }
 
@@ -292,40 +296,53 @@ export namespace FileSystem
   // ! Throws exception on error.
   export function encodeAsFileName(str: string): string
   {
-    return truncateByteLength(str, MAX_FILENAME_LENGTH_BYTES);
-  }
-
-  // ! Throws exception on error.
-  export function hasValidByteLengthAsFileName(str: string): boolean
-  {
     const encodedStr = encodeStringAsFileName(str);
 
-    return getByteLength(encodedStr) <= MAX_FILENAME_LENGTH_BYTES;
-  }
-
-  // ! Throws exception on error.
-  export async function loadJsonFromFile(directory: string, fileName: string)
-  : Promise<string>
-  {
-    const path = composePath(directory, fileName);
-
-    const readResult = await readFile(path);
-
-    if (readResult === "File doesn't exist")
+    if (byteLengthOf(encodedStr) > MAX_FILENAME_LENGTH_BYTES)
     {
-      throw Error(`Failed to load file '${path}'`
-        + ` because it doesn't exist`);
+      throw Error(`Failed to encode string "${str}" as file name`
+        + ` because after encoding it exceeds maximum byte length`
+        + ` of a file name. Truncating it could mask another file`
+        + ` name, which could lead to nasty errors so it's better`
+        + ` to use another unique file name instead`);
     }
 
-    return readResult.data;
+    return encodedStr;
   }
+
+/// TO BE DELETED.
+/// Místo tohohle rovnou zavolat encodeAsFileName() a odchytnout exception.
+// // ! Throws exception on error.
+// export function hasValidByteLengthAsFileName(str: string): boolean
+// {
+//   const encodedStr = encodeStringAsFileName(str);
+
+//   return getByteLength(encodedStr) <= MAX_FILENAME_LENGTH_BYTES;
+// }
+
+/// TO BE DELETED.
+/// Tohle prostě jen přečte data ze souboru s tím, že soubor musí existovat.
+/// To samý dělá funkce readExistingFile(), takže použít tu.
+// // ! Throws exception on error.
+// export async function loadJsonFromFile(directory: string, fileName: string)
+// : Promise<string>
+// {
+//   const path = composePath(directory, fileName);
+
+//   const readResult = await readFile(path);
+
+//   if (readResult === "File doesn't exist")
+//   {
+//     throw Error(`Failed to load file '${path}'`
+//       + ` because it doesn't exist`);
+//   }
+
+//   return readResult.data;
+// }
 
   export function composePath(directory: string, fileName: string): string
   {
-    if (directory.endsWith("/"))
-      return `${directory}${fileName}`;
-
-    return `${directory}/${fileName}`;
+    return NodePath.join(directory, fileName);
   }
 }
 
@@ -339,22 +356,14 @@ function requestSaving
 )
 : Promise<void> | "Saving is possible right now"
 {
-  let queue = savingQueues.get(path);
+  const queue = savingQueues.get(path);
 
-  if (queue === undefined)
-  {
-    // Nobody is saving to the path yet.
-    queue = new SavingQueue();
+  if (queue !== undefined)
+    return queue.addRequest();
 
-    // Note: We don't push a resolve callback for the first
-    // request, because it will be processed right away.
-    savingQueues.set(path, queue);
+  savingQueues.set(path, new SavingQueue());
 
-    return "Saving is possible right now";
-  }
-
-  // Someone is already saving to the path.
-  return queue.addRequest();
+  return "Saving is possible right now";
 }
 
 // ! Throws exception on error.
@@ -364,34 +373,26 @@ function finishSaving(path: string): void
 
   if (queue === undefined)
   {
-    throw Error(`Attempt to report finished saving of file`
-      + ` "${path}" which is not registered as being saved`);
+    throw Error(`Attempt to finish saving of file "${path}"`
+      + ` which is not registered as being saved`);
   }
 
-  const pollResult = queue.pollRequest();
+  const nextRequest = queue.getNextRequest();
 
-  if (pollResult === "Queue is empty")
+  if (nextRequest === "Queue is empty")
   {
     savingQueues.delete(path);
     return;
   }
 
-  const resolveCallback: Types.ResolveFunction<void> = pollResult;
-
-  // By calling the resolve callback we finish savingAwaiter()
-  // of whoever called us. That should lead to the next saving
-  // to proceed.
-  resolveCallback();
+  nextRequest.startSaving();
 }
 
 // ! Throws exception on error.
 function mustBeRelative(path: string): void
 {
-  if (!path.startsWith("./"))
-  {
-    throw Error(`File path "${path}" is not relative.`
-    + ` Make sure that it starts with './'`);
-  }
+  if (NodePath.isAbsolute(path))
+    throw Error(`File path "${path}" is not relative`);
 
   // Double dot can be used to traverse out of working directory
   // so we need to prevent it as well.
@@ -417,13 +418,14 @@ async function writeData
   try
   {
     // 'FS.outputFile()' creates the directory if it doesn't exist.
-    await FS.outputFile(path, data, "utf8");
+    await FS.outputFile(path, data, encoding);
   }
   catch (error)
   {
     const errorCode = getErrorCode(error);
 
-    throw Error (`Failed to save file "${path}": ${errorCode}`);
+    throw Error (`Failed to save file "${path}": ${String(error.message)}.`
+        + ` Error code: ${errorCode}`);
   }
 }
 
@@ -451,65 +453,26 @@ async function statFile(path: string): Promise<FS.Stats>
   {
     const errorCode = getErrorCode(error);
 
-    throw Error(`Unable to stat file "${path}": ${errorCode}`);
+    throw Error(`Unable to stat file "${path}": ${String(error.message)}.`
+        + ` Error code: ${errorCode}`);
   }
 }
 
 // ! Throws exception on error.
-function getByteLength(str: string): number
+function byteLengthOf(str: string): number
 {
   // This should work on node.js.
   if (typeof (Buffer as any) === "undefined")
   {
     throw Error(`Unable to compute byte length of string`
-    + ` "${str}" because 'Buffer' object is supported`);
+    + ` "${str}" because 'Buffer' object is not supported.`
+    + ` Maybe we are not running under Node.js?`);
   }
 
   return Buffer.byteLength(str, "utf8");
 }
 
-// ! Throws exception on error.
-// -> Returns string encoded to be safely used as filename
-//    and truncated to 'maxByteLength' bytes of length.
-function truncateByteLength(str: string, maxByteLength: number): string
-{
-  if (maxByteLength < 1)
-  {
-    throw Error("Invalid 'maxByteLength' parameter."
-      + " String is not truncated");
-  }
-
-  let truncatedStr = str;
-  let encodedStr = encodeStringAsFileName(str);
-  let byteLength = getByteLength(encodedStr);
-
-  while (byteLength > maxByteLength && str.length > 0)
-  {
-    // Note that we are shortening the original, unencoded
-    // string and reencoding it before byte length check.
-    // That's because if we shortened encoded string, it
-    // could stop being valid file name.
-    truncatedStr = truncatedStr.slice(0, -1);
-
-    encodedStr = encodeStringAsFileName(str);
-    byteLength = getByteLength(encodedStr);
-  }
-
-  if (truncatedStr.length < str.length)
-  {
-    throw Error(`Failed to correctly encode string "${str}" as`
-      + ` filename because it's longer than ${maxByteLength} bytes`
-      + ` after encoding. Truncating it to "${truncatedStr}". Note`
-      + ` that this means that if some other string used as file name`
-      + ` exceeds this limit, it could refer to the same file. You should`
-      + ` prevent entity names (or any other source of file names) to`
-      + ` exceed byte length of ${maxByteLength}`);
-  }
-
-  return encodedStr;
-}
-
-function replaceControlCharacter(str: string, charCode: number): string
+function escapeControlCharacter(str: string, charCode: number): string
 {
   // Create string from integer charcode value.
   const key = String.fromCharCode(charCode);
@@ -556,11 +519,11 @@ function escapeControlCharacters(str: string): string
 
   // Escape control characters (0x00–0x1F)
   for (let i = 0x00; i < 0x1F; i++)
-    result = replaceControlCharacter(result, i);
+    result = escapeControlCharacter(result, i);
 
   // Escape control characters (0x80–0x9F)
   for (let i = 0x80; i < 0x9F; i++)
-    result = replaceControlCharacter(result, i);
+    result = escapeControlCharacter(result, i);
 
   return result;
 }
