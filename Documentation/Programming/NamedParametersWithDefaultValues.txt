@@ -1,0 +1,48 @@
+Named parameters
+===================
+
+Method 1 (only works with inferrable types):
+---------------------------------------------
+
+function test1
+(
+  {
+    a = "A",
+    b = "B"
+  } = {}
+)
+{
+  console.log("a:", a, "b:", b);
+}
+
+test1();                    // a: A b: B
+test1({ a: "1" });          // a: 1 b: B
+test1({ b: "2" });          // a: A b: 2
+test1({ a: "3", b: "4" });  // a: 3 b: 4
+
+
+Method 2 (works with custom types as well):
+--------------------------------------------
+
+type AB = "A" | "B"
+
+function test2
+(
+  {
+    a = "A",
+    b = "B"
+  }:
+  {
+    a?: AB,
+    b?: AB
+  }
+  = {}
+)
+{
+  console.log("a:", a, "b:", b);
+}
+
+test2();                    // a: A b: B
+test2({ a: "B" });          // a: B b: B
+test2({ b: "A" });          // a: A b: A
+test2({ a: "B", b: "A" });  // a: B b: A
