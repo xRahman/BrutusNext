@@ -7,7 +7,7 @@
 import { SavingQueue } from "../../Server/FileSystem/SavingQueue";
 
 // Node.js modules.
-import * as NodePath from "path";
+import * as Path from "path";
 
 // 3rd party modules.
 import * as FS from "fs-extra";
@@ -50,7 +50,7 @@ const RESERVED_FILENAMES = new Map
   ]
 );
 
-// Key: relative path of saved file.
+// [Key]: relative path of saved file.
 const savingQueues = new Map<string, SavingQueue>();
 
 export namespace FileSystem
@@ -156,7 +156,7 @@ export namespace FileSystem
   )
   : Promise<void>
   {
-    const fileName = NodePath.basename(path);
+    const fileName = Path.posix.basename(Path.posix.normalize(path));
     const validationResult = validateFileName(fileName);
 
     if (validationResult !== "File name is valid")
@@ -333,7 +333,7 @@ export namespace FileSystem
 
   export function composePath(directory: string, fileName: string): string
   {
-    return NodePath.join(directory, fileName);
+    return Path.posix.join(Path.posix.normalize(directory), fileName);
   }
 }
 
@@ -380,7 +380,7 @@ function startNextSaving(path: string): void
 // ! Throws exception on error.
 function mustBeRelative(path: string): void
 {
-  if (NodePath.isAbsolute(path))
+  if (Path.posix.isAbsolute(Path.posix.normalize(path)))
     throw Error(`File path "${path}" is not relative`);
 
   // Double dot can be used to traverse out of working directory
