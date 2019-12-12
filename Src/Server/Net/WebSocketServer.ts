@@ -1,4 +1,8 @@
-/*  Part of Kosmud  */
+/*
+  Part of BrutusNext
+
+  WebSocket server.
+*/
 
 import { REPORT } from "../../Shared/Log/REPORT";
 import { ERROR } from "../../Shared/Log/ERROR";

@@ -1,15 +1,14 @@
-/* Part of BrutusNext */
+/*
+  Part of BrutusNext
+
+  Runtime exception reporting
+*/
 
 /*
-  Runtime exception reporting
-
   --------------------------------------------------------
          EVERY EXCEPTION NEEDS TO BE FIXED ASAP!
         (Even if the MUD doesn't crash right away)
   --------------------------------------------------------
-
-  IMPORTANT:
-    Parameter of REPORT() must be an Error object.
 
   Usage example:
 

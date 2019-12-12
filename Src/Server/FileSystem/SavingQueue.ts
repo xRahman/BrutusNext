@@ -1,6 +1,6 @@
-/* Part of BrutusNext */
-
 /*
+  Part of BrutusNext
+
   Class that keeps track of multiple requests to save the same file.
 */
 

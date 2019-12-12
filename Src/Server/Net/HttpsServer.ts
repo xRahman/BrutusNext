@@ -1,15 +1,16 @@
-/* Part of BrutusNext */
+/*
+  Part of BrutusNext
+
+  Https server.
+*/
 
 /*
-  Https server.
+  Websocket server runs inside https server and is started
+  automatically along with it.
 
-  Notes:
-    Websocket server runs inside https server and is started
-    automatically along with it.
+  Http trafic is redirected to https.
 
-    Http trafic is redirected to https.
-
-    Express is used to handle security issues like directory traversing.
+  Express is used to handle security issues like directory traversing.
 */
 
 import { REPORT } from "../../Shared/Log/REPORT";

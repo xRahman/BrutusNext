@@ -1,6 +1,6 @@
-/* Part of BrutusNext */
-
 /*
+  Part of BrutusNext
+
   Filesystem I/O operations.
 */
 

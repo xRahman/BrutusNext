@@ -1,6 +1,6 @@
-/* Part of BrutusNext */
-
 /*
+  Part of BrutusNext
+
   Types and type-associated utility functions.
 */
 

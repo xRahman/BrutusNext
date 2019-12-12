@@ -1,7 +1,7 @@
-/* Part of BrutusNext */
-
 /*
-  Class wrapping FastPriotityQueue.
+  Part of BrutusNext
+
+  FastPriotityQueue wrapper.
 */
 
 import { Serializable } from "../../Shared/Class/Serializable";

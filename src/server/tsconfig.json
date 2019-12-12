@@ -1,4 +1,8 @@
-/* Part of BrutusNext */
+/*
+  Part of BrutusNext
+
+  Server typescript config file.
+*/
 
 {
   "compilerOptions":

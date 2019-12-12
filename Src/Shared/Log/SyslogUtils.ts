@@ -1,14 +1,15 @@
-/* Part of BrutusNext */
+/*
+  Part of BrutusNext
+
+  Syslog-related utility functions.
+*/
 
 /*
-  Syslog-related utility functions.
-
-  Notes:
-    Logging is done differently on the client and on
-    the server but logging function need to be useable
-    from shared code. To make it possible, they need
-    to be overridden in both Client/Log/SyslogUtils
-    andServer/Log/SyslogUtils.
+  Logging is done differently on the client and on
+  the server but logging function need to be useable
+  from shared code. To make it possible, they need
+  to be overridden in both Client/Log/SyslogUtils
+  andServer/Log/SyslogUtils.
 */
 
 import { Syslog } from "../../Shared/Log/Syslog";
