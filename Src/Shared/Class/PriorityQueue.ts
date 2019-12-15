@@ -1,7 +1,7 @@
 /*
   Part of BrutusNext
 
-  FastPriotityQueue wrapper.
+  FastPriotityQueue wrapper
 */
 
 import { Serializable } from "../../Shared/Class/Serializable";

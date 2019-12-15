@@ -1,3 +1,96 @@
+TODO: Posílat ping do websocketu, viz
+  https://github.com/websockets/ws
+
+TODO: RETHROW možná není potřeba, dělám to ručně a možná je to tak
+  čitelnější.
+
+Proč jsou vlastně WebSocketServer a Https server classy?
+  Však jsou to beztak singletony.
+TODO: Předělat je na namespacy.
+
+U socketu to je už jiná otázka, těch může bejt víc a různě se na něj věšej
+  event handlery a tak.
+- možná na klientu to nemusí bejt classa.
+
+
+Proč se v onClose() na socketu volá socket.close()?
+  https://github.com/heineiuo/isomorphic-ws#readme
+To je asi blbě, zrušit.
+
+
+Socket class hierarchy
+------------------------
+
+'Socket' zapouzdřuje WebSocket
+- nemůže se jmenovat WebSocket, protože by se to bilo, ale to asi ničemu nevadí
+- měl by řešit čistě věci kolem WebSocketu, tj. event handlery, posílání
+  raw dat (nemusí nic vědět o paketech), možná zavírání socketu, pokud
+  to bude potřeba.
+
+- otázka je, jestli by měl vůbec mít bejt onMessage() handler. Ale asi jo,
+  lepší je přetížit metodu, kteá se z handleru zavolá.
+  - tak jako tak ten handler musí bejt metoda, buď aby šel přetížit, nebo
+    aby mohl volat metodu, která jde přetížit.
+
+- Socket rozhodně nepotřebuje umět zpracovávat packety, tj. dědit ho
+  z PacketHandleru je špatně.
+
+Ze socketu by asi mělo bejt zděděný něco, co umí pracovat s paketama,
+  tj. přečíst z paketu data a poslat je do socketu a vyrobit z příchozích
+  dat paket a zavolat na něm process().
+- mohlo by to i socket zapouzdřovat, ale pak by mu to muselo předávat
+  callback na zpracování příchozích dat - v zásadě dává smysl spíš to
+  zdědění.
+
+Server verze Connection má na sobě getIp, což client verze nepotřebuje
+  (protože je připojená vždycky na server). Ale pokud to mít může
+  (bylo by to ip serveru?), tak to asi ničemu nevadí.
+Server a client verze connectionu (packet handleru) mají jinak posílání
+  paketů - při posílání na klienta se serializuje jinak než při posílání
+  na server.
+Klient určitě taky potřebuje vlastní verzi connectionu, už proto, že
+  na klientu je jen jedna connection.
+
+TODO: Vymyslet, kam dát metody na zpracování packetů.
+- možná to prostě jen přehodit, ze Socketu zdědit PacketHandler a z toho
+  Connection.
+
+Proč má vlastně connection Playera? Aby věděla, koho se týkají přijatý pakety?
+- playera asi každopádně zatím řešit nemusím.
+
+
+------------------------------------------------------------------------------
+
+ÚVAHA: kdy házet REPORT(error)
+
+- asi když k tomu můžu dát smysluplnou informaci
+
+Obecně asi nemá smysl probublávat chyby až do top-level funkcí. Dokonce
+  tam mám i napsáno, že by měly bejt odchycené dřív.
+
+IDEA: Možná se řídit tím, co jsem sám napsal do komentáře k funkci REPORT():
+- když bych vyhodil ERROR() a dal return, tak je lepší místo toho hodit
+  exception. Výjimka mě prostě vyhodí z předpokládanýho stavu věcí.
+
+Ještě jde o to, že s výjimkou můžu něco dělat. Když posílám broadcast
+  do všech connectionů a jeden z nich failne, tak to asi ničemu nevadí
+  a můžu klidně poslat do všech dalších. Když ale posílám třeba nějakou
+  entitu na klienta a neprojde to, tak bych dál neměl pracovat s tím,
+  že je úspěšně poslaná.
+  - to jsem asi zpět u toho returnu. Z connection.send() potřebuju při
+    failu vrátit informaci, že se to nepovedlo. Z Connections.broadcast()
+    asi spíš ne. I když... Ale jo, asi nepotřebuju. Naopak je fajn vědět,
+    do který connection se mi něco nepovedlo poslat, což zajistí REPORT()
+    s dodatečným messagem. Kdybych tu exception hodil znova, tak se mi
+    message nepošle do ostatních connectionů. Což ale asi až tolik nevadí,
+    beztak je to exception, takže je něco fakt špatně.
+
+  - možná bych ještě potřeboval funkci, která k error messagi přidá
+    nějakou informaci a pošle výjimku dál. Něco jako:
+      RETHROW(error, "Failed to send message to connection %{connectionInfo}");
+
+------------------------------------------------------------------------------
+
 TS verze fastpriorityqueue:
 ---------------------------
 

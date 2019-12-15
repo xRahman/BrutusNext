@@ -1,7 +1,13 @@
 /*
   Part of BrutusNext
 
-  WebSocket server.
+  WebSocket server
+*/
+
+/*
+  WebSocket server is running inside a https server so we don't
+  need an extra port for websocket communication (it's going over
+  https port) and it enjoys the perks of https security.
 */
 
 import { REPORT } from "../../Shared/Log/REPORT";
@@ -10,13 +16,13 @@ import { Syslog } from "../../Server/Log/Syslog";
 import { Connection } from "../../Server/Net/Connection";
 import { Connections } from "../../Server/Net/Connections";
 
+// Node.js modules.
+import * as http from "http";
+import * as https from "https";
+
 // 3rd party modules.
 // Use 'isomorphic-ws' to use the same code on both client and server.
 import * as WebSocket from "isomorphic-ws";
-
-// Built-in node.js modules.
-import * as http from "http";  // Import namespace 'http' from node.js.
-import * as https from "https";  // Import namespace 'http' from node.js.
 
 export class WebSocketServer
 {
@@ -56,8 +62,8 @@ export class WebSocketServer
     // Unlike http server websocket server is up immediately so
     // we don't have to register handler for 'listening' event
     // (in fact, there is no such event on websocket server).
-    //   But since the websocket server runs inside a http server,
-    // it must be started after onStartListening() is fired on http
+    //   But since the websocket server runs inside a https server,
+    // it must be started after onStartListening() is fired on https
     // server.
     Syslog.log("[WEBSOCKET_SERVER]", `Websocket server is up and listening`);
 
@@ -73,7 +79,7 @@ export class WebSocketServer
   )
   : void
   {
-    const ip = parseAddress(request);
+    const ip = parseIpAddress(request);
     const { url } = request;
 
     // Request.url is only valid for requests obtained from http.Server
@@ -107,7 +113,7 @@ export class WebSocketServer
 
 // ----------------- Auxiliary Functions ---------------------
 
-function parseAddress(request: http.IncomingMessage): string
+function parseIpAddress(request: http.IncomingMessage): string
 {
   if (request.connection.remoteAddress === undefined)
     return "Unknown ip address";
@@ -137,8 +143,9 @@ function denyConnection
   ip: string,
   url?: string
 )
+: void
 {
-  const address = (url !== undefined) ? `(${url} [${ip}])` : `[${ip}]`;
+  const address = url ? `(${url} [${ip}])` : `[${ip}]`;
 
   Syslog.log("[WEBSOCKET_SERVER]", `Denying`
     + ` connection ${address}: ${reason}`);

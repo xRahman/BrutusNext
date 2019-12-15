@@ -1,13 +1,14 @@
-/* Part of BrutusNext */
+/*
+  Part of BrutusNext
+
+  Server side logging
+*/
 
 /*
-  Server side logging.
-
-  Notes:
-    We redefine logging functions in Shared/Log/Syslog
-    and Shared/Log/SyslogUtils modules and then reexport
-    those modified modules. This allows server-side
-    logging functions to be called from shared code.
+  We redefine logging functions in Shared/Log/Syslog
+  and Shared/Log/SyslogUtils modules and then reexport
+  those modified modules. This allows server-side
+  logging functions to be called from shared code.
 */
 
 import { ERROR } from "../../Shared/Log/ERROR";

@@ -1,7 +1,7 @@
 /*
   Part of BrutusNext
 
-  Types and type-associated utility functions.
+  Types and type-related utility functions
 */
 
 // import { Serializable } from "../../Shared/Class/Serializable";
@@ -16,46 +16,6 @@ export namespace Types
 
   // Used for example in 'new Promise((resolve, reject) => { ... })'.
   export type RejectFunction = (reason?: any) => void;
-
-// // TODO: Tohle by mělo bejt ve WebSocket.ts
-// // Used in WebSocket onOpen handler.
-// export type OpenEvent =
-// {
-//   target: WebSocket;
-// };
-
-// // TODO: Tohle by mělo bejt ve WebSocket.ts
-// export type OpenEventHandler = (event: OpenEvent) => void;
-
-// export type MessageEvent =
-// {
-//   data: WebSocket.Data;
-//   type: string;
-//   target: WebSocket;
-// };
-
-// export type MessageEventHandler = (event: MessageEvent) => void;
-
-// export type ErrorEvent =
-// {
-//   error: any;
-//   message: string;
-//   type: string;
-//   target: WebSocket;
-// };
-
-// export type ErrorEventHandler = (event: ErrorEvent) => void;
-
-// export type CloseEvent =
-// {
-//   wasClean:
-//   boolean;
-//   code: number;
-//   reason: string;
-//   target: WebSocket;
-// };
-
-// export type CloseEventHandler = (event: CloseEvent) => void;
 
 // // If you exclaim "WTF!" loudly after reading the next two lines of
 // // code, I absolutely aggree with you.

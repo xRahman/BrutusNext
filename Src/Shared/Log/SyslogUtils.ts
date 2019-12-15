@@ -1,7 +1,7 @@
 /*
   Part of BrutusNext
 
-  Syslog-related utility functions.
+  Syslog-related utility functions
 */
 
 /*

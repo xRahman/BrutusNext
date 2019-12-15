@@ -1,7 +1,7 @@
 /*
   Part of BrutusNext
 
-  Runtime error reporting
+  Function ERROR() that reports runtime errors
 */
 
 /*

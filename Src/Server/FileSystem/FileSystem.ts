@@ -1,7 +1,7 @@
 /*
   Part of BrutusNext
 
-  Filesystem I/O operations.
+  Filesystem I/O operations
 */
 
 import { SavingQueue } from "../../Server/FileSystem/SavingQueue";

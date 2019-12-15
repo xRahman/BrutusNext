@@ -1,8 +1,9 @@
-/* Part of BrutusNext */
-
 /*
-  Eslint config file.
+  Part of BrutusNext
+
+  Eslint config file
 */
+
 {
   "env":
   {
@@ -899,8 +900,8 @@
       [
         "error",
         {
-          "newIsCapExceptionPattern": "^ERROR|REPORT$",
-          "capIsNewExceptionPattern": "^ERROR|REPORT$"
+          "newIsCapExceptionPattern": "^ERROR|REPORT|RETHROW$",
+          "capIsNewExceptionPattern": "^ERROR|REPORT|RETHROW$"
         }
       ],
       // Enforce or disallow parentheses when invoking a constructor

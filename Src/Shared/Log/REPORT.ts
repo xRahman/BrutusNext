@@ -1,7 +1,7 @@
 /*
   Part of BrutusNext
 
-  Runtime exception reporting
+  Function REPORT() that reports runtime exceptions
 */
 
 /*

@@ -1,7 +1,7 @@
 /*
   Part of BrutusNext
 
-  Https server.
+  Https server
 */
 
 /*

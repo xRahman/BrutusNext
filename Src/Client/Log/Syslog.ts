@@ -1,7 +1,7 @@
 /*
   Part of BrutusNext
 
-  Client side logging.
+  Client side logging
 */
 
 /*

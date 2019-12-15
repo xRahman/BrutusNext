@@ -1,7 +1,7 @@
 /*
   Part of BrutusNext
 
-  Class that keeps track of multiple requests to save the same file.
+  Queue of requests to save the same file
 */
 
 import { Types } from "../../Shared/Utils/Types";
