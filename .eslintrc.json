@@ -914,7 +914,7 @@
       // Disallow 'continue' statements.
       "no-continue": "error",
       // Disallow inline comments after code.
-      "no-inline-comments": "error",
+      "no-inline-comments": "off",
       // Disallow 'if' statements as the only statement in 'else' blocks.
       "no-lonely-if": "error",
       // Disallow mixed binary operators.
