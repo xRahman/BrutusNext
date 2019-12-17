@@ -4,8 +4,7 @@
   List of player connections
 */
 
-import { RETHROW } from "../../Shared/Log/RETHROW";
-import { Packet } from "../../Shared/Protocol/Packet";
+// import { Packet } from "../../Shared/Protocol/Packet";
 import { Connection } from "../../Server/Net/Connection";
 
 // 3rd party modules.
@@ -29,20 +28,20 @@ export namespace Connections
 //   connections.delete(connection);
 // }
 
-// export function newConnection
-// (
-//   webSocket: WebSocket,
-//   ip: string,
-//   url: string
-// )
-// : Connection
-// {
-//   const connection = new Connection(webSocket, ip, url);
+  export function newConnection
+  (
+    webSocket: WebSocket,
+    ip: string,
+    url: string
+  )
+  : Connection
+  {
+    const connection = new Connection(webSocket, ip, url);
 
-//   connections.add(connection);
+    connections.add(connection);
 
-//   return connection;
-// }
+    return connection;
+  }
 
   // ! Throws exception on error.
 // export function broadcast(packet: Packet): void

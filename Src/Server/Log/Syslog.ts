@@ -20,6 +20,7 @@ Syslog.log = (messageType: Syslog.MessageType, message: string) =>
   const entry = SyslogUtils.createLogEntry(messageType, message);
 
   logToStdout(entry);
+
   /// TODO:
   // logToFile(entry);
 };
@@ -59,6 +60,7 @@ function logError(messageType: Syslog.MessageType, message: string): void
   const entry = SyslogUtils.createLogEntry(messageType, message);
 
   logToStderr(entry);
+
   /// TODO:
   // logToErrorFile(entry);
 }

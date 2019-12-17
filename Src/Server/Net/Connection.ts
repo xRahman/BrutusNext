@@ -5,8 +5,8 @@
 */
 
 import { Socket } from "../../Shared/Net/Socket";
-import { Syslog } from "../../Shared/Log/Syslog";
-import { WebSocketEvent } from "../../Shared/Net/WebSocketEvent";
+// import { Syslog } from "../../Shared/Log/Syslog";
+// import { WebSocketEvent } from "../../Shared/Net/WebSocketEvent";
 // import { Types } from "../../Shared/Utils/Types";
 // import { Packet } from "../../Shared/Protocol/Packet";
 // import { ClassFactory } from "../../Shared/Class/ClassFactory";
@@ -96,19 +96,19 @@ export class Connection extends Socket
   //   return info;
   // }
 
-  // Make sure that the connection is open before
-  // you try to send 'packet' to it or you will get
-  // an error.
-  // ! Throws exception on error.
-  public send(packet: Packet): void
-  {
-    // ! Throws exception on error.
-    this.sendData
-    (
-      // ! Throws exception on error.
-      packet.serialize("Send to client")
-    );
-  }
+  // // Make sure that the connection is open before
+  // // you try to send 'packet' to it or you will get
+  // // an error.
+  // // ! Throws exception on error.
+  // public send(packet: Packet): void
+  // {
+  //   // ! Throws exception on error.
+  //   this.sendData
+  //   (
+  //     // ! Throws exception on error.
+  //     packet.serialize("Send to client")
+  //   );
+  // }
 
   // // ! Throws exception on error.
   // public updateClient()
@@ -122,6 +122,14 @@ export class Connection extends Socket
   //       this.send(update);
   //   }
   // }
+
+  // --------------- Protected methods ------------------
+
+  // eslint-disable-next-line class-methods-use-this
+  protected async processData(data: string): Promise<void>
+  {
+    // TODO
+  }
 
   // --------------- Private methods --------------------
 
@@ -146,51 +154,51 @@ export class Connection extends Socket
 
   // ---------------- Event handlers --------------------
 
-  // ~ Overrides Shared.Socket.onClose().
-  protected onClose(event: Types.CloseEvent)
-  {
-    super.onClose(event);
+  // // ~ Overrides Shared.Socket.onClose().
+  // protected onClose(event: Types.CloseEvent)
+  // {
+  //   super.onClose(event);
 
-    if (isNormalDisconnect(event))
-    {
-      logNormalDisconnect(this.getPlayerInfo(), event);
-    }
-    else
-    {
-      this.logSocketClosingError(event);
-    }
+  //   if (isNormalDisconnect(event))
+  //   {
+  //     logNormalDisconnect(this.getPlayerInfo(), event);
+  //   }
+  //   else
+  //   {
+  //     this.logSocketClosingError(event);
+  //   }
 
-    this.release();
-  }
+  //   this.release();
+  // }
 }
 
 // ----------------- Auxiliary Functions ---------------------
 
-function logNormalDisconnect(user: string, event: Types.CloseEvent)
-{
-  if (isCausedByClosingTab(event))
-  {
-    Syslog.log("[CONNECTION_INFO]", `User ${user} has`
-      + ` disconnected by closing or reloading browser tab`);
-  }
-  else
-  {
-    Syslog.log("[CONNECTION_INFO]", `User ${user} has disconnected`);
-  }
-}
+// function logNormalDisconnect(user: string, event: Types.CloseEvent)
+// {
+//   if (isCausedByClosingTab(event))
+//   {
+//     Syslog.log("[CONNECTION_INFO]", `User ${user} has`
+//       + ` disconnected by closing or reloading browser tab`);
+//   }
+//   else
+//   {
+//     Syslog.log("[CONNECTION_INFO]", `User ${user} has disconnected`);
+//   }
+// }
 
-function isCausedByClosingTab(event: Types.CloseEvent)
-{
-  // 'event.reason' is checked because for some reason Chrome sometimes
-  // closes webSocket with code 1006 when the tab is closed even though
-  // we close() the socket manually in onBeforeUnload() handler (see
-  // ClientApp.onBeforeUnload() for more details).
-  return event.reason === WebSocketEvent.TAB_CLOSED;
-}
+// function isCausedByClosingTab(event: Types.CloseEvent)
+// {
+//   // 'event.reason' is checked because for some reason Chrome sometimes
+//   // closes webSocket with code 1006 when the tab is closed even though
+//   // we close() the socket manually in onBeforeUnload() handler (see
+//   // ClientApp.onBeforeUnload() for more details).
+//   return event.reason === WebSocketEvent.TAB_CLOSED;
+// }
 
-function isNormalDisconnect(event: Types.CloseEvent): boolean
-{
-  const isNormalClose = WebSocketEvent.isNormalClose(event.code);
+// function isNormalDisconnect(event: Types.CloseEvent): boolean
+// {
+//   const isNormalClose = WebSocketEvent.isNormalClose(event.code);
 
-  return isNormalClose || isCausedByClosingTab(event);
-}
+//   return isNormalClose || isCausedByClosingTab(event);
+// }

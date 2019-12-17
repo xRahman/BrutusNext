@@ -1125,7 +1125,7 @@
       // after declared.
       "prefer-const": "error",
       // Require destructuring from arrays and/or objects.
-      "prefer-destructuring": "error",
+      "prefer-destructuring": "off",
       // Disallow 'parseInt()' and 'Number.parseInt()' in favor of binary,
       // octal, and hexadecimal literals.
       "prefer-numeric-literals": "error",

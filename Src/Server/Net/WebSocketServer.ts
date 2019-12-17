@@ -13,7 +13,7 @@
 import { REPORT } from "../../Shared/Log/REPORT";
 import { ERROR } from "../../Shared/Log/ERROR";
 import { Syslog } from "../../Server/Log/Syslog";
-import { Connection } from "../../Server/Net/Connection";
+// import { Connection } from "../../Server/Net/Connection";
 import { Connections } from "../../Server/Net/Connections";
 
 // Node.js modules.
@@ -80,7 +80,7 @@ export class WebSocketServer
   : void
   {
     const ip = parseIpAddress(request);
-    const { url } = request;
+    const url = request.url;
 
     // Request.url is only valid for requests obtained from http.Server
     // (which should be our case).

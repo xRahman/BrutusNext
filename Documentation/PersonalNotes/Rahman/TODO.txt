@@ -1,3 +1,15 @@
+TODO: Proč vlastně ze socketu při zavření removuju event listenery?
+  V příkladech se to nikde nedělá.
+
+
+IDEA: HttpsServer by se mohl jmenovat jen Http.
+- jak by se pak jmenoval WebSocket server? WebSockets?
+
+- a nebo možná založit Servers.ts a volat Servers.start().
+
+
+
+
 TODO: Posílat ping do websocketu, viz
   https://github.com/websockets/ws
 

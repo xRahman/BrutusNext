@@ -50,7 +50,7 @@ export abstract class Socket
   // This is used to determine if a socket error means that
   // we have been disconnected or that connection couldn't
   // even be established.
-  private hasSocketBeenOpen = false;
+  private hasSocketBeenOpened = false;
 
   // We remember event listeners so we can remove them
   // when the socket closes.
@@ -143,9 +143,9 @@ export abstract class Socket
     return isClosing || isClosed;
   }
 
-  protected hasBeenOpen(): boolean
+  protected hasBeenOpened(): boolean
   {
-    return this.hasSocketBeenOpen;
+    return this.hasSocketBeenOpened;
   }
 
   // ---------------- Private methods -------------------
@@ -200,6 +200,8 @@ export abstract class Socket
 
   private removeEventListeners(): void
   {
+    this.webSocket.onopen
+
     if (this.listeners.onopen !== "Not attached")
       this.webSocket.removeEventListener("open", this.listeners.onopen);
 
@@ -218,7 +220,7 @@ export abstract class Socket
   // TODO: Proč protected?
   private onOpen(event: OpenEvent): void
   {
-    this.hasSocketBeenOpen = true;
+    this.hasSocketBeenOpened = true;
   }
 
   private async onMessage(event: MessageEvent): Promise<void>

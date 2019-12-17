@@ -531,7 +531,7 @@ function encodeStringAsFileName(str: string): string
 // ! Throws exception on error.
 function getErrorCode(error: Error): string
 {
-  const { code } = error as NodeJS.ErrnoException;
+  const code = (error as NodeJS.ErrnoException).code;
 
   if (code === undefined)
   {
