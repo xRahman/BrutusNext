@@ -1,9 +1,6 @@
 TODO: Posílat ping do websocketu, viz
   https://github.com/websockets/ws
 
-TODO: RETHROW možná není potřeba, dělám to ručně a možná je to tak
-  čitelnější.
-
 Proč jsou vlastně WebSocketServer a Https server classy?
   Však jsou to beztak singletony.
 TODO: Předělat je na namespacy.

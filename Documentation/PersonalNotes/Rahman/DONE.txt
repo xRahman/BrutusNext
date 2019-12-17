@@ -1,3 +1,9 @@
+TODO: RETHROW možná není potřeba, dělám to ručně a možná je to tak
+  čitelnější.
+- RETHROW() určitě zrušit, throw Error() je dostatečně výmluvné
+  a většinou se beztak novej message formátuje speciálně.
+[done]
+
 ------------------------------------------------------------------------------
 
 Eslint
