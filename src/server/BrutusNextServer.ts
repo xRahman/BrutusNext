@@ -11,7 +11,7 @@
 
 import { REPORT } from "../Shared/Log/REPORT";
 import { Syslog } from "../Server/Log/Syslog";
-import { HttpsServer } from "../Server/Net/HttpsServer";
+import { WebServer } from "../Server/Net/WebServer";
 // import { Game } from "../Server/Game/Game";
 // import { Engine } from "../Server/Engine/Engine";
 
@@ -29,7 +29,7 @@ async function startBrutusNextServer(): Promise<void>
 
   try
   {
-    await HttpsServer.startServers();
+    await WebServer.start();
     // await Game.load();
     /// Tohle si tu nechám kvůli budoucí teminologii. Na klientu
     /// by to mělo bejt stejně.

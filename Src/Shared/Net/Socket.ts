@@ -200,8 +200,6 @@ export abstract class Socket
 
   private removeEventListeners(): void
   {
-    this.webSocket.onopen
-
     if (this.listeners.onopen !== "Not attached")
       this.webSocket.removeEventListener("open", this.listeners.onopen);
 

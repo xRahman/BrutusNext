@@ -4,6 +4,7 @@
   Filesystem I/O operations
 */
 
+import { ErrorUtils } from "../../Shared/Utils/ErrorUtils";
 import { SavingQueue } from "../../Server/FileSystem/SavingQueue";
 
 // Node.js modules.
@@ -137,13 +138,16 @@ export namespace FileSystem
     catch (error)
     {
       // ! Throws exception on error.
-      const errorCode = getErrorCode(error);
+      const errorCode = ErrorUtils.getErrorCode(error);
 
       if (errorCode === "ENOENT")
         return "File doesn't exist";
 
-      throw Error(`Unable to read file '${path}': ${String(error.message)}.`
-        + ` Error code: ${errorCode}`);
+      throw ErrorUtils.prependMessage
+      (
+        `Unable to read file '${path}' (error code: ${errorCode})`,
+        error
+      );
     }
   }
 
@@ -201,10 +205,13 @@ export namespace FileSystem
     catch (error)
     {
       // ! Throws exception on error.
-      const errorCode = getErrorCode(error);
+      const errorCode = ErrorUtils.getErrorCode(error);
 
-      throw Error(`Failed to delete file "${path}": ${String(error.message)}.`
-        + ` Error code: ${errorCode}`);
+      throw ErrorUtils.prependMessage
+      (
+        `Failed to delete file '${path}' (error code: ${errorCode})`,
+        error
+      );
     }
   }
 
@@ -230,11 +237,14 @@ export namespace FileSystem
     catch (error)
     {
       // ! Throws exception on error.
-      const errorCode = getErrorCode(error);
+      const errorCode = ErrorUtils.getErrorCode(error);
 
-      throw Error(`Unable to ensure existence of`
-        + ` directory "${directory}": ${String(error.message)}.`
-        + ` Error code: ${errorCode}`);
+      throw ErrorUtils.prependMessage
+      (
+        `Unable to ensure existence of directory '${directory}'`
+          + `(error code: ${errorCode})`,
+        error
+      );
     }
   }
 
@@ -256,11 +266,14 @@ export namespace FileSystem
     }
     catch (error)
     {
-      const errorCode = getErrorCode(error);
+      const errorCode = ErrorUtils.getErrorCode(error);
 
-      throw Error(`Unable to read contents of directory`
-        + ` "${directory}": ${String(error.message)}.`
-        + ` Error code: ${errorCode}`);
+      throw ErrorUtils.prependMessage
+      (
+        `Unable to read contents of directory '${directory}'`
+          + `(error code: ${errorCode})`,
+        error
+      );
     }
   }
 
@@ -411,10 +424,13 @@ async function writeData
   }
   catch (error)
   {
-    const errorCode = getErrorCode(error);
+    const errorCode = ErrorUtils.getErrorCode(error);
 
-    throw Error (`Failed to save file "${path}": ${String(error.message)}.`
-        + ` Error code: ${errorCode}`);
+    throw ErrorUtils.prependMessage
+    (
+      `Failed to save file '${path}' (error code: ${errorCode})`,
+      error
+    );
   }
 }
 
@@ -430,10 +446,13 @@ async function statFile(path: string): Promise<FS.Stats>
   }
   catch (error)
   {
-    const errorCode = getErrorCode(error);
+    const errorCode = ErrorUtils.getErrorCode(error);
 
-    throw Error(`Unable to stat file "${path}": ${String(error.message)}.`
-        + ` Error code: ${errorCode}`);
+    throw ErrorUtils.prependMessage
+    (
+      `Unable to stat file '${path}' (error code: ${errorCode})`,
+      error
+    );
   }
 }
 
@@ -526,19 +545,4 @@ function encodeStringAsFileName(str: string): string
   result = escapeTrailingCharacter(result, " ");
 
   return result;
-}
-
-// ! Throws exception on error.
-function getErrorCode(error: Error): string
-{
-  const code = (error as NodeJS.ErrnoException).code;
-
-  if (code === undefined)
-  {
-    throw Error("Missing 'code' property on error object."
-      + " It probably means that 'error' is not a Node.js"
-      + " error object. Maybe you are not runing under Node.js?");
-  }
-
-  return code;
 }

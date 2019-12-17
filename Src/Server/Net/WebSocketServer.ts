@@ -24,23 +24,44 @@ import * as https from "https";
 // Use 'isomorphic-ws' to use the same code on both client and server.
 import * as WebSocket from "isomorphic-ws";
 
-export class WebSocketServer
+let webSocketServer: (WebSocket.Server | "Not running") = "Not running";
+
+const status =
 {
-  // ----------------- Private data ---------------------
-
   // Do we accept new connections?
-  private open = false;
+  isOpen: true
+};
 
-  private webSocketServer: (WebSocket.Server | "Not running") = "Not running";
+export namespace WebSocketServer
+{
+  export function isOpen(): boolean { return status.isOpen; }
 
-  // ---------------- Public methods --------------------
+  export function open(): void
+  {
+    status.isOpen = true;
 
-  public isOpen(): boolean { return this.open; }
+    Syslog.log
+    (
+      "[WEBSOCKET_SERVER]",
+      "WebSocket server is now open. It will accept connections"
+    );
+  }
+
+  export function close(): void
+  {
+    status.isOpen = false;
+
+    Syslog.log
+    (
+      "[WEBSOCKET_SERVER]",
+      "WebSocket server is now closed. It won't accept any connections"
+    );
+  }
 
   // ! Throws exception on error.
-  public startInsideHttpsServer(httpsServer: https.Server): void
+  export function startInHttpsServer(httpsServer: https.Server): void
   {
-    if (this.webSocketServer !== "Not running")
+    if (webSocketServer !== "Not running")
     {
       throw Error("Failed to start websocket server"
         + " because it's already running");
@@ -48,66 +69,23 @@ export class WebSocketServer
 
     Syslog.log("[WEBSOCKET_SERVER]", "Starting websocket server");
 
-    this.webSocketServer = new WebSocket.Server({ server: httpsServer });
+    webSocketServer = new WebSocket.Server({ server: httpsServer });
 
-    this.webSocketServer.on
+    webSocketServer.on
     (
       "connection",
-      (socket, request) =>
-      {
-        this.onNewConnection(socket, request);
-      }
+      (socket, request) => { onNewConnection(socket, request); }
     );
+
+    status.isOpen = true;
 
     // Unlike http server websocket server is up immediately so
     // we don't have to register handler for 'listening' event
     // (in fact, there is no such event on websocket server).
-    //   But since the websocket server runs inside a https server,
+    //  But since the websocket server runs inside a https server,
     // it must be started after onStartListening() is fired on https
     // server.
     Syslog.log("[WEBSOCKET_SERVER]", `Websocket server is up and listening`);
-
-    this.open = true;
-  }
-
-  // ---------------- Event handlers --------------------
-
-  private onNewConnection
-  (
-    webSocket: WebSocket,
-    request: http.IncomingMessage
-  )
-  : void
-  {
-    const ip = parseIpAddress(request);
-    const url = request.url;
-
-    // Request.url is only valid for requests obtained from http.Server
-    // (which should be our case).
-    if (url === undefined)
-    {
-      ERROR("Invalid 'request.url'. This probably means that"
-        + " websocket server is used outside of http server."
-        + " Connection is denied");
-
-      denyConnection(webSocket, "Invalid request.url", ip);
-      return;
-    }
-
-    if (!this.isOpen())
-    {
-      denyConnection(webSocket, "Server is closed", ip, url);
-      return;
-    }
-
-    try
-    {
-      acceptConnection(webSocket, ip, url);
-    }
-    catch (error)
-    {
-      Syslog.reportUncaughtException(error);
-    }
   }
 }
 
@@ -125,14 +103,14 @@ function acceptConnection(webSocket: WebSocket, ip: string, url: string): void
 {
   try
   {
-    const connection = Connections.newConnection(webSocket, ip, url);
+    Connections.newConnection(webSocket, ip, url);
 
     Syslog.log("[WEBSOCKET_SERVER]", `Accepting`
-      + ` connection ${connection.getOrigin()}`);
+      + ` connection ${composeAddress(ip, url)}`);
   }
   catch (error)
   {
-    REPORT(error, "Failed to accept connection");
+    REPORT(error, `Failed to accept connection ${composeAddress(ip, url)}`);
   }
 }
 
@@ -145,10 +123,50 @@ function denyConnection
 )
 : void
 {
-  const address = url ? `(${url} [${ip}])` : `[${ip}]`;
+  const address = composeAddress(ip, url);
 
-  Syslog.log("[WEBSOCKET_SERVER]", `Denying`
-    + ` connection ${address}: ${reason}`);
+  Syslog.log("[WEBSOCKET_SERVER]", `Denying connection ${address}: ${reason}`);
 
   socket.close();
+}
+
+function composeAddress(ip: string, url?: string): string
+{
+  if (url)
+    return `[${url} (${ip})]`;
+
+  return `[${ip}]`;
+}
+
+// ---------------- Event handlers --------------------
+
+function onNewConnection
+(
+  webSocket: WebSocket,
+  request: http.IncomingMessage
+)
+: void
+{
+  const ip = parseIpAddress(request);
+  const url = request.url;
+
+  // Request.url is only valid for requests obtained from http.Server
+  // (which should be our case).
+  if (url === undefined)
+  {
+    ERROR("Invalid 'request.url'. This probably means that"
+      + " websocket server is used outside of http server."
+      + " Connection is denied");
+
+    denyConnection(webSocket, "Invalid request.url", ip);
+    return;
+  }
+
+  if (!status.isOpen)
+  {
+    denyConnection(webSocket, "Server is closed", ip, url);
+    return;
+  }
+
+  acceptConnection(webSocket, ip, url);
 }
