@@ -6,14 +6,13 @@
 
 /*
   WebSocket server is running inside a https server so we don't
-  need an extra port for websocket communication (it's going over
+  need an extra port for WebSocket communication (it's going over
   https port) and it enjoys the perks of https security.
 */
 
 import { REPORT } from "../../Shared/Log/REPORT";
 import { ERROR } from "../../Shared/Log/ERROR";
 import { Syslog } from "../../Server/Log/Syslog";
-// import { Connection } from "../../Server/Net/Connection";
 import { Connections } from "../../Server/Net/Connections";
 
 // Node.js modules.
@@ -150,7 +149,7 @@ function onNewConnection
   const ip = parseIpAddress(request);
   const url = request.url;
 
-  // Request.url is only valid for requests obtained from http.Server
+  // Request.url is only valid for requests obtained from http(s).Server
   // (which should be our case).
   if (url === undefined)
   {
