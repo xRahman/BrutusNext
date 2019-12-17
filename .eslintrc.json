@@ -889,7 +889,7 @@
       // Enforce a maximum number of statements allowed in function blocks.
       "max-statements": [ "error", { "max": 15 } ],
       // Enforce a maximum number of statements allowed per line.
-      "max-statements-per-line": [ "error", { "max": 1 } ],
+      "max-statements-per-line": [ "error", { "max": 2 } ],
       // Enforce a particular style for multiline comments.
       // (None of the options is useful.)
       "multiline-comment-style": "off",
@@ -900,8 +900,8 @@
       [
         "error",
         {
-          "newIsCapExceptionPattern": "^ERROR|REPORT|RETHROW$",
-          "capIsNewExceptionPattern": "^ERROR|REPORT|RETHROW$"
+          "newIsCapExceptionPattern": "^ERROR|REPORT|Express$",
+          "capIsNewExceptionPattern": "^ERROR|REPORT|Express$"
         }
       ],
       // Enforce or disallow parentheses when invoking a constructor
