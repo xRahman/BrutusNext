@@ -67,6 +67,13 @@ function browserSupportsWebSockets(): boolean
   return typeof WebSocket !== "undefined";
 }
 
+// ! Throws exception on error.
+function processData(data: string): void
+{
+  // TODO
+  console.log(`Data from the server: ${data}`);
+}
+
 // ---------------- Event handlers --------------------
 
 function onBeforeUnload(event: BeforeUnloadEvent): void
@@ -80,6 +87,7 @@ function onBeforeUnload(event: BeforeUnloadEvent): void
   if (webSocket.readyState === WebSocket.CLOSED)
     return;
 
+  // TODO: Otestovat
   // Close the connection to prevent browser from closing it
   // abnormally with event code 1006.
   //   For some strange reson this doesn't always work in Chrome.
@@ -88,7 +96,7 @@ function onBeforeUnload(event: BeforeUnloadEvent): void
   // but sometimes code will be 1006 instead of 1000. To circumvent
   // this, we send WebSocketEvent.REASON_CLOSE when socket is closed
   // from onBeforeUnload() and we check for it in ServerSocket.onClose().
-  webSocket.close(WebSocketEvent.TAB_CLOSED);
+  webSocket.close(WebSocketEvent.CLOSED_BY_CLOSING_BROWSER_TAB);
 }
 
 function onOpen(event: SocketUtils.OpenEvent): void
@@ -105,15 +113,15 @@ async function onMessage(event: SocketUtils.MessageEvent): Promise<void>
     // handler so there is noone else to catch this exception.
     REPORT
     (
-      new Error(`Websocket ${urlAndIp} received non-string data. Message`
-        + ` will not be processed because we can only process string data`)
+      new Error(`Websocket received non-string data.`
+        + ` Message will not be processed`)
     );
     return;
   }
 
   try
   {
-    await processData(event.data, urlAndIp);
+    await processData(event.data);
   }
   catch (error)
   {
