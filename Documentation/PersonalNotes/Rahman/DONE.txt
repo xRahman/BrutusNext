@@ -1,3 +1,8 @@
+TODO: Zvážit, jestli by typy přece jen neměly bejt dependancy místo
+  dev dependancy.
+- jo, mají být dependancy, prorože jsou používané v runtime kódu.
+[done]
+
 TODO: RETHROW možná není potřeba, dělám to ručně a možná je to tak
   čitelnější.
 - RETHROW() určitě zrušit, throw Error() je dostatečně výmluvné

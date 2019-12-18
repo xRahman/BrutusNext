@@ -1,6 +1,3 @@
-TODO: Zvážit, jestli by typy přece jen neměly bejt dependancy místo
-  dev dependancy.
-- jo, mají být dependancy, prorože jsou používané v runtime kódu.
 
 TODO: ErrorUtils by mohly být v Shared/Log
 - a obnecně XyUtils by mohly být vždycky někde kontextově a ne ve Shared/Utils
