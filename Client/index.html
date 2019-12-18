@@ -1,0 +1,42 @@
+<!doctype html>
+<!--<html lang="en-us" dir="ltr">-->
+<html>
+
+  <head>  
+    <title>BrutusNext</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="shortcut icon" href="/icons/favicon.ico" />
+    <!--
+    <link rel="stylesheet" href="/css/normalize.css" type="text/css" />
+    <link rel="stylesheet" href="/css/BrutusNextDefault.css" type="text/css" />
+    -->
+  </head>
+
+  <body>
+
+    <!-- Phaser should be imported as a module but I can't make it work. -->
+    <!--
+    <script src="/js/phaser/phaser.js"></script>
+    <script src="/js/phaser/AnimatedTiles.js"></script>
+    -->
+
+    <!--
+      Run javascript module loader, then run script Main.js
+
+      IMPORTANT: Main.js should be listed last so everything
+      else is loaded before it is launched.
+    -->
+    <!--
+    <script src="/js/requirejs/require.js" data-main="/js/Main.js"></script>
+    -->
+    <!--
+      // Až budou fungovat ES6 moduly, tak se pak používají takhle:
+      // (teď nefungují, protože browser vyžaduje '.js' na konci a typescript
+      //  ho tam nedává.)
+    -->
+    <script type="module" src="./js/Client/BrutusNextClient.js"></script>
+
+  </body>
+
+</html>
