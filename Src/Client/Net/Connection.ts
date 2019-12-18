@@ -1,4 +1,143 @@
-/*  Part of Kosmud  */
+/*
+  Part of BrutusNext
+
+  A connection to the server
+*/
+
+import { Syslog } from "../../Shared/Log/Syslog";
+import { SocketUtils } from "../../Shared/Net/SocketUtils";
+import { WebSocketEvent } from "../../Shared/Net/WebSocketEvent";
+
+// 3rd party modules.
+// Use 'isomorphic-ws' to use the same code on both client and server.
+import * as WebSocket from "isomorphic-ws";
+
+let webSocket: (WebSocket | "disconnected") = "disconnected";
+
+export namespace Connection
+{
+  // ! Throws exception on error.
+  export function connect(): void
+  {
+    if (isOpen())
+      throw Error("Connection to the server is already open");
+
+    if (!browserSupportsWebSockets())
+    {
+      throw Error("Failed to connect to the server because"
+        + " browser doesn't support WebSockets");
+    }
+
+    window.onbeforeunload = (event: BeforeUnloadEvent) =>
+    {
+      onBeforeUnload(event);
+    };
+
+    // There is no point in error handling here, because opening
+    // a socket is asynchronnous. If an error occurs, 'error' event
+    // is fired and onSocketError() is executed.
+    //   For the same reason we can't send anything to the socket until
+    // it's actually open - see this.onOpen().
+    //   We don't need to specify port because websocket server runs
+    // inside https server so it automaticaly uses https port.
+    webSocket = new WebSocket(`wss://${window.location.hostname}`);
+
+    webSocket.onopen = (event) => { onOpen(event); };
+    webSocket.onmessage = async (event) => { await onMessage(event); };
+    webSocket.onerror = (event) => { onError(event); };
+    webSocket.onclose = (event) => { onClose(event); };
+  }
+
+  export function isOpen(): boolean
+  {
+    if (webSocket === "disconnected")
+      return false;
+
+    // Note that testing 'readyState === WebSocket.CLOSED' isn't
+    // the same as 'readyState !== WebSocket.OPEN'. There are also
+    // 'WebSocket.CONNECTING' and 'WebSocket.CLOSING' ready states.
+    return webSocket.readyState === WebSocket.OPEN;
+  }
+}
+
+// ----------------- Auxiliary Functions ---------------------
+
+function browserSupportsWebSockets(): boolean
+{
+  return typeof WebSocket !== "undefined";
+}
+
+// ---------------- Event handlers --------------------
+
+function onBeforeUnload(event: BeforeUnloadEvent): void
+{
+  if (webSocket === "disconnected")
+    return;
+
+  if (webSocket.readyState === WebSocket.CLOSING)
+    return;
+
+  if (webSocket.readyState === WebSocket.CLOSED)
+    return;
+
+  // Close the connection to prevent browser from closing it
+  // abnormally with event code 1006.
+  //   For some strange reson this doesn't always work in Chrome.
+  // If we call socket.close(1000, "Tab closed"), onClose() event
+  // handler on respective server socket will receive the reason
+  // but sometimes code will be 1006 instead of 1000. To circumvent
+  // this, we send WebSocketEvent.REASON_CLOSE when socket is closed
+  // from onBeforeUnload() and we check for it in ServerSocket.onClose().
+  webSocket.close(WebSocketEvent.TAB_CLOSED);
+}
+
+function onOpen(event: SocketUtils.OpenEvent): void
+{
+  // Do nothing.
+}
+
+async function onMessage(event: SocketUtils.MessageEvent): Promise<void>
+{
+  if (typeof event.data !== "string")
+  {
+    // Create the Error object so the stack trace is logged and
+    // report it stright away beacuse we are the top level event
+    // handler so there is noone else to catch this exception.
+    REPORT
+    (
+      new Error(`Websocket ${urlAndIp} received non-string data. Message`
+        + ` will not be processed because we can only process string data`)
+    );
+    return;
+  }
+
+  try
+  {
+    await processData(event.data, urlAndIp);
+  }
+  catch (error)
+  {
+    Syslog.reportUncaughtException(error);
+  }
+}
+
+function onError(event: SocketUtils.ErrorEvent): void
+{
+  let message = "Socket error occured";
+
+  if (event.message)
+    message += `: ${event.message}`;
+
+  message += `. Connection to the server will close`;
+
+  Syslog.log("[WEBSOCKET]", message);
+}
+
+function onClose(event: SocketUtils.CloseEvent): void
+{
+  // Do nothing.
+}
+
 
 // import { ClassFactory } from "../../Shared/Class/ClassFactory";
 // import { WebSocketEvent } from "../../Shared/Net/WebSocketEvent";

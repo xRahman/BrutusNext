@@ -11,6 +11,8 @@
 
 export namespace Types
 {
+  // TODO: Reslove a Rejct možná hodit do PromiseUtils.
+
   // Used for example in 'new Promise((resolve, reject) => { ... })'.
   export type ResolveFunction<T> = (value?: T | PromiseLike<T>) => void;
 

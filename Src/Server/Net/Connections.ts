@@ -15,32 +15,27 @@ const connections = new Set<Connection>();
 
 export namespace Connections
 {
-// // TODO: Na co se tohle používá? Má to bejt public?
-// // ! Throws exception on error.
-// export function removeConnection(connection: Connection): void
-// {
-//   if (!connections.has(connection))
-//   {
-//     throw Error(`Attempt to release connection`
-//       + ` ${connection.getPlayerInfo()} which doesn't exist`);
-//   }
-
-//   connections.delete(connection);
-// }
-
   export function newConnection
   (
     webSocket: WebSocket,
     ip: string,
     url: string
   )
-  : Connection
+  : void
   {
     const connection = new Connection(webSocket, ip, url);
 
     connections.add(connection);
+  }
 
-    return connection;
+  // ! Throws exception on error.
+  export function release(connection: Connection): void
+  {
+    if (!connections.delete(connection))
+    {
+      throw Error(`Attempt to release connection ${connection.urlAndIp}`
+        + ` which isn't listed in Connections`);
+    }
   }
 
   // ! Throws exception on error.

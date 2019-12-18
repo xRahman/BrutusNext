@@ -10,9 +10,9 @@
   https port) and it enjoys the perks of https security.
 */
 
-import { REPORT } from "../../Shared/Log/REPORT";
 import { ERROR } from "../../Shared/Log/ERROR";
 import { Syslog } from "../../Server/Log/Syslog";
+import { SocketUtils } from "../../Shared/Net/SocketUtils";
 import { Connections } from "../../Server/Net/Connections";
 
 // Node.js modules.
@@ -100,17 +100,11 @@ function parseIpAddress(request: http.IncomingMessage): string
 
 function acceptConnection(webSocket: WebSocket, ip: string, url: string): void
 {
-  try
-  {
-    Connections.newConnection(webSocket, ip, url);
+  const urlAndIp = SocketUtils.urlAndIp(ip, url);
 
-    Syslog.log("[WEBSOCKET_SERVER]", `Accepting`
-      + ` connection ${composeAddress(ip, url)}`);
-  }
-  catch (error)
-  {
-    REPORT(error, `Failed to accept connection ${composeAddress(ip, url)}`);
-  }
+  Syslog.log("[WEBSOCKET_SERVER]", `Accepting connection ${urlAndIp}`);
+
+  Connections.newConnection(webSocket, ip, url);
 }
 
 function denyConnection
@@ -118,23 +112,18 @@ function denyConnection
   socket: WebSocket,
   reason: string,
   ip: string,
-  url?: string
+  url: string
 )
 : void
 {
-  const address = composeAddress(ip, url);
+  const address = SocketUtils.urlAndIp(ip, url);
 
   Syslog.log("[WEBSOCKET_SERVER]", `Denying connection ${address}: ${reason}`);
 
+  // TODO: Poslat do socketu informaci, že server nepřijal connection (a proč).
+  // - asi poslat packet, ať ho client může rozumně zpracovat.
+
   socket.close();
-}
-
-function composeAddress(ip: string, url?: string): string
-{
-  if (url)
-    return `[${url} (${ip})]`;
-
-  return `[${ip}]`;
 }
 
 // ---------------- Event handlers --------------------
@@ -157,7 +146,7 @@ function onNewConnection
       + " websocket server is used outside of http server."
       + " Connection is denied");
 
-    denyConnection(webSocket, "Invalid request.url", ip);
+    denyConnection(webSocket, "Invalid request.url", ip, "invalid url");
     return;
   }
 

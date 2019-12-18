@@ -6,6 +6,7 @@
 
 import { REPORT } from "../../Shared/Log/REPORT";
 import { Syslog } from "../../Shared/Log/Syslog";
+import { ErrorUtils } from "../../Shared/Utils/ErrorUtils";
 import { WebSocketEvent } from "../../Shared/Net/WebSocketEvent";
 
 // 3rd party modules.
@@ -84,16 +85,18 @@ export abstract class Socket
   // ! Throws exception on error.
   public close(reason?: string): void
   {
-    // TODO: Tohle je tu asi taky zbytečně.
-    if (this.isClosingOrClosed())
-    {
-      throw Error(`Failed to close socket to ${this.getOrigin()}`
-        + ` because it is already closing or closed`);
-    }
+    // if (this.isClosing() || this.isClosed())
+    //   return;
 
-    // TODO: Proč se tady volá close? Však tohle by měla bejt
-    //   informace o tom, že se socket zavírá, ne?
-    this.webSocket.close(WebSocketEvent.NORMAL_CLOSE, reason);
+    try
+    {
+      this.webSocket.close(WebSocketEvent.CLOSED_BY_APPLICATION, reason);
+    }
+    catch (error)
+    {
+      // TODO: Dát do message adresu.
+      throw ErrorUtils.prependMessage("Failed to close socket", error);
+    }
   }
 
   // --------------- Protected methods ------------------
@@ -130,18 +133,20 @@ export abstract class Socket
     }
 
     message += `. Code: ${event.code}.`;
-    message += ` Description: "${WebSocketEvent.description(event.code)}"`;
+    message += ` Description: "${WebSocketEvent.getDescription(event.code)}"`;
 
     Syslog.log("[WEBSOCKET]", message);
   }
 
-  protected isClosingOrClosed(): boolean
-  {
-    const isClosing = this.webSocket.readyState === WebSocket.CLOSING;
-    const isClosed = this.webSocket.readyState === WebSocket.CLOSED;
+  // protected isClosing(): boolean
+  // {
+  //   return this.webSocket.readyState === WebSocket.CLOSING;
+  // }
 
-    return isClosing || isClosed;
-  }
+  // protected isClosed(): boolean
+  // {
+  //   return this.webSocket.readyState === WebSocket.CLOSED;
+  // }
 
   protected hasBeenOpened(): boolean
   {

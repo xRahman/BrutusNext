@@ -176,18 +176,16 @@ const codeRanges: Array<SingleValue | RangeOfValues> =
 
 export namespace WebSocketEvent
 {
-  // TODO: Je tohle třeba exportit?
-  export const NORMAL_CLOSE = 1000;
+  export const CLOSED_BY_APPLICATION = 4000;
 
   export const TAB_CLOSED = "Browser tab has been closed.";
 
-  export function isNormalClose(code: number): boolean
-  {
-    return code === NORMAL_CLOSE;
-  }
+  // export function isNormalClose(code: number): boolean
+  // {
+  //   return code === NORMAL_CLOSE;
+  // }
 
-  // TODO: Spíš getDescription().
-  export function description(code: number): string
+  export function getDescription(code: number): string
   {
     for (const codeRange of codeRanges)
     {
