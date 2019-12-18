@@ -672,7 +672,13 @@
       // Disallow 'void' operators.
       "no-void": "error",
       // Disallow specified warning terms in comments.
-      "no-warning-comments": [ "warn", { "terms": [ "todo", "fixme" ] } ],
+      "no-warning-comments":
+      [
+        "warn",
+        {
+          "terms": [ "todo", "fixme", "test" ]
+        }
+      ],
       // Disallow 'with' statements.
       "no-with": "error",
       // Enforce using named capture group in regular expression.
