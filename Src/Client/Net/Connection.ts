@@ -75,6 +75,18 @@ function processData(data: string): void
   console.log(`Data from the server: ${data}`);
 }
 
+// ! Throws exception on error.
+function sendData(data: string): void
+{
+  if (webSocket === "disconnected" || !Connection.isOpen())
+  {
+    throw Error("Failed to send data to the server"
+      + " because the connection is closed");
+  }
+
+  webSocket.send(data);
+}
+
 // ---------------- Event handlers --------------------
 
 function onBeforeUnload(event: BeforeUnloadEvent): void
@@ -103,6 +115,9 @@ function onBeforeUnload(event: BeforeUnloadEvent): void
 function onOpen(event: SocketUtils.OpenEvent): void
 {
   // Do nothing.
+
+  // TEST
+  sendData("TEST: Client has connected");
 }
 
 function onMessage(event: SocketUtils.MessageEvent): void
@@ -136,8 +151,6 @@ function onError(event: SocketUtils.ErrorEvent): void
 
   if (event.message)
     message += `: ${event.message}`;
-
-  message += `. Connection to the server will close`;
 
   Syslog.log("[WEBSOCKET]", message);
 }
