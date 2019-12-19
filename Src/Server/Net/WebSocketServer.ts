@@ -10,6 +10,9 @@
   https port) and it enjoys the perks of https security.
 */
 
+/// TODO: Implement detection of broken connections (by sending
+///   pings in regular intervals).
+
 import { ERROR } from "../../Shared/Log/ERROR";
 import { Syslog } from "../../Server/Log/Syslog";
 import { SocketUtils } from "../../Shared/Net/SocketUtils";

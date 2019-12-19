@@ -4,6 +4,9 @@
   A connection to the server
 */
 
+/// TODO: Implement detection of broken connections (by sending
+///   pings in regular intervals).
+
 import { REPORT } from "../../Shared/Log/REPORT";
 import { Syslog } from "../../Shared/Log/Syslog";
 import { SocketUtils } from "../../Shared/Net/SocketUtils";

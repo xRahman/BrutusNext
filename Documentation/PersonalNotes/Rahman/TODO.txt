@@ -60,11 +60,21 @@ IDEA: HttpsServer by se mohl jmenovat jen Http.
 
 - a nebo možná založit Servers.ts a volat Servers.start().
 
+------------------------------------------------------------------------------
 
+Detekce "stale" socketů
+------------------------
 
+Spojení se může přerušit způsobem, o kterém se server ani klient
+přímo nedozví - například rozpojením kabelu. Zjišťuje se to pravidelným
+posíláním pingu a kontrolou, že dorazil.
+
+=> Tohle teď implementovat nebudu, není to nutně potřeba na hratelnou verzi.
 
 TODO: Posílat ping do websocketu, viz
-  https://github.com/websockets/ws
+  https://github.com/websockets/ws#how-to-detect-and-close-broken-connections
+
+------------------------------------------------------------------------------
 
 Proč jsou vlastně WebSocketServer a Https server classy?
   Však jsou to beztak singletony.
