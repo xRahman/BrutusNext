@@ -9,6 +9,30 @@
                           Client application
 */
 
+import { REPORT } from "../Shared/Log/REPORT";
+import { Syslog } from "../Client/Log/Syslog";
+import { Connection } from "../Client/Net/Connection";
+
+function start(): void
+{
+  Syslog.log("[CLIENT]", "Starting Kosmud client...");
+
+  try
+  {
+    // Gui.init();
+    // await Renderer.init();
+    Connection.connect();
+  }
+  catch (error)
+  {
+    REPORT(error, "Failed to start the client");
+    alert(`Failed to start`);
+  }
+}
+
+// tslint:disable-next-line:no-floating-promises
+start();
+
 // import { REPORT } from "../Shared/Log/REPORT";
 // import { Syslog } from "../Client/Log/Syslog";
 // import { Gui } from "../Client/Gui/Gui";
