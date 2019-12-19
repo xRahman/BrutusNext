@@ -14,28 +14,18 @@
   </head>
 
   <body>
-
-    <!-- Phaser should be imported as a module but I can't make it work. -->
-    <!--
-    <script src="/js/phaser/phaser.js"></script>
-    <script src="/js/phaser/AnimatedTiles.js"></script>
-    -->
-
     <!--
       Run javascript module loader, then run script Main.js
 
       IMPORTANT: Main.js should be listed last so everything
       else is loaded before it is launched.
     -->
-    <!--
     <script src="/js/requirejs/require.js" data-main="/js/Main.js"></script>
-    -->
     <!--
-      // Až budou fungovat ES6 moduly, tak se pak používají takhle:
-      // (teď nefungují, protože browser vyžaduje '.js' na konci a typescript
-      //  ho tam nedává.)
-    -->
+      When npm modules are useable as es6 modules, this is how es modules
+      are used:
     <script type="module" src="./js/Client/BrutusNextClient.js"></script>
+    -->
 
   </body>
 
