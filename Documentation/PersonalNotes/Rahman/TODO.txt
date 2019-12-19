@@ -1,11 +1,5 @@
 
-
-TODO: Přejmenovat adresář /Build na /Server. V něm bude /js, stejně
-  jako v /Client, a do něj se bude buildit. Data na serveru budou tudíž
-  v adresáři /Server.
-
-TODO: V Client/js by měl bejt adresář BrutusNext a v něm až /Shared a /Client.
-  To samý na serveru.
+TODO: Přesunout /Keys do /Server/Keys
 
 ------------------------------------------------------------------------------
 

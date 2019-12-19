@@ -1,3 +1,12 @@
+TODO: Přejmenovat adresář /Build na /Server. V něm bude /js, stejně
+  jako v /Client, a do něj se bude buildit. Data na serveru budou tudíž
+  v adresáři /Server.
+[done]
+
+TODO: V Client/js by měl bejt adresář BrutusNext a v něm až /Shared a /Client.
+  To samý na serveru.
+[done]
+
 TODO: Možná rozdělit typ Syslog.messageType na ok message a error message.
 - zamítnuto, errory se reportují jinak než pomocí Syslog.log().
 [won't do]
