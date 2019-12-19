@@ -1,35 +1,34 @@
 {
-    "version": "0.2.0",
-    "configurations":
-    [
-        {
-            "name": "Launch BrutusNext Server",
-            "type": "node", // default
-            "request": "launch",
-            "protocol": "inspector",
-            "program": "${workspaceRoot}/Src/Server/BrutusNextServer.ts",
-            "stopOnEntry": false,
-            "args": [],
-            "cwd": "${workspaceRoot}",
-            "preLaunchTask": null,
-            "runtimeExecutable": null,
-            "runtimeArgs":
-            [
-                "--nolazy"/*,
-                "--harmony_rest_parameters",
-                "--harmony_proxies"*/
-            ],
-            "env":
-            {
-                "NODE_ENV": "development"
-                // This is needed so we don't have to use '../../' in imports
-                // ('baseUrl' does this on the client).
-                // "NODE_PATH": "${cwd}/Build/js"
-            },
-            "console": "externalTerminal",
-            "sourceMaps": true,
-            // "trace": true, // Enables logging.
-            "outFiles": [ "${workspaceRoot}/Build/js/**/*.js" ]
-        }
-    ]
+  "version": "0.2.0",
+  "configurations":
+  [
+    {
+      "name": "Launch BrutusNext Server",
+      "type": "node", // default
+      "request": "launch",
+      "protocol": "inspector",
+      "program": "${workspaceRoot}/Src/Server/BrutusNextServer.ts",
+      "stopOnEntry": false,
+      "args": [],
+      "cwd": "${workspaceRoot}",
+      "preLaunchTask": null,
+      "runtimeExecutable": null,
+      "runtimeArgs":
+      [
+        // "nolazy" flag is needed for the breakpoints to work.
+        "--nolazy"
+      ],
+      "env":
+      {
+        "NODE_ENV": "development"
+        // This is needed so we don't have to use '../../' in imports
+        // ('baseUrl' does this on the client).
+        // "NODE_PATH": "${cwd}/Build/js"
+      },
+      "console": "externalTerminal",
+      "sourceMaps": true,
+      // "trace": true, // Enables logging.
+      "outFiles": [ "${workspaceRoot}/Server/js/BrutusNext/**/*.js" ]
+    }
+  ]
 }

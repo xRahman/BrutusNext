@@ -17,7 +17,7 @@
     // "traceResolution": true, // Print module resolution to terminal.
     "newLine": "LF",
     "noEmitOnError": true,
-    "outDir": "../../Client/js",
+    "outDir": "../../Client/js/BrutusNext",
     // 'rootDir' points to Src directory.
     "rootDir": "../",
     // Unfortunaly this doesn't work very well in vs code.

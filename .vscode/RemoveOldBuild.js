@@ -10,10 +10,8 @@ const fs = require('fs-extra');
 
 console.log('Removing old build...');
 
-rmTree("./Client/js/Client");
-rmTree("./Client/js/Shared");
-rmTree("./Build/js/Server");
-rmTree("./Build/js/Shared");
+rmTree("./Client/js/BrutusNext");
+rmTree("./Server/js/BrutusNext");
 
 // Removes directory 'path' even if it's not empty.
 function rmTree(path)
