@@ -1,0 +1,27 @@
+------------------------------------------------------------------------------
+
+Detekce "stale" socketů
+------------------------
+
+Spojení se může přerušit způsobem, o kterém se server ani klient
+přímo nedozví - například rozpojením kabelu. Zjišťuje se to pravidelným
+posíláním pingu a kontrolou, že dorazil.
+
+=> Tohle teď implementovat nebudu, není to nutně potřeba na hratelnou verzi.
+
+TODO: Posílat ping do websocketu, viz
+  https://github.com/websockets/ws#how-to-detect-and-close-broken-connections
+
+------------------------------------------------------------------------------
+
+Graceful shutdown
+------------------
+
+TODO: node.js process se neukončí, dokud běží http server (a asi i https
+  a web socket server).
+
+- problém je, že serverům se dá zavolat .close(), ale to neukončí stávající
+  connections. Graceful shutdown je poměrně komplikovaná asynchronní
+  záležitost.
+
+------------------------------------------------------------------------------

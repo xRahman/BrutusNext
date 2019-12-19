@@ -1,0 +1,21 @@
+-----------------------------------------------------------------------------
+
+ÚVAHA: kdy házet REPORT(error)
+
+- asi když k tomu můžu dát smysluplnou informaci
+
+Obecně asi nemá smysl probublávat chyby až do top-level funkcí. Dokonce
+  v nich mám i napsáno, že by měly bejt odchycené dřív.
+
+IDEA: Možná se řídit tím, co jsem sám napsal do komentáře k funkci REPORT():
+- když bych vyhodil ERROR() a dal return, tak je lepší místo toho hodit
+  exception. Výjimka mě prostě vyhodí z předpokládanýho stavu věcí.
+
+Ještě jde o to, že s výjimkou můžu něco dělat. Když posílám broadcast
+  do všech connectionů a jeden z nich failne, tak to asi ničemu nevadí
+  a můžu to klidně poslat do všech zbylých. Když ale posílám třeba nějakou
+  entitu na klienta a neprojde to, tak bych dál neměl pracovat s tím,
+  že je úspěšně poslaná. Tj. potřebuju, aby výjimka vybublala nahoru,
+  protože to je informace o tom, že se to celé nepovedlo.
+
+------------------------------------------------------------------------------

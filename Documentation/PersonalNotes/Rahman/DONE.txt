@@ -1,3 +1,20 @@
+TODO: Možná rozdělit typ Syslog.messageType na ok message a error message.
+- zamítnuto, errory se reportují jinak než pomocí Syslog.log().
+[won't do]
+
+Proč jsou vlastně WebSocketServer a Https server classy?
+  Však jsou to beztak singletony.
+TODO: Předělat je na namespacy.
+[done]
+
+U socketu to je už jiná otázka, těch může bejt víc a různě se na něj věšej
+  event handlery a tak.
+- možná na klientu to nemusí bejt classa.
+[done]
+
+TODO: Udělat z WebSocketServer namespace.
+[done]
+
 TODO: Zvážit, jestli by typy přece jen neměly bejt dependancy místo
   dev dependancy.
 - jo, mají být dependancy, prorože jsou používané v runtime kódu.
