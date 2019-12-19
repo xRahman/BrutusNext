@@ -66,6 +66,14 @@ export namespace HttpsServer
       () => { onHttpsStartListening(); }
     );
   }
+
+  export function shutdown(): void
+  {
+    WebSocketServer.shutdown();
+
+    if (httpsServer !== "Not running")
+      httpsServer.close();
+  }
 }
 
 // ----------------- Auxiliary Functions ---------------------

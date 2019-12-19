@@ -86,6 +86,15 @@ export namespace WebSocketServer
     // server.
     Syslog.log("[WEBSOCKET_SERVER]", `Websocket server is up and listening`);
   }
+
+  export function shutdown(): void
+  {
+    /// TODO: Let all connected players know that server is shuttting down,
+    ///   then close all connections and only then close the server.
+
+    if (webSocketServer !== "Not running")
+      webSocketServer.close();
+  }
 }
 
 // ----------------- Auxiliary Functions ---------------------

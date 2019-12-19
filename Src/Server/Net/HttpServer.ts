@@ -52,6 +52,12 @@ export namespace HttpServer
 
     redirectHttpToHttps(express);
   }
+
+  export function shutdown(): void
+  {
+    if (httpServer !== "Not running")
+      httpServer.close();
+  }
 }
 
 // ---------------- Event handlers --------------------

@@ -23,7 +23,7 @@ export const timeOfBoot = new Date();
 import * as SourceMapSupport from "source-map-support";
 SourceMapSupport.install();
 
-async function startBrutusNextServer(): Promise<void>
+async function runBrutusNextServer(): Promise<void>
 {
   Syslog.log("[SERVER]", "Starting BrutusNext server");
 
@@ -43,10 +43,23 @@ async function startBrutusNextServer(): Promise<void>
 
   // await Engine.loop();
 
+  /// TODO:
+  // Node.js application won't finish here as long as http
+  // and https servers are open so we need to shut them down.
+  // Calling their 'close()' methods, however, is not enough,
+  // because they will wait for existing connections to close.
+  // So the correct solution probably is to close all connections
+  // first (and prefferably let the users know what is going on)
+  // and close the servers after that. That will probably be
+  // an asynchronous operation so we will actualy have to await
+  // the shutdown here.
+  //   All shutdown operations should also be properly logged.
+  // WebServer.shutdown();
+
   Syslog.log("[SERVER]", "BrutusNext server has stopped normally");
 }
 
-startBrutusNextServer().catch
+runBrutusNextServer().catch
 (
   (reason: any) =>
   {

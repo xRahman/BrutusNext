@@ -51,6 +51,19 @@ export namespace WebServer
 
     serveStaticFiles();
   }
+
+  // ! Throws exception on error.
+  export function shutdown(): void
+  {
+    // It's probably a good idea to shutdown https server first,
+    // because http server only redirects trafic to https, so
+    // when we shut it down, http requests won't get any reply.
+    // ! Throws exception on error.
+    HttpsServer.shutdown();
+
+    // ! Throws exception on error.
+    HttpServer.shutdown();
+  }
 }
 
 // ----------------- Auxiliary Functions ---------------------
