@@ -706,8 +706,8 @@
       //  strict mode.)
       "strict": [ "error", "never" ],
 
-      // Require or disallow initialization in variable declarations.
-      "init-declarations": "error",
+      // Require initialization in variable declarations.
+      "init-declarations": "off",
       // Disallow deleting variables.
       "no-delete-var": "error",
       // Disallow labels that share a name with a variable.
