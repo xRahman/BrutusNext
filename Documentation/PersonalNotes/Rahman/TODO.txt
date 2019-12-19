@@ -1,3 +1,7 @@
+TODO: V Client/js by měl bejt adresář BrutusNext a v něm až /Shared a /Client.
+  To samý na serveru.
+
+------------------------------------------------------------------------------
 
 TODO: ErrorUtils by mohly být v Shared/Log
 - a obnecně XyUtils by mohly být vždycky někde kontextově a ne ve Shared/Utils
