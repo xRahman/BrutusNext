@@ -4,6 +4,7 @@
   A connection to the server
 */
 
+import { REPORT } from "../../Shared/Log/REPORT";
 import { Syslog } from "../../Shared/Log/Syslog";
 import { SocketUtils } from "../../Shared/Net/SocketUtils";
 import { WebSocketEvent } from "../../Shared/Net/WebSocketEvent";
@@ -43,7 +44,7 @@ export namespace Connection
     webSocket = new WebSocket(`wss://${window.location.hostname}`);
 
     webSocket.onopen = (event) => { onOpen(event); };
-    webSocket.onmessage = async (event) => { await onMessage(event); };
+    webSocket.onmessage = (event) => { onMessage(event); };
     webSocket.onerror = (event) => { onError(event); };
     webSocket.onclose = (event) => { onClose(event); };
   }
@@ -104,7 +105,7 @@ function onOpen(event: SocketUtils.OpenEvent): void
   // Do nothing.
 }
 
-async function onMessage(event: SocketUtils.MessageEvent): Promise<void>
+function onMessage(event: SocketUtils.MessageEvent): void
 {
   if (typeof event.data !== "string")
   {
@@ -121,7 +122,7 @@ async function onMessage(event: SocketUtils.MessageEvent): Promise<void>
 
   try
   {
-    await processData(event.data);
+    processData(event.data);
   }
   catch (error)
   {
@@ -145,7 +146,6 @@ function onClose(event: SocketUtils.CloseEvent): void
 {
   // Do nothing.
 }
-
 
 // import { ClassFactory } from "../../Shared/Class/ClassFactory";
 // import { WebSocketEvent } from "../../Shared/Net/WebSocketEvent";
