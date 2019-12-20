@@ -26,8 +26,8 @@ import * as https from "https";
 // 3rd party modules.
 import * as Express from "express";
 
-const PRIVATE_KEY_FILE = "./Keys/BrutusNext-key.pem";
-const CERTIFICATE_FILE = "./Keys/BrutusNext-cert.pem";
+const PRIVATE_KEY_FILE = "./Server/Keys/BrutusNext-key.pem";
+const CERTIFICATE_FILE = "./Server/Keys/BrutusNext-cert.pem";
 
 let httpsServer: (https.Server | "Not running") = "Not running";
 
