@@ -15,9 +15,7 @@ import { SyslogUtils } from "../../Shared/Log/SyslogUtils";
 SyslogUtils.logEntry = (entry: string) =>
 {
   logToStdout(entry);
-
-  /// TODO:
-  // logToFile(entry);
+  logToFile(entry);
 };
 
 SyslogUtils.logError = (error: Error) =>
@@ -25,9 +23,7 @@ SyslogUtils.logError = (error: Error) =>
   const entry = `${error.message}\n${removeErrorMessage(error.stack)}`;
 
   logToStderr(entry);
-
-  /// TODO:
-  // logToErrorFile(entry);
+  logToErrorFile(entry);
 };
 
 export { Syslog, SyslogUtils };
@@ -67,7 +63,17 @@ function logToStdout(entry: string): void
   console.log(entry);
 }
 
+function logToFile(entry: string): void
+{
+  /// TODO
+}
+
 function logToStderr(entry: string): void
 {
   console.error(entry);
+}
+
+function logToErrorFile(entry: string): void
+{
+  /// TODO
 }
