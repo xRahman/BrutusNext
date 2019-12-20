@@ -1,4 +1,4 @@
 ^old
-node_modules
-Server
-Client
+node_modules/*
+Server/*
+Client/*
