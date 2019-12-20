@@ -131,8 +131,8 @@ function denyConnection
 
   Syslog.log("[WEBSOCKET_SERVER]", `Denying connection ${address}: ${reason}`);
 
-  // TODO: Poslat do socketu informaci, že server nepřijal connection (a proč).
-  // - asi poslat packet, ať ho client může rozumně zpracovat.
+  /// TODO: Poslat do socketu informaci, že server nepřijal connection
+  // (a proč) - asi poslat packet, ať ho client může rozumně zpracovat.
 
   socket.close();
 }

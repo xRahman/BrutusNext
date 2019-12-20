@@ -10,6 +10,10 @@ pozn: volat socket.close(1000) je nejspíš špatně, protože kód 1000
   není "available for use by applications". To by mohl bejt důvod, proč
   dorazí jinek kód.
 
+TODO: V WebsocketServer.denyConnection() posílat playerovi info, že byla
+  connection zamítnuta a proč.
+
+
 ------------------------------------------------------------------------------
 
 Detekce "stale" socketů

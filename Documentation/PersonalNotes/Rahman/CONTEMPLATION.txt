@@ -1,5 +1,40 @@
 ------------------------------------------------------------------------------
 
+Socket class hierarchy
+------------------------
+
+'Socket' zapouzdřuje WebSocket
+- nemůže se jmenovat WebSocket, protože by se to bilo, ale to asi ničemu nevadí
+- měl by řešit čistě věci kolem WebSocketu, tj. event handlery, posílání
+  raw dat (nemusí nic vědět o paketech), možná zavírání socketu, pokud
+  to bude potřeba.
+
+- otázka je, jestli by měl vůbec mít bejt onMessage() handler. Ale asi jo,
+  lepší je přetížit metodu, kteá se z handleru zavolá.
+  - tak jako tak ten handler musí bejt metoda, buď aby šel přetížit, nebo
+    aby mohl volat metodu, která jde přetížit.
+
+- Socket rozhodně nepotřebuje umět zpracovávat packety, tj. dědit ho
+  z PacketHandleru je špatně.
+
+Ze socketu by asi mělo bejt zděděný něco, co umí pracovat s paketama,
+  tj. přečíst z paketu data a poslat je do socketu a vyrobit z příchozích
+  dat paket a zavolat na něm process().
+- mohlo by to i socket zapouzdřovat, ale pak by mu to muselo předávat
+  callback na zpracování příchozích dat - v zásadě dává smysl spíš to
+  zdědění.
+
+Server verze Connection má na sobě getIp, což client verze nepotřebuje
+  (protože je připojená vždycky na server). Ale pokud to mít může
+  (bylo by to ip serveru?), tak to asi ničemu nevadí.
+Server a client verze connectionu (packet handleru) mají jinak posílání
+  paketů - při posílání na klienta se serializuje jinak než při posílání
+  na server.
+Klient určitě taky potřebuje vlastní verzi connectionu, už proto, že
+  na klientu je jen jedna connection.
+
+------------------------------------------------------------------------------
+
 ÚVAHA O ERROR REPORTINGU
 ------------------------
 
