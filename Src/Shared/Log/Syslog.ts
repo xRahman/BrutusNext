@@ -31,12 +31,12 @@ export namespace Syslog
   | "[HTTP_SERVER]"
     // Messages from https server.
   | "[HTTPS_SERVER]"
-    // Messages from websocket communication.
-  | "[WEBSOCKET]"
+    // Websocket errors.
+  | "[WEBSOCKET_ERROR]"
     // Messages from websocket server.
   | "[WEBSOCKET_SERVER]"
     // Player has connected etc.
-  | "[CONNECTION_INFO]";
+  | "[CONNECTION]";
 
   // ! This function needs to be overwritten on the client and server.
   export function log(messageType: MessageType, message: string): void

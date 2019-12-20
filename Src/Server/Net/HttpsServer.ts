@@ -5,12 +5,8 @@
 */
 
 /*
-  // Websocket server runs inside https server and is started
-  // automatically along with it.
-
-  // Http trafic is redirected to https.
-
-  // Express is used to handle security issues like directory traversing.
+  When https server comes online it starts a websocket server
+  inside it.
 */
 
 import { REPORT } from "../../Shared/Log/REPORT";

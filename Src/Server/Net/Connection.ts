@@ -143,14 +143,18 @@ function onError(event: SocketUtils.ErrorEvent, urlAndIp: string): void
 
   message += `. Connection to ${urlAndIp} will close`;
 
-  Syslog.log("[WEBSOCKET]", message);
+  // Note that it doesn't make sense to create an Error object
+  // here and report it because it would contain stack trace
+  // which would be a false clue, because the error didn't actualy
+  // happen here. So we just send the message to syslog.
+  Syslog.log("[WEBSOCKET_ERROR]", message);
 }
 
 function onClose(event: SocketUtils.CloseEvent, urlAndIp: string): void
 {
-  // Do nothing.
-  // TODO: použít Socket.logSocketClosingError().
-  //   a vůbec logovat, že jsem přišel o playera.
+  /// TODO: Better logging - who has just disconnected and why
+  /// (by closing browser tab, by losing connection...)
+  Syslog.log("[CONNECTION]", `Connection to ${urlAndIp} has closed`);
 }
 
 // ----------------- Auxiliary Functions ---------------------
@@ -338,12 +342,12 @@ async function processData(data: string, urlAndIp: string)
 // // {
 // //   if (isCausedByClosingTab(event))
 // //   {
-// //     Syslog.log("[CONNECTION_INFO]", `User ${user} has`
+// //     Syslog.log("[CONNECTION]", `User ${user} has`
 // //       + ` disconnected by closing or reloading browser tab`);
 // //   }
 // //   else
 // //   {
-// //     Syslog.log("[CONNECTION_INFO]", `User ${user} has disconnected`);
+// //     Syslog.log("[CONNECTION]", `User ${user} has disconnected`);
 // //   }
 // // }
 

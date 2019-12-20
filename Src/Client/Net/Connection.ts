@@ -155,7 +155,11 @@ function onError(event: SocketUtils.ErrorEvent): void
   if (event.message)
     message += `: ${event.message}`;
 
-  Syslog.log("[WEBSOCKET]", message);
+  // Note that it doesn't make sense to create an Error object
+  // here and report it because it would contain stack trace
+  // which would be a false clue, because the error didn't actualy
+  // happen here. So we just send the message to syslog.
+  Syslog.log("[WEBSOCKET_ERROR]", message);
 }
 
 function onClose(event: SocketUtils.CloseEvent): void

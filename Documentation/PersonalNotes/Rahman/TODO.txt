@@ -1,35 +1,15 @@
+============================================================
+ BIG TODO: Nedělat nic, co nepotřebuju na funkční prototyp!
+============================================================
 
-TODO: Přesunout /Keys do /Server/Keys
 
 ------------------------------------------------------------------------------
-
-TODO: ErrorUtils by mohly být v Shared/Log
-- a obnecně XyUtils by mohly být vždycky někde kontextově a ne ve Shared/Utils
-  (protože SyslogUtils je v zásadě privátní část Syslogu spíš než obecné
-   utility funkce).
-
-TODO: Jak přistoupit k handlerům na socketu.
-- connection na klientu je singleton. Řešil jsem to tak, že
-  v Connection.ts je static classa zděděná ze Shared.Connection,
-  která má v sobě instanci 'connection' - ouch, to je velká divočina.
-- buď z toho udělat namepace, kterej bude mít instanci connection,
-  nebo prostě v Client.Connection implementovat vlastní handlery
-  socket eventů (případně je tahat z ConnectionUtils nebo tak něčeho).
 
 IDEA: volat socket.close(1000) je nejspíš špatně, protože kód 1000
   není "available for use by applications". To by mohl bejt důvod, proč
   dorazí jinek kód.
-
-
-TODO: funkce HttpsServer.prependMessage() by asi měla bejt globální
-  (a měla by se asi jmenovat názornějš).
-- hodilo by se Error.prependMessage(), ale to asi nepůjde.
-  (nebo error.prependMessage())
-- je to ve ErrorUtils, ale nejsem si jistej, že to je dobrý pojmenování
-  (ale asi jo).
-
-TODO: Proč vlastně ze socketu při zavření removuju event listenery?
-  V příkladech se to nikde nedělá.
+TODO: Napsat a otestovat reporting closed socketu.
+  (nebo se na to vykašlat, protože to nutně nepotřebuju)
 
 
 ------------------------------------------------------------------------------
@@ -38,6 +18,7 @@ TODO: Proč vlastně ze socketu při zavření removuju event listenery?
 Proč se v onClose() na socketu volá socket.close()?
   https://github.com/heineiuo/isomorphic-ws#readme
 To je asi blbě, zrušit.
+[done]
 
 
 Socket class hierarchy
