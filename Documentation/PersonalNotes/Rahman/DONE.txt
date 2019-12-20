@@ -1,3 +1,6 @@
+TODO: Reportovat disconnect zavřením browser tabu
+[done]
+
 TODO: Proč vlastně ze socketu při zavření removuju event listenery?
   V příkladech se to nikde nedělá.
 - v novém kódu se to taky nedělá

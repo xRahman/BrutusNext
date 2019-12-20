@@ -103,16 +103,7 @@ function onBeforeUnload(event: BeforeUnloadEvent): void
   if (webSocket.readyState === WebSocket.CLOSED)
     return;
 
-  // TODO: Otestovat
-  // Close the connection to prevent browser from closing it
-  // abnormally with event code 1006.
-  //   For some strange reson this doesn't always work in Chrome.
-  // If we call socket.close(1000, "Tab closed"), onClose() event
-  // handler on respective server socket will receive the reason
-  // but sometimes code will be 1006 instead of 1000. To circumvent
-  // this, we send WebSocketEvent.REASON_CLOSE when socket is closed
-  // from onBeforeUnload() and we check for it in ServerSocket.onClose().
-  webSocket.close(WebSocketEvent.CLOSED_BY_CLOSING_BROWSER_TAB);
+  webSocket.close(WebSocketEvent.USER_CLOSED_BROWSER_TAB);
 }
 
 function onOpen(event: SocketUtils.OpenEvent): void

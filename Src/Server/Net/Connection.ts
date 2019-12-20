@@ -154,7 +154,22 @@ function onClose(event: SocketUtils.CloseEvent, urlAndIp: string): void
 {
   /// TODO: Better logging - who has just disconnected and why
   /// (by closing browser tab, by losing connection...)
-  Syslog.log("[CONNECTION]", `Connection to ${urlAndIp} has closed`);
+  if (event.code === WebSocketEvent.USER_CLOSED_BROWSER_TAB)
+  {
+    Syslog.log
+    (
+      "[CONNECTION]",
+      `Connection to ${urlAndIp} has been closed by closing browser tab`
+    );
+  }
+  else
+  {
+    Syslog.log
+    (
+      "[CONNECTION]",
+      `Connection to ${urlAndIp} has closed (code: ${event.code})`
+    );
+  }
 }
 
 // ----------------- Auxiliary Functions ---------------------

@@ -1,5 +1,17 @@
 ------------------------------------------------------------------------------
 
+Robust connection reporting
+----------------------------
+
+TODO: Logovat, který player se connectnul/disconnectnul a proč
+  (zavřel browser tab, spadlo mu spojení...)
+
+pozn: volat socket.close(1000) je nejspíš špatně, protože kód 1000
+  není "available for use by applications". To by mohl bejt důvod, proč
+  dorazí jinek kód.
+
+------------------------------------------------------------------------------
+
 Detekce "stale" socketů
 ------------------------
 

@@ -2,14 +2,24 @@
  BIG TODO: Nedělat nic, co nepotřebuju na funkční prototyp!
 ============================================================
 
+TARGET:
+- posílám automaticky serializovaný pakety (entity)
+- na klientovi mám komponenty, okna
+- funguje registrace playerů
+- mám zónu, v ní roomy
+- hraju si se zobrazením minimapy
+- klikací editor mapy
+  - nejdřív jen nové roomy
+  - pak editace properties stávajících room
+  - pak prototypová dědičnost room a přiřazování prototypu
+    v editoru
 
 ------------------------------------------------------------------------------
 
-IDEA: volat socket.close(1000) je nejspíš špatně, protože kód 1000
-  není "available for use by applications". To by mohl bejt důvod, proč
-  dorazí jinek kód.
-TODO: Napsat a otestovat reporting closed socketu.
-  (nebo se na to vykašlat, protože to nutně nepotřebuju)
+TODO: Některý syslog message types házet do stderr.
+
+------------------------------------------------------------------------------
+
 
 
 ------------------------------------------------------------------------------

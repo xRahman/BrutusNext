@@ -177,7 +177,7 @@ const codeRanges: Array<SingleValue | RangeOfValues> =
 export namespace WebSocketEvent
 {
   export const CLOSED_BY_APPLICATION = 4000;
-  export const CLOSED_BY_CLOSING_BROWSER_TAB = 4001;
+  export const USER_CLOSED_BROWSER_TAB = 4001;
 
   export const TAB_CLOSED = "Browser tab has been closed.";
 
