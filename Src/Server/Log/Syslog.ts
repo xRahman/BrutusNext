@@ -5,64 +5,61 @@
 */
 
 /*
-  We redefine logging functions in Shared/Log/Syslog
-  and Shared/Log/SyslogUtils modules and then reexport
-  those modified modules. This allows server-side
-  logging functions to be called from shared code.
+  This module redefines logging functions in Shared/Log/SyslogUtils
+  to do server-specific logging.
 */
 
-import { ERROR } from "../../Shared/Log/ERROR";
 import { Syslog } from "../../Shared/Log/Syslog";
 import { SyslogUtils } from "../../Shared/Log/SyslogUtils";
 
-Syslog.log = (messageType: Syslog.MessageType, message: string) =>
+SyslogUtils.logEntry = (entry: string) =>
 {
-  const entry = SyslogUtils.createLogEntry(messageType, message);
-
   logToStdout(entry);
 
   /// TODO:
   // logToFile(entry);
 };
 
-Syslog.reportUncaughtException = (error: Error) =>
+SyslogUtils.logError = (error: Error) =>
 {
-  logError("[UNCAUGHT_EXCEPTION]", getStackTrace(error));
-};
+  const entry = `${error.message}\n${removeErrorMessage(error.stack)}`;
 
-SyslogUtils.reportError = (message: string) =>
-{
-  // Error message will contain stack trace beginning with
-  // function 'ERROR' so the user sees where the error
-  // originated rather than where the stack trace has been
-  // captured.
-  const stackTrace = SyslogUtils.getTrimmedStackTrace(ERROR);
+  logToStderr(entry);
 
-  logError("[ERROR]", `${message}\n${stackTrace}`);
-};
-
-SyslogUtils.reportException = (error: Error) =>
-{
-  logError("[EXCEPTION]", getStackTrace(error));
+  /// TODO:
+  // logToErrorFile(entry);
 };
 
 export { Syslog, SyslogUtils };
 
 // ----------------- Auxiliary Functions ---------------------
 
-function getStackTrace(error: Error): string
+// Removes lines from the start of multiline string 'str' that
+// don't start with 'prefix'. Lines need to be separated by '\n'.
+function removeLinesWithoutPrefix(str: string, prefix: string): string
 {
-  return `${error.message}\n${SyslogUtils.removeErrorMessage(error.stack)}`;
+  const LINE_BREAK = "\n";
+  const lines = str.split(LINE_BREAK);
+
+  while (!lines[0].startsWith(prefix))
+  {
+    lines.shift();
+  }
+
+  return lines.join(LINE_BREAK);
 }
 
-function logError(messageType: Syslog.MessageType, message: string): void
+export function removeErrorMessage(stackTrace?: string): string
 {
-  const entry = SyslogUtils.createLogEntry(messageType, message);
+  if (!stackTrace)
+    return "Stack trace is not available.";
 
-  logToStderr(entry);
-
-  /// TODO:
-  // logToErrorFile(entry);
+  // Stack trace in Error object starts with error message
+  // prefixed with 'Error' which would be confusing in the log.
+  //   To remove it, we trim lines not starting with '    at '.
+  // (Error message can be multi-line so removing just 1 line
+  //  would not always be enough.)
+  return removeLinesWithoutPrefix(stackTrace, "    at ");
 }
 
 function logToStdout(entry: string): void

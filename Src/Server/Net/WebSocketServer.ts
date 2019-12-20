@@ -13,7 +13,6 @@
 /// TODO: Implement detection of broken connections (by sending
 ///   pings in regular intervals).
 
-import { ERROR } from "../../Shared/Log/ERROR";
 import { Syslog } from "../../Server/Log/Syslog";
 import { SocketUtils } from "../../Shared/Net/SocketUtils";
 import { Connections } from "../../Server/Net/Connections";
@@ -154,8 +153,8 @@ function onNewConnection
   // (which should be our case).
   if (url === undefined)
   {
-    ERROR("Invalid 'request.url'. This probably means that"
-      + " websocket server is used outside of http server."
+    Syslog.logError("Invalid 'request.url'. This probably means"
+      + " that websocket server is used outside of http server."
       + " Connection is denied");
 
     denyConnection(webSocket, "Invalid request.url", ip, "invalid url");

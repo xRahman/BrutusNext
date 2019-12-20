@@ -1,3 +1,54 @@
+------------------------------------------------------------------------------
+
+ÚVAHA O ERROR REPORTINGU
+------------------------
+
+Errory se dělí na tři druhy:
+- reportuju přímo exception
+- nemám exception, ale chci zalogovat stack trace
+  (takže si vyrobím Error object a reportnu ho).
+- stack trace nedává smysl.
+
+IMPORTANT: REPORT(new Error()) je blbost, stack trace loguje
+  i funkce ERROR().
+
+- možná by to šlo ale zjednodušit tím, že zruším funkci ERROR(),
+  strack trace budu vždycky tvořit funkcí REPORT a log bez stack
+  trace půjde vždycky přes Syslog.něco().
+- na druhou stranu budu psát víc kódu.
+
+U funkce ERROR() bych asi taky přece jen chtěl rozlišovat druh erroru
+  (aby se daly filtrovat skript errory od jiných errorů).
+- možná zavést funkce jako SCRIPT_ERROR() etc. Ale popravě rozlišovat to
+  jednotně message typem je asi lepší.
+
+Otázka je, jeslti stack trace něčemu vadí. Jako ok, u socket erroru
+  ho asi nepotřebuju, ale to je nejspíš ojedinělej případ.
+=> Nelogovat WEBSOCKET_ERROR přes Syslog.log().
+
+Závěr:
+  Když loguju jakejkoliv error, tak:
+  - zajímá mě stack trace
+  - asi bych chtěl rozlišovat druhy errorů, abych mohl filtrovat
+    třeba jen skript errory (i když...)
+    Možná by se dala sloužit funkce ERROR() a REPORT()
+    (ať už přes REPORT(new Error()) nebo tím, že ERROR() bude testovat
+     typ parametru a pokud to bude Error object, tak ho reportne).
+  Do funkce Syslog.log() by neměly chodit žádný errory.
+
+Vidím to takhle:
+- sloučím ERROR a REPORT (půjde dát Error object jako parametr ERRORu)
+  (tohle sice nebude tak názorný jako REPORT(error), ale nebude se mi stávat,
+   že bych napsal REPORT(new Error)).
+- nebudu zavádět různý typy errorů, protože všechny errory jsou high
+  priority a je třeba je opravit
+  (možná zavést WARNING, ale spíš ne.)
+
+Tak nakonec ještě jinak:
+- Veškeré reportování bude v Syslogu
+  Sylog.log() na info hlášky
+  Syslog.logError() na errory (jak Error objekty, tak stringy).
+
 -----------------------------------------------------------------------------
 
 ÚVAHA: kdy házet REPORT(error)

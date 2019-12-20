@@ -10,7 +10,6 @@
   Express is used to handle security issues like directory traversing.
 */
 
-import { REPORT } from "../../Shared/Log/REPORT";
 import { Syslog } from "../../Shared/Log/Syslog";
 
 // Node.js modules.
@@ -64,7 +63,7 @@ export namespace HttpServer
 
 function onHttpError(error: Error): void
 {
-  REPORT(error);
+  Syslog.logError(error);
 }
 
 function onHttpStartListening(): void
@@ -87,10 +86,10 @@ function redirect
 
   if (!request.headers.host)
   {
-    // Report the error immediately instead of throwing
+    // Report the error right away instead of throwing
     // an exception because this is a top-level callback
     // so there is noone else to catch the exception.
-    REPORT(new Error("Missing 'host' on http request"));
+    Syslog.logError("Missing 'host' on http request");
     return;
   }
 

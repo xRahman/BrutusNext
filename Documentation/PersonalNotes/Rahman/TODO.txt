@@ -16,19 +16,9 @@ TARGET:
 
 ------------------------------------------------------------------------------
 
-TODO: Některý syslog message types házet do stderr.
+TODO: Projít TODO commenty
 
 ------------------------------------------------------------------------------
-
-
-
-------------------------------------------------------------------------------
-
-
-Proč se v onClose() na socketu volá socket.close()?
-  https://github.com/heineiuo/isomorphic-ws#readme
-To je asi blbě, zrušit.
-[done]
 
 
 Socket class hierarchy
@@ -81,10 +71,6 @@ https://github.com/ddurschlag6river/TypedPriorityQueue/tree/tsport
 
 https://github.com/lemire/TypedFastBitSet.js
 - tohle je kupodivu javascript, ale i tak je to asi lepší než fastbitset
-
-
-TODO: Použít FastPriorityQueue na saving queue nedává smysl (ehm),
-  protože save requesty se nesortěj, prostě jen seděj v řadě za sebou.
 
 
 ------------------------------------------------------------------------------

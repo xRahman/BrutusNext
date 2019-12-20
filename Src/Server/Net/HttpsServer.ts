@@ -9,7 +9,6 @@
   inside it.
 */
 
-import { REPORT } from "../../Shared/Log/REPORT";
 import { Syslog } from "../../Shared/Log/Syslog";
 import { ErrorUtils } from "../../Shared/Utils/ErrorUtils";
 import { FileSystem } from "../../Server/FileSystem/FileSystem";
@@ -132,11 +131,8 @@ function onHttpsStartListening(): void
   {
     // Report the error right away because we are the top-level
     // event handler so there is noone else to do it.
-    REPORT
-    (
-      new Error("Something fishy is going on - https server is not"
-        + " running even though it has just started listening")
-    );
+    Syslog.logError("Something fishy is going on - https server is not"
+        + " running even though it has just started listening");
     return;
   }
 
@@ -149,11 +145,11 @@ function onHttpsStartListening(): void
   }
   catch (error)
   {
-    REPORT(error);
+    Syslog.logError(error);
   }
 }
 
 function onHttpsError(error: Error): void
 {
-  REPORT(error);
+  Syslog.logError(error);
 }

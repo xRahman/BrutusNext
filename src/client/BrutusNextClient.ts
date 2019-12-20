@@ -9,14 +9,11 @@
                           Client application
 */
 
-import { REPORT } from "../Shared/Log/REPORT";
 import { Syslog } from "../Client/Log/Syslog";
 import { Connection } from "../Client/Net/Connection";
 
 function start(): void
 {
-  Syslog.log("[CLIENT]", "Starting Kosmud client...");
-
   try
   {
     // Gui.init();
@@ -25,7 +22,7 @@ function start(): void
   }
   catch (error)
   {
-    REPORT(error, "Failed to start the client");
+    Syslog.logError(error, "Failed to start the client");
     alert(`Failed to start`);
   }
 }

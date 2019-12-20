@@ -7,7 +7,6 @@
 /// TODO: Implement detection of broken connections (by sending
 ///   pings in regular intervals).
 
-import { REPORT } from "../../Shared/Log/REPORT";
 import { Syslog } from "../../Shared/Log/Syslog";
 import { SocketUtils } from "../../Shared/Net/SocketUtils";
 import { WebSocketEvent } from "../../Shared/Net/WebSocketEvent";
@@ -121,11 +120,8 @@ function onMessage(event: SocketUtils.MessageEvent): void
     // Create the Error object so the stack trace is logged and
     // report it stright away beacuse we are the top level event
     // handler so there is noone else to catch this exception.
-    REPORT
-    (
-      new Error(`Websocket received non-string data.`
-        + ` Message will not be processed`)
-    );
+    Syslog.logError(`Websocket received non-string data.`
+      + ` Message will not be processed`);
     return;
   }
 
@@ -146,11 +142,7 @@ function onError(event: SocketUtils.ErrorEvent): void
   if (event.message)
     message += `: ${event.message}`;
 
-  // Note that it doesn't make sense to create an Error object
-  // here and report it because it would contain stack trace
-  // which would be a false clue, because the error didn't actualy
-  // happen here. So we just send the message to syslog.
-  Syslog.log("[WEBSOCKET_ERROR]", message);
+  Syslog.logError(message);
 }
 
 function onClose(event: SocketUtils.CloseEvent): void

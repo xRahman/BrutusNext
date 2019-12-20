@@ -4,7 +4,6 @@
   A client connection
 */
 
-import { REPORT } from "../../Shared/Log/REPORT";
 import { Syslog } from "../../Shared/Log/Syslog";
 import { ErrorUtils } from "../../Shared/Utils/ErrorUtils";
 import { SocketUtils } from "../../Shared/Net/SocketUtils";
@@ -113,14 +112,8 @@ async function onMessage(event: SocketUtils.MessageEvent, urlAndIp: string)
 {
   if (typeof event.data !== "string")
   {
-    // Create the Error object so the stack trace is logged and
-    // report it stright away beacuse we are the top level event
-    // handler so there is noone else to catch this exception.
-    REPORT
-    (
-      new Error(`Websocket ${urlAndIp} received non-string data. Message`
-        + ` will not be processed because we can only process string data`)
-    );
+    Syslog.logError(`Websocket ${urlAndIp} received non-string data. Message`
+        + ` will not be processed because we can only process string data`);
     return;
   }
 
@@ -143,11 +136,7 @@ function onError(event: SocketUtils.ErrorEvent, urlAndIp: string): void
 
   message += `. Connection to ${urlAndIp} will close`;
 
-  // Note that it doesn't make sense to create an Error object
-  // here and report it because it would contain stack trace
-  // which would be a false clue, because the error didn't actualy
-  // happen here. So we just send the message to syslog.
-  Syslog.log("[WEBSOCKET_ERROR]", message);
+  Syslog.logError(message);
 }
 
 function onClose(event: SocketUtils.CloseEvent, urlAndIp: string): void
@@ -159,7 +148,8 @@ function onClose(event: SocketUtils.CloseEvent, urlAndIp: string): void
     Syslog.log
     (
       "[CONNECTION]",
-      `Connection to ${urlAndIp} has been closed by closing browser tab`
+      `Connection to ${urlAndIp} has been closed`
+      + ` by closing or reloading browser tab`
     );
   }
   else

@@ -9,7 +9,6 @@
                           Server application
 */
 
-import { REPORT } from "../Shared/Log/REPORT";
 import { Syslog } from "../Server/Log/Syslog";
 import { WebServer } from "../Server/Net/WebServer";
 // import { Game } from "../Server/Game/Game";
@@ -27,6 +26,12 @@ async function runBrutusNextServer(): Promise<void>
 {
   Syslog.log("[SERVER]", "Starting BrutusNext server");
 
+  Syslog.log("[CLIENT]", "Starting Kosmud client...");
+
+  Syslog.logError("Test error");
+  Syslog.logError(new Error("Test exception"));
+  Syslog.reportUncaughtException(new Error ("Test uncaught exception"));
+
   try
   {
     await WebServer.start();
@@ -37,7 +42,7 @@ async function runBrutusNextServer(): Promise<void>
   }
   catch (error)
   {
-    REPORT(error, "Failed to start BrutusNext server");
+    Syslog.logError(error, "Failed to start BrutusNext server");
     return;
   }
 

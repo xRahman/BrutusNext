@@ -1,3 +1,17 @@
+TODO:
+  Sylog.log() čistě na info hlášky
+  Syslog.logError() na errory (jak Error objekty, tak stringy).
+[done]
+
+TODO: Použít FastPriorityQueue na saving queue nedává smysl (ehm),
+  protože save requesty se nesortěj, prostě jen seděj v řadě za sebou.
+[done]
+
+Proč se v onClose() na socketu volá socket.close()?
+  https://github.com/heineiuo/isomorphic-ws#readme
+To je asi blbě, zrušit.
+[done]
+
 TODO: Reportovat disconnect zavřením browser tabu
 [done]
 
