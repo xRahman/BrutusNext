@@ -20,6 +20,27 @@ TARGET:
 Co dřív: posílání paketů, nebo komponenty na klientu?
 - asi spíš GUI, chci něco vidět.
 
+------------------------------------------------------------------------------
+
+Css
+----
+
+Zvážit resetování css pro každou komponentu pomocí:
+
+.module
+{
+  all: initial;
+}
+
+https://css-tricks.com/almanac/properties/a/all/
+
+- Asi by se pak musel nastavovat font pro každou komponentu,
+  ale to by snad nemuselo vadit (dal bych je někam na jedno místo
+  a všude je importoval).
+
+
+IDEA: Možná by taky nebylo od věci mít nějakej "default" pro css values,
+  podobně jako mám defaultní hodnoty pro property attributes.
 
 
 ------------------------------------------------------------------------------

@@ -11,12 +11,13 @@
 
 import { Syslog } from "../Client/Log/Syslog";
 import { Connection } from "../Client/Net/Connection";
+import { Gui } from "../Client/Gui/Gui";
 
 function start(): void
 {
   try
   {
-    // Gui.init();
+    Gui.init();
     // await Renderer.init();
     Connection.connect();
   }
