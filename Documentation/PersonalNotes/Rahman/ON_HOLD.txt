@@ -1,3 +1,10 @@
+TODO: Review Serializable, Entites a Entity
+- nemám sílu na to, udělat to v kuse, takže v téhle fázi pouze
+  zreviduju eslint errory a vrhnu se na další úkol.
+    Je to v zásadě uzavřenej kus kódu, kterej prostě buď funguje
+  a nebo ne, nemělo by do něj bejt potřeba dál hrabat.
+
+
 ------------------------------------------------------------------------------
 
 Robust connection reporting

@@ -1,3 +1,8 @@
+TODO: Projít client a server verzi Connection, jestli by nedávalo smysl
+  sdílet část kódu (ale asi bude přehlednější to nedělat).
+- zatím to fakt nemá smysl.
+[done]
+
 TODO:
   Sylog.log() čistě na info hlášky
   Syslog.logError() na errory (jak Error objekty, tak stringy).

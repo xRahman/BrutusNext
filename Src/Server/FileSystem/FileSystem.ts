@@ -58,6 +58,11 @@ export namespace FileSystem
 {
   // ---------------- Public methods --------------------
 
+  export function joinPathSegments(segments: string[]): string
+  {
+    return Path.posix.join(...segments);
+  }
+
   // Checks if 'fileName' is valid both on Windows and Linux.
   export function validateFileName
   (

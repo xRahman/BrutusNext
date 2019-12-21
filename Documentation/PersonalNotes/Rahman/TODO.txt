@@ -17,15 +17,15 @@ TARGET:
 
 ------------------------------------------------------------------------------
 
+Co dřív: posílání paketů, nebo komponenty na klientu?
+- asi spíš GUI, chci něco vidět.
+
 
 
 ------------------------------------------------------------------------------
 
 Socket class hierarchy
 ------------------------
-
-TODO: Projít client a server verzi Connection, jestli by nedávalo smysl
-  sdílet část kódu (ale asi bude přehlednější to nedělat).
 
 TODO: Vymyslet, kam dát metody na zpracování packetů.
 
