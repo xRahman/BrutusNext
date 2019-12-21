@@ -508,7 +508,7 @@
       // Disallow calling global object properties as functions.
       "no-obj-calls": "error",
       // Disallow calling some 'Object.prototype' methods directly on objects.
-      "no-prototype-builtins": "error",
+      "no-prototype-builtins": "off",
       // Disallow multiple spaces in regular expressions.
       "no-regex-spaces": "error",
       // Disallow returning values from setters.
@@ -543,7 +543,7 @@
       // Enforce the use of variables within the scope they are defined.
       "block-scoped-var": "error",
       // Enforce that class methods utilize 'this'.
-      "class-methods-use-this": "error",
+      "class-methods-use-this": "off",
       // Enforce a maximum cyclomatic complexity allowed in a program.
       "complexity": [ "error", 10 ],
       // Require 'return' statements to either always or never specify values.
@@ -616,7 +616,7 @@
       // loop statements.
       "no-loop-func": "error",
       // Disallow multiple spaces.
-      "no-multi-spaces": "error",
+      "no-multi-spaces": [ "error", { "ignoreEOLComments": true } ],
       // Disallow multiline strings.
       "no-multi-str": "error",
       // Disallow 'new' operators outside of assignments or comparisons.
@@ -918,7 +918,7 @@
       // Disallow bitwise operators.
       "no-bitwise": "error",
       // Disallow 'continue' statements.
-      "no-continue": "error",
+      "no-continue": "off",
       // Disallow inline comments after code.
       "no-inline-comments": "off",
       // Disallow 'if' statements as the only statement in 'else' blocks.
