@@ -107,6 +107,8 @@ export class Attributable
     }
 
     applyDefaults(attributes, classDefaults);
+
+    return attributes;
   }
 
   private applyGlobalDefaults(attributes: object): void

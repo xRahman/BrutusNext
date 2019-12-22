@@ -50,8 +50,6 @@ import { Attributable } from "../../Shared/Class/Attributable";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const FastBitSet = require("fastbitset");
 
-interface ObjectType { [key: string]: any }
-
 const VERSION = "version";
 const CLASS_NAME = "className";
 const NAME = "name";
@@ -92,7 +90,7 @@ export class Serializable extends Attributable
   {
     // ! Throws exception on error.
     const jsonObject = JsonObject.parse(data);
-    const className = (jsonObject as ObjectType)[CLASS_NAME];
+    const className = (jsonObject as Types.Object)[CLASS_NAME];
 
     if (className === null || className === undefined)
     {
@@ -170,12 +168,12 @@ export class Serializable extends Attributable
       // in the save will not get overwritten with 'undefined'. This allows
       // adding new properties to existing classes without the need to
       // convert all save files.
-      (this as ObjectType)[propertyName] = this.deserializeProperty
+      (this as Types.Object)[propertyName] = this.deserializeProperty
       (
         {
           propertyName,
-          targetProperty: (this as ObjectType)[propertyName],
-          sourceProperty: (jsonObject as ObjectType)[propertyName],
+          targetProperty: (this as Types.Object)[propertyName],
+          sourceProperty: (jsonObject as Types.Object)[propertyName],
           path
         }
       );
@@ -222,7 +220,7 @@ export class Serializable extends Attributable
       if (!hasOwnValue(this[propertyName]))
         continue;
 
-      (jsonObject as ObjectType)[propertyName] = this.serializeProperty
+      (jsonObject as Types.Object)[propertyName] = this.serializeProperty
       (
         {
           property: this[propertyName],
@@ -256,7 +254,10 @@ export class Serializable extends Attributable
   private writeName(jsonObject: object): object
   {
     if (this.hasOwnProperty(NAME))
-      (jsonObject as ObjectType)[NAME] = (this as ObjectType)[NAME];
+    {
+      (jsonObject as Types.Object)[NAME] =
+        (this as Types.Object)[NAME];
+    }
 
     return jsonObject;
   }
@@ -280,7 +281,7 @@ export class Serializable extends Attributable
         + ` inicialized in class ${this.className}`);
     }
 
-    const version = (this.constructor as ObjectType)[VERSION];
+    const version = (this.constructor as Types.Object)[VERSION];
 
     if (!Types.isNumber(version))
     {
@@ -290,14 +291,14 @@ export class Serializable extends Attributable
         + ` class ${this.className} to some number`);
     }
 
-    (jsonObject as ObjectType)[VERSION] = version;
+    (jsonObject as Types.Object)[VERSION] = version;
 
     return jsonObject;
   }
 
   private writeClassName(jsonObject: object): object
   {
-    (jsonObject as ObjectType)[CLASS_NAME] = this.className;
+    (jsonObject as Types.Object)[CLASS_NAME] = this.className;
 
     return jsonObject;
   }
@@ -306,8 +307,8 @@ export class Serializable extends Attributable
   {
     if (this.hasOwnProperty(propertyName))
     {
-      (jsonObject as ObjectType)[propertyName] =
-        (this as ObjectType)[propertyName];
+      (jsonObject as Types.Object)[propertyName] =
+        (this as Types.Object)[propertyName];
     }
 
     return jsonObject;
@@ -437,7 +438,7 @@ export class Serializable extends Attributable
   private serializePlainObject
   (
     param: Serializable.SerializeParam,
-    sourceObject: ObjectType
+    sourceObject: Types.Object
   )
   : object
   {
@@ -456,7 +457,7 @@ export class Serializable extends Attributable
       if (!hasOwnValue(sourceProperty))
         continue;
 
-      (jsonObject as ObjectType)[propertyName] = this.serializeProperty
+      (jsonObject as Types.Object)[propertyName] = this.serializeProperty
       (
         {
           property: sourceProperty,
@@ -550,7 +551,7 @@ export class Serializable extends Attributable
   // ! Throws exception on error.
   private classMatchCheck(jsonObject: object, path?: string): void
   {
-    const sourceClassName = (jsonObject as ObjectType)[CLASS_NAME];
+    const sourceClassName = (jsonObject as Types.Object)[CLASS_NAME];
     const targetClassName = this.className;
 
     if (sourceClassName === undefined)
@@ -579,7 +580,7 @@ export class Serializable extends Attributable
   // ! Throws exception on error.
   private versionMatchCheck(jsonObject: object, path?: string): void
   {
-    const version = (jsonObject as ObjectType)[VERSION];
+    const version = (jsonObject as Types.Object)[VERSION];
 
     // If there isn't a 'version' property in jsonObject,
     // it won't be checked for (it's not used in packets
@@ -589,7 +590,7 @@ export class Serializable extends Attributable
       return;
 
     // 'this.constructor[VERSION]' acesses static property 'version'.
-    const thisVersion = (this.constructor as ObjectType)[VERSION];
+    const thisVersion = (this.constructor as Types.Object)[VERSION];
 
     if (!Types.isString(version))
     {
@@ -923,7 +924,7 @@ function isBitvectorRecord(jsonObject: object): boolean
   if (jsonObject === undefined || jsonObject === null)
     return false;
 
-  return (jsonObject as ObjectType)[CLASS_NAME] === BITVECTOR_CLASS_NAME;
+  return (jsonObject as Types.Object)[CLASS_NAME] === BITVECTOR_CLASS_NAME;
 }
 
 // Checks if 'param.sourceProperty' represents a saved Set object.
@@ -932,7 +933,7 @@ function isSetRecord(jsonObject: object): boolean
   if (jsonObject === undefined || jsonObject === null)
     return false;
 
-  return (jsonObject as ObjectType)[CLASS_NAME] === SET_CLASS_NAME;
+  return (jsonObject as Types.Object)[CLASS_NAME] === SET_CLASS_NAME;
 }
 
 // Checks if 'param.sourceProperty' represents a saved Map object.
@@ -941,7 +942,7 @@ function isMapRecord(jsonObject: object): boolean
   if (jsonObject === undefined || jsonObject === null)
     return false;
 
-  return (jsonObject as ObjectType)[CLASS_NAME] === MAP_CLASS_NAME;
+  return (jsonObject as Types.Object)[CLASS_NAME] === MAP_CLASS_NAME;
 }
 
 // Checks if 'param.sourceProperty' represents a saved reference to
@@ -951,7 +952,7 @@ function isReference(jsonObject: object): boolean
   if (jsonObject === undefined || jsonObject === null)
     return false;
 
-  return (jsonObject as ObjectType)[CLASS_NAME] === REFERENCE_CLASS_NAME;
+  return (jsonObject as Types.Object)[CLASS_NAME] === REFERENCE_CLASS_NAME;
 }
 
 function isDeserializable(instance: any): boolean
@@ -982,7 +983,7 @@ function createSetSaver(set: Set<any>): Serializable
   const saver = createSaver(SET_CLASS_NAME);
 
   // Set is saved as it's Array representation to property 'set'.
-  (saver as ObjectType)[SET] = saveSetToArray(set);
+  (saver as Types.Object)[SET] = saveSetToArray(set);
 
   return saver;
 }
@@ -993,7 +994,7 @@ function createMapSaver(map: Map<any, any>): Serializable
   const saver = createSaver(MAP_CLASS_NAME);
 
   // Map is saved as it's Array representation to property 'map'.
-  (saver as ObjectType)[MAP] = saveMapToArray(map);
+  (saver as Types.Object)[MAP] = saveMapToArray(map);
 
   return saver;
 }
@@ -1017,7 +1018,7 @@ function createBitvectorSaver(bitvector: any): Serializable
 
   // Bitvector is saved as it's JSON string representation to
   // property 'bitvector'.
-  (saver as ObjectType)[BITVECTOR] = bitvector.toJSON();
+  (saver as Types.Object)[BITVECTOR] = bitvector.toJSON();
 
   return saver;
 }
@@ -1036,7 +1037,7 @@ function createEntitySaver
   const saver = createSaver(REFERENCE_CLASS_NAME);
 
   // Only a string id is saved when an entity is serialized.
-  (saver as ObjectType)[ID] = id;
+  (saver as Types.Object)[ID] = id;
 
   return saver;
 }
@@ -1180,7 +1181,11 @@ function isEntity(variable: object): boolean
 }
 
 // ! Throws exception on error.
-function getEntityId(entity: ObjectType, param: Serializable.SerializeParam)
+function getEntityId
+(
+  entity: Types.Object,
+  param: Serializable.SerializeParam
+)
 : string
 {
   const id = entity[ID];

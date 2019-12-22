@@ -24,6 +24,7 @@ function start(): void
   catch (error)
   {
     Syslog.logError(error, "Failed to start the client");
+    // TODO: Dát hráči vědět nějak líp (vypsat to do konzole, nebo tak něco).
     alert(`Failed to start`);
   }
 }

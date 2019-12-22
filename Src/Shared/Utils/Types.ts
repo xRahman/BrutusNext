@@ -11,6 +11,8 @@ import { Serializable } from "../../Shared/Class/Serializable";
 
 export namespace Types
 {
+  export type Object = { [key: string]: any };
+
   // Used for example in 'new Promise((resolve, reject) => { ... })'.
   export type ResolveFunction<T> = (value?: T | PromiseLike<T>) => void;
 

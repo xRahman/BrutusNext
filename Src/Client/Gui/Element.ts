@@ -10,18 +10,43 @@ export namespace Element
 {
   // ------------ Protected static methods --------------
 
+  export function setCss
+  (
+    element: HTMLElement,
+    css: Partial<CSSStyleDeclaration>
+  )
+  : void
+  {
+    // Iterate over all own properties of 'css' object and set
+    // their values to respective properties in 'css'.
+    // (It works because 'css' has the same properties as
+    //  this.element.style, only they are all optional).
+    for (const property in css)
+    {
+      // Skip inherited properties.
+      if (!css.hasOwnProperty(property))
+        continue;
+
+      const value = css[property];
+
+      if (value !== undefined)
+        element.style[property] = value;
+    }
+  }
+
   export function createDiv
   (
     parent: HTMLElement,
+    css: Partial<CSSStyleDeclaration>,
     insertMode: InsertMode = InsertMode.APPEND
   )
   : HTMLDivElement
   {
     const div = document.createElement("div");
 
-    insertToParent(div, parent, insertMode);
+    setCss(div, css);
 
-    /// TODO: Nastavit atributy, css.
+    insertToParent(div, parent, insertMode);
 
     return div;
   }

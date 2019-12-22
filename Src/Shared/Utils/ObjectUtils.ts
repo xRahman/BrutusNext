@@ -14,15 +14,15 @@ export function applyDefaults(target: object, defaults: object): void
     if (!defaults.hasOwnProperty(propertyName))
       continue;
 
-    const defaultValue = defaults[propertyName];
-    const targetValue = target[propertyName];
+    const defaultValue = (defaults as Types.Object)[propertyName];
+    const targetValue = (target as Types.Object)[propertyName];
 
     if (defaultValue === undefined)
       continue;
 
     if (targetValue === undefined)
     {
-      target[propertyName] = defaultValue;
+      (target as Types.Object)[propertyName] = defaultValue;
       continue;
     }
 

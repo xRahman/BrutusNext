@@ -4,74 +4,44 @@
   Keeps references to root html components
 */
 
-import { Html } from "../../Client/Gui/Html";
-import { Body } from "../../Client/Gui/Body";
+import { Element } from "../../Client/Gui/Element";
+import { Windows } from "../../Client/Gui/Windows";
 
-let html: Html | "Not initialized" = "Not initialized";
-let body: Body | "Not initialized" = "Not initialized";
+const htmlElementCss: Partial<CSSStyleDeclaration> =
+{
+  height: "100%",
+  outline: "0 none",
+  margin: "0px",
+  padding: "0px"
+};
+
+const bodyElementCss: Partial<CSSStyleDeclaration> =
+{
+  outline: "0 none",
+  margin: "0px",
+  padding: "0px",
+  width: "100%",
+  height: "100%",
+  minHeight: "100%",
+  minWidth: "100%",
+  position: "absolute",
+
+  // Disable text selection.
+  webkitUserSelect: "none",
+  userSelect: "none",
+
+  // Set default cursor.
+  // (otherwise text select cursor would appear on
+  //  components with disabled text selection)
+  cursor: "default"
+};
 
 export namespace Gui
 {
   // ! Throws exception on error.
-  export function getBody(): Body
-  {
-    if (body === "Not initialized")
-      throw Error("Body component doesn't exist");
-
-    return body;
-  }
-
-  // ! Throws exception on error.
-  export function getHtml(): Html
-  {
-    if (html === "Not initialized")
-      throw Error("Html component doesn't exist");
-
-    return html;
-  }
-
-  // ------------- Public static methods ----------------
-
-  // ! Throws exception on error.
   export function init(): void
   {
-    // ! Throws exception on error.
-    initHtmlComponent();
-
-    // ! Throws exception on error.
-    initBodyComponent();
+    Element.setCss(document.documentElement, htmlElementCss);
+    Element.setCss(document.body, bodyElementCss);
   }
-}
-
-// ----------------- Auxiliary Functions ---------------------
-
-// ! Throws exception on error.
-function initHtmlComponent(): void
-{
-  if (html !== "Not initialized")
-  {
-    throw Error("Failed to init <html> component"
-      + " because it is already initialized");
-  }
-
-  // 'document.documentElement' is a direct reference to <html> element.
-  if (document.documentElement === null)
-  {
-    throw Error("Failed to init <html> component"
-      + " because it doesn't exist in the DOM");
-  }
-
-  html = new Html(document.documentElement);
-}
-
-// ! Throws exception on error.
-function initBodyComponent(): void
-{
-  if (body !== "Not initialized")
-  {
-    throw Error("Failed to init <body> component"
-      + " because  is already initialized");
-  }
-
-  body = new Body(document.body);
 }

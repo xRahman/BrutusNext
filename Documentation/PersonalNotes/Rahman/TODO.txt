@@ -17,8 +17,12 @@ TARGET:
 
 ------------------------------------------------------------------------------
 
-Co dřív: posílání paketů, nebo komponenty na klientu?
-- asi spíš GUI, chci něco vidět.
+Aktuální TODO:
+- zobrazit jedno konkrétní okno (asi to, co se zobrazuje jako první,
+  tj. nejspíš loginWindow).
+- potom řešit app state a to, kdy se má co zobrazovat.
+
+TODO: Updatnout client-side npm moduly
 
 ------------------------------------------------------------------------------
 
@@ -41,6 +45,26 @@ https://css-tricks.com/almanac/properties/a/all/
 
 IDEA: Možná by taky nebylo od věci mít nějakej "default" pro css values,
   podobně jako mám defaultní hodnoty pro property attributes.
+
+CSSStyleDeclaration:
+https://www.javascripture.com/CSSStyleDeclaration
+
+TODO: Používat všude grid místo flexboxu.
+- např. ve Window
+
+---------------------
+
+Setování elementu do component.
+- určitě v konstruktoru, pak nemusím řešit, jestli existuje. Čili stopro
+  se bude přeávat konstruktoru předka.
+
+Setování css při vytváření componenty
+- asi ho setnout rovnou při vytváření elementu, tzn. v konstruktoru Component
+  nevolat setCss().
+
+TODO: Potřebuju vůbec classy Body a Html?
+- asi by stačilo v Gui setnout 'body' elementu css.
+- to samý pro Html.
 
 
 ------------------------------------------------------------------------------

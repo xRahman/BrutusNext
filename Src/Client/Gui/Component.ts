@@ -4,7 +4,8 @@
   Abstract ancestor of classes wrapping DOM elements.
 */
 
-import { Syslog } from "../../Shared/Log/Syslog";
+// import { Syslog } from "../../Shared/Log/Syslog";
+import { Element } from "../../Client/Gui/Element";
 
 export abstract class Component
 {
@@ -30,28 +31,17 @@ export abstract class Component
     this.restoreDisplayMode();
   }
 
+  public isHidden(): boolean { return this.element.style.display === "none"; }
+
   // --------------- Protected methods ------------------
 
   protected setCss(css: Partial<CSSStyleDeclaration>): void
   {
-    // Iterate over all own properties of 'css' object and set
-    // their values to respective properties in 'css'.
-    // (It works because 'css' has the same properties as
-    //  this.element.style, only they are all optional).
-    for (const property in css)
-    {
-      // Skip inherited properties.
-      if (!css.hasOwnProperty(property))
-        continue;
-
-      const value = css[property];
-
-      if (value !== undefined)
-        this.element.style[property] = value;
-    }
+    Element.setCss(this.element, css);
 
     // Setting css properties can change the display mode
-    // so we have to re-remember it.
+    // so we have to remember it to be able to return it.
+    // when show() is called.
     this.rememberDisplayMode();
   }
 
