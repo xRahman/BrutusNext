@@ -1,4 +1,5 @@
 define(function (require, exports, module) {
+
 /**
  * FastBitSet.js : a fast bit set implementation in JavaScript.
  * (c) the authors
@@ -91,15 +92,26 @@ FastBitSet.prototype.has = function(index) {
   return (this.words[index  >>> 5] & (1 << index)) !== 0;
 };
 
+// Tries to add the value (Set the bit at index to true), return 1 if the
+// value was added, return 0 if the value was already present
+FastBitSet.prototype.checkedAdd = function(index) {
+  this.resize(index);
+  var word = this.words[index  >>> 5]
+  var newword = word | (1 << index)
+  this.words[index >>> 5] = newword
+  return (newword ^ word) >>> index
+};
+
+
 // Reduce the memory usage to a minimum
 FastBitSet.prototype.trim = function(index) {
   var nl = this.words.length
-  while (nl > 0) {
-    if (this.words[nl - 1] === 0)
+  while ((nl > 0) && (this.words[nl - 1] === 0)) {
       nl--;
   }
   this.words = this.words.slice(0,nl);
 };
+
 
 // Resize the bitset so that we can write a value at index
 FastBitSet.prototype.resize = function(index) {

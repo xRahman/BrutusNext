@@ -1,4 +1,5 @@
 define(function (require, exports, module) {
+
 /**
  * FastPriorityQueue.js : a fast heap-based priority queue  in JavaScript.
  * (c) the authors
