@@ -17,6 +17,7 @@ export class LoginWindow extends Window
   {
     super(parent, {});
 
+    console.log("Created loginWindow");
     // this.setTitle("&gWelcome to &RBrutus&YNext");
   }
 

@@ -9,6 +9,14 @@ import { Element } from "../../Client/Gui/Element";
 
 export abstract class Component
 {
+  protected static readonly css: Partial<CSSStyleDeclaration> =
+  {
+    outline: "0 none !important",
+    margin: "0 !important",
+    padding: "0 !important",
+    boxSizing: "border-box"
+  };
+
   private displayMode = "block";
 
   constructor(protected element: HTMLElement)

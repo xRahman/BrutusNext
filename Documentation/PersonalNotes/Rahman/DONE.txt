@@ -1,3 +1,21 @@
+Setování elementu do component.
+- určitě v konstruktoru, pak nemusím řešit, jestli existuje. Čili stopro
+  se bude přeávat konstruktoru předka.
+[done]
+
+Setování css při vytváření componenty
+- asi ho setnout rovnou při vytváření elementu, tzn. v konstruktoru Component
+  nevolat setCss().
+[done]
+
+TODO: Potřebuju vůbec classy Body a Html?
+- asi by stačilo v Gui setnout 'body' elementu css.
+- to samý pro Html.
+[done]
+
+TODO: Updatnout client-side npm moduly
+[done]
+
 TODO: Projít client a server verzi Connection, jestli by nedávalo smysl
   sdílet část kódu (ale asi bude přehlednější to nedělat).
 - zatím to fakt nemá smysl.

@@ -15,6 +15,8 @@ import { Gui } from "../Client/Gui/Gui";
 
 function start(): void
 {
+  Syslog.log("[CLIENT]", "Starting BrutusNext client...");
+
   try
   {
     Gui.init();

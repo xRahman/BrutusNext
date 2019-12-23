@@ -22,7 +22,11 @@ Aktuální TODO:
   tj. nejspíš loginWindow).
 - potom řešit app state a to, kdy se má co zobrazovat.
 
-TODO: Updatnout client-side npm moduly
+TODO: Vnitřek LoginWindow (title bar, title, login form etc.)
+
+TODO: Zprovoznit defaultění css v rámci Component hierarchie.
+- bacha, v GUI je definované css mimo Component classu.
+
 
 ------------------------------------------------------------------------------
 
@@ -42,10 +46,6 @@ https://css-tricks.com/almanac/properties/a/all/
   ale to by snad nemuselo vadit (dal bych je někam na jedno místo
   a všude je importoval).
 
-
-IDEA: Možná by taky nebylo od věci mít nějakej "default" pro css values,
-  podobně jako mám defaultní hodnoty pro property attributes.
-
 CSSStyleDeclaration:
 https://www.javascripture.com/CSSStyleDeclaration
 
@@ -54,17 +54,43 @@ TODO: Používat všude grid místo flexboxu.
 
 ---------------------
 
-Setování elementu do component.
-- určitě v konstruktoru, pak nemusím řešit, jestli existuje. Čili stopro
-  se bude přeávat konstruktoru předka.
+IDEA: Možná by taky nebylo od věci mít nějakej "default" pro css values,
+  podobně jako mám defaultní hodnoty pro property attributes.
 
-Setování css při vytváření componenty
-- asi ho setnout rovnou při vytváření elementu, tzn. v konstruktoru Component
-  nevolat setCss().
+  S děděním css properties to není tak jednoduchý, protože na neprimitivní
+  properties nefunguje prototypová dědičnost.
+  => Definice css by musela bejt class a v potomkovi bych musel
+    explicitně napsat, že ji dědím.
 
-TODO: Potřebuju vůbec classy Body a Html?
-- asi by stačilo v Gui setnout 'body' elementu css.
-- to samý pro Html.
+
+
+interface I
+{
+    a?: number,
+    b?: number
+}
+
+const cssA: I = { a: 1, b: 2 };
+
+class Css
+{
+    constructor(private css: I) {}
+    
+    public extends(ancestor: I)
+    {
+        Object.setPrototypeOf(this.css, ancestor);
+        return this.css;
+    }
+}
+
+const cssB = new Css
+(
+  {
+    a: 7
+  }
+).extends(cssA);
+
+console.log(cssB.a, cssB.b);
 
 
 ------------------------------------------------------------------------------

@@ -18,9 +18,9 @@ import { LoginWindow } from "../../Client/Gui/Login/LoginWindow";
 // import { MapWindow } from "../../../Client/Gui/Map/MapWindow";
 // import { ClientApp } from "../../../Client/lib/app/ClientApp";
 
-const parent = document.body;
-
 const windows = new Set<Window>();
+
+const parent = document.body;
 
 const loginWindow = addWindow(new LoginWindow(parent));
 // const loginWindow: (LoginWindow | null) = null;
@@ -35,6 +35,11 @@ const loginWindow = addWindow(new LoginWindow(parent));
 
 export namespace Windows
 {
+  export function init(): void
+  {
+    // Nothing for now.
+  }
+
   /// To be deleted.
   /// private activeScrollWindow: (ScrollWindow | null) = null;
 

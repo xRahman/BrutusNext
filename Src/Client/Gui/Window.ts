@@ -7,34 +7,36 @@
 // import { Utils } from "../../../Shared/lib/utils/Utils";
 // import { Flags } from "../../../shared/lib/utils/Flags";
 // import { ClientApp } from "../../../client/lib/app/ClientApp";
-import { applyDefaults } from "../../Shared/Utils/ObjectUtils";
+import { Css } from "../../Client/Gui/Css";
 import { Component } from "../../Client/Gui/Component";
 import { Element } from "../../Client/Gui/Element";
 
-const windowCss: Partial<CSSStyleDeclaration> =
-{
-  // Graphics.
-  fontFamily: "CourierNew",
-  fontWeight: "bold",
-  fontSize: "1.0em",
-  textOverflow: "ellipsis",   // Add '...' if text overflows.
-  textShadow: "0 1px 0 rgba(0, 0, 0, 0.5)",
-  color: "rgb(210, 230, 250)", // Text color.
-  border: "1px ridge rgba(110,130,150,0.8)",
-  background: "rgba(0, 0, 0, 0.6)",
-  outline: "none",
-
-  // Structure:
-  margin: "0",
-  padding: "0",
-  display: "flex",
-  flexDirection: "column",
-  width: "20%",
-  height: "15%"
-};
-
 export class Window extends Component
 {
+  protected static readonly css = new Css
+  (
+    {
+      // Graphics.
+      fontFamily: "CourierNew",
+      fontWeight: "bold",
+      fontSize: "1.0em",
+      textOverflow: "ellipsis",   // Add '...' if text overflows.
+      textShadow: "0 1px 0 rgba(0, 0, 0, 0.5)",
+      color: "rgb(210, 230, 250)", // Text color.
+      border: "1px ridge rgba(110,130,150,0.8)",
+      background: "rgba(0, 0, 0, 0.6)",
+      outline: "none",
+
+      // Structure:
+      margin: "0",
+      padding: "0",
+      display: "flex",
+      flexDirection: "column",
+      width: "20%",
+      height: "15%"
+    }
+  ).extends(Component.css);
+
   // ---------------- Protected data --------------------
 
   protected closed = false;
@@ -52,7 +54,7 @@ export class Window extends Component
   // ! Throws an exception on error.
   constructor(parent: HTMLElement, css: Partial<CSSStyleDeclaration>)
   {
-    super(createElement(parent, css));
+    super(Element.createDiv(parent, Window.css));
   }
 
   // constructor(windowParam: Component.DivParam = {})
@@ -170,18 +172,4 @@ export class Window extends Component
 
   //   return true;
   // }
-}
-
-// ----------------- Auxiliary Functions ---------------------
-
-function createElement
-(
-  parent: HTMLElement,
-  css: Partial<CSSStyleDeclaration>
-)
-: HTMLElement
-{
-  applyDefaults(css, windowCss);
-
-  return Element.createDiv(parent, css);
 }
