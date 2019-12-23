@@ -1,3 +1,33 @@
+TODO: Zprovoznit defaultění css v rámci Component hierarchie.
+- bacha, v GUI je definované css mimo Component classu.
+[done]
+
+TODO: Používat všude grid místo flexboxu.
+- např. ve Window
+[done]
+
+V Gui už zbylo jen setování css pro Body element,
+  takže z toho možná můžu zase udělat Body.ts (a možná
+  rovnou zase komponentu, protože proč ne).
+- hmm tak ne, asi budu potřebovat <html> element kvůli
+  globálnímu nastavování velikosti fontů.
+TODO: Určitě z toho zase udělat komponenty. Bude dávat větší smysl,
+  když budou zděděné z Component stejně jako všechno statní.
+[done]
+
+TODO: Všude používat 'rem' místo 'em':
+  'rem' values are relative to the root html element, not the parent element.
+- a používat to i pro padding, grid gap a podobně, ať mi všechno scaluje
+  s velikostí fontu.
+[done]
+
+TODO: Pořešit init Body, Html a Windows.
+[done]
+
+IDEA: Možná by taky nebylo od věci mít nějakej "default" pro css values,
+  podobně jako mám defaultní hodnoty pro property attributes.
+[done]
+
 Setování elementu do component.
 - určitě v konstruktoru, pak nemusím řešit, jestli existuje. Čili stopro
   se bude přeávat konstruktoru předka.

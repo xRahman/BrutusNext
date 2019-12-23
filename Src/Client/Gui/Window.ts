@@ -16,24 +16,33 @@ export class Window extends Component
   protected static readonly css = new Css
   (
     {
-      // Graphics.
-      fontFamily: "CourierNew",
+      // ------------- Size and position -------------
+      gridColumnStart: "4",
+      gridColumnEnd: "7",
+      gridRowStart: "4",
+      gridRowEnd: "7",
+
+      // ------- Children size and positioning -------
+      // display: "grid",
+      // gridTemplateColumns: "auto auto auto auto auto auto auto auto auto",
+      // gridColumnGap: "0.2rem",
+      // gridTemplateRows: "auto auto auto auto auto auto auto auto auto",
+      // gridRowGap: "0.2rem",
+
+      // ---------------- Background -----------------
+      backgroundColor: "rgba(0, 0, 0, 0.6)",
+
+      // ---- Border, margin, padding and outline ----
+      margin: "0",
+      padding: "0",
+      outline: "none",
+
+      // ------------------- Text --------------------
       fontWeight: "bold",
-      fontSize: "1.0em",
       textOverflow: "ellipsis",   // Add '...' if text overflows.
       textShadow: "0 1px 0 rgba(0, 0, 0, 0.5)",
       color: "rgb(210, 230, 250)", // Text color.
-      border: "1px ridge rgba(110,130,150,0.8)",
-      background: "rgba(0, 0, 0, 0.6)",
-      outline: "none",
-
-      // Structure:
-      margin: "0",
-      padding: "0",
-      display: "flex",
-      flexDirection: "column",
-      width: "20%",
-      height: "15%"
+      border: "1px ridge rgba(110,130,150,0.8)"
     }
   ).extends(Component.css);
 

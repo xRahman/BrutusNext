@@ -11,7 +11,11 @@
 
 import { Syslog } from "../Client/Log/Syslog";
 import { Connection } from "../Client/Net/Connection";
-import { Gui } from "../Client/Gui/Gui";
+
+// Import following modules to execute their inicialization code.
+import "../Client/Gui/Html";
+import "../Client/Gui/Body";
+import "../Client/Gui/Windows";
 
 function start(): void
 {
@@ -19,7 +23,6 @@ function start(): void
 
   try
   {
-    Gui.init();
     // await Renderer.init();
     Connection.connect();
   }

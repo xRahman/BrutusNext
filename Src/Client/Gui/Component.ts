@@ -11,10 +11,18 @@ export abstract class Component
 {
   protected static readonly css: Partial<CSSStyleDeclaration> =
   {
-    outline: "0 none !important",
-    margin: "0 !important",
-    padding: "0 !important",
-    boxSizing: "border-box"
+    // ---- Border, margin, padding and outline ----
+    // Count padding and border to the width and height.
+    boxSizing: "border-box",
+    border: "none",
+    margin: "0",
+    padding: "0",
+    outline: "0 none",
+
+    // ------------------- Text --------------------
+    // Fonts are saved on server so we don't need alternatives.
+    fontFamily: "CourierNew",
+    fontSize: "1rem"
   };
 
   private displayMode = "block";
