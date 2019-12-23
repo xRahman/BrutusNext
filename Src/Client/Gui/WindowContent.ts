@@ -10,7 +10,7 @@ import { Component } from "../../Client/Gui/Component";
 
 export class WindowContent extends Component
 {
-  public static readonly GRID_AREA = "title_bar";
+  public static readonly GRID_AREA = "window_content";
 
   protected static readonly css = new Css
   (
