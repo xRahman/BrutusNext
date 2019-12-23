@@ -29,9 +29,24 @@ StandaloneWindow? CenterScreenWindow? ScreenCenterWindow? CenteredWindow?
  Výšku automaticky, centrovat na střed
 - Hmm, vlastně asi v gridu bejt může, prostě přes celej grid a vycentrovat se.
 
-TODO: TitledWindow
-
 TODO: Setovat text do title baru (defalt: "New window).
+
+------------------------------------------------------------------------------
+
+Component hierarchy
+--------------------
+
+• Should text link be component or just element?
+
+• Should window content be component or just element?
+  - možná obecná komponenta "Content" s tím, že jméno "window_content"
+    dostane od okna, které ji vyrobí?
+
+• Should text be component or just element?
+
+Svádí mě to udělat všechno jako komponenty. Bude to sice hodně
+  ts souborů, ale zas bude všechno oddělené a bude přehledné
+  dědění css (nebude víc deklarací css na classu).
 
 ------------------------------------------------------------------------------
 

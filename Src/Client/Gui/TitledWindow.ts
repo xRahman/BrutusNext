@@ -5,10 +5,9 @@
 */
 
 import { Css } from "../../Client/Gui/Css";
-import { Element } from "../../Client/Gui/Element";
-import { Component } from "../../Client/Gui/Component";
-import { Window } from "../../Client/Gui/Window";
 import { TitleBar } from "../../Client/Gui/TitleBar";
+import { WindowContent } from "../../Client/Gui/WindowContent";
+import { Window } from "../../Client/Gui/Window";
 
 export class TitledWindow extends Window
 {
@@ -21,25 +20,14 @@ export class TitledWindow extends Window
       gridColumnGap: "0px",
       gridTemplateRows: "2",
       gridRowGap: "0px",
-      gridTemplateAreas: `"titlebar" "content"`
+      gridTemplateAreas: `"${TitleBar.GRID_AREA}" "${WindowContent.GRID_AREA}"`
     }
   ).extends(Window.css);
-
-  private static readonly contentCss = new Css
-  (
-    {
-      // ------------- Size and position -------------
-      gridArea: "content",
-
-      // ---- Border, margin, padding and outline ----
-      padding: "1rem"
-    }
-  ).extends(Component.css);
 
   // ---------------- Protected data --------------------
 
   protected titleBar: TitleBar;
-  protected contentElement: HTMLElement;
+  protected content: WindowContent;
 
   // ! Throws an exception on error.
   constructor
@@ -52,7 +40,7 @@ export class TitledWindow extends Window
     super(parent, name, css);
 
     this.titleBar = this.createTitleBar();
-    this.contentElement = this.createContentElement();
+    this.content = this.createContent();
   }
 
   // constructor
@@ -179,15 +167,8 @@ export class TitledWindow extends Window
     return new TitleBar(this.element, "window_title_bar");
   }
 
-  private createContentElement(): HTMLElement
+  private createContent(): WindowContent
   {
-    const contentElement = Element.createDiv
-    (
-      this.element,
-      "window_content",
-      TitledWindow.contentCss
-    );
-
-    return contentElement;
+    return new WindowContent(this.element);
   }
 }

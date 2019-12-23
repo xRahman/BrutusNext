@@ -10,11 +10,13 @@ import { Component } from "../../Client/Gui/Component";
 
 export class TitleBar extends Component
 {
+  public static readonly GRID_AREA = "title_bar";
+
   protected static readonly css = new Css
   (
     {
       // ------------- Size and position -------------
-      gridArea: "titlebar",
+      gridArea: `${TitleBar.GRID_AREA}`,
 
       // ---- Border, margin, padding and outline ----
       padding: "0.1rem",
