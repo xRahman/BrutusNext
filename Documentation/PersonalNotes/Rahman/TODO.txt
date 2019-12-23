@@ -35,6 +35,8 @@ Css
 CSSStyleDeclaration:
 https://www.javascripture.com/CSSStyleDeclaration
 
+Guide to css grid:
+https://css-tricks.com/snippets/css/complete-guide-grid/
 
 ------------------------------------------------------------------------------
 

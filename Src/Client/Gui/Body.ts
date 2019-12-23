@@ -23,9 +23,9 @@ export class Body extends Component
 
       // ------- Children size and positioning -------
       display: "grid",
-      gridTemplateColumns: "auto auto auto auto auto auto auto auto auto",
+      gridTemplateColumns: "repeat(9, auto)",
       gridColumnGap: "0.2rem",
-      gridTemplateRows: "auto auto auto auto auto auto auto auto auto",
+      gridTemplateRows: "repeat(9, auto)",
       gridRowGap: "0.2rem",
 
       // ---------------- Background -----------------
