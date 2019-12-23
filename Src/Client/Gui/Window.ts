@@ -61,9 +61,14 @@ export class Window extends Component
   // private hidden = true;
 
   // ! Throws an exception on error.
-  constructor(parent: HTMLElement, css?: Partial<CSSStyleDeclaration>)
+  constructor
+  (
+    parent: HTMLElement,
+    name = "window",
+    css = Window.css
+  )
   {
-    super(Element.createDiv(parent, css ? css : Window.css));
+    super(Element.createDiv(parent, name, css));
   }
 
   // constructor(windowParam: Component.DivParam = {})

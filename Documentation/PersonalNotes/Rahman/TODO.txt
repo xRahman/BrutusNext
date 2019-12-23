@@ -31,7 +31,7 @@ StandaloneWindow? CenterScreenWindow? ScreenCenterWindow? CenteredWindow?
 
 TODO: TitledWindow
 
-TODO: Dávat komponentám  jména.
+TODO: Setovat text do title baru (defalt: "New window).
 
 ------------------------------------------------------------------------------
 

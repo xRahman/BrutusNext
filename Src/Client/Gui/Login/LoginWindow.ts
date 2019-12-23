@@ -10,12 +10,12 @@ import { CenteredTitledWindow } from
 // export class LoginWindow extends FormWindow
 export class LoginWindow extends CenteredTitledWindow
 {
-  // constructor(parent: HTMLElement)
-  // {
-  //   super(parent);
+  constructor(parent: HTMLElement)
+  {
+    super(parent, "login_window");
 
-  //   // this.setTitle("&gWelcome to &RBrutus&YNext");
-  // }
+    // this.setTitle("&gWelcome to &RBrutus&YNext");
+  }
 
 // constructor()
 // {

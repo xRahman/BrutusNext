@@ -32,12 +32,15 @@ export namespace Element
   export function createDiv
   (
     parent: HTMLElement,
+    name: string,
     css: Partial<CSSStyleDeclaration>,
     insertMode: InsertMode = InsertMode.APPEND
   )
   : HTMLDivElement
   {
     const div = document.createElement("div");
+
+    div.setAttribute("name", name);
 
     setCss(div, css);
 

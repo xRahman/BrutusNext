@@ -42,9 +42,14 @@ export class TitledWindow extends Window
   protected contentElement: HTMLElement;
 
   // ! Throws an exception on error.
-  constructor(parent: HTMLElement, css?: Partial<CSSStyleDeclaration>)
+  constructor
+  (
+    parent: HTMLElement,
+    name = "titled_window",
+    css = TitledWindow.css
+  )
   {
-    super(parent, css ? css : TitledWindow.css);
+    super(parent, name, css);
 
     this.titleBar = this.createTitleBar();
     this.contentElement = this.createContentElement();
@@ -171,11 +176,18 @@ export class TitledWindow extends Window
 
   private createTitleBar(): TitleBar
   {
-    return new TitleBar(this.element);
+    return new TitleBar(this.element, "window_title_bar");
   }
 
   private createContentElement(): HTMLElement
   {
-    return Element.createDiv(this.element, TitledWindow.contentCss);
+    const contentElement = Element.createDiv
+    (
+      this.element,
+      "window_content",
+      TitledWindow.contentCss
+    );
+
+    return contentElement;
   }
 }

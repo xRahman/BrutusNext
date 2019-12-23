@@ -43,9 +43,14 @@ export class TitleBar extends Component
   // protected title: HTMLElement;
 
   // ! Throws an exception on error.
-  constructor(parent: HTMLElement, css?: Partial<CSSStyleDeclaration>)
+  constructor
+  (
+    parent: HTMLElement,
+    name = "title_bar",
+    css = TitleBar.css
+  )
   {
-    super(Element.createDiv(parent, css ? css : TitleBar.css));
+    super(Element.createDiv(parent, name, css));
 
     // this.title = createTitleElement();
   }

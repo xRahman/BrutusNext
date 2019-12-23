@@ -1,3 +1,9 @@
+TODO: Dávat komponentám jména.
+[done]
+
+TODO: Použít všude defaultní hodnotu parametru místo ternary operátoru.
+[done]
+
 TODO: Udělat z TitleBaru Componentu.
 [done]
 

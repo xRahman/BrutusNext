@@ -30,8 +30,13 @@ export class CenteredTitledWindow extends TitledWindow
   ).extends(TitledWindow.css);
 
   // ! Throws an exception on error.
-  constructor(parent: HTMLElement, css?: Partial<CSSStyleDeclaration>)
+  constructor
+  (
+    parent: HTMLElement,
+    name = "centered_titled_window",
+    css = CenteredTitledWindow.css
+  )
   {
-    super(parent, css ? css : CenteredTitledWindow.css);
+    super(parent, name, css);
   }
 }
