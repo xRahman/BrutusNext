@@ -24,12 +24,9 @@ Aktuální TODO:
 
 TODO: Vnitřek LoginWindow (title bar, title, login form etc.)
 
-StandaloneWindow? CenterScreenWindow? ScreenCenterWindow? CenteredWindow?
-- Šířku definovat přes 'rem', ne přes grid.
- Výšku automaticky, centrovat na střed
-- Hmm, vlastně asi v gridu bejt může, prostě přes celej grid a vycentrovat se.
-
 TODO: Setovat text do title baru (defalt: "New window).
+
+TODO: Vyrobit komponentu Text (a asi rovnou i TextLink)
 
 ------------------------------------------------------------------------------
 
