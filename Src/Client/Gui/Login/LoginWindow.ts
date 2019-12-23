@@ -4,14 +4,11 @@
   Login window.
 */
 
-import { ScreenCenterWindow } from "../../../Client/Gui/ScreenCenterWindow";
-// import { ERROR } from "../../../shared/lib/error/ERROR";
-// import { ClientApp } from "../../../client/lib/app/ClientApp";
-// import { FormWindow } from "../../../client/gui/window/FormWindow";
-// import { LoginForm } from "../../../client/gui/login/LoginForm";
+import { CenteredTitledWindow } from
+  "../../../Client/Gui/CenteredTitledWindow";
 
 // export class LoginWindow extends FormWindow
-export class LoginWindow extends ScreenCenterWindow
+export class LoginWindow extends CenteredTitledWindow
 {
   // constructor(parent: HTMLElement)
   // {
