@@ -17,16 +17,11 @@ export namespace Element
   )
   : void
   {
-    // Iterate over all own properties of 'css' object and set
-    // their values to respective properties in 'css'.
-    // (It works because 'css' has the same properties as
-    //  this.element.style, only they are all optional).
+    // We do want to include inherited properties here
+    // because we use prototype chain for css inheritance.
+    // eslint-disable-next-line guard-for-in
     for (const property in css)
     {
-      // Skip inherited properties.
-      if (!css.hasOwnProperty(property))
-        continue;
-
       const value = css[property];
 
       if (value !== undefined)

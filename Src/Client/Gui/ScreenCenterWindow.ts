@@ -1,26 +1,34 @@
 /*
   Part of BrutusNEXT
 
-  Window GUI component
+  A window in the center of the screen
 */
 
 // import { Utils } from "../../../Shared/lib/utils/Utils";
 // import { Flags } from "../../../shared/lib/utils/Flags";
 // import { ClientApp } from "../../../client/lib/app/ClientApp";
 import { Css } from "../../Client/Gui/Css";
-import { Component } from "../../Client/Gui/Component";
-import { Element } from "../../Client/Gui/Element";
+import { Window } from "../../Client/Gui/Window";
 
-export class Window extends Component
+export class ScreenCenterWindow extends Window
 {
   protected static readonly css = new Css
   (
     {
       // ------------- Size and position -------------
-      gridColumnStart: "4",
-      gridColumnEnd: "7",
-      gridRowStart: "4",
-      gridRowEnd: "7",
+      gridColumnStart: "1",
+      gridColumnEnd: "last-line",
+      gridRowStart: "1",
+      gridRowEnd: "last-line",
+      justifySelf: "center",
+      alignSelf: "center",
+      width: "20rem",
+      // 'vw' means viewport width so this window won't be
+      // wider than the viewport.
+      maxWidth: "100vw",
+      // 'vh' means viewport height so this window won't be
+      // higher than the viewport.
+      maxHeight: "100vh"
 
       // ------- Children size and positioning -------
       // display: "grid",
@@ -30,22 +38,21 @@ export class Window extends Component
       // gridRowGap: "0.2rem",
 
       // ---------------- Background -----------------
-      backgroundColor: "rgba(0, 0, 0, 0.6)",
+      // backgroundColor: "rgba(0, 0, 0, 0.6)",
 
       // ---- Border, margin, padding and outline ----
-      margin: "0",
-      padding: "0",
-      outline: "none",
+      // margin: "0",
+      // padding: "0",
+      // outline: "none",
 
       // ------------------- Text --------------------
-      // TODO: Proč bold?
-      fontWeight: "bold",
-      textOverflow: "ellipsis",   // Add '...' if text overflows.
-      textShadow: "0 1px 0 rgba(0, 0, 0, 0.5)",
-      color: "rgb(210, 230, 250)", // Text color.
-      border: "1px ridge rgba(110,130,150,0.8)"
+      // fontWeight: "bold",
+      // textOverflow: "ellipsis",   // Add '...' if text overflows.
+      // textShadow: "0 1px 0 rgba(0, 0, 0, 0.5)",
+      // color: "rgb(210, 230, 250)", // Text color.
+      // border: "1px ridge rgba(110,130,150,0.8)"
     }
-  ).extends(Component.css);
+  ).extends(Window.css);
 
   // ---------------- Protected data --------------------
 
@@ -62,9 +69,9 @@ export class Window extends Component
   // private hidden = true;
 
   // ! Throws an exception on error.
-  constructor(parent: HTMLElement, css?: Partial<CSSStyleDeclaration>)
+  constructor(parent: HTMLElement)
   {
-    super(Element.createDiv(parent, css ? css : Window.css));
+    super(parent, ScreenCenterWindow.css);
   }
 
   // constructor(windowParam: Component.DivParam = {})

@@ -1,3 +1,6 @@
+TODO: Přejmenovat Resources na ^Resources nebo tak něco.
+[done]
+
 TODO: Zprovoznit defaultění css v rámci Component hierarchie.
 - bacha, v GUI je definované css mimo Component classu.
 [done]

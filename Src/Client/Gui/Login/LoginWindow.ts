@@ -4,22 +4,21 @@
   Login window.
 */
 
-import { Window } from "../../../Client/Gui/Window";
+import { ScreenCenterWindow } from "../../../Client/Gui/ScreenCenterWindow";
 // import { ERROR } from "../../../shared/lib/error/ERROR";
 // import { ClientApp } from "../../../client/lib/app/ClientApp";
 // import { FormWindow } from "../../../client/gui/window/FormWindow";
 // import { LoginForm } from "../../../client/gui/login/LoginForm";
 
 // export class LoginWindow extends FormWindow
-export class LoginWindow extends Window
+export class LoginWindow extends ScreenCenterWindow
 {
-  constructor(parent: HTMLElement)
-  {
-    super(parent, {});
+  // constructor(parent: HTMLElement)
+  // {
+  //   super(parent);
 
-    console.log("Created loginWindow");
-    // this.setTitle("&gWelcome to &RBrutus&YNext");
-  }
+  //   // this.setTitle("&gWelcome to &RBrutus&YNext");
+  // }
 
 // constructor()
 // {
