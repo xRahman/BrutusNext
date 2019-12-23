@@ -31,6 +31,8 @@ StandaloneWindow? CenterScreenWindow? ScreenCenterWindow? CenteredWindow?
 
 TODO: TitledWindow
 
+TODO: Dávat komponentám  jména.
+
 ------------------------------------------------------------------------------
 
 Css

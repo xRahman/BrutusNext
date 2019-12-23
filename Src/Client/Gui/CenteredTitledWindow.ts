@@ -5,9 +5,9 @@
 */
 
 import { Css } from "../../Client/Gui/Css";
-import { Window } from "../../Client/Gui/Window";
+import { TitledWindow } from "../../Client/Gui/TitledWindow";
 
-export class CenteredTitledWindow extends Window
+export class CenteredTitledWindow extends TitledWindow
 {
   protected static readonly css = new Css
   (
@@ -27,11 +27,11 @@ export class CenteredTitledWindow extends Window
       // higher than the viewport.
       maxHeight: "100vh"
     }
-  ).extends(Window.css);
+  ).extends(TitledWindow.css);
 
   // ! Throws an exception on error.
-  constructor(parent: HTMLElement)
+  constructor(parent: HTMLElement, css?: Partial<CSSStyleDeclaration>)
   {
-    super(parent, CenteredTitledWindow.css);
+    super(parent, css ? css : CenteredTitledWindow.css);
   }
 }

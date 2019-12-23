@@ -1,3 +1,6 @@
+TODO: Udělat z TitleBaru Componentu.
+[done]
+
 TODO: Přejmenovat Resources na ^Resources nebo tak něco.
 [done]
 

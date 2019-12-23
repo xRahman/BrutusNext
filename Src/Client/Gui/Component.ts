@@ -4,7 +4,6 @@
   Abstract ancestor of classes wrapping DOM elements.
 */
 
-// import { Syslog } from "../../Shared/Log/Syslog";
 import { Element } from "../../Client/Gui/Element";
 
 export abstract class Component

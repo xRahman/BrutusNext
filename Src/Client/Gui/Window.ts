@@ -38,9 +38,8 @@ export class Window extends Component
       outline: "none",
 
       // ------------------- Text --------------------
-      // TODO: Proč bold?
-      fontWeight: "bold",
-      textOverflow: "ellipsis",   // Add '...' if text overflows.
+      // fontWeight: "bold",
+      // textOverflow: "ellipsis",   // Add '...' if text overflows.
       textShadow: "0 1px 0 rgba(0, 0, 0, 0.5)",
       color: "rgb(210, 230, 250)", // Text color.
       border: "1px ridge rgba(110,130,150,0.8)"
