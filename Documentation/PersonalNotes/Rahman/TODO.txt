@@ -24,9 +24,40 @@ Aktuální TODO:
 
 TODO: Vnitřek LoginWindow (title bar, title, login form etc.)
 
-TODO: Setovat text do title baru (defalt: "New window).
+TODO: Setovat text do title baru (default: "New window).
 
 TODO: Vyrobit komponentu Text (a asi rovnou i TextLink)
+
+TODO: Vyřešit stavy jako mouseover, active etc.
+- vyzkoušet vytváření vlastních css class.
+
+Hmm...
+- vytvořit vlastní typ pro css properties
+- generovat z něj stringovou reprezentaci css classy
+  (při té příležiosti můžu pořešit vícenásobnou definici některejch
+   properties kvůli zpětný kompatibilitě)
+- a asi by stálo za to, zamyslet se ještě jednou na využitím true
+  prototypal inheritance pro Component classy.
+  - to teda bude znamenat instancovat je přes ClassFactory...
+
+
+TODO: Nejdřív předělat komponenty na entity a stávající dědičnost
+  udělat přes true prototypal inheritance
+TODO: Client/Entities
+
+TODO: Potom založit novej typ na css a umožnit v něm deklarovat
+  :hover, :active a podobně.
+
+TODO: Pak napsat vyrábění stringové reprezentace css classy.
+
+TODO: A zautomatizovat vyrobení a setnutí css classy pro každou
+  komponentu.
+  (vyrábět by se měla jen jednou, takže nejspíš v konstruktoru,
+   protože ten se zavolá jen při vytváření prototypu - další
+   instance se pak vyráběj pře Object.create() a konstruktor se
+   nevolá)
+
+
 
 ------------------------------------------------------------------------------
 

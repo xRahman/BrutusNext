@@ -33,8 +33,7 @@ export class TitleBar extends Component
 
       // ------------------- Text --------------------
       fontWeight: "bold",
-      // Add '...' if text overflows.
-      textOverflow: "ellipsis",
+      textOverflow: "ellipsis",   // Add '...' if text overflows.
       textShadow: "0 1px 0 rgba(0, 0, 0, 0.5)",
       color: "rgb(210, 230, 250)" // Text color.
     }

@@ -1,5 +1,37 @@
 ------------------------------------------------------------------------------
 
+Stavy jako mouseover, active etc.
+---------------------------------
+
+V prvé řadě budu asi potřebovat rozšířit definici css. Nebude to jeden
+  objekt, ale něco ve smyslu:
+
+{
+  normal: Partial<CSSStyleDeclaration>,
+  hover: Partial<CSSStyleDeclaration>,
+  active: Partial<CSSStyleDeclaration>
+}
+
+S tím, že hover, active apod. by asi měly automaticky dědit
+  z normal (nejspíš v Element.setCss()).
+
+
+Další otázka je, jak ty stavy přehazovat. Asi to budu muset dělat
+  přes event handlery - což je ok, ale bojím se, abych si to nepřepsal,
+  až budu ty handlery potřebovat na něco jinýho. Nejspíš budou muset
+  bejt v Componentě, aby se z potomků dalo volat super().
+
+
+
+Druhá možnost:
+- nesetovat elementům jednotlivý css properties, místo toho vytvořit
+  pro každou komponentu css classu (pokud to půjde) a setnout tu.
+
+  https://stackoverflow.com/questions/1720320/how-to-dynamically-create-css-class-in-javascript-and-apply
+
+
+------------------------------------------------------------------------------
+
 Css all
 ---------
 
@@ -73,6 +105,32 @@ Dědění přímo css má nevýhodu v tom, že se musím extra specifikovat, z �
   budu mít vícero css v jednom ts souboru, což asi mít budu.
 
 => Zatím nechám solution 1. Uvidí se, jak se s ním bude pracovat.
+
+--------------
+
+Ještě přece jen zvážím dědičnost ve stylu entit, aby nebylo třeba ručně
+psát, z čeho se dědí.
+
+Problém je, že každá komponenta by pak musela mít svoji instanci css,
+  nebo aspoň odkaz na ni.
+- kdyby to byl odkaz, tak intancování každý entity by ho asi přepsalo.
+  I když vlastně ne. Instancuje se z prototypu, kterej se vytváří
+  jen jednou. Do něj se nasetujou hodnoty přiřazené v classy. Nově
+  vytvořené instance pak jsou jen {}.
+
+Takže zřejmě na Componenty potřebuju to samý co na Entity.
+  Je nějakej důvod, proč by to neměly bejt rovnou Entity?
+  - budou mít vlastní id, což ale ničemu nevadí. Můžu ho
+    používat jako idčko html elementu.
+  - budu muset povolit vyrábění entit na klientu. Což je trochu
+    problém, protože se mi budou bít idčka.
+    - To má easy řešení - entity na klientu budou mít jinej prefix.
+      Nepotřebujou timestamp, protože klient entity se nesavujou.
+
+
+
+
+
 
 ------------------------------------------------------------------------------
 
