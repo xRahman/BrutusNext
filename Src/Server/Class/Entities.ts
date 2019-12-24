@@ -1,4 +1,8 @@
-/*  Part of Kosmud  */
+/*
+  Part of BrutusNext
+
+  Stores instances of all entities.
+*/
 
 import { Types } from "../../Shared/Utils/Types";
 import { FileSystem } from "../../Server/FileSystem/FileSystem";

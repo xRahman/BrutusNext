@@ -40,10 +40,8 @@ Hmm...
   prototypal inheritance pro Component classy.
   - to teda bude znamenat instancovat je přes ClassFactory...
 
-
 TODO: Nejdřív předělat komponenty na entity a stávající dědičnost
   udělat přes true prototypal inheritance
-TODO: Client/Entities
 
 TODO: Potom založit novej typ na css a umožnit v něm deklarovat
   :hover, :active a podobně.
@@ -57,6 +55,8 @@ TODO: A zautomatizovat vyrobení a setnutí css classy pro každou
    instance se pak vyráběj pře Object.create() a konstruktor se
    nevolá)
 
+TODO: Client/Entities
+[done]
 
 
 ------------------------------------------------------------------------------
