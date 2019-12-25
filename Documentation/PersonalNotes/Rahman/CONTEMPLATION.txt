@@ -1,5 +1,44 @@
 ------------------------------------------------------------------------------
 
+Component hierarchy
+--------------------
+
+• Should text link be component or just element?
+
+• Should window content be component or just element?
+  - možná obecná komponenta "Content" s tím, že jméno "window_content"
+    dostane od okna, které ji vyrobí?
+
+• Should text be component or just element?
+
+Svádí mě to udělat všechno jako komponenty. Bude to sice hodně
+  ts souborů, ale zas bude všechno oddělené a bude přehledné
+  dědění css (nebude víc deklarací css na classu).
+
+=> Budu na všechno dělat componenty.
+
+------------------------------------------------------------------------------
+
+Vytváření custom "style" elementu
+----------------------------------
+
+var style = (function() {
+    // Create the <style> tag
+    var style = document.createElement("style");
+
+    // WebKit hack
+    style.appendChild(document.createTextNode(""));
+
+    // Add the <style> element to the page
+    document.head.appendChild(style);
+  
+    console.log(style.sheet.cssRules); // length is 0, and no rules
+
+    return style;
+})();
+
+------------------------------------------------------------------------------
+
 Stavy jako mouseover, active etc.
 ---------------------------------
 

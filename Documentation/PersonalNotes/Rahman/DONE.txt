@@ -1,3 +1,45 @@
+Hmm...
+- vytvořit vlastní typ pro css properties
+- generovat z něj stringovou reprezentaci css classy
+  (při té příležiosti můžu pořešit vícenásobnou definici některejch
+   properties kvůli zpětný kompatibilitě)
+- a asi by stálo za to, zamyslet se ještě jednou na využitím true
+  prototypal inheritance pro Component classy.
+  - to teda bude znamenat instancovat je přes ClassFactory...
+Tohle nakonec bude jinak.
+[won't do]
+
+TODO: Nejdřív předělat komponenty na entity a stávající dědičnost
+  udělat přes true prototypal inheritance
+Tohle nakonec bude jinak.
+[won't do]
+
+TODO: Potom založit novej typ na css a umožnit v něm deklarovat
+  :hover, :active a podobně.
+Tohle nakonec bude jinak.
+[won't do]
+
+TODO: Pak napsat vyrábění stringové reprezentace css classy.
+Tohle nakonec bude jinak.
+[won't do]
+
+TODO: A zautomatizovat vyrobení a setnutí css classy pro každou
+  komponentu.
+  (vyrábět by se měla jen jednou, takže nejspíš v konstruktoru,
+   protože ten se zavolá jen při vytváření prototypu - další
+   instance se pak vyráběj pře Object.create() a konstruktor se
+   nevolá)
+Tohle nakonec bude jinak.
+[won't do]
+
+TODO: Client/Entities
+[done]
+
+TODO: Vyřešit stavy jako mouseover, active etc.
+- vyzkoušet vytváření vlastních css class.
+Tohle nakonec bude jinak.
+[won't do]
+
 StandaloneWindow? CenterScreenWindow? ScreenCenterWindow? CenteredWindow?
 - Šířku definovat přes 'rem', ne přes grid.
  Výšku automaticky, centrovat na střed
