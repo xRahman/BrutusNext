@@ -29,7 +29,8 @@ export namespace Css
 {
   export type Class =
   {
-    base: Partial<CSSStyleDeclaration>,
+    name: string,
+    css: Partial<CSSStyleDeclaration>,
     ":active"?: Partial<CSSStyleDeclaration>,
     "::after"?: Partial<CSSStyleDeclaration>,
     "::before"?: Partial<CSSStyleDeclaration>,
@@ -62,28 +63,26 @@ export namespace Css
     "::selection"?: Partial<CSSStyleDeclaration>,
     ":target"?: Partial<CSSStyleDeclaration>,
     ":valid"?: Partial<CSSStyleDeclaration>,
-    ":visited"?: Partial<CSSStyleDeclaration>
+    ":visited"?: Partial<CSSStyleDeclaration>,
+
+    [key: string]: Partial<CSSStyleDeclaration> | undefined
   };
 
-  export function createClass(className: string, css: Class): Class
+  export function createClass(cssClass: Class): Class
   {
-    // const cssClass = "TestCssClass";
-    // const selector = `.${cssClass}:hover`;
-    // // const selector = `.${cssClass}`;
-    // const command = "text-decoration: underline;";
-    // // const command = `color:#3333BB;`;
-
-    // Css.addCommandToStylesheet(RUNTIME_STYLE_ID, selector, command);
-
-    for (const property in css)
+    for (const property in cssClass)
     {
-      if (property === "base")
-        addClass(className, "", css.base);
+      if (property === "className")
+        continue;
+
+      if (property === "css")
+        addClass(cssClass.name, "", cssClass.css);
       else
-        addClass(className, property, css.base);
+        // Any othe property specifies a selector (like :hover).
+        addClass(cssClass.name, property, cssClass[property]);
     }
 
-    return css;
+    return cssClass;
   }
 }
 

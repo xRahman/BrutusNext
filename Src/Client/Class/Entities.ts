@@ -4,6 +4,9 @@
   Stores instances of all entities.
 */
 
+// Client-side entities probably won't be needed after
+// all but I'll leave this here just in case.
+
 import { Types } from "../../Shared/Utils/Types";
 import { Entity } from "../../Shared/Class/Entity";
 import * as Shared from "../../Shared/Class/Entities";

@@ -5,31 +5,32 @@
 */
 
 import { Css } from "../../Client/Gui/Css";
-import { TitleBar } from "../../Client/Gui/TitleBar";
-import { WindowContent } from "../../Client/Gui/WindowContent";
+import { TitleBar, TITLE_BAR_GRID_AREA } from "../../Client/Gui/TitleBar";
+import { WindowContent, WINDOW_CONTENT_GRID_AREA } from
+  "../../Client/Gui/WindowContent";
 import { Window } from "../../Client/Gui/Window";
+
+const cssClass = Css.createClass
+(
+  {
+    name: "TitledWindow",
+    css:
+    {
+      // ------- Children size and positioning -------
+      display: "grid",
+      gridTemplateColumns: "1",
+      gridColumnGap: "0px",
+      gridTemplateRows: "2",
+      gridRowGap: "0px",
+      gridTemplateAreas:
+        `"${TITLE_BAR_GRID_AREA}"`
+      + `"${WINDOW_CONTENT_GRID_AREA}"`
+    }
+  }
+);
 
 export class TitledWindow extends Window
 {
-  public static css = Css.createClass
-  (
-    "TitledWindow",
-    {
-      base:
-      {
-        // ------- Children size and positioning -------
-        display: "grid",
-        gridTemplateColumns: "1",
-        gridColumnGap: "0px",
-        gridTemplateRows: "2",
-        gridRowGap: "0px",
-        gridTemplateAreas:
-          `"${TitleBar.GRID_AREA}"`
-        + `"${WindowContent.GRID_AREA}"`
-      }
-    }
-  );
-
   // ---------------- Protected data --------------------
 
   protected titleBar: TitleBar;
@@ -43,8 +44,6 @@ export class TitledWindow extends Window
   )
   {
     super(parent, name);
-
-    this.setCssClass("TitledWindow");
 
     this.titleBar = this.createTitleBar();
     this.content = this.createContent();

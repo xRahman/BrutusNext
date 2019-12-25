@@ -7,40 +7,56 @@
 import { Css } from "../../Client/Gui/Css";
 import { Element } from "../../Client/Gui/Element";
 
+const cssClass = Css.createClass
+(
+  {
+    name: "Component",
+    css:
+    {
+      // ---- Border, margin, padding and outline ----
+      // Count padding and border to the width and height.
+      boxSizing: "border-box",
+      border: "none",
+      margin: "0",
+      padding: "0",
+      outline: "0 none",
+
+      // ------------------- Text --------------------
+      // Fonts are saved on server so we don't need alternatives.
+      fontFamily: "CourierNew",
+      fontSize: "1rem"
+    }
+  }
+);
+
 export abstract class Component
 {
-  public static css = Css.createClass
-  (
-    "Component",
-    {
-      base:
-      {
-        // ---- Border, margin, padding and outline ----
-        // Count padding and border to the width and height.
-        boxSizing: "border-box",
-        border: "none",
-        margin: "0",
-        padding: "0",
-        outline: "0 none",
+  // This function traverses the static prototype tree
+  // and sets class names of all ancestors as a css class
+  // to the element.
+  private static setCssClasses(element: HTMLElement): void
+  {
+    const ancestor = Object.getPrototypeOf(this);
 
-        // ------------------- Text --------------------
-        // Fonts are saved on server so we don't need alternatives.
-        fontFamily: "CourierNew",
-        fontSize: "1rem"
-      }
-    }
-  );
+    if (ancestor.setCssClasses)
+        ancestor.setCssClasses(element);
 
-  // protected static createCssClass(css: Css.Class): Css.Class
-  // {
-  //   return Css.createClass(this.name, css);
-  // }
+    Element.setCssClass(element, this.name);
+  }
 
   private displayMode = "block";
 
   constructor(protected element: HTMLElement)
   {
-    this.setCssClass("Component");
+    // Typescript doesn't seem to know that 'this.constructor'
+    // refers to the class so it can be used to call static
+    // method so we have to typecast to 'any' to do it.
+    (this.constructor as any).setCssClasses(element);
+
+    // Setting css class can change the display mode so
+    // we have to remember it to be able to return it.
+    // when show() is called.
+    this.rememberDisplayMode();
   }
 
   // ---------------- Public methods --------------------
@@ -68,16 +84,6 @@ export abstract class Component
 
     // Setting css properties can change the display mode
     // so we have to remember it to be able to return it.
-    // when show() is called.
-    this.rememberDisplayMode();
-  }
-
-  protected setCssClass(className: string): void
-  {
-    this.element.classList.add(className);
-
-    // Setting css class can change the display mode so
-    // we have to remember it to be able to return it.
     // when show() is called.
     this.rememberDisplayMode();
   }

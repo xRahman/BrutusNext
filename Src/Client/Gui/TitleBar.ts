@@ -8,41 +8,41 @@ import { Css } from "../../Client/Gui/Css";
 import { Element } from "../../Client/Gui/Element";
 import { Component } from "../../Client/Gui/Component";
 
+export const TITLE_BAR_GRID_AREA = "title_bar";
+
+const cssClass = Css.createClass
+(
+  {
+    name: "TitleBar",
+    css:
+    {
+      // ------------- Size and position -------------
+      gridArea: `${TITLE_BAR_GRID_AREA}`,
+
+      // ---- Border, margin, padding and outline ----
+      padding: "0.1rem",
+
+      // ---------------- Background -----------------
+      // background: "rgba(80, 80, 80, 0.6)",
+      background: "linear-gradient"
+        + "("
+        + "  rgba(80, 80, 80, 0.6) 0%,"
+        + "  rgba(110, 110, 110, 0.6) 5%,"
+        + "  rgba(60, 60, 60, 0.6) 90%,"
+        + "  rgba(30, 30, 30, 0.6) 100%"
+        + ")",
+
+      // ------------------- Text --------------------
+      fontWeight: "bold",
+      textOverflow: "ellipsis",   // Add '...' if text overflows.
+      textShadow: "0 1px 0 rgba(0, 0, 0, 0.5)",
+      color: "rgb(210, 230, 250)" // Text color.
+    }
+  }
+);
+
 export class TitleBar extends Component
 {
-  public static readonly GRID_AREA = "title_bar";
-
-  public static css = Css.createClass
-  (
-    "TitleBar",
-    {
-      base:
-      {
-        // ------------- Size and position -------------
-        gridArea: `${TitleBar.GRID_AREA}`,
-
-        // ---- Border, margin, padding and outline ----
-        padding: "0.1rem",
-
-        // ---------------- Background -----------------
-        // background: "rgba(80, 80, 80, 0.6)",
-        background: "linear-gradient"
-          + "("
-          + "  rgba(80, 80, 80, 0.6) 0%,"
-          + "  rgba(110, 110, 110, 0.6) 5%,"
-          + "  rgba(60, 60, 60, 0.6) 90%,"
-          + "  rgba(30, 30, 30, 0.6) 100%"
-          + ")",
-
-        // ------------------- Text --------------------
-        fontWeight: "bold",
-        textOverflow: "ellipsis",   // Add '...' if text overflows.
-        textShadow: "0 1px 0 rgba(0, 0, 0, 0.5)",
-        color: "rgb(210, 230, 250)" // Text color.
-      }
-    }
-  );
-
   // ---------------- Protected data --------------------
 
   // protected title: HTMLElement;
@@ -55,8 +55,6 @@ export class TitleBar extends Component
   )
   {
     super(Element.createDiv(parent, name));
-
-    this.setCssClass("TitleBar");
 
     // this.title = createTitleElement();
   }

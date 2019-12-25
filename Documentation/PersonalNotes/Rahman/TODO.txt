@@ -60,6 +60,7 @@ TODO: Client/Entities
 
 
 TODO: Přidávat custom styl programově:
+- tak nakonec ne, bude to jinak.
 
 var style = (function() {
     // Create the <style> tag

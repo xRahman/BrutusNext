@@ -5,7 +5,7 @@
 */
 
 import { Syslog } from "../../Shared/Log/Syslog";
-import { Css } from "../../Client/Gui/Css";
+// import { Css } from "../../Client/Gui/Css";
 
 export namespace Element
 {
@@ -28,6 +28,11 @@ export namespace Element
       if (value !== undefined)
         element.style[property] = value;
     }
+  }
+
+  export function setCssClass(element: HTMLElement, cssClassName: string): void
+  {
+    element.classList.add(cssClassName);
   }
 
 // export function createCssClass

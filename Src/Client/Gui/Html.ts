@@ -14,20 +14,20 @@
 import { Css } from "../../Client/Gui/Css";
 import { Component } from "../../Client/Gui/Component";
 
+const cssClass = Css.createClass
+(
+  {
+    name: "Html",
+    css:
+    {
+      // ------------------- Font --------------------
+      fontSize: "16px"
+    }
+  }
+);
+
 export class Html extends Component
 {
-  public static css = Css.createClass
-  (
-    "Html",
-    {
-      base:
-      {
-        // ------------------- Font --------------------
-        fontSize: "16px"
-      }
-    }
-  );
-
   private static readonly html = new Html();
 
   public static scaleAllFonts(size: number): void
@@ -41,7 +41,5 @@ export class Html extends Component
   constructor()
   {
     super(document.documentElement);
-
-    this.setCssClass("Html");
   }
 }
