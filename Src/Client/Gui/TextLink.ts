@@ -10,33 +10,35 @@ import { Component } from "../../Client/Gui/Component";
 
 export class TextLink extends Component
 {
-  protected static readonly css = new Css
+  public static css = Css.createClass
   (
+    "TextLink",
     {
-      // Proč?
-      fontWeight: "bold",
-      textShadow: "0 1px 0 rgba(0, 0, 0, 0.5)",
-      // color: "rgb(210, 230, 250)"    // Text color.
-      color: "rgb(43, 144, 255)",    // Text color.
-      textDecoration: "none"
+      "base":
+      {
+        // Proč?
+        fontWeight: "bold",
+        textShadow: "0 1px 0 rgba(0, 0, 0, 0.5)",
+        // color: "rgb(210, 230, 250)"    // Text color.
+        color: "rgb(43, 144, 255)",    // Text color.
+        textDecoration: "none"
+      },
+      ":hover":
+      {
+        textDecoration: "underline"
+      }
     }
-  ).extends(Component.css);
-
-  protected static readonly cssHover = new Css
-  (
-    {
-      textDecoration: "underline"
-    }
-  ).extends(TextLink.css);
+  );
 
   // ! Throws an exception on error.
   constructor
   (
     parent: HTMLElement,
-    name = "text_link",
-    css = TextLink.css
+    name = "text_link"
   )
   {
-    super(Element.createDiv(parent, name, css));
+    super(Element.createDiv(parent, name));
+
+    this.setCssClass("TextLink");
   }
 }

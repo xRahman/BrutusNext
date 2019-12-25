@@ -12,25 +12,30 @@ export class WindowContent extends Component
 {
   public static readonly GRID_AREA = "window_content";
 
-  protected static readonly css = new Css
+  public static css = Css.createClass
   (
+    "WindowContent",
     {
-      // ------------- Size and position -------------
-      gridArea: `${WindowContent.GRID_AREA}`,
+      base:
+      {
+        // ------------- Size and position -------------
+        gridArea: `${WindowContent.GRID_AREA}`,
 
-      // ---- Border, margin, padding and outline ----
-      padding: "1rem"
+        // ---- Border, margin, padding and outline ----
+        padding: "1rem"
+      }
     }
-  ).extends(Component.css);
+  );
 
   // ! Throws an exception on error.
   constructor
   (
     parent: HTMLElement,
-    name = "window_content",
-    css = WindowContent.css
+    name = "window_content"
   )
   {
-    super(Element.createDiv(parent, name, css));
+    super(Element.createDiv(parent, name));
+
+    this.setCssClass("WindowContent");
   }
 }

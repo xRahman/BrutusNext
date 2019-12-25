@@ -30,6 +30,16 @@ Druhá možnost:
   https://stackoverflow.com/questions/1720320/how-to-dynamically-create-css-class-in-javascript-and-apply
 
 
+
+
+Konverze jména property CSSStyleDeclaration na jméno css property.
+  http://www.java2s.com/Tutorials/Javascript/CSS/How_to_use_CSSStyleDeclaration_Objects.htm#property_from_CSSStyleDeclaration
+
+
+"fooBarBaz".replace(/([A-Z])/g, "-$1").toLowerCase();
+https://stackoverflow.com/questions/24758284/how-to-change-camelcase-to-slug-case-or-kabob-case-via-regex-in-javascript
+
+
 ------------------------------------------------------------------------------
 
 Css all
@@ -52,6 +62,16 @@ Zkusil jsem to nastavit pro * a vedlo to k tomu, že se zobrazil i title,
 kterej je v headeru.
 
 => kašlat na to.
+
+
+-------------------
+
+Jelikož budu používat css classy, nedává smysl nastavovat je v instancích.
+Tn. buď statickou metodou, nebo automaticky při vytvoření objektu.
+
+A dědění udělám prostě tak, že komponentě nafrkám všechny classy předků,
+ono to zjevně funguje.
+
 
 ------------------------------------------------------------------------------
 
@@ -126,10 +146,6 @@ Takže zřejmě na Componenty potřebuju to samý co na Entity.
     problém, protože se mi budou bít idčka.
     - To má easy řešení - entity na klientu budou mít jinej prefix.
       Nepotřebujou timestamp, protože klient entity se nesavujou.
-
-
-
-
 
 
 ------------------------------------------------------------------------------

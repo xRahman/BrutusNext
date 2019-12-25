@@ -7,10 +7,6 @@
 import { Syslog } from "../../Shared/Log/Syslog";
 import { Css } from "../../Client/Gui/Css";
 
-// Style with this 'id' must be definec in index.html
-// (for example <style id="runtime_stylesheet"></style>)
-const RUNTIME_STYLE_ID = "runtime_style";
-
 export namespace Element
 {
   // ------------ Protected static methods --------------
@@ -34,43 +30,38 @@ export namespace Element
     }
   }
 
-  export function createCssClass
-  (
-    element: HTMLElement,
-    css:
-    {
-      default: Partial<CSSStyleDeclaration>,
-      hover: Partial<CSSStyleDeclaration>
-    }
-  )
-  : void
-  {
-    const cssClass = "TestCssClass";
-    const selector = `.${cssClass}:hover`;
-    // const selector = `.${cssClass}`;
-    const command = "text-decoration: underline;";
-    // const command = `color:#3333BB;`;
+// export function createCssClass
+// (
+//   element: HTMLElement,
+//   css: Css
+// )
+// : void
+// {
+//   const cssClass = "TestCssClass";
+//   const selector = `.${cssClass}:hover`;
+//   // const selector = `.${cssClass}`;
+//   const command = "text-decoration: underline;";
+//   // const command = `color:#3333BB;`;
 
-    Css.addCommandToStylesheet(RUNTIME_STYLE_ID, selector, command);
+//   Css.addCommandToStylesheet(RUNTIME_STYLE_ID, selector, command);
 
-    // TODO: Tohle by asi nemělo bejt v createCssClass() ale v setCssClass().
-    element.classList.add(cssClass);
+//   // TODO: Tohle by asi nemělo bejt v createCssClass() ale v setCssClass().
+//   element.classList.add(cssClass);
 
-    /*
-    var style = document.createElement('style');
-    style.type = 'text/css';
-    style.innerHTML = '.cssClass { color: #F00; }';
-    document.getElementsByTagName('head')[0].appendChild(style);
+//   /*
+//   var style = document.createElement('style');
+//   style.type = 'text/css';
+//   style.innerHTML = '.cssClass { color: #F00; }';
+//   document.getElementsByTagName('head')[0].appendChild(style);
 
-    document.getElementById('someElementId').className = 'cssClass';
-    */
-  }
+//   document.getElementById('someElementId').className = 'cssClass';
+//   */
+// }
 
   export function createDiv
   (
     parent: HTMLElement,
     name: string,
-    css: Partial<CSSStyleDeclaration>,
     insertMode: InsertMode = InsertMode.APPEND
   )
   : HTMLDivElement
@@ -78,8 +69,6 @@ export namespace Element
     const div = document.createElement("div");
 
     div.setAttribute("name", name);
-
-    setCss(div, css);
 
     insertToParent(div, parent, insertMode);
 

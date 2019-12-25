@@ -4,31 +4,43 @@
   Abstract ancestor of classes wrapping DOM elements.
 */
 
+import { Css } from "../../Client/Gui/Css";
 import { Element } from "../../Client/Gui/Element";
 
 export abstract class Component
 {
-  protected static readonly css: Partial<CSSStyleDeclaration> =
-  {
-    // ---- Border, margin, padding and outline ----
-    // Count padding and border to the width and height.
-    boxSizing: "border-box",
-    border: "none",
-    margin: "0",
-    padding: "0",
-    outline: "0 none",
+  public static css = Css.createClass
+  (
+    "Component",
+    {
+      base:
+      {
+        // ---- Border, margin, padding and outline ----
+        // Count padding and border to the width and height.
+        boxSizing: "border-box",
+        border: "none",
+        margin: "0",
+        padding: "0",
+        outline: "0 none",
 
-    // ------------------- Text --------------------
-    // Fonts are saved on server so we don't need alternatives.
-    fontFamily: "CourierNew",
-    fontSize: "1rem"
-  };
+        // ------------------- Text --------------------
+        // Fonts are saved on server so we don't need alternatives.
+        fontFamily: "CourierNew",
+        fontSize: "1rem"
+      }
+    }
+  );
+
+  // protected static createCssClass(css: Css.Class): Css.Class
+  // {
+  //   return Css.createClass(this.name, css);
+  // }
 
   private displayMode = "block";
 
   constructor(protected element: HTMLElement)
   {
-    this.rememberDisplayMode();
+    this.setCssClass("Component");
   }
 
   // ---------------- Public methods --------------------
@@ -56,6 +68,16 @@ export abstract class Component
 
     // Setting css properties can change the display mode
     // so we have to remember it to be able to return it.
+    // when show() is called.
+    this.rememberDisplayMode();
+  }
+
+  protected setCssClass(className: string): void
+  {
+    this.element.classList.add(className);
+
+    // Setting css class can change the display mode so
+    // we have to remember it to be able to return it.
     // when show() is called.
     this.rememberDisplayMode();
   }

@@ -59,6 +59,23 @@ TODO: Client/Entities
 [done]
 
 
+TODO: Přidávat custom styl programově:
+
+var style = (function() {
+    // Create the <style> tag
+    var style = document.createElement("style");
+
+    // WebKit hack
+    style.appendChild(document.createTextNode(""));
+
+    // Add the <style> element to the page
+    document.head.appendChild(style);
+  
+    console.log(style.sheet.cssRules); // length is 0, and no rules
+
+    return style;
+})();
+
 ------------------------------------------------------------------------------
 
 Component hierarchy

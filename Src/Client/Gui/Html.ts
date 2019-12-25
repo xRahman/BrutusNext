@@ -16,13 +16,17 @@ import { Component } from "../../Client/Gui/Component";
 
 export class Html extends Component
 {
-  protected static readonly css = new Css
+  public static css = Css.createClass
   (
+    "Html",
     {
-      // ------------------- Font --------------------
-      fontSize: "16px"
+      base:
+      {
+        // ------------------- Font --------------------
+        fontSize: "16px"
+      }
     }
-  ).extends(Component.css);
+  );
 
   private static readonly html = new Html();
 
@@ -38,6 +42,6 @@ export class Html extends Component
   {
     super(document.documentElement);
 
-    this.setCss(Html.css);
+    this.setCssClass("Html");
   }
 }

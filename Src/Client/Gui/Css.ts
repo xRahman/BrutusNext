@@ -21,65 +21,155 @@
     object.
 */
 
-export class Css
+// Style with this 'id' must be defined in index.html
+// (for example <style id="runtime_stylesheet"></style>)
+const RUNTIME_STYLE_ID = "runtime_style";
+
+export namespace Css
 {
-  // ! Throws exception on error.
-  public static addCommandToStylesheet
-  (
-    styleId: string,
-    selector: string,
-    command: string
-  )
-  : void
+  export type Class =
   {
-    const rule = `${selector} {${command}}`;
-    const style = document.getElementById(styleId);
+    base: Partial<CSSStyleDeclaration>,
+    ":active"?: Partial<CSSStyleDeclaration>,
+    "::after"?: Partial<CSSStyleDeclaration>,
+    "::before"?: Partial<CSSStyleDeclaration>,
+    ":checked"?: Partial<CSSStyleDeclaration>,
+    ":default"?: Partial<CSSStyleDeclaration>,
+    ":disabled"?: Partial<CSSStyleDeclaration>,
+    ":empty"?: Partial<CSSStyleDeclaration>,
+    ":enabled"?: Partial<CSSStyleDeclaration>,
+    ":first-child"?: Partial<CSSStyleDeclaration>,
+    "::first-letter"?: Partial<CSSStyleDeclaration>,
+    "::first-line"?: Partial<CSSStyleDeclaration>,
+    ":first-of-type"?: Partial<CSSStyleDeclaration>,
+    ":focus"?: Partial<CSSStyleDeclaration>,
+    ":hover"?: Partial<CSSStyleDeclaration>,
+    ":in-range"?: Partial<CSSStyleDeclaration>,
+    ":indeterminate"?: Partial<CSSStyleDeclaration>,
+    ":invalid"?: Partial<CSSStyleDeclaration>,
+    ":last-child"?: Partial<CSSStyleDeclaration>,
+    ":last-of-type"?: Partial<CSSStyleDeclaration>,
+    ":link"?: Partial<CSSStyleDeclaration>,
+    ":only-of-type"?: Partial<CSSStyleDeclaration>,
+    ":only-child"?: Partial<CSSStyleDeclaration>,
+    ":optional"?: Partial<CSSStyleDeclaration>,
+    ":out-of-range"?: Partial<CSSStyleDeclaration>,
+    "::placeholder"?: Partial<CSSStyleDeclaration>,
+    ":read-only"?: Partial<CSSStyleDeclaration>,
+    ":read-write"?: Partial<CSSStyleDeclaration>,
+    ":required"?: Partial<CSSStyleDeclaration>,
+    ":root"?: Partial<CSSStyleDeclaration>,
+    "::selection"?: Partial<CSSStyleDeclaration>,
+    ":target"?: Partial<CSSStyleDeclaration>,
+    ":valid"?: Partial<CSSStyleDeclaration>,
+    ":visited"?: Partial<CSSStyleDeclaration>
+  };
 
-    if (!style)
-    {
-      throw Error(`Failed to add rule ${rule} to stylesheet because`
-        + ` style with id '${styleId}' doesn't exist in html document`);
-    }
-
-    const stylesheet = (style as HTMLStyleElement).sheet as CSSStyleSheet;
-
-    if (stylesheet === undefined)
-    {
-      throw Error(`Failed to add rule ${rule} to stylesheet because`
-        + ` style with id '${styleId}' doesn't have a stylesheet`);
-    }
-
-    // if (stylesheet.addRule !== undefined)
-    // {
-    //   stylesheet.addRule(selector, rule);
-    //   // TEST
-    //   console.log(stylesheet);
-    //   return;
-    // }
-
-    if (stylesheet.insertRule !== undefined)
-    {
-      stylesheet.insertRule(rule, stylesheet.cssRules.length);
-      // TEST
-      console.log(stylesheet);
-      return;
-    }
-
-    throw Error(`Failed to add rule ${rule} to stylesheet because`
-    + ` style with id '${styleId}' has neither 'insertRule()`
-    + ` nor 'addRule() method`);
-  }
-
-  constructor(private readonly css: Partial<CSSStyleDeclaration>) {}
-
-  public extends
-  (
-    css: Partial<CSSStyleDeclaration>
-  )
-  : Partial<CSSStyleDeclaration>
+  export function createClass(className: string, css: Class): Class
   {
-    Object.setPrototypeOf(this.css, css);
+    // const cssClass = "TestCssClass";
+    // const selector = `.${cssClass}:hover`;
+    // // const selector = `.${cssClass}`;
+    // const command = "text-decoration: underline;";
+    // // const command = `color:#3333BB;`;
 
-    return this.css;
+    // Css.addCommandToStylesheet(RUNTIME_STYLE_ID, selector, command);
+
+    for (const property in css)
+    {
+      if (property === "base")
+        addClass(className, "", css.base);
+      else
+        addClass(className, property, css.base);
+    }
+
+    return css;
   }
 }
+
+// ----------------- Auxiliary Functions ---------------------
+
+// Converts javascript-style property name like 'backgroundColor'
+// to css style ('background-color').
+function convertToCssPropertyStyle(property: string): string
+{
+  return property.replace(/(?<capital_letter>[A-Z])/ug, "-$1").toLowerCase();
+}
+
+function addClass
+(
+  className: string,
+  selector: string,
+  styleDeclaration?: Partial<CSSStyleDeclaration>
+)
+: void
+{
+  if (styleDeclaration === undefined)
+    return;
+
+  let commands = "";
+
+  for (const property in styleDeclaration)
+  {
+    if (!styleDeclaration.hasOwnProperty(property))
+      continue;
+
+    const command = convertToCssPropertyStyle(property);
+
+    commands += `${command}: ${String(styleDeclaration[property])};`;
+  }
+
+  addToStylesheet(RUNTIME_STYLE_ID, className, selector, commands);
+}
+
+// ! Throws exception on error.
+function addToStylesheet
+(
+  styleId: string,
+  className: string,
+  selector: string,
+  commands: string
+)
+: void
+{
+  const rule = `.${className}${selector} {${commands}}`;
+  const style = document.getElementById(styleId);
+
+  if (!style)
+  {
+    throw Error(`Failed to add css class ${className} to stylesheet`
+      + ` because style '${styleId}' doesn't exist in html document`);
+  }
+
+  const stylesheet = (style as HTMLStyleElement).sheet as CSSStyleSheet;
+
+  if (stylesheet === undefined)
+  {
+    throw Error(`Failed to add css class ${className} to stylesheet`
+      + ` because style '${styleId}' doesn't have a stylesheet`);
+  }
+
+  if (stylesheet.insertRule === undefined)
+  {
+    throw Error(`Failed to add css class ${className} to stylesheet`
+      + ` because style '${styleId}' doesn't have 'insertRule() method`);
+  }
+
+  stylesheet.insertRule(rule, stylesheet.cssRules.length);
+}
+
+// export class Css
+// {
+//   constructor(private readonly css: Partial<CSSStyleDeclaration>) {}
+
+//   public extends
+//   (
+//     css: Partial<CSSStyleDeclaration>
+//   )
+//   : Partial<CSSStyleDeclaration>
+//   {
+//     Object.setPrototypeOf(this.css, css);
+
+//     return this.css;
+//   }
+// }

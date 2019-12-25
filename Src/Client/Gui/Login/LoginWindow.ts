@@ -7,19 +7,12 @@
 import { CenteredTitledWindow } from
   "../../../Client/Gui/CenteredTitledWindow";
 
-// TEST
-import { Element } from "../../../Client/Gui/Element";
-
 // export class LoginWindow extends FormWindow
 export class LoginWindow extends CenteredTitledWindow
 {
   constructor(parent: HTMLElement)
   {
     super(parent, "login_window");
-
-    // TEST
-    this.element.textContent = "TEST TEXT";
-    Element.createCssClass(this.element, { default: {}, hover: {} });
 
     // this.setTitle("&gWelcome to &RBrutus&YNext");
   }

@@ -11,18 +11,24 @@ import { Window } from "../../Client/Gui/Window";
 
 export class TitledWindow extends Window
 {
-  protected static readonly css = new Css
+  public static css = Css.createClass
   (
+    "TitledWindow",
     {
-      // ------- Children size and positioning -------
-      display: "grid",
-      gridTemplateColumns: "1",
-      gridColumnGap: "0px",
-      gridTemplateRows: "2",
-      gridRowGap: "0px",
-      gridTemplateAreas: `"${TitleBar.GRID_AREA}" "${WindowContent.GRID_AREA}"`
+      base:
+      {
+        // ------- Children size and positioning -------
+        display: "grid",
+        gridTemplateColumns: "1",
+        gridColumnGap: "0px",
+        gridTemplateRows: "2",
+        gridRowGap: "0px",
+        gridTemplateAreas:
+          `"${TitleBar.GRID_AREA}"`
+        + `"${WindowContent.GRID_AREA}"`
+      }
     }
-  ).extends(Window.css);
+  );
 
   // ---------------- Protected data --------------------
 
@@ -33,11 +39,12 @@ export class TitledWindow extends Window
   constructor
   (
     parent: HTMLElement,
-    name = "titled_window",
-    css = TitledWindow.css
+    name = "titled_window"
   )
   {
-    super(parent, name, css);
+    super(parent, name);
+
+    this.setCssClass("TitledWindow");
 
     this.titleBar = this.createTitleBar();
     this.content = this.createContent();

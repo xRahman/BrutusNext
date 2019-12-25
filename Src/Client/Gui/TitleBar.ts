@@ -12,32 +12,36 @@ export class TitleBar extends Component
 {
   public static readonly GRID_AREA = "title_bar";
 
-  protected static readonly css = new Css
+  public static css = Css.createClass
   (
+    "TitleBar",
     {
-      // ------------- Size and position -------------
-      gridArea: `${TitleBar.GRID_AREA}`,
+      base:
+      {
+        // ------------- Size and position -------------
+        gridArea: `${TitleBar.GRID_AREA}`,
 
-      // ---- Border, margin, padding and outline ----
-      padding: "0.1rem",
+        // ---- Border, margin, padding and outline ----
+        padding: "0.1rem",
 
-      // ---------------- Background -----------------
-      // background: "rgba(80, 80, 80, 0.6)",
-      background: "linear-gradient"
-        + "("
-        + "  rgba(80, 80, 80, 0.6) 0%,"
-        + "  rgba(110, 110, 110, 0.6) 5%,"
-        + "  rgba(60, 60, 60, 0.6) 90%,"
-        + "  rgba(30, 30, 30, 0.6) 100%"
-        + ")",
+        // ---------------- Background -----------------
+        // background: "rgba(80, 80, 80, 0.6)",
+        background: "linear-gradient"
+          + "("
+          + "  rgba(80, 80, 80, 0.6) 0%,"
+          + "  rgba(110, 110, 110, 0.6) 5%,"
+          + "  rgba(60, 60, 60, 0.6) 90%,"
+          + "  rgba(30, 30, 30, 0.6) 100%"
+          + ")",
 
-      // ------------------- Text --------------------
-      fontWeight: "bold",
-      textOverflow: "ellipsis",   // Add '...' if text overflows.
-      textShadow: "0 1px 0 rgba(0, 0, 0, 0.5)",
-      color: "rgb(210, 230, 250)" // Text color.
+        // ------------------- Text --------------------
+        fontWeight: "bold",
+        textOverflow: "ellipsis",   // Add '...' if text overflows.
+        textShadow: "0 1px 0 rgba(0, 0, 0, 0.5)",
+        color: "rgb(210, 230, 250)" // Text color.
+      }
     }
-  ).extends(Component.css);
+  );
 
   // ---------------- Protected data --------------------
 
@@ -47,11 +51,12 @@ export class TitleBar extends Component
   constructor
   (
     parent: HTMLElement,
-    name = "title_bar",
-    css = TitleBar.css
+    name = "title_bar"
   )
   {
-    super(Element.createDiv(parent, name, css));
+    super(Element.createDiv(parent, name));
+
+    this.setCssClass("TitleBar");
 
     // this.title = createTitleElement();
   }

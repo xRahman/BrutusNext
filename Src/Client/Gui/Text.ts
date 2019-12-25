@@ -10,25 +10,30 @@ import { Component } from "../../Client/Gui/Component";
 
 export class Text extends Component
 {
-  protected static readonly css = new Css
+  public static css = Css.createClass
   (
+    "Text",
     {
-      // ------------- Size and position -------------
-      // gridArea: `${WindowContent.GRID_AREA}`,
+      base:
+      {
+        // ------------- Size and position -------------
+        // gridArea: `${WindowContent.GRID_AREA}`,
 
-      // ---- Border, margin, padding and outline ----
-      // padding: "1rem"
+        // ---- Border, margin, padding and outline ----
+        // padding: "1rem"
+      }
     }
-  ).extends(Component.css);
+  );
 
   // ! Throws an exception on error.
   constructor
   (
     parent: HTMLElement,
-    name = "text",
-    css = Text.css
+    name = "text"
   )
   {
-    super(Element.createDiv(parent, name, css));
+    super(Element.createDiv(parent, name));
+
+    this.setCssClass("Text");
   }
 }
