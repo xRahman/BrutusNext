@@ -4,30 +4,7 @@
   Abstract ancestor of classes wrapping DOM elements.
 */
 
-import { Css } from "../../Client/Gui/Css";
 import { Element } from "../../Client/Gui/Element";
-
-const cssClass = Css.createClass
-(
-  {
-    name: "Component",
-    css:
-    {
-      // ---- Border, margin, padding and outline ----
-      // Count padding and border to the width and height.
-      boxSizing: "border-box",
-      border: "none",
-      margin: "0",
-      padding: "0",
-      outline: "0 none",
-
-      // ------------------- Text --------------------
-      // Fonts are saved on server so we don't need alternatives.
-      fontFamily: "CourierNew",
-      fontSize: "1rem"
-    }
-  }
-);
 
 export abstract class Component
 {

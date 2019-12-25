@@ -11,20 +11,7 @@
   can scale the size of all fonts, paddings, grid gaps etc.
 */
 
-import { Css } from "../../Client/Gui/Css";
 import { Component } from "../../Client/Gui/Component";
-
-const cssClass = Css.createClass
-(
-  {
-    name: "Html",
-    css:
-    {
-      // ------------------- Font --------------------
-      fontSize: "16px"
-    }
-  }
-);
 
 export class Html extends Component
 {

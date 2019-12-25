@@ -7,46 +7,8 @@
 // import { Utils } from "../../../Shared/lib/utils/Utils";
 // import { Flags } from "../../../shared/lib/utils/Flags";
 // import { ClientApp } from "../../../client/lib/app/ClientApp";
-import { Css } from "../../Client/Gui/Css";
 import { Component } from "../../Client/Gui/Component";
 import { Element } from "../../Client/Gui/Element";
-
-const cssClass = Css.createClass
-(
-  {
-    name: "Window",
-    css:
-    {
-      // ------------- Size and position -------------
-      gridColumnStart: "4",
-      gridColumnEnd: "7",
-      gridRowStart: "4",
-      gridRowEnd: "7",
-
-      // ------- Children size and positioning -------
-      // display: "grid",
-      // gridTemplateColumns: "auto auto auto auto auto auto auto auto auto",
-      // gridColumnGap: "0.2rem",
-      // gridTemplateRows: "auto auto auto auto auto auto auto auto auto",
-      // gridRowGap: "0.2rem",
-
-      // ---------------- Background -----------------
-      backgroundColor: "rgba(0, 0, 0, 0.6)",
-
-      // ---- Border, margin, padding and outline ----
-      margin: "0",
-      padding: "0",
-      outline: "none",
-
-      // ------------------- Text --------------------
-      // fontWeight: "bold",
-      // textOverflow: "ellipsis",   // Add '...' if text overflows.
-      textShadow: "0 1px 0 rgba(0, 0, 0, 0.5)",
-      color: "rgb(210, 230, 250)", // Text color.
-      border: "1px ridge rgba(110,130,150,0.8)"
-    }
-  }
-);
 
 export class Window extends Component
 {

@@ -4,30 +4,9 @@
   Window with a titlebar and content
 */
 
-import { Css } from "../../Client/Gui/Css";
-import { TitleBar, TITLE_BAR_GRID_AREA } from "../../Client/Gui/TitleBar";
-import { WindowContent, WINDOW_CONTENT_GRID_AREA } from
-  "../../Client/Gui/WindowContent";
+import { TitleBar } from "../../Client/Gui/TitleBar";
+import { WindowContent } from "../../Client/Gui/WindowContent";
 import { Window } from "../../Client/Gui/Window";
-
-const cssClass = Css.createClass
-(
-  {
-    name: "TitledWindow",
-    css:
-    {
-      // ------- Children size and positioning -------
-      display: "grid",
-      gridTemplateColumns: "1",
-      gridColumnGap: "0px",
-      gridTemplateRows: "2",
-      gridRowGap: "0px",
-      gridTemplateAreas:
-        `"${TITLE_BAR_GRID_AREA}"`
-      + `"${WINDOW_CONTENT_GRID_AREA}"`
-    }
-  }
-);
 
 export class TitledWindow extends Window
 {
