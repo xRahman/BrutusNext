@@ -28,7 +28,7 @@ const colors: { [key: string]: string } =
   "&W": "rgb(255,255,255)"  // Bright White
 };
 
-export namespace MudColors
+export namespace TextColors
 {
   // Default base color that will be used if a message doesn't
   // start with a color code.
@@ -58,7 +58,11 @@ export namespace MudColors
   //   to it so it will inherit text color from parent element.
   // • 'baseColor' is used when '&_' is found in 'message'.
   // -> Returns html that creates the spans.
-  export function htmlize(message: string, baseColor = DEFAULT_COLOR)
+  export function htmlize
+  (
+    message: string,
+    baseColor = DEFAULT_COLOR
+  )
   : string
   {
     if (hasNoColors(message))

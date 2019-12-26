@@ -1,3 +1,6 @@
+TODO: Přejmenovat MudColors na TextColors.
+[done]
+
 TODO: Setovat text do title baru (default: "New window).
 [done]
 

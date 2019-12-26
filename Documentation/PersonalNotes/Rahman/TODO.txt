@@ -24,7 +24,7 @@ Aktuální TODO:
 
 TODO: Vnitřek LoginWindow (title bar, title, login form etc.)
 
-TODO: Přejmenovat MudColors na TextColors.
+TODO: Otestovat novou verzi TextColors.
 
 ------------------------------------------------------------------------------
 

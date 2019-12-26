@@ -6,7 +6,7 @@
 
 import { Element } from "../../Client/Gui/Element";
 import { Component } from "../../Client/Gui/Component";
-import { MudColors } from "../../Client/Gui/MudColors";
+import { TextColors } from "../../Client/Gui/TextColors";
 
 export class Text extends Component
 {
@@ -17,6 +17,6 @@ export class Text extends Component
     name = "text"
   )
   {
-    super(Element.createSpan(parent, name, MudColors.htmlize(coloredText)));
+    super(Element.createSpan(parent, name, TextColors.htmlize(coloredText)));
   }
 }
