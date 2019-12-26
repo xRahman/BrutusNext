@@ -1,3 +1,16 @@
+TODO: Newrapovat MudColors.htmlize() do extra spanu, protože
+   do spanu se to bude dávat při vytváření elementu.
+[done]
+
+TODO: Refactoring MudColors.ts
+[done]
+
+TODO: Escapovat string, ze kterého dělám html.
+[done]
+
+TODO: Escapovat až outputnutý charactery (dělám si to zbytečně složitý).
+[done]
+
 TODO: Vyrobit komponentu Text (a asi rovnou i TextLink)
 [done]
 

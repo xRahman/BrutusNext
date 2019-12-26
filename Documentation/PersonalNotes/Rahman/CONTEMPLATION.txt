@@ -1,5 +1,44 @@
 ------------------------------------------------------------------------------
 
+Text Colors
+------------
+
+Jak je to s escapováním:
+
+&&r -> &r
+&&? -> &?
+
+&x? -> &x
+
+To znamená, že && nejspíš vůbec nemusím řešit. Když to není color kód,
+tak prostě outputnu nezměněný znaky. I když vlastně ne, && musím nahradit za &
+
+
+IDEA:
+Nejdřív split podle "&&" a nakonec join přes &&.
+=> Efektivně řeším pouze problém stringu vždy s jedním ampersandem.
+
+IDEA: Všechny
+
+Řešení color kódů:
+- split podle "&".
+  Když je první prvek &&, znamená to, že začínám ampersandem, tj. už první
+  prvek může bejt <span>. Vlastně vždycky je, protože i když tam není
+  barva, tak použiju base color.
+
+Brute Force:
+
+Otevřu <span>
+  Doplním barvu podle toho, jeslti je na začáku color code.
+
+  Když uvntiř najdru color code, tak
+  - zavřu <span>
+  - otevřu <span>
+
+Zavřu <span>
+
+------------------------------------------------------------------------------
+
 Component hierarchy
 --------------------
 

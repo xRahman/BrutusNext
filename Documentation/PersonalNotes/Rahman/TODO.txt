@@ -25,12 +25,9 @@ Aktuální TODO:
 TODO: Vnitřek LoginWindow (title bar, title, login form etc.)
 
 TODO: Setovat text do title baru (default: "New window).
+[done]
 
-
-TODO: Newrapovat MudColors.htmlize() do extra spanu, protože
-   do spanu se to bude dávat při vytváření elementu.
-
-TODO: Refactoring MudColors.ts
+TODO: Přejmenovat MudColors na TextColors.
 
 ------------------------------------------------------------------------------
 
