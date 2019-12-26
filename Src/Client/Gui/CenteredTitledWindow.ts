@@ -12,9 +12,10 @@ export class CenteredTitledWindow extends TitledWindow
   constructor
   (
     parent: HTMLElement,
-    name = "centered_titled_window"
+    name = "centered_titled_window",
+    title = ""
   )
   {
-    super(parent, name);
+    super(parent, name, title);
   }
 }

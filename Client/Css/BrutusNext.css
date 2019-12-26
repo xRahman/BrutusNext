@@ -221,6 +221,7 @@
   text-overflow: ellipsis;      /* Add '...' if text overflows. */
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
   color: rgb(210, 230, 250);  /* Text color. */
+  text-align: center;
 }
 
 .WindowContent

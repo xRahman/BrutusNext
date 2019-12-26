@@ -6,23 +6,25 @@
 
 import { Element } from "../../Client/Gui/Element";
 import { Component } from "../../Client/Gui/Component";
+import { Text } from "../../Client/Gui/Text";
 
 export class TitleBar extends Component
 {
   // ---------------- Protected data --------------------
 
-  // protected title: HTMLElement;
+  protected title: Text;
 
   // ! Throws an exception on error.
   constructor
   (
     parent: HTMLElement,
-    name = "title_bar"
+    name = "title_bar",
+    title = ""
   )
   {
     super(Element.createDiv(parent, name));
 
-    // this.title = createTitleElement();
+    this.title = new Text(this.element, title, "title");
   }
 
   // -------------- Static class data -------------------

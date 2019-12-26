@@ -28,7 +28,10 @@ TODO: Setovat text do title baru (default: "New window).
 
 TODO: Vyrobit komponentu Text (a asi rovnou i TextLink)
 
-TODO: Přesunout css do style sheetu
+TODO: Newrapovat MudColors.htmlize() do extra spanu, protože
+   do spanu se to bude dávat při vytváření elementu.
+
+TODO: Refactoring MudColors.ts
 
 ------------------------------------------------------------------------------
 

@@ -67,7 +67,7 @@ export namespace Element
   (
     parent: HTMLElement,
     name: string,
-    insertMode: InsertMode = InsertMode.APPEND
+    insertMode = InsertMode.APPEND
   )
   : HTMLDivElement
   {
@@ -79,9 +79,61 @@ export namespace Element
 
     return div;
   }
+
+  export function createSpan
+  (
+    parent: HTMLElement,
+    name: string,
+    html?: string,
+    insertMode = InsertMode.APPEND
+  )
+  : HTMLSpanElement
+  {
+    const span = document.createElement("span");
+
+    span.setAttribute("name", name);
+
+    if (html)
+      insertHtml(span, html);
+
+    insertToParent(span, parent, insertMode);
+
+    return span;
+  }
 }
 
 // ----------------- Auxiliary Functions ---------------------
+
+function insertHtml
+(
+  element: HTMLElement,
+  html: string,
+  insertMode = Element.InsertMode.APPEND
+)
+: HTMLElement
+{
+  switch (insertMode)
+  {
+    case Element.InsertMode.APPEND:
+      element.insertAdjacentHTML("beforeend", html);
+      break;
+
+    case Element.InsertMode.PREPEND:
+      element.insertAdjacentHTML("afterbegin", html);
+      break;
+
+    case Element.InsertMode.REPLACE:
+      clearHtmlContent(element);
+      element.insertAdjacentHTML("afterbegin", html);
+      break;
+
+    default:
+      Syslog.reportMissingCase(insertMode);
+      break;
+  }
+
+  return element;
+}
 
 function clearHtmlContent(element: HTMLElement): void
 {
@@ -95,11 +147,11 @@ function insertToParent
 (
   element: HTMLElement,
   parent: HTMLElement,
-  mode: Element.InsertMode
+  insertMode: Element.InsertMode
 )
 : void
 {
-  switch (mode)
+  switch (insertMode)
   {
     case Element.InsertMode.APPEND:
       parent.appendChild(element);
@@ -115,8 +167,7 @@ function insertToParent
       break;
 
     default:
-      Syslog.logError("Unknown insert mode."
-        + " Element is not inserted to parent");
+      Syslog.reportMissingCase(insertMode);
       break;
   }
 }

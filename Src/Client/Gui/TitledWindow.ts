@@ -19,13 +19,14 @@ export class TitledWindow extends Window
   constructor
   (
     parent: HTMLElement,
-    name = "titled_window"
+    name = "titled_window",
+    title = ""
   )
   {
     super(parent, name);
 
-    this.titleBar = this.createTitleBar();
-    this.content = this.createContent();
+    this.titleBar = new TitleBar(this.element, "window_title_bar", title);
+    this.content = new WindowContent(this.element);
   }
 
   // constructor
@@ -146,14 +147,4 @@ export class TitledWindow extends Window
   // }
 
   // ---------------- Private methods -------------------
-
-  private createTitleBar(): TitleBar
-  {
-    return new TitleBar(this.element, "window_title_bar");
-  }
-
-  private createContent(): WindowContent
-  {
-    return new WindowContent(this.element);
-  }
 }

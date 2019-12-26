@@ -1,3 +1,6 @@
+TODO: Přesunout css do style sheetu
+[done]
+
 Hmm...
 - vytvořit vlastní typ pro css properties
 - generovat z něj stringovou reprezentaci css classy
