@@ -8,6 +8,7 @@
 ///   pings in regular intervals).
 
 import { Syslog } from "../../Shared/Log/Syslog";
+import { Types } from "../../Shared/Utils/Types";
 import { SocketUtils } from "../../Shared/Net/SocketUtils";
 import { WebSocketEvent } from "../../Shared/Net/WebSocketEvent";
 
@@ -17,10 +18,18 @@ import * as WebSocket from "isomorphic-ws";
 
 let webSocket: (WebSocket | "disconnected") = "disconnected";
 
+type PromiseHandler =
+{
+  resolve: Types.ResolveFunction<void>,
+  reject: Types.ResolveFunction<void>
+};
+
+let connectingProgress: PromiseHandler | "Not connecting" = "Not connecting";
+
 export namespace Connection
 {
   // ! Throws exception on error.
-  export function connect(): void
+  export async function connect(): Promise<void>
   {
     if (isOpen())
       throw Error("Connection to the server is already open");
@@ -29,6 +38,12 @@ export namespace Connection
     {
       throw Error("Failed to connect to the server because"
         + " browser doesn't support WebSockets");
+    }
+
+    if (connectingProgress !== "Not connecting")
+    {
+      throw Error("Failed to connect to the server because"
+        + " another connection attempt is still going on");
     }
 
     window.onbeforeunload = (event: BeforeUnloadEvent) =>
@@ -49,6 +64,11 @@ export namespace Connection
     webSocket.onmessage = (event) => { onMessage(event); };
     webSocket.onerror = (event) => { onError(event); };
     webSocket.onclose = (event) => { onClose(event); };
+
+    return new Promise<void>
+    (
+      (resolve, reject) => { connectingProgress = { resolve, reject }; }
+    );
   }
 
   export function isOpen(): boolean
@@ -107,7 +127,7 @@ function onBeforeUnload(event: BeforeUnloadEvent): void
 
 function onOpen(event: SocketUtils.OpenEvent): void
 {
-  // Do nothing.
+  finishConnecting();
 
   // TEST
   sendData("TEST: Client has connected");
@@ -143,11 +163,37 @@ function onError(event: SocketUtils.ErrorEvent): void
     message += `: ${event.message}`;
 
   Syslog.logError(message);
+
+  failConnecting();
 }
 
 function onClose(event: SocketUtils.CloseEvent): void
 {
   // Do nothing.
+}
+
+function finishConnecting(): void
+{
+  if (connectingProgress === "Not connecting")
+  {
+    Syslog.logError("Failed to finish connecting"
+      + " because 'connectingProgress' is not initialized."
+      + " It must be done in Connection.connect()");
+    return;
+  }
+
+  connectingProgress.resolve();
+
+  connectingProgress = "Not connecting";
+}
+
+function failConnecting(): void
+{
+  if (connectingProgress !== "Not connecting")
+  {
+    connectingProgress.reject();
+    connectingProgress = "Not connecting";
+  }
 }
 
 // import { ClassFactory } from "../../Shared/Class/ClassFactory";

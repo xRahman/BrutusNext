@@ -17,18 +17,16 @@ import { Windows } from "../Client/Gui/Windows";
 import "../Client/Gui/Html";
 import "../Client/Gui/Body";
 
-function start(): void
+async function startBrutusNextClient(): Promise<void>
 {
   Syslog.log("[CLIENT]", "Starting BrutusNext client...");
 
   try
   {
-    // await Renderer.init();
-
-    // TODO: Tohle by měla bejt async metoda.
-    Connection.connect();
-
     Windows.init();
+
+    // await Renderer.init();
+    await Connection.connect();
 
     Windows.switchToState(Windows.State.LOGIN);
   }
@@ -40,8 +38,14 @@ function start(): void
   }
 }
 
-// tslint:disable-next-line:no-floating-promises
-start();
+startBrutusNextClient().catch
+(
+  (reason: any) =>
+  {
+    console.log(`BrutusNext client encountered an unhandled`
+      + ` error (${String(reason)})`);
+  }
+);
 
 // import { REPORT } from "../Shared/Log/REPORT";
 // import { Syslog } from "../Client/Log/Syslog";

@@ -10,7 +10,7 @@ export class SavingQueue
 {
   // ----------------- Private data ---------------------
 
-  private readonly requestQueue: Types.ResolveFunction<void>[] = [];
+  private readonly requestQueue: Array<Types.ResolveFunction<void>> = [];
 
   // ---------------- Public methods --------------------
 

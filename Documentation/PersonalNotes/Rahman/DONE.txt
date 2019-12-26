@@ -1,3 +1,7 @@
+TODO: Connection.open() by měla bejt async funkce, která se resolvne
+  v Connection.onOpen().
+[done]
+
 TODO: pořešit app state a to, kdy se má co zobrazovat.
 [done]
 
