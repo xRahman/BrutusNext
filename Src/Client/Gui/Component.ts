@@ -42,13 +42,31 @@ export abstract class Component
 
   public hide(): void
   {
+    // Don't do anything if we are already hidden.
+    if (this.isHidden())
+      return;
+
+    // 'onHide()' must be called after setting display mode
+    // because hidden components can't be manipulated with
+    // (for example they can't be given focus).
+    this.onShow();
+
     this.rememberDisplayMode();
     this.element.style.display = "none";
   }
 
   public show(): void
   {
+    // Don't do anything if we are already shown.
+    if (!this.isHidden())
+      return;
+
     this.restoreDisplayMode();
+
+    // 'onShow()' must be called after this.restoreDisplayMode()
+    // because hidden components can't be manipulated with
+    // (for example they can't be given focus).
+    this.onShow();
   }
 
   public isHidden(): boolean { return this.element.style.display === "none"; }
@@ -63,6 +81,16 @@ export abstract class Component
     // so we have to remember it to be able to return it.
     // when show() is called.
     this.rememberDisplayMode();
+  }
+
+  protected onShow(): void
+  {
+    // This handler can be redefined by descendants.
+  }
+
+  protected onHide(): void
+  {
+    // This handler can be redefined by descendants.
   }
 
   // ---------------- Private methods -------------------

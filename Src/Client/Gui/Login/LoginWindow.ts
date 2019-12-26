@@ -4,6 +4,7 @@
   Login window.
 */
 
+import { Windows } from "../../../Client/Gui/Windows";
 import { CenteredTitledWindow } from
   "../../../Client/Gui/CenteredTitledWindow";
 
@@ -13,6 +14,8 @@ export class LoginWindow extends CenteredTitledWindow
   constructor(parent: HTMLElement)
   {
     super(parent, "login_window", "&wWelcome to &gBrutus&GNext");
+
+    this.visibility.set(Windows.State.LOGIN);
   }
 
 // constructor()

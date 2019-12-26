@@ -11,11 +11,11 @@
 
 import { Syslog } from "../Client/Log/Syslog";
 import { Connection } from "../Client/Net/Connection";
+import { Windows } from "../Client/Gui/Windows";
 
 // Import following modules to execute their inicialization code.
 import "../Client/Gui/Html";
 import "../Client/Gui/Body";
-import "../Client/Gui/Windows";
 
 function start(): void
 {
@@ -24,7 +24,13 @@ function start(): void
   try
   {
     // await Renderer.init();
+
+    // TODO: Tohle by měla bejt async metoda.
     Connection.connect();
+
+    Windows.init();
+
+    Windows.switchToState(Windows.State.LOGIN);
   }
   catch (error)
   {

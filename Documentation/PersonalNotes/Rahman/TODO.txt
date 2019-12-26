@@ -30,6 +30,9 @@ Aktuální TODO:
 
 ------------------------------------------------------------------------------
 
+TODO: Connection.open() by měla bejt async funkce, která se resolvne
+  v Connection.onOpen().
+
 TODO: V title baru nefunguje "text-overflow: ellipsis;"
 
 ------------------------------------------------------------------------------

@@ -22,7 +22,7 @@ const windows = new Set<Window>();
 
 const parent = document.body;
 
-const loginWindow = addWindow(new LoginWindow(parent));
+// let loginWindow: LoginWindow | "Doesn't exist" = "Doesn't exist";
 // const loginWindow: (LoginWindow | null) = null;
 // const registerWindow: (RegisterWindow | null) = null;
 // const termsWindow: (TermsWindow | null) = null;
@@ -35,9 +35,50 @@ const loginWindow = addWindow(new LoginWindow(parent));
 
 export namespace Windows
 {
+  export enum State
+  {
+    INITIAL,
+    LOGIN,
+    REGISTER,
+    TERMS,
+    CHARSELECT,
+    CHARGEN,
+    IN_GAME,
+    ERROR   // Player is asked to reload browser tab to recover.
+  }
+
+  let state = State.INITIAL;
+
+  // export type State =
+  //   | "INITIAL"
+  //   | "LOGIN"
+  //   | "REGISTER"
+  //   | "TERMS"
+  //   | "CHARSELECT"
+  //   | "CHARGEN"
+  //   | "GAME"
+  //   | "ERROR";   // Player is asked to reload browser tab to recover.
+
   export function init(): void
   {
-    // Nothing for now.
+    addWindow(new LoginWindow(parent));
+  }
+
+  // ! Throws exception on error.
+  export function switchToState(newState: State): void
+  {
+    if (newState === State.INITIAL)
+      throw Error("Attempt to set Windows state to 'INITIAL'");
+
+    state = newState;
+
+    showWindowsByState(state);
+
+    if (newState === State.ERROR)
+    {
+      // TODO: Better error message.
+      alert("An error occured. Please reload the browser tab to log back in.");
+    }
   }
 
   /// To be deleted.
@@ -243,4 +284,10 @@ function addWindow<T extends Window>(window: T): T
   windows.add(window);
 
   return window;
+}
+
+function showWindowsByState(state: Windows.State): void
+{
+  for (const window of windows)
+    window.showByState(state);
 }
