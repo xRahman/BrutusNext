@@ -20,7 +20,7 @@ export class TitledWindow extends Window
   (
     parent: HTMLElement,
     name = "titled_window",
-    title = ""
+    title = "New window"
   )
   {
     super(parent, name);

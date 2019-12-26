@@ -24,9 +24,6 @@ Aktuální TODO:
 
 TODO: Vnitřek LoginWindow (title bar, title, login form etc.)
 
-TODO: Setovat text do title baru (default: "New window).
-[done]
-
 TODO: Přejmenovat MudColors na TextColors.
 
 ------------------------------------------------------------------------------

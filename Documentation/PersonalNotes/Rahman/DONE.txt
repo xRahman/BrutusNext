@@ -1,3 +1,6 @@
+TODO: Setovat text do title baru (default: "New window).
+[done]
+
 TODO: Newrapovat MudColors.htmlize() do extra spanu, protože
    do spanu se to bude dávat při vytváření elementu.
 [done]
