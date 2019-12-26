@@ -47,17 +47,8 @@ export namespace Windows
     ERROR   // Player is asked to reload browser tab to recover.
   }
 
+  /// TODO: State should probably be somewhere else.
   let state = State.INITIAL;
-
-  // export type State =
-  //   | "INITIAL"
-  //   | "LOGIN"
-  //   | "REGISTER"
-  //   | "TERMS"
-  //   | "CHARSELECT"
-  //   | "CHARGEN"
-  //   | "GAME"
-  //   | "ERROR";   // Player is asked to reload browser tab to recover.
 
   export function init(): void
   {

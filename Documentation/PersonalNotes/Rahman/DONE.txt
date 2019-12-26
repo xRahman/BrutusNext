@@ -1,3 +1,6 @@
+TODO: pořešit app state a to, kdy se má co zobrazovat.
+[done]
+
 TODO: Otestovat novou verzi TextColors.
 [done]
 

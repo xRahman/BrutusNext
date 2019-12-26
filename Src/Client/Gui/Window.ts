@@ -55,8 +55,6 @@ export class Window extends Component
 
   public showByState(state: Windows.State): void
   {
-    console.log("showByState", state);
-
     if (this.visibility.isSet(state))
     {
       this.show();
