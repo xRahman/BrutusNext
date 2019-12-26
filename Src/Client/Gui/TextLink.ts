@@ -4,18 +4,18 @@
   Window with a titlebar and content
 */
 
-import { Element } from "../../Client/Gui/Element";
-import { Component } from "../../Client/Gui/Component";
+import { Text } from "../../Client/Gui/Text";
 
-export class TextLink extends Component
+export class TextLink extends Text
 {
   // ! Throws an exception on error.
   constructor
   (
     parent: HTMLElement,
+    coloredText: string,
     name = "text_link"
   )
   {
-    super(Element.createDiv(parent, name));
+    super(parent, coloredText, name);
   }
 }

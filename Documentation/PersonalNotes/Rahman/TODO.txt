@@ -26,7 +26,6 @@ TODO: Vnitřek LoginWindow (title bar, title, login form etc.)
 
 TODO: Setovat text do title baru (default: "New window).
 
-TODO: Vyrobit komponentu Text (a asi rovnou i TextLink)
 
 TODO: Newrapovat MudColors.htmlize() do extra spanu, protože
    do spanu se to bude dávat při vytváření elementu.

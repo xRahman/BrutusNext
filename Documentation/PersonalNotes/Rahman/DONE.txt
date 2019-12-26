@@ -1,3 +1,6 @@
+TODO: Vyrobit komponentu Text (a asi rovnou i TextLink)
+[done]
+
 TODO: Přesunout css do style sheetu
 [done]
 
