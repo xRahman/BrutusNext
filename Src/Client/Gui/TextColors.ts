@@ -134,7 +134,7 @@ function parseColors(message: string, baseColor: string): string
   html += openSpan(color);
   html += escape(peekResult.output);
   html += parseRestOfMessage(peekResult.restOfMessage, baseColor);
-  html += closeSpan;
+  html += closeSpan();
 
   return html;
 }

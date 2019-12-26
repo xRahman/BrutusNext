@@ -15,16 +15,22 @@ TARGET:
   - pak prototypová dědičnost room a přiřazování prototypu
     v editoru
 
+Trochu změna: Mapa first
+
 ------------------------------------------------------------------------------
 
 Aktuální TODO:
-- zobrazit jedno konkrétní okno (asi to, co se zobrazuje jako první,
-  tj. nejspíš loginWindow).
-- potom řešit app state a to, kdy se má co zobrazovat.
+- pořešit app state a to, kdy se má co zobrazovat.
+- vytvořit okna pro defaultní game view:
+  - GroupWindow, RoomWindow, MapWindow
+  Dole:
+  - ChatWindow, InputWindow, CombatSpamWindow
+  Někde bude ještě muset bejt player frame, target frame a tak - nejspíš
+    někde uprostřed.
 
-TODO: Vnitřek LoginWindow (title bar, title, login form etc.)
+------------------------------------------------------------------------------
 
-TODO: Kód z TextColors asi můžu rovnou hodit do komponenty Text.
+TODO: V title baru nefunguje "text-overflow: ellipsis;"
 
 ------------------------------------------------------------------------------
 
