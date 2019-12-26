@@ -24,7 +24,7 @@ Aktuální TODO:
 
 TODO: Vnitřek LoginWindow (title bar, title, login form etc.)
 
-TODO: Otestovat novou verzi TextColors.
+TODO: Kód z TextColors asi můžu rovnou hodit do komponenty Text.
 
 ------------------------------------------------------------------------------
 

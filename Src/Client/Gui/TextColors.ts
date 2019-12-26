@@ -66,7 +66,7 @@ export namespace TextColors
   : string
   {
     if (hasNoColors(message))
-      return `<span>${encodeURIComponent(message)}</span>`;
+      return `<span>${escape(message)}</span>`;
 
     return parseColors(message, baseColor);
   }
@@ -74,25 +74,42 @@ export namespace TextColors
 
 // ----------------- Auxiliary Functions ---------------------
 
+// Escepe function is used to prevent injecting html elements
+// to text.
+function escape(message: string): string
+{
+  return message
+    // Escaping quotes doesn't work but they probably
+    // won't do much harm by themselves.
+    // .split(`"`).join("&quot;")
+    .split("&").join("&amp;")
+    .split("'").join("&#39;")
+    .split("<").join("&lt;")
+    .split(">").join("&gt;");
+}
+
+function openSpan(color: string): string
+{
+  return `<span style="color: ${color}">`;
+}
+
+function closeSpan(): string
+{
+  return "</span>";
+}
+
 function peek
 (
   message: string,
   baseColor: string
 )
-: { color?: string, restOfMessage: string, outputCharacter: string }
+: { color?: string, restOfMessage: string, output: string }
 {
-  let restOfMessage = message.substr(2);
-
   if (message.startsWith("&&"))
-    return { restOfMessage, outputCharacter: "&" };
+    return { restOfMessage: message.substr(2), output: "&" };
 
-  if (message.startsWith("$_"))
-  {
-    const color = baseColor;
-    const outputCharacter = "";
-
-    return { color, restOfMessage, outputCharacter };
-  }
+  if (message.startsWith("&_"))
+    return { color: baseColor, restOfMessage: message.substr(2), output: "" };
 
   if (message.startsWith("&"))
   {
@@ -100,13 +117,26 @@ function peek
     const color = colors[code];
 
     if (color !== undefined)
-      return { color, restOfMessage, outputCharacter: "" };
+      return { color, restOfMessage: message.substr(2), output: "" };
   }
 
-  restOfMessage = message.substr(1);
-  const outputCharacter = message.charAt(0);
+  return { restOfMessage: message.substr(1), output: message.charAt(0) };
+}
 
-  return { restOfMessage, outputCharacter };
+// Creates a series of colored <span> elements.
+function parseColors(message: string, baseColor: string): string
+{
+  const peekResult = peek(message, baseColor);
+  const color = peekResult.color ? peekResult.color : baseColor;
+
+  let html = "";
+
+  html += openSpan(color);
+  html += escape(peekResult.output);
+  html += parseRestOfMessage(peekResult.restOfMessage, baseColor);
+  html += closeSpan;
+
+  return html;
 }
 
 // Creates a series of colored <span> elements.
@@ -120,28 +150,12 @@ function parseRestOfMessage(message: string, baseColor: string): string
 
   if (peekResult.color)
   {
-    html += "</span>";
-    html += `<span style="color: ${peekResult.color}">`;
+    html += closeSpan();
+    html += openSpan(peekResult.color);
   }
 
-  html += encodeURIComponent(peekResult.outputCharacter);
+  html += escape(peekResult.output);
   html += parseRestOfMessage(peekResult.restOfMessage, baseColor);
-
-  return html;
-}
-
-// Creates a series of colored <span> elements.
-function parseColors(message: string, baseColor: string): string
-{
-  const peekResult = peek(message, baseColor);
-  const color = peekResult.color ? peekResult.color : baseColor;
-
-  let html = "";
-
-  html += `<span style="color: ${color}">`;
-  html += encodeURIComponent(peekResult.outputCharacter);
-  html += parseRestOfMessage(peekResult.restOfMessage, baseColor);
-  html += "</span>";
 
   return html;
 }
@@ -150,301 +164,3 @@ function hasNoColors(message: string): boolean
 {
   return !message.includes("&");
 }
-
-// function parseColors()
-// {
-//   const parser =
-//   {
-//     // Start with empty string.
-//     html: "",
-//     spanOpen: false,
-//     activeColor: baseColor
-//   };
-
-//   let remainingMessage = message;
-
-//   while (remainingMessage.length > 0)
-//   {
-//     remainingMessage = parseStartOfMessage(parser, message, baseColor);
-//   }
-
-//   // for (let i = 0; i < message.length; i++)
-//   // {
-//   //   // It is possible that more than 1 character is parsed.
-//   //   // The extra parsed ones are skipped.
-//   //   i += parseCharacter(parser, message, i, baseColor);
-//   // }
-
-//   closeSpanIfOpen(parser);
-
-//   return parser.html;
-// }
-
-// // -> Returns html rgb code if two characters on 'index'
-// //    represent a color code, 'null' otherwise.
-// function parseColorCode(colorCode: string, baseColor: string)
-// : string | null
-// {
-//   // '&_' means 'baseColor'
-//   // (which is usually the color at the start of the message).
-//   if (colorCode === "&_")
-//     return baseColor;
-
-//   const htmlColor = colors[colorCode];
-
-//   if (htmlColor === undefined)
-//     return null;
-
-//   return htmlColor;
-// }
-
-// function closeSpanIfOpen(parser: { html: string, spanOpen: boolean }): void
-// {
-//   if (parser.spanOpen === true)
-//   {
-//     parser.html += "</span>";
-//     parser.spanOpen = false;
-//   }
-// }
-
-// // Regularly, 'parser.activeColor' (which is obtained by parsing
-// // color codes from in the message) will be used with opening
-// // tag. If you provide a 'color' param, it will be used instead
-// // (without modifying parser.activeColor value, so the next opened
-// // <span> tag will use parser.activeColor again).
-// function openSpanIfClosed
-// (
-//   parser: { html: string, spanOpen: boolean, activeColor: string },
-//   color: (string | null) = null
-// )
-// : void
-// {
-//   const usedColor = color ? color : parser.activeColor;
-
-//   /// Původně tu bylo:
-//   // if (color === null)
-//   //   color = parser.activeColor;
-
-//   if (parser.spanOpen === false)
-//   {
-//     parser.html += `<span style="color: ${usedColor}">`;
-
-//     parser.spanOpen = true;
-//   }
-// }
-
-// // // Adds 'characters' string to resulting html coloured with
-// // // 'color' if you provide it or 'parser.activeColor' if you don't.
-// // function outputCharacters
-// // (
-// //   parser: { html: string, spanOpen: boolean, activeColor: string },
-// //   characters: string,
-// //   color: (string | null) = null
-// // )
-// // : void
-// // {
-// //   openSpanIfClosed(parser, color);
-// //   parser.html += characters;
-// // }
-
-// // -> Returns number of extra parsed characters that need
-// //    to be skipped in the main cycle.
-// function outputEscapedColorCode
-// (
-//   parser: { html: string, spanOpen: boolean, activeColor: string },
-//   colorCode: string
-// )
-// : number
-// {
-//   closeSpanIfOpen(parser);
-
-//   // This will also open a <span> tag.
-//   outputCharacters
-//   (
-//     parser,
-//     colorCode,
-//     // Use special color to distiguish escaped color codes.
-//     MudColors.COLOR_CODE_COLOR
-//   );
-
-//   closeSpanIfOpen(parser);
-
-//   // Skip parsing of two extra characters because
-//   // we have just outputed them in advance.
-//   return 2;
-// }
-
-// // -> Returns number of extra parsed characters that need
-// //    to be skipped in the main cycle.
-// function parseEscapedColorCode
-// (
-//   parser: { html: string, spanOpen: boolean, activeColor: string },
-//   message: string,
-//   index: number,
-//   baseColor: string
-// )
-// : number
-// {
-//   // Take a peek at the two following characters.
-//   const colorCode = message.substr(index + 1, 2);
-//   const color = parseColorCode(colorCode, baseColor);
-
-//   if (color === null)
-//   {
-//     // It there isn't a color code after '&' character
-//     // and it isn't part of color code itself, treat
-//     // it just like a regular character.
-//     outputCharacters(parser, "&");
-
-//     // Don't skip any extra characters.
-//     return 0;
-//   }
-
-//   // If there is a color code after a '&' (so it's something like '&&r'),
-//   // we output it as an unescaped color code ('&r') using special color.
-//   return outputEscapedColorCode(parser, colorCode);
-// }
-
-// // -> Returns the rest of message that still needs to be parsed.
-// function parseAmpersand
-// (
-//   parser: { html: string, spanOpen: boolean, activeColor: string },
-//   message: string,
-//   baseColor: string
-// )
-// : string
-// {
-//   if (message.startsWith("&&"))
-//   {
-//     // Output one ampersand and following character.
-
-//     return message.substr(3);
-//   }
-
-//   if (message.startsWith("&_"))
-//   {
-//     // Output base color.
-//     closeSpanIfOpen(parser);
-
-//     // Update the active color.
-//     // (We don't open next <span> tag here, it will be
-//     // opened automatically by parsing the next character.
-//     parser.activeColor = baseColor;
-//     return message.substr(2);
-//   }
-
-//   const colorCode = `&${message.charAt(1)}`;
-//   const color = colors[colorCode];
-
-//   if (color === undefined)
-//   {
-//     // Output ampersand and following character.
-
-//     return message.substr(2);
-//   }
-
-//   // Update the active color.
-//   // (We don't open next <span> tag here, it will be
-//   // opened automatically by parsing the next character.
-//   parser.activeColor = color;
-
-//   return message.substr(2);
-// }
-
-// // -> Returns number of extra parsed characters that need
-// //    to be skipped in the main cycle.
-// function parseAmpersand
-// (
-//   parser: { html: string, spanOpen: boolean, activeColor: string },
-//   message: string,
-//   index: number,
-//   baseColor: string
-// )
-// : number
-// {
-//   // Check if there is a color code at position 'index'.
-//   const colorCode = message.substr(index, 2);
-//   const color = parseColorCode(colorCode, baseColor);
-
-//   // If there is a color code.
-//   if (color !== null)
-//   {
-//     closeSpanIfOpen(parser);
-
-//     // Update the active color.
-//     // (We don't open next <span> tag here, it will be
-//     // opened automatically by parsing the next character.
-//     parser.activeColor = color;
-
-//     // Skip one extra character
-//     // (because we have just parsed a color code which is
-//     // two character long).
-//     return 1;
-//   }
-
-//   return parseEscapedColorCode(parser, message, index, baseColor);
-// }
-
-// // -> Returns the rest of message that still needs to be parsed.
-// function parseStartOfMessage
-// (
-//   parser: { html: string, spanOpen: boolean, activeColor: string },
-//   message: string,
-//   baseColor: string
-// )
-// : string
-// {
-//   if (message.length === 0)
-//     return "";
-
-//   if (message.startsWith("&"))
-//     return parseAmpersand(parser, message, baseColor);
-
-//   if (message.startsWith("\n"))
-//   {
-//     closeSpanIfOpen(parser);
-//     parser.html += "<br />";
-//   }
-//   else
-//   {
-//     openSpanIfClosed(parser);
-//     parser.html += message.charAt(0);
-//   }
-
-//   // Return the rest of the message except the one character we have
-//   // just parsed.
-//   return message.substr(1);
-// }
-
-// // -> Returns number of extra parsed characters that need
-// //    to be skipped in the main cycle.
-// function parseCharacter
-// (
-//   parser: { html: string, spanOpen: boolean, activeColor: string },
-//   message: string,
-//   index: number,
-//   baseColor: string
-// )
-// : number
-// {
-//   const ch = message.substr(index, 1);
-
-//   switch (ch)
-//   {
-//     case "&":
-//       // Return the number of extra parsed characters to be skipped).
-//       return parseAmpersand(parser, message, index, baseColor);
-
-//     case "\n":
-//       closeSpanIfOpen(parser);
-//       parser.html += "<br />";
-//       break;
-
-//     default:
-//       outputCharacters(parser, ch);
-//       break;
-//   }
-
-//   // Don't skip any extra characters.
-//   return 0;
-// }

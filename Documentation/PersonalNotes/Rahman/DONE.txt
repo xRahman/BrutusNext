@@ -1,3 +1,6 @@
+TODO: Otestovat novou verzi TextColors.
+[done]
+
 TODO: Přejmenovat MudColors na TextColors.
 [done]
 
