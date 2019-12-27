@@ -19,7 +19,7 @@ export class MapWindow extends TitledWindow
   {
     super(parent, "map_window", "Map Window");
 
-    this.map = new Map(this);
+    this.map = new Map(this.content);
 
     this.visibility.set(Gui.State.GAME);
   }
