@@ -20,12 +20,55 @@ Trochu změna: Mapa first
 ------------------------------------------------------------------------------
 
 Aktuální TODO:
-- vytvořit okna pro defaultní game view:
-  - GroupWindow, RoomWindow, MapWindow
-  Dole:
-  - ChatWindow, InputWindow, CombatSpamWindow
-  Někde bude ještě muset bejt player frame, target frame a tak - nejspíš
-    někde uprostřed.
+- začít experimentovat s Map Window.
+
+TODO: Data pro pár roomů a exitů
+- koordináty v gridu
+  - X a Y musej bejt celý čísla
+  - Z nutně ne, ale platí, že v každém celočíselném intervalu může bejt
+    jen jedna rooma (tj. efektivně i z je celočíselné + může mít offset).
+    A offset stejně teď nemám jak zobrazit, takže na něj sere pes a bude
+    i Z fixně.
+
+TODO: Transformace do mapovejch dat
+- map data jsou 2d, tj. čtvercová síť. Jsou v ní roomy, který se maj
+  zobrazit - ne nutně jen řez gridem, můžou se zobrazovat i roomy co jsou níž.
+- můžou tam bejt odkazy na roomy v gridu
+- exity do 10 směrů.
+
+Exity by to chtělo mít separátně, jeden objekt pro každej exit, abych je
+  mohl vykreslit v jednom průchodu.
+
+
+ \|/  \|/  \|/  \|/  \|/  \|/  \|
+--x----x----x----x----x----x----x
+ /|\  /|\  /|\  /|\  /|\  /|\  /|
+  | \/ | \/ | \/ | \/ | \/ | \/ |
+  | /\ | /\ | /\ | /\ | /\ | /\ |
+  |/  \|/  \|/  \|/  \|/  \|/  \|
+--x----x----x----x----x----x----x
+ /|\  /|\  /|\  /|\  /|\  /|\  /|
+  | \/ | \/ | \/ | \/ | \/ | \/ |
+  | /\ | /\ | /\ | /\ | /\ | /\ |
+  |/  \|/  \|/  \|/  \|/  \|/  \|
+--x----x----x----x----x----x----x
+
+IDEA: Rozdělit to na několik seznamů, vždycky existy v jednom směru:
+- n/s
+- e/w
+- nw/se
+- sw/ne
+Pokud je mapa čtvercová, tak mi vlastně u každýho exitu stačí vědět,
+  kolikátej v pořadí je (což je pořadí v poli). Podle toho dopočítám,
+  ke kterejm roomám vede.
+(Teleportační exity nechám zatím bejt.)
+  Tzn. když budu mít N/X roomů, tak potřebuju N-1 exitů od každýho za 4 typů.
+- Je teda otázka, jesltli je potřeba mít celou síť exitů, i když se jich
+  většina nebude zobrazovat (pro editaci asi jo), ale můžu tohle použít
+  minimálně na indexaci exitů (tj. nasypu je třeba do hashmapy a budu je
+  indexovat číslem, který by měly v plný síti).
+
+TODO: Zobrazení mapovejch dat
 
 ------------------------------------------------------------------------------
 

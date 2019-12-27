@@ -28,7 +28,7 @@ async function startBrutusNextClient(): Promise<void>
     // await Renderer.init();
     await Connection.connect();
 
-    Windows.switchToState(Windows.State.LOGIN);
+    Windows.switchToState(Windows.State.GAME);
   }
   catch (error)
   {

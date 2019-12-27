@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Login window.
+  Login window
 */
 
 import { Windows } from "../../../Client/Gui/Windows";

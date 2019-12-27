@@ -6,6 +6,12 @@
 
 import { Window } from "../../Client/Gui/Window";
 import { LoginWindow } from "../../Client/Gui/Login/LoginWindow";
+import { GroupWindow } from "../../Client/Gui/Game/GroupWindow";
+import { RoomWindow } from "../../Client/Gui/Game/RoomWindow";
+import { MapWindow } from "../../Client/Gui/Game/MapWindow";
+import { ChatWindow } from "../../Client/Gui/Game/ChatWindow";
+import { CombatWindow } from "../../Client/Gui/Game/CombatWindow";
+import { SpamWindow } from "../../Client/Gui/Game/SpamWindow";
 // import { RegisterWindow } from
 //   "../../../Client/Gui/Register/RegisterWindow";
 // import { TermsWindow } from "../../../Client/Gui/Terms/TermsWindow";
@@ -43,7 +49,7 @@ export namespace Windows
     TERMS,
     CHARSELECT,
     CHARGEN,
-    IN_GAME,
+    GAME,
     ERROR   // Player is asked to reload browser tab to recover.
   }
 
@@ -53,6 +59,14 @@ export namespace Windows
   export function init(): void
   {
     addWindow(new LoginWindow(parent));
+
+    // Game windows.
+    addWindow(new GroupWindow(parent));
+    addWindow(new RoomWindow(parent));
+    addWindow(new MapWindow(parent));
+    addWindow(new ChatWindow(parent));
+    addWindow(new CombatWindow(parent));
+    addWindow(new SpamWindow(parent));
   }
 
   // ! Throws exception on error.

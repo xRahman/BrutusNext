@@ -1,3 +1,12 @@
+TODO:
+- vytvořit okna pro defaultní game view:
+  - GroupWindow, RoomWindow, MapWindow
+  Dole:
+  - ChatWindow, CombatWindow, SpamWindow
+  Někde bude ještě muset bejt player frame, target frame a tak - nejspíš
+    někde uprostřed.
+[done]
+
 TODO: Connection.open() by měla bejt async funkce, která se resolvne
   v Connection.onOpen().
 [done]
