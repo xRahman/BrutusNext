@@ -84,17 +84,19 @@ function redirect
   if (request.secure)
     return next();
 
-  if (!request.hostname)
+  const host = request.get("Host");
+
+  if (!host)
   {
-    // Report the error right away instead of throwing
-    // an exception because this is a top-level callback
-    // so there is noone else to catch the exception.
-    Syslog.logError("Failed to redirect http request to https"
-      + " because 'hostname' is missing on http request");
+    // Sometimes 'hostst' is missing in request so we can't
+    // redirect to it. In that case we will reply with status
+    // '400' (Bad Request).
+    response.statusMessage = "Missing 'host' on requests";
+    response.status(400).end();
     return;
   }
 
-  response.redirect(`https://${request.hostname}${request.url}`);
+  response.redirect(`https://${host}${request.url}`);
 }
 
 function redirectHttpToHttps(express: Express.Application): void
