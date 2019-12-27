@@ -151,10 +151,13 @@
   /* ------- Children size and positioning ------- */
 
   display: grid;
-  grid-template-columns: repeat(9, auto);
-  column-gap: 0.2rem;
-  grid-template-rows: repeat(9, auto);
-  row-gap: 0.2rem;
+  grid-template-columns: repeat(3, auto);
+  column-gap: 0px;
+  grid-template-rows: repeat(2, auto);
+  row-gap: 0px;
+  grid-template-areas:
+    "GroupWindow RoomWindow MapWindow"
+    "ChatWindow CombatWindow SpamWindow";
 
   /* ---------------- Background ----------------- */
 
@@ -199,11 +202,12 @@
 {
   /* ------------- Size and position ------------- */
 
-  grid-area: title_bar;
+  grid-area: TitleBar;
 
   /* ---- Border, margin, padding and outline ---- */
 
   padding: 0.1rem;
+  /*border: 1px solid rgba(0, 0, 0, 0.0);*/
 
   /* ---------------- Background ----------------- */
 
@@ -214,7 +218,13 @@
   /* Chrome10-25,Safari5.1-6 */
   background: -webkit-linear-gradient(top, rgba(80, 80, 80, 0.6) 0%, rgba(110, 110, 110, 0.6) 5%, rgba(60, 60, 60, 0.6) 90%, rgba(30, 30, 30, 0.6) 100%);
   /* CSS3 compatible browsers*/
-  background: linear-gradient(rgba(80, 80, 80, 0.6) 0%, rgba(110, 110, 110, 0.6) 5%, rgba(60, 60, 60, 0.6) 90%, rgba(30, 30, 30, 0.6) 100%);
+  /*background: linear-gradient(rgba(80, 80, 80, 0.6) 0%, rgba(110, 110, 110, 0.6) 5%, rgba(60, 60, 60, 0.6) 90%, rgba(30, 30, 30, 0.6) 100%);*/
+  background: linear-gradient(rgba(80, 80, 80, 0.7) 0%, rgba(80, 80, 80, 0.7) 5%, rgba(50, 50, 50, 0.6) 90%, rgba(20, 20, 20, 0.7) 100%);
+
+  /* background-clip: border-box|padding-box|content-box*/
+  /*background-clip: padding-box;*/
+
+  /* z-index: -1; */
 
   /* ------------------- Text -------------------- */
 
@@ -229,7 +239,7 @@
 {
   /* ------------- Size and position ------------- */
 
-  grid-area: window_content;
+  grid-area: WindowContent;
 
   /* ---- Border, margin, padding and outline ---- */
 
@@ -240,10 +250,12 @@
 {
   /* ------------- Size and position ------------- */
 
+  /*
   grid-column-start: 4;
   grid-column-end: 7;
   grid-row-start: 4;
   grid-row-end: 7;
+  */
 
   /* ---------------- Background ----------------- */
 
@@ -253,9 +265,15 @@
 
   /*
   margin: 0;
-  padding: 0;
+  */
+  /*padding: 1px;*/
+  /*
   outline: none;
   */
+  border-style: ridge;
+  border-width: 2px;
+  border-color: rgb(53, 53, 53);
+  /*box-shadow: inset 0 0 4px rgb(36, 36, 36);*/
 
   /* ------------------- Text -------------------- */
 
@@ -280,11 +298,11 @@
   display: grid;
   grid-template-columns: auto;
   column-gap: 0px;
-  grid-template-rows: auto auto;
+  grid-template-rows: auto 1fr;
   row-gap: 0px;
   grid-template-areas:
-    "title_bar"
-    "window_content";
+    "TitleBar"
+    "WindowContent";
 }
 
 .CenteredTitledWindow
@@ -304,6 +322,48 @@
   /* 'vh' means viewport height so this window won't be
      higher than the viewport. */
   max-height: 100vh;
+}
+
+.GroupWindow
+{
+  /* ------------- Size and position ------------- */
+
+  grid-area: GroupWindow;
+}
+
+.RoomWindow
+{
+  /* ------------- Size and position ------------- */
+
+  grid-area: RoomWindow;
+}
+
+.MapWindow
+{
+  /* ------------- Size and position ------------- */
+
+  grid-area: MapWindow;
+}
+
+.ChatWindow
+{
+  /* ------------- Size and position ------------- */
+
+  grid-area: ChatWindow;
+}
+
+.CombatWindow
+{
+  /* ------------- Size and position ------------- */
+
+  grid-area: CombatWindow;
+}
+
+.SpamWindow
+{
+  /* ------------- Size and position ------------- */
+
+  grid-area: SpamWindow;
 }
 
 /***************************************************************/
