@@ -112,7 +112,9 @@
   /* ------------------- Text -------------------- */
 
   /* Fonts are saved on the server so we don't need alternatives. */
-  font-family: "CourierNew";
+  font-family: CourierNew;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+  color: rgb(210, 230, 250);   /* Text color. */
 
   /* -------------- Text selection --------------- */
 
@@ -183,13 +185,8 @@
 
 .TextLink
 {
-  /* Proč? */
-  font-weight: "bold";
   text-shadow: "0 1px 0 rgba(0, 0, 0, 0.5)";
-  /* color: rgb(210, 230, 250) */    /* Text color. */
   color: rgb(43, 144, 255);    /* Text color. */
-  /* Tohle nejspíš není potřeba */
-  /* text-decoration: none; */
 }
 
 .TextLink:hover
@@ -207,31 +204,22 @@
   /* ---- Border, margin, padding and outline ---- */
 
   padding: 0.1rem;
-  /*border: 1px solid rgba(0, 0, 0, 0.0);*/
 
   /* ---------------- Background ----------------- */
 
   /* Old browsers */
-  background: rgba(80, 80, 80, 0.6);
+  background: rgba(60, 60, 60, 0.6);
   /* FF3.6-15 */
-  background: -moz-linear-gradient(top, rgba(80, 80, 80, 0.6) 0%, rgba(110, 110, 110, 0.6) 5%, rgba(60, 60, 60, 0.6) 90%, rgba(30, 30, 30, 0.6) 100%);
+  background: -moz-linear-gradient(top, rgba(50, 50, 50, 0.6) 0%, rgba(70, 70, 70, 0.6) 5%, rgba(50, 50, 50, 0.6) 90%, rgba(20, 20, 20, 0.6) 100%);
   /* Chrome10-25,Safari5.1-6 */
-  background: -webkit-linear-gradient(top, rgba(80, 80, 80, 0.6) 0%, rgba(110, 110, 110, 0.6) 5%, rgba(60, 60, 60, 0.6) 90%, rgba(30, 30, 30, 0.6) 100%);
-  /* CSS3 compatible browsers*/
-  /*background: linear-gradient(rgba(80, 80, 80, 0.6) 0%, rgba(110, 110, 110, 0.6) 5%, rgba(60, 60, 60, 0.6) 90%, rgba(30, 30, 30, 0.6) 100%);*/
-  background: linear-gradient(rgba(80, 80, 80, 0.7) 0%, rgba(80, 80, 80, 0.7) 5%, rgba(50, 50, 50, 0.6) 90%, rgba(20, 20, 20, 0.7) 100%);
-
-  /* background-clip: border-box|padding-box|content-box*/
-  /*background-clip: padding-box;*/
-
-  /* z-index: -1; */
+  background: -webkit-linear-gradient(top, rgba(50, 50, 50, 0.6) 0%, rgba(70, 70, 70, 0.6) 5%, rgba(50, 50, 50, 0.6) 90%, rgba(20, 20, 20, 0.6) 100%);
+  /* CSS3 compatible browsers*/  
+  background: linear-gradient(rgba(50, 50, 50, 0.6) 0%, rgba(70, 70, 70, 0.6) 5%, rgba(50, 50, 50, 0.6) 90%, rgba(20, 20, 20, 0.6) 100%);
 
   /* ------------------- Text -------------------- */
 
   font-weight: bold;
   text-overflow: ellipsis;      /* Add '...' if text overflows. */
-  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
-  color: rgb(210, 230, 250);  /* Text color. */
   text-align: center;
 }
 
@@ -248,47 +236,15 @@
 
 .Window
 {
-  /* ------------- Size and position ------------- */
-
-  /*
-  grid-column-start: 4;
-  grid-column-end: 7;
-  grid-row-start: 4;
-  grid-row-end: 7;
-  */
-
   /* ---------------- Background ----------------- */
 
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.3);
 
   /* ---- Border, margin, padding and outline ---- */
 
-  /*
-  margin: 0;
-  */
-  /*padding: 1px;*/
-  /*
-  outline: none;
-  */
   border-style: ridge;
   border-width: 2px;
-  border-color: rgb(53, 53, 53);
-  /*box-shadow: inset 0 0 4px rgb(36, 36, 36);*/
-
-  /* ------------------- Text -------------------- */
-
-  /*
-     Proč Window nastavuje text?
-       Buď to nechat až na komponenty, který nějakej text obsahujou,
-     nebo to dát dovnou do Component.
-  */
-  /*
-  fontWeight: "bold",
-  textOverflow: "ellipsis",   // Add '...' if text overflows.
-  textShadow: "0 1px 0 rgba(0, 0, 0, 0.5)",
-  color: "rgb(210, 230, 250)", // Text color.
-  border: "1px ridge rgba(110,130,150,0.8)"
-  */
+  border-color: rgb(50, 50, 50);
 }
 
 .TitledWindow
