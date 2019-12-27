@@ -5,7 +5,7 @@
 */
 
 import { Component } from "../../../Client/Gui/Component";
-import { Map } from "../../../Client/Gui/Map/Map";
+import { MudMap } from "../../../Client/Gui/Map/MudMap";
 import { Gui } from "../../../Client/Gui/Gui";
 import { TitledWindow } from "../../../Client/Gui/TitledWindow";
 
@@ -13,13 +13,13 @@ export class MapWindow extends TitledWindow
 {
   // ---------------- Protected data --------------------
 
-  protected map: Map;
+  protected map: MudMap;
 
   constructor(parent: Component)
   {
     super(parent, "map_window", "Map Window");
 
-    this.map = new Map(this.content);
+    this.map = new MudMap(this.content);
 
     this.visibility.set(Gui.State.GAME);
   }

@@ -7,7 +7,7 @@
 import { Component } from "../../../Client/Gui/Component";
 import { SvgComponent } from "../../../Client/Gui/SvgComponent";
 
-export class Map extends SvgComponent
+export class MudMap extends SvgComponent
 {
   constructor(parent: Component, name = "map")
   {

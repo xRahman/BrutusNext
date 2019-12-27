@@ -1,3 +1,6 @@
+TODO: Přejmenovat Map na MudMap, protože se to tluče s hashmapou.
+[done]
+
 TODO: Možná by 'parent' předávanej konstruktoru komponent mohl
   bejt Component a ne element.
 - to by ale asi znamenalo, že div a podobně by musela vyrábět až Component.
