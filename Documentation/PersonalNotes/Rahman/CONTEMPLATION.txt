@@ -34,7 +34,7 @@ Map data
     |/  \|/  \|/  \|/  \|/  \|/  \|
   --x----x----x----x----x----x----x
 
-  IDEA: Rozdělit to na několik seznamů, vždycky existy v jednom směru:
+  IDEA: Rozdělit to na několik seznamů, vždycky exity v jednom směru:
   - n/s
   - e/w
   - nw/se

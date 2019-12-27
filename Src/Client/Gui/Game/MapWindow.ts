@@ -4,16 +4,24 @@
   Map window
 */
 
-import { Windows } from "../../../Client/Gui/Windows";
+import { Component } from "../../../Client/Gui/Component";
+import { Map } from "../../../Client/Gui/Map/Map";
+import { Gui } from "../../../Client/Gui/Gui";
 import { TitledWindow } from "../../../Client/Gui/TitledWindow";
 
 export class MapWindow extends TitledWindow
 {
-  constructor(parent: HTMLElement)
+  // ---------------- Protected data --------------------
+
+  protected map: Map;
+
+  constructor(parent: Component)
   {
     super(parent, "map_window", "Map Window");
 
-    this.visibility.set(Windows.State.GAME);
+    this.map = new Map(this);
+
+    this.visibility.set(Gui.State.GAME);
   }
 
   // --------------- Public accessors -------------------

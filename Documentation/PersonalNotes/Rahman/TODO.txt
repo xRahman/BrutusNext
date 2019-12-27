@@ -28,9 +28,9 @@ TODO: Transformace do mapovejch dat
 
 TODO: Zobrazení mapovejch dat
 
-------------------------------------------------------------------------------
+TODO: Přejmenovat Map na MudMap, protože se to tluče s hashmapou.
 
-TODO: state by asi měl bejt jinde než ve Windows. Application?
+------------------------------------------------------------------------------
 
 TODO: V title baru nefunguje "text-overflow: ellipsis;"
 

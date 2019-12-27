@@ -4,6 +4,7 @@
   Window with a titlebar and content
 */
 
+import { Component } from "../../Client/Gui/Component";
 import { TitleBar } from "../../Client/Gui/TitleBar";
 import { WindowContent } from "../../Client/Gui/WindowContent";
 import { Window } from "../../Client/Gui/Window";
@@ -18,15 +19,15 @@ export class TitledWindow extends Window
   // ! Throws an exception on error.
   constructor
   (
-    parent: HTMLElement,
+    parent: Component,
     name = "titled_window",
     title = "New window"
   )
   {
     super(parent, name);
 
-    this.titleBar = new TitleBar(this.element, "window_title_bar", title);
-    this.content = new WindowContent(this.element);
+    this.titleBar = new TitleBar(this, "window_title_bar", title);
+    this.content = new WindowContent(this);
   }
 
   // constructor

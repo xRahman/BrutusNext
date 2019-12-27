@@ -4,28 +4,26 @@
   Window GUI component
 */
 
-// import { Utils } from "../../../Shared/lib/utils/Utils";
+import { Gui } from "../../Client/Gui/Gui";
 import { Flags } from "../../Shared/class/Flags";
-// import { ClientApp } from "../../../client/lib/app/ClientApp";
 import { Component } from "../../Client/Gui/Component";
-import { Element } from "../../Client/Gui/Element";
-import { Windows } from "../../Client/Gui/Windows";
+import { DivComponent } from "../../Client/Gui/DivComponent";
 
-export class Window extends Component
+export class Window extends DivComponent
 {
   // ---------------- Protected data --------------------
 
   // In what states is this window shown.
-  protected readonly visibility = new Flags<Windows.State>();
+  protected readonly visibility = new Flags<Gui.State>();
 
   // ! Throws an exception on error.
   constructor
   (
-    parent: HTMLElement,
+    parent: Component,
     name = "window"
   )
   {
-    super(Element.createDiv(parent, name));
+    super(parent, name);
 
     // Windows are created hidden.
     this.hide();
@@ -53,7 +51,7 @@ export class Window extends Component
   //   this.show();
   // }
 
-  public showByState(state: Windows.State): void
+  public showByState(state: Gui.State): void
   {
     if (this.visibility.isSet(state))
     {

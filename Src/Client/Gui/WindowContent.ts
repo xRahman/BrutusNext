@@ -4,18 +4,18 @@
   Window with a titlebar and content
 */
 
-import { Element } from "../../Client/Gui/Element";
 import { Component } from "../../Client/Gui/Component";
+import { DivComponent } from "../../Client/Gui/DivComponent";
 
-export class WindowContent extends Component
+export class WindowContent extends DivComponent
 {
   // ! Throws an exception on error.
   constructor
   (
-    parent: HTMLElement,
+    parent: Component,
     name = "window_content"
   )
   {
-    super(Element.createDiv(parent, name));
+    super(parent, name);
   }
 }

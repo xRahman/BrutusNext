@@ -1,5 +1,5 @@
 /*
-  Part of Kosmud
+  Part of BrutusNEXT
 
   Entity is an object that:
   - has a unique id

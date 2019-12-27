@@ -11,11 +11,11 @@
 
 import { Syslog } from "../Client/Log/Syslog";
 import { Connection } from "../Client/Net/Connection";
-import { Windows } from "../Client/Gui/Windows";
+import { Gui } from "../Client/Gui/Gui";
+import { Body } from "../Client/Gui/Body";
 
 // Import following modules to execute their inicialization code.
 import "../Client/Gui/Html";
-import "../Client/Gui/Body";
 
 async function startBrutusNextClient(): Promise<void>
 {
@@ -23,12 +23,12 @@ async function startBrutusNextClient(): Promise<void>
 
   try
   {
-    Windows.init();
+    Body.createWindows();
 
     // await Renderer.init();
     await Connection.connect();
 
-    Windows.switchToState(Windows.State.GAME);
+    Gui.switchToState(Gui.State.GAME);
   }
   catch (error)
   {
@@ -60,7 +60,7 @@ startBrutusNextClient().catch
 
 // async function start()
 // {
-//   Syslog.log("[CLIENT]", "Starting Kosmud client...");
+//   Syslog.log("[CLIENT]", "Starting BrutusNext client...");
 
 //   try
 //   {

@@ -1,4 +1,6 @@
-/*  Part of Kosmud  */
+/*
+  Part of BrutusNEXT
+*/
 
 /*
   Note:

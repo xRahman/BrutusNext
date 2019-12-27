@@ -4,11 +4,11 @@
   Window titlebar
 */
 
-import { Element } from "../../Client/Gui/Element";
-import { Component } from "../../Client/Gui/Component";
 import { Text } from "../../Client/Gui/Text";
+import { Component } from "../../Client/Gui/Component";
+import { DivComponent } from "../../Client/Gui/DivComponent";
 
-export class TitleBar extends Component
+export class TitleBar extends DivComponent
 {
   // ---------------- Protected data --------------------
 
@@ -17,14 +17,14 @@ export class TitleBar extends Component
   // ! Throws an exception on error.
   constructor
   (
-    parent: HTMLElement,
+    parent: Component,
     name = "title_bar",
     title = ""
   )
   {
-    super(Element.createDiv(parent, name));
+    super(parent, name);
 
-    this.title = new Text(this.element, title, "title");
+    this.title = new Text(this, title, "title");
   }
 
   // -------------- Static class data -------------------

@@ -1,11 +1,10 @@
 /*
-  Part of Kosmud
+  Part of BrutusNEXT
 
   Functions related to html elements.
 */
 
 import { Syslog } from "../../Shared/Log/Syslog";
-// import { Css } from "../../Client/Gui/Css";
 
 export namespace Element
 {
@@ -13,7 +12,7 @@ export namespace Element
 
   export function setCss
   (
-    element: HTMLElement,
+    element: HTMLElement | SVGElement,
     css: Partial<CSSStyleDeclaration>
   )
   : void
@@ -30,14 +29,19 @@ export namespace Element
     }
   }
 
-  export function setCssClass(element: HTMLElement, cssClassName: string): void
+  export function setCssClass
+  (
+    element: HTMLElement | SVGElement,
+    cssClassName: string
+  )
+  : void
   {
     element.classList.add(cssClassName);
   }
 
 // export function createCssClass
 // (
-//   element: HTMLElement,
+//   element: HTMLElement | SVGElement,
 //   css: Css
 // )
 // : void
@@ -65,7 +69,7 @@ export namespace Element
 
   export function createDiv
   (
-    parent: HTMLElement,
+    parent: HTMLElement | SVGElement,
     name: string,
     insertMode = InsertMode.APPEND
   )
@@ -82,7 +86,7 @@ export namespace Element
 
   export function createSpan
   (
-    parent: HTMLElement,
+    parent: HTMLElement | SVGElement,
     name: string,
     html?: string,
     insertMode = InsertMode.APPEND
@@ -100,17 +104,34 @@ export namespace Element
 
     return span;
   }
+
+  export function createSvg
+  (
+    parent: HTMLElement | SVGElement,
+    name: string,
+    insertMode = InsertMode.APPEND
+  )
+  : SVGElement
+  {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+
+    svg.setAttribute("name", name);
+
+    insertToParent(svg, parent, insertMode);
+
+    return svg;
+  }
 }
 
 // ----------------- Auxiliary Functions ---------------------
 
 function insertHtml
 (
-  element: HTMLElement,
+  element: HTMLElement | SVGElement,
   html: string,
   insertMode = Element.InsertMode.APPEND
 )
-: HTMLElement
+: HTMLElement | SVGElement
 {
   switch (insertMode)
   {
@@ -135,7 +156,7 @@ function insertHtml
   return element;
 }
 
-function clearHtmlContent(element: HTMLElement): void
+function clearHtmlContent(element: HTMLElement | SVGElement): void
 {
   while (element.lastChild !== null)
   {
@@ -145,8 +166,8 @@ function clearHtmlContent(element: HTMLElement): void
 
 function insertToParent
 (
-  element: HTMLElement,
-  parent: HTMLElement,
+  element: HTMLElement | SVGElement,
+  parent: HTMLElement | SVGElement,
   insertMode: Element.InsertMode
 )
 : void

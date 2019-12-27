@@ -1,30 +1,41 @@
 /*
-  Part of Kosmud
+  Part of BrutusNEXT
 
   Abstract ancestor of classes wrapping DOM elements.
 */
 
-import { Element } from "../../Client/Gui/Element";
+import { Syslog } from "../../Shared/Log/Syslog";
 
 export abstract class Component
 {
   // This function traverses the static prototype tree
   // and sets class names of all ancestors as a css class
   // to the element.
-  private static setCssClasses(element: HTMLElement): void
+  private static setCssClasses(element: HTMLElement | SVGElement): void
   {
     const ancestor = Object.getPrototypeOf(this);
 
     if (ancestor.setCssClasses)
         ancestor.setCssClasses(element);
 
-    Element.setCssClass(element, this.name);
+    element.classList.add(this.name);
   }
 
   private displayMode = "block";
 
-  constructor(protected element: HTMLElement)
+  constructor
+  (
+    protected readonly parent: Component | "No parent",
+    private readonly element: HTMLElement | SVGElement,
+    protected readonly name: string,
+    insertMode = Component.InsertMode.APPEND
+  )
   {
+    element.setAttribute("name", name);
+
+    if (parent !== "No parent")
+      parent.insertElement(element, insertMode);
+
     // Typescript doesn't seem to know that 'this.constructor'
     // refers to the class so it can be used to call static
     // method so we have to typecast to 'any' to do it.
@@ -37,8 +48,6 @@ export abstract class Component
   }
 
   // ---------------- Public methods --------------------
-
-  public getElement(): HTMLElement { return this.element; }
 
   public hide(): void
   {
@@ -75,12 +84,49 @@ export abstract class Component
 
   protected setCss(css: Partial<CSSStyleDeclaration>): void
   {
-    Element.setCss(this.element, css);
+    for (const property in css)
+    {
+      if (!css.hasOwnProperty(property))
+        continue;
+
+      const value = css[property];
+
+      if (value !== undefined)
+        this.element.style[property] = value;
+    }
 
     // Setting css properties can change the display mode
     // so we have to remember it to be able to return it.
     // when show() is called.
     this.rememberDisplayMode();
+  }
+
+  protected insertHtml
+  (
+    html: string,
+    insertMode = Component.InsertMode.APPEND
+  )
+  : void
+  {
+    switch (insertMode)
+    {
+      case Component.InsertMode.APPEND:
+        this.element.insertAdjacentHTML("beforeend", html);
+        break;
+
+      case Component.InsertMode.PREPEND:
+        this.element.insertAdjacentHTML("afterbegin", html);
+        break;
+
+      case Component.InsertMode.REPLACE:
+        this.removeAllChildren();
+        this.element.insertAdjacentHTML("afterbegin", html);
+        break;
+
+      default:
+        Syslog.reportMissingCase(insertMode);
+        break;
+    }
   }
 
   protected onShow(): void
@@ -95,6 +141,42 @@ export abstract class Component
 
   // ---------------- Private methods -------------------
 
+  private removeAllChildren(): void
+  {
+    while (this.element.lastChild !== null)
+    {
+      this.element.removeChild(this.element.lastChild);
+    }
+  }
+
+  private insertElement
+  (
+    element: HTMLElement | SVGElement,
+    insertMode: Component.InsertMode
+  )
+  : void
+  {
+    switch (insertMode)
+    {
+      case Component.InsertMode.APPEND:
+        this.element.appendChild(element);
+        break;
+
+      case Component.InsertMode.PREPEND:
+        this.element.insertBefore(element, this.element.firstChild);
+        break;
+
+      case Component.InsertMode.REPLACE:
+        this.removeAllChildren();
+        this.element.appendChild(element);
+        break;
+
+      default:
+        Syslog.reportMissingCase(insertMode);
+        break;
+    }
+  }
+
   private rememberDisplayMode(): void
   {
     if (this.element.style.display !== null)
@@ -106,5 +188,20 @@ export abstract class Component
   private restoreDisplayMode(): void
   {
     this.element.style.display = this.displayMode;
+  }
+}
+
+// ------------------ Type Declarations ----------------------
+
+export namespace Component
+{
+  export enum InsertMode
+  {
+    // Insert as the last child (default).
+    APPEND,
+    // Insert as the first child.
+    PREPEND,
+    // Html contents of parent element is cleared first.
+    REPLACE
   }
 }

@@ -4,18 +4,19 @@
   Login window
 */
 
-import { Windows } from "../../../Client/Gui/Windows";
+import { Gui } from "../../../Client/Gui/Gui";
+import { Component } from "../../../Client/Gui/Component";
 import { CenteredTitledWindow } from
   "../../../Client/Gui/CenteredTitledWindow";
 
 // export class LoginWindow extends FormWindow
 export class LoginWindow extends CenteredTitledWindow
 {
-  constructor(parent: HTMLElement)
+  constructor(parent: Component)
   {
     super(parent, "login_window", "&wWelcome to &gBrutus&GNext");
 
-    this.visibility.set(Windows.State.LOGIN);
+    this.visibility.set(Gui.State.LOGIN);
   }
 
 // constructor()

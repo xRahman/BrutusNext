@@ -27,6 +27,6 @@ export class Html extends Component
 
   constructor()
   {
-    super(document.documentElement);
+    super("No parent", document.documentElement, "html");
   }
 }

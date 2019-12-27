@@ -1,3 +1,15 @@
+TODO: Možná by 'parent' předávanej konstruktoru komponent mohl
+  bejt Component a ne element.
+- to by ale asi znamenalo, že div a podobně by musela vyrábět až Component.
+- a pak by asi bylo lepší udělat to tak, že z Component zdědím DivComponent,
+  SpanComponent, SvgComponent atd., z nichž každá automaticky vyrobí
+  element příslušnýho druhu.
+[done]
+
+TODO: state by asi měl bejt jinde než ve Windows. Application?
+- Gui could have a state.
+[done]?
+
 TODO:
 - vytvořit okna pro defaultní game view:
   - GroupWindow, RoomWindow, MapWindow

@@ -4,16 +4,17 @@
   Combat window
 */
 
-import { Windows } from "../../../Client/Gui/Windows";
+import { Component } from "../../../Client/Gui/Component";
+import { Gui } from "../../../Client/Gui/Gui";
 import { TitledWindow } from "../../../Client/Gui/TitledWindow";
 
 export class CombatWindow extends TitledWindow
 {
-  constructor(parent: HTMLElement)
+  constructor(parent: Component)
   {
     super(parent, "combatt_window", "Combat Window");
 
-    this.visibility.set(Windows.State.GAME);
+    this.visibility.set(Gui.State.GAME);
   }
 
   // --------------- Public accessors -------------------

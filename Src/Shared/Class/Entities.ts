@@ -1,4 +1,6 @@
-/*  Part of Kosmud  */
+/*
+  Part of BrutusNEXT
+*/
 
 import { Types } from "../../Shared/Utils/Types";
 import { ID, PROTOTYPE_ID } from "../../Shared/Class/Serializable";

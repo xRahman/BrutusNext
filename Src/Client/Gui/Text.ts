@@ -4,19 +4,21 @@
   Window with a titlebar and content
 */
 
-import { Element } from "../../Client/Gui/Element";
 import { Component } from "../../Client/Gui/Component";
+import { SpanComponent } from "../../Client/Gui/SpanComponent";
 import { TextColors } from "../../Client/Gui/TextColors";
 
-export class Text extends Component
+export class Text extends SpanComponent
 {
   constructor
   (
-    parent: HTMLElement,
+    parent: Component,
     coloredText: string,
     name = "text"
   )
   {
-    super(Element.createSpan(parent, name, TextColors.htmlize(coloredText)));
+    super(parent, name);
+
+    this.insertHtml(TextColors.htmlize(coloredText));
   }
 }
