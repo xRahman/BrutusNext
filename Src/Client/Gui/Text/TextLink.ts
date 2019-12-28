@@ -4,8 +4,8 @@
   Window with a titlebar and content
 */
 
-import { Component } from "../../Client/Gui/Component";
-import { Text } from "../../Client/Gui/Text";
+import { Component } from "../../../Client/Gui/Component";
+import { Text } from "../../../Client/Gui/Text/Text";
 
 export class TextLink extends Text
 {

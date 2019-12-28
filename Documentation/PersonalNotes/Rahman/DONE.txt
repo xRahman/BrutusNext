@@ -1,3 +1,15 @@
+TODO: Kód z MapCenteringContainer rozhodit do podkomponent.
+[done]
+
+TODO: Přesunout svg komponenty do /Svg a text komponenty do /Text
+[done]
+
+TODO: Funkce na jednotlivé svg transofrmace (translace atd.)
+[done]
+
+TODO: SpanComponent, SvgComponent etc přejmenovat na Span, Svg etc.
+[done]
+
 TODO: Přejmenovat Map na MudMap, protože se to tluče s hashmapou.
 [done]
 

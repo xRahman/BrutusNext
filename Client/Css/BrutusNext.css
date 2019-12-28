@@ -4,6 +4,28 @@
   Font definition style sheet.
 */
 
+/*
+  How are css classes used:
+  
+    Css classes correspond to Component class hierarchy in code.
+    If you have for example an instance of Window which extends
+    DivComponent which extends component, your Window instance
+    will have css classes: .Component, .DivComponent and .Window.
+    They are applied in this particular order - it means that any
+    attributes definied in .Component css class will be overwritten
+    by attributes in .DivComponent and .Window css classes - which
+    is exactly how javascript inheritance works. In other words,
+    css classes defined here extend one another the same way as
+    Component classes in code do.
+
+    Css classes are set to instances of Components automatically but
+    they are defined in this stylesheet only if necessary so you might
+    see that a css class is set to a component in the browser but you
+    won't find it here. It just means that all css is inherited from
+    parent component classes.
+
+*/
+
 /***************************************************************/
 /*                           Fonts                             */
 /***************************************************************/
@@ -353,7 +375,7 @@
   height: 100%;
 }
 
-.MapCenteringContainer
+.MapCenterer
 {
   /* Disable clipping of svg contents. */
   overflow: visible;

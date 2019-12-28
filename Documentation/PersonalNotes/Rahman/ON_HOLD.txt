@@ -1,3 +1,23 @@
+------------------------------------------------------------------------------
+
+FatPriotityQueue
+-----------------
+
+TS verze fastpriorityqueue:
+
+- kašlat na ni, už mám vyrobenou klient verzi z té javascriptové.
+
+https://github.com/voxeline/FastPriorityQueue.ts
+https://github.com/ddurschlag6river/TypedPriorityQueue/tree/tsport
+
+https://github.com/lemire/TypedFastBitSet.js
+- tohle je kupodivu javascript, ale i tak je to asi lepší než fastbitset
+
+TODO: Potřebuju vůbec fast priority queue serializovat?
+  - asi ne, to by měla vždycky bejt runtime záležitost
+
+------------------------------------------------------------------------------
+
 TODO: Review Serializable, Entites a Entity
 - nemám sílu na to, udělat to v kuse, takže v téhle fázi pouze
   zreviduju eslint errory a vrhnu se na další úkol.
@@ -46,5 +66,19 @@ TODO: node.js process se neukončí, dokud běží http server (a asi i https
 - problém je, že serverům se dá zavolat .close(), ale to neukončí stávající
   connections. Graceful shutdown je poměrně komplikovaná asynchronní
   záležitost.
+
+------------------------------------------------------------------------------
+
+Cs6 moduly
+-----------
+
+Zapnout je v prohlížeči už jde, jen je třeba do všech importů dát koncovku
+".js". Problém je, že npm moduly nejsou psané jako cs6 modul.
+
+- Ideální řešení by asi bylo, v prebuild stepu udělat bundle čistě z použitých
+  npm modulů, nejlépe jednu verzi pro server (takže ani server runtime
+  by nelezl do node_modules) a druhou pro klienta.
+    Zkoušel jsem použít rollup, ale nepovedlo se mi ho v rozumném čase
+  rozplazit (v bundlu byl jen import, vlastní kód modulu se nezbundloval).
 
 ------------------------------------------------------------------------------

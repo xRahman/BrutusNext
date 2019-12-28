@@ -5,9 +5,9 @@
 */
 
 import { Component } from "../../Client/Gui/Component";
-import { DivComponent } from "../../Client/Gui/DivComponent";
+import { Div } from "../../Client/Gui/Div";
 
-export class WindowContent extends DivComponent
+export class WindowContent extends Div
 {
   // ! Throws an exception on error.
   constructor

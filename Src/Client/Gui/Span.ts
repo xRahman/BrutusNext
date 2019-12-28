@@ -6,7 +6,7 @@
 
 import { Component } from "../../Client/Gui/Component";
 
-export abstract class SpanComponent extends Component
+export abstract class Span extends Component
 {
   constructor
   (

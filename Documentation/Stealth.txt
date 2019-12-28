@@ -1,0 +1,6 @@
+﻿Stealth
+--------
+
+Difference in stealth skill level and perception skill level determines range of time a thief may stay undetected in the room (exact time is rolled randomly). If a diffference is big enough, she may stay indefinitely.
+
+There should be a hint of some kind that an enemy is about to detect the thief: "Have you head something?" "I think there is someone around." *starts sniffing around.* etc.

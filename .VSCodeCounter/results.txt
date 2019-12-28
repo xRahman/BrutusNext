@@ -1,0 +1,102 @@
+Date : 2019-12-28 15:44:09
+Directory : c:\Brutus\BrutusNext\Src
+Total : 59 files,  3482 codes, 2114 comments, 1118 blanks, all 6714 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| TypeScript |         57 |      3,451 |      2,067 |      1,114 |      6,632 |
+| JSON       |          2 |         31 |         47 |          4 |         82 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++-----------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                            | files      | code       | comment    | blank      | total      |
++-----------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                               |         59 |      3,482 |      2,114 |      1,118 |      6,714 |
+| Client                                                          |         32 |        884 |        915 |        381 |      2,180 |
+| Client\Class                                                    |          1 |         26 |         41 |         15 |         82 |
+| Client\Gui                                                      |         27 |        675 |        487 |        256 |      1,418 |
+| Client\Gui\Game                                                 |          6 |         69 |         61 |         51 |        181 |
+| Client\Gui\Login                                                |          1 |         12 |         71 |         25 |        108 |
+| Client\Gui\Map                                                  |          2 |         37 |         22 |         13 |         72 |
+| Client\Log                                                      |          1 |         11 |         11 |          5 |         27 |
+| Client\Net                                                      |          1 |        129 |        306 |         91 |        526 |
+| Server                                                          |         12 |        978 |        566 |        309 |      1,853 |
+| Server\Class                                                    |          1 |         47 |         24 |         14 |         85 |
+| Server\FileSystem                                               |          2 |        385 |        101 |        102 |        588 |
+| Server\Log                                                      |          1 |         44 |         19 |         16 |         79 |
+| Server\Net                                                      |          6 |        459 |        374 |        166 |        999 |
+| Shared                                                          |         15 |      1,620 |        633 |        428 |      2,681 |
+| Shared\Class                                                    |          8 |      1,228 |        516 |        353 |      2,097 |
+| Shared\Log                                                      |          2 |         72 |         43 |         20 |        135 |
+| Shared\Net                                                      |          2 |        211 |         29 |         17 |        257 |
+| Shared\Utils                                                    |          3 |        109 |         45 |         38 |        192 |
++-----------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-----------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                        | language   | code       | comment    | blank      | total      |
++-----------------------------------------------------------------+------------+------------+------------+------------+------------+
+| c:\Brutus\BrutusNext\Src\Client\BrutusNextClient.ts             | TypeScript |         28 |         39 |         12 |         79 |
+| c:\Brutus\BrutusNext\Src\Client\Class\Entities.ts               | TypeScript |         26 |         41 |         15 |         82 |
+| c:\Brutus\BrutusNext\Src\Client\Gui\Body.ts                     | TypeScript |         34 |         10 |          8 |         52 |
+| c:\Brutus\BrutusNext\Src\Client\Gui\CenteredTitledWindow.ts     | TypeScript |         14 |          6 |          2 |         22 |
+| c:\Brutus\BrutusNext\Src\Client\Gui\Component.ts                | TypeScript |        135 |         34 |         38 |        207 |
+| c:\Brutus\BrutusNext\Src\Client\Gui\DivComponent.ts             | TypeScript |         13 |          5 |          2 |         20 |
+| c:\Brutus\BrutusNext\Src\Client\Gui\Game\ChatWindow.ts          | TypeScript |         11 |         10 |          8 |         29 |
+| c:\Brutus\BrutusNext\Src\Client\Gui\Game\CombatWindow.ts        | TypeScript |         11 |         10 |          8 |         29 |
+| c:\Brutus\BrutusNext\Src\Client\Gui\Game\GroupWindow.ts         | TypeScript |         11 |         10 |          8 |         29 |
+| c:\Brutus\BrutusNext\Src\Client\Gui\Game\MapWindow.ts           | TypeScript |         14 |         11 |         11 |         36 |
+| c:\Brutus\BrutusNext\Src\Client\Gui\Game\RoomWindow.ts          | TypeScript |         11 |         10 |          8 |         29 |
+| c:\Brutus\BrutusNext\Src\Client\Gui\Game\SpamWindow.ts          | TypeScript |         11 |         10 |          8 |         29 |
+| c:\Brutus\BrutusNext\Src\Client\Gui\Gui.ts                      | TypeScript |         27 |          7 |          7 |         41 |
+| c:\Brutus\BrutusNext\Src\Client\Gui\Html.ts                     | TypeScript |         13 |         14 |          5 |         32 |
+| c:\Brutus\BrutusNext\Src\Client\Gui\Login\LoginWindow.ts        | TypeScript |         12 |         71 |         25 |        108 |
+| c:\Brutus\BrutusNext\Src\Client\Gui\Map\MapCeneringContainer.ts | TypeScript |         24 |         15 |          9 |         48 |
+| c:\Brutus\BrutusNext\Src\Client\Gui\Map\MudMap.ts               | TypeScript |         13 |          7 |          4 |         24 |
+| c:\Brutus\BrutusNext\Src\Client\Gui\SpanComponent.ts            | TypeScript |         13 |          5 |          2 |         20 |
+| c:\Brutus\BrutusNext\Src\Client\Gui\Svg.ts                      | TypeScript |         14 |          5 |          2 |         21 |
+| c:\Brutus\BrutusNext\Src\Client\Gui\SvgComponent.ts             | TypeScript |         47 |          7 |          9 |         63 |
+| c:\Brutus\BrutusNext\Src\Client\Gui\SvgG.ts                     | TypeScript |         14 |          5 |          2 |         21 |
+| c:\Brutus\BrutusNext\Src\Client\Gui\SvgImage.ts                 | TypeScript |         19 |          5 |          4 |         28 |
+| c:\Brutus\BrutusNext\Src\Client\Gui\Text.ts                     | TypeScript |         16 |          5 |          3 |         24 |
+| c:\Brutus\BrutusNext\Src\Client\Gui\TextColors.ts               | TypeScript |        106 |         31 |         29 |        166 |
+| c:\Brutus\BrutusNext\Src\Client\Gui\TextLink.ts                 | TypeScript |         14 |          6 |          2 |         22 |
+| c:\Brutus\BrutusNext\Src\Client\Gui\TitleBar.ts                 | TypeScript |         17 |         48 |         14 |         79 |
+| c:\Brutus\BrutusNext\Src\Client\Gui\TitledWindow.ts             | TypeScript |         20 |        108 |         23 |        151 |
+| c:\Brutus\BrutusNext\Src\Client\Gui\Window.ts                   | TypeScript |         28 |         26 |         13 |         67 |
+| c:\Brutus\BrutusNext\Src\Client\Gui\WindowContent.ts            | TypeScript |         13 |          6 |          2 |         21 |
+| c:\Brutus\BrutusNext\Src\Client\Log\Syslog.ts                   | TypeScript |         11 |         11 |          5 |         27 |
+| c:\Brutus\BrutusNext\Src\Client\Net\Connection.ts               | TypeScript |        129 |        306 |         91 |        526 |
+| c:\Brutus\BrutusNext\Src\Client\tsconfig.json                   | JSON       |         15 |         31 |          2 |         48 |
+| c:\Brutus\BrutusNext\Src\Server\BrutusNextServer.ts             | TypeScript |         27 |         32 |          9 |         68 |
+| c:\Brutus\BrutusNext\Src\Server\Class\Entities.ts               | TypeScript |         47 |         24 |         14 |         85 |
+| c:\Brutus\BrutusNext\Src\Server\FileSystem\FileSystem.ts        | TypeScript |        365 |         94 |         94 |        553 |
+| c:\Brutus\BrutusNext\Src\Server\FileSystem\SavingQueue.ts       | TypeScript |         20 |          7 |          8 |         35 |
+| c:\Brutus\BrutusNext\Src\Server\Log\Syslog.ts                   | TypeScript |         44 |         19 |         16 |         79 |
+| c:\Brutus\BrutusNext\Src\Server\Net\Connection.ts               | TypeScript |        131 |        189 |         53 |        373 |
+| c:\Brutus\BrutusNext\Src\Server\Net\Connections.ts              | TypeScript |         25 |         45 |         10 |         80 |
+| c:\Brutus\BrutusNext\Src\Server\Net\HttpServer.ts               | TypeScript |         71 |         18 |         22 |        111 |
+| c:\Brutus\BrutusNext\Src\Server\Net\HttpsServer.ts              | TypeScript |         98 |         30 |         27 |        155 |
+| c:\Brutus\BrutusNext\Src\Server\Net\WebServer.ts                | TypeScript |         30 |         61 |         18 |        109 |
+| c:\Brutus\BrutusNext\Src\Server\Net\WebSocketServer.ts          | TypeScript |        104 |         31 |         36 |        171 |
+| c:\Brutus\BrutusNext\Src\Server\tsconfig.json                   | JSON       |         16 |         16 |          2 |         34 |
+| c:\Brutus\BrutusNext\Src\Shared\Class\Attributable.ts           | TypeScript |         57 |         40 |         21 |        118 |
+| c:\Brutus\BrutusNext\Src\Shared\Class\Attributes.ts             | TypeScript |          7 |          9 |          1 |         17 |
+| c:\Brutus\BrutusNext\Src\Shared\Class\ClassFactory.ts           | TypeScript |        108 |         84 |         31 |        223 |
+| c:\Brutus\BrutusNext\Src\Shared\Class\Entities.ts               | TypeScript |         94 |         28 |         32 |        154 |
+| c:\Brutus\BrutusNext\Src\Shared\Class\Entity.ts                 | TypeScript |        109 |         80 |         35 |        224 |
+| c:\Brutus\BrutusNext\Src\Shared\Class\Flags.ts                  | TypeScript |         25 |         10 |          8 |         43 |
+| c:\Brutus\BrutusNext\Src\Shared\Class\JsonObject.ts             | TypeScript |         51 |         17 |         13 |         81 |
+| c:\Brutus\BrutusNext\Src\Shared\Class\Serializable.ts           | TypeScript |        777 |        248 |        212 |      1,237 |
+| c:\Brutus\BrutusNext\Src\Shared\Log\Syslog.ts                   | TypeScript |         56 |         31 |         16 |        103 |
+| c:\Brutus\BrutusNext\Src\Shared\Log\SyslogUtils.ts              | TypeScript |         16 |         12 |          4 |         32 |
+| c:\Brutus\BrutusNext\Src\Shared\Net\SocketUtils.ts              | TypeScript |         32 |          7 |          6 |         45 |
+| c:\Brutus\BrutusNext\Src\Shared\Net\WebSocketEvent.ts           | TypeScript |        179 |         22 |         11 |        212 |
+| c:\Brutus\BrutusNext\Src\Shared\Utils\ErrorUtils.ts             | TypeScript |         23 |          8 |          6 |         37 |
+| c:\Brutus\BrutusNext\Src\Shared\Utils\ObjectUtils.ts            | TypeScript |         24 |          6 |          7 |         37 |
+| c:\Brutus\BrutusNext\Src\Shared\Utils\Types.ts                  | TypeScript |         62 |         31 |         25 |        118 |
+| Total                                                           |            |      3,482 |      2,114 |      1,118 |      6,714 |
++-----------------------------------------------------------------+------------+------------+------------+------------+------------+

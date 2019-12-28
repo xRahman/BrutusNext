@@ -57,6 +57,11 @@ Map data
     minimálně na indexaci exitů (tj. nasypu je třeba do hashmapy a budu je
     indexovat číslem, který by měly v plný síti).
 
+Juju mapper:
+-------------
+(asi ho nepoužiju, ale nechám si tu odkaz)
+http://www.mudportal.com/forum/support/22-jujumapper-open-beta
+
 ------------------------------------------------------------------------------
 
 Text Colors
@@ -175,6 +180,18 @@ Konverze jména property CSSStyleDeclaration na jméno css property.
 
 "fooBarBaz".replace(/([A-Z])/g, "-$1").toLowerCase();
 https://stackoverflow.com/questions/24758284/how-to-change-camelcase-to-slug-case-or-kabob-case-via-regex-in-javascript
+
+
+------------------------------------------------------------------------------
+
+Css
+----
+
+CSSStyleDeclaration:
+https://www.javascripture.com/CSSStyleDeclaration
+
+Guide to css grid:
+https://css-tricks.com/snippets/css/complete-guide-grid/
 
 
 ------------------------------------------------------------------------------

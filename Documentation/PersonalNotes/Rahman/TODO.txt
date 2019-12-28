@@ -17,6 +17,14 @@ TARGET:
 
 Trochu změna: Mapa first
 
+How much to do in this batch?
+- určitě zobrazit víc místností a exity mezi nimi.
+- mouseover na roomu a exitu
+- "naklikávání" mapy (zatím bez vyrábění dat na serveru)
+  - čistě edit mód, jinej zatím vůbec neuvažovat.
+
+Nebo se na to vykašlat, trochu učesat stávající kód a zas to na chvíli odložit.
+
 ------------------------------------------------------------------------------
 
 Aktuální TODO:
@@ -35,24 +43,53 @@ Inspiration:
 https://dwwiki.mooo.com/w/images/8/89/Bp_estates.png
 http://dw.daftjunk.com/genua_npcs.php
 
+Change color of svg:
+https://css-tricks.com/change-color-of-svg-on-hover/
+
+Room
+-----
+
+Ikona - svg image
+  - tvar (square, circle) 
+
+Exit
+-----
+
+Exit line (svg line)
+Exit outline (širší svg line pod ní. Nebo možná outline attribute?)
+Exit highlight (možná drop shadow?)
+
+
+
+Workaround jak přidat outlinu k svg image:
+
+#note-0 {
+    outline: 6px solid white;
+}
+
+Možná drop-shadow přes filtry:
+https://stackoverflow.com/questions/6088409/svg-drop-shadow-using-css3
+
+
+TODO: Vyrobit soubor se seznamem užitečných extensionů
+
+Code counter extension:
+https://marketplace.visualstudio.com/items?itemName=uctakeoff.vscode-counter
+
 ------------------------------------------------------------------------------
 
 TODO (IMPORTANT): Napsat návod, jak z inkscapu vyexportovat co nejčistší svg.
 
-TODO: SpanComponent, SvgComponent etc přejmenovat na Span, Svg etc.
 
-TODO: V title baru nefunguje "text-overflow: ellipsis;"
+TODO: Zkontrolovat css.
+
 
 ------------------------------------------------------------------------------
 
-Css
-----
-
-CSSStyleDeclaration:
-https://www.javascripture.com/CSSStyleDeclaration
-
-Guide to css grid:
-https://css-tricks.com/snippets/css/complete-guide-grid/
+TODO: V title baru nefunguje "text-overflow: ellipsis;"
+- tohle zatím odložím.
+    Titlebar se roztahuje podle velikosti textu, takže ellipsis tam není
+  potřeba, ale časem to určitě potřeba bude.
 
 ------------------------------------------------------------------------------
 
@@ -60,32 +97,6 @@ Socket class hierarchy
 ------------------------
 
 TODO: Vymyslet, kam dát metody na zpracování packetů.
-
-------------------------------------------------------------------------------
-
-FatPriotityQueue
------------------
-
-TS verze fastpriorityqueue:
-
-- kašlat na ni, už mám vyrobenou klient verzi z té javascriptové
-  (ale asi by ji to chtělo updatnout z aktuální verze).
-
-https://github.com/voxeline/FastPriorityQueue.ts
-https://github.com/ddurschlag6river/TypedPriorityQueue/tree/tsport
-
-https://github.com/lemire/TypedFastBitSet.js
-- tohle je kupodivu javascript, ale i tak je to asi lepší než fastbitset
-
-TODO: Potřebuju vůbec fast priority queue serializovat?
-  - popravdě asi ne, to by měla vždycky bejt runtime záležitost
-
-------------------------------------------------------------------------------
-
-Juju mapper:
--------------
-
-http://www.mudportal.com/forum/support/22-jujumapper-open-beta
 
 
 ------------------------------------------------------------------------------

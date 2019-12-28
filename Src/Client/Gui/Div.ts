@@ -6,7 +6,7 @@
 
 import { Component } from "../../Client/Gui/Component";
 
-export abstract class DivComponent extends Component
+export abstract class Div extends Component
 {
   constructor
   (

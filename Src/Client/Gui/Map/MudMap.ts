@@ -5,20 +5,19 @@
 */
 
 import { Component } from "../../../Client/Gui/Component";
-import { MapCenteringContainer } from
-  "../../../Client/Gui/Map/MapCeneringContainer";
-import { SvgComponent } from "../../../Client/Gui/SvgComponent";
+import { MapCenterer } from "../../../Client/Gui/Map/MapCenterer";
+import { SvgComponent } from "../../../Client/Gui/Svg/SvgComponent";
 
 export class MudMap extends SvgComponent
 {
-  private readonly centeringContainer: MapCenteringContainer;
+  private readonly mapCenterer: MapCenterer;
 
-  constructor(parent: Component, name = "map")
+  constructor(parent: Component, name = "mud_map")
   {
-    super(parent, name);
+    super(parent, "svg", name);
 
     // Use another svg component to translate the map to the center
     // of parent element.
-    this.centeringContainer = new MapCenteringContainer(this);
+    this.mapCenterer = new MapCenterer(this);
   }
 }

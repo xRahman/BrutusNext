@@ -4,11 +4,11 @@
   Window with a titlebar and content
 */
 
-import { Component } from "../../Client/Gui/Component";
-import { SpanComponent } from "../../Client/Gui/SpanComponent";
-import { TextColors } from "../../Client/Gui/TextColors";
+import { Component } from "../../../Client/Gui/Component";
+import { Span } from "../../../Client/Gui/Span";
+import { TextColors } from "../../../Client/Gui/Text/TextColors";
 
-export class Text extends SpanComponent
+export class Text extends Span
 {
   constructor
   (

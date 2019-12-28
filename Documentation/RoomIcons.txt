@@ -1,0 +1,11 @@
+﻿Room Icon General Principles
+-----------------------------
+
+Square - city
+
+Circle - outdoor
+
+
+Different sizes - large room, small room.
+
+Some rooms (like ramparts or river) may have a direction-dependant icon (direction may be calculated automatically based on room exits or set by hand)

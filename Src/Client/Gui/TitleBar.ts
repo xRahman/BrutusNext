@@ -4,11 +4,11 @@
   Window titlebar
 */
 
-import { Text } from "../../Client/Gui/Text";
+import { Text } from "../../Client/Gui/Text/Text";
 import { Component } from "../../Client/Gui/Component";
-import { DivComponent } from "../../Client/Gui/DivComponent";
+import { Div } from "../../Client/Gui/Div";
 
-export class TitleBar extends DivComponent
+export class TitleBar extends Div
 {
   // ---------------- Protected data --------------------
 

@@ -7,9 +7,9 @@
 import { Gui } from "../../Client/Gui/Gui";
 import { Flags } from "../../Shared/class/Flags";
 import { Component } from "../../Client/Gui/Component";
-import { DivComponent } from "../../Client/Gui/DivComponent";
+import { Div } from "../../Client/Gui/Div";
 
-export class Window extends DivComponent
+export class Window extends Div
 {
   // ---------------- Protected data --------------------
 
