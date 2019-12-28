@@ -1,0 +1,7 @@
+﻿Required:
+  ESLint 
+
+Optional:
+  Latest TypeScript and Javascript Grammar
+  Bookmarks
+  VS Code Counter
