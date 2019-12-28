@@ -26,7 +26,7 @@ export abstract class Component
   constructor
   (
     protected readonly parent: Component | "No parent",
-    private readonly element: HTMLElement | SVGElement,
+    protected readonly element: HTMLElement | SVGElement,
     protected readonly name: string,
     insertMode = Component.InsertMode.APPEND
   )

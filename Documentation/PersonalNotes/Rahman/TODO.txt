@@ -28,7 +28,18 @@ TODO: Transformace do mapovejch dat
 
 TODO: Zobrazení mapovejch dat
 
+TODO:
+<image x="0" y="0" height="60" width="60" xlink:href="huge-red-circle.svg" />
+
+Inspiration:
+https://dwwiki.mooo.com/w/images/8/89/Bp_estates.png
+http://dw.daftjunk.com/genua_npcs.php
+
 ------------------------------------------------------------------------------
+
+TODO (IMPORTANT): Napsat návod, jak z inkscapu vyexportovat co nejčistší svg.
+
+TODO: SpanComponent, SvgComponent etc přejmenovat na Span, Svg etc.
 
 TODO: V title baru nefunguje "text-overflow: ellipsis;"
 

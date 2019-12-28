@@ -6,12 +6,12 @@
 
 import { Component } from "../../Client/Gui/Component";
 
-export abstract class SvgComponent extends Component
+export class SvgGComponent extends Component
 {
   constructor
   (
     parent: Component,
-    name: string,
+    name = "svg_g_element",
     insertMode = Component.InsertMode.APPEND
   )
   {
@@ -22,5 +22,16 @@ export abstract class SvgComponent extends Component
       name,
       insertMode
     );
+  }
+
+  public setTransform(transform: string): void
+  {
+    this.element.setAttribute("transform", transform);
+  }
+
+  public setRelativePosition(x: number, y: number): void
+  {
+    this.element.setAttribute("x", `${String(x)}%`);
+    this.element.setAttribute("y", `${String(y)}%`);
   }
 }
