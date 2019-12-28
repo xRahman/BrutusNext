@@ -1,3 +1,9 @@
+TODO: Napsat návod, jak z inkscapu vyexportovat co nejčistší svg.
+[dine]
+
+TODO: Zkontrolovat css.
+[done]
+
 TODO: Kód z MapCenteringContainer rozhodit do podkomponent.
 [done]
 

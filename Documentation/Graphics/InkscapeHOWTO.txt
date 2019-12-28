@@ -1,0 +1,37 @@
+﻿How to export svg from Inkscape
+--------------------------------
+
+
+File -> Save As -> Optimized Svg
+
+  Možnosti
+    Number of significant digits for coordinates: 2
+    +Zkrátit barevné hodnoty
+    +Převést vlasntnosti CSS na vlastnosti XML
+    +Collapse groups
+    +Create groups for similar attributes
+    -Uchovat data editoru
+    -Keep unreferenced definitions
+    +Work around rendered bugs
+  Výstup SVG
+    Document options
+      +Remove the XML declaration
+      +Odebrat metadata
+      +Odebrat komentáře
+      +Embed raster images
+      -Enable viewboxing
+    Pretty-printing
+       +Format output with line-breaks and indentation
+      Indentation characters: Space
+      Depth of indentation:
+       +Strip the "xml:space attribute from the root SVG element
+  IDs
+    +Remove unused IDs
+    -Shorten IDs
+    +Preserve manually created ID.s not ending with digits
+
+
+Also try to make sure that there is no viewbox in the save file
+(I'm not quite sure how to do that, try to exprement). The easiest
+way is to rename and edit an already existing svg file and than
+save it as optimized svg.

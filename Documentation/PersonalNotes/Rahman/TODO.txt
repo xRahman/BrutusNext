@@ -78,11 +78,6 @@ https://marketplace.visualstudio.com/items?itemName=uctakeoff.vscode-counter
 
 ------------------------------------------------------------------------------
 
-TODO (IMPORTANT): Napsat návod, jak z inkscapu vyexportovat co nejčistší svg.
-
-
-TODO: Zkontrolovat css.
-
 
 ------------------------------------------------------------------------------
 
