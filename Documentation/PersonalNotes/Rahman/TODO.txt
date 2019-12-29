@@ -32,6 +32,23 @@ Map() na stornutí roomů dává celkem smysl, ale budu to muset něčím
   se sama nevyrobí.
 - asi ani úplně nedává smysl oddělit roomy a exity...
 
+Pozor na to, že prvky v hashmapě jsou v pořadí podle vložení, ne podle
+  hodnoty indexu.
+  - při vykreslování to asi nevadí, protože pozici určují koordináty, ale
+    při určování, co má bejt vidět, by to vadit mohlo.
+
+Potřebuju vůbec na vložený roomy grid?
+- ten mi umožní najít roomu podle souřadnic, ale zobrazený stejně nejsou
+  všechny roomy, takže to je asi jedno. Navíc můžu mít v Room odkaz na
+  RoomOnMap
+
+Idea: Místo MudMap dát MapSvg, místo RoomOnMap dát RoomSvg, místo IconOnMap
+  dát IconSvg.
+  - sounds good.
+[done]
+
+TODO: Potřebuju vůbec classu na Ikony? Nestačila by SvgImage?
+
 
 TODO: setPosition nefunguje u SvgG elementu.
  - respektive musela by to bejt transformace, což asi klidně může.

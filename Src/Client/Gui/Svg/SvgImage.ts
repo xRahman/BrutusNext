@@ -13,12 +13,32 @@ export class SvgImage extends SvgComponent
 {
   constructor
   (
-    parent: Component,
-    name: string,
+    {
+      parent,
+      name,
+      widthPixels,
+      heightPixels,
+      imagePath,
+      isCentered
+    } :
+    {
+      parent: Component,
+      name: string,
+      widthPixels: number,
+      heightPixels: number,
+      imagePath: string,
+      isCentered: boolean
+    },
     insertMode = Component.InsertMode.APPEND
   )
   {
     super(parent, "image", name, insertMode);
+
+    this.setSize(widthPixels, heightPixels);
+    this.setImage(imagePath);
+
+    if (isCentered)
+      this.translate(-widthPixels / 2, -heightPixels / 2);
   }
 
   public setImage(path: string): void

@@ -8,11 +8,11 @@ import { Component } from "../../../Client/Gui/Component";
 import { MapCenterer } from "../../../Client/Gui/Map/MapCenterer";
 import { SvgComponent } from "../../../Client/Gui/Svg/SvgComponent";
 
-export class MudMap extends SvgComponent
+export class MapSvg extends SvgComponent
 {
   private readonly mapCenterer: MapCenterer;
 
-  constructor(parent: Component, name = "mud_map")
+  constructor(parent: Component, name = "map")
   {
     super(parent, "svg", name);
 

@@ -9,13 +9,13 @@
 */
 
 import { Component } from "../../../Client/Gui/Component";
-import { RoomOnMap } from "../../../Client/Gui/Map/RoomOnMap";
+import { RoomSvg } from "../../../Client/Gui/Map/RoomSvg";
 import { SvgG } from "../../../Client/Gui/Svg/SvgG";
 
 // Use Map instead of Array so we can have negative indexes.
-type ColumnOfRooms = Map<number, RoomOnMap>;
+type ColumnOfRooms = Map<number, RoomSvg>;
 
-export class RoomsOnMap extends SvgG
+export class RoomsSvg extends SvgG
 {
   private readonly rooms = new Map<number, ColumnOfRooms>();
 
@@ -34,7 +34,7 @@ export class RoomsOnMap extends SvgG
 
       for (let y = -radius; y <= radius; y++)
       {
-        const room = new RoomOnMap(this);
+        const room = new RoomSvg(this);
 
         room.setPosition(24 * x, 24 * y);
 

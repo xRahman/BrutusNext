@@ -5,14 +5,14 @@
 */
 
 import { Component } from "../../../Client/Gui/Component";
-import { IconOnMap } from "../../../Client/Gui/Map/IconOnMap";
+import { SvgImage } from "../../../Client/Gui/Svg/SvgImage";
 import { SvgCircle } from "../../../Client/Gui/Svg/SvgCircle";
 import { SvgG } from "../../../Client/Gui/Svg/SvgG";
 
-export class RoomOnMap extends SvgG
+export class RoomSvg extends SvgG
 {
   private readonly backgroud: SvgCircle;
-  private readonly icon: IconOnMap;
+  private readonly icon: SvgImage;
 
   constructor(parent: Component, name = "room")
   {
@@ -23,13 +23,16 @@ export class RoomOnMap extends SvgG
     this.backgroud = new SvgCircle(this, "room_background");
     this.backgroud.setRadius(roomPixelSize * 0.6);
 
-    this.icon = new IconOnMap
+    this.icon = new SvgImage
     (
-      this,
-      roomPixelSize,
-      roomPixelSize,
-      "Images/Rooms/Circle.svg",
-      "room_icon"
+      {
+        parent: this,
+        name: "room_icon",
+        widthPixels: roomPixelSize,
+        heightPixels: roomPixelSize,
+        imagePath: "Images/Rooms/Circle.svg",
+        isCentered: true
+      }
     );
   }
 }
