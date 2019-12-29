@@ -7,7 +7,7 @@
 import { Component } from "../../../Client/Gui/Component";
 import { SvgImage } from "../../../Client/Gui/Svg/SvgImage";
 
-export class MapIcon extends SvgImage
+export class IconOnMap extends SvgImage
 {
   constructor
   (

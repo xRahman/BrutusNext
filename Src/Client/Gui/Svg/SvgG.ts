@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-   Class wrapping <svg> element.
+   Class wrapping SVG <g> element.
 */
 
 import { Component } from "../../../Client/Gui/Component";
@@ -12,10 +12,18 @@ export class SvgG extends SvgComponent
   constructor
   (
     parent: Component,
-    name = "svg_g_container",
+    name = "svg_container",
     insertMode = Component.InsertMode.APPEND
   )
   {
     super(parent, "g", name, insertMode);
+  }
+
+  // ~ Overrides SvgComponent.setPosition().
+  public setPosition(xPixels: number, yPixels: number): void
+  {
+    // We must use translate transformation because svg <g> element
+    // doesn't have a [x, y] position.
+    this.translate(xPixels, yPixels);
   }
 }

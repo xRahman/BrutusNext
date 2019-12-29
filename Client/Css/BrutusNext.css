@@ -380,3 +380,15 @@
   /* Disable clipping of svg contents. */
   overflow: visible;
 }
+
+.RoomOnMap:hover
+{
+  fill:white;
+}
+
+/* Svg element is only active when lmb is pressed on it
+   so this gives visual feedback when element is clicked. */
+.RoomOnMap:active
+{
+  fill:red;
+}

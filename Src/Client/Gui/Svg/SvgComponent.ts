@@ -27,6 +27,8 @@ export class SvgComponent extends Component
     );
   }
 
+  // ---------------- Public methods --------------------
+
   public setPosition(xPixels: number, yPixels: number): void
   {
     this.element.setAttribute("x", String(xPixels));
@@ -39,12 +41,6 @@ export class SvgComponent extends Component
     this.element.setAttribute("y", `${String(yPercent)}%`);
   }
 
-  public setSize(widthPixels: number, heightPixels: number): void
-  {
-    this.element.setAttribute("width", String(widthPixels));
-    this.element.setAttribute("height", String(heightPixels));
-  }
-
   public scale(scale: number): void
   {
     this.transform(`scale(${scale})`);
@@ -54,6 +50,8 @@ export class SvgComponent extends Component
   {
     this.transform(`translate(${xPixels}, ${yPixels})`);
   }
+
+  // ---------------- Private methods -------------------
 
   private transform(transform: string): void
   {
@@ -68,5 +66,18 @@ export namespace SvgComponent
   export type Type =
     | "svg"
     | "g"
-    | "image";
+    | "image"
+    | "circle";
+
+  export function setWidthAndHeight
+  (
+    element: HTMLElement | SVGElement,
+    widthPixels: number,
+    heightPixels: number
+  )
+  : void
+  {
+    element.setAttribute("width", String(widthPixels));
+    element.setAttribute("height", String(heightPixels));
+  }
 }

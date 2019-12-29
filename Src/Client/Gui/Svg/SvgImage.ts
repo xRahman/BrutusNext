@@ -25,4 +25,9 @@ export class SvgImage extends SvgComponent
   {
     this.element.setAttributeNS(SVG_XLINK_NAMESPACE, "href", path);
   }
+
+  public setSize(widthPixels: number, heightPixels: number): void
+  {
+    SvgComponent.setWidthAndHeight(this.element, widthPixels, heightPixels);
+  }
 }

@@ -18,4 +18,9 @@ export class Svg extends SvgComponent
   {
     super(parent, "svg", name, insertMode);
   }
+
+  public setSize(widthPixels: number, heightPixels: number): void
+  {
+    SvgComponent.setWidthAndHeight(this.element, widthPixels, heightPixels);
+  }
 }

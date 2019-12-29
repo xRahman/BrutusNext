@@ -19,11 +19,23 @@ Trochu změna: Mapa first
 
 How much to do in this batch?
 - určitě zobrazit víc místností a exity mezi nimi.
-- mouseover na roomu a exitu
+- mouseover a selection na roomu a exitu
 - "naklikávání" mapy (zatím bez vyrábění dat na serveru)
   - čistě edit mód, jinej zatím vůbec neuvažovat.
 
 Nebo se na to vykašlat, trochu učesat stávající kód a zas to na chvíli odložit.
+
+------------------------------------------------------------------------------
+
+Map() na stornutí roomů dává celkem smysl, ale budu to muset něčím
+  obalit, aby šlo zapisovat na libovolnej index, protože vnořená mapa
+  se sama nevyrobí.
+- asi ani úplně nedává smysl oddělit roomy a exity...
+
+
+TODO: setPosition nefunguje u SvgG elementu.
+ - respektive musela by to bejt transformace, což asi klidně může.
+ - ale setRelativePosition() nebude fungovat určitě.
 
 ------------------------------------------------------------------------------
 
