@@ -4,7 +4,15 @@
   Manages state of user interface
 */
 
+import { Coords } from "../../Shared/Class/Coords";
+import { World } from "../../Client/World/World";
 import { Body } from "../../Client/Gui/Body";
+import { RoomsSvg } from "../../Client/Gui/Map/RoomsSvg";
+
+const components =
+{
+  roomsSvg: undefined as RoomsSvg | undefined
+};
 
 export namespace Gui
 {
@@ -36,6 +44,36 @@ export namespace Gui
     {
       // TODO: Better displaying of error message.
       alert("An error occured. Please reload the browser tab to log back in.");
+    }
+  }
+
+  export function setRoomsSvg(roomsSvg: RoomsSvg): RoomsSvg
+  {
+    components.roomsSvg = roomsSvg;
+
+    return roomsSvg;
+  }
+
+  export function updateMap(): void
+  {
+    if (!components.roomsSvg)
+    {
+      throw Error("Failed to update map because 'roomsSvg' component"
+        + " is not available");
+    }
+
+    for (let x = -3; x <= 3; x++)
+    {
+      for (let y = -3; y <= 3; y++)
+      {
+        const coords = new Coords(x, y, 0);
+        const room = World.getRoomAtCoords(coords);
+
+        if (room === "Nothing there")
+          components.roomsSvg.createRoomSvg("Doesn't exist", coords);
+        else
+          components.roomsSvg.createRoomSvg(room, coords);
+      }
     }
   }
 }

@@ -1,3 +1,32 @@
+TODO: Implementovat Grid3d (pořadí souřadnic je e, s, u).
+  TODO: Zaokrouhlovat coords na celá čísla.
+  [done]
+[done]
+
+TODO: namespace World a class Room
+  (zóny zatím neřešit, potřebuju zobrazit celej World)
+[done]
+
+Na začátku žádný roomy neexistujou. Zavolám RoomsSvg.update(), vyrobí
+  to 2d řez neexistujících room.
+[done]
+
+TODO: setPosition nefunguje u SvgG elementu.
+ - respektive musela by to bejt transformace, což asi klidně může.
+ - ale setRelativePosition() nebude fungovat určitě.
+TODO: Dát setRelativePosition() jen do Svg, jinde stejně nejspíš
+  nebude potřeba.
+[done]
+
+Idea: Místo MudMap dát MapSvg, místo RoomOnMap dát RoomSvg, místo IconOnMap
+  dát IconSvg.
+  - sounds good.
+[done]
+
+TODO: Potřebuju vůbec classu na Ikony? Nestačila by SvgImage?
+- nepotřebuju, zrušit
+[done]
+
 TODO: Vyrobit soubor se seznamem užitečných extensionů
 [done]
 

@@ -27,43 +27,17 @@ Nebo se na to vykašlat, trochu učesat stávající kód a zas to na chvíli od
 
 ------------------------------------------------------------------------------
 
-Map() na stornutí roomů dává celkem smysl, ale budu to muset něčím
-  obalit, aby šlo zapisovat na libovolnej index, protože vnořená mapa
-  se sama nevyrobí.
-- asi ani úplně nedává smysl oddělit roomy a exity...
+TODO: Kašlat zatím na exity, ať si to nekomplikuju.
 
-Pozor na to, že prvky v hashmapě jsou v pořadí podle vložení, ne podle
-  hodnoty indexu.
-  - při vykreslování to asi nevadí, protože pozici určují koordináty, ale
-    při určování, co má bejt vidět, by to vadit mohlo.
+TODO: Prozatím navrdo setnuté rozměry světa.
 
-Potřebuju vůbec na vložený roomy grid?
-- ten mi umožní najít roomu podle souřadnic, ale zobrazený stejně nejsou
-  všechny roomy, takže to je asi jedno. Navíc můžu mít v Room odkaz na
-  RoomOnMap
+TODO: Grafika pro neexistující roomu (možná jí prostě nedat ikonu?)
 
-Idea: Místo MudMap dát MapSvg, místo RoomOnMap dát RoomSvg, místo IconOnMap
-  dát IconSvg.
-  - sounds good.
-[done]
+TODO: Vyrobení roomy kliknutím na její ikonu.
+- Změní se grafika, do World.grid se na příslušný souřadnice přidá new Room().
 
-TODO: Potřebuju vůbec classu na Ikony? Nestačila by SvgImage?
-
-
-TODO: setPosition nefunguje u SvgG elementu.
- - respektive musela by to bejt transformace, což asi klidně může.
- - ale setRelativePosition() nebude fungovat určitě.
 
 ------------------------------------------------------------------------------
-
-Aktuální TODO:
-- začít experimentovat s Map Window.
-
-TODO: Data pro pár roomů a exitů
-
-TODO: Transformace do mapovejch dat
-
-TODO: Zobrazení mapovejch dat
 
 
 Change color of svg:

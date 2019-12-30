@@ -1,10 +1,55 @@
 ------------------------------------------------------------------------------
 
+Data vs GUI
+------------
+
+Mají data šahat do GUI a updatnout ho, nebo má spíš GUI číst data
+a nastavit se podle nich?
+
+ Ideálně ani jedno.
+
+ - data by rozhodně neměla pracovat s GUI komponentama.
+
+IDEA:
+ Editor - z GUI půjde zaovlat Editor.createRoom() nebo tak něco,
+   editor pak zavolá World.createRoom().
+ - Je nějakej důvod, proč nezavolat rovnou World.createRoom()?
+   Asi jo: Když na to samý napíšu textovej příkaz, tak můžu
+   zavolat tu samou funkci editoru (na druhou stranu příkaz
+   asi spíš pošlu na server...)
+
+  Ok, co vytvoření svg podle dat.
+  - World by určitě neměl mít odkazy na GUI, tj. rozhodně by neměla
+    existovat metoda World.updateUI() nebo tak něco.
+
+Bylo by asi šikovný, mít někde odkazy přímo na komponenty, který je
+  potřeba updatovat - nemusel bych se pak provolávat přes MapWindow
+  a všchno, co je do něj vnořený.
+- tj. byl by to nějakej middleman, kterej by si bral data z Worldu a vyráběl
+  by podle nich komponenty na patřičnejch místech v UI.
+  - asi Gui se na to teď nejvíc hodí. Gui.updateMap().
+
+OK. Každopádně základní myšlenka je, že data sama nic nedělaj s GUI
+  a stejně tak GUI komponenty se samy nehrabou na data. Data mají prostě
+  pouze metody na čtení a setování dat, GUI má pouze metody na vyrábění
+  gui elementů a posílání messagů (což je teda volání metod).
+
+------------------------------------------------------------------------------
+
 Použití svg z inkscapu
 -----------------------
 
 
 http://techdatadigest.blogspot.com/2014/03/creating-svg-from-inkscape-to-use-on.html
+
+------------------------------------------------------------------------------
+
+Exity
+------
+
+Pokud budu mít exity v gridu (budou mít souřadnice), tak asi nemusím
+řešit, odkud kam vedou a nemusím je zapisovat do room.
+(Respektive zapisovat musím akorát teleportační exity).
 
 ------------------------------------------------------------------------------
 
@@ -30,17 +75,17 @@ Map data
 
 
   \|/  \|/  \|/  \|/  \|/  \|/  \|
-  --x----x----x----x----x----x----x
+ --x----x----x----x----x----x----x
   /|\  /|\  /|\  /|\  /|\  /|\  /|
-    | \/ | \/ | \/ | \/ | \/ | \/ |
-    | /\ | /\ | /\ | /\ | /\ | /\ |
-    |/  \|/  \|/  \|/  \|/  \|/  \|
-  --x----x----x----x----x----x----x
+   | \/ | \/ | \/ | \/ | \/ | \/ |
+   | /\ | /\ | /\ | /\ | /\ | /\ |
+   |/  \|/  \|/  \|/  \|/  \|/  \|
+ --x----x----x----x----x----x----x
   /|\  /|\  /|\  /|\  /|\  /|\  /|
-    | \/ | \/ | \/ | \/ | \/ | \/ |
-    | /\ | /\ | /\ | /\ | /\ | /\ |
-    |/  \|/  \|/  \|/  \|/  \|/  \|
-  --x----x----x----x----x----x----x
+   | \/ | \/ | \/ | \/ | \/ | \/ |
+   | /\ | /\ | /\ | /\ | /\ | /\ |
+   |/  \|/  \|/  \|/  \|/  \|/  \|
+ --x----x----x----x----x----x----x
 
   IDEA: Rozdělit to na několik seznamů, vždycky exity v jednom směru:
   - n/s
@@ -57,10 +102,61 @@ Map data
     minimálně na indexaci exitů (tj. nasypu je třeba do hashmapy a budu je
     indexovat číslem, který by měly v plný síti).
 
+------------
+
+Map() na stornutí roomů dává celkem smysl, ale budu to muset něčím
+  obalit, aby šlo zapisovat na libovolnej index, protože vnořená mapa
+  se sama nevyrobí.
+- asi ani úplně nedává smysl oddělit roomy a exity...
+
+Pozor na to, že prvky v hashmapě jsou v pořadí podle vložení, ne podle
+  hodnoty indexu.
+  - při vykreslování to asi nevadí, protože pozici určují koordináty, ale
+    při určování, co má bejt vidět, by to vadit mohlo.
+
+Potřebuju vůbec na vložený roomy grid?
+- ten mi umožní najít roomu podle souřadnic, ale zobrazený stejně nejsou
+  všechny roomy, takže to je asi jedno. Navíc můžu mít v Room odkaz na
+  RoomOnMap
+
+------------
+
+Vyřešit:
+
+• Jak vyrobit roomu, kde žádná není.
+
+  V browseru určitě musej "neexistující" roomy existovat, abych
+  na ně mohl klikat. Vyrobit je můžu jednoduchym cyklem.
+  - při tý příležitosti ale potřebuju zjistit, jesti na danejch
+    souřadnicích už nějaká rooma existuje.
+    - Na to mi každopádně stačí 2d grid.
+
+  IDEA: Nejdřív 2d grid osázím existujícíma místnostma. Pak ho projdu
+    cyklem a tam, kde není reálná místnost, doplním neexistující.
+
+
+• Jak zjistit, co mám zobrazit pod sebou.
+
+  Kdy vlastně budu zobrazovat to, co je pode mnou?
+  - Když jsem v podzemí, tak určitě ne.
+  - Use case jsou hradby nebo věže hradu, ze kterých bych měl
+    vidět nádvoří a tak.
+  - Nějak musím poznat, že tam není skála, ale vzduch.
+    - tj. musím mít místnosti "In the Air"?
+  => Každopádně tam musej bejt nějak marknutý místnosti.
+
+
+V map datech nebudu potřebovat grid. Když mi ze serveru přijde nová místnost,
+tak prostě rebuildnu map data.
+- Rozhodně ho nebudu potřebovat hned.
+
+
+
 Juju mapper:
 -------------
 (asi ho nepoužiju, ale nechám si tu odkaz)
 http://www.mudportal.com/forum/support/22-jujumapper-open-beta
+
 
 ------------------------------------------------------------------------------
 
