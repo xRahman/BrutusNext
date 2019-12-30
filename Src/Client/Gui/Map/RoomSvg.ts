@@ -75,8 +75,6 @@ export class RoomSvg extends SvgG
 
   private onMouseUp(event: MouseEvent): void
   {
-    console.log("onMouseUp fired", event.button);
-
     switch (event.button)
     {
       case 0:

@@ -1,3 +1,7 @@
+TODO: Zamyslet se, jestli nebude lepší v Grid.delete() házet exception,
+  když tam mazanej item není (asi jo).
+[done]
+
 TODO: Zakázat context menu v celém dokumentu
 [done]
 

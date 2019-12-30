@@ -51,6 +51,22 @@ Pokud budu mít exity v gridu (budou mít souřadnice), tak asi nemusím
 řešit, odkud kam vedou a nemusím je zapisovat do room.
 (Respektive zapisovat musím akorát teleportační exity).
 
+Exity mají souřadnice 32.5, 12.5
+Na nich jsou vždycky 4 exity:
+ ew
+ nwse
+ swne
+
+- To je naprd. Z hlediska map dat potřebuju prostě seznam exitů
+  a každej z nich má dvoje souřadnice (tj. vím, odkud kam ho
+  mám nakreslit).
+
+IDEA: Když budou mít exity idčka, tak snadno poznám, že
+  už ho v seznamu mám.
+
+Potřebuju u exitu vědět, odkud kam vede?
+- hodí se to, z roomů si přečtu coords.
+
 ------------------------------------------------------------------------------
 
 Mapa
