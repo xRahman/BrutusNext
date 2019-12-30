@@ -1,3 +1,6 @@
+TODO: Smazat Element.ts.deprecated
+[done]
+
 TODO: Grafika pro neexistující roomu (možná jí prostě nedat ikonu?)
 - není to moc hezký, ale zatím to stačí.
 [done]

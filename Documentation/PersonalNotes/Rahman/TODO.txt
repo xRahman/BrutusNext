@@ -39,8 +39,6 @@ TODO: Cestu k ikoně hodit do Roomy (a číst ji z ní).
 TODO: Zamyslet se, jestli nebude lepší v Grid.delete() házet exception,
   když tam mazanej item není (asi jo).
 
-TODO: Smazat Element.ts.deprecated
-
 ------------------------------------------------------------------------------
 
 
