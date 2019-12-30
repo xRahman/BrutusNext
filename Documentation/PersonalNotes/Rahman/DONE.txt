@@ -1,3 +1,10 @@
+TODO: Zakázat context menu v celém dokumentu
+[done]
+
+TODO: Vyrobení roomy kliknutím na její ikonu.
+- Změní se grafika, do World.grid se na příslušný souřadnice přidá new Room().
+[done]
+
 TODO: Smazat Element.ts.deprecated
 [done]
 

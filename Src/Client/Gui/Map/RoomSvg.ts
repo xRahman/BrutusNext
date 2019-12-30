@@ -38,10 +38,11 @@ export class RoomSvg extends SvgG
     this.assignEventListeners();
   }
 
+  // ---------------- Private methods -------------------
+
   private assignEventListeners(): void
   {
-    this.element.onclick = (event) => { this.onLeftClick(event); };
-    this.element.oncontextmenu = (event) => { this.onRightClick(event); };
+    this.element.onmouseup = (event) => { this.onMouseUp(event); };
   }
 
   private updateRoomIcon(): void
@@ -70,6 +71,27 @@ export class RoomSvg extends SvgG
     );
   }
 
+  // ---------------- Event handlers --------------------
+
+  private onMouseUp(event: MouseEvent): void
+  {
+    console.log("onMouseUp fired", event.button);
+
+    switch (event.button)
+    {
+      case 0:
+        this.onLeftClick(event);
+        break;
+
+      case 2:
+        this.onRightClick(event);
+        break;
+
+      default:
+        break;
+    }
+  }
+
   private onLeftClick(event: MouseEvent): void
   {
     if (this.room === "Doesn't exist")
@@ -81,9 +103,6 @@ export class RoomSvg extends SvgG
 
   private onRightClick(event: MouseEvent): void
   {
-    // Tohle nějak nefunguje.
-    // event.preventDefault();
-
     if (this.room !== "Doesn't exist")
     {
       Editor.deleteRoom(this.room);
