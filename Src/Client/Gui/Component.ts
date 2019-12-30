@@ -80,6 +80,11 @@ export abstract class Component
 
   public isHidden(): boolean { return this.element.style.display === "none"; }
 
+  public removeFromParent(): void
+  {
+    this.element.parentNode?.removeChild(this.element);
+  }
+
   // --------------- Protected methods ------------------
 
   protected setCss(css: Partial<CSSStyleDeclaration>): void

@@ -11,4 +11,6 @@ export class Room
   constructor(private readonly coords: Coords)
   {
   }
+
+  public getCoords(): Coords { return this.coords; }
 }

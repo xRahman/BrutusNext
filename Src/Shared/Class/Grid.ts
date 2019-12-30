@@ -98,6 +98,28 @@ export class Grid<T>
     this.includeToGridSize(flooredCoords);
   }
 
+  // ! Throws exception on error.
+  // Deletes 'item' at position [e, s, u].
+  // Grid size is not changed by this operation so it might be
+  // bigger than necessary afterwards.
+  public delete(coords: Coords): void
+  {
+    const flooredCoords = coords.getFlooredCoords();
+
+    const horizontalSlice = this.data.get(flooredCoords.u);
+
+    if (horizontalSlice === undefined)
+      throw failedToDelete(coords);
+
+    const eastWestLine = horizontalSlice.get(flooredCoords.s);
+
+    if (eastWestLine === undefined)
+      throw failedToDelete(coords);
+
+    if (!eastWestLine.delete(flooredCoords.e))
+      throw failedToDelete(coords);
+  }
+
   /// This works (hopefuly) but it's not needed after all.
   // public getItemsInDepth(depth: number): Array<T>
   // {
@@ -158,4 +180,13 @@ export class Grid<T>
     if (this.max.u < coords.u)
       this.max.u = coords.u;
   }
+}
+
+// ----------------- Auxiliary Functions ---------------------
+
+function failedToDelete(coords: Coords): Error
+{
+  return new Error(`Failed to delete an item from the grid`
+    + ` at coords ${coords.toString()} because it already`
+    + ` wasn't there`);
 }

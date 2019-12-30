@@ -21,4 +21,24 @@ export namespace World
   {
     return grid.get(coords);
   }
+
+  export function createRoom(coords: Coords): Room
+  {
+    if (grid.get(coords) !== "Nothing there")
+    {
+      throw Error(`Failed to create room at coords ${coords.toString()}"`
+        + ` because there already is a room at those coords`);
+    }
+
+    const newRoom = new Room(coords);
+
+    grid.set(coords, newRoom);
+
+    return newRoom;
+  }
+
+  export function deleteRoom(room: Room): void
+  {
+    grid.delete(room.getCoords());
+  }
 }

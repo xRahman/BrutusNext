@@ -1,3 +1,7 @@
+TODO: Grafika pro neexistující roomu (možná jí prostě nedat ikonu?)
+- není to moc hezký, ale zatím to stačí.
+[done]
+
 TODO: Implementovat Grid3d (pořadí souřadnic je e, s, u).
   TODO: Zaokrouhlovat coords na celá čísla.
   [done]

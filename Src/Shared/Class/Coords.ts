@@ -122,6 +122,11 @@ export class Coords
     );
   }
 
+  public toString(): string
+  {
+    return `[ e: ${this.e}, s: ${this.s}, u: ${this.u} ]`;
+  }
+
   // --------------- Protected methods ------------------
 
   // ---------------- Private methods -------------------

@@ -6,21 +6,24 @@
 
 import { Coords } from "../../../Shared/Class/Coords";
 import { Room } from "../../../Client/World/Room";
+import { Editor } from "../../../Client/Editor/Editor";
 import { Component } from "../../../Client/Gui/Component";
 import { SvgImage } from "../../../Client/Gui/Svg/SvgImage";
 import { SvgCircle } from "../../../Client/Gui/Svg/SvgCircle";
 import { SvgG } from "../../../Client/Gui/Svg/SvgG";
 
+const roomPixelSize = 10;
+
 export class RoomSvg extends SvgG
 {
   private readonly backgroud: SvgCircle;
-  private readonly icon: SvgImage;
+  private icon: SvgImage | "Doesn't exist" = "Doesn't exist";
 
   constructor
   (
     parent: Component,
-    private readonly room: Room | "Doesn't exist",
-    coords: Coords,
+    private room: Room | "Doesn't exist",
+    private readonly coords: Coords,
     name = "room"
   )
   {
@@ -28,10 +31,31 @@ export class RoomSvg extends SvgG
 
     this.setPosition(24 * coords.e, 24 * coords.s);
 
-    const roomPixelSize = 10;
-
     this.backgroud = new SvgCircle(this, "room_background");
     this.backgroud.setRadius(roomPixelSize * 0.6);
+
+    this.updateRoomIcon();
+    this.assignEventListeners();
+  }
+
+  private assignEventListeners(): void
+  {
+    this.element.onclick = (event) => { this.onLeftClick(event); };
+    this.element.oncontextmenu = (event) => { this.onRightClick(event); };
+  }
+
+  private updateRoomIcon(): void
+  {
+    if (this.room === "Doesn't exist")
+    {
+      if (this.icon !== "Doesn't exist")
+      {
+        this.icon.removeFromParent();
+        this.icon = "Doesn't exist";
+      }
+
+      return;
+    }
 
     this.icon = new SvgImage
     (
@@ -44,5 +68,27 @@ export class RoomSvg extends SvgG
         isCentered: true
       }
     );
+  }
+
+  private onLeftClick(event: MouseEvent): void
+  {
+    if (this.room === "Doesn't exist")
+    {
+      this.room = Editor.createRoom(this.coords);
+      this.updateRoomIcon();
+    }
+  }
+
+  private onRightClick(event: MouseEvent): void
+  {
+    // Tohle nějak nefunguje.
+    // event.preventDefault();
+
+    if (this.room !== "Doesn't exist")
+    {
+      Editor.deleteRoom(this.room);
+      this.room = "Doesn't exist";
+      this.updateRoomIcon();
+    }
   }
 }
