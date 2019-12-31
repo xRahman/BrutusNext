@@ -26,8 +26,6 @@ How much to do in this batch?
 
 TODO: Prozatím navrdo setnuté rozměry světa.
 
-TODO: Cestu k ikoně hodit do Roomy (a číst ji z ní).
-
 TODO: Data pro exity
   - potřebuju classu Exit a musí mít idčko (klidně ho nafakovat).
   - v roomě potřebuju 10 odkazů do příslušných směrů

@@ -12,8 +12,6 @@ import { SvgImage } from "../../../Client/Gui/Svg/SvgImage";
 import { Circle } from "../../../Client/Gui/Svg/Circle";
 import { G } from "../../../Client/Gui/Svg/G";
 
-const roomPixelSize = 10;
-
 export class RoomSvg extends G
 {
   private readonly backgroud: Circle;
@@ -32,7 +30,7 @@ export class RoomSvg extends G
     this.setPosition(24 * coords.e, 24 * coords.s);
 
     this.backgroud = new Circle(this, "room_background");
-    this.backgroud.setRadius(roomPixelSize * 0.6);
+    this.backgroud.setRadius(Room.NONEXISTING_ROOM_PIXEL_SIZE * 0.6);
 
     this.updateRoomIcon();
     this.assignEventListeners();
@@ -63,9 +61,9 @@ export class RoomSvg extends G
       {
         parent: this,
         name: "room_icon",
-        widthPixels: roomPixelSize,
-        heightPixels: roomPixelSize,
-        imagePath: "Images/Rooms/Circle.svg",
+        widthPixels: this.room.icon.pixelSize,
+        heightPixels: this.room.icon.pixelSize,
+        imagePath: this.room.icon.path,
         isCentered: true
       }
     );
