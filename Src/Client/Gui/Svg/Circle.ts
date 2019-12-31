@@ -7,7 +7,7 @@
 import { Component } from "../../../Client/Gui/Component";
 import { SvgComponent } from "../../../Client/Gui/Svg/SvgComponent";
 
-export class SvgCircle extends SvgComponent
+export class Circle extends SvgComponent
 {
   constructor
   (

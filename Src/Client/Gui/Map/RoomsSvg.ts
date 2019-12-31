@@ -12,12 +12,12 @@ import { Coords } from "../../../Shared/Class/Coords";
 import { Room } from "../../../Client/World/Room";
 import { Component } from "../../../Client/Gui/Component";
 import { RoomSvg } from "../../../Client/Gui/Map/RoomSvg";
-import { SvgG } from "../../../Client/Gui/Svg/SvgG";
+import { G } from "../../../Client/Gui/Svg/G";
 
 // // Use Map instead of Array so we can have negative indexes.
 // type ColumnOfRooms = Map<number, RoomSvg>;
 
-export class RoomsSvg extends SvgG
+export class RoomsSvg extends G
 {
   // private readonly rooms = new Map<number, ColumnOfRooms>();
   private readonly rooms: Array<RoomSvg> = [];

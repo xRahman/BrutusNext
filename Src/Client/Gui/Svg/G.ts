@@ -7,7 +7,7 @@
 import { Component } from "../../../Client/Gui/Component";
 import { SvgComponent } from "../../../Client/Gui/Svg/SvgComponent";
 
-export class SvgG extends SvgComponent
+export class G extends SvgComponent
 {
   constructor
   (

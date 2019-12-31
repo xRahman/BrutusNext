@@ -9,14 +9,14 @@ import { Room } from "../../../Client/World/Room";
 import { Editor } from "../../../Client/Editor/Editor";
 import { Component } from "../../../Client/Gui/Component";
 import { SvgImage } from "../../../Client/Gui/Svg/SvgImage";
-import { SvgCircle } from "../../../Client/Gui/Svg/SvgCircle";
-import { SvgG } from "../../../Client/Gui/Svg/SvgG";
+import { Circle } from "../../../Client/Gui/Svg/Circle";
+import { G } from "../../../Client/Gui/Svg/G";
 
 const roomPixelSize = 10;
 
-export class RoomSvg extends SvgG
+export class RoomSvg extends G
 {
-  private readonly backgroud: SvgCircle;
+  private readonly backgroud: Circle;
   private icon: SvgImage | "Doesn't exist" = "Doesn't exist";
 
   constructor
@@ -31,7 +31,7 @@ export class RoomSvg extends SvgG
 
     this.setPosition(24 * coords.e, 24 * coords.s);
 
-    this.backgroud = new SvgCircle(this, "room_background");
+    this.backgroud = new Circle(this, "room_background");
     this.backgroud.setRadius(roomPixelSize * 0.6);
 
     this.updateRoomIcon();

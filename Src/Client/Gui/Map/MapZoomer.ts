@@ -11,9 +11,9 @@
 import { Gui } from "../../../Client/Gui/Gui";
 import { Component } from "../../../Client/Gui/Component";
 import { RoomsSvg } from "../../../Client/Gui/Map/RoomsSvg";
-import { SvgG } from "../../../Client/Gui/Svg/SvgG";
+import { G } from "../../../Client/Gui/Svg/G";
 
-export class MapZoomer extends SvgG
+export class MapZoomer extends G
 {
   private zoom = 1.0;
 
