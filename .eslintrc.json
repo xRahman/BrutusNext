@@ -339,15 +339,16 @@
       // Disable the base rule as it can report incorrect errors.
       "no-unused-vars": "off",
       // Disallow unused variables.
-      "@typescript-eslint/no-unused-vars":
-      [
-        "warn",
-        {
-          // Allow unused arguments to be able to override functions
-          // with some arguments but empty body.
-          "args": "none"
-        }
-      ],
+      // (Typescript warns about this so there is no need to do it twice.)
+      "@typescript-eslint/no-unused-vars": "off",
+      // [
+      //   "warn",
+      //   {
+      //     // Allow unused arguments to be able to override functions
+      //     // with some arguments but empty body.
+      //     "args": "none"
+      //   }
+      // ],
       // Disallow the use of variables before they are defined.
       "@typescript-eslint/no-use-before-define": "off",
       // Disable the base rule as it can report incorrect errors.
