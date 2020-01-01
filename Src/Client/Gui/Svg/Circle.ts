@@ -19,7 +19,6 @@ export class Circle extends SvgComponent
     super(parent, "circle", name, insertMode);
   }
 
-  // ~ Overrides SvgComponent.setPosition().
   // Note that origin point of <circle> is in the middle.
   public setPosition(xPixels: number, yPixels: number): void
   {
@@ -27,8 +26,7 @@ export class Circle extends SvgComponent
     this.element.setAttribute("cy", String(yPixels));
   }
 
-  // ~ Overrides SvgComponent.setPosition().
-  // Note that origin point of <circle> is in the middle.
+  // Note that origin of <circle> is in the middle.
   public setRelativePosition(xPercent: number, yPercent: number): void
   {
     this.element.setAttribute("cx", `${String(xPercent)}%`);

@@ -67,6 +67,30 @@ IDEA: Když budou mít exity idčka, tak snadno poznám, že
 Potřebuju u exitu vědět, odkud kam vede?
 - hodí se to, z roomů si přečtu coords.
 
+-----------------
+
+Tak asi ještě jinak:
+
+- na entitu Exit se asi vykašlu. Nejspíš není potřeba a byl by pak problém
+  s tím, do který zóny patří exit mezi dvěma zónama.
+
+- Exity v roomách se budou odkazovat na roomu, ne na coords.
+  Je to sice v zásadě jedno, ale častějš budu přistupovat na roomu.
+
+- Obousměrnost exitů a podobně tudíž budu muset řešit při buildování mapy.
+
+Exit directions možná pořešit úplně jinak
+  - časem nejspíš budu potřebovat převádět směr na jednotkovej vektor,
+    tj. můžu rovnou vyrobit mapu jmen exitů na vektory.
+  - a zjištění direction pak můžu udělat tak, že projdu vektory
+    a porovnám, na kterej to sedí.
+  Nevýhody:
+  - bude to fungovat jen na jednotkovou vzdálenost
+  - bude to pomalejší, protože budu muset procházet pole a dělat
+    spoustu porovnání.
+=> Mapování asi někdy udělám, ale zjišťování direction nechám tak, jak je.
+
+
 ------------------------------------------------------------------------------
 
 Mapa

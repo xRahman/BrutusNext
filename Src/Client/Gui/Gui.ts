@@ -5,13 +5,17 @@
 */
 
 import { Coords } from "../../Shared/Class/Coords";
+import { Room } from "../../Client/World/Room";
 import { World } from "../../Client/World/World";
-import { Body } from "../../Client/Gui/Body";
+import { ExitSvg } from "../../Client/Gui/Map/ExitSvg";
+import { ExitsSvg } from "../../Client/Gui/Map/ExitsSvg";
 import { RoomsSvg } from "../../Client/Gui/Map/RoomsSvg";
+import { Body } from "../../Client/Gui/Body";
 
 const components =
 {
-  roomsSvg: undefined as RoomsSvg | undefined
+  roomsSvg: "Not assigned" as (RoomsSvg | "Not assigned"),
+  exitsSvg: "Not assigned" as (ExitsSvg | "Not assigned")
 };
 
 export namespace Gui
@@ -49,31 +53,129 @@ export namespace Gui
 
   export function setRoomsSvg(roomsSvg: RoomsSvg): RoomsSvg
   {
+    if (components.roomsSvg !== "Not assigned")
+    {
+      throw Error("'roomSvg' is already assigned to Gui");
+    }
+
     components.roomsSvg = roomsSvg;
 
     return roomsSvg;
   }
 
-  export function updateMap(): void
+  export function setExitsSvg(exitsSvg: ExitsSvg): ExitsSvg
   {
-    if (!components.roomsSvg)
+    if (components.exitsSvg !== "Not assigned")
     {
-      throw Error("Failed to update map because 'roomsSvg' component"
-        + " is not available");
+      throw Error("'exitsSvg' is already assigned to Gui");
     }
 
-    for (let x = -3; x <= 3; x++)
-    {
-      for (let y = -3; y <= 3; y++)
-      {
-        const coords = new Coords(x, y, 0);
-        const room = World.getRoomAtCoords(coords);
+    components.exitsSvg = exitsSvg;
 
-        if (room === "Nothing there")
-          components.roomsSvg.createRoomSvg("Doesn't exist", coords);
-        else
-          components.roomsSvg.createRoomSvg(room, coords);
+    return exitsSvg;
+  }
+
+  // ! Throws exception on error.
+  export function updateMap(): void
+  {
+    if (components.roomsSvg === "Not assigned")
+    {
+      throw Error("Failed to update map because 'roomsSvg' component"
+        + " is not assigned to Gui yet");
+    }
+
+    components.roomsSvg.clear();
+
+    if (components.exitsSvg === "Not assigned")
+    {
+      throw Error("Failed to update map because 'exitsSvg' component"
+        + " is not assigned to Gui yet");
+    }
+
+    components.exitsSvg.clear();
+
+    createRoomsAndExits(components.roomsSvg, components.exitsSvg);
+  }
+}
+
+// ----------------- Auxiliary Functions ---------------------
+
+function createRoomsAndExits(roomsSvg: RoomsSvg, exitsSvg: ExitsSvg): void
+{
+  const exitsData = createRooms(roomsSvg);
+
+  createExits(exitsData, exitsSvg);
+}
+
+function createRooms(roomsSvg: RoomsSvg): Map<string, ExitSvg.ExitData>
+{
+  const exitsData = new Map<string, ExitSvg.ExitData>();
+
+  for (let x = -3; x <= 3; x++)
+  {
+    for (let y = -3; y <= 3; y++)
+    {
+      const coords = new Coords(x, y, 0);
+      const room = World.getRoomAtCoords(coords);
+
+      if (room === "Nothing there")
+      {
+        roomsSvg.createRoomSvg("Doesn't exist", coords);
       }
+      else
+      {
+        roomsSvg.createRoomSvg(room, coords);
+        extractExitData(room, exitsData);
+      }
+    }
+  }
+
+  return exitsData;
+}
+
+function createExits
+(
+  exitsData: Map<string, ExitSvg.ExitData>,
+  exitsSvg: ExitsSvg
+)
+: void
+{
+  for (const exitData of exitsData.values())
+  {
+    exitsSvg.createExitSvg(exitData);
+  }
+}
+
+function extractExitData
+(
+  room: Room,
+  exitsData: Map<string, ExitSvg.ExitData>
+)
+: void
+{
+  for (const exitName in room.exits)
+  {
+    if (!room.exits.hasOwnProperty(exitName))
+      continue;
+
+    const exit = room.exits[exitName];
+
+    if (exit.to === "Nowhere")
+      continue;
+
+    const from = room.coords;
+    const to = exit.to.coords;
+    const exitId = Coords.getExitId(from, to);
+
+    const exitData = exitsData.get(exitId);
+
+    if (exitData === undefined)
+    {
+      exitsData.set(exitId, { from, to, bidirectional: false });
+    }
+    else
+    {
+      exitsData.set(exitId, { from, to, bidirectional: true });
     }
   }
 }

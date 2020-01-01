@@ -5,20 +5,43 @@
 */
 
 import { Coords } from "../../Shared/Class/Coords";
+import { Exit } from "../../Client/World/Exit";
 
 export class Room
 {
-  public static readonly NONEXISTING_ROOM_PIXEL_SIZE = 10;
+  public static readonly DEFAULT_ROOM_PIXEL_SIZE = 10;
 
   public readonly icon =
   {
     path: "Images/Rooms/Circle.svg",
-    pixelSize: 10
+    pixelSize: Room.DEFAULT_ROOM_PIXEL_SIZE
   };
 
-  constructor(private readonly coords: Coords)
+  public readonly exits: { [name: string]: Exit } =
+  {
+    n: Exit.nowhere(),
+    ne: Exit.nowhere(),
+    e: Exit.nowhere(),
+    se: Exit.nowhere(),
+    s: Exit.nowhere(),
+    sw: Exit.nowhere(),
+    w: Exit.nowhere(),
+    nw: Exit.nowhere(),
+    u: Exit.nowhere(),
+    d: Exit.nowhere()
+  };
+
+  constructor(public readonly coords: Coords)
   {
   }
 
-  public getCoords(): Coords { return this.coords; }
+  public setRoomInDirection
+  (
+    direction: Exit.Direction,
+    targetRoom: Room | "Nowhere"
+  )
+  : void
+  {
+    this.exits[direction].to = targetRoom;
+  }
 }

@@ -194,6 +194,33 @@ export abstract class Component
   {
     this.element.style.display = this.displayMode;
   }
+
+  // ---------------- Event handlers --------------------
+
+  /// This idea is deprecated in favour of assigning event handler directly
+  /// to this.element. It might be less elegant but it's pure javascript
+  /// so it can be easily googled how to do it. And it is probably more
+  /// easily readable anyways.
+  // // We are generating our own 'onLeftClick and onRightClick' event handler
+  // // calls because there is no 'rightClick' event in plain javascript.
+  // // (There is an 'oncontextmenu' event which technically fires on right
+  // // click  but using it that way is more like a hack.)
+  // protected onMouseUp(event: MouseEvent): void
+  // {
+  //   switch (event.button)
+  //   {
+  //     case 0:
+  //       this.onLeftClick(event);
+  //       break;
+
+  //     case 2:
+  //       this.onRightClick(event);
+  //       break;
+
+  //     default:
+  //       break;
+  //   }
+  // }
 }
 
 // ------------------ Type Declarations ----------------------

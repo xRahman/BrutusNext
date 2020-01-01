@@ -38,8 +38,68 @@ TODO: Naklikávání exitů
 TODO: Vyrábění room dragnutím přes ně
  (ostatně když někam vyrobím exit, tak tak zjevně chci i roomu, že)
 
+TODO: V konstruktorech komponent dát parentům typ rodiče, ať se přes
+  this.parent dají volat jeho metody.
+
+TODO: Líp vyřešit leftClick a rightClick
+  (nelíbí se mi, že se různý eventy handlujou různě)
+- asi na to v Component udělat funkci assignEventHandler()
+  (nebo registerEventHandler()) a tý předat typ eventu
+  a handler s tím, že ona si uvnitř pořeší setnutí handleru
+  na element, případně pseudo event na right click.
+Ono teda popravdě přiřazovat ty handlery přímo na this.element
+  bude možná nakonec nejpřehlednější. A navíc je to pure javascript,
+  takže se dá celkem snadno vygooglit, jak se to dělá.
+
+TODO: U "line" nedává smysl setPosition().
+
+TODO: Parametrizovat rozestupy místností
+
+TODO: Udělat Exit.nowhere(), což vrátí instanci exitu, kterej nikam nevede.
+  Důvod: Časem bude potřeba look description v daném směru a bude lepší, když
+    to bude ve standarní struktuře exitů.
+  (exit to "Nowhere").
+
+TODO: Rozdělit funkci na distance a direction
+  (direction hodí exception když je distance 0).
+
+TODO: Room.PIXEL_SIZE hodit zpět někam do GUI
+  (A je to spíš ROOM_SPACING).
+  Rooma může mít klidně velikost, ale relativně (small, medium, large).
+  (A hlavně to nemusím řešit teď).
+
+TODO: Editor přejmenovat na MapEditor
+
+TODO: V Gui.updateMap() je třeba nejdřív vysypat obsah room a exitů v mapě.
+
+TODO: Pořešit error handling v RoomSvg
+
+TODO: Ještě přece jen zvážit, že by se event handlery věšely rovnou
+  na komponentu.
+- mohly by to bejt settery, takže by se jmenovaly stejně jako v javascriptu
+  (onclick atp.). Prostě by to jen provovaly na this.element.
+Sounds good.
+TODO: Když už v tom budu, tak můžu handlery automaticky obalovat
+  odchytáváním a reportováním exceptionů (což je dobro).
+IDEA: Možná bych pak vůbec nemusel exceptiony v handlerech ošetřovat, dělalo
+  by se to automaticky.
+
+TODO: Gui.updateMap() volat asi rovnou z svg komponent. Bude pak z toho kódu
+  jasnější, co se děje.
+exeptiony - render z gui
+
+TODO: Když dragnu exit z neexistující roomy, tak se pokusí vytvořit
+  a hodít to exception, že zdrojová rooma neexistuje (pochopitelně)
+  - asi ji automaticky vytvořit.
+
+TODO: Zkusit updatnout eslint, jestli neopravili chybu s export let x;
+  (Editor.lastSelectedCoords).
+
 ------------------------------------------------------------------------------
 
+TODO: Zamyslet se nad exity do neexistujících místností
+- v edit módu je to blbost, ale v mapper módu player vidí,
+  že je v daném směru exit, ale ještě neví, kam vede.
 
 Change color of svg:
 https://css-tricks.com/change-color-of-svg-on-hover/

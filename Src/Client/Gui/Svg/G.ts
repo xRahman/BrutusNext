@@ -19,7 +19,6 @@ export class G extends SvgComponent
     super(parent, "g", name, insertMode);
   }
 
-  // ~ Overrides SvgComponent.setPosition().
   public setPosition(xPixels: number, yPixels: number): void
   {
     // Use translate transformation because <g> element

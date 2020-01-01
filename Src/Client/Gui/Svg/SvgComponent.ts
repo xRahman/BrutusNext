@@ -29,12 +29,6 @@ export class SvgComponent extends Component
 
   // ---------------- Public methods --------------------
 
-  public setPosition(xPixels: number, yPixels: number): void
-  {
-    this.element.setAttribute("x", String(xPixels));
-    this.element.setAttribute("y", String(yPixels));
-  }
-
   public scale(scale: number): void
   {
     this.transform(`scale(${scale})`);
@@ -61,7 +55,8 @@ export namespace SvgComponent
     | "svg"
     | "g"
     | "image"
-    | "circle";
+    | "circle"
+    | "line";
 
   export function setWidthAndHeight
   (

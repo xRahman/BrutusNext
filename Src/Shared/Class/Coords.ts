@@ -4,39 +4,55 @@
   World [e, s, u] coordinates
 */
 
-// // Maps exit names to opposite directions.
-// const REVERSE_DIRS: { [key: string]: string} =
-// {
-//   'n':   's',
-//   'nw':  'se',
-//   'w':   'e',
-//   'sw':  'ne',
-//   's':   'n',
-//   'se':  'nw',
-//   'e':   'w',
-//   'ne':  'sw',
-//   // 'nu':  'sd',
-//   // 'nwu': 'sed',
-//   // 'wu':  'ed',
-//   // 'swu': 'ned',
-//   // 'su':  'nd',
-//   // 'seu': 'nwd',
-//   // 'eu':  'wd',
-//   // 'neu': 'swd',
-//   'u':   'd',
-//   // 'nd':  'su',
-//   // 'nwd': 'seu',
-//   // 'wd':  'eu',
-//   // 'swd': 'neu',
-//   // 'sd':  'nu',
-//   // 'sed': 'nwu',
-//   // 'ed':  'wu',
-//   // 'ned': 'swu',
-//   'd':   'u'
-// }
-
 export class Coords
 {
+  public static distance
+  (
+    from: Coords,
+    to: Coords
+  )
+  : 0 | 1 | "More than 1"
+  {
+    const eDistance = to.e - from.e;
+    const sDistance = to.s - from.s;
+    const uDistance = to.u - from.u;
+
+    if (eDistance === 0 && sDistance === 0 && uDistance === 0)
+      return 0;
+
+    if (eDistance <= 1 && sDistance <= 1 && uDistance <= 1)
+      return 1;
+
+    return "More than 1";
+  }
+
+  // Creates a string id unique to a given pair of coords
+  // regardless or their order (this is used to deduplicate
+  // room exits).
+  public static getExitId(from: Coords, to: Coords): string
+  {
+    if (from.e < to.e)
+      return joinCoordStrings(from, to);
+
+    if (from.e > to.e)
+      return joinCoordStrings(to, from);
+
+    if (from.s < to.s)
+      return joinCoordStrings(from, to);
+
+    if (from.s > to.s)
+      return joinCoordStrings(to, from);
+
+    if (from.u < to.u)
+      return joinCoordStrings(from, to);
+
+    if (from.u > to.u)
+      return joinCoordStrings(to, from);
+
+    // If both coords are equal, order doesn't matter.
+    return joinCoordStrings(from, to);
+  }
+
   constructor(public e = 0, public s = 0, public u = 0)
   {
   }
@@ -132,4 +148,11 @@ export class Coords
   // ---------------- Private methods -------------------
 
   // ---------------- Event handlers --------------------
+}
+
+// ----------------- Auxiliary Functions ---------------------
+
+function joinCoordStrings(from: Coords, to: Coords): string
+{
+  return `${from.toString()}-${to.toString()}`;
 }

@@ -11,6 +11,7 @@
 import { Gui } from "../../../Client/Gui/Gui";
 import { Component } from "../../../Client/Gui/Component";
 import { RoomsSvg } from "../../../Client/Gui/Map/RoomsSvg";
+import { ExitsSvg } from "../../../Client/Gui/Map/ExitsSvg";
 import { G } from "../../../Client/Gui/Svg/G";
 
 export class MapZoomer extends G
@@ -18,13 +19,14 @@ export class MapZoomer extends G
   private zoom = 1.0;
 
   private readonly roomsSvg: RoomsSvg;
+  private readonly exitsSvg: ExitsSvg;
 
   constructor(parent: Component, name = "map_zoomer")
   {
     super(parent, name);
 
-    // TODO: Víc než jedna rooma. A možná i pár exitů, když už v tom budu :)
     this.roomsSvg = Gui.setRoomsSvg(new RoomsSvg(this));
+    this.exitsSvg = Gui.setExitsSvg(new ExitsSvg(this));
   }
 
   public setZoom(zoomFactor: number): void

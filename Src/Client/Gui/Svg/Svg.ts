@@ -24,6 +24,12 @@ export class Svg extends SvgComponent
     SvgComponent.setWidthAndHeight(this.element, widthPixels, heightPixels);
   }
 
+  public setPosition(xPixels: number, yPixels: number): void
+  {
+    this.element.setAttribute("x", String(xPixels));
+    this.element.setAttribute("y", String(yPixels));
+  }
+
   public setRelativePosition(xPercent: number, yPercent: number): void
   {
     this.element.setAttribute("x", `${String(xPercent)}%`);

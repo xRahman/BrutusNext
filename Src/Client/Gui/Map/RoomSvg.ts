@@ -20,7 +20,7 @@ export class RoomSvg extends G
   constructor
   (
     parent: Component,
-    private room: Room | "Doesn't exist",
+    private readonly room: Room | "Doesn't exist",
     private readonly coords: Coords,
     name = "room"
   )
@@ -30,17 +30,20 @@ export class RoomSvg extends G
     this.setPosition(24 * coords.e, 24 * coords.s);
 
     this.backgroud = new Circle(this, "room_background");
-    this.backgroud.setRadius(Room.NONEXISTING_ROOM_PIXEL_SIZE * 0.6);
+    this.backgroud.setRadius(Room.DEFAULT_ROOM_PIXEL_SIZE * 0.6);
 
     this.updateRoomIcon();
-    this.assignEventListeners();
+    this.registerEventListeners();
   }
 
   // ---------------- Private methods -------------------
 
-  private assignEventListeners(): void
+  private registerEventListeners(): void
   {
-    this.element.onmouseup = (event) => { this.onMouseUp(event); };
+    this.element.onclick = (event) => { this.onLeftClick(event); };
+    this.element.oncontextmenu = (event) => { this.onRightClick(event); };
+    this.element.onmouseenter = (event) => { this.onMouseEnter(event); };
+    this.element.onmouseleave = (event) => { this.onMouseLeave(event); };
   }
 
   private updateRoomIcon(): void
@@ -71,39 +74,52 @@ export class RoomSvg extends G
 
   // ---------------- Event handlers --------------------
 
-  private onMouseUp(event: MouseEvent): void
-  {
-    switch (event.button)
-    {
-      case 0:
-        this.onLeftClick(event);
-        break;
-
-      case 2:
-        this.onRightClick(event);
-        break;
-
-      default:
-        break;
-    }
-  }
-
-  private onLeftClick(event: MouseEvent): void
+  protected onLeftClick(event: MouseEvent): void
   {
     if (this.room === "Doesn't exist")
     {
-      this.room = Editor.createRoom(this.coords);
-      this.updateRoomIcon();
+      // ! Throws exception on error.
+      Editor.createRoom(this.coords);
     }
   }
 
-  private onRightClick(event: MouseEvent): void
+  protected onRightClick(event: MouseEvent): void
   {
     if (this.room !== "Doesn't exist")
     {
+      // ! Throws exception on error.
       Editor.deleteRoom(this.room);
-      this.room = "Doesn't exist";
-      this.updateRoomIcon();
+      // TEST: Zkusím to udělat tak, že po každý změně Editor
+      /// zavolá GUI.updateMap().
+      // this.room = "Doesn't exist";
+      // this.updateRoomIcon();
+      /// TODO: updatnout exity.
+    }
+  }
+
+  protected onMouseEnter(event: MouseEvent): void
+  {
+    if (event.buttons === 1)   // Left mouse button down.
+    {
+      if (this.room === "Doesn't exist")
+        // ! Throws exception on error.
+        Editor.ensureRoomExists(this.coords);
+
+      if (Editor.lastSelectedCoords !== "Not set")
+        // ! Throws exception on error.
+        Editor.ensureRoomExists(Editor.lastSelectedCoords);
+
+      // ! Throws exception on error.
+      Editor.createExitTo(this.coords);
+    }
+  }
+
+  protected onMouseLeave(event: MouseEvent): void
+  {
+    if (event.buttons === 1)   // Left mouse button down.
+    {
+      // ! Throws exception on error.
+      Editor.lastSelectedCoords = this.coords;
     }
   }
 }
