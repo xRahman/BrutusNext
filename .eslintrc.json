@@ -670,7 +670,7 @@
       [
         "warn",
         {
-          "terms": [ "todo", "fixme", "test" ]
+          "terms": [ "todo", "fixme", "test", "debug" ]
         }
       ],
       // Disallow 'with' statements.
