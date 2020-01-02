@@ -121,6 +121,19 @@ Možná by exity měly přece jen vést na coords a ne na roomu.
   exity "na dálku".
 
 TODO: Vymyslet, jak mazat exity (nějak pohodlnějš než editací roomy).
+  - Asi to spojit se změnou metody mazání místností (obojí deletem při
+    mouseoveru). Díky tomu půjde dát na pravý myšítko něco jinýho (nejspíš
+    editace roomu).
+TODO: :hover pro exity (a možná i černej background).
+  - Na to asi budu potřebovat Componentu, abych jí mohl dát separátní css
+    (kdybych setoval css celýmu RoomSvg, měnil bych tím obě čáry).
+
+TODO: Zoomování mapy kolečkem myši
+
+TODO: Na editaci by se asi hodilo mít větší ikony room, aby se na ně líp
+  trefovalo.
+
+TODO: Výhledově by mělo bejt v editoru undo.
 
 ------------------------------------------------------------------------------
 
