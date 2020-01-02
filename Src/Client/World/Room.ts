@@ -35,6 +35,11 @@ export class Room
   {
   }
 
+  public hasExit(direction: Exit.Direction): boolean
+  {
+    return this.exits[direction].to !== "Nowhere";
+  }
+
   public setRoomInDirection
   (
     direction: Exit.Direction,

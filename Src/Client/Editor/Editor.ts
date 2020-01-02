@@ -4,10 +4,10 @@
   Client-side version of game world
 */
 
-import { Gui } from "../../Client/Gui/Gui";
 import { Coords } from "../../Shared/Class/Coords";
-import { Room } from "../../Client/World/Room";
 import { World } from "../../Client/World/World";
+import { Room } from "../../Client/World/Room";
+import { Exit } from "../../Client/World/Exit";
 
 export namespace Editor
 {
@@ -17,27 +17,23 @@ export namespace Editor
   export let lastSelectedCoords: Coords | "Not set" = "Not set";
 
   // ! Throws exception on error.
-  export function ensureRoomExists(coords: Coords): Room
+  export function ensureRoomExists
+  (
+    coords: Coords
+  )
+  : "Changes occured" | "No change was required"
   {
-    const existingRoom = World.getRoomAtCoords(coords);
+    const existingRoom = World.getRoom(coords);
 
     if (existingRoom === "Nothing there")
+    {
       // ! Throws exception on error.
-      return createRoom(coords);
+      World.setRoom(new Room(coords));
 
-    return existingRoom;
-  }
+      return "Changes occured";
+    }
 
-  // ! Throws exception on error.
-  export function createRoom(coords: Coords): Room
-  {
-    // ! Throws exception on error.
-    const newRoom = World.createRoom(coords);
-
-    // ! Throws exception on error.
-    Gui.updateMap();
-
-    return newRoom;
+    return "No change was required";
   }
 
   // ! Throws exception on error.
@@ -45,38 +41,73 @@ export namespace Editor
   {
     // ! Throws exception on error.
     World.deleteRoom(room);
-
-    // ! Throws exception on error.
-    Gui.updateMap();
   }
 
-  // ! Throws exception on error.
-  export function createExitTo(to: Coords): void
+  export function createConnectedRooms
+  (
+    from: Coords,
+    to: Coords
+  )
+  : "Changes occured" | "No change was required"
   {
-    if (lastSelectedCoords === "Not set")
-      return;
-
-    const from = lastSelectedCoords;
-
-    if (!canBuildExit(from, to))
-      return;
+    let result: "Changes occured" | "No change was required" =
+    "No change was required";
 
     // ! Throws exception on error.
-    World.createExit(from, to);
+    if (ensureRoomExists(from) === "Changes occured")
+      result = "Changes occured";
 
     // ! Throws exception on error.
-    Gui.updateMap();
+    if (ensureRoomExists(to) === "Changes occured")
+      result = "Changes occured";
+
+    if (connectRooms(from, to) === "Changes occured")
+      result = "Changes occured";
+
+    return result;
   }
 }
 
 // ----------------- Auxiliary Functions ---------------------
 
-function canBuildExit(from: Coords, to: Coords): boolean
+function connectRooms
+(
+  from: Coords,
+  to: Coords
+)
+: "Changes occured" | "No change was required"
 {
-  const distance = Coords.distance(from, to);
+  let result: "Changes occured" | "No change was required" =
+    "No change was required";
 
-  if (distance === 0 || distance === "More than 1")
-    return false;
+  const fromRoom = getRoom(from);
+  const toRoom = getRoom(to);
 
-  return true;
+  // ! Throws exception on error.
+  const direction = Exit.getDirection(from, to);
+  const reverseDirection = Exit.reverse(direction);
+
+  if (!fromRoom.hasExit(direction))
+  {
+    fromRoom.setRoomInDirection(direction, toRoom);
+    result = "Changes occured";
+  }
+
+  if (!toRoom.hasExit(reverseDirection))
+  {
+    toRoom.setRoomInDirection(reverseDirection, fromRoom);
+    result = "Changes occured";
+  }
+
+  return result;
+}
+
+function getRoom(coords: Coords): Room
+{
+  const room = World.getRoom(coords);
+
+  if (room === "Nothing there")
+    throw Error(`Room at coords ${coords.toString()} doesn't exist`);
+
+  return room;
 }

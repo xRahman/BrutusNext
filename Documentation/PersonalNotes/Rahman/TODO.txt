@@ -95,6 +95,18 @@ TODO: Když dragnu exit z neexistující roomy, tak se pokusí vytvořit
 TODO: Zkusit updatnout eslint, jestli neopravili chybu s export let x;
   (Editor.lastSelectedCoords).
 
+TODO: V RoomSvg.onMouseEnter() vyrábět exit pouze pokud ještě není
+  vyrobenej (respektive hlavně nepřegenerovávat mapu, pokud už exit
+  existuje, protože pak se pořád dokola posílá onmouseenter);
+
+TODO: Do event handlerů v RoomSvg dát funkce popisující, co se vlastně dělá.
+
+TODO: V RoomSvg místo Editor.areAdjacentCoords zavolat rovnou
+  Coords.areAdjacent() (bude ji třeba napsat místo Coords.distance().
+
+
+TODO: "No change was required" zkrátit na "No change" (to samý druhá hodnota)
+
 ------------------------------------------------------------------------------
 
 TODO: Zamyslet se nad exity do neexistujících místností

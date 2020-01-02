@@ -6,24 +6,19 @@
 
 export class Coords
 {
-  public static distance
-  (
-    from: Coords,
-    to: Coords
-  )
-  : 0 | 1 | "More than 1"
+  public static areAdjacent(c1: Coords, c2: Coords): boolean
   {
-    const eDistance = to.e - from.e;
-    const sDistance = to.s - from.s;
-    const uDistance = to.u - from.u;
+    const eDistance = Math.abs(c1.e - c2.e);
+    const sDistance = Math.abs(c1.s - c2.s);
+    const uDistance = Math.abs(c1.u - c2.u);
 
     if (eDistance === 0 && sDistance === 0 && uDistance === 0)
-      return 0;
+      return false;
 
     if (eDistance <= 1 && sDistance <= 1 && uDistance <= 1)
-      return 1;
+      return true;
 
-    return "More than 1";
+    return false;
   }
 
   // Creates a string id unique to a given pair of coords

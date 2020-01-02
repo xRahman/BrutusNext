@@ -116,7 +116,7 @@ function createRooms(roomsSvg: RoomsSvg): Map<string, ExitSvg.ExitData>
     for (let y = -3; y <= 3; y++)
     {
       const coords = new Coords(x, y, 0);
-      const room = World.getRoomAtCoords(coords);
+      const room = World.getRoom(coords);
 
       if (room === "Nothing there")
       {

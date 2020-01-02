@@ -48,10 +48,10 @@ export class Exit
       // ! Throws exception on error.
       return getVerticalDirection(uDistance);
 
+    // ! Throws exception on error.
     // Exits in horizontal direction are allowed to be sloping up or
     // down. It means that direction like [1, 1, 1] is "sout-east",
     // not "south-east-up".
-    // ! Throws exception on error.
     return getHorizontalDirection(eDistance, sDistance);
   }
 

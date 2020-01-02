@@ -7,6 +7,7 @@
 import { Coords } from "../../../Shared/Class/Coords";
 import { Room } from "../../../Client/World/Room";
 import { Editor } from "../../../Client/Editor/Editor";
+import { Gui } from "../../../Client/Gui/Gui";
 import { Component } from "../../../Client/Gui/Component";
 import { SvgImage } from "../../../Client/Gui/Svg/SvgImage";
 import { Circle } from "../../../Client/Gui/Svg/Circle";
@@ -79,7 +80,10 @@ export class RoomSvg extends G
     if (this.room === "Doesn't exist")
     {
       // ! Throws exception on error.
-      Editor.createRoom(this.coords);
+      const result = Editor.ensureRoomExists(this.coords);
+
+      if (result === "Changes occured")
+        Gui.updateMap();
     }
   }
 
@@ -89,37 +93,55 @@ export class RoomSvg extends G
     {
       // ! Throws exception on error.
       Editor.deleteRoom(this.room);
-      // TEST: Zkusím to udělat tak, že po každý změně Editor
-      /// zavolá GUI.updateMap().
-      // this.room = "Doesn't exist";
-      // this.updateRoomIcon();
-      /// TODO: updatnout exity.
+      Gui.updateMap();
     }
   }
 
   protected onMouseEnter(event: MouseEvent): void
   {
+    // DEBUG
+    console.log("onMouseEnter()", this.coords);
     if (event.buttons === 1)   // Left mouse button down.
     {
-      if (this.room === "Doesn't exist")
-        // ! Throws exception on error.
-        Editor.ensureRoomExists(this.coords);
+      const result = connectWithLastCoords(this.coords);
 
-      if (Editor.lastSelectedCoords !== "Not set")
-        // ! Throws exception on error.
-        Editor.ensureRoomExists(Editor.lastSelectedCoords);
-
-      // ! Throws exception on error.
-      Editor.createExitTo(this.coords);
+      if (result === "Changes occured")
+        Gui.updateMap();
     }
   }
 
   protected onMouseLeave(event: MouseEvent): void
   {
+    // DEBUG
+    console.log("onMouseLeave()", this.coords);
+
     if (event.buttons === 1)   // Left mouse button down.
     {
-      // ! Throws exception on error.
-      Editor.lastSelectedCoords = this.coords;
+      rememberCoords(this.coords);
     }
   }
+}
+
+// ----------------- Auxiliary Functions ---------------------
+
+function rememberCoords(coords: Coords): void
+{
+  Editor.lastSelectedCoords = coords;
+}
+
+function connectWithLastCoords
+(
+  newCoords: Coords
+)
+: "Changes occured" | "No change was required"
+{
+  if (Editor.lastSelectedCoords === "Not set")
+    return "No change was required";
+
+  const lastCoords = Editor.lastSelectedCoords;
+
+  if (!Coords.areAdjacent(lastCoords, newCoords))
+    return "No change was required";
+
+  return Editor.createConnectedRooms(lastCoords, newCoords);
 }
