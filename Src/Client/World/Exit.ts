@@ -23,10 +23,6 @@ const REVERSE_DIRECTION: { [direction in Exit.Direction]: Exit.Direction} =
 
 export class Exit
 {
-  private static readonly exitToNowhere = new Exit("Nowhere");
-
-  public static nowhere(): Exit { return Exit.exitToNowhere; }
-
   public static reverse(direction: Exit.Direction): Exit.Direction
   {
     return REVERSE_DIRECTION[direction];

@@ -171,10 +171,36 @@ function extractExitData
 
     if (exitData === undefined)
     {
+      // DEBUG
+      // console.log
+      // (
+      //   "Setting onedirectional exit",
+      //   exitName,
+      //   "from:",
+      //   from,
+      //   "to:",
+      //   to,
+      //   "exitId:",
+      //   exitId
+      // );
+
       exitsData.set(exitId, { from, to, bidirectional: false });
     }
     else
     {
+      // DEBUG
+      // console.log
+      // (
+      //   "Setting bidirectional exit",
+      //   exitName,
+      //   "from:",
+      //   from,
+      //   "to:",
+      //   to,
+      //   "exitId:",
+      //   exitId
+      // );
+
       exitsData.set(exitId, { from, to, bidirectional: true });
     }
   }

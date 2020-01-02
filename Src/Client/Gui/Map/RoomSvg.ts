@@ -99,24 +99,31 @@ export class RoomSvg extends G
 
   protected onMouseEnter(event: MouseEvent): void
   {
-    // DEBUG
-    console.log("onMouseEnter()", this.coords);
     if (event.buttons === 1)   // Left mouse button down.
     {
       const result = connectWithLastCoords(this.coords);
 
       if (result === "Changes occured")
+      {
+        // Gui.updateMap() will destroy all room svg components
+        // (including this one) and create new ones. If mouse
+        // moves fast, it can leave the room svg element before
+        // new one is create so the coords won't be remembered
+        // and the next room won't connect to this one. To prevent
+        // it we remember current coords when a new room is created.
+        rememberCoords(this.coords);
         Gui.updateMap();
+      }
     }
   }
 
   protected onMouseLeave(event: MouseEvent): void
   {
-    // DEBUG
-    console.log("onMouseLeave()", this.coords);
-
     if (event.buttons === 1)   // Left mouse button down.
     {
+      // DEBUG
+      console.log("Remembering coords", this.coords);
+
       rememberCoords(this.coords);
     }
   }

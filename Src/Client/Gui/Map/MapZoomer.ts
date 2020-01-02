@@ -25,8 +25,9 @@ export class MapZoomer extends G
   {
     super(parent, name);
 
-    this.roomsSvg = Gui.setRoomsSvg(new RoomsSvg(this));
+    // Order of creation determines drawing order.
     this.exitsSvg = Gui.setExitsSvg(new ExitsSvg(this));
+    this.roomsSvg = Gui.setRoomsSvg(new RoomsSvg(this));
   }
 
   public setZoom(zoomFactor: number): void

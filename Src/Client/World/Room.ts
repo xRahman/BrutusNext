@@ -19,16 +19,16 @@ export class Room
 
   public readonly exits: { [name: string]: Exit } =
   {
-    n: Exit.nowhere(),
-    ne: Exit.nowhere(),
-    e: Exit.nowhere(),
-    se: Exit.nowhere(),
-    s: Exit.nowhere(),
-    sw: Exit.nowhere(),
-    w: Exit.nowhere(),
-    nw: Exit.nowhere(),
-    u: Exit.nowhere(),
-    d: Exit.nowhere()
+    n: new Exit("Nowhere"),
+    ne: new Exit("Nowhere"),
+    e: new Exit("Nowhere"),
+    se: new Exit("Nowhere"),
+    s: new Exit("Nowhere"),
+    sw: new Exit("Nowhere"),
+    w: new Exit("Nowhere"),
+    nw: new Exit("Nowhere"),
+    u: new Exit("Nowhere"),
+    d: new Exit("Nowhere")
   };
 
   constructor(public readonly coords: Coords)

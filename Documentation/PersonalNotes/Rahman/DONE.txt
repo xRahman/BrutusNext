@@ -1,3 +1,10 @@
+TODO: Když jedu myší rychle, tak zjevně odjedu z nově vytvořené roomy
+  dřív, než se pro ni vytvoří element, a tudíž se nespustí onMouseLeave().
+- Co s tím?
+  Nejspíš nově vytvořenou roomu zapamatovat jako naposledy označenou.
+  - Jo, to pomohlo.
+[done]
+
 TODO: Cestu k ikoně hodit do Roomy (a číst ji z ní).
 [done]
 

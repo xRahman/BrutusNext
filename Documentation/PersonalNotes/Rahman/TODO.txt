@@ -104,8 +104,23 @@ TODO: Do event handlerů v RoomSvg dát funkce popisující, co se vlastně děl
 TODO: V RoomSvg místo Editor.areAdjacentCoords zavolat rovnou
   Coords.areAdjacent() (bude ji třeba napsat místo Coords.distance().
 
-
 TODO: "No change was required" zkrátit na "No change" (to samý druhá hodnota)
+
+TODO: Ze statickým metod v Coords, které nemusí být statické, udělat
+  instanční metody
+
+TODO: Assert, že vytvářenej exit nevede do stejný roomy
+
+TODO: Mazání roomy nemaže exity.
+- hmm a kdo ví, jestli to vůbec smaže to roomu. Když do ní totiž vedou
+  exity, tak se v nich na ni drží reference.
+  - aha, jasně. To znamená, že se asi dál vykreslujou jendosměrný exity.
+Možná by exity měly přece jen vést na coords a ne na roomu.
+- alternativně budu muset při mazání roomu odmazat ze všech room, které
+  do ní mají exit - což může bejt problém zjistit, pokud budou existovat
+  exity "na dálku".
+
+TODO: Vymyslet, jak mazat exity (nějak pohodlnějš než editací roomy).
 
 ------------------------------------------------------------------------------
 
