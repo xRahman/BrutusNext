@@ -1,3 +1,15 @@
+TODO: V RoomSvg.onMouseEnter() vyrábět exit pouze pokud ještě není
+  vyrobenej (respektive hlavně nepřegenerovávat mapu, pokud už exit
+  existuje, protože pak se pořád dokola posílá onmouseenter);
+[done]
+
+TODO: Do event handlerů v RoomSvg dát funkce popisující, co se vlastně dělá.
+[done]
+
+TODO: V RoomSvg místo Editor.areAdjacentCoords zavolat rovnou
+  Coords.areAdjacent() (bude ji třeba napsat místo Coords.distance().
+[done]
+
 TODO: Ze statických metod v Coords, které nemusí být statické, udělat
   instanční metody
 [done]
