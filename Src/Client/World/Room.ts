@@ -17,7 +17,7 @@ export class Room
     pixelSize: Room.DEFAULT_ROOM_PIXEL_SIZE
   };
 
-  public readonly exits: { [name: string]: Exit } =
+  public readonly exits: { [name in Exit.Direction]: Exit } =
   {
     n: new Exit("Nowhere"),
     ne: new Exit("Nowhere"),
@@ -35,9 +35,14 @@ export class Room
   {
   }
 
+  public getExit(direction: Exit.Direction): Exit
+  {
+    return this.exits[direction];
+  }
+
   public hasExit(direction: Exit.Direction): boolean
   {
-    return this.exits[direction].to !== "Nowhere";
+    return this.getExit(direction).to !== "Nowhere";
   }
 
   public setExitDestination
@@ -47,18 +52,13 @@ export class Room
   )
   : void
   {
-    this.exits[direction].to = coords;
+    this.getExit(direction).to = coords;
   }
 
   public deleteExitsTo(to: Coords): void
   {
-    for (const exitName in this.exits)
+    for (const exit of Object.values(this.exits))
     {
-      if (!this.exits.hasOwnProperty(exitName))
-        continue;
-
-      const exit = this.exits[exitName];
-
       if (exit.to === "Nowhere")
         continue;
 

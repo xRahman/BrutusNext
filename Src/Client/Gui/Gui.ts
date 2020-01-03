@@ -153,13 +153,8 @@ function extractExitData
 )
 : void
 {
-  for (const exitName in room.exits)
+  for (const exit of Object.values(room.exits))
   {
-    if (!room.exits.hasOwnProperty(exitName))
-      continue;
-
-    const exit = room.exits[exitName];
-
     if (exit.to === "Nowhere")
       continue;
 
