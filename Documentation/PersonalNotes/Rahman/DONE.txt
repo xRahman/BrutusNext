@@ -1,3 +1,6 @@
+TODO: Exity směřovat na Coords místo na Room
+[done]
+
 TODO: Editor přejmenovat na MapEditor
 [done]
 

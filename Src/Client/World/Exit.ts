@@ -5,7 +5,6 @@
 */
 
 import { Coords } from "../../Shared/Class/Coords";
-import { Room } from "../../Client/World/Room";
 
 const REVERSE_DIRECTION: { [direction in Exit.Direction]: Exit.Direction} =
 {
@@ -51,7 +50,7 @@ export class Exit
     return getHorizontalDirection(eDistance, sDistance);
   }
 
-  constructor (public to: Room | "Nowhere")
+  constructor (public to: Coords | "Nowhere")
   {
   }
 }

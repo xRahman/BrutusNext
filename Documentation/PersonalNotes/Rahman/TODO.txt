@@ -72,8 +72,6 @@ Možná by exity měly přece jen vést na coords a ne na roomu.
 - Exity směřované na coords taky vyřeší problém u automapy, že exit vede
   do neprozkoumané místnosti.
 
-TODO: Exity směřovat na Coords místo na Room
-
 TODO: Vymyslet, jak mazat exity (nějak pohodlnějš než editací roomy).
   - Asi to spojit se změnou metody mazání místností (obojí deletem při
     mouseoveru). Díky tomu půjde dát na pravý myšítko něco jinýho (nejspíš

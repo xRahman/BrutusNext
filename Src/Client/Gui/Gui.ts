@@ -164,7 +164,7 @@ function extractExitData
       continue;
 
     const from = room.coords;
-    const to = exit.to.coords;
+    const to = exit.to;
     const exitId = Coords.createExitId(from, to);
 
     const exitData = exitsData.get(exitId);

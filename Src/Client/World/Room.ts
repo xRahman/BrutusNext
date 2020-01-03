@@ -40,13 +40,13 @@ export class Room
     return this.exits[direction].to !== "Nowhere";
   }
 
-  public setRoomInDirection
+  public setExitDestination
   (
     direction: Exit.Direction,
-    targetRoom: Room | "Nowhere"
+    coords: Coords | "Nowhere"
   )
   : void
   {
-    this.exits[direction].to = targetRoom;
+    this.exits[direction].to = coords;
   }
 }

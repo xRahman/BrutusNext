@@ -99,13 +99,13 @@ function connectRooms
 
   if (!fromRoom.hasExit(direction))
   {
-    fromRoom.setRoomInDirection(direction, toRoom);
+    fromRoom.setExitDestination(direction, to);
     result = "Changes occured";
   }
 
   if (!toRoom.hasExit(reverseDirection))
   {
-    toRoom.setRoomInDirection(reverseDirection, fromRoom);
+    toRoom.setExitDestination(reverseDirection, from);
     result = "Changes occured";
   }
 
