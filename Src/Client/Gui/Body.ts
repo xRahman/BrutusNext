@@ -9,6 +9,7 @@
   handled by this class.
 */
 
+import { Editor } from "../../Client/Editor/Editor";
 import { Gui } from "../../Client/Gui/Gui";
 import { Window } from "../../Client/Gui/Window";
 import { LoginWindow } from "../../Client/Gui/Login/LoginWindow";
@@ -48,5 +49,12 @@ export class Body extends Component
   constructor()
   {
     super("No parent", document.body, "body");
+
+    this.element.onmouseup = (event) => { this.onMouseUp(event); };
+  }
+
+  private onMouseUp(event: MouseEvent): void
+  {
+    Editor.resetLastVisitedCoords();
   }
 }

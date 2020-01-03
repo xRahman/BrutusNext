@@ -85,9 +85,6 @@ IDEA: Možná bych pak vůbec nemusel exceptiony v handlerech ošetřovat, děla
 TODO: Odchytávat exeptiony v RoomSvg (nebo možná spíš v navěšování handlerů
   v Component).
 
-TODO: Pamatovat si lastSelectedRoom na konci onmouseenter() místo
-  onmouseleave()
-
 TODO: Zkusit updatnout eslint, jestli neopravili chybu s export let x;
   (Editor.lastSelectedCoords).
 

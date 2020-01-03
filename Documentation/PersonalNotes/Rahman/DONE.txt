@@ -1,3 +1,13 @@
+TODO: Pamatovat si lastSelectedRoom na konci onmouseenter() místo
+  onmouseleave()
+- tohle nepůjde. Když do místnosti vlezu myší bez lmb down, tak
+  se coords nezapamatujou.
+[won't do]
+
+TODO: V onmouseup() zapomenout zapamatované coords (protože jinak exit navazuje
+  na roomu, u které už to builder nečeká)
+[done]
+
 TODO: V Gui.updateMap() je třeba nejdřív vysypat obsah room a exitů v mapě.
 [done]
 

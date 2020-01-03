@@ -9,12 +9,24 @@ import { World } from "../../Client/World/World";
 import { Room } from "../../Client/World/Room";
 import { Exit } from "../../Client/World/Exit";
 
+let lastVisitedCoords: Coords | "Not set" = "Not set";
+
 export namespace Editor
 {
-  // This is an eslint false positive. Exported variable can be assigned
-  // from outside of this module.
-  // eslint-disable-next-line prefer-const
-  export let lastSelectedCoords: Coords | "Not set" = "Not set";
+  export function setLastVisitedCoords(coords: Coords): void
+  {
+    lastVisitedCoords = coords;
+  }
+
+  export function getLastVisitedCoords(): Coords | "Not set"
+  {
+    return lastVisitedCoords;
+  }
+
+  export function resetLastVisitedCoords(): void
+  {
+    lastVisitedCoords = "Not set";
+  }
 
   // ! Throws exception on error.
   export function ensureRoomExists

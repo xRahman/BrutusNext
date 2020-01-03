@@ -75,7 +75,7 @@ export class RoomSvg extends G
 
   // ---------------- Event handlers --------------------
 
-  protected onLeftClick(event: MouseEvent): void
+  private onLeftClick(event: MouseEvent): void
   {
     if (this.room === "Doesn't exist")
     {
@@ -87,7 +87,7 @@ export class RoomSvg extends G
     }
   }
 
-  protected onRightClick(event: MouseEvent): void
+  private onRightClick(event: MouseEvent): void
   {
     if (this.room !== "Doesn't exist")
     {
@@ -97,7 +97,7 @@ export class RoomSvg extends G
     }
   }
 
-  protected onMouseEnter(event: MouseEvent): void
+  private onMouseEnter(event: MouseEvent): void
   {
     if (event.buttons === 1)   // Left mouse button down.
     {
@@ -105,24 +105,25 @@ export class RoomSvg extends G
 
       if (result === "Changes occured")
       {
+        Gui.updateMap();
+
         // Gui.updateMap() will destroy all room svg components
         // (including this one) and create new ones. If mouse
-        // moves fast, it can leave the room svg element before
-        // new one is create so the coords won't be remembered
-        // and the next room won't connect to this one. To prevent
-        // it we remember current coords when a new room is created.
+        // pointer moves fast, it can leave the room svg element
+        // before new one is created so the onmouseleave() won't
+        // trigger and coords won't be remembered. So we do it here
+        // instead.
         rememberCoords(this.coords);
-        Gui.updateMap();
       }
     }
   }
 
-  protected onMouseLeave(event: MouseEvent): void
+  private onMouseLeave(event: MouseEvent): void
   {
     if (event.buttons === 1)   // Left mouse button down.
     {
       // DEBUG
-      console.log("Remembering coords", this.coords);
+      // console.log("Remembering coords", this.coords);
 
       rememberCoords(this.coords);
     }
@@ -133,7 +134,7 @@ export class RoomSvg extends G
 
 function rememberCoords(coords: Coords): void
 {
-  Editor.lastSelectedCoords = coords;
+  Editor.setLastVisitedCoords(coords);
 }
 
 function connectWithLastCoords
@@ -142,10 +143,10 @@ function connectWithLastCoords
 )
 : "Changes occured" | "No change was required"
 {
-  if (Editor.lastSelectedCoords === "Not set")
-    return "No change was required";
+  const lastCoords = Editor.getLastVisitedCoords();
 
-  const lastCoords = Editor.lastSelectedCoords;
+  if (lastCoords === "Not set")
+    return "No change was required";
 
   if (!Coords.areAdjacent(lastCoords, newCoords))
     return "No change was required";
