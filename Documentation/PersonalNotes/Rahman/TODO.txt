@@ -62,8 +62,7 @@ TODO: Odchytávat exeptiony v RoomSvg (nebo možná spíš v navěšování hand
   v Component).
 
 TODO: Mazání exitů pravým myšítkem
-
-TODO: Mazání roomů i exitů dragováním pravým myšítkem
+TODO: Mazání exitů dragováním pravým myšítkem
 
 TODO: :hover pro exity (a možná i černej background).
   - Na to asi budu potřebovat Componentu, abych jí mohl dát separátní css
@@ -78,9 +77,6 @@ TODO: Ještě jednou se zamyslet nad strukturou mapy
 - možná by se hodila komponenta pod MapZoomerem, do které se budou dávat
   Roomy a exity. Možná World?
   - mohl by v ní bejt třeba rozestup roomů (v MapZoomeru to moc nedává smysl)
-
-TODO: V Gui se cyklí skrz exity v roomě. Zamyslet se, jesti by to šlo
-  přesunout do Room.
 
 TODO: Vymyslet, jak zobrazovat exity up a down
 

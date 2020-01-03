@@ -1,3 +1,11 @@
+TODO: Mazání roomů dragováním pravým myšítkem
+[done]
+
+TODO: V Gui se cyklí skrz exity v roomě. Zamyslet se, jesti by to šlo
+  přesunout do Room
+- nedává to moc smysl.
+[won't do]
+
 TODO: Zoomování mapy kolečkem myši
 [done]
 

@@ -42,7 +42,7 @@ export class Room
 
   public hasExit(direction: Exit.Direction): boolean
   {
-    return this.getExit(direction).to !== "Nowhere";
+    return this.exits[direction].to !== "Nowhere";
   }
 
   public setExitDestination
@@ -52,7 +52,7 @@ export class Room
   )
   : void
   {
-    this.getExit(direction).to = coords;
+    this.exits[direction].to = coords;
   }
 
   public deleteExitsTo(to: Coords): void
