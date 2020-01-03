@@ -94,10 +94,6 @@ TODO: Do event handlerů v RoomSvg dát funkce popisující, co se vlastně děl
 TODO: V RoomSvg místo Editor.areAdjacentCoords zavolat rovnou
   Coords.areAdjacent() (bude ji třeba napsat místo Coords.distance().
 
-
-TODO: Ze statickým metod v Coords, které nemusí být statické, udělat
-  instanční metody
-
 TODO: Assert, že vytvářenej exit nevede do stejný roomy
 
 TODO: Mazání roomy nemaže exity.

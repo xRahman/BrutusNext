@@ -6,25 +6,10 @@
 
 export class Coords
 {
-  public static areAdjacent(c1: Coords, c2: Coords): boolean
-  {
-    const eDistance = Math.abs(c1.e - c2.e);
-    const sDistance = Math.abs(c1.s - c2.s);
-    const uDistance = Math.abs(c1.u - c2.u);
-
-    if (eDistance === 0 && sDistance === 0 && uDistance === 0)
-      return false;
-
-    if (eDistance <= 1 && sDistance <= 1 && uDistance <= 1)
-      return true;
-
-    return false;
-  }
-
   // Creates a string id unique to a given pair of coords
   // regardless or their order (this is used to deduplicate
   // room exits).
-  public static getExitId(from: Coords, to: Coords): string
+  public static createExitId(from: Coords, to: Coords): string
   {
     if (from.e < to.e)
       return joinCoordStrings(from, to);
@@ -122,6 +107,21 @@ export class Coords
   // }
 
   // ---------------- Public methods --------------------
+
+  public isAdjacentTo(coords: Coords): boolean
+  {
+    const eDistance = Math.abs(this.e - coords.e);
+    const sDistance = Math.abs(this.s - coords.s);
+    const uDistance = Math.abs(this.u - coords.u);
+
+    if (eDistance === 0 && sDistance === 0 && uDistance === 0)
+      return false;
+
+    if (eDistance <= 1 && sDistance <= 1 && uDistance <= 1)
+      return true;
+
+    return false;
+  }
 
   public getFlooredCoords(): Coords
   {

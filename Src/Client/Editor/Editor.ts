@@ -60,7 +60,7 @@ export namespace Editor
     from: Coords,
     to: Coords
   )
-  : "Changes occured" | "No change was required"
+  : "Changes occured" | "No change"
   {
     let result: "Changes occured" | "No change" = "No change";
 

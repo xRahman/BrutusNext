@@ -148,7 +148,7 @@ function connectWithLastCoords
   if (lastCoords === "Not set")
     return "No change";
 
-  if (!Coords.areAdjacent(lastCoords, newCoords))
+  if (!lastCoords.isAdjacentTo(newCoords))
     return "No change";
 
   return Editor.createConnectedRooms(lastCoords, newCoords);
