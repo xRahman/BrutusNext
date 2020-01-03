@@ -1,3 +1,6 @@
+TODO: Vyrobit room už v onmouseleave
+[done]
+
 TODO: Udělat Exit.nowhere(), což vrátí instanci exitu, kterej nikam nevede.
   Důvod: Časem bude potřeba look description v daném směru a bude lepší, když
     to bude ve standarní struktuře exitů.

@@ -126,6 +126,12 @@ export class RoomSvg extends G
       // console.log("Remembering coords", this.coords);
 
       rememberCoords(this.coords);
+
+      // ! Throws exception on error.
+      const result = Editor.ensureRoomExists(this.coords);
+
+      if (result === "Changes occured")
+        Gui.updateMap();
     }
   }
 }

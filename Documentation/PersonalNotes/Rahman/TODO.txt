@@ -98,8 +98,6 @@ TODO: :hover pro exity (a možná i černej background).
   - Na to asi budu potřebovat Componentu, abych jí mohl dát separátní css
     (kdybych setoval css celýmu RoomSvg, měnil bych tím obě čáry).
 
-TODO: Vyrobit room už v onmouseleave
-
 TODO: Zoomování mapy kolečkem myši
 
 TODO: Na editaci by se asi hodilo mít větší ikony room, aby se na ně líp
