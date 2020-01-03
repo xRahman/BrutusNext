@@ -61,21 +61,6 @@ IDEA: Možná bych pak vůbec nemusel exceptiony v handlerech ošetřovat, děla
 TODO: Odchytávat exeptiony v RoomSvg (nebo možná spíš v navěšování handlerů
   v Component).
 
-TODO: Mazání roomy nemaže exity.
-- hmm a kdo ví, jestli to vůbec smaže to roomu. Když do ní totiž vedou
-  exity, tak se v nich na ni drží reference.
-  - aha, jasně. To znamená, že se asi dál vykreslujou jendosměrný exity.
-Možná by exity měly přece jen vést na coords a ne na roomu.
-- alternativně budu muset při mazání roomu odmazat ze všech room, které
-  do ní mají exit - což může bejt problém zjistit, pokud budou existovat
-  exity "na dálku".
-- Exity směřované na coords taky vyřeší problém u automapy, že exit vede
-  do neprozkoumané místnosti.
-Otázka je, jestli při smazání roomy exity smazat chci.
-  Asi jo, exit do neexistující místnosti je beztak naprd (neměl by existovat).
-TODO: Při mazání roomy smazat exity, které do ní vedou.
-[done]
-
 TODO: Mazání exitů pravým myšítkem
 
 TODO: Mazání roomů i exitů dragováním pravým myšítkem
@@ -98,14 +83,19 @@ TODO: Ještě jednou se zamyslet nad strukturou mapy
 TODO: V Gui se cyklí skrz exity v roomě. Zamyslet se, jesti by to šlo
   přesunout do Room.
 
-TODO: Vymyslet, jak zobrazovat jednosměrné exity
-
 TODO: Vymyslet, jak zobrazovat exity up a down
+
+TODO: Zprovoznit editaci víc než jedný vrstvy
+- bude třeba "chození up a down" (a obecně asi chození po mapě, teď
+  se dá zobrazit jen omezenej výřez).
 
 ------------------------------------------------------------------------------
 
 Výhledové TODO
 ---------------
+
+TODO: Vymyslet, jak zobrazovat jednosměrné exity
+  Tohle zatím nepotřebuju, beztak budu chtít spíš buildit obousměrný exity.
 
 TODO: Až budu dělat teleporty (exity na větší vzdálenost než 1), tak do cílové
   roomy dát seznam místností, odkud se do ní dá teleportovat (mimo jiné

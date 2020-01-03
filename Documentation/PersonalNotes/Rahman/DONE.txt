@@ -1,3 +1,18 @@
+TODO: Mazání roomy nemaže exity.
+- hmm a kdo ví, jestli to vůbec smaže to roomu. Když do ní totiž vedou
+  exity, tak se v nich na ni drží reference.
+  - aha, jasně. To znamená, že se asi dál vykreslujou jendosměrný exity.
+Možná by exity měly přece jen vést na coords a ne na roomu.
+- alternativně budu muset při mazání roomu odmazat ze všech room, které
+  do ní mají exit - což může bejt problém zjistit, pokud budou existovat
+  exity "na dálku".
+- Exity směřované na coords taky vyřeší problém u automapy, že exit vede
+  do neprozkoumané místnosti.
+Otázka je, jestli při smazání roomy exity smazat chci.
+  Asi jo, exit do neexistující místnosti je beztak naprd (neměl by existovat).
+TODO: Při mazání roomy smazat exity, které do ní vedou.
+[done]
+
 TODO: Vymyslet, jak mazat exity (nějak pohodlnějš než editací roomy).
   - Asi to spojit se změnou metody mazání místností (obojí deletem při
     mouseoveru). Díky tomu půjde dát na pravý myšítko něco jinýho (nejspíš
