@@ -1,3 +1,6 @@
+TODO: "No change was required" zkrátit na "No change"
+[done]
+
 TODO: Pamatovat si lastSelectedRoom na konci onmouseenter() místo
   onmouseleave()
 - tohle nepůjde. Když do místnosti vlezu myší bez lmb down, tak

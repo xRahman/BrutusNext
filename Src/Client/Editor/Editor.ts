@@ -33,7 +33,7 @@ export namespace Editor
   (
     coords: Coords
   )
-  : "Changes occured" | "No change was required"
+  : "Changes occured" | "No change"
   {
     const existingRoom = World.getRoom(coords);
 
@@ -45,7 +45,7 @@ export namespace Editor
       return "Changes occured";
     }
 
-    return "No change was required";
+    return "No change";
   }
 
   // ! Throws exception on error.
@@ -62,8 +62,7 @@ export namespace Editor
   )
   : "Changes occured" | "No change was required"
   {
-    let result: "Changes occured" | "No change was required" =
-    "No change was required";
+    let result: "Changes occured" | "No change" = "No change";
 
     // ! Throws exception on error.
     if (ensureRoomExists(from) === "Changes occured")
@@ -87,10 +86,9 @@ function connectRooms
   from: Coords,
   to: Coords
 )
-: "Changes occured" | "No change was required"
+: "Changes occured" | "No change"
 {
-  let result: "Changes occured" | "No change was required" =
-    "No change was required";
+  let result: "Changes occured" | "No change" = "No change";
 
   const fromRoom = getRoom(from);
   const toRoom = getRoom(to);

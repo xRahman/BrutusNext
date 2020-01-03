@@ -141,15 +141,15 @@ function connectWithLastCoords
 (
   newCoords: Coords
 )
-: "Changes occured" | "No change was required"
+: "Changes occured" | "No change"
 {
   const lastCoords = Editor.getLastVisitedCoords();
 
   if (lastCoords === "Not set")
-    return "No change was required";
+    return "No change";
 
   if (!Coords.areAdjacent(lastCoords, newCoords))
-    return "No change was required";
+    return "No change";
 
   return Editor.createConnectedRooms(lastCoords, newCoords);
 }
