@@ -6,6 +6,11 @@
 
 export class Coords
 {
+  public static equals(c1: Coords, c2: Coords): boolean
+  {
+    return c1.e === c2.e && c1.s === c2.s && c1.u === c2.u;
+  }
+
   // Creates a string id unique to a given pair of coords
   // regardless or their order (this is used to deduplicate
   // room exits).
@@ -107,6 +112,32 @@ export class Coords
   // }
 
   // ---------------- Public methods --------------------
+
+  public getAdjacentCoords(): Array<Coords>
+  {
+    const adjacentCoords: Array<Coords> = [];
+
+    for (let e = -1; e <= 1; e++)
+    {
+      for (let s = -1; s <= 1; s++)
+      {
+        for (let u = -1; u <= 1; u++)
+        {
+          if (e === 0 && s === 0 && u === 0)
+            continue;
+
+          adjacentCoords.push(this.getShiftedCoords(e, s, u));
+        }
+      }
+    }
+
+    return adjacentCoords;
+  }
+
+  public getShiftedCoords(e: number, s: number, u: number): Coords
+  {
+    return new Coords(this.e + e, this.s + s, this.u + u);
+  }
 
   public isAdjacentTo(coords: Coords): boolean
   {

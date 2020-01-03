@@ -51,6 +51,8 @@ export namespace MapEditor
   // ! Throws exception on error.
   export function deleteRoom(room: Room): void
   {
+    deleteExitsTo(room);
+
     // ! Throws exception on error.
     World.deleteRoom(room);
   }
@@ -120,4 +122,17 @@ function getRoom(coords: Coords): Room
     throw Error(`Room at coords ${coords.toString()} doesn't exist`);
 
   return room;
+}
+
+function deleteExitsTo(room: Room): void
+{
+  const adjacentCoords = room.coords.getAdjacentCoords();
+
+  for (const coords of adjacentCoords)
+  {
+    const fromRoom = World.getRoom(coords);
+
+    if (fromRoom !== "Nothing there")
+      fromRoom.deleteExitsTo(room.coords);
+  }
 }

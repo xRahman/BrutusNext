@@ -1,3 +1,20 @@
+TODO: Vymyslet, jak mazat exity (nějak pohodlnějš než editací roomy).
+  - Asi to spojit se změnou metody mazání místností (obojí deletem při
+    mouseoveru). Díky tomu půjde dát na pravý myšítko něco jinýho (nejspíš
+    editace roomu).
+Problém: Dávalo by smysl mazání dragováním pravým myšítkem, stejně jak se
+  buildí dragováním levým myšítkem. V tom případě se ale nemůže mazat
+  mačkáním deletu.
+  - šlo by to držením deletu, ale to pravý myšítko je asi šikovnější.
+Bude to pravým myšítkem
+[done]
+
+TODO: ExitSvg by se možná měl jmenovat spíš RoomConnection.
+  Exit je ven z roomy...
+  I když, ono to je možná srozumitelný i takhle (jednosměrnej exit, obousměrnej
+  exit, atd.)
+[nechám to být]
+
 TODO: Exity směřovat na Coords místo na Room
 [done]
 

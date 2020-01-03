@@ -49,4 +49,21 @@ export class Room
   {
     this.exits[direction].to = coords;
   }
+
+  public deleteExitsTo(to: Coords): void
+  {
+    for (const exitName in this.exits)
+    {
+      if (!this.exits.hasOwnProperty(exitName))
+        continue;
+
+      const exit = this.exits[exitName];
+
+      if (exit.to === "Nowhere")
+        continue;
+
+      if (Coords.equals(exit.to, to))
+        exit.to = "Nowhere";
+    }
+  }
 }

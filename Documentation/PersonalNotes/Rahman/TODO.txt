@@ -71,11 +71,15 @@ Možná by exity měly přece jen vést na coords a ne na roomu.
   exity "na dálku".
 - Exity směřované na coords taky vyřeší problém u automapy, že exit vede
   do neprozkoumané místnosti.
+Otázka je, jestli při smazání roomy exity smazat chci.
+  Asi jo, exit do neexistující místnosti je beztak naprd (neměl by existovat).
+TODO: Při mazání roomy smazat exity, které do ní vedou.
+[done]
 
-TODO: Vymyslet, jak mazat exity (nějak pohodlnějš než editací roomy).
-  - Asi to spojit se změnou metody mazání místností (obojí deletem při
-    mouseoveru). Díky tomu půjde dát na pravý myšítko něco jinýho (nejspíš
-    editace roomu).
+TODO: Mazání exitů pravým myšítkem
+
+TODO: Mazání roomů i exitů dragováním pravým myšítkem
+
 TODO: :hover pro exity (a možná i černej background).
   - Na to asi budu potřebovat Componentu, abych jí mohl dát separátní css
     (kdybych setoval css celýmu RoomSvg, měnil bych tím obě čáry).
@@ -91,15 +95,22 @@ TODO: Ještě jednou se zamyslet nad strukturou mapy
   Roomy a exity. Možná World?
   - mohl by v ní bejt třeba rozestup roomů (v MapZoomeru to moc nedává smysl)
 
-TODO: ExitSvg by se možná měl jmenovat spíš RoomConnection.
-  Exit je ven z roomy...
-  I když, ono to je možná srozumitelný i takhle (jednosměrnej exit, obousměrnej
-  exit, atd.)
+TODO: V Gui se cyklí skrz exity v roomě. Zamyslet se, jesti by to šlo
+  přesunout do Room.
+
+TODO: Vymyslet, jak zobrazovat jednosměrné exity
+
+TODO: Vymyslet, jak zobrazovat exity up a down
 
 ------------------------------------------------------------------------------
 
 Výhledové TODO
 ---------------
+
+TODO: Až budu dělat teleporty (exity na větší vzdálenost než 1), tak do cílové
+  roomy dát seznam místností, odkud se do ní dá teleportovat (mimo jiné
+  kvůli tomu, aby se při smazání roomy daly invalidovat exity, který do ní
+  vedou (setjnout jim 'to' na 'nowhere').
 
 TODO: Výhledově by mělo bejt v editoru undo.
 
