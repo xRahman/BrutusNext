@@ -134,7 +134,7 @@ export class RoomSvg extends G
 
 function rememberCoords(coords: Coords): void
 {
-  Editor.setLastVisitedCoords(coords);
+  Editor.setLastCoords(coords);
 }
 
 function connectWithLastCoords
@@ -143,7 +143,7 @@ function connectWithLastCoords
 )
 : "Changes occured" | "No change"
 {
-  const lastCoords = Editor.getLastVisitedCoords();
+  const lastCoords = Editor.getLastCoords();
 
   if (lastCoords === "Not set")
     return "No change";

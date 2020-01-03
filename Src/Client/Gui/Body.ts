@@ -55,6 +55,6 @@ export class Body extends Component
 
   private onMouseUp(event: MouseEvent): void
   {
-    Editor.resetLastVisitedCoords();
+    Editor.resetLastCoords();
   }
 }

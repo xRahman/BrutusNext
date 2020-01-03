@@ -53,15 +53,7 @@ Ono teda popravdě přiřazovat ty handlery přímo na this.element
 
 TODO: U "line" nedává smysl setPosition().
 
-TODO: Parametrizovat rozestupy místností
-
-TODO: Udělat Exit.nowhere(), což vrátí instanci exitu, kterej nikam nevede.
-  Důvod: Časem bude potřeba look description v daném směru a bude lepší, když
-    to bude ve standarní struktuře exitů.
-  (exit to "Nowhere").
-
-TODO: Rozdělit funkci na distance a direction
-  (direction hodí exception když je distance 0).
+TODO: Parametrizovat rozestupy místností 
 
 TODO: Room.PIXEL_SIZE hodit zpět někam do GUI
   (A je to spíš ROOM_SPACING).
@@ -69,8 +61,6 @@ TODO: Room.PIXEL_SIZE hodit zpět někam do GUI
   (A hlavně to nemusím řešit teď).
 
 TODO: Editor přejmenovat na MapEditor
-
-TODO: Pořešit error handling v RoomSvg
 
 TODO: Ještě přece jen zvážit, že by se event handlery věšely rovnou
   na komponentu.
@@ -108,14 +98,19 @@ TODO: :hover pro exity (a možná i černej background).
   - Na to asi budu potřebovat Componentu, abych jí mohl dát separátní css
     (kdybych setoval css celýmu RoomSvg, měnil bych tím obě čáry).
 
+TODO: Vyrobit room už v onmouseleave
+
 TODO: Zoomování mapy kolečkem myši
 
 TODO: Na editaci by se asi hodilo mít větší ikony room, aby se na ně líp
   trefovalo.
 
-TODO: Výhledově by mělo bejt v editoru undo.
-
 ------------------------------------------------------------------------------
+
+Výhledové TODO
+---------------
+
+TODO: Výhledově by mělo bejt v editoru undo.
 
 TODO: Zamyslet se nad exity do neexistujících místností
 - v edit módu je to blbost, ale v mapper módu player vidí,

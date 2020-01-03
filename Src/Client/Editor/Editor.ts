@@ -9,23 +9,23 @@ import { World } from "../../Client/World/World";
 import { Room } from "../../Client/World/Room";
 import { Exit } from "../../Client/World/Exit";
 
-let lastVisitedCoords: Coords | "Not set" = "Not set";
+let lastCoords: Coords | "Not set" = "Not set";
 
 export namespace Editor
 {
-  export function setLastVisitedCoords(coords: Coords): void
+  export function setLastCoords(coords: Coords): void
   {
-    lastVisitedCoords = coords;
+    lastCoords = coords;
   }
 
-  export function getLastVisitedCoords(): Coords | "Not set"
+  export function getLastCoords(): Coords | "Not set"
   {
-    return lastVisitedCoords;
+    return lastCoords;
   }
 
-  export function resetLastVisitedCoords(): void
+  export function resetLastCoords(): void
   {
-    lastVisitedCoords = "Not set";
+    lastCoords = "Not set";
   }
 
   // ! Throws exception on error.

@@ -1,3 +1,13 @@
+TODO: Udělat Exit.nowhere(), což vrátí instanci exitu, kterej nikam nevede.
+  Důvod: Časem bude potřeba look description v daném směru a bude lepší, když
+    to bude ve standarní struktuře exitů.
+  (exit to "Nowhere").
+[done]
+
+TODO: Rozdělit funkci na distance a direction
+  (direction hodí exception když je distance 0).
+[done] 
+
 TODO: V RoomSvg.onMouseEnter() vyrábět exit pouze pokud ještě není
   vyrobenej (respektive hlavně nepřegenerovávat mapu, pokud už exit
   existuje, protože pak se pořád dokola posílá onmouseenter);
