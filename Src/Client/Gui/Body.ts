@@ -9,7 +9,7 @@
   handled by this class.
 */
 
-import { Editor } from "../../Client/Editor/Editor";
+import { MapEditor } from "../../Client/Editor/MapEditor";
 import { Gui } from "../../Client/Gui/Gui";
 import { Window } from "../../Client/Gui/Window";
 import { LoginWindow } from "../../Client/Gui/Login/LoginWindow";
@@ -55,6 +55,6 @@ export class Body extends Component
 
   private onMouseUp(event: MouseEvent): void
   {
-    Editor.resetLastCoords();
+    MapEditor.resetLastCoords();
   }
 }

@@ -24,19 +24,7 @@ How much to do in this batch?
   - čistě edit mód, jinej zatím vůbec neuvažovat.
 ------------------------------------------------------------------------------
 
-TODO: Prozatím navrdo setnuté rozměry světa.
-
-TODO: Data pro exity
-  - potřebuju classu Exit a musí mít idčko (klidně ho nafakovat).
-  - v roomě potřebuju 10 odkazů do příslušných směrů
-
-TODO: Zobrazení exitů
-
-TODO: Naklikávání exitů
-
-
-TODO: Vyrábění room dragnutím přes ně
- (ostatně když někam vyrobím exit, tak tak zjevně chci i roomu, že)
+TODO: Parametrizovat rozměry světa.
 
 TODO: V konstruktorech komponent dát parentům typ rodiče, ať se přes
   this.parent dají volat jeho metody.
@@ -60,8 +48,6 @@ TODO: Room.PIXEL_SIZE hodit zpět někam do GUI
   Rooma může mít klidně velikost, ale relativně (small, medium, large).
   (A hlavně to nemusím řešit teď).
 
-TODO: Editor přejmenovat na MapEditor
-
 TODO: Ještě přece jen zvážit, že by se event handlery věšely rovnou
   na komponentu.
 - mohly by to bejt settery, takže by se jmenovaly stejně jako v javascriptu
@@ -74,8 +60,6 @@ IDEA: Možná bych pak vůbec nemusel exceptiony v handlerech ošetřovat, děla
 
 TODO: Odchytávat exeptiony v RoomSvg (nebo možná spíš v navěšování handlerů
   v Component).
-
-TODO: Assert, že vytvářenej exit nevede do stejný roomy
 
 TODO: Mazání roomy nemaže exity.
 - hmm a kdo ví, jestli to vůbec smaže to roomu. Když do ní totiž vedou
@@ -102,6 +86,17 @@ TODO: Zoomování mapy kolečkem myši
 
 TODO: Na editaci by se asi hodilo mít větší ikony room, aby se na ně líp
   trefovalo.
+
+TODO: Ještě jednou se zamyslet nad strukturou mapy
+- potřebuju nutně kořenovou svg komponentu MapSvg?
+- možná by se hodila komponenta pod MapZoomerem, do které se budou dávat
+  Roomy a exity. Možná World?
+  - mohl by v ní bejt třeba rozestup roomů (v MapZoomeru to moc nedává smysl)
+
+TODO: ExitSvg by se možná měl jmenovat spíš RoomConnection.
+  Exit je ven z roomy...
+  I když, ono to je možná srozumitelný i takhle (jednosměrnej exit, obousměrnej
+  exit, atd.)
 
 ------------------------------------------------------------------------------
 

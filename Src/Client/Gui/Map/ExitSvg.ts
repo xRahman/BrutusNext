@@ -1,13 +1,11 @@
 /*
   Part of BrutusNEXT
 
-  Svg reprezentation of a room on the map
+  Svg reprezentation of a connection between rooms on the map
 */
 
 import { CssColor } from "../../../Client/Gui/CssColor";
 import { Coords } from "../../../Shared/Class/Coords";
-// import { Room } from "../../../Client/World/Room";
-// import { Editor } from "../../../Client/Editor/Editor";
 import { ExitsSvg } from "../../../Client/Gui/Map/ExitsSvg";
 import { Line } from "../../../Client/Gui/Svg/Line";
 import { G } from "../../../Client/Gui/Svg/G";

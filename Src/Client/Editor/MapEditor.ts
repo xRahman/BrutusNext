@@ -11,7 +11,7 @@ import { Exit } from "../../Client/World/Exit";
 
 let lastCoords: Coords | "Not set" = "Not set";
 
-export namespace Editor
+export namespace MapEditor
 {
   export function setLastCoords(coords: Coords): void
   {

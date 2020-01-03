@@ -1,3 +1,24 @@
+TODO: Editor přejmenovat na MapEditor
+[done]
+
+TODO: Data pro exity
+  - potřebuju classu Exit a musí mít idčko (klidně ho nafakovat).
+  - v roomě potřebuju 10 odkazů do příslušných směrů
+[done]
+
+TODO: Zobrazení exitů
+[done]
+
+TODO: Naklikávání exitů
+[done]
+
+TODO: Vyrábění room dragnutím přes ně
+ (ostatně když někam vyrobím exit, tak tak zjevně chci i roomu, že)
+[done]
+
+TODO: Assert, že vytvářenej exit nevede do stejný roomy
+[done]
+
 TODO: Vyrobit room už v onmouseleave
 [done]
 

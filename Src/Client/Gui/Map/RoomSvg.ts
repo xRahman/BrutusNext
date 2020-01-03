@@ -6,7 +6,7 @@
 
 import { Coords } from "../../../Shared/Class/Coords";
 import { Room } from "../../../Client/World/Room";
-import { Editor } from "../../../Client/Editor/Editor";
+import { MapEditor } from "../../../Client/Editor/MapEditor";
 import { Gui } from "../../../Client/Gui/Gui";
 import { Component } from "../../../Client/Gui/Component";
 import { SvgImage } from "../../../Client/Gui/Svg/SvgImage";
@@ -80,7 +80,7 @@ export class RoomSvg extends G
     if (this.room === "Doesn't exist")
     {
       // ! Throws exception on error.
-      const result = Editor.ensureRoomExists(this.coords);
+      const result = MapEditor.ensureRoomExists(this.coords);
 
       if (result === "Changes occured")
         Gui.updateMap();
@@ -92,7 +92,7 @@ export class RoomSvg extends G
     if (this.room !== "Doesn't exist")
     {
       // ! Throws exception on error.
-      Editor.deleteRoom(this.room);
+      MapEditor.deleteRoom(this.room);
       Gui.updateMap();
     }
   }
@@ -128,7 +128,7 @@ export class RoomSvg extends G
       rememberCoords(this.coords);
 
       // ! Throws exception on error.
-      const result = Editor.ensureRoomExists(this.coords);
+      const result = MapEditor.ensureRoomExists(this.coords);
 
       if (result === "Changes occured")
         Gui.updateMap();
@@ -140,7 +140,7 @@ export class RoomSvg extends G
 
 function rememberCoords(coords: Coords): void
 {
-  Editor.setLastCoords(coords);
+  MapEditor.setLastCoords(coords);
 }
 
 function connectWithLastCoords
@@ -149,7 +149,7 @@ function connectWithLastCoords
 )
 : "Changes occured" | "No change"
 {
-  const lastCoords = Editor.getLastCoords();
+  const lastCoords = MapEditor.getLastCoords();
 
   if (lastCoords === "Not set")
     return "No change";
@@ -157,5 +157,5 @@ function connectWithLastCoords
   if (!lastCoords.isAdjacentTo(newCoords))
     return "No change";
 
-  return Editor.createConnectedRooms(lastCoords, newCoords);
+  return MapEditor.createConnectedRooms(lastCoords, newCoords);
 }
