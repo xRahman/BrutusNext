@@ -69,13 +69,12 @@ TODO: :hover pro exity (a možná i černej background).
   - Na to asi budu potřebovat Componentu, abych jí mohl dát separátní css
     (kdybych setoval css celýmu RoomSvg, měnil bych tím obě čáry).
 
-TODO: Zoomování mapy kolečkem myši
-
 TODO: Na editaci by se asi hodilo mít větší ikony room, aby se na ně líp
   trefovalo.
 
 TODO: Ještě jednou se zamyslet nad strukturou mapy
 - potřebuju nutně kořenovou svg komponentu MapSvg?
+  Teď už ano, je na ni navěšený zoomování.
 - možná by se hodila komponenta pod MapZoomerem, do které se budou dávat
   Roomy a exity. Možná World?
   - mohl by v ní bejt třeba rozestup roomů (v MapZoomeru to moc nedává smysl)
@@ -89,10 +88,18 @@ TODO: Zprovoznit editaci víc než jedný vrstvy
 - bude třeba "chození up a down" (a obecně asi chození po mapě, teď
   se dá zobrazit jen omezenej výřez).
 
+TODO: V Gui asi míchám moc responsibility dohromady.
+- je to stavovej automat
+- vyrábí to svg mapy
+  - to by asi měla dělat svg komponenta s mapou. Gui na ni může mít odkaz.
+
 ------------------------------------------------------------------------------
 
 Výhledové TODO
 ---------------
+
+TODO: Přezoomování na jiný místo (tj. zoomIn() bude zároveň mapu centerovat
+  na pozici myši).
 
 TODO: Vymyslet, jak zobrazovat jednosměrné exity
   Tohle zatím nepotřebuju, beztak budu chtít spíš buildit obousměrný exity.

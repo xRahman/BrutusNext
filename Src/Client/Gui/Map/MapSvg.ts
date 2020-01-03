@@ -19,5 +19,22 @@ export class MapSvg extends SvgComponent
     // Use another svg component to translate the map to the center
     // of parent element.
     this.mapCenterer = new MapCenterer(this);
+
+    this.element.onwheel = (event) => { this.onWheel(event); };
+  }
+
+  // ---------------- Event handlers --------------------
+
+  private onWheel(event: WheelEvent): void
+  {
+    console.log("onWheel()");
+
+    event.preventDefault();
+
+    if (event.deltaY > 0)
+      this.mapCenterer.mapZoomer.zoomIn();
+
+    if (event.deltaY < 0)
+      this.mapCenterer.mapZoomer.zoomOut();
   }
 }

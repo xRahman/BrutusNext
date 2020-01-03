@@ -1,3 +1,6 @@
+TODO: Zoomování mapy kolečkem myši
+[done]
+
 TODO: Mazání roomy nemaže exity.
 - hmm a kdo ví, jestli to vůbec smaže to roomu. Když do ní totiž vedou
   exity, tak se v nich na ni drží reference.

@@ -15,7 +15,7 @@ import { Svg } from "../../../Client/Gui/Svg/Svg";
 
 export class MapCenterer extends Svg
 {
-  private readonly mapZoomer: MapZoomer;
+  public readonly mapZoomer: MapZoomer;
 
   constructor(parent: Component, name = "map_centerer")
   {
