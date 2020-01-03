@@ -70,8 +70,6 @@ TODO: Room.PIXEL_SIZE hodit zpět někam do GUI
 
 TODO: Editor přejmenovat na MapEditor
 
-TODO: V Gui.updateMap() je třeba nejdřív vysypat obsah room a exitů v mapě.
-
 TODO: Pořešit error handling v RoomSvg
 
 TODO: Ještě přece jen zvážit, že by se event handlery věšely rovnou
@@ -84,13 +82,11 @@ TODO: Když už v tom budu, tak můžu handlery automaticky obalovat
 IDEA: Možná bych pak vůbec nemusel exceptiony v handlerech ošetřovat, dělalo
   by se to automaticky.
 
-TODO: Gui.updateMap() volat asi rovnou z svg komponent. Bude pak z toho kódu
-  jasnější, co se děje.
-exeptiony - render z gui
+TODO: Odchytávat exeptiony v RoomSvg (nebo možná spíš v navěšování handlerů
+  v Component).
 
-TODO: Když dragnu exit z neexistující roomy, tak se pokusí vytvořit
-  a hodít to exception, že zdrojová rooma neexistuje (pochopitelně)
-  - asi ji automaticky vytvořit.
+TODO: Pamatovat si lastSelectedRoom na konci onmouseenter() místo
+  onmouseleave()
 
 TODO: Zkusit updatnout eslint, jestli neopravili chybu s export let x;
   (Editor.lastSelectedCoords).
@@ -119,6 +115,10 @@ Možná by exity měly přece jen vést na coords a ne na roomu.
 - alternativně budu muset při mazání roomu odmazat ze všech room, které
   do ní mají exit - což může bejt problém zjistit, pokud budou existovat
   exity "na dálku".
+- Exity směřované na coords taky vyřeší problém u automapy, že exit vede
+  do neprozkoumané místnosti.
+
+TODO: Exity směřovat na Coords místo na Room
 
 TODO: Vymyslet, jak mazat exity (nějak pohodlnějš než editací roomy).
   - Asi to spojit se změnou metody mazání místností (obojí deletem při
@@ -140,6 +140,11 @@ TODO: Výhledově by mělo bejt v editoru undo.
 TODO: Zamyslet se nad exity do neexistujících místností
 - v edit módu je to blbost, ale v mapper módu player vidí,
   že je v daném směru exit, ale ještě neví, kam vede.
+Good point - řeším zbývající jednosměrné exity po smazání roomy, to s tím
+  souvisí.
+- Asi by měl přibýt třetí stav exitu, tj. kromě one-way a two-way by mělo
+    být něco jako "at least one-way"
+  To ale budu řešit až v rámci automap módu.
 
 Change color of svg:
 https://css-tricks.com/change-color-of-svg-on-hover/

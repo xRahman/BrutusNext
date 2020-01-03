@@ -1,3 +1,15 @@
+TODO: V Gui.updateMap() je třeba nejdřív vysypat obsah room a exitů v mapě.
+[done]
+
+TODO: Gui.updateMap() volat asi rovnou z svg komponent. Bude pak z toho kódu
+  jasnější, co se děje.
+[done]
+
+TODO: Když dragnu exit z neexistující roomy, tak se pokusí vytvořit
+  a hodít to exception, že zdrojová rooma neexistuje (pochopitelně)
+  - asi ji automaticky vytvořit.
+[done]
+
 TODO: Když jedu myší rychle, tak zjevně odjedu z nově vytvořené roomy
   dřív, než se pro ni vytvoří element, a tudíž se nespustí onMouseLeave().
 - Co s tím?
