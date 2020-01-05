@@ -22,7 +22,11 @@ How much to do in this batch?
 - mouseover a selection na roomu a exitu
 - "naklikávání" mapy (zatím bez vyrábění dat na serveru)
   - čistě edit mód, jinej zatím vůbec neuvažovat.
+
 ------------------------------------------------------------------------------
+
+Optimalizace mapy:
+------------------
 
 TODO: Vytvořit WorldSvg
 
@@ -43,41 +47,12 @@ TODO: Cashování room elementů při updatu mapy
   nebudou vyrábět - místo toho se vezmou z cashe, nastaví se jim pozice,
   grafika atd. a odhidnou se.
 
-TODO: Udělat zátěžovej test renderování hromady kruhů v Pixi.js
-  http://scottmcdonnell.github.io/pixi-examples/index.html?s=basics&f=graphics.js&title=Graphics
-- udělal jsem a nic moc, s miliónem circlů má taky problémy (nejen je vyrobit, ale i rendering nic moc).
-- část problému je, že pixi.js nemá automatickej culling (takže si tím moc nepomůžu).
-
-TODO: Parametrizovat rozměry světa
-- hmm, ony to vlastně nejsou rozměry světa, ten žádnej limit nemá
-  (respektive je to MAX_INT, nebo tak něco). Je to "zábě" editoru.
-- nicméně svět rozměry má, je to velikost gridu. Tj. ideálně by mapa
-  měla koukat na nějaký minimální rozměry a když je svět větší, tak
-  koukat na celej svět.
-=> Nechám v gridu automatický počítání velikosti a přidám
-  velikost do World. Z tý si to bude brát Gui.updateMap().
-- tak nakonec ne. Nechám size jen v gridu, ať nemám nekonzistentní data.
-  Bude mít výchozí defaultní hodnotu, která se může zvětšit, když někdo
-  přidá roomu mimo výchozí oblast.
+------------------------------------------------------------------------------
 
 TODO: V createMap() v cyklu na vyrábění mapy oasertovat krajní hodnoty cyklu,
  abych nemohl vyrobit nekonečnej cyklus.
-
-TODO: Zjistit, kolik room by se mělo maximálně zobrazovat najednou.
-  (mapa přes celý okno a maximální zoon out).
-- 200x200 je v pohodě i v aktuálním max zoomu, ale to je 40.000 room
-  80x80 je přes celou obrazovku v zoom factoru 0.5 (což je rozumný minimum)
-- asi by se to dalo dynamicky počítat z rozestupů room a rozměrů map window
-  (respektive mapSvg komponenty).
-Další test:
-  rychlost rendoerování 500x500 room nehledě na rychlost loadování - SUCKS.
-  (a zabere to 2 GB paměti)
-=> Rozhodně nemůžu nasypat celej World do DOM, respektive teda určitě ne
-  všechny placeholdery na vyrábění roomů. Očividně to nemá clipování.
-TODO: Ještě zkusit renderovat to hidnutý.
-  Result: Když je v DOM 500x500 romů a viditelných je jen 10x10, tak to pořád
-  zoomuje trhaně.
-=> Setovat display: none tudíž nestačí.
+- tohle asi po optimalizaci nebude potřeba (respektive možná to bude
+  potřeba v novém cyklu)
 
 TODO: V konstruktorech komponent dát parentům typ rodiče, ať se přes
   this.parent dají volat jeho metody.

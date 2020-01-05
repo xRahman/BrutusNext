@@ -1,3 +1,34 @@
+TODO: Zjistit, kolik room by se mělo maximálně zobrazovat najednou.
+  (mapa přes celý okno a maximální zoom out).
+- 200x200 je v pohodě i v aktuálním max zoomu, ale to je 40.000 room
+  80x80 je přes celou obrazovku v zoom factoru 0.5 (což je rozumný minimum)
+- asi by se to dalo dynamicky počítat z rozestupů room a rozměrů map window
+  (respektive mapSvg komponenty).
+Další test:
+  rychlost renderování 500x500 room nehledě na rychlost loadování - SUCKS.
+  (a zabere to 2 GB paměti)
+=> Rozhodně nemůžu nasypat celej World do DOM, respektive teda určitě ne
+  všechny placeholdery na vyrábění roomů. Očividně to nemá clipování.
+TODO: Ještě zkusit renderovat to hidnutý.
+  Result: Když je v DOM 500x500 roomů a viditelných je jen 10x10, tak to pořád
+  zoomuje trhaně.
+=> Setovat display: "none" tudíž nestačí.
+[done]
+
+TODO: Udělat zátěžovej test renderování hromady kruhů v Pixi.js
+
+
+TODO: Udělat zátěžovej test renderování hromady kruhů v Pixi.js
+  http://scottmcdonnell.github.io/pixi-examples/index.html?s=basics&f=graphics.js&title=Graphics
+- udělal jsem a nic moc, s miliónem circlů má taky problémy
+  (nejen je vyrobit, ale i rendering nic moc).
+- část problému je, že pixi.js nemá automatickej culling
+  (takže si tím moc nepomůžu).
+=> Závěr je, že pixi.js to, celkem překvapivě, tak docela neřeší. Musel bych
+  udělat stejný optimalizace jako pro svg a s těma bude použitelný i svg.
+  - Takže kašlat na pixi.js
+[done]
+
 TODO: Mazání roomů dragováním pravým myšítkem
 [done]
 
