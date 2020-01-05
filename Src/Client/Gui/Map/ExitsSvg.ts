@@ -4,7 +4,7 @@
   Svg container for exits on the map
 */
 
-import { MapZoomer } from "../../../Client/Gui/Map/MapZoomer";
+import { WorldSvg } from "../../../Client/Gui/Map/WorldSvg";
 import { ExitSvg } from "../../../Client/Gui/Map/ExitSvg";
 import { G } from "../../../Client/Gui/Svg/G";
 
@@ -12,7 +12,7 @@ export class ExitsSvg extends G
 {
   private exits: Array<ExitSvg> = [];
 
-  constructor(parent: MapZoomer, name = "exits")
+  constructor(parent: WorldSvg, name = "exits")
   {
     super(parent, name);
   }

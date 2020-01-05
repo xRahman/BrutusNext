@@ -25,6 +25,19 @@ How much to do in this batch?
 
 ------------------------------------------------------------------------------
 
+TODO: Ještě jednou se zamyslet nad strukturou mapy
+- potřebuju nutně kořenovou svg komponentu MapSvg?
+  Teď už ano, je na ni navěšený zoomování.
+- možná by se hodila komponenta pod MapZoomerem, do které se budou dávat
+  Roomy a exity. Možná World?
+  - mohl by v ní bejt třeba rozestup roomů (v MapZoomeru to moc nedává smysl)
+
+- ještě bych mohl WorldSvg zdědit z MapZoomeru a MapPanneru. Pak by to fyzicky
+  byla jedna komponenta (není jich potřeba víc), ale kód by byl separovanej.
+  - problém je, že nemám vícenásobnou dědičnost. Zoomování by nemělo dědit
+    z panování a naopak (composition, možná?).
+
+
 Optimalizace mapy:
 ------------------
 
@@ -95,13 +108,6 @@ TODO: Mazání exitů dragováním pravým myšítkem
 TODO: :hover pro exity (a možná i černej background).
   - Na to asi budu potřebovat Componentu, abych jí mohl dát separátní css
     (kdybych setoval css celýmu RoomSvg, měnil bych tím obě čáry).
-
-TODO: Ještě jednou se zamyslet nad strukturou mapy
-- potřebuju nutně kořenovou svg komponentu MapSvg?
-  Teď už ano, je na ni navěšený zoomování.
-- možná by se hodila komponenta pod MapZoomerem, do které se budou dávat
-  Roomy a exity. Možná World?
-  - mohl by v ní bejt třeba rozestup roomů (v MapZoomeru to moc nedává smysl)
 
 TODO: Vymyslet, jak zobrazovat exity up a down
 

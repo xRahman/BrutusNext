@@ -10,12 +10,12 @@
 */
 
 import { Component } from "../../../Client/Gui/Component";
-import { MapZoomer } from "../../../Client/Gui/Map/MapZoomer";
+import { WorldSvg } from "../../../Client/Gui/Map/WorldSvg";
 import { Svg } from "../../../Client/Gui/Svg/Svg";
 
 export class MapCenterer extends Svg
 {
-  public readonly mapZoomer: MapZoomer;
+  public readonly mapZoomer: WorldSvg;
 
   constructor(parent: Component, name = "map_centerer")
   {
@@ -23,6 +23,6 @@ export class MapCenterer extends Svg
 
     this.setRelativePosition(50, 50);
 
-    this.mapZoomer = new MapZoomer(this);
+    this.mapZoomer = new WorldSvg(this);
   }
 }
