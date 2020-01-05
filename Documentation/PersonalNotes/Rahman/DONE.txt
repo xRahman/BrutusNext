@@ -1,3 +1,19 @@
+TODO: Vytvořit WorldSvg
+[done]
+
+TODO: Ještě jednou se zamyslet nad strukturou mapy
+- potřebuju nutně kořenovou svg komponentu MapSvg?
+  Teď už ano, je na ni navěšený zoomování.
+- možná by se hodila komponenta pod MapZoomerem, do které se budou dávat
+  Roomy a exity. Možná World?
+  - mohl by v ní bejt třeba rozestup roomů (v MapZoomeru to moc nedává smysl)
+- ještě bych mohl WorldSvg zdědit z MapZoomeru a MapPanneru. Pak by to fyzicky
+  byla jedna komponenta (není jich potřeba víc), ale kód by byl separovanej.
+  - problém je, že nemám vícenásobnou dědičnost. Zoomování by nemělo dědit
+    z panování a naopak (composition, možná?).
+Zdědil jsem World z MapZoomeru.
+[done]
+
 TODO: Zjistit, kolik room by se mělo maximálně zobrazovat najednou.
   (mapa přes celý okno a maximální zoom out).
 - 200x200 je v pohodě i v aktuálním max zoomu, ale to je 40.000 room

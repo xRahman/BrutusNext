@@ -25,23 +25,14 @@ How much to do in this batch?
 
 ------------------------------------------------------------------------------
 
-TODO: Ještě jednou se zamyslet nad strukturou mapy
-- potřebuju nutně kořenovou svg komponentu MapSvg?
-  Teď už ano, je na ni navěšený zoomování.
-- možná by se hodila komponenta pod MapZoomerem, do které se budou dávat
-  Roomy a exity. Možná World?
-  - mohl by v ní bejt třeba rozestup roomů (v MapZoomeru to moc nedává smysl)
-
-- ještě bych mohl WorldSvg zdědit z MapZoomeru a MapPanneru. Pak by to fyzicky
-  byla jedna komponenta (není jich potřeba víc), ale kód by byl separovanej.
-  - problém je, že nemám vícenásobnou dědičnost. Zoomování by nemělo dědit
-    z panování a naopak (composition, možná?).
-
+TODO: Obecnější parsování argumentů ze stringu
+- chtělo by to vyčítat hodnoty rovnou do properties výslednýho objektu.
+  (problém je, že bych ten objekt musel předat jako parametr,
+   abych mohl uvnitř parsovací funkce, zjistit, kolik má properties
+   a jak se jmenujou).
 
 Optimalizace mapy:
 ------------------
-
-TODO: Vytvořit WorldSvg
 
 TODO: Event hnadler ve WorldSvg
 

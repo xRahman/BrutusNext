@@ -1,3 +1,26 @@
+------------------------------------------------------------------------------
+
+Parsování argumentů ze stringu
+-------------------------------
+
+- umím vyparsovat string argumenty podle substringů
+- neumím je zkonvertit do požadovaných typů a vrátit je jako
+  rovnou použitelné proměnné.
+
+IDEA: Passnu parsovací funkci result object, do kterého to rovnou zapíše
+  (a zkontroluje, že se naparsovalo tolik argumentů, kolik má ten objekt
+   properties)
+  - mohly by se z jeho properties vyčítat i typy.
+  - případně bych do substringů mohl propašovat jména properties,
+    do kterých se mají atributy zapisovat. Něco ve stylu:
+scan("A 1 B 2", result, [ "A ", [ "a" ], " B " [ "b" ]);
+  - nebo ta jména propašovat do stringu, nějak takhle:
+scan("A 1 B 2", result, "A ${a} B ${b}");
+  (result by byl typu { a, b }).
+  - nebo takhle:
+scan("A 1 B 2", result, "A ", "${result.a}", " B ", "${result.b}");
+
+------------------------------------------------------------------------------
 
 Prostudovat:
 https://medium.com/better-programming/event-delegation-in-javascript-boost-your-app-performance-5f10f25cec96

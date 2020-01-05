@@ -4,6 +4,8 @@
   World [e, s, u] coordinates
 */
 
+import { StringUtils } from "../../Shared/Utils/StringUtils";
+
 export class Coords
 {
   public static equals(c1: Coords, c2: Coords): boolean
@@ -38,11 +40,18 @@ export class Coords
     return joinCoordStrings(from, to);
   }
 
+  public static fromString(coordsString: string): Coords
+  {
+    const coords = parseCoordsString(coordsString);
+
+    return new Coords(coords.e, coords.s, coords.u);
+  }
+
   constructor
   (
-    public readonly e = 0,
-    public readonly s = 0,
-    public readonly u = 0
+    public readonly e: number,
+    public readonly s: number,
+    public readonly u: number
   )
   {
   }
@@ -186,4 +195,30 @@ export class Coords
 function joinCoordStrings(from: Coords, to: Coords): string
 {
   return `${from.toString()}-${to.toString()}`;
+}
+
+// ! Throws exception on error.
+function parseCoordsString(coords: string): { e: number, s: number, u: number }
+{
+  const format = [ "[ e: ", ", s: ", " u: ", " ]" ];
+  // ! Throws exception on error.
+  const values = StringUtils.splitBySubstrings(coords, ...format);
+
+  if (values.length !== 3)
+  {
+    throw Error(`Failed to parse coords from string '${coords}' because`
+      + ` it doesn't match expected format ${format.join("%d")}`);
+  }
+
+  const e = Number(values[0]);
+  const s = Number(values[0]);
+  const u = Number(values[0]);
+
+  if (Number.isNaN(e) || Number.isNaN(s) || Number.isNaN(u))
+  {
+    throw Error(`Failed to parse coords from string '${coords}' because`
+    + ` at least one of the values is not a number`);
+  }
+
+  return { e, s, u };
 }
