@@ -10,10 +10,11 @@ import { Exit } from "../../Client/World/Exit";
 export class Room
 {
   public static readonly DEFAULT_ROOM_PIXEL_SIZE = 10;
+  public static readonly DEFAULT_ROOM_ICON = "Images/Rooms/Circle.svg";
 
   public readonly icon =
   {
-    path: "Images/Rooms/Circle.svg",
+    path: Room.DEFAULT_ROOM_ICON,
     pixelSize: Room.DEFAULT_ROOM_PIXEL_SIZE
   };
 

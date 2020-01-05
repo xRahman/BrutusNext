@@ -1,3 +1,12 @@
+TODO: Zviditelňování room icony při vyrobení roomy
+[done]
+
+TODO: Event delegation (event hnadler ve WorldSvg)
+[done]
+
+TODO: Smazat roomu, když do ní kliknu a vyjedu myší ven.
+[done]
+
 TODO: Vytvořit WorldSvg
 [done]
 

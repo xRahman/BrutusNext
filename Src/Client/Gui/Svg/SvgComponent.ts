@@ -4,16 +4,15 @@
    Ancestor of all SVG components.
 */
 
+import { SvgElement } from "../../../Client/Gui/Svg/SvgElement";
 import { Component } from "../../../Client/Gui/Component";
-
-const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
 
 export class SvgComponent extends Component
 {
   constructor
   (
     parent: Component,
-    componentType: SvgComponent.Type,
+    elementType: SvgElement.Type,
     name: string,
     insertMode = Component.InsertMode.APPEND
   )
@@ -21,7 +20,7 @@ export class SvgComponent extends Component
     super
     (
       parent,
-      document.createElementNS(SVG_NAMESPACE, componentType),
+      SvgElement.create(elementType),
       name,
       insertMode
     );
@@ -31,42 +30,11 @@ export class SvgComponent extends Component
 
   public scale(scale: number): void
   {
-    this.transform(`scale(${scale})`);
+    SvgElement.scale(this.element as SVGElement, scale);
   }
 
   public translate(xPixels: number, yPixels: number): void
   {
-    this.transform(`translate(${xPixels}, ${yPixels})`);
-  }
-
-  // ---------------- Private methods -------------------
-
-  private transform(transform: string): void
-  {
-    this.element.setAttribute("transform", transform);
-  }
-}
-
-// ------------------ Type Declarations ----------------------
-
-export namespace SvgComponent
-{
-  export type Type =
-    | "svg"
-    | "g"
-    | "image"
-    | "circle"
-    | "line";
-
-  export function setWidthAndHeight
-  (
-    element: HTMLElement | SVGElement,
-    widthPixels: number,
-    heightPixels: number
-  )
-  : void
-  {
-    element.setAttribute("width", String(widthPixels));
-    element.setAttribute("height", String(heightPixels));
+    SvgElement.translate(this.element as SVGElement, xPixels, yPixels);
   }
 }

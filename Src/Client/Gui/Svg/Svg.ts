@@ -5,6 +5,7 @@
 */
 
 import { Component } from "../../../Client/Gui/Component";
+import { SvgElement } from "../../../Client/Gui/Svg/SvgElement";
 import { SvgComponent } from "../../../Client/Gui/Svg/SvgComponent";
 
 export class Svg extends SvgComponent
@@ -21,7 +22,12 @@ export class Svg extends SvgComponent
 
   public setSize(widthPixels: number, heightPixels: number): void
   {
-    SvgComponent.setWidthAndHeight(this.element, widthPixels, heightPixels);
+    SvgElement.setWidthAndHeight
+    (
+      this.element as SVGElement,
+      widthPixels,
+      heightPixels
+    );
   }
 
   public setPosition(xPixels: number, yPixels: number): void

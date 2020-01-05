@@ -5,9 +5,9 @@
 */
 
 import { Component } from "../../../Client/Gui/Component";
+import { SvgElement } from "../../../Client/Gui/Svg/SvgElement";
+import { SvgImageElement } from "../../../Client/Gui/Svg/SvgImageElement";
 import { SvgComponent } from "../../../Client/Gui/Svg/SvgComponent";
-
-const SVG_XLINK_NAMESPACE = "http://www.w3.org/1999/xlink";
 
 export class SvgImage extends SvgComponent
 {
@@ -43,11 +43,16 @@ export class SvgImage extends SvgComponent
 
   public setImage(path: string): void
   {
-    this.element.setAttributeNS(SVG_XLINK_NAMESPACE, "href", path);
+    SvgImageElement.setTexture(this.element as SVGImageElement, path);
   }
 
   public setSize(widthPixels: number, heightPixels: number): void
   {
-    SvgComponent.setWidthAndHeight(this.element, widthPixels, heightPixels);
+    SvgElement.setWidthAndHeight
+    (
+      this.element as SVGElement,
+      widthPixels,
+      heightPixels
+    );
   }
 }

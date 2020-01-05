@@ -49,12 +49,23 @@ export namespace MapEditor
   }
 
   // ! Throws exception on error.
-  export function deleteRoom(room: Room): void
+  export function deleteRoomIfExists
+  (
+    coords: Coords
+  )
+  : "Changes occured" | "No change"
   {
+    const room = World.getRoom(coords);
+
+    if (room === "Nothing there")
+      return "No change";
+
     deleteExitsTo(room);
 
     // ! Throws exception on error.
     World.deleteRoom(room);
+
+    return "Changes occured";
   }
 
   export function createConnectedRooms
