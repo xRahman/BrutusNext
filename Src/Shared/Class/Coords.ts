@@ -38,7 +38,12 @@ export class Coords
     return joinCoordStrings(from, to);
   }
 
-  constructor(public e = 0, public s = 0, public u = 0)
+  constructor
+  (
+    public readonly e = 0,
+    public readonly s = 0,
+    public readonly u = 0
+  )
   {
   }
 

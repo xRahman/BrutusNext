@@ -14,8 +14,8 @@ import { RoomsSvg } from "../../../Client/Gui/Map/RoomsSvg";
 import { ExitsSvg } from "../../../Client/Gui/Map/ExitsSvg";
 import { G } from "../../../Client/Gui/Svg/G";
 
-const MINIMUM_ZOOM = 0.2;
-const MAXIMUM_ZOOM = 2;
+const MINIMUM_ZOOM_FACTOR = 0.5;
+const MAXIMUM_ZOOM_FACTOR = 2;
 const ZOOM_STEP = 0.2;
 
 export class MapZoomer extends G
@@ -38,11 +38,11 @@ export class MapZoomer extends G
   {
     this.zoom = zoomFactor;
 
-    if (this.zoom < MINIMUM_ZOOM)
-      this.zoom = MINIMUM_ZOOM;
+    if (this.zoom < MINIMUM_ZOOM_FACTOR)
+      this.zoom = MINIMUM_ZOOM_FACTOR;
 
-    if (this.zoom > MAXIMUM_ZOOM)
-      this.zoom = MAXIMUM_ZOOM;
+    if (this.zoom > MAXIMUM_ZOOM_FACTOR)
+      this.zoom = MAXIMUM_ZOOM_FACTOR;
 
     this.scale(zoomFactor);
   }

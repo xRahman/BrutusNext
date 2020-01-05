@@ -1,3 +1,62 @@
+
+Prostudovat:
+https://medium.com/better-programming/event-delegation-in-javascript-boost-your-app-performance-5f10f25cec96
+https://ehsangazar.com/optimizing-javascript-event-listeners-for-performance-e28406ad406c
+https://ehsangazar.com/javascript-tips-for-performance-ee53239ae12d
+
+Problémy s výkonem svg
+----------------------
+
+Možnosti:
+
+1) Použít pixi.js
+  http://scottmcdonnell.github.io/pixi-examples/index.html?s=demos&f=interactivity.js&title=Interactivity
+
+2) Udržovat v DOM jen elementy, který můžou bejt vidět, a přiávat je
+   přes insertHtml().
+
+Problém: Když všechno vyrobím najednou přes insertHtml, tak nebudu mít
+  komponenty a na ně navěšený event handlery
+  (to je možná důvod, proč je to pomalý, a proč to žere tolik paměti).
+
+Ok, takže nejdřív zkusit mít event handlery na parentovi.
+
+3) Cashovat svg elementy
+- tj. nemazat je, reusovat je. A to i při přepínání pater.
+
+4) Pokud nebudou event handlery na RoomSvg komponentách,
+  tak je asi zbytečný ty komponenty vyrábět. Budou jich tisíce, takže
+  to sežere spoustu paměti.
+=> Mít komponenty pouze na kontejnery (RoomsSvg, ExitsSvg) a to,
+   co je uvnitř, vyrábět ručně.
+- v kontejneru si pořád můžu držet odkazy na jednotlivý elementy,
+  abych s nima mohl manipulovat.
+
+5) Použít document.createDocumentFragment()
+https://coderwall.com/p/o9ws2g/why-you-should-always-append-dom-elements-using-documentfragments
+- nebo alternativně vyrobit nejdřív parent element, nedávat ho do DOM,
+  nainsertovat do něj všechny children a až pak appendnout parenta do DOM
+
+Vidím to takhle:
+- určitě optimalizovat vytváření
+  - nevyrábět komponentu pro každou roomu
+  - mít jen jeden event handler
+  - sázet to do kontejneru mimo DOM a ten pak appendnout do DOM
+    (appendovat přes javascript bude asi nejrychlejší)
+- reusovat komponenty, minimálně teda ty pro neexistující roomy.
+  Při přegenerování mapy se černejm tečkám nastavěj jen nový pozice
+    a coords.
+- z velikosti MapSvg a rozestupu roomů počítat, kolik jich je vidět při
+  maximálním zoomu.
+- Otázka je, jestli při panování mapy vždycky roomy na jedný straně umazat
+  a na druhý vyrobit, nebo i tady reusnout komponenty (prostě je posunout
+  na druhou stranu).
+  - minimálně dummy roomy by asi šlo reusovat i tady.
+
+Ha! Zoomování browseru přes ctrl+wheel mi do toho kupodivu vidle
+  nehodí, protože jsem ho zjevně zakázal. Což je fajn, scalování
+  fontů si můžu udělat interně.
+
 ------------------------------------------------------------------------------
 
 Data vs GUI

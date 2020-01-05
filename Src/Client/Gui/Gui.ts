@@ -102,6 +102,23 @@ export namespace Gui
 
 function createRoomsAndExits(roomsSvg: RoomsSvg, exitsSvg: ExitsSvg): void
 {
+  /*
+  // TEST
+
+  let svg = "";
+
+  for (let i = 0; i < 200000; i++)
+  {
+    svg += `<circle cx="${20 * (i - 5000)}" cy="50" r="40" stroke="black"`;
+    svg += ` stroke-width="3" fill="red" />`;
+  }
+
+  if (components.roomsSvg === "Not assigned")
+    return;
+
+  components.roomsSvg.insertHtml(svg);
+  */
+
   const exitsData = createRooms(roomsSvg);
 
   createExits(exitsData, exitsSvg);
@@ -109,13 +126,23 @@ function createRoomsAndExits(roomsSvg: RoomsSvg, exitsSvg: ExitsSvg): void
 
 function createRooms(roomsSvg: RoomsSvg): Map<string, ExitSvg.ExitData>
 {
+  const minimumCoords = World.getMinimumCoords();
+  const maximumCoords = World.getMaximumCoords();
   const exitsData = new Map<string, ExitSvg.ExitData>();
 
-  for (let x = -3; x <= 3; x++)
+  // DEBUG
+  console.log(minimumCoords, maximumCoords);
+
+  // Order of cycles determines oder of svg components representing
+  // rooms in the DOM. Since people usually expects rows of things
+  // rather than columns, we iterate nort-south direction first.
+  for (let s = minimumCoords.s; s <= maximumCoords.s; s++)
   {
-    for (let y = -3; y <= 3; y++)
+    for (let e = minimumCoords.e; e <= maximumCoords.e; e++)
     {
-      const coords = new Coords(x, y, 0);
+      // The world is 3d but map only 2e - we show only
+      // one horizontal slice of the world at a time.
+      const coords = new Coords(e, s, 0);
       const room = World.getRoom(coords);
 
       if (room === "Nothing there")

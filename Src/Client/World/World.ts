@@ -33,4 +33,7 @@ export namespace World
     // ! Throws exception on error.
     grid.delete(room.coords);
   }
+
+  export function getMinimumCoords(): Coords { return grid.mininumCoords; }
+  export function getMaximumCoords(): Coords { return grid.maximumCoords; }
 }

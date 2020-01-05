@@ -28,10 +28,23 @@ export class Grid<T>
 
   private readonly data = new Map<number, Map<number, Map<number, T>>>();
 
-  // Point in array with smallest 'e', 's' and 'u'
-  private min = new Coords();
-  // Point in array with largest 'e', 's' and 'u'.
-  private max = new Coords();
+  // Grid size increases automaticaly when an item with coords outside
+  // this box is inserted to it.
+  private readonly size =
+  {
+    // min: new Coords(-30, -30, -30),
+    // max: new Coords(30, 30, 30)
+    min: new Coords(-40, -40, -40),
+    max: new Coords(40, 40, 40)
+    // min: new Coords(-50, -50, -50),
+    // max: new Coords(50, 50, 50)
+    // min: new Coords(-75, -75, -75),
+    // max: new Coords(75, 75, 75)
+    // min: new Coords(-100, -100, -10),
+    // max: new Coords(100, 100, 10)
+    // min: new Coords(-250, -250, -10),
+    // max: new Coords(250, 250, 10)
+  };
 
   // --------------- Static accessors -------------------
 
@@ -39,12 +52,26 @@ export class Grid<T>
 
   // --------------- Public accessors -------------------
 
-  // Size of the array on 'e-w' axis.
-  public get length(): number { return this.max.e - this.min.e; }
-  // Size of the array on 'n-s' axis.
-  public get width(): number { return this.max.s - this.min.s; }
-  // Size of the array on 'u-d' axis.
-  public get height(): number { return this.max.u - this.min.u; }
+  public get mininumCoords(): Coords { return this.size.min; }
+  public get maximumCoords(): Coords { return this.size.max; }
+
+  // Size of the array on 'east-west' axis.
+  public get eSize(): number
+  {
+    return this.size.max.e - this.size.min.e;
+  }
+
+  // Size of the array on 'north-south' axis.
+  public get sSize(): number
+  {
+    return this.size.max.s - this.size.min.s;
+  }
+
+  // Size of the array on 'up-down' axis.
+  public get uSize(): number
+  {
+    return this.size.max.u - this.size.min.u;
+  }
 
   // ---------------- Public methods --------------------
 
@@ -100,8 +127,8 @@ export class Grid<T>
 
   // ! Throws exception on error.
   // Deletes 'item' at position [e, s, u].
-  // Grid size is not changed by this operation so it might be
-  // bigger than necessary afterwards.
+  //   Grid size is not changed by this operation because
+  // it would be nontrivial operation.
   public delete(coords: Coords): void
   {
     const flooredCoords = coords.getFlooredCoords();
@@ -120,65 +147,23 @@ export class Grid<T>
       throw failedToDelete(coords);
   }
 
-  /// This works (hopefuly) but it's not needed after all.
-  // public getItemsInDepth(depth: number): Array<T>
-  // {
-  //   const items: Array<T> = [];
-
-  //   const horizontalSlice = this.data.get(Math.floor(depth));
-
-  //   if (horizontalSlice === undefined)
-  //     return items;
-
-  //   for (const eastWestLine of horizontalSlice.values())
-  //   {
-  //     for (const item of eastWestLine.values())
-  //     {
-  //       items.push(item);
-  //     }
-  //   }
-
-  //   return items;
-  // }
-
-  /// This works (hopefuly) but it's not needed after all.
-  // public getHorizontalSlice
-  // (
-  //   depth: number
-  // )
-  // : Map<number, Map<number, T>> | "Nothing there"
-  // {
-  //   const horizontalSlice = this.data.get(Math.floor(depth));
-
-  //   if (horizontalSlice === undefined)
-  //     return "Nothing there";
-
-  //   return horizontalSlice;
-  // }
-
-  // --------------- Protected methods ------------------
-
   // ---------------- Private methods -------------------
 
   private includeToGridSize(coords: Coords): void
   {
-    if (this.min.e > coords.e)
-      this.min.e = coords.e;
+    this.size.min = new Coords
+    (
+      this.size.min.e > coords.e ? coords.e : this.size.min.e,
+      this.size.min.s > coords.s ? coords.s : this.size.min.s,
+      this.size.min.u > coords.u ? coords.u : this.size.min.u
+    );
 
-    if (this.min.s > coords.s)
-      this.min.s = coords.s;
-
-    if (this.min.u > coords.u)
-      this.min.u = coords.u;
-
-    if (this.max.e < coords.e)
-      this.max.e = coords.e;
-
-    if (this.max.s < coords.s)
-      this.max.s = coords.s;
-
-    if (this.max.u < coords.u)
-      this.max.u = coords.u;
+    this.size.max = new Coords
+    (
+      this.size.max.e < coords.e ? coords.e : this.size.max.e,
+      this.size.max.s < coords.s ? coords.s : this.size.max.s,
+      this.size.max.u < coords.u ? coords.u : this.size.max.u
+    );
   }
 }
 
