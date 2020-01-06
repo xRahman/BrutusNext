@@ -130,6 +130,9 @@ function createRooms(roomsSvg: RoomsSvg): Map<string, ExitSvg.ExitData>
   const maximumCoords = World.getMaximumCoords();
   const exitsData = new Map<string, ExitSvg.ExitData>();
 
+  // DEBUG
+  console.log(minimumCoords, maximumCoords);
+
   // Order of cycles determines oder of svg components representing
   // rooms in the DOM. Since people usually expects rows of things
   // rather than columns, we iterate nort-south direction first.

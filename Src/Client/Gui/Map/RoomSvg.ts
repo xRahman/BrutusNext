@@ -15,7 +15,7 @@ import { G } from "../../../Client/Gui/Svg/G";
 
 export class RoomSvg extends G
 {
-  private readonly background: Circle;
+  private readonly backgroud: Circle;
   private icon: SvgImage | "Doesn't exist" = "Doesn't exist";
 
   constructor
@@ -30,14 +30,22 @@ export class RoomSvg extends G
 
     this.setPosition(24 * coords.e, 24 * coords.s);
 
-    this.background = new Circle(this, "room_background");
-    this.background.setId(coords.toString());
-    this.background.setRadius(Room.DEFAULT_ROOM_PIXEL_SIZE * 0.6);
+    this.backgroud = new Circle(this, "room_background");
+    this.backgroud.setRadius(Room.DEFAULT_ROOM_PIXEL_SIZE * 0.6);
 
     this.updateRoomIcon();
+    // this.registerEventListeners();
   }
 
   // ---------------- Private methods -------------------
+
+  // private registerEventListeners(): void
+  // {
+  //   this.element.onclick = (event) => { this.onLeftClick(event); };
+  //   this.element.oncontextmenu = (event) => { this.onRightClick(event); };
+  //   this.element.onmouseenter = (event) => { this.onMouseEnter(event); };
+  //   this.element.onmouseleave = (event) => { this.onMouseLeave(event); };
+  // }
 
   private updateRoomIcon(): void
   {
@@ -63,11 +71,53 @@ export class RoomSvg extends G
         isCentered: true
       }
     );
-
-    // Disable mouse events on the icon so they are handled
-    // by "room_background" element.
-    this.icon.setCss({ pointerEvents: "none" });
   }
+
+  // ---------------- Event handlers --------------------
+
+  // // ! Throws exception on error.
+  // private onLeftClick(event: MouseEvent): void
+  // {
+  //   if (this.room === "Doesn't exist")
+  //   {
+  //     // ! Throws exception on error.
+  //     createRoom(this.coords);
+  //   }
+  // }
+
+  // // ! Throws exception on error.
+  // private onRightClick(event: MouseEvent): void
+  // {
+  //   // ! Throws exception on error.
+  //   deleteRoom(this.room);
+  // }
+
+  // // ! Throws exception on error.
+  // private onMouseEnter(event: MouseEvent): void
+  // {
+  //   if (event.buttons === 1)   // Left mouse button down.
+  //     // ! Throws exception on error.
+  //     buildConnectionTo(this.coords);
+
+  //   if (event.buttons === 2)   // Right mouse button down.
+  //     // ! Throws exception on error.
+  //     deleteRoom(this.room);
+  // }
+
+  // // ! Throws exception on error.
+  // private onMouseLeave(event: MouseEvent): void
+  // {
+  //   if (event.buttons === 1)   // Left mouse button down.
+  //   {
+  //     rememberCoords(this.coords);
+
+  //     if (this.room === "Doesn't exist")
+  //     {
+  //       // ! Throws exception on error.
+  //       createRoom(this.coords);
+  //     }
+  //   }
+  // }
 }
 
 // ----------------- Auxiliary Functions ---------------------

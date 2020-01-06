@@ -15,19 +15,29 @@ TARGET:
   - pak prototypová dědičnost room a přiřazování prototypu
     v editoru
 
+Trochu změna: Mapa first
+
+How much to do in this batch?
+- určitě zobrazit víc místností a exity mezi nimi.
+- mouseover a selection na roomu a exitu
+- "naklikávání" mapy (zatím bez vyrábění dat na serveru)
+  - čistě edit mód, jinej zatím vůbec neuvažovat.
+
 ------------------------------------------------------------------------------
+
+TODO: Obecnější parsování argumentů ze stringu
+- chtělo by to vyčítat hodnoty rovnou do properties výslednýho objektu.
+  (problém je, že bych ten objekt musel předat jako parametr,
+   abych mohl uvnitř parsovací funkce, zjistit, kolik má properties
+   a jak se jmenujou).
 
 Optimalizace mapy:
 ------------------
 
+TODO: Event hnadler ve WorldSvg
+
 TODO: Zrušit Svg komponenty pro Roomy a Exity, udělat z toho elementy
   ve WorldSvg
-- možná z těch souborů udělat namespacy a nechat tam funkce na práci
-  s elementy...
-  (I když, to možná stačí dát do ExitsSvg a RoomsSvg).
-
-
-TODO: Vyčistit binec s componentama a elementama.
 
 TODO: Výpočet, kolik room je třeba zobrazovat
 
@@ -42,23 +52,6 @@ TODO: Cashování room elementů při updatu mapy
   grafika atd. a odhidnou se.
 
 ------------------------------------------------------------------------------
-
-TODO: Nějak líp vyřešit typy SVGElement a HTMLElement
-  (ideálně bez přetypování).
-- možná udělat HtmlComponent a SvgComponent, obojí zděděné z Component?
-
-TODO: SvgElement.setName() sloučit s tím, jak se setuje name v Component
-
-TODO: V coords parametrizovat stringovej formát (aby bylo na jednom místě
-  definováno, jak vypadá toString() a fromString()).
-
-TODO: Setovat "overflow: visible" na MapCenterer z kódu místo ze style sheetu.
-
-TODO: Obecnější parsování argumentů ze stringu
-- chtělo by to vyčítat hodnoty rovnou do properties výslednýho objektu.
-  (problém je, že bych ten objekt musel předat jako parametr,
-   abych mohl uvnitř parsovací funkce zjistit, kolik má properties
-   a jak se jmenujou).
 
 TODO: V createMap() v cyklu na vyrábění mapy oasertovat krajní hodnoty cyklu,
  abych nemohl vyrobit nekonečnej cyklus.

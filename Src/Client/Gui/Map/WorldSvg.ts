@@ -5,6 +5,7 @@
 */
 
 import { Coords } from "../../../Shared/Class/Coords";
+import { Room } from "../../../Client/World/Room";
 import { MapEditor } from "../../../Client/Editor/MapEditor";
 import { Gui } from "../../../Client/Gui/Gui";
 import { RoomsSvg } from "../../../Client/Gui/Map/RoomsSvg";
@@ -34,8 +35,8 @@ export class WorldSvg extends MapZoomer
   {
     this.element.onclick = (event) => { this.onLeftClick(event); };
     this.element.oncontextmenu = (event) => { this.onRightClick(event); };
-    this.element.onmouseover = (event) => { this.onMouseOver(event); };
-    this.element.onmouseout = (event) => { this.onMouseOut(event); };
+    this.element.onmouseenter = (event) => { this.onMouseEnter(event); };
+    this.element.onmouseleave = (event) => { this.onMouseLeave(event); };
   }
 
   // ---------------- Event handlers --------------------
@@ -43,93 +44,51 @@ export class WorldSvg extends MapZoomer
   // ! Throws exception on error.
   private onLeftClick(event: MouseEvent): void
   {
-    const coords = getRoomCoords(event);
+    console.log(event.target);
 
-    if (!coords)
-      return;
-
-    // ! Throws exception on error.
-    ensureRoomExists(coords);
+    // if (this.room === "Doesn't exist")
+    // {
+    //   // ! Throws exception on error.
+    //   createRoom(this.coords);
+    // }
   }
 
   // ! Throws exception on error.
   private onRightClick(event: MouseEvent): void
   {
-    const coords = getRoomCoords(event);
-
-    if (!coords)
-      return;
-
-    // ! Throws exception on error.
-    deleteRoomIfExists(coords);
+    // // ! Throws exception on error.
+    // deleteRoom(this.room);
   }
 
   // ! Throws exception on error.
-  private onMouseOver(event: MouseEvent): void
+  private onMouseEnter(event: MouseEvent): void
   {
-    const coords = getRoomCoords(event);
+    // if (event.buttons === 1)   // Left mouse button down.
+    //   // ! Throws exception on error.
+    //   buildConnectionTo(this.coords);
 
-    if (!coords)
-      return;
-
-    console.log("onMouseOver()", coords);
-
-    // Left mouse button down.
-    if (event.buttons === 1)
-      // ! Throws exception on error.
-      buildConnectionTo(coords);
-
-    // Right mouse button down.
-    if (event.buttons === 2)
-      // ! Throws exception on error.
-      deleteRoomIfExists(coords);
+    // if (event.buttons === 2)   // Right mouse button down.
+    //   // ! Throws exception on error.
+    //   deleteRoom(this.room);
   }
 
   // ! Throws exception on error.
-  private onMouseOut(event: MouseEvent): void
+  private onMouseLeave(event: MouseEvent): void
   {
-     const coords = getRoomCoords(event);
+    // if (event.buttons === 1)   // Left mouse button down.
+    // {
+    //   rememberCoords(this.coords);
 
-    if (!coords)
-      return;
-
-    // Left mouse button down.
-    if (event.buttons === 1)
-    {
-      rememberCoords(coords);
-
-      // ! Throws exception on error.
-      ensureRoomExists(coords);
-    }
-
-    // Left mouse button down.
-    if (event.buttons === 2)
-    {
-      // ! Throws exception on error.
-      deleteRoomIfExists(coords);
-    }
+    //   if (this.room === "Doesn't exist")
+    //   {
+    //     // ! Throws exception on error.
+    //     createRoom(this.coords);
+    //   }
+    // }
   }
 }
 
 // ----------------- Auxiliary Functions ---------------------
-
-function getRoomCoords(event: Event): Coords | undefined
-{
-  if (event.target === null)
-      return undefined;
-
-  if (event.target instanceof Element)
-  {
-    // TODO: parametrizovat "room_background".
-    if (event.target.getAttribute("name") !== "room_background")
-      return undefined;
-
-    // ! Throws exception on error.
-    return Coords.fromString(event.target.id);
-  }
-
-  return undefined;
-}
 
 function rememberCoords(coords: Coords): void
 {
@@ -174,7 +133,7 @@ function buildConnectionTo(coords: Coords): void
 }
 
 // ! Throws exception on error.
-function ensureRoomExists(coords: Coords): void
+function createRoom(coords: Coords): void
 {
   // ! Throws exception on error.
   const result = MapEditor.ensureRoomExists(coords);
@@ -184,11 +143,12 @@ function ensureRoomExists(coords: Coords): void
 }
 
 // ! Throws exception on error.
-function deleteRoomIfExists(coords: Coords): void
+function deleteRoom(room: Room | "Doesn't exist"): void
 {
-  // ! Throws exception on error.
-  const result = MapEditor.deleteRoomIfExists(coords);
+  if (room === "Doesn't exist")
+    return;
 
-  if (result === "Changes occured")
-    Gui.updateMap();
+  // ! Throws exception on error.
+  MapEditor.deleteRoom(room);
+  Gui.updateMap();
 }

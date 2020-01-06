@@ -32,12 +32,10 @@ export class Grid<T>
   // this box is inserted to it.
   private readonly size =
   {
-    min: new Coords(-10, -10, -10),
-    max: new Coords(10, 10, 10)
     // min: new Coords(-30, -30, -30),
     // max: new Coords(30, 30, 30)
-    // min: new Coords(-40, -40, -40),
-    // max: new Coords(40, 40, 40)
+    min: new Coords(-40, -40, -40),
+    max: new Coords(40, 40, 40)
     // min: new Coords(-50, -50, -50),
     // max: new Coords(50, 50, 50)
     // min: new Coords(-75, -75, -75),

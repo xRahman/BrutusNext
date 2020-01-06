@@ -85,12 +85,9 @@ export abstract class Component
     this.element.parentNode?.removeChild(this.element);
   }
 
-  public setId(id: string): void
-  {
-    this.element.id = id;
-  }
+  // --------------- Protected methods ------------------
 
-  public setCss(css: Partial<CSSStyleDeclaration>): void
+  protected setCss(css: Partial<CSSStyleDeclaration>): void
   {
     for (const property in css)
     {
@@ -108,8 +105,6 @@ export abstract class Component
     // when show() is called.
     this.rememberDisplayMode();
   }
-
-  // --------------- Protected methods ------------------
 
   protected insertHtml
   (
