@@ -28,7 +28,7 @@ How much to do in this batch?
 Optimalizace mapy:
 ------------------
 
-TODO: Výpočet, kolik room je třeba zobrazovat
+TODO: Updatovat počet zobrazovaných room při resizu MapWindow.
 
 TODO: Nevytvářet roomy podle rozměrů worldu, ale podle počtu, kolik je třeba
   zobrazovat.
@@ -41,6 +41,11 @@ TODO: Cashování room elementů při updatu mapy
   grafika atd. a odhidnou se.
 
 ------------------------------------------------------------------------------
+
+TODO: Prostudovat:
+  https://medium.com/better-programming/event-delegation-in-javascript-boost-your-app-performance-5f10f25cec96
+  https://ehsangazar.com/optimizing-javascript-event-listeners-for-performance-e28406ad406c
+  https://ehsangazar.com/javascript-tips-for-performance-ee53239ae12d
 
 TODO: Revize hierarchie komponent (hlavně SVG komponent)
 - ideálně by element měl bejt vždycky konkrétního typu

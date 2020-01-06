@@ -1,3 +1,8 @@
+TODO: Výpočet, kolik room je třeba zobrazovat
+- je to pekelně složitý a nutně to nepotřebuju. Místo toho to bude
+  konstanta.
+[won't do]
+
 TODO: Vyčistit testovací logování
 [done]
 

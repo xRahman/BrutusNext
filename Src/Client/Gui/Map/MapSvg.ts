@@ -6,6 +6,7 @@
 
 import { Component } from "../../../Client/Gui/Component";
 import { MapCenterer } from "../../../Client/Gui/Map/MapCenterer";
+import { MapZoomer } from "../../../Client/Gui/Map/MapZoomer";
 import { SvgComponent } from "../../../Client/Gui/Svg/SvgComponent";
 
 export class MapSvg extends SvgComponent

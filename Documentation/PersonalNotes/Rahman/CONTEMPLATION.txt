@@ -1,5 +1,27 @@
 ------------------------------------------------------------------------------
 
+Výpočet, kolik roomů má bejt připravenejch
+-------------------------------------------
+
+- První vidle do toho hází skutečnost, že ona jsou vyráběna hidden,
+  takže komponenty uvnitř nich maj nulovou velikost. Takže z MapSvg
+  nic nezjistím.
+
+- Druhý vidle do toho hází, že i když si vezmu velikost browser okna,
+  uživatel může resiznout celej browser - takže bych to stejně musel
+  dynamicky přepočítávat.
+
+A nejdůležitější: Nic z toho nepotřebuju na funkční hru.
+  - potřebuju optimalizaci, že budu mít připravenej určitej
+    počet room elementů a ty budu recyklovat. Když bych totiž
+    vyrobil roomů na celej world, tak by se to nehejbalo.
+    - tenhle počet ale klidně může bejt konstanta, dynamický
+      přepočítání se dá dopsat kdykoliv pozdějš.
+
+
+
+------------------------------------------------------------------------------
+
 Parsování argumentů ze stringu
 -------------------------------
 
@@ -21,11 +43,6 @@ scan("A 1 B 2", result, "A ${a} B ${b}");
 scan("A 1 B 2", result, "A ", "${result.a}", " B ", "${result.b}");
 
 ------------------------------------------------------------------------------
-
-Prostudovat:
-https://medium.com/better-programming/event-delegation-in-javascript-boost-your-app-performance-5f10f25cec96
-https://ehsangazar.com/optimizing-javascript-event-listeners-for-performance-e28406ad406c
-https://ehsangazar.com/javascript-tips-for-performance-ee53239ae12d
 
 Problémy s výkonem svg
 ----------------------

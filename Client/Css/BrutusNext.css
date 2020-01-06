@@ -321,6 +321,12 @@
   /* ------------- Size and position ------------- */
 
   grid-area: MapWindow;
+  /*
+  grid-column-start: 1;
+  grid-column-end: last-line;
+  grid-row-start: 1;
+  grid-row-end: last-line;
+  */
 }
 
 .ChatWindow
