@@ -28,10 +28,38 @@ How much to do in this batch?
 Optimalizace mapy:
 ------------------
 
-TODO: Updatovat počet zobrazovaných room při resizu MapWindow.
-
 TODO: Nevytvářet roomy podle rozměrů worldu, ale podle počtu, kolik je třeba
-  zobrazovat.
+  zobrazovat
+
+TODO: Vyhození všech roomSvgs do cashe a znovu rozmístění do mapy
+ přehází pozice, což vede k tomu, že se znova firnou eventy na elementu,
+ kterej už představuje jinou roomu.
+ - zkusit udělat z cashe hashmapu, nechávat roomám coords a pokud tam je
+   rooma na správnejch coords, tak ji reusnout.
+ Problém: V hashmapě nemůže bejt víc entit pod stejnym klíčem, takže
+   iniciální (nebo i vyhozený) roomy tam nemůžu dát pod klíčem "In cache"...
+ Řešení:
+ - mít v cache pole s neřazanejma roomama a mapu se zařazenejma...
+ Další problém: Co když roomu s příslušnejma coords nenajdu, takže budu
+   potřebovat novou, ale všechny roomy jsou použitý s nějakejma coords?
+
+IDEA (asi lepší: Roomy, který jsou ve výřezu, vůbec nepřemisťovat, jen jim
+  updatnout grafiku. Tzn.:
+TODO: Pamatovat si původní pozici.
+TODO: V cyklu, kdy hážu roomy do cashe checkovat, jestli jsou coords
+  v původním výřezu a pokud ano, tak roomu do cashe neházet.
+TODO: V cyklu, kde updatuju roomy, checkovat, jestli coord jsou v původním
+  výřezu. Pokud ano, jen updatnou grafiku. Pokud ne, vzít roomu z cashe.
+
+
+TODO: Vyrábět room elementy mimo DOM a insternout je najednou s parentem
+[done]
+
+TODO: Nevytvářet exity podle rozměrů worldu, ale podle počtu, kolik je třeba
+  zobrazovat
+
+TODO: Vyrábět exit elementy mimo DOM a insternout je najednou
+  s parentem
 
 TODO: Cashování room elementů při updatu mapy
 - nejdřív se checkne, který nemají být vidět, ty se hidnou a hoděj do seznamu
@@ -40,7 +68,19 @@ TODO: Cashování room elementů při updatu mapy
   nebudou vyrábět - místo toho se vezmou z cashe, nastaví se jim pozice,
   grafika atd. a odhidnou se.
 
+TODO: Grid je v /shared, tj. asi by v něm nemělo bejt počáteční nastavení
+  velikosti
+- po optimalizaci mapy to budu moct zrušit.
+
 ------------------------------------------------------------------------------
+
+TODO: Invertnout s axis (kladné hodnoty by měly růst nahoru)
+
+TODO: Rozestupy a velikost roomů nastavit relativně k velikosti fontu.
+Jak zjistit, kolik je 1 rem:
+ parseFloat(getComputedStyle(document.documentElement).fontSize)
+ (pokud font size html dokumentu nastavuju sám, tak si to můžu prostě pamatovat)
+- asi je to lepší zjišťovat z DOM
 
 TODO: Prostudovat:
   https://medium.com/better-programming/event-delegation-in-javascript-boost-your-app-performance-5f10f25cec96
@@ -51,9 +91,6 @@ TODO: Revize hierarchie komponent (hlavně SVG komponent)
 - ideálně by element měl bejt vždycky konkrétního typu
   (tj. nenastavoval by se v konstruktoru, ale nejspíš přímo inicializací
    v classe, takže potomek by ho overridnul).
-
-TODO: Grid je v /shared, tj. asi by v něm nemělo bejt počáteční nastavení
-  velikosti
 
 TODO: Obecnější parsování argumentů ze stringu
 - chtělo by to vyčítat hodnoty rovnou do properties výslednýho objektu.

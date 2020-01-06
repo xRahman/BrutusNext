@@ -13,32 +13,12 @@ export class SvgImage extends SvgComponent
 {
   constructor
   (
-    {
-      parent,
-      name,
-      widthPixels,
-      heightPixels,
-      imagePath,
-      isCentered
-    } :
-    {
-      parent: Component,
-      name: string,
-      widthPixels: number,
-      heightPixels: number,
-      imagePath: string,
-      isCentered: boolean
-    },
+    parent: Component,
+    name = "image",
     insertMode = Component.InsertMode.APPEND
   )
   {
     super(parent, "image", name, insertMode);
-
-    this.setSize(widthPixels, heightPixels);
-    this.setImage(imagePath);
-
-    if (isCentered)
-      this.translate(-widthPixels / 2, -heightPixels / 2);
   }
 
   public setImage(path: string): void
@@ -46,8 +26,17 @@ export class SvgImage extends SvgComponent
     this.element.setAttributeNS(SVG_XLINK_NAMESPACE, "href", path);
   }
 
-  public setSize(widthPixels: number, heightPixels: number): void
+  public setSize
+  (
+    widthPixels: number,
+    heightPixels: number,
+    { centered = false }
+  )
+  : void
   {
     SvgComponent.setWidthAndHeight(this.element, widthPixels, heightPixels);
+
+    if (centered)
+      this.translate(-widthPixels / 2, -heightPixels / 2);
   }
 }

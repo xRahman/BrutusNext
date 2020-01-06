@@ -1,4 +1,5 @@
 TODO: Výpočet, kolik room je třeba zobrazovat
+TODO: Updatovat počet zobrazovaných room při resizu MapWindow.
 - je to pekelně složitý a nutně to nepotřebuju. Místo toho to bude
   konstanta.
 [won't do]

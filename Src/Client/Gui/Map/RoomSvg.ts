@@ -13,57 +13,76 @@ import { G } from "../../../Client/Gui/Svg/G";
 
 export class RoomSvg extends G
 {
-  private readonly background: Circle;
-  private icon: SvgImage | "Doesn't exist" = "Doesn't exist";
+  private readonly roomBackground: Circle;
+  private readonly roomIcon: SvgImage;
+
+  private coords: Coords | "In room cache" = "In room cache";
 
   constructor
   (
     parent: Component,
-    private readonly room: Room | "Doesn't exist",
-    private readonly coords: Coords,
     name = "room"
   )
   {
     super(parent, name);
 
-    this.setPosition(24 * coords.e, 24 * coords.s);
+    this.roomBackground = createRoomBackground(this);
 
-    this.background = new Circle(this, "room_background");
-    this.background.setId(coords.toString());
-    this.background.setRadius(Room.DEFAULT_ROOM_PIXEL_SIZE * 0.6);
+    this.hide();
 
-    this.updateRoomIcon();
+    this.roomIcon = createRoomIcon(this);
   }
 
-  // ---------------- Private methods -------------------
-
-  private updateRoomIcon(): void
+  public setCoords(coords: Coords | "In room cache"): void
   {
-    if (this.room === "Doesn't exist")
-    {
-      if (this.icon !== "Doesn't exist")
-      {
-        this.icon.removeFromParent();
-        this.icon = "Doesn't exist";
-      }
+    const elementId =
+      coords === "In room cache" ? "In room cache" : coords.toString();
 
+    this.coords = coords;
+    this.roomBackground.setId(elementId);
+  }
+
+  public setRoom(room: Room | "Doesn't exist"): void
+  {
+    if (room === "Doesn't exist")
+    {
+      this.roomIcon.hide();
       return;
     }
 
-    this.icon = new SvgImage
+    this.roomIcon.setSize
     (
-      {
-        parent: this,
-        name: "room_icon",
-        widthPixels: this.room.icon.pixelSize,
-        heightPixels: this.room.icon.pixelSize,
-        imagePath: this.room.icon.path,
-        isCentered: true
-      }
+      room.icon.pixelSize,
+      room.icon.pixelSize,
+      { centered: true }
     );
 
-    // Disable mouse events on the icon so they are handled
-    // by "room_background" element.
-    this.icon.setCss({ pointerEvents: "none" });
+    this.roomIcon.setImage(room.icon.path);
+
+    this.roomIcon.show();
   }
+}
+
+// ----------------- Auxiliary Functions ---------------------
+
+function createRoomBackground(parent: RoomSvg): Circle
+{
+  const background = new Circle(parent, "room_background");
+
+  background.setRadius(Room.DEFAULT_ROOM_PIXEL_SIZE * 0.6);
+
+  return background;
+}
+
+function createRoomIcon(parent: RoomSvg): SvgImage
+{
+  const roomIcon = new SvgImage(parent, "room_icon");
+
+  // Disable mouse events on the icon (they are handled
+  // by "room_background" element).
+  roomIcon.setCss({ pointerEvents: "none" });
+
+  roomIcon.hide();
+
+  return roomIcon;
 }

@@ -78,6 +78,9 @@ export namespace Gui
   // ! Throws exception on error.
   export function updateMap(): void
   {
+    // TODO: Parametrizovat.
+    const location = new Coords(0, 0, 0);
+
     if (components.roomsSvg === "Not assigned")
     {
       throw Error("Failed to update map because 'roomsSvg' component"
@@ -85,6 +88,7 @@ export namespace Gui
     }
 
     components.roomsSvg.clear();
+    const exitsData = updateRooms(components.roomsSvg, location);
 
     if (components.exitsSvg === "Not assigned")
     {
@@ -93,62 +97,54 @@ export namespace Gui
     }
 
     components.exitsSvg.clear();
-
-    createRoomsAndExits(components.roomsSvg, components.exitsSvg);
+    updateExits(exitsData, components.exitsSvg, location);
   }
 }
 
 // ----------------- Auxiliary Functions ---------------------
 
-function createRoomsAndExits(roomsSvg: RoomsSvg, exitsSvg: ExitsSvg): void
+function updateRooms
+(
+  roomsSvg: RoomsSvg,
+  location: Coords
+)
+: Map<string, ExitSvg.ExitData>
 {
-  /*
-  // TEST
-
-  let svg = "";
-
-  for (let i = 0; i < 200000; i++)
+  // TODO: Provázat tohle s RoomsSvg.ROOMS_IN_CACHE
+  // (měly by to bejt stejný hodnoty).
+  const from =
   {
-    svg += `<circle cx="${20 * (i - 5000)}" cy="50" r="40" stroke="black"`;
-    svg += ` stroke-width="3" fill="red" />`;
-  }
+    e: location.e - 20,
+    s: location.s - 20
+  };
 
-  if (components.roomsSvg === "Not assigned")
-    return;
+  const to =
+  {
+    e: location.e + 20,
+    s: location.s + 20
+  };
 
-  components.roomsSvg.insertHtml(svg);
-  */
-
-  const exitsData = createRooms(roomsSvg);
-
-  createExits(exitsData, exitsSvg);
-}
-
-function createRooms(roomsSvg: RoomsSvg): Map<string, ExitSvg.ExitData>
-{
-  const minimumCoords = World.getMinimumCoords();
-  const maximumCoords = World.getMaximumCoords();
   const exitsData = new Map<string, ExitSvg.ExitData>();
 
   // Order of cycles determines oder of svg components representing
   // rooms in the DOM. Since people usually expects rows of things
   // rather than columns, we iterate nort-south direction first.
-  for (let s = minimumCoords.s; s <= maximumCoords.s; s++)
+  for (let s = from.s; s <= to.s; s++)
   {
-    for (let e = minimumCoords.e; e <= maximumCoords.e; e++)
+    for (let e = from.e; e <= to.e; e++)
     {
       // The world is 3d but map only 2e - we show only
       // one horizontal slice of the world at a time.
-      const coords = new Coords(e, s, 0);
+      const coords = new Coords(e, s, location.u);
       const room = World.getRoom(coords);
 
       if (room === "Nothing there")
       {
-        roomsSvg.createRoomSvg("Doesn't exist", coords);
+        roomsSvg.addRoomSvg("Doesn't exist", coords);
       }
       else
       {
-        roomsSvg.createRoomSvg(room, coords);
+        roomsSvg.addRoomSvg(room, coords);
         extractExitData(room, exitsData);
       }
     }
@@ -157,10 +153,11 @@ function createRooms(roomsSvg: RoomsSvg): Map<string, ExitSvg.ExitData>
   return exitsData;
 }
 
-function createExits
+function updateExits
 (
   exitsData: Map<string, ExitSvg.ExitData>,
-  exitsSvg: ExitsSvg
+  exitsSvg: ExitsSvg,
+  location: Coords
 )
 : void
 {

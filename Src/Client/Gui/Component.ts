@@ -131,6 +131,40 @@ export abstract class Component
         this.element.insertAdjacentHTML("afterbegin", html);
         break;
 
+      case Component.InsertMode.DO_NOT_INSERT:
+        break;
+
+      default:
+        Syslog.reportMissingCase(insertMode);
+        break;
+    }
+  }
+
+  public insertElement
+  (
+    element: HTMLElement | SVGElement,
+    insertMode: Component.InsertMode
+  )
+  : void
+  {
+    switch (insertMode)
+    {
+      case Component.InsertMode.APPEND:
+        this.element.appendChild(element);
+        break;
+
+      case Component.InsertMode.PREPEND:
+        this.element.insertBefore(element, this.element.firstChild);
+        break;
+
+      case Component.InsertMode.REPLACE:
+        this.removeAllChildren();
+        this.element.appendChild(element);
+        break;
+
+      case Component.InsertMode.DO_NOT_INSERT:
+        break;
+
       default:
         Syslog.reportMissingCase(insertMode);
         break;
@@ -156,34 +190,6 @@ export abstract class Component
     while (this.element.lastChild !== null)
     {
       this.element.removeChild(this.element.lastChild);
-    }
-  }
-
-  private insertElement
-  (
-    element: HTMLElement | SVGElement,
-    insertMode: Component.InsertMode
-  )
-  : void
-  {
-    switch (insertMode)
-    {
-      case Component.InsertMode.APPEND:
-        this.element.appendChild(element);
-        break;
-
-      case Component.InsertMode.PREPEND:
-        this.element.insertBefore(element, this.element.firstChild);
-        break;
-
-      case Component.InsertMode.REPLACE:
-        this.removeAllChildren();
-        this.element.appendChild(element);
-        break;
-
-      default:
-        Syslog.reportMissingCase(insertMode);
-        break;
     }
   }
 
@@ -239,6 +245,8 @@ export namespace Component
     // Insert as the first child.
     PREPEND,
     // Html contents of parent element is cleared first.
-    REPLACE
+    REPLACE,
+    // As you would guess.
+    DO_NOT_INSERT
   }
 }
