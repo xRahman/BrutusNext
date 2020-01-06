@@ -27,8 +27,6 @@ export class MapSvg extends SvgComponent
 
   private onWheel(event: WheelEvent): void
   {
-    console.log("onWheel()");
-
     event.preventDefault();
 
     if (event.deltaY > 0)

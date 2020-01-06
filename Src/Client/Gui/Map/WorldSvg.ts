@@ -72,8 +72,6 @@ export class WorldSvg extends MapZoomer
     if (!coords)
       return;
 
-    console.log("onMouseOver()", coords);
-
     // Left mouse button down.
     if (event.buttons === 1)
       // ! Throws exception on error.

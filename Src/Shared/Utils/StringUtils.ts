@@ -28,8 +28,6 @@ export namespace StringUtils
     {
       splitResult = splitBySubstring(parsedStr, substring);
 
-      console.log(splitResult);
-
       if (splitResult.before !== "")
         result.push(splitResult.before);
 

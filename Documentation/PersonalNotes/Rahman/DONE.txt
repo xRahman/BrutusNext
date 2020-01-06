@@ -1,3 +1,6 @@
+TODO: Vyčistit testovací logování
+[done]
+
 TODO: Event hnadler ve WorldSvg
 [done]
 

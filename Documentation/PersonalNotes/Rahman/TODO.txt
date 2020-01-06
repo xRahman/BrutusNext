@@ -42,6 +42,11 @@ TODO: Cashování room elementů při updatu mapy
 
 ------------------------------------------------------------------------------
 
+TODO: Revize hierarchie komponent (hlavně SVG komponent)
+- ideálně by element měl bejt vždycky konkrétního typu
+  (tj. nenastavoval by se v konstruktoru, ale nejspíš přímo inicializací
+   v classe, takže potomek by ho overridnul).
+
 TODO: Grid je v /shared, tj. asi by v něm nemělo bejt počáteční nastavení
   velikosti
 
