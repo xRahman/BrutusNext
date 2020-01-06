@@ -25,19 +25,8 @@ How much to do in this batch?
 
 ------------------------------------------------------------------------------
 
-TODO: Obecnější parsování argumentů ze stringu
-- chtělo by to vyčítat hodnoty rovnou do properties výslednýho objektu.
-  (problém je, že bych ten objekt musel předat jako parametr,
-   abych mohl uvnitř parsovací funkce, zjistit, kolik má properties
-   a jak se jmenujou).
-
 Optimalizace mapy:
 ------------------
-
-TODO: Event hnadler ve WorldSvg
-
-TODO: Zrušit Svg komponenty pro Roomy a Exity, udělat z toho elementy
-  ve WorldSvg
 
 TODO: Výpočet, kolik room je třeba zobrazovat
 
@@ -52,6 +41,15 @@ TODO: Cashování room elementů při updatu mapy
   grafika atd. a odhidnou se.
 
 ------------------------------------------------------------------------------
+
+TODO: Grid je v /shared, tj. asi by v něm nemělo bejt počáteční nastavení
+  velikosti
+
+TODO: Obecnější parsování argumentů ze stringu
+- chtělo by to vyčítat hodnoty rovnou do properties výslednýho objektu.
+  (problém je, že bych ten objekt musel předat jako parametr,
+   abych mohl uvnitř parsovací funkce, zjistit, kolik má properties
+   a jak se jmenujou).
 
 TODO: V createMap() v cyklu na vyrábění mapy oasertovat krajní hodnoty cyklu,
  abych nemohl vyrobit nekonečnej cyklus.

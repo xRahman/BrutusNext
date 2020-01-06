@@ -1,3 +1,12 @@
+TODO: Event hnadler ve WorldSvg
+[done]
+
+TODO: Zrušit Svg komponenty pro Roomy a Exity, udělat z toho elementy
+  ve WorldSvg
+- na tohle nakonec kašlu. Sice bych ušetřil nějakou paměť, ale měl bych
+  pak dvojí kód a přístup pro práci s GUI, což je brutálně nepřehledný.
+[won't do]
+
 TODO: Vytvořit WorldSvg
 [done]
 

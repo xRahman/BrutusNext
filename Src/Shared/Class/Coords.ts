@@ -198,27 +198,36 @@ function joinCoordStrings(from: Coords, to: Coords): string
 }
 
 // ! Throws exception on error.
+function convertToNumber(str: string): number
+{
+  const value = Number(str);
+
+  if (Number.isNaN(value))
+  {
+    throw Error(`Failed to parse coords because argument`
+    + ` ${str} is not a number`);
+  }
+
+  return value;
+}
+
+// ! Throws exception on error.
 function parseCoordsString(coords: string): { e: number, s: number, u: number }
 {
-  const format = [ "[ e: ", ", s: ", " u: ", " ]" ];
-  // ! Throws exception on error.
-  const values = StringUtils.splitBySubstrings(coords, ...format);
+  const format = [ "[ e: ", ", s: ", ", u: ", " ]" ];
 
-  if (values.length !== 3)
+  // ! Throws exception on error.
+  const stringValues = StringUtils.splitBySubstrings(coords, ...format);
+
+  if (stringValues.length !== 3)
   {
     throw Error(`Failed to parse coords from string '${coords}' because`
       + ` it doesn't match expected format ${format.join("%d")}`);
   }
 
-  const e = Number(values[0]);
-  const s = Number(values[0]);
-  const u = Number(values[0]);
-
-  if (Number.isNaN(e) || Number.isNaN(s) || Number.isNaN(u))
-  {
-    throw Error(`Failed to parse coords from string '${coords}' because`
-    + ` at least one of the values is not a number`);
-  }
+  const e = convertToNumber(stringValues[0]);
+  const s = convertToNumber(stringValues[1]);
+  const u = convertToNumber(stringValues[2]);
 
   return { e, s, u };
 }
