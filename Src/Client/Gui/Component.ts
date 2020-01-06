@@ -171,6 +171,21 @@ export abstract class Component
     }
   }
 
+  public replaceChild(element: HTMLElement | SVGElement): void
+  {
+    this.element.replaceChild(element, element);
+  }
+
+  public enableMouseEvents(): void
+  {
+    this.setCss({ pointerEvents: "auto" });
+  }
+
+  public disableMouseEvents(): void
+  {
+    this.setCss({ pointerEvents: "none" });
+  }
+
   // --------------- Protected methods ------------------
 
   protected onShow(): void

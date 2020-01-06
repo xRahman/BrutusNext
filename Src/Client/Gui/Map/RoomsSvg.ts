@@ -49,8 +49,8 @@ export class RoomsSvg extends G
       throw Error("No more room svg elements are left in cache");
     }
 
-    roomSvg.setPosition(24 * coords.e, 24 * coords.s);
     roomSvg.setCoords(coords);
+    roomSvg.setPosition(24 * coords.e, 24 * coords.s);
     roomSvg.setRoom(room);
     roomSvg.show();
 
@@ -64,6 +64,14 @@ export class RoomsSvg extends G
 
     this.roomSvgs = [];
   }
+
+  public updateGraphics(): void
+  {
+    if (this.parent !== "No parent")
+      this.parent.replaceChild(this.element);
+  }
+
+  // ---------------- Private methods -------------------
 
   private putToCache(roomSvg: RoomSvg): void
   {

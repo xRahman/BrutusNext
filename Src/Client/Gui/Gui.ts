@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 /*
   Part of BrutusNEXT
 
@@ -78,6 +79,8 @@ export namespace Gui
   // ! Throws exception on error.
   export function updateMap(): void
   {
+    console.log("updateMap()");
+
     // TODO: Parametrizovat.
     const location = new Coords(0, 0, 0);
 
@@ -87,8 +90,17 @@ export namespace Gui
         + " is not assigned to Gui yet");
     }
 
+    // TEST
+    console.log("disabling mouse events");
+    components.roomsSvg.disableMouseEvents();
+
+    console.error(new Error("Update"));
+
     components.roomsSvg.clear();
+
     const exitsData = updateRooms(components.roomsSvg, location);
+
+    components.roomsSvg.updateGraphics();
 
     if (components.exitsSvg === "Not assigned")
     {
@@ -98,6 +110,21 @@ export namespace Gui
 
     components.exitsSvg.clear();
     updateExits(exitsData, components.exitsSvg, location);
+
+    // TEST
+    console.log("setting timeout");
+    setTimeout
+    (
+      () =>
+      {
+        if (components.roomsSvg !== "Not assigned")
+        {
+          console.log("enabling mouse events");
+          components.roomsSvg.enableMouseEvents();
+        }
+      },
+      2000
+    );
   }
 }
 

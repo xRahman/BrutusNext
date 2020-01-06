@@ -1,5 +1,33 @@
 ------------------------------------------------------------------------------
 
+Problém:
+
+Vyhození všech roomSvgs do cashe a znovu rozmístění do mapy
+ přehází pozice, což vede k tomu, že se znova firnou eventy na elementu,
+ kterej už představuje jinou roomu.
+ - zkusit udělat z cashe hashmapu, nechávat roomám coords a pokud tam je
+   rooma na správnejch coords, tak ji reusnout.
+ Problém: V hashmapě nemůže bejt víc entit pod stejnym klíčem, takže
+   iniciální (nebo i vyhozený) roomy tam nemůžu dát pod klíčem "In cache"...
+ Řešení:
+ - mít v cache pole s neřazanejma roomama a mapu se zařazenejma...
+ Další problém: Co když roomu s příslušnejma coords nenajdu, takže budu
+   potřebovat novou, ale všechny roomy jsou použitý s nějakejma coords?
+
+IDEA (asi lepší: Roomy, který jsou ve výřezu, vůbec nepřemisťovat, jen jim
+  updatnout grafiku. Tzn.:
+TODO: Pamatovat si původní pozici.
+TODO: V cyklu, kdy hážu roomy do cashe checkovat, jestli jsou coords
+  v původním výřezu a pokud ano, tak roomu do cashe neházet.
+TODO: V cyklu, kde updatuju roomy, checkovat, jestli coord jsou v původním
+  výřezu. Pokud ano, jen updatnou grafiku. Pokud ne, vzít roomu z cashe.
+
+Tohle problém stejně neřeší, protože když změním patro nebo projdu
+  teleportem, tak se mi stejně vyměněj všechny roomy, čili mi přijdou
+  mouse eventy na jinou roomu.
+
+------------------------------------------------------------------------------
+
 Výpočet, kolik roomů má bejt připravenejch
 -------------------------------------------
 
