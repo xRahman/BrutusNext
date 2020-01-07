@@ -13,6 +13,8 @@ import { G } from "../../../Client/Gui/Svg/G";
 
 export class RoomSvg extends G
 {
+  public static readonly ROOM_BACKGROUND = "room_background";
+
   private readonly roomBackground: Circle;
   private readonly roomIcon: SvgImage;
 
@@ -67,7 +69,7 @@ export class RoomSvg extends G
 
 function createRoomBackground(parent: RoomSvg): Circle
 {
-  const background = new Circle(parent, "room_background");
+  const background = new Circle(parent, RoomSvg.ROOM_BACKGROUND);
 
   background.setRadius(Room.DEFAULT_ROOM_PIXEL_SIZE * 0.6);
 

@@ -7,6 +7,7 @@
 import { Coords } from "../../../Shared/Class/Coords";
 import { MapEditor } from "../../../Client/Editor/MapEditor";
 import { Gui } from "../../../Client/Gui/Gui";
+import { RoomSvg } from "../../../Client/Gui/Map/RoomSvg";
 import { RoomsSvg } from "../../../Client/Gui/Map/RoomsSvg";
 import { ExitsSvg } from "../../../Client/Gui/Map/ExitsSvg";
 import { MapCenterer } from "../../../Client/Gui/Map/MapCenterer";
@@ -72,9 +73,6 @@ export class WorldSvg extends MapZoomer
     if (!coords)
       return;
 
-    // DEBUG
-    console.log("onMouseOver()", coords);
-
     // Left mouse button down.
     if (event.buttons === 1)
       // ! Throws exception on error.
@@ -121,8 +119,7 @@ function getRoomCoords(event: Event): Coords | undefined
 
   if (event.target instanceof Element)
   {
-    // TODO: parametrizovat "room_background".
-    if (event.target.getAttribute("name") !== "room_background")
+    if (event.target.getAttribute("name") !== RoomSvg.ROOM_BACKGROUND)
       return undefined;
 
     // ! Throws exception on error.
@@ -164,13 +161,13 @@ function buildConnectionTo(coords: Coords): void
     // ! Throws exception on error.
     Gui.updateMap();
 
-    // Gui.updateMap() will destroy all room svg components
-    // (including this one) and create new ones. If mouse
-    // pointer moves fast, it can leave the room svg element
-    // before new one is created so the onmouseleave() won't
-    // trigger and coords won't be remembered. So we do it here
-    // instead.
-    rememberCoords(coords);
+    // // Gui.updateMap() will destroy all room svg components
+    // // (including this one) and create new ones. If mouse
+    // // pointer moves fast, it can leave the room svg element
+    // // before new one is created so the onmouseleave() won't
+    // // trigger and coords won't be remembered. So we do it here
+    // // instead.
+    // rememberCoords(coords);
   }
 }
 

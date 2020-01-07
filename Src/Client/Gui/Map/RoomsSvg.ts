@@ -17,8 +17,8 @@ const ROOMS_IN_CACHE = 41 * 41;
 
 export class RoomsSvg extends G
 {
-  // TODO: Make this a set (and add appropriate checks).
-  private roomSvgs: Array<RoomSvg> = [];
+  // [key]: string representation of room coords.
+  private readonly roomSvgs: Map<string, RoomSvg> = new Map();
 
   // TODO: Make this a set (and add appropriate checks).
   private readonly roomSvgCache: Array<RoomSvg>;
@@ -39,6 +39,14 @@ export class RoomsSvg extends G
     parent.insertElement(this.element, Component.InsertMode.APPEND);
   }
 
+  public updateRoomSvg(room: Room | "Doesn't exist", coords: Coords): void
+  {
+    const roomSvg = this.getRoomSvg(coords);
+
+    roomSvg.setRoom(room);
+  }
+
+  // ! Throws exception on error.
   public addRoomSvg(room: Room | "Doesn't exist", coords: Coords): void
   {
     const roomSvg = this.roomSvgCache.pop();
@@ -46,6 +54,8 @@ export class RoomsSvg extends G
     if (roomSvg === undefined)
     {
       // TODO: Vysvětlit, co to znamená a co s tím.
+      //  - že je ideálně třeba dynamicky updatovat velikost room cashe
+      //    podle velikosti MapSvg.
       throw Error("No more room svg elements are left in cache");
     }
 
@@ -54,15 +64,20 @@ export class RoomsSvg extends G
     roomSvg.setRoom(room);
     roomSvg.show();
 
-    this.roomSvgs.push(roomSvg);
+    const roomId = coords.toString();
+
+    if (this.roomSvgs.has(roomId))
+      throw Error(`Room ${roomId} already has a svg component`);
+
+    this.roomSvgs.set(roomId, roomSvg);
   }
 
   public clear(): void
   {
-    for (const roomSvg of this.roomSvgs)
+    for (const roomSvg of this.roomSvgs.values())
       this.putToCache(roomSvg);
 
-    this.roomSvgs = [];
+    this.roomSvgs.clear();
   }
 
   public updateGraphics(): void
@@ -79,6 +94,18 @@ export class RoomsSvg extends G
     roomSvg.setRoom("Doesn't exist");
     roomSvg.hide();
     this.roomSvgCache.push(roomSvg);
+  }
+
+  // ! Throws exception on error.
+  private getRoomSvg(coords: Coords): RoomSvg
+  {
+    const roomId = coords.toString();
+    const roomSvg = this.roomSvgs.get(roomId);
+
+    if (roomSvg === undefined)
+      throw Error(`Room ${roomId} doesn't have a map svg component`);
+
+    return roomSvg;
   }
 }
 

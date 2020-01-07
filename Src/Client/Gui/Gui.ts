@@ -47,7 +47,8 @@ export namespace Gui
 
     if (newState === State.ERROR)
     {
-      // TODO: Better displaying of error message.
+      // TODO: Better displaying of error message
+      //  (probably output it to error window).
       alert("An error occured. Please reload the browser tab to log back in.");
     }
   }
@@ -76,11 +77,13 @@ export namespace Gui
     return exitsSvg;
   }
 
-  // ! Throws exception on error.
-  export function updateMap(): void
+  export function rebuildMap(): void
   {
-    console.log("updateMap()");
+    updateMap({ rebuild: true });
+  }
 
+  export function updateMap({ rebuild = false } = {}): void
+  {
     // TODO: Parametrizovat.
     const location = new Coords(0, 0, 0);
 
@@ -90,17 +93,9 @@ export namespace Gui
         + " is not assigned to Gui yet");
     }
 
-    // TEST
-    console.log("disabling mouse events");
-    components.roomsSvg.disableMouseEvents();
+    const exitsData = updateRooms(components.roomsSvg, location, { rebuild });
 
-    console.error(new Error("Update"));
-
-    components.roomsSvg.clear();
-
-    const exitsData = updateRooms(components.roomsSvg, location);
-
-    components.roomsSvg.updateGraphics();
+    // components.roomsSvg.updateGraphics();
 
     if (components.exitsSvg === "Not assigned")
     {
@@ -108,35 +103,16 @@ export namespace Gui
         + " is not assigned to Gui yet");
     }
 
-    components.exitsSvg.clear();
-    updateExits(exitsData, components.exitsSvg, location);
-
-    // TEST
-    console.log("setting timeout");
-    setTimeout
-    (
-      () =>
-      {
-        if (components.roomsSvg !== "Not assigned")
-        {
-          console.log("enabling mouse events");
-          components.roomsSvg.enableMouseEvents();
-        }
-      },
-      2000
-    );
+    rebuildExits(exitsData, components.exitsSvg, location);
   }
 }
 
 // ----------------- Auxiliary Functions ---------------------
 
-function updateRooms
-(
-  roomsSvg: RoomsSvg,
-  location: Coords
-)
-: Map<string, ExitSvg.ExitData>
+function getCoordsInView(location: Coords): Array<Coords>
 {
+  const coordsInView: Array<Coords> = [];
+
   // TODO: Provázat tohle s RoomsSvg.ROOMS_IN_CACHE
   // (měly by to bejt stejný hodnoty).
   const from =
@@ -151,8 +127,6 @@ function updateRooms
     s: location.s + 20
   };
 
-  const exitsData = new Map<string, ExitSvg.ExitData>();
-
   // Order of cycles determines oder of svg components representing
   // rooms in the DOM. Since people usually expects rows of things
   // rather than columns, we iterate nort-south direction first.
@@ -160,27 +134,53 @@ function updateRooms
   {
     for (let e = from.e; e <= to.e; e++)
     {
-      // The world is 3d but map only 2e - we show only
-      // one horizontal slice of the world at a time.
-      const coords = new Coords(e, s, location.u);
-      const room = World.getRoom(coords);
+      coordsInView.push(new Coords(e, s, location.u));
+    }
+  }
 
-      if (room === "Nothing there")
-      {
+  return coordsInView;
+}
+
+function updateRooms
+(
+  roomsSvg: RoomsSvg,
+  location: Coords,
+  { rebuild = false }
+)
+: Map<string, ExitSvg.ExitData>
+{
+  if (rebuild)
+    roomsSvg.clear();
+
+  const exitsData = new Map<string, ExitSvg.ExitData>();
+  const coordsInView = getCoordsInView(location);
+
+  for (const coords of coordsInView)
+  {
+    const room = World.getRoom(coords);
+
+    if (room === "Nothing there")
+    {
+      if (rebuild)
         roomsSvg.addRoomSvg("Doesn't exist", coords);
-      }
       else
-      {
+        roomsSvg.updateRoomSvg("Doesn't exist", coords);
+    }
+    else
+    {
+      if (rebuild)
         roomsSvg.addRoomSvg(room, coords);
-        extractExitData(room, exitsData);
-      }
+      else
+        roomsSvg.updateRoomSvg(room, coords);
+
+      extractExitData(room, exitsData);
     }
   }
 
   return exitsData;
 }
 
-function updateExits
+function rebuildExits
 (
   exitsData: Map<string, ExitSvg.ExitData>,
   exitsSvg: ExitsSvg,
@@ -188,6 +188,8 @@ function updateExits
 )
 : void
 {
+  exitsSvg.clear();
+
   for (const exitData of exitsData.values())
   {
     exitsSvg.createExitSvg(exitData);

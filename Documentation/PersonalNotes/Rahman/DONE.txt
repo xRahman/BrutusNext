@@ -1,3 +1,9 @@
+TODO: Ve WorldSvg.getRoomCoords() parametrizovat jméno komponenty
+  room background (nastavuje se v konstruktoru RoomSvg)
+
+TODO: Sloučit funkce Gui.updateMap() a Gui.rebuildMap()
+[done]
+
 TODO: Výpočet, kolik room je třeba zobrazovat
 TODO: Updatovat počet zobrazovaných room při resizu MapWindow.
 - je to pekelně složitý a nutně to nepotřebuju. Místo toho to bude
