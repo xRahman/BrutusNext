@@ -1,3 +1,8 @@
+TODO: Zakázat ve VsCode prohledávání TODO (tj. obecně adresáře Documentation).
+  (aha, ono to prohledává otevřený soubory, i když je v nich zakázaný
+   prohledávání. Tak nic).
+[doesn't work]
+
 TODO: Ve WorldSvg.getRoomCoords() parametrizovat jméno komponenty
   room background (nastavuje se v konstruktoru RoomSvg)
 

@@ -44,7 +44,7 @@ export class Window extends Div
   // // ! Throws an exception on error.
   // public open(): void
   // {
-  //   // TODO: Throw an error if this window doesn't have a 'visibility'
+  //   // TODO: Throw an error if this window doesn't have 'visibility'
   //   // flag set for current current Windows state.
 
   //   this.closed = false;

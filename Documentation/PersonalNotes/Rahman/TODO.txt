@@ -74,6 +74,9 @@ TODO: Udělat RoomsSvg.roomsSvgCache Set a přidat checky, že to něj nepřidá
 
 TODO: Vysvětlující error message v RoomsSvg.addRoomSvg()
 
+TODO: Dát někam funkci na čtení jména z elementu a použít ji
+  ve WorldSvg.getRoomCoords().
+
 
 TODO: Invertnout 's' axis (kladné hodnoty by měly růst nahoru)
 
