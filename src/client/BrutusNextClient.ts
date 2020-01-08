@@ -30,7 +30,7 @@ async function startBrutusNextClient(): Promise<void>
     await Connection.connect();
 
     // TEST (Mělo by se to volat jinde)
-    Gui.updateMap();
+    Gui.rebuildMap();
     Gui.switchToState(Gui.State.GAME);
   }
   catch (error)
