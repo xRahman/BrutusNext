@@ -5,14 +5,14 @@
 */
 
 import { Gui } from "../../../Client/Gui/Gui";
-import { Component } from "../../../Client/Gui/Component";
+import { Body } from "../../../Client/Gui/Body";
 import { CenteredTitledWindow } from
   "../../../Client/Gui/CenteredTitledWindow";
 
 // export class LoginWindow extends FormWindow
 export class LoginWindow extends CenteredTitledWindow
 {
-  constructor(parent: Component)
+  constructor(parent: Body)
   {
     super(parent, "login_window", "&wWelcome to &gBrutus&GNext");
 

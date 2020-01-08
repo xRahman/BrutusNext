@@ -4,7 +4,7 @@
   Window with a titlebar and content
 */
 
-import { Component } from "../../Client/Gui/Component";
+import { Body } from "../../Client/Gui/Body";
 import { TitleBar } from "../../Client/Gui/TitleBar";
 import { WindowContent } from "../../Client/Gui/WindowContent";
 import { Window } from "../../Client/Gui/Window";
@@ -19,7 +19,7 @@ export class TitledWindow extends Window
   // ! Throws an exception on error.
   constructor
   (
-    parent: Component,
+    parent: Body,
     name = "titled_window",
     title = "New window"
   )

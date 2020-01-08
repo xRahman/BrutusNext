@@ -4,7 +4,7 @@
   Map window
 */
 
-import { Component } from "../../../Client/Gui/Component";
+import { Body } from "../../../Client/Gui/Body";
 import { MapComponent } from "../../../Client/Gui/Map/MapComponent";
 import { Gui } from "../../../Client/Gui/Gui";
 import { TitledWindow } from "../../../Client/Gui/TitledWindow";
@@ -15,7 +15,7 @@ export class MapWindow extends TitledWindow
 
   protected map: MapComponent;
 
-  constructor(parent: Component)
+  constructor(parent: Body)
   {
     super(parent, "map_window", "Map Window");
 

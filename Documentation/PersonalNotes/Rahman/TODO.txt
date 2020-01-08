@@ -75,6 +75,9 @@ Jak zjistit, kolik je 1 rem:
  (pokud font size html dokumentu nastavuju sám, tak si to můžu prostě pamatovat)
 - asi je to lepší zjišťovat z DOM
 
+TODO: V css používat výhradně rem (a procenta), nikdy pixely
+- změnit šířku rámečku okna.
+
 TODO: Prostudovat:
   https://medium.com/better-programming/event-delegation-in-javascript-boost-your-app-performance-5f10f25cec96
   https://ehsangazar.com/optimizing-javascript-event-listeners-for-performance-e28406ad406c
@@ -96,10 +99,7 @@ TODO: V createMap() v cyklu na vyrábění mapy oasertovat krajní hodnoty cyklu
 - tohle asi po optimalizaci nebude potřeba (respektive možná to bude
   potřeba v novém cyklu)
 
-TODO: V konstruktorech komponent dát parentům typ rodiče, ať se přes
-  this.parent dají volat jeho metody.
-
-TODO: Líp vyřešit leftClick a rightClick
+TODO: Líp vyřešit onLeftClick a onRightClick
   (nelíbí se mi, že se různý eventy handlujou různě)
 - asi na to v Component udělat funkci assignEventHandler()
   (nebo registerEventHandler()) a tý předat typ eventu

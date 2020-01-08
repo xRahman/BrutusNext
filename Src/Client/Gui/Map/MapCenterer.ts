@@ -9,7 +9,7 @@
   this component or it will clip three quarters of the map.
 */
 
-import { Component } from "../../../Client/Gui/Component";
+import { MapComponent } from "../../../Client/Gui/Map/MapComponent";
 import { WorldComponent } from "../../../Client/Gui/Map/WorldComponent";
 import { Svg } from "../../../Client/Gui/Svg/Svg";
 
@@ -17,7 +17,7 @@ export class MapCenterer extends Svg
 {
   public readonly world: WorldComponent;
 
-  constructor(parent: Component, name = "map_centerer")
+  constructor(parent: MapComponent, name = "map_centerer")
   {
     super(parent, name);
 

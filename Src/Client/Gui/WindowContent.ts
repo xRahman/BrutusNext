@@ -4,7 +4,7 @@
   Window with a titlebar and content
 */
 
-import { Component } from "../../Client/Gui/Component";
+import { Window } from "../../Client/Gui/Window";
 import { Div } from "../../Client/Gui/Div";
 
 export class WindowContent extends Div
@@ -12,7 +12,7 @@ export class WindowContent extends Div
   // ! Throws an exception on error.
   constructor
   (
-    parent: Component,
+    parent: Window,
     name = "window_content"
   )
   {

@@ -25,19 +25,19 @@ const windows = new Set<Window>();
 
 export class Body extends Component
 {
-  private static readonly body = new Body();
+  private static readonly instance = new Body();
 
   public static createWindows(): void
   {
-    windows.add(new LoginWindow(this.body));
+    windows.add(new LoginWindow(Body.instance));
 
     // Game windows.
-    windows.add(new GroupWindow(this.body));
-    windows.add(new RoomWindow(this.body));
-    windows.add(new MapWindow(this.body));
-    windows.add(new ChatWindow(this.body));
-    windows.add(new CombatWindow(this.body));
-    windows.add(new SpamWindow(this.body));
+    windows.add(new GroupWindow(Body.instance));
+    windows.add(new RoomWindow(Body.instance));
+    windows.add(new MapWindow(Body.instance));
+    windows.add(new ChatWindow(Body.instance));
+    windows.add(new CombatWindow(Body.instance));
+    windows.add(new SpamWindow(Body.instance));
   }
 
   public static showWindowsByState(state: Gui.State): void

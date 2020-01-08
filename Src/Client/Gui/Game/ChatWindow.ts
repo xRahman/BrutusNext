@@ -4,13 +4,13 @@
   Chat window
 */
 
-import { Component } from "../../../Client/Gui/Component";
+import { Body } from "../../../Client/Gui/Body";
 import { Gui } from "../../../Client/Gui/Gui";
 import { TitledWindow } from "../../../Client/Gui/TitledWindow";
 
 export class ChatWindow extends TitledWindow
 {
-  constructor(parent: Component)
+  constructor(parent: Body)
   {
     super(parent, "chat_window", "Chat Window");
 

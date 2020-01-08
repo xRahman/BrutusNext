@@ -6,7 +6,7 @@
 
 import { Coords } from "../../../Shared/Class/Coords";
 import { Room } from "../../../Client/World/Room";
-import { Component } from "../../../Client/Gui/Component";
+import { RoomsComponent } from "../../../Client/Gui/Map/RoomsComponent";
 import { SvgImage } from "../../../Client/Gui/Svg/SvgImage";
 import { Circle } from "../../../Client/Gui/Svg/Circle";
 import { G } from "../../../Client/Gui/Svg/G";
@@ -22,7 +22,7 @@ export class RoomComponent extends G
 
   constructor
   (
-    parent: Component,
+    parent: RoomsComponent,
     name = "room"
   )
   {

@@ -5,7 +5,7 @@
 */
 
 import { Text } from "../../Client/Gui/Text/Text";
-import { Component } from "../../Client/Gui/Component";
+import { Window } from "../../Client/Gui/Window";
 import { Div } from "../../Client/Gui/Div";
 
 export class TitleBar extends Div
@@ -17,7 +17,7 @@ export class TitleBar extends Div
   // ! Throws an exception on error.
   constructor
   (
-    parent: Component,
+    parent: Window,
     name = "title_bar",
     title = ""
   )

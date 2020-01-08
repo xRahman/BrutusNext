@@ -4,7 +4,7 @@
   A window in the center of the screen
 */
 
-import { Component } from "../../Client/Gui/Component";
+import { Body } from "../../Client/Gui/Body";
 import { TitledWindow } from "../../Client/Gui/TitledWindow";
 
 export class CenteredTitledWindow extends TitledWindow
@@ -12,7 +12,7 @@ export class CenteredTitledWindow extends TitledWindow
   // ! Throws an exception on error.
   constructor
   (
-    parent: Component,
+    parent: Body,
     name = "centered_titled_window",
     title = ""
   )

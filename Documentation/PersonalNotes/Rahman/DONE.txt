@@ -1,3 +1,7 @@
+TODO: V konstruktorech komponent dát parentům typ rodiče, ať se přes
+  this.parent dají volat jeho metody.
+[done]
+
 TODO: Místo RoomSvg, MapSvg a podobně asi používat RoomComponent, MapComponent
   etc.
 [done]

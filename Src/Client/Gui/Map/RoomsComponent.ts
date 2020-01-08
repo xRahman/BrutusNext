@@ -7,7 +7,7 @@
 import { Component } from "../../../Client/Gui/Component";
 import { Coords } from "../../../Shared/Class/Coords";
 import { Room } from "../../../Client/World/Room";
-import { MapZoomer } from "../../../Client/Gui/Map/MapZoomer";
+import { WorldComponent } from "../../../Client/Gui/Map/WorldComponent";
 import { RoomComponent } from "../../../Client/Gui/Map/RoomComponent";
 import { G } from "../../../Client/Gui/Svg/G";
 
@@ -22,7 +22,7 @@ export class RoomsComponent extends G
 
   private readonly roomComponentCache = new Set<RoomComponent>();
 
-  constructor(parent: MapZoomer, name = "rooms")
+  constructor(parent: WorldComponent, name = "rooms")
   {
     // Speed optimalization:
     //   This component is not inserted to parent right away
