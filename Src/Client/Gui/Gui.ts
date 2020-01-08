@@ -8,15 +8,15 @@
 import { Coords } from "../../Shared/Class/Coords";
 import { Room } from "../../Client/World/Room";
 import { World } from "../../Client/World/World";
-import { ExitSvg } from "../../Client/Gui/Map/ExitSvg";
-import { ExitsSvg } from "../../Client/Gui/Map/ExitsSvg";
-import { RoomsSvg } from "../../Client/Gui/Map/RoomsSvg";
+import { ExitComponent } from "../../Client/Gui/Map/ExitComponent";
+import { ExitsComponent } from "../../Client/Gui/Map/ExitsComponent";
+import { RoomsComponent } from "../../Client/Gui/Map/RoomsComponent";
 import { Body } from "../../Client/Gui/Body";
 
 const components =
 {
-  roomsSvg: "Not assigned" as (RoomsSvg | "Not assigned"),
-  exitsSvg: "Not assigned" as (ExitsSvg | "Not assigned")
+  rooms: "Not assigned" as (RoomsComponent | "Not assigned"),
+  exits: "Not assigned" as (ExitsComponent | "Not assigned")
 };
 
 export namespace Gui
@@ -53,28 +53,26 @@ export namespace Gui
     }
   }
 
-  export function setRoomsSvg(roomsSvg: RoomsSvg): RoomsSvg
+  export function setRoomsComponent(rooms: RoomsComponent): RoomsComponent
   {
-    if (components.roomsSvg !== "Not assigned")
-    {
-      throw Error("'roomSvg' is already assigned to Gui");
-    }
+    if (components.rooms !== "Not assigned")
+      throw Error("A reference to 'rooms' is already assigned to Gui");
 
-    components.roomsSvg = roomsSvg;
+    components.rooms = rooms;
 
-    return roomsSvg;
+    return rooms;
   }
 
-  export function setExitsSvg(exitsSvg: ExitsSvg): ExitsSvg
+  export function setExitsComponent(exits: ExitsComponent): ExitsComponent
   {
-    if (components.exitsSvg !== "Not assigned")
+    if (components.exits !== "Not assigned")
     {
-      throw Error("'exitsSvg' is already assigned to Gui");
+      throw Error("A reference to 'exits' is already assigned to Gui");
     }
 
-    components.exitsSvg = exitsSvg;
+    components.exits = exits;
 
-    return exitsSvg;
+    return exits;
   }
 
   export function rebuildMap(): void
@@ -87,23 +85,23 @@ export namespace Gui
     // TODO: Parametrizovat.
     const location = new Coords(0, 0, 0);
 
-    if (components.roomsSvg === "Not assigned")
+    if (components.rooms === "Not assigned")
     {
-      throw Error("Failed to update map because 'roomsSvg' component"
+      throw Error("Failed to update map because 'rooms' component"
         + " is not assigned to Gui yet");
     }
 
-    const exitsData = updateRooms(components.roomsSvg, location, { rebuild });
+    const exitsData = updateRooms(components.rooms, location, { rebuild });
 
-    // components.roomsSvg.updateGraphics();
+    // components.rooms.updateGraphics();
 
-    if (components.exitsSvg === "Not assigned")
+    if (components.exits === "Not assigned")
     {
-      throw Error("Failed to update map because 'exitsSvg' component"
+      throw Error("Failed to update map because 'exits' component"
         + " is not assigned to Gui yet");
     }
 
-    rebuildExits(exitsData, components.exitsSvg, location);
+    rebuildExits(exitsData, components.exits, location);
   }
 }
 
@@ -113,7 +111,7 @@ function getCoordsInView(location: Coords): Array<Coords>
 {
   const coordsInView: Array<Coords> = [];
 
-  // TODO: Provázat tohle s RoomsSvg.ROOMS_IN_CACHE
+  // TODO: Provázat tohle s Rooms.ROOMS_IN_CACHE
   // (měly by to bejt stejný hodnoty).
   const from =
   {
@@ -143,16 +141,16 @@ function getCoordsInView(location: Coords): Array<Coords>
 
 function updateRooms
 (
-  roomsSvg: RoomsSvg,
+  rooms: RoomsComponent,
   location: Coords,
   { rebuild = false }
 )
-: Map<string, ExitSvg.ExitData>
+: Map<string, ExitComponent.ExitData>
 {
   if (rebuild)
-    roomsSvg.clear();
+    rooms.clear();
 
-  const exitsData = new Map<string, ExitSvg.ExitData>();
+  const exitsData = new Map<string, ExitComponent.ExitData>();
   const coordsInView = getCoordsInView(location);
 
   for (const coords of coordsInView)
@@ -162,16 +160,16 @@ function updateRooms
     if (room === "Nothing there")
     {
       if (rebuild)
-        roomsSvg.addRoomSvg("Doesn't exist", coords);
+        rooms.addRoomComponent("Doesn't exist", coords);
       else
-        roomsSvg.updateRoomSvg("Doesn't exist", coords);
+        rooms.updateRoom("Doesn't exist", coords);
     }
     else
     {
       if (rebuild)
-        roomsSvg.addRoomSvg(room, coords);
+        rooms.addRoomComponent(room, coords);
       else
-        roomsSvg.updateRoomSvg(room, coords);
+        rooms.updateRoom(room, coords);
 
       extractExitData(room, exitsData);
     }
@@ -182,24 +180,24 @@ function updateRooms
 
 function rebuildExits
 (
-  exitsData: Map<string, ExitSvg.ExitData>,
-  exitsSvg: ExitsSvg,
+  exitsData: Map<string, ExitComponent.ExitData>,
+  exits: ExitsComponent,
   location: Coords
 )
 : void
 {
-  exitsSvg.clear();
+  exits.clear();
 
   for (const exitData of exitsData.values())
   {
-    exitsSvg.createExitSvg(exitData);
+    exits.createExitComponent(exitData);
   }
 }
 
 function extractExitData
 (
   room: Room,
-  exitsData: Map<string, ExitSvg.ExitData>
+  exitsData: Map<string, ExitComponent.ExitData>
 )
 : void
 {

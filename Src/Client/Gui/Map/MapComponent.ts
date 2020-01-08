@@ -1,14 +1,14 @@
 /*
   Part of BrutusNEXT
 
-  Svg map
+  Map of the world
 */
 
 import { Component } from "../../../Client/Gui/Component";
 import { MapCenterer } from "../../../Client/Gui/Map/MapCenterer";
 import { SvgComponent } from "../../../Client/Gui/Svg/SvgComponent";
 
-export class MapSvg extends SvgComponent
+export class MapComponent extends SvgComponent
 {
   private readonly mapCenterer: MapCenterer;
 
@@ -30,9 +30,9 @@ export class MapSvg extends SvgComponent
     event.preventDefault();
 
     if (event.deltaY > 0)
-      this.mapCenterer.mapZoomer.zoomIn();
+      this.mapCenterer.world.zoomIn();
 
     if (event.deltaY < 0)
-      this.mapCenterer.mapZoomer.zoomOut();
+      this.mapCenterer.world.zoomOut();
   }
 }

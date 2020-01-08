@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Svg component that centers the map in map window
+  Component that centers the map
 */
 
 /*
@@ -10,12 +10,12 @@
 */
 
 import { Component } from "../../../Client/Gui/Component";
-import { WorldSvg } from "../../../Client/Gui/Map/WorldSvg";
+import { WorldComponent } from "../../../Client/Gui/Map/WorldComponent";
 import { Svg } from "../../../Client/Gui/Svg/Svg";
 
 export class MapCenterer extends Svg
 {
-  public readonly mapZoomer: WorldSvg;
+  public readonly world: WorldComponent;
 
   constructor(parent: Component, name = "map_centerer")
   {
@@ -23,6 +23,6 @@ export class MapCenterer extends Svg
 
     this.setRelativePosition(50, 50);
 
-    this.mapZoomer = new WorldSvg(this);
+    this.world = new WorldComponent(this);
   }
 }

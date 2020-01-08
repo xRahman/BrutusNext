@@ -1,3 +1,7 @@
+TODO: Místo RoomSvg, MapSvg a podobně asi používat RoomComponent, MapComponent
+  etc.
+[done]
+
 TODO: Udělat RoomsSvg.roomsSvgCache Set a přidat checky, že to něj nepřidávám
   něco, co už v něm je.
 [done]

@@ -1,23 +1,23 @@
 /*
   Part of BrutusNEXT
 
-  Svg reprezentation of a connection between rooms on the map
+  Connection between rooms on the map
 */
 
 import { CssColor } from "../../../Client/Gui/CssColor";
 import { Coords } from "../../../Shared/Class/Coords";
-import { ExitsSvg } from "../../../Client/Gui/Map/ExitsSvg";
+import { ExitsComponent } from "../../../Client/Gui/Map/ExitsComponent";
 import { Line } from "../../../Client/Gui/Svg/Line";
 import { G } from "../../../Client/Gui/Svg/G";
 
-export class ExitSvg extends G
+export class ExitComponent extends G
 {
   private readonly svgLine: Line;
 
   constructor
   (
-    parent: ExitsSvg,
-    private readonly exitData: ExitSvg.ExitData,
+    parent: ExitsComponent,
+    private readonly exitData: ExitComponent.ExitData,
     name = "exit"
   )
   {
@@ -60,7 +60,7 @@ export class ExitSvg extends G
 
 // ------------------ Type Declarations ----------------------
 
-export namespace ExitSvg
+export namespace ExitComponent
 {
   export type ExitData =
   {

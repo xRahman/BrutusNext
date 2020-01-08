@@ -1,30 +1,30 @@
 /*
   Part of BrutusNEXT
 
-  Svg container for everything in the world
+  World on the map
 */
 
 import { Coords } from "../../../Shared/Class/Coords";
 import { MapEditor } from "../../../Client/Editor/MapEditor";
 import { Gui } from "../../../Client/Gui/Gui";
-import { RoomSvg } from "../../../Client/Gui/Map/RoomSvg";
-import { RoomsSvg } from "../../../Client/Gui/Map/RoomsSvg";
-import { ExitsSvg } from "../../../Client/Gui/Map/ExitsSvg";
+import { RoomComponent } from "../../../Client/Gui/Map/RoomComponent";
+import { RoomsComponent } from "../../../Client/Gui/Map/RoomsComponent";
+import { ExitsComponent } from "../../../Client/Gui/Map/ExitsComponent";
 import { MapCenterer } from "../../../Client/Gui/Map/MapCenterer";
 import { MapZoomer } from "../../../Client/Gui/Map/MapZoomer";
 
-export class WorldSvg extends MapZoomer
+export class WorldComponent extends MapZoomer
 {
-  private readonly roomsSvg: RoomsSvg;
-  private readonly exitsSvg: ExitsSvg;
+  private readonly rooms: RoomsComponent;
+  private readonly exits: ExitsComponent;
 
   constructor(parent: MapCenterer, name = "world")
   {
     super(parent, name);
 
     // Order of creation determines drawing order.
-    this.exitsSvg = Gui.setExitsSvg(new ExitsSvg(this));
-    this.roomsSvg = Gui.setRoomsSvg(new RoomsSvg(this));
+    this.exits = Gui.setExitsComponent(new ExitsComponent(this));
+    this.rooms = Gui.setRoomsComponent(new RoomsComponent(this));
 
     this.registerEventListeners();
   }
@@ -119,7 +119,7 @@ function getRoomCoords(event: Event): Coords | undefined
 
   if (event.target instanceof Element)
   {
-    if (event.target.getAttribute("name") !== RoomSvg.ROOM_BACKGROUND)
+    if (event.target.getAttribute("name") !== RoomComponent.ROOM_BACKGROUND)
       return undefined;
 
     // ! Throws exception on error.

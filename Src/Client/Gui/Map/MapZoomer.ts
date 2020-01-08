@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Svg component that zooms the map
+  Component that zooms the map
 */
 
 /*
