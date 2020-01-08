@@ -18,10 +18,9 @@ const ROOMS_IN_CACHE = 41 * 41;
 export class RoomsSvg extends G
 {
   // [key]: string representation of room coords.
-  private readonly roomSvgs: Map<string, RoomSvg> = new Map();
+  private readonly rooms = new Map<string, RoomSvg>();
 
-  // TODO: Make this a set (and add appropriate checks).
-  private readonly roomSvgCache: Array<RoomSvg>;
+  private readonly roomCache = new Set<RoomSvg>();
 
   constructor(parent: MapZoomer, name = "rooms")
   {
@@ -34,7 +33,7 @@ export class RoomsSvg extends G
     // children already created.
     super(parent, name, Component.InsertMode.DO_NOT_INSERT);
 
-    this.roomSvgCache = createRoomCache(this);
+    this.populateRoomCache();
 
     parent.insertElement(this.element, Component.InsertMode.APPEND);
   }
@@ -49,9 +48,9 @@ export class RoomsSvg extends G
   // ! Throws exception on error.
   public addRoomSvg(room: Room | "Doesn't exist", coords: Coords): void
   {
-    const roomSvg = this.roomSvgCache.pop();
+    const roomSvg = pop(this.roomCache);
 
-    if (roomSvg === undefined)
+    if (roomSvg === "Nothing there")
     {
       // TODO: Vysvětlit, co to znamená a co s tím.
       //  - že je ideálně třeba dynamicky updatovat velikost room cashe
@@ -66,18 +65,18 @@ export class RoomsSvg extends G
 
     const roomId = coords.toString();
 
-    if (this.roomSvgs.has(roomId))
+    if (this.rooms.has(roomId))
       throw Error(`Room ${roomId} already has a svg component`);
 
-    this.roomSvgs.set(roomId, roomSvg);
+    this.rooms.set(roomId, roomSvg);
   }
 
   public clear(): void
   {
-    for (const roomSvg of this.roomSvgs.values())
+    for (const roomSvg of this.rooms.values())
       this.putToCache(roomSvg);
 
-    this.roomSvgs.clear();
+    this.rooms.clear();
   }
 
   public updateGraphics(): void
@@ -88,19 +87,43 @@ export class RoomsSvg extends G
 
   // ---------------- Private methods -------------------
 
+  // ! Throws exception on error.
+  private populateRoomCache(): void
+  {
+    if (this.roomCache.size !== 0)
+      throw Error("Attempt to populate room cache which is not empty");
+
+    for (let i = 0; i < ROOMS_IN_CACHE; i++)
+    {
+      const roomSvg = new RoomSvg(this);
+
+      roomSvg.setCoords("In room cache");
+
+      this.roomCache.add(roomSvg);
+    }
+  }
+
+  // ! Throws exception on error.
   private putToCache(roomSvg: RoomSvg): void
   {
     roomSvg.setCoords("In room cache");
     roomSvg.setRoom("Doesn't exist");
     roomSvg.hide();
-    this.roomSvgCache.push(roomSvg);
+
+    if (this.roomCache.has(roomSvg))
+    {
+      throw Error("Attempt to add an element to roomCache which is"
+        + " already there");
+    }
+
+    this.roomCache.add(roomSvg);
   }
 
   // ! Throws exception on error.
   private getRoomSvg(coords: Coords): RoomSvg
   {
     const roomId = coords.toString();
-    const roomSvg = this.roomSvgs.get(roomId);
+    const roomSvg = this.rooms.get(roomId);
 
     if (roomSvg === undefined)
       throw Error(`Room ${roomId} doesn't have a map svg component`);
@@ -111,18 +134,16 @@ export class RoomsSvg extends G
 
 // ----------------- Auxiliary Functions ---------------------
 
-function createRoomCache(parent: RoomsSvg): Array<RoomSvg>
+function pop(roomCache: Set<RoomSvg>): RoomSvg | "Nothing there"
 {
-  const roomCache: Array<RoomSvg> = [];
-
-  for (let i = 0; i < ROOMS_IN_CACHE; i++)
+  for (const value of roomCache)
   {
-    const roomSvg = new RoomSvg(parent);
+    roomCache.delete(value);
 
-    roomSvg.setCoords("In room cache");
-
-    roomCache.push(roomSvg);
+    // We are using the for cycle just to access the
+    // first element of the set so we return right awayt.
+    return value;
   }
 
-  return roomCache;
+  return "Nothing there";
 }

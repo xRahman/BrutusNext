@@ -25,19 +25,11 @@ How much to do in this batch?
 
 ------------------------------------------------------------------------------
 
-TODO: Při editaci mapy není důvod vysypávat všechny roomSvg elementy,
-  stačí jim updatnout grafiku.
-- exity se asi budou muset rebuildnout, ty nemaj dummy varianty.
-  To znamená, že při updatu grafiky je třeba buildit exit data.
-
 Optimalizace mapy:
 ------------------
 
 TODO: Nevytvářet roomy podle rozměrů worldu, ale podle počtu, kolik je třeba
   zobrazovat
-
-TODO: Fix buildění jiných než chtěných room.
-
 
 TODO: Vyrábět room elementy mimo DOM a insternout je najednou s parentem
 [done]
@@ -68,9 +60,6 @@ TODO: Provázat velikost zobrazované části mapy v Gui.getCoordsInView()
 
 TODO: Pokusit se sjednotit "Nothing here" a "Doesn't exist"
   (asi vracet z gridu "Doesn't exist")
-
-TODO: Udělat RoomsSvg.roomsSvgCache Set a přidat checky, že to něj nepřidávám
-  něco, co už v něm je.
 
 TODO: Vysvětlující error message v RoomsSvg.addRoomSvg()
 

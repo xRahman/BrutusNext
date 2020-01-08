@@ -1,3 +1,16 @@
+TODO: Udělat RoomsSvg.roomsSvgCache Set a přidat checky, že to něj nepřidávám
+  něco, co už v něm je.
+[done]
+
+TODO: Při editaci mapy není důvod vysypávat všechny roomSvg elementy,
+  stačí jim updatnout grafiku.
+- exity se asi budou muset rebuildnout, ty nemaj dummy varianty.
+  To znamená, že při updatu grafiky je třeba buildit exit data.
+[done]
+
+TODO: Fix buildění jiných než chtěných room.
+[done]
+
 TODO: Zakázat ve VsCode prohledávání TODO (tj. obecně adresáře Documentation).
   (aha, ono to prohledává otevřený soubory, i když je v nich zakázaný
    prohledávání. Tak nic).
