@@ -58,6 +58,9 @@ TODO: Jelikož se 'result' object před použitím StringUtils.scan() stejně
 - s typem návratový hodnoty problém nebude, protože nemusím nic vracet
   (result se modifikuje jako side effect).
 - házet Error, když dostanu 'result' object s 'undefined' propertizama.
+IDEA: property, do kterých se má zapsat number, bych mohl inicializovat
+  na NaN (ale můžu asi povolit i inicializaci číslem).
+- tj. testovat, jestli je property NaN nebo typ "number".
 
 TODO: Parametrizovat 'location' v Gui.updateMap()
 
