@@ -53,6 +53,12 @@ TODO: Grid je v /shared, tj. asi by v něm nemělo bejt počáteční nastavení
 
 ------------------------------------------------------------------------------
 
+TODO: Jelikož se 'result' object před použitím StringUtils.scan() stejně
+  musí inicializovat, tak asi klidně můžu automaticky konvertovat typy.
+- s typem návratový hodnoty problém nebude, protože nemusím nic vracet
+  (result se modifikuje jako side effect).
+- házet Error, když dostanu 'result' object s 'undefined' propertizama.
+
 TODO: Parametrizovat 'location' v Gui.updateMap()
 
 TODO: Provázat velikost zobrazované části mapy v Gui.getCoordsInView()
