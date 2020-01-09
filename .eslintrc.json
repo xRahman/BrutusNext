@@ -351,6 +351,13 @@
       // ],
       // Disallow the use of variables before they are defined.
       "@typescript-eslint/no-use-before-define": "off",
+      // [
+      //   "error",
+      //   {
+      //     "functions": false,
+      //     "classes": true
+      //   }
+      // ],
       // Disable the base rule as it can report incorrect errors.
       "no-useless-constructor": "off",
       // Disallow unnecessary constructor.
@@ -539,7 +546,7 @@
       // Enforce that class methods utilize 'this'.
       "class-methods-use-this": "off",
       // Enforce a maximum cyclomatic complexity allowed in a program.
-      "complexity": [ "error", 10 ],
+      "complexity": [ "error", 20 ],
       // Require 'return' statements to either always or never specify values.
       // (This is not necessary for typescript.)
       "consistent-return": "off",
@@ -900,8 +907,8 @@
       [
         "error",
         {
-          "newIsCapExceptionPattern": "^ERROR|REPORT|Express$",
-          "capIsNewExceptionPattern": "^ERROR|REPORT|Express$"
+          "newIsCapExceptionPattern": "^Express$",
+          "capIsNewExceptionPattern": "^Express$"
         }
       ],
       // Enforce or disallow parentheses when invoking a constructor
