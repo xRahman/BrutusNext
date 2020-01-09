@@ -70,6 +70,23 @@ scan("A 1 B 2", result, "A ${a} B ${b}");
   - nebo takhle:
 scan("A 1 B 2", result, "A ", "${result.a}", " B ", "${result.b}");
 
+
+Usage example:
+ const str = "[ A: 1, B: cat ]";
+ let result { a: number, b: string } = {};
+ result = scan(str, result, "[ A: ${a: number}, B: ${b: string} ]");
+
+Problém s typama:
+- můžu sice říct, že 'result' bude nějakýho typu, ale není, jak to
+  zkontrolovat, pokud parametr 'result' nebude mít definované hodnoty
+  všech properties, protože z 'undefined' se nepozná typ.
+
+Možnosti:
+- smířit se s tím, že typy nemusej sedět.
+- parsovat jen stringy s tím, že typecast se nebude dělat v rámci
+  scanování.
+=> kašlu na konverze.
+
 ------------------------------------------------------------------------------
 
 Problémy s výkonem svg

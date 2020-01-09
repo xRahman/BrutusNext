@@ -197,37 +197,49 @@ function joinCoordStrings(from: Coords, to: Coords): string
   return `${from.toString()}-${to.toString()}`;
 }
 
-// ! Throws exception on error.
-function convertToNumber(str: string): number
-{
-  const value = Number(str);
+// // ! Throws exception on error.
+// function convertToNumber(str: string): number
+// {
+//   const value = Number(str);
 
-  if (Number.isNaN(value))
-  {
-    throw Error(`Failed to parse coords because argument`
-    + ` ${str} is not a number`);
-  }
+//   if (Number.isNaN(value))
+//   {
+//     throw Error(`Failed to parse coords because argument`
+//     + ` ${str} is not a number`);
+//   }
 
-  return value;
-}
+//   return value;
+// }
 
 // ! Throws exception on error.
 function parseCoordsString(coords: string): { e: number, s: number, u: number }
 {
-  const format = [ "[ e: ", ", s: ", ", u: ", " ]" ];
+  // const format = [ "[ e: ", ", s: ", ", u: ", " ]" ];
+
+  const scanResult = { e: "", s: "", u: "" };
 
   // ! Throws exception on error.
-  const stringValues = StringUtils.splitBySubstrings(coords, ...format);
+  StringUtils.scan(coords, "[ e: ${e}, s: ${s}, u: ${u} ]", scanResult);
 
-  if (stringValues.length !== 3)
-  {
-    throw Error(`Failed to parse coords from string '${coords}' because`
-      + ` it doesn't match expected format ${format.join("%d")}`);
-  }
+  // ! Throws exception on error.
+  const e = StringUtils.toNumber(scanResult.e);
+  // ! Throws exception on error.
+  const s = StringUtils.toNumber(scanResult.s);
+  // ! Throws exception on error.
+  const u = StringUtils.toNumber(scanResult.u);
 
-  const e = convertToNumber(stringValues[0]);
-  const s = convertToNumber(stringValues[1]);
-  const u = convertToNumber(stringValues[2]);
+  // // ! Throws exception on error.
+  // const stringValues = StringUtils.splitBySubstrings(coords, ...format);
+
+  // if (stringValues.length !== 3)
+  // {
+  //   throw Error(`Failed to parse coords from string '${coords}' because`
+  //     + ` it doesn't match expected format ${format.join("%d")}`);
+  // }
+
+  // const e = convertToNumber(stringValues[0]);
+  // const s = convertToNumber(stringValues[1]);
+  // const u = convertToNumber(stringValues[2]);
 
   return { e, s, u };
 }

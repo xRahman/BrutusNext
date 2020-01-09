@@ -1,3 +1,8 @@
+TODO: Lepší StringUtils.scan()
+[done]
+TODO: Otestovat
+[done]
+
 TODO: V konstruktorech komponent dát parentům typ rodiče, ať se přes
   this.parent dají volat jeho metody.
 [done]
