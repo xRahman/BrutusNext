@@ -53,9 +53,6 @@ TODO: Grid je v /shared, tj. asi by v něm nemělo bejt počáteční nastavení
 
 ------------------------------------------------------------------------------
 
-TODO: Mrknout se, proč se nezobrazujou errory z kompilace clientu
-  https://code.visualstudio.com/docs/editor/tasks#_background-watching-tasks
-
 TODO: Parametrizovat 'location' v Gui.updateMap()
 
 TODO: Provázat velikost zobrazované části mapy v Gui.getCoordsInView()

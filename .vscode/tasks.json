@@ -61,7 +61,8 @@
         "--watch",
         "--project", "./Src/Client"
       ],
-      "problemMatcher": [ "$tsc" ],
+      // "problemMatcher": [ "$tsc" ],
+      "problemMatcher": [ "$tsc-watch" ],
       // "dependsOn": [ "Lint Client" ]
       "dependsOn": [ "Remove Old Build" ]
     },
@@ -109,7 +110,8 @@
         "--watch",
         "--project", "./Src/Server"
       ],
-      "problemMatcher": [ "$tsc" ],
+      // "problemMatcher": [ "$tsc" ],
+      "problemMatcher": [ "$tsc-watch" ],
       // "dependsOn": [ "Lint Server" ]
       "dependsOn": [ "Remove Old Build" ]
     },
