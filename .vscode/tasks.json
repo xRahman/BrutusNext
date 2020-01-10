@@ -10,7 +10,8 @@
   [
     {
       "label": "Remove Old Build",
-      "presentation" : { "panel": "shared" },
+      // "presentation" : { "panel": "shared" },
+      "presentation" : { "panel": "shared", "group": "BrutusNext" },
       "command": "node",
       "type": "process",
       "isBackground": false,
@@ -51,7 +52,8 @@
     // },
     {
       "label": "Transpile Client",
-      "presentation" : { "panel": "shared" },
+      // "presentation" : { "panel": "shared" },
+      "presentation" : { "panel": "shared", "group": "BrutusNext" },
       "command": "node",
       "type": "process",
       "isBackground": true,
@@ -100,7 +102,8 @@
     // },
     {
       "label": "Transpile Server",
-      "presentation" : { "panel": "shared" },
+      // "presentation" : { "panel": "shared" },
+      "presentation" : { "panel": "shared", "group": "BrutusNext" },
       "command": "node",
       "type": "process",
       "isBackground": true,
@@ -117,7 +120,8 @@
     },
     {
       "label": "Build",
-      "presentation" : { "panel": "shared" },
+      // "presentation" : { "panel": "shared" },
+      "presentation" : { "panel": "shared", "group": "BrutusNext" },
       "dependsOn": [ "Transpile Client", "Transpile Server" ],
       "group":
       {

@@ -53,6 +53,7 @@ function assignValue
   property: string,
   value: string,
   result: { [ key: string ]: any }
+  // result: object
 )
 : void
 {
