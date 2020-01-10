@@ -187,21 +187,16 @@ function splitBySubstring
 )
 : { before: string, after: string }
 {
-  const splitResult = str.split(substring);
+  const substringPosition = str.indexOf(substring);
 
-  if (splitResult.length < 2)
+  if (substringPosition === -1)
   {
     throw Error(`Failed to split string ${str} because it`
       + ` doesn't contain substring ${substring}`);
   }
 
-  const before = splitResult[0];
-
-  splitResult.shift();
-
-  // 'str' may contain more than one occurance of 'substring'
-  // so we need to join the rest of 'splitResult'.
-  const after = splitResult.join(substring);
+  const before = str.substring(0, substringPosition);
+  const after = str.substring(substringPosition + substring.length);
 
   return { before, after };
 }

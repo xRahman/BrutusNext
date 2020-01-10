@@ -58,10 +58,6 @@ TODO: Mrknout se, proč se nezobrazujou errory z kompilace clientu
 
 TODO: Commitnout moje vscode settings
 
-TODO: Ve StringUtils.splitBySubstrings() použít indexy ve stringu místo
-  str.split().
-- a parametr může bejt Array.
-
 TODO: Parametrizovat 'location' v Gui.updateMap()
 
 TODO: Provázat velikost zobrazované části mapy v Gui.getCoordsInView()

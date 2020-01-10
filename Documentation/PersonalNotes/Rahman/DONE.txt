@@ -1,3 +1,8 @@
+TODO: Ve StringUtils.splitBySubstrings() použít indexy ve stringu místo
+  str.split().
+- a parametr může bejt Array.
+[done]
+
 TODO: Jelikož se 'result' object před použitím StringUtils.scan() stejně
   musí inicializovat, tak asi klidně můžu automaticky konvertovat typy.
 - s typem návratový hodnoty problém nebude, protože nemusím nic vracet
