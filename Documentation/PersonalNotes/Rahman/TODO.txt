@@ -53,14 +53,14 @@ TODO: Grid je v /shared, tj. asi by v něm nemělo bejt počáteční nastavení
 
 ------------------------------------------------------------------------------
 
-TODO: Jelikož se 'result' object před použitím StringUtils.scan() stejně
-  musí inicializovat, tak asi klidně můžu automaticky konvertovat typy.
-- s typem návratový hodnoty problém nebude, protože nemusím nic vracet
-  (result se modifikuje jako side effect).
-- házet Error, když dostanu 'result' object s 'undefined' propertizama.
-IDEA: property, do kterých se má zapsat number, bych mohl inicializovat
-  na NaN (ale můžu asi povolit i inicializaci číslem).
-- tj. testovat, jestli je property NaN nebo typ "number".
+TODO: Mrknout se, proč se nezobrazujou errory z kompilace clientu
+  https://code.visualstudio.com/docs/editor/tasks#_background-watching-tasks
+
+TODO: Commitnout moje vscode settings
+
+TODO: Ve StringUtils.splitBySubstrings() použít indexy ve stringu místo
+  str.split().
+- a parametr může bejt Array.
 
 TODO: Parametrizovat 'location' v Gui.updateMap()
 

@@ -1,3 +1,14 @@
+TODO: Jelikož se 'result' object před použitím StringUtils.scan() stejně
+  musí inicializovat, tak asi klidně můžu automaticky konvertovat typy.
+- s typem návratový hodnoty problém nebude, protože nemusím nic vracet
+  (result se modifikuje jako side effect).
+- házet Error, když dostanu 'result' object s 'undefined' propertizama.
+IDEA: property, do kterých se má zapsat number, bych mohl inicializovat
+  na NaN (ale můžu asi povolit i inicializaci číslem).
+- tj. testovat, jestli je property NaN nebo typ "number".
+  (NaN je typu number, takže to funguje automaticky)
+[done]
+
 TODO: Lepší StringUtils.scan()
 [done]
 TODO: Otestovat

@@ -6,23 +6,18 @@
 
 export namespace StringUtils
 {
-  export type ScanResult =
-  {
-    [key: string]: string
-  };
-
   // ! Throws exception on error.
   // Example of usage:
-  //   const str = "[ A: 1, B: cat ]";
-  //   let result { a: number, b: string } = {};
+  //   const str = "[ A: NaN, B: "" ]";
+  //   let result = { a: Number, b: String } = {};
   //   result = scan(str, "[ A: ${a}, B: ${b} ]", result);
-  //   console.log(result.a);  // "1"
+  //   console.log(result.a);  // 1
   //   console.log(result.b);  // "cat"
   export function scan
   (
     str: string,
     template: string,
-    result: ScanResult
+    result: { [ key: string ]: any }
   )
   : void
   {
@@ -30,7 +25,7 @@ export namespace StringUtils
     const { substrings, properties } = parseTemplate(str, template);
 
     // ! Throws exception on error.
-    const values = splitBySubstrings(str, ...substrings);
+    const values = splitBySubstrings(str, substrings);
 
     // ! Throws exception on error.
     assignValues(str, template, properties, values, result);
@@ -51,15 +46,50 @@ export namespace StringUtils
 // ----------------- Auxiliary Functions ---------------------
 
 // ! Throws exception on error.
+function assignValue
+(
+  str: string,
+  template: string,
+  property: string,
+  value: string,
+  result: { [ key: string ]: any }
+)
+: void
+{
+  if (!(property in result))
+  {
+    throw Error(`Failed to scan string ${str} for values using template`
+      + ` ${template}: Result object doesn't have property ${property}`);
+  }
+
+  if (typeof result[property] === "number")
+  {
+    result[property] = StringUtils.toNumber(value);
+    return;
+  }
+
+  if (typeof result[property] === "string")
+  {
+    result[property] = value;
+    return;
+  }
+
+  throw Error(`Failed to scan string ${str} for values using`
+      + ` template ${template}: Property '${property}' with value`
+      + ` '${String(result[property])}' in result object is of an`
+      + ` unsupported type`);
+}
+
+// ! Throws exception on error.
 function assignValues
 (
   str: string,
   template: string,
   properties: Array<string>,
   values: Array<string>,
-  result: StringUtils.ScanResult
+  result: { [ key: string ]: any }
 )
-: StringUtils.ScanResult
+: void
 {
   if (properties.length !== values.length)
   {
@@ -77,19 +107,8 @@ function assignValues
 
   for (let i = 0; i < values.length; i++)
   {
-    const property = properties[i];
-    const value = values[i];
-
-    if (!(property in result))
-    {
-      throw Error(`Failed to scan string ${str} for values using template`
-        + ` ${template}: Result object doesn't have property ${property}`);
-    }
-
-    result[property] = value;
+    assignValue(str, template, properties[i], values[i], result);
   }
-
-  return result;
 }
 
 function findArgument(str: string):
@@ -191,7 +210,7 @@ function splitBySubstring
 function splitBySubstrings
 (
   str: string,
-  ...substrings: string[]
+  substrings: Array<string>
 )
 : Array<string>
 {
@@ -201,7 +220,7 @@ function splitBySubstrings
       + ` because no substrings were provided`);
   }
 
-  const result = [];
+  const result: Array<string> = [];
   let parsedStr = str;
   let splitResult = { before: "", after: "" };
 

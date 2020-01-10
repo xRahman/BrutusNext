@@ -214,19 +214,19 @@ function joinCoordStrings(from: Coords, to: Coords): string
 // ! Throws exception on error.
 function parseCoordsString(coords: string): { e: number, s: number, u: number }
 {
-  // const format = [ "[ e: ", ", s: ", ", u: ", " ]" ];
-
-  const scanResult = { e: "", s: "", u: "" };
+  const result = { e: NaN, s: NaN, u: NaN };
 
   // ! Throws exception on error.
-  StringUtils.scan(coords, "[ e: ${e}, s: ${s}, u: ${u} ]", scanResult);
+  StringUtils.scan(coords, "[ e: ${e}, s: ${s}, u: ${u} ]", result);
 
-  // ! Throws exception on error.
-  const e = StringUtils.toNumber(scanResult.e);
-  // ! Throws exception on error.
-  const s = StringUtils.toNumber(scanResult.s);
-  // ! Throws exception on error.
-  const u = StringUtils.toNumber(scanResult.u);
+  return result;
+
+  // // ! Throws exception on error.
+  // const e = StringUtils.toNumber(scanResult.e);
+  // // ! Throws exception on error.
+  // const s = StringUtils.toNumber(scanResult.s);
+  // // ! Throws exception on error.
+  // const u = StringUtils.toNumber(scanResult.u);
 
   // // ! Throws exception on error.
   // const stringValues = StringUtils.splitBySubstrings(coords, ...format);
@@ -241,5 +241,5 @@ function parseCoordsString(coords: string): { e: number, s: number, u: number }
   // const s = convertToNumber(stringValues[1]);
   // const u = convertToNumber(stringValues[2]);
 
-  return { e, s, u };
+  // return { e, s, u };
 }
