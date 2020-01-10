@@ -1,3 +1,6 @@
+TODO: Commitnout moje vscode settings
+[done]
+
 TODO: Ve StringUtils.splitBySubstrings() použít indexy ve stringu místo
   str.split().
 - a parametr může bejt Array.

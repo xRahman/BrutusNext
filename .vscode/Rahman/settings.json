@@ -1,19 +1,34 @@
 // Place your settings in this file to overwrite the default settings
 {
    // Controls if suggestions should be accepted 'Enter' - in addition to 'Tab'. Helps to avoid ambiguity between inserting new lines or accepting suggestions.
-  "editor.acceptSuggestionOnEnter": true,
+  "editor.acceptSuggestionOnEnter": "off",
 
   // Controls if the editor should automatically close brackets after opening them
-  "editor.autoClosingBrackets": false,
-
-  "editor.minimap.enabled": false,
+  "editor.autoClosingBrackets": "never",
 
   // Controls the font size.
   "editor.fontSize": 20,
 
-  "window.zoomLevel": -0.2,
-  "workbench.colorTheme": "Visual Studio Light",
+  "editor.minimap.enabled": false,
 
-  // Whether auto fetching is enabled.
-  "git.autofetch": false
+  "editor.renderIndentGuides": false,
+
+  "window.zoomLevel": 0.0,
+
+  "http.proxy": "http://proxy.mlp.cz:8080/",
+  "workbench.colorTheme": "Visual Studio Light",
+  "editor.renderWhitespace": "none",
+  "editor.renderControlCharacters": false,
+  "git.enableSmartCommit": true,
+
+  "editor.autoIndent": false,
+  "files.associations": {
+    "*.json": "jsonc"
+  },
+  "workbench.statusBar.feedback.visible": false,
+  "terminal.integrated.rendererType": "dom",
+  "githd.blameView.enabled": false,
+  "typescript.updateImportsOnFileMove.enabled": "never",
+  "editor.autoClosingQuotes": "never",
+  "editor.autoSurround": "never"
 }
