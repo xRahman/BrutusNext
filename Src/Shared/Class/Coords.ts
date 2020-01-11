@@ -217,7 +217,7 @@ function parseCoordsString(coords: string): { e: number, s: number, u: number }
   const result = { e: NaN, s: NaN, u: NaN };
 
   // ! Throws exception on error.
-  StringUtils.scan(coords, "[ e: ${e}, s: ${s}, u: ${u} ]", result);
+  StringUtils.scan(coords, "[ e: &{e}, s: &{s}, u: &{u} ]", result);
 
   return result;
 

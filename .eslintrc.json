@@ -517,7 +517,7 @@
       // Disallow sparse arrays.
       "no-sparse-arrays": "error",
       // Disallow template literal placeholder syntax in regular strings.
-      "no-template-curly-in-string": "off",
+      "no-template-curly-in-string": "error",
       // Disallow confusing multiline expressions.
       "no-unexpected-multiline": "off",
       

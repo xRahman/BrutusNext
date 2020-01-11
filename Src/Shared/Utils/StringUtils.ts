@@ -10,7 +10,7 @@ export namespace StringUtils
   // Example of usage:
   //   const str = "[ A: NaN, B: "" ]";
   //   let result = { a: Number, b: String } = {};
-  //   result = scan(str, "[ A: ${a}, B: ${b} ]", result);
+  //   result = scan(str, "[ A: &{a}, B: &{b} ]", result);
   //   console.log(result.a);  // 1
   //   console.log(result.b);  // "cat"
   export function scan
@@ -120,8 +120,8 @@ function findArgument(str: string):
 }
 {
   // Example of template string:
-  //   "[ A: ${a}, B: ${b} ]"
-  const openingPosition = str.indexOf("${");
+  //   "[ A: &{a}, B: &{b} ]"
+  const openingPosition = str.indexOf("&{");
   const closingPosition = str.indexOf("}");
 
   const tagNotFound = openingPosition === -1 || closingPosition === -1;
@@ -151,7 +151,7 @@ function parseTemplate
   const properties = new Set<string>();
 
   // Template string example:
-  //   "[ A: ${a}, B: ${b} ]"
+  //   "[ A: &{a}, B: &{b} ]"
 
   let remainder = template;
 
