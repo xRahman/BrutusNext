@@ -176,6 +176,7 @@
 
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  /* grid-template-columns: repeat(3, minmax(33.33%, 1fr)); */
   column-gap: 0px;
   grid-template-rows: repeat(2, 1fr);
   row-gap: 0px;
@@ -274,7 +275,7 @@
   /* ------- Children size and positioning ------- */
 
   display: grid;
-  grid-template-columns: auto;
+  grid-template-columns: 1fr;
   column-gap: 0px;
   grid-template-rows: auto 1fr;
   row-gap: 0px;
@@ -384,7 +385,7 @@
 }
 */
 
-.MapSvg
+.MapComponent
 {
   width: 100%;
   height: 100%;
@@ -396,14 +397,14 @@
   overflow: visible;
 }
 
-.RoomSvg:hover
+.RoomComponent:hover
 {
   fill:white;
 }
 
 /* Svg element is only active when lmb is pressed on it
    so this gives visual feedback when element is clicked. */
-.RoomSvg:active
+.RoomComponent:active
 {
   fill:red;
 }
