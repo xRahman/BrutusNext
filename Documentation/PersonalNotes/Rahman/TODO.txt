@@ -25,29 +25,6 @@ How much to do in this batch?
 
 ------------------------------------------------------------------------------
 
-TODO: Ještě přece jen zvážit, že by se event handlery věšely rovnou
-  na komponentu.
-- mohly by to bejt settery, takže by se jmenovaly stejně jako v javascriptu
-  (onclick atp.). Prostě by to jen provovaly na this.element.
-Sounds good.
-TODO: Když už v tom budu, tak můžu handlery automaticky obalovat
-  odchytáváním a reportováním exceptionů (což je dobro).
-IDEA: Možná bych pak vůbec nemusel exceptiony v handlerech ošetřovat, dělalo
-  by se to automaticky.
-
-TODO: Odchytávat exeptiony v RoomSvg (nebo možná spíš v navěšování handlerů
-  v Component).
-
-TODO: Líp vyřešit onLeftClick a onRightClick
-  (nelíbí se mi, že se různý eventy handlujou různě)
-- asi na to v Component udělat funkci assignEventHandler()
-  (nebo registerEventHandler()) a tý předat typ eventu
-  a handler s tím, že ona si uvnitř pořeší setnutí handleru
-  na element, případně pseudo event na right click.
-Ono teda popravdě přiřazovat ty handlery přímo na this.element
-  bude možná nakonec nejpřehlednější. A navíc je to pure javascript,
-  takže se dá celkem snadno vygooglit, jak se to dělá.
-
 
 
 TODO: Revize hierarchie komponent (hlavně SVG komponent)

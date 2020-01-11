@@ -53,7 +53,7 @@ export abstract class Component
   {
     this.element.onclick = (event: MouseEvent) =>
     {
-      this.eventHandlerWrapper(event, handler, "click");
+      this.wrapEventHandler(event, handler, "click");
     };
   }
 
@@ -61,7 +61,7 @@ export abstract class Component
   {
     this.element.oncontextmenu = (event: MouseEvent) =>
     {
-      this.eventHandlerWrapper(event, handler, "rightclick");
+      this.wrapEventHandler(event, handler, "rightclick");
     };
   }
 
@@ -69,7 +69,7 @@ export abstract class Component
   {
     this.element.onmouseover = (event: MouseEvent) =>
     {
-      this.eventHandlerWrapper(event, handler, "mouseover");
+      this.wrapEventHandler(event, handler, "mouseover");
     };
   }
 
@@ -77,7 +77,7 @@ export abstract class Component
   {
     this.element.onmouseout = (event: MouseEvent) =>
     {
-      this.eventHandlerWrapper(event, handler, "mouseout");
+      this.wrapEventHandler(event, handler, "mouseout");
     };
   }
 
@@ -255,7 +255,7 @@ export abstract class Component
     this.element.style.display = this.displayMode;
   }
 
-  private eventHandlerWrapper
+  private wrapEventHandler
   (
     event: MouseEvent,
     handler: (event: MouseEvent) => void,
