@@ -25,14 +25,90 @@ How much to do in this batch?
 
 ------------------------------------------------------------------------------
 
+TODO: Ještě přece jen zvážit, že by se event handlery věšely rovnou
+  na komponentu.
+- mohly by to bejt settery, takže by se jmenovaly stejně jako v javascriptu
+  (onclick atp.). Prostě by to jen provovaly na this.element.
+Sounds good.
+TODO: Když už v tom budu, tak můžu handlery automaticky obalovat
+  odchytáváním a reportováním exceptionů (což je dobro).
+IDEA: Možná bych pak vůbec nemusel exceptiony v handlerech ošetřovat, dělalo
+  by se to automaticky.
+
+TODO: Odchytávat exeptiony v RoomSvg (nebo možná spíš v navěšování handlerů
+  v Component).
+
+TODO: Líp vyřešit onLeftClick a onRightClick
+  (nelíbí se mi, že se různý eventy handlujou různě)
+- asi na to v Component udělat funkci assignEventHandler()
+  (nebo registerEventHandler()) a tý předat typ eventu
+  a handler s tím, že ona si uvnitř pořeší setnutí handleru
+  na element, případně pseudo event na right click.
+Ono teda popravdě přiřazovat ty handlery přímo na this.element
+  bude možná nakonec nejpřehlednější. A navíc je to pure javascript,
+  takže se dá celkem snadno vygooglit, jak se to dělá.
+
+
+
+TODO: Revize hierarchie komponent (hlavně SVG komponent)
+- ideálně by element měl bejt vždycky konkrétního typu
+  (tj. nenastavoval by se v konstruktoru, ale nejspíš přímo inicializací
+   v classe, takže potomek by ho overridnul).
+
+TODO: U "line" nedává smysl setPosition().
+
+TODO: Dát někam funkci na čtení jména z elementu a použít ji
+  ve WorldSvg.getRoomCoords().
+
+
+TODO: V Gui asi míchám moc responsibility dohromady.
+- je to stavovej automat
+- vyrábí to svg mapy
+  - to by asi měla dělat svg komponenta s mapou. Gui na ni může mít odkaz.
+
+
+TODO: V createMap() v cyklu na vyrábění mapy oasertovat krajní hodnoty cyklu,
+ abych nemohl vyrobit nekonečnej cyklus.
+- tohle asi po optimalizaci nebude potřeba (respektive možná to bude
+  potřeba v novém cyklu)
+
+
+
+TODO: Parametrizovat rozestupy místností 
+
+TODO: Room.PIXEL_SIZE hodit zpět někam do GUI
+  (A je to spíš ROOM_SPACING).
+  Rooma může mít klidně velikost, ale relativně (small, medium, large).
+  (A hlavně to nemusím řešit teď).
+
+
+TODO: Parametrizovat 'location' v Gui.updateMap()
+
+TODO: Provázat velikost zobrazované části mapy v Gui.getCoordsInView()
+  s RoomsSvg.ROOMS_IN_CACHE.
+
+TODO: Pokusit se sjednotit "Nothing here" a "Doesn't exist"
+  (asi vracet z gridu "Doesn't exist")
+
+TODO: Vysvětlující error message v RoomsSvg.addRoomSvg()
+
+TODO: Invertnout 's' axis (kladné hodnoty by měly růst nahoru)
+
+
+
+TODO: Rozestupy a velikost roomů nastavit relativně k velikosti fontu.
+Jak zjistit, kolik je 1 rem:
+ parseFloat(getComputedStyle(document.documentElement).fontSize)
+ (pokud font size html dokumentu nastavuju sám, tak si to můžu prostě pamatovat)
+- asi je to lepší zjišťovat z DOM
+
+TODO: V css používat výhradně rem (a procenta), nikdy pixely
+- změnit šířku rámečku okna.
+
+
+
 Optimalizace mapy:
 ------------------
-
-TODO: Nevytvářet roomy podle rozměrů worldu, ale podle počtu, kolik je třeba
-  zobrazovat
-
-TODO: Vyrábět room elementy mimo DOM a insternout je najednou s parentem
-[done]
 
 TODO: Nevytvářet exity podle rozměrů worldu, ale podle počtu, kolik je třeba
   zobrazovat
@@ -53,83 +129,11 @@ TODO: Grid je v /shared, tj. asi by v něm nemělo bejt počáteční nastavení
 
 ------------------------------------------------------------------------------
 
-TODO: Parametrizovat 'location' v Gui.updateMap()
-
-TODO: Provázat velikost zobrazované části mapy v Gui.getCoordsInView()
-  s RoomsSvg.ROOMS_IN_CACHE.
-
-TODO: Pokusit se sjednotit "Nothing here" a "Doesn't exist"
-  (asi vracet z gridu "Doesn't exist")
-
-TODO: Vysvětlující error message v RoomsSvg.addRoomSvg()
-
-TODO: Dát někam funkci na čtení jména z elementu a použít ji
-  ve WorldSvg.getRoomCoords().
-
-
-TODO: Invertnout 's' axis (kladné hodnoty by měly růst nahoru)
-
-TODO: Rozestupy a velikost roomů nastavit relativně k velikosti fontu.
-Jak zjistit, kolik je 1 rem:
- parseFloat(getComputedStyle(document.documentElement).fontSize)
- (pokud font size html dokumentu nastavuju sám, tak si to můžu prostě pamatovat)
-- asi je to lepší zjišťovat z DOM
-
-TODO: V css používat výhradně rem (a procenta), nikdy pixely
-- změnit šířku rámečku okna.
-
 TODO: Prostudovat:
   https://medium.com/better-programming/event-delegation-in-javascript-boost-your-app-performance-5f10f25cec96
   https://ehsangazar.com/optimizing-javascript-event-listeners-for-performance-e28406ad406c
   https://ehsangazar.com/javascript-tips-for-performance-ee53239ae12d
 
-TODO: Revize hierarchie komponent (hlavně SVG komponent)
-- ideálně by element měl bejt vždycky konkrétního typu
-  (tj. nenastavoval by se v konstruktoru, ale nejspíš přímo inicializací
-   v classe, takže potomek by ho overridnul).
-
-TODO: Obecnější parsování argumentů ze stringu
-- chtělo by to vyčítat hodnoty rovnou do properties výslednýho objektu.
-  (problém je, že bych ten objekt musel předat jako parametr,
-   abych mohl uvnitř parsovací funkce, zjistit, kolik má properties
-   a jak se jmenujou).
-
-TODO: V createMap() v cyklu na vyrábění mapy oasertovat krajní hodnoty cyklu,
- abych nemohl vyrobit nekonečnej cyklus.
-- tohle asi po optimalizaci nebude potřeba (respektive možná to bude
-  potřeba v novém cyklu)
-
-TODO: Líp vyřešit onLeftClick a onRightClick
-  (nelíbí se mi, že se různý eventy handlujou různě)
-- asi na to v Component udělat funkci assignEventHandler()
-  (nebo registerEventHandler()) a tý předat typ eventu
-  a handler s tím, že ona si uvnitř pořeší setnutí handleru
-  na element, případně pseudo event na right click.
-Ono teda popravdě přiřazovat ty handlery přímo na this.element
-  bude možná nakonec nejpřehlednější. A navíc je to pure javascript,
-  takže se dá celkem snadno vygooglit, jak se to dělá.
-
-TODO: U "line" nedává smysl setPosition().
-
-TODO: Parametrizovat rozestupy místností 
-
-TODO: Room.PIXEL_SIZE hodit zpět někam do GUI
-  (A je to spíš ROOM_SPACING).
-  Rooma může mít klidně velikost, ale relativně (small, medium, large).
-  (A hlavně to nemusím řešit teď).
-
-TODO: Ještě přece jen zvážit, že by se event handlery věšely rovnou
-  na komponentu.
-- mohly by to bejt settery, takže by se jmenovaly stejně jako v javascriptu
-  (onclick atp.). Prostě by to jen provovaly na this.element.
-Sounds good.
-TODO: Když už v tom budu, tak můžu handlery automaticky obalovat
-  odchytáváním a reportováním exceptionů (což je dobro).
-IDEA: Možná bych pak vůbec nemusel exceptiony v handlerech ošetřovat, dělalo
-  by se to automaticky.
-
-TODO: Odchytávat exeptiony v RoomSvg (nebo možná spíš v navěšování handlerů
-  v Component).
 
 TODO: Mazání exitů pravým myšítkem
 TODO: Mazání exitů dragováním pravým myšítkem
@@ -140,7 +144,7 @@ TODO: :hover pro exity (a možná i černej background).
 
 TODO: Vymyslet, jak zobrazovat exity up a down
 
-Asi nějak takhle:
+  Asi nějak takhle:
 
   .
  /|\
@@ -152,11 +156,6 @@ Asi nějak takhle:
 TODO: Zprovoznit editaci víc než jedný vrstvy
 - bude třeba "chození up a down" (a obecně asi chození po mapě, teď
   se dá zobrazit jen omezenej výřez).
-
-TODO: V Gui asi míchám moc responsibility dohromady.
-- je to stavovej automat
-- vyrábí to svg mapy
-  - to by asi měla dělat svg komponenta s mapou. Gui na ni může mít odkaz.
 
 ------------------------------------------------------------------------------
 

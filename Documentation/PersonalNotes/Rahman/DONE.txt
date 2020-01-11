@@ -1,3 +1,21 @@
+TODO: Opravit rozjeté velikosti oken.
+- přejmenoval jsem classy v kódu, ale ne ve style sheetu
+[fixed]
+
+TODO: Obecnější parsování argumentů ze stringu
+- chtělo by to vyčítat hodnoty rovnou do properties výslednýho objektu.
+  (problém je, že bych ten objekt musel předat jako parametr,
+   abych mohl uvnitř parsovací funkce, zjistit, kolik má properties
+   a jak se jmenujou).
+[done]
+
+TODO: Nevytvářet roomy podle rozměrů worldu, ale podle počtu, kolik je třeba
+  zobrazovat
+[done]
+
+TODO: Vyrábět room elementy mimo DOM a insternout je najednou s parentem
+[done]
+
 TODO: Mrknout se, proč se nezobrazujou errory z kompilace clientu
   https://code.visualstudio.com/docs/editor/tasks#_background-watching-tasks
 [done]

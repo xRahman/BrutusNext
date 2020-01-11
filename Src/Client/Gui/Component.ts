@@ -47,6 +47,40 @@ export abstract class Component
     this.rememberDisplayMode();
   }
 
+  // ------------ Event Handler Setters -----------------
+
+  public set onclick(handler: (event: MouseEvent) => void)
+  {
+    this.element.onclick = (event: MouseEvent) =>
+    {
+      this.eventHandlerWrapper(event, handler, "click");
+    };
+  }
+
+  public set onrightclick(handler: (event: MouseEvent) => void)
+  {
+    this.element.oncontextmenu = (event: MouseEvent) =>
+    {
+      this.eventHandlerWrapper(event, handler, "rightclick");
+    };
+  }
+
+  public set onmouseover(handler: (event: MouseEvent) => void)
+  {
+    this.element.onmouseover = (event: MouseEvent) =>
+    {
+      this.eventHandlerWrapper(event, handler, "mouseover");
+    };
+  }
+
+  public set onmouseout(handler: (event: MouseEvent) => void)
+  {
+    this.element.onmouseout = (event: MouseEvent) =>
+    {
+      this.eventHandlerWrapper(event, handler, "mouseout");
+    };
+  }
+
   // ---------------- Public methods --------------------
 
   public hide(): void
@@ -219,6 +253,24 @@ export abstract class Component
   private restoreDisplayMode(): void
   {
     this.element.style.display = this.displayMode;
+  }
+
+  private eventHandlerWrapper
+  (
+    event: MouseEvent,
+    handler: (event: MouseEvent) => void,
+    eventName: string
+  )
+  : void
+  {
+    try
+    {
+      handler(event);
+    }
+    catch (error)
+    {
+      Syslog.logError(error, `Failed to process '${eventName}' event`);
+    }
   }
 
   // ---------------- Event handlers --------------------

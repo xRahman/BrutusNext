@@ -33,10 +33,12 @@ export class WorldComponent extends MapZoomer
 
   private registerEventListeners(): void
   {
-    this.element.onclick = (event) => { this.onLeftClick(event); };
-    this.element.oncontextmenu = (event) => { this.onRightClick(event); };
-    this.element.onmouseover = (event) => { this.onMouseOver(event); };
-    this.element.onmouseout = (event) => { this.onMouseOut(event); };
+    // this.element.onclick = (event) => { this.onLeftClick(event); };
+    this.onclick = (event) => { this.onLeftClick(event); };
+
+    this.onrightclick = (event) => { this.onRightClick(event); };
+    this.onmouseover = (event) => { this.onMouseOver(event); };
+    this.onmouseout = (event) => { this.onMouseOut(event); };
   }
 
   // ---------------- Event handlers --------------------
