@@ -1,0 +1,30 @@
+﻿Kouzlení s přípravou
+=====================
+
+• Každé kouzlo by šlo jednou seslat, pak by ho bylo třeba znova připravit. Příprava může jít v zásadě i v boji, zabere prostě nějakej čas.
+
+• Různá kouzla mohou mít různou délku přípravy.
+
+• Postupně můžu seslat úplně všechna kouzla, co znám, aniž bych musel něco připravovat.
+
+
+Školy a lišty kouzel
+---------------------
+
+• Kouzla napevno jsou rozdělena do škol (nekromancy, elemental magic etc.)
+
+• Hráč si může kouzla, která zná, umisťovat na lišty. Těch má neomezeně mnoho (nebo možná omezeně, ale půjdou získat další). Jedno kouzlo může být na více lištách.
+
+• Když hráč sešle kouzlo, na liště mu vyšedne. Pravým kliknutím (nebo opětovným kliknutím) ho připraví (to trvá nějakej čas). V jednu chvíli jde sesílat nebo připravovat jen jedno kouzlo (všechno je sekvenční).
+
+• Hráč může seslat kouzlo z libovolné lišty, nejen z té, co má zrovna aktivní. "Přepnutí" na jinou lištu ale trvá nějakej čas, kterej se připočte k casting time kouzla, není to akce sama o sobě. To znamená, že v průběhu sesílání stávajícího kouzla může hráč proswitchovat lišty a vybrat si, které kouzlo sešle dál.
+
+("přepínání" by asi mohlo běžet automaticky, když je hráč na dané liště, aby si mohl přepnout lištu předem). Tj. když zrovna nic nekouzlí ani  nepřipravuje, tak se mu automaticky zkracuje delay na příští přepnutí.
+
+• Seslání kouzla z jiné školy má ještě větší delay.
+
+
+Buffy a debuffy
+----------------
+Spuštěním přípravy kouzla se zruší stávající affect. Takže když chci třeba moba nechat spát, musím spánek držet nepřipravený.
+
