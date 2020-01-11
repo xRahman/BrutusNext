@@ -15,16 +15,7 @@ TARGET:
   - pak prototypová dědičnost room a přiřazování prototypu
     v editoru
 
-Trochu změna: Mapa first
-
-How much to do in this batch?
-- určitě zobrazit víc místností a exity mezi nimi.
-- mouseover a selection na roomu a exitu
-- "naklikávání" mapy (zatím bez vyrábění dat na serveru)
-  - čistě edit mód, jinej zatím vůbec neuvažovat.
-
 ------------------------------------------------------------------------------
-
 
 
 TODO: Revize hierarchie komponent (hlavně SVG komponent)

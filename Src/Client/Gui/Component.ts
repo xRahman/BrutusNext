@@ -33,9 +33,6 @@ export abstract class Component
   {
     element.setAttribute("name", name);
 
-    if (parent !== "No parent")
-      parent.insertElement(element, insertMode);
-
     // Typescript doesn't seem to know that 'this.constructor'
     // refers to the class so it can be used to call static
     // method so we have to typecast to 'any' to do it.
@@ -45,6 +42,11 @@ export abstract class Component
     // we have to remember it to be able to return it.
     // when show() is called.
     this.rememberDisplayMode();
+
+    // Insert 'element' to parent last so the browser only has to
+    // recompute graphics once.
+    if (parent !== "No parent")
+      parent.insertElement(element, insertMode);
   }
 
   // ------------ Event Handler Setters -----------------
