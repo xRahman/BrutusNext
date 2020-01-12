@@ -7,30 +7,17 @@
 import { CssColor } from "../../../Client/Gui/CssColor";
 import { Dom } from "../../../Client/Gui/Dom";
 import { Component } from "../../../Client/Gui/Component";
-import { SvgComponent } from "../../../Client/Gui/Svg/SvgComponent";
 
-export class Line extends SvgComponent
+export class Line extends Component
 {
   constructor
   (
     parent: Component,
     name = "line",
-    // {
-    //   from,
-    //   to,
-    //   color,
-    // } :
-    // {
-    //   from: { xPixels: number, yPixels: number },
-    //   to: { xPixels: number, yPixels: number },
-    //   color: CssColor,
-    // },
     insertMode = Dom.InsertMode.APPEND
   )
   {
-    super(parent, "line", name, insertMode);
-
-    // this.draw(from, to);
+    super(parent, Dom.createLine(), name, insertMode);
   }
 
   public draw

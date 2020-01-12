@@ -6,11 +6,10 @@
 
 import { Dom } from "../../../Client/Gui/Dom";
 import { Component } from "../../../Client/Gui/Component";
-import { SvgComponent } from "../../../Client/Gui/Svg/SvgComponent";
 
 const SVG_XLINK_NAMESPACE = "http://www.w3.org/1999/xlink";
 
-export class SvgImage extends SvgComponent
+export class SvgImage extends Component
 {
   constructor
   (
@@ -19,7 +18,7 @@ export class SvgImage extends SvgComponent
     insertMode = Dom.InsertMode.APPEND
   )
   {
-    super(parent, "image", name, insertMode);
+    super(parent, Dom.createImage(), name, insertMode);
   }
 
   public setImage(path: string): void
@@ -35,9 +34,10 @@ export class SvgImage extends SvgComponent
   )
   : void
   {
-    SvgComponent.setWidthAndHeight(this.element, widthPixels, heightPixels);
+    Dom.setWidth(this.element, widthPixels);
+    Dom.setHeight(this.element, heightPixels);
 
     if (centered)
-      this.translate(-widthPixels / 2, -heightPixels / 2);
+      Dom.translate(this.element, -widthPixels / 2, -heightPixels / 2);
   }
 }

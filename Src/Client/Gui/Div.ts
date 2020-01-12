@@ -16,6 +16,6 @@ export abstract class Div extends Component
     insertMode = Dom.InsertMode.APPEND
   )
   {
-    super(parent, document.createElement("div"), name, insertMode);
+    super(parent, Dom.createDiv(), name, insertMode);
   }
 }

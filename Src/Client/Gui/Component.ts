@@ -22,7 +22,7 @@ export abstract class Component
     Dom.addCssClass(element, this.name);
   }
 
-  private displayMode = "block";
+  private displayMode: string;
 
   constructor
   (
@@ -39,10 +39,7 @@ export abstract class Component
     // method so we have to typecast to 'any' to do it.
     (this.constructor as any).setCssClasses(element);
 
-    // Setting css class can change the display mode so
-    // we have to remember it to be able to return it.
-    // when show() is called.
-    this.rememberDisplayMode();
+    this.displayMode = Dom.getDisplayMode(this.element);
 
     // Insert 'element' to parent last so the browser only has to
     // recompute graphics once.
@@ -81,6 +78,14 @@ export abstract class Component
     this.element.onmouseout = (event: MouseEvent) =>
     {
       wrapEventHandler(event, handler, "mouseout");
+    };
+  }
+
+  public set onwheel(handler: (event: WheelEvent) => void)
+  {
+    this.element.onwheel = (event: WheelEvent) =>
+    {
+      wrapEventHandler(event, handler, "wheel");
     };
   }
 
@@ -154,7 +159,7 @@ export abstract class Component
   )
   : void
   {
-    Dom.insertElement(element, insertMode);
+    Dom.insertElement(this.element, element, insertMode);
   }
 
   public replaceChild(element: Dom.Element): void
@@ -199,10 +204,10 @@ export abstract class Component
 
 // ----------------- Auxiliary Functions ---------------------
 
-function wrapEventHandler
+function wrapEventHandler<T>
 (
-  event: MouseEvent,
-  handler: (event: MouseEvent) => void,
+  event: T,
+  handler: (event: T) => void,
   eventName: string
 )
 : void

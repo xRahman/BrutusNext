@@ -6,9 +6,8 @@
 
 import { Dom } from "../../../Client/Gui/Dom";
 import { Component } from "../../../Client/Gui/Component";
-import { SvgComponent } from "../../../Client/Gui/Svg/SvgComponent";
 
-export class G extends SvgComponent
+export class G extends Component
 {
   constructor
   (
@@ -17,13 +16,23 @@ export class G extends SvgComponent
     insertMode = Dom.InsertMode.APPEND
   )
   {
-    super(parent, "g", name, insertMode);
+    super(parent, Dom.createG(), name, insertMode);
   }
 
   public setPosition(xPixels: number, yPixels: number): void
   {
     // Use translate transformation because <g> element
     // doesn't have 'x' and 'y' attributes.
-    this.translate(xPixels, yPixels);
+    Dom.translate(this.element, xPixels, yPixels);
+  }
+
+  public scale(scale: number): void
+  {
+    Dom.scale(this.element, scale);
+  }
+
+  public translate(xPixels: number, yPixels: number): void
+  {
+    Dom.translate(this.element, xPixels, yPixels);
   }
 }

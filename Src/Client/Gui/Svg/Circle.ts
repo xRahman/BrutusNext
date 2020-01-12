@@ -6,9 +6,8 @@
 
 import { Dom } from "../../../Client/Gui/Dom";
 import { Component } from "../../../Client/Gui/Component";
-import { SvgComponent } from "../../../Client/Gui/Svg/SvgComponent";
 
-export class Circle extends SvgComponent
+export class Circle extends Component
 {
   constructor
   (
@@ -17,7 +16,7 @@ export class Circle extends SvgComponent
     insertMode = Dom.InsertMode.APPEND
   )
   {
-    super(parent, "circle", name, insertMode);
+    super(parent, Dom.createCircle(), name, insertMode);
   }
 
   // Note that origin point of <circle> is in the middle.

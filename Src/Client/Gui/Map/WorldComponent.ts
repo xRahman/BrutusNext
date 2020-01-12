@@ -4,6 +4,7 @@
   World on the map
 */
 
+import { Dom } from "../../../Client/Gui/Dom";
 import { Coords } from "../../../Shared/Class/Coords";
 import { MapEditor } from "../../../Client/Editor/MapEditor";
 import { Gui } from "../../../Client/Gui/Gui";
@@ -119,13 +120,11 @@ function getRoomCoords(event: Event): Coords | undefined
   if (event.target === null)
       return undefined;
 
-  if (event.target instanceof Element)
+  if (event.target instanceof SVGElement)
   {
-    if (event.target.getAttribute("name") !== RoomComponent.ROOM_BACKGROUND)
-      return undefined;
-
-    // ! Throws exception on error.
-    return Coords.fromString(event.target.id);
+    if (Dom.getName(event.target) === RoomComponent.ROOM_BACKGROUND)
+      // ! Throws exception on error.
+      return Coords.fromString(event.target.id);
   }
 
   return undefined;

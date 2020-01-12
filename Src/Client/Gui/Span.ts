@@ -16,6 +16,6 @@ export abstract class Span extends Component
     insertMode = Dom.InsertMode.APPEND
   )
   {
-    super(parent, document.createElement("span"), name, insertMode);
+    super(parent, Dom.createSpan(), name, insertMode);
   }
 }

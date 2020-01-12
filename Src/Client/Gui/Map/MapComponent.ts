@@ -6,21 +6,21 @@
 
 import { Component } from "../../../Client/Gui/Component";
 import { MapCenterer } from "../../../Client/Gui/Map/MapCenterer";
-import { SvgComponent } from "../../../Client/Gui/Svg/SvgComponent";
+import { Svg } from "../../../Client/Gui/Svg/Svg";
 
-export class MapComponent extends SvgComponent
+export class MapComponent extends Svg
 {
   private readonly mapCenterer: MapCenterer;
 
   constructor(parent: Component, name = "map")
   {
-    super(parent, "svg", name);
+    super(parent, name);
 
     // Use another svg component to translate the map to the center
     // of parent element.
     this.mapCenterer = new MapCenterer(this);
 
-    this.element.onwheel = (event) => { this.onWheel(event); };
+    this.onwheel = (event) => { this.onWheel(event); };
   }
 
   // ---------------- Event handlers --------------------

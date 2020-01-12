@@ -6,9 +6,8 @@
 
 import { Dom } from "../../../Client/Gui/Dom";
 import { Component } from "../../../Client/Gui/Component";
-import { SvgComponent } from "../../../Client/Gui/Svg/SvgComponent";
 
-export class Svg extends SvgComponent
+export class Svg extends Component
 {
   constructor
   (
@@ -17,12 +16,13 @@ export class Svg extends SvgComponent
     insertMode = Dom.InsertMode.APPEND
   )
   {
-    super(parent, "svg", name, insertMode);
+    super(parent, Dom.createSvg(), name, insertMode);
   }
 
   public setSize(widthPixels: number, heightPixels: number): void
   {
-    SvgComponent.setWidthAndHeight(this.element, widthPixels, heightPixels);
+    Dom.setWidth(this.element, widthPixels);
+    Dom.setHeight(this.element, heightPixels);
   }
 
   public setPosition(xPixels: number, yPixels: number): void

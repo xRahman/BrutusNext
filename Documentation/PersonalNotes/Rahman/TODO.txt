@@ -17,23 +17,12 @@ TARGET:
 
 ------------------------------------------------------------------------------
 
-
-TODO: Revize hierarchie komponent (hlavně SVG komponent)
-- ideálně by element měl bejt vždycky konkrétního typu
-  (tj. nenastavoval by se v konstruktoru, ale nejspíš přímo inicializací
-   v classe, takže potomek by ho overridnul).
-
-TODO: Typ SvgComponent.Type je asi zbytečnej. Lepší bude, když si každá
-  konkrétní SVG komponenta vyrobí svůj element sama.
+TODO: V Dom.insertElement() vložit do elementu element místo childa
+  a pořešit následnej neodchycenej error.
 
 TODO: v Image je třeba si pamatovat, že má bejt centerovaná, a zohlednit
   to i v případném setování pozice.
 - flag 'centered' by se asi měl nastavovat rovnou v konstruktoru.
-
-TODO: Dát někam funkci na čtení jména z elementu a použít ji
-  ve WorldSvg.getRoomCoords().
-- problém je, že se čte z event.target, takže to nemůže bejt
-  metoda Component
 
 
 TODO: V Gui asi míchám moc responsibility dohromady.

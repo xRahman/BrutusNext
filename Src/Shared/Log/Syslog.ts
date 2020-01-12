@@ -82,6 +82,8 @@ export namespace Syslog
 
 function logExistingErrorObject(error: Error, catchMessage?: string): void
 {
+  // DEBUG
+  // console.log(error);
   error.message = `[ERROR] ${error.message}`;
 
   if (catchMessage)

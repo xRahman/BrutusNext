@@ -45,8 +45,9 @@ startBrutusNextClient().catch
 (
   (reason: any) =>
   {
-    console.log(`BrutusNext client encountered an unhandled`
-      + ` error (${String(reason)})`);
+    Syslog.logError(reason, "Unhandled exception");
+    // console.log(`BrutusNext client encountered an unhandled`
+    //   + ` error (${String(reason)})`);
   }
 );
 

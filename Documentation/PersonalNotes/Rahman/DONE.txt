@@ -1,3 +1,23 @@
+TODO: Revize hierarchie komponent (hlavně SVG komponent)
+- ideálně by element měl bejt vždycky konkrétního typu
+  (tj. nenastavoval by se v konstruktoru, ale nejspíš přímo inicializací
+   v classe, takže potomek by ho overridnul).
+Na tohle kašlat
+[done]
+
+TODO: Zrušit SvgComponent (namespace přesunout do Dom)
+[done]
+
+TODO: Dát někam funkci na čtení jména z elementu a použít ji
+  ve WorldSvg.getRoomCoords().
+- problém je, že se čte z event.target, takže to nemůže bejt
+  metoda Component
+[done]
+
+TODO: Typ SvgComponent.Type je asi zbytečnej. Lepší bude, když si každá
+  konkrétní SVG komponenta vyrobí svůj element sama.
+[done]
+
 TODO: U "line" nedává smysl setPosition().
 - však ho taky nemá.
 [no need to do anything]

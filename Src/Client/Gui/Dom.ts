@@ -1,10 +1,12 @@
 /*
   Part of BrutusNEXT
 
-  Functions manipulating with DOM elements.
+  Functions manipulating DOM elements
 */
 
 import { Syslog } from "../../Shared/Log/Syslog";
+
+const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
 
 export namespace Dom
 {
@@ -29,6 +31,16 @@ export namespace Dom
   export function setName(element: Element, name: string): void
   {
     element.setAttribute("name", name);
+  }
+
+  export function getName(element: Element): string
+  {
+    const name = element.getAttribute("name");
+
+    if (name === null)
+      return "";
+
+    return name;
   }
 
   export function hide(element: Element): void
@@ -112,6 +124,7 @@ export namespace Dom
   export function insertElement
   (
     element: Element,
+    child: Element,
     insertMode: InsertMode
   )
   : void
@@ -119,16 +132,16 @@ export namespace Dom
     switch (insertMode)
     {
       case InsertMode.APPEND:
-        element.appendChild(element);
+        element.appendChild(child);
         break;
 
       case InsertMode.PREPEND:
-        element.insertBefore(element, element.firstChild);
+        element.insertBefore(child, element.firstChild);
         break;
 
       case InsertMode.REPLACE:
         removeAllChildren(element);
-        element.appendChild(element);
+        element.appendChild(child);
         break;
 
       case InsertMode.DO_NOT_INSERT:
@@ -159,4 +172,72 @@ export namespace Dom
   {
     element.style.display = displayMode;
   }
+
+  export function setWidth(element: Element, widthPixels: number): void
+  {
+    element.setAttribute("width", String(widthPixels));
+  }
+
+  export function setHeight(element: Element, heightPixels: number): void
+  {
+    element.setAttribute("height", String(heightPixels));
+  }
+
+  export function scale(element: Element, scaleFactor: number): void
+  {
+    setTransform(element, `scale(${scaleFactor})`);
+  }
+
+  export function translate
+  (
+    element: Element,
+    xPixels: number,
+    yPixels: number
+  )
+  : void
+  {
+    setTransform(element, `translate(${xPixels}, ${yPixels})`);
+  }
+
+  export function createSpan(): HTMLSpanElement
+  {
+    return document.createElement("span");
+  }
+
+  export function createDiv(): HTMLDivElement
+  {
+    return document.createElement("div");
+  }
+
+  export function createCircle(): SVGCircleElement
+  {
+    return document.createElementNS(SVG_NAMESPACE, "circle");
+  }
+
+  export function createG(): SVGGElement
+  {
+    return document.createElementNS(SVG_NAMESPACE, "g");
+  }
+
+  export function createLine(): SVGLineElement
+  {
+    return document.createElementNS(SVG_NAMESPACE, "line");
+  }
+
+  export function createSvg(): SVGSVGElement
+  {
+    return document.createElementNS(SVG_NAMESPACE, "svg");
+  }
+
+  export function createImage(): SVGImageElement
+  {
+    return document.createElementNS(SVG_NAMESPACE, "image");
+  }
+}
+
+// ----------------- Auxiliary Functions ---------------------
+
+function setTransform(element: Element, transform: string): void
+{
+  element.setAttribute("transform", transform);
 }
