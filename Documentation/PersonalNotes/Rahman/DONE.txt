@@ -1,3 +1,7 @@
+TODO: U "line" nedává smysl setPosition().
+- však ho taky nemá.
+[no need to do anything]
+
 TODO: Ještě přece jen zvážit, že by se event handlery věšely rovnou
   na komponentu.
 - mohly by to bejt settery, takže by se jmenovaly stejně jako v javascriptu

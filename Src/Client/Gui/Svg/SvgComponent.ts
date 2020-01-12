@@ -1,14 +1,14 @@
 /*
   Part of BrutusNEXT
 
-   Ancestor of all SVG components.
+   Ancestor of SVG components.
 */
 
 import { Component } from "../../../Client/Gui/Component";
 
 const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
 
-export class SvgComponent extends Component
+export abstract class SvgComponent extends Component
 {
   constructor
   (

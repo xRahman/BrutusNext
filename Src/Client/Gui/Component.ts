@@ -309,13 +309,12 @@ export namespace Component
 {
   export enum InsertMode
   {
-    // Insert as the last child (default).
+    // Insert as the last child.
     APPEND,
     // Insert as the first child.
     PREPEND,
     // Html contents of parent element is cleared first.
     REPLACE,
-    // As you would guess.
     DO_NOT_INSERT
   }
 }

@@ -1,5 +1,38 @@
 ------------------------------------------------------------------------------
 
+Component Hierarchy
+--------------------
+
+- property element nemůže bejt abstraktní, protože pak se s ní nedá
+  pracovat v konstruktoru a tudíž se na ní nedají automaticky setnout
+  css classy.
+
+- když je konkrétní, tak se musí předávat jako parametr konstuktoru,
+  aby byla inicializovaná, tudíž se nedá přetížit typ
+
+- teoreticky to jde vyřešit přes generic class Component, ale to je jednak
+  otrava a pak to taky vylučuje parenta s obecným typem.
+  - Možná nevylučuje, parent může bejt typu Component<HTMLElement | SVGElement>
+    Ok, takže pres generic by to možná udělat šlo.
+
+Další možnost je, v konstuktoru potomka si přiřadit vlastní this.element.
+- To naráží na problém, že element se musí nejdřív předat konstruktoru předka,
+  tj. nemůžu si ho schovat do promměnný a tu pak přiřadit.
+- Jde to udělat přes tmp proměnnou v modulu, ale je to dost škaredý a musel
+  bych to tak udělat v každý komponentě, která by chtěla mít specifickej typ
+  elementu.
+
+Závěr: Pokud budu chtít mít specifickej typ this.elementu, tak největší smysl
+  dává generic.
+
+Otázka je, jestli to je vůbec potřeba. Elementu se stejně setujou atributy
+  přes setAttribute(), což umožňuje setnout úplně cokoliv nehledě na typ.
+  Úplně cokoliv teda nebude pak nic dělat, ale to nevadí, páč zapouzdřením
+  zajistím, že setuju smysluplný atributy.
+Potřebuju to tudíž vůbec někdě?
+
+------------------------------------------------------------------------------
+
 Problém:
 
 Vyhození všech roomSvgs do cashe a znovu rozmístění do mapy
