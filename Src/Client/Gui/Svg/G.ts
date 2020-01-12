@@ -4,6 +4,7 @@
    Class wrapping SVG <g> element.
 */
 
+import { Dom } from "../../../Client/Gui/Dom";
 import { Component } from "../../../Client/Gui/Component";
 import { SvgComponent } from "../../../Client/Gui/Svg/SvgComponent";
 
@@ -13,7 +14,7 @@ export class G extends SvgComponent
   (
     parent: Component,
     name = "svg_container",
-    insertMode = Component.InsertMode.APPEND
+    insertMode = Dom.InsertMode.APPEND
   )
   {
     super(parent, "g", name, insertMode);

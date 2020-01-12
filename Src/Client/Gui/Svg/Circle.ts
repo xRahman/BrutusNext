@@ -4,6 +4,7 @@
    Class wrapping SVG <circle> element.
 */
 
+import { Dom } from "../../../Client/Gui/Dom";
 import { Component } from "../../../Client/Gui/Component";
 import { SvgComponent } from "../../../Client/Gui/Svg/SvgComponent";
 
@@ -13,7 +14,7 @@ export class Circle extends SvgComponent
   (
     parent: Component,
     name = "circle",
-    insertMode = Component.InsertMode.APPEND
+    insertMode = Dom.InsertMode.APPEND
   )
   {
     super(parent, "circle", name, insertMode);

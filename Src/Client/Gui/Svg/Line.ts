@@ -5,6 +5,7 @@
 */
 
 import { CssColor } from "../../../Client/Gui/CssColor";
+import { Dom } from "../../../Client/Gui/Dom";
 import { Component } from "../../../Client/Gui/Component";
 import { SvgComponent } from "../../../Client/Gui/Svg/SvgComponent";
 
@@ -24,7 +25,7 @@ export class Line extends SvgComponent
     //   to: { xPixels: number, yPixels: number },
     //   color: CssColor,
     // },
-    insertMode = Component.InsertMode.APPEND
+    insertMode = Dom.InsertMode.APPEND
   )
   {
     super(parent, "line", name, insertMode);

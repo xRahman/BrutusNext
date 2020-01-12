@@ -5,20 +5,21 @@
 */
 
 import { Syslog } from "../../Shared/Log/Syslog";
+import { Dom } from "../../Client/Gui/Dom";
 
 export abstract class Component
 {
   // This function traverses the static prototype tree
   // and sets class names of all ancestors as a css class
   // to the element.
-  private static setCssClasses(element: HTMLElement | SVGElement): void
+  private static setCssClasses(element: Dom.Element): void
   {
     const ancestor = Object.getPrototypeOf(this);
 
     if (ancestor.setCssClasses)
         ancestor.setCssClasses(element);
 
-    element.classList.add(this.name);
+    Dom.addCssClass(element, this.name);
   }
 
   private displayMode = "block";
@@ -26,12 +27,12 @@ export abstract class Component
   constructor
   (
     protected readonly parent: Component | "No parent",
-    protected readonly element: HTMLElement | SVGElement,
+    protected readonly element: Dom.Element,
     protected readonly name: string,
-    insertMode = Component.InsertMode.APPEND
+    insertMode = Dom.InsertMode.APPEND
   )
   {
-    element.setAttribute("name", name);
+    Dom.setName(element, name);
 
     // Typescript doesn't seem to know that 'this.constructor'
     // refers to the class so it can be used to call static
@@ -55,7 +56,7 @@ export abstract class Component
   {
     this.element.onclick = (event: MouseEvent) =>
     {
-      this.wrapEventHandler(event, handler, "click");
+      wrapEventHandler(event, handler, "click");
     };
   }
 
@@ -63,7 +64,7 @@ export abstract class Component
   {
     this.element.oncontextmenu = (event: MouseEvent) =>
     {
-      this.wrapEventHandler(event, handler, "rightclick");
+      wrapEventHandler(event, handler, "rightclick");
     };
   }
 
@@ -71,7 +72,7 @@ export abstract class Component
   {
     this.element.onmouseover = (event: MouseEvent) =>
     {
-      this.wrapEventHandler(event, handler, "mouseover");
+      wrapEventHandler(event, handler, "mouseover");
     };
   }
 
@@ -79,7 +80,7 @@ export abstract class Component
   {
     this.element.onmouseout = (event: MouseEvent) =>
     {
-      this.wrapEventHandler(event, handler, "mouseout");
+      wrapEventHandler(event, handler, "mouseout");
     };
   }
 
@@ -97,7 +98,7 @@ export abstract class Component
     this.onShow();
 
     this.rememberDisplayMode();
-    this.element.style.display = "none";
+    Dom.hide(this.element);
   }
 
   public show(): void
@@ -114,30 +115,21 @@ export abstract class Component
     this.onShow();
   }
 
-  public isHidden(): boolean { return this.element.style.display === "none"; }
+  public isHidden(): boolean { return Dom.isHidden(this.element); }
 
   public removeFromParent(): void
   {
-    this.element.parentNode?.removeChild(this.element);
+    Dom.removeFromParent(this.element);
   }
 
   public setId(id: string): void
   {
-    this.element.id = id;
+    Dom.setId(this.element, id);
   }
 
   public setCss(css: Partial<CSSStyleDeclaration>): void
   {
-    for (const property in css)
-    {
-      if (!css.hasOwnProperty(property))
-        continue;
-
-      const value = css[property];
-
-      if (value !== undefined)
-        this.element.style[property] = value;
-    }
+    Dom.setCss(this.element, css);
 
     // Setting css properties can change the display mode
     // so we have to remember it to be able to return it.
@@ -148,78 +140,36 @@ export abstract class Component
   protected insertHtml
   (
     html: string,
-    insertMode = Component.InsertMode.APPEND
+    insertMode = Dom.InsertMode.APPEND
   )
   : void
   {
-    switch (insertMode)
-    {
-      case Component.InsertMode.APPEND:
-        this.element.insertAdjacentHTML("beforeend", html);
-        break;
-
-      case Component.InsertMode.PREPEND:
-        this.element.insertAdjacentHTML("afterbegin", html);
-        break;
-
-      case Component.InsertMode.REPLACE:
-        this.removeAllChildren();
-        this.element.insertAdjacentHTML("afterbegin", html);
-        break;
-
-      case Component.InsertMode.DO_NOT_INSERT:
-        break;
-
-      default:
-        Syslog.reportMissingCase(insertMode);
-        break;
-    }
+    Dom.insertHtml(this.element, html, insertMode);
   }
 
   public insertElement
   (
     element: HTMLElement | SVGElement,
-    insertMode: Component.InsertMode
+    insertMode: Dom.InsertMode
   )
   : void
   {
-    switch (insertMode)
-    {
-      case Component.InsertMode.APPEND:
-        this.element.appendChild(element);
-        break;
-
-      case Component.InsertMode.PREPEND:
-        this.element.insertBefore(element, this.element.firstChild);
-        break;
-
-      case Component.InsertMode.REPLACE:
-        this.removeAllChildren();
-        this.element.appendChild(element);
-        break;
-
-      case Component.InsertMode.DO_NOT_INSERT:
-        break;
-
-      default:
-        Syslog.reportMissingCase(insertMode);
-        break;
-    }
+    Dom.insertElement(element, insertMode);
   }
 
-  public replaceChild(element: HTMLElement | SVGElement): void
+  public replaceChild(element: Dom.Element): void
   {
     this.element.replaceChild(element, element);
   }
 
   public enableMouseEvents(): void
   {
-    this.setCss({ pointerEvents: "auto" });
+    Dom.enableMouseEvents(this.element);
   }
 
   public disableMouseEvents(): void
   {
-    this.setCss({ pointerEvents: "none" });
+    Dom.disableMouseEvents(this.element);
   }
 
   // --------------- Protected methods ------------------
@@ -236,85 +186,33 @@ export abstract class Component
 
   // ---------------- Private methods -------------------
 
-  private removeAllChildren(): void
-  {
-    while (this.element.lastChild !== null)
-    {
-      this.element.removeChild(this.element.lastChild);
-    }
-  }
-
   private rememberDisplayMode(): void
   {
-    if (this.element.style.display !== null)
-    {
-      this.displayMode = this.element.style.display;
-    }
+    this.displayMode = Dom.getDisplayMode(this.element);
   }
 
   private restoreDisplayMode(): void
   {
-    this.element.style.display = this.displayMode;
+    Dom.setDisplayMode(this.element, this.displayMode);
   }
-
-  private wrapEventHandler
-  (
-    event: MouseEvent,
-    handler: (event: MouseEvent) => void,
-    eventName: string
-  )
-  : void
-  {
-    try
-    {
-      handler(event);
-    }
-    catch (error)
-    {
-      Syslog.logError(error, `Failed to process '${eventName}' event`);
-    }
-  }
-
-  // ---------------- Event handlers --------------------
-
-  /// This idea is deprecated in favour of assigning event handler directly
-  /// to this.element. It might be less elegant but it's pure javascript
-  /// so it can be easily googled how to do it. And it is probably more
-  /// easily readable anyways.
-  // // We are generating our own 'onLeftClick and onRightClick' event handler
-  // // calls because there is no 'rightClick' event in plain javascript.
-  // // (There is an 'oncontextmenu' event which technically fires on right
-  // // click  but using it that way is more like a hack.)
-  // protected onMouseUp(event: MouseEvent): void
-  // {
-  //   switch (event.button)
-  //   {
-  //     case 0:
-  //       this.onLeftClick(event);
-  //       break;
-
-  //     case 2:
-  //       this.onRightClick(event);
-  //       break;
-
-  //     default:
-  //       break;
-  //   }
-  // }
 }
 
-// ------------------ Type Declarations ----------------------
+// ----------------- Auxiliary Functions ---------------------
 
-export namespace Component
+function wrapEventHandler
+(
+  event: MouseEvent,
+  handler: (event: MouseEvent) => void,
+  eventName: string
+)
+: void
 {
-  export enum InsertMode
+  try
   {
-    // Insert as the last child.
-    APPEND,
-    // Insert as the first child.
-    PREPEND,
-    // Html contents of parent element is cleared first.
-    REPLACE,
-    DO_NOT_INSERT
+    handler(event);
+  }
+  catch (error)
+  {
+    Syslog.logError(error, `Failed to process '${eventName}' event`);
   }
 }

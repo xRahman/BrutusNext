@@ -4,6 +4,7 @@
   Class wrapping <div> element.
 */
 
+import { Dom } from "../../Client/Gui/Dom";
 import { Component } from "../../Client/Gui/Component";
 
 export abstract class Div extends Component
@@ -12,7 +13,7 @@ export abstract class Div extends Component
   (
     parent: Component,
     name: string,
-    insertMode = Component.InsertMode.APPEND
+    insertMode = Dom.InsertMode.APPEND
   )
   {
     super(parent, document.createElement("div"), name, insertMode);

@@ -4,6 +4,7 @@
   Rooms on the map
 */
 
+import { Dom } from "../../../Client/Gui/Dom";
 import { Component } from "../../../Client/Gui/Component";
 import { Coords } from "../../../Shared/Class/Coords";
 import { Room } from "../../../Client/World/Room";
@@ -31,11 +32,11 @@ export class RoomsComponent extends G
     // a room component is inserted, we create them while
     // we are outside of DOM and than insert ourselves with
     // children already created.
-    super(parent, name, Component.InsertMode.DO_NOT_INSERT);
+    super(parent, name, Dom.InsertMode.DO_NOT_INSERT);
 
     this.populateComponentCache();
 
-    parent.insertElement(this.element, Component.InsertMode.APPEND);
+    parent.insertElement(this.element, Dom.InsertMode.APPEND);
   }
 
   public updateRoom(room: Room | "Doesn't exist", coords: Coords): void

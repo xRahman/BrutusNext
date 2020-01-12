@@ -4,6 +4,7 @@
    Class wrapping <svg> element.
 */
 
+import { Dom } from "../../../Client/Gui/Dom";
 import { Component } from "../../../Client/Gui/Component";
 import { SvgComponent } from "../../../Client/Gui/Svg/SvgComponent";
 
@@ -15,7 +16,7 @@ export class SvgImage extends SvgComponent
   (
     parent: Component,
     name = "image",
-    insertMode = Component.InsertMode.APPEND
+    insertMode = Dom.InsertMode.APPEND
   )
   {
     super(parent, "image", name, insertMode);

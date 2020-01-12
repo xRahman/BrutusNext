@@ -4,6 +4,7 @@
    Ancestor of SVG components.
 */
 
+import { Dom } from "../../../Client/Gui/Dom";
 import { Component } from "../../../Client/Gui/Component";
 
 const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
@@ -13,9 +14,9 @@ export abstract class SvgComponent extends Component
   constructor
   (
     parent: Component,
-    componentType: SvgComponent.Type,
+    componentType: string,
     name: string,
-    insertMode = Component.InsertMode.APPEND
+    insertMode = Dom.InsertMode.APPEND
   )
   {
     super
@@ -51,12 +52,12 @@ export abstract class SvgComponent extends Component
 
 export namespace SvgComponent
 {
-  export type Type =
-    | "svg"
-    | "g"
-    | "image"
-    | "circle"
-    | "line";
+  // export type Type =
+  //   | "svg"
+  //   | "g"
+  //   | "image"
+  //   | "circle"
+  //   | "line";
 
   export function setWidthAndHeight
   (

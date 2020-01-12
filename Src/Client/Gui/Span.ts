@@ -4,6 +4,7 @@
    Class wrapping <span> element.
 */
 
+import { Dom } from "../../Client/Gui/Dom";
 import { Component } from "../../Client/Gui/Component";
 
 export abstract class Span extends Component
@@ -12,7 +13,7 @@ export abstract class Span extends Component
   (
     parent: Component,
     name: string,
-    insertMode = Component.InsertMode.APPEND
+    insertMode = Dom.InsertMode.APPEND
   )
   {
     super(parent, document.createElement("span"), name, insertMode);
