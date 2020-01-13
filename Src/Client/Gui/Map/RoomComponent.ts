@@ -7,7 +7,7 @@
 import { Coords } from "../../../Shared/Class/Coords";
 import { Room } from "../../../Client/World/Room";
 import { RoomsComponent } from "../../../Client/Gui/Map/RoomsComponent";
-import { SvgImage } from "../../../Client/Gui/Svg/SvgImage";
+import { Image } from "../../../Client/Gui/Svg/Image";
 import { Circle } from "../../../Client/Gui/Svg/Circle";
 import { G } from "../../../Client/Gui/Svg/G";
 
@@ -16,7 +16,7 @@ export class RoomComponent extends G
   public static readonly ROOM_BACKGROUND = "room_background";
 
   private readonly roomBackground: Circle;
-  private readonly roomIcon: SvgImage;
+  private readonly roomIcon: Image;
 
   private coords: Coords | "In cache" = "In cache";
 
@@ -75,9 +75,9 @@ function createRoomBackground(parent: RoomComponent): Circle
   return background;
 }
 
-function createRoomIcon(parent: RoomComponent): SvgImage
+function createRoomIcon(parent: RoomComponent): Image
 {
-  const roomIcon = new SvgImage(parent, "room_icon");
+  const roomIcon = new Image(parent, "room_icon");
 
   // Disable mouse events on the icon (they are handled
   // by "room_background" element).

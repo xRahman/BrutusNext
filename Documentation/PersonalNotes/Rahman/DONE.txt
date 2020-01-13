@@ -1,3 +1,7 @@
+TODO: V Dom.insertElement() vložit do elementu element místo childa
+  a pořešit následnej neodchycenej error.
+[done]
+
 TODO: Revize hierarchie komponent (hlavně SVG komponent)
 - ideálně by element měl bejt vždycky konkrétního typu
   (tj. nenastavoval by se v konstruktoru, ale nejspíš přímo inicializací

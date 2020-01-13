@@ -17,8 +17,10 @@ TARGET:
 
 ------------------------------------------------------------------------------
 
-TODO: V Dom.insertElement() vložit do elementu element místo childa
-  a pořešit následnej neodchycenej error.
+TODO: Ještě jednou projít GUI componenty a zkontrolovat, že to dává smysl
+
+TODO: Ještě jednou projít Syslog a zamyslet se, jestli klonování errorů
+  dává smysl a je to napsaný rozumně
 
 TODO: v Image je třeba si pamatovat, že má bejt centerovaná, a zohlednit
   to i v případném setování pozice.

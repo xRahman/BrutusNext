@@ -9,7 +9,7 @@ import { Component } from "../../../Client/Gui/Component";
 
 const SVG_XLINK_NAMESPACE = "http://www.w3.org/1999/xlink";
 
-export class SvgImage extends Component
+export class Image extends Component
 {
   constructor
   (
