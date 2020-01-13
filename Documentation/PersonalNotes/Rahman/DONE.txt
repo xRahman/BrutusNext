@@ -1,3 +1,8 @@
+TODO: v Image je třeba si pamatovat, že má bejt centerovaná, a zohlednit
+  to i v případném setování pozice.
+- flag 'centered' by se asi měl nastavovat rovnou v konstruktoru.
+[done]
+
 TODO: V Dom.insertElement() vložit do elementu element místo childa
   a pořešit následnej neodchycenej error.
 [done]

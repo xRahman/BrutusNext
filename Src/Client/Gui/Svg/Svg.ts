@@ -19,21 +19,20 @@ export class Svg extends Component
     super(parent, Dom.createSvg(), name, insertMode);
   }
 
+  // ---------------- Public methods --------------------
+
   public setSize(widthPixels: number, heightPixels: number): void
   {
-    Dom.setWidth(this.element, widthPixels);
-    Dom.setHeight(this.element, heightPixels);
+    Dom.setPosition(this.element, widthPixels, heightPixels);
   }
 
   public setPosition(xPixels: number, yPixels: number): void
   {
-    this.element.setAttribute("x", String(xPixels));
-    this.element.setAttribute("y", String(yPixels));
+    Dom.setPosition(this.element, xPixels, yPixels);
   }
 
   public setRelativePosition(xPercent: number, yPercent: number): void
   {
-    this.element.setAttribute("x", `${String(xPercent)}%`);
-    this.element.setAttribute("y", `${String(yPercent)}%`);
+    Dom.setRelativePosition(this.element, xPercent, yPercent);
   }
 }

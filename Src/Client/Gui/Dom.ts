@@ -173,6 +173,18 @@ export namespace Dom
     element.style.display = displayMode;
   }
 
+  export function setSize
+  (
+    element: Element,
+    widthPixels: number,
+    heightPixels: number
+  )
+  : void
+  {
+    setWidth(element, widthPixels);
+    setHeight(element, heightPixels);
+  }
+
   export function setWidth(element: Element, widthPixels: number): void
   {
     element.setAttribute("width", String(widthPixels));
@@ -181,6 +193,50 @@ export namespace Dom
   export function setHeight(element: Element, heightPixels: number): void
   {
     element.setAttribute("height", String(heightPixels));
+  }
+
+  export function setX(element: Element, xPixels: number): void
+  {
+    element.setAttribute("x", String(xPixels));
+  }
+
+  export function setY(element: Element, yPixels: number): void
+  {
+    element.setAttribute("y", String(yPixels));
+  }
+
+  export function setPosition
+  (
+    element: Element,
+    xPixels: number,
+    yPixels: number
+  )
+  : void
+  {
+    setX(element, xPixels);
+    setY(element, yPixels);
+  }
+
+  export function setRelativeX(element: Element, xPercent: number): void
+  {
+    element.setAttribute("x", `${String(xPercent)}%`);
+  }
+
+  export function setRelativeY(element: Element, yPercent: number): void
+  {
+    element.setAttribute("y", `${String(yPercent)}%`);
+  }
+
+  export function setRelativePosition
+  (
+    element: Element,
+    xPercent: number,
+    yPercent: number
+  )
+  : void
+  {
+    setRelativeX(element, xPercent);
+    setRelativeY(element, yPercent);
   }
 
   export function scale(element: Element, scaleFactor: number): void

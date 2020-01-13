@@ -51,12 +51,7 @@ export class RoomComponent extends G
       return;
     }
 
-    this.roomIcon.setSize
-    (
-      room.icon.pixelSize,
-      room.icon.pixelSize,
-      { centered: true }
-    );
+    this.roomIcon.setSize(room.icon.pixelSize, room.icon.pixelSize);
 
     this.roomIcon.setImage(room.icon.path);
 
