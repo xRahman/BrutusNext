@@ -29,6 +29,7 @@
 */
 
 import { SyslogUtils } from "../../Shared/Log/SyslogUtils";
+import { ErrorUtils } from "../../Shared/Utils/ErrorUtils";
 
 type SyslogMessageType =
   | "[CLIENT]"
@@ -66,9 +67,13 @@ export namespace Syslog
 
   export function reportUncaughtException(error: Error): void
   {
-    error.message = `[UNCAUGHT_EXCEPTION] ${error.message}`;
+    // Clone the 'error' because Error objects like DOMException have
+    // readonly properties so we wouldn't be able to write to them.
+    const clonedError = ErrorUtils.clone(error);
 
-    SyslogUtils.logError(error);
+    clonedError.message = `[UNCAUGHT_EXCEPTION] ${error.message}`;
+
+    SyslogUtils.logError(clonedError);
   }
 
   // If you get a compiler error "Argument of type '"xy"'
@@ -82,21 +87,21 @@ export namespace Syslog
 
 function logExistingErrorObject(error: Error, catchMessage?: string): void
 {
-  // DEBUG
-  // console.log(error);
-  error.message = `[ERROR] ${error.message}`;
+  // Clone the 'error' because Error objects like DOMException have
+  // readonly properties so we wouldn't be able to write to them.
+  const clonedError = ErrorUtils.clone(error);
 
   if (catchMessage)
-    error.message = `${catchMessage} (${error.message})`;
+    clonedError.message = `[ERROR] ${catchMessage}: ${error.message}`;
+  else
+    clonedError.message = `[ERROR] ${error.message}`;
 
-  SyslogUtils.logError(error);
+  SyslogUtils.logError(clonedError);
 }
 
 function logNewErrorObject(message: string): void
 {
-  const error = new Error(message);
-
-  error.message = `[ERROR] ${error.message}`;
+  const error = new Error(`[ERROR] ${message}`);
 
   // Modify stack trace to start where Syslog.logError() was called.
   Error.captureStackTrace(error, Syslog.logError);

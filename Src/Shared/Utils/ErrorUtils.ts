@@ -6,16 +6,25 @@
 
 export namespace ErrorUtils
 {
+  export function clone(error: Error): Error
+  {
+    return Object.assign(new Error(error.message), error);
+  }
+
   export function prependMessage(message: string, error: Error): Error
   {
     // This may happen because 'error' has type 'any' when caught.
     if (!(error instanceof Error))
       return new Error(`${message}: ${String(error)}`);
 
+    // Clone the 'error' because Error objects like DOMException have
+    // readonly properties so we wouldn't be able to write to them.
+    const clonedError = clone(error);
+
     if (error.message)
-      error.message = `${message}: ${error.message}`;
+      clonedError.message = `${message}: ${error.message}`;
     else
-      error.message = message;
+      clonedError.message = message;
 
     return error;
   }
