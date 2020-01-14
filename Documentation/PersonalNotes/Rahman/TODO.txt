@@ -17,17 +17,30 @@ TARGET:
 
 ------------------------------------------------------------------------------
 
+TODO: Na detekci buttonů ve WorldComponent udělat funkce (asi v Dom?)
+  - možná založit MouseEvent (i když to je build-in typ, takže asi ne)
+    DomEvent? To se zas bude plést s Dom.Event
+
 TODO: Ještě jednou projít GUI componenty a zkontrolovat, že to dává smysl
+TODO: Doprojít adresáře Map, Login a Game
 
 TODO: Ještě jednou projít Syslog a zamyslet se, jestli klonování errorů
   dává smysl a je to napsaný rozumně
 
+TODO: Zvážit, jestli onShow() a onHide() newrapnout stejně jako DOM eventy
+  (pracovalo by se s tím stejně a automaticky by to odchytávalo exceptiony).
+
+TODO: Zvážit adresářovou strukturu GUI
+- možná adresář Html podobně jako Svg
+  (byl by tam asi Div, Span, Body, Html a asi i Document)
+- a možná adresář Window
+  (Window, WindowContent, TitleBar, Title, TitledWindow)
 
 TODO: V Gui asi míchám moc responsibility dohromady.
 - je to stavovej automat
 - vyrábí to svg mapy
   - to by asi měla dělat svg komponenta s mapou. Gui na ni může mít odkaz.
-
+TODO: Gui.State asi může bejt union type místo enumu.
 
 TODO: V createMap() v cyklu na vyrábění mapy oasertovat krajní hodnoty cyklu,
  abych nemohl vyrobit nekonečnej cyklus.

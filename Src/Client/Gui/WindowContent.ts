@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Window with a titlebar and content
+  Window content container
 */
 
 import { Window } from "../../Client/Gui/Window";

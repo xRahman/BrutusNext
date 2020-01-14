@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-   Class wrapping SVG <circle> element.
+   Class wrapping SVG <circle> element
 */
 
 import { Dom } from "../../../Client/Gui/Dom";
@@ -11,13 +11,15 @@ export class Circle extends Component
 {
   constructor
   (
-    parent: Component,
+    parent: Component | "No parent",
     name = "circle",
     insertMode: Dom.InsertMode = "APPEND"
   )
   {
     super(parent, Dom.createCircle(), name, insertMode);
   }
+
+  // ---------------- Public methods --------------------
 
   // Note that origin point of <circle> is in the middle.
   public setPosition(xPixels: number, yPixels: number): void

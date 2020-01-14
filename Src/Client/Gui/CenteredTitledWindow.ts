@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  A window in the center of the screen
+  A window with title in the center of the screen
 */
 
 import { Body } from "../../Client/Gui/Body";

@@ -61,7 +61,7 @@ export namespace Syslog
     }
     else
     {
-      logNewErrorObject(errorOrMessage);
+      logNewErrorObject(errorOrMessage, catchMessage);
     }
   }
 
@@ -99,9 +99,14 @@ function logExistingErrorObject(error: Error, catchMessage?: string): void
   SyslogUtils.logError(clonedError);
 }
 
-function logNewErrorObject(message: string): void
+function logNewErrorObject(message: string, catchMessage?: string): void
 {
-  const error = new Error(`[ERROR] ${message}`);
+  let error: Error;
+
+  if (catchMessage)
+    error = new Error(`[ERROR] ${catchMessage}: ${message}`);
+  else
+    error = new Error(`[ERROR] ${message}`);
 
   // Modify stack trace to start where Syslog.logError() was called.
   Error.captureStackTrace(error, Syslog.logError);

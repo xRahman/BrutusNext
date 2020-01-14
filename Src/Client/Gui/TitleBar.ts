@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Window titlebar
+  Window title bar
 */
 
 import { Text } from "../../Client/Gui/Text/Text";
@@ -26,8 +26,6 @@ export class TitleBar extends Div
 
     this.title = new Text(this, title, "title");
   }
-
-  // -------------- Static class data -------------------
 
   // ---------------- Public methods --------------------
 

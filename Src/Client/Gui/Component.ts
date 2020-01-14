@@ -26,7 +26,7 @@ export abstract class Component
 
   constructor
   (
-    protected readonly parent: Component | "No parent",
+    protected parent: Component | "No parent",
     protected readonly element: Dom.Element,
     protected readonly name: string,
     insertMode: Dom.InsertMode = "APPEND"
@@ -81,6 +81,22 @@ export abstract class Component
     };
   }
 
+  public set onmouseup(handler: (event: MouseEvent) => void)
+  {
+    this.element.onmouseup = (event: MouseEvent) =>
+    {
+      wrapEventHandler(event, handler, "mouseup");
+    };
+  }
+
+  public set onmousedown(handler: (event: MouseEvent) => void)
+  {
+    this.element.onmousedown = (event: MouseEvent) =>
+    {
+      wrapEventHandler(event, handler, "mousedown");
+    };
+  }
+
   public set onwheel(handler: (event: WheelEvent) => void)
   {
     this.element.onwheel = (event: WheelEvent) =>
@@ -97,12 +113,13 @@ export abstract class Component
     if (this.isHidden())
       return;
 
-    // 'onHide()' must be called after setting display mode
-    // because hidden components can't be manipulated with
-    // (for example they can't be given focus).
-    this.onShow();
+    // 'onHide()' must be called fefore setting display mode
+    // to "none" because hidden components can't be manipulated
+    // with (for example they can't be given focus).
+    this.onHide();
 
     this.rememberDisplayMode();
+
     Dom.hide(this.element);
   }
 
@@ -122,6 +139,19 @@ export abstract class Component
 
   public isHidden(): boolean { return Dom.isHidden(this.element); }
 
+  public setParent
+  (
+    parent: Component | "No parent",
+    insertMode: Dom.InsertMode = "APPEND"
+  )
+  : void
+  {
+    this.parent = parent;
+
+    if (parent !== "No parent")
+      parent.insertElement(this.element, insertMode);
+  }
+
   public removeFromParent(): void
   {
     Dom.removeFromParent(this.element);
@@ -136,9 +166,6 @@ export abstract class Component
   {
     Dom.setCss(this.element, css);
 
-    // Setting css properties can change the display mode
-    // so we have to remember it to be able to return it.
-    // when show() is called.
     this.rememberDisplayMode();
   }
 
@@ -162,8 +189,10 @@ export abstract class Component
     Dom.insertElement(this.element, element, insertMode);
   }
 
-  public replaceChild(element: Dom.Element): void
+  public updateChildGraphics(element: Dom.Element): void
   {
+    // Removing 'element' from DOM and inserting it back again
+    // forces the browser to recalculate it's graphics.
     this.element.replaceChild(element, element);
   }
 
@@ -177,7 +206,7 @@ export abstract class Component
     Dom.disableMouseEvents(this.element);
   }
 
-  // --------------- Protected methods ------------------
+  // ---------------- Event handlers --------------------
 
   protected onShow(): void
   {

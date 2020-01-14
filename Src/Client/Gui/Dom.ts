@@ -7,27 +7,16 @@
 import { Syslog } from "../../Shared/Log/Syslog";
 
 const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
+const SVG_XLINK_NAMESPACE = "http://www.w3.org/1999/xlink";
 
 export namespace Dom
 {
   export type Element = HTMLElement | SVGElement;
 
   export type InsertMode =
-  | "APPEND"          // Insert as the last child.
-  | "PREPEND"         // Insert as the first child.
-  | "REPLACE"         // Html contents of parent element is cleared first.
-  | "DO_NOT_INSERT";
-
-  // export enum InsertMode
-  // {
-  //   // Insert as the last child.
-  //   APPEND,
-  //   // Insert as the first child.
-  //   PREPEND,
-  //   // Html contents of parent element is cleared first.
-  //   REPLACE,
-  //   DO_NOT_INSERT
-  // }
+  | "APPEND"    // Insert as the last child.
+  | "PREPEND"   // Insert as the first child.
+  | "REPLACE";  // Html contents of parent element is cleared first.
 
   export function addCssClass(element: Element, cssClassName: string): void
   {
@@ -73,7 +62,8 @@ export namespace Dom
   (
     element: Element,
     css: Partial<CSSStyleDeclaration>
-  ): void
+  )
+  : void
   {
     for (const property in css)
     {
@@ -85,6 +75,11 @@ export namespace Dom
       if (value !== undefined)
         element.style[property] = value;
     }
+  }
+
+  export function setHref(element: Element, path: string): void
+  {
+    element.setAttributeNS(SVG_XLINK_NAMESPACE, "href", path);
   }
 
   export function removeAllChildren(element: Element): void
@@ -118,9 +113,6 @@ export namespace Dom
         element.insertAdjacentHTML("afterbegin", html);
         break;
 
-      case "DO_NOT_INSERT":
-        break;
-
       default:
         Syslog.reportMissingCase(insertMode);
         break;
@@ -150,9 +142,6 @@ export namespace Dom
         element.appendChild(child);
         break;
 
-      case "DO_NOT_INSERT":
-        break;
-
       default:
         Syslog.reportMissingCase(insertMode);
         break;
@@ -179,6 +168,16 @@ export namespace Dom
     element.style.display = displayMode;
   }
 
+  export function setWidth(element: Element, widthPixels: number): void
+  {
+    element.setAttribute("width", String(widthPixels));
+  }
+
+  export function setHeight(element: Element, heightPixels: number): void
+  {
+    element.setAttribute("height", String(heightPixels));
+  }
+
   export function setSize
   (
     element: Element,
@@ -189,16 +188,6 @@ export namespace Dom
   {
     setWidth(element, widthPixels);
     setHeight(element, heightPixels);
-  }
-
-  export function setWidth(element: Element, widthPixels: number): void
-  {
-    element.setAttribute("width", String(widthPixels));
-  }
-
-  export function setHeight(element: Element, heightPixels: number): void
-  {
-    element.setAttribute("height", String(heightPixels));
   }
 
   export function setX(element: Element, xPixels: number): void

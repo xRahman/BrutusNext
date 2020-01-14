@@ -4,8 +4,6 @@
   Rooms on the map
 */
 
-import { Dom } from "../../../Client/Gui/Dom";
-import { Component } from "../../../Client/Gui/Component";
 import { Coords } from "../../../Shared/Class/Coords";
 import { Room } from "../../../Client/World/Room";
 import { WorldComponent } from "../../../Client/Gui/Map/WorldComponent";
@@ -32,11 +30,11 @@ export class RoomsComponent extends G
     // a room component is inserted, we create them while
     // we are outside of DOM and than insert ourselves with
     // children already created.
-    super(parent, name, "DO_NOT_INSERT");
+    super("No parent", name);
 
     this.populateComponentCache();
 
-    parent.insertElement(this.element);
+    this.setParent(parent);
   }
 
   public updateRoom(room: Room | "Doesn't exist", coords: Coords): void
@@ -82,12 +80,12 @@ export class RoomsComponent extends G
 
   // ! Throws exception on error.
   // Forces recalculating of focus, css etc.
-  public updateGraphics(): void
+  public updateChildGraphics(): void
   {
     if (this.parent === "No parent")
       throw Error("Failed to update graphics because there is no parent");
 
-    this.parent.replaceChild(this.element);
+    this.parent.updateChildGraphics(this.element);
   }
 
   // ---------------- Private methods -------------------

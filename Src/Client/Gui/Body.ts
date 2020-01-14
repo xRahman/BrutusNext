@@ -50,8 +50,10 @@ export class Body extends Component
   {
     super("No parent", document.body, "body");
 
-    this.element.onmouseup = (event) => { this.onMouseUp(event); };
+    this.onmouseup = (event) => { this.onMouseUp(event); };
   }
+
+  // ---------------- Event handlers --------------------
 
   private onMouseUp(event: MouseEvent): void
   {

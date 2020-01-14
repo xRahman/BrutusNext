@@ -1,7 +1,13 @@
 /*
   Part of BrutusNEXT
 
-  Window GUI component
+  A window
+*/
+
+/*
+  Notes:
+    Windows are created hidden.
+    Windows are children of <body> element.
 */
 
 import { Gui } from "../../Client/Gui/Gui";
@@ -28,8 +34,6 @@ export class Window extends Div
     // Windows are created hidden.
     this.hide();
   }
-
-  // --------------- Public accessors -------------------
 
   // ---------------- Public methods --------------------
 

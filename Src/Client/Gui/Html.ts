@@ -15,14 +15,14 @@ import { Component } from "../../Client/Gui/Component";
 
 export class Html extends Component
 {
-  private static readonly html = new Html();
+  private static readonly instance = new Html();
 
   public static scaleAllFonts(size: number): void
   {
     // Since all fonts should use 'rem' units to specify
     // their size, changing size of font in <html> elements
     // changes their size as well.
-    this.html.setCss({ fontSize: `${size}px` });
+    this.instance.setCss({ fontSize: `${size}px` });
   }
 
   constructor()

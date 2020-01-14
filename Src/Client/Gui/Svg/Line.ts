@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-   Class wrapping SVG <circle> element.
+   Class wrapping SVG <line> element
 */
 
 import { CssColor } from "../../../Client/Gui/CssColor";
@@ -12,13 +12,15 @@ export class Line extends Component
 {
   constructor
   (
-    parent: Component,
+    parent: Component | "No parent",
     name = "line",
     insertMode: Dom.InsertMode = "APPEND"
   )
   {
     super(parent, Dom.createLine(), name, insertMode);
   }
+
+  // ---------------- Public methods --------------------
 
   public draw
   (

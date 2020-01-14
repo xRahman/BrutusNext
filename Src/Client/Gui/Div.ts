@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Class wrapping <div> element.
+  Class wrapping <div> element
 */
 
 import { Dom } from "../../Client/Gui/Dom";
@@ -11,7 +11,7 @@ export abstract class Div extends Component
 {
   constructor
   (
-    parent: Component,
+    parent: Component | "No parent",
     name: string,
     insertMode: Dom.InsertMode = "APPEND"
   )

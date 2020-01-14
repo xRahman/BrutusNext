@@ -30,28 +30,6 @@ export class TitledWindow extends Window
     this.content = new WindowContent(this);
   }
 
-  // constructor
-  // (
-  //   {
-  //     windowParam = {},
-  //     titleBarParam = {},
-  //     titleParam = {},
-  //     contentParam = {}
-  //   }
-  //   : TitledWindow.Param = {}
-  // )
-  // {
-  //   super
-  //   (
-  //     Utils.applyDefaults(windowParam, { name: 'titled_window' })
-  //   );
-
-  //   this.createTitleBar(titleBarParam, titleParam);
-  //   this.createContent(contentParam);
-  // }
-
-  // -------------- Static class data -------------------
-
   // ---------------- Public methods --------------------
 
   // // Sets text to 'title' element

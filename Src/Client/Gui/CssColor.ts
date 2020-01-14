@@ -27,6 +27,8 @@ export class CssColor
     checkInterval("a", a, { min: 0, max: 1 });
   }
 
+  // ---------------- Public methods --------------------
+
   public toString(): string
   {
     if (this.a === 1)

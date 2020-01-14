@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-   Class wrapping <svg> element.
+   Class wrapping <svg> element
 */
 
 import { Dom } from "../../../Client/Gui/Dom";
@@ -11,7 +11,7 @@ export class Svg extends Component
 {
   constructor
   (
-    parent: Component,
+    parent: Component | "No parent",
     name: string,
     insertMode: Dom.InsertMode = "APPEND"
   )

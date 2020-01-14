@@ -1,13 +1,11 @@
 /*
   Part of BrutusNEXT
 
-   Class wrapping <svg> element.
+   Class wrapping SVG <image> element
 */
 
 import { Dom } from "../../../Client/Gui/Dom";
 import { Component } from "../../../Client/Gui/Component";
-
-const SVG_XLINK_NAMESPACE = "http://www.w3.org/1999/xlink";
 
 export class Image extends Component
 {
@@ -17,7 +15,7 @@ export class Image extends Component
 
   constructor
   (
-    parent: Component,
+    parent: Component | "No parent",
     name = "image",
     centered = true,
     insertMode: Dom.InsertMode = "APPEND"
@@ -28,9 +26,11 @@ export class Image extends Component
     this.centered = centered;
   }
 
+  // ---------------- Public methods --------------------
+
   public setImage(path: string): void
   {
-    this.element.setAttributeNS(SVG_XLINK_NAMESPACE, "href", path);
+    Dom.setHref(this.element, path);
   }
 
   public setSize
@@ -48,8 +48,6 @@ export class Image extends Component
     if (this.centered)
       this.center();
   }
-
-  // ---------------- Public methods --------------------
 
   public setPosition(xPixels: number, yPixels: number): void
   {
