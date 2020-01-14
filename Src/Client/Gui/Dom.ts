@@ -12,16 +12,22 @@ export namespace Dom
 {
   export type Element = HTMLElement | SVGElement;
 
-  export enum InsertMode
-  {
-    // Insert as the last child.
-    APPEND,
-    // Insert as the first child.
-    PREPEND,
-    // Html contents of parent element is cleared first.
-    REPLACE,
-    DO_NOT_INSERT
-  }
+  export type InsertMode =
+  | "APPEND"          // Insert as the last child.
+  | "PREPEND"         // Insert as the first child.
+  | "REPLACE"         // Html contents of parent element is cleared first.
+  | "DO_NOT_INSERT";
+
+  // export enum InsertMode
+  // {
+  //   // Insert as the last child.
+  //   APPEND,
+  //   // Insert as the first child.
+  //   PREPEND,
+  //   // Html contents of parent element is cleared first.
+  //   REPLACE,
+  //   DO_NOT_INSERT
+  // }
 
   export function addCssClass(element: Element, cssClassName: string): void
   {
@@ -93,26 +99,26 @@ export namespace Dom
   (
     element: Element,
     html: string,
-    insertMode = InsertMode.APPEND
+    insertMode: InsertMode = "APPEND"
   )
   : void
   {
     switch (insertMode)
     {
-      case InsertMode.APPEND:
+      case "APPEND":
         element.insertAdjacentHTML("beforeend", html);
         break;
 
-      case InsertMode.PREPEND:
+      case "PREPEND":
         element.insertAdjacentHTML("afterbegin", html);
         break;
 
-      case InsertMode.REPLACE:
+      case "REPLACE":
         removeAllChildren(element);
         element.insertAdjacentHTML("afterbegin", html);
         break;
 
-      case InsertMode.DO_NOT_INSERT:
+      case "DO_NOT_INSERT":
         break;
 
       default:
@@ -131,20 +137,20 @@ export namespace Dom
   {
     switch (insertMode)
     {
-      case InsertMode.APPEND:
+      case "APPEND":
         element.appendChild(child);
         break;
 
-      case InsertMode.PREPEND:
+      case "PREPEND":
         element.insertBefore(child, element.firstChild);
         break;
 
-      case InsertMode.REPLACE:
+      case "REPLACE":
         removeAllChildren(element);
         element.appendChild(child);
         break;
 
-      case InsertMode.DO_NOT_INSERT:
+      case "DO_NOT_INSERT":
         break;
 
       default:

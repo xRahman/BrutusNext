@@ -14,7 +14,7 @@ export class Line extends Component
   (
     parent: Component,
     name = "line",
-    insertMode = Dom.InsertMode.APPEND
+    insertMode: Dom.InsertMode = "APPEND"
   )
   {
     super(parent, Dom.createLine(), name, insertMode);

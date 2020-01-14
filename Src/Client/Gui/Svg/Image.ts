@@ -20,7 +20,7 @@ export class Image extends Component
     parent: Component,
     name = "image",
     centered = true,
-    insertMode = Dom.InsertMode.APPEND
+    insertMode: Dom.InsertMode = "APPEND"
   )
   {
     super(parent, Dom.createImage(), name, insertMode);

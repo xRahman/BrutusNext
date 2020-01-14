@@ -32,11 +32,11 @@ export class RoomsComponent extends G
     // a room component is inserted, we create them while
     // we are outside of DOM and than insert ourselves with
     // children already created.
-    super(parent, name, Dom.InsertMode.DO_NOT_INSERT);
+    super(parent, name, "DO_NOT_INSERT");
 
     this.populateComponentCache();
 
-    parent.insertElement(this.element, Dom.InsertMode.APPEND);
+    parent.insertElement(this.element);
   }
 
   public updateRoom(room: Room | "Doesn't exist", coords: Coords): void

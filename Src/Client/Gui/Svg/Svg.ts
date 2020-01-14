@@ -13,7 +13,7 @@ export class Svg extends Component
   (
     parent: Component,
     name: string,
-    insertMode = Dom.InsertMode.APPEND
+    insertMode: Dom.InsertMode = "APPEND"
   )
   {
     super(parent, Dom.createSvg(), name, insertMode);

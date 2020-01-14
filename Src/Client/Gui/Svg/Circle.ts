@@ -13,7 +13,7 @@ export class Circle extends Component
   (
     parent: Component,
     name = "circle",
-    insertMode = Dom.InsertMode.APPEND
+    insertMode: Dom.InsertMode = "APPEND"
   )
   {
     super(parent, Dom.createCircle(), name, insertMode);

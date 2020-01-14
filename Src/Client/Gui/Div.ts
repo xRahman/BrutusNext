@@ -13,7 +13,7 @@ export abstract class Div extends Component
   (
     parent: Component,
     name: string,
-    insertMode = Dom.InsertMode.APPEND
+    insertMode: Dom.InsertMode = "APPEND"
   )
   {
     super(parent, Dom.createDiv(), name, insertMode);

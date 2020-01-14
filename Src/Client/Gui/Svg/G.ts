@@ -13,7 +13,7 @@ export class G extends Component
   (
     parent: Component,
     name = "svg_container",
-    insertMode = Dom.InsertMode.APPEND
+    insertMode: Dom.InsertMode = "APPEND"
   )
   {
     super(parent, Dom.createG(), name, insertMode);

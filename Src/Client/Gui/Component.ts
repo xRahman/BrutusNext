@@ -29,7 +29,7 @@ export abstract class Component
     protected readonly parent: Component | "No parent",
     protected readonly element: Dom.Element,
     protected readonly name: string,
-    insertMode = Dom.InsertMode.APPEND
+    insertMode: Dom.InsertMode = "APPEND"
   )
   {
     Dom.setName(element, name);
@@ -145,7 +145,7 @@ export abstract class Component
   protected insertHtml
   (
     html: string,
-    insertMode = Dom.InsertMode.APPEND
+    insertMode: Dom.InsertMode = "APPEND"
   )
   : void
   {
@@ -155,7 +155,7 @@ export abstract class Component
   public insertElement
   (
     element: HTMLElement | SVGElement,
-    insertMode: Dom.InsertMode
+    insertMode: Dom.InsertMode = "APPEND"
   )
   : void
   {
