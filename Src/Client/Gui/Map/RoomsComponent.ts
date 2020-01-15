@@ -4,6 +4,7 @@
   Rooms on the map
 */
 
+import { Dom } from "../../../Client/Gui/Dom";
 import { Coords } from "../../../Shared/Class/Coords";
 import { Room } from "../../../Client/World/Room";
 import { WorldComponent } from "../../../Client/Gui/Map/WorldComponent";
@@ -16,6 +17,11 @@ const ROOMS_IN_CACHE = 41 * 41;
 
 export class RoomsComponent extends G
 {
+  public static get roomSpacingPixels(): number
+  {
+    return Dom.remToPixels(1.5);
+  }
+
   // [key]: string representation of room coords.
   private readonly roomComponents = new Map<string, RoomComponent>();
 
@@ -57,7 +63,7 @@ export class RoomsComponent extends G
       throw Error("No more room components are left in cache");
     }
 
-    const roomSpacing = WorldComponent.roomSpacingPixels;
+    const roomSpacing = RoomsComponent.roomSpacingPixels;
 
     roomComponent.setCoords(coords);
     roomComponent.setPosition

@@ -16,11 +16,6 @@ import { MapZoomer } from "../../../Client/Gui/Map/MapZoomer";
 
 export class WorldComponent extends MapZoomer
 {
-  public static get roomSpacingPixels(): number
-  {
-    return Dom.remToPixels(1.5);
-  }
-
   private readonly rooms: RoomsComponent;
   private readonly exits: ExitsComponent;
 
