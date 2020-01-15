@@ -414,6 +414,8 @@
       // or of type string.
       "@typescript-eslint/restrict-plus-operands": "error",
       // Enforce template literal expressions to be of string type.
+      // (This rule is used to prevent automatic conversions of 'null'
+      //  or 'undefined' values to production strings.)
       "@typescript-eslint/restrict-template-expressions":
       [
         "error",

@@ -24,6 +24,12 @@ export abstract class Component
 
   private displayMode: string;
 
+  private handlers =
+  {
+    onShow: "Not set" as (() => void) | "Not set",
+    onHide: "Not set" as (() => void) | "Not set"
+  };
+
   constructor
   (
     protected parent: Component | "No parent",
@@ -105,6 +111,22 @@ export abstract class Component
     };
   }
 
+  public set onshow(handler: () => void)
+  {
+    this.handlers.onShow = () =>
+    {
+      wrapHandler(handler, "show");
+    };
+  }
+
+  public set onhide(handler: () => void)
+  {
+    this.handlers.onHide = () =>
+    {
+      wrapHandler(handler, "hide");
+    };
+  }
+
   // ---------------- Public methods --------------------
 
   public hide(): void
@@ -116,7 +138,8 @@ export abstract class Component
     // 'onHide()' must be called fefore setting display mode
     // to "none" because hidden components can't be manipulated
     // with (for example they can't be given focus).
-    this.onHide();
+    if (this.handlers.onHide !== "Not set")
+      this.handlers.onHide();
 
     this.rememberDisplayMode();
 
@@ -134,7 +157,8 @@ export abstract class Component
     // 'onShow()' must be called after this.restoreDisplayMode()
     // because hidden components can't be manipulated with
     // (for example they can't be given focus).
-    this.onShow();
+    if (this.handlers.onShow !== "Not set")
+      this.handlers.onShow();
   }
 
   public isHidden(): boolean { return Dom.isHidden(this.element); }
@@ -206,18 +230,6 @@ export abstract class Component
     Dom.disableMouseEvents(this.element);
   }
 
-  // ---------------- Event handlers --------------------
-
-  protected onShow(): void
-  {
-    // This handler can be redefined by descendants.
-  }
-
-  protected onHide(): void
-  {
-    // This handler can be redefined by descendants.
-  }
-
   // ---------------- Private methods -------------------
 
   private rememberDisplayMode(): void
@@ -232,6 +244,23 @@ export abstract class Component
 }
 
 // ----------------- Auxiliary Functions ---------------------
+
+function wrapHandler
+(
+  handler: () => void,
+  eventName: string
+)
+: void
+{
+  try
+  {
+    handler();
+  }
+  catch (error)
+  {
+    Syslog.logError(error, `Failed to process '${eventName}' event`);
+  }
+}
 
 function wrapEventHandler<T>
 (

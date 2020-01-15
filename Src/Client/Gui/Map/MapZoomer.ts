@@ -4,10 +4,6 @@
   Component that zooms the map
 */
 
-/*
-  Scale transform on MapZoomer scales everything inside it.
-*/
-
 import { G } from "../../../Client/Gui/Svg/G";
 
 const MINIMUM_ZOOM_FACTOR = 0.5;

@@ -68,6 +68,7 @@ export namespace MapEditor
     return "Changes occured";
   }
 
+  // ! Throws exception on error.
   export function createConnectedRooms
   (
     from: Coords,

@@ -80,6 +80,7 @@ export namespace Gui
     updateMap({ rebuild: true });
   }
 
+  // ! Throws exception on error.
   export function updateMap({ rebuild = false } = {}): void
   {
     // TODO: Parametrizovat.

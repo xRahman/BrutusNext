@@ -63,6 +63,6 @@ runBrutusNextServer().catch
   (reason: any) =>
   {
     console.log(`BrutusNext server encountered an unhandled`
-      + ` error (${String(reason)})`);
+      + ` error: ${String(reason)}`);
   }
 );

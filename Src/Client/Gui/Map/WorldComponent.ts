@@ -34,9 +34,7 @@ export class WorldComponent extends MapZoomer
 
   private registerEventListeners(): void
   {
-    // this.element.onclick = (event) => { this.onLeftClick(event); };
     this.onclick = (event) => { this.onLeftClick(event); };
-
     this.onrightclick = (event) => { this.onRightClick(event); };
     this.onmouseover = (event) => { this.onMouseOver(event); };
     this.onmouseout = (event) => { this.onMouseOut(event); };
@@ -47,9 +45,10 @@ export class WorldComponent extends MapZoomer
   // ! Throws exception on error.
   private onLeftClick(event: MouseEvent): void
   {
+    // ! Throws exception on error.
     const coords = getRoomCoords(event);
 
-    if (!coords)
+    if (coords === "Not a room event")
       return;
 
     // ! Throws exception on error.
@@ -59,9 +58,10 @@ export class WorldComponent extends MapZoomer
   // ! Throws exception on error.
   private onRightClick(event: MouseEvent): void
   {
+    // ! Throws exception on error.
     const coords = getRoomCoords(event);
 
-    if (!coords)
+    if (coords === "Not a room event")
       return;
 
     // ! Throws exception on error.
@@ -71,26 +71,32 @@ export class WorldComponent extends MapZoomer
   // ! Throws exception on error.
   private onMouseOver(event: MouseEvent): void
   {
+    // ! Throws exception on error.
     const coords = getRoomCoords(event);
 
-    if (!coords)
+    if (coords === "Not a room event")
       return;
 
     if (Dom.isLeftButtonDown(event))
+    {
       // ! Throws exception on error.
       buildConnectionTo(coords);
+    }
 
     if (Dom.isRightButtonDown(event))
+    {
       // ! Throws exception on error.
       deleteRoomIfExists(coords);
+    }
   }
 
   // ! Throws exception on error.
   private onMouseOut(event: MouseEvent): void
   {
-     const coords = getRoomCoords(event);
+    // ! Throws exception on error.
+    const coords = getRoomCoords(event);
 
-    if (!coords)
+    if (coords === "Not a room event")
       return;
 
     if (Dom.isLeftButtonDown(event))
@@ -111,10 +117,11 @@ export class WorldComponent extends MapZoomer
 
 // ----------------- Auxiliary Functions ---------------------
 
-function getRoomCoords(event: Event): Coords | undefined
+// ! Throws exception on error.
+function getRoomCoords(event: Event): Coords | "Not a room event"
 {
   if (event.target === null)
-      return undefined;
+      return "Not a room event";
 
   if (event.target instanceof SVGElement)
   {
@@ -123,7 +130,7 @@ function getRoomCoords(event: Event): Coords | undefined
       return Coords.fromString(event.target.id);
   }
 
-  return undefined;
+  return "Not a room event";
 }
 
 function rememberCoords(coords: Coords): void
@@ -131,6 +138,7 @@ function rememberCoords(coords: Coords): void
   MapEditor.setLastCoords(coords);
 }
 
+// ! Throws exception on error.
 function connectWithLastCoords
 (
   newCoords: Coords
@@ -145,26 +153,20 @@ function connectWithLastCoords
   if (!lastCoords.isAdjacentTo(newCoords))
     return "No change";
 
+  // ! Throws exception on error.
   return MapEditor.createConnectedRooms(lastCoords, newCoords);
 }
 
 // ! Throws exception on error.
 function buildConnectionTo(coords: Coords): void
 {
+  // ! Throws exception on error.
   const result = connectWithLastCoords(coords);
 
   if (result === "Changes occured")
   {
     // ! Throws exception on error.
     Gui.updateMap();
-
-    // // Gui.updateMap() will destroy all room svg components
-    // // (including this one) and create new ones. If mouse
-    // // pointer moves fast, it can leave the room svg element
-    // // before new one is created so the onmouseleave() won't
-    // // trigger and coords won't be remembered. So we do it here
-    // // instead.
-    // rememberCoords(coords);
   }
 }
 
@@ -175,7 +177,10 @@ function ensureRoomExists(coords: Coords): void
   const result = MapEditor.ensureRoomExists(coords);
 
   if (result === "Changes occured")
+  {
+    // ! Throws exception on error.
     Gui.updateMap();
+  }
 }
 
 // ! Throws exception on error.
@@ -185,5 +190,8 @@ function deleteRoomIfExists(coords: Coords): void
   const result = MapEditor.deleteRoomIfExists(coords);
 
   if (result === "Changes occured")
+  {
+    // ! Throws exception on error.
     Gui.updateMap();
+  }
 }

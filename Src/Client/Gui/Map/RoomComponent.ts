@@ -74,10 +74,7 @@ function createRoomIcon(parent: RoomComponent): Image
 {
   const roomIcon = new Image(parent, "room_icon");
 
-  // Disable mouse events on the icon (they are handled
-  // by "room_background" element).
-  roomIcon.setCss({ pointerEvents: "none" });
-
+  roomIcon.disableMouseEvents();
   roomIcon.hide();
 
   return roomIcon;

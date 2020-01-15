@@ -32,7 +32,7 @@ export class RoomsComponent extends G
     // children already created.
     super("No parent", name);
 
-    this.populateComponentCache();
+    this.populateRoomComponentCache();
 
     this.setParent(parent);
   }
@@ -58,6 +58,7 @@ export class RoomsComponent extends G
     }
 
     roomComponent.setCoords(coords);
+    // TODO: Parametrizovat rozestupy
     roomComponent.setPosition(24 * coords.e, 24 * coords.s);
     roomComponent.setRoom(room);
     roomComponent.show();
@@ -65,7 +66,7 @@ export class RoomsComponent extends G
     const roomId = coords.toString();
 
     if (this.roomComponents.has(roomId))
-      throw Error(`Room ${roomId} already has a svg component`);
+      throw Error(`Room ${roomId} already has an svg component`);
 
     this.roomComponents.set(roomId, roomComponent);
   }
@@ -91,7 +92,7 @@ export class RoomsComponent extends G
   // ---------------- Private methods -------------------
 
   // ! Throws exception on error.
-  private populateComponentCache(): void
+  private populateRoomComponentCache(): void
   {
     if (this.roomComponentCache.size !== 0)
       throw Error("Attempt to populate room cache which is not empty");
@@ -144,7 +145,7 @@ function shift(roomCache: Set<RoomComponent>): RoomComponent | "Nothing there"
     roomCache.delete(value);
 
     // We are using the for cycle just to access the
-    // first element of the set so we return right awayt.
+    // first element of the set so we return right away.
     return value;
   }
 

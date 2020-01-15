@@ -391,11 +391,12 @@
   height: 100%;
 }
 
+
+/*
 .MapCenterer
 {
-  /* Disable clipping of svg contents. */
-  overflow: visible;
 }
+*/
 
 .RoomComponent:hover
 {

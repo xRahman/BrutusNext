@@ -31,8 +31,8 @@ export class Circle extends Component
   // Note that origin of <circle> is in the middle.
   public setRelativePosition(xPercent: number, yPercent: number): void
   {
-    this.element.setAttribute("cx", `${String(xPercent)}%`);
-    this.element.setAttribute("cy", `${String(yPercent)}%`);
+    this.element.setAttribute("cx", `${xPercent}%`);
+    this.element.setAttribute("cy", `${yPercent}%`);
   }
 
   public setRadius(radiusPixels: number): void

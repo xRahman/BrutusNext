@@ -14,9 +14,9 @@ export namespace Dom
   export type Element = HTMLElement | SVGElement;
 
   export type InsertMode =
-  | "APPEND"    // Insert as the last child.
-  | "PREPEND"   // Insert as the first child.
-  | "REPLACE";  // Html contents of parent element is cleared first.
+    | "APPEND"    // Insert as the last child.
+    | "PREPEND"   // Insert as the first child.
+    | "REPLACE";  // Html contents of parent element is cleared first.
 
   export function addCssClass(element: Element, cssClassName: string): void
   {
@@ -214,12 +214,12 @@ export namespace Dom
 
   export function setRelativeX(element: Element, xPercent: number): void
   {
-    element.setAttribute("x", `${String(xPercent)}%`);
+    element.setAttribute("x", `${xPercent}%`);
   }
 
   export function setRelativeY(element: Element, yPercent: number): void
   {
-    element.setAttribute("y", `${String(yPercent)}%`);
+    element.setAttribute("y", `${yPercent}%`);
   }
 
   export function setRelativePosition

@@ -1,3 +1,15 @@
+TODO: Zvážit, jestli onShow() a onHide() newrapnout stejně jako DOM eventy
+  (pracovalo by se s tím stejně a automaticky by to odchytávalo exceptiony).
+[done]
+
+TODO: Ještě jednou projít GUI componenty a zkontrolovat, že to dává smysl
+TODO: Doprojít adresáře Map, Login a Game
+[done]
+
+TODO: Ještě jednou projít Syslog a zamyslet se, jestli klonování errorů
+  dává smysl a je to napsaný rozumně
+[asi ok]
+
 TODO: Na detekci buttonů ve WorldComponent udělat funkce (asi v Dom?)
   - možná založit MouseEvent (i když to je build-in typ, takže asi ne)
     DomEvent? To se zas bude plést s Dom.Event

@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Connection between rooms on the map
+  Exit connecting two rooms on the map
 */
 
 import { CssColor } from "../../../Client/Gui/CssColor";
@@ -12,7 +12,7 @@ import { G } from "../../../Client/Gui/Svg/G";
 
 export class ExitComponent extends G
 {
-  private readonly svgLine: Line;
+  private readonly line: Line;
 
   constructor
   (
@@ -23,9 +23,9 @@ export class ExitComponent extends G
   {
     super(parent, name);
 
-    this.svgLine = new Line(this, "exit_line");
-    this.svgLine.setColor(new CssColor(255, 255, 0));
-    this.svgLine.draw
+    this.line = new Line(this, "exit_line");
+    this.line.setColor(new CssColor(255, 255, 0));
+    this.line.draw
     (
       {
         xPixels: 24 * exitData.from.e,
@@ -36,26 +36,7 @@ export class ExitComponent extends G
         yPixels: 24 * exitData.to.s
       }
     );
-
-    // this.assignEventListeners();
   }
-
-  // ---------------- Private methods -------------------
-
-  // private assignEventListeners(): void
-  // {
-  //   this.element.onmouseup = (event) => { this.onMouseUp(event); };
-  // }
-
-  // ---------------- Event handlers --------------------
-
-  // private onLeftClick(event: MouseEvent): void
-  // {
-  // }
-
-  // private onRightClick(event: MouseEvent): void
-  // {
-  // }
 }
 
 // ------------------ Type Declarations ----------------------
