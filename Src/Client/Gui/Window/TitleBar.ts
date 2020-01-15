@@ -4,9 +4,9 @@
   Window title bar
 */
 
-import { Text } from "../../Client/Gui/Text/Text";
-import { Window } from "../../Client/Gui/Window";
-import { Div } from "../../Client/Gui/Div";
+import { Text } from "../../../Client/Gui/Text/Text";
+import { Window } from "../../../Client/Gui/Window/Window";
+import { Div } from "../../../Client/Gui/Html/Div";
 
 export class TitleBar extends Div
 {

@@ -1,3 +1,10 @@
+TODO: Zvážit adresářovou strukturu GUI
+- možná adresář Html podobně jako Svg
+  (byl by tam asi Div, Span, Body, Html a asi i Document)
+- a možná adresář Window
+  (Window, WindowContent, TitleBar, Title, TitledWindow)
+[done]
+
 TODO: Zvážit, jestli onShow() a onHide() newrapnout stejně jako DOM eventy
   (pracovalo by se s tím stejně a automaticky by to odchytávalo exceptiony).
 [done]

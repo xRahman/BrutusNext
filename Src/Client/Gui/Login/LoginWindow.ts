@@ -5,9 +5,9 @@
 */
 
 import { Gui } from "../../../Client/Gui/Gui";
-import { Body } from "../../../Client/Gui/Body";
+import { Body } from "../../../Client/Gui/Html/Body";
 import { CenteredTitledWindow } from
-  "../../../Client/Gui/CenteredTitledWindow";
+  "../../../Client/Gui/Window/CenteredTitledWindow";
 
 // export class LoginWindow extends FormWindow
 export class LoginWindow extends CenteredTitledWindow

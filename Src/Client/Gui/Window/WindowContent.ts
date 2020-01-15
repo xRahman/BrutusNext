@@ -4,8 +4,8 @@
   Window content container
 */
 
-import { Window } from "../../Client/Gui/Window";
-import { Div } from "../../Client/Gui/Div";
+import { Window } from "../../../Client/Gui/Window/Window";
+import { Div } from "../../../Client/Gui/Html/Div";
 
 export class WindowContent extends Div
 {

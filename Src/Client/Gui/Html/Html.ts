@@ -11,7 +11,7 @@
   can scale the size of all fonts, paddings, grid gaps etc.
 */
 
-import { Component } from "../../Client/Gui/Component";
+import { Component } from "../../../Client/Gui/Component";
 
 export class Html extends Component
 {

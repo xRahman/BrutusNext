@@ -10,10 +10,10 @@
     Windows are children of <body> element.
 */
 
-import { Gui } from "../../Client/Gui/Gui";
-import { Flags } from "../../Shared/class/Flags";
-import { Component } from "../../Client/Gui/Component";
-import { Div } from "../../Client/Gui/Div";
+import { Gui } from "../../../Client/Gui/Gui";
+import { Flags } from "../../../Shared/class/Flags";
+import { Component } from "../../../Client/Gui/Component";
+import { Div } from "../../../Client/Gui/Html/Div";
 
 export class Window extends Div
 {

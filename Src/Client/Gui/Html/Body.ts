@@ -9,17 +9,17 @@
   handled by this class.
 */
 
-import { MapEditor } from "../../Client/Editor/MapEditor";
-import { Gui } from "../../Client/Gui/Gui";
-import { Window } from "../../Client/Gui/Window";
-import { LoginWindow } from "../../Client/Gui/Login/LoginWindow";
-import { GroupWindow } from "../../Client/Gui/Game/GroupWindow";
-import { RoomWindow } from "../../Client/Gui/Game/RoomWindow";
-import { MapWindow } from "../../Client/Gui/Game/MapWindow";
-import { ChatWindow } from "../../Client/Gui/Game/ChatWindow";
-import { CombatWindow } from "../../Client/Gui/Game/CombatWindow";
-import { SpamWindow } from "../../Client/Gui/Game/SpamWindow";
-import { Component } from "../../Client/Gui/Component";
+import { MapEditor } from "../../../Client/Editor/MapEditor";
+import { Gui } from "../../../Client/Gui/Gui";
+import { Window } from "../../../Client/Gui/Window/Window";
+import { LoginWindow } from "../../../Client/Gui/Login/LoginWindow";
+import { GroupWindow } from "../../../Client/Gui/Game/GroupWindow";
+import { RoomWindow } from "../../../Client/Gui/Game/RoomWindow";
+import { MapWindow } from "../../../Client/Gui/Game/MapWindow";
+import { ChatWindow } from "../../../Client/Gui/Game/ChatWindow";
+import { CombatWindow } from "../../../Client/Gui/Game/CombatWindow";
+import { SpamWindow } from "../../../Client/Gui/Game/SpamWindow";
+import { Component } from "../../../Client/Gui/Component";
 
 const windows = new Set<Window>();
 

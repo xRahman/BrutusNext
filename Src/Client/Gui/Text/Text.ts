@@ -5,7 +5,7 @@
 */
 
 import { Component } from "../../../Client/Gui/Component";
-import { Span } from "../../../Client/Gui/Span";
+import { Span } from "../../../Client/Gui/Html/Span";
 import { TextColors } from "../../../Client/Gui/Text/TextColors";
 
 export class Text extends Span

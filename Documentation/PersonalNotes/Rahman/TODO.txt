@@ -17,12 +17,6 @@ TARGET:
 
 ------------------------------------------------------------------------------
 
-TODO: Zvážit adresářovou strukturu GUI
-- možná adresář Html podobně jako Svg
-  (byl by tam asi Div, Span, Body, Html a asi i Document)
-- a možná adresář Window
-  (Window, WindowContent, TitleBar, Title, TitledWindow)
-
 TODO: V Gui asi míchám moc responsibility dohromady.
 - je to stavovej automat
 - vyrábí to svg mapy

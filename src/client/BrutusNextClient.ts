@@ -12,7 +12,7 @@
 import { Syslog } from "../Client/Log/Syslog";
 import { Connection } from "../Client/Net/Connection";
 import { Gui } from "../Client/Gui/Gui";
-import { Body } from "../Client/Gui/Body";
+import { Body } from "../Client/Gui/Html/Body";
 
 // Import following modules to execute their inicialization code.
 import "../Client/Gui/Document";

@@ -4,10 +4,10 @@
   Window with a titlebar and content
 */
 
-import { Body } from "../../Client/Gui/Body";
-import { TitleBar } from "../../Client/Gui/TitleBar";
-import { WindowContent } from "../../Client/Gui/WindowContent";
-import { Window } from "../../Client/Gui/Window";
+import { Body } from "../../../Client/Gui/Html/Body";
+import { TitleBar } from "../../../Client/Gui/Window/TitleBar";
+import { WindowContent } from "../../../Client/Gui/Window/WindowContent";
+import { Window } from "../../Client/../Gui/Window/Window";
 
 export class TitledWindow extends Window
 {

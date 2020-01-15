@@ -4,8 +4,8 @@
    Class wrapping <span> element
 */
 
-import { Dom } from "../../Client/Gui/Dom";
-import { Component } from "../../Client/Gui/Component";
+import { Dom } from "../../../Client/Gui/Dom";
+import { Component } from "../../../Client/Gui/Component";
 
 export abstract class Span extends Component
 {

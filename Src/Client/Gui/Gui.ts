@@ -11,7 +11,7 @@ import { World } from "../../Client/World/World";
 import { ExitComponent } from "../../Client/Gui/Map/ExitComponent";
 import { ExitsComponent } from "../../Client/Gui/Map/ExitsComponent";
 import { RoomsComponent } from "../../Client/Gui/Map/RoomsComponent";
-import { Body } from "../../Client/Gui/Body";
+import { Body } from "../../Client/Gui/Html/Body";
 
 const components =
 {
