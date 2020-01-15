@@ -30,8 +30,6 @@ TODO: V createMap() v cyklu na vyrábění mapy oasertovat krajní hodnoty cyklu
 
 
 
-TODO: Parametrizovat rozestupy místností 
-
 TODO: Room.PIXEL_SIZE hodit zpět někam do GUI
   (A je to spíš ROOM_SPACING).
   Rooma může mít klidně velikost, ale relativně (small, medium, large).
@@ -50,16 +48,6 @@ TODO: Vysvětlující error message v RoomsSvg.addRoomSvg()
 
 TODO: Invertnout 's' axis (kladné hodnoty by měly růst nahoru)
 
-
-
-TODO: Rozestupy a velikost roomů nastavit relativně k velikosti fontu.
-Jak zjistit, kolik je 1 rem:
- parseFloat(getComputedStyle(document.documentElement).fontSize)
- (pokud font size html dokumentu nastavuju sám, tak si to můžu prostě pamatovat)
-- asi je to lepší zjišťovat z DOM
-
-TODO: V css používat výhradně rem (a procenta), nikdy pixely
-- změnit šířku rámečku okna.
 
 
 

@@ -260,6 +260,14 @@ export namespace Dom
     return event.buttons === 2;
   }
 
+  export function remToPixels(rem: number): number
+  {
+    const fontSize =
+      parseFloat(getComputedStyle(document.documentElement).fontSize);
+
+    return rem * fontSize;
+  }
+
   export function createSpan(): HTMLSpanElement
   {
     return document.createElement("span");

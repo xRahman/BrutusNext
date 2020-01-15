@@ -6,6 +6,7 @@
 
 import { CssColor } from "../../../Client/Gui/CssColor";
 import { Coords } from "../../../Shared/Class/Coords";
+import { WorldComponent } from "../../../Client/Gui/Map/WorldComponent";
 import { ExitsComponent } from "../../../Client/Gui/Map/ExitsComponent";
 import { Line } from "../../../Client/Gui/Svg/Line";
 import { G } from "../../../Client/Gui/Svg/G";
@@ -23,17 +24,19 @@ export class ExitComponent extends G
   {
     super(parent, name);
 
+    const roomSpacing = WorldComponent.roomSpacingPixels;
+
     this.line = new Line(this, "exit_line");
     this.line.setColor(new CssColor(255, 255, 0));
     this.line.draw
     (
       {
-        xPixels: 24 * exitData.from.e,
-        yPixels: 24 * exitData.from.s
+        xPixels: roomSpacing * exitData.from.e,
+        yPixels: roomSpacing * exitData.from.s
       },
       {
-        xPixels: 24 * exitData.to.e,
-        yPixels: 24 * exitData.to.s
+        xPixels: roomSpacing * exitData.to.e,
+        yPixels: roomSpacing * exitData.to.s
       }
     );
   }

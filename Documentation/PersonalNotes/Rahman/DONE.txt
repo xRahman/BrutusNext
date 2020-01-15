@@ -1,3 +1,17 @@
+TODO: Parametrizovat rozestupy místností 
+[done]
+
+TODO: Rozestupy a velikost roomů nastavit relativně k velikosti fontu.
+Jak zjistit, kolik je 1 rem:
+ parseFloat(getComputedStyle(document.documentElement).fontSize)
+ (pokud font size html dokumentu nastavuju sám, tak si to můžu prostě pamatovat)
+- asi je to lepší zjišťovat z DOM
+[done]
+
+TODO: V css používat výhradně rem (a procenta), nikdy pixely
+- změnit šířku rámečku okna.
+[done]
+
 TODO: Zvážit adresářovou strukturu GUI
 - možná adresář Html podobně jako Svg
   (byl by tam asi Div, Span, Body, Html a asi i Document)

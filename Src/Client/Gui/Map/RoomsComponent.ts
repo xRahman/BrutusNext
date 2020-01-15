@@ -57,9 +57,14 @@ export class RoomsComponent extends G
       throw Error("No more room components are left in cache");
     }
 
+    const roomSpacing = WorldComponent.roomSpacingPixels;
+
     roomComponent.setCoords(coords);
-    // TODO: Parametrizovat rozestupy
-    roomComponent.setPosition(24 * coords.e, 24 * coords.s);
+    roomComponent.setPosition
+    (
+      roomSpacing * coords.e,
+      roomSpacing * coords.s
+    );
     roomComponent.setRoom(room);
     roomComponent.show();
 
