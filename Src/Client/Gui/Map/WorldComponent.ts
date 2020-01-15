@@ -76,13 +76,11 @@ export class WorldComponent extends MapZoomer
     if (!coords)
       return;
 
-    // Left mouse button down.
-    if (event.buttons === 1)
+    if (Dom.isLeftButtonDown(event))
       // ! Throws exception on error.
       buildConnectionTo(coords);
 
-    // Right mouse button down.
-    if (event.buttons === 2)
+    if (Dom.isRightButtonDown(event))
       // ! Throws exception on error.
       deleteRoomIfExists(coords);
   }
@@ -95,8 +93,7 @@ export class WorldComponent extends MapZoomer
     if (!coords)
       return;
 
-    // Left mouse button down.
-    if (event.buttons === 1)
+    if (Dom.isLeftButtonDown(event))
     {
       rememberCoords(coords);
 
@@ -104,8 +101,7 @@ export class WorldComponent extends MapZoomer
       ensureRoomExists(coords);
     }
 
-    // Left mouse button down.
-    if (event.buttons === 2)
+    if (Dom.isRightButtonDown(event))
     {
       // ! Throws exception on error.
       deleteRoomIfExists(coords);

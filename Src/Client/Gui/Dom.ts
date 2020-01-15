@@ -250,6 +250,16 @@ export namespace Dom
     setTransform(element, `translate(${xPixels}, ${yPixels})`);
   }
 
+  export function isLeftButtonDown(event: MouseEvent): boolean
+  {
+    return event.buttons === 1;
+  }
+
+  export function isRightButtonDown(event: MouseEvent): boolean
+  {
+    return event.buttons === 2;
+  }
+
   export function createSpan(): HTMLSpanElement
   {
     return document.createElement("span");

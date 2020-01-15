@@ -17,10 +17,6 @@ TARGET:
 
 ------------------------------------------------------------------------------
 
-TODO: Na detekci buttonů ve WorldComponent udělat funkce (asi v Dom?)
-  - možná založit MouseEvent (i když to je build-in typ, takže asi ne)
-    DomEvent? To se zas bude plést s Dom.Event
-
 TODO: Ještě jednou projít GUI componenty a zkontrolovat, že to dává smysl
 TODO: Doprojít adresáře Map, Login a Game
 

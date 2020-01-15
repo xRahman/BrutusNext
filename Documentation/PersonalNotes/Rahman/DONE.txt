@@ -1,3 +1,8 @@
+TODO: Na detekci buttonů ve WorldComponent udělat funkce (asi v Dom?)
+  - možná založit MouseEvent (i když to je build-in typ, takže asi ne)
+    DomEvent? To se zas bude plést s Dom.Event
+[done]
+
 TODO: v Image je třeba si pamatovat, že má bejt centerovaná, a zohlednit
   to i v případném setování pozice.
 - flag 'centered' by se asi měl nastavovat rovnou v konstruktoru.
