@@ -4,6 +4,7 @@
   A room on the map
 */
 
+import { Dom } from "../../../Client/Gui/Dom";
 import { Coords } from "../../../Shared/Class/Coords";
 import { Room } from "../../../Client/World/Room";
 import { RoomsComponent } from "../../../Client/Gui/Map/RoomsComponent";
@@ -13,6 +14,11 @@ import { G } from "../../../Client/Gui/Svg/G";
 
 export class RoomComponent extends G
 {
+  public static get roomPixelSize(): number
+  {
+    return Dom.remToPixels(0.75);
+  }
+
   public static readonly ROOM_BACKGROUND = "room_background";
 
   private readonly roomBackground: Circle;
@@ -51,7 +57,9 @@ export class RoomComponent extends G
       return;
     }
 
-    this.roomIcon.setSize(room.icon.pixelSize, room.icon.pixelSize);
+    const roomPixelSize = RoomComponent.roomPixelSize * room.icon.scale;
+
+    this.roomIcon.setSize(roomPixelSize, roomPixelSize);
 
     this.roomIcon.setImage(room.icon.path);
 
@@ -65,7 +73,7 @@ function createRoomBackground(parent: RoomComponent): Circle
 {
   const background = new Circle(parent, RoomComponent.ROOM_BACKGROUND);
 
-  background.setRadius(Room.DEFAULT_ROOM_PIXEL_SIZE * 0.6);
+  background.setRadius(1.2 * RoomComponent.roomPixelSize / 2);
 
   return background;
 }

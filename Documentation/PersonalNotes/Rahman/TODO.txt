@@ -30,12 +30,6 @@ TODO: V createMap() v cyklu na vyrábění mapy oasertovat krajní hodnoty cyklu
 
 
 
-TODO: Room.PIXEL_SIZE hodit zpět někam do GUI
-  (A je to spíš ROOM_SPACING).
-  Rooma může mít klidně velikost, ale relativně (small, medium, large).
-  (A hlavně to nemusím řešit teď).
-
-
 TODO: Parametrizovat 'location' v Gui.updateMap()
 
 TODO: Provázat velikost zobrazované části mapy v Gui.getCoordsInView()

@@ -9,12 +9,10 @@ import { Exit } from "../../Client/World/Exit";
 
 export class Room
 {
-  public static readonly DEFAULT_ROOM_PIXEL_SIZE = 10;
-
   public readonly icon =
   {
     path: "Images/Rooms/Circle.svg",
-    pixelSize: Room.DEFAULT_ROOM_PIXEL_SIZE
+    scale: 1.0
   };
 
   public readonly exits: { [name in Exit.Direction]: Exit } =
