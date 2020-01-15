@@ -15,8 +15,8 @@ import { Gui } from "../Client/Gui/Gui";
 import { Body } from "../Client/Gui/Html/Body";
 
 // Import following modules to execute their inicialization code.
-import "../Client/Gui/Document";
-import "../Client/Gui/Html";
+import "../Client/Gui/Html/Document";
+import "../Client/Gui/Html/Html";
 
 async function startBrutusNextClient(): Promise<void>
 {
