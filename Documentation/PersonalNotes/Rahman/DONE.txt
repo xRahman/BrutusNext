@@ -1,3 +1,10 @@
+TODO: V Gui asi míchám moc responsibility dohromady.
+- je to stavovej automat
+- vyrábí to svg mapy
+  - to by asi měla dělat svg komponenta s mapou. Gui na ni může mít odkaz.
+  - nakonec si odkaz na sebe drží sama.
+[done]
+
 TODO: Gui.State asi může bejt union type místo enumu.
 - nemůže, protože hodnoty jsou flagy bitvectoru
 [bad idea]

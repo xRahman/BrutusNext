@@ -12,6 +12,7 @@
 import { Syslog } from "../Client/Log/Syslog";
 import { Connection } from "../Client/Net/Connection";
 import { Gui } from "../Client/Gui/Gui";
+import { WorldComponent } from "../Client/Gui/Map/WorldComponent";
 import { Body } from "../Client/Gui/Html/Body";
 
 // Import following modules to execute their inicialization code.
@@ -24,13 +25,14 @@ async function startBrutusNextClient(): Promise<void>
 
   try
   {
+    // ! Throws exception on error.
     Body.createWindows();
 
     // await Renderer.init();
     await Connection.connect();
 
     // TEST (Mělo by se to volat jinde)
-    Gui.rebuildMap();
+    WorldComponent.rebuildMap();
     Gui.switchToState(Gui.State.GAME);
   }
   catch (error)

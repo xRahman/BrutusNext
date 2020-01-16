@@ -12,6 +12,7 @@ export class MapCenterer extends Svg
 {
   public readonly world: WorldComponent;
 
+  // ! Throws exception on error.
   constructor(parent: MapComponent, name = "map_centerer")
   {
     super(parent, name);
@@ -22,6 +23,7 @@ export class MapCenterer extends Svg
     // or it will clip three quarters of the map.
     this.setCss({ overflow: "visible" });
 
+    // ! Throws exception on error.
     this.world = new WorldComponent(this);
   }
 }

@@ -15,10 +15,12 @@ export class MapWindow extends TitledWindow
 
   protected map: MapComponent;
 
+  // ! Throws exception on error.
   constructor(parent: Body)
   {
     super(parent, "map_window", "Map Window");
 
+    // ! Throws exception on error.
     this.map = new MapComponent(this.content);
 
     this.visibility.set(Gui.State.GAME);

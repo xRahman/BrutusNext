@@ -12,10 +12,12 @@ export class MapComponent extends Svg
 {
   private readonly mapCenterer: MapCenterer;
 
+  // ! Throws exception on error.
   constructor(parent: Component, name = "map")
   {
     super(parent, name);
 
+    // ! Throws exception on error.
     // Use another svg component to translate the map to the center
     // of parent element.
     this.mapCenterer = new MapCenterer(this);

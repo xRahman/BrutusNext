@@ -27,6 +27,7 @@ export class Body extends Component
 {
   private static readonly instance = new Body();
 
+  // ! Throws exception on error.
   public static createWindows(): void
   {
     windows.add(new LoginWindow(Body.instance));
@@ -34,6 +35,7 @@ export class Body extends Component
     // Game windows.
     windows.add(new GroupWindow(Body.instance));
     windows.add(new RoomWindow(Body.instance));
+    // ! Throws exception on error.
     windows.add(new MapWindow(Body.instance));
     windows.add(new ChatWindow(Body.instance));
     windows.add(new CombatWindow(Body.instance));
