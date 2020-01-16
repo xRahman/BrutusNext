@@ -3,17 +3,22 @@
 ============================================================
 
 TARGET:
+- edituju server-side roomy, exity
+- přepínám patra v mapě, můžu v ní "chodit" (i nahoru a dolů)
+  a můžu s ní panovat
 - posílám automaticky serializovaný pakety (entity)
 - savuju entity na disk
-- na klientovi mám komponenty, okna
+- edituju roomy a exity v zóně, na serveru ji ukládám na disk
+- edituju properties room a exitů
+- roomy mají prototypovou dědičnost
+  - vyrábím nové prototypové entity
+  - přiřazuju prototyp existujícím roomám
+  - "kreslím štětcem", tj. vyrábím roomy s přednastaveným prototypem
+
+Později:
+- mám okno s command linou, můžu na server posílat příkazy a zobrazovat
+  response (vyrábění nové zóny, možná prototypů?)
 - funguje registrace playerů
-- mám zónu, v ní roomy
-- hraju si se zobrazením minimapy
-- klikací editor mapy
-  - nejdřív jen nové roomy
-  - pak editace properties stávajících room
-  - pak prototypová dědičnost room a přiřazování prototypu
-    v editoru
 
 ------------------------------------------------------------------------------
 
