@@ -91,6 +91,23 @@ export namespace MapEditor
 
     return result;
   }
+
+  // ! Throws exception on error.
+  export function connectWithLastCoords
+  (
+    newCoords: Coords
+  )
+  : "Changes occured" | "No change"
+  {
+    if (lastCoords === "Not set")
+      return "No change";
+
+    if (!lastCoords.isAdjacentTo(newCoords))
+      return "No change";
+
+    // ! Throws exception on error.
+    return createConnectedRooms(lastCoords, newCoords);
+  }
 }
 
 // ----------------- Auxiliary Functions ---------------------

@@ -95,8 +95,6 @@ export class WorldComponent extends MapZoomer
 
     const exitsData = updateRooms(this.rooms, location, { rebuild });
 
-    // components.rooms.updateGraphics();
-
     rebuildExits(exitsData, this.exits, location);
   }
 
@@ -106,7 +104,7 @@ export class WorldComponent extends MapZoomer
   private onLeftClick(event: MouseEvent): void
   {
     // ! Throws exception on error.
-    const coords = getRoomCoords(event);
+    const coords = parseRoomCoords(event);
 
     if (coords === "Not a room event")
       return;
@@ -119,7 +117,7 @@ export class WorldComponent extends MapZoomer
   private onRightClick(event: MouseEvent): void
   {
     // ! Throws exception on error.
-    const coords = getRoomCoords(event);
+    const coords = parseRoomCoords(event);
 
     if (coords === "Not a room event")
       return;
@@ -132,7 +130,7 @@ export class WorldComponent extends MapZoomer
   private onMouseOver(event: MouseEvent): void
   {
     // ! Throws exception on error.
-    const coords = getRoomCoords(event);
+    const coords = parseRoomCoords(event);
 
     if (coords === "Not a room event")
       return;
@@ -154,7 +152,7 @@ export class WorldComponent extends MapZoomer
   private onMouseOut(event: MouseEvent): void
   {
     // ! Throws exception on error.
-    const coords = getRoomCoords(event);
+    const coords = parseRoomCoords(event);
 
     if (coords === "Not a room event")
       return;
@@ -178,7 +176,7 @@ export class WorldComponent extends MapZoomer
   private buildConnectionTo(coords: Coords): void
   {
     // ! Throws exception on error.
-    const result = connectWithLastCoords(coords);
+    const result = MapEditor.connectWithLastCoords(coords);
 
     if (result === "Changes occured")
     {
@@ -217,7 +215,7 @@ export class WorldComponent extends MapZoomer
 // ----------------- Auxiliary Functions ---------------------
 
 // ! Throws exception on error.
-function getRoomCoords(event: Event): Coords | "Not a room event"
+function parseRoomCoords(event: Event): Coords | "Not a room event"
 {
   if (event.target === null)
       return "Not a room event";
@@ -235,25 +233,6 @@ function getRoomCoords(event: Event): Coords | "Not a room event"
 function rememberCoords(coords: Coords): void
 {
   MapEditor.setLastCoords(coords);
-}
-
-// ! Throws exception on error.
-function connectWithLastCoords
-(
-  newCoords: Coords
-)
-: "Changes occured" | "No change"
-{
-  const lastCoords = MapEditor.getLastCoords();
-
-  if (lastCoords === "Not set")
-    return "No change";
-
-  if (!lastCoords.isAdjacentTo(newCoords))
-    return "No change";
-
-  // ! Throws exception on error.
-  return MapEditor.createConnectedRooms(lastCoords, newCoords);
 }
 
 function getCoordsInView(location: Coords): Array<Coords>

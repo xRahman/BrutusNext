@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 /*
   Part of BrutusNEXT
 
