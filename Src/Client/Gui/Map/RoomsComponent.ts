@@ -51,9 +51,16 @@ export class RoomsComponent extends G
   }
 
   // ! Throws exception on error.
-  public addRoomComponent(room: Room | "Doesn't exist", coords: Coords): void
+  public addRoomComponent
+  (
+    room: Room | "Doesn't exist",
+    roomCoords: Coords,
+    mapOffset: Coords
+  )
+  : void
   {
-    const roomComponent = shift(this.roomComponentCache);
+    const roomMapCoords = Coords.c1MinusC2(roomCoords, mapOffset);
+    const roomComponent = getComponentFrom(this.roomComponentCache);
 
     if (roomComponent === "Nothing there")
     {
@@ -65,16 +72,16 @@ export class RoomsComponent extends G
 
     const roomSpacing = RoomsComponent.roomSpacingPixels;
 
-    roomComponent.setCoords(coords);
+    roomComponent.setCoords(roomCoords);
     roomComponent.setPosition
     (
-      roomSpacing * coords.e,
-      roomSpacing * coords.s
+      roomSpacing * roomMapCoords.e,
+      roomSpacing * roomMapCoords.s
     );
     roomComponent.setRoom(room);
     roomComponent.show();
 
-    const coordsString = coords.toString();
+    const coordsString = roomCoords.toString();
 
     if (this.roomComponents.has(coordsString))
     {
@@ -155,7 +162,7 @@ export class RoomsComponent extends G
 
 // ----------------- Auxiliary Functions ---------------------
 
-function shift(roomCache: Set<RoomComponent>): RoomComponent | "Nothing there"
+function getComponentFrom(roomCache: Set<RoomComponent>): RoomComponent | "Nothing there"
 {
   for (const value of roomCache)
   {

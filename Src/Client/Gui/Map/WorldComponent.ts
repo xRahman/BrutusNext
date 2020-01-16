@@ -64,15 +64,15 @@ export class WorldComponent extends MapZoomer
 
   // ---------------- Private methods -------------------
 
-  private lookAt(targetCoords: Coords): void
+  private lookAt(mapOffset: Coords): void
   {
     /// S tímhle testem by se neprovedla úvodní inicializace mapy.
     // if (targetCoords.equals(this.currentCoords))
     //   return;
 
-    this.rebuildMap(targetCoords);
+    this.rebuildMap(mapOffset);
 
-    this.currentCoords = targetCoords;
+    this.currentCoords = mapOffset;
   }
 
   private registerEventListeners(): void
@@ -97,12 +97,12 @@ export class WorldComponent extends MapZoomer
   }
 
   // ! Throws exception on error.
-  private rebuildMap(targetCoords: Coords): void
+  private rebuildMap(mapOffset: Coords): void
   {
     const exitsData =
-      updateRooms(this.rooms, targetCoords, { rebuild: true });
+      updateRooms(this.rooms, mapOffset, { rebuild: true });
 
-    rebuildExits(exitsData, this.exits, targetCoords);
+    rebuildExits(exitsData, this.exits, mapOffset);
   }
 
   // ! Throws exception on error.
@@ -251,7 +251,7 @@ function rememberCoords(coords: Coords): void
   MapEditor.setLastCoords(coords);
 }
 
-function getCoordsInViewAround(location: Coords): Array<Coords>
+function getCoordsInViewAround(coords: Coords): Array<Coords>
 {
   const coordsInView: Array<Coords> = [];
 
@@ -259,14 +259,14 @@ function getCoordsInViewAround(location: Coords): Array<Coords>
   // (měly by to bejt stejný hodnoty).
   const from =
   {
-    e: location.e - 20,
-    s: location.s - 20
+    e: coords.e - 20,
+    s: coords.s - 20
   };
 
   const to =
   {
-    e: location.e + 20,
-    s: location.s + 20
+    e: coords.e + 20,
+    s: coords.s + 20
   };
 
   // Order of cycles determines oder of svg components representing
@@ -276,7 +276,7 @@ function getCoordsInViewAround(location: Coords): Array<Coords>
   {
     for (let e = from.e; e <= to.e; e++)
     {
-      coordsInView.push(new Coords(e, s, location.u));
+      coordsInView.push(new Coords(e, s, coords.u));
     }
   }
 
@@ -286,7 +286,7 @@ function getCoordsInViewAround(location: Coords): Array<Coords>
 function updateRooms
 (
   rooms: RoomsComponent,
-  targetCoords: Coords,
+  mapOffset: Coords,
   { rebuild = false }
 )
 : Map<string, ExitComponent.ExitData>
@@ -295,7 +295,7 @@ function updateRooms
     rooms.clear();
 
   const exitsData = new Map<string, ExitComponent.ExitData>();
-  const coordsInView = getCoordsInViewAround(targetCoords);
+  const coordsInView = getCoordsInViewAround(mapOffset);
 
   for (const coords of coordsInView)
   {
@@ -304,14 +304,14 @@ function updateRooms
     if (room === "Nothing there")
     {
       if (rebuild)
-        rooms.addRoomComponent("Doesn't exist", coords);
+        rooms.addRoomComponent("Doesn't exist", coords, mapOffset);
       else
         rooms.updateRoom("Doesn't exist", coords);
     }
     else
     {
       if (rebuild)
-        rooms.addRoomComponent(room, coords);
+        rooms.addRoomComponent(room, coords, mapOffset);
       else
         rooms.updateRoom(room, coords);
 

@@ -42,6 +42,16 @@ export class Coords
     return new Coords(coords.e, coords.s, coords.u);
   }
 
+  public static add(c1: Coords, c2: Coords): Coords
+  {
+    return new Coords(c1.e + c2.e, c1.s + c2.s, c1.u + c2.u);
+  }
+
+  public static c1MinusC2(c1: Coords, c2: Coords): Coords
+  {
+    return new Coords(c1.e - c2.e, c1.s - c2.s, c1.u - c2.u);
+  }
+
   constructor
   (
     public readonly e: number,
@@ -140,17 +150,12 @@ export class Coords
           if (e === 0 && s === 0 && u === 0)
             continue;
 
-          adjacentCoords.push(this.getShiftedCoords(e, s, u));
+          adjacentCoords.push(Coords.add(this, new Coords(e, s, u)));
         }
       }
     }
 
     return adjacentCoords;
-  }
-
-  public getShiftedCoords(e: number, s: number, u: number): Coords
-  {
-    return new Coords(this.e + e, this.s + s, this.u + u);
   }
 
   public isAdjacentTo(coords: Coords): boolean

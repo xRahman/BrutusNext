@@ -1,3 +1,6 @@
+TODO: Při mačkání altu se mi updatuje mapa
+[už ne]
+
 TODO: keyup a keydown handlery do Component
 [done]
 
