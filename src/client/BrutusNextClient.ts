@@ -11,6 +11,7 @@
 
 import { Syslog } from "../Client/Log/Syslog";
 import { Connection } from "../Client/Net/Connection";
+import { Coords } from "../Shared/Class/Coords";
 import { Gui } from "../Client/Gui/Gui";
 import { WorldComponent } from "../Client/Gui/Map/WorldComponent";
 import { Body } from "../Client/Gui/Html/Body";
@@ -32,7 +33,7 @@ async function startBrutusNextClient(): Promise<void>
     await Connection.connect();
 
     // TEST (Mělo by se to volat jinde)
-    WorldComponent.rebuildMap();
+    WorldComponent.lookAt(new Coords(0, 0, 0));
     Gui.switchToState(Gui.State.GAME);
   }
   catch (error)

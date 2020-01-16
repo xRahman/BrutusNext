@@ -74,12 +74,15 @@ export class RoomsComponent extends G
     roomComponent.setRoom(room);
     roomComponent.show();
 
-    const roomId = coords.toString();
+    const coordsString = coords.toString();
 
-    if (this.roomComponents.has(roomId))
-      throw Error(`Room ${roomId} already has an svg component`);
+    if (this.roomComponents.has(coordsString))
+    {
+      throw Error(`Room with coords ${coordsString} already`
+        + ` has a component in the map`);
+    }
 
-    this.roomComponents.set(roomId, roomComponent);
+    this.roomComponents.set(coordsString, roomComponent);
   }
 
   public clear(): void
@@ -137,11 +140,14 @@ export class RoomsComponent extends G
   // ! Throws exception on error.
   private getRoomComponent(coords: Coords): RoomComponent
   {
-    const roomId = coords.toString();
-    const roomComponent = this.roomComponents.get(roomId);
+    const coordsString = coords.toString();
+    const roomComponent = this.roomComponents.get(coordsString);
 
     if (roomComponent === undefined)
-      throw Error(`Room ${roomId} doesn't have a map svg component`);
+    {
+      throw Error(`There is no component representing room at coords`
+        + ` ${coordsString} in the map`);
+    }
 
     return roomComponent;
   }

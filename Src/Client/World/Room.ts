@@ -60,7 +60,7 @@ export class Room
       if (exit.to === "Nowhere")
         continue;
 
-      if (Coords.equals(exit.to, to))
+      if (exit.to.equals(to))
         exit.to = "Nowhere";
     }
   }

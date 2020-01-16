@@ -22,15 +22,11 @@ export class WorldComponent extends MapZoomer
 
   // ------------- Public static methods ----------------
 
-  public static rebuildMap(): void
-  {
-    this.updateMap({ rebuild: true });
-  }
-
   // ! Throws exception on error.
-  public static updateMap({ rebuild = false } = {}): void
+  public static lookAt(coords: Coords): void
   {
-    this.getInstance().updateMap({ rebuild });
+    // ! Throws exception on error.
+    this.getInstance().lookAt(coords);
   }
 
   // ------------- Private static methods ---------------
@@ -49,6 +45,8 @@ export class WorldComponent extends MapZoomer
   private readonly rooms: RoomsComponent;
   private readonly exits: ExitsComponent;
 
+  private currentCoords = new Coords(0, 0, 0);
+
   // ! Throws exception on error.
   constructor(parent: MapCenterer, name = "world")
   {
@@ -65,6 +63,17 @@ export class WorldComponent extends MapZoomer
   }
 
   // ---------------- Private methods -------------------
+
+  private lookAt(targetCoords: Coords): void
+  {
+    /// S tímhle testem by se neprovedla úvodní inicializace mapy.
+    // if (targetCoords.equals(this.currentCoords))
+    //   return;
+
+    this.rebuildMap(targetCoords);
+
+    this.currentCoords = targetCoords;
+  }
 
   private registerEventListeners(): void
   {
@@ -88,14 +97,21 @@ export class WorldComponent extends MapZoomer
   }
 
   // ! Throws exception on error.
-  private updateMap({ rebuild = false } = {}): void
+  private rebuildMap(targetCoords: Coords): void
   {
-    // TODO: Parametrizovat.
-    const location = new Coords(0, 0, 0);
+    const exitsData =
+      updateRooms(this.rooms, targetCoords, { rebuild: true });
 
-    const exitsData = updateRooms(this.rooms, location, { rebuild });
+    rebuildExits(exitsData, this.exits, targetCoords);
+  }
 
-    rebuildExits(exitsData, this.exits, location);
+  // ! Throws exception on error.
+  private updateMap(): void
+  {
+    const exitsData =
+      updateRooms(this.rooms, this.currentCoords, { rebuild: false });
+
+    rebuildExits(exitsData, this.exits, this.currentCoords);
   }
 
   // ---------------- Event handlers --------------------
@@ -235,7 +251,7 @@ function rememberCoords(coords: Coords): void
   MapEditor.setLastCoords(coords);
 }
 
-function getCoordsInView(location: Coords): Array<Coords>
+function getCoordsInViewAround(location: Coords): Array<Coords>
 {
   const coordsInView: Array<Coords> = [];
 
@@ -270,7 +286,7 @@ function getCoordsInView(location: Coords): Array<Coords>
 function updateRooms
 (
   rooms: RoomsComponent,
-  location: Coords,
+  targetCoords: Coords,
   { rebuild = false }
 )
 : Map<string, ExitComponent.ExitData>
@@ -279,7 +295,7 @@ function updateRooms
     rooms.clear();
 
   const exitsData = new Map<string, ExitComponent.ExitData>();
-  const coordsInView = getCoordsInView(location);
+  const coordsInView = getCoordsInViewAround(targetCoords);
 
   for (const coords of coordsInView)
   {
@@ -310,7 +326,7 @@ function rebuildExits
 (
   exitsData: Map<string, ExitComponent.ExitData>,
   exits: ExitsComponent,
-  location: Coords
+  targetCoords: Coords
 )
 : void
 {

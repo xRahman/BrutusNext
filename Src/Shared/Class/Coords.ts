@@ -8,11 +8,6 @@ import { StringUtils } from "../../Shared/Utils/StringUtils";
 
 export class Coords
 {
-  public static equals(c1: Coords, c2: Coords): boolean
-  {
-    return c1.e === c2.e && c1.s === c2.s && c1.u === c2.u;
-  }
-
   // Creates a string id unique to a given pair of coords
   // regardless or their order (this is used to deduplicate
   // room exits).
@@ -126,6 +121,11 @@ export class Coords
   // }
 
   // ---------------- Public methods --------------------
+
+  public equals(coords: Coords): boolean
+  {
+    return this.e === coords.e && this.s === coords.s && this.u === coords.u;
+  }
 
   public getAdjacentCoords(): Array<Coords>
   {
