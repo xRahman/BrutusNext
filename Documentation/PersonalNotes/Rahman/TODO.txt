@@ -23,6 +23,8 @@ Později:
 ------------------------------------------------------------------------------
 
 
+TODO: Testovací verze posouvání mapy klávesama
+
 
 TODO: V createMap() v cyklu na vyrábění mapy oasertovat krajní hodnoty cyklu,
  abych nemohl vyrobit nekonečnej cyklus.
@@ -31,12 +33,11 @@ TODO: V createMap() v cyklu na vyrábění mapy oasertovat krajní hodnoty cyklu
 Teď se to týká funkce WorldComponent.getCoordsInView()
 
 
-TODO: Parametrizovat 'location' v WorldComponent.updateMap()
-- chtělo by to něco jako WorldComponent.lookAt(coords);
-
 TODO: Mělo by to bejt spíš asi MapWindow.lookAt(coords) nebo
   MapComponent.lookAt(coords).
 Kdo si bude pamatovat aktulní coords, na který se mapa dívá?
+- zatím jsem to dal do WorldComponent, ale k ničemu se to nepoužívá,
+  jen se to nastavuje.
 
 
 

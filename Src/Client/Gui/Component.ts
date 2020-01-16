@@ -53,7 +53,7 @@ export abstract class Component
       parent.insertElement(element, insertMode);
   }
 
-  // ------------ Event Handler Setters -----------------
+  // ------------ Event handler setters -----------------
 
   public set onclick(handler: (event: MouseEvent) => void)
   {
@@ -108,6 +108,30 @@ export abstract class Component
     this.element.onwheel = (event: WheelEvent) =>
     {
       wrapEventHandler(event, handler, "wheel");
+    };
+  }
+
+  public set onkeydown(handler: (event: KeyboardEvent) => void)
+  {
+    this.element.onkeydown = (event: KeyboardEvent) =>
+    {
+      wrapEventHandler(event, handler, "keydown");
+    };
+  }
+
+  public set onkeypress(handler: (event: KeyboardEvent) => void)
+  {
+    this.element.onkeypress = (event: KeyboardEvent) =>
+    {
+      wrapEventHandler(event, handler, "keypress");
+    };
+  }
+
+  public set onkeyup(handler: (event: KeyboardEvent) => void)
+  {
+    this.element.onkeyup = (event: KeyboardEvent) =>
+    {
+      wrapEventHandler(event, handler, "keyup");
     };
   }
 

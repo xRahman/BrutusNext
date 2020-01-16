@@ -1,3 +1,10 @@
+TODO: keyup a keydown handlery do Component
+[done]
+
+TODO: Parametrizovat 'location' v WorldComponent.updateMap()
+- chtělo by to něco jako WorldComponent.lookAt(coords);
+[done]
+
 TODO: V Gui asi míchám moc responsibility dohromady.
 - je to stavovej automat
 - vyrábí to svg mapy
