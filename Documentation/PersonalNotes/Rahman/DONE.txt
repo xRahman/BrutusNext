@@ -1,3 +1,7 @@
+TODO: Gui.State asi může bejt union type místo enumu.
+- nemůže, protože hodnoty jsou flagy bitvectoru
+[bad idea]
+
 TODO: Room.PIXEL_SIZE hodit zpět někam do GUI
   (A je to spíš ROOM_SPACING).
   Rooma může mít klidně velikost, ale relativně (small, medium, large).

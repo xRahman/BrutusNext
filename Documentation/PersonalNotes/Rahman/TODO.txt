@@ -26,7 +26,7 @@ TODO: V Gui asi míchám moc responsibility dohromady.
 - je to stavovej automat
 - vyrábí to svg mapy
   - to by asi měla dělat svg komponenta s mapou. Gui na ni může mít odkaz.
-TODO: Gui.State asi může bejt union type místo enumu.
+
 
 TODO: V createMap() v cyklu na vyrábění mapy oasertovat krajní hodnoty cyklu,
  abych nemohl vyrobit nekonečnej cyklus.

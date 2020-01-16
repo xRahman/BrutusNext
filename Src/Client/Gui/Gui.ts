@@ -21,6 +21,7 @@ const components =
 
 export namespace Gui
 {
+  // This needs to be enum because values are used as bitvector flags.
   export enum State
   {
     INITIAL,
