@@ -326,7 +326,7 @@ function rebuildExits
 (
   exitsData: Map<string, ExitComponent.ExitData>,
   exits: ExitsComponent,
-  targetCoords: Coords
+  mapOffset: Coords
 )
 : void
 {
@@ -334,7 +334,7 @@ function rebuildExits
 
   for (const exitData of exitsData.values())
   {
-    exits.createExitComponent(exitData);
+    exits.createExitComponent(exitData, mapOffset);
   }
 }
 

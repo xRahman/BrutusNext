@@ -1,3 +1,18 @@
+TODO: Zprovoznit editaci víc než jedný vrstvy
+- bude třeba "chození up a down" (a obecně asi chození po mapě, teď
+  se dá zobrazit jen omezenej výřez).
+[done]
+
+TODO: Testovací verze posouvání mapy klávesama
+[done]
+
+TODO: Promítnout map offset do pozice exitů
+[done]
+
+TODO: Roomy se zobrazují fixně na pozici podle coords roomu. Je ale třeba,
+  aby to bylo relativně k coords, na které se mapa dívá.
+[done]
+
 TODO: Při mačkání altu se mi updatuje mapa
 [už ne]
 

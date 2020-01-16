@@ -22,17 +22,10 @@ Později:
 
 ------------------------------------------------------------------------------
 
-TODO: Promítnout map offset do pozice exitů
-
-TODO: Roomy se zobrazují fixně na pozici podle coords roomu. Je ale třeba,
-  aby to bylo relativně k coords, na které se mapa dívá.
-
 TODO: Ve updateRooms.updateRooms() netahat exit data z roomu ve stejnem
   cyklu, kde se buildi roomy. Misto toho nejdriv vytahnout z worldu
   roomy a ty pak projet jednim cyklem na zbuildeni roomu a dalsim
   cyklem na zbuildeni exitu.
-
-TODO: Testovací verze posouvání mapy klávesama
 
 
 TODO: V createMap() v cyklu na vyrábění mapy oasertovat krajní hodnoty cyklu,
@@ -110,10 +103,6 @@ TODO: Vymyslet, jak zobrazovat exity up a down
   |
  /
 /
-
-TODO: Zprovoznit editaci víc než jedný vrstvy
-- bude třeba "chození up a down" (a obecně asi chození po mapě, teď
-  se dá zobrazit jen omezenej výřez).
 
 ------------------------------------------------------------------------------
 
