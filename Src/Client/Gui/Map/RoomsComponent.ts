@@ -51,7 +51,7 @@ export class RoomsComponent extends G
   }
 
   // ! Throws exception on error.
-  public addRoomComponent
+  public addRoom
   (
     room: Room | "Doesn't exist",
     roomCoords: Coords,
@@ -162,7 +162,11 @@ export class RoomsComponent extends G
 
 // ----------------- Auxiliary Functions ---------------------
 
-function getComponentFrom(roomCache: Set<RoomComponent>): RoomComponent | "Nothing there"
+function getComponentFrom
+(
+  roomCache: Set<RoomComponent>
+)
+: RoomComponent | "Nothing there"
 {
   for (const value of roomCache)
   {

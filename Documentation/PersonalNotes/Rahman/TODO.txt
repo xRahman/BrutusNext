@@ -22,10 +22,8 @@ Později:
 
 ------------------------------------------------------------------------------
 
-TODO: Ve updateRooms.updateRooms() netahat exit data z roomu ve stejnem
-  cyklu, kde se buildi roomy. Misto toho nejdriv vytahnout z worldu
-  roomy a ty pak projet jednim cyklem na zbuildeni roomu a dalsim
-  cyklem na zbuildeni exitu.
+TODO: Opravit poskočení mapy při prvním kliknutí na roomu
+  (bylo to i v předchozí verzi?)
 
 
 TODO: V createMap() v cyklu na vyrábění mapy oasertovat krajní hodnoty cyklu,

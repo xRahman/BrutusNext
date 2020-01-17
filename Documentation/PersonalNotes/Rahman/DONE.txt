@@ -1,3 +1,9 @@
+TODO: Ve WorldComponent.updateRooms() netahat exit data z roomu ve stejnem
+  cyklu, kde se buildi roomy. Misto toho nejdriv vytahnout z worldu
+  roomy a ty pak projet jednim cyklem na zbuildeni roomu a dalsim
+  cyklem na zbuildeni exitu.
+[done]
+
 TODO: Zprovoznit editaci víc než jedný vrstvy
 - bude třeba "chození up a down" (a obecně asi chození po mapě, teď
   se dá zobrazit jen omezenej výřez).

@@ -99,19 +99,57 @@ export class WorldComponent extends MapZoomer
   // ! Throws exception on error.
   private rebuildMap(mapOffset: Coords): void
   {
-    const exitsData =
-      updateRooms(this.rooms, mapOffset, { rebuild: true });
+    const mapView = getMapView(mapOffset);
 
-    rebuildExits(exitsData, this.exits, mapOffset);
+    this.updateRooms(mapView, mapOffset, { rebuild: true });
+    this.rebuildExits(mapView, mapOffset);
   }
 
   // ! Throws exception on error.
   private updateMap(): void
   {
-    const exitsData =
-      updateRooms(this.rooms, this.currentCoords, { rebuild: false });
+    const mapOffset = this.currentCoords;
+    const mapView = getMapView(mapOffset);
 
-    rebuildExits(exitsData, this.exits, this.currentCoords);
+    this.updateRooms(mapView, mapOffset, { rebuild: false });
+    this.rebuildExits(mapView, mapOffset);
+  }
+
+  private updateRooms
+  (
+    mapView: Array<{ room: Room | "Doesn't exist", coords: Coords }>,
+    mapOffset: Coords,
+    { rebuild = false }
+  )
+  : void
+  {
+    if (rebuild)
+      this.rooms.clear();
+
+    for (const { room, coords } of mapView)
+    {
+      if (rebuild)
+        this.rooms.addRoom(room, coords, mapOffset);
+      else
+        this.rooms.updateRoom(room, coords);
+    }
+  }
+
+  private rebuildExits
+  (
+    mapView: Array<{ room: Room | "Doesn't exist", coords: Coords }>,
+    mapOffset: Coords
+  )
+  : void
+  {
+    const exitsData = extractExitsData(mapView);
+
+    this.exits.clear();
+
+    for (const exitData of exitsData.values())
+    {
+      this.exits.createExitComponent(exitData, mapOffset);
+    }
   }
 
   // ---------------- Event handlers --------------------
@@ -283,59 +321,61 @@ function getCoordsInViewAround(coords: Coords): Array<Coords>
   return coordsInView;
 }
 
-function updateRooms
+function getMapView
 (
-  rooms: RoomsComponent,
-  mapOffset: Coords,
-  { rebuild = false }
+  mapOffset: Coords
+)
+: Array<{ room: Room | "Doesn't exist", coords: Coords }>
+{
+  // TODO: Provázat tohle s Rooms.ROOMS_IN_CACHE
+  // (měly by to bejt stejný hodnoty).
+  const from =
+  {
+    e: mapOffset.e - 20,
+    s: mapOffset.s - 20
+  };
+
+  const to =
+  {
+    e: mapOffset.e + 20,
+    s: mapOffset.s + 20
+  };
+
+  const mapView: Array<{ room: Room | "Doesn't exist", coords: Coords }> = [];
+
+  // Order of cycles determines oder of svg components representing
+  // rooms in the DOM. Since people usually expects rows of things
+  // rather than columns, we iterate nort-south direction first.
+  for (let s = from.s; s <= to.s; s++)
+  {
+    for (let e = from.e; e <= to.e; e++)
+    {
+      const coords = new Coords(e, s, mapOffset.u);
+      const getResult = World.getRoom(coords);
+      const room = getResult === "Nothing there" ? "Doesn't exist" : getResult;
+
+      mapView.push({ coords, room });
+    }
+  }
+
+  return mapView;
+}
+
+function extractExitsData
+(
+  mapView: Array<{ room: Room | "Doesn't exist", coords: Coords }>
 )
 : Map<string, ExitComponent.ExitData>
 {
-  if (rebuild)
-    rooms.clear();
-
   const exitsData = new Map<string, ExitComponent.ExitData>();
-  const coordsInView = getCoordsInViewAround(mapOffset);
 
-  for (const coords of coordsInView)
+  for (const { room } of mapView)
   {
-    const room = World.getRoom(coords);
-
-    if (room === "Nothing there")
-    {
-      if (rebuild)
-        rooms.addRoomComponent("Doesn't exist", coords, mapOffset);
-      else
-        rooms.updateRoom("Doesn't exist", coords);
-    }
-    else
-    {
-      if (rebuild)
-        rooms.addRoomComponent(room, coords, mapOffset);
-      else
-        rooms.updateRoom(room, coords);
-
+    if (room !== "Doesn't exist")
       extractExitData(room, exitsData);
-    }
   }
 
   return exitsData;
-}
-
-function rebuildExits
-(
-  exitsData: Map<string, ExitComponent.ExitData>,
-  exits: ExitsComponent,
-  mapOffset: Coords
-)
-: void
-{
-  exits.clear();
-
-  for (const exitData of exitsData.values())
-  {
-    exits.createExitComponent(exitData, mapOffset);
-  }
 }
 
 function extractExitData
