@@ -22,9 +22,6 @@ Později:
 
 ------------------------------------------------------------------------------
 
-TODO: Opravit poskočení mapy při prvním kliknutí na roomu
-  (bylo to i v předchozí verzi?)
-
 
 TODO: V createMap() v cyklu na vyrábění mapy oasertovat krajní hodnoty cyklu,
  abych nemohl vyrobit nekonečnej cyklus.

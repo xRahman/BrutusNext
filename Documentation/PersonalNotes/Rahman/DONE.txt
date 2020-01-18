@@ -1,3 +1,8 @@
+TODO: Opravit poskočení mapy při prvním kliknutí na roomu
+- MapComponent před tím z nějakýho důvodu není přes celej WindowContent.
+Pomohlo nastavit "display: block;"
+[fixed]
+
 TODO: Ve WorldComponent.updateRooms() netahat exit data z roomu ve stejnem
   cyklu, kde se buildi roomy. Misto toho nejdriv vytahnout z worldu
   roomy a ty pak projet jednim cyklem na zbuildeni roomu a dalsim
