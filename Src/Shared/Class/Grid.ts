@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  Associative 3d array indexed by [e, s, u] coordinates
+  Associative 3d array indexed by [e, n, u] coordinates
 */
 
 /*
@@ -10,10 +10,9 @@
     item inserted on [0.3, 0, 0] will actualy be put on [0, 0, 0].
 
     Grid is associative - it means that you can use negative indexes,
-    it can have holes and you can use negative indexes.
-
-    But it also means that items are not sorted by coordinates but
-    rather by order of insertion.
+    it can have holes and you can use negative indexes. But it also
+    means that items are not sorted by coordinates but by order of
+    insertion.
 */
 
 import { Coords } from "../../Shared/Class/Coords";
@@ -66,9 +65,9 @@ export class Grid<T>
   }
 
   // Size of the array on 'north-south' axis.
-  public get sSize(): number
+  public get nSize(): number
   {
-    return this.size.max.s - this.size.min.s;
+    return this.size.max.n - this.size.min.n;
   }
 
   // Size of the array on 'up-down' axis.
@@ -90,7 +89,7 @@ export class Grid<T>
     if (horizontalSlice === undefined)
       return "Nothing there";
 
-    const eastWestLine = horizontalSlice.get(flooredCoords.s);
+    const eastWestLine = horizontalSlice.get(flooredCoords.n);
 
     if (eastWestLine === undefined)
       return "Nothing there";
@@ -103,7 +102,7 @@ export class Grid<T>
     return item;
   }
 
-  // Sets 'item' at position [e, s, u].
+  // Sets 'item' at position [e, n, u].
   public set(coords: Coords, item: T): void
   {
     const flooredCoords = coords.getFlooredCoords();
@@ -116,12 +115,12 @@ export class Grid<T>
       this.data.set(flooredCoords.u, horizontalSlice);
     }
 
-    let eastWestLine = horizontalSlice.get(flooredCoords.s);
+    let eastWestLine = horizontalSlice.get(flooredCoords.n);
 
     if (!eastWestLine)
     {
       eastWestLine = new Map<number, T>();
-      horizontalSlice.set(flooredCoords.s, eastWestLine);
+      horizontalSlice.set(flooredCoords.n, eastWestLine);
     }
 
     eastWestLine.set(flooredCoords.e, item);
@@ -130,7 +129,7 @@ export class Grid<T>
   }
 
   // ! Throws exception on error.
-  // Deletes 'item' at position [e, s, u].
+  // Deletes 'item' at position [e, n, u].
   //   Grid size is not changed by this operation because
   // it would be nontrivial operation.
   public delete(coords: Coords): void
@@ -142,7 +141,7 @@ export class Grid<T>
     if (horizontalSlice === undefined)
       throw failedToDelete(coords);
 
-    const eastWestLine = horizontalSlice.get(flooredCoords.s);
+    const eastWestLine = horizontalSlice.get(flooredCoords.n);
 
     if (eastWestLine === undefined)
       throw failedToDelete(coords);
@@ -158,14 +157,14 @@ export class Grid<T>
     this.size.min = new Coords
     (
       this.size.min.e > coords.e ? coords.e : this.size.min.e,
-      this.size.min.s > coords.s ? coords.s : this.size.min.s,
+      this.size.min.n > coords.n ? coords.n : this.size.min.n,
       this.size.min.u > coords.u ? coords.u : this.size.min.u
     );
 
     this.size.max = new Coords
     (
       this.size.max.e < coords.e ? coords.e : this.size.max.e,
-      this.size.max.s < coords.s ? coords.s : this.size.max.s,
+      this.size.max.n < coords.n ? coords.n : this.size.max.n,
       this.size.max.u < coords.u ? coords.u : this.size.max.u
     );
   }

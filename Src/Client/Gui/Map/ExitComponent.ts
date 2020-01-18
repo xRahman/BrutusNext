@@ -18,7 +18,7 @@ export class ExitComponent extends G
   constructor
   (
     parent: ExitsComponent,
-    private readonly exitData: ExitComponent.ExitData,
+    exitData: ExitComponent.ExitData,
     name = "exit"
   )
   {
@@ -32,11 +32,11 @@ export class ExitComponent extends G
     (
       {
         xPixels: roomSpacing * exitData.from.e,
-        yPixels: roomSpacing * exitData.from.s
+        yPixels: -roomSpacing * exitData.from.n
       },
       {
         xPixels: roomSpacing * exitData.to.e,
-        yPixels: roomSpacing * exitData.to.s
+        yPixels: -roomSpacing * exitData.to.n
       }
     );
   }

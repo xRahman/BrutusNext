@@ -36,10 +36,10 @@ export class Exit
   : Exit.Direction
   {
     const eDistance = to.e - from.e;
-    const sDistance = to.s - from.s;
+    const nDistance = to.n - from.n;
     const uDistance = to.u - from.u;
 
-    if (eDistance === 0 && sDistance === 0)
+    if (eDistance === 0 && nDistance === 0)
       // ! Throws exception on error.
       return getVerticalDirection(uDistance);
 
@@ -47,7 +47,7 @@ export class Exit
     // Exits in horizontal direction are allowed to be sloping up or
     // down. It means that direction like [1, 1, 1] is "sout-east",
     // not "south-east-up".
-    return getHorizontalDirection(eDistance, sDistance);
+    return getHorizontalDirection(eDistance, nDistance);
   }
 
   constructor (public to: Coords | "Nowhere")
@@ -73,22 +73,11 @@ function getVerticalDirection(uDistance: number): Exit.VerticalDirection
 function getHorizontalDirection
 (
   eDistance: number,
-  sDistance: number
+  nDistance: number
 )
 : Exit.HorizontalDirection
 {
-  if (sDistance > 0)
-  {
-    if (eDistance > 0)
-      return "se";
-
-    if (eDistance < 0)
-      return "sw";
-
-    return "s";
-  }
-
-  if (sDistance < 0)
+  if (nDistance > 0)
   {
     if (eDistance > 0)
       return "ne";
@@ -97,6 +86,17 @@ function getHorizontalDirection
       return "nw";
 
     return "n";
+  }
+
+  if (nDistance < 0)
+  {
+    if (eDistance > 0)
+      return "se";
+
+    if (eDistance < 0)
+      return "sw";
+
+    return "s";
   }
 
   if (eDistance > 0)

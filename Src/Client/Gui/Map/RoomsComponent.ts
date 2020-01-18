@@ -76,7 +76,7 @@ export class RoomsComponent extends G
     roomComponent.setPosition
     (
       roomSpacing * roomMapCoords.e,
-      roomSpacing * roomMapCoords.s
+      -roomSpacing * roomMapCoords.n
     );
     roomComponent.setRoom(room);
     roomComponent.show();

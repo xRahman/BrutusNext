@@ -22,6 +22,17 @@ Později:
 
 ------------------------------------------------------------------------------
 
+TODO: Pozici v pixelech by si měla setovat RoomComponent a ExitComponent
+  (teď to dělá ExitComponent ale místo RoomComponent to dělá RoomsComponent)
+- nějak líp pořešit relativní pozici mapy.
+Nejlepší by asi bylo, kdybych všemu dával natvrdo pozici, jako kdyby se mapa
+  koukala na [ 0, 0, 0 ] a dal celý mapě translaci na aktuální pozici.
+
+
+TODO: Zrušit počíteční rozměry gridu.
+
+TODO: Provázat velikost zobrazované části mapy
+  v WorldComponent.getCoordsInView() s RoomsSvg.ROOMS_IN_CACHE.
 
 TODO: V createMap() v cyklu na vyrábění mapy oasertovat krajní hodnoty cyklu,
  abych nemohl vyrobit nekonečnej cyklus.
@@ -30,25 +41,9 @@ TODO: V createMap() v cyklu na vyrábění mapy oasertovat krajní hodnoty cyklu
 Teď se to týká funkce WorldComponent.getCoordsInView()
 
 
-TODO: Mělo by to bejt spíš asi MapWindow.lookAt(coords) nebo
-  MapComponent.lookAt(coords).
-Kdo si bude pamatovat aktulní coords, na který se mapa dívá?
-- zatím jsem to dal do WorldComponent a používá se to v updateMap().
 
-
-
-TODO: Provázat velikost zobrazované části mapy
-  v WorldComponent.getCoordsInView() s RoomsSvg.ROOMS_IN_CACHE.
-
-TODO: Pokusit se sjednotit "Nothing here" a "Doesn't exist"
-  (asi vracet z gridu "Doesn't exist")
 
 TODO: Vysvětlující error message v RoomsSvg.addRoomSvg()
-
-TODO: Invertnout 's' axis (kladné hodnoty by měly růst nahoru)
-  Aha, tak osy jsou dobře, south přece musí růst dolů :-)
-Ale Coords by asi měly bejt spíš [ e, n, u ] místo [ e, s, u ].
-  (takže nejen invert osy, ale i změna pojmenování)
 
 
 
@@ -58,6 +53,14 @@ Optimalizace mapy:
 
 TODO: Nevytvářet exity podle rozměrů worldu, ale podle počtu, kolik je třeba
   zobrazovat
+- eh, to asi dělám. Exity se vyčítají ze seznamu room, na který mapa kouká.
+[done]
+
+TODO: Cache na exit elementy
+- zvlášť na horizontal exity a zvlášť na vertical
+  Hmm, každá rooma by vlastně rovnou mohla mít svg komponentu na exit
+  up a down a jen ji showovat/hidovat/přebarvovat, tj. up/down exity
+  vůbec nemusej bejt v ExitsComponent.
 
 TODO: Vyrábět exit elementy mimo DOM a insternout je najednou
   s parentem
@@ -104,8 +107,14 @@ TODO: Vymyslet, jak zobrazovat exity up a down
 Výhledové TODO
 ---------------
 
+TODO: Mělo by to bejt spíš asi MapWindow.lookAt(coords) nebo
+  MapComponent.lookAt(coords).
+- zatím to nechám bejt, třeba se časem vyvrbí, jak to má bejt strukturovaný
+
 TODO: Na editaci by se asi hodilo mít větší ikony room, aby se na ně líp
   trefovalo (zase to pak bude vypadat jinak než hra, to asi není dobře).
+- prozatím jsem zvětšil ikony místností obecně. Uvidíme, jestli to bude
+  vypadat dobře.
 
 TODO: Přezoomování na jiný místo (tj. zoomIn() bude zároveň mapu centerovat
   na pozici myši).

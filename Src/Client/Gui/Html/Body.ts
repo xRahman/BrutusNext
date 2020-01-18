@@ -72,7 +72,7 @@ export class Body extends Component
   private onKeyUp(event: KeyboardEvent): void
   {
     let e = 0;
-    let s = 0;
+    let n = 0;
     let u = 0;
 
     switch (event.keyCode)
@@ -90,7 +90,7 @@ export class Body extends Component
         break;
 
       case 38: // Up.
-        s = -1;
+        n = 1;
         break;
 
       case 39: // Right.
@@ -98,14 +98,14 @@ export class Body extends Component
         break;
 
       case 40: // Down.
-        s = 1;
+        n = -1;
         break;
 
       default:
         return;
     }
 
-    coords = Coords.add(coords, new Coords(e, s, u));
+    coords = Coords.add(coords, new Coords(e, n, u));
 
     WorldComponent.lookAt(coords);
   }

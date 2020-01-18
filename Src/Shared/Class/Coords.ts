@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  World [e, s, u] coordinates
+  World [e, n, u] coordinates
 */
 
 import { StringUtils } from "../../Shared/Utils/StringUtils";
@@ -19,10 +19,10 @@ export class Coords
     if (from.e > to.e)
       return joinCoordStrings(to, from);
 
-    if (from.s < to.s)
+    if (from.n < to.n)
       return joinCoordStrings(from, to);
 
-    if (from.s > to.s)
+    if (from.n > to.n)
       return joinCoordStrings(to, from);
 
     if (from.u < to.u)
@@ -39,23 +39,23 @@ export class Coords
   {
     const coords = parseCoordsString(coordsString);
 
-    return new Coords(coords.e, coords.s, coords.u);
+    return new Coords(coords.e, coords.n, coords.u);
   }
 
   public static add(c1: Coords, c2: Coords): Coords
   {
-    return new Coords(c1.e + c2.e, c1.s + c2.s, c1.u + c2.u);
+    return new Coords(c1.e + c2.e, c1.n + c2.n, c1.u + c2.u);
   }
 
   public static c1MinusC2(c1: Coords, c2: Coords): Coords
   {
-    return new Coords(c1.e - c2.e, c1.s - c2.s, c1.u - c2.u);
+    return new Coords(c1.e - c2.e, c1.n - c2.n, c1.u - c2.u);
   }
 
   constructor
   (
     public readonly e: number,
-    public readonly s: number,
+    public readonly n: number,
     public readonly u: number
   )
   {
@@ -91,14 +91,14 @@ export class Coords
 
   //   // Add the two required operands.
   //   result.e += op0.e + op1.e;
-  //   result.s += op0.s + op1.s;
+  //   result.n += op0.n + op1.n;
   //   result.u += op0.u + op1.u;
 
   //   // Add the remaining operands.
   //   for (let operand of moreOps)
   //   {
   //     result.e += operand.e;
-  //     result.s += operand.s;
+  //     result.n += operand.n;
   //     result.u += operand.u;
   //   }
 
@@ -111,7 +111,7 @@ export class Coords
   //   // Copmare second required operand with the first one.
   //   if (op0.e !== op1.e)
   //     return false;
-  //   if (op0.s !== op1.s)
+  //   if (op0.n !== op1.n)
   //     return false;
   //   if (op0.u !== op1.u)
   //     return false;
@@ -121,7 +121,7 @@ export class Coords
   //   {
   //     if (op0.e !== moreOps[i].e)
   //       return false;
-  //     if (op0.s !== moreOps[i].s)
+  //     if (op0.n !== moreOps[i].n)
   //       return false;
   //     if (op0.u !== moreOps[i].u)
   //       return false;
@@ -134,7 +134,7 @@ export class Coords
 
   public equals(coords: Coords): boolean
   {
-    return this.e === coords.e && this.s === coords.s && this.u === coords.u;
+    return this.e === coords.e && this.n === coords.n && this.u === coords.u;
   }
 
   public getAdjacentCoords(): Array<Coords>
@@ -143,14 +143,14 @@ export class Coords
 
     for (let e = -1; e <= 1; e++)
     {
-      for (let s = -1; s <= 1; s++)
+      for (let n = -1; n <= 1; n++)
       {
         for (let u = -1; u <= 1; u++)
         {
-          if (e === 0 && s === 0 && u === 0)
+          if (e === 0 && n === 0 && u === 0)
             continue;
 
-          adjacentCoords.push(Coords.add(this, new Coords(e, s, u)));
+          adjacentCoords.push(Coords.add(this, new Coords(e, n, u)));
         }
       }
     }
@@ -161,13 +161,13 @@ export class Coords
   public isAdjacentTo(coords: Coords): boolean
   {
     const eDistance = Math.abs(this.e - coords.e);
-    const sDistance = Math.abs(this.s - coords.s);
+    const nDistance = Math.abs(this.n - coords.n);
     const uDistance = Math.abs(this.u - coords.u);
 
-    if (eDistance === 0 && sDistance === 0 && uDistance === 0)
+    if (eDistance === 0 && nDistance === 0 && uDistance === 0)
       return false;
 
-    if (eDistance <= 1 && sDistance <= 1 && uDistance <= 1)
+    if (eDistance <= 1 && nDistance <= 1 && uDistance <= 1)
       return true;
 
     return false;
@@ -178,14 +178,14 @@ export class Coords
     return new Coords
     (
       Math.floor(this.e),
-      Math.floor(this.s),
+      Math.floor(this.n),
       Math.floor(this.u)
     );
   }
 
   public toString(): string
   {
-    return `[ e: ${this.e}, s: ${this.s}, u: ${this.u} ]`;
+    return `[ e: ${this.e}, n: ${this.n}, u: ${this.u} ]`;
   }
 
   // --------------- Protected methods ------------------
@@ -217,19 +217,19 @@ function joinCoordStrings(from: Coords, to: Coords): string
 // }
 
 // ! Throws exception on error.
-function parseCoordsString(coords: string): { e: number, s: number, u: number }
+function parseCoordsString(coords: string): { e: number, n: number, u: number }
 {
-  const result = { e: NaN, s: NaN, u: NaN };
+  const result = { e: NaN, n: NaN, u: NaN };
 
   // ! Throws exception on error.
-  StringUtils.scan(coords, "[ e: &{e}, s: &{s}, u: &{u} ]", result);
+  StringUtils.scan(coords, "[ e: &{e}, n: &{n}, u: &{u} ]", result);
 
   return result;
 
   // // ! Throws exception on error.
   // const e = StringUtils.toNumber(scanResult.e);
   // // ! Throws exception on error.
-  // const s = StringUtils.toNumber(scanResult.s);
+  // const s = StringUtils.toNumber(scanResult.n);
   // // ! Throws exception on error.
   // const u = StringUtils.toNumber(scanResult.u);
 

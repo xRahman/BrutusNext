@@ -298,13 +298,13 @@ function getCoordsInViewAround(coords: Coords): Array<Coords>
   const from =
   {
     e: coords.e - 20,
-    s: coords.s - 20
+    s: coords.n - 20
   };
 
   const to =
   {
     e: coords.e + 20,
-    s: coords.s + 20
+    s: coords.n + 20
   };
 
   // Order of cycles determines oder of svg components representing
@@ -332,13 +332,13 @@ function getMapView
   const from =
   {
     e: mapOffset.e - 20,
-    s: mapOffset.s - 20
+    s: mapOffset.n - 20
   };
 
   const to =
   {
     e: mapOffset.e + 20,
-    s: mapOffset.s + 20
+    s: mapOffset.n + 20
   };
 
   const mapView: Array<{ room: Room | "Doesn't exist", coords: Coords }> = [];
