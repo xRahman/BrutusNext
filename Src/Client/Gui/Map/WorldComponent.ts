@@ -64,15 +64,26 @@ export class WorldComponent extends MapZoomer
 
   // ---------------- Private methods -------------------
 
-  private lookAt(mapOffset: Coords): void
+  private translateTo(coords: Coords): void
+  {
+    const roomSpacing = RoomsComponent.roomSpacingPixels;
+
+    this.translate
+    (
+      -roomSpacing * coords.e,
+      roomSpacing * coords.n
+    );
+  }
+
+  private lookAt(coords: Coords): void
   {
     /// S tímhle testem by se neprovedla úvodní inicializace mapy.
     // if (targetCoords.equals(this.currentCoords))
     //   return;
 
-    this.rebuildMap(mapOffset);
-
-    this.currentCoords = mapOffset;
+    this.rebuildMap(coords);
+    this.translateTo(coords);
+    this.currentCoords = coords;
   }
 
   private registerEventListeners(): void
@@ -103,6 +114,9 @@ export class WorldComponent extends MapZoomer
 
     this.updateRooms(mapView, mapOffset, { rebuild: true });
     this.rebuildExits(mapView, mapOffset);
+
+    // TEST (pokus o refresh scale transformace)
+    // this.setZoom(this.getZoom());
   }
 
   // ! Throws exception on error.

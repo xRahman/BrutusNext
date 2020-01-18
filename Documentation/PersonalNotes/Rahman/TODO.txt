@@ -22,12 +22,25 @@ Později:
 
 ------------------------------------------------------------------------------
 
+TODO: Pokud má k něčemu bejt typování parentů, tak taky musej bejt
+  overridnutý.
+
+TODO: Zvýraznit "pozici playera"
+
+TODO: Pokusit se opravit scale při přebudování mapy
+
+TODO: Umožnit scale a translate současně
+
 TODO: Pozici v pixelech by si měla setovat RoomComponent a ExitComponent
   (teď to dělá ExitComponent ale místo RoomComponent to dělá RoomsComponent)
 - nějak líp pořešit relativní pozici mapy.
 Nejlepší by asi bylo, kdybych všemu dával natvrdo pozici, jako kdyby se mapa
   koukala na [ 0, 0, 0 ] a dal celý mapě translaci na aktuální pozici.
 
+IDEA: Invertnutí N axis dát do setPosition() funkcí v svg komponentách.
+
+Hmm. Nebo prostě zůstat u [ e, s, u ], pak invert osy není potřeba
+- ale asi ne, bylo to neintuitivní a pohodlí pro editory je důležitý
 
 TODO: Zrušit počíteční rozměry gridu.
 

@@ -25,6 +25,13 @@ export class G extends Component
   {
     // Use translate transformation because <g> element
     // doesn't have 'x' and 'y' attributes.
+   this.translate(xPixels, yPixels);
+  }
+
+  public translate(xPixels: number, yPixels: number): void
+  {
+    // Use translate transformation because <g> element
+    // doesn't have 'x' and 'y' attributes.
     Dom.translate(this.element, xPixels, yPixels);
   }
 

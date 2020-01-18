@@ -1,3 +1,10 @@
+TODO: Opravit stack top v error výpisu
+[done]
+
+TODO: V StringUtils.scan() chytat errory a přilepit k nim
+  informativnější error message.
+[done]
+
 TODO: Invertnout 's' axis (kladné hodnoty by měly růst nahoru)
   Aha, tak osy jsou dobře, south přece musí růst dolů :-)
 Ale Coords by asi měly bejt spíš [ e, n, u ] místo [ e, s, u ].

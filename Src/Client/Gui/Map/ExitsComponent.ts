@@ -25,14 +25,15 @@ export class ExitsComponent extends G
   )
   : void
   {
-    const mapCoordsExitData =
-    {
-      from: Coords.c1MinusC2(exitData.from, mapOffset),
-      to: Coords.c1MinusC2(exitData.to, mapOffset),
-      bidirectional: exitData.bidirectional
-    };
+    // const mapCoordsExitData =
+    // {
+    //   from: Coords.c1MinusC2(exitData.from, mapOffset),
+    //   to: Coords.c1MinusC2(exitData.to, mapOffset),
+    //   bidirectional: exitData.bidirectional
+    // };
 
-    const exitComponent = new ExitComponent(this, mapCoordsExitData);
+    // const exitComponent = new ExitComponent(this, mapCoordsExitData);
+    const exitComponent = new ExitComponent(this, exitData);
 
     this.exits.push(exitComponent);
   }

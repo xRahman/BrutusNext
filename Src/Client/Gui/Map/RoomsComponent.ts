@@ -59,7 +59,7 @@ export class RoomsComponent extends G
   )
   : void
   {
-    const roomMapCoords = Coords.c1MinusC2(roomCoords, mapOffset);
+    // const roomMapCoords = Coords.c1MinusC2(roomCoords, mapOffset);
     const roomComponent = getComponentFrom(this.roomComponentCache);
 
     if (roomComponent === "Nothing there")
@@ -75,8 +75,10 @@ export class RoomsComponent extends G
     roomComponent.setCoords(roomCoords);
     roomComponent.setPosition
     (
-      roomSpacing * roomMapCoords.e,
-      -roomSpacing * roomMapCoords.n
+      // roomSpacing * roomMapCoords.e,
+      roomSpacing * roomCoords.e,
+      // -roomSpacing * roomMapCoords.n
+      -roomSpacing * roomCoords.n
     );
     roomComponent.setRoom(room);
     roomComponent.show();

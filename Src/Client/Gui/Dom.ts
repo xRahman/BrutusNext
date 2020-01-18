@@ -5,6 +5,7 @@
 */
 
 import { Syslog } from "../../Shared/Log/Syslog";
+import { StringUtils } from "../../Shared/Utils/StringUtils";
 
 const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
 const SVG_XLINK_NAMESPACE = "http://www.w3.org/1999/xlink";
@@ -234,9 +235,30 @@ export namespace Dom
     setRelativeY(element, yPercent);
   }
 
+  // ! Throws exception on error.
   export function scale(element: Element, scaleFactor: number): void
   {
-    setTransform(element, `scale(${scaleFactor})`);
+    const transformAttribute = element.getAttribute("transform");
+    const transformString = transformAttribute ? transformAttribute : "";
+    const transform =
+    {
+      translate: "",
+      scale: ""
+    };
+
+    // ! Throws exception on error.
+    StringUtils.scan
+    (
+      transformString,
+      "translate(&{translate}) scale(&{scale})",
+      transform
+    );
+
+    setTransform
+    (
+      element,
+      `translate(${transform.translate}) scale(${scaleFactor})`
+    );
   }
 
   export function translate

@@ -69,9 +69,10 @@ export namespace Syslog
   {
     // Clone the 'error' because Error objects like DOMException have
     // readonly properties so we wouldn't be able to write to them.
-    const clonedError = ErrorUtils.clone(error);
+    const clonedError = ErrorUtils.cloneError(error);
+    const message = `[UNCAUGHT_EXCEPTION] ${error.message}`;
 
-    clonedError.message = `[UNCAUGHT_EXCEPTION] ${error.message}`;
+    ErrorUtils.setErrorMessage(clonedError, message);
 
     SyslogUtils.logError(clonedError);
   }
@@ -89,12 +90,16 @@ function logExistingErrorObject(error: Error, catchMessage?: string): void
 {
   // Clone the 'error' because Error objects like DOMException have
   // readonly properties so we wouldn't be able to write to them.
-  const clonedError = ErrorUtils.clone(error);
+  const clonedError = ErrorUtils.cloneError(error);
+
+  let message;
 
   if (catchMessage)
-    clonedError.message = `[ERROR] ${catchMessage}: ${error.message}`;
+    message = `[ERROR] ${catchMessage}: ${error.message}`;
   else
-    clonedError.message = `[ERROR] ${error.message}`;
+    message = `[ERROR]  ${error.message}`;
+
+  ErrorUtils.setErrorMessage(clonedError, message);
 
   SyslogUtils.logError(clonedError);
 }

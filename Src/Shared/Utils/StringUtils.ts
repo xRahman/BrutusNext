@@ -1,3 +1,5 @@
+import { ErrorUtils } from "./ErrorUtils";
+
 /*
   Part of BrutusNext
 
@@ -21,14 +23,22 @@ export namespace StringUtils
   )
   : void
   {
-    // ! Throws exception on error.
-    const { substrings, properties } = parseTemplate(str, template);
+    try
+    {
+      // ! Throws exception on error.
+      const { substrings, properties } = parseTemplate(str, template);
 
-    // ! Throws exception on error.
-    const values = splitBySubstrings(str, substrings);
+      // ! Throws exception on error.
+      const values = splitBySubstrings(str, substrings);
 
-    // ! Throws exception on error.
-    assignValues(str, template, properties, values, result);
+      // ! Throws exception on error.
+      assignValues(str, template, properties, values, result);
+    }
+    catch (error)
+    {
+      throw ErrorUtils.prependMessage(`Failed to scan string "${str}"`
+        + ` for values using template string "${template}"`, error);
+    }
   }
 
   // ! Throws exception on error.
@@ -40,6 +50,21 @@ export namespace StringUtils
       throw Error(`Value ${str} does not represent a number`);
 
     return value;
+  }
+
+  // Removes lines from the start of multiline string 'str' that
+  // don't start with 'prefix'. Lines need to be separated by '\n'.
+  export function removeLinesWithoutPrefix(str: string, prefix: string): string
+  {
+    const LINE_BREAK = "\n";
+    const lines = str.split(LINE_BREAK);
+
+    while (!lines[0].startsWith(prefix))
+    {
+      lines.shift();
+    }
+
+    return lines.join(LINE_BREAK);
   }
 }
 
@@ -192,8 +217,8 @@ function splitBySubstring
 
   if (substringPosition === -1)
   {
-    throw Error(`Failed to split string ${str} because it`
-      + ` doesn't contain substring ${substring}`);
+    throw Error(`Failed to split string "${str}" because it`
+      + ` doesn't contain substring "${substring}"`);
   }
 
   const before = str.substring(0, substringPosition);
@@ -212,7 +237,7 @@ function splitBySubstrings
 {
   if (substrings.length === 0)
   {
-    throw Error(`Failed to split string '${str}' by substrings`
+    throw Error(`Failed to split string "${str}" by substrings`
       + ` because no substrings were provided`);
   }
 
