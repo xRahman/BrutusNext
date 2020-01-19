@@ -238,53 +238,14 @@ export namespace Dom
   // ! Throws exception on error.
   export function scale(element: Element, scaleFactor: number): void
   {
-    const transformAttribute = element.getAttribute("transform");
-    const transformString = transformAttribute ? transformAttribute : "";
-    // const transform =
-    // {
-    //   translate: "",
-    //   scale: ""
-    // };
+    const existingTranslate = getExistingTranslate(element);
 
-    // // ! Throws exception on error.
-    // StringUtils.scan
-    // (
-    //   transformString,
-    //   "translate(&{translate}) scale(&{scale})",
-    //   transform
-    // );
+    const transform: Transform = { scale: `${scaleFactor}` };
 
-    if (transformString.includes("translate("))
-    {
-      const transform =
-      {
-        prefix: "",
-        translate: "",
-        suffix: ""
-      };
+    if (existingTranslate)
+      transform.translate = existingTranslate;
 
-      // ! Throws exception on error.
-      StringUtils.scan
-      (
-        transformString,
-        "&{prefix}translate(&{translate})&{suffix}",
-        transform
-      );
-
-      setTransform
-      (
-        element,
-        `translate(${transform.translate}) scale(${scaleFactor})`
-      );
-
-      return;
-    }
-
-    setTransform
-    (
-      element,
-      `scale(${scaleFactor})`
-    );
+    setTransform(element, transform);
   }
 
   export function translate
@@ -295,7 +256,14 @@ export namespace Dom
   )
   : void
   {
-    setTransform(element, `translate(${xPixels}, ${yPixels})`);
+    const existingScale = getExistingScale(element);
+
+    const transform: Transform = { translate: `${xPixels}, ${yPixels}` };
+
+    if (existingScale)
+      transform.scale = existingScale;
+
+    setTransform(element, transform);
   }
 
   export function isLeftButtonDown(event: MouseEvent): boolean
@@ -354,7 +322,87 @@ export namespace Dom
 
 // ----------------- Auxiliary Functions ---------------------
 
-function setTransform(element: Element, transform: string): void
+type Transform =
 {
-  element.setAttribute("transform", transform);
+  scale?: string,
+  translate?: string
+};
+
+function setTransform
+(
+  element: Dom.Element,
+  transform: Transform
+)
+: void
+{
+  if (transform.scale === undefined && transform.translate === undefined)
+  {
+    element.removeAttribute("transform");
+    return;
+  }
+
+  let transformString = "";
+
+  // Note: Order of transformations matters.
+
+  if (transform.scale !== undefined)
+    transformString += `scale(${transform.scale})`;
+
+  if (transform.scale !== undefined && transform.translate !== undefined)
+    transformString += " ";
+
+  if (transform.translate !== undefined)
+    transformString += `translate(${transform.translate})`;
+
+  element.setAttribute("transform", transformString);
+}
+
+function getTransformAttribute(element: Dom.Element): string
+{
+  const attribute = element.getAttribute("transform");
+
+  if (attribute === null)
+    return "";
+
+  return attribute;
+}
+
+function getExistingTranslate(element: Dom.Element): string
+{
+  const attribute = getTransformAttribute(element);
+
+  if (!attribute.includes("translate"))
+    return "";
+
+  const transform = { translate: "" };
+
+  // ! Throws exception on error.
+  StringUtils.scan
+  (
+    attribute,
+    "&{*}translate(&{translate})&{*}",
+    transform
+  );
+
+  return transform.translate;
+}
+
+function getExistingScale(element: Dom.Element): string
+{
+  const attribute = getTransformAttribute(element);
+
+  if (!attribute.includes("scale"))
+    return "";
+
+  const transform = { scale: "" };
+
+  // ! Throws exception on error.
+  StringUtils.scan
+  (
+    attribute,
+    "&{*}scale(&{scale})&{*}",
+    transform
+  );
+
+  return transform.scale;
 }

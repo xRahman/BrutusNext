@@ -79,6 +79,11 @@ function assignValue
 )
 : void
 {
+  // '*' is used as a wild card to skip any number of characters
+  // so we are not going to assign respective value anywhere.
+  if (property === "*")
+    return;
+
   if (!(property in result))
   {
     throw Error(`Result object doesn't have property '${property}'`);
@@ -116,13 +121,13 @@ function assignValues
       + ` but template specifies ${properties.length}`);
   }
 
-  if (Object.entries(result).length !== properties.length)
-  {
-    throw Error(`Result object contains`
-      + ` ${Object.entries(result).length}`
-      + ` properties but template specifies`
-      + ` ${properties.length}`);
-  }
+  // if (Object.entries(result).length !== properties.length)
+  // {
+  //   throw Error(`Result object contains`
+  //     + ` ${Object.entries(result).length}`
+  //     + ` properties but template specifies`
+  //     + ` ${properties.length}`);
+  // }
 
   for (let i = 0; i < values.length; i++)
   {
@@ -130,12 +135,11 @@ function assignValues
   }
 }
 
-function findArgument(str: string):
-{
-  substring: string,
-  property: string,
-  remainder: string
-}
+function findArgument
+(
+  str: string
+)
+: { substring: string, property: string, remainder: string }
 {
   // Example of template string:
   //   "[ A: &{a}, B: &{b} ]"
@@ -163,9 +167,7 @@ function parseTemplate
 : { substrings: Array<string>, properties: Array<string> }
 {
   const substrings: Array<string> = [];
-
-  // Use Set to ensure that each property is only specified once.
-  const properties = new Set<string>();
+  const properties: Array<string> = [];
 
   // Template string example:
   //   "[ A: &{a}, B: &{b} ]"
@@ -176,18 +178,22 @@ function parseTemplate
   {
     const result = findArgument(remainder);
 
-    if (result.substring !== "")
-      substrings.push(result.substring);
+    // if (result.substring !== "")
+    //   substrings.push(result.substring);
+    substrings.push(result.substring);
+
+    if (result.property !== "" && result.remainder === "")
+      substrings.push("");
 
     if (result.property !== "")
     {
-      if (properties.has(result.property))
+      if (result.property !== "*" && properties.includes(result.property))
       {
         throw Error(`Property '${result.property}' is`
         + ` specified more than once, that is not possible`);
       }
 
-      properties.add(result.property);
+      properties.push(result.property);
     }
 
     remainder = result.remainder;
@@ -240,14 +246,19 @@ function splitBySubstrings
   {
     splitResult = splitBySubstring(parsedStr, substring);
 
-    if (splitResult.before !== "")
-      result.push(splitResult.before);
+    // if (splitResult.before !== "")
+    //   result.push(splitResult.before);
+    result.push(splitResult.before);
 
     parsedStr = splitResult.after;
   }
 
-  if (splitResult.after !== "")
-    result.push(splitResult.after);
+  // Discard the first result because value can't be
+  // before the first substring.
+  result.shift();
+
+  // if (splitResult.after !== "")
+  //   result.push(splitResult.after);
 
   return result;
 }

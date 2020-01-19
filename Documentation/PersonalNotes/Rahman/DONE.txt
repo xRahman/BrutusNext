@@ -1,3 +1,31 @@
+TODO: Refactoring Dom.scale() a Dom.translate()
+[done]
+
+Hmm. Nebo prostě zůstat u [ e, s, u ], pak invert osy není potřeba
+- ale asi ne, bylo to neintuitivní a pohodlí pro editory je důležitý
+[won't do]
+
+TODO: Opravit scale při přebudování mapy
+[done]
+
+TODO: Umožnit scale a translate současně
+[done]
+
+TODO: Pozici v pixelech by si měla setovat RoomComponent a ExitComponent
+  (teď to dělá ExitComponent ale místo RoomComponent to dělá RoomsComponent)
+- nějak líp pořešit relativní pozici mapy.
+Nejlepší by asi bylo, kdybych všemu dával natvrdo pozici, jako kdyby se mapa
+  koukala na [ 0, 0, 0 ] a dal celý mapě translaci na aktuální pozici.
+[done]
+
+TODO: Ve StringUtils.scan() povolit "" jako hodnotu.
+- možná spíš zavést &{*} jako wild card na "cokoliv".
+TODO: Ještě zvážit, jestli "" je validní hodnota stringového argumentu
+- je, protože je to obecnější. Když to bude zakázané, tak nepude scanovat
+  potenciálně prázdnej argument. Když to bude povolené a prázdnej argument
+  nebude žádoucí, tak si to můžu ošetřit dodatečně.
+[done]
+
 TODO: Prořezat error message ve StringUtils.scan():
   Jelikož v hlavní funkci rethrowuju error s doplňujícím messagem,
   nemusím ten doplňující message konstruovat v každym messagi ve vnořenejch

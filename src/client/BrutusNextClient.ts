@@ -20,6 +20,23 @@ import { Body } from "../Client/Gui/Html/Body";
 import "../Client/Gui/Html/Document";
 import "../Client/Gui/Html/Html";
 
+// TEST
+// import { StringUtils } from "../Shared/Utils/StringUtils";
+
+// const str = "translate(0, 0)";
+
+// const transform = { translate: "" };
+
+// // ! Throws exception on error.
+// StringUtils.scan
+// (
+//   str,
+//   "&{*}translate(&{translate})&{*}",
+//   transform
+// );
+
+// console.log("result:", transform);
+
 async function startBrutusNextClient(): Promise<void>
 {
   Syslog.log("[CLIENT]", "Starting BrutusNext client...");

@@ -83,8 +83,8 @@ A nejdůležitější: Nic z toho nepotřebuju na funkční hru.
 
 ------------------------------------------------------------------------------
 
-Parsování argumentů ze stringu
--------------------------------
+Parsování argumentů ze stringu (StringUtils.scan())
+----------------------------------------------------
 
 - umím vyparsovat string argumenty podle substringů
 - neumím je zkonvertit do požadovaných typů a vrátit je jako
