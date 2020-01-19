@@ -24,11 +24,6 @@ Později:
 
 
 
-TODO: funkce scan() by si zasloužila vlastní modul.
-- možná ji pojmenovat scanString() (nebo stringScan()) nebo tak nějak
-  a importovat ji jako import { scanString } from "..."?
-
-
 
 TODO: Zvýraznit "pozici playera"
 

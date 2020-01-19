@@ -28,7 +28,7 @@
     added automatically to the log message.
 */
 
-import { SyslogUtils } from "../../Shared/Log/SyslogUtils";
+import { SyslogLib } from "../../Shared/Log/Lib/SyslogLib";
 import { ErrorUtils } from "../../Shared/Utils/ErrorUtils";
 
 type SyslogMessageType =
@@ -43,7 +43,7 @@ export namespace Syslog
 {
   export function log(messageType: SyslogMessageType, message: string): void
   {
-    SyslogUtils.logEntry(`${String(messageType)} ${message}`);
+    SyslogLib.logEntry(`${String(messageType)} ${message}`);
   }
 
   export function logError(message: string): void;
@@ -74,7 +74,7 @@ export namespace Syslog
 
     ErrorUtils.setErrorMessage(clonedError, message);
 
-    SyslogUtils.logError(clonedError);
+    SyslogLib.logError(clonedError);
   }
 
   // If you get a compiler error "Argument of type '"xy"'
@@ -101,7 +101,7 @@ function logExistingErrorObject(error: Error, catchMessage?: string): void
 
   ErrorUtils.setErrorMessage(clonedError, message);
 
-  SyslogUtils.logError(clonedError);
+  SyslogLib.logError(clonedError);
 }
 
 function logNewErrorObject(message: string, catchMessage?: string): void
@@ -116,5 +116,5 @@ function logNewErrorObject(message: string, catchMessage?: string): void
   // Modify stack trace to start where Syslog.logError() was called.
   Error.captureStackTrace(error, Syslog.logError);
 
-  SyslogUtils.logError(error);
+  SyslogLib.logError(error);
 }

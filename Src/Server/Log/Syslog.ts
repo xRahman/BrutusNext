@@ -11,15 +11,15 @@
 
 import { Syslog } from "../../Shared/Log/Syslog";
 import { ErrorUtils } from "../../Shared/Utils/ErrorUtils";
-import { SyslogUtils } from "../../Shared/Log/SyslogUtils";
+import { SyslogLib } from "../../Shared/Log/Lib/SyslogLib";
 
-SyslogUtils.logEntry = (entry: string) =>
+SyslogLib.logEntry = (entry: string) =>
 {
   logToStdout(entry);
   logToFile(entry);
 };
 
-SyslogUtils.logError = (error: Error) =>
+SyslogLib.logError = (error: Error) =>
 {
   let trimmedStackTrace = ErrorUtils.removeErrorMessage(error.stack);
 
@@ -32,7 +32,7 @@ SyslogUtils.logError = (error: Error) =>
   logToErrorFile(entry);
 };
 
-export { Syslog, SyslogUtils };
+export { Syslog, SyslogLib as SyslogUtils };
 
 // ----------------- Auxiliary Functions ---------------------
 

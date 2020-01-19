@@ -1,3 +1,16 @@
+TODO: funkce scan() by si zasloužila vlastní modul.
+- možná ji pojmenovat scanString() (nebo stringScan()) nebo tak nějak
+  a importovat ji jako import { scanString } from "..."?
+  - to není zrovna chytrý. Namespacy bráněj konfliktům jmen
+Ok, takže určitě musí bejt v namespacu.
+- buď ji nějak udržet ve StringUtils
+- nebo udělat nový.
+  Třeba StringScan.scan()?
+  - to zní divně.
+Nebo ji nechat ve StringUtils a střeva přesunout do StringScan?
+- částečně přesunuto do StringScanLib
+[done]
+
 TODO: Pokud má k něčemu bejt typování parentů, tak taky musej bejt
   overridnutý.
 [done]

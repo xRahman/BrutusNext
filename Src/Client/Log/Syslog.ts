@@ -10,15 +10,15 @@
 */
 
 import { Syslog } from "../../Shared/Log/Syslog";
-import { SyslogUtils } from "../../Shared/Log/SyslogUtils";
+import { SyslogLib } from "../../Shared/Log/Lib/SyslogLib";
 import { ErrorUtils } from "../../Shared/Utils/ErrorUtils";
 
-SyslogUtils.logEntry = (entry: string) =>
+SyslogLib.logEntry = (entry: string) =>
 {
   console.log(entry);
 };
 
-SyslogUtils.logError = (error: Error) =>
+SyslogLib.logError = (error: Error) =>
 {
   // For some reason Chrome console displays original
   // error message instead of modified one (which has
@@ -31,4 +31,4 @@ SyslogUtils.logError = (error: Error) =>
   console.error(clonedError);
 };
 
-export { Syslog, SyslogUtils };
+export { Syslog, SyslogLib as SyslogUtils };
