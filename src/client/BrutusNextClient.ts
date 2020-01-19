@@ -20,26 +20,9 @@ import { Body } from "../Client/Gui/Html/Body";
 import "../Client/Gui/Html/Document";
 import "../Client/Gui/Html/Html";
 
-// TEST
-// import { StringUtils } from "../Shared/Utils/StringUtils";
-
-// const str = "translate(0, 0)";
-
-// const transform = { translate: "" };
-
-// // ! Throws exception on error.
-// StringUtils.scan
-// (
-//   str,
-//   "&{*}translate(&{translate})&{*}",
-//   transform
-// );
-
-// console.log("result:", transform);
-
 async function startBrutusNextClient(): Promise<void>
 {
-  Syslog.log("[CLIENT]", "Starting BrutusNext client...");
+  Syslog.log("[CLIENT]", "Starting BrutusNext client");
 
   try
   {
@@ -56,8 +39,7 @@ async function startBrutusNextClient(): Promise<void>
   catch (error)
   {
     Syslog.logError(error, "Failed to start the client");
-    // TODO: Dát hráči vědět nějak líp (vypsat to do konzole, nebo tak něco).
-    alert(`Failed to start`);
+    // TODO: Dát o tom nějak vědět hráči.
   }
 }
 
