@@ -121,14 +121,6 @@ function assignValues
       + ` but template specifies ${properties.length}`);
   }
 
-  // if (Object.entries(result).length !== properties.length)
-  // {
-  //   throw Error(`Result object contains`
-  //     + ` ${Object.entries(result).length}`
-  //     + ` properties but template specifies`
-  //     + ` ${properties.length}`);
-  // }
-
   for (let i = 0; i < values.length; i++)
   {
     assignValue(properties[i], values[i], result);
@@ -178,8 +170,6 @@ function parseTemplate
   {
     const result = findArgument(remainder);
 
-    // if (result.substring !== "")
-    //   substrings.push(result.substring);
     substrings.push(result.substring);
 
     if (result.property !== "" && result.remainder === "")
@@ -246,8 +236,6 @@ function splitBySubstrings
   {
     splitResult = splitBySubstring(parsedStr, substring);
 
-    // if (splitResult.before !== "")
-    //   result.push(splitResult.before);
     result.push(splitResult.before);
 
     parsedStr = splitResult.after;
@@ -256,9 +244,6 @@ function splitBySubstrings
   // Discard the first result because value can't be
   // before the first substring.
   result.shift();
-
-  // if (splitResult.after !== "")
-  //   result.push(splitResult.after);
 
   return result;
 }
