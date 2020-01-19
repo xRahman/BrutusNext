@@ -240,24 +240,50 @@ export namespace Dom
   {
     const transformAttribute = element.getAttribute("transform");
     const transformString = transformAttribute ? transformAttribute : "";
-    const transform =
-    {
-      translate: "",
-      scale: ""
-    };
+    // const transform =
+    // {
+    //   translate: "",
+    //   scale: ""
+    // };
 
-    // ! Throws exception on error.
-    StringUtils.scan
-    (
-      transformString,
-      "translate(&{translate}) scale(&{scale})",
-      transform
-    );
+    // // ! Throws exception on error.
+    // StringUtils.scan
+    // (
+    //   transformString,
+    //   "translate(&{translate}) scale(&{scale})",
+    //   transform
+    // );
+
+    if (transformString.includes("translate("))
+    {
+      const transform =
+      {
+        prefix: "",
+        translate: "",
+        suffix: ""
+      };
+
+      // ! Throws exception on error.
+      StringUtils.scan
+      (
+        transformString,
+        "&{prefix}translate(&{translate})&{suffix}",
+        transform
+      );
+
+      setTransform
+      (
+        element,
+        `translate(${transform.translate}) scale(${scaleFactor})`
+      );
+
+      return;
+    }
 
     setTransform
     (
       element,
-      `translate(${transform.translate}) scale(${scaleFactor})`
+      `scale(${scaleFactor})`
     );
   }
 

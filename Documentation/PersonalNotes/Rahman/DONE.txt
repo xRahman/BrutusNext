@@ -1,3 +1,9 @@
+TODO: Prořezat error message ve StringUtils.scan():
+  Jelikož v hlavní funkci rethrowuju error s doplňujícím messagem,
+  nemusím ten doplňující message konstruovat v každym messagi ve vnořenejch
+  funkcích.
+[done]
+
 TODO: Opravit stack top v error výpisu
 [done]
 

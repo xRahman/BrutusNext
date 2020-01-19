@@ -22,6 +22,9 @@ Později:
 
 ------------------------------------------------------------------------------
 
+TODO: Ve StringUtils.scan() povolit "" jako hodnotu.
+- možná spíš zavést &{*} jako wild card na "cokoliv".
+
 TODO: Pokud má k něčemu bejt typování parentů, tak taky musej bejt
   overridnutý.
 
