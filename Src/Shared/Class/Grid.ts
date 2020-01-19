@@ -28,25 +28,11 @@ export class Grid<T>
   private readonly data = new Map<number, Map<number, Map<number, T>>>();
 
   // Grid size increases automaticaly when an item with coords outside
-  // this box is inserted to it.
+  // of this box is inserted to it.
   private readonly size =
   {
-    // min: new Coords(-61, -33, -10),
-    // max: new Coords(61, 33, 10)
-    min: new Coords(-10, -10, -10),
-    max: new Coords(10, 10, 10)
-    // min: new Coords(-30, -30, -30),
-    // max: new Coords(30, 30, 30)
-    // min: new Coords(-40, -40, -40),
-    // max: new Coords(40, 40, 40)
-    // min: new Coords(-50, -50, -50),
-    // max: new Coords(50, 50, 50)
-    // min: new Coords(-75, -75, -75),
-    // max: new Coords(75, 75, 75)
-    // min: new Coords(-100, -100, -10),
-    // max: new Coords(100, 100, 10)
-    // min: new Coords(-250, -250, -10),
-    // max: new Coords(250, 250, 10)
+    min: new Coords(0, 0, 0),
+    max: new Coords(0, 0, 0)
   };
 
   // --------------- Static accessors -------------------

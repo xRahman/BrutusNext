@@ -27,9 +27,6 @@ Později:
 TODO: Pokud má k něčemu bejt typování parentů, tak taky musej bejt
   overridnutý.
 
-TODO: Zrušit počáteční rozměry gridu.
-
-
 
 
 TODO: funkce scan() by si zasloužila vlastní modul.
