@@ -13,7 +13,7 @@ export class ExitsComponent extends G
 {
   private exits: Array<ExitComponent> = [];
 
-  constructor(parent: WorldComponent, name = "exits")
+  constructor(protected parent: WorldComponent, name = "exits")
   {
     super(parent, name);
   }

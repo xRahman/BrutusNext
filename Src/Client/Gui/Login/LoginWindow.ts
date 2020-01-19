@@ -12,7 +12,7 @@ import { CenteredTitledWindow } from
 // export class LoginWindow extends FormWindow
 export class LoginWindow extends CenteredTitledWindow
 {
-  constructor(parent: Body)
+  constructor(protected parent: Body)
   {
     super(parent, "login_window", "&wWelcome to &gBrutus&GNext");
 

@@ -28,7 +28,7 @@ export class RoomComponent extends G
 
   constructor
   (
-    parent: RoomsComponent,
+    protected parent: RoomsComponent,
     name = "room"
   )
   {

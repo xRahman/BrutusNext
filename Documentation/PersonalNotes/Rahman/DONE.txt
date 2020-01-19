@@ -1,3 +1,7 @@
+TODO: Pokud má k něčemu bejt typování parentů, tak taky musej bejt
+  overridnutý.
+[done]
+
 TODO: Zrušit počáteční rozměry gridu.
 [done]
 

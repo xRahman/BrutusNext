@@ -10,7 +10,7 @@ import { TitledWindow } from "../../../Client/Gui/Window/TitledWindow";
 
 export class ChatWindow extends TitledWindow
 {
-  constructor(parent: Body)
+  constructor(protected parent: Body)
   {
     super(parent, "chat_window", "Chat Window");
 

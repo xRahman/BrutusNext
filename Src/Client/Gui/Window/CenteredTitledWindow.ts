@@ -12,7 +12,7 @@ export class CenteredTitledWindow extends TitledWindow
   // ! Throws an exception on error.
   constructor
   (
-    parent: Body,
+    protected parent: Body,
     name = "centered_titled_window",
     title = ""
   )

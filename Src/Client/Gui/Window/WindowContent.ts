@@ -12,7 +12,7 @@ export class WindowContent extends Div
   // ! Throws an exception on error.
   constructor
   (
-    parent: Window,
+    protected parent: Window,
     name = "window_content"
   )
   {

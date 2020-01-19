@@ -10,7 +10,7 @@ import { TitledWindow } from "../../../Client/Gui/Window/TitledWindow";
 
 export class GroupWindow extends TitledWindow
 {
-  constructor(parent: Body)
+  constructor(protected parent: Body)
   {
     super(parent, "group_window", "Group Window");
 

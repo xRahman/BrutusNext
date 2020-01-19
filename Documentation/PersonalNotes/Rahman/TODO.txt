@@ -22,11 +22,6 @@ Později:
 
 ------------------------------------------------------------------------------
 
-(todo na večer):
-
-TODO: Pokud má k něčemu bejt typování parentů, tak taky musej bejt
-  overridnutý.
-
 
 
 TODO: funkce scan() by si zasloužila vlastní modul.

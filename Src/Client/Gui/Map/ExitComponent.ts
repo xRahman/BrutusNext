@@ -17,7 +17,7 @@ export class ExitComponent extends G
 
   constructor
   (
-    parent: ExitsComponent,
+    protected parent: ExitsComponent,
     exitData: ExitComponent.ExitData,
     name = "exit"
   )

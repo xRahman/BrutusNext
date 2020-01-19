@@ -13,7 +13,7 @@ export class MapCenterer extends Svg
   public readonly world: WorldComponent;
 
   // ! Throws exception on error.
-  constructor(parent: MapComponent, name = "map_centerer")
+  constructor(protected parent: MapComponent, name = "map_centerer")
   {
     super(parent, name);
 

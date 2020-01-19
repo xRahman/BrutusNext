@@ -19,7 +19,7 @@ export class TitledWindow extends Window
   // ! Throws an exception on error.
   constructor
   (
-    parent: Body,
+    protected parent: Body,
     name = "titled_window",
     title = "New window"
   )

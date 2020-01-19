@@ -17,7 +17,7 @@ export class TitleBar extends Div
   // ! Throws an exception on error.
   constructor
   (
-    parent: Window,
+    protected parent: Window,
     name = "title_bar",
     title = ""
   )

@@ -10,7 +10,7 @@ import { TitledWindow } from "../../../Client/Gui/Window/TitledWindow";
 
 export class SpamWindow extends TitledWindow
 {
-  constructor(parent: Body)
+  constructor(protected parent: Body)
   {
     super(parent, "spam_window", "Spam Window");
 

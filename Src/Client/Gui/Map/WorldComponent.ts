@@ -48,7 +48,7 @@ export class WorldComponent extends MapZoomer
   private currentCoords = new Coords(0, 0, 0);
 
   // ! Throws exception on error.
-  constructor(parent: MapCenterer, name = "world")
+  constructor(protected parent: MapCenterer, name = "world")
   {
     super(parent, name);
 

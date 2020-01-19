@@ -27,7 +27,7 @@ export class RoomsComponent extends G
 
   private readonly roomComponentCache = new Set<RoomComponent>();
 
-  constructor(parent: WorldComponent, name = "rooms")
+  constructor(protected parent: WorldComponent, name = "rooms")
   {
     // Speed optimalization:
     //   This component is not inserted to parent right away
@@ -106,9 +106,6 @@ export class RoomsComponent extends G
   // Forces recalculating of focus, css etc.
   public updateChildGraphics(): void
   {
-    if (this.parent === "No parent")
-      throw Error("Failed to update graphics because there is no parent");
-
     this.parent.updateChildGraphics(this.element);
   }
 

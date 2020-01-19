@@ -16,7 +16,7 @@ export class MapWindow extends TitledWindow
   protected map: MapComponent;
 
   // ! Throws exception on error.
-  constructor(parent: Body)
+  constructor(protected parent: Body)
   {
     super(parent, "map_window", "Map Window");
 
