@@ -15,6 +15,10 @@ export namespace StringUtils
   //   result = scan(str, "[ A: &{a}, B: &{b} ]", result);
   //   console.log(result.a);  // 1
   //   console.log(result.b);  // "cat"
+  // You can also use "&{*}" as 'wildcard' to match any string
+  //   without assigning it to a property.
+  // Example (only read value of 'A:'):
+  //   result = scan(str, "&{*}A: &{a},&{*}", result);
   export function scan
   (
     str: string,

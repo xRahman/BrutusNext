@@ -38,8 +38,6 @@ TODO: Zrušit počíteční rozměry gridu.
 
 
 
-TODO: Updatnout commenty u StringUtils.scan()
-
 
 IDEA: Invertnutí N axis dát do setPosition() funkcí v svg komponentách.
 

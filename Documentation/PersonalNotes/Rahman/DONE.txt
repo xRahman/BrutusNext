@@ -1,3 +1,5 @@
+TODO: Updatnout commenty u StringUtils.scan()
+
 TODO: Vyčistit StringUtils.scan() od zakomentovaného kódu.
 [done]
 
