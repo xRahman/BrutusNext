@@ -37,11 +37,9 @@ TODO: Zrušit počíteční rozměry gridu.
 
 
 
-
-
-IDEA: Invertnutí N axis dát do setPosition() funkcí v svg komponentách.
-
-
+TODO: funkce scan() by si zasloužila vlastní modul.
+- možná ji pojmenovat scanString() (nebo stringScan()) nebo tak nějak
+  a importovat ji jako import { scanString } from "..."?
 
 
 

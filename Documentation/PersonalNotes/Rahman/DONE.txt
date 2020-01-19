@@ -1,4 +1,12 @@
+IDEA: Invertnutí N axis dát do setPosition() funkcí v svg komponentách.
+- respektive ideálně rovnou v Dom.
+Ehm tak ne, to je blbost. To bych invertnul y i pro všechny html komponenty.
+  Tzn. nemůže to bejt v Dom a nemělo by to bejt ani přímo v SVG komponentách,
+  musí si to dělat až mapa. Což už dělá.
+[bad idea]
+
 TODO: Updatnout commenty u StringUtils.scan()
+[done]
 
 TODO: Vyčistit StringUtils.scan() od zakomentovaného kódu.
 [done]
