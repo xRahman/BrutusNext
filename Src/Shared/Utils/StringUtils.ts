@@ -1,4 +1,4 @@
-import { ErrorUtils } from "./ErrorUtils";
+import { ErrorUtils } from "../../Shared/Utils/ErrorUtils";
 
 /*
   Part of BrutusNext
@@ -47,7 +47,7 @@ export namespace StringUtils
     const value = Number(str);
 
     if (Number.isNaN(value))
-      throw Error(`Value ${str} does not represent a number`);
+      throw Error(`Value "${str}" does not represent a number`);
 
     return value;
   }
@@ -84,8 +84,8 @@ function assignValue
 {
   if (!(property in result))
   {
-    throw Error(`Failed to scan string ${str} for values using template`
-      + ` ${template}: Result object doesn't have property ${property}`);
+    throw Error(`Failed to scan string "${str}" for values using template`
+      + ` "${template}": Result object doesn't have property '${property}'`);
   }
 
   if (typeof result[property] === "number")
@@ -100,8 +100,8 @@ function assignValue
     return;
   }
 
-  throw Error(`Failed to scan string ${str} for values using`
-      + ` template ${template}: Property '${property}' with value`
+  throw Error(`Failed to scan string "${str}" for values using`
+      + ` template "${template}": Property '${property}' with value`
       + ` '${String(result[property])}' in result object is of an`
       + ` unsupported type`);
 }
@@ -119,16 +119,17 @@ function assignValues
 {
   if (properties.length !== values.length)
   {
-    throw Error(`Failed to scan string ${str} for values using template`
-      + ` ${template}: String contains ${values.length} values but template`
+    throw Error(`Failed to scan string "${str}" for values using template`
+      + ` "${template}": String contains ${values.length} values but template`
       + ` specifies ${properties.length} of them`);
   }
 
   if (Object.entries(result).length !== properties.length)
   {
-    throw Error(`Failed to scan string ${str} for values using template`
-      + ` ${template}: Result object contains ${Object.entries(result).length}`
-      + ` properties but template specifies ${properties.length} of them`);
+    throw Error(`Failed to scan string "${str}" for values using`
+      + ` template "${template}": Result object contains`
+      + `  ${Object.entries(result).length} properties but`
+      + `  template specifies ${properties.length} of them`);
   }
 
   for (let i = 0; i < values.length; i++)
@@ -155,7 +156,7 @@ function findArgument(str: string):
   if (tagNotFound || tagIsEmpty)
     return { substring: str, property: "", remainder: "" };
 
-  const substring = str.substring(0, openingPosition - 1);
+  const substring = str.substring(0, openingPosition);
   const property = str.substring(openingPosition + 2, closingPosition);
   const remainder = str.substring(closingPosition + 1);
 
@@ -191,9 +192,9 @@ function parseTemplate
     {
       if (properties.has(result.property))
       {
-        throw Error(`Failed to scan string ${str} for values using template`
-        + ` ${template}: Property ${result.property} is specified more than`
-        + ` once, that is not possible`);
+        throw Error(`Failed to scan string "${str}" for values using`
+        + ` template "${template}": Property '${result.property}' is`
+        + ` specified more than once, that is not possible`);
       }
 
       properties.add(result.property);
