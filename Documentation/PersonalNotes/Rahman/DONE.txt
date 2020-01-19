@@ -1,3 +1,9 @@
+TODO: Když mám v kódu 18 warningů, který zvesela ignoruju,
+  tak jsou vcelku k ničemu.
+- neaktuální TODO commenty dát za ///
+- pořád mi tam budou strašit alerty, ale těch snad není tolik
+[done]
+
 IDEA: Invertnutí N axis dát do setPosition() funkcí v svg komponentách.
 - respektive ideálně rovnou v Dom.
 Ehm tak ne, to je blbost. To bych invertnul y i pro všechny html komponenty.

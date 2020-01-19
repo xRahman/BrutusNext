@@ -24,15 +24,10 @@ Později:
 
 (todo na večer):
 
-TODO: Když mám v kódu 18 warningů, který zvesela ignoruju,
-  tak jsou vcelku k ničemu.
-- neaktuální TODO commenty dát za ///
-- pořád mi tam budou strašit alerty, ale těch snad není tolik
-
 TODO: Pokud má k něčemu bejt typování parentů, tak taky musej bejt
   overridnutý.
 
-TODO: Zrušit počíteční rozměry gridu.
+TODO: Zrušit počáteční rozměry gridu.
 
 
 

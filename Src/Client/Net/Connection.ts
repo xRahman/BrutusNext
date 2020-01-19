@@ -93,7 +93,7 @@ function browserSupportsWebSockets(): boolean
 // ! Throws exception on error.
 function processData(data: string): void
 {
-  // TODO
+  /// TODO
   console.log(`Data from the server: ${data}`);
 }
 
@@ -129,7 +129,7 @@ function onOpen(event: SocketUtils.OpenEvent): void
 {
   finishConnecting();
 
-  // TEST
+  /// TEST
   sendData("TEST: Client has connected");
 }
 

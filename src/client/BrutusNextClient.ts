@@ -32,14 +32,14 @@ async function startBrutusNextClient(): Promise<void>
     // await Renderer.init();
     await Connection.connect();
 
-    // TEST (Mělo by se to volat jinde)
+    /// TEST (Mělo by se to volat jinde)
     WorldComponent.lookAt(new Coords(0, 0, 0));
     Gui.switchToState(Gui.State.GAME);
   }
   catch (error)
   {
     Syslog.logError(error, "Failed to start the client");
-    // TODO: Dát o tom nějak vědět hráči.
+    /// TODO: Dát o tom nějak vědět hráči.
   }
 }
 

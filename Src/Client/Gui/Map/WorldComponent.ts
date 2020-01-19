@@ -114,9 +114,6 @@ export class WorldComponent extends MapZoomer
 
     this.updateRooms(mapView, mapOffset, { rebuild: true });
     this.rebuildExits(mapView, mapOffset);
-
-    // TEST (pokus o refresh scale transformace)
-    // this.setZoom(this.getZoom());
   }
 
   // ! Throws exception on error.
@@ -412,7 +409,7 @@ function extractExitData
 
     if (exitData === undefined)
     {
-      // DEBUG
+      /// DEBUG
       // console.log
       // (
       //   "Setting onedirectional exit",
@@ -429,7 +426,7 @@ function extractExitData
     }
     else
     {
-      // DEBUG
+      /// DEBUG
       // console.log
       // (
       //   "Setting bidirectional exit",
