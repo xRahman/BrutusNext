@@ -1,3 +1,9 @@
+TODO: Nevytvářet exity podle rozměrů worldu, ale podle počtu, kolik je třeba
+  zobrazovat
+- eh, to asi dělám, protože exity se vyčítají ze seznamu room, na který mapa
+  kouká.
+[done]
+
 TODO: Funkcionalitu z event handleru v Body přesunout někam jinam
   - nejspíš do WorldComponent, jelikož se na ní nakonec volá lookAt()
   (ostatně jsou tam i currentCoords, takže je můžu použít místo coords v Body)

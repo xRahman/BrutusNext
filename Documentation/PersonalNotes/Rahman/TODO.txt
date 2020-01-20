@@ -45,11 +45,6 @@ TODO: Vysvětlující error message v RoomsSvg.addRoomSvg()
 Optimalizace mapy:
 ------------------
 
-TODO: Nevytvářet exity podle rozměrů worldu, ale podle počtu, kolik je třeba
-  zobrazovat
-- eh, to asi dělám. Exity se vyčítají ze seznamu room, na který mapa kouká.
-[done]
-
 TODO: Cache na exit elementy
 - zvlášť na horizontal exity a zvlášť na vertical
   Hmm, každá rooma by vlastně rovnou mohla mít svg komponentu na exit
