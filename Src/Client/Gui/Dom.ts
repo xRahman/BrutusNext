@@ -115,8 +115,7 @@ export namespace Dom
         break;
 
       default:
-        Syslog.reportMissingCase(insertMode);
-        break;
+        throw Syslog.reportMissingCase(insertMode);
     }
   }
 
@@ -144,8 +143,7 @@ export namespace Dom
         break;
 
       default:
-        Syslog.reportMissingCase(insertMode);
-        break;
+        throw Syslog.reportMissingCase(insertMode);
     }
   }
 

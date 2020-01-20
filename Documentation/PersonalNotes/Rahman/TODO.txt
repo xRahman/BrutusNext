@@ -41,10 +41,6 @@ Teď se to týká funkce WorldComponent.getCoordsInView()
 TODO: Vysvětlující error message v RoomsSvg.addRoomSvg()
 
 
-TODO: Funkcionalitu z event handleru v Body přesunout někam jinam
-  - nejspíš do WorldComponent, jelikož se na ní nakonec volá lookAt()
-  (ostatně jsou tam i currentCoords, takže je můžu použít místo coords v Body)
-
 
 Optimalizace mapy:
 ------------------
@@ -104,6 +100,12 @@ TODO: Vymyslet, jak zobrazovat exity up a down
 
 Výhledové TODO
 ---------------
+
+TODO: Líp vyřešit "klonování" errorů
+  Nejspíš tak, že prependMessage() vyrobí vlastní custom error classu,
+  třeba RethrownError, která bude mít odkaz na původní error objekt
+  a svůj vlastní stack a message.
+(pozor na to, že klonuje se i z jinejch důvodů než v prependMessage).
 
 TODO: Mělo by to bejt spíš asi MapWindow.lookAt(coords) nebo
   MapComponent.lookAt(coords).

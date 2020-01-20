@@ -203,10 +203,10 @@ export namespace WebSocketEvent
           break;
 
         default:
-          Syslog.reportMissingCase(codeRange);
+          throw Syslog.reportMissingCase(codeRange);
       }
     }
 
-    return "Undefined event code.";
+    return "Undefined event code";
   }
 }

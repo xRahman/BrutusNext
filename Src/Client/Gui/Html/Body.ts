@@ -23,9 +23,6 @@ import { SpamWindow } from "../../../Client/Gui/Game/SpamWindow";
 import { Component } from "../../../Client/Gui/Component";
 import { WorldComponent } from "../Map/WorldComponent";
 
-// TEST
-let coords = new Coords(0, 0, 0);
-
 const windows = new Set<Window>();
 
 export class Body extends Component
@@ -68,45 +65,37 @@ export class Body extends Component
     MapEditor.resetLastCoords();
   }
 
-  // TEST
   private onKeyUp(event: KeyboardEvent): void
   {
-    let e = 0;
-    let n = 0;
-    let u = 0;
-
     switch (event.keyCode)
     {
       case 33: // PgUp.
-        u = 1;
+        WorldComponent.stepInDirection("u");
         break;
 
       case 34: // PgDown.
-        u = -1;
+        WorldComponent.stepInDirection("d");
         break;
 
       case 37: // Left.
-        e = -1;
+        WorldComponent.stepInDirection("w");
         break;
 
       case 38: // Up.
-        n = 1;
+        WorldComponent.stepInDirection("n");
         break;
 
       case 39: // Right.
-        e = 1;
+        WorldComponent.stepInDirection("e");
         break;
 
       case 40: // Down.
-        n = -1;
+        WorldComponent.stepInDirection("s");
         break;
 
       default:
-        return;
+        // No default.
+        break;
     }
-
-    coords = Coords.add(coords, new Coords(e, n, u));
-
-    WorldComponent.lookAt(coords);
   }
 }

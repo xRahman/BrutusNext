@@ -6,6 +6,7 @@
 
 import { Dom } from "../../../Client/Gui/Dom";
 import { Coords } from "../../../Shared/Class/Coords";
+import { Exit } from "../../../Client/World/Exit";
 import { Room } from "../../../Client/World/Room";
 import { World } from "../../../Client/World/World";
 import { MapEditor } from "../../../Client/Editor/MapEditor";
@@ -27,6 +28,18 @@ export class WorldComponent extends MapZoomer
   {
     // ! Throws exception on error.
     this.getInstance().lookAt(coords);
+  }
+
+  // ! Throws exception on error.
+  public static stepInDirection(direction: Exit.Direction): void
+  {
+    // ! Throws exception on error.
+    const vector = Exit.getUnitVector(direction);
+
+    // ! Throws exception on error.
+    const currentCoords = this.getInstance().currentCoords;
+
+    WorldComponent.lookAt(Coords.add(currentCoords, vector));
   }
 
   // ------------- Private static methods ---------------

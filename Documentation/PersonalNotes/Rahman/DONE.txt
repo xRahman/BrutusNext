@@ -1,3 +1,9 @@
+TODO: Funkcionalitu z event handleru v Body přesunout někam jinam
+  - nejspíš do WorldComponent, jelikož se na ní nakonec volá lookAt()
+  (ostatně jsou tam i currentCoords, takže je můžu použít místo coords v Body)
+IDEA: Použít Exit.Direction
+[done]
+
 TODO: Klonování erroru do instance stejný classy možná není dobrej nápad
   (zkontrolovat, jestli to nevyrobí zase readonly properties)
   otestovat DOMException (zkusit vložit element do sebe sama nebo tak něco)

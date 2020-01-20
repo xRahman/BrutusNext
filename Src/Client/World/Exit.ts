@@ -4,6 +4,7 @@
  Room exit
 */
 
+import { Syslog } from "../../Shared/Log/Syslog";
 import { Coords } from "../../Shared/Class/Coords";
 
 const REVERSE_DIRECTION: { [direction in Exit.Direction]: Exit.Direction} =
@@ -48,6 +49,46 @@ export class Exit
     // down. It means that direction like [1, 1, 1] is "sout-east",
     // not "south-east-up".
     return getHorizontalDirection(eDistance, nDistance);
+  }
+
+  // ! Throws exception on error.
+  public static getUnitVector(direction: Exit.Direction): Coords
+  {
+    switch (direction)
+    {
+      case "n":
+        return new Coords(0, 1, 0);
+
+      case "ne":
+        return new Coords(1, 1, 0);
+
+      case "e":
+        return new Coords(1, 0, 0);
+
+      case "se":
+        return new Coords(1, -1, 0);
+
+      case "s":
+        return new Coords(0, -1, 0);
+
+      case "sw":
+        return new Coords(-1, -1, 0);
+
+      case "w":
+        return new Coords(-1, 0, 0);
+
+      case "nw":
+        return new Coords(-1, 1, 0);
+
+      case "u":
+        return new Coords(0, 0, 1);
+
+      case "d":
+        return new Coords(0, 0, -1);
+
+      default:
+        throw Syslog.reportMissingCase(direction);
+    }
   }
 
   constructor (public to: Coords | "Nowhere")
