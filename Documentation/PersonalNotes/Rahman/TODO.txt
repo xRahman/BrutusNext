@@ -25,6 +25,11 @@ Později:
 
 
 TODO: Zvýraznit "pozici playera"
+- asi mimo roomy, protože player se může pohybovat mezi roomama
+- musí se scalovat (zoomovat) se vším ostatním, ale ne translatovat
+  To bude trochu problém, protože MapZoomer jsem zrušil coby komponentu.
+  - asi ji budu muset zase založit, aby mohly existovat komponenty,
+    který se zoomujou s mapou, ale nejsou součástí worldu
 
 TODO: Provázat velikost zobrazované části mapy
   v WorldComponent.getCoordsInView() s RoomsSvg.ROOMS_IN_CACHE.
