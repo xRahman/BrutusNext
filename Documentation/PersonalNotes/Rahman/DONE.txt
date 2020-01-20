@@ -1,3 +1,9 @@
+TODO: Klonování erroru do instance stejný classy možná není dobrej nápad
+  (zkontrolovat, jestli to nevyrobí zase readonly properties)
+  otestovat DOMException (zkusit vložit element do sebe sama nebo tak něco)
+- back to cloning into an Error instance
+[done]
+
 TODO: funkce scan() by si zasloužila vlastní modul.
 - možná ji pojmenovat scanString() (nebo stringScan()) nebo tak nějak
   a importovat ji jako import { scanString } from "..."?

@@ -10,8 +10,16 @@ export namespace ErrorUtils
 {
   export function cloneError(error: Error): Error
   {
-    const ErrorConstructor = error.constructor as new (message: string) => any;
-    const newError = new ErrorConstructor(error.message);
+    // Note:
+    //   We loose original type of Error object here.
+    // That's because we can't use an instance of the
+    // same class because it would have the same readonly
+    // properties that we are trying to work around by cloning
+    // the error object.
+    //   We also can't use Object.create() because the result
+    // wouldn't actualy be the Error object so the chrome console
+    // wouldn't display it as such.
+    const newError = new Error(error.message);
 
     Object.assign(newError, error);
 
@@ -20,13 +28,22 @@ export namespace ErrorUtils
 
     // Node.js specific (system errors)...
     if ((error as NodeJS.ErrnoException).code)
-      newError.code = (error as NodeJS.ErrnoException).code;
+    {
+      (newError as NodeJS.ErrnoException).code =
+        (error as NodeJS.ErrnoException).code;
+    }
 
     if ((error as NodeJS.ErrnoException).errno)
-      newError.errno = (error as NodeJS.ErrnoException).errno;
+    {
+      (newError as NodeJS.ErrnoException).errno =
+        (error as NodeJS.ErrnoException).errno;
+    }
 
     if ((error as NodeJS.ErrnoException).syscall)
-      newError.syscall = (error as NodeJS.ErrnoException).syscall;
+    {
+      (newError as NodeJS.ErrnoException).syscall =
+        (error as NodeJS.ErrnoException).syscall;
+    }
 
     return newError;
   }

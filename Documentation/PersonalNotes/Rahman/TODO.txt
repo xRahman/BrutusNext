@@ -24,7 +24,6 @@ Později:
 
 
 
-
 TODO: Zvýraznit "pozici playera"
 
 TODO: Provázat velikost zobrazované části mapy
@@ -42,6 +41,9 @@ Teď se to týká funkce WorldComponent.getCoordsInView()
 TODO: Vysvětlující error message v RoomsSvg.addRoomSvg()
 
 
+TODO: Funkcionalitu z event handleru v Body přesunout někam jinam
+  - nejspíš do WorldComponent, jelikož se na ní nakonec volá lookAt()
+  (ostatně jsou tam i currentCoords, takže je můžu použít místo coords v Body)
 
 
 Optimalizace mapy:
