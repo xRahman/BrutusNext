@@ -35,9 +35,8 @@ export namespace Gui
 
     if (newState === State.ERROR)
     {
-      /// TODO: Better displaying of error message
+      /// TODO: Display the error message to the player
       //  (probably output it to error window).
-      alert("An error occured. Please reload the browser tab to log back in.");
     }
   }
 }
