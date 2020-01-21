@@ -10,7 +10,6 @@
 */
 
 import { MapEditor } from "../../../Client/Editor/MapEditor";
-import { Coords } from "../../../Shared/Class/Coords";
 import { Gui } from "../../../Client/Gui/Gui";
 import { Window } from "../../../Client/Gui/Window/Window";
 import { LoginWindow } from "../../../Client/Gui/Login/LoginWindow";
@@ -21,7 +20,7 @@ import { ChatWindow } from "../../../Client/Gui/Game/ChatWindow";
 import { CombatWindow } from "../../../Client/Gui/Game/CombatWindow";
 import { SpamWindow } from "../../../Client/Gui/Game/SpamWindow";
 import { Component } from "../../../Client/Gui/Component";
-import { WorldComponent } from "../Map/WorldComponent";
+import { WorldMap } from "../../../Client/Gui/Map/WorldMap";
 
 const windows = new Set<Window>();
 
@@ -70,27 +69,27 @@ export class Body extends Component
     switch (event.keyCode)
     {
       case 33: // PgUp.
-        WorldComponent.stepInDirection("u");
+        WorldMap.stepInDirection("u");
         break;
 
       case 34: // PgDown.
-        WorldComponent.stepInDirection("d");
+        WorldMap.stepInDirection("d");
         break;
 
       case 37: // Left.
-        WorldComponent.stepInDirection("w");
+        WorldMap.stepInDirection("w");
         break;
 
       case 38: // Up.
-        WorldComponent.stepInDirection("n");
+        WorldMap.stepInDirection("n");
         break;
 
       case 39: // Right.
-        WorldComponent.stepInDirection("e");
+        WorldMap.stepInDirection("e");
         break;
 
       case 40: // Down.
-        WorldComponent.stepInDirection("s");
+        WorldMap.stepInDirection("s");
         break;
 
       default:

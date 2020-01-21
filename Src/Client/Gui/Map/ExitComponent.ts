@@ -6,6 +6,7 @@
 
 import { CssColor } from "../../../Client/Gui/CssColor";
 import { Coords } from "../../../Shared/Class/Coords";
+import { WorldMap } from "../../../Client/Gui/Map/WorldMap";
 import { RoomsComponent } from "../../../Client/Gui/Map/RoomsComponent";
 import { ExitsComponent } from "../../../Client/Gui/Map/ExitsComponent";
 import { Line } from "../../../Client/Gui/Svg/Line";
@@ -18,7 +19,7 @@ export class ExitComponent extends G
   constructor
   (
     protected parent: ExitsComponent,
-    exitData: ExitComponent.ExitData,
+    exitData: WorldMap.ExitData,
     name = "exit"
   )
   {
@@ -42,14 +43,14 @@ export class ExitComponent extends G
   }
 }
 
-// ------------------ Type Declarations ----------------------
+// // ------------------ Type Declarations ----------------------
 
-export namespace ExitComponent
-{
-  export type ExitData =
-  {
-    from: Coords,
-    to: Coords,
-    bidirectional: boolean
-  };
-}
+// export namespace ExitComponent
+// {
+//   export type ExitData =
+//   {
+//     from: Coords,
+//     to: Coords,
+//     bidirectional: boolean
+//   };
+// }

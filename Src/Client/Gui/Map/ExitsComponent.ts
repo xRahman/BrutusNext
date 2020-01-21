@@ -5,6 +5,7 @@
 */
 
 import { Coords } from "../../../Shared/Class/Coords";
+import { WorldMap } from "../../../Client/Gui/Map/WorldMap";
 import { WorldComponent } from "../../../Client/Gui/Map/WorldComponent";
 import { ExitComponent } from "../../../Client/Gui/Map/ExitComponent";
 import { G } from "../../../Client/Gui/Svg/G";
@@ -18,12 +19,7 @@ export class ExitsComponent extends G
     super(parent, name);
   }
 
-  public createExitComponent
-  (
-    exitData: ExitComponent.ExitData,
-    mapOffset: Coords
-  )
-  : void
+  public createExitComponent(exitData: WorldMap.ExitData): void
   {
     // const mapCoordsExitData =
     // {

@@ -24,6 +24,8 @@ Později:
 
 TODO: Znovu projít mapové komponenty
 
+TODO: Auxiliary funkce ve WorldComponent, které se volají z event handlerů,
+  přesunout do MapEditoru
 
 
 TODO: Provázat velikost zobrazované části mapy
@@ -91,6 +93,8 @@ TODO: Vymyslet, jak zobrazovat exity up a down
 
 Výhledové TODO
 ---------------
+
+TODO: WorldMap.stepInDirection() přesunout někam jinam (nejspíš do Characteru)
 
 TODO: Líp vyřešit "klonování" errorů
   Nejspíš tak, že prependMessage() vyrobí vlastní custom error classu,

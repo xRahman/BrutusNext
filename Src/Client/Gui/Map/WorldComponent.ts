@@ -6,59 +6,20 @@
 
 import { Dom } from "../../../Client/Gui/Dom";
 import { Coords } from "../../../Shared/Class/Coords";
-import { Exit } from "../../../Client/World/Exit";
-import { Room } from "../../../Client/World/Room";
-import { World } from "../../../Client/World/World";
 import { MapEditor } from "../../../Client/Editor/MapEditor";
+import { WorldMap } from "../../../Client/Gui/Map/WorldMap";
 import { RoomComponent } from "../../../Client/Gui/Map/RoomComponent";
 import { RoomsComponent } from "../../../Client/Gui/Map/RoomsComponent";
-import { ExitComponent } from "../../../Client/Gui/Map/ExitComponent";
 import { ExitsComponent } from "../../../Client/Gui/Map/ExitsComponent";
 import { MapZoomer } from "../../../Client/Gui/Map/MapZoomer";
 import { G } from "../../../Client/Gui/Svg/G";
 
 export class WorldComponent extends G
 {
-  private static instance: WorldComponent | "Not set" = "Not set";
-
-  // ------------- Public static methods ----------------
-
-  // ! Throws exception on error.
-  public static lookAt(coords: Coords): void
-  {
-    // ! Throws exception on error.
-    this.getInstance().lookAt(coords);
-  }
-
-  // ! Throws exception on error.
-  public static stepInDirection(direction: Exit.Direction): void
-  {
-    // ! Throws exception on error.
-    const vector = Exit.getUnitVector(direction);
-
-    // ! Throws exception on error.
-    const currentCoords = this.getInstance().currentCoords;
-
-    WorldComponent.lookAt(Coords.add(currentCoords, vector));
-  }
-
-  // ------------- Private static methods ---------------
-
-  // ! Throws exception on error.
-  private static getInstance(): WorldComponent
-  {
-    if (this.instance === "Not set")
-      throw Error("An instance of WorldComponent is not created yet");
-
-    return this.instance;
-  }
-
   // ----------------- Private data ---------------------
 
   private readonly rooms: RoomsComponent;
   private readonly exits: ExitsComponent;
-
-  private currentCoords = new Coords(0, 0, 0);
 
   // ! Throws exception on error.
   constructor(protected parent: MapZoomer, name = "world")
@@ -72,12 +33,24 @@ export class WorldComponent extends G
     this.registerEventListeners();
 
     // ! Throws exception on error.
-    this.setInstance();
+    WorldMap.setWorldComponent(this);
   }
 
-  // ---------------- Private methods -------------------
+  // ---------------- Public methods --------------------
 
-  private translateTo(coords: Coords): void
+  public update
+  (
+    roomsAndCoords: WorldMap.RoomsAndCoords,
+    exitsData: WorldMap.ExitsData,
+    { rebuild = false }
+  )
+  : void
+  {
+    this.updateRooms(roomsAndCoords, { rebuild });
+    this.rebuildExits(exitsData);
+  }
+
+  public translateTo(coords: Coords): void
   {
     const roomSpacing = RoomsComponent.roomSpacingPixels;
 
@@ -88,15 +61,35 @@ export class WorldComponent extends G
     );
   }
 
-  private lookAt(coords: Coords): void
-  {
-    /// S tímhle testem by se neprovedla úvodní inicializace mapy.
-    // if (targetCoords.equals(this.currentCoords))
-    //   return;
+  // ---------------- Private methods -------------------
 
-    this.rebuildMap(coords);
-    this.translateTo(coords);
-    this.currentCoords = coords;
+  private updateRooms
+  (
+    roomsAndCoords: WorldMap.RoomsAndCoords,
+    { rebuild = false }
+  )
+  : void
+  {
+    if (rebuild)
+      this.rooms.clear();
+
+    for (const { room, coords } of roomsAndCoords)
+    {
+      if (rebuild)
+        this.rooms.addRoom(room, coords);
+      else
+        this.rooms.updateRoom(room, coords);
+    }
+  }
+
+  private rebuildExits(exitsData: WorldMap.ExitsData): void
+  {
+    this.exits.clear();
+
+    for (const exitData of exitsData.values())
+    {
+      this.exits.createExitComponent(exitData);
+    }
   }
 
   private registerEventListeners(): void
@@ -105,75 +98,6 @@ export class WorldComponent extends G
     this.onrightclick = (event) => { this.onRightClick(event); };
     this.onmouseover = (event) => { this.onMouseOver(event); };
     this.onmouseout = (event) => { this.onMouseOut(event); };
-  }
-
-  // ! Throws exception on error.
-  private setInstance(): void
-  {
-    if (WorldComponent.instance !== "Not set")
-    {
-      throw Error("An instance of WorldComponent is already set."
-        + " WorldComponent is a singleton at the moment - if you"
-        + " need more instances of map, you need to change this");
-    }
-
-    WorldComponent.instance = this;
-  }
-
-  // ! Throws exception on error.
-  private rebuildMap(mapOffset: Coords): void
-  {
-    const mapView = getMapView(mapOffset);
-
-    this.updateRooms(mapView, mapOffset, { rebuild: true });
-    this.rebuildExits(mapView, mapOffset);
-  }
-
-  // ! Throws exception on error.
-  private updateMap(): void
-  {
-    const mapOffset = this.currentCoords;
-    const mapView = getMapView(mapOffset);
-
-    this.updateRooms(mapView, mapOffset, { rebuild: false });
-    this.rebuildExits(mapView, mapOffset);
-  }
-
-  private updateRooms
-  (
-    mapView: Array<{ room: Room | "Doesn't exist", coords: Coords }>,
-    mapOffset: Coords,
-    { rebuild = false }
-  )
-  : void
-  {
-    if (rebuild)
-      this.rooms.clear();
-
-    for (const { room, coords } of mapView)
-    {
-      if (rebuild)
-        this.rooms.addRoom(room, coords, mapOffset);
-      else
-        this.rooms.updateRoom(room, coords);
-    }
-  }
-
-  private rebuildExits
-  (
-    mapView: Array<{ room: Room | "Doesn't exist", coords: Coords }>,
-    mapOffset: Coords
-  )
-  : void
-  {
-    const exitsData = extractExitsData(mapView);
-
-    this.exits.clear();
-
-    for (const exitData of exitsData.values())
-    {
-      this.exits.createExitComponent(exitData, mapOffset);
-    }
   }
 
   // ---------------- Event handlers --------------------
@@ -237,7 +161,7 @@ export class WorldComponent extends G
 
     if (Dom.isLeftButtonDown(event))
     {
-      rememberCoords(coords);
+      MapEditor.rememberCoords(coords);
 
       // ! Throws exception on error.
       this.ensureRoomExists(coords);
@@ -259,7 +183,7 @@ export class WorldComponent extends G
     if (result === "Changes occured")
     {
       // ! Throws exception on error.
-      this.updateMap();
+      WorldMap.update({ rebuild: false });
     }
   }
 
@@ -272,7 +196,7 @@ export class WorldComponent extends G
     if (result === "Changes occured")
     {
       // ! Throws exception on error.
-      this.updateMap();
+      WorldMap.update({ rebuild: false });
     }
   }
 
@@ -285,7 +209,7 @@ export class WorldComponent extends G
     if (result === "Changes occured")
     {
       // ! Throws exception on error.
-      this.updateMap();
+      WorldMap.update({ rebuild: false });
     }
   }
 }
@@ -306,153 +230,4 @@ function parseRoomCoords(event: Event): Coords | "Not a room event"
   }
 
   return "Not a room event";
-}
-
-function rememberCoords(coords: Coords): void
-{
-  MapEditor.setLastCoords(coords);
-}
-
-function getCoordsInViewAround(coords: Coords): Array<Coords>
-{
-  const coordsInView: Array<Coords> = [];
-
-  // TODO: Provázat tohle s Rooms.ROOMS_IN_CACHE
-  // (měly by to bejt stejný hodnoty).
-  const from =
-  {
-    e: coords.e - 20,
-    s: coords.n - 20
-  };
-
-  const to =
-  {
-    e: coords.e + 20,
-    s: coords.n + 20
-  };
-
-  // Order of cycles determines oder of svg components representing
-  // rooms in the DOM. Since people usually expects rows of things
-  // rather than columns, we iterate nort-south direction first.
-  for (let s = from.s; s <= to.s; s++)
-  {
-    for (let e = from.e; e <= to.e; e++)
-    {
-      coordsInView.push(new Coords(e, s, coords.u));
-    }
-  }
-
-  return coordsInView;
-}
-
-function getMapView
-(
-  mapOffset: Coords
-)
-: Array<{ room: Room | "Doesn't exist", coords: Coords }>
-{
-  // TODO: Provázat tohle s Rooms.ROOMS_IN_CACHE
-  // (měly by to bejt stejný hodnoty).
-  const from =
-  {
-    e: mapOffset.e - 20,
-    s: mapOffset.n - 20
-  };
-
-  const to =
-  {
-    e: mapOffset.e + 20,
-    s: mapOffset.n + 20
-  };
-
-  const mapView: Array<{ room: Room | "Doesn't exist", coords: Coords }> = [];
-
-  // Order of cycles determines oder of svg components representing
-  // rooms in the DOM. Since people usually expects rows of things
-  // rather than columns, we iterate nort-south direction first.
-  for (let s = from.s; s <= to.s; s++)
-  {
-    for (let e = from.e; e <= to.e; e++)
-    {
-      const coords = new Coords(e, s, mapOffset.u);
-      const getResult = World.getRoom(coords);
-      const room = getResult === "Nothing there" ? "Doesn't exist" : getResult;
-
-      mapView.push({ coords, room });
-    }
-  }
-
-  return mapView;
-}
-
-function extractExitsData
-(
-  mapView: Array<{ room: Room | "Doesn't exist", coords: Coords }>
-)
-: Map<string, ExitComponent.ExitData>
-{
-  const exitsData = new Map<string, ExitComponent.ExitData>();
-
-  for (const { room } of mapView)
-  {
-    if (room !== "Doesn't exist")
-      extractExitData(room, exitsData);
-  }
-
-  return exitsData;
-}
-
-function extractExitData
-(
-  room: Room,
-  exitsData: Map<string, ExitComponent.ExitData>
-)
-: void
-{
-  for (const exit of Object.values(room.exits))
-  {
-    if (exit.to === "Nowhere")
-      continue;
-
-    const from = room.coords;
-    const to = exit.to;
-    const exitId = Coords.createExitId(from, to);
-
-    const exitData = exitsData.get(exitId);
-
-    if (exitData === undefined)
-    {
-      /// DEBUG
-      // console.log
-      // (
-      //   "Setting onedirectional exit",
-      //   exitName,
-      //   "from:",
-      //   from,
-      //   "to:",
-      //   to,
-      //   "exitId:",
-      //   exitId
-      // );
-
-      exitsData.set(exitId, { from, to, bidirectional: false });
-    }
-    else
-    {
-      /// DEBUG
-      // console.log
-      // (
-      //   "Setting bidirectional exit",
-      //   exitName,
-      //   "from:",
-      //   from,
-      //   "to:",
-      //   to,
-      //   "exitId:",
-      //   exitId
-      // );
-
-      exitsData.set(exitId, { from, to, bidirectional: true });
-    }
-  }
 }

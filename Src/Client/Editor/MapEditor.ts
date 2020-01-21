@@ -13,7 +13,7 @@ let lastCoords: Coords | "Not set" = "Not set";
 
 export namespace MapEditor
 {
-  export function setLastCoords(coords: Coords): void
+  export function rememberCoords(coords: Coords): void
   {
     lastCoords = coords;
   }
@@ -37,7 +37,7 @@ export namespace MapEditor
   {
     const existingRoom = World.getRoom(coords);
 
-    if (existingRoom === "Nothing there")
+    if (existingRoom === "Doesn't exist")
     {
       // ! Throws exception on error.
       World.setRoom(new Room(coords));
@@ -57,7 +57,7 @@ export namespace MapEditor
   {
     const room = World.getRoom(coords);
 
-    if (room === "Nothing there")
+    if (room === "Doesn't exist")
       return "No change";
 
     deleteExitsTo(room);
@@ -147,7 +147,7 @@ function getRoom(coords: Coords): Room
 {
   const room = World.getRoom(coords);
 
-  if (room === "Nothing there")
+  if (room === "Doesn't exist")
     throw Error(`Room at coords ${coords.toString()} doesn't exist`);
 
   return room;
@@ -161,7 +161,7 @@ function deleteExitsTo(room: Room): void
   {
     const fromRoom = World.getRoom(coords);
 
-    if (fromRoom !== "Nothing there")
+    if (fromRoom !== "Doesn't exist")
       fromRoom.deleteExitsTo(room.coords);
   }
 }

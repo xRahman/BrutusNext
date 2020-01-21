@@ -17,9 +17,14 @@ export namespace World
   //   return grid.getItemsInDepth(depth);
   // }
 
-  export function getRoom(coords: Coords): Room | "Nothing there"
+  export function getRoom(coords: Coords): Room | "Doesn't exist"
   {
-    return grid.get(coords);
+    const room = grid.get(coords);
+
+    if (room === "Nothing there")
+      return "Doesn't exist";
+
+    return room;
   }
 
   export function setRoom(room: Room): void

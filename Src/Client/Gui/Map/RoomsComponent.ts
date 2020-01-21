@@ -7,13 +7,12 @@
 import { Dom } from "../../../Client/Gui/Dom";
 import { Coords } from "../../../Shared/Class/Coords";
 import { Room } from "../../../Client/World/Room";
+import { WorldMap } from "../../../Client/Gui/Map/WorldMap";
 import { WorldComponent } from "../../../Client/Gui/Map/WorldComponent";
 import { RoomComponent } from "../../../Client/Gui/Map/RoomComponent";
 import { G } from "../../../Client/Gui/Svg/G";
 
-/// TODO: This number should be computed from the size of SvgMap
-///  component and updated dynamically when it is resized.
-const ROOMS_IN_CACHE = 41 * 41;
+const ROOMS_IN_CACHE = WorldMap.countRoomsInView();
 
 export class RoomsComponent extends G
 {
@@ -54,15 +53,14 @@ export class RoomsComponent extends G
   public addRoom
   (
     room: Room | "Doesn't exist",
-    roomCoords: Coords,
-    mapOffset: Coords
+    roomCoords: Coords
   )
   : void
   {
     // const roomMapCoords = Coords.c1MinusC2(roomCoords, mapOffset);
-    const roomComponent = getComponentFrom(this.roomComponentCache);
+    const roomComponent = this.removeComponentFromCache();
 
-    if (roomComponent === "Nothing there")
+    if (roomComponent === "Cache is empty")
     {
       // TODO: Vysvětlit, co to znamená a co s tím.
       //  - že je ideálně třeba dynamicky updatovat velikost room cashe
@@ -157,24 +155,18 @@ export class RoomsComponent extends G
 
     return roomComponent;
   }
-}
 
-// ----------------- Auxiliary Functions ---------------------
-
-function getComponentFrom
-(
-  roomCache: Set<RoomComponent>
-)
-: RoomComponent | "Nothing there"
-{
-  for (const value of roomCache)
+  private removeComponentFromCache(): RoomComponent | "Cache is empty"
   {
-    roomCache.delete(value);
+    for (const value of this.roomComponentCache)
+    {
+      this.roomComponentCache.delete(value);
 
-    // We are using the for cycle just to access the
-    // first element of the set so we return right away.
-    return value;
+      // We are using the for cycle just to access the
+      // first element of the set so we return right away.
+      return value;
+    }
+
+    return "Cache is empty";
   }
-
-  return "Nothing there";
 }
