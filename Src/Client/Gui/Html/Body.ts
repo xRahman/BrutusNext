@@ -61,7 +61,7 @@ export class Body extends Component
 
   private onMouseUp(event: MouseEvent): void
   {
-    MapEditor.resetLastCoords();
+    MapEditor.resetRememberedCoords();
   }
 
   private onKeyUp(event: KeyboardEvent): void

@@ -17,6 +17,16 @@ export namespace World
   //   return grid.getItemsInDepth(depth);
   // }
 
+  export function roomExists(coords: Coords): boolean
+  {
+    const room = grid.get(coords);
+
+    if (room === "Nothing there")
+      return false;
+
+    return true;
+  }
+
   export function getRoom(coords: Coords): Room | "Doesn't exist"
   {
     const room = grid.get(coords);

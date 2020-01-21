@@ -112,7 +112,7 @@ export class WorldComponent extends G
       return;
 
     // ! Throws exception on error.
-    this.ensureRoomExists(coords);
+    MapEditor.createRoom(coords);
   }
 
   // ! Throws exception on error.
@@ -125,7 +125,7 @@ export class WorldComponent extends G
       return;
 
     // ! Throws exception on error.
-    this.deleteRoomIfExists(coords);
+    MapEditor.deleteRoom(coords);
   }
 
   // ! Throws exception on error.
@@ -140,13 +140,13 @@ export class WorldComponent extends G
     if (Dom.isLeftButtonDown(event))
     {
       // ! Throws exception on error.
-      this.buildConnectionTo(coords);
+      MapEditor.buildConnectionTo(coords);
     }
 
     if (Dom.isRightButtonDown(event))
     {
       // ! Throws exception on error.
-      this.deleteRoomIfExists(coords);
+      MapEditor.deleteRoom(coords);
     }
   }
 
@@ -164,52 +164,13 @@ export class WorldComponent extends G
       MapEditor.rememberCoords(coords);
 
       // ! Throws exception on error.
-      this.ensureRoomExists(coords);
+      MapEditor.createRoom(coords);
     }
 
     if (Dom.isRightButtonDown(event))
     {
       // ! Throws exception on error.
-      this.deleteRoomIfExists(coords);
-    }
-  }
-
-  // ! Throws exception on error.
-  private buildConnectionTo(coords: Coords): void
-  {
-    // ! Throws exception on error.
-    const result = MapEditor.connectWithLastCoords(coords);
-
-    if (result === "Changes occured")
-    {
-      // ! Throws exception on error.
-      WorldMap.update({ rebuild: false });
-    }
-  }
-
-  // ! Throws exception on error.
-  private ensureRoomExists(coords: Coords): void
-  {
-    // ! Throws exception on error.
-    const result = MapEditor.ensureRoomExists(coords);
-
-    if (result === "Changes occured")
-    {
-      // ! Throws exception on error.
-      WorldMap.update({ rebuild: false });
-    }
-  }
-
-  // ! Throws exception on error.
-  private deleteRoomIfExists(coords: Coords): void
-  {
-    // ! Throws exception on error.
-    const result = MapEditor.deleteRoomIfExists(coords);
-
-    if (result === "Changes occured")
-    {
-      // ! Throws exception on error.
-      WorldMap.update({ rebuild: false });
+      MapEditor.deleteRoom(coords);
     }
   }
 }

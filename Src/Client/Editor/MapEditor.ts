@@ -8,110 +8,63 @@ import { Coords } from "../../Shared/Class/Coords";
 import { World } from "../../Client/World/World";
 import { Room } from "../../Client/World/Room";
 import { Exit } from "../../Client/World/Exit";
+import { WorldMap } from "../../Client/Gui/Map/WorldMap";
 
-let lastCoords: Coords | "Not set" = "Not set";
+let rememberedCoords: Coords | "Not set" = "Not set";
 
 export namespace MapEditor
 {
   export function rememberCoords(coords: Coords): void
   {
-    lastCoords = coords;
+    rememberedCoords = coords;
   }
 
-  export function getLastCoords(): Coords | "Not set"
+  export function resetRememberedCoords(): void
   {
-    return lastCoords;
-  }
-
-  export function resetLastCoords(): void
-  {
-    lastCoords = "Not set";
+    rememberedCoords = "Not set";
   }
 
   // ! Throws exception on error.
-  export function ensureRoomExists
-  (
-    coords: Coords
-  )
-  : "Changes occured" | "No change"
+  export function createRoom(coords: Coords): void
   {
-    const existingRoom = World.getRoom(coords);
-
-    if (existingRoom === "Doesn't exist")
+    if (ensureRoomExists(coords) === "Changes occured")
     {
       // ! Throws exception on error.
-      World.setRoom(new Room(coords));
-
-      return "Changes occured";
+      WorldMap.update({ rebuild: false });
     }
-
-    return "No change";
   }
 
   // ! Throws exception on error.
-  export function deleteRoomIfExists
-  (
-    coords: Coords
-  )
-  : "Changes occured" | "No change"
+  export function deleteRoom(coords: Coords): void
   {
-    const room = World.getRoom(coords);
-
-    if (room === "Doesn't exist")
-      return "No change";
-
-    deleteExitsTo(room);
-
-    // ! Throws exception on error.
-    World.deleteRoom(room);
-
-    return "Changes occured";
+    if (deleteRoomIfExists(coords) === "Changes occured")
+    {
+      // ! Throws exception on error.
+      WorldMap.update({ rebuild: false });
+    }
   }
 
   // ! Throws exception on error.
-  export function createConnectedRooms
-  (
-    from: Coords,
-    to: Coords
-  )
-  : "Changes occured" | "No change"
+  export function buildConnectionTo(coords: Coords): void
   {
-    let result: "Changes occured" | "No change" = "No change";
+    if (rememberedCoords === "Not set")
+      return;
+
+    if (!rememberedCoords.isAdjacentTo(coords))
+      return;
 
     // ! Throws exception on error.
-    if (ensureRoomExists(from) === "Changes occured")
-      result = "Changes occured";
-
-    // ! Throws exception on error.
-    if (ensureRoomExists(to) === "Changes occured")
-      result = "Changes occured";
-
-    if (connectRooms(from, to) === "Changes occured")
-      result = "Changes occured";
-
-    return result;
-  }
-
-  // ! Throws exception on error.
-  export function connectWithLastCoords
-  (
-    newCoords: Coords
-  )
-  : "Changes occured" | "No change"
-  {
-    if (lastCoords === "Not set")
-      return "No change";
-
-    if (!lastCoords.isAdjacentTo(newCoords))
-      return "No change";
-
-    // ! Throws exception on error.
-    return createConnectedRooms(lastCoords, newCoords);
+    if (createConnectedRooms(rememberedCoords, coords) === "Changes occured")
+    {
+      // ! Throws exception on error.
+      WorldMap.update({ rebuild: false });
+    }
   }
 }
 
 // ----------------- Auxiliary Functions ---------------------
 
+// ! Throws exception on error.
 function connectRooms
 (
   from: Coords,
@@ -164,4 +117,69 @@ function deleteExitsTo(room: Room): void
     if (fromRoom !== "Doesn't exist")
       fromRoom.deleteExitsTo(room.coords);
   }
+}
+
+// ! Throws exception on error.
+function ensureRoomExists
+(
+  coords: Coords
+)
+: "Changes occured" | "No change"
+{
+  const existingRoom = World.getRoom(coords);
+
+  if (existingRoom === "Doesn't exist")
+  {
+    // ! Throws exception on error.
+    World.setRoom(new Room(coords));
+
+    return "Changes occured";
+  }
+
+  return "No change";
+}
+
+// ! Throws exception on error.
+function deleteRoomIfExists
+(
+  coords: Coords
+)
+: "Changes occured" | "No change"
+{
+  const room = World.getRoom(coords);
+
+  if (room === "Doesn't exist")
+    return "No change";
+
+  deleteExitsTo(room);
+
+  // ! Throws exception on error.
+  World.deleteRoom(room);
+
+  return "Changes occured";
+}
+
+// ! Throws exception on error.
+function createConnectedRooms
+(
+  from: Coords,
+  to: Coords
+)
+: "Changes occured" | "No change"
+{
+  let result: "Changes occured" | "No change" = "No change";
+
+  // ! Throws exception on error.
+  if (ensureRoomExists(from) === "Changes occured")
+    result = "Changes occured";
+
+  // ! Throws exception on error.
+  if (ensureRoomExists(to) === "Changes occured")
+    result = "Changes occured";
+
+  // ! Throws exception on error.
+  if (connectRooms(from, to) === "Changes occured")
+    result = "Changes occured";
+
+  return result;
 }

@@ -57,25 +57,17 @@ export class RoomsComponent extends G
   )
   : void
   {
-    // const roomMapCoords = Coords.c1MinusC2(roomCoords, mapOffset);
     const roomComponent = this.removeComponentFromCache();
 
     if (roomComponent === "Cache is empty")
-    {
-      // TODO: Vysvětlit, co to znamená a co s tím.
-      //  - že je ideálně třeba dynamicky updatovat velikost room cashe
-      //    podle velikosti MapSvg.
-      throw Error("No more room components are left in cache");
-    }
+      throw Error("There are no more room components in the cache");
 
     const roomSpacing = RoomsComponent.roomSpacingPixels;
 
     roomComponent.setCoords(roomCoords);
     roomComponent.setPosition
     (
-      // roomSpacing * roomMapCoords.e,
       roomSpacing * roomCoords.e,
-      // -roomSpacing * roomMapCoords.n
       -roomSpacing * roomCoords.n
     );
     roomComponent.setRoom(room);

@@ -24,24 +24,9 @@ Později:
 
 TODO: Znovu projít mapové komponenty
 
-TODO: Auxiliary funkce ve WorldComponent, které se volají z event handlerů,
-  přesunout do MapEditoru
-
-
-TODO: Provázat velikost zobrazované části mapy
-  v WorldComponent.getCoordsInView() s RoomsSvg.ROOMS_IN_CACHE.
-
-TODO: V createMap() v cyklu na vyrábění mapy oasertovat krajní hodnoty cyklu,
- abych nemohl vyrobit nekonečnej cyklus.
-- tohle asi po optimalizaci nebude potřeba (respektive možná to bude
-  potřeba v novém cyklu)
-Teď se to týká funkce WorldComponent.getCoordsInView()
-
-
-
-
-TODO: Vysvětlující error message v RoomsSvg.addRoomSvg()
-
+TODO: Pozice room componenty by se měla nastavovat v RoomComponent, stejně
+  jako se pozice ExitComponenty nastavuje v ExitComponent
+  (tj. ne v RoomsComponent)
 
 
 Optimalizace mapy:

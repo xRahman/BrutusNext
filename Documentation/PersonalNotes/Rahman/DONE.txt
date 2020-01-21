@@ -1,3 +1,11 @@
+TODO: Auxiliary funkce ve WorldComponent, které se volají z event handlerů,
+  přesunout do MapEditoru
+[done]
+
+TODO: Provázat velikost zobrazované části mapy
+  v WorldComponent.getCoordsInView() s RoomsSvg.ROOMS_IN_CACHE.
+[done]
+
 TODO: Grid je v /shared, tj. asi by v něm nemělo bejt počáteční nastavení
   velikosti
 - po optimalizaci mapy to budu moct zrušit.
