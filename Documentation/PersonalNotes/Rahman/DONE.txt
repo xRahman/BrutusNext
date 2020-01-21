@@ -1,3 +1,8 @@
+TODO: Grid je v /shared, tj. asi by v něm nemělo bejt počáteční nastavení
+  velikosti
+- po optimalizaci mapy to budu moct zrušit.
+[done]
+
 TODO: Zvýraznit "pozici playera"
 - asi mimo roomy, protože player se může pohybovat mezi roomama
 - musí se scalovat (zoomovat) se vším ostatním, ale ne translatovat

@@ -61,10 +61,6 @@ TODO: Cashování room elementů při updatu mapy
   nebudou vyrábět - místo toho se vezmou z cashe, nastaví se jim pozice,
   grafika atd. a odhidnou se.
 
-TODO: Grid je v /shared, tj. asi by v něm nemělo bejt počáteční nastavení
-  velikosti
-- po optimalizaci mapy to budu moct zrušit.
-
 ------------------------------------------------------------------------------
 
 TODO: Prostudovat:
