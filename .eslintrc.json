@@ -270,7 +270,14 @@
       // Disable the base rule as it can report incorrect errors.
       "no-extra-parens": "off",
       // Disallow unnecessary parentheses.
-      "@typescript-eslint/no-extra-parens": "error",
+      "@typescript-eslint/no-extra-parens": "off",
+      /*
+      [
+        "error",
+        "all",
+        { "nestedBinaryExpressions": false }
+      ],
+      */
       // Forbids the use of classes as namespaces.
       "@typescript-eslint/no-extraneous-class": "error",
       // Requires Promise-like values to be handled appropriately.
