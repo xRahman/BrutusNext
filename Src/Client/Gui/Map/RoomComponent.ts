@@ -26,11 +26,7 @@ export class RoomComponent extends G
 
   private coords: Coords | "In cache" = "In cache";
 
-  constructor
-  (
-    protected parent: RoomsComponent,
-    name = "room"
-  )
+  constructor(protected parent: RoomsComponent, name = "room")
   {
     super(parent, name);
 
@@ -57,9 +53,9 @@ export class RoomComponent extends G
       return;
     }
 
-    const roomPixelSize = RoomComponent.roomPixelSize * room.icon.scale;
+    const iconPixelSize = RoomComponent.roomPixelSize * room.icon.scale;
 
-    this.roomIcon.setSize(roomPixelSize, roomPixelSize);
+    this.roomIcon.setSize(iconPixelSize, iconPixelSize);
 
     this.roomIcon.setImage(room.icon.path);
 

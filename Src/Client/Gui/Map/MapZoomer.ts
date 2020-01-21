@@ -4,6 +4,9 @@
   Component that zooms the map
 */
 
+import { MapCenterer } from "../../../Client/Gui/Map/MapCenterer";
+import { PlayerPosition } from "../../../Client/Gui/Map/PlayerPosition";
+import { WorldComponent } from "../../../Client/Gui/Map/WorldComponent";
 import { G } from "../../../Client/Gui/Svg/G";
 
 const MINIMUM_ZOOM_FACTOR = 0.5;
@@ -13,6 +16,20 @@ const ZOOM_STEP = 0.2;
 export class MapZoomer extends G
 {
   private zoom = 1.0;
+
+  private readonly playerPosition: PlayerPosition;
+  private readonly world: WorldComponent;
+
+  // ! Throws exception on error.
+  constructor(protected parent: MapCenterer, name = "map_centerer")
+  {
+    super(parent, name);
+
+    this.playerPosition = new PlayerPosition(this);
+
+    // ! Throws exception on error.
+    this.world = new WorldComponent(this);
+  }
 
   // ---------------- Public methods --------------------
 

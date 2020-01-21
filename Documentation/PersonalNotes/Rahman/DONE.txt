@@ -1,3 +1,17 @@
+TODO: Zvýraznit "pozici playera"
+- asi mimo roomy, protože player se může pohybovat mezi roomama
+- musí se scalovat (zoomovat) se vším ostatním, ale ne translatovat
+  To bude trochu problém, protože MapZoomer jsem zrušil coby komponentu.
+  - asi ji budu muset zase založit, aby mohly existovat komponenty,
+    který se zoomujou s mapou, ale nejsou součástí worldu
+[done]
+
+TODO: Udělat zase z MapZoomeru samostatnou komponentu
+[done]
+
+TODO: Vyrobit komponentu PlayerPosition
+[done]
+
 TODO: Nevytvářet exity podle rozměrů worldu, ale podle počtu, kolik je třeba
   zobrazovat
 - eh, to asi dělám, protože exity se vyčítají ze seznamu room, na který mapa

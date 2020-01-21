@@ -14,10 +14,10 @@ import { RoomComponent } from "../../../Client/Gui/Map/RoomComponent";
 import { RoomsComponent } from "../../../Client/Gui/Map/RoomsComponent";
 import { ExitComponent } from "../../../Client/Gui/Map/ExitComponent";
 import { ExitsComponent } from "../../../Client/Gui/Map/ExitsComponent";
-import { MapCenterer } from "../../../Client/Gui/Map/MapCenterer";
 import { MapZoomer } from "../../../Client/Gui/Map/MapZoomer";
+import { G } from "../../../Client/Gui/Svg/G";
 
-export class WorldComponent extends MapZoomer
+export class WorldComponent extends G
 {
   private static instance: WorldComponent | "Not set" = "Not set";
 
@@ -61,7 +61,7 @@ export class WorldComponent extends MapZoomer
   private currentCoords = new Coords(0, 0, 0);
 
   // ! Throws exception on error.
-  constructor(protected parent: MapCenterer, name = "world")
+  constructor(protected parent: MapZoomer, name = "world")
   {
     super(parent, name);
 

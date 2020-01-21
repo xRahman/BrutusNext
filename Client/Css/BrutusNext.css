@@ -399,6 +399,17 @@
 }
 */
 
+/*
+.MapZoomer
+{
+}
+*/
+
+.PlayerPosition
+{
+  fill:rgb(0, 238, 255);
+}
+
 .RoomComponent:hover
 {
   fill:white;

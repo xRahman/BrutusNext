@@ -32,9 +32,9 @@ export class MapComponent extends Svg
     event.preventDefault();
 
     if (event.deltaY > 0)
-      this.mapCenterer.world.zoomIn();
+      this.mapCenterer.mapZoomer.zoomIn();
 
     if (event.deltaY < 0)
-      this.mapCenterer.world.zoomOut();
+      this.mapCenterer.mapZoomer.zoomOut();
   }
 }

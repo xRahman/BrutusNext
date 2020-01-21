@@ -5,12 +5,12 @@
 */
 
 import { MapComponent } from "../../../Client/Gui/Map/MapComponent";
-import { WorldComponent } from "../../../Client/Gui/Map/WorldComponent";
+import { MapZoomer } from "../../../Client/Gui/Map/MapZoomer";
 import { Svg } from "../../../Client/Gui/Svg/Svg";
 
 export class MapCenterer extends Svg
 {
-  public readonly world: WorldComponent;
+  public readonly mapZoomer: MapZoomer;
 
   // ! Throws exception on error.
   constructor(protected parent: MapComponent, name = "map_centerer")
@@ -24,6 +24,6 @@ export class MapCenterer extends Svg
     this.setCss({ overflow: "visible" });
 
     // ! Throws exception on error.
-    this.world = new WorldComponent(this);
+    this.mapZoomer = new MapZoomer(this);
   }
 }
