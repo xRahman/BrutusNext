@@ -41,13 +41,6 @@ TODO: Cache na exit elementy
 TODO: Vyrábět exit elementy mimo DOM a insternout je najednou
   s parentem
 
-TODO: Cashování room elementů při updatu mapy
-- nejdřív se checkne, který nemají být vidět, ty se hidnou a hoděj do seznamu
-  komponent v cashi.
-- pak se projdou roomy, který mají bejt vidět a nejsou, ale elementy se pro ně
-  nebudou vyrábět - místo toho se vezmou z cashe, nastaví se jim pozice,
-  grafika atd. a odhidnou se.
-
 ------------------------------------------------------------------------------
 
 TODO: Prostudovat:

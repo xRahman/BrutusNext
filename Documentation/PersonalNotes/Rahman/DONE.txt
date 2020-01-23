@@ -1,3 +1,13 @@
+TODO: Cashování room elementů při updatu mapy
+- nejdřív se checkne, který nemají být vidět, ty se hidnou a hoděj do seznamu
+  komponent v cashi.
+- pak se projdou roomy, který mají bejt vidět a nejsou, ale elementy se pro ně
+  nebudou vyrábět - místo toho se vezmou z cashe, nastaví se jim pozice,
+  grafika atd. a odhidnou se.
+Dělám to zatím tak, že se všechny roomy vysypou do cashe a znovu se z ní
+  insertnou a napozicují. Prozatím to tak nechám.
+[done]
+
 TODO: Auxiliary funkce ve WorldComponent, které se volají z event handlerů,
   přesunout do MapEditoru
 [done]
