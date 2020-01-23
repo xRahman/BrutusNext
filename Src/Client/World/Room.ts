@@ -11,7 +11,9 @@ export class Room
 {
   public readonly icon =
   {
+    // path: "Images/Exits/ExitUp.svg",
     path: "Images/Rooms/Circle.svg",
+    // scale: 2.0
     scale: 1.0
   };
 
