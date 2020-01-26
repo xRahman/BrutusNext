@@ -7,41 +7,41 @@
 import { Dom } from "../../../Client/Gui/Dom";
 import { Coords } from "../../../Shared/Class/Coords";
 import { MapEditor } from "../../../Client/Editor/MapEditor";
-import { WorldMap } from "../../../Client/Gui/Map/WorldMap";
-import { RoomComponent } from "../../../Client/Gui/Map/RoomComponent";
-import { RoomsComponent } from "../../../Client/Gui/Map/RoomsComponent";
-import { ExitsComponent } from "../../../Client/Gui/Map/ExitsComponent";
-import { MapZoomer } from "../../../Client/Gui/Map/MapZoomer";
+import { MudMap } from "../../../Client/Gui/Map/MudMap";
+import { SvgRoom } from "../../../Client/Gui/Map/SvgRoom";
+import { SvgRooms } from "../../../Client/Gui/Map/SvgRooms";
+import { SvgExits } from "../../../Client/Gui/Map/SvgExits";
+import { SvgMapZoomer } from "../../../Client/Gui/Map/SvgMapZoomer";
 import { G } from "../../../Client/Gui/Svg/G";
 
-export class WorldComponent extends G
+export class SvgWorld extends G
 {
   // ----------------- Private data ---------------------
 
-  private readonly rooms: RoomsComponent;
-  private readonly exits: ExitsComponent;
+  private readonly rooms: SvgRooms;
+  private readonly exits: SvgExits;
 
   // ! Throws exception on error.
-  constructor(protected parent: MapZoomer, name = "world")
+  constructor(protected parent: SvgMapZoomer, name = "world")
   {
     super(parent, name);
 
     // Order of creation determines drawing order.
-    this.exits = new ExitsComponent(this);
-    this.rooms = new RoomsComponent(this);
+    this.exits = new SvgExits(this);
+    this.rooms = new SvgRooms(this);
 
     this.registerEventListeners();
 
     // ! Throws exception on error.
-    WorldMap.setWorldComponent(this);
+    MudMap.setSvgWorld(this);
   }
 
   // ---------------- Public methods --------------------
 
   public update
   (
-    roomsAndCoords: WorldMap.RoomsAndCoords,
-    exitsData: WorldMap.ExitsData,
+    roomsAndCoords: MudMap.RoomsAndCoords,
+    exitsData: MudMap.ExitsData,
     { rebuild = false }
   )
   : void
@@ -52,7 +52,7 @@ export class WorldComponent extends G
 
   public translateTo(coords: Coords): void
   {
-    const roomSpacing = RoomsComponent.roomSpacingPixels;
+    const roomSpacing = SvgRooms.roomSpacingPixels;
 
     this.translate
     (
@@ -65,7 +65,7 @@ export class WorldComponent extends G
 
   private updateRooms
   (
-    roomsAndCoords: WorldMap.RoomsAndCoords,
+    roomsAndCoords: MudMap.RoomsAndCoords,
     { rebuild = false }
   )
   : void
@@ -82,7 +82,7 @@ export class WorldComponent extends G
     }
   }
 
-  private rebuildExits(exitsData: WorldMap.ExitsData): void
+  private rebuildExits(exitsData: MudMap.ExitsData): void
   {
     this.exits.clear();
 
@@ -185,7 +185,7 @@ function parseRoomCoords(event: Event): Coords | "Not a room event"
 
   if (event.target instanceof SVGElement)
   {
-    if (Dom.getName(event.target) === RoomComponent.ROOM_BACKGROUND)
+    if (Dom.getName(event.target) === SvgRoom.ROOM_BACKGROUND)
       // ! Throws exception on error.
       return Coords.fromString(event.target.id);
   }

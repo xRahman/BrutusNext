@@ -13,7 +13,7 @@ import { Syslog } from "../Client/Log/Syslog";
 import { Connection } from "../Client/Net/Connection";
 import { Coords } from "../Shared/Class/Coords";
 import { Gui } from "../Client/Gui/Gui";
-import { WorldMap } from "../Client/Gui/Map/WorldMap";
+import { MudMap } from "../Client/Gui/Map/MudMap";
 import { Body } from "../Client/Gui/Html/Body";
 
 // Import following modules to execute their inicialization code.
@@ -33,7 +33,7 @@ async function startBrutusNextClient(): Promise<void>
     await Connection.connect();
 
     /// TEST (Mělo by se to volat jinde)
-    WorldMap.lookAt(new Coords(0, 0, 0));
+    MudMap.lookAt(new Coords(0, 0, 0));
     Gui.switchToState(Gui.State.GAME);
   }
   catch (error)

@@ -5,7 +5,7 @@
 */
 
 import { Body } from "../../../Client/Gui/Html/Body";
-import { MapComponent } from "../../../Client/Gui/Map/MapComponent";
+import { SvgMap } from "../../../Client/Gui/Map/SvgMap";
 import { Gui } from "../../../Client/Gui/Gui";
 import { TitledWindow } from "../../../Client/Gui/Window/TitledWindow";
 
@@ -13,7 +13,7 @@ export class MapWindow extends TitledWindow
 {
   // ---------------- Protected data --------------------
 
-  protected map: MapComponent;
+  protected map: SvgMap;
 
   // ! Throws exception on error.
   constructor(protected parent: Body)
@@ -21,7 +21,7 @@ export class MapWindow extends TitledWindow
     super(parent, "map_window", "Map Window");
 
     // ! Throws exception on error.
-    this.map = new MapComponent(this.content);
+    this.map = new SvgMap(this.content);
 
     this.visibility.set(Gui.State.GAME);
   }

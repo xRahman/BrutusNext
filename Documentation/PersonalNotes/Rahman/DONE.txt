@@ -1,3 +1,6 @@
+TODO: Rozdělit VerticalExit a HorizontalExit
+[done]
+
 TODO: Pozice room componenty by se měla nastavovat v RoomComponent, stejně
   jako se pozice ExitComponenty nastavuje v ExitComponent
   (tj. ne v RoomsComponent)

@@ -20,7 +20,7 @@ import { ChatWindow } from "../../../Client/Gui/Game/ChatWindow";
 import { CombatWindow } from "../../../Client/Gui/Game/CombatWindow";
 import { SpamWindow } from "../../../Client/Gui/Game/SpamWindow";
 import { Component } from "../../../Client/Gui/Component";
-import { WorldMap } from "../../../Client/Gui/Map/WorldMap";
+import { MudMap } from "../../../Client/Gui/Map/MudMap";
 
 const windows = new Set<Window>();
 
@@ -69,27 +69,27 @@ export class Body extends Component
     switch (event.keyCode)
     {
       case 33: // PgUp.
-        WorldMap.stepInDirection("u");
+        MudMap.stepInDirection("u");
         break;
 
       case 34: // PgDown.
-        WorldMap.stepInDirection("d");
+        MudMap.stepInDirection("d");
         break;
 
       case 37: // Left.
-        WorldMap.stepInDirection("w");
+        MudMap.stepInDirection("w");
         break;
 
       case 38: // Up.
-        WorldMap.stepInDirection("n");
+        MudMap.stepInDirection("n");
         break;
 
       case 39: // Right.
-        WorldMap.stepInDirection("e");
+        MudMap.stepInDirection("e");
         break;
 
       case 40: // Down.
-        WorldMap.stepInDirection("s");
+        MudMap.stepInDirection("s");
         break;
 
       default:

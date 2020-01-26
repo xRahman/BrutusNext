@@ -5,12 +5,12 @@
 */
 
 import { Component } from "../../../Client/Gui/Component";
-import { MapCenterer } from "../../../Client/Gui/Map/MapCenterer";
+import { SvgMapCenterer } from "../../../Client/Gui/Map/SvgMapCenterer";
 import { Svg } from "../../../Client/Gui/Svg/Svg";
 
-export class MapComponent extends Svg
+export class SvgMap extends Svg
 {
-  private readonly mapCenterer: MapCenterer;
+  private readonly mapCenterer: SvgMapCenterer;
 
   // ! Throws exception on error.
   constructor(parent: Component, name = "map")
@@ -20,7 +20,7 @@ export class MapComponent extends Svg
     // ! Throws exception on error.
     // Use another svg component to translate the map to the center
     // of parent element.
-    this.mapCenterer = new MapCenterer(this);
+    this.mapCenterer = new SvgMapCenterer(this);
 
     this.onwheel = (event) => { this.onWheel(event); };
   }

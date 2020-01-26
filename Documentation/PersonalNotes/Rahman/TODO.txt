@@ -24,9 +24,6 @@ Později:
 TODO: Znovu projít mapové komponenty
 
 
-TODO: Rozdělit VerticalExit a HorizontalExit
-
-
 Optimalizace mapy:
 ------------------
 

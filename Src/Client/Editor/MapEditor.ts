@@ -8,7 +8,7 @@ import { Coords } from "../../Shared/Class/Coords";
 import { World } from "../../Client/World/World";
 import { Room } from "../../Client/World/Room";
 import { Exit } from "../../Client/World/Exit";
-import { WorldMap } from "../../Client/Gui/Map/WorldMap";
+import { MudMap } from "../../Client/Gui/Map/MudMap";
 
 let rememberedCoords: Coords | "Not set" = "Not set";
 
@@ -30,7 +30,7 @@ export namespace MapEditor
     if (ensureRoomExists(coords) === "Changes occured")
     {
       // ! Throws exception on error.
-      WorldMap.update({ rebuild: false });
+      MudMap.update({ rebuild: false });
     }
   }
 
@@ -40,7 +40,7 @@ export namespace MapEditor
     if (deleteRoomIfExists(coords) === "Changes occured")
     {
       // ! Throws exception on error.
-      WorldMap.update({ rebuild: false });
+      MudMap.update({ rebuild: false });
     }
   }
 
@@ -57,7 +57,7 @@ export namespace MapEditor
     if (createConnectedRooms(rememberedCoords, coords) === "Changes occured")
     {
       // ! Throws exception on error.
-      WorldMap.update({ rebuild: false });
+      MudMap.update({ rebuild: false });
     }
   }
 }

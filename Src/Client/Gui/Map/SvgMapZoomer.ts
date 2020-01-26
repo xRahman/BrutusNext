@@ -4,31 +4,31 @@
   Component that zooms the map
 */
 
-import { MapCenterer } from "../../../Client/Gui/Map/MapCenterer";
-import { PlayerPosition } from "../../../Client/Gui/Map/PlayerPosition";
-import { WorldComponent } from "../../../Client/Gui/Map/WorldComponent";
+import { SvgMapCenterer } from "../../../Client/Gui/Map/SvgMapCenterer";
+import { SvgPlayerPosition } from "../../../Client/Gui/Map/SvgPlayerPosition";
+import { SvgWorld } from "../../../Client/Gui/Map/SvgWorld";
 import { G } from "../../../Client/Gui/Svg/G";
 
 const MINIMUM_ZOOM_FACTOR = 0.5;
 const MAXIMUM_ZOOM_FACTOR = 2;
 const ZOOM_STEP = 0.2;
 
-export class MapZoomer extends G
+export class SvgMapZoomer extends G
 {
   private zoom = 1.0;
 
-  private readonly playerPosition: PlayerPosition;
-  private readonly world: WorldComponent;
+  private readonly playerPosition: SvgPlayerPosition;
+  private readonly world: SvgWorld;
 
   // ! Throws exception on error.
-  constructor(protected parent: MapCenterer, name = "map_centerer")
+  constructor(protected parent: SvgMapCenterer, name = "map_centerer")
   {
     super(parent, name);
 
-    this.playerPosition = new PlayerPosition(this);
+    this.playerPosition = new SvgPlayerPosition(this);
 
     // ! Throws exception on error.
-    this.world = new WorldComponent(this);
+    this.world = new SvgWorld(this);
   }
 
   // ---------------- Public methods --------------------

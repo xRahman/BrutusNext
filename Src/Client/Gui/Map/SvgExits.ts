@@ -1,25 +1,24 @@
 /*
   Part of BrutusNEXT
 
-  Exits on the map
+  Horizontal exits on the map
 */
 
-import { Coords } from "../../../Shared/Class/Coords";
-import { WorldMap } from "../../../Client/Gui/Map/WorldMap";
-import { WorldComponent } from "../../../Client/Gui/Map/WorldComponent";
-import { ExitComponent } from "../../../Client/Gui/Map/ExitComponent";
+import { MudMap } from "../../../Client/Gui/Map/MudMap";
+import { SvgWorld } from "../../../Client/Gui/Map/SvgWorld";
+import { SvgHorizontalExit } from "../../../Client/Gui/Map/SvgHorizontalExit";
 import { G } from "../../../Client/Gui/Svg/G";
 
-export class ExitsComponent extends G
+export class SvgExits extends G
 {
-  private exits: Array<ExitComponent> = [];
+  private exits: Array<SvgHorizontalExit> = [];
 
-  constructor(protected parent: WorldComponent, name = "exits")
+  constructor(protected parent: SvgWorld, name = "exits")
   {
     super(parent, name);
   }
 
-  public createExitComponent(exitData: WorldMap.ExitData): void
+  public createExitComponent(exitData: MudMap.ExitData): void
   {
     // const mapCoordsExitData =
     // {
@@ -29,7 +28,7 @@ export class ExitsComponent extends G
     // };
 
     // const exitComponent = new ExitComponent(this, mapCoordsExitData);
-    const exitComponent = new ExitComponent(this, exitData);
+    const exitComponent = new SvgHorizontalExit(this, exitData);
 
     this.exits.push(exitComponent);
   }

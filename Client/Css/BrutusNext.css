@@ -385,7 +385,7 @@
 }
 */
 
-.MapComponent
+.SvgMap
 {
   display: block;
   width: 100%;
@@ -394,30 +394,30 @@
 
 
 /*
-.MapCenterer
+.SvgMapCenterer
 {
 }
 */
 
 /*
-.MapZoomer
+.SvgMapZoomer
 {
 }
 */
 
-.PlayerPosition
+.SvgPlayerPosition
 {
   fill:rgb(0, 238, 255);
 }
 
-.RoomComponent:hover
+.SvgRoom:hover
 {
   fill:white;
 }
 
 /* Svg element is only active when lmb is pressed on it
    so this gives visual feedback when element is clicked. */
-.RoomComponent:active
+.SvgRoom:active
 {
   fill:red;
 }

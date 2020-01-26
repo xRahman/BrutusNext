@@ -7,12 +7,12 @@
 import { Dom } from "../../../Client/Gui/Dom";
 import { Coords } from "../../../Shared/Class/Coords";
 import { Room } from "../../../Client/World/Room";
-import { RoomsComponent } from "../../../Client/Gui/Map/RoomsComponent";
+import { SvgRooms } from "../../../Client/Gui/Map/SvgRooms";
 import { Image } from "../../../Client/Gui/Svg/Image";
 import { Circle } from "../../../Client/Gui/Svg/Circle";
 import { G } from "../../../Client/Gui/Svg/G";
 
-export class RoomComponent extends G
+export class SvgRoom extends G
 {
   public static get roomPixelSize(): number
   {
@@ -26,7 +26,7 @@ export class RoomComponent extends G
 
   private coords: Coords | "In cache" = "In cache";
 
-  constructor(protected parent: RoomsComponent, name = "room")
+  constructor(protected parent: SvgRooms, name = "room")
   {
     super(parent, name);
 
@@ -61,7 +61,7 @@ export class RoomComponent extends G
       return;
     }
 
-    const iconPixelSize = RoomComponent.roomPixelSize * room.icon.scale;
+    const iconPixelSize = SvgRoom.roomPixelSize * room.icon.scale;
 
     this.roomIcon.setSize(iconPixelSize, iconPixelSize);
 
@@ -74,7 +74,7 @@ export class RoomComponent extends G
 
   private updatePosition(coords: Coords): void
   {
-    const roomSpacing = RoomsComponent.roomSpacingPixels;
+    const roomSpacing = SvgRooms.roomSpacingPixels;
 
     this.setPosition
     (
@@ -86,16 +86,16 @@ export class RoomComponent extends G
 
 // ----------------- Auxiliary Functions ---------------------
 
-function createRoomBackground(parent: RoomComponent): Circle
+function createRoomBackground(parent: SvgRoom): Circle
 {
-  const background = new Circle(parent, RoomComponent.ROOM_BACKGROUND);
+  const background = new Circle(parent, SvgRoom.ROOM_BACKGROUND);
 
-  background.setRadius(1.2 * RoomComponent.roomPixelSize / 2);
+  background.setRadius(1.2 * SvgRoom.roomPixelSize / 2);
 
   return background;
 }
 
-function createRoomIcon(parent: RoomComponent): Image
+function createRoomIcon(parent: SvgRoom): Image
 {
   const roomIcon = new Image(parent, "room_icon");
 

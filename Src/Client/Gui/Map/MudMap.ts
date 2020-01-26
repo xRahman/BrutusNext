@@ -8,7 +8,7 @@ import { Coords } from "../../../Shared/Class/Coords";
 import { Exit } from "../../../Client/World/Exit";
 import { Room } from "../../../Client/World/Room";
 import { World } from "../../../Client/World/World";
-import { WorldComponent } from "../../../Client/Gui/Map/WorldComponent";
+import { SvgWorld } from "../../../Client/Gui/Map/SvgWorld";
 
 // Radius '0' wmeans that only 1 room is displayed,
 // '1' means 3x3 rooms, '2' means 5x5 rooms etc.
@@ -16,9 +16,9 @@ const VIEW_RADIUS = 20;
 
 let viewCoords = new Coords(0, 0, 0);
 
-let worldComponent: WorldComponent | "Not set" = "Not set";
+let svgWorld: SvgWorld | "Not set" = "Not set";
 
-export namespace WorldMap
+export namespace MudMap
 {
   export type ExitData =
   {
@@ -38,12 +38,12 @@ export namespace WorldMap
   }
 
   // ! Throws exception on error.
-  export function setWorldComponent(component: WorldComponent): void
+  export function setSvgWorld(component: SvgWorld): void
   {
-    if (worldComponent !== "Not set")
-      throw Error("World component is already set to WorldMap");
+    if (svgWorld !== "Not set")
+      throw Error("Svg world component is already set to WorldMap");
 
-    worldComponent = component;
+    svgWorld = component;
   }
 
   // ! Throws exception on error.
@@ -51,7 +51,7 @@ export namespace WorldMap
   {
     viewCoords = coords;
     update({ rebuild: true });
-    getWorldComponent().translateTo(coords);
+    getSvgWorld().translateTo(coords);
   }
 
   // ! Throws exception on error.
@@ -60,7 +60,7 @@ export namespace WorldMap
     const roomsInView = getRoomsInView();
     const exitsData = extractExitsData(roomsInView);
 
-    getWorldComponent().update(roomsInView, exitsData, { rebuild });
+    getSvgWorld().update(roomsInView, exitsData, { rebuild });
   }
 
   /// TODO: Tohle by asi neměla dělat mapa, ale Character, nebo tak něco.
@@ -107,10 +107,10 @@ function getCoordsInView(): Array<Coords>
   return coordsInView;
 }
 
-function getRoomsInView(): WorldMap.RoomsAndCoords
+function getRoomsInView(): MudMap.RoomsAndCoords
 {
   const coordsInView = getCoordsInView();
-  const roomsInView: WorldMap.RoomsAndCoords = [];
+  const roomsInView: MudMap.RoomsAndCoords = [];
 
   for (const coords of coordsInView)
   {
@@ -124,11 +124,11 @@ function getRoomsInView(): WorldMap.RoomsAndCoords
 
 function extractExitsData
 (
-  roomsInView: WorldMap.RoomsAndCoords
+  roomsInView: MudMap.RoomsAndCoords
 )
-: WorldMap.ExitsData
+: MudMap.ExitsData
 {
-  const exitsData = new Map<string, WorldMap.ExitData>();
+  const exitsData = new Map<string, MudMap.ExitData>();
 
   for (const { room } of roomsInView)
   {
@@ -139,7 +139,7 @@ function extractExitsData
   return exitsData;
 }
 
-function extractExitData(room: Room, exitsData: WorldMap.ExitsData): void
+function extractExitData(room: Room, exitsData: MudMap.ExitsData): void
 {
   for (const exit of Object.values(room.exits))
   {
@@ -190,10 +190,10 @@ function extractExitData(room: Room, exitsData: WorldMap.ExitsData): void
 }
 
 // ! Throws exception on error.
-function getWorldComponent(): WorldComponent
+function getSvgWorld(): SvgWorld
 {
-  if (worldComponent === "Not set")
+  if (svgWorld === "Not set")
     throw Error("World component is not set to WorldMap yet");
 
-  return worldComponent;
+  return svgWorld;
 }

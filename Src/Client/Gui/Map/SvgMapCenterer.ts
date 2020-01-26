@@ -4,16 +4,16 @@
   Component that centers the map
 */
 
-import { MapComponent } from "../../../Client/Gui/Map/MapComponent";
-import { MapZoomer } from "../../../Client/Gui/Map/MapZoomer";
+import { SvgMap } from "../../../Client/Gui/Map/SvgMap";
+import { SvgMapZoomer } from "../../../Client/Gui/Map/SvgMapZoomer";
 import { Svg } from "../../../Client/Gui/Svg/Svg";
 
-export class MapCenterer extends Svg
+export class SvgMapCenterer extends Svg
 {
-  public readonly mapZoomer: MapZoomer;
+  public readonly mapZoomer: SvgMapZoomer;
 
   // ! Throws exception on error.
-  constructor(protected parent: MapComponent, name = "map_centerer")
+  constructor(protected parent: SvgMap, name = "map_centerer")
   {
     super(parent, name);
 
@@ -24,6 +24,6 @@ export class MapCenterer extends Svg
     this.setCss({ overflow: "visible" });
 
     // ! Throws exception on error.
-    this.mapZoomer = new MapZoomer(this);
+    this.mapZoomer = new SvgMapZoomer(this);
   }
 }

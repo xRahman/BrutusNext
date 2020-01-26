@@ -7,14 +7,14 @@
 import { Dom } from "../../../Client/Gui/Dom";
 import { Coords } from "../../../Shared/Class/Coords";
 import { Room } from "../../../Client/World/Room";
-import { WorldMap } from "../../../Client/Gui/Map/WorldMap";
-import { WorldComponent } from "../../../Client/Gui/Map/WorldComponent";
-import { RoomComponent } from "../../../Client/Gui/Map/RoomComponent";
+import { MudMap } from "../../../Client/Gui/Map/MudMap";
+import { SvgWorld } from "../../../Client/Gui/Map/SvgWorld";
+import { SvgRoom } from "../../../Client/Gui/Map/SvgRoom";
 import { G } from "../../../Client/Gui/Svg/G";
 
-const ROOMS_IN_CACHE = WorldMap.countRoomsInView();
+const ROOMS_IN_CACHE = MudMap.countRoomsInView();
 
-export class RoomsComponent extends G
+export class SvgRooms extends G
 {
   public static get roomSpacingPixels(): number
   {
@@ -22,11 +22,11 @@ export class RoomsComponent extends G
   }
 
   // [key]: string representation of room coords.
-  private readonly roomComponents = new Map<string, RoomComponent>();
+  private readonly roomComponents = new Map<string, SvgRoom>();
 
-  private readonly roomComponentCache = new Set<RoomComponent>();
+  private readonly roomComponentCache = new Set<SvgRoom>();
 
-  constructor(protected parent: WorldComponent, name = "rooms")
+  constructor(protected parent: SvgWorld, name = "rooms")
   {
     // Speed optimalization:
     //   This component is not inserted to parent right away
@@ -89,7 +89,7 @@ export class RoomsComponent extends G
   // ---------------- Private methods -------------------
 
   // ! Throws exception on error.
-  private addRoomComponent(id: string, component: RoomComponent): void
+  private addRoomComponent(id: string, component: SvgRoom): void
   {
     if (this.roomComponents.has(id))
     {
@@ -108,12 +108,12 @@ export class RoomsComponent extends G
 
     for (let i = 0; i < ROOMS_IN_CACHE; i++)
     {
-      this.putToCache(new RoomComponent(this));
+      this.putToCache(new SvgRoom(this));
     }
   }
 
   // ! Throws exception on error.
-  private putToCache(roomComponent: RoomComponent): void
+  private putToCache(roomComponent: SvgRoom): void
   {
     if (this.roomComponentCache.has(roomComponent))
     {
@@ -130,7 +130,7 @@ export class RoomsComponent extends G
   }
 
   // ! Throws exception on error.
-  private getRoomComponent(coords: Coords): RoomComponent
+  private getRoomComponent(coords: Coords): SvgRoom
   {
     const coordsString = coords.toString();
     const roomComponent = this.roomComponents.get(coordsString);
@@ -145,7 +145,7 @@ export class RoomsComponent extends G
   }
 
   // ! Throws exception on error.
-  private getComponentFromCache(): RoomComponent
+  private getComponentFromCache(): SvgRoom
   {
     const component = Array.from(this.roomComponentCache).pop();
 
