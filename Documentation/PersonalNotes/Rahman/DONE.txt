@@ -1,3 +1,7 @@
+TODO: Společnej předek pro SvgExits a SvGrooms
+  (CachedContainer nebo tak něco)
+[done]
+
 TODO: Mělo by to bejt spíš asi MapWindow.lookAt(coords) nebo
   MapComponent.lookAt(coords).
 - zatím to nechám bejt, třeba se časem vyvrbí, jak to má bejt strukturovaný

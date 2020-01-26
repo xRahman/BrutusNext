@@ -21,8 +21,6 @@ Později:
 
 ------------------------------------------------------------------------------
 
-TODO: Společnej předek pro SvgExits a SvGrooms
-  (CachedContainer nebo tak něco)
 
 TODO: Znovu projít mapové komponenty
 

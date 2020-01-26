@@ -10,11 +10,9 @@ import { Room } from "../../../Client/World/Room";
 import { MudMap } from "../../../Client/Gui/Map/MudMap";
 import { SvgWorld } from "../../../Client/Gui/Map/SvgWorld";
 import { SvgRoom } from "../../../Client/Gui/Map/SvgRoom";
-import { G } from "../../../Client/Gui/Svg/G";
+import { SvgComponentCache } from "../../../Client/Gui/Svg/SvgComponentCache";
 
-const ROOMS_IN_CACHE = MudMap.maxRoomsInView();
-
-export class SvgRooms extends G
+export class SvgRooms extends SvgComponentCache<SvgRoom>
 {
   public static get ROOM_SPACING_PIXELS(): number
   {
@@ -24,22 +22,9 @@ export class SvgRooms extends G
   // [key]: string representation of room coords.
   private readonly svgRooms = new Map<string, SvgRoom>();
 
-  private readonly roomCache = new Set<SvgRoom>();
-
   constructor(protected parent: SvgWorld, name = "rooms")
   {
-    // Speed optimalization:
-    //   This component is not inserted to parent right away
-    // because we will be creating large number of children
-    // inside it. To prevent recalculating of DOM each time
-    // a room component is inserted, we create them while
-    // we are outside of DOM and than insert ourselves with
-    // children already created.
-    super("No parent", name);
-
-    this.populateRoomCache();
-
-    this.setParent(parent);
+    super(parent, MudMap.maxRoomsInView(), SvgRoom, name);
   }
 
   // ---------------- Public methods --------------------
@@ -62,7 +47,7 @@ export class SvgRooms extends G
     const roomId = coords.toString();
 
     // ! Throws exception on error.
-    const svgRoom = this.getRoomFromCache();
+    const svgRoom = this.getComponentFromCache();
 
     svgRoom.setCoords(coords);
     svgRoom.setId(roomId);
@@ -96,39 +81,10 @@ export class SvgRooms extends G
     if (this.svgRooms.has(id))
     {
       throw Error(`There already is a component`
-        + ` representing room ${id} in the map`);
+        + ` representing room ${id} on the map`);
     }
 
     this.svgRooms.set(id, component);
-  }
-
-  // ! Throws exception on error.
-  private populateRoomCache(): void
-  {
-    if (this.roomCache.size !== 0)
-      throw Error("Attempt to populate room cache which is not empty");
-
-    for (let i = 0; i < ROOMS_IN_CACHE; i++)
-    {
-      this.putToCache(new SvgRoom(this));
-    }
-  }
-
-  // ! Throws exception on error.
-  private putToCache(svgRoom: SvgRoom): void
-  {
-    if (this.roomCache.has(svgRoom))
-    {
-      throw Error("Attempt to add an element to room cache which is"
-        + " already there");
-    }
-
-    svgRoom.setCoords("In cache");
-    svgRoom.setId("In cache");
-    svgRoom.setRoom("Doesn't exist");
-    svgRoom.hide();
-
-    this.roomCache.add(svgRoom);
   }
 
   // ! Throws exception on error.
@@ -139,23 +95,10 @@ export class SvgRooms extends G
 
     if (roomComponent === undefined)
     {
-      throw Error(`There is no component representing room at coords`
-        + ` ${coords.toString()} in the map`);
+      throw Error(`There is no component representing room`
+        + ` on the map at coords ${coords.toString()}`);
     }
 
     return roomComponent;
-  }
-
-  // ! Throws exception on error.
-  private getRoomFromCache(): SvgRoom
-  {
-    const component = Array.from(this.roomCache).pop();
-
-    if (!component)
-      throw Error("There are no more room components in the cache");
-
-    this.roomCache.delete(component);
-
-    return component;
   }
 }
