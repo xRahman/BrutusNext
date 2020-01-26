@@ -307,6 +307,11 @@ export namespace Dom
     return document.createElementNS(SVG_NAMESPACE, "line");
   }
 
+  export function createPath(): SVGPathElement
+  {
+    return document.createElementNS(SVG_NAMESPACE, "path");
+  }
+
   export function createSvg(): SVGSVGElement
   {
     return document.createElementNS(SVG_NAMESPACE, "svg");
@@ -315,6 +320,16 @@ export namespace Dom
   export function createImage(): SVGImageElement
   {
     return document.createElementNS(SVG_NAMESPACE, "image");
+  }
+
+  export function createDefs(): SVGDefsElement
+  {
+    return document.createElementNS(SVG_NAMESPACE, "defs");
+  }
+
+  export function createMarker(): SVGMarkerElement
+  {
+    return document.createElementNS(SVG_NAMESPACE, "marker");
   }
 }
 

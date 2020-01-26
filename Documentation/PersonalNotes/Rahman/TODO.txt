@@ -25,6 +25,21 @@ Později:
 TODO: Znovu projít mapové komponenty
 
 
+TODO: Šipky na exity přes markery:
+  https://stackoverflow.com/questions/3290392/creating-svg-markers-programmatically-with-javascript
+  https://vanseodesign.com/web-design/svg-markers/
+Obarvování svg markerů (pouze v SVG 2):
+  https://stackoverflow.com/questions/16664584/changing-an-svg-markers-color-css
+
+
+TODO: Defs a Marker bych asi neměl vyrábět v každym exitu,
+  ale jen jednou pro celou mapu
+- možná bude problém s obarvováním, ale rychlost to zjevně řeší
+[done]
+
+TODO: Sloučit Path.setColor() a Line.setColor()
+  (volat v nich funkci z Dom).
+
 ------------------------------------------------------------------------------
 
 TODO: Prostudovat:

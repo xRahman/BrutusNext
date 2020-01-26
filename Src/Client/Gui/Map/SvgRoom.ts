@@ -10,6 +10,7 @@ import { Room } from "../../../Client/World/Room";
 import { SvgRooms } from "../../../Client/Gui/Map/SvgRooms";
 import { Image } from "../../../Client/Gui/Svg/Image";
 import { Circle } from "../../../Client/Gui/Svg/Circle";
+import { SvgVerticalExit } from "../../../Client/Gui/Map/SvgVerticalExit";
 import { G } from "../../../Client/Gui/Svg/G";
 
 export class SvgRoom extends G
@@ -23,6 +24,8 @@ export class SvgRoom extends G
 
   private readonly roomBackground: Circle;
   private readonly roomIcon: Image;
+  private readonly exitUp: SvgVerticalExit;
+  private readonly exitDown: SvgVerticalExit;
 
   private coords: Coords | "In cache" = "In cache";
 
@@ -30,11 +33,13 @@ export class SvgRoom extends G
   {
     super(parent, name);
 
+    this.exitUp = createExit(this, "up");
+    this.exitDown = createExit(this, "down");
+
     this.roomBackground = createRoomBackground(this);
+    this.roomIcon = createRoomIcon(this);
 
     this.hide();
-
-    this.roomIcon = createRoomIcon(this);
   }
 
   public setId(id: string): void
@@ -103,4 +108,11 @@ function createRoomIcon(parent: SvgRoom): Image
   roomIcon.hide();
 
   return roomIcon;
+}
+
+function createExit(parent: SvgRoom, direction: "up" | "down"): SvgVerticalExit
+{
+  const svgExit = new SvgVerticalExit(parent, direction);
+
+  return svgExit;
 }
