@@ -24,6 +24,7 @@ export namespace MudMap
   {
     from: Coords,
     to: Coords,
+    id: string,
     bidirectional: boolean
   };
 
@@ -32,9 +33,18 @@ export namespace MudMap
   export type RoomsAndCoords =
     Array<{ room: Room | "Doesn't exist", coords: Coords }>;
 
-  export function countRoomsInView(): number
+  export function maxRoomsInView(): number
   {
     return ((2 * VIEW_RADIUS) + 1) ** 2;
+  }
+
+  export function maxExitsInView(): number
+  {
+    // The formula to count maximum possible number of horizontal
+    // exits for grid of (m * n) rooms (including exits leading out
+    // of this grid) is: 4 * m * n + 3 * (m + n) - 2.
+    //   If (m === n), the fomula simplifies to: 4 * n * n + 6 * n - 2.
+    return (4 * VIEW_RADIUS * VIEW_RADIUS) + (6 * VIEW_RADIUS) - 2;
   }
 
   // ! Throws exception on error.
@@ -148,9 +158,9 @@ function extractExitData(room: Room, exitsData: MudMap.ExitsData): void
 
     const from = room.coords;
     const to = exit.to;
-    const exitId = Coords.createExitId(from, to);
+    const id = Coords.createExitId(from, to);
 
-    const exitData = exitsData.get(exitId);
+    const exitData = exitsData.get(id);
 
     if (exitData === undefined)
     {
@@ -167,7 +177,7 @@ function extractExitData(room: Room, exitsData: MudMap.ExitsData): void
       //   exitId
       // );
 
-      exitsData.set(exitId, { from, to, bidirectional: false });
+      exitsData.set(id, { from, to, id, bidirectional: false });
     }
     else
     {
@@ -184,7 +194,7 @@ function extractExitData(room: Room, exitsData: MudMap.ExitsData): void
       //   exitId
       // );
 
-      exitsData.set(exitId, { from, to, bidirectional: true });
+      exitsData.set(id, { from, to, id, bidirectional: true });
     }
   }
 }

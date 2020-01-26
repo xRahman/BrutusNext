@@ -1,3 +1,31 @@
+TODO: Mělo by to bejt spíš asi MapWindow.lookAt(coords) nebo
+  MapComponent.lookAt(coords).
+- zatím to nechám bejt, třeba se časem vyvrbí, jak to má bejt strukturovaný
+Je to MudMap.lookAt(coords).
+[done]
+
+TODO: Na editaci by se asi hodilo mít větší ikony room, aby se na ně líp
+  trefovalo (zase to pak bude vypadat jinak než hra, to asi není dobře).
+- prozatím jsem zvětšil ikony místností obecně. Uvidíme, jestli to bude
+  vypadat dobře.
+[done]
+
+Optimalizace mapy:
+------------------
+
+TODO: Cache na exit elementy
+- zvlášť na horizontal exity a zvlášť na vertical
+  Hmm, každá rooma by vlastně rovnou mohla mít svg komponentu na exit
+  up a down a jen ji showovat/hidovat/přebarvovat, tj. up/down exity
+  vůbec nemusej bejt v ExitsComponent.
+Hmm, až budou exity v cachi, tak jim asi nepůjde nastavovat pozice
+  v konstruktoru
+[done]
+
+TODO: Vyrábět exit elementy mimo DOM a insternout je najednou
+  s parentem
+[done]
+
 TODO: Rozdělit VerticalExit a HorizontalExit
 [done]
 

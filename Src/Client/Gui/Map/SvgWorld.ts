@@ -52,7 +52,7 @@ export class SvgWorld extends G
 
   public translateTo(coords: Coords): void
   {
-    const roomSpacing = SvgRooms.roomSpacingPixels;
+    const roomSpacing = SvgRooms.ROOM_SPACING_PIXELS;
 
     this.translate
     (
@@ -88,7 +88,7 @@ export class SvgWorld extends G
 
     for (const exitData of exitsData.values())
     {
-      this.exits.createExitComponent(exitData);
+      this.exits.addExit(exitData);
     }
   }
 

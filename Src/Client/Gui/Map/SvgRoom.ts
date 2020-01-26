@@ -14,7 +14,7 @@ import { G } from "../../../Client/Gui/Svg/G";
 
 export class SvgRoom extends G
 {
-  public static get roomPixelSize(): number
+  public static get ROOM_PIXEL_SIZE(): number
   {
     return Dom.remToPixels(0.75);
   }
@@ -61,7 +61,7 @@ export class SvgRoom extends G
       return;
     }
 
-    const iconPixelSize = SvgRoom.roomPixelSize * room.icon.scale;
+    const iconPixelSize = SvgRoom.ROOM_PIXEL_SIZE * room.icon.scale;
 
     this.roomIcon.setSize(iconPixelSize, iconPixelSize);
 
@@ -74,7 +74,7 @@ export class SvgRoom extends G
 
   private updatePosition(coords: Coords): void
   {
-    const roomSpacing = SvgRooms.roomSpacingPixels;
+    const roomSpacing = SvgRooms.ROOM_SPACING_PIXELS;
 
     this.setPosition
     (
@@ -90,7 +90,7 @@ function createRoomBackground(parent: SvgRoom): Circle
 {
   const background = new Circle(parent, SvgRoom.ROOM_BACKGROUND);
 
-  background.setRadius(1.2 * SvgRoom.roomPixelSize / 2);
+  background.setRadius(1.2 * SvgRoom.ROOM_PIXEL_SIZE / 2);
 
   return background;
 }

@@ -12,19 +12,19 @@ import { SvgWorld } from "../../../Client/Gui/Map/SvgWorld";
 import { SvgRoom } from "../../../Client/Gui/Map/SvgRoom";
 import { G } from "../../../Client/Gui/Svg/G";
 
-const ROOMS_IN_CACHE = MudMap.countRoomsInView();
+const ROOMS_IN_CACHE = MudMap.maxRoomsInView();
 
 export class SvgRooms extends G
 {
-  public static get roomSpacingPixels(): number
+  public static get ROOM_SPACING_PIXELS(): number
   {
     return Dom.remToPixels(1.5);
   }
 
   // [key]: string representation of room coords.
-  private readonly roomComponents = new Map<string, SvgRoom>();
+  private readonly svgRooms = new Map<string, SvgRoom>();
 
-  private readonly roomComponentCache = new Set<SvgRoom>();
+  private readonly roomCache = new Set<SvgRoom>();
 
   constructor(protected parent: SvgWorld, name = "rooms")
   {
@@ -37,46 +37,48 @@ export class SvgRooms extends G
     // children already created.
     super("No parent", name);
 
-    this.populateRoomComponentCache();
+    this.populateRoomCache();
 
     this.setParent(parent);
   }
 
+  // ---------------- Public methods --------------------
+
   public updateRoom(room: Room | "Doesn't exist", coords: Coords): void
   {
-    const roomComponent = this.getRoomComponent(coords);
+    const svgRoom = this.getSvgRoom(coords);
 
-    roomComponent.setRoom(room);
+    svgRoom.setRoom(room);
   }
 
   // ! Throws exception on error.
   public addRoom
   (
     room: Room | "Doesn't exist",
-    roomCoords: Coords
+    coords: Coords
   )
   : void
   {
-    const roomId = roomCoords.toString();
+    const roomId = coords.toString();
 
     // ! Throws exception on error.
-    const roomComponent = this.getComponentFromCache();
+    const svgRoom = this.getRoomFromCache();
 
-    roomComponent.setCoords(roomCoords);
-    roomComponent.setId(roomId);
-    roomComponent.setRoom(room);
-    roomComponent.show();
+    svgRoom.setCoords(coords);
+    svgRoom.setId(roomId);
+    svgRoom.setRoom(room);
+    svgRoom.show();
 
     // ! Throws exception on error.
-    this.addRoomComponent(roomId, roomComponent);
+    this.addSvgRoom(roomId, svgRoom);
   }
 
   public clear(): void
   {
-    for (const roomComponent of this.roomComponents.values())
-      this.putToCache(roomComponent);
+    for (const svgRoom of this.svgRooms.values())
+      this.putToCache(svgRoom);
 
-    this.roomComponents.clear();
+    this.svgRooms.clear();
   }
 
   // ! Throws exception on error.
@@ -89,21 +91,21 @@ export class SvgRooms extends G
   // ---------------- Private methods -------------------
 
   // ! Throws exception on error.
-  private addRoomComponent(id: string, component: SvgRoom): void
+  private addSvgRoom(id: string, component: SvgRoom): void
   {
-    if (this.roomComponents.has(id))
+    if (this.svgRooms.has(id))
     {
       throw Error(`There already is a component`
         + ` representing room ${id} in the map`);
     }
 
-    this.roomComponents.set(id, component);
+    this.svgRooms.set(id, component);
   }
 
   // ! Throws exception on error.
-  private populateRoomComponentCache(): void
+  private populateRoomCache(): void
   {
-    if (this.roomComponentCache.size !== 0)
+    if (this.roomCache.size !== 0)
       throw Error("Attempt to populate room cache which is not empty");
 
     for (let i = 0; i < ROOMS_IN_CACHE; i++)
@@ -113,46 +115,46 @@ export class SvgRooms extends G
   }
 
   // ! Throws exception on error.
-  private putToCache(roomComponent: SvgRoom): void
+  private putToCache(svgRoom: SvgRoom): void
   {
-    if (this.roomComponentCache.has(roomComponent))
+    if (this.roomCache.has(svgRoom))
     {
-      throw Error("Attempt to add an element to roomCache which is"
+      throw Error("Attempt to add an element to room cache which is"
         + " already there");
     }
 
-    roomComponent.setCoords("In cache");
-    roomComponent.setId("In cache");
-    roomComponent.setRoom("Doesn't exist");
-    roomComponent.hide();
+    svgRoom.setCoords("In cache");
+    svgRoom.setId("In cache");
+    svgRoom.setRoom("Doesn't exist");
+    svgRoom.hide();
 
-    this.roomComponentCache.add(roomComponent);
+    this.roomCache.add(svgRoom);
   }
 
   // ! Throws exception on error.
-  private getRoomComponent(coords: Coords): SvgRoom
+  private getSvgRoom(coords: Coords): SvgRoom
   {
-    const coordsString = coords.toString();
-    const roomComponent = this.roomComponents.get(coordsString);
+    const roomId = coords.toString();
+    const roomComponent = this.svgRooms.get(roomId);
 
     if (roomComponent === undefined)
     {
       throw Error(`There is no component representing room at coords`
-        + ` ${coordsString} in the map`);
+        + ` ${coords.toString()} in the map`);
     }
 
     return roomComponent;
   }
 
   // ! Throws exception on error.
-  private getComponentFromCache(): SvgRoom
+  private getRoomFromCache(): SvgRoom
   {
-    const component = Array.from(this.roomComponentCache).pop();
+    const component = Array.from(this.roomCache).pop();
 
     if (!component)
       throw Error("There are no more room components in the cache");
 
-    this.roomComponentCache.delete(component);
+    this.roomCache.delete(component);
 
     return component;
   }

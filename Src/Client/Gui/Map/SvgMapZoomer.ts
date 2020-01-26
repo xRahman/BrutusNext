@@ -21,7 +21,7 @@ export class SvgMapZoomer extends G
   private readonly world: SvgWorld;
 
   // ! Throws exception on error.
-  constructor(protected parent: SvgMapCenterer, name = "map_centerer")
+  constructor(protected parent: SvgMapCenterer, name = "map_zoomer")
   {
     super(parent, name);
 

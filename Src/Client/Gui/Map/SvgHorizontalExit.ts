@@ -18,15 +18,28 @@ export class SvgHorizontalExit extends G
   constructor
   (
     protected parent: SvgExits,
-    exitData: MudMap.ExitData,
     name = "exit"
   )
   {
     super(parent, name);
 
-    const roomSpacing = SvgRooms.roomSpacingPixels;
-
     this.line = new Line(this, "exit_line");
+  }
+
+  // ---------------- Public methods --------------------
+
+  public setExitData(exitData: MudMap.ExitData): void
+  {
+    this.setId(exitData.id);
+    this.updateGraphics(exitData);
+  }
+
+  // ---------------- Private methods -------------------
+
+  private updateGraphics(exitData: MudMap.ExitData): void
+  {
+    const roomSpacing = SvgRooms.ROOM_SPACING_PIXELS;
+
     this.line.setColor(new CssColor(255, 255, 0));
     this.line.draw
     (
@@ -41,15 +54,3 @@ export class SvgHorizontalExit extends G
     );
   }
 }
-
-// // ------------------ Type Declarations ----------------------
-
-// export namespace ExitComponent
-// {
-//   export type ExitData =
-//   {
-//     from: Coords,
-//     to: Coords,
-//     bidirectional: boolean
-//   };
-// }
