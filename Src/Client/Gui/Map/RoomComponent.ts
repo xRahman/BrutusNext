@@ -37,12 +37,20 @@ export class RoomComponent extends G
     this.roomIcon = createRoomIcon(this);
   }
 
+  public setId(id: string): void
+  {
+    // Id of 'room_background' element is used
+    // when processing mouse events to determine
+    // which room has been clicked on.
+    this.roomBackground.setId(id);
+  }
+
   public setCoords(coords: Coords | "In cache"): void
   {
-    const elementId = coords === "In cache" ? "In cache" : coords.toString();
-
     this.coords = coords;
-    this.roomBackground.setId(elementId);
+
+    if (coords !== "In cache")
+      this.updatePosition(coords);
   }
 
   public setRoom(room: Room | "Doesn't exist"): void
@@ -60,6 +68,19 @@ export class RoomComponent extends G
     this.roomIcon.setImage(room.icon.path);
 
     this.roomIcon.show();
+  }
+
+  // ---------------- Private methods -------------------
+
+  private updatePosition(coords: Coords): void
+  {
+    const roomSpacing = RoomsComponent.roomSpacingPixels;
+
+    this.setPosition
+    (
+      roomSpacing * coords.e,
+      -roomSpacing * coords.n
+    );
   }
 }
 

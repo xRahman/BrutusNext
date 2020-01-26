@@ -5,7 +5,6 @@
 TARGET:
 - edituju server-side roomy, exity
 - přepínám patra v mapě, můžu v ní "chodit" (i nahoru a dolů)
-  a můžu s ní panovat
 - posílám automaticky serializovaný pakety (entity)
 - savuju entity na disk
 - edituju roomy a exity v zóně, na serveru ji ukládám na disk
@@ -24,9 +23,8 @@ Později:
 
 TODO: Znovu projít mapové komponenty
 
-TODO: Pozice room componenty by se měla nastavovat v RoomComponent, stejně
-  jako se pozice ExitComponenty nastavuje v ExitComponent
-  (tj. ne v RoomsComponent)
+
+TODO: Rozdělit VerticalExit a HorizontalExit
 
 
 Optimalizace mapy:
@@ -37,6 +35,8 @@ TODO: Cache na exit elementy
   Hmm, každá rooma by vlastně rovnou mohla mít svg komponentu na exit
   up a down a jen ji showovat/hidovat/přebarvovat, tj. up/down exity
   vůbec nemusej bejt v ExitsComponent.
+Hmm, až budou exity v cachi, tak jim asi nepůjde nastavovat pozice
+  v konstruktoru
 
 TODO: Vyrábět exit elementy mimo DOM a insternout je najednou
   s parentem

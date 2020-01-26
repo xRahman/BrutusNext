@@ -57,31 +57,18 @@ export class RoomsComponent extends G
   )
   : void
   {
-    const roomComponent = this.removeComponentFromCache();
+    const roomId = roomCoords.toString();
 
-    if (roomComponent === "Cache is empty")
-      throw Error("There are no more room components in the cache");
-
-    const roomSpacing = RoomsComponent.roomSpacingPixels;
+    // ! Throws exception on error.
+    const roomComponent = this.getComponentFromCache();
 
     roomComponent.setCoords(roomCoords);
-    roomComponent.setPosition
-    (
-      roomSpacing * roomCoords.e,
-      -roomSpacing * roomCoords.n
-    );
+    roomComponent.setId(roomId);
     roomComponent.setRoom(room);
     roomComponent.show();
 
-    const coordsString = roomCoords.toString();
-
-    if (this.roomComponents.has(coordsString))
-    {
-      throw Error(`Room with coords ${coordsString} already`
-        + ` has a component in the map`);
-    }
-
-    this.roomComponents.set(coordsString, roomComponent);
+    // ! Throws exception on error.
+    this.addRoomComponent(roomId, roomComponent);
   }
 
   public clear(): void
@@ -102,6 +89,18 @@ export class RoomsComponent extends G
   // ---------------- Private methods -------------------
 
   // ! Throws exception on error.
+  private addRoomComponent(id: string, component: RoomComponent): void
+  {
+    if (this.roomComponents.has(id))
+    {
+      throw Error(`There already is a component`
+        + ` representing room ${id} in the map`);
+    }
+
+    this.roomComponents.set(id, component);
+  }
+
+  // ! Throws exception on error.
   private populateRoomComponentCache(): void
   {
     if (this.roomComponentCache.size !== 0)
@@ -109,26 +108,23 @@ export class RoomsComponent extends G
 
     for (let i = 0; i < ROOMS_IN_CACHE; i++)
     {
-      const roomComponent = new RoomComponent(this);
-
-      roomComponent.setCoords("In cache");
-
-      this.roomComponentCache.add(roomComponent);
+      this.putToCache(new RoomComponent(this));
     }
   }
 
   // ! Throws exception on error.
   private putToCache(roomComponent: RoomComponent): void
   {
-    roomComponent.setCoords("In cache");
-    roomComponent.setRoom("Doesn't exist");
-    roomComponent.hide();
-
     if (this.roomComponentCache.has(roomComponent))
     {
       throw Error("Attempt to add an element to roomCache which is"
         + " already there");
     }
+
+    roomComponent.setCoords("In cache");
+    roomComponent.setId("In cache");
+    roomComponent.setRoom("Doesn't exist");
+    roomComponent.hide();
 
     this.roomComponentCache.add(roomComponent);
   }
@@ -148,17 +144,16 @@ export class RoomsComponent extends G
     return roomComponent;
   }
 
-  private removeComponentFromCache(): RoomComponent | "Cache is empty"
+  // ! Throws exception on error.
+  private getComponentFromCache(): RoomComponent
   {
-    for (const value of this.roomComponentCache)
-    {
-      this.roomComponentCache.delete(value);
+    const component = Array.from(this.roomComponentCache).pop();
 
-      // We are using the for cycle just to access the
-      // first element of the set so we return right away.
-      return value;
-    }
+    if (!component)
+      throw Error("There are no more room components in the cache");
 
-    return "Cache is empty";
+    this.roomComponentCache.delete(component);
+
+    return component;
   }
 }

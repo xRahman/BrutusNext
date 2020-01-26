@@ -1,3 +1,8 @@
+TODO: Pozice room componenty by se měla nastavovat v RoomComponent, stejně
+  jako se pozice ExitComponenty nastavuje v ExitComponent
+  (tj. ne v RoomsComponent)
+[done]
+
 TODO: Cashování room elementů při updatu mapy
 - nejdřív se checkne, který nemají být vidět, ty se hidnou a hoděj do seznamu
   komponent v cashi.
