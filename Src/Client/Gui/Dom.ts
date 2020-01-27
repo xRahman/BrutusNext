@@ -338,8 +338,39 @@ export namespace Dom
 type Transform =
 {
   scale?: string,
-  translate?: string
+  translate?: string,
+  rotate?: string,
+  skewX?: string,
+  skewY?: string
 };
+
+function addTransform
+(
+  param: { transformString: string, spaceIsNeeded: boolean },
+  transform: string,
+  value?: string
+)
+: void
+{
+  if (value === undefined)
+    return;
+
+  param.transformString += `${transform}(${value})`;
+  param.spaceIsNeeded = true;
+}
+
+function addSpaceIfNeeded
+(
+  param: { transformString: string, spaceIsNeeded: boolean }
+)
+: void
+{
+  if (param.spaceIsNeeded)
+  {
+    param.transformString += " ";
+    param.spaceIsNeeded = false;
+  }
+}
 
 function setTransform
 (
@@ -348,31 +379,33 @@ function setTransform
 )
 : void
 {
-  if (transform.scale === undefined && transform.translate === undefined)
+  const param =
   {
-    element.removeAttribute("transform");
-    return;
-  }
-
-  let transformString = "";
+    transformString: "",
+    spaceIsNeeded: false
+  };
 
   // Note: Order of transformations matters.
 
-  if (transform.scale !== undefined)
-    transformString += `scale(${transform.scale})`;
+  addTransform(param, "scale", transform.scale);
+  addSpaceIfNeeded(param);
+  addTransform(param, "translate", transform.translate);
+  addSpaceIfNeeded(param);
+  addTransform(param, "rotate", transform.rotate);
+  addSpaceIfNeeded(param);
+  addTransform(param, "skewX", transform.skewX);
+  addSpaceIfNeeded(param);
+  addTransform(param, "skewY", transform.skewY);
 
-  if (transform.scale !== undefined && transform.translate !== undefined)
-    transformString += " ";
-
-  if (transform.translate !== undefined)
-    transformString += `translate(${transform.translate})`;
-
-  element.setAttribute("transform", transformString);
+  if (param.transformString === "")
+    element.removeAttribute("transform");
+  else
+    element.setAttribute("transform", param.transformString);
 }
 
-function getTransformAttribute(element: Dom.Element): string
+function getAttribute(element: Dom.Element, name: string): string
 {
-  const attribute = element.getAttribute("transform");
+  const attribute = element.getAttribute(name);
 
   if (attribute === null)
     return "";
@@ -382,7 +415,7 @@ function getTransformAttribute(element: Dom.Element): string
 
 function getExistingTranslate(element: Dom.Element): string
 {
-  const attribute = getTransformAttribute(element);
+  const attribute = getAttribute(element, "translate");
 
   if (!attribute.includes("translate"))
     return "";
@@ -402,7 +435,7 @@ function getExistingTranslate(element: Dom.Element): string
 
 function getExistingScale(element: Dom.Element): string
 {
-  const attribute = getTransformAttribute(element);
+  const attribute = getAttribute(element, "scale");
 
   if (!attribute.includes("scale"))
     return "";
