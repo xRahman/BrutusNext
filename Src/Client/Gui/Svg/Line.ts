@@ -37,7 +37,7 @@ export class Line extends Component
 
   public setColor(color: CssColor): void
   {
-    this.element.setAttribute("stroke", color.toString());
+    Dom.setLineColor(this.element, color);
   }
 
   public setMarkerEnd(id: string): void

@@ -1,3 +1,7 @@
+TODO: Sloučit Path.setColor() a Line.setColor()
+  (volat v nich funkci z Dom).
+[done]
+
 TODO: Rozšířit setování transformací na všechny transformace
   https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/transform
 [done]

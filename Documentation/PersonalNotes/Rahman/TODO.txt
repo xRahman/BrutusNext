@@ -41,9 +41,6 @@ TODO: Defs a Marker bych asi neměl vyrábět v každym exitu,
 - možná bude problém s obarvováním, ale rychlost to zjevně řeší
 [done]
 
-TODO: Sloučit Path.setColor() a Line.setColor()
-  (volat v nich funkci z Dom).
-
 ------------------------------------------------------------------------------
 
 TODO: Prostudovat:
