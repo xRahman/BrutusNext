@@ -21,9 +21,6 @@ Později:
 
 ------------------------------------------------------------------------------
 
-TODO: Rozšířit setování transformací na všechny transformace
-  https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/transform
-
 TODO: Vykašlat se na markery, protože jim nejde dynamicky setovat barva
   Místo nich to udělat jako path s rotate transformací na celej exit
   (V SVG2 na to bude 'context-fill' a 'context-stroke', ale zatím není)

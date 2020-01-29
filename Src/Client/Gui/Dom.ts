@@ -10,6 +10,17 @@ import { StringUtils } from "../../Shared/Utils/StringUtils";
 const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
 const SVG_XLINK_NAMESPACE = "http://www.w3.org/1999/xlink";
 
+type Transform =
+{
+  scale?: string,
+  translate?: string,
+  rotate?: string,
+  skewX?: string,
+  skewY?: string
+};
+
+type Point = { xPixels: number, yPixels: number };
+
 export namespace Dom
 {
   export type Element = HTMLElement | SVGElement;
@@ -236,13 +247,9 @@ export namespace Dom
   // ! Throws exception on error.
   export function scale(element: Element, scaleFactor: number): void
   {
-    const existingTranslate = getExistingTranslate(element);
+    const transform = getCurrentTransform(element);
 
-    const transform: Transform = { scale: `${scaleFactor}` };
-
-    if (existingTranslate)
-      transform.translate = existingTranslate;
-
+    transform.scale = `${scaleFactor}`;
     setTransform(element, transform);
   }
 
@@ -254,13 +261,43 @@ export namespace Dom
   )
   : void
   {
-    const existingScale = getExistingScale(element);
+    const transform = getCurrentTransform(element);
 
-    const transform: Transform = { translate: `${xPixels}, ${yPixels}` };
+    transform.translate = `${xPixels}, ${yPixels}`;
+    setTransform(element, transform);
+  }
 
-    if (existingScale)
-      transform.scale = existingScale;
+  export function rotate
+  (
+    element: Element,
+    degrees: number,
+    pivot?: Point
+  )
+  : void
+  {
+    const transform = getCurrentTransform(element);
 
+    transform.rotate = `${degrees}`;
+
+    if (pivot)
+      transform.rotate += `, ${pivot.xPixels}, ${pivot.yPixels}`;
+
+    setTransform(element, transform);
+  }
+
+  export function skewX(element: Element, degrees: number): void
+  {
+    const transform = getCurrentTransform(element);
+
+    transform.skewX = `${degrees}`;
+    setTransform(element, transform);
+  }
+
+  export function skewY(element: Element, degrees: number): void
+  {
+    const transform = getCurrentTransform(element);
+
+    transform.skewX = `${degrees}`;
     setTransform(element, transform);
   }
 
@@ -335,15 +372,6 @@ export namespace Dom
 
 // ----------------- Auxiliary Functions ---------------------
 
-type Transform =
-{
-  scale?: string,
-  translate?: string,
-  rotate?: string,
-  skewX?: string,
-  skewY?: string
-};
-
 function addTransform
 (
   param: { transformString: string, spaceIsNeeded: boolean },
@@ -352,7 +380,7 @@ function addTransform
 )
 : void
 {
-  if (value === undefined)
+  if (value === undefined || value === "")
     return;
 
   param.transformString += `${transform}(${value})`;
@@ -413,24 +441,44 @@ function getAttribute(element: Dom.Element, name: string): string
   return attribute;
 }
 
-function getExistingTranslate(element: Dom.Element): string
+function getCurrentTransform(element: Dom.Element): Transform
 {
-  const attribute = getAttribute(element, "translate");
+  const transform: Transform =
+  {
+    scale: getTransformArgument(element, "scale"),
+    translate: getTransformArgument(element, "translate"),
+    rotate: getTransformArgument(element, "rotate"),
+    skewX: getTransformArgument(element, "skewX"),
+    skewY: getTransformArgument(element, "skewY")
+  };
 
-  if (!attribute.includes("translate"))
+  return transform;
+}
+
+// ! Throws exception on error.
+function getTransformArgument
+(
+  element: Dom.Element,
+  transformComponent: string
+)
+: string
+{
+  const transformAttribute = getAttribute(element, transformComponent);
+
+  if (!transformAttribute.includes(transformComponent))
     return "";
 
-  const transform = { translate: "" };
+  const transform = { argument: "" };
 
   // ! Throws exception on error.
   StringUtils.scan
   (
-    attribute,
-    "&{*}translate(&{translate})&{*}",
+    transformAttribute,
+    `&{*}${transformComponent}(&{argument})&{*}`,
     transform
   );
 
-  return transform.translate;
+  return transform.argument;
 }
 
 function getExistingScale(element: Dom.Element): string

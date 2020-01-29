@@ -1,3 +1,7 @@
+TODO: Rozšířit setování transformací na všechny transformace
+  https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/transform
+[done]
+
 TODO: Společnej předek pro SvgExits a SvGrooms
   (CachedContainer nebo tak něco)
 [done]
