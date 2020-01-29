@@ -8,15 +8,12 @@ import { Syslog } from "../../../Shared/Log/Syslog";
 import { CssColor } from "../../../Client/Gui/CssColor";
 import { SvgRoom } from "../../../Client/Gui/Map/SvgRoom";
 import { SvgRooms } from "../../../Client/Gui/Map/SvgRooms";
-import { Line } from "../../../Client/Gui/Svg/Line";
+import { Path } from "../../../Client/Gui/Svg/Path";
 import { G } from "../../../Client/Gui/Svg/G";
 
 export class SvgVerticalExit extends G
 {
-  // private readonly defs: Defs;
-  // private readonly arrowMarker: Marker;
-  // private readonly arrowTriangle: Path;
-  private readonly exitLine: Line;
+  private readonly exitGraphics: Path;
 
   constructor
   (
@@ -27,8 +24,8 @@ export class SvgVerticalExit extends G
   {
     super(parent, name);
 
-    this.exitLine = new Line(this, "exit_line");
-    this.exitLine.setMarkerEnd("Arrow");
+    this.exitGraphics = new Path(this, "exit_line");
+    // this.exitGraphics.setMarkerEnd("Arrow");
 
     this.updateGraphics(direction);
   }
@@ -39,10 +36,16 @@ export class SvgVerticalExit extends G
 
   private updateGraphics(direction: "up" | "down"): void
   {
-    const sign = getSign(direction);
     const roomSpacing = SvgRooms.ROOM_SPACING_PIXELS;
 
-    this.exitLine.setColor(new CssColor(255, 255, 0));
+    const path = `M 0 0`
+      + ` L ${roomSpacing * 0.4} 0`
+      + ` L ${roomSpacing * 0.4} ${roomSpacing * 0.03}`
+      + ` L ${roomSpacing * 0.45} 0`
+      + ` L ${roomSpacing * 0.4} -${roomSpacing * 0.03}`
+      + ` L ${roomSpacing * 0.4} 0`;
+
+    this.exitGraphics.setColor(new CssColor(255, 255, 0));
     // this.line.draw
     // (
     //   {
@@ -54,31 +57,35 @@ export class SvgVerticalExit extends G
     //     yPixels: -sign * roomSpacing / 2
     //   }
     // );
-    this.exitLine.draw
-    (
-      {
-        xPixels: sign * roomSpacing * 0.125,
-        yPixels: 0
-      },
-      {
-        xPixels: sign * roomSpacing * 0.125,
-        yPixels: -sign * roomSpacing * 0.4
-      }
-    );
+    // this.exitGraphics.draw
+    // (
+    //   {
+    //     xPixels: sign * roomSpacing * 0.125,
+    //     yPixels: 0
+    //   },
+    //   {
+    //     xPixels: sign * roomSpacing * 0.125,
+    //     yPixels: -sign * roomSpacing * 0.4
+    //   }
+    // );
+
+    this.exitGraphics.draw(path);
+
+    this.rotate(-67.5 + rotateByDirection(direction));
   }
 }
 
 // ----------------- Auxiliary Functions ---------------------
 
-function getSign(direction: "up" | "down"): 1 | -1
+function rotateByDirection(direction: "up" | "down"): number
 {
   switch (direction)
   {
     case "up":
-      return 1;
+      return 0;
 
     case "down":
-      return -1;
+      return 180;
 
     default:
       throw Syslog.reportMissingCase(direction);

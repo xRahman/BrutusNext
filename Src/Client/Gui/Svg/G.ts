@@ -28,6 +28,11 @@ export class G extends Component
    this.translate(xPixels, yPixels);
   }
 
+  public scale(scale: number): void
+  {
+    Dom.scale(this.element, scale);
+  }
+
   public translate(xPixels: number, yPixels: number): void
   {
     // Use translate transformation because <g> element
@@ -35,8 +40,18 @@ export class G extends Component
     Dom.translate(this.element, xPixels, yPixels);
   }
 
-  public scale(scale: number): void
+  public rotate(degrees: number, pivot?: Dom.Point): void
   {
-    Dom.scale(this.element, scale);
+    Dom.rotate(this.element, degrees);
+  }
+
+  public skewX(degrees: number): void
+  {
+    Dom.skewX(this.element, degrees);
+  }
+
+  public skewY(degrees: number): void
+  {
+    Dom.skewY(this.element, degrees);
   }
 }

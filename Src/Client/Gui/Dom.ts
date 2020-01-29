@@ -20,10 +20,10 @@ type Transform =
   skewY?: string
 };
 
-type Point = { xPixels: number, yPixels: number };
-
 export namespace Dom
 {
+  export type Point = { xPixels: number, yPixels: number };
+
   export type Element = HTMLElement | SVGElement;
 
   export type InsertMode =

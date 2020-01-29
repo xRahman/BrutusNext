@@ -21,25 +21,19 @@ Později:
 
 ------------------------------------------------------------------------------
 
-TODO: Vykašlat se na markery, protože jim nejde dynamicky setovat barva
-  Místo nich to udělat jako path s rotate transformací na celej exit
-  (V SVG2 na to bude 'context-fill' a 'context-stroke', ale zatím není)
+TODO: Znovu projít mapové komponenty (refactoring)
 
+TODO: Setovat stroke-width podle rem
 
-TODO: Znovu projít mapové komponenty
+TODO: Zobrazovat exity "up" a "down" podle exitů v roomách
 
+TODO: Chodit po malě na numerické klávesnici (PgUp/PgDown zůstává)
 
-TODO: Šipky na exity přes markery:
-  https://stackoverflow.com/questions/3290392/creating-svg-markers-programmatically-with-javascript
-  https://vanseodesign.com/web-design/svg-markers/
-Obarvování svg markerů (pouze v SVG 2):
-  https://stackoverflow.com/questions/16664584/changing-an-svg-markers-color-css
-
-
-TODO: Defs a Marker bych asi neměl vyrábět v každym exitu,
-  ale jen jednou pro celou mapu
-- možná bude problém s obarvováním, ale rychlost to zjevně řeší
-[done]
+TODO: Buildit a mazat exity "up" a "down"
+  Jakou UI akcí?
+  - shift + PgUp/PgDown?
+    Potom by asi přes shift+kurzory měly jít vyrábět všechny exity
+    (respektive spíš shift+numpad keys, aby šly i šikmý)
 
 ------------------------------------------------------------------------------
 

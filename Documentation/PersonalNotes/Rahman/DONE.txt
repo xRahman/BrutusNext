@@ -1,3 +1,20 @@
+TODO: Vykašlat se na markery, protože jim nejde dynamicky setovat barva
+  Místo nich to udělat jako path s rotate transformací na celej exit
+  (V SVG2 na to bude 'context-fill' a 'context-stroke', ale zatím není)
+[done]
+
+TODO: Šipky na exity přes markery:
+  https://stackoverflow.com/questions/3290392/creating-svg-markers-programmatically-with-javascript
+  https://vanseodesign.com/web-design/svg-markers/
+Obarvování svg markerů (pouze v SVG 2):
+  https://stackoverflow.com/questions/16664584/changing-an-svg-markers-color-css
+[won't use]
+
+TODO: Defs a Marker bych asi neměl vyrábět v každym exitu,
+  ale jen jednou pro celou mapu
+- možná bude problém s obarvováním, ale rychlost to zjevně řeší
+[won't use]
+
 TODO: Sloučit Path.setColor() a Line.setColor()
   (volat v nich funkci z Dom).
 [done]
@@ -6,7 +23,7 @@ TODO: Rozšířit setování transformací na všechny transformace
   https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/transform
 [done]
 
-TODO: Společnej předek pro SvgExits a SvGrooms
+TODO: Společnej předek pro SvgExits a SvGRooms
   (CachedContainer nebo tak něco)
 [done]
 
