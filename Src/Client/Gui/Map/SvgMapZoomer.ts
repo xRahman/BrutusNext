@@ -5,6 +5,7 @@
 */
 
 import "../../../Shared/Utils/Number";
+// import { Number } from "../../../Shared/Utils/Number";
 import { SvgMapCenterer } from "../../../Client/Gui/Map/SvgMapCenterer";
 import { SvgPlayerPosition } from "../../../Client/Gui/Map/SvgPlayerPosition";
 import { SvgWorld } from "../../../Client/Gui/Map/SvgWorld";
@@ -48,11 +49,7 @@ export class SvgMapZoomer extends G
 
   private setZoomStep(zoomStep: number): void
   {
-    this.zoomStep = Number(zoomStep).clampTo
-    (
-      MININUM_ZOOM_STEP,
-      MAXIMUM_ZOOM_STEP
-    );
+    this.zoomStep = zoomStep.clampTo(MININUM_ZOOM_STEP, MAXIMUM_ZOOM_STEP);
 
     // if (zoomStep < MININUM_ZOOM_STEP)
     //   this.zoomStep = MININUM_ZOOM_STEP;

@@ -12,8 +12,6 @@
       import "../../Shared/Utils/Number";
 */
 
-// Strangely something must be imported into this module
-//  in order to be able to do global namespace augmenting.
 import { Syslog } from "../../Shared/Log/Syslog";
 
 // We are augmenting global namespace.
@@ -56,14 +54,20 @@ declare global
   }
 }
 
-Number.prototype.isValid = function(): boolean
+// Arrow functions can't be used to extend Number prototype
+// because they would capture global 'this' instead of the Number
+// object that we are extending.
+/* eslint-disable @typescript-eslint/unbound-method */
+
+Number.prototype.isValid = function isValid(): boolean
 {
   return this.valueOf() !== null && this.valueOf() !== undefined
     && !Number.isNaN(this.valueOf()) && Number.isFinite(this.valueOf());
 };
 
 // ! Throws exception on error.
-Number.prototype.validate = function(): number
+// eslint-disable-next-line @typescript-eslint/unbound-method
+Number.prototype.validate = function validate(): number
 {
   if (!this.isValid())
     throw Error(`Invalid number: ${this.valueOf()}`);
@@ -71,7 +75,12 @@ Number.prototype.validate = function(): number
   return this.valueOf();
 };
 
-Number.prototype.clampTo = function(minimum: number, maximum: number): number
+Number.prototype.clampTo = function clampTo
+(
+  minimum: number,
+  maximum: number
+)
+: number
 {
   if (this < minimum)
     return minimum;
@@ -82,7 +91,7 @@ Number.prototype.clampTo = function(minimum: number, maximum: number): number
   return this.valueOf();
 };
 
-Number.prototype.atLeast = function(minimum: number): number
+Number.prototype.atLeast = function atLeast(minimum: number): number
 {
   if (this < minimum)
     return minimum;
@@ -90,7 +99,7 @@ Number.prototype.atLeast = function(minimum: number): number
   return this.valueOf();
 };
 
-Number.prototype.atMost = function(maximum: number): number
+Number.prototype.atMost = function atMost(maximum: number): number
 {
   if (this > maximum)
     return maximum;
@@ -99,11 +108,12 @@ Number.prototype.atMost = function(maximum: number): number
 };
 
 // ! Throws exception on error.
-Number.prototype.validateToInterval = function
+Number.prototype.validateToInterval = function validateToInterval
 (
   minimum: number,
   maximum: number
 )
+: void
 {
   if (this < minimum || this > maximum)
   {
@@ -113,7 +123,11 @@ Number.prototype.validateToInterval = function
 };
 
 // ! Throws exception on error.
-Number.prototype.validateToAtLeast = function(minimum: number)
+Number.prototype.validateToAtLeast = function validateToAtLeast
+(
+  minimum: number
+)
+: void
 {
   if (this < minimum)
   {
@@ -123,7 +137,11 @@ Number.prototype.validateToAtLeast = function(minimum: number)
 };
 
 // ! Throws exception on error.
-Number.prototype.validateToAtMost = function(maximum: number)
+Number.prototype.validateToAtMost = function validateToAtMost
+(
+  maximum: number
+)
+: void
 {
   if (this > maximum)
   {
@@ -133,7 +151,7 @@ Number.prototype.validateToAtMost = function(maximum: number)
 };
 
 // ! Throws exception on error.
-Number.prototype.forceToInterval = function
+Number.prototype.forceToInterval = function forceToInterval
 (
   minimum: number,
   maximum: number
@@ -154,7 +172,11 @@ Number.prototype.forceToInterval = function
 };
 
 // ! Throws exception on error.
-Number.prototype.forceToAtLeast = function(minimum: number): number
+Number.prototype.forceToAtLeast = function forceToAtLeast
+(
+  minimum: number
+)
+: number
 {
   if (this < minimum)
   {
@@ -168,7 +190,11 @@ Number.prototype.forceToAtLeast = function(minimum: number): number
 };
 
 // ! Throws exception on error.
-Number.prototype.forceToAtMost = function(maximum: number): number
+Number.prototype.forceToAtMost = function forceToAtMost
+(
+  maximum: number
+)
+: number
 {
   if (this > maximum)
   {
@@ -181,4 +207,5 @@ Number.prototype.forceToAtMost = function(maximum: number): number
   return this.valueOf();
 };
 
+// Ensure this file is treated as a module.
 export {};

@@ -597,7 +597,7 @@
       // Disallow the use of 'eval()'.
       "no-eval": "error",
       // Disallow extending native types.
-      "no-extend-native": "error",
+      "no-extend-native": "off",
       // Disallow unnecessary calls to '.bind()'.
       "no-extra-bind": "error",
       // Disallow unnecessary labels.

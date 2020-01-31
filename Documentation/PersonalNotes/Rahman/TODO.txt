@@ -21,6 +21,10 @@ Později:
 
 ------------------------------------------------------------------------------
 
+TODO: Revidovat Number.ts
+
+TODO: Okomentovat tsconfig.eslint.json a zkusit z něj ostranit compilerOptions
+
 TODO: Znovu projít mapové komponenty (refactoring)
 - MudMap done.
 
