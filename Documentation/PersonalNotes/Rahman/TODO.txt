@@ -23,8 +23,6 @@ Později:
 
 TODO: Znovu projít mapové komponenty (refactoring)
 
-TODO: Zvážit, jestli místo lineWidht/lineColor neříkat spíš strokeWidth/color
-
 TODO: Zobrazovat exity "up" a "down" podle exitů v roomách
 
 TODO: Chodit po mapě na numerické klávesnici (PgUp/PgDown zůstává)

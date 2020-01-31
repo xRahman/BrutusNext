@@ -1,3 +1,7 @@
+TODO: Zvážit, jestli místo lineWidth/lineColor neříkat spíš strokeWidth/color
+- asi jo
+[done]
+
 TODO: Setovat stroke-width pomocí rem
 [done]
 

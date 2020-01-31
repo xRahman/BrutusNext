@@ -95,12 +95,12 @@ export namespace Dom
     element.setAttributeNS(SVG_XLINK_NAMESPACE, "href", path);
   }
 
-  export function setLineColor(element: Element, color: CssColor): void
+  export function setStrokeColor(element: Element, color: CssColor): void
   {
     element.setAttribute("stroke", color.toString());
   }
 
-  export function setLineWidth(element: Element, widthPixels: number): void
+  export function setStrokeWidth(element: Element, widthPixels: number): void
   {
     element.setAttribute("stroke-width", widthPixels.toString());
   }

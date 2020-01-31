@@ -46,8 +46,8 @@ export class SvgVerticalExit extends G
       + ` L ${roomSpacing * 0.4} -${roomSpacing * 0.03}`
       + ` L ${roomSpacing * 0.4} 0`;
 
-    this.exitGraphics.setColor(new CssColor(255, 255, 0));
-    this.exitGraphics.setLineWidth(SvgExits.LINE_WIDTH_PIXELS);
+    this.exitGraphics.setStrokeColor(new CssColor(255, 255, 0));
+    this.exitGraphics.setStrokeWidth(SvgExits.LINE_WIDTH_PIXELS);
 
     this.exitGraphics.draw(path);
 

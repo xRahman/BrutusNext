@@ -35,14 +35,14 @@ export class Line extends Component
     this.element.setAttribute("y2", String(to.yPixels));
   }
 
-  public setColor(color: CssColor): void
+  public setStrokeColor(color: CssColor): void
   {
-    Dom.setLineColor(this.element, color);
+    Dom.setStrokeColor(this.element, color);
   }
 
-  public setWidth(widthPixels: number): void
+  public setStrokeWidth(widthPixels: number): void
   {
-    Dom.setLineWidth(this.element, widthPixels);
+    Dom.setStrokeWidth(this.element, widthPixels);
   }
 
   public setMarkerEnd(id: string): void

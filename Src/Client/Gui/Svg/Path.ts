@@ -31,13 +31,13 @@ export class Path extends Component
     this.element.setAttribute("d", pathData);
   }
 
-  public setColor(color: CssColor): void
+  public setStrokeColor(color: CssColor): void
   {
-    Dom.setLineColor(this.element, color);
+    Dom.setStrokeColor(this.element, color);
   }
 
-  public setLineWidth(widthPixels: number): void
+  public setStrokeWidth(widthPixels: number): void
   {
-    Dom.setLineWidth(this.element, widthPixels);
+    Dom.setStrokeWidth(this.element, widthPixels);
   }
 }
