@@ -4,7 +4,7 @@ import { ErrorUtils } from "../../Shared/Utils/ErrorUtils";
 /*
   Part of BrutusNext
 
-  String-related utility functions.
+  String-related utility functions
 */
 
 export namespace StringUtils

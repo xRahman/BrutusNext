@@ -4,6 +4,11 @@
   Server typescript config file
 */
 
+/*
+  TODO: Tenhle soubor říká eslintu, že má lintovat všechno v Src,
+  i když to není odnikud includnuté.
+*/
+
 {
   "compilerOptions":
   {

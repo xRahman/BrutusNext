@@ -1,0 +1,13 @@
+/*
+  Part of BrutusNext
+
+  Server typescript config file
+*/
+
+{
+  "compilerOptions": { "strict": true },
+  "include":
+  [
+    "**/Src/**/*.ts"
+  ]
+}

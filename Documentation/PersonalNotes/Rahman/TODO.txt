@@ -22,6 +22,7 @@ Později:
 ------------------------------------------------------------------------------
 
 TODO: Znovu projít mapové komponenty (refactoring)
+- MudMap done.
 
 TODO: V SvgMapZoomer.setZoomStep() líp enforcovat interval hodnot
 
