@@ -41,6 +41,7 @@ export class SvgHorizontalExit extends G
     const roomSpacing = SvgRooms.ROOM_SPACING_PIXELS;
 
     this.line.setColor(new CssColor(255, 255, 0));
+    this.line.setWidth(SvgExits.LINE_WIDTH_PIXELS);
     this.line.draw
     (
       {

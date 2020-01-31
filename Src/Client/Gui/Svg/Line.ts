@@ -40,6 +40,11 @@ export class Line extends Component
     Dom.setLineColor(this.element, color);
   }
 
+  public setWidth(widthPixels: number): void
+  {
+    Dom.setLineWidth(this.element, widthPixels);
+  }
+
   public setMarkerEnd(id: string): void
   {
     this.element.setAttribute("marker-end", `url(#${id})`);

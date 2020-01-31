@@ -35,4 +35,9 @@ export class Path extends Component
   {
     Dom.setLineColor(this.element, color);
   }
+
+  public setLineWidth(widthPixels: number): void
+  {
+    Dom.setLineWidth(this.element, widthPixels);
+  }
 }

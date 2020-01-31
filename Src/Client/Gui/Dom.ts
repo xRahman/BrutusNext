@@ -100,6 +100,11 @@ export namespace Dom
     element.setAttribute("stroke", color.toString());
   }
 
+  export function setLineWidth(element: Element, widthPixels: number): void
+  {
+    element.setAttribute("stroke-width", widthPixels.toString());
+  }
+
   export function removeAllChildren(element: Element): void
   {
     while (element.lastChild !== null)

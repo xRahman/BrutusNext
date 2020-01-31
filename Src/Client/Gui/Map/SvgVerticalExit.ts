@@ -9,6 +9,7 @@ import { CssColor } from "../../../Client/Gui/CssColor";
 import { SvgRoom } from "../../../Client/Gui/Map/SvgRoom";
 import { SvgRooms } from "../../../Client/Gui/Map/SvgRooms";
 import { Path } from "../../../Client/Gui/Svg/Path";
+import { SvgExits } from "../../../Client/Gui/Map/SvgExits";
 import { G } from "../../../Client/Gui/Svg/G";
 
 export class SvgVerticalExit extends G
@@ -46,28 +47,7 @@ export class SvgVerticalExit extends G
       + ` L ${roomSpacing * 0.4} 0`;
 
     this.exitGraphics.setColor(new CssColor(255, 255, 0));
-    // this.line.draw
-    // (
-    //   {
-    //     xPixels: 0,
-    //     yPixels: 0
-    //   },
-    //   {
-    //     xPixels: sign * roomSpacing / 5,
-    //     yPixels: -sign * roomSpacing / 2
-    //   }
-    // );
-    // this.exitGraphics.draw
-    // (
-    //   {
-    //     xPixels: sign * roomSpacing * 0.125,
-    //     yPixels: 0
-    //   },
-    //   {
-    //     xPixels: sign * roomSpacing * 0.125,
-    //     yPixels: -sign * roomSpacing * 0.4
-    //   }
-    // );
+    this.exitGraphics.setLineWidth(SvgExits.LINE_WIDTH_PIXELS);
 
     this.exitGraphics.draw(path);
 
