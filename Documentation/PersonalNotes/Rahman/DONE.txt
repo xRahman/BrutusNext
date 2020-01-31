@@ -1,3 +1,6 @@
+TODO: Zoomování má nějak blbě kroky (a max zoom je moc detailní)
+[fixed]
+
 TODO: Zvážit, jestli místo lineWidth/lineColor neříkat spíš strokeWidth/color
 - asi jo
 [done]

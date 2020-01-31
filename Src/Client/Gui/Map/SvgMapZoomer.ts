@@ -9,13 +9,13 @@ import { SvgPlayerPosition } from "../../../Client/Gui/Map/SvgPlayerPosition";
 import { SvgWorld } from "../../../Client/Gui/Map/SvgWorld";
 import { G } from "../../../Client/Gui/Svg/G";
 
-const MINIMUM_ZOOM_FACTOR = 0.5;
-const MAXIMUM_ZOOM_FACTOR = 2;
-const ZOOM_STEP = 0.2;
+const MAXIMUM_ZOOM_STEP = 4;
+const MININUM_ZOOM_STEP = -4;
+const ZOOM_FACTOR_PER_STEP = 0.2;
 
 export class SvgMapZoomer extends G
 {
-  private zoom = 1.0;
+  private zoomStep = 0;
 
   private readonly playerPosition: SvgPlayerPosition;
   private readonly world: SvgWorld;
@@ -33,28 +33,40 @@ export class SvgMapZoomer extends G
 
   // ---------------- Public methods --------------------
 
-  public setZoom(zoomFactor: number): void
-  {
-    this.zoom = zoomFactor;
-
-    if (this.zoom < MINIMUM_ZOOM_FACTOR)
-      this.zoom = MINIMUM_ZOOM_FACTOR;
-
-    if (this.zoom > MAXIMUM_ZOOM_FACTOR)
-      this.zoom = MAXIMUM_ZOOM_FACTOR;
-
-    this.scale(zoomFactor);
-  }
-
-  public getZoom(): number { return this.zoom; }
-
   public zoomIn(): void
   {
-    this.setZoom(this.zoom / (1 + ZOOM_STEP));
+    this.setZoomStep(this.zoomStep - 1);
   }
 
   public zoomOut(): void
   {
-    this.setZoom(this.zoom * (1 + ZOOM_STEP));
+    this.setZoomStep(this.zoomStep + 1);
+  }
+
+  // ---------------- Private methods -------------------
+
+  private setZoomStep(zoomStep: number): void
+  {
+    this.zoomStep = zoomStep;
+
+    if (zoomStep < MININUM_ZOOM_STEP)
+      this.zoomStep = MININUM_ZOOM_STEP;
+
+    if (zoomStep > MAXIMUM_ZOOM_STEP)
+      this.zoomStep = MAXIMUM_ZOOM_STEP;
+
+    this.updateZoomFactor();
+  }
+
+  private updateZoomFactor(): void
+  {
+    const zoomFactor = (1 + ZOOM_FACTOR_PER_STEP) ** this.zoomStep;
+
+    this.setZoomFactor(zoomFactor);
+  }
+
+  private setZoomFactor(zoomFactor: number): void
+  {
+    this.scale(zoomFactor);
   }
 }

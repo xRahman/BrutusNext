@@ -23,7 +23,8 @@ Později:
 
 TODO: Znovu projít mapové komponenty (refactoring)
 
-TODO: Zoomování má nějak blbě kroky (a max zoom je moc detailní)
+TODO: V SvgMapZoomer.setZoomStep() líp enforcovat interval hodnot
+
 
 TODO: Zobrazovat exity "up" a "down" podle exitů v roomách
 
