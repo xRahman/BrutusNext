@@ -23,6 +23,8 @@ Později:
 
 TODO: Znovu projít mapové komponenty (refactoring)
 
+TODO: Zoomování má nějak blbě kroky (a max zoom je moc detailní)
+
 TODO: Zobrazovat exity "up" a "down" podle exitů v roomách
 
 TODO: Chodit po mapě na numerické klávesnici (PgUp/PgDown zůstává)

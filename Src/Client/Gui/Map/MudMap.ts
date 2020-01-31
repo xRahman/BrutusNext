@@ -10,13 +10,16 @@ import { Room } from "../../../Client/World/Room";
 import { World } from "../../../Client/World/World";
 import { SvgWorld } from "../../../Client/Gui/Map/SvgWorld";
 
-// Radius '0' wmeans that only 1 room is displayed,
+// Radius '0' means that only 1 room is displayed,
 // '1' means 3x3 rooms, '2' means 5x5 rooms etc.
-const VIEW_RADIUS = 20;
+const MAP_VIEW_RADIUS = 20;
 
-let viewCoords = new Coords(0, 0, 0);
+let mapViewCoords = new Coords(0, 0, 0);
 
-let svgWorld: SvgWorld | "Not set" = "Not set";
+const components =
+{
+  svgWorld: "Not set" as SvgWorld | "Not set"
+};
 
 export namespace MudMap
 {
@@ -35,7 +38,7 @@ export namespace MudMap
 
   export function maxRoomsInView(): number
   {
-    return ((2 * VIEW_RADIUS) + 1) ** 2;
+    return ((2 * MAP_VIEW_RADIUS) + 1) ** 2;
   }
 
   export function maxExitsInView(): number
@@ -44,23 +47,27 @@ export namespace MudMap
     // exits for grid of (m * n) rooms (including exits leading out
     // of this grid) is: 4 * m * n + 3 * (m + n) - 2.
     //   If (m === n), the fomula simplifies to: 4 * n * n + 6 * n - 2.
-    return (4 * VIEW_RADIUS * VIEW_RADIUS) + (6 * VIEW_RADIUS) - 2;
+    return (4 * MAP_VIEW_RADIUS * MAP_VIEW_RADIUS) + (6 * MAP_VIEW_RADIUS) - 2;
   }
 
   // ! Throws exception on error.
-  export function setSvgWorld(component: SvgWorld): void
+  export function setSvgWorld(svgWorld: SvgWorld): void
   {
-    if (svgWorld !== "Not set")
+    if (components.svgWorld !== "Not set")
       throw Error("Svg world component is already set to WorldMap");
 
-    svgWorld = component;
+    components.svgWorld = svgWorld;
   }
 
   // ! Throws exception on error.
   export function lookAt(coords: Coords): void
   {
-    viewCoords = coords;
+    mapViewCoords = coords;
+
+    // ! Throws exception on error.
     update({ rebuild: true });
+
+    // ! Throws exception on error.
     getSvgWorld().translateTo(coords);
   }
 
@@ -81,7 +88,7 @@ export namespace MudMap
     // ! Throws exception on error.
     const vector = Exit.getUnitVector(direction);
 
-    lookAt(Coords.add(viewCoords, vector));
+    lookAt(Coords.add(mapViewCoords, vector));
   }
 }
 
@@ -93,24 +100,24 @@ function getCoordsInView(): Array<Coords>
 
   const from =
   {
-    e: viewCoords.e - VIEW_RADIUS,
-    n: viewCoords.n - VIEW_RADIUS
+    e: mapViewCoords.e - MAP_VIEW_RADIUS,
+    n: mapViewCoords.n - MAP_VIEW_RADIUS
   };
 
   const to =
   {
-    e: viewCoords.e + VIEW_RADIUS,
-    n: viewCoords.n + VIEW_RADIUS
+    e: mapViewCoords.e + MAP_VIEW_RADIUS,
+    n: mapViewCoords.n + MAP_VIEW_RADIUS
   };
 
   // Order of cycles determines oder of svg components representing
-  // rooms. Since people usually expects rows of things rather than
+  // rooms. Since people usually expect rows of things rather than
   // columns, we iterate north-south direction first.
   for (let n = from.n; n <= to.n; n++)
   {
     for (let e = from.e; e <= to.e; e++)
     {
-      coordsInView.push(new Coords(e, n, viewCoords.u));
+      coordsInView.push(new Coords(e, n, mapViewCoords.u));
     }
   }
 
@@ -158,52 +165,26 @@ function extractExitData(room: Room, exitsData: MudMap.ExitsData): void
 
     const from = room.coords;
     const to = exit.to;
-    const id = Coords.createExitId(from, to);
 
-    const exitData = exitsData.get(id);
+    // 'id' is composed from string representantions of coords
+    // regardless of order (id of exit (from, to) is the same as id
+    // of exit (to, from)).
+    const id = Coords.composeExitId(from, to);
 
-    if (exitData === undefined)
-    {
-      /// DEBUG
-      // console.log
-      // (
-      //   "Setting onedirectional exit",
-      //   exitName,
-      //   "from:",
-      //   from,
-      //   "to:",
-      //   to,
-      //   "exitId:",
-      //   exitId
-      // );
+    // Bidirectional exit is processed twice - first time as (from, to),
+    // time as (to, from). Both times the same 'id' is composed so if it
+    // already is in exitsData, it means that this exit is bidirectional.
+    const bidirectional = exitsData.has(id);
 
-      exitsData.set(id, { from, to, id, bidirectional: false });
-    }
-    else
-    {
-      /// DEBUG
-      // console.log
-      // (
-      //   "Setting bidirectional exit",
-      //   exitName,
-      //   "from:",
-      //   from,
-      //   "to:",
-      //   to,
-      //   "exitId:",
-      //   exitId
-      // );
-
-      exitsData.set(id, { from, to, id, bidirectional: true });
-    }
+    exitsData.set(id, { from, to, id, bidirectional });
   }
 }
 
 // ! Throws exception on error.
 function getSvgWorld(): SvgWorld
 {
-  if (svgWorld === "Not set")
-    throw Error("World component is not set to WorldMap yet");
+  if (components.svgWorld === "Not set")
+    throw Error("World component is not set to MudMap yet");
 
-  return svgWorld;
+  return components.svgWorld;
 }

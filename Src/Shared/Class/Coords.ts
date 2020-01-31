@@ -11,7 +11,7 @@ export class Coords
   // Creates a string id unique to a given pair of coords
   // regardless or their order (this is used to deduplicate
   // room exits).
-  public static createExitId(from: Coords, to: Coords): string
+  public static composeExitId(from: Coords, to: Coords): string
   {
     if (from.e < to.e)
       return joinCoordStrings(from, to);
