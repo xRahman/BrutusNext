@@ -21,7 +21,7 @@ Později:
 
 ------------------------------------------------------------------------------
 
-TODO: Revidovat Number.ts
+TODO: Zkusit StringUtils.scan() předělat na String.scan()
 
 TODO: Okomentovat tsconfig.eslint.json a zkusit z něj ostranit compilerOptions
 

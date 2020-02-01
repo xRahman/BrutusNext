@@ -1,3 +1,6 @@
+TODO: Revidovat Number.ts
+[done]
+
 TODO: Upravit Number.ts, aby byl eslint spokojenej
 [done (v rámci možností)]
 

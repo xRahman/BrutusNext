@@ -55,8 +55,9 @@ declare global
 }
 
 // Arrow functions can't be used to extend Number prototype
-// because they would capture global 'this' instead of the Number
-// object that we are extending.
+// because they capture global 'this' instead of the Number
+// object that we are extending. So we need to disable respective
+// eslint rule.
 /* eslint-disable @typescript-eslint/unbound-method */
 
 Number.prototype.isValid = function isValid(): boolean
@@ -66,7 +67,6 @@ Number.prototype.isValid = function isValid(): boolean
 };
 
 // ! Throws exception on error.
-// eslint-disable-next-line @typescript-eslint/unbound-method
 Number.prototype.validate = function validate(): number
 {
   if (!this.isValid())
