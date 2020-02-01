@@ -1,11 +1,17 @@
 /*
   Part of BrutusNext
 
-  Server typescript config file
+  Fake tsconfig file specifying what eslint should lint
+*/
+
+/*
+  Eslint reports error if it finds a file that is not included
+  in any project. This fake tsconfig file works around it by
+  including all .ts files in Src directory. This file has no
+  other purpose.
 */
 
 {
-  "compilerOptions": { "strict": true },
   "include":
   [
     "**/Src/**/*.ts"

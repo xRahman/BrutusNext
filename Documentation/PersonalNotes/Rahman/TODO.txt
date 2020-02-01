@@ -23,8 +23,6 @@ Později:
 
 TODO: Zkusit StringUtils.scan() předělat na String.scan()
 
-TODO: Okomentovat tsconfig.eslint.json a zkusit z něj ostranit compilerOptions
-
 TODO: Znovu projít mapové komponenty (refactoring)
 - MudMap done.
 

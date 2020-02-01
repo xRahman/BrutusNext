@@ -1,3 +1,6 @@
+TODO: Okomentovat tsconfig.eslint.json a zkusit z něj ostranit compilerOptions
+[done]
+
 TODO: Revidovat Number.ts
 [done]
 
