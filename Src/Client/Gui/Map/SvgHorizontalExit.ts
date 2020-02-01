@@ -7,7 +7,8 @@
 import { CssColor } from "../../../Client/Gui/CssColor";
 import { MudMap } from "../../../Client/Gui/Map/MudMap";
 import { SvgRooms } from "../../../Client/Gui/Map/SvgRooms";
-import { SvgExits } from "../../../Client/Gui/Map/SvgExits";
+import { SvgHorizontalExits } from
+  "../../../Client/Gui/Map/SvgHorizontalExits";
 import { Line } from "../../../Client/Gui/Svg/Line";
 import { G } from "../../../Client/Gui/Svg/G";
 
@@ -15,11 +16,7 @@ export class SvgHorizontalExit extends G
 {
   private readonly line: Line;
 
-  constructor
-  (
-    protected parent: SvgExits,
-    name = "exit"
-  )
+  constructor(protected parent: SvgHorizontalExits, name = "exit")
   {
     super(parent, name);
 
@@ -41,7 +38,7 @@ export class SvgHorizontalExit extends G
     const roomSpacing = SvgRooms.ROOM_SPACING_PIXELS;
 
     this.line.setStrokeColor(new CssColor(255, 255, 0));
-    this.line.setStrokeWidth(SvgExits.LINE_WIDTH_PIXELS);
+    this.line.setStrokeWidth(SvgHorizontalExits.LINE_WIDTH_PIXELS);
     this.line.draw
     (
       {

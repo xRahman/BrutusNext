@@ -1,3 +1,9 @@
+TODO: Znovu projít mapové komponenty (refactoring)
+[done]
+
+TODO: V SvgMapZoomer.setZoomStep() líp enforcovat interval hodnot
+[done]
+
 TODO: Zkusit StringUtils.scan() předělat na String.scan()
 [done]
 

@@ -10,7 +10,7 @@ import { SvgWorld } from "../../../Client/Gui/Map/SvgWorld";
 import { SvgHorizontalExit } from "../../../Client/Gui/Map/SvgHorizontalExit";
 import { SvgComponentCache } from "../../../Client/Gui/Svg/SvgComponentCache";
 
-export class SvgExits extends SvgComponentCache<SvgHorizontalExit>
+export class SvgHorizontalExits extends SvgComponentCache<SvgHorizontalExit>
 {
   public static get LINE_WIDTH_PIXELS(): number
   {

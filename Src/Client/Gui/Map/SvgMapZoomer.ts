@@ -5,7 +5,6 @@
 */
 
 import "../../../Shared/Utils/Number";
-// import { Number } from "../../../Shared/Utils/Number";
 import { SvgMapCenterer } from "../../../Client/Gui/Map/SvgMapCenterer";
 import { SvgPlayerPosition } from "../../../Client/Gui/Map/SvgPlayerPosition";
 import { SvgWorld } from "../../../Client/Gui/Map/SvgWorld";
@@ -13,7 +12,7 @@ import { G } from "../../../Client/Gui/Svg/G";
 
 const MAXIMUM_ZOOM_STEP = 4;
 const MININUM_ZOOM_STEP = -4;
-const ZOOM_FACTOR_PER_STEP = 0.2;
+const ZOOM_FACTOR_PER_STEP = 1.2;
 
 export class SvgMapZoomer extends G
 {
@@ -51,24 +50,13 @@ export class SvgMapZoomer extends G
   {
     this.zoomStep = zoomStep.clampTo(MININUM_ZOOM_STEP, MAXIMUM_ZOOM_STEP);
 
-    // if (zoomStep < MININUM_ZOOM_STEP)
-    //   this.zoomStep = MININUM_ZOOM_STEP;
-
-    // if (zoomStep > MAXIMUM_ZOOM_STEP)
-    //   this.zoomStep = MAXIMUM_ZOOM_STEP;
-
     this.updateZoomFactor();
   }
 
   private updateZoomFactor(): void
   {
-    const zoomFactor = (1 + ZOOM_FACTOR_PER_STEP) ** this.zoomStep;
+    const zoomFactor = ZOOM_FACTOR_PER_STEP ** this.zoomStep;
 
-    this.setZoomFactor(zoomFactor);
-  }
-
-  private setZoomFactor(zoomFactor: number): void
-  {
     this.scale(zoomFactor);
   }
 }

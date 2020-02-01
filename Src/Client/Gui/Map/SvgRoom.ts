@@ -33,8 +33,8 @@ export class SvgRoom extends G
   {
     super(parent, name);
 
-    this.exitUp = createExit(this, "up");
-    this.exitDown = createExit(this, "down");
+    this.exitUp = new SvgVerticalExit(this, "up");
+    this.exitDown = new SvgVerticalExit(this, "down");
 
     this.roomBackground = createRoomBackground(this);
     this.roomIcon = createRoomIcon(this);
@@ -69,9 +69,7 @@ export class SvgRoom extends G
     const iconPixelSize = SvgRoom.ROOM_PIXEL_SIZE * room.icon.scale;
 
     this.roomIcon.setSize(iconPixelSize, iconPixelSize);
-
     this.roomIcon.setImage(room.icon.path);
-
     this.roomIcon.show();
   }
 
@@ -108,11 +106,4 @@ function createRoomIcon(parent: SvgRoom): Image
   roomIcon.hide();
 
   return roomIcon;
-}
-
-function createExit(parent: SvgRoom, direction: "up" | "down"): SvgVerticalExit
-{
-  const svgExit = new SvgVerticalExit(parent, direction);
-
-  return svgExit;
 }

@@ -10,7 +10,8 @@ import { MapEditor } from "../../../Client/Editor/MapEditor";
 import { MudMap } from "../../../Client/Gui/Map/MudMap";
 import { SvgRoom } from "../../../Client/Gui/Map/SvgRoom";
 import { SvgRooms } from "../../../Client/Gui/Map/SvgRooms";
-import { SvgExits } from "../../../Client/Gui/Map/SvgExits";
+import { SvgHorizontalExits } from
+  "../../../Client/Gui/Map/SvgHorizontalExits";
 import { SvgMapZoomer } from "../../../Client/Gui/Map/SvgMapZoomer";
 import { G } from "../../../Client/Gui/Svg/G";
 
@@ -19,7 +20,7 @@ export class SvgWorld extends G
   // ----------------- Private data ---------------------
 
   private readonly rooms: SvgRooms;
-  private readonly exits: SvgExits;
+  private readonly horizontalExits: SvgHorizontalExits;
 
   // ! Throws exception on error.
   constructor(protected parent: SvgMapZoomer, name = "world")
@@ -27,7 +28,7 @@ export class SvgWorld extends G
     super(parent, name);
 
     // Order of creation determines drawing order.
-    this.exits = new SvgExits(this);
+    this.horizontalExits = new SvgHorizontalExits(this);
     this.rooms = new SvgRooms(this);
 
     this.registerEventListeners();
@@ -42,12 +43,12 @@ export class SvgWorld extends G
   (
     roomsAndCoords: MudMap.RoomsAndCoords,
     exitsData: MudMap.ExitsData,
-    { rebuild = false }
+    { rebuild }: { rebuild: boolean }
   )
   : void
   {
     this.updateRooms(roomsAndCoords, { rebuild });
-    this.rebuildExits(exitsData);
+    this.rebuildHorizontalExits(exitsData);
   }
 
   public translateTo(coords: Coords): void
@@ -82,13 +83,13 @@ export class SvgWorld extends G
     }
   }
 
-  private rebuildExits(exitsData: MudMap.ExitsData): void
+  private rebuildHorizontalExits(exitsData: MudMap.ExitsData): void
   {
-    this.exits.clear();
+    this.horizontalExits.clear();
 
     for (const exitData of exitsData.values())
     {
-      this.exits.addExit(exitData);
+      this.horizontalExits.addExit(exitData);
     }
   }
 
@@ -106,47 +107,47 @@ export class SvgWorld extends G
   private onLeftClick(event: MouseEvent): void
   {
     // ! Throws exception on error.
-    const coords = parseRoomCoords(event);
+    const result = parseRoomEvent(event);
 
-    if (coords === "Not a room event")
+    if (result.status === "Not a room event")
       return;
 
     // ! Throws exception on error.
-    MapEditor.createRoom(coords);
+    MapEditor.createRoom(result.coords);
   }
 
   // ! Throws exception on error.
   private onRightClick(event: MouseEvent): void
   {
     // ! Throws exception on error.
-    const coords = parseRoomCoords(event);
+    const result = parseRoomEvent(event);
 
-    if (coords === "Not a room event")
+    if (result.status === "Not a room event")
       return;
 
     // ! Throws exception on error.
-    MapEditor.deleteRoom(coords);
+    MapEditor.deleteRoom(result.coords);
   }
 
   // ! Throws exception on error.
   private onMouseOver(event: MouseEvent): void
   {
     // ! Throws exception on error.
-    const coords = parseRoomCoords(event);
+    const result = parseRoomEvent(event);
 
-    if (coords === "Not a room event")
+    if (result.status === "Not a room event")
       return;
 
     if (Dom.isLeftButtonDown(event))
     {
       // ! Throws exception on error.
-      MapEditor.buildConnectionTo(coords);
+      MapEditor.buildConnectionTo(result.coords);
     }
 
     if (Dom.isRightButtonDown(event))
     {
       // ! Throws exception on error.
-      MapEditor.deleteRoom(coords);
+      MapEditor.deleteRoom(result.coords);
     }
   }
 
@@ -154,23 +155,23 @@ export class SvgWorld extends G
   private onMouseOut(event: MouseEvent): void
   {
     // ! Throws exception on error.
-    const coords = parseRoomCoords(event);
+    const result = parseRoomEvent(event);
 
-    if (coords === "Not a room event")
+    if (result.status === "Not a room event")
       return;
 
     if (Dom.isLeftButtonDown(event))
     {
-      MapEditor.rememberCoords(coords);
+      MapEditor.rememberCoords(result.coords);
 
       // ! Throws exception on error.
-      MapEditor.createRoom(coords);
+      MapEditor.createRoom(result.coords);
     }
 
     if (Dom.isRightButtonDown(event))
     {
       // ! Throws exception on error.
-      MapEditor.deleteRoom(coords);
+      MapEditor.deleteRoom(result.coords);
     }
   }
 }
@@ -178,17 +179,21 @@ export class SvgWorld extends G
 // ----------------- Auxiliary Functions ---------------------
 
 // ! Throws exception on error.
-function parseRoomCoords(event: Event): Coords | "Not a room event"
+function parseRoomEvent
+(
+  event: Event
+)
+: { status: "Not a room event" } | { status: "Ok", coords: Coords }
 {
   if (event.target === null)
-      return "Not a room event";
+    return { status: "Not a room event" };
 
-  if (event.target instanceof SVGElement)
-  {
-    if (Dom.getName(event.target) === SvgRoom.ROOM_BACKGROUND)
-      // ! Throws exception on error.
-      return Coords.fromString(event.target.id);
-  }
+  if (!(event.target instanceof SVGElement))
+    return { status: "Not a room event" };
 
-  return "Not a room event";
+  if (Dom.getName(event.target) !== SvgRoom.ROOM_BACKGROUND)
+    return { status: "Not a room event" };
+
+  // ! Throws exception on error.
+  return { status: "Ok", coords: Coords.fromString(event.target.id) };
 }

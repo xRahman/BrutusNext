@@ -9,7 +9,8 @@ import { CssColor } from "../../../Client/Gui/CssColor";
 import { SvgRoom } from "../../../Client/Gui/Map/SvgRoom";
 import { SvgRooms } from "../../../Client/Gui/Map/SvgRooms";
 import { Path } from "../../../Client/Gui/Svg/Path";
-import { SvgExits } from "../../../Client/Gui/Map/SvgExits";
+import { SvgHorizontalExits } from
+  "../../../Client/Gui/Map/SvgHorizontalExits";
 import { G } from "../../../Client/Gui/Svg/G";
 
 export class SvgVerticalExit extends G
@@ -26,8 +27,6 @@ export class SvgVerticalExit extends G
     super(parent, name);
 
     this.exitGraphics = new Path(this, "exit_line");
-    // this.exitGraphics.setMarkerEnd("Arrow");
-
     this.updateGraphics(direction);
   }
 
@@ -47,17 +46,15 @@ export class SvgVerticalExit extends G
       + ` L ${roomSpacing * 0.4} 0`;
 
     this.exitGraphics.setStrokeColor(new CssColor(255, 255, 0));
-    this.exitGraphics.setStrokeWidth(SvgExits.LINE_WIDTH_PIXELS);
-
+    this.exitGraphics.setStrokeWidth(SvgHorizontalExits.LINE_WIDTH_PIXELS);
     this.exitGraphics.draw(path);
-
-    this.rotate(-67.5 + rotateByDirection(direction));
+    this.rotate(-67.5 + angleToDirection(direction));
   }
 }
 
 // ----------------- Auxiliary Functions ---------------------
 
-function rotateByDirection(direction: "up" | "down"): number
+function angleToDirection(direction: "up" | "down"): number
 {
   switch (direction)
   {

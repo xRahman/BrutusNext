@@ -21,10 +21,7 @@ Později:
 
 ------------------------------------------------------------------------------
 
-TODO: Znovu projít mapové komponenty (refactoring)
-- MudMap done.
-
-TODO: V SvgMapZoomer.setZoomStep() líp enforcovat interval hodnot
+TODO: Refactorovat Serializable
 
 
 TODO: Zobrazovat exity "up" a "down" podle exitů v roomách

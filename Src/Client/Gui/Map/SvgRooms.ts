@@ -44,10 +44,9 @@ export class SvgRooms extends SvgComponentCache<SvgRoom>
   )
   : void
   {
-    const roomId = coords.toString();
-
     // ! Throws exception on error.
     const svgRoom = this.getComponentFromCache();
+    const roomId = coords.toString();
 
     svgRoom.setCoords(coords);
     svgRoom.setId(roomId);
@@ -64,13 +63,6 @@ export class SvgRooms extends SvgComponentCache<SvgRoom>
       this.putToCache(svgRoom);
 
     this.svgRooms.clear();
-  }
-
-  // ! Throws exception on error.
-  // Forces recalculating of focus, css etc.
-  public updateChildGraphics(): void
-  {
-    this.parent.updateChildGraphics(this.element);
   }
 
   // ---------------- Private methods -------------------

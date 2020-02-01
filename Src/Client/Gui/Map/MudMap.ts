@@ -1,7 +1,7 @@
 /*
   Part of BrutusNEXT
 
-  World on the map
+  Mud map
 */
 
 import { Coords } from "../../../Shared/Class/Coords";
