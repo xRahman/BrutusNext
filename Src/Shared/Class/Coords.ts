@@ -4,7 +4,7 @@
   World [e, n, u] coordinates
 */
 
-import { StringUtils } from "../../Shared/Utils/StringUtils";
+import "../../Shared/Utils/String";
 
 export class Coords
 {
@@ -187,12 +187,6 @@ export class Coords
   {
     return `[ e: ${this.e}, n: ${this.n}, u: ${this.u} ]`;
   }
-
-  // --------------- Protected methods ------------------
-
-  // ---------------- Private methods -------------------
-
-  // ---------------- Event handlers --------------------
 }
 
 // ----------------- Auxiliary Functions ---------------------
@@ -202,49 +196,13 @@ function joinCoordStrings(from: Coords, to: Coords): string
   return `${from.toString()}-${to.toString()}`;
 }
 
-// // ! Throws exception on error.
-// function convertToNumber(str: string): number
-// {
-//   const value = Number(str);
-
-//   if (Number.isNaN(value))
-//   {
-//     throw Error(`Failed to parse coords because argument`
-//     + ` ${str} is not a number`);
-//   }
-
-//   return value;
-// }
-
 // ! Throws exception on error.
 function parseCoordsString(coords: string): { e: number, n: number, u: number }
 {
   const result = { e: NaN, n: NaN, u: NaN };
 
   // ! Throws exception on error.
-  StringUtils.scan(coords, "[ e: &{e}, n: &{n}, u: &{u} ]", result);
+  coords.scan("[ e: &{e}, n: &{n}, u: &{u} ]", result);
 
   return result;
-
-  // // ! Throws exception on error.
-  // const e = StringUtils.toNumber(scanResult.e);
-  // // ! Throws exception on error.
-  // const s = StringUtils.toNumber(scanResult.n);
-  // // ! Throws exception on error.
-  // const u = StringUtils.toNumber(scanResult.u);
-
-  // // ! Throws exception on error.
-  // const stringValues = StringUtils.splitBySubstrings(coords, ...format);
-
-  // if (stringValues.length !== 3)
-  // {
-  //   throw Error(`Failed to parse coords from string '${coords}' because`
-  //     + ` it doesn't match expected format ${format.join("%d")}`);
-  // }
-
-  // const e = convertToNumber(stringValues[0]);
-  // const s = convertToNumber(stringValues[1]);
-  // const u = convertToNumber(stringValues[2]);
-
-  // return { e, s, u };
 }

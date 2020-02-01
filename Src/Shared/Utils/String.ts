@@ -1,39 +1,122 @@
 /*
   Part of BrutusNext
 
-  Library functions used by StringUtils.scan()
+  Augments javascript String type with utility functions
 */
 
 /*
-  IMPORTANT:
-    Don't use this module directly, use StringUtils.scan() instead.
+  Note:
+    To use this module, you need to force typescript to execute
+    it's code. It means importing it like this:
+
+      import "../../Shared/Utils/String";
 */
 
-import { StringUtils } from "../../../Shared/Utils/StringUtils";
+import { ErrorUtils } from "../../Shared/Utils/ErrorUtils";
 
-export namespace StringScanLib
+// We are augmenting global namespace.
+declare global
 {
-  // ! Throws exception on error.
-  export function scan
-  (
-    str: string,
-    template: string,
-    result: { [ key: string ]: any }
-  )
-  : void
+  export interface String
   {
     // ! Throws exception on error.
-    const { substrings, properties } = parseTemplate(template);
+    // Example of usage:
+    //   const str = "[ A: NaN, B: "" ]";
+    //   let result = { a: Number, b: String } = {};
+    //   result = scan(str, "[ A: &{a}, B: &{b} ]", result);
+    //   console.log(result.a);  // 1
+    //   console.log(result.b);  // "cat"
+    // You can also use "&{*}" as 'wildcard' to match any string
+    //   without assigning it to a property.
+    // Example (only read value of 'A:'):
+    //   result = scan(str, "&{*}A: &{a},&{*}", result);
+    scan(template: string, result: { [ key: string ]: any }): void,
 
     // ! Throws exception on error.
-    const values = splitBySubstrings(str, substrings);
+    toNumber(): number,
 
-    // ! Throws exception on error.
-    assignValues(properties, values, result);
+    // Removes lines from the start of multiline string 'str' that
+    // don't start with 'prefix'. Lines need to be separated by '\n'.
+    removeLinesWithoutPrefix(prefix: string): string
   }
 }
 
+// Arrow functions can't be used to extend String prototype
+// because they capture global 'this' instead of the String
+// that we are extending. So we need to disable respective
+// eslint rule.
+/* eslint-disable @typescript-eslint/unbound-method */
+
+// ! Throws exception on error.
+String.prototype.scan = function scan
+(
+  template: string,
+  result: { [ key: string ]: any }
+)
+: void
+{
+  try
+  {
+    // ! Throws exception on error.
+    scanString(this.valueOf(), template, result);
+  }
+  catch (error)
+  {
+    throw ErrorUtils.prependMessage(`Failed to scan string "${this.valueOf()}"`
+      + ` for values using template string "${template}"`, error);
+  }
+};
+
+String.prototype.toNumber = function toNumber(): number
+{
+  const value = Number(this.valueOf());
+
+  if (Number.isNaN(value))
+    throw Error(`Value "${this.valueOf()}" does not represent a number`);
+
+  return value;
+};
+
+String.prototype.removeLinesWithoutPrefix = function removeLinesWithoutPrefix
+(
+  prefix: string
+)
+: string
+{
+  const LINE_BREAK = "\n";
+  const lines = this.valueOf().split(LINE_BREAK);
+
+  while (!lines[0].startsWith(prefix))
+  {
+    lines.shift();
+  }
+
+  return lines.join(LINE_BREAK);
+};
+
+// Ensure this file is treated as a module.
+export {};
+
 // ----------------- Auxiliary Functions ---------------------
+
+// ! Throws exception on error.
+function scanString
+(
+  str: string,
+  template: string,
+  result: { [ key: string ]: any }
+)
+: void
+{
+  // ! Throws exception on error.
+  const { substrings, properties } = parseTemplate(template);
+
+  // ! Throws exception on error.
+  const values = splitBySubstrings(str, substrings);
+
+  // ! Throws exception on error.
+  assignValues(properties, values, result);
+}
 
 // ! Throws exception on error.
 function assignValue
@@ -56,7 +139,7 @@ function assignValue
 
   if (typeof result[property] === "number")
   {
-    result[property] = StringUtils.toNumber(value);
+    result[property] = value.toNumber();
     return;
   }
 

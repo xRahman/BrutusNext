@@ -21,8 +21,6 @@ Později:
 
 ------------------------------------------------------------------------------
 
-TODO: Zkusit StringUtils.scan() předělat na String.scan()
-
 TODO: Znovu projít mapové komponenty (refactoring)
 - MudMap done.
 

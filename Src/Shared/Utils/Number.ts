@@ -1,7 +1,7 @@
 /*
   Part of BrutusNext
 
-  Augments javascript Number type with utility functions and constants.
+  Augments javascript Number type with utility functions
 */
 
 /*
@@ -56,7 +56,7 @@ declare global
 
 // Arrow functions can't be used to extend Number prototype
 // because they capture global 'this' instead of the Number
-// object that we are extending. So we need to disable respective
+// that we are extending. So we need to disable respective
 // eslint rule.
 /* eslint-disable @typescript-eslint/unbound-method */
 

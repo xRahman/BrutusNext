@@ -1,3 +1,6 @@
+TODO: Zkusit StringUtils.scan() předělat na String.scan()
+[done]
+
 TODO: Okomentovat tsconfig.eslint.json a zkusit z něj ostranit compilerOptions
 [done]
 

@@ -4,7 +4,7 @@
   Functions related to Error object
 */
 
-import { StringUtils } from "../../Shared/Utils/StringUtils";
+import "../../Shared/Utils/String";
 
 export namespace ErrorUtils
 {
@@ -105,7 +105,7 @@ export namespace ErrorUtils
     //   To remove it, we trim lines not starting with '    at '.
     // (Error message can be multi-line so removing just 1 line
     //  would not always be enough.)
-    return StringUtils.removeLinesWithoutPrefix(stackTrace, "    at ");
+    return stackTrace.removeLinesWithoutPrefix("    at ");
   }
 }
 

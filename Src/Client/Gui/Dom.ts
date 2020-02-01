@@ -4,8 +4,8 @@
   Functions manipulating DOM elements
 */
 
+import "../../Shared/Utils/String";
 import { Syslog } from "../../Shared/Log/Syslog";
-import { StringUtils } from "../../Shared/Utils/StringUtils";
 import { CssColor } from "./CssColor";
 
 const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
@@ -482,9 +482,8 @@ function getTransformArgument
   const transform = { argument: "" };
 
   // ! Throws exception on error.
-  StringUtils.scan
+  transformAttribute.scan
   (
-    transformAttribute,
     `&{*}${transformComponent}(&{argument})&{*}`,
     transform
   );
@@ -502,12 +501,7 @@ function getExistingScale(element: Dom.Element): string
   const transform = { scale: "" };
 
   // ! Throws exception on error.
-  StringUtils.scan
-  (
-    attribute,
-    "&{*}scale(&{scale})&{*}",
-    transform
-  );
+  attribute.scan("&{*}scale(&{scale})&{*}", transform);
 
   return transform.scale;
 }
