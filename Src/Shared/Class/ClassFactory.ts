@@ -197,6 +197,17 @@ function instantiateProperty(prototypeProperty: any): any
   if (prototypeProperty[ID] !== undefined)
     return "Not instantiated";
 
+  // This was a difficult decision. By assigning new [], we effictively
+  // disable prototypal inheritance for arrays. Reasons are:
+  // - not assigning [] and not using Object.create(prototypeProperty)
+  //   is not an option because writing to the descendant array would
+  //   change the array in prototype object (which must never happen).
+  // - using Object.create(prototypeProperty) would solve this, but
+  //   then the array would behave as a weird composite of values in
+  //   array property of prototype and values in array property of descendant.
+  if (Types.isArray(prototypeProperty))
+    return [];
+
   // Properties of type Map or Set can't be instantiated using
   // Object.create() because accessing them would thrown an exception,
   // so we have to create a new instance of Map() or Set().

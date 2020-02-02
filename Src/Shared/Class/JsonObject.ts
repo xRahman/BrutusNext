@@ -10,6 +10,22 @@ import { Types } from "../../Shared/Utils/Types";
 // 3rd party modules
 import { js_beautify as beautify } from "js-beautify";
 
+const beautifyParam: JsBeautifyOptions =
+{
+  // eslint-disable-next-line @typescript-eslint/camelcase
+  indent_size: 2,
+  // eslint-disable-next-line @typescript-eslint/camelcase
+  indent_char: " ",
+  // eslint-disable-next-line @typescript-eslint/camelcase
+  eol: "\n",
+  // eslint-disable-next-line @typescript-eslint/camelcase
+  brace_style: "expand",
+  // eslint-disable-next-line @typescript-eslint/camelcase
+  keep_array_indentation: true,
+  // eslint-disable-next-line @typescript-eslint/camelcase
+  end_with_newline: false
+};
+
 export namespace JsonObject
 {
   // ---------------- Public methods --------------------
@@ -19,24 +35,7 @@ export namespace JsonObject
   {
     let jsonString = JSON.stringify(jsonObject);
 
-    jsonString = beautify
-    (
-      jsonString,
-      {
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        indent_size: 2,
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        indent_char: " ",
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        eol: "\n",
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        brace_style: "expand",
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        keep_array_indentation: true,
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        end_with_newline: false
-      }
-    );
+    jsonString = beautify(jsonString, beautifyParam);
 
     return jsonString;
   }

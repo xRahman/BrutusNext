@@ -1,3 +1,4 @@
+
 ============================================================
  BIG TODO: Nedělat nic, co nepotřebuju na funkční prototyp!
 ============================================================
@@ -22,6 +23,13 @@ Později:
 ------------------------------------------------------------------------------
 
 TODO: Refactorovat Serializable
+
+IDEA: Zdědit Serializable z Deserializable
+  (oddělím tím serializační a deserializační kód do samostatných modulů)
+
+TODO:
+- Při vyrábění instance i při deserializaci do polí přiřadit [].
+  
 
 
 TODO: Zobrazovat exity "up" a "down" podle exitů v roomách

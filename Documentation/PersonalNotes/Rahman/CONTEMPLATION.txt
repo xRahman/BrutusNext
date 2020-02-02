@@ -1,5 +1,91 @@
 ------------------------------------------------------------------------------
 
+Prototypová dědičnost a deserializace {} a []
+----------------------------------------------
+
+ÚVAHA:
+- když mám v serializable {} nebo [] property, která není undefined,
+  mám ji při deserializaci přepsat novým {} nebo [] s deserializovanými
+  properties, nebo zapisovat do stávající?
+  - Asi to přepsat novým {} nebo []. U pole to určitě dává smysl,
+    přidáváním do starýho pole bych vytvořil kdo ví co. Tudíž asi
+    objekt řešit stejně (jako kdyby to byla primitivní value, kterou
+    prostě přepíšu novou hodnotou).
+Otázka: Co to udělá s prototypovou dědičností?
+- tu to nejspíš rozbije. Nestačí vytvořit {}, musí to být {} s prototypem
+  rovným té samé {} property v předkovi.
+To bude dost těžký vyrobit, sakryš...
+- hmm, to je možná důvod, proč jsem zapisoval do existujícího {}, když tam byl
+  (Jako že tam musí bejt, protože při vyrábění instance jsem inicializoval
+   prototypovou dědičnost)
+TODO: Při deserializaci {} vůbec nevyrábět novej {}. Pokud je targetProperty
+  undefined, je to error a je třeba hodit exception - znamená to, že nebyla
+  správně provedena inicializace prototypové dědičnosti při instancializaci.
+TODO: Pořádně se podívat, jak je to s prototypovou dědičností []
+  - Mrknout, jestli u pole nastavuju prototyp při instanciaci
+    a jak funguje dědičnost, když předka mám (mám dojem, že to fungovalo
+    vcelku intuitivně, tj. že když na indexu [i] bylo něco v poli potomka,
+    bralo se to z něj, a když ne, bral se index [i] z pole předka - otázka
+    teda je, jestli to je žádoucí chování a jestli by se spíš pole nemělo
+    chovat jako primitivní typ, tj. když ho potomek nemá, tak se bere
+    pole předka, ale když ano, bere se pouze pole potomka a nemíchá se to.
+    (Ta druhá varianta by znamenala, že v Deserializable.deserializeArray()
+     bych deserializoval vždycky do novýho [] a to pak přiřadil do
+     targetProperty (tedy tak, jak je to teď) - nové [] nebude mí jako prototyp
+     [] v předkovi, takže by to mělo zafungovat)
+  - až se rozhodnu pro jednu z variant, tak podle toho udělat jak intanciaci,
+    tak upravit Deserializable.deserializeArray()
+RESULT testování:
+- chová se to stejně, ať už dám poli v potomkovi pole předka jako prototyp
+  nebo ne - dědí se per index (jako kdyby indexy byly properties objektu).
+(Rozdíl je jen v tom, že když dám console.log(potomke.pole), tak bez
+ ručního nastavení prototypu mi to vypíše regulérní pole, zatímco s ručním
+ nastavením prototypu mi to vypíše jako {}, jehož prototype je pole předka)
+Aha, tak moment - bez ručního nastavení prototypu to zjevně zapisuje na
+  příslušnej index v předkovi, takže potome.pole je reference na predek.pole
+Aha!
+- když dám potomek.pole = [] a až pak do něj zapisuju, tak to dědičnost fakt
+  zruší a do předka se nezapisuje.
+TAKŽE:
+- Při vytváření instance MUSÍM buď do potomek.pole dát [], nebo ho vytvořit
+  přes Object.create() s polem na předkovi coby prototypem, protože jinak
+  se bude zapisovat do pole předka (to je určitě špatně)
+- Při deserializaci bych to asi měl udělat stejně, protože jinak se bude
+  dědičnost chovat různě podle toho, jak je objekt vytvořenej.
+ZÁVĚR:
+- Při vyrábění intance udělat potomek.pole přes Object.create() s polem
+  v předkovi jako prototypem
+- Při deserializaci do potomek.pole zapsat [] a do něj nasypat hodnoty.
+Chovat se to bude takhle:
+- dokud do potomek.pole nezapíšu [], tak bude obsahovat hodnoty předka,
+  zápis do potomek.pole ale NEZMĚNÍ predek.pole (což rozhodně nesmí).
+  Když místo přiřazení [] zapíšu na index, tak se to bude chovat divně
+  (pole bude mít mix prvků předka a potomka). Nic mi ale nebrání do něj
+  přiřadit [], pak se to s předkem mixovat nebude (což je přesně věc, kterou
+  budu dělat při deserializaci).
+Má to dvě vady na kráse:
+- když po instanciaci zapíšu na konkrétní indexy a pak objekt savnu a loadnu,
+  tak se bude chovat jinak (předtím to byl mix indexů, teď to bude [] s novými
+  hodnotami). To se ale asi nedá nic dělat.
+- když do potomek.pole zapíšu [], tak už ho nebudu moct "smazat" a vrátit se
+  zpět k dědění z předka.
+
+Ha!
+- ještě je tu možnost udělat potomek.pole.length = 0;
+  - To pole "vyprázdní", ale prototypem bude pořád pole v překovi
+    (zatímco při přiřazení [] se prototyp ztratí).
+  - když následně udělám 'delete potomek.pole;', tak se vrátím
+    do původního stavu, kdy vidím zděděné pole.
+(Čili tenhle trik řeší aspoň problém s tím, že se můžu vrátit k dědění
+ z předka.)
+
+Hmm, popravdě by bylo asi nejlepší se na prototypovou dědičnost polí
+  vykašlat a při instanciaci i při deserializaci do pole zapisovat [].
+  Přijdu tím sice o možnost zdědit pole, ale bude se to chovat konzistentně
+  (a Set ani Map se taky nedaj zdědit).
+
+------------------------------------------------------------------------------
+
 Kolik exitů může být k M x N roomám?
 -------------------------------------
 

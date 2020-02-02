@@ -7,8 +7,8 @@
 
 /*
   Notes:
-    Only saved properties are loaded. Properties that are not
-    present in the save will not be deleted. It means that you
+    Properties that are not present in json object will not be
+    deleted from target object when loading. It means that you
     can add new properties to existing classes without converting
     existing save files (but you should initialize them with
     default values).
@@ -17,24 +17,24 @@
     into which we are loading. This allows saving of properties
     created in runtime.
 
-    Serializing of entities using just an 'id' is implemented
-    in Serializable rather than in Entity to allow serializable
-    entity references in non-entity Serializable classes.
+    Serializing of entities as a reference (using entity 'id')
+    is implemented in Serializable rather than in Entity to allow
+    referencing entities in non-entity Serializable classes.
 
     Descendants can override methods customSerializeProperty()
-    and customDeserializeProperty() to change how are specific
-    properties serialized.
+    and customDeserializeProperty() to change how specific
+    properties are serialized.
 
   Implementation notes:
     At the moment, attributes are checked only for direct properties
-    of Serializable instances so if you use a plan {} as a property,
+    of Serializable instances so if you use a plain {} as a property,
     you can't set attributes to it's properties. You can, however,
     use a Serializable class instead of {} for this purpose.
 */
 
 // There are long functions in this file.
-/* eslint-disable max-statements */
-/* eslint-disable complexity */
+// /* eslint-disable max-statements */
+// /* eslint-disable complexity */
 
 import { Types } from "../../Shared/Utils/Types";
 import { Syslog } from "../../Shared/Log/Syslog";
@@ -90,23 +90,15 @@ export class Serializable extends Attributable
   {
     // ! Throws exception on error.
     const jsonObject = JsonObject.parse(data);
-    const className = (jsonObject as Types.Object)[CLASS_NAME];
 
-    if (className === null || className === undefined)
-    {
-      throw Error(`Unable to deserialize data because there is`
-        + ` no '${CLASS_NAME}' property in it`);
-    }
+    // ! Throws exception on error.
+    const className = getClassName(jsonObject);
 
-    if (!Types.isString(className))
-    {
-      throw Error(`Unable to deserialize data because property`
-        + ` '${CLASS_NAME}' isn't a string`);
-    }
-
+    // ! Throws exception on error.
     const serializable = ClassFactory.newInstanceByName(className);
 
-    return serializable.deserialize(jsonObject, path);
+    // ! Throws exception on error.
+    return serializable.deserialize(jsonObject, className, path);
   }
 
   // --------------- Public accessors -------------------
@@ -123,13 +115,10 @@ export class Serializable extends Attributable
   // ! Throws exception on error.
   public dynamicCast<T>(Class: Types.AnyClass<T>): T
   {
-    // Dynamic type check - we make sure that entity is inherited
-    // from requested class (or an instance of the class itself).
     if (!(this instanceof Class))
     {
-      throw Error (`Type cast error: serializable`
-        + ` object ${this.debugId} is not an instance`
-        + ` of class (${Class.name})`);
+      throw Error (`Type cast error: ${this.debugId} is not`
+        + ` an instance of class (${Class.name})`);
     }
 
     return (this as unknown) as T;
@@ -144,67 +133,26 @@ export class Serializable extends Attributable
   }
 
   // ! Throws exception on error.
-  // Extracts data from plain javascript object to this instance.
-  public deserialize(jsonObject: object, path?: string): this
-  {
-    // ! Throws exeption if versions don't match.
-    this.versionMatchCheck(jsonObject, path);
-
-    // ! Throws exeption if class names in source and target data don't match.
-    this.classMatchCheck(jsonObject, path);
-
-    // Copy all properties from 'jsonObject'.
-    for (const propertyName in jsonObject)
-    {
-      // Properties 'className' and 'version' aren't assigned
-      // ('className' represents the name of the javascript class
-      //   which cannot be changed and 'version' is serialized only
-      //   to be checked agains).
-      if (propertyName === CLASS_NAME || propertyName === VERSION)
-        continue;
-
-      // We are cycling over properties in JSON object, not in Serializable
-      // that is being loaded. It means that properties that are not present
-      // in the save will not get overwritten with 'undefined'. This allows
-      // adding new properties to existing classes without the need to
-      // convert all save files.
-      (this as Types.Object)[propertyName] = this.deserializeProperty
-      (
-        {
-          propertyName,
-          targetProperty: (this as Types.Object)[propertyName],
-          sourceProperty: (jsonObject as Types.Object)[propertyName],
-          path
-        }
-      );
-    }
-
-    return this;
-  }
-
-  // ! Throws exception on error.
-  // Creates primitive Javascript object and fills it with properties
-  // of 'this'. Data types that can't be directly serialized to JSON
-  // (like Set or Map) are converted to something serializable (Array,
-  //  string, etc).
+  // Creates a Javascript object and fills it with properties of
+  // 'this'. Data types that can't be directly serialized to JSON
+  // (like Set or Map) are converted to something serializable
+  // (Array, string, etc).
   public saveToJsonObject(mode: Serializable.Mode): object
   {
-    let jsonObject = {};
+    const jsonObject = {};
 
-    // A little hack - save 'name', 'id', 'version' and 'className' properties
-    // first (out of order) to make saved JSON files more readable.
-    jsonObject = this.writeClassName(jsonObject);
-    jsonObject = this.writeId(jsonObject, ID);
-    jsonObject = this.writeId(jsonObject, PROTOTYPE_ID);
-    jsonObject = this.writeName(jsonObject);
-    jsonObject = this.writeVersion(jsonObject, mode);
+    // A little hack - save some properties first (out of order)
+    // to make resulting JSON more readable.
+    this.writeClassName(jsonObject);
+    this.writeProperty(jsonObject, ID);
+    this.writeProperty(jsonObject, PROTOTYPE_ID);
+    this.writeProperty(jsonObject, NAME);
+    this.writeVersion(jsonObject, mode);
 
     // Cycle through all properties in source object.
     for (const propertyName in this)
     {
-      // Skip 'name' and 'className' properties because they are already
-      // saved by hack (we don't have to skip 'version' property because
-      // it is static).
+      // Skip properties that we wrote out of order.
       if (isSkippedProperty(propertyName))
         continue;
 
@@ -237,26 +185,35 @@ export class Serializable extends Attributable
   // -------------- Protected methods -------------------
 
   // This method can be overriden to change how a property is serialized.
-  protected customSerializeProperty(param: Serializable.SerializeParam): any
+  protected customSerializeProperty
+  (
+    param: Serializable.SerializeParam
+  )
+  : { serializedProperty?: any }
   {
-    return "Property isn't serialized customly";
+    return {};
   }
 
   // This method can be overriden to change how a property is deserialized.
-  protected customDeserializeProperty(param: Serializable.DeserializeParam)
-  : any
+  protected customDeserializeProperty
+  (
+    param: Serializable.DeserializeParam
+  )
+  : { deserializedProperty?: any }
   {
-    return "Property isn't deserialized customly";
+    return {};
   }
 
   // --------------- Private methods --------------------
 
-  private writeName(jsonObject: object): object
+  // *** Serialize Methods ***
+
+  private writeProperty(jsonObject: object, propertyName: string): object
   {
-    if (this.hasOwnProperty(NAME))
+    if (this.hasOwnProperty(propertyName))
     {
-      (jsonObject as Types.Object)[NAME] =
-        (this as Types.Object)[NAME];
+      (jsonObject as Types.Object)[propertyName] =
+        (this as Types.Object)[propertyName];
     }
 
     return jsonObject;
@@ -303,17 +260,6 @@ export class Serializable extends Attributable
     return jsonObject;
   }
 
-  private writeId(jsonObject: object, propertyName: string): object
-  {
-    if (this.hasOwnProperty(propertyName))
-    {
-      (jsonObject as Types.Object)[propertyName] =
-        (this as Types.Object)[propertyName];
-    }
-
-    return jsonObject;
-  }
-
   // Determines if property 'propertyName' is to be serialized
   // in given serializable 'mode'.
   private isSerialized(propertyName: string, mode: Serializable.Mode): boolean
@@ -323,16 +269,16 @@ export class Serializable extends Attributable
     switch (mode)
     {
       case "Save to file":
-        return attributes.saved !== false;
+        return attributes.saved === true;
 
       case "Send to client":
-        return attributes.sentToClient !== false;
+        return attributes.sentToClient === true;
 
       case "Send to server":
-        return attributes.sentToServer !== false;
+        return attributes.sentToServer === true;
 
       case "Send to editor":
-        return attributes.edited !== false;
+        return attributes.edited === true;
 
       default:
         throw Syslog.reportMissingCase(mode);
@@ -345,29 +291,31 @@ export class Serializable extends Attributable
   private serializeProperty(param: Serializable.SerializeParam): any
   {
     const property = param.property;
-    const mode = param.mode;
 
     // Allow custom property serialization in descendants.
     const customValue = this.customSerializeProperty(param);
 
-    if (customValue !== "Property isn't serialized customly")
-      return customValue;
+    if (customValue.serializedProperty !== undefined)
+      return customValue.serializedProperty;
 
     // Primitive values (number, string, null, etc.) are just assigned.
     if (Types.isPrimitiveType(property) || property === undefined)
       return property;
 
+    return this.serializeObjectProperty(param);
+  }
+
+  private serializeObjectProperty(param: Serializable.SerializeParam): any
+  {
+    const property = param.property as object;
+    const mode = param.mode;
+
     if (Types.isArray(property))
       return this.serializeArray(param, property as Array<any>);
 
-    // We have eliminated all possibilities that 'property' isn't an
-    // object of some kind so we can safely typecast it.
-    const objectProperty = property as object;
-
-    if (isEntity(objectProperty))
-      // Entities are serialized separately (each entity is saved to
-      // a separate file). Only entity id will be saved.
-      return createEntitySaver(objectProperty, param).saveToJsonObject(mode);
+    if (isEntity(property))
+      // Entities are serialized separately. Only entity id will be saved.
+      return createEntitySaver(property, param).saveToJsonObject(mode);
 
     // Property is a Serializable object (but not an entity).
     if (property instanceof Serializable)
@@ -391,7 +339,7 @@ export class Serializable extends Attributable
       return createSetSaver(property).saveToJsonObject(mode);
 
     if (Types.isPlainObject(property))
-      return this.serializePlainObject(param, objectProperty);
+      return this.serializePlainObject(param, property);
 
     throw Error(`Property '${param.description}' in class`
       + ` '${param.className}' (or inherited from one of it's`
@@ -471,132 +419,57 @@ export class Serializable extends Attributable
     return jsonObject;
   }
 
+  // *** Deserialize Methods ***
+
   // ! Throws exception on error.
-  // Deserializes a single property from corresponding JSON object.
-  // Converts from serializable format to original data type as needed
-  // (for example Set class is saved to JSON as an Array so it has to be
-  //  reconstructed here).
-  private deserializeProperty(param: Serializable.DeserializeParam): any
+  // Extracts data from plain javascript object to this instance.
+  public deserialize
+  (
+    jsonObject: object,
+    sourceClassName: string,
+    path?: string
+  )
+  : this
   {
-    {
-      // Allow custom property deserialization in descendants.
-      const result = this.customDeserializeProperty(param);
+    // ! Throws exeption if versions don't match.
+    /// TODO: This will probably have to be replaced by code that
+    /// converts data to the new version (instead of preventing
+    /// data to be deserialized by throwing an exception).
+    this.versionMatchCheck(jsonObject, path);
 
-      if (result !== "Property isn't deserialized customly")
-        return result;
-    }
+    // ! Throws exeption if class names in source and target data don't match.
+    this.classMatchCheck(sourceClassName, this.className, path);
 
-    // First handle the case that source property has 'null' value. In that
-    // case target property will also be 'null', no matter what type it is.
-    if (param.sourceProperty === null)
-    {
-      throw Error(`Property '${param.propertyName}'`
-        + `${inFile(param.path)} has 'null' value.`
-        + `'null' is not allowed, make sure that it`
-        + ` is not used anywhere`);
-    }
+    // ! Throws exception on error.
+    this.deserializeProperties(this, jsonObject, path);
 
-    {
-      const result = deserializeAsBitvector(param);
-
-      if (result !== "Property is not a bitvector")
-        return result;
-    }
-
-    {
-      const result = this.deserializeAsSet(param);
-
-      if (result !== "Property is not a Set")
-        return result;
-    }
-
-    {
-      const result = this.deserializeAsMap(param);
-
-      if (result !== "Property is not a Map")
-          return result;
-    }
-
-    {
-      const result = deserializeAsEntityReference(param);
-
-      if (result !== "Property is not a reference to an Entity")
-        return result;
-    }
-
-    {
-      const result = this.deserializeAsArray(param);
-
-      if (result !== "Property is not an Array")
-        return result;
-    }
-
-    {
-      // Attempt to load property as an object
-      // (including classes inherited from Serializable).
-      //   Note that this would also mean Arrrays and all other
-      // nonprimitive types, so they must be handled before this.
-      const result = this.deserializeAsObject(param);
-
-      if (result !== "Property is not an object")
-        return result;
-    }
-
-    // If propety has neither of types we have just tried,
-    // we load it as primitive type (primitive properties
-    // are simply assigned).
-    return param.sourceProperty;
+    return this;
   }
 
-  // ! Throws exception on error.
-  private classMatchCheck(jsonObject: object, path?: string): void
+  private getStaticProperty(propertyName: string): any
   {
-    const sourceClassName = (jsonObject as Types.Object)[CLASS_NAME];
-    const targetClassName = this.className;
-
-    if (sourceClassName === undefined)
-    {
-      throw Error(`Failed to deserialize because`
-        + ` there is no '${CLASS_NAME}' property`
-        + ` in JSON data${inFile(path)}`);
-    }
-
-    if (!Types.isString(sourceClassName))
-    {
-      throw Error(`Failed to deserialize because`
-        + ` '${CLASS_NAME}' property in JSON`
-        + ` data${inFile(path)} isn't a string`);
-    }
-
-    if (sourceClassName !== targetClassName)
-    {
-      throw Error(`Failed to deserialize because`
-        + ` JSON data${inFile(path)} belongs to class`
-        + ` '${String(sourceClassName)}' while target`
-        + `  class is '${targetClassName})`);
-    }
+    return (this.constructor as Types.Object)[propertyName];
   }
 
   // ! Throws exception on error.
   private versionMatchCheck(jsonObject: object, path?: string): void
   {
-    const version = (jsonObject as Types.Object)[VERSION];
+    const version = readProperty(jsonObject, VERSION);
 
     // If there isn't a 'version' property in jsonObject,
-    // it won't be checked for (it's not used in packets
-    // because they are always sent and received from the
-    // same version of code).
+    // it won't be checked for (version is not used in
+    // packets because they are always sent and received
+    // from the same version of code).
     if (version === undefined)
       return;
-
-    // 'this.constructor[VERSION]' acesses static property 'version'.
-    const thisVersion = (this.constructor as Types.Object)[VERSION];
 
     if (!Types.isString(version))
     {
       throw Error(`Failed to deserialize because ${VERSION}`
         + ` property in JSON data${inFile(path)} isn't a string`);
     }
+
+    const thisVersion = this.getStaticProperty(VERSION);
 
     if (!Types.isString(thisVersion))
     {
@@ -607,286 +480,299 @@ export class Serializable extends Attributable
     if (version !== thisVersion)
     {
       throw Error(`Failed to deserialize because version of`
-        + ` JSON data (${String(version)})${inFile(path)} doesn't match`
-        + ` required version (${String(thisVersion)})`);
+        + ` JSON data (${String(version)})${inFile(path)} doesn't`
+        + ` match actual version (${String(thisVersion)})`);
     }
   }
 
   // ! Throws exception on error.
-  private deserializeAsSet(param: Serializable.DeserializeParam)
-  : Set<any> | "Property is not a Set"
+  private classMatchCheck
+  (
+    sourceClassName: string,
+    targetClassName: string,
+    path?: string
+  )
+  : void
   {
-    if (!isSetRecord(param.sourceProperty))
-      return "Property is not a Set";
-
-    const targetIsValid =
-       param.targetProperty === null
-    || param.targetProperty === undefined
-    || Types.isSet(param.targetProperty);
-
-    if (!targetIsValid)
+    if (sourceClassName !== targetClassName)
     {
-      throw Error(`Failed to deserialize because target property`
-        + ` '${param.propertyName}'${inFile(param.path)} is not 'Set',`
-        + ` 'null' or 'undefined' when deserializing property of type Set`);
+      throw Error(`Failed to deserialize because JSON data${inFile(path)}`
+        + ` represents class '${String(sourceClassName)}' while target`
+        + ` class is '${targetClassName})`);
     }
-
-    return this.readSet(param);
   }
 
   // ! Throws exception on error.
-  private deserializeAsMap(param: Serializable.DeserializeParam)
-  : Map<any, any> | "Property is not a Map"
+  private deserializeProperties
+  (
+    targetObject: object,
+    sourceObject: object,
+    path?: string
+  )
+  : void
   {
-    if (!isMapRecord(param.sourceProperty))
-      return "Property is not a Map";
-
-    const targetIsValid =
-       param.targetProperty === null
-    || param.targetProperty === undefined
-    || Types.isMap(param.targetProperty);
-
-    if (!targetIsValid)
+    for (const propertyName in sourceObject)
     {
-      throw Error(`Failed to deserialize because target property`
-        + ` '${param.propertyName}'${inFile(param.path)} is not 'Map',`
-        + ` 'null' or 'undefined' when deserializing property of type Map`);
-    }
+      // Skip inherited properties.
+      if (!sourceObject.hasOwnProperty(propertyName))
+        continue;
 
-    return this.readMap(param);
+      // Properties 'className' and 'version' aren't assigned
+      // ('className' represents the name of the javascript class
+      //   which cannot be changed and 'version' is serialized only
+      //   to be checked against).
+      if (propertyName === CLASS_NAME || propertyName === VERSION)
+        continue;
+
+      // ! Throws exception on error.
+      // We are cycling over properties in source object, not in Serializable
+      // that is being loaded so properties that are not present in source JSON
+      // object will not get overwritten with 'undefined'. This allows adding
+      // new properties to existing classes without the need to convert all
+      // save files.
+      targetObject[propertyName] = this.deserializeProperty
+      (
+        {
+          propertyName,
+          targetProperty: targetObject[propertyName],
+          sourceProperty: sourceObject[propertyName],
+          path
+        }
+      );
+    }
   }
 
   // ! Throws exception on error.
-  private deserializeAsArray(param: Serializable.DeserializeParam)
-  : Array<any> | "Property is not an Array"
+  // Deserializes a single object property. Converts from serialized
+  // format to original data type as needed (for example Set is
+  // saved to JSON as an Array so it has to be reconstructed here).
+  private deserializeProperty(param: Serializable.DeserializeParam): any
   {
-    if (!Array.isArray(param.sourceProperty))
-      return "Property is not an Array";
+    // Allow custom property deserialization in descendants.
+    const customValue = this.customDeserializeProperty(param);
 
-    // Here we need to use Types.isArray() instead of Array.isArray()
-    // because 'param.targetProperty' can be a {} with an array
-    // as it's prototype created by object.create().
-    const targetIsValid =
-       param.targetProperty === null
-    || param.targetProperty === undefined
-    || Types.isArray(param.targetProperty);
+    if (customValue.deserializedProperty !== undefined)
+      return customValue.deserializedProperty;
 
-    if (!targetIsValid)
-    {
-      throw Error(`Failed to deserialize because target property`
-        + ` '${param.propertyName}'${inFile(param.path)} is not 'Array'`
-        + ` 'null' or 'undefined' when deserializing property of type Array`);
-    }
+    // ! Throws exception on error.
+    this.validateSourceAndTarget(param);
 
-    return this.readArray(param);
-  }
-
-  // ! Throws exception on error.
-  private deserializeAsObject(param: Serializable.DeserializeParam)
-  : object | "Property is not an object"
-  {
     if (Types.isPrimitiveType(param.sourceProperty))
-      return "Property is not an object";
+      // Properties of primitive types are simply assigned.
+      return param.sourceProperty;
 
-    const targetIsValid =
-       param.targetProperty === null
-    || param.targetProperty === undefined
-    || !Types.isPrimitiveType(param.targetProperty);
+    if (Array.isArray(param.sourceProperty))
+      // ! Throws exception on error.
+      return this.deserializeArray(param.sourceProperty, param.path);
 
-    if (!targetIsValid)
-    {
-      throw Error(`Failed to deserialize because target property`
-        + ` '${param.propertyName}'${inFile(param.path)} is not 'object',`
-        + ` 'null' or 'undefined' when deserializing property of type object`);
-    }
-
-    return this.readObject(param);
+    return this.deserializeObject
+    (
+      param.sourceProperty,
+      param.targetProperty,
+      param.propertyName,
+      param.path
+    );
   }
 
   // ! Throws exception on error.
-  private readObject(param: Serializable.DeserializeParam): object
+  private validateSourceAndTarget
+  (
+    {
+      propertyName,
+      sourceProperty,
+      targetProperty,
+      path
+    }
+    : Serializable.DeserializeParam
+  )
+  : void
   {
-    let instance = param.targetProperty;
+    if (sourceProperty === null)
+    {
+      throw Error(`Property '${propertyName}${inFile(path)}`
+        + ` has 'null' value. 'null' is not allowed, make sure that it`
+        + ` is not used anywhere`);
+    }
+
+    if (targetProperty === null)
+    {
+      throw Error(`Property '${propertyName}' of ${this.debugId} has`
+        + ` 'null' value. 'null' is not allowed, make sure that it`
+        + ` is not used anywhere`);
+    }
+
+    const targetIsInvalid = targetProperty !== undefined
+      && typeof targetProperty !== typeof sourceProperty;
+
+    if (targetIsInvalid)
+    {
+      throw Error(`Failed to deserialize because target property`
+        + ` '${propertyName}'${inFile(path)} is not 'undefined'`
+        + ` or the same type as source property`);
+    }
+  }
+
+  private deserializeObject
+  (
+    sourceObject: object,
+    targetObject: object,
+    propertyName: string,
+    path?: string
+  )
+  : object
+  {
+    const className = readProperty(sourceObject, CLASS_NAME);
+
+    if (className === undefined)
+      return this.deserializePlainObject(sourceObject, targetObject, path);
+
+    switch (className)
+    {
+      case BITVECTOR_CLASS_NAME:
+        // ! Throws exception on error.
+        return deserializeBitvector(sourceObject, propertyName, path);
+
+      case SET_CLASS_NAME:
+        // ! Throws exception on error.
+        return this.deserializeSet(sourceObject, propertyName, path);
+
+      case MAP_CLASS_NAME:
+        // ! Throws exception on error.
+        return this.deserializeMap(sourceObject, propertyName, path);
+
+      case REFERENCE_CLASS_NAME:
+        // ! Throws exception on error.
+        return deserializeEntityReference(sourceObject, propertyName, path);
+
+      default:
+        // ! Throws exception on error.
+        return this.deserializeSerializable
+        (
+          sourceObject,
+          targetObject,
+          propertyName,
+          className,
+          path
+        );
+    }
+  }
+
+  // ! Throws exception on error.
+  private deserializePlainObject
+  (
+    sourceObject: object,
+    targetProperty: object,
+    path?: string
+  )
+  : object
+  {
+    let targetObject = targetProperty;
+
+    if (targetObject === null || targetObject === undefined)
+      targetObject = {};
+
+    // ! Throws exception on error.
+    this.deserializeProperties(targetObject, sourceObject, path);
+
+    return targetObject;
+  }
+
+  // ! Throws exception on error.
+  private deserializeArray(sourceArray: Array<any>, path?: string): Array<any>
+  {
+    const targetArray = [];
+
+    for (let i = 0; i < sourceArray.length; i++)
+    {
+      const arrayItem = this.deserializeProperty
+      (
+        {
+          propertyName: `Array item [${i}]`,
+          targetProperty: undefined,
+          sourceProperty: sourceArray[i],
+          path
+        }
+      );
+
+      targetArray.push(arrayItem);
+    }
+
+    return targetArray;
+  }
+
+  // ! Throws exception on error.
+  private deserializeSet
+  (
+    sourceObject: object,
+    propertyName: string,
+    path?: string
+  )
+  : Set<any>
+  {
+    const setData = getDataProperty(sourceObject, propertyName, SET);
+
+    // ! Throws exception on error.
+    // In order to deserialize a Set object, we need to load all items
+    // in array which represents it in serialized form, because they
+    // may require special handling themselves (for example if you put
+    // another Set into your Set). We let deserializeArray() do it for us.
+    return new Set(this.deserializeArray(setData, path));
+  }
+
+  // ! Throws exception on error.
+  // Converts 'param.sourceProperty' to a Map object.
+  private deserializeMap
+  (
+    sourceObject: object,
+    propertyName: string,
+    path?: string
+  )
+  : Map<any, any>
+  {
+    const mapData = getDataProperty(sourceObject, propertyName, MAP);
+
+    // ! Throws exception on error.
+    // In order to deserialize a Map object, we need to load all items
+    // in array which represents it in serialized form, because they
+    // may require special handling themselvs (for example if you put
+    // another Map into your Map). We let deserializeArray() do it for us.
+    return new Map(this.deserializeArray(mapData, path));
+  }
+
+  // ! Throws exception on error.
+  private deserializeSerializable
+  (
+    sourceObject: object,
+    targetObject: object,
+    propertyName: string,
+    className: string,
+    path?: string
+  )
+  : Serializable
+  {
+    let targetInstance = targetObject;
 
     // If target property is 'null' or 'undefined', we wouldn't be
     // able to write anything to it or call it's deserialize method.
     // So we first need to assign a new instance of correct type to
     // it - the type is saved in JSON as 'className' property.
-    if (instance === null || instance === undefined)
-      instance = createNew(param);
+    if (targetInstance === null || targetInstance === undefined)
+      targetInstance = ClassFactory.newInstanceByName(className);
 
-    if (instance === null || instance === undefined)
+    if (!(targetInstance instanceof Serializable))
     {
-      throw Error(`Failed to instantiate property '${param.propertyName}'`
-        + `${inFile(param.path)}`);
+      throw Error(`Failed to deserialize property '${propertyName}'`
+        + `${inFile(path)} because target property is supposed to`
+        + ` be an instance of Serializable class and it isn't`);
     }
 
-    if (isDeserializable(instance))
-      return instance.deserialize(param.sourceProperty, param.path);
-
-    if (!Types.isPlainObject(instance))
-    {
-      throw Error("Attempt to deserialize a nonprimitive property which"
-        + " is neither an instance of Serializable class nor a plain"
-        + " Javascript object. This means that you have a class inherited"
-        + " from Serializable and you put a property in it which is"
-        + " neither inherited from Serializable nor a special type"
-        + " handled in Serializable.ts (like Set, Map, etc.). You either"
-        + " have to extend this property from Serializable class or add"
-        + " code to Serializable to handle it's serialization");
-    }
-
-    // We are loading a primitive Javascript object.
-    return this.deserializePlainObject
-    (
-      {
-        propertyName: param.propertyName,
-        sourceProperty: param.sourceProperty,
-        // We will be loading into our possibly newly created instance.
-        targetProperty: instance,
-        path: param.path
-      }
-    );
-  }
-
-  // ! Throws exception on error.
-  private deserializePlainObject(param: Serializable.DeserializeParam)
-  : object
-  {
-    const sourceObject = param.sourceProperty;
-
-    // We are cycling over properties in source object, not in
-    // object that is being loaded. It means that we are only
-    // overwriting properties that exist on the source object.
-    //   We are not, however, enforcing that source properties
-    // exist in target object because that would prevent
-    // deserializing plain Javascript objects to a 'null' value
-    // property (properties with 'null' value are instantiated
-    // as {} before writing into them so they don't have any
-    // properties).
-    //   The same is true for loading Array items (the don't exist
-    // prior to loading) which applies to Map and Set objects as well
-    // (because they are serialized as Arrays).
-    for (const propertyName in sourceObject)
-    {
-      // Only deserialize own (not inherited) properties.
-      if (!sourceObject.hasOwnProperty(propertyName))
-        continue;
-
-      // Deserializing of each property may require special handling
-      // so we use readProperty() which will do it for us.
-      param.targetProperty[propertyName] = this.deserializeProperty
-      (
-        {
-          propertyName: param.propertyName,
-          // We pass 'undefined' as 'targetProperty' to make
-          // readObject() create a new instance for us.
-          targetProperty: undefined,
-          sourceProperty: param.sourceProperty[propertyName],
-          path: param.path
-        }
-      );
-    }
-
-    return param.targetProperty;
-  }
-
-  // ! Throws exception on error.
-  private readSet(param: Serializable.DeserializeParam): Set<any>
-  {
-    // ! Throws exception on error.
-    // In order to deserialize a Set object, we need to load all items
-    // in array which represents it in serialized form, because they
-    // may require special handling themselves (for example if you put
-    // another Set into your Set). We let readArray() do it for us.
-    const deserializedArray = this.readArray
-    (
-      {
-        propertyName: "Serialized record: Set",
-        targetProperty: [],   // Load into a new array.
-        sourceProperty: getProperty(param, SET),
-        path: param.path
-      }
-    );
-
-    return new Set(deserializedArray);
-  }
-
-  // ! Throws exception on error.
-  // Converts 'param.sourceProperty' to a Map object.
-  private readMap(param: Serializable.DeserializeParam): Map<any, any>
-  {
-    // ! Throws exception on error.
-    // In order to deserialize a Map object, we need to load all items
-    // in array which represents it in serialized form, because they
-    // may require special handling themselvs (for example if you put
-    // another Map into your Map). We let readArray() do it for us.
-    const deserializedArray = this.readArray
-    (
-      {
-        propertyName: "Serialized record: Map",
-        targetProperty: [],   // Load into a new array.
-        sourceProperty: getProperty(param, MAP),
-        path: param.path
-      }
-    );
-
-    return new Map(deserializedArray);
-  }
-
-  // ! Throws exception on error.
-  // Converts 'param.sourceProperty' to Array.
-  private readArray(param: Serializable.DeserializeParam): Array<any>
-  {
-    const array = param.sourceProperty;
-
-    if (array === null || array === undefined)
-    {
-      throw Error(`Failed to deserialize array because`
-        + ` source property '${param.propertyName}' is`
-        + ` invalid${inFile(param.path)}`);
-    }
-
-    if (!Array.isArray(array))
-    {
-      throw Error(`Failed to deserialize array because`
-        + ` source property '${param.propertyName}' is not`
-        + ` an array${inFile(param.path)}`);
-    }
-
-    const newArray = [];
-
-    for (let i = 0; i < array.length; i++)
-    {
-      newArray.push
-      (
-        this.readArrayItem(array[i], i, param.path)
-      );
-    }
-
-    return newArray;
-  }
-
-  // ! Throws exception on error.
-  // ('index' and 'path' are used only for error messages).
-  private readArrayItem(item: any, index: number, path?: string): any
-  {
-    // Let 'readProperty()' method load the contents of an array item.
-    return this.deserializeProperty
-    (
-      {
-        propertyName: `Array item [${index}]`,
-        // We pass 'undefined' as 'targetProperty' to make
-        // readObject() create a new instance for us.
-        targetProperty: undefined,
-        sourceProperty: item,
-        path
-      }
-    );
+    return targetInstance.deserialize(sourceObject, path);
   }
 }
 
 // ----------------- Auxiliary Functions ---------------------
+
+// *** Serialize Functions ***
 
 // -> Returns 'true' if 'variable' has own (not just inherited) value.
 function hasOwnValue(variable: any): boolean
@@ -898,8 +784,8 @@ function hasOwnValue(variable: any): boolean
   if (Types.isMap(variable) || Types.isSet(variable))
   {
     // Maps and Sets are always instantiated as 'new Map()'
-    // or 'new Set()'. We only serialize them if they contain
-    // something.
+    // or 'new Set()' so we only need to serialize them if
+    // they contain something.
     return variable.size !== 0;
   }
 
@@ -916,48 +802,6 @@ function hasOwnValue(variable: any): boolean
   }
 
   return false;
-}
-
-// Checks if 'param.sourceProperty' represents a saved FastBitSet object.
-function isBitvectorRecord(jsonObject: object): boolean
-{
-  if (jsonObject === undefined || jsonObject === null)
-    return false;
-
-  return (jsonObject as Types.Object)[CLASS_NAME] === BITVECTOR_CLASS_NAME;
-}
-
-// Checks if 'param.sourceProperty' represents a saved Set object.
-function isSetRecord(jsonObject: object): boolean
-{
-  if (jsonObject === undefined || jsonObject === null)
-    return false;
-
-  return (jsonObject as Types.Object)[CLASS_NAME] === SET_CLASS_NAME;
-}
-
-// Checks if 'param.sourceProperty' represents a saved Map object.
-function isMapRecord(jsonObject: object): boolean
-{
-  if (jsonObject === undefined || jsonObject === null)
-    return false;
-
-  return (jsonObject as Types.Object)[CLASS_NAME] === MAP_CLASS_NAME;
-}
-
-// Checks if 'param.sourceProperty' represents a saved reference to
-// an entity.
-function isReference(jsonObject: object): boolean
-{
-  if (jsonObject === undefined || jsonObject === null)
-    return false;
-
-  return (jsonObject as Types.Object)[CLASS_NAME] === REFERENCE_CLASS_NAME;
-}
-
-function isDeserializable(instance: any): boolean
-{
-  return "deserialize" in instance;
 }
 
 function createSaver(className: string): Serializable
@@ -1064,112 +908,25 @@ function saveMapToArray(map: Map<any, any>): Array<any>
   return result;
 }
 
-// -> Returns string informing about file location or empty string
-//    if 'path' is not available.
-function inFile(path?: string): string
-{
-  if (!path)
-    return "";
-
-  return ` in file ${path}`;
-}
-
-// ! Throws exception on error.
-function getProperty
-(
-  param: Serializable.DeserializeParam,
-  propertyName: string
-)
-: any
-{
-  if (!param.sourceProperty)
-  {
-    throw Error(`Failed to deserialize because source property`
-      + ` '${param.propertyName}'${inFile(param.path)} isn't valid`);
-  }
-
-  const property = param.sourceProperty[propertyName];
-
-  if (property === undefined || property === null)
-  {
-    throw Error(`Failed to deserialize because property`
-      + ` '${propertyName}'${inFile(param.path)} isn't valid`);
-  }
-
-  return property;
-}
-
-// ! Throws exception on error.
-// Reads 'className' from 'param.sourceProperty'
-// and creates an instance of that class.
-function createNew(param: Serializable.DeserializeParam): object
-{
-  const className = param.sourceProperty[CLASS_NAME];
-
-  // If there isn't a 'className' property in source object,
-  // we will load into a plain object.
-  if (className === undefined)
-    return {};
-
-  // Note:
-  //   We don't have to check if 'className' is an Entity class,
-  // because entities are always serialized as a reference. So if
-  // there is an instance of some Serializable class saved directly
-  // in JSON, it can't be an entity class.
-
-  // ! Throws exception on error.
-  return ClassFactory.newInstanceByName(className);
-}
-
-// Converts 'param.sourceProperty' to a FastBitSet object.
-function readBitvector(param: Serializable.DeserializeParam): any
-{
-  return new FastBitSet(getProperty(param, BITVECTOR));
-}
-
-// ! Throws exception on error.
-function deserializeAsBitvector(param: Serializable.DeserializeParam): any
-{
-  if (!isBitvectorRecord(param.sourceProperty))
-    return "Property is not a bitvector";
-
-  const targetIsValid =
-     param.targetProperty === null
-  || param.targetProperty === undefined
-  || Types.isBitvector(param.targetProperty);
-
-  if (!targetIsValid)
-  {
-    throw Error(`Failed to deserialize because target property`
-      + ` '${param.propertyName}'${inFile(param.path)} is not 'bitvector',`
-      + ` 'null' or 'undefined' when deserializing property of type`
-      + ` bitvector`);
-  }
-
-  return readBitvector(param);
-}
-
 // ! Throws exception on error.
 // Converts 'param.sourceProperty' to a reference to an Entity.
 // If 'id' loaded from JSON already exists in Entities, existing
 // entity will be returned. Otherwise an 'invalid' entity reference
 // will be created and returned.
 // -> Retuns an existing entity or an invalid entity reference.
-function readEntityReference(param: Serializable.DeserializeParam): any
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+function deserializeEntityReference
+(
+  sourceObject: object,
+  propertyName: string,
+  path?: string
+)
+// Let typescript infer the type here so we don't have to import Entity
+// (that would lead to cyclic import troubles).
 {
-  const id = getProperty(param, ID);
+  const id = getDataProperty(sourceObject, propertyName, path);
 
   return Entities.getReference(id);
-}
-
-// Attempts to convert 'param.sourceProperty' to reference to an Entity.
-function deserializeAsEntityReference(param: Serializable.DeserializeParam)
-: any
-{
-  if (!isReference(param.sourceProperty))
-    return "Property is not a reference to an Entity";
-
-  return readEntityReference(param);
 }
 
 function isEntity(variable: object): boolean
@@ -1209,15 +966,91 @@ function isSkippedProperty(name: string): boolean
       || name === PROTOTYPE_ID;
 }
 
+// *** Deserialize Functions ***
+
+function readProperty(jsonObject: Types.Object, propertyName: string): any
+{
+  return jsonObject[propertyName];
+}
+
+// ! Throws exception on error.
+function getClassName(jsonObject: object): string
+{
+  const className = readProperty(jsonObject, CLASS_NAME);
+
+  if (!className)
+  {
+    throw Error(`Unable to deserialize data because there is`
+      + ` no '${CLASS_NAME}' property in it`);
+  }
+
+  if (!(typeof className === "string"))
+  {
+    throw Error(`Unable to deserialize data because property`
+      + ` '${CLASS_NAME}' isn't a string`);
+  }
+
+  return className;
+}
+
+// -> Returns string informing about file location or empty string
+//    if 'path' is not available.
+function inFile(path?: string): string
+{
+  if (!path)
+    return "";
+
+  return ` in file ${path}`;
+}
+
+// ! Throws exception on error.
+function getDataProperty
+(
+  sourceObject: object,
+  propertyName: string,
+  path?: string
+)
+: any
+{
+  const property = sourceObject[propertyName];
+
+  if (property === undefined || property === null)
+  {
+    throw Error(`Failed to deserialize because property`
+      + ` '${propertyName}'${inFile(path)} isn't valid`);
+  }
+
+  return property;
+}
+
+function deserializeBitvector
+(
+  sourceObject: object,
+  propertyName: string,
+  path?: string
+)
+: any
+{
+  const bitvectorData = getDataProperty(sourceObject, BITVECTOR, path);
+
+  if (bitvectorData === undefined)
+  {
+    throw Error(`Failed to deserialize bitvector property ${propertyName}`
+      + ` because '${BITVECTOR}' property is missing in source JSON data`);
+  }
+
+  return new FastBitSet(bitvectorData);
+}
+
 // ------------------ Type declarations ----------------------
 
 export namespace Serializable
 {
   export type Mode =
-    "Save to file"
-  | "Send to client"
-  | "Send to server"
-  | "Send to editor";
+    | "Save to file"
+    | "Send to client"
+    | "Send to server"
+    | "Send to editor";
 
   export interface DeserializeParam
   {
