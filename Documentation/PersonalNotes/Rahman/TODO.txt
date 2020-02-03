@@ -24,12 +24,13 @@ Později:
 
 TODO: Refactorovat Serializable
 
-IDEA: Zdědit Serializable z Deserializable
-  (oddělím tím serializační a deserializační kód do samostatných modulů)
+TODO: Projít metody na detekci typů v Types, jestli by nešly zrušit
 
-TODO:
-- Při vyrábění instance i při deserializaci do polí přiřadit [].
-  
+TODO: Zapisovat properties při serializaci přes writeProperty(),
+  aby se používala stejná konstanta jako při deserializaci
+  (u mapy už to tak je)
+
+TODO: Připomenout si, proč Date nejde prototypově dědit a Time ano
 
 
 TODO: Zobrazovat exity "up" a "down" podle exitů v roomách
