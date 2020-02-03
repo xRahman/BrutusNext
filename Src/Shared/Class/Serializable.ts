@@ -92,7 +92,7 @@ export class Serializable extends Attributable
     const jsonObject = JsonObject.parse(data);
 
     // ! Throws exception on error.
-    const className = getClassName(jsonObject);
+    const className = getClassName(jsonObject, path);
 
     // ! Throws exception on error.
     const serializable = ClassFactory.newInstanceByName(className);
@@ -426,7 +426,7 @@ export class Serializable extends Attributable
   public deserialize
   (
     jsonObject: object,
-    sourceClassName: string,
+    className: string,
     path?: string
   )
   : this
@@ -438,7 +438,7 @@ export class Serializable extends Attributable
     this.versionMatchCheck(jsonObject, path);
 
     // ! Throws exeption if class names in source and target data don't match.
-    this.classMatchCheck(sourceClassName, this.className, path);
+    this.classMatchCheck(className, this.className, path);
 
     // ! Throws exception on error.
     this.deserializeProperties(this, jsonObject, path);
@@ -517,19 +517,18 @@ export class Serializable extends Attributable
       if (!sourceObject.hasOwnProperty(propertyName))
         continue;
 
-      // Properties 'className' and 'version' aren't assigned
-      // ('className' represents the name of the javascript class
-      //   which cannot be changed and 'version' is serialized only
-      //   to be checked against).
+      // 'className' represents the name of the javascript class
+      // which cannot be changed and 'version' is serialized only
+      // to be checked against.
       if (propertyName === CLASS_NAME || propertyName === VERSION)
         continue;
 
       // ! Throws exception on error.
-      // We are cycling over properties in source object, not in Serializable
-      // that is being loaded so properties that are not present in source JSON
-      // object will not get overwritten with 'undefined'. This allows adding
-      // new properties to existing classes without the need to convert all
-      // save files.
+      // We are cycling over properties in source JSON object, not in target
+      // object to ensure that properties which are not present in source data
+      // will not get overwritten with 'undefined'. This allows adding new
+      // properties to existing classes without the need to convert all save
+      // files.
       targetObject[propertyName] = this.deserializeProperty
       (
         {
@@ -974,20 +973,20 @@ function readProperty(jsonObject: Types.Object, propertyName: string): any
 }
 
 // ! Throws exception on error.
-function getClassName(jsonObject: object): string
+function getClassName(jsonObject: object, path?: string): string
 {
   const className = readProperty(jsonObject, CLASS_NAME);
 
   if (!className)
   {
-    throw Error(`Unable to deserialize data because there is`
-      + ` no '${CLASS_NAME}' property in it`);
+    throw Error(`Unable to deserialize json data${inFile(path)}`
+      + ` because there is no '${CLASS_NAME}' property in it`);
   }
 
   if (!(typeof className === "string"))
   {
-    throw Error(`Unable to deserialize data because property`
-      + ` '${CLASS_NAME}' isn't a string`);
+    throw Error(`Unable to deserialize json data${inFile(path)}`
+      + ` because property '${CLASS_NAME}' isn't a string`);
   }
 
   return className;
