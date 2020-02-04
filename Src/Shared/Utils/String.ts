@@ -277,16 +277,15 @@ function splitBySubstrings
   }
 
   const result: Array<string> = [];
-  let parsedStr = str;
   let splitResult = { before: "", after: "" };
 
   for (const substring of substrings)
   {
-    splitResult = splitBySubstring(parsedStr, substring);
+    splitResult = splitBySubstring(str, substring);
 
     result.push(splitResult.before);
 
-    parsedStr = splitResult.after;
+    str = splitResult.after;
   }
 
   // Discard the first result because value can't be

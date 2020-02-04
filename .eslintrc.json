@@ -641,7 +641,14 @@
       // Disallow octal escape sequences in string literals.
       "no-octal-escape": "error",
       // Disallow reassigning 'function' parameters.
-      "no-param-reassign": "error",
+      // (This is hard decision. Disallowing parameter reassignemnt can
+      //  help prevent errors when working with 'arguments' object. On
+      //  the other hand it hampers code readability because in order
+      //  to work with a value of parameter without reassignment you
+      //  have to to come up with second name to the same thing. Since
+      //  working with 'arguments' is very rare and hampering readability
+      //  is quite common, let's turn this off.)
+      "no-param-reassign": "off",
       // Disallow the use of the '__proto__' property.
       "no-proto": "error",
       // Disallow variable redeclaration.

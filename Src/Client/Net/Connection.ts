@@ -16,13 +16,13 @@ import { WebSocketEvent } from "../../Shared/Net/WebSocketEvent";
 // Use 'isomorphic-ws' to use the same code on both client and server.
 import * as WebSocket from "isomorphic-ws";
 
-let webSocket: (WebSocket | "disconnected") = "disconnected";
-
 type PromiseHandler =
 {
   resolve: Types.ResolveFunction<void>,
   reject: Types.ResolveFunction<void>
 };
+
+let webSocket: (WebSocket | "disconnected") = "disconnected";
 
 let connectingProgress: PromiseHandler | "Not connecting" = "Not connecting";
 

@@ -33,11 +33,9 @@ export namespace JsonObject
   // Same as JSON.stringify() but with more readable formatting.
   export function stringify(jsonObject: object): string
   {
-    let jsonString = JSON.stringify(jsonObject);
+    const jsonString = JSON.stringify(jsonObject);
 
-    jsonString = beautify(jsonString, beautifyParam);
-
-    return jsonString;
+    return beautify(jsonString, beautifyParam);
   }
 
   // ! Throws exception on error.

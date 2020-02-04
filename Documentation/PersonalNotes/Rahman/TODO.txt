@@ -29,8 +29,22 @@ TODO: Projít metody na detekci typů v Types, jestli by nešly zrušit
 TODO: Zapisovat properties při serializaci přes writeProperty(),
   aby se používala stejná konstanta jako při deserializaci
   (u mapy už to tak je)
+[done]
 
 TODO: Připomenout si, proč Date nejde prototypově dědit a Time ano
+
+TODO: Serializační metody jako serializeArray() by se asi měly jmenovat
+  spíš arrayToJSON()
+
+TODO: Přece jen ještě zvážit, jestli nezavést argument 'debugInfo',
+  kterej by slučovat parametry určené pouze pro debug výpisy
+  (Mohlo by to zredukovat množství kódu a zároveň logicky oddělit
+   ostré argumenty od debugových).
+
+
+IDEA: Serializovat Map jako properties objectu (bylo by to čitelnější)
+  https://2ality.com/2015/08/es6-map-json.html#string-maps-as-json-via-objects
+[done]
 
 
 TODO: Zobrazovat exity "up" a "down" podle exitů v roomách

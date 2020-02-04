@@ -486,12 +486,10 @@ function escapeControlCharacter(str: string, charCode: number): string
 
 function escapeReservedCharacters(str: string): string
 {
-  let result = str;
-
   for (const [ key, value ] of RESERVED_FILENAME_CHARACTERS.entries())
-    result = result.split(key).join(value);
+    str = str.split(key).join(value);
 
-  return result;
+  return str;
 }
 
 function escapeReservedFilenames(str: string): string
@@ -518,17 +516,15 @@ function escapeReservedFilenames(str: string): string
 
 function escapeControlCharacters(str: string): string
 {
-  let result = str;
-
   // Escape control characters (0x00–0x1F)
   for (let i = 0x00; i < 0x1F; i++)
-    result = escapeControlCharacter(result, i);
+    str = escapeControlCharacter(str, i);
 
   // Escape control characters (0x80–0x9F)
   for (let i = 0x80; i < 0x9F; i++)
-    result = escapeControlCharacter(result, i);
+    str = escapeControlCharacter(str, i);
 
-  return result;
+  return str;
 }
 
 function escapeTrailingCharacter(str: string, character: string): string
@@ -541,13 +537,12 @@ function escapeTrailingCharacter(str: string, character: string): string
 
 function encodeStringAsFileName(str: string): string
 {
-  let result = str.toLowerCase();
+  str = str.toLowerCase();
+  str = escapeReservedCharacters(str);
+  str = escapeReservedFilenames(str);
+  str = escapeControlCharacters(str);
+  str = escapeTrailingCharacter(str, ".");
+  str = escapeTrailingCharacter(str, " ");
 
-  result = escapeReservedCharacters(result);
-  result = escapeReservedFilenames(result);
-  result = escapeControlCharacters(result);
-  result = escapeTrailingCharacter(result, ".");
-  result = escapeTrailingCharacter(result, " ");
-
-  return result;
+  return str;
 }

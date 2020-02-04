@@ -54,16 +54,14 @@ export namespace ErrorUtils
     if (!(error instanceof Error))
       return new Error(`${message}: ${String(error)}`);
 
-    let newMessage = message;
-
     if (error.message)
-      newMessage += `\nReason: ${error.message}`;
+      message += `\nReason: ${error.message}`;
 
     // Clone the 'error' because Error objects like DOMException have
     // readonly properties so we wouldn't be able to write to them.
     const clonedError = cloneError(error);
 
-    setErrorMessage(clonedError, newMessage);
+    setErrorMessage(clonedError, message);
 
     return clonedError;
   }
