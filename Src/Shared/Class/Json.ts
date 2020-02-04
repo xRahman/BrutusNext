@@ -1,7 +1,7 @@
 /*
   Part of BrutusNext
 
-  Wraps javascript JSON class.
+  Wraps javascript JSON object
 */
 
 import { ErrorUtils } from "../../Shared/Utils/ErrorUtils";
@@ -26,7 +26,7 @@ const beautifyParam: JsBeautifyOptions =
   end_with_newline: false
 };
 
-export namespace JsonObject
+export namespace Json
 {
   // ---------------- Public methods --------------------
 

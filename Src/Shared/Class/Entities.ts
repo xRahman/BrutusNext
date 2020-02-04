@@ -76,15 +76,15 @@ export namespace Entities
   }
 
   // ! Throws exception on error.
-  export function loadEntityFromJsonObject
+  export function entityFromJson
   (
-    jsonObject: object,
+    json: object,
     expectedId?: string
   )
   : Entity
   {
     // ! Throws exception on error.
-    const id = readId(jsonObject, ID);
+    const id = getStringProperty(json, ID);
 
     if (expectedId !== undefined && expectedId !== id)
     {
@@ -94,12 +94,12 @@ export namespace Entities
     }
 
     // ! Throws exception on error.
-    const prototypeId = readId(jsonObject, PROTOTYPE_ID);
+    const prototypeId = getStringProperty(json, PROTOTYPE_ID);
     // ! Throws exception on error.
     const prototype = get(prototypeId);
     const entity = instantiateEntity(prototype, id);
 
-    return entity.deserialize(jsonObject);
+    return entity.fromJson(json);
   }
 
   // ! Throws exception on error.
@@ -140,15 +140,15 @@ function createInvalidEntity(id: string): Entity
 }
 
 // ! Throws exception on error.
-function readId(jsonData: object, propertyName: string): string
+function getStringProperty(jsonData: object, propertyName: string): string
 {
-  const id = (jsonData as any)[propertyName];
+  const property = (jsonData as any)[propertyName];
 
-  if (!id)
+  if (!property)
     throw Error(`Missing or invalid ${propertyName} in json data`);
 
-  if (!Types.isString(id))
+  if (!Types.isString(property))
     throw Error(`Property ${propertyName} in json data is not a string`);
 
-  return id;
+  return property;
 }

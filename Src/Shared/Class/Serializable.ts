@@ -39,7 +39,7 @@ import { Types } from "../../Shared/Utils/Types";
 import { Syslog } from "../../Shared/Log/Syslog";
 import { Entities } from "../../Shared/Class/Entities";
 import { ClassFactory } from "../../Shared/Class/ClassFactory";
-import { JsonObject } from "../../Shared/Class/JsonObject";
+import { Json } from "../../Shared/Class/Json";
 import { Attributable } from "../../Shared/Class/Attributable";
 
 // 3rd party modules.
@@ -64,12 +64,9 @@ const NAME = "name";
 export const ID = "id";
 export const PROTOTYPE_ID = "prototypeId";
 
-// These special property names are only written to serialized data
-// (for example 'map' property holds an Array that represents serialized
-//  data of a Map object).
-const BITVECTOR = "bitvector";
-const MAP = "map";
-const SET = "set";
+// Special property name used to store serialized data of Map,
+// Set and Bitvector.
+const DATA = "data";
 
 export class Serializable extends Attributable
 {
@@ -88,16 +85,16 @@ export class Serializable extends Attributable
   public static deserialize(data: string, path?: string): Serializable
   {
     // ! Throws exception on error.
-    const jsonObject = JsonObject.parse(data);
+    const json = Json.parse(data);
 
     // ! Throws exception on error.
-    const className = readClassName(jsonObject, path);
+    const className = readClassName(json, path);
 
     // ! Throws exception on error.
     const instance = ClassFactory.newInstanceByName(className);
 
     // ! Throws exception on error.
-    return instance.deserialize(jsonObject, path);
+    return instance.fromJson(json, path);
   }
 
   // --------------- Public accessors -------------------
@@ -125,25 +122,25 @@ export class Serializable extends Attributable
   // ! Throws exception on error.
   public serialize(mode: Serializable.Mode): string
   {
-    const jsonObject = this.saveToJsonObject(mode);
+    const json = this.toJson(mode);
 
-    return JsonObject.stringify(jsonObject);
+    return Json.stringify(json);
   }
 
   // ! Throws exception on error.
-  public deserialize(jsonObject: object, path?: string): this
+  public fromJson(json: object, path?: string): this
   {
     // ! Throws exception on error.
     /// TODO: This will probably have to be replaced by code that
     /// converts data to the new version (instead of preventing
     /// data to be deserialized by throwing an exception).
-    this.versionMatchCheck(jsonObject, path);
+    this.versionMatchCheck(json, path);
 
     // ! Throws exception on error.
-    this.classMatchCheck(jsonObject, path);
+    this.classMatchCheck(json, path);
 
     // ! Throws exception on error.
-    this.deserializeProperties(jsonObject, this, path);
+    this.propertiesFromJson(json, this, path);
 
     return this;
   }
@@ -151,27 +148,27 @@ export class Serializable extends Attributable
   // -------------- Protected methods -------------------
 
   // This method can be overriden to change how a property is serialized.
-  protected customSerializeProperty
+  protected propertyToCustomJson
   (
     property: any,
     propertyName: string,
     className: string,
     mode: Serializable.Mode
   )
-  : { serializedProperty?: any }
+  : { property?: any }
   {
     return {};
   }
 
   // This method can be overriden to change how a property is deserialized.
-  protected customDeserializeProperty
+  protected propertyFromCustomJson
   (
     propertyName: string,
     source: any,
     target: any,
     path?: string
   )
-  : { deserializedProperty?: any }
+  : { property?: any }
   {
     return {};
   }
@@ -181,21 +178,21 @@ export class Serializable extends Attributable
   // *** Serialize Methods ***
 
   // ! Throws exception on error.
-  private saveToJsonObject(mode: Serializable.Mode): object
+  private toJson(mode: Serializable.Mode): object
   {
-    const jsonObject = {};
+    const json = {};
 
     // Save these properties first to make JSON more readable.
-    this.writeClassName(jsonObject);
-    this.copyOwnProperty(jsonObject, ID);
-    this.copyOwnProperty(jsonObject, PROTOTYPE_ID);
-    this.copyOwnProperty(jsonObject, NAME);
-    this.writeVersion(jsonObject, mode);
+    this.writeClassName(json);
+    this.copyOwnProperty(json, ID);
+    this.copyOwnProperty(json, PROTOTYPE_ID);
+    this.copyOwnProperty(json, NAME);
+    this.writeVersion(json, mode);
 
     // Cycle through all properties in source object.
     for (const propertyName in this)
     {
-      if (isSavedOutOfOrder(propertyName))
+      if (isWrittenOutOfOrder(propertyName))
         continue;
 
       // Skip inherited properties (they are serialized on prototype entity).
@@ -213,26 +210,26 @@ export class Serializable extends Attributable
       if (!hasOwnValue(property))
         continue;
 
-      const serializedProperty =
-        this.serializeProperty(property, propertyName, this.className, mode);
+      const propertyJson =
+        this.propertyToJson(property, propertyName, this.className, mode);
 
-      writeProperty(jsonObject, propertyName, serializedProperty);
+      writeProperty(json, propertyName, propertyJson);
     }
 
-    return jsonObject;
+    return json;
   }
 
-  private copyOwnProperty(jsonObject: object, propertyName: string): void
+  private copyOwnProperty(json: object, propertyName: string): void
   {
     if (this.hasOwnProperty(propertyName))
     {
       const property = readProperty(this, propertyName);
 
-      writeProperty(jsonObject, propertyName, property);
+      writeProperty(json, propertyName, property);
     }
   }
 
-  private writeVersion(jsonObject: object, mode: Serializable.Mode): void
+  private writeVersion(json: object, mode: Serializable.Mode): void
   {
     if (mode === "Send to client" || mode === "Send to server")
     {
@@ -246,27 +243,27 @@ export class Serializable extends Attributable
     if (!this.constructor.hasOwnProperty(VERSION))
     {
       throw Error(`Failed to serialize ${this.debugId}`
-        + ` because static '${VERSION}' property is missing`
-        + ` on it. Make sure that 'static ${VERSION}' is`
-        + ` inicialized in class ${this.className}`);
+        + ` because it doesn't have static property`
+        + ` '${VERSION}'. Make sure that 'static ${VERSION}'`
+        + ` is inicialized in class ${this.className}`);
     }
 
     const version = this.getStaticProperty(VERSION);
 
     if (!Types.isNumber(version))
     {
-      throw Error(`Failed to serialize ${this.debugId}`
-        + ` because static '${VERSION}' property is not a number.`
-        + ` Make sure that 'static ${VERSION}' is inicialized in`
-        + ` class ${this.className} to some number`);
+      throw Error(`Failed to serialize ${this.debugId} because`
+        + ` static property '${VERSION}' is not a number. Make`
+        + ` sure that 'static ${VERSION}' is inicialized in`
+        + ` class ${this.className} to a number`);
     }
 
-    writeProperty(jsonObject, VERSION, version);
+    writeProperty(json, VERSION, version);
   }
 
-  private writeClassName(jsonObject: object): void
+  private writeClassName(json: object): void
   {
-    writeProperty(jsonObject, CLASS_NAME, this.className);
+    writeProperty(json, CLASS_NAME, this.className);
   }
 
   // ! Throws exception on error.
@@ -294,7 +291,7 @@ export class Serializable extends Attributable
   }
 
   // ! Throws exception on error.
-  private serializeProperty
+  private propertyToJson
   (
     property: any,
     propertyName: string,
@@ -304,22 +301,23 @@ export class Serializable extends Attributable
   : any
   {
     // Allow custom property serialization in descendants.
-    const customValue =
-      this.customSerializeProperty(property, propertyName, className, mode);
+    const customJson =
+      this.propertyToCustomJson(property, propertyName, className, mode);
 
-    if (customValue.serializedProperty !== undefined)
-      return customValue.serializedProperty;
+    if (customJson.property !== undefined)
+      return customJson.property;
 
-    // Primitive values (number, string, null, etc.) are just assigned.
-    if (Types.isPrimitiveType(property) || property === undefined)
+    // Primitive values (number, string, undefined, null, etc.)
+    // are directly assigned.
+    if (Types.isPrimitiveType(property))
       return property;
 
     // ! Throws exception on error.
-    return this.serializeObject(property, propertyName, className, mode);
+    return this.objectToJson(property, propertyName, className, mode);
   }
 
   // ! Throws exception on error.
-  private serializeObject
+  private objectToJson
   (
     property: object,
     className: string,
@@ -330,16 +328,16 @@ export class Serializable extends Attributable
   {
     if (Array.isArray(property))
       // ! Throws exception on error.
-      return this.serializeArray(property, className, mode);
+      return this.arrayToJson(property, className, mode);
 
     if (property instanceof Serializable)
     {
       if (isEntity(property))
         // ! Throws exception on error.
-        return serializeEntity(property, className, propertyName);
+        return entityToJson(property, className, propertyName);
 
       // ! Throws exception on error.
-      return property.saveToJsonObject(mode);
+      return property.toJson(mode);
     }
 
     if (Types.isDate(property))
@@ -351,89 +349,84 @@ export class Serializable extends Attributable
     }
 
     if (property instanceof Map)
-      return serializeMap(property);
+      return mapToJson(property);
 
     if (Types.isBitvector(property))
       // ! Throws exception on error.
-      return serializeBitvector(property, className, propertyName);
+      return bitvectorToJson(property, className, propertyName);
 
     if (property instanceof Set)
-      return serializeSet(property);
+      return setToJson(property);
 
     if (Types.isPlainObject(property))
-      return this.serializePlainObject(property, className, mode);
+      return this.plainObjectToJson(property, className, mode);
 
     throw Error(`Property '${propertyName}' in class '${className}'`
-      + ` (or inherited from one of it's ancestors) is a class`
-      + ` but is neither inherited from Serializable nor has`
-      + ` a type that we know how to save. Make sure that you only`
-      + ` use primitive types (numbers, strings, etc.), Arrays,`
-      + ` primitive javascript objects, Maps, Sets or classes`
-      + ` inherited from Serializable as properties of classes`
-      + ` inherited from Serializable. If you want a new type to`
-      + ` be serialized, you need to add this functionality to`
+      + ` is an instance of a class which is neither inherited from`
+      + ` Serializable nor has a type that we know how to save. Either`
+      + ` extend it from Serializable or add this functionality to`
       + ` Serializable.ts. Property is not serialized`);
   }
 
   // ! Throws exception on error.
-  private serializeArray
+  private arrayToJson
   (
-    sourceArray: Array<any>,
+    array: Array<any>,
     className: string,
     mode: Serializable.Mode
   )
   : Array<any>
   {
-    const targetArray = [];
+    const arrayJson = [];
 
-    for (let i = 0; i < sourceArray.length; i++)
+    for (let i = 0; i < array.length; i++)
     {
       // ! Throws exception on error.
-      const serializedItem = this.serializeProperty
+      const itemJson = this.propertyToJson
       (
-        sourceArray[i],
+        array[i],
         `Array item [${i}]`,
         className,
         mode
       );
 
-      targetArray.push(serializedItem);
+      arrayJson.push(itemJson);
     }
 
-    return targetArray;
+    return arrayJson;
   }
 
   // ! Throws exception on error.
-  private serializePlainObject
+  private plainObjectToJson
   (
-    sourceObject: Types.Object,
+    plainObject: Types.Object,
     className: string,
     mode: Serializable.Mode
   )
   : object
   {
-    const jsonObject = {};
+    const json = {};
 
     // Serialize all properties of sourceObject.
-    for (const propertyName in sourceObject)
+    for (const propertyName in plainObject)
     {
       // Only serialize own (not inherited) properties.
-      if (!sourceObject.hasOwnProperty(propertyName))
+      if (!plainObject.hasOwnProperty(propertyName))
         continue;
 
-      const property = sourceObject[propertyName];
+      const property = plainObject[propertyName];
 
       // Skip nonprimitive properties that don't have any own properties.
       if (!hasOwnValue(property))
         continue;
 
-      const serializedProperty =
-        this.serializeProperty(property, propertyName, className, mode);
+      const propertyJson =
+        this.propertyToJson(property, propertyName, className, mode);
 
-      writeProperty(jsonObject, propertyName, serializedProperty);
+      writeProperty(json, propertyName, propertyJson);
     }
 
-    return jsonObject;
+    return json;
   }
 
   // *** Deserialize Methods ***
@@ -444,18 +437,18 @@ export class Serializable extends Attributable
   }
 
   // ! Throws exception on error.
-  private versionMatchCheck(jsonObject: object, path?: string): void
+  private versionMatchCheck(json: object, path?: string): void
   {
-    const version = readProperty(jsonObject, VERSION);
+    const jsonVersion = readProperty(json, VERSION);
 
     // If there isn't a 'version' property in jsonObject,
     // it won't be checked for (version is not used in
     // packets because they are always sent and received
     // from the same version of code).
-    if (version === undefined)
+    if (jsonVersion === undefined)
       return;
 
-    if (!Types.isString(version))
+    if (!Types.isString(jsonVersion))
     {
       throw Error(`Failed to deserialize because ${VERSION}`
         + ` property in JSON data${inFile(path)} isn't a string`);
@@ -469,23 +462,23 @@ export class Serializable extends Attributable
         + ` property in target object isn't a string`);
     }
 
-    if (version !== thisVersion)
+    if (jsonVersion !== thisVersion)
     {
-      throw Error(`Failed to deserialize because version of`
-        + ` JSON data (${String(version)})${inFile(path)} doesn't`
-        + ` match actual version (${String(thisVersion)})`);
+      throw Error(`Failed to deserialize because version`
+        + `${String(jsonVersion)}${inFile(path)} doesn't`
+        + ` match target version ${String(thisVersion)}`);
     }
   }
 
   // ! Throws exception on error.
   private classMatchCheck
   (
-    jsonObject: object,
+    json: object,
     path?: string
   )
   : void
   {
-    const className = readProperty(jsonObject, CLASS_NAME);
+    const className = readProperty(json, CLASS_NAME);
 
     if (className !== this.className)
     {
@@ -496,18 +489,18 @@ export class Serializable extends Attributable
   }
 
   // ! Throws exception on error.
-  private deserializeProperties
+  private propertiesFromJson
   (
-    sourceObject: Types.Object,
-    targetObject: Types.Object,
+    json: Types.Object,
+    target: Types.Object,
     path?: string
   )
   : void
   {
-    for (const propertyName in sourceObject)
+    for (const propertyName in json)
     {
       // Skip inherited properties.
-      if (!sourceObject.hasOwnProperty(propertyName))
+      if (!json.hasOwnProperty(propertyName))
         continue;
 
       // 'className' represents the name of the javascript class
@@ -522,73 +515,72 @@ export class Serializable extends Attributable
       // will not get overwritten with 'undefined'. This allows adding new
       // properties to existing classes without the need to convert all save
       // files.
-      const property = this.deserializeProperty
+      const property = this.propertyFromJson
       (
         propertyName,
-        targetObject[propertyName],
-        sourceObject[propertyName],
+        target[propertyName],
+        json[propertyName],
         path
       );
 
-      writeProperty(targetObject, propertyName, property);
+      writeProperty(target, propertyName, property);
     }
   }
 
   // ! Throws exception on error.
-  private deserializeProperty
+  private propertyFromJson
   (
     propertyName: string,
-    source: any,
+    json: any,
     target: any,
     path?: string
   )
   : any
   {
     // Allow custom property deserialization in descendants.
-    const customValue =
-      this.customDeserializeProperty(propertyName, source, target, path);
+    const customJson =
+      this.propertyFromCustomJson(propertyName, json, target, path);
 
-    if (customValue.deserializedProperty !== undefined)
-      return customValue.deserializedProperty;
+    if (customJson.property !== undefined)
+      return customJson.property;
 
     // ! Throws exception on error.
-    this.validateSourceAndTarget(propertyName, source, target, path);
+    this.validateJsonAndTarget(propertyName, json, target, path);
 
-    if (Types.isPrimitiveType(source))
+    if (Types.isPrimitiveType(json))
       // Properties of primitive types are simply assigned.
-      return source;
+      return json;
 
-    return this.deserializeObject(source, target, propertyName, path);
+    return this.objectFromJson(json, target, propertyName, path);
   }
 
   // ! Throws exception on error.
-  private validateSourceAndTarget
+  private validateJsonAndTarget
   (
     propertyName: string,
-    sourceProperty: any,
-    targetProperty: any,
+    json: any,
+    target: any,
     path?: string
   )
   : void
   {
-    if (sourceProperty === null)
+    if (json === null)
     {
       throw Error(`Property '${propertyName}${inFile(path)}`
-        + ` has 'null' value. 'null' is not allowed, make sure that it`
-        + ` is not used anywhere`);
+        + ` has 'null' value. 'null' is not allowed, make sure`
+        + ` that it is not used anywhere`);
     }
 
-    if (targetProperty === null)
+    if (target === null)
     {
-      throw Error(`Property '${propertyName}' of ${this.debugId} has`
+      throw Error(`Property '${propertyName}' in ${this.debugId} has`
         + ` 'null' value. 'null' is not allowed, make sure that it`
         + ` is not used anywhere`);
     }
 
-    const typesMatch = typeof targetProperty === typeof sourceProperty;
-    const targetIsValid = targetProperty === undefined || typesMatch;
+    const typesMatch = typeof target === typeof json;
 
-    if (!targetIsValid)
+    if (target !== undefined && !typesMatch)
     {
       throw Error(`Failed to deserialize because target property`
         + ` '${propertyName}'${inFile(path)} is not 'undefined'`
@@ -596,48 +588,48 @@ export class Serializable extends Attributable
     }
   }
 
-  private deserializeObject
+  private objectFromJson
   (
-    sourceObject: object,
-    targetObject: object,
+    json: object,
+    target: object,
     propertyName: string,
     path?: string
   )
   : object
   {
-    if (Array.isArray(sourceObject))
+    if (Array.isArray(json))
       // ! Throws exception on error.
-      return this.deserializeArray(sourceObject, path);
+      return this.arrayFromJson(json, path);
 
-    const className = readProperty(sourceObject, CLASS_NAME);
+    const className = readProperty(json, CLASS_NAME);
 
     if (className === undefined)
-      return this.deserializePlainObject(sourceObject, targetObject, path);
+      return this.plainObjectFromJson(json, target, path);
 
     switch (className)
     {
       case BITVECTOR_CLASS_NAME:
         // ! Throws exception on error.
-        return deserializeBitvector(sourceObject, propertyName, path);
+        return bitvectorFromJson(json, propertyName, path);
 
       case SET_CLASS_NAME:
         // ! Throws exception on error.
-        return this.deserializeSet(sourceObject, propertyName, path);
+        return this.setFromJson(json, propertyName, path);
 
       case MAP_CLASS_NAME:
         // ! Throws exception on error.
-        return this.deserializeMap(sourceObject, propertyName, path);
+        return this.mapFromJson(json, propertyName, path);
 
       case ENTITY_CLASS_NAME:
         // ! Throws exception on error.
-        return deserializeEntity(sourceObject, propertyName, path);
+        return entityFromJson(json, path);
 
       default:
         // ! Throws exception on error.
-        return this.deserializeSerializable
+        return this.serializableFromJson
         (
-          sourceObject,
-          targetObject,
+          json,
+          target,
           propertyName,
           className,
           path
@@ -646,95 +638,81 @@ export class Serializable extends Attributable
   }
 
   // ! Throws exception on error.
-  private deserializePlainObject
+  private plainObjectFromJson
   (
-    sourceObject: object,
-    targetObject: object,
+    json: object,
+    target: object,
     path?: string
   )
   : object
   {
-    if (targetObject === null || targetObject === undefined)
-      targetObject = {};
+    if (target === null || target === undefined)
+      target = {};
 
     // ! Throws exception on error.
-    this.deserializeProperties(sourceObject, targetObject, path);
+    this.propertiesFromJson(json, target, path);
 
-    return targetObject;
+    return target;
   }
 
   // ! Throws exception on error.
-  private deserializeArray(sourceArray: Array<any>, path?: string): Array<any>
+  private arrayFromJson(arrayJson: Array<any>, path?: string): Array<any>
   {
-    const targetArray = [];
+    const array = [];
 
-    for (let i = 0; i < sourceArray.length; i++)
+    for (let i = 0; i < arrayJson.length; i++)
     {
-      const arrayItem = this.deserializeProperty
+      const arrayItem = this.propertyFromJson
       (
         `Array item [${i}]`,
         undefined,
-        sourceArray[i],
+        arrayJson[i],
         path
       );
 
-      targetArray.push(arrayItem);
+      array.push(arrayItem);
     }
 
-    return targetArray;
+    return array;
   }
 
   // ! Throws exception on error.
-  private deserializeSet
+  private setFromJson
   (
-    sourceObject: object,
+    json: object,
     propertyName: string,
     path?: string
   )
   : Set<any>
   {
-    const setArray = getDataProperty(sourceObject, propertyName, SET);
-
     // ! Throws exception on error.
-    // In order to deserialize a Set object, we need to load all items
-    // in array which represents it in serialized form, because they
-    // may require special handling themselves (for example if you put
-    // another Set into your Set). We let deserializeArray() do it for us.
-    return new Set(this.deserializeArray(setArray, path));
+    const setData = getProperty(json, propertyName, DATA);
+
+    return new Set(this.arrayFromJson(setData, path));
   }
 
   // ! Throws exception on error.
-  private deserializeMap
+  private mapFromJson
   (
-    mapRecord: object,
+    json: object,
     propertyName: string,
     path?: string
   )
   : Map<any, any>
   {
-    const jsonData = getDataProperty(mapRecord, propertyName, MAP);
-    const deserializedData = {};
+    const mapJson = getProperty(json, propertyName, DATA);
+    const mapObject = {};
 
     // ! Throws exception on error.
-    this.deserializePlainObject(jsonData, deserializedData, path);
+    this.plainObjectFromJson(mapJson, mapObject, path);
 
-    const map = new Map();
-
-    for (const [ key, value ] of Object.entries(deserializedData))
-      map.set(key, value);
-
-    // ! Throws exception on error.
-    // In order to deserialize a Map object, we need to load all items
-    // in array which represents it in serialized form, because they
-    // may require special handling themselvs (for example if you put
-    // another Map into your Map). We let deserializeArray() do it for us.
-    return map;
+    return mapFromObject(mapObject);
   }
 
   // ! Throws exception on error.
-  private deserializeSerializable
+  private serializableFromJson
   (
-    source: object,
+    json: object,
     target: object,
     propertyName: string,
     className: string,
@@ -752,11 +730,11 @@ export class Serializable extends Attributable
     if (!(target instanceof Serializable))
     {
       throw Error(`Failed to deserialize property '${propertyName}'`
-        + `${inFile(path)} because target property is supposed to`
-        + ` be an instance of Serializable class and it isn't`);
+        + `${inFile(path)} because target class '${className}'`
+        + ` isn't a Serializable class`);
     }
 
-    return target.deserialize(source, path);
+    return target.fromJson(json, path);
   }
 }
 
@@ -766,16 +744,16 @@ export class Serializable extends Attributable
 
 function writeProperty
 (
-  jsonObject: Types.Object,
+  json: Types.Object,
   propertyName: string,
   value: any
 )
 : void
 {
-  jsonObject[propertyName] = value;
+  json[propertyName] = value;
 }
 
-// -> Returns 'true' if 'property' has own (not just inherited) value.
+// -> Returns 'true' if 'variable' has own (not just inherited) value.
 function hasOwnValue(variable: any): boolean
 {
   // Variables of primitive types are always serialized.
@@ -808,28 +786,28 @@ function hasOwnValue(variable: any): boolean
   return false;
 }
 
-function serializeSet(set: Set<any>): object
+function setToJson(set: Set<any>): object
 {
-  const setRecord = {};
+  const json = {};
 
-  writeProperty(setRecord, CLASS_NAME, SET_CLASS_NAME);
-  writeProperty(setRecord, SET, Array.from(set));
+  writeProperty(json, CLASS_NAME, SET_CLASS_NAME);
+  writeProperty(json, DATA, Array.from(set));
 
-  return setRecord;
+  return json;
 }
 
-function serializeMap(map: Map<any, any>): object
+function mapToJson(map: Map<any, any>): object
 {
-  const mapRecord = {};
+  const json = {};
 
-  writeProperty(mapRecord, CLASS_NAME, MAP_CLASS_NAME);
-  writeProperty(mapRecord, MAP, mapToJson(map));
+  writeProperty(json, CLASS_NAME, MAP_CLASS_NAME);
+  writeProperty(json, DATA, mapDataToJson(map));
 
-  return mapRecord;
+  return json;
 }
 
 // ! Throws exception on error.
-function serializeBitvector
+function bitvectorToJson
 (
   bitvector: any,
   className: string,
@@ -846,13 +824,13 @@ function serializeBitvector
   }
 
   writeProperty(bitvectorRecord, CLASS_NAME, BITVECTOR_CLASS_NAME);
-  writeProperty(bitvectorRecord, MAP, bitvector.toJSON());
+  writeProperty(bitvectorRecord, DATA, bitvector.toJSON());
 
   return bitvectorRecord;
 }
 
 // ! Throws exception on error.
-function serializeEntity
+function entityToJson
 (
   entity: object,
   className: string,
@@ -878,8 +856,7 @@ function serializeEntity
   return entityRecord;
 }
 
-// -> Returns an Array representation of Map object.
-function mapToJson(map: Map<any, any>): object
+function mapDataToJson(map: Map<any, any>): object
 {
   const json = {};
 
@@ -895,16 +872,15 @@ function mapToJson(map: Map<any, any>): object
 // entity will be returned. Otherwise an 'invalid' entity reference
 // will be created and returned.
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-function deserializeEntity
+function entityFromJson
 (
-  sourceObject: object,
-  propertyName: string,
+  json: object,
   path?: string
 )
 // Let typescript infer the type here so we don't have to import Entity
 // (that would lead to cyclic import troubles).
 {
-  const id = getDataProperty(sourceObject, propertyName, path);
+  const id = getProperty(json, ID, path);
 
   return Entities.getReference(id);
 }
@@ -917,25 +893,39 @@ function isEntity(variable: object): boolean
   return ID in variable;
 }
 
-function isSavedOutOfOrder(name: string): boolean
+function isWrittenOutOfOrder(propertyName: string): boolean
 {
-  return name === NAME
-      || name === CLASS_NAME
-      || name === ID
-      || name === PROTOTYPE_ID;
+  return propertyName === NAME
+      || propertyName === CLASS_NAME
+      || propertyName === ID
+      || propertyName === PROTOTYPE_ID;
 }
 
 // *** Deserialize Functions ***
 
-function readProperty(jsonObject: Types.Object, propertyName: string): any
+function readProperty(json: Types.Object, propertyName: string): any
 {
-  return jsonObject[propertyName];
+  return json[propertyName];
 }
 
 // ! Throws exception on error.
-function readClassName(jsonObject: object, path?: string): string
+function getProperty(json: object, propertyName: string, path?: string): any
 {
-  const className = readProperty(jsonObject, CLASS_NAME);
+  const property = readProperty(json, propertyName);
+
+  if (property === undefined || property === null)
+  {
+    throw Error(`Failed to deserialize data because property`
+      + ` '${propertyName}'${inFile(path)} isn't valid`);
+  }
+
+  return property;
+}
+
+// ! Throws exception on error.
+function readClassName(json: object, path?: string): string
+{
+  const className = readProperty(json, CLASS_NAME);
 
   if (!className)
   {
@@ -962,43 +952,33 @@ function inFile(path?: string): string
   return ` in file ${path}`;
 }
 
-// ! Throws exception on error.
-function getDataProperty
+function bitvectorFromJson
 (
-  sourceObject: object,
+  json: object,
   propertyName: string,
   path?: string
 )
 : any
 {
-  const property = readProperty(sourceObject, propertyName);
-
-  if (property === undefined || property === null)
-  {
-    throw Error(`Failed to deserialize data because property`
-      + ` '${propertyName}'${inFile(path)} isn't valid`);
-  }
-
-  return property;
-}
-
-function deserializeBitvector
-(
-  sourceObject: object,
-  propertyName: string,
-  path?: string
-)
-: any
-{
-  const bitvectorData = getDataProperty(sourceObject, BITVECTOR, path);
+  const bitvectorData = getProperty(json, DATA, path);
 
   if (bitvectorData === undefined)
   {
     throw Error(`Failed to deserialize bitvector property ${propertyName}`
-      + ` because '${BITVECTOR}' property is missing in source JSON data`);
+      + ` because '${DATA}' property is missing in source JSON data`);
   }
 
   return new FastBitSet(bitvectorData);
+}
+
+function mapFromObject(mapObject: object): Map<any, any>
+{
+  const map = new Map();
+
+  for (const [ key, value ] of Object.entries(mapObject))
+    map.set(key, value);
+
+  return map;
 }
 
 // ------------------ Type declarations ----------------------

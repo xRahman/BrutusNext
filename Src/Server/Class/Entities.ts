@@ -6,7 +6,7 @@
 
 import { Types } from "../../Shared/Utils/Types";
 import { FileSystem } from "../../Server/FileSystem/FileSystem";
-import { JsonObject } from "../../Shared/Class/JsonObject";
+import { Json } from "../../Shared/Class/Json";
 import { timeOfBoot } from "../../Server/BrutusNextServer";
 import { Entity } from "../../Shared/Class/Entity";
 import * as Shared from "../../Shared/Class/Entities";
@@ -48,7 +48,7 @@ export namespace Entities
     const json = await FileSystem.readExistingFile(path);
 
     // ! Throws exception on error.
-    return loadEntityFromJson(json, id);
+    return deserializeEntity(json, id);
   }
 
   export function getFileName(id: string): string
@@ -60,12 +60,12 @@ export namespace Entities
 // ----------------- Auxiliary Functions ---------------------
 
 // ! Throws exception on error.
-function loadEntityFromJson(json: string, expectedId: string): Entity
+function deserializeEntity(data: string, expectedId: string): Entity
 {
   // ! Throws exception on error.
-  const jsonObject = JsonObject.parse(json);
+  const json = Json.parse(data);
 
-  return Shared.Entities.loadEntityFromJsonObject(jsonObject, expectedId);
+  return Shared.Entities.entityFromJson(json, expectedId);
 }
 
 function generateId(): string
