@@ -35,15 +35,12 @@
     a Serializable class instead of {} for this purpose.
 */
 
-import { Serialize } from "../../Shared/Class/Lib/Serialize";
-import { Deserialize } from "../../Shared/Class/Lib/Deserialize";
-
-import { Types } from "../../Shared/Utils/Types";
-import { Syslog } from "../../Shared/Log/Syslog";
-import { Entities } from "../../Shared/Class/Entities";
-import { ClassFactory } from "../../Shared/Class/ClassFactory";
-import { Json } from "../../Shared/Class/Json";
-import { Attributable } from "../../Shared/Class/Attributable";
+import { Types } from "../../../Shared/Utils/Types";
+import { Syslog } from "../../../Shared/Log/Syslog";
+import { Entities } from "../../../Shared/Class/Entities";
+import { ClassFactory } from "../../../Shared/Class/ClassFactory";
+import { Json } from "../../../Shared/Class/Json";
+import { Attributable } from "../../../Shared/Class/Attributable";
 
 // 3rd party modules.
 // Note: Disable eslint check for using 'require' because we
@@ -70,6 +67,10 @@ export const PROTOTYPE_ID = "prototypeId";
 // Special property name used to store serialized data of Map,
 // Set and Bitvector.
 const DATA = "data";
+
+export namespace Serialize
+{
+}
 
 export class Serializable extends Attributable
 {
@@ -131,25 +132,22 @@ export class Serializable extends Attributable
   }
 
   // ! Throws exception on error.
-  public fromJson = Deserialize.fromJson;
+  public fromJson(json: object, path?: string): this
+  {
+    // ! Throws exception on error.
+    /// TODO: This will probably have to be replaced by code that
+    /// converts data to the new version (instead of preventing
+    /// data to be deserialized by throwing an exception).
+    this.versionMatchCheck(json, path);
 
-  // // ! Throws exception on error.
-  // public fromJson(json: object, path?: string): this
-  // {
-  //   // ! Throws exception on error.
-  //   /// TODO: This will probably have to be replaced by code that
-  //   /// converts data to the new version (instead of preventing
-  //   /// data to be deserialized by throwing an exception).
-  //   this.versionMatchCheck(json, path);
+    // ! Throws exception on error.
+    this.classMatchCheck(json, path);
 
-  //   // ! Throws exception on error.
-  //   this.classMatchCheck(json, path);
+    // ! Throws exception on error.
+    this.propertiesFromJson(json, this, path);
 
-  //   // ! Throws exception on error.
-  //   this.propertiesFromJson(json, this, path);
-
-  //   return this;
-  // }
+    return this;
+  }
 
   // -------------- Protected methods -------------------
 

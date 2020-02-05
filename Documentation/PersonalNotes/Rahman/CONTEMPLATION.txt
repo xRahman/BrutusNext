@@ -1,5 +1,36 @@
 ------------------------------------------------------------------------------
 
+Trik na class composition
+--------------------------
+
+https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
+
+class BigClass
+{
+    public getValue = getValue;
+    public setValue = setValue;
+
+    protected value = "a-value";
+}
+
+function getValue(this: BigClass)
+{
+    return this.value;
+}
+
+function setValue(this: BigClass, value: string )
+{
+    this.value = value;
+}
+
+/*
+  Tohle je hezký, má to ale jeden problém: Z "externí" metody
+  jde přistupovat pouze na public a protected properties classy, nikoliv
+  na private.
+*/
+
+------------------------------------------------------------------------------
+
 Prototypová dědičnost a deserializace {} a []
 ----------------------------------------------
 

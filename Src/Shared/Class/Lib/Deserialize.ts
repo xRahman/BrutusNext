@@ -1,3 +1,4 @@
+/* eslint-disable no-invalid-this */
 /*
   Part of BrutusNext
 
@@ -35,15 +36,12 @@
     a Serializable class instead of {} for this purpose.
 */
 
-import { Serialize } from "../../Shared/Class/Lib/Serialize";
-import { Deserialize } from "../../Shared/Class/Lib/Deserialize";
-
-import { Types } from "../../Shared/Utils/Types";
-import { Syslog } from "../../Shared/Log/Syslog";
-import { Entities } from "../../Shared/Class/Entities";
-import { ClassFactory } from "../../Shared/Class/ClassFactory";
-import { Json } from "../../Shared/Class/Json";
-import { Attributable } from "../../Shared/Class/Attributable";
+import { Types } from "../../../Shared/Utils/Types";
+import { Syslog } from "../../../Shared/Log/Syslog";
+import { Entities } from "../../../Shared/Class/Entities";
+import { ClassFactory } from "../../../Shared/Class/ClassFactory";
+import { Json } from "../../../Shared/Class/Json";
+import { Serializable } from "../../../Shared/Class/Serializable";
 
 // 3rd party modules.
 // Note: Disable eslint check for using 'require' because we
@@ -71,6 +69,74 @@ export const PROTOTYPE_ID = "prototypeId";
 // Set and Bitvector.
 const DATA = "data";
 
+export namespace Deserialize
+{
+  // ! Throws exception on error.
+  export function fromJson
+  (
+    this: Serializable,
+    json: object,
+    path?: string
+  )
+  : Serializable
+  {
+    // ! Throws exception on error.
+    /// TODO: This will probably have to be replaced by code that
+    /// converts data to the new version (instead of preventing
+    /// data to be deserialized by throwing an exception).
+   versionMatchCheck(this, json, path);
+
+    // ! Throws exception on error.
+    this.classMatchCheck(json, path);
+
+    // ! Throws exception on error.
+    this.propertiesFromJson(json, this, path);
+
+    return this;
+  }
+}
+
+// ! Throws exception on error.
+function versionMatchCheck
+(
+  this: Serializable,
+  json: object,
+  path?: string
+)
+: void
+{
+  const jsonVersion = readProperty(json, VERSION);
+
+  // If there isn't a 'version' property in jsonObject,
+  // it won't be checked for (version is not used in
+  // packets because they are always sent and received
+  // from the same version of code).
+  if (jsonVersion === undefined)
+    return;
+
+  if (!Types.isString(jsonVersion))
+  {
+    throw Error(`Failed to deserialize because ${VERSION}`
+      + ` property in JSON data${inFile(path)} isn't a string`);
+  }
+
+  const thisVersion = this.getStaticProperty(VERSION);
+
+  if (!Types.isString(thisVersion))
+  {
+    throw Error(`Failed to deserialize because ${VERSION}`
+      + ` property in target object isn't a string`);
+  }
+
+  if (jsonVersion !== thisVersion)
+  {
+    throw Error(`Failed to deserialize because version`
+      + `${String(jsonVersion)}${inFile(path)} doesn't`
+      + ` match target version ${String(thisVersion)}`);
+  }
+}
+
+/*
 export class Serializable extends Attributable
 {
   // ------------- Protected static data ----------------
@@ -129,9 +195,6 @@ export class Serializable extends Attributable
 
     return Json.stringify(json);
   }
-
-  // ! Throws exception on error.
-  public fromJson = Deserialize.fromJson;
 
   // // ! Throws exception on error.
   // public fromJson(json: object, path?: string): this
@@ -442,39 +505,39 @@ export class Serializable extends Attributable
     return (this.constructor as Types.Object)[propertyName];
   }
 
-  // ! Throws exception on error.
-  private versionMatchCheck(json: object, path?: string): void
-  {
-    const jsonVersion = readProperty(json, VERSION);
+  // // ! Throws exception on error.
+  // private versionMatchCheck(json: object, path?: string): void
+  // {
+  //   const jsonVersion = readProperty(json, VERSION);
 
-    // If there isn't a 'version' property in jsonObject,
-    // it won't be checked for (version is not used in
-    // packets because they are always sent and received
-    // from the same version of code).
-    if (jsonVersion === undefined)
-      return;
+  //   // If there isn't a 'version' property in jsonObject,
+  //   // it won't be checked for (version is not used in
+  //   // packets because they are always sent and received
+  //   // from the same version of code).
+  //   if (jsonVersion === undefined)
+  //     return;
 
-    if (!Types.isString(jsonVersion))
-    {
-      throw Error(`Failed to deserialize because ${VERSION}`
-        + ` property in JSON data${inFile(path)} isn't a string`);
-    }
+  //   if (!Types.isString(jsonVersion))
+  //   {
+  //     throw Error(`Failed to deserialize because ${VERSION}`
+  //       + ` property in JSON data${inFile(path)} isn't a string`);
+  //   }
 
-    const thisVersion = this.getStaticProperty(VERSION);
+  //   const thisVersion = this.getStaticProperty(VERSION);
 
-    if (!Types.isString(thisVersion))
-    {
-      throw Error(`Failed to deserialize because ${VERSION}`
-        + ` property in target object isn't a string`);
-    }
+  //   if (!Types.isString(thisVersion))
+  //   {
+  //     throw Error(`Failed to deserialize because ${VERSION}`
+  //       + ` property in target object isn't a string`);
+  //   }
 
-    if (jsonVersion !== thisVersion)
-    {
-      throw Error(`Failed to deserialize because version`
-        + `${String(jsonVersion)}${inFile(path)} doesn't`
-        + ` match target version ${String(thisVersion)}`);
-    }
-  }
+  //   if (jsonVersion !== thisVersion)
+  //   {
+  //     throw Error(`Failed to deserialize because version`
+  //       + `${String(jsonVersion)}${inFile(path)} doesn't`
+  //       + ` match target version ${String(thisVersion)}`);
+  //   }
+  // }
 
   // ! Throws exception on error.
   private classMatchCheck
@@ -995,3 +1058,4 @@ export namespace Serializable
     | "Send to server"
     | "Send to editor";
 }
+*/

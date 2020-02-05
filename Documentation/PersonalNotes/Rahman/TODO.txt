@@ -24,6 +24,9 @@ Později:
 
 TODO: Refactorovat Serializable
 
+TODO: Vyzkoušet class composition trik na rozdělení Serializable
+  do více souborů
+
 TODO: Projít metody na detekci typů v Types, jestli by nešly zrušit
 
 TODO: Zapisovat properties při serializaci přes writeProperty(),
