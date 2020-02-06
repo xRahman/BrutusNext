@@ -35,8 +35,8 @@
     a Serializable class instead of {} for this purpose.
 */
 
-import { Serialize } from "../../Shared/Class/Lib/Serialize";
-import { Deserialize } from "../../Shared/Class/Lib/Deserialize";
+import { Jsonizer } from "../../Shared/Class/Lib/Jsonizer";
+import { Dejsonizer } from "../../Shared/Class/Lib/Dejsonizer";
 
 import { Types } from "../../Shared/Utils/Types";
 import { Syslog } from "../../Shared/Log/Syslog";
@@ -51,6 +51,22 @@ import { Attributable } from "../../Shared/Class/Attributable";
 //   be imported using 'import' keyword.
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const FastBitSet = require("fastbitset");
+
+type PropertyFromJson =
+(
+  propertyName: string,
+  source: any,
+  target: any,
+  path?: string
+) => any;
+
+type PropertyToJson =
+(
+  property: any,
+  propertyName: string,
+  className: string,
+  mode: Serializable.Mode
+) => any;
 
 // Names of classes that are transformed to JSON in a special way
 // or are serialized only as a reference.
@@ -100,6 +116,9 @@ export class Serializable extends Attributable
     return instance.fromJson(json, path);
   }
 
+  protected customPropertyFromJson: PropertyFromJson | undefined = undefined;
+  protected customPropertyToJson: PropertyToJson | undefined = undefined;
+
   // --------------- Public accessors -------------------
 
   // -> Returns string describing this object for error logging.
@@ -131,7 +150,29 @@ export class Serializable extends Attributable
   }
 
   // ! Throws exception on error.
-  public fromJson = Deserialize.fromJson;
+  public fromJson(json: object, path?: string): this
+  {
+    // ! Throws exception on error.
+    /// TODO: This will probably have to be replaced by code that
+    /// converts data to the new version (instead of preventing
+    /// data to be deserialized by throwing an exception).
+    this.versionMatchCheck(json, path);
+
+    // ! Throws exception on error.
+    this.classMatchCheck(json, path);
+
+    const dejsonizer = new Dejsonizer
+    (
+      this,
+      this.customPropertyFromJson,
+      path
+    );
+
+    // ! Throws exception on error.
+    dejsonizer.objectFromJson(json, this);
+
+    return this;
+  }
 
   // // ! Throws exception on error.
   // public fromJson(json: object, path?: string): this
@@ -166,18 +207,18 @@ export class Serializable extends Attributable
     return {};
   }
 
-  // This method can be overriden to change how a property is deserialized.
-  protected propertyFromCustomJson
-  (
-    propertyName: string,
-    source: any,
-    target: any,
-    path?: string
-  )
-  : { property?: any }
-  {
-    return {};
-  }
+  // // This method can be overriden to change how a property is deserialized.
+  // protected propertyFromCustomJson
+  // (
+  //   propertyName: string,
+  //   source: any,
+  //   target: any,
+  //   path?: string
+  // )
+  // : { property?: any }
+  // {
+  //   return {};
+  // }
 
   // --------------- Private methods --------------------
 
@@ -186,8 +227,20 @@ export class Serializable extends Attributable
   // ! Throws exception on error.
   private toJson(mode: Serializable.Mode): object
   {
+    // TODO: Tak asi zpět. Jsonizer nemůže volat this.propertyAttributes(),
+    // takže serializace přímých properties Serializable objektu asi bude
+    // muset bejt tady v Serializable.
+
     const json = {};
 
+    this.writeClassName(json);
+    this.writeVersion(json, mode);
+
+    const jsonizer = new Jsonizer(this, mode);
+
+    return jsonizer.objectToJson(this, json);
+
+    /*
     // Save these properties first to make JSON more readable.
     this.writeClassName(json);
     this.copyOwnProperty(json, ID);
@@ -223,17 +276,18 @@ export class Serializable extends Attributable
     }
 
     return json;
+    */
   }
 
-  private copyOwnProperty(json: object, propertyName: string): void
-  {
-    if (this.hasOwnProperty(propertyName))
-    {
-      const property = readProperty(this, propertyName);
+  // private copyOwnProperty(json: object, propertyName: string): void
+  // {
+  //   if (this.hasOwnProperty(propertyName))
+  //   {
+  //     const property = readProperty(this, propertyName);
 
-      writeProperty(json, propertyName, property);
-    }
-  }
+  //     writeProperty(json, propertyName, property);
+  //   }
+  // }
 
   private writeVersion(json: object, mode: Serializable.Mode): void
   {
@@ -494,270 +548,309 @@ export class Serializable extends Attributable
     }
   }
 
-  // ! Throws exception on error.
-  private propertiesFromJson
-  (
-    json: Types.Object,
-    target: Types.Object,
-    path?: string
-  )
-  : void
-  {
-    for (const propertyName in json)
-    {
-      // Skip inherited properties.
-      if (!json.hasOwnProperty(propertyName))
-        continue;
+// // ! Throws exception on error.
+// private propertiesFromJson
+// (
+//   json: Types.Object,
+//   target: Types.Object,
+//   path?: string
+// )
+// : void
+// {
+//   for (const propertyName in json)
+//   {
+//     // Skip inherited properties.
+//     if (!json.hasOwnProperty(propertyName))
+//       continue;
 
-      // 'className' represents the name of the javascript class
-      // which cannot be changed and 'version' is serialized only
-      // to be checked against.
-      if (propertyName === CLASS_NAME || propertyName === VERSION)
-        continue;
+//     // 'className' represents the name of the javascript class
+//     // which cannot be changed and 'version' is serialized only
+//     // to be checked against.
+//     if (propertyName === CLASS_NAME || propertyName === VERSION)
+//       continue;
 
-      // ! Throws exception on error.
-      // We are cycling over properties in source JSON object, not in target
-      // object to ensure that properties which are not present in source data
-      // will not get overwritten with 'undefined'. This allows adding new
-      // properties to existing classes without the need to convert all save
-      // files.
-      const property = this.propertyFromJson
-      (
-        propertyName,
-        target[propertyName],
-        json[propertyName],
-        path
-      );
+//     // ! Throws exception on error.
+//     // We are cycling over properties in source JSON object, not in target
+//     // object to ensure that properties which are not present in source data
+//     // will not get overwritten with 'undefined'. This allows adding new
+//     // properties to existing classes without the need to convert all save
+//     // files.
+//     const property = this.propertyFromJson
+//     (
+//       propertyName,
+//       target[propertyName],
+//       json[propertyName],
+//       path
+//     );
 
-      writeProperty(target, propertyName, property);
-    }
-  }
+//     writeProperty(target, propertyName, property);
+//   }
+// }
 
-  // ! Throws exception on error.
-  private propertyFromJson
-  (
-    propertyName: string,
-    json: any,
-    target: any,
-    path?: string
-  )
-  : any
-  {
-    // Allow custom property deserialization in descendants.
-    const customJson =
-      this.propertyFromCustomJson(propertyName, json, target, path);
+// // ! Throws exception on error.
+// private propertyFromJson
+// (
+//   propertyName: string,
+//   json: any,
+//   target: any,
+//   path?: string
+// )
+// : any
+// {
+//   // Allow custom property deserialization in descendants.
+//   const customJson =
+//     this.propertyFromCustomJson(propertyName, json, target, path);
 
-    if (customJson.property !== undefined)
-      return customJson.property;
+//   if (customJson.property !== undefined)
+//     return customJson.property;
 
-    // ! Throws exception on error.
-    this.validateJsonAndTarget(propertyName, json, target, path);
+//   // ! Throws exception on error.
+//   this.validateJsonAndTarget(propertyName, json, target, path);
 
-    if (Types.isPrimitiveType(json))
-      // Properties of primitive types are simply assigned.
-      return json;
+//   if (Types.isPrimitiveType(json))
+//     // Properties of primitive types are simply assigned.
+//     return json;
 
-    return this.objectFromJson(json, target, propertyName, path);
-  }
+//   return this.objectFromJson(json, target, propertyName, path);
+// }
 
-  // ! Throws exception on error.
-  private validateJsonAndTarget
-  (
-    propertyName: string,
-    json: any,
-    target: any,
-    path?: string
-  )
-  : void
-  {
-    if (json === null)
-    {
-      throw Error(`Property '${propertyName}${inFile(path)}`
-        + ` has 'null' value. 'null' is not allowed, make sure`
-        + ` that it is not used anywhere`);
-    }
+// // ! Throws exception on error.
+// private validateJsonAndTarget
+// (
+//   propertyName: string,
+//   json: any,
+//   target: any,
+//   path?: string
+// )
+// : void
+// {
+//   if (json === null)
+//   {
+//     throw Error(`Property '${propertyName}${inFile(path)}`
+//       + ` has 'null' value. 'null' is not allowed, make sure`
+//       + ` that it is not used anywhere`);
+//   }
 
-    if (target === null)
-    {
-      throw Error(`Property '${propertyName}' in ${this.debugId} has`
-        + ` 'null' value. 'null' is not allowed, make sure that it`
-        + ` is not used anywhere`);
-    }
+//   if (target === null)
+//   {
+//     throw Error(`Property '${propertyName}' in ${this.debugId} has`
+//       + ` 'null' value. 'null' is not allowed, make sure that it`
+//       + ` is not used anywhere`);
+//   }
 
-    const typesMatch = typeof target === typeof json;
+//   const typesMatch = typeof target === typeof json;
 
-    if (target !== undefined && !typesMatch)
-    {
-      throw Error(`Failed to deserialize because target property`
-        + ` '${propertyName}'${inFile(path)} is not 'undefined'`
-        + ` or the same type as source property`);
-    }
-  }
+//   if (target !== undefined && !typesMatch)
+//   {
+//     throw Error(`Failed to deserialize because target property`
+//       + ` '${propertyName}'${inFile(path)} is not 'undefined'`
+//       + ` or the same type as source property`);
+//   }
+// }
 
-  private objectFromJson
-  (
-    json: object,
-    target: object,
-    propertyName: string,
-    path?: string
-  )
-  : object
-  {
-    if (Array.isArray(json))
-      // ! Throws exception on error.
-      return this.arrayFromJson(json, path);
+// private objectFromJson
+// (
+//   json: object,
+//   target: object,
+//   propertyName: string,
+//   path?: string
+// )
+// : object
+// {
+//   if (Array.isArray(json))
+//     // ! Throws exception on error.
+//     return this.arrayFromJson(json, path);
 
-    const className = readProperty(json, CLASS_NAME);
+//   const className = readProperty(json, CLASS_NAME);
 
-    if (className === undefined)
-      return this.plainObjectFromJson(json, target, path);
+//   if (className === undefined)
+//     return this.plainObjectFromJson(json, target, path);
 
-    switch (className)
-    {
-      case BITVECTOR_CLASS_NAME:
-        // ! Throws exception on error.
-        return bitvectorFromJson(json, propertyName, path);
+//   switch (className)
+//   {
+//     case BITVECTOR_CLASS_NAME:
+//       // ! Throws exception on error.
+//       return bitvectorFromJson(json, propertyName, path);
 
-      case SET_CLASS_NAME:
-        // ! Throws exception on error.
-        return this.setFromJson(json, propertyName, path);
+//     case SET_CLASS_NAME:
+//       // ! Throws exception on error.
+//       return this.setFromJson(json, propertyName, path);
 
-      case MAP_CLASS_NAME:
-        // ! Throws exception on error.
-        return this.mapFromJson(json, propertyName, path);
+//     case MAP_CLASS_NAME:
+//       // ! Throws exception on error.
+//       return this.mapFromJson(json, propertyName, path);
 
-      case ENTITY_CLASS_NAME:
-        // ! Throws exception on error.
-        return entityFromJson(json, path);
+//     case ENTITY_CLASS_NAME:
+//       // ! Throws exception on error.
+//       return entityFromJson(json, path);
 
-      default:
-        // ! Throws exception on error.
-        return this.serializableFromJson
-        (
-          json,
-          target,
-          propertyName,
-          className,
-          path
-        );
-    }
-  }
+//     default:
+//       // ! Throws exception on error.
+//       return this.serializableFromJson
+//       (
+//         json,
+//         target,
+//         propertyName,
+//         className,
+//         path
+//       );
+//   }
+// }
 
-  // ! Throws exception on error.
-  private plainObjectFromJson
-  (
-    json: object,
-    target: object,
-    path?: string
-  )
-  : object
-  {
-    if (target === null || target === undefined)
-      target = {};
+// // ! Throws exception on error.
+// private plainObjectFromJson
+// (
+//   json: object,
+//   target: object,
+//   path?: string
+// )
+// : object
+// {
+//   if (target === null || target === undefined)
+//     target = {};
 
-    // ! Throws exception on error.
-    this.propertiesFromJson(json, target, path);
+//   // ! Throws exception on error.
+//   this.propertiesFromJson(json, target, path);
 
-    return target;
-  }
+//   return target;
+// }
 
-  // ! Throws exception on error.
-  private arrayFromJson(arrayJson: Array<any>, path?: string): Array<any>
-  {
-    const array = [];
+// // ! Throws exception on error.
+// private arrayFromJson(arrayJson: Array<any>, path?: string): Array<any>
+// {
+//   const array = [];
 
-    for (let i = 0; i < arrayJson.length; i++)
-    {
-      const arrayItem = this.propertyFromJson
-      (
-        `Array item [${i}]`,
-        undefined,
-        arrayJson[i],
-        path
-      );
+//   for (let i = 0; i < arrayJson.length; i++)
+//   {
+//     const arrayItem = this.propertyFromJson
+//     (
+//       `Array item [${i}]`,
+//       undefined,
+//       arrayJson[i],
+//       path
+//     );
 
-      array.push(arrayItem);
-    }
+//     array.push(arrayItem);
+//   }
 
-    return array;
-  }
+//   return array;
+// }
 
-  // ! Throws exception on error.
-  private setFromJson
-  (
-    json: object,
-    propertyName: string,
-    path?: string
-  )
-  : Set<any>
-  {
-    // ! Throws exception on error.
-    const setData = getProperty(json, propertyName, DATA);
+// // ! Throws exception on error.
+// private setFromJson
+// (
+//   json: object,
+//   propertyName: string,
+//   path?: string
+// )
+// : Set<any>
+// {
+//   // ! Throws exception on error.
+//   const setData = getProperty(json, propertyName, DATA);
 
-    return new Set(this.arrayFromJson(setData, path));
-  }
+//   return new Set(this.arrayFromJson(setData, path));
+// }
 
-  // ! Throws exception on error.
-  private mapFromJson
-  (
-    json: object,
-    propertyName: string,
-    path?: string
-  )
-  : Map<any, any>
-  {
-    const mapJson = getProperty(json, propertyName, DATA);
-    const mapObject = {};
+// // ! Throws exception on error.
+// private mapFromJson
+// (
+//   json: object,
+//   propertyName: string,
+//   path?: string
+// )
+// : Map<any, any>
+// {
+//   const mapJson = getProperty(json, propertyName, DATA);
+//   const mapObject = {};
 
-    // ! Throws exception on error.
-    this.plainObjectFromJson(mapJson, mapObject, path);
+//   // ! Throws exception on error.
+//   this.plainObjectFromJson(mapJson, mapObject, path);
 
-    return mapFromObject(mapObject);
-  }
+//   return mapFromObject(mapObject);
+// }
 
-  // ! Throws exception on error.
-  private serializableFromJson
-  (
-    json: object,
-    target: object,
-    propertyName: string,
-    className: string,
-    path?: string
-  )
-  : Serializable
-  {
-    // If target object is 'null' or 'undefined', we wouldn't be
-    // able to write anything to it or call it's deserialize method.
-    // So we first need to assign a new instance of correct type to
-    // it - the type is saved in JSON as 'className' property.
-    if (target === null || target === undefined)
-      target = ClassFactory.newInstanceByName(className);
+// // ! Throws exception on error.
+// private serializableFromJson
+// (
+//   json: object,
+//   target: object,
+//   propertyName: string,
+//   className: string,
+//   path?: string
+// )
+// : Serializable
+// {
+//   // If target object is 'null' or 'undefined', we wouldn't be
+//   // able to write anything to it or call it's deserialize method.
+//   // So we first need to assign a new instance of correct type to
+//   // it - the type is saved in JSON as 'className' property.
+//   if (target === null || target === undefined)
+//     target = ClassFactory.newInstanceByName(className);
 
-    if (!(target instanceof Serializable))
-    {
-      throw Error(`Failed to deserialize property '${propertyName}'`
-        + `${inFile(path)} because target class '${className}'`
-        + ` isn't a Serializable class`);
-    }
+//   if (!(target instanceof Serializable))
+//   {
+//     throw Error(`Failed to deserialize property '${propertyName}'`
+//       + `${inFile(path)} because target class '${className}'`
+//       + ` isn't a Serializable class`);
+//   }
 
-    return target.fromJson(json, path);
-  }
+//   return target.fromJson(json, path);
+// }
 }
 
 // ----------------- Auxiliary Functions ---------------------
 
 // *** Serialize Functions ***
 
-function writeProperty
-(
-  json: Types.Object,
-  propertyName: string,
-  value: any
-)
-: void
+// function readProperty(json: Types.Object, propertyName: string): any
+// {
+//   return json[propertyName];
+// }
+
+// ! Throws exception on error.
+function getProperty(json: object, propertyName: string, path?: string): any
 {
-  json[propertyName] = value;
+  const property = readProperty(json, propertyName);
+
+  if (property === undefined || property === null)
+  {
+    throw Error(`Failed to deserialize data because property`
+      + ` '${propertyName}'${inFile(path)} isn't valid`);
+  }
+
+  return property;
 }
+
+// ! Throws exception on error.
+function getStringProperty
+(
+  json: object,
+  propertyName: string,
+  path?: string
+)
+: string
+{
+  const property = getProperty(json, propertyName);
+
+  if (typeof property !== "string")
+  {
+    throw Error(`Unable to deserialize json data${inFile(path)}`
+      + ` because property '${propertyName}' isn't a string`);
+  }
+
+  return property;
+}
+
+// function writeProperty
+// (
+//   json: Types.Object,
+//   propertyName: string,
+//   value: any
+// )
+// : void
+// {
+//   json[propertyName] = value;
+// }
 
 // -> Returns 'true' if 'variable' has own (not just inherited) value.
 function hasOwnValue(variable: any): boolean
@@ -897,54 +990,13 @@ function isEntity(variable: object): boolean
   return ID in variable;
 }
 
-function isWrittenOutOfOrder(propertyName: string): boolean
-{
-  return propertyName === NAME
-      || propertyName === CLASS_NAME
-      || propertyName === ID
-      || propertyName === PROTOTYPE_ID;
-}
-
-// *** Deserialize Functions ***
-
-function readProperty(json: Types.Object, propertyName: string): any
-{
-  return json[propertyName];
-}
-
-// ! Throws exception on error.
-function getProperty(json: object, propertyName: string, path?: string): any
-{
-  const property = readProperty(json, propertyName);
-
-  if (property === undefined || property === null)
-  {
-    throw Error(`Failed to deserialize data because property`
-      + ` '${propertyName}'${inFile(path)} isn't valid`);
-  }
-
-  return property;
-}
-
-// ! Throws exception on error.
-function getStringProperty
-(
-  json: object,
-  propertyName: string,
-  path?: string
-)
-: string
-{
-  const property = getProperty(json, propertyName);
-
-  if (typeof property !== "string")
-  {
-    throw Error(`Unable to deserialize json data${inFile(path)}`
-      + ` because property '${propertyName}' isn't a string`);
-  }
-
-  return property;
-}
+// function isWrittenOutOfOrder(propertyName: string): boolean
+// {
+//   return propertyName === NAME
+//       || propertyName === CLASS_NAME
+//       || propertyName === ID
+//       || propertyName === PROTOTYPE_ID;
+// }
 
 // -> Returns string informing about file location or empty string
 //    if 'path' is not available.
@@ -956,34 +1008,85 @@ function inFile(path?: string): string
   return ` in file ${path}`;
 }
 
-function bitvectorFromJson
-(
-  json: object,
-  propertyName: string,
-  path?: string
-)
-: any
-{
-  const bitvectorData = getProperty(json, DATA, path);
+// *** Deserialize Functions ***
 
-  if (bitvectorData === undefined)
-  {
-    throw Error(`Failed to deserialize bitvector property ${propertyName}`
-      + ` because property '${DATA}' is missing in source JSON`);
-  }
+// function readProperty(json: Types.Object, propertyName: string): any
+// {
+//   return json[propertyName];
+// }
 
-  return new FastBitSet(bitvectorData);
-}
+// // ! Throws exception on error.
+// function getProperty(json: object, propertyName: string, path?: string): any
+// {
+//   const property = readProperty(json, propertyName);
 
-function mapFromObject(mapObject: object): Map<any, any>
-{
-  const map = new Map();
+//   if (property === undefined || property === null)
+//   {
+//     throw Error(`Failed to deserialize data because property`
+//       + ` '${propertyName}'${inFile(path)} isn't valid`);
+//   }
 
-  for (const [ key, value ] of Object.entries(mapObject))
-    map.set(key, value);
+//   return property;
+// }
 
-  return map;
-}
+// // ! Throws exception on error.
+// function getStringProperty
+// (
+//   json: object,
+//   propertyName: string,
+//   path?: string
+// )
+// : string
+// {
+//   const property = getProperty(json, propertyName);
+
+//   if (typeof property !== "string")
+//   {
+//     throw Error(`Unable to deserialize json data${inFile(path)}`
+//       + ` because property '${propertyName}' isn't a string`);
+//   }
+
+//   return property;
+// }
+
+// // -> Returns string informing about file location or empty string
+// //    if 'path' is not available.
+// function inFile(path?: string): string
+// {
+//   if (!path)
+//     return "";
+
+//   return ` in file ${path}`;
+// }
+
+// function bitvectorFromJson
+// (
+//   json: object,
+//   propertyName: string,
+//   path?: string
+// )
+// : any
+// {
+//   const bitvectorData = getProperty(json, DATA, path);
+
+//   if (bitvectorData === undefined)
+//   {
+//     throw Error(`Failed to deserialize bitvector property ${propertyName}`
+//       + ` because property '${DATA}' is missing in source JSON`);
+//   }
+
+//   return new FastBitSet(bitvectorData);
+// }
+
+// function mapFromObject(mapObject: object): Map<any, any>
+// {
+//   const map = new Map();
+
+//   for (const [ key, value ] of Object.entries(mapObject))
+//     map.set(key, value);
+
+//   return map;
+// }
 
 // ------------------ Type declarations ----------------------
 

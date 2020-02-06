@@ -41,6 +41,7 @@ import { Entities } from "../../../Shared/Class/Entities";
 import { ClassFactory } from "../../../Shared/Class/ClassFactory";
 import { Json } from "../../../Shared/Class/Json";
 import { Attributable } from "../../../Shared/Class/Attributable";
+import { Serializable } from "../../../Shared/Class/Serializable";
 
 // 3rd party modules.
 // Note: Disable eslint check for using 'require' because we
@@ -68,10 +69,126 @@ export const PROTOTYPE_ID = "prototypeId";
 // Set and Bitvector.
 const DATA = "data";
 
-export namespace Serialize
+export class Jsonizer
 {
+  constructor
+  (
+    private readonly source: Serializable,
+    private readonly mode: Serializable.Mode
+  )
+  {
+  }
+
+  // ---------------- Public methods --------------------
+
+  public objectToJson(source: object, json?: object): object
+  {
+    if (json === undefined || json === null)
+      json = {};
+
+    // Save these properties first to make JSON more readable.
+    copyOwnProperty(source, json, ID);
+    copyOwnProperty(source, json, PROTOTYPE_ID);
+    copyOwnProperty(source, json, NAME);
+
+    // Cycle through all properties in source object.
+    for (const propertyName in this)
+    {
+      if (isWrittenOutOfOrder(propertyName))
+        continue;
+
+      // Skip inherited properties (they are serialized on prototype entity).
+      if (!this.hasOwnProperty(propertyName))
+        continue;
+
+      // ! Throws exception on error.
+      if (!this.isSerialized(propertyName, mode))
+        continue;
+
+      const property = readProperty(this, propertyName);
+
+      // Skip values like [] or {} that are created by instantiation
+      // (they would unnecessarily clutter the JSON).
+      if (!hasOwnValue(property))
+        continue;
+
+      const propertyJson =
+        this.propertyToJson(property, propertyName, this.className, mode);
+
+      writeProperty(json, propertyName, propertyJson);
+    }
+
+    return json;
+  }
+
+  // --------------- Private methods --------------------
 }
 
+function readProperty(json: Types.Object, propertyName: string): any
+{
+  return json[propertyName];
+}
+
+function writeProperty
+(
+  json: Types.Object,
+  propertyName: string,
+  value: any
+)
+: void
+{
+  json[propertyName] = value;
+}
+
+function copyOwnProperty
+(
+  source: object,
+  json: object,
+  propertyName: string
+)
+: void
+{
+  if (source.hasOwnProperty(propertyName))
+  {
+    const property = readProperty(source, propertyName);
+
+    writeProperty(json, propertyName, property);
+  }
+}
+
+function isWrittenOutOfOrder(propertyName: string): boolean
+{
+  return propertyName === NAME
+      || propertyName === CLASS_NAME
+      || propertyName === ID
+      || propertyName === PROTOTYPE_ID;
+}
+
+// ! Throws exception on error.
+function isSerialized(propertyName: string, mode: Serializable.Mode): boolean
+{
+  const attributes = this.propertyAttributes(propertyName);
+
+  switch (mode)
+  {
+    case "Save to file":
+      return attributes.saved === true;
+
+    case "Send to client":
+      return attributes.sentToClient === true;
+
+    case "Send to server":
+      return attributes.sentToServer === true;
+
+    case "Send to editor":
+      return attributes.edited === true;
+
+    default:
+      throw Syslog.reportMissingCase(mode);
+  }
+}
+
+/*
 export class Serializable extends Attributable
 {
   // ------------- Protected static data ----------------
@@ -993,3 +1110,4 @@ export namespace Serializable
     | "Send to server"
     | "Send to editor";
 }
+*/

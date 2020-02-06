@@ -24,6 +24,13 @@ Později:
 
 TODO: Refactorovat Serializable
 
+TODO: V deserializaci jsem zašantročil 'propertyName', která říkala,
+  v jaké property nastala chyba.
+- ještě lepší by bylo, kdyby to byl celej property chain, tj. třeba
+  zones.zone[13].rooms.data
+  - ten bych asi musel rekurzivně budovat v parametru (nemá smysl
+    psát vlastní stack, když 
+
 TODO: Vyzkoušet class composition trik na rozdělení Serializable
   do více souborů
 

@@ -1,3 +1,44 @@
+Rozdělení Serializable
+-----------------------
+
+Komplikují to metody propertyFromCustomJson() a propertyToCustomJson().
+
+- V zásadě to jsou funkce, které když narazí na určité propertyName,
+  tak vyplivnou custom json. Tj. nemusí to nutně být metody a nemusí
+  se nutně volat na this.
+
+- Problém ale je, když mám Serializable v Serializable. Serializace toho
+  vnitřního se volá ze serializace vnějšího, takže custom serializační
+  metodu nejde předat externím parametrem. Tudíž to přece jen musí bejt
+  metoda.
+
+- Možná ji ale vstupní serializační funkce může předat jako parametr tomu,
+  co má pod sebou.
+
+IDEA: Classy Jsonizer a Dejsonizer
+- částečně jsem napsal Dejsonizer, takže to asi půjde. Otázka je,
+  jestli se má vyrobit instance Dejsonizeru při každé dejsonizaci,
+  nebo má v serializable bejt jedna na pevno a reusovat se.
+- Když to bude on-demand, tak bude bez problémů setnutí temporary
+  proměnný path.
+
+------------------------------------------------------------------------------
+
+Verze v Serializable
+---------------------
+
+- Házet error při nesouhlasu verzí je blbost, to by mělo smysl pouze
+  pokud bych data konvertoval externě.
+
+- Spíš budu potřebovat možnost loadovat data i z out of date formátu,
+  tj. něco ve stylu propertyFromCustomJson().
+  Možná na to používat přímo metodu propertyToCustomJson()?
+  - asi by měla jako parametr dostávat verzi z jsonu (k thisVersion přístup
+    má, protože to je metoda).
+
+=> Zatím se na to úplně vykašlu. Budu to řešit, až to budu k něčemu potřebovat.
+
+
 ------------------------------------------------------------------------------
 
 Trik na class composition
