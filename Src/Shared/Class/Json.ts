@@ -65,6 +65,22 @@ export namespace Json
 
     return result;
   }
+
+  export function readProperty(json: Types.Object, propertyName: string): any
+  {
+    return json[propertyName];
+  }
+
+  export function writeProperty
+  (
+    json: Types.Object,
+    propertyName: string,
+    value: any
+  )
+  : void
+  {
+    json[propertyName] = value;
+  }
 }
 
 // ----------------- Auxiliary Functions ---------------------

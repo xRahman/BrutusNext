@@ -29,10 +29,13 @@ TODO: V deserializaci jsem zašantročil 'propertyName', která říkala,
 - ještě lepší by bylo, kdyby to byl celej property chain, tj. třeba
   zones.zone[13].rooms.data
   - ten bych asi musel rekurzivně budovat v parametru (nemá smysl
-    psát vlastní stack, když 
+    psát vlastní stack, když můžu využít call stack)
 
 TODO: Vyzkoušet class composition trik na rozdělení Serializable
   do více souborů
+
+TODO: Sloučit společný funkce a konstanty v Serializable, Jsonizeru
+  a Dejsonizeru
 
 TODO: Projít metody na detekci typů v Types, jestli by nešly zrušit
 
@@ -43,13 +46,9 @@ TODO: Zapisovat properties při serializaci přes writeProperty(),
 
 TODO: Připomenout si, proč Date nejde prototypově dědit a Time ano
 
-TODO: Serializační metody jako serializeArray() by se asi měly jmenovat
-  spíš arrayToJSON()
 
-TODO: Přece jen ještě zvážit, jestli nezavést argument 'debugInfo',
-  kterej by slučovat parametry určené pouze pro debug výpisy
-  (Mohlo by to zredukovat množství kódu a zároveň logicky oddělit
-   ostré argumenty od debugových).
+TODO: Zvážit, jestli ObjectUtils nepředělat na augmentaci Objectu
+  (asi jo)
 
 
 IDEA: Serializovat Map jako properties objectu (bylo by to čitelnější)

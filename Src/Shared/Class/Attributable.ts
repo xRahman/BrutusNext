@@ -34,7 +34,7 @@ const DEFAULT_ATTRIBUTES = "defaultAttributes";
 export class Attributable
 {
   // This can be redefined so the new defaults apply to whole
-  // subclass.
+  // subclass tree.
   protected static defaultAttributes: Attributes =
   {
     saved: true,
@@ -43,16 +43,7 @@ export class Attributable
     sentToServer: true
   };
 
-  // --------------- Public methods ---------------------
-
-  // In Javascript, name of the constructor is the class name.
-  public get className(): string { return this.constructor.name; }
-
-  // -------------- Protected methods -------------------
-
-  // (Note that 'defaultAttributes' declared in the same class as the property
-  //  are taken in effect, not possible override in a descendant class.)
-  protected propertyAttributes(propertyName: string): Attributes
+  public static propertyAttributes(propertyName: string): Attributes
   {
     const attributes: Attributes = {};
 
@@ -69,9 +60,7 @@ export class Attributable
     return attributes;
   }
 
-  // ---------------- Private methods -------------------
-
-  private applyPropertyDefaults
+  private static applyPropertyDefaults
   (
     attributes: object,
     propertyName: string
@@ -86,14 +75,14 @@ export class Attributable
     if (!Types.isPlainObject(propertyAttributes))
     {
       throw Error(`Static propety ${propertyName} in class`
-        + ` ${this.className} is not a plain object`);
+        + ` ${this.name} is not a plain object`);
     }
 
     applyDefaults(attributes, propertyAttributes);
   }
 
   // ! Throws exception on error.
-  private applyClassDefaults(attributes: object): object
+  private static applyClassDefaults(attributes: object): object
   {
     const classDefaults = (this.constructor as any)[DEFAULT_ATTRIBUTES];
 
@@ -103,7 +92,7 @@ export class Attributable
     if (!Types.isPlainObject(classDefaults))
     {
       throw Error(`Static propety ${DEFAULT_ATTRIBUTES} in`
-        + ` class ${this.className} is not a plain object'`);
+        + ` class ${this.name} is not a plain object'`);
     }
 
     applyDefaults(attributes, classDefaults);
@@ -111,8 +100,25 @@ export class Attributable
     return attributes;
   }
 
-  private applyGlobalDefaults(attributes: object): void
+  private static applyGlobalDefaults(attributes: object): void
   {
     applyDefaults(attributes, Attributable.defaultAttributes);
+  }
+
+  // Tell typescript what type 'this.constructor' is.
+  public ["constructor"]: typeof Attributable;
+
+  // --------------- Public methods ---------------------
+
+  // In Javascript, name of the constructor is the class name.
+  public get className(): string { return this.constructor.name; }
+
+  // -------------- Protected methods -------------------
+
+  // (Note that 'defaultAttributes' declared in the same class as the property
+  //  are taken in effect, not possible override in a descendant class.)
+  protected propertyAttributes(propertyName: string): Attributes
+  {
+    return this.constructor.propertyAttributes(propertyName);
   }
 }

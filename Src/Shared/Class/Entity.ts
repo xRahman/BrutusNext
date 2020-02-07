@@ -26,8 +26,10 @@
 */
 
 import { Types } from "../../Shared/Utils/Types";
-import { ID, PROTOTYPE_ID, Serializable } from
-  "../../Shared/Class/Serializable";
+import { Serializable } from "../../Shared/Class/Serializable";
+
+const ID = Serializable.ID;
+const PROTOTYPE_ID = Serializable.PROTOTYPE_ID;
 
 const MISSING_ID = "<missing id>";
 const MISSING_NAME = "<missing name>";

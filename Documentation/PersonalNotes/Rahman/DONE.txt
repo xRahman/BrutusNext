@@ -1,3 +1,14 @@
+TODO: Přece jen ještě zvážit, jestli nezavést argument 'debugInfo',
+  kterej by slučovat parametry určené pouze pro debug výpisy
+  (Mohlo by to zredukovat množství kódu a zároveň logicky oddělit
+   ostré argumenty od debugových).
+(Tohle možná nebude po zavedení jsonizeru a dejsonizeru potřeba)
+[solved by other change]
+
+TODO: Serializační metody jako serializeArray() by se asi měly jmenovat
+  spíš arrayToJSON()
+[done]
+
 IDEA: Zdědit Serializable z Deserializable
   (oddělím tím serializační a deserializační kód do samostatných modulů)
 - to bohužel nejde kvůli návratovým hodnotám.
