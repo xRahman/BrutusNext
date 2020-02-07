@@ -1,0 +1,17 @@
+Static Member Access
+----------------------
+
+class SomeClass
+{
+  static property = 123;
+
+  // Tell typescript that type of this.constructor is 'typeof SomeClass'.
+  public ["constructor"]: typeof SomeClass;
+
+  method()
+  {
+    // Without the previous type definition wouldn't know what type
+    // 'this.constructor' is.
+    this.constructor.property;
+  }
+}
