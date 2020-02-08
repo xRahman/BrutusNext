@@ -25,7 +25,7 @@
   }
 */
 
-import { applyDefaults } from "../../Shared/Utils/ObjectUtils";
+import "../../Shared/Utils/Object";
 import { Types } from "../../Shared/Utils/Types";
 import { DynamicClass } from "../../Shared/Class/DynamicClass";
 import { Attributes } from "../../Shared/Class/Attributes";
@@ -83,7 +83,7 @@ export class Attributable extends DynamicClass
         + ` ${this.name} is not a plain object`);
     }
 
-    applyDefaults(attributes, propertyAttributes);
+    attributes.applyDefaults(propertyAttributes);
   }
 
   // ! Throws exception on error.
@@ -100,14 +100,14 @@ export class Attributable extends DynamicClass
         + ` class ${this.name} is not a plain object'`);
     }
 
-    applyDefaults(attributes, classDefaults);
+    attributes.applyDefaults(classDefaults);
 
     return attributes;
   }
 
   private static applyGlobalDefaults(attributes: object): void
   {
-    applyDefaults(attributes, Attributable.defaultAttributes);
+    attributes.applyDefaults(Attributable.defaultAttributes);
   }
 
   // Tell typescript what type 'this.constructor' is.
