@@ -1,3 +1,40 @@
+Prototypová dědičnost entit
+----------------------------
+
+Nevím, jak jsem to původně zamýšlel, ale očividně nepůjde udělat
+  prototype chain poskládaný z mých vlastních instancí v rámci
+  class hierarchy v kódu.
+  - když mám hierarchy class Orc extends Mob {}, tak můžu vyrábět
+    instance orků přes Object.create(new Orc()), ale ten new Orc()
+    už nemůže mít jako prototyp new Mob(). Tj. nemůžu zapsat
+    do prototypeMob a změnit tím properties na všech mobech z něj
+    zděděnejch.
+(nebo jsem to možná kdysi nějak vyřešil? Nevypadá to.)
+
+Ono to asi nevadí. Pořád můžu dělat instance mobů, room a podobně,
+  jen se holt muset lišit pouze obsahem properties, ne tím, jaký properties
+  maj. Různou funkčnost můžu zajistit setováním dat, Brutus na tom ostatně
+  byl postavenej (flagy například). Tady to teda můžu udělat i tak,
+  že tam setnu objekt s příslušnou funkcionalitou, takže to bude polymorfní.
+
+
+------------------------------------------------------------------------------
+
+Date a prototypová dědičnost
+-----------------------------
+
+Proč Date nejde prototypově dědit a Time ano?
+
+- problém je, že Date property se sice zdědí, ale setovací metody
+  měněj hodnotu data na předkovi. Instanciovat ji přes Object.create()
+  nejde, protože:
+    "Uncaught TypeError: Method Date.prototype.toDateString called on
+     incompatible receiver [object Object]"
+- tj. musel bych to udělat jako u Setu a Mapy, že instance si vytvoří
+  vlastní Date object a tudíž ho nebude dědit.
+
+------------------------------------------------------------------------------
+
 Rozdělení Serializable
 -----------------------
 

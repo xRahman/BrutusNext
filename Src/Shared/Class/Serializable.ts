@@ -1,7 +1,7 @@
 /*
   Part of BrutusNext
 
-  Automated serializing of classes to JSON format
+  Class that can serialize to JSON format
 */
 
 /*
@@ -16,17 +16,19 @@
     into which we are loading. This allows saving of properties
     created in runtime.
 
+  Custom property serialization:
+    Descendants of Serializable can implement methods customPropertyToJson()
+    and customPropertyFromJson() to change how specific properties are
+    serialized.
+
+  Serializing of entities:
     If a property contains an Entity class, only an id is serialized.
     When deserializing, an instance with the same id is assigned to
     that property if it is in memory, invalid reference otherwise.
 
-    Serializing of entities as a reference (using entity 'id')
-    is implemented in Serializable.ts rather than in Entity.ts to allow
-    referencing entities in non-entity Serializable classes.
-
-    Descendants of Serializable can override methods customSerializeProperty()
-    and customDeserializeProperty() to change how specific properties are
-    serialized.
+    When a referenced entity isn't loaded yet while deserialing, an
+    invalid entity reference will be assigned. So be sure to check if
+    referenced entities are valid when you access them after deserialization.
 
   Implementation notes:
     At the moment, property attributes are checked only for direct properties
@@ -35,6 +37,7 @@
     a Serializable class instead of {} for this purpose.
 */
 
+import { Syslog } from "../../Shared/Log/Syslog";
 import { Types } from "../../Shared/Utils/Types";
 import { ClassFactory } from "../../Shared/Class/ClassFactory";
 import { Json } from "../../Shared/Class/Json";
@@ -55,14 +58,16 @@ export class Serializable extends Attributable
 
   // ! Throws exception on error.
   // Use this method only for Serializable objects not inherited from Entity
-  // ('path' is used in error messages to help with debugging).
+  // (it's because an entity needs to have it's prototype set and that's not
+  //  done here.)
+  // • 'path' is used in error messages to help with debugging.
   public static deserialize(data: string, path?: string): Serializable
   {
     // ! Throws exception on error.
     const json = Json.parse(data);
 
     // ! Throws exception on error.
-    const className = getClassName
+    const className = deserializeClassName
     (
       json,
       Serializable.CLASS_NAME,
@@ -76,8 +81,39 @@ export class Serializable extends Attributable
     return instance.fromJson(json, path);
   }
 
+  // ! Throws exception on error.
+  public static isSerialized
+  (
+    propertyName: string,
+    mode: Serializable.Mode
+  )
+  : boolean
+  {
+    const attributes = this.propertyAttributes(propertyName);
+
+    switch (mode)
+    {
+      case "Save to file":
+        return attributes.saved === true;
+
+      case "Send to client":
+        return attributes.sentToClient === true;
+
+      case "Send to server":
+        return attributes.sentToServer === true;
+
+      case "Send to editor":
+        return attributes.edited === true;
+
+      default:
+        throw Syslog.reportMissingCase(mode);
+    }
+  }
+
   // Tell typescript what type 'this.constructor' is.
   public ["constructor"]: typeof Serializable;
+
+  // ---------------- Protected data --------------------
 
   protected customPropertyFromJson:
     Serializable.PropertyFromJson | undefined = undefined;
@@ -85,27 +121,7 @@ export class Serializable extends Attributable
   protected customPropertyToJson:
     Serializable.PropertyToJson | undefined = undefined;
 
-  // --------------- Public accessors -------------------
-
-  // -> Returns string describing this object for error logging.
-  public get debugId(): string
-  {
-    return `{ class: ${this.className} }`;
-  }
-
   // ---------------- Public methods --------------------
-
-  // ! Throws exception on error.
-  public dynamicCast<T>(Class: Types.AnyClass<T>): T
-  {
-    if (!(this instanceof Class))
-    {
-      throw Error (`Type cast error: ${this.debugId} is not`
-        + ` an instance of class (${Class.name})`);
-    }
-
-    return (this as unknown) as T;
-  }
 
   // ! Throws exception on error.
   public serialize(mode: Serializable.Mode): string
@@ -159,28 +175,28 @@ export class Serializable extends Attributable
     return this;
   }
 
-  // -------------- Protected methods -------------------
-
   // --------------- Private methods --------------------
+
+  private writeClassName(json: object): void
+  {
+    Json.writeProperty(json, Serializable.CLASS_NAME, this.className);
+  }
 
   private writeVersion(json: object, mode: Serializable.Mode): void
   {
+    // Version is not written to serialized packets because they
+    // are always sent and received by the same code so it's
+    // unnecessary information.
     if (mode === "Send to client" || mode === "Send to server")
-    {
-      // Version is not written to serialized packets because they
-      // are always sent and received by the same code so it's
-      // unnecessary information.
       return;
-    }
 
     // 'this.constructor' contains static properties of this class.
     if (!this.constructor.hasOwnProperty(Serializable.VERSION))
     {
-      throw Error(`Failed to serialize ${this.debugId}`
-        + ` because it doesn't have static property`
-        + ` '${Serializable.VERSION}'. Make sure that 'static`
-        + ` ${Serializable.VERSION}' is inicialized in class`
-        + ` ${this.className}`);
+      throw Error(`Failed to serialize ${this.debugId} because it`
+        + ` doesn't have static property '${Serializable.VERSION}'.`
+        + ` Make sure that 'static ${Serializable.VERSION}' is`
+        + ` inicialized in class ${this.className}`);
     }
 
     const version = this.getStaticProperty(Serializable.VERSION);
@@ -190,15 +206,10 @@ export class Serializable extends Attributable
       throw Error(`Failed to serialize ${this.debugId} because`
         + ` static property '${Serializable.VERSION}' is not a`
         + ` number. Make sure that 'static ${Serializable.VERSION}'`
-        + ` is inicialized in class ${this.className} to a number`);
+        + ` in class ${this.className} is a number`);
     }
 
     Json.writeProperty(json, Serializable.VERSION, version);
-  }
-
-  private writeClassName(json: object): void
-  {
-    Json.writeProperty(json, Serializable.CLASS_NAME, this.className);
   }
 
   private getStaticProperty(propertyName: string): any
@@ -262,7 +273,7 @@ export class Serializable extends Attributable
 // ----------------- Auxiliary Functions ---------------------
 
 // ! Throws exception on error.
-function getClassName
+function deserializeClassName
 (
   json: object,
   propertyName: string,
@@ -295,7 +306,7 @@ function inFile(path?: string): string
   return ` in file ${path}`;
 }
 
-// ------------------ Type Declarations ----------------------
+// ------------------ Type declarations ----------------------
 
 export namespace Serializable
 {
@@ -307,9 +318,9 @@ export namespace Serializable
 
   export type PropertyFromJson =
   (
-    propertyName: string,
     source: any,
     target: any,
+    propertyName: string,
     path?: string
   ) => any;
 
@@ -317,8 +328,7 @@ export namespace Serializable
   (
     property: any,
     propertyName: string,
-    className: string,
-    mode: Mode
+    className: string
   ) => any;
 
   // Names of properties that require special handling.

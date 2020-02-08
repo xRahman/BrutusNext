@@ -22,38 +22,13 @@ Později:
 
 ------------------------------------------------------------------------------
 
-TODO: Refactorovat Serializable
-
-TODO: V deserializaci jsem zašantročil 'propertyName', která říkala,
-  v jaké property nastala chyba.
-- ještě lepší by bylo, kdyby to byl celej property chain, tj. třeba
-  zones.zone[13].rooms.data
-  - ten bych asi musel rekurzivně budovat v parametru (nemá smysl
-    psát vlastní stack, když můžu využít call stack)
-
-TODO: Vyzkoušet class composition trik na rozdělení Serializable
-  do více souborů
-
-TODO: Sloučit společný funkce a konstanty v Serializable, Jsonizeru
-  a Dejsonizeru
-
-TODO: Projít metody na detekci typů v Types, jestli by nešly zrušit
-
-TODO: Zapisovat properties při serializaci přes writeProperty(),
-  aby se používala stejná konstanta jako při deserializaci
-  (u mapy už to tak je)
-[done]
-
-TODO: Připomenout si, proč Date nejde prototypově dědit a Time ano
-
-
 TODO: Zvážit, jestli ObjectUtils nepředělat na augmentaci Objectu
   (asi jo)
 
 
-IDEA: Serializovat Map jako properties objectu (bylo by to čitelnější)
-  https://2ality.com/2015/08/es6-map-json.html#string-maps-as-json-via-objects
-[done]
+
+
+
 
 
 TODO: Zobrazovat exity "up" a "down" podle exitů v roomách

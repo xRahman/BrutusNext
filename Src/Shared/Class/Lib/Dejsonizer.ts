@@ -1,7 +1,7 @@
 /*
   Part of BrutusNext
 
-  Extracts properties from json object
+  Restores properties from json object
 */
 
 import { Types } from "../../../Shared/Utils/Types";
@@ -16,6 +16,8 @@ import { Serializable } from "../../../Shared/Class/Serializable";
 //   be imported using 'import' keyword.
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const FastBitSet = require("fastbitset");
+
+type PropertyFromJson = Serializable.PropertyFromJson;
 
 // Names of classes that are transformed to JSON in a special way
 // or are serialized only as a reference.
@@ -39,8 +41,7 @@ export class Dejsonizer
   constructor
   (
     private readonly target: Serializable,
-    private readonly customPropertyFromJson:
-      Serializable.PropertyFromJson | undefined,
+    private readonly customPropertyFromJson: PropertyFromJson | undefined,
     private readonly path?: string
   )
   {
@@ -49,19 +50,18 @@ export class Dejsonizer
   // ---------------- Public methods --------------------
 
   // ! Throws exception on error.
-  public objectFromJson
-  (
-    json: Types.Object,
-    target: Types.Object
-  )
-  : object
+  public objectFromJson(json: Types.Object, target?: Types.Object): object
   {
     if (target === null || target === undefined)
       target = {};
 
+    // We are cycling over properties in source JSON object, not in target
+    // object to ensure that properties which are not present in source data
+    // will not get overwritten with 'undefined'. This allows adding new
+    // properties to existing classes without the need to convert all save
+    // files.
     for (const propertyName in json)
     {
-      // Skip inherited properties.
       if (!json.hasOwnProperty(propertyName))
         continue;
 
@@ -72,16 +72,11 @@ export class Dejsonizer
         continue;
 
       // ! Throws exception on error.
-      // We are cycling over properties in source JSON object, not in target
-      // object to ensure that properties which are not present in source data
-      // will not get overwritten with 'undefined'. This allows adding new
-      // properties to existing classes without the need to convert all save
-      // files.
       const property = this.propertyFromJson
       (
-        propertyName,
+        json[propertyName],
         target[propertyName],
-        json[propertyName]
+        propertyName
       );
 
       Json.writeProperty(target, propertyName, property);
@@ -94,7 +89,7 @@ export class Dejsonizer
 
   private bitvectorFromJson(json: object): any
   {
-    const bitvectorData = this.getProperty(json, DATA);
+    const bitvectorData = this.getValidProperty(json, DATA);
 
     return new FastBitSet(bitvectorData);
   }
@@ -110,17 +105,15 @@ export class Dejsonizer
   }
 
   // ! Throws exception on error.
-  private propertyFromJson(propertyName: string, json: any, target: any): any
+  private propertyFromJson(json: any, target: any, propertyName: string): any
   {
-    // Allow custom property deserialization.
     if (this.customPropertyFromJson)
-      return this.customPropertyFromJson(propertyName, json, target);
+      return this.customPropertyFromJson(json, target, propertyName);
 
     // ! Throws exception on error.
-    this.validateJsonAndTarget(propertyName, json, target);
+    this.validateJsonAndTarget(json, target, propertyName);
 
     if (Types.isPrimitiveType(json))
-      // Properties of primitive types are simply assigned.
       return json;
 
     if (Array.isArray(json))
@@ -165,9 +158,9 @@ export class Dejsonizer
   // ! Throws exception on error.
   private validateJsonAndTarget
   (
-    propertyName: string,
     json: any,
-    target: any
+    target: any,
+    propertyName: string
   )
   : void
   {
@@ -204,9 +197,9 @@ export class Dejsonizer
     {
       const arrayItem = this.propertyFromJson
       (
-        `Array item [${i}]`,
+        arrayJson[i],
         undefined,
-        arrayJson[i]
+        `Array item [${i}]`
       );
 
       array.push(arrayItem);
@@ -219,34 +212,29 @@ export class Dejsonizer
   private setFromJson(json: object): Set<any>
   {
     // ! Throws exception on error.
-    const setData = this.getProperty(json, DATA);
+    const setJson = this.getValidProperty(json, DATA);
 
-    return new Set(this.arrayFromJson(setData));
+    return new Set(this.arrayFromJson(setJson));
   }
 
   // ! Throws exception on error.
   private mapFromJson(json: object): Map<any, any>
   {
-    const mapJson = this.getProperty(json, DATA);
-    const mapObject = {};
+    const mapJson = this.getValidProperty(json, DATA);
 
-    // ! Throws exception on error.
-    this.objectFromJson(mapJson, mapObject);
-
-    return this.mapFromObject(mapObject);
+    return this.mapFromObject(this.objectFromJson(mapJson));
   }
 
   // ! Throws exception on error.
-  // Converts 'param.sourceProperty' to a reference to an Entity.
-  // If 'id' loaded from JSON already exists in Entities, existing
-  // entity will be returned. Otherwise an 'invalid' entity reference
-  // will be created and returned.
+  // If entity with 'id' loaded from JSON isn't in Entities,
+  // an invalid entity reference will be assigned.
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   private entityFromJson(json: object)
   // Let typescript infer the type here so we don't have to import Entity
   // (that would lead to cyclic import troubles).
   {
-    const id = this.getProperty(json, ID);
+    // ! Throws exception on error.
+    const id = this.getValidProperty(json, ID);
 
     if (typeof id !== "string")
     {
@@ -261,7 +249,7 @@ export class Dejsonizer
   private serializableFromJson
   (
     json: object,
-    target: object,
+    target: any,
     propertyName: string,
     className: string
   )
@@ -285,7 +273,7 @@ export class Dejsonizer
   }
 
   // ! Throws exception on error.
-  private getProperty(json: object, propertyName: string): any
+  private getValidProperty(json: object, propertyName: string): any
   {
     const property = Json.readProperty(json, propertyName);
 

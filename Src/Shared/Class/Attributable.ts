@@ -26,12 +26,13 @@
 */
 
 import { applyDefaults } from "../../Shared/Utils/ObjectUtils";
-import { Attributes } from "../../Shared/Class/Attributes";
 import { Types } from "../../Shared/Utils/Types";
+import { DynamicClass } from "../../Shared/Class/DynamicClass";
+import { Attributes } from "../../Shared/Class/Attributes";
 
 const DEFAULT_ATTRIBUTES = "defaultAttributes";
 
-export class Attributable
+export class Attributable extends DynamicClass
 {
   // This can be redefined so the new defaults apply to whole
   // subclass tree.
@@ -43,7 +44,9 @@ export class Attributable
     sentToServer: true
   };
 
-  public static propertyAttributes(propertyName: string): Attributes
+  // ------------ Protected static methods --------------
+
+  protected static propertyAttributes(propertyName: string): Attributes
   {
     const attributes: Attributes = {};
 
@@ -59,6 +62,8 @@ export class Attributable
 
     return attributes;
   }
+
+  // ------------- Private static methods ---------------
 
   private static applyPropertyDefaults
   (
@@ -107,11 +112,6 @@ export class Attributable
 
   // Tell typescript what type 'this.constructor' is.
   public ["constructor"]: typeof Attributable;
-
-  // --------------- Public methods ---------------------
-
-  // In Javascript, name of the constructor is the class name.
-  public get className(): string { return this.constructor.name; }
 
   // -------------- Protected methods -------------------
 

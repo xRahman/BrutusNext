@@ -18,8 +18,10 @@
     when writing to the instance.
 */
 
-import { ID, Serializable } from "../../Shared/Class/Serializable";
+import { Serializable } from "../../Shared/Class/Serializable";
 import { Types } from "../../Shared/Utils/Types";
+
+const ID = Serializable.ID;
 
 // Key:   Class name.
 // Value: Prototype instance that will be passed to Object.create()

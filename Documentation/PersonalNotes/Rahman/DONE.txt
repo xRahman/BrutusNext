@@ -1,3 +1,40 @@
+IDEA: Serializovat Map jako properties objectu (bylo by to čitelnější)
+  https://2ality.com/2015/08/es6-map-json.html#string-maps-as-json-via-objects
+[done]
+
+TODO: Zapisovat properties při serializaci přes writeProperty(),
+  aby se používala stejná konstanta jako při deserializaci
+  (u mapy už to tak je)
+[done]
+
+IDEA: Jsonizer.isSerialized() by se teoreticky dalo volat na zdrojové
+  classe (respektive dokonce na její static části). Asi by bylo lepší,
+  aby to bylo přímo v Serializable a ne v Jsonizeru.
+[done]
+
+TODO: V deserializaci jsem zašantročil 'propertyName', která říkala,
+  v jaké property nastala chyba.
+- ještě lepší by bylo, kdyby to byl celej property chain, tj. třeba
+  zones.zone[13].rooms.data
+  - ten bych asi musel rekurzivně budovat v parametru (nemá smysl
+    psát vlastní stack, když můžu využít call stack)
+[je to ok]
+
+TODO: Proč je dynamicCast() v Serializable?
+  To je jiná responsibility.
+- kam jinam to  ale dát?
+  Attibutable asi ne.
+  Samostatná class? DynamicClass?
+[done]
+
+TODO: Vyzkoušet class composition trik na rozdělení Serializable
+  do více souborů
+[done]
+
+TODO: Sloučit společný funkce a konstanty v Serializable, Jsonizeru
+  a Dejsonizeru
+[done]
+
 TODO: Přece jen ještě zvážit, jestli nezavést argument 'debugInfo',
   kterej by slučovat parametry určené pouze pro debug výpisy
   (Mohlo by to zredukovat množství kódu a zároveň logicky oddělit

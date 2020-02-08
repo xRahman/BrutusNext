@@ -3,9 +3,12 @@
 */
 
 import { Types } from "../../Shared/Utils/Types";
-import { ID, PROTOTYPE_ID } from "../../Shared/Class/Serializable";
+import { Serializable } from "../../Shared/Class/Serializable";
 import { Entity } from "../../Shared/Class/Entity";
 import { ClassFactory } from "../../Shared/Class/ClassFactory";
+
+const ID = Serializable.ID;
+const PROTOTYPE_ID = Serializable.PROTOTYPE_ID;
 
 // [Key]:   Entity id.
 // [Value]: Entity instance.

@@ -1,14 +1,14 @@
 /*
   Part of BrutusNext
 
-  Writes properties to json object
+  Stores properties to json object
 */
 
 import { Types } from "../../../Shared/Utils/Types";
-import { Syslog } from "../../../Shared/Log/Syslog";
 import { Json } from "../../../Shared/Class/Json";
-import { Attributable } from "../../../Shared/Class/Attributable";
 import { Serializable } from "../../../Shared/Class/Serializable";
+
+type PropertyToJson = Serializable.PropertyToJson;
 
 // Names of classes that are transformed to JSON in a special way
 // or are serialized only as a reference.
@@ -33,9 +33,8 @@ export class Jsonizer
   constructor
   (
     private readonly source: Serializable,
-    private readonly AttributableClass: typeof Attributable,
-    private readonly customPropertyToJson:
-      Serializable.PropertyToJson | undefined,
+    private readonly StaticInterface: typeof Serializable,
+    private readonly customPropertyToJson: PropertyToJson | undefined,
     private readonly mode: Serializable.Mode
   )
   {
@@ -53,24 +52,22 @@ export class Jsonizer
     copyOwnProperty(source, json, PROTOTYPE_ID);
     copyOwnProperty(source, json, NAME);
 
-    // Cycle through all properties in source object.
-    for (const propertyName in this)
+    for (const propertyName in source)
     {
-      if (isWrittenOutOfOrder(propertyName))
-        continue;
-
-      // Skip inherited properties (they are serialized on prototype entity).
       if (!this.hasOwnProperty(propertyName))
         continue;
 
+      if (isWrittenOutOfOrder(propertyName))
+        continue;
+
       // ! Throws exception on error.
-      if (!this.isSerialized(propertyName))
+      if (!this.StaticInterface.isSerialized(propertyName, this.mode))
         continue;
 
       const property = Json.readProperty(this, propertyName);
 
-      // Skip values like [] or {} that are created by instantiation
-      // (they would unnecessarily clutter the JSON).
+      // Skip values like [] or {} because they are created
+      // by instantiation so they don't need to be in JSON.
       if (!hasOwnValue(property))
         continue;
 
@@ -85,30 +82,6 @@ export class Jsonizer
   // --------------- Private methods --------------------
 
   // ! Throws exception on error.
-  private isSerialized(propertyName: string): boolean
-  {
-    const attributes = this.AttributableClass.propertyAttributes(propertyName);
-
-    switch (this.mode)
-    {
-      case "Save to file":
-        return attributes.saved === true;
-
-      case "Send to client":
-        return attributes.sentToClient === true;
-
-      case "Send to server":
-        return attributes.sentToServer === true;
-
-      case "Send to editor":
-        return attributes.edited === true;
-
-      default:
-        throw Syslog.reportMissingCase(this.mode);
-    }
-  }
-
-  // ! Throws exception on error.
   private propertyToJson(property: any, propertyName: string): any
   {
     const className = this.source.className;
@@ -120,8 +93,7 @@ export class Jsonizer
       (
         property,
         propertyName,
-        className,
-        this.mode
+        className
       );
     }
 
@@ -135,14 +107,8 @@ export class Jsonizer
       return this.arrayToJson(property);
 
     if (property instanceof Serializable)
-    {
-      if (isEntity(property))
-        // ! Throws exception on error.
-        return this.entityToJson(property, propertyName);
-
       // ! Throws exception on error.
-      return property.toJson(this.mode);
-    }
+      return this.serializableToJson(property, propertyName);
 
     if (Types.isDate(property))
     {
@@ -167,9 +133,9 @@ export class Jsonizer
 
     throw Error(`Property '${propertyName}' in class '${className}'`
       + ` is an instance of a class which is neither inherited from`
-      + ` Serializable nor has a type that we know how to save. Either`
-      + ` extend it from Serializable or add this functionality to`
-      + ` Serializable.ts. Property is not serialized`);
+      + ` Serializable nor has a type that we know how to serialize.`
+      + ` Either extend it from Serializable or add this functionality`
+      + ` to Serializable.ts. Property is not serialized`);
   }
 
   // ! Throws exception on error.
@@ -188,27 +154,43 @@ export class Jsonizer
     return arrayJson;
   }
 
+  // ! Throws exception on error.
+  private serializableToJson
+  (
+    property: Serializable,
+    propertyName: string
+  )
+  : object
+  {
+    if (isEntity(property))
+      // ! Throws exception on error.
+      return this.entityToJson(property, propertyName);
+
+    // ! Throws exception on error.
+    return property.toJson(this.mode);
+  }
+
     // ! Throws exception on error.
   private bitvectorToJson(bitvector: any, propertyName: string): object
   {
-    const bitvectorRecord = {};
+    const json = {};
 
     if (!("toJSON" in bitvector))
     {
-      throw Error(`Failed to serialize class '${this.source.className}'`
-        + ` because property ${propertyName} doesn't have 'toJSON' method`);
+      throw Error(`Failed to serialize ${this.source.debugId} because`
+        + ` property ${propertyName} doesn't have 'toJSON' method`);
     }
 
-    Json.writeProperty(bitvectorRecord, CLASS_NAME, BITVECTOR_CLASS_NAME);
-    Json.writeProperty(bitvectorRecord, DATA, bitvector.toJSON());
+    Json.writeProperty(json, CLASS_NAME, BITVECTOR_CLASS_NAME);
+    Json.writeProperty(json, DATA, bitvector.toJSON());
 
-    return bitvectorRecord;
+    return json;
   }
 
   // ! Throws exception on error.
   private entityToJson(entity: object, propertyName: string): object
   {
-    const entityRecord = {};
+    const json = {};
 
     const id = Json.readProperty(entity, ID);
 
@@ -218,10 +200,10 @@ export class Jsonizer
         + ` because ${propertyName}.${ID} is not a string`);
     }
 
-    Json.writeProperty(entityRecord, CLASS_NAME, ENTITY_CLASS_NAME);
-    Json.writeProperty(entityRecord, ID, id);
+    Json.writeProperty(json, CLASS_NAME, ENTITY_CLASS_NAME);
+    Json.writeProperty(json, ID, id);
 
-    return entityRecord;
+    return json;
   }
 }
 
@@ -286,8 +268,8 @@ function hasOwnValue(variable: any): boolean
 
 function isEntity(variable: object): boolean
 {
-  // We can't import Entity to Serializable because it would cause
-  // cyclic module dependency error. So instead we just test if there
+  // We can't import Entity here because it would cause cyclic
+  // module dependency error. So instead we just test if there
   // is an 'id' property in 'variable'.
   return ID in variable;
 }
@@ -307,17 +289,17 @@ function mapToJson(map: Map<any, any>): object
   const json = {};
 
   Json.writeProperty(json, CLASS_NAME, MAP_CLASS_NAME);
-  Json.writeProperty(json, DATA, mapDataToJson(map));
+  Json.writeProperty(json, DATA, mapToObject(map));
 
   return json;
 }
 
-function mapDataToJson(map: Map<any, any>): object
+function mapToObject(map: Map<any, any>): object
 {
-  const json = {};
+  const result = {};
 
   for (const [ key, value ] of map.entries())
-    Json.writeProperty(json, key, value);
+    Json.writeProperty(result, key, value);
 
-  return json;
+  return result;
 }

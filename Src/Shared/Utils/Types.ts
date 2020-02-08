@@ -61,6 +61,14 @@ export function isMap(variable: any): boolean
   return variable.constructor.name === "Map";
 }
 
+export function isSet(variable: any): boolean
+{
+  if (variable === null || variable === undefined || !variable.constructor)
+    return false;
+
+  return variable.constructor.name === "Set";
+}
+
 // Detects only native javascript Objects - not classes.
 export function isPlainObject(variable: any): boolean
 {
@@ -85,14 +93,6 @@ export function isPrimitiveType(variable: any): boolean
   // For some reason typeof 'null' is 'object' in javascript
   // so we have check for it explicitely.
   return variable === null || typeof variable !== "object";
-}
-
-export function isSet(variable: any): boolean
-{
-  if (variable === null || variable === undefined || !variable.constructor)
-    return false;
-
-  return variable.constructor.name === "Set";
 }
 
 export function isSerializable(variable: any): boolean
