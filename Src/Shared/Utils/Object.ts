@@ -34,14 +34,14 @@ Object.prototype.applyDefaults = function applyDefaults
       continue;
 
     const defaultValue = defaults[propertyName];
-    const targetValue = this[propertyName];
+    const targetValue = (this as Types.Object)[propertyName];
 
     if (defaultValue === undefined)
       continue;
 
     if (targetValue === undefined)
     {
-      this[propertyName] = defaultValue;
+      (this as Types.Object)[propertyName] = defaultValue;
       continue;
     }
 
