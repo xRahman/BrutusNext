@@ -1,3 +1,7 @@
+TODO: Zvážit, jestli ObjectUtils nepředělat na augmentaci Objectu
+  (asi jo)
+[done]
+
 IDEA: Serializovat Map jako properties objectu (bylo by to čitelnější)
   https://2ality.com/2015/08/es6-map-json.html#string-maps-as-json-via-objects
 [done]

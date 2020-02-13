@@ -22,13 +22,11 @@ Později:
 
 ------------------------------------------------------------------------------
 
-TODO: Zvážit, jestli ObjectUtils nepředělat na augmentaci Objectu
-  (asi jo)
-
-
-
-
-
+TODO: SvgVerticalExit divně pracuje s grafikou. Path by se měla
+  na začátku vyrobit (create) a pak jen hidovat/showovat
+- horizontální exity se při změně komplet rebuildnout, tzn. neexistující
+  vůbec nemají komponentu. Takže nepotřebujou updateGraphics(), stačí
+  create.
 
 
 TODO: Zobrazovat exity "up" a "down" podle exitů v roomách
@@ -40,6 +38,12 @@ TODO: Buildit a mazat exity "up" a "down"
   - shift + PgUp/PgDown?
     Potom by asi přes shift+kurzory měly jít vyrábět všechny exity
     (respektive spíš shift+numpad keys, aby šly i šikmý)
+  - ještě bych mohl nechat "dummy" exity u current roomy a umožnit
+    na ně klikat. Nebo u všech room stejně jako místnosti? Na dragování
+    by nereagovaly, takže s builděním room by se to nebilo. To by asi šlo.
+    - na to bych ale měl udělat ještě exit-background, stejně jako u roomů.
+      (asi nemusej nutně přesahovat, aby to neyblo jinak než u horizontálních
+       exitů)
 
 ------------------------------------------------------------------------------
 

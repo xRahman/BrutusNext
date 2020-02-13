@@ -16,6 +16,7 @@ import { G } from "../../../Client/Gui/Svg/G";
 export class SvgVerticalExit extends G
 {
   private readonly exitGraphics: Path;
+  // private readonly exitBackground: Path;
 
   constructor
   (
@@ -26,15 +27,15 @@ export class SvgVerticalExit extends G
   {
     super(parent, name);
 
-    this.exitGraphics = new Path(this, "exit_line");
-    this.updateGraphics(direction);
+    this.exitGraphics = new Path(this, "exit_graphics");
+    this.createGraphics(direction);
   }
 
   // ---------------- Public methods --------------------
 
   // ---------------- Private methods -------------------
 
-  private updateGraphics(direction: "up" | "down"): void
+  private createGraphics(direction: "up" | "down"): void
   {
     const roomSpacing = SvgRooms.ROOM_SPACING_PIXELS;
 
