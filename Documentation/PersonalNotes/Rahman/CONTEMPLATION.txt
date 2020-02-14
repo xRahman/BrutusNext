@@ -1,3 +1,17 @@
+Renderování room a vertical exitů
+----------------------------------
+
+SvgVerticalExit je v SvgRoom kvůli transformaci. Grafika roomu
+  (room background, room icon) tudíž musí být v dalším <g> (nová classa),
+  kterému se bude setovat :hover a podobně.
+
+Chci programově nastavovat barvu room a exitů. Teoreticky můžu
+  stále :hover a :active nastavit v css, ale bude pak problém
+  s kontrastem - bílej rámeček kolem bílého exitu (sector snow)
+  nebude vidět.
+
+------------------------------------------------------------------------------
+
 Prototypová dědičnost entit
 ----------------------------
 
