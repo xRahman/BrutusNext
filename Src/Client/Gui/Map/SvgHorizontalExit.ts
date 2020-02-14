@@ -14,13 +14,13 @@ import { G } from "../../../Client/Gui/Svg/G";
 
 export class SvgHorizontalExit extends G
 {
-  private readonly line: Line;
+  private readonly graphics: Line;
 
   constructor(protected parent: SvgHorizontalExits, name = "exit")
   {
     super(parent, name);
 
-    this.line = new Line(this, "exit_line");
+    this.graphics = new Line(this, "exit_line");
   }
 
   // ---------------- Public methods --------------------
@@ -37,9 +37,9 @@ export class SvgHorizontalExit extends G
   {
     const roomSpacing = SvgRooms.ROOM_SPACING_PIXELS;
 
-    this.line.setStrokeColor(new CssColor(255, 255, 0));
-    this.line.setStrokeWidth(SvgHorizontalExits.LINE_WIDTH_PIXELS);
-    this.line.draw
+    this.graphics.setStrokeColor(new CssColor(255, 255, 0));
+    this.graphics.setStrokeWidth(SvgHorizontalExits.LINE_WIDTH_PIXELS);
+    this.graphics.draw
     (
       {
         xPixels: roomSpacing * exitData.from.e,

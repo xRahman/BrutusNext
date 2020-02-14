@@ -355,55 +355,12 @@
 /*                      Svg Components                         */
 /***************************************************************/
 
-/*
-.Svg
-{
-}
-*/
-
-/*
-.G
-{
-}
-*/
-
-/*
-.Image
-{
-}
-*/
-
-/*
-.Circle
-{
-}
-*/
-
-/*
-.Line
-{
-}
-*/
-
 .SvgMap
 {
   display: block;
   width: 100%;
   height: 100%;
 }
-
-
-/*
-.SvgMapCenterer
-{
-}
-*/
-
-/*
-.SvgMapZoomer
-{
-}
-*/
 
 .SvgPlayerPosition
 {
@@ -420,4 +377,14 @@
 .SvgRoom:active
 {
   fill:red;
+}
+
+.SvgVerticalExit:hover
+{
+  stroke:white;
+}
+
+.SvgVerticalExit:active
+{
+  stroke:red;
 }

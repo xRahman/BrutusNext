@@ -22,7 +22,7 @@ export class SvgRoom extends G
 
   public static readonly ROOM_BACKGROUND = "room_background";
 
-  private readonly roomBackground: Circle;
+  private readonly background: Circle;
   private readonly roomIcon: Image;
   private readonly exitUp: SvgVerticalExit;
   private readonly exitDown: SvgVerticalExit;
@@ -33,10 +33,10 @@ export class SvgRoom extends G
   {
     super(parent, name);
 
-    this.exitUp = new SvgVerticalExit(this, "up");
-    this.exitDown = new SvgVerticalExit(this, "down");
+    this.exitUp = new SvgVerticalExit(this, "up", "exit_up");
+    this.exitDown = new SvgVerticalExit(this, "down", "exit_down");
 
-    this.roomBackground = createRoomBackground(this);
+    this.background = createRoomBackground(this);
     this.roomIcon = createRoomIcon(this);
 
     this.hide();
@@ -47,7 +47,7 @@ export class SvgRoom extends G
     // Id of 'room_background' element is used
     // when processing mouse events to determine
     // which room has been clicked on.
-    this.roomBackground.setId(id);
+    this.background.setId(id);
   }
 
   public setCoords(coords: Coords | "In cache"): void

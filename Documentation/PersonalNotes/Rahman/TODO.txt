@@ -24,9 +24,14 @@ Později:
 
 TODO: SvgVerticalExit divně pracuje s grafikou. Path by se měla
   na začátku vyrobit (create) a pak jen hidovat/showovat
-- horizontální exity se při změně komplet rebuildnout, tzn. neexistující
+- horizontální exity se při změně komplet rebuildnou, tzn. neexistující
   vůbec nemají komponentu. Takže nepotřebujou updateGraphics(), stačí
   create.
+  - updateGraphics() přece jen dává smysl, protože grafika exitu
+    se nevyrábí už v konstruktoru, ale až při setnutí dat - což teda
+    taky není zrovna intuitivní, když se dál nemění.. Tak ne, je to
+    ok, protože svgExity se nejdřív vyrábí do cashe a grafika se jim
+    nastavuje, až když se z ní vyndavají.
 
 
 TODO: Zobrazovat exity "up" a "down" podle exitů v roomách

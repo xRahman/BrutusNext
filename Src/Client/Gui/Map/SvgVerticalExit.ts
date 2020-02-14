@@ -15,8 +15,8 @@ import { G } from "../../../Client/Gui/Svg/G";
 
 export class SvgVerticalExit extends G
 {
-  private readonly exitGraphics: Path;
-  // private readonly exitBackground: Path;
+  private readonly graphics: Path;
+  private readonly background: Path;
 
   constructor
   (
@@ -27,15 +27,16 @@ export class SvgVerticalExit extends G
   {
     super(parent, name);
 
-    this.exitGraphics = new Path(this, "exit_graphics");
-    this.createGraphics(direction);
+    this.background = new Path(this, "exit_background");
+    this.graphics = new Path(this, "exit_graphics");
+    this.updateGraphics(direction);
   }
 
   // ---------------- Public methods --------------------
 
   // ---------------- Private methods -------------------
 
-  private createGraphics(direction: "up" | "down"): void
+  private updateGraphics(direction: "up" | "down"): void
   {
     const roomSpacing = SvgRooms.ROOM_SPACING_PIXELS;
 
@@ -46,10 +47,24 @@ export class SvgVerticalExit extends G
       + ` L ${roomSpacing * 0.4} -${roomSpacing * 0.03}`
       + ` L ${roomSpacing * 0.4} 0`;
 
-    this.exitGraphics.setStrokeColor(new CssColor(255, 255, 0));
-    this.exitGraphics.setStrokeWidth(SvgHorizontalExits.LINE_WIDTH_PIXELS);
-    this.exitGraphics.draw(path);
+    this.drawGraphics(path);
+    this.drawBackground(path);
+
     this.rotate(-67.5 + angleToDirection(direction));
+  }
+
+  private drawGraphics(path: string): void
+  {
+    this.graphics.setStrokeColor(new CssColor(255, 255, 0));
+    this.graphics.setStrokeWidth(SvgHorizontalExits.LINE_WIDTH_PIXELS);
+    this.graphics.draw(path);
+  }
+
+  private drawBackground(path: string): void
+  {
+    this.background.setStrokeColor(new CssColor(0, 0, 0));
+    this.background.setStrokeWidth(SvgHorizontalExits.LINE_WIDTH_PIXELS);
+    this.background.draw(path);
   }
 }
 
