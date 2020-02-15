@@ -27,6 +27,16 @@
 */
 
 /***************************************************************/
+/*                         Variables                           */
+/***************************************************************/
+
+:root
+{
+  --exit-line-width: 0.075rem;
+  --exit-line-width-hover: 0.1rem;
+}
+
+/***************************************************************/
 /*                           Fonts                             */
 /***************************************************************/
 
@@ -379,12 +389,32 @@
   fill:red;
 }
 
+.SvgVerticalExit
+{
+  stroke-width: var(--exit-line-width);
+}
+
 .SvgVerticalExit:hover
 {
-  stroke:white;
+  stroke-width: var(--exit-line-width-hover);
 }
 
 .SvgVerticalExit:active
 {
-  stroke:red;
+  stroke-width: var(--exit-line-width);
+}
+
+.SvgHorizontalExit
+{
+  stroke-width: var(--exit-line-width);
+}
+
+.SvgHorizontalExit:hover
+{
+  stroke-width: var(--exit-line-width-hover);
+}
+
+.SvgHorizontalExit:active
+{
+  stroke-width: var(--exit-line-width);
 }

@@ -56,14 +56,12 @@ export class SvgVerticalExit extends G
   private drawGraphics(path: string): void
   {
     this.graphics.setStrokeColor(new CssColor(255, 255, 0));
-    this.graphics.setStrokeWidth(SvgHorizontalExits.LINE_WIDTH_PIXELS);
     this.graphics.draw(path);
   }
 
   private drawBackground(path: string): void
   {
     this.background.setStrokeColor(new CssColor(0, 0, 0));
-    this.background.setStrokeWidth(SvgHorizontalExits.LINE_WIDTH_PIXELS);
     this.background.draw(path);
   }
 }

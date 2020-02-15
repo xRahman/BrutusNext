@@ -12,11 +12,6 @@ import { SvgComponentCache } from "../../../Client/Gui/Svg/SvgComponentCache";
 
 export class SvgHorizontalExits extends SvgComponentCache<SvgHorizontalExit>
 {
-  public static get LINE_WIDTH_PIXELS(): number
-  {
-    return Dom.remToPixels(0.075);
-  }
-
   // [key]: concatenated string representations of coords of connected rooms.
   private readonly svgExits = new Map<string, SvgHorizontalExit>();
 
