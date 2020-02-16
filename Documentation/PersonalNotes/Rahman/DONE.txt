@@ -1,3 +1,6 @@
+TODO: Dát SvgRoom a SvgVertical exity do extra kontejneru
+[done]
+
 TODO: Zvážit, jestli ObjectUtils nepředělat na augmentaci Objectu
   (asi jo)
 [done]

@@ -11,11 +11,12 @@ import { SvgRooms } from "../../../Client/Gui/Map/SvgRooms";
 import { Image } from "../../../Client/Gui/Svg/Image";
 import { Circle } from "../../../Client/Gui/Svg/Circle";
 import { SvgVerticalExit } from "../../../Client/Gui/Map/SvgVerticalExit";
+import { SvgRoomNode } from "../../../Client/Gui/Map/SvgRoomNode";
 import { G } from "../../../Client/Gui/Svg/G";
 
 export class SvgRoom extends G
 {
-  public static get ROOM_PIXEL_SIZE(): number
+  public static get PIXEL_SIZE(): number
   {
     return Dom.remToPixels(0.75);
   }
@@ -24,22 +25,22 @@ export class SvgRoom extends G
 
   private readonly background: Circle;
   private readonly roomIcon: Image;
-  private readonly exitUp: SvgVerticalExit;
-  private readonly exitDown: SvgVerticalExit;
+  // private readonly exitUp: SvgVerticalExit;
+  // private readonly exitDown: SvgVerticalExit;
 
-  private coords: Coords | "In cache" = "In cache";
+  // private coords: Coords | "In cache" = "In cache";
 
-  constructor(protected parent: SvgRooms, name = "room")
+  constructor(protected parent: SvgRoomNode, name = "room")
   {
     super(parent, name);
 
-    this.exitUp = new SvgVerticalExit(this, "up", "exit_up");
-    this.exitDown = new SvgVerticalExit(this, "down", "exit_down");
+    // this.exitUp = new SvgVerticalExit(this, "up", "exit_up");
+    // this.exitDown = new SvgVerticalExit(this, "down", "exit_down");
 
     this.background = createRoomBackground(this);
     this.roomIcon = createRoomIcon(this);
 
-    this.hide();
+    // this.hide();
   }
 
   public setId(id: string): void
@@ -50,13 +51,13 @@ export class SvgRoom extends G
     this.background.setId(id);
   }
 
-  public setCoords(coords: Coords | "In cache"): void
-  {
-    this.coords = coords;
+  // public setCoords(coords: Coords | "In cache"): void
+  // {
+  //   this.coords = coords;
 
-    if (coords !== "In cache")
-      this.updatePosition(coords);
-  }
+  //   if (coords !== "In cache")
+  //     this.updatePosition(coords);
+  // }
 
   public setRoom(room: Room | "Doesn't exist"): void
   {
@@ -66,7 +67,7 @@ export class SvgRoom extends G
       return;
     }
 
-    const iconPixelSize = SvgRoom.ROOM_PIXEL_SIZE * room.icon.scale;
+    const iconPixelSize = SvgRoom.PIXEL_SIZE * room.icon.scale;
 
     this.roomIcon.setSize(iconPixelSize, iconPixelSize);
     this.roomIcon.setImage(room.icon.path);
@@ -75,16 +76,16 @@ export class SvgRoom extends G
 
   // ---------------- Private methods -------------------
 
-  private updatePosition(coords: Coords): void
-  {
-    const roomSpacing = SvgRooms.ROOM_SPACING_PIXELS;
+  // private updatePosition(coords: Coords): void
+  // {
+  //   const roomSpacing = SvgRooms.ROOM_SPACING_PIXELS;
 
-    this.setPosition
-    (
-      roomSpacing * coords.e,
-      -roomSpacing * coords.n
-    );
-  }
+  //   this.setPosition
+  //   (
+  //     roomSpacing * coords.e,
+  //     -roomSpacing * coords.n
+  //   );
+  // }
 }
 
 // ----------------- Auxiliary Functions ---------------------
@@ -93,7 +94,7 @@ function createRoomBackground(parent: SvgRoom): Circle
 {
   const background = new Circle(parent, SvgRoom.ROOM_BACKGROUND);
 
-  background.setRadius(1.2 * SvgRoom.ROOM_PIXEL_SIZE / 2);
+  background.setRadius(1.2 * SvgRoom.PIXEL_SIZE / 2);
 
   return background;
 }

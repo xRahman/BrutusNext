@@ -9,6 +9,7 @@ import { CssColor } from "../../../Client/Gui/CssColor";
 import { SvgRoom } from "../../../Client/Gui/Map/SvgRoom";
 import { SvgRooms } from "../../../Client/Gui/Map/SvgRooms";
 import { Path } from "../../../Client/Gui/Svg/Path";
+import { SvgRoomNode } from "../../../Client/Gui/Map/SvgRoomNode";
 import { SvgHorizontalExits } from
   "../../../Client/Gui/Map/SvgHorizontalExits";
 import { G } from "../../../Client/Gui/Svg/G";
@@ -20,7 +21,7 @@ export class SvgVerticalExit extends G
 
   constructor
   (
-    protected parent: SvgRoom,
+    protected parent: SvgRoomNode,
     direction: "up" | "down",
     name = "exit"
   )

@@ -14,7 +14,7 @@ export class SvgPlayerPosition extends Circle
   {
     super(parent, name);
 
-    const roomPixelSize = SvgRoom.ROOM_PIXEL_SIZE;
+    const roomPixelSize = SvgRoom.PIXEL_SIZE;
 
     this.setRadius(1.4 * roomPixelSize / 2);
   }

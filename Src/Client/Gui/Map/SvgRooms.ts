@@ -10,9 +10,10 @@ import { Room } from "../../../Client/World/Room";
 import { MudMap } from "../../../Client/Gui/Map/MudMap";
 import { SvgWorld } from "../../../Client/Gui/Map/SvgWorld";
 import { SvgRoom } from "../../../Client/Gui/Map/SvgRoom";
+import { SvgRoomNode } from "../../../Client/Gui/Map/SvgRoomNode";
 import { SvgComponentCache } from "../../../Client/Gui/Svg/SvgComponentCache";
 
-export class SvgRooms extends SvgComponentCache<SvgRoom>
+export class SvgRooms extends SvgComponentCache<SvgRoomNode>
 {
   public static get ROOM_SPACING_PIXELS(): number
   {
@@ -20,20 +21,20 @@ export class SvgRooms extends SvgComponentCache<SvgRoom>
   }
 
   // [key]: string representation of room coords.
-  private readonly svgRooms = new Map<string, SvgRoom>();
+  private readonly roomNodes = new Map<string, SvgRoomNode>();
 
   constructor(protected parent: SvgWorld, name = "rooms")
   {
-    super(parent, MudMap.maxRoomsInView(), SvgRoom, name);
+    super(parent, MudMap.maxRoomsInView(), SvgRoomNode, name);
   }
 
   // ---------------- Public methods --------------------
 
   public updateRoom(room: Room | "Doesn't exist", coords: Coords): void
   {
-    const svgRoom = this.getSvgRoom(coords);
+    const roomNode = this.getRoomNode(coords);
 
-    svgRoom.setRoom(room);
+    roomNode.setRoom(room);
   }
 
   // ! Throws exception on error.
@@ -45,52 +46,52 @@ export class SvgRooms extends SvgComponentCache<SvgRoom>
   : void
   {
     // ! Throws exception on error.
-    const svgRoom = this.getComponentFromCache();
+    const roomNode = this.getComponentFromCache();
     const roomId = coords.toString();
 
-    svgRoom.setCoords(coords);
-    svgRoom.setId(roomId);
-    svgRoom.setRoom(room);
-    svgRoom.show();
+    roomNode.setCoords(coords);
+    roomNode.setId(roomId);
+    roomNode.setRoom(room);
+    roomNode.show();
 
     // ! Throws exception on error.
-    this.addSvgRoom(roomId, svgRoom);
+    this.addRoomNode(roomId, roomNode);
   }
 
   public clear(): void
   {
-    for (const svgRoom of this.svgRooms.values())
+    for (const svgRoom of this.roomNodes.values())
       this.putToCache(svgRoom);
 
-    this.svgRooms.clear();
+    this.roomNodes.clear();
   }
 
   // ---------------- Private methods -------------------
 
   // ! Throws exception on error.
-  private addSvgRoom(id: string, component: SvgRoom): void
+  private addRoomNode(id: string, component: SvgRoomNode): void
   {
-    if (this.svgRooms.has(id))
+    if (this.roomNodes.has(id))
     {
       throw Error(`There already is a component`
         + ` representing room ${id} on the map`);
     }
 
-    this.svgRooms.set(id, component);
+    this.roomNodes.set(id, component);
   }
 
   // ! Throws exception on error.
-  private getSvgRoom(coords: Coords): SvgRoom
+  private getRoomNode(coords: Coords): SvgRoomNode
   {
     const roomId = coords.toString();
-    const roomComponent = this.svgRooms.get(roomId);
+    const roomNode = this.roomNodes.get(roomId);
 
-    if (roomComponent === undefined)
+    if (roomNode === undefined)
     {
       throw Error(`There is no component representing room`
         + ` on the map at coords ${coords.toString()}`);
     }
 
-    return roomComponent;
+    return roomNode;
   }
 }
