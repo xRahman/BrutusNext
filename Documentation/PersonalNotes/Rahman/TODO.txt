@@ -23,7 +23,12 @@ Později:
 ------------------------------------------------------------------------------
 
 TODO: SvgVerticalExit divně pracuje s grafikou. Path by se měla
-  na začátku vyrobit (create) a pak jen hidovat/showovat
+  na začátku vyrobit (create) a pak jen hidovat/showovat.
+  - i když, v game módu asi stačí, aby byly vyrobeny svg komponenty jen
+    pro existující exity. To by znamenalo je při každé změně všechny
+    rebuildnou.
+    (Možná to můžu udělat tak, že dummy exity (černé) budou v edit módu
+     vyrobené všechny a ostré exity se budou vždy komplet rebuildovat).
 - horizontální exity se při změně komplet rebuildnou, tzn. neexistující
   vůbec nemají komponentu. Takže nepotřebujou updateGraphics(), stačí
   create.
