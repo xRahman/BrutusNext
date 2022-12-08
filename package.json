@@ -25,7 +25,7 @@
     "@types/ws": "^6.0.4",
     "@typescript-eslint/eslint-plugin": "^2.10.0",
     "@typescript-eslint/parser": "^2.10.0",
-    "express": "^4.17.1",
+    "express": "^4.18.2",
     "fastbitset": "^0.2.8",
     "fastpriorityqueue": "^0.6.3",
     "fs-extra": "^8.1.0",
